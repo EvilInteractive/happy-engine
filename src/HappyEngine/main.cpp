@@ -1,0 +1,35 @@
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//
+//This file is part of HappyEngine.
+//
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    cout << "       ******************************       \n";
+    cout << "  ****************        ****************  \n";
+    cout << "*************  HappyEngine :D  *************\n";
+    cout << "  ***************          ***************  \n";
+    cout << "       ******************************       \n\n\n";
+    
+
+    cout << "--Thank you for using HappyEngine--\n";
+    cout << "press enter to quit";
+    cin.get();
+    return 0;
+};
