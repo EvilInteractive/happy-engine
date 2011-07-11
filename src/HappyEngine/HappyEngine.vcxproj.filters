@@ -16,20 +16,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="F:\happy-engine\src\HappyEngine\HappyEngine.cpp">
-      <Filter>happyengine</Filter>
-    </ClCompile>
     <ClCompile Include="X.cpp">
       <Filter>happyengine\template</Filter>
     </ClCompile>
     <ClCompile Include="ContentManager.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
+    <ClCompile Include="HappyEngine.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="F:\happy-engine\src\HappyEngine\HappyEngine.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
     <ClInclude Include="X.h">
       <Filter>happyengine\template</Filter>
     </ClInclude>
@@ -41,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="I2DRenderer.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="HappyEngine.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="IGame.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

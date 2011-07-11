@@ -15,34 +15,32 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _CONTENT_MANAGER_H_
-#define _CONTENT_MANAGER_H_
+#ifndef _MAINGAME_H_
+#define _MAINGAME_H_
 #pragma once
 
-#include <string>
+#include "IGame.h"
 
-namespace happyengine {
-namespace content {
+namespace happytest {
 
-class ContentManager
+class MainGame : public happyengine::IGame
 {
 public:
-	ContentManager();
-    virtual ~ContentManager();
+	MainGame();
+    virtual ~MainGame();
 
-	//graphics::Texture2D::pointer loadTexture2D(const std::string& path);
-	// graphics::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
-	// asyncLoadTexture2D(const std::string& path, graphics::Texture2D::pointer*);
-
-	//graphics::Model::pointer loadModel(const std::string& path);
+    virtual void init();
+    virtual void load();
+    virtual void tick(float dTime);
+    virtual void draw(float dTime);
 
 private:
 
     //Disable default copy constructor and default assignment operator
-    ContentManager(const ContentManager&);
-    ContentManager& operator=(const ContentManager&);
+    MainGame(const MainGame&);
+    MainGame& operator=(const MainGame&);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

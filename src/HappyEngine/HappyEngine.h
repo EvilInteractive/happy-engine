@@ -20,6 +20,8 @@
 #pragma once
 
 #include "boost/shared_ptr.hpp"
+#include "IGame.h"
+#include "SDL.h"
 
 namespace happyengine {
 
@@ -30,14 +32,26 @@ public:
 
     virtual ~HappyEngine();
 
-    void init();
+    void start(IGame* pGame);
 
     static pointer getPointer();
 
 private:
-    //singleton design pattern
+    // Singleton design pattern
     HappyEngine();
     static pointer s_pHappyEngine;
+
+    IGame* m_pGame;
+    SDL_Window* m_pMainWindow;
+    SDL_Renderer* m_pRenderer;
+
+    bool m_Quit;
+
+    // Methods
+    void initWindow();
+    void initSubEngines();
+    void drawThread();
+    void quit();
 
     //Disable default copy constructor and default assignment operator
     HappyEngine(const HappyEngine&);

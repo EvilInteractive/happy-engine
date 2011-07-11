@@ -16,19 +16,33 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "HappyEngine.h"
+
 #include <iostream>
+
+#include "boost/thread.hpp"
 
 namespace happyengine {
 
-HappyEngine::HappyEngine()
+HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
+
+HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false)
 {
 }
 HappyEngine::~HappyEngine()
 {
-    std::cout << "--Thank you for using HappyEngine--\n";
 }
 
-void HappyEngine::init()
+void HappyEngine::quit()
+{   
+    //dispose/delete all sub engines here
+    std::cout << "--Thank you for using HappyEngine--\n";
+}
+void HappyEngine::initSubEngines()
+{
+    //init all sub engines here
+}
+
+void HappyEngine::start(IGame* pGame)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -36,12 +50,78 @@ void HappyEngine::init()
     cout << "*************  HappyEngine :D  *************\n";
     cout << "  ***************          ***************  \n";
     cout << "       ******************************       \n\n\n";
+
+    m_pGame = pGame;
+
+    //Init SDL
+    SDL_Init(SDL_INIT_EVERYTHING);
+
+    //Init Game
+    pGame->init();
+
+    //Init other stuff
+    initWindow();
+    initSubEngines();
+
+    pGame->load();
+    
+    //Start draw thread
+    boost::thread drawThread(boost::bind(&HappyEngine::drawThread, this));
+
+    //Run main update loop
+    SDL_Event event;
+    Uint32 prevTicks = SDL_GetTicks();
+    while (m_Quit == false)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                case SDL_QUIT: m_Quit = true; break;
+            }
+        }
+        Uint32 ticks = SDL_GetTicks();
+        float dTime = (ticks - prevTicks) / 1000.0f;
+        prevTicks = ticks;
+
+        m_pGame->tick(dTime);
+
+        //SDL_Delay(12);
+    }
+
+    drawThread.join();
+
+    SDL_Quit();
+
+    quit();
+}
+void HappyEngine::drawThread()
+{
+    Uint32 prevTicks = SDL_GetTicks();
+    while (m_Quit == false)
+    {
+        Uint32 ticks = SDL_GetTicks();
+        float dTime = (ticks - prevTicks) / 1000.0f;
+        prevTicks = ticks;
+
+        SDL_SetRenderDrawColor(m_pRenderer, 128, 180, 255, 255);
+        SDL_RenderClear(m_pRenderer);
+
+        m_pGame->draw(dTime);
+
+        SDL_RenderPresent(m_pRenderer);
+    }
+}
+
+void HappyEngine::initWindow()
+{
+    m_pMainWindow = SDL_CreateWindow("Happy Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        1280, 720, SDL_WINDOW_SHOWN);
+    m_pRenderer = SDL_CreateRenderer(m_pMainWindow, -1, 0);
 }
 
 HappyEngine::pointer HappyEngine::getPointer()
 {
-    if (s_pHappyEngine.get() == nullptr)
-        s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
     return s_pHappyEngine;
 }
 
