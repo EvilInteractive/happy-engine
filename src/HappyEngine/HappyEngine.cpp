@@ -15,21 +15,34 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "HappyEngine.h"
 #include <iostream>
 
-using namespace std;
+namespace happyengine {
 
-int main()
+HappyEngine::HappyEngine()
 {
+}
+HappyEngine::~HappyEngine()
+{
+    std::cout << "--Thank you for using HappyEngine--\n";
+}
+
+void HappyEngine::init()
+{
+    using namespace std;
     cout << "       ******************************       \n";
     cout << "  ****************        ****************  \n";
     cout << "*************  HappyEngine :D  *************\n";
     cout << "  ***************          ***************  \n";
     cout << "       ******************************       \n\n\n";
-    
+}
 
-    cout << "--Thank you for using HappyEngine--\n";
-    cout << "press enter to quit";
-    cin.get();
-    return 0;
-};
+HappyEngine::pointer HappyEngine::getPointer()
+{
+    if (s_pHappyEngine.get() == nullptr)
+        s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
+    return s_pHappyEngine;
+}
+
+} //end namespace

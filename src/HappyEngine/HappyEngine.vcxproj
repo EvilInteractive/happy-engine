@@ -10,6 +10,18 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ContentManager.cpp" />
+    <ClCompile Include="F:\happy-engine\src\HappyEngine\HappyEngine.cpp" />
+    <ClCompile Include="X.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="I2DRenderer.h" />
+    <ClInclude Include="ContentManager.h" />
+    <ClInclude Include="F:\happy-engine\src\HappyEngine\HappyEngine.h" />
+    <ClInclude Include="I3DRenderer.h" />
+    <ClInclude Include="X.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2FEABBB6-C485-41DF-BAC6-F516615A10B3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -17,7 +29,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -87,9 +99,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
