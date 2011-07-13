@@ -19,15 +19,17 @@
 #define _I3DRENDERER_H_
 #pragma once
 
+#include "Model.h"
+
 namespace happyengine {
 namespace graphics {
 
 class I3DRenderer
 {
 public:
-    virtual ~I3DRenderer();
+    virtual ~I3DRenderer() {}
 
-	void draw();
+	virtual void draw(const Model::pointer& pModel) = 0;
 };
 
 } } //end namespace

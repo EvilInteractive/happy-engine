@@ -15,40 +15,39 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MAINGAME_H_
-#define _MAINGAME_H_
+#ifndef _SHADER_H_
+#define _SHADER_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-#include "IGame.h"
-#include "Model.h"
-#include "Shader.h"
-#include "SimpleForward3DRenderer.h"
+#include <string>
+#include "VertexLayout.h"
 
-namespace happytest {
+namespace happyengine {
+namespace graphics {
 
-class MainGame : public happyengine::IGame
+class Shader
 {
 public:
-	MainGame();
-    virtual ~MainGame();
+	Shader();
+    virtual ~Shader();
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void draw(float dTime);
+    bool init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexLayout);
+
+    void begin() const;
+    void end() const;
+
+    unsigned int id() const;
 
 private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Shader* m_pShader;
-
-    happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
+    unsigned int m_Id;
+    unsigned int m_VsId;
+    unsigned int m_FsId;
 
     //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    Shader(const Shader&);
+    Shader& operator=(const Shader&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

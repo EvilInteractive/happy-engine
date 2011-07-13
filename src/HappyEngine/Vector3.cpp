@@ -15,21 +15,33 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _I2DRENDERER_H_
-#define _I2DRENDERER_H_
-#pragma once
+#include "Vector3.h"
 
 namespace happyengine {
-namespace graphics {
+namespace math {
 
-class I2DRenderer
+Vector3::Vector3(): x(0), y(0), z(0)
 {
-public:
-    virtual ~I2DRenderer() {}
+}
+Vector3::Vector3(float x_, float y_, float z_): x(x_), y(y_), z(z_)
+{
+}
+Vector3::~Vector3()
+{
+}
 
-    virtual void draw() = 0;
-};
+Vector3::Vector3(const Vector3& other)
+{
+    x = other.x;
+    y = other.y;
+    z = other.z;
+}
+Vector3& Vector3::operator=(const Vector3& other)
+{
+    x = other.x;
+    y = other.y;
+    z = other.z;
+    return *this;
+}
 
 } } //end namespace
-
-#endif

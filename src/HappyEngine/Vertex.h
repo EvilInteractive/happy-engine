@@ -15,40 +15,29 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MAINGAME_H_
-#define _MAINGAME_H_
+#ifndef _VERTEX_H_
+#define _VERTEX_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-#include "IGame.h"
-#include "Model.h"
-#include "Shader.h"
-#include "SimpleForward3DRenderer.h"
+#include "Vector3.h"
+#include "VertexLayout.h"
 
-namespace happytest {
+namespace happyengine {
+namespace graphics {
 
-class MainGame : public happyengine::IGame
+struct VertexPosCol
 {
 public:
-	MainGame();
-    virtual ~MainGame();
+    math::Vector3 position;
+    math::Vector3 color;
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void draw(float dTime);
-
-private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Shader* m_pShader;
-
-    happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
-
-    //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+	VertexPosCol();
+	VertexPosCol(const math::Vector3& pos, const math::Vector3& col);
+    ~VertexPosCol();
+	VertexPosCol(const VertexPosCol& other);
+	VertexPosCol& operator=(const VertexPosCol& other);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

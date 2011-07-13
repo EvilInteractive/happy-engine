@@ -20,12 +20,30 @@
 #include <iostream>
 
 #include "boost/thread.hpp"
+#include "Assert.h"
 
 namespace happyengine {
 
 HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
 
-HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false)
+inline void glHandleError(GLenum err)
+{
+    if (err != GL_NO_ERROR)
+    {
+        std::cout << "***GL error*** file: " << __FILE__ << " line: " << __LINE__ << "\n";
+        std::cout << glewGetErrorString(err);
+    }
+}
+inline void sdlHandleError(int err)
+{
+    if (err != 0)
+    {
+        std::cout << "***SDL error***" << __FILE__ << " line: " << __LINE__ << "\n";
+        std::cout << SDL_GetError();
+    }
+}
+
+HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false)
 {
 }
 HappyEngine::~HappyEngine()
@@ -35,6 +53,10 @@ HappyEngine::~HappyEngine()
 void HappyEngine::quit()
 {   
     //dispose/delete all sub engines here
+    SDL_GL_DeleteContext(m_GLContext);
+    SDL_DestroyWindow(m_pMainWindow);
+    SDL_Quit();
+
     std::cout << "--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::initSubEngines()
@@ -60,64 +82,90 @@ void HappyEngine::start(IGame* pGame)
     pGame->init();
 
     //Init other stuff
-    initWindow();
     initSubEngines();
-
-    pGame->load();
+    
+    m_VertexQuad.push_back(VertexPosColor(8.0f, 8.0f, 0.5f, 
+                                          0.0f, 0.0f, 1.0f));
+    m_VertexQuad.push_back(VertexPosColor(128.0f, 8.0f, 0.5f, 
+                                          1.0f, 0.0f, 1.0f));
+    m_VertexQuad.push_back(VertexPosColor(8.0f, 128.0f, 0.5f, 
+                                          0.0f, 1.0f, 0.0f));
+    m_VertexQuad.push_back(VertexPosColor(128.0f, 128.0f, 0.5f, 
+                                          1.0f, 1.0f, 1.0f));
     
     //Start draw thread
     boost::thread drawThread(boost::bind(&HappyEngine::drawThread, this));
 
     //Run main update loop
-    SDL_Event event;
     Uint32 prevTicks = SDL_GetTicks();
     while (m_Quit == false)
     {
-        while (SDL_PollEvent(&event))
+        Uint32 ticks = SDL_GetTicks();
+        float dTime = (ticks - prevTicks) / 1000.0f;
+        prevTicks = ticks;
+
+        if (m_Loaded)
+            m_pGame->tick(dTime);
+
+        SDL_Delay(12);
+    }
+    
+    drawThread.join();
+
+    quit();
+}
+void HappyEngine::drawThread()
+{
+    initWindow();
+    m_pGame->load();
+
+    m_Loaded = true;
+    Uint32 prevTicks = SDL_GetTicks();
+    SDL_Event event;
+    while (m_Quit == false)
+    {
+        Uint32 ticks = SDL_GetTicks();
+        float dTime = (ticks - prevTicks) / 1000.0f;
+        prevTicks = ticks;
+        
+        while (SDL_PollEvent(&event)) //Events are window related ==> need to be in the same thread
         {
             switch (event.type)
             {
                 case SDL_QUIT: m_Quit = true; break;
             }
         }
-        Uint32 ticks = SDL_GetTicks();
-        float dTime = (ticks - prevTicks) / 1000.0f;
-        prevTicks = ticks;
-
-        m_pGame->tick(dTime);
-
-        //SDL_Delay(12);
-    }
-
-    drawThread.join();
-
-    SDL_Quit();
-
-    quit();
-}
-void HappyEngine::drawThread()
-{
-    Uint32 prevTicks = SDL_GetTicks();
-    while (m_Quit == false)
-    {
-        Uint32 ticks = SDL_GetTicks();
-        float dTime = (ticks - prevTicks) / 1000.0f;
-        prevTicks = ticks;
-
-        SDL_SetRenderDrawColor(m_pRenderer, 128, 180, 255, 255);
-        SDL_RenderClear(m_pRenderer);
+        glViewport(0, 0, 1280, 720);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);                 
 
         m_pGame->draw(dTime);
 
-        SDL_RenderPresent(m_pRenderer);
+        SDL_GL_SwapWindow(m_pMainWindow);
     }
 }
 
 void HappyEngine::initWindow()
 {
+    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2));
+    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1));
+
+    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
+    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24));
+
     m_pMainWindow = SDL_CreateWindow("Happy Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1280, 720, SDL_WINDOW_SHOWN);
-    m_pRenderer = SDL_CreateRenderer(m_pMainWindow, -1, 0);
+        1280, 720, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    
+    m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
+    if (SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext) != 0)
+        std::cout << SDL_GetError();
+
+    glHandleError(glewInit());
+
+    //VSync
+    sdlHandleError(SDL_GL_SetSwapInterval(1));
+
+    glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
+    glClearDepth(1.0f);
 }
 
 HappyEngine::pointer HappyEngine::getPointer()

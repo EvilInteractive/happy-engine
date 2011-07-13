@@ -15,21 +15,28 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _I2DRENDERER_H_
-#define _I2DRENDERER_H_
-#pragma once
+#include "FileOpenException.h"
 
 namespace happyengine {
-namespace graphics {
+namespace error {
 
-class I2DRenderer
+FileOpenException::FileOpenException() : Exception(L"File open failed")
 {
-public:
-    virtual ~I2DRenderer() {}
+}
+FileOpenException::FileOpenException(const std::wstring& file) : 
+    Exception(L"Could not open file: " + file)
+{
+}
 
-    virtual void draw() = 0;
-};
+
+FileOpenException::~FileOpenException()
+{
+}
+
+
+std::wstring FileOpenException::getType() const
+{
+    return L"FileOpenException";
+}
 
 } } //end namespace
-
-#endif

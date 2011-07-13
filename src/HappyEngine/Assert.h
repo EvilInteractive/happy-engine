@@ -15,40 +15,28 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MAINGAME_H_
-#define _MAINGAME_H_
+#ifndef _ASSERT_H_
+#define _ASSERT_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-#include "IGame.h"
-#include "Model.h"
-#include "Shader.h"
-#include "SimpleForward3DRenderer.h"
+namespace happyengine {
+namespace error {
 
-namespace happytest {
+#define ASSERT(...) __debugbreak()
 
-class MainGame : public happyengine::IGame
+class Assert
 {
 public:
-	MainGame();
-    virtual ~MainGame();
-
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void draw(float dTime);
+	Assert();
+    virtual ~Assert();
 
 private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Shader* m_pShader;
-
-    happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
 
     //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    Assert(const Assert&);
+    Assert& operator=(const Assert&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

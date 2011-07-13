@@ -11,16 +11,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Assert.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
+    <ClCompile Include="Exception.cpp" />
+    <ClCompile Include="FileOpenException.cpp" />
+    <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="HappyEngine.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="X.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assert.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="SimpleForward3DRenderer.h" />
+    <ClInclude Include="Exception.h" />
+    <ClInclude Include="FileOpenException.h" />
+    <ClInclude Include="FileReader.h" />
     <ClInclude Include="HappyEngine.h" />
     <ClInclude Include="I2DRenderer.h" />
     <ClInclude Include="ContentManager.h" />
     <ClInclude Include="I3DRenderer.h" />
     <ClInclude Include="IGame.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="X.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

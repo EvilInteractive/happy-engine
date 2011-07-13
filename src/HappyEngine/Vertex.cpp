@@ -15,21 +15,30 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _I2DRENDERER_H_
-#define _I2DRENDERER_H_
-#pragma once
+#include "Vertex.h"
 
 namespace happyengine {
 namespace graphics {
-
-class I2DRenderer
+    
+VertexPosCol::VertexPosCol() : position(), color()
 {
-public:
-    virtual ~I2DRenderer() {}
-
-    virtual void draw() = 0;
-};
+}
+VertexPosCol::VertexPosCol(const math::Vector3& pos, const math::Vector3& col): position(pos), color(col)
+{
+}
+VertexPosCol::~VertexPosCol()
+{
+}
+VertexPosCol::VertexPosCol(const VertexPosCol& other)
+{
+    position = other.position;
+    color = other.color;
+}
+VertexPosCol& VertexPosCol::operator=(const VertexPosCol& other)
+{
+    position = other.position;
+    color = other.color;
+    return *this;
+}
 
 } } //end namespace
-
-#endif

@@ -8,6 +8,12 @@
     <Filter Include="references">
       <UniqueIdentifier>{68967bde-5287-4907-bda8-15b9b01b1dd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{e569846f-1e8b-4d37-b6a3-aa0b8083c225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders">
+      <UniqueIdentifier>{d7784cf1-3904-46fc-bd20-1dcca4742a65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,5 +27,13 @@
     <ClInclude Include="MainGame.h">
       <Filter>happytest</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shaders\simple2DShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\simple2DShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

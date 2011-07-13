@@ -1,5 +1,10 @@
+
+#define BOOST_DISABLE_ASSERTS
+
 #include "HappyEngine.h"
 #include "MainGame.h"
+
+#include <iostream>
 
 int main( int /*argc*/, char** /*args[]*/ )
 {

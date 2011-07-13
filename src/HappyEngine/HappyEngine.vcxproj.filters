@@ -14,6 +14,24 @@
     <Filter Include="happyengine\graphics">
       <UniqueIdentifier>{83150577-dea8-4777-903f-cd2738603782}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\io">
+      <UniqueIdentifier>{2aae4662-d64d-402a-a861-ce804ea7b2a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\error">
+      <UniqueIdentifier>{57e8f79e-354c-43d3-adff-7187f1929be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\error\exceptions">
+      <UniqueIdentifier>{9dad1105-381b-47a8-ab6c-5dec45474df8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\error\logicerror">
+      <UniqueIdentifier>{4edba084-3ea7-4bb0-9265-a97bb2f5974d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\error\exceptions\io">
+      <UniqueIdentifier>{15e9a65e-275c-4376-a11b-297248fe7a44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\math">
+      <UniqueIdentifier>{9db2183d-db1d-4c98-ab51-08a8de83f48e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -24,6 +42,36 @@
     </ClCompile>
     <ClCompile Include="HappyEngine.cpp">
       <Filter>happyengine</Filter>
+    </ClCompile>
+    <ClCompile Include="FileReader.cpp">
+      <Filter>happyengine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>happyengine\error\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="FileOpenException.cpp">
+      <Filter>happyengine\error\exceptions\io</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexLayout.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleForward3DRenderer.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Assert.cpp">
+      <Filter>happyengine\error\logicerror</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,6 +92,36 @@
     </ClInclude>
     <ClInclude Include="IGame.h">
       <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="FileReader.h">
+      <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>happyengine\error\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="FileOpenException.h">
+      <Filter>happyengine\error\exceptions\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexLayout.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleForward3DRenderer.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Assert.h">
+      <Filter>happyengine\error\logicerror</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

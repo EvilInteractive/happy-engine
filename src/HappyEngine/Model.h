@@ -15,40 +15,42 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MAINGAME_H_
-#define _MAINGAME_H_
+#ifndef _MODEL_H_
+#define _MODEL_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-#include "IGame.h"
-#include "Model.h"
-#include "Shader.h"
-#include "SimpleForward3DRenderer.h"
+#include <vector>
+#include "VertexLayout.h"
+#include "boost/shared_ptr.hpp"
 
-namespace happytest {
+namespace happyengine {
+namespace graphics {
 
-class MainGame : public happyengine::IGame
+class Model
 {
 public:
-	MainGame();
-    virtual ~MainGame();
+    typedef boost::shared_ptr<Model> pointer;
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void draw(float dTime);
+	Model();
+    virtual ~Model();
+
+    void setVertices(void* pVertices, unsigned int num, const VertexLayout& vertexLayout);
+
+    unsigned int getVertexArraysID() const;
+    unsigned int getNumVertices() const;
 
 private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Shader* m_pShader;
 
-    happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
+    unsigned int m_VaoID[1];
+    unsigned int m_VboID[1];
+
+    unsigned int m_NumVertices;
 
     //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    Model(const Model&);
+    Model& operator=(const Model&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

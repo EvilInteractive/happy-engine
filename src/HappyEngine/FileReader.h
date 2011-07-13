@@ -15,40 +15,46 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MAINGAME_H_
-#define _MAINGAME_H_
+#ifndef _FILEREADER_H_
+#define _FILEREADER_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-#include "IGame.h"
-#include "Model.h"
-#include "Shader.h"
-#include "SimpleForward3DRenderer.h"
+#include <string>
+#include <fstream>
 
-namespace happytest {
+namespace happyengine {
+namespace io {
 
-class MainGame : public happyengine::IGame
+class FileReader
 {
 public:
-	MainGame();
-    virtual ~MainGame();
+    enum OpenType
+    {
+        OpenType_Unicode,
+        OpenType_ASCII
+    };
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void draw(float dTime);
+	FileReader();
+    virtual ~FileReader();
+
+    void open(const std::string& path, OpenType type);
+    void close();
+
+    std::string readLine();
+    std::string readToEnd();
+
+    std::wstring readLineW();
+    std::wstring readToEndW();
 
 private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Shader* m_pShader;
-
-    happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
+    std::wfstream m_Wfstream;
+    std::fstream m_fstream;
 
     //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    FileReader(const FileReader&);
+    FileReader& operator=(const FileReader&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

@@ -15,21 +15,29 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _I2DRENDERER_H_
-#define _I2DRENDERER_H_
-#pragma once
+#include "SimpleForward3DRenderer.h"
+#include "GL/glew.h"
+#include "Assert.h"
 
 namespace happyengine {
 namespace graphics {
 
-class I2DRenderer
+SimpleForward3DRenderer::SimpleForward3DRenderer()
 {
-public:
-    virtual ~I2DRenderer() {}
+}
 
-    virtual void draw() = 0;
-};
+
+SimpleForward3DRenderer::~SimpleForward3DRenderer()
+{
+}
+
+void SimpleForward3DRenderer::draw(const Model::pointer& pModel)
+{
+    glBindVertexArray(pModel->getVertexArraysID());
+
+    glDrawArrays(GL_TRIANGLES, 0, pModel->getNumVertices());
+
+    glBindVertexArray(0);
+}
 
 } } //end namespace
-
-#endif

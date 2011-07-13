@@ -15,21 +15,29 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _I2DRENDERER_H_
-#define _I2DRENDERER_H_
-#pragma once
+#include "Exception.h"
 
 namespace happyengine {
-namespace graphics {
+namespace error {
 
-class I2DRenderer
+Exception::Exception() : m_Msg(L"")
 {
-public:
-    virtual ~I2DRenderer() {}
+}
+Exception::Exception(const std::wstring msg) : m_Msg(msg)
+{
+}
 
-    virtual void draw() = 0;
-};
+Exception::~Exception()
+{
+}
+
+std::wstring Exception::getType() const
+{
+    return L"Exception";
+}
+std::wstring Exception::getMsg() const
+{
+    return m_Msg;
+}
 
 } } //end namespace
-
-#endif

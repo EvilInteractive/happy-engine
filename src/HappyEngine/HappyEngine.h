@@ -23,7 +23,23 @@
 #include "IGame.h"
 #include "SDL.h"
 
+#include "GL/glew.h"
+
+#include <vector>
+
 namespace happyengine {
+
+struct VertexPosColor
+{
+public:
+    float x, y, z;
+    float r, g, b;
+
+    VertexPosColor(float _x, float _y, float _z,
+                   float _r, float _g, float _b) : x(_x), y(_y), z(_z),
+                                                   r(_r), g(_g), b(_b)
+    {}
+};
 
 class HappyEngine
 {
@@ -43,9 +59,12 @@ private:
 
     IGame* m_pGame;
     SDL_Window* m_pMainWindow;
-    SDL_Renderer* m_pRenderer;
+    SDL_GLContext m_GLContext;
 
     bool m_Quit;
+    bool m_Loaded;
+
+    std::vector<VertexPosColor> m_VertexQuad;
 
     // Methods
     void initWindow();
