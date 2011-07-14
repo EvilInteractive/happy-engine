@@ -22,6 +22,9 @@
 #include <string>
 #include "VertexLayout.h"
 
+#include "Matrix.h"
+#include "Vector3.h"
+
 namespace happyengine {
 namespace graphics {
 
@@ -33,15 +36,20 @@ public:
 
     bool init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexLayout);
 
-    void begin() const;
-    void end() const;
+    void begin();
+    void end();
 
-    unsigned int id() const;
+    unsigned int getShaderVarId(const std::string& name) const;
+
+    void setShaderVar(unsigned int id, const math::Matrix& matrix) const;
+    void setShaderVar(unsigned int id, const math::Vector3& vec) const;
 
 private:
     unsigned int m_Id;
     unsigned int m_VsId;
     unsigned int m_FsId;
+
+    bool m_Bound;
 
     //Disable default copy constructor and default assignment operator
     Shader(const Shader&);

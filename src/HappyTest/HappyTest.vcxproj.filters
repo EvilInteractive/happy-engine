@@ -29,10 +29,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\simple2DShader.frag">
+    <None Include="data\shaders\simpleShader.frag">
       <Filter>data\shaders</Filter>
     </None>
-    <None Include="data\shaders\simple2DShader.vert">
+    <None Include="data\shaders\simpleShader.vert">
       <Filter>data\shaders</Filter>
     </None>
   </ItemGroup>

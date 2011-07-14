@@ -15,46 +15,46 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _VECTOR3_H_
-#define _VECTOR3_H_
+#ifndef _MATHFUNCTIONS_H_
+#define _MATHFUNCTIONS_H_
 #pragma once
 
-#include "PxVec3.h"
+#include "Vector3.h"
+#include "PxMat44.h"
 
 namespace happyengine {
 namespace math {
-
-struct Vector3
+   
+// Float
+inline float sqr(float a)
 {
-public:
-    float x, y, z;
+    return a * a;
+}
 
-	Vector3();
-    explicit Vector3(physx::pubfnd3::PxVec3 vec);
-	Vector3(float x_, float y_, float z_);
-    ~Vector3();
-
-    Vector3(const Vector3& other);
-    Vector3& operator=(const Vector3& other);
-
-    //>---------Operators--------------------->
-	Vector3 operator-() const;
-
-	Vector3 operator*(float a) const;
-	Vector3 operator/(float a) const;
-
-	Vector3 operator+(const Vector3& v) const;
-	Vector3 operator-(const Vector3& v) const;
-
-	Vector3& operator+=(const Vector3& v);
-	Vector3& operator-=(const Vector3& v);
-	Vector3& operator*=(float a);
-	Vector3& operator/=(float a);
-
-	bool operator==(const Vector3& v) const;
-	bool operator!=(const Vector3& v) const;
-    //<----------------------------------------<
-};
+// Vector3
+inline float lengthSqr(const Vector3& vector)
+{
+    return sqr(vector.x) + sqr(vector.y) + sqr(vector.z);
+}
+inline float length(const Vector3& vector)
+{
+    return sqrtf(lengthSqr(vector));
+}
+inline Vector3 normalize(const Vector3& vector)
+{
+    return vector / length(vector);
+}
+inline float dot(const Vector3& vector1, const Vector3& vector2)
+{
+    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+}
+inline Vector3 cross(const Vector3& vector1, const Vector3& vector2)
+{
+    return Vector3(
+        vector1.y * vector2.z - vector1.z * vector2.y,
+        vector1.z * vector2.x - vector1.x * vector2.z,
+        vector1.x * vector2.y - vector1.y * vector2.x);
+}
 
 } } //end namespace
 

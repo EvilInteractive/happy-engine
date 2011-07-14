@@ -44,6 +44,8 @@ private:
 
     happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
 
+    float m_Timer;
+
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
     MainGame& operator=(const MainGame&);

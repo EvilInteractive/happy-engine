@@ -27,7 +27,7 @@
 namespace happyengine {
 namespace graphics {
 
-Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
+Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0), m_Bound(false)
 {
 }
 
@@ -108,9 +108,6 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
     m_FsId = glCreateShader(GL_FRAGMENT_SHADER);
-    
-    if (glGetError() != GL_NO_ERROR)
-        ASSERT();
 
     const char* vsBuff(strVS.c_str());
     glShaderSource(m_VsId, 1, &vsBuff, 0);
@@ -139,25 +136,33 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
     return succes;
 }
 
-void Shader::begin() const
+void Shader::begin()
 {
-    
-    if (glGetError() != GL_NO_ERROR)
-        ASSERT();
     glUseProgram(m_Id);
-    if (glGetError() != GL_NO_ERROR)
-        ASSERT();
+    m_Bound = true;
 }
-void Shader::end() const
+void Shader::end()
 {
     glUseProgram(0);
-    if (glGetError() != GL_NO_ERROR)
-        ASSERT();
+    m_Bound = false;
 }
 
-unsigned int Shader::id() const
+unsigned int Shader::getShaderVarId(const std::string& name) const
 {
-    return m_Id;
+    return glGetUniformLocation(m_Id, name.c_str());
+}
+
+void Shader::setShaderVar(unsigned int id, const math::Matrix& matrix) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    float fArr[16];
+    matrix.toFloatArray(fArr);
+    glUniformMatrix4fv(id, 1, GL_FALSE, fArr);
+}
+void Shader::setShaderVar(unsigned int id, const math::Vector3& vec) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    glUniform3f(id, vec.x, vec.y, vec.z);
 }
 
 } } //end namespace

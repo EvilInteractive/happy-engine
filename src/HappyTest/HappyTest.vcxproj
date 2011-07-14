@@ -93,8 +93,8 @@
     <ClInclude Include="MainGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\simple2DShader.frag" />
-    <None Include="data\shaders\simple2DShader.vert" />
+    <None Include="data\shaders\simpleShader.frag" />
+    <None Include="data\shaders\simpleShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

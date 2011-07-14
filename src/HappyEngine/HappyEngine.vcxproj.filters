@@ -73,6 +73,12 @@
     <ClCompile Include="Assert.cpp">
       <Filter>happyengine\error\logicerror</Filter>
     </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathFunctions.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -122,6 +128,12 @@
     </ClInclude>
     <ClInclude Include="Assert.h">
       <Filter>happyengine\error\logicerror</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathFunctions.h">
+      <Filter>happyengine\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

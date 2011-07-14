@@ -70,8 +70,10 @@ void Model::setVertices(void* pVertices, unsigned int num, const VertexLayout& v
 
             case VertexElement::Type_Byte: type = GL_BYTE; break;
             case VertexElement::Type_UByte: type = GL_UNSIGNED_BYTE; break;
-
-            default: ASSERT(false, "unkown size type"); break;
+            
+            #pragma warning(disable:4127) //disable conditional expression is constant
+            default: ASSERT(false, "unkown size type"); break;    
+            #pragma warning(default:4127) 
         }
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 

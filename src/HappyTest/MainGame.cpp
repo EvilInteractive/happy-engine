@@ -19,10 +19,12 @@
 
 #include <vector>
 #include "Vertex.h"
+#include "Matrix.h"
+#include "Vector3.h"
 
 namespace happytest {
 
-MainGame::MainGame() : m_pShader(0), m_pSimpleForward3DRenderer(0)
+MainGame::MainGame() : m_pShader(0), m_pSimpleForward3DRenderer(0), m_Timer(0.0f)
 {
 }
 
@@ -43,13 +45,13 @@ void MainGame::load()
     m_pModel = Model::pointer(new Model());
 
     std::vector<VertexPosCol> vertices;
-    vertices.push_back(VertexPosCol(math::Vector3(1.0f, -1.0f, 0.0f), math::Vector3(1.0f, 0.0f, 0.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(-1.0f, -1.0f, 0.0f), math::Vector3(0.0f, 1.0f, 1.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(-1.0f, 1.0f, 0.0f), math::Vector3(0.0f, 0.0f, 1.0f)));
+    vertices.push_back(VertexPosCol(math::Vector3(64.0f, -64.0f, 0.0f), math::Vector3(1.0f, 0.0f, 0.0f)));
+    vertices.push_back(VertexPosCol(math::Vector3(-64.0f, -64.0f, 0.0f), math::Vector3(0.0f, 1.0f, 1.0f)));
+    vertices.push_back(VertexPosCol(math::Vector3(-64.0f, 64.0f, 0.0f), math::Vector3(0.0f, 0.0f, 1.0f)));
 
-    vertices.push_back(VertexPosCol(math::Vector3(1.0f, -1.0f, 0.0f), math::Vector3(1.0f, 0.0f, 1.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(1.0f, 1.0f, 0.0f), math::Vector3(0.0f, 1.0f, 1.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(-1.0f, 1.0f, 0.0f), math::Vector3(1.0f, 1.0f, 0.0f)));
+    vertices.push_back(VertexPosCol(math::Vector3(64.0f, -64.0f, 0.0f), math::Vector3(1.0f, 0.0f, 1.0f)));
+    vertices.push_back(VertexPosCol(math::Vector3(64.0f, 64.0f, 0.0f), math::Vector3(0.0f, 1.0f, 1.0f)));
+    vertices.push_back(VertexPosCol(math::Vector3(-64.0f, 64.0f, 0.0f), math::Vector3(1.0f, 1.0f, 0.0f)));
 
     VertexLayout layout;
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, sizeof(math::Vector3), 0, "inPosition"));
@@ -58,16 +60,27 @@ void MainGame::load()
     m_pModel->setVertices(vertices.data(), 6, layout);
 
     m_pShader = new Shader();
-    m_pShader->init("../data/shaders/simple2DShader.vert", "../data/shaders/simple2DShader.frag", layout);
+    m_pShader->init("../data/shaders/simpleShader.vert", "../data/shaders/simpleShader.frag", layout);
 
     m_pSimpleForward3DRenderer = new SimpleForward3DRenderer();
 }
 void MainGame::tick(float /*dTime*/)
 {
 }
-void MainGame::draw(float /*dTime*/)
+void MainGame::draw(float dTime)
 {
+    m_Timer += dTime;
+
+    using namespace happyengine;
     m_pShader->begin();
+    math::Matrix persp(math::Matrix::createOrthoLH(0, 1280, 0, 720, 0, 1));
+    math::Matrix world(
+        math::Matrix::createTranslation(math::Vector3(256, 256, 0)) *
+        math::Matrix::createRotation(math::Vector3(0, 0, 1), m_Timer) *
+        math::Matrix::createScale(cosf(m_Timer/2.0f) + 1.0f)
+                      );
+
+    m_pShader->setShaderVar(m_pShader->getShaderVarId("matWVP"), persp * world);
 
     m_pSimpleForward3DRenderer->draw(m_pModel);
 

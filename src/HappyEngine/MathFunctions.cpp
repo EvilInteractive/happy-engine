@@ -15,30 +15,11 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
-#pragma once
+#include "MathFunctions.h"
 
 namespace happyengine {
-namespace error {
+namespace math {
+  
 
-#define ASSERT(isOk, message) \
-    if (!isOk) \
-        __debugbreak()
-
-class Assert
-{
-public:
-	Assert();
-    virtual ~Assert();
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    Assert(const Assert&);
-    Assert& operator=(const Assert&);
-};
 
 } } //end namespace
-
-#endif
