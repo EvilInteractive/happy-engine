@@ -15,11 +15,21 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "MathFunctions.h"
+#ifndef _MATH_CONSTANTS_H_
+#define _MATH_CONSTANTS_H_
+#pragma once
 
 namespace happyengine {
 namespace math {
-  
 
+static const float pi(3.141592654f);
+static const float piOverTwo(1.570796327f);
+static const float piOverFour(0.7853981634f);
+static const float twoPi(6.283185307f);
+
+static const float e(2.718281828459045f);
+static const float phi(1.618033988749894f);
 
 } } //end namespace
+
+#endif

@@ -76,9 +76,6 @@
     <ClCompile Include="Matrix.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="MathFunctions.cpp">
-      <Filter>happyengine\math</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -133,6 +130,9 @@
       <Filter>happyengine\math</Filter>
     </ClInclude>
     <ClInclude Include="MathFunctions.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathConstants.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
   </ItemGroup>

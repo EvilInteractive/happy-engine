@@ -21,6 +21,7 @@
 
 #include "Vector3.h"
 #include "PxMat44.h"
+#include "MathConstants.h"
 
 namespace happyengine {
 namespace math {
@@ -29,6 +30,14 @@ namespace math {
 inline float sqr(float a)
 {
     return a * a;
+}
+inline float toRadians(float degrees)
+{
+    return degrees / 180.0f * pi;
+}
+inline float toDegrees(float radians)
+{
+    return radians * 180.0f / pi;
 }
 
 // Vector3

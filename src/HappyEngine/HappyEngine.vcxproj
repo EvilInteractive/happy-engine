@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Assert.cpp" />
-    <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
@@ -29,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assert.h" />
+    <ClInclude Include="MathConstants.h" />
     <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Model.h" />
