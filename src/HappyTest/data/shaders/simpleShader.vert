@@ -8,5 +8,5 @@ uniform mat4 matWVP;
 void main()
 {
 	gl_Position = matWVP * vec4(inPosition, 1.0f);
-	passColor = inColor;
+	passColor = (inColor + 1.0f) / 2.0f;
 }

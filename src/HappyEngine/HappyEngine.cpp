@@ -127,7 +127,7 @@ void HappyEngine::drawThread()
         Uint32 ticks = SDL_GetTicks();
         float dTime = (ticks - prevTicks) / 1000.0f;
         prevTicks = ticks;
-        
+
         while (SDL_PollEvent(&event)) //Events are window related ==> need to be in the same thread
         {
             switch (event.type)

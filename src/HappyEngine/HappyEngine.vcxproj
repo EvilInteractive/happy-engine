@@ -14,6 +14,7 @@
     <ClCompile Include="Assert.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
     <ClCompile Include="Exception.cpp" />
@@ -21,6 +22,7 @@
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="HappyEngine.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
@@ -32,6 +34,7 @@
     <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="SimpleForward3DRenderer.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="FileOpenException.h" />
@@ -42,6 +45,7 @@
     <ClInclude Include="I3DRenderer.h" />
     <ClInclude Include="IGame.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexLayout.h" />

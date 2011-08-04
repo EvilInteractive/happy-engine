@@ -29,16 +29,5 @@ VertexPosCol::VertexPosCol(const math::Vector3& pos, const math::Vector3& col): 
 VertexPosCol::~VertexPosCol()
 {
 }
-VertexPosCol::VertexPosCol(const VertexPosCol& other)
-{
-    position = other.position;
-    color = other.color;
-}
-VertexPosCol& VertexPosCol::operator=(const VertexPosCol& other)
-{
-    position = other.position;
-    color = other.color;
-    return *this;
-}
 
 } } //end namespace

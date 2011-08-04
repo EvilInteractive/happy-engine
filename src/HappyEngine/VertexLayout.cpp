@@ -21,9 +21,9 @@ namespace happyengine {
 namespace graphics {
 
 #pragma region VertexElement
-VertexElement::VertexElement(unsigned int elementIndex, Type type, unsigned int size,
-                             unsigned int byteOffset, const std::string& nameInShader):
-        m_ElementIndex(elementIndex), m_Type(type),
+VertexElement::VertexElement(unsigned int elementIndex, Type type, Usage usage, 
+    unsigned int size, unsigned int byteOffset, const std::string& nameInShader):
+m_ElementIndex(elementIndex), m_Type(type), m_Usage(usage),
         m_Size(size), m_ByteOffset(byteOffset), 
         m_NameInShader(nameInShader)
 {
@@ -43,6 +43,10 @@ unsigned int VertexElement::getByteOffset() const
 VertexElement::Type VertexElement::getType() const
 {
     return m_Type;
+}
+VertexElement::Usage VertexElement::getUsage() const
+{
+    return m_Usage;
 }
 const std::string& VertexElement::getShaderVariableName() const
 {

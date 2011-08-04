@@ -16,17 +16,30 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Assert.h"
+#include <iostream>
 
 namespace happyengine {
 namespace error {
+namespace details {
 
-Assert::Assert()
+void happyAssert(bool isOk, const char* message)
 {
+    if (!isOk)
+    {
+        std::cout << "**ASSERTION FAILURE!**\n";
+        std::cout << message << "\n";
+        __debugbreak();
+    }
+}
+void happyAssert(const char* message)
+{
+    std::cout << "**ASSERTION FAILURE!**\n";
+    std::cout << message << "\n";
+     __debugbreak();
+}
+void happyAssert()
+{
+     __debugbreak();
 }
 
-
-Assert::~Assert()
-{
-}
-
-} } //end namespace
+} } } //end namespace

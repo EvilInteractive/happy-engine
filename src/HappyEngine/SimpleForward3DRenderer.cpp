@@ -24,6 +24,9 @@ namespace graphics {
 
 SimpleForward3DRenderer::SimpleForward3DRenderer()
 {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
 }
 
 
@@ -35,7 +38,7 @@ void SimpleForward3DRenderer::draw(const Model::pointer& pModel)
 {
     glBindVertexArray(pModel->getVertexArraysID());
 
-    glDrawArrays(GL_TRIANGLES, 0, pModel->getNumVertices());
+    glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
 
     glBindVertexArray(0);
 }

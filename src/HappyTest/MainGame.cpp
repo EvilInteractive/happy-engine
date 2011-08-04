@@ -21,6 +21,8 @@
 #include "Vertex.h"
 #include "Matrix.h"
 #include "Vector3.h"
+#include "ObjLoader.h"
+#include "MathConstants.h"
 
 namespace happytest {
 
@@ -44,20 +46,16 @@ void MainGame::load()
     using namespace happyengine;
     m_pModel = Model::pointer(new Model());
 
-    std::vector<VertexPosCol> vertices;
-    vertices.push_back(VertexPosCol(math::Vector3(64.0f, -64.0f, 0.0f), math::Vector3(1.0f, 0.0f, 0.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(-64.0f, -64.0f, 0.0f), math::Vector3(0.0f, 1.0f, 1.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(-64.0f, 64.0f, 0.0f), math::Vector3(0.0f, 0.0f, 1.0f)));
-
-    vertices.push_back(VertexPosCol(math::Vector3(64.0f, -64.0f, 0.0f), math::Vector3(1.0f, 0.0f, 1.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(64.0f, 64.0f, 0.0f), math::Vector3(0.0f, 1.0f, 1.0f)));
-    vertices.push_back(VertexPosCol(math::Vector3(-64.0f, 64.0f, 0.0f), math::Vector3(1.0f, 1.0f, 0.0f)));
+    content::models::ObjLoader loader;
+    loader.load("../data/models/testModelComplex1.obj");
 
     VertexLayout layout;
-    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, sizeof(math::Vector3), 0, "inPosition"));
-    layout.addElement(VertexElement(1, VertexElement::Type_Vector3, sizeof(math::Vector3), sizeof(math::Vector3), "inColor"));
+    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
+    layout.addElement(VertexElement(1, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), sizeof(math::Vector3), "inColor"));
+    std::vector<VertexPosCol> vertices = loader.getVertices<VertexPosCol>(layout);
 
-    m_pModel->setVertices(vertices.data(), 6, layout);
+    m_pModel->setVertices(vertices.data(), vertices.size(), layout);
+    m_pModel->setIndices(loader.getIndices(), loader.getNumIndices(), loader.getIndexType());
 
     m_pShader = new Shader();
     m_pShader->init("../data/shaders/simpleShader.vert", "../data/shaders/simpleShader.frag", layout);
@@ -73,14 +71,15 @@ void MainGame::draw(float dTime)
 
     using namespace happyengine;
     m_pShader->begin();
-    math::Matrix persp(math::Matrix::createOrthoLH(0, 1280, 0, 720, 0, 1));
+    math::Matrix persp(math::Matrix::createPerspectiveLH(math::piOverFour, 1280, 720, 1, 1000));
+    math::Matrix view(math::Matrix::createLookAtLH(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0)));
     math::Matrix world(
-        math::Matrix::createTranslation(math::Vector3(256, 256, 0)) *
-        math::Matrix::createRotation(math::Vector3(0, 0, 1), m_Timer) *
-        math::Matrix::createScale(cosf(m_Timer/2.0f) + 1.0f)
+        math::Matrix::createTranslation(math::Vector3(0, -1, 0)) *
+        math::Matrix::createRotation(math::Vector3(0.0f, 1.0f, 0.0f), m_Timer) *
+        math::Matrix::createScale(2.0f)
                       );
 
-    m_pShader->setShaderVar(m_pShader->getShaderVarId("matWVP"), persp * world);
+    m_pShader->setShaderVar(m_pShader->getShaderVarId("matWVP"), persp * view * world);
 
     m_pSimpleForward3DRenderer->draw(m_pModel);
 

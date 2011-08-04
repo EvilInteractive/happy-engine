@@ -1,0 +1,226 @@
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//
+//This file is part of HappyEngine.
+//
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author: Bastian Damman
+//Created: 04/08/2011
+
+#include "ObjLoader.h"
+
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+
+#include "FileReader.h"
+#include "FileOpenException.h"
+
+#include "Assert.h"
+
+namespace happyengine {
+namespace content {
+namespace models {
+
+ObjLoader::ObjLoader(): m_NumIndices(0), m_NumVertices(0)
+{
+}
+
+
+ObjLoader::~ObjLoader()
+{
+}
+void ObjLoader::load(const std::string& path)
+{
+    read(path);
+    create();
+}
+
+void ObjLoader::read(const std::string& path)
+{
+    //Clean
+    m_PositionData.clear();
+    m_TextureData.clear();
+    m_NormalData.clear();
+    m_FaceData.clear();
+
+    using namespace std;
+
+    io::FileReader reader;
+    vector<string> objData;
+    try 
+    { 
+        reader.open(path, io::FileReader::OpenType_ASCII); 
+        objData = reader.readToEndSplit();
+    }
+    catch (error::FileOpenException&)
+    {
+        reader.close();
+        throw;
+    }
+    
+    for_each(objData.cbegin(), objData.cend(), [&](const string& line)
+    {
+        using namespace math;
+        if (line[0] == 'v' && line[1] == ' ')
+        {
+            Vector3 v;
+            sscanf_s(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
+            m_PositionData.push_back(v);
+        }
+        else if (line[0] == 'v' && line[1] == 't')
+        {
+            Vector2 t;
+            sscanf_s(line.c_str(), "vt %f %f", &t.x, &t.y);
+            m_TextureData.push_back(t);
+        }
+        else if (line[0] == 'v' && line[1] == 'n')
+        {
+            Vector3 n;
+            sscanf_s(line.c_str(), "vn %f %f %f", &n.x, &n.y, &n.z);
+            m_NormalData.push_back(n);
+        }
+        else if (line[0] == 'f')
+        {
+            std::vector<std::vector<unsigned int>> data;
+            for (int i = 0; i < 3; ++i)
+            {
+                std::vector<unsigned int> temp(3);
+                temp.resize(3);
+                data.push_back(temp);
+            }
+
+            sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &data[0][0], &data[0][1], &data[0][2],
+                                                                   &data[1][0], &data[1][1], &data[1][2],
+                                                                   &data[2][0], &data[2][1], &data[2][2]);
+            m_FaceData.push_back(data);
+        }
+    });
+}
+void ObjLoader::create()
+{
+    m_IndexMap.clear();
+    m_VertexData.clear();
+    m_IndicesUInt.clear();
+    m_IndicesUShort.clear();
+    m_IndicesByte.clear();
+
+    m_NumIndices = m_FaceData.size() * 3;
+    if (m_NumIndices < UCHAR_MAX)
+    {
+        m_IndexType = graphics::IndexType_Byte;
+    }
+    else if (m_NumIndices < USHRT_MAX)
+    {
+        m_IndexType = graphics::IndexType_UShort;
+    }
+    else if (m_NumIndices < UINT_MAX)
+    {
+        m_IndexType = graphics::IndexType_UInt;
+    }
+    else
+    {
+        ASSERT("too many indices");
+    }
+
+    m_NumVertices = 0;
+    std::for_each(m_FaceData.cbegin(), m_FaceData.cend(), [&](const std::vector<std::vector<unsigned int>>& face)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            std::stringstream stream;
+            stream << face[i][0] << " " << face[i][1] << " " << face[i][2];
+            std::map<std::string, unsigned int>::const_iterator index(m_IndexMap.find(stream.str()));
+            if (index == m_IndexMap.cend())
+            {
+                addIndex(m_VertexData.size());
+                m_IndexMap[stream.str()] = m_VertexData.size();
+                m_VertexData.push_back(
+                    ObjLoader::TempVertex(
+                        math::Vector3(m_PositionData[face[i][0] - 1]),
+                        math::Vector2(m_TextureData[face[i][1] - 1]),
+                        math::Vector3(m_NormalData[face[i][2] - 1])));
+                ++m_NumVertices;
+            }
+            else
+            {
+                addIndex(index->second);
+            }
+        }
+    });
+}
+void ObjLoader::addIndex(unsigned int index)
+{
+    switch (m_IndexType)
+    {
+        case graphics::IndexType_Byte:   m_IndicesByte.push_back(static_cast<unsigned char>(index)); break;
+        case graphics::IndexType_UShort: m_IndicesUShort.push_back(static_cast<unsigned short>(index)); break;
+        case graphics::IndexType_UInt:   m_IndicesUInt.push_back(index); break;
+        default: ASSERT("unkown type"); break;
+    }
+}
+void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout) const
+{
+    int pOff = -1;
+    int tOff = -1;
+    int nOff = -1;
+
+    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const graphics::VertexElement& element)
+    {
+        if (element.getUsage() == graphics::VertexElement::Usage_Position)
+            pOff = element.getByteOffset();
+        else if (element.getUsage() == graphics::VertexElement::Usage_TextureCoordinate)
+            tOff = element.getByteOffset();
+        else if (element.getUsage() == graphics::VertexElement::Usage_Normal)
+            nOff = element.getByteOffset();
+    });
+
+    char* pCharData = static_cast<char*>(pVertexData);
+    unsigned int count = 0;
+    std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const TempVertex& vert)
+    {
+        if (pOff != -1)
+            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+        if (tOff != -1)
+            *reinterpret_cast<math::Vector2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+        if (nOff != -1)
+            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+        ++count;
+    });
+}
+
+const void* ObjLoader::getIndices() const 
+{
+    switch (m_IndexType)
+    {
+        case graphics::IndexType_Byte:   return &m_IndicesByte[0];
+        case graphics::IndexType_UShort: return &m_IndicesUShort[0];
+        case graphics::IndexType_UInt:   return &m_IndicesUInt[0];
+        default: ASSERT("unkown type");  return 0;
+    }
+}
+graphics::IndexType ObjLoader::getIndexType() const
+{
+    return m_IndexType;
+}
+unsigned int ObjLoader::getNumVertices() const
+{
+    return m_NumVertices;
+}
+unsigned int ObjLoader::getNumIndices() const
+{
+    return m_NumIndices;
+}
+
+} } } //end namespace

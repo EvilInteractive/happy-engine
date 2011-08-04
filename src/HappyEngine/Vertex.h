@@ -34,8 +34,7 @@ public:
 	VertexPosCol();
 	VertexPosCol(const math::Vector3& pos, const math::Vector3& col);
     ~VertexPosCol();
-	VertexPosCol(const VertexPosCol& other);
-	VertexPosCol& operator=(const VertexPosCol& other);
+    //default copy constructor and assignment operator are fine
 };
 
 } } //end namespace

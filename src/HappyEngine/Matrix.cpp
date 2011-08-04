@@ -117,7 +117,7 @@ Matrix Matrix::createRotation(const Vector3& axis, float radians)
 
     return Matrix(
         cosAlpha + sqr(axis.x) * (1 - cosAlpha),                    axis.x * axis.y * (1 - cosAlpha) - axis.z * sinAlpha,       axis.x * axis.z * (1 - cosAlpha) + axis.y * sinAlpha,       0.0f,
-        axis.x * axis.y * (1 - cosAlpha) + axis.z * sinAlpha,       cosAlpha + sqr(axis.y) * (1 - cosAlpha),                    axis.x * axis.z * (1 - cosAlpha) - axis.y * sinAlpha,       0.0f,
+        axis.x * axis.y * (1 - cosAlpha) + axis.z * sinAlpha,       cosAlpha + sqr(axis.y) * (1 - cosAlpha),                    axis.y * axis.z * (1 - cosAlpha) - axis.x * sinAlpha,       0.0f,
         axis.x * axis.z * (1 - cosAlpha) - axis.y * sinAlpha,       axis.y * axis.z * (1 - cosAlpha) + axis.x * sinAlpha,       cosAlpha + sqr(axis.z) * (1 - cosAlpha),                    0.0f,
         0.0f,                                                       0.0f,                                                       0.0f,                                                       1.0f);
 }

@@ -42,8 +42,15 @@ public:
         Type_Byte,
         Type_UByte,
     };
-    VertexElement(unsigned int elementIndex, Type type, unsigned int size,
-                  unsigned int byteOffset, const std::string& nameInShader);
+    enum Usage
+    {
+        Usage_Position,
+        Usage_TextureCoordinate,
+        Usage_Normal,
+        Usage_Other
+    };
+    VertexElement(unsigned int elementIndex, Type type, Usage usage, 
+        unsigned int size, unsigned int byteOffset, const std::string& nameInShader);
     virtual ~VertexElement() {}
     //default copy constructor and assignment operator are fine
 
@@ -51,11 +58,13 @@ public:
     unsigned int getSize() const; 
     unsigned int getByteOffset() const; 
     Type getType() const;
+    Usage getUsage() const;
     const std::string& getShaderVariableName() const;
 
 private:
     unsigned int m_ElementIndex;
     Type m_Type;
+    Usage m_Usage;
     unsigned int m_Size;
     unsigned int m_ByteOffset;
     std::string m_NameInShader;

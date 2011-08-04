@@ -26,6 +26,13 @@
 namespace happyengine {
 namespace graphics {
 
+enum IndexType
+{
+    IndexType_Byte = sizeof(unsigned char),
+    IndexType_UShort = sizeof(unsigned short),
+    IndexType_UInt = sizeof(unsigned int)
+};
+
 class Model
 {
 public:
@@ -34,17 +41,26 @@ public:
 	Model();
     virtual ~Model();
 
-    void setVertices(void* pVertices, unsigned int num, const VertexLayout& vertexLayout);
+    void setVertices(const void* pVertices, unsigned int num, const VertexLayout& vertexLayout);
+    void setIndices(const void* pIndices, unsigned int num, IndexType type);
 
     unsigned int getVertexArraysID() const;
+
     unsigned int getNumVertices() const;
+    unsigned int getNumIndices() const;
+
+    unsigned int getIndexType() const;
 
 private:
 
     unsigned int m_VaoID[1];
-    unsigned int m_VboID[1];
+    unsigned int m_VertexVboID[1];
+    unsigned int m_IndexVboID[1];
 
     unsigned int m_NumVertices;
+    unsigned int m_NumIndices;
+
+    unsigned int m_IndexType;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

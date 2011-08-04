@@ -32,6 +32,9 @@
     <Filter Include="happyengine\math">
       <UniqueIdentifier>{9db2183d-db1d-4c98-ab51-08a8de83f48e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\content\models">
+      <UniqueIdentifier>{9e80cf7f-8664-4e6a-99ad-aa55fb71c72e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -74,6 +77,12 @@
       <Filter>happyengine\error\logicerror</Filter>
     </ClCompile>
     <ClCompile Include="Matrix.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjLoader.cpp">
+      <Filter>happyengine\content\models</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
   </ItemGroup>
@@ -133,6 +142,12 @@
       <Filter>happyengine\math</Filter>
     </ClInclude>
     <ClInclude Include="MathConstants.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjLoader.h">
+      <Filter>happyengine\content\models</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
   </ItemGroup>

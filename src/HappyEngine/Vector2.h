@@ -15,47 +15,45 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _FILEREADER_H_
-#define _FILEREADER_H_
+#ifndef _VECTOR2_H_
+#define _VECTOR2_H_
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <vector>
+#include "PxVec2.h"
 
 namespace happyengine {
-namespace io {
+namespace math {
 
-class FileReader
+struct Vector2
 {
 public:
-    enum OpenType
-    {
-        OpenType_Unicode,
-        OpenType_ASCII
-    };
+    float x, y;
 
-	FileReader();
-    virtual ~FileReader();
+	Vector2();
+    explicit Vector2(physx::pubfnd3::PxVec2 vec);
+	Vector2(float x_, float y_);
+    ~Vector2();
 
-    void open(const std::string& path, OpenType type);
-    void close();
+    Vector2(const Vector2& other);
+    Vector2& operator=(const Vector2& other);
 
-    std::string readLine();
-    std::string readToEnd();
-    std::vector<std::string> readToEndSplit();
+    //>---------Operators--------------------->
+	Vector2 operator-() const;
 
-    std::wstring readLineW();
-    std::wstring readToEndW();
-    std::vector<std::wstring> readToEndSplitW();
+	Vector2 operator*(float a) const;
+	Vector2 operator/(float a) const;
 
-private:
-    std::wfstream m_Wfstream;
-    std::fstream m_fstream;
+	Vector2 operator+(const Vector2& v) const;
+	Vector2 operator-(const Vector2& v) const;
 
-    //Disable default copy constructor and default assignment operator
-    FileReader(const FileReader&);
-    FileReader& operator=(const FileReader&);
+	Vector2& operator+=(const Vector2& v);
+	Vector2& operator-=(const Vector2& v);
+	Vector2& operator*=(float a);
+	Vector2& operator/=(float a);
+
+	bool operator==(const Vector2& v) const;
+	bool operator!=(const Vector2& v) const;
+    //<----------------------------------------<
 };
 
 } } //end namespace

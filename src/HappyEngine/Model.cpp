@@ -26,8 +26,9 @@ namespace graphics {
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-Model::Model(): m_NumVertices(0)
+Model::Model(): m_NumVertices(0), m_NumIndices(0)
 {
+    glGenVertexArrays(1, &m_VaoID[0]);
 }
 
 
@@ -35,19 +36,19 @@ Model::~Model()
 {
     
 }
-
-void Model::setVertices(void* pVertices, unsigned int num, const VertexLayout& vertexLayout)
+//Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old contents)
+void Model::setVertices(const void* pVertices, unsigned int num, const VertexLayout& vertexLayout)
 {
+    ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModel instead");
     m_NumVertices = num;
 
-    glGenVertexArrays(1, &m_VaoID[0]);
     glBindVertexArray(m_VaoID[0]);
     glEnableVertexAttribArray(m_VaoID[0]);
 
     VertexLayout::layout elements(vertexLayout.getElements());
 
-    glGenBuffers(1, m_VboID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_VboID[0]);
+    glGenBuffers(1, m_VertexVboID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID[0]);
     glBufferData(GL_ARRAY_BUFFER, vertexLayout.getVertexSize() * num, pVertices, GL_STATIC_DRAW);
 
     std::for_each(elements.cbegin(), elements.cend(), [&](const VertexElement& e)
@@ -71,9 +72,7 @@ void Model::setVertices(void* pVertices, unsigned int num, const VertexLayout& v
             case VertexElement::Type_Byte: type = GL_BYTE; break;
             case VertexElement::Type_UByte: type = GL_UNSIGNED_BYTE; break;
             
-            #pragma warning(disable:4127) //disable conditional expression is constant
-            default: ASSERT(false, "unkown size type"); break;    
-            #pragma warning(default:4127) 
+            default: ASSERT("unknown type"); break; 
         }
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 
@@ -82,6 +81,24 @@ void Model::setVertices(void* pVertices, unsigned int num, const VertexLayout& v
     //unbind
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
+}
+void Model::setIndices(const void* pIndices, unsigned int num, IndexType type)
+{
+    ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModel instead");
+    m_NumIndices = num;
+    
+    glBindVertexArray(m_VaoID[0]);
+    glGenBuffers(1, m_IndexVboID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID[0]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
+
+    switch (type)
+    {
+        case IndexType_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
+        case IndexType_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
+        case IndexType_UInt: m_IndexType = GL_UNSIGNED_INT; break;
+        default: ASSERT("unkown type"); break;
+    }
 }
 
 unsigned int Model::getVertexArraysID() const
@@ -92,6 +109,15 @@ unsigned int Model::getVertexArraysID() const
 unsigned int Model::getNumVertices() const
 {
     return m_NumVertices;
+}
+unsigned int Model::getNumIndices() const
+{
+    return m_NumIndices;
+}
+
+unsigned int Model::getIndexType() const
+{
+    return m_IndexType;
 }
 
 

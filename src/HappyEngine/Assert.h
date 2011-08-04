@@ -19,26 +19,25 @@
 #define _ASSERT_H_
 #pragma once
 
+
 namespace happyengine {
 namespace error {
 
-#define ASSERT(isOk, message) \
-    if (!isOk) \
-        __debugbreak()
+#ifdef _DEBUG
+#define ASSERT error::details::happyAssert
+#else
+#define ASSERT(...) {}
+#endif
 
-class Assert
-{
-public:
-	Assert();
-    virtual ~Assert();
+namespace details {
 
-private:
+#ifdef _DEBUG
+void happyAssert(bool isOk, const char* message);
+void happyAssert(const char* message);
+void happyAssert();
+#endif
 
-    //Disable default copy constructor and default assignment operator
-    Assert(const Assert&);
-    Assert& operator=(const Assert&);
-};
+} } } //end namespace
 
-} } //end namespace
 
 #endif

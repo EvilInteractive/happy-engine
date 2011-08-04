@@ -86,7 +86,7 @@ bool validateProgram(GLuint programID)
 bool Shader::init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexlayout)
 {
     bool succes = true;
-    //ASSERT(m_Id != -1, "no need to init twice");
+    ASSERT(m_Id != -1, "no need to init twice");
 
     // Read VS and FS files --------------------------->
     io::FileReader reader;
