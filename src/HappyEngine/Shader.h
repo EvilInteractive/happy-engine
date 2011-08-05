@@ -24,6 +24,7 @@
 
 #include "Matrix.h"
 #include "Vector3.h"
+#include "HappyTypes.h"
 
 namespace happyengine {
 namespace graphics {
@@ -39,15 +40,15 @@ public:
     void begin();
     void end();
 
-    unsigned int getShaderVarId(const std::string& name) const;
+    uint getShaderVarId(const std::string& name) const;
 
-    void setShaderVar(unsigned int id, const math::Matrix& matrix) const;
-    void setShaderVar(unsigned int id, const math::Vector3& vec) const;
+    void setShaderVar(uint id, const math::Matrix& matrix) const;
+    void setShaderVar(uint id, const math::Vector3& vec) const;
 
 private:
-    unsigned int m_Id;
-    unsigned int m_VsId;
-    unsigned int m_FsId;
+    uint m_Id;
+    uint m_VsId;
+    uint m_FsId;
 
     bool m_Bound;
 

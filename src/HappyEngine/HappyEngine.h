@@ -22,10 +22,11 @@
 #include "boost/shared_ptr.hpp"
 #include "IGame.h"
 #include "SDL.h"
-
 #include "GL/glew.h"
 
 #include <vector>
+
+#include "GraphicsEngine.h"
 
 namespace happyengine {
 
@@ -52,19 +53,20 @@ public:
 
     static pointer getPointer();
 
+    //subengines
+    graphics::GraphicsEngine* getGraphicsEngine() const;
+
 private:
     // Singleton design pattern
     HappyEngine();
     static pointer s_pHappyEngine;
 
     IGame* m_pGame;
-    SDL_Window* m_pMainWindow;
-    SDL_GLContext m_GLContext;
+
+    graphics::GraphicsEngine* m_pGraphicsEngine;
 
     bool m_Quit;
     bool m_Loaded;
-
-    std::vector<VertexPosColor> m_VertexQuad;
 
     // Methods
     void initWindow();

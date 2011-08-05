@@ -42,7 +42,7 @@ Shader::~Shader()
 }
 bool validateShader(GLuint shaderID, const std::string& file)
 {
-    const unsigned int BUFFER_SIZE = 512;
+    const uint BUFFER_SIZE = 512;
     char buffer[BUFFER_SIZE];
     GLsizei length = 0;
 
@@ -60,7 +60,7 @@ bool validateProgram(GLuint programID)
 {
     bool succes = true;
 
-    const unsigned int BUFFER_SIZE = 512;
+    const uint BUFFER_SIZE = 512;
     char buffer[BUFFER_SIZE];
     GLsizei length = 0;
 
@@ -147,19 +147,19 @@ void Shader::end()
     m_Bound = false;
 }
 
-unsigned int Shader::getShaderVarId(const std::string& name) const
+uint Shader::getShaderVarId(const std::string& name) const
 {
     return glGetUniformLocation(m_Id, name.c_str());
 }
 
-void Shader::setShaderVar(unsigned int id, const math::Matrix& matrix) const
+void Shader::setShaderVar(uint id, const math::Matrix& matrix) const
 {
     ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
     float fArr[16];
     matrix.toFloatArray(fArr);
     glUniformMatrix4fv(id, 1, GL_FALSE, fArr);
 }
-void Shader::setShaderVar(unsigned int id, const math::Vector3& vec) const
+void Shader::setShaderVar(uint id, const math::Vector3& vec) const
 {
     ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
     glUniform3f(id, vec.x, vec.y, vec.z);

@@ -21,29 +21,13 @@
 
 #include "boost/thread.hpp"
 #include "Assert.h"
+#include "ExternalError.h"
 
 namespace happyengine {
 
 HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
 
-inline void glHandleError(GLenum err)
-{
-    if (err != GL_NO_ERROR)
-    {
-        std::cout << "***GL error*** file: " << __FILE__ << " line: " << __LINE__ << "\n";
-        std::cout << glewGetErrorString(err);
-    }
-}
-inline void sdlHandleError(int err)
-{
-    if (err != 0)
-    {
-        std::cout << "***SDL error***" << __FILE__ << " line: " << __LINE__ << "\n";
-        std::cout << SDL_GetError();
-    }
-}
-
-HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false)
+HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), m_pGraphicsEngine(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -53,8 +37,8 @@ HappyEngine::~HappyEngine()
 void HappyEngine::quit()
 {   
     //dispose/delete all sub engines here
-    SDL_GL_DeleteContext(m_GLContext);
-    SDL_DestroyWindow(m_pMainWindow);
+    delete m_pGraphicsEngine;
+
     SDL_Quit();
 
     std::cout << "--Thank you for using HappyEngine--\n";
@@ -62,6 +46,7 @@ void HappyEngine::quit()
 void HappyEngine::initSubEngines()
 {
     //init all sub engines here
+    m_pGraphicsEngine = new graphics::GraphicsEngine();
 }
 
 void HappyEngine::start(IGame* pGame)
@@ -71,27 +56,19 @@ void HappyEngine::start(IGame* pGame)
     cout << "  ****************        ****************  \n";
     cout << "*************  HappyEngine :D  *************\n";
     cout << "  ***************          ***************  \n";
-    cout << "       ******************************       \n\n\n";
+    cout << "       ******************************       \n";
+    cout << "os: " << SDL_GetPlatform() << "\n\n";
 
     m_pGame = pGame;
 
     //Init SDL
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    //Init Game
-    pGame->init();
-
     //Init other stuff
     initSubEngines();
-    
-    m_VertexQuad.push_back(VertexPosColor(8.0f, 8.0f, 0.5f, 
-                                          0.0f, 0.0f, 1.0f));
-    m_VertexQuad.push_back(VertexPosColor(128.0f, 8.0f, 0.5f, 
-                                          1.0f, 0.0f, 1.0f));
-    m_VertexQuad.push_back(VertexPosColor(8.0f, 128.0f, 0.5f, 
-                                          0.0f, 1.0f, 0.0f));
-    m_VertexQuad.push_back(VertexPosColor(128.0f, 128.0f, 0.5f, 
-                                          1.0f, 1.0f, 1.0f));
+
+    //Init Game
+    pGame->init();
     
     //Start draw thread
     boost::thread drawThread(boost::bind(&HappyEngine::drawThread, this));
@@ -116,7 +93,7 @@ void HappyEngine::start(IGame* pGame)
 }
 void HappyEngine::drawThread()
 {
-    initWindow();
+    m_pGraphicsEngine->init();
     m_pGame->load();
 
     m_Loaded = true;
@@ -134,43 +111,24 @@ void HappyEngine::drawThread()
             {
                 case SDL_QUIT: m_Quit = true; break;
             }
-        }
-        glViewport(0, 0, 1280, 720);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);                 
+        }             
 
         m_pGame->draw(dTime);
-
-        SDL_GL_SwapWindow(m_pMainWindow);
+        
+        m_pGraphicsEngine->present();
     }
-}
-
-void HappyEngine::initWindow()
-{
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2));
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1));
-
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24));
-
-    m_pMainWindow = SDL_CreateWindow("Happy Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1280, 720, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
-    
-    m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
-    if (SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext) != 0)
-        std::cout << SDL_GetError();
-
-    glHandleError(glewInit());
-
-    //VSync
-    sdlHandleError(SDL_GL_SetSwapInterval(1));
-
-    glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
-    glClearDepth(1.0f);
 }
 
 HappyEngine::pointer HappyEngine::getPointer()
 {
     return s_pHappyEngine;
+}
+
+
+//SubEngines
+graphics::GraphicsEngine* HappyEngine::getGraphicsEngine() const
+{
+    return m_pGraphicsEngine;
 }
 
 } //end namespace

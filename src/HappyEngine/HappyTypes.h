@@ -15,28 +15,21 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 05/08/2011
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _HAPPY_TYPES_H_
+#define _HAPPY_TYPES_H_
 #pragma once
 
 namespace happyengine {
 
-class X
-{
-public:
-	X();
-    virtual ~X();
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
-};
+typedef unsigned long ulong;
+typedef unsigned int uint;
+typedef unsigned short ushort;
+typedef unsigned char byte;
 
 } //end namespace
+
 
 #endif

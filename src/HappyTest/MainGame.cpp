@@ -18,11 +18,14 @@
 #include "MainGame.h"
 
 #include <vector>
+#include <sstream>
+
 #include "Vertex.h"
 #include "Matrix.h"
 #include "Vector3.h"
 #include "ObjLoader.h"
 #include "MathConstants.h"
+#include "HappyEngine.h"
 
 namespace happytest {
 
@@ -67,6 +70,7 @@ void MainGame::tick(float /*dTime*/)
 }
 void MainGame::draw(float dTime)
 {
+    happyengine::HappyEngine::getPointer()->getGraphicsEngine()->clearAll();
     m_Timer += dTime;
 
     using namespace happyengine;

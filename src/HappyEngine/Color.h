@@ -15,26 +15,28 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 05/08/2011
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _COLOR_H_
+#define _COLOR_H_
 #pragma once
+
+#include "Color.h"
+#include "HappyTypes.h"
 
 namespace happyengine {
 
-class X
+class Color
 {
 public:
-	X();
-    virtual ~X();
+    float r, g, b, a;
 
-private:
-
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
+	Color();
+	Color(float r, float g, float b, float a);
+	Color(byte r, byte g, byte b, byte a);
+    virtual ~Color();
+    //Default copy constructor and assignment operator are fine
 };
 
 } //end namespace

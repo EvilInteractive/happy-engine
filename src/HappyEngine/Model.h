@@ -22,15 +22,16 @@
 #include <vector>
 #include "VertexLayout.h"
 #include "boost/shared_ptr.hpp"
+#include "HappyTypes.h"
 
 namespace happyengine {
 namespace graphics {
 
 enum IndexType
 {
-    IndexType_Byte = sizeof(unsigned char),
-    IndexType_UShort = sizeof(unsigned short),
-    IndexType_UInt = sizeof(unsigned int)
+    IndexType_Byte = sizeof(byte),
+    IndexType_UShort = sizeof(ushort),
+    IndexType_UInt = sizeof(uint)
 };
 
 class Model
@@ -41,26 +42,26 @@ public:
 	Model();
     virtual ~Model();
 
-    void setVertices(const void* pVertices, unsigned int num, const VertexLayout& vertexLayout);
-    void setIndices(const void* pIndices, unsigned int num, IndexType type);
+    void setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout);
+    void setIndices(const void* pIndices, uint num, IndexType type);
 
-    unsigned int getVertexArraysID() const;
+    uint getVertexArraysID() const;
 
-    unsigned int getNumVertices() const;
-    unsigned int getNumIndices() const;
+    uint getNumVertices() const;
+    uint getNumIndices() const;
 
-    unsigned int getIndexType() const;
+    uint getIndexType() const;
 
 private:
 
-    unsigned int m_VaoID[1];
-    unsigned int m_VertexVboID[1];
-    unsigned int m_IndexVboID[1];
+    uint m_VaoID[1];
+    uint m_VertexVboID[1];
+    uint m_IndexVboID[1];
 
-    unsigned int m_NumVertices;
-    unsigned int m_NumIndices;
+    uint m_NumVertices;
+    uint m_NumIndices;
 
-    unsigned int m_IndexType;
+    uint m_IndexType;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

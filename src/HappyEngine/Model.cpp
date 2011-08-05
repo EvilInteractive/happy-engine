@@ -37,7 +37,7 @@ Model::~Model()
     
 }
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old contents)
-void Model::setVertices(const void* pVertices, unsigned int num, const VertexLayout& vertexLayout)
+void Model::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)
 {
     ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModel instead");
     m_NumVertices = num;
@@ -82,7 +82,7 @@ void Model::setVertices(const void* pVertices, unsigned int num, const VertexLay
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 }
-void Model::setIndices(const void* pIndices, unsigned int num, IndexType type)
+void Model::setIndices(const void* pIndices, uint num, IndexType type)
 {
     ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModel instead");
     m_NumIndices = num;
@@ -101,21 +101,21 @@ void Model::setIndices(const void* pIndices, unsigned int num, IndexType type)
     }
 }
 
-unsigned int Model::getVertexArraysID() const
+uint Model::getVertexArraysID() const
 {
     return m_VaoID[0];
 }
 
-unsigned int Model::getNumVertices() const
+uint Model::getNumVertices() const
 {
     return m_NumVertices;
 }
-unsigned int Model::getNumIndices() const
+uint Model::getNumIndices() const
 {
     return m_NumIndices;
 }
 
-unsigned int Model::getIndexType() const
+uint Model::getIndexType() const
 {
     return m_IndexType;
 }

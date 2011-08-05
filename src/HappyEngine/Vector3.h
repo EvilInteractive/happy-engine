@@ -31,7 +31,7 @@ public:
 
 	Vector3();
     explicit Vector3(physx::pubfnd3::PxVec3 vec);
-	Vector3(float x_, float y_, float z_);
+	Vector3(float x, float y, float z);
     ~Vector3();
 
     Vector3(const Vector3& other);

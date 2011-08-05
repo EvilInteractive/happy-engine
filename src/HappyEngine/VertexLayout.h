@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "HappyTypes.h"
+
 namespace happyengine {
 namespace graphics {
 
@@ -49,24 +51,24 @@ public:
         Usage_Normal,
         Usage_Other
     };
-    VertexElement(unsigned int elementIndex, Type type, Usage usage, 
-        unsigned int size, unsigned int byteOffset, const std::string& nameInShader);
+    VertexElement(uint elementIndex, Type type, Usage usage, 
+        uint size, uint byteOffset, const std::string& nameInShader);
     virtual ~VertexElement() {}
     //default copy constructor and assignment operator are fine
 
-    unsigned int getElementIndex() const;
-    unsigned int getSize() const; 
-    unsigned int getByteOffset() const; 
+    uint getElementIndex() const;
+    uint getSize() const; 
+    uint getByteOffset() const; 
     Type getType() const;
     Usage getUsage() const;
     const std::string& getShaderVariableName() const;
 
 private:
-    unsigned int m_ElementIndex;
+    uint m_ElementIndex;
     Type m_Type;
     Usage m_Usage;
-    unsigned int m_Size;
-    unsigned int m_ByteOffset;
+    uint m_Size;
+    uint m_ByteOffset;
     std::string m_NameInShader;
 };
 
@@ -83,12 +85,12 @@ public:
     void addElement(const VertexElement& element);
 
     const layout& getElements() const;
-    unsigned int getVertexSize() const;
+    uint getVertexSize() const;
 
 
 private:
     layout m_Layout;
-    unsigned int m_VertexSize;
+    uint m_VertexSize;
 };
 
 } } //end namespace

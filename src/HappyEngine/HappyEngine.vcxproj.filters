@@ -35,6 +35,9 @@
     <Filter Include="happyengine\content\models">
       <UniqueIdentifier>{9e80cf7f-8664-4e6a-99ad-aa55fb71c72e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\error\external">
+      <UniqueIdentifier>{ce469388-db5d-4ca6-b40d-350ade7876d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -84,6 +87,15 @@
     </ClCompile>
     <ClCompile Include="Vector2.cpp">
       <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsEngine.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Rect.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>happyengine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +161,21 @@
     </ClInclude>
     <ClInclude Include="Vector2.h">
       <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsEngine.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="HappyTypes.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalError.h">
+      <Filter>happyengine\error\external</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

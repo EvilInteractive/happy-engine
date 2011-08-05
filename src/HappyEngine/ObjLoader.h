@@ -31,6 +31,7 @@
 #include "Vector3.h"
 #include "Vector2.h"
 #include "Model.h"
+#include "HappyTypes.h"
 
 namespace happyengine {
 namespace content {
@@ -64,33 +65,33 @@ public:
 
         return vertData;
     }
-    unsigned int getNumVertices() const;
+    uint getNumVertices() const;
 
     const void* getIndices() const;
     graphics::IndexType getIndexType() const;
-    unsigned int getNumIndices() const;
+    uint getNumIndices() const;
 
 
 private:
     void read(const std::string& path);
     void create();
-    void addIndex(unsigned int index);
+    void addIndex(uint index);
     void fill(void* pdata, const graphics::VertexLayout& vertLayout) const;
 
     std::vector<math::Vector3> m_PositionData;
     std::vector<math::Vector2> m_TextureData;
     std::vector<math::Vector3> m_NormalData;
-    std::vector<std::vector<std::vector<unsigned int>>> m_FaceData;
+    std::vector<std::vector<std::vector<uint>>> m_FaceData;
 
     std::vector<TempVertex> m_VertexData;
-    std::map<std::string, unsigned int> m_IndexMap;
+    std::map<std::string, uint> m_IndexMap;
 
-    std::vector<unsigned char> m_IndicesByte;
-    std::vector<unsigned short> m_IndicesUShort;
-    std::vector<unsigned int> m_IndicesUInt;
+    std::vector<byte> m_IndicesByte;
+    std::vector<ushort> m_IndicesUShort;
+    std::vector<uint> m_IndicesUInt;
 
-    unsigned int m_NumVertices;
-    unsigned int m_NumIndices;
+    uint m_NumVertices;
+    uint m_NumIndices;
     graphics::IndexType m_IndexType;
 
     //Disable default copy constructor and default assignment operator

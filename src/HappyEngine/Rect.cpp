@@ -18,16 +18,37 @@
 //Author:  
 //Created: //
 
-#include "X.h"
+#include "Rect.h"
 
 namespace happyengine {
 
-X::X()
+RectF::RectF(): x(0.0f), y(0.0f), width(0.0f), height(0.0f)
+{
+}
+RectF::RectF(float x_, float y_, float width_, float height_): x(x_), y(y_), width(width_), height(height_)
+{
+}
+RectF::RectF(const RectI& rect): x(static_cast<float>(rect.x)), y(static_cast<float>(rect.y)), 
+                                 width(static_cast<float>(rect.width)), height(static_cast<float>(rect.height))
+{
+}
+RectF::~RectF()
 {
 }
 
-
-X::~X()
+RectI::RectI(): x(0), y(0), width(0), height(0)
+{
+}
+RectI::RectI(int x_, int y_, int width_, int height_): x(x_), y(y_), width(width_), height(height_)
+{
+}
+RectI::RectI(const RectF& rect): x(static_cast<int>(rect.x)), 
+                                 y(static_cast<int>(rect.y)), 
+                                 width(static_cast<int>(rect.width)), 
+                                 height(static_cast<int>(rect.height))
+{
+}
+RectI::~RectI()
 {
 }
 

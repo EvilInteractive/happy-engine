@@ -15,28 +15,36 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 05/08/2011
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _EXTRERNAL_ERROR_H_
+#define _EXTRERNAL_ERROR_H_
 #pragma once
 
+#include "GL/glew.h"
+#include "SDL.h"
+#include <iostream>
+
 namespace happyengine {
+namespace error {
 
-class X
+inline void glHandleError(GLenum err)
 {
-public:
-	X();
-    virtual ~X();
+    if (err != GL_NO_ERROR)
+    {
+        std::cout << "***GL error*** file: " << __FILE__ << " line: " << __LINE__ << "\n";
+        std::cout << glewGetErrorString(err);
+    }
+}
+inline void sdlHandleError(int err)
+{
+    if (err != 0)
+    {
+        std::cout << "***SDL error***" << __FILE__ << " line: " << __LINE__ << "\n";
+        std::cout << SDL_GetError();
+    }
+}
 
-private:
-
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
-};
-
-} //end namespace
-
+} } //end namespace
 #endif

@@ -12,9 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Assert.cpp" />
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
+    <ClCompile Include="Rect.cpp" />
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
     <ClCompile Include="Exception.cpp" />
@@ -30,11 +33,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assert.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="HappyTypes.h" />
     <ClInclude Include="MathConstants.h" />
     <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ObjLoader.h" />
+    <ClInclude Include="Rect.h" />
+    <ClInclude Include="ExternalError.h" />
     <ClInclude Include="SimpleForward3DRenderer.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="FileOpenException.h" />

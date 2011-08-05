@@ -31,7 +31,7 @@ public:
 
 	Vector2();
     explicit Vector2(physx::pubfnd3::PxVec2 vec);
-	Vector2(float x_, float y_);
+	Vector2(float x, float y);
     ~Vector2();
 
     Vector2(const Vector2& other);

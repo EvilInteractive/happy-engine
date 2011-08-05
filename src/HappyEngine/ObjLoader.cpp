@@ -93,10 +93,10 @@ void ObjLoader::read(const std::string& path)
         }
         else if (line[0] == 'f')
         {
-            std::vector<std::vector<unsigned int>> data;
+            std::vector<std::vector<uint>> data;
             for (int i = 0; i < 3; ++i)
             {
-                std::vector<unsigned int> temp(3);
+                std::vector<uint> temp(3);
                 temp.resize(3);
                 data.push_back(temp);
             }
@@ -135,13 +135,13 @@ void ObjLoader::create()
     }
 
     m_NumVertices = 0;
-    std::for_each(m_FaceData.cbegin(), m_FaceData.cend(), [&](const std::vector<std::vector<unsigned int>>& face)
+    std::for_each(m_FaceData.cbegin(), m_FaceData.cend(), [&](const std::vector<std::vector<uint>>& face)
     {
         for (int i = 0; i < 3; ++i)
         {
             std::stringstream stream;
             stream << face[i][0] << " " << face[i][1] << " " << face[i][2];
-            std::map<std::string, unsigned int>::const_iterator index(m_IndexMap.find(stream.str()));
+            std::map<std::string, uint>::const_iterator index(m_IndexMap.find(stream.str()));
             if (index == m_IndexMap.cend())
             {
                 addIndex(m_VertexData.size());
@@ -160,12 +160,12 @@ void ObjLoader::create()
         }
     });
 }
-void ObjLoader::addIndex(unsigned int index)
+void ObjLoader::addIndex(uint index)
 {
     switch (m_IndexType)
     {
-        case graphics::IndexType_Byte:   m_IndicesByte.push_back(static_cast<unsigned char>(index)); break;
-        case graphics::IndexType_UShort: m_IndicesUShort.push_back(static_cast<unsigned short>(index)); break;
+        case graphics::IndexType_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
+        case graphics::IndexType_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
         case graphics::IndexType_UInt:   m_IndicesUInt.push_back(index); break;
         default: ASSERT("unkown type"); break;
     }
@@ -187,7 +187,7 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
     });
 
     char* pCharData = static_cast<char*>(pVertexData);
-    unsigned int count = 0;
+    uint count = 0;
     std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const TempVertex& vert)
     {
         if (pOff != -1)
@@ -214,11 +214,11 @@ graphics::IndexType ObjLoader::getIndexType() const
 {
     return m_IndexType;
 }
-unsigned int ObjLoader::getNumVertices() const
+uint ObjLoader::getNumVertices() const
 {
     return m_NumVertices;
 }
-unsigned int ObjLoader::getNumIndices() const
+uint ObjLoader::getNumIndices() const
 {
     return m_NumIndices;
 }

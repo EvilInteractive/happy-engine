@@ -15,26 +15,39 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 05/08/2011
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _RECT_H_
+#define _RECT_H_
 #pragma once
+
+#include "HappyTypes.h"
 
 namespace happyengine {
 
-class X
+struct RectI;
+struct RectF
 {
 public:
-	X();
-    virtual ~X();
+    float x, y, width, height;
 
-private:
+    RectF();
+	RectF(float x, float y, float width, float height);
+    explicit RectF(const RectI& rect);
+    ~RectF();
+    //Default copy constructor and assignment operator are fine
+};
+struct RectI
+{
+public:
+    int x, y, width, height;
 
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
+	RectI();
+	RectI(int x, int y, int width, int height);
+    explicit RectI(const RectF& rect);
+    ~RectI();
+    //Default copy constructor and assignment operator are fine
 };
 
 } //end namespace
