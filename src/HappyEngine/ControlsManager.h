@@ -15,26 +15,40 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 05/08/2011
-#include "Color.h"
+//Author: Bastian Damman 
+//Created: 08/08/2011
+
+#ifndef _CONTROLS_MANAGER_H_
+#define _CONTROLS_MANAGER_H_
+#pragma once
+
+#include "Keyboard.h"
+#include "Mouse.h"
 
 namespace happyengine {
+namespace io {
 
-Color::Color()
+class ControlsManager
 {
-}
-Color::Color(float red, float green, float blue, float alpha): r(red), g(green), b(blue), a(alpha)
-{
-}
-Color::Color(byte red, byte green, byte blue, byte alpha) : r(red / 255.0f), g(green / 255.0f), 
-                                                   b(blue / 255.0f), a(alpha / 255.0f)
-{
-}
+public:
+	ControlsManager();
+    virtual ~ControlsManager();
 
+    void tick();
 
-Color::~Color()
-{
-}
+    const Keyboard* getKeyboard() const;
+    const Mouse* getMouse() const;
 
-} //end namespace
+private:
+
+    Keyboard* m_pKeyboard;
+    Mouse* m_pMouse;
+
+    //Disable default copy constructor and default assignment operator
+    ControlsManager(const ControlsManager&);
+    ControlsManager& operator=(const ControlsManager&);
+};
+
+} } //end namespace
+
+#endif

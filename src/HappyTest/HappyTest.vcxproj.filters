@@ -22,9 +22,15 @@
     <ClCompile Include="MainGame.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
+    <ClCompile Include="TestObject.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="TestObject.h">
       <Filter>happytest</Filter>
     </ClInclude>
   </ItemGroup>

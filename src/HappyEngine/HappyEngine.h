@@ -19,14 +19,17 @@
 #define _HAPPYENGINE_H_
 #pragma once
 
+#define SDL_NO_COMPAT
 #include "boost/shared_ptr.hpp"
-#include "IGame.h"
 #include "SDL.h"
 #include "GL/glew.h"
 
 #include <vector>
 
+#include "IGame.h"
+
 #include "GraphicsEngine.h"
+#include "ControlsManager.h"
 
 namespace happyengine {
 
@@ -55,6 +58,7 @@ public:
 
     //subengines
     graphics::GraphicsEngine* getGraphicsEngine() const;
+    const io::ControlsManager* getControls() const;
 
 private:
     // Singleton design pattern
@@ -64,6 +68,7 @@ private:
     IGame* m_pGame;
 
     graphics::GraphicsEngine* m_pGraphicsEngine;
+    io::ControlsManager* m_pControlsManager;
 
     bool m_Quit;
     bool m_Loaded;

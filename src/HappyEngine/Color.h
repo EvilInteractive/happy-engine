@@ -27,7 +27,7 @@
 
 namespace happyengine {
 
-class Color
+struct Color
 {
 public:
     float r, g, b, a;
@@ -35,7 +35,7 @@ public:
 	Color();
 	Color(float r, float g, float b, float a);
 	Color(byte r, byte g, byte b, byte a);
-    virtual ~Color();
+    ~Color();
     //Default copy constructor and assignment operator are fine
 };
 

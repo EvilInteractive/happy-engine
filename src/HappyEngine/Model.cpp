@@ -20,6 +20,7 @@
 #include "GL/glew.h"
 #include <algorithm>
 #include "Assert.h"
+#include "Color.h"
 
 namespace happyengine {
 namespace graphics {
@@ -34,7 +35,6 @@ Model::Model(): m_NumVertices(0), m_NumIndices(0)
 
 Model::~Model()
 {
-    
 }
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old contents)
 void Model::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)

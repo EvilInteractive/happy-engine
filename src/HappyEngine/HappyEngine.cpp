@@ -27,7 +27,8 @@ namespace happyengine {
 
 HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
 
-HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), m_pGraphicsEngine(nullptr)
+HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
+                            m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -38,6 +39,7 @@ void HappyEngine::quit()
 {   
     //dispose/delete all sub engines here
     delete m_pGraphicsEngine;
+    delete m_pControlsManager;
 
     SDL_Quit();
 
@@ -47,6 +49,7 @@ void HappyEngine::initSubEngines()
 {
     //init all sub engines here
     m_pGraphicsEngine = new graphics::GraphicsEngine();
+    m_pControlsManager = new io::ControlsManager();
 }
 
 void HappyEngine::start(IGame* pGame)
@@ -129,6 +132,10 @@ HappyEngine::pointer HappyEngine::getPointer()
 graphics::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 {
     return m_pGraphicsEngine;
+}
+const io::ControlsManager* HappyEngine::getControls() const
+{
+    return m_pControlsManager;
 }
 
 } //end namespace

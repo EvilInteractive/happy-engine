@@ -97,6 +97,15 @@
     <ClCompile Include="Color.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
+    <ClCompile Include="ControlsManager.cpp">
+      <Filter>happyengine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>happyengine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>happyengine\io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -176,6 +185,18 @@
     </ClInclude>
     <ClInclude Include="ExternalError.h">
       <Filter>happyengine\error\external</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlsManager.h">
+      <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Keys.h">
+      <Filter>happyengine\io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

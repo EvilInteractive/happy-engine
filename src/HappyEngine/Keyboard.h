@@ -16,25 +16,43 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 05/08/2011
-#include "Color.h"
+//Created: 08/08/2011
+
+#ifndef _KEYBOARD_H_
+#define _KEYBOARD_H_
+#pragma once
+
+#include "HappyTypes.h"
+#include "Keys.h"
+#include <vector>
 
 namespace happyengine {
+namespace io {
 
-Color::Color()
+class Keyboard
 {
-}
-Color::Color(float red, float green, float blue, float alpha): r(red), g(green), b(blue), a(alpha)
-{
-}
-Color::Color(byte red, byte green, byte blue, byte alpha) : r(red / 255.0f), g(green / 255.0f), 
-                                                   b(blue / 255.0f), a(alpha / 255.0f)
-{
-}
+public:
+	Keyboard();
+    virtual ~Keyboard();
 
+    void tick();
 
-Color::~Color()
-{
-}
+    bool isKeyUp(Key key) const;
+    bool isKeyDown(Key key) const;
 
-} //end namespace
+    bool isKeyPressed(Key key) const;  //true when state goes from up to down
+    bool isKeyReleased(Key key) const; //true when state goes from down to up
+
+private:
+    byte* m_KeyState;
+    byte* m_PrevKeyState;
+    int m_NumKeys, m_NumPrevKeys;
+
+    //Disable default copy constructor and default assignment operator
+    Keyboard(const Keyboard&);
+    Keyboard& operator=(const Keyboard&);
+};
+
+} } //end namespace
+
+#endif

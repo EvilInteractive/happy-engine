@@ -20,10 +20,10 @@
 #pragma once
 
 #define BOOST_DISABLE_ASSERTS
+
 #include "IGame.h"
-#include "Model.h"
-#include "Shader.h"
 #include "SimpleForward3DRenderer.h"
+#include "TestObject.h"
 
 namespace happytest {
 
@@ -39,12 +39,8 @@ public:
     virtual void draw(float dTime);
 
 private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Shader* m_pShader;
-
     happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
-
-    float m_Timer;
+    TestObject* m_pTestObject;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

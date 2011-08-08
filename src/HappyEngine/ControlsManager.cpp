@@ -16,25 +16,37 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 05/08/2011
-#include "Color.h"
+//Created: 08/08/2011
+
+#include "ControlsManager.h"
 
 namespace happyengine {
+namespace io {
 
-Color::Color()
-{
-}
-Color::Color(float red, float green, float blue, float alpha): r(red), g(green), b(blue), a(alpha)
-{
-}
-Color::Color(byte red, byte green, byte blue, byte alpha) : r(red / 255.0f), g(green / 255.0f), 
-                                                   b(blue / 255.0f), a(alpha / 255.0f)
+ControlsManager::ControlsManager(): m_pKeyboard(new Keyboard()), m_pMouse(new Mouse())
 {
 }
 
 
-Color::~Color()
+ControlsManager::~ControlsManager()
 {
+    delete m_pKeyboard;
+    delete m_pMouse;
 }
 
-} //end namespace
+void ControlsManager::tick()
+{
+    m_pKeyboard->tick();
+    m_pMouse->tick();
+}
+
+const Keyboard* ControlsManager::getKeyboard() const
+{
+    return m_pKeyboard;
+}
+const Mouse* ControlsManager::getMouse() const
+{
+    return m_pMouse;
+}
+
+} } //end namespace

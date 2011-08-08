@@ -62,7 +62,7 @@ void GraphicsEngine::init()
 }
 void GraphicsEngine::initWindow()
 {
-    m_pMainWindow = SDL_CreateWindow("Happy Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    m_pMainWindow = SDL_CreateWindow(m_WindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         m_ScreenRect.width, m_ScreenRect.height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     
     int x, y;
@@ -74,7 +74,6 @@ void GraphicsEngine::initWindow()
 
     SDL_SetWindowPosition(m_pMainWindow, m_ScreenRect.x, m_ScreenRect.y);
     SDL_SetWindowFullscreen(m_pMainWindow, static_cast<SDL_bool>(m_IsFullScreen));
-    SDL_SetWindowTitle(m_pMainWindow, m_WindowTitle.c_str());
 
     m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
     error::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));
