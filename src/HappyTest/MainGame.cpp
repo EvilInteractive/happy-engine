@@ -40,6 +40,7 @@ MainGame::MainGame() : m_pSimpleForward3DRenderer(nullptr), m_pTestObject(nullpt
 MainGame::~MainGame()
 {
     delete m_pSimpleForward3DRenderer;
+    delete m_pTestObject;
 }
 
 void MainGame::init()

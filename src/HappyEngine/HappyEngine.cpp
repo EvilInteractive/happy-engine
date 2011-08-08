@@ -19,7 +19,14 @@
 
 #include <iostream>
 
+#if _DEBUG
+    #undef new
+#endif
 #include "boost/thread.hpp"
+#if _DEBUG
+    #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 #include "Assert.h"
 #include "ExternalError.h"
 

@@ -19,6 +19,12 @@
 #define _HAPPYENGINE_H_
 #pragma once
 
+#if _DEBUG
+#include <crtdbg.h>
+#define _CRTDBG_MAP_ALLOC
+#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 #define SDL_NO_COMPAT
 #include "boost/shared_ptr.hpp"
 #include "SDL.h"

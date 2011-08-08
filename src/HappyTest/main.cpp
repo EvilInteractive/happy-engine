@@ -17,6 +17,10 @@ int main( int /*argc*/, char** /*args[]*/ )
     pEngine->start(pGame);
     delete pGame;
 
+    #ifdef _DEBUG
+    _CrtDumpMemoryLeaks();
+    #endif
+
     std::cout << "press enter to quit\n";
     std::cin.get();
 
