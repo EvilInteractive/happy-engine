@@ -35,18 +35,26 @@ namespace io {
 Keyboard::~Keyboard()
 {
     delete[] m_PrevKeyState;
+    delete[] m_KeyState;
 }
 void Keyboard::tick()
 {
-    if (m_NumPrevKeys != m_NumKeys)
-    {
-        delete[] m_PrevKeyState;
-        m_PrevKeyState = new byte[m_NumKeys];
-        m_NumPrevKeys = m_NumKeys;
-    }
-    memcpy(m_PrevKeyState, m_KeyState, m_NumKeys * sizeof(byte));
+    int keys;
+    byte* state;
+    state = SDL_GetKeyboardState(&keys);
+
+    byte* temp = m_PrevKeyState;
+    m_PrevKeyState = m_KeyState;
+    m_KeyState = temp;
     
-    m_KeyState = SDL_GetKeyboardState(&m_NumKeys);
+    if (m_NumPrevKeys != keys)
+    {
+        delete[] m_KeyState;
+        m_KeyState = new byte[keys];
+        m_NumPrevKeys = m_NumKeys;
+        m_NumKeys = keys;
+    }
+    memcpy(m_KeyState, state, m_NumKeys * sizeof(byte));
 }
 
 bool Keyboard::isKeyUp(Key key) const

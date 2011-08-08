@@ -24,6 +24,7 @@
 #include "IGame.h"
 #include "SimpleForward3DRenderer.h"
 #include "TestObject.h"
+#include "Color.h"
 
 namespace happytest {
 
@@ -41,6 +42,9 @@ public:
 private:
     happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
     TestObject* m_pTestObject;
+
+    happyengine::Color m_BackgroundColors[5];
+    happyengine::byte m_BackgroundIndex;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

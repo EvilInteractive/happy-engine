@@ -114,7 +114,8 @@ void HappyEngine::drawThread()
             {
                 case SDL_QUIT: m_Quit = true; break;
             }
-        }             
+        }            
+        m_pControlsManager->tick(); 
 
         m_pGame->draw(dTime);
         
