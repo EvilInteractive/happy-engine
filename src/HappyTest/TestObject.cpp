@@ -57,14 +57,13 @@ void TestObject::load()
 void TestObject::tick(float dTime)
 {
     using namespace happyengine;
-    HappyEngine::pointer pEngine = HappyEngine::getPointer();
-    if (pEngine->getControls()->getKeyboard()->isKeyDown(io::Key_Left))
+    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Left))
         m_Rotation += math::pi * dTime;
-    if (pEngine->getControls()->getKeyboard()->isKeyDown(io::Key_Right))
+    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
         m_Rotation -= math::pi * dTime;
-    if (pEngine->getControls()->getKeyboard()->isKeyDown(io::Key_Up))
+    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
         m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
-    if (pEngine->getControls()->getKeyboard()->isKeyDown(io::Key_Down))
+    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
         m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
 }
 void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer)

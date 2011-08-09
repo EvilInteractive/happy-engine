@@ -10,11 +10,9 @@ int main( int /*argc*/, char** /*args[]*/ )
 {
     using namespace happyengine;
     using namespace happytest;
-
-    HappyEngine::pointer pEngine(HappyEngine::getPointer());
-
+    
     MainGame* pGame(new MainGame());
-    pEngine->start(pGame);
+    HAPPYENGINE->start(pGame);
     delete pGame;
 
     #ifdef _DEBUG

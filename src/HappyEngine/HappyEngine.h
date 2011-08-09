@@ -37,6 +37,10 @@
 #include "GraphicsEngine.h"
 #include "ControlsManager.h"
 
+#define HAPPYENGINE happyengine::HappyEngine::getPointer()
+#define GRAPHICS HAPPYENGINE->getGraphicsEngine()
+#define CONTROLS HAPPYENGINE->getControls()
+
 namespace happyengine {
 
 struct VertexPosColor

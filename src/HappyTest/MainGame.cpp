@@ -29,11 +29,12 @@ namespace happytest {
 
 MainGame::MainGame() : m_pSimpleForward3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0)
 {
-    m_BackgroundColors[0] = happyengine::Color((happyengine::byte)10, (happyengine::byte)130, (happyengine::byte)131, (happyengine::byte)255);
-    m_BackgroundColors[1] = happyengine::Color((happyengine::byte)122, (happyengine::byte)186, (happyengine::byte)122, (happyengine::byte)255);
-    m_BackgroundColors[2] = happyengine::Color((happyengine::byte)255, (happyengine::byte)127, (happyengine::byte)80, (happyengine::byte)255);
-    m_BackgroundColors[3] = happyengine::Color((happyengine::byte)255, (happyengine::byte)165, (happyengine::byte)0, (happyengine::byte)255);
-    m_BackgroundColors[4] = happyengine::Color((happyengine::byte)30, (happyengine::byte)144, (happyengine::byte)255, (happyengine::byte)255);
+    using namespace happyengine;
+    m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
+    m_BackgroundColors[1] = Color((byte)122, (byte)186, (byte)122, (byte)255);
+    m_BackgroundColors[2] = Color((byte)255, (byte)127, (byte)80, (byte)255);
+    m_BackgroundColors[3] = Color((byte)255, (byte)165, (byte)0, (byte)255);
+    m_BackgroundColors[4] = Color((byte)30, (byte)144, (byte)255, (byte)255);
 }
 
 
@@ -58,14 +59,14 @@ void MainGame::tick(float dTime)
 }
 void MainGame::draw(float /*dTime*/)
 {
-    if (happyengine::HappyEngine::getPointer()->getControls()->getKeyboard()->isKeyPressed(happyengine::io::Key_Return))
+    if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Return))
     {
         ++m_BackgroundIndex;
         if (m_BackgroundIndex > 4)
             m_BackgroundIndex = 0;
-        happyengine::HappyEngine::getPointer()->getGraphicsEngine()->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
+        GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
     }
-    happyengine::HappyEngine::getPointer()->getGraphicsEngine()->clearAll();
+    GRAPHICS->clearAll();
 
     m_pTestObject->draw(m_pSimpleForward3DRenderer);
 }
