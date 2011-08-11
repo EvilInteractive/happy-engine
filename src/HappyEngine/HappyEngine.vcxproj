@@ -15,6 +15,8 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ControlsManager.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="IniReader.cpp" />
+    <ClCompile Include="IniWriter.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -24,12 +26,13 @@
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
     <ClCompile Include="Exception.cpp" />
-    <ClCompile Include="FileOpenException.cpp" />
+    <ClCompile Include="FileNotFoundException.cpp" />
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="HappyEngine.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vector4.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="X.cpp" />
@@ -40,6 +43,8 @@
     <ClInclude Include="ControlsManager.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="HappyTypes.h" />
+    <ClInclude Include="IniReader.h" />
+    <ClInclude Include="IniWriter.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="MathConstants.h" />
@@ -52,7 +57,7 @@
     <ClInclude Include="ExternalError.h" />
     <ClInclude Include="SimpleForward3DRenderer.h" />
     <ClInclude Include="Exception.h" />
-    <ClInclude Include="FileOpenException.h" />
+    <ClInclude Include="FileNotFoundException.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="HappyEngine.h" />
     <ClInclude Include="I2DRenderer.h" />
@@ -62,6 +67,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="X.h" />

@@ -43,6 +43,10 @@ HappyEngine::~HappyEngine()
 }
 
 void HappyEngine::quit()
+{
+    m_Quit = true;
+}
+void HappyEngine::cleanup()
 {   
     //dispose/delete all sub engines here
     delete m_pGraphicsEngine;
@@ -99,7 +103,7 @@ void HappyEngine::start(IGame* pGame)
     
     drawThread.join();
 
-    quit();
+    cleanup();
 }
 void HappyEngine::drawThread()
 {

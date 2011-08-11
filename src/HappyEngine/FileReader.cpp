@@ -16,7 +16,7 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "FileReader.h"
-#include "FileOpenException.h"
+#include "FileNotFoundException.h"
 #include <sstream>
 #include "Assert.h"
 
@@ -38,13 +38,13 @@ void FileReader::open(const std::string& path, OpenType type)
     {
         m_Wfstream.open(path.c_str(), std::ios_base::in);
         if (m_Wfstream.is_open() == false)
-            throw error::FileOpenException(std::wstring(path.cbegin(), path.cend()));
+            throw error::FileNotFoundException(path);
     }
     else
     {
         m_fstream.open(path.c_str(), std::ios_base::in);
         if (m_fstream.is_open() == false)
-            throw error::FileOpenException(std::wstring(path.cbegin(), path.cend()));
+            throw error::FileNotFoundException(path);
     }
 }
 void FileReader::close()

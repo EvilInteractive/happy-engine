@@ -49,9 +49,9 @@ public:
     float x, y, z;
     float r, g, b;
 
-    VertexPosColor(float _x, float _y, float _z,
-                   float _r, float _g, float _b) : x(_x), y(_y), z(_z),
-                                                   r(_r), g(_g), b(_b)
+    VertexPosColor(float x_, float y_, float z_,
+                   float r_, float g_, float b_) : x(x_), y(y_), z(z_),
+                                                   r(r_), g(g_), b(b_)
     {}
 };
 
@@ -65,6 +65,8 @@ public:
     void start(IGame* pGame);
 
     static pointer getPointer();
+
+    void quit();
 
     //subengines
     graphics::GraphicsEngine* getGraphicsEngine() const;
@@ -87,7 +89,7 @@ private:
     void initWindow();
     void initSubEngines();
     void drawThread();
-    void quit();
+    void cleanup();
 
     //Disable default copy constructor and default assignment operator
     HappyEngine(const HappyEngine&);

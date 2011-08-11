@@ -54,7 +54,9 @@ public:
     void setViewport(const RectI& viewport);
     const RectI& getViewport() const;
 
-    void setBackgroundColor(const Color& color) const;
+    void setVSync(bool enable);
+
+    void setBackgroundColor(const Color& color);
     void clearAll() const;
     void clearColor() const;
     void clearDepth() const;
@@ -72,7 +74,10 @@ private:
     RectI m_ScreenRect;
 
     bool m_IsFullScreen;
+    bool m_VSyncEnabled;
     std::string m_WindowTitle;
+
+    Color m_ClearColor;
 
     //Disable default copy constructor and default assignment operator
     GraphicsEngine(const GraphicsEngine&);

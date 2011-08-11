@@ -55,9 +55,6 @@
     <ClCompile Include="Exception.cpp">
       <Filter>happyengine\error\exceptions</Filter>
     </ClCompile>
-    <ClCompile Include="FileOpenException.cpp">
-      <Filter>happyengine\error\exceptions\io</Filter>
-    </ClCompile>
     <ClCompile Include="Vertex.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
@@ -106,6 +103,18 @@
     <ClCompile Include="Mouse.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
+    <ClCompile Include="IniReader.cpp">
+      <Filter>happyengine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="IniWriter.cpp">
+      <Filter>happyengine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="FileNotFoundException.cpp">
+      <Filter>happyengine\error\exceptions\io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -131,9 +140,6 @@
     </ClInclude>
     <ClInclude Include="Exception.h">
       <Filter>happyengine\error\exceptions</Filter>
-    </ClInclude>
-    <ClInclude Include="FileOpenException.h">
-      <Filter>happyengine\error\exceptions\io</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>happyengine\graphics</Filter>
@@ -197,6 +203,18 @@
     </ClInclude>
     <ClInclude Include="Keys.h">
       <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="IniReader.h">
+      <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="IniWriter.h">
+      <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="FileNotFoundException.h">
+      <Filter>happyengine\error\exceptions\io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

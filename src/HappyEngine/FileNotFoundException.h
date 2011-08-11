@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _FILE_OPEN_EXCEPTION_H_
-#define _FILE_OPEN_EXCEPTION_H_
+#ifndef _FILE_NOT_FOUND_EXCEPTION_H_
+#define _FILE_NOT_FOUND_EXCEPTION_H_
 #pragma once
 
 #include "Exception.h"
@@ -24,12 +24,12 @@
 namespace happyengine {
 namespace error {
 
-class FileOpenException : public Exception
+class FileNotFoundException : public Exception
 {
 public:
-	FileOpenException();
-	FileOpenException(const std::wstring& file);
-    virtual ~FileOpenException();
+	FileNotFoundException();
+	FileNotFoundException(const std::string& file);
+    virtual ~FileNotFoundException();
     //default copy constructor and assignment operator are fine
 
     virtual std::wstring getType() const;

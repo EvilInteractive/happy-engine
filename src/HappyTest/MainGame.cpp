@@ -19,11 +19,15 @@
 
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 #include "Matrix.h"
 #include "Vector3.h"
 #include "MathConstants.h"
 #include "HappyEngine.h"
+
+#include "IniReader.h"
+#include "FileNotFoundException.h"
 
 namespace happytest {
 
@@ -46,6 +50,23 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
+    using namespace happyengine;
+    io::IniReader reader;
+    try { reader.open("../data/setting.ini"); }
+    catch (error::FileNotFoundException& e)
+    { std::wcout << e.getMsg() << "\n"; }
+    if (reader.isOpen())
+    {
+        math::Vector2 windowDim(reader.readVector2(L"Window", L"dimension", math::Vector2(1280, 720)));
+        GRAPHICS->setScreenDimension(static_cast<int>(windowDim.x), static_cast<int>(windowDim.y));
+        GRAPHICS->setWindowTitle(reader.readString(L"Window", L"title", "Test"));
+
+        math::Vector4 bColor(reader.readVector4(L"Background", L"color"));
+        GRAPHICS->setBackgroundColor(Color(bColor.x, bColor.y, bColor.z, bColor.w));
+
+        GRAPHICS->setVSync(reader.readBool(L"Graphics", L"vsync", true));
+        GRAPHICS->toggleFullscreen(reader.readBool(L"Graphics", L"fullscreen"));
+    }
 }
 void MainGame::load()
 {
@@ -55,6 +76,8 @@ void MainGame::load()
 }
 void MainGame::tick(float dTime)
 {
+    if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Escape))
+        HAPPYENGINE->quit();
     m_pTestObject->tick(dTime);
 }
 void MainGame::draw(float /*dTime*/)

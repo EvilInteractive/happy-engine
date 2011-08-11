@@ -19,7 +19,7 @@
 
 #include "GL/glew.h"
 #include "FileReader.h"
-#include "FileOpenException.h"
+#include "FileNotFoundException.h"
 #include <iostream>
 #include <algorithm>
 #include "Assert.h"
@@ -102,7 +102,7 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
         strFS = reader.readToEnd();
         reader.close();
     }
-    catch (const error::FileOpenException& /*e*/)
+    catch (const error::FileNotFoundException& /*e*/)
     { /*PANIC(e.getMsg());*/ return false; }
     // <-----------------------------------------------
 

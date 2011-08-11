@@ -96,6 +96,7 @@
     <ClInclude Include="TestObject.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\settings.ini" />
     <None Include="data\shaders\simpleShader.frag" />
     <None Include="data\shaders\simpleShader.vert" />
   </ItemGroup>

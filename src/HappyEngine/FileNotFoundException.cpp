@@ -15,28 +15,28 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "FileOpenException.h"
+#include "FileNotFoundException.h"
 
 namespace happyengine {
 namespace error {
 
-FileOpenException::FileOpenException() : Exception(L"File open failed")
+FileNotFoundException::FileNotFoundException() : Exception(L"File not found")
 {
 }
-FileOpenException::FileOpenException(const std::wstring& file) : 
-    Exception(L"Could not open file: " + file)
-{
-}
-
-
-FileOpenException::~FileOpenException()
+FileNotFoundException::FileNotFoundException(const std::string& file) : 
+    Exception(L"Could not open file: " + std::wstring(file.cbegin(), file.cend()))
 {
 }
 
 
-std::wstring FileOpenException::getType() const
+FileNotFoundException::~FileNotFoundException()
 {
-    return L"FileOpenException";
+}
+
+
+std::wstring FileNotFoundException::getType() const
+{
+    return L"FileNotFoundException";
 }
 
 } } //end namespace

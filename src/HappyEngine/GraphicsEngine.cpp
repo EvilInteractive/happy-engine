@@ -30,7 +30,8 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_ScreenRect(-1, -1, 1280, 720),
                                   m_Viewport(0, 0, 1280, 720),
                                   m_IsFullScreen(false),
-                                  m_WindowTitle("HappyEngine")
+                                  m_WindowTitle("HappyEngine"),
+                                  m_VSyncEnabled(true)
 {
 }
 
@@ -53,11 +54,10 @@ void GraphicsEngine::init()
     glewExperimental = true;
     glHandleError(glewInit());
 
-    //VSync
-    sdlHandleError(SDL_GL_SetSwapInterval(1));
+    setVSync(m_VSyncEnabled);
     setViewport(m_Viewport);
 
-    glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
+    setBackgroundColor(m_ClearColor);
     glClearDepth(1.0f);
 }
 void GraphicsEngine::initWindow()
@@ -140,9 +140,26 @@ const RectI& GraphicsEngine::getViewport() const
     return m_Viewport;
 }
 
-void GraphicsEngine::setBackgroundColor(const Color& color) const
+void GraphicsEngine::setVSync(bool enable)
+{
+    if (m_pMainWindow != nullptr)
+    {
+        if (enable)
+            error::sdlHandleError(SDL_GL_SetSwapInterval(1));
+        else
+            error::sdlHandleError(SDL_GL_SetSwapInterval(0));
+        m_VSyncEnabled = enable;
+    }
+    else
+    {
+        m_VSyncEnabled = enable;
+    }
+}
+
+void GraphicsEngine::setBackgroundColor(const Color& color)
 {
     glClearColor(color.r, color.g, color.b, color.r);
+    m_ClearColor = color;
 }
 void GraphicsEngine::clearAll() const
 {

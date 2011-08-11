@@ -25,7 +25,7 @@
 #include <sstream>
 
 #include "FileReader.h"
-#include "FileOpenException.h"
+#include "FileNotFoundException.h"
 
 #include "Assert.h"
 
@@ -64,7 +64,7 @@ void ObjLoader::read(const std::string& path)
         reader.open(path, io::FileReader::OpenType_ASCII); 
         objData = reader.readToEndSplit();
     }
-    catch (error::FileOpenException&)
+    catch (error::FileNotFoundException&)
     {
         reader.close();
         throw;
