@@ -159,6 +159,30 @@ void ObjLoader::create()
             }
         }
     });
+
+    //flip indices for CCW culling
+    for (uint i = 0; i < m_NumIndices; i += 3)
+    {
+        byte bTemp(0);
+        ushort usTemp(0);
+        uint uiTemp(0);
+        switch (m_IndexType)
+        {
+            case graphics::IndexType_Byte:   
+                bTemp = m_IndicesByte[i + 1];
+                m_IndicesByte[i + 1] = m_IndicesByte[i + 2]; 
+                m_IndicesByte[i + 2] = bTemp; break;
+            case graphics::IndexType_UShort: 
+                usTemp = m_IndicesUShort[i + 1];
+                m_IndicesUShort[i + 1] = m_IndicesUShort[i + 2]; 
+                m_IndicesUShort[i + 2] = usTemp; break;
+            case graphics::IndexType_UInt:   
+                uiTemp = m_IndicesUInt[i + 1];
+                m_IndicesUInt[i + 1] = m_IndicesUInt[i + 2]; 
+                m_IndicesUInt[i + 2] = uiTemp; break;
+            default: ASSERT("unkown type"); break;
+        }
+    }
 }
 void ObjLoader::addIndex(uint index)
 {

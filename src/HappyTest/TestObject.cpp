@@ -17,9 +17,10 @@
 
 #include "TestObject.h"
 #include "ObjLoader.h"
-#include "Vertex.h"
 #include "MathConstants.h"
 #include "HappyEngine.h"
+#include "VertexPNT.h"
+#include "TextureLoader.h"
 
 namespace happytest {
 
@@ -45,14 +46,22 @@ void TestObject::load()
 
     VertexLayout layout;
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
-    layout.addElement(VertexElement(1, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), sizeof(math::Vector3), "inColor"));
-    std::vector<VertexPosCol> vertices = loader.getVertices<VertexPosCol>(layout);
+    layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
+    layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
+    std::vector<VertexPNT> vertices = loader.getVertices<VertexPNT>(layout);
 
     m_pModel->setVertices(vertices.data(), vertices.size(), layout);
     m_pModel->setIndices(loader.getIndices(), loader.getNumIndices(), loader.getIndexType());
 
     m_pShader = new Shader();
-    m_pShader->init("../data/shaders/simpleShader.vert", "../data/shaders/simpleShader.frag", layout);
+    m_pShader->init("../data/shaders/simpleTextureShader.vert", "../data/shaders/simpleTextureShader.frag", layout);
+
+    happyengine::content::TextureLoader texLoader;
+    texLoader.load("../data/textures/testTex.png", m_pDiffuseMap);
+
+    m_ShaderWVPpos = m_pShader->getShaderVarId("matWVP");
+    m_ShaderWorldPos = m_pShader->getShaderVarId("matWorld");
+    m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
 }
 void TestObject::tick(float dTime)
 {
@@ -78,7 +87,9 @@ void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer)
         math::Matrix::createScale(2.0f)
                       );
 
-    m_pShader->setShaderVar(m_pShader->getShaderVarId("matWVP"), persp * view * world);
+    m_pShader->setShaderVar(m_ShaderWVPpos, persp * view * world);
+    m_pShader->setShaderVar(m_ShaderWorldPos, world);
+    m_pShader->setShaderVar(m_ShaderDiffTexPos, m_pDiffuseMap);
 
     pRenderer->draw(m_pModel);
 

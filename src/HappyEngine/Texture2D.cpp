@@ -14,36 +14,31 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 11/08/2011
 
-#include "SimpleForward3DRenderer.h"
+#include "Texture2D.h"
 #include "GL/glew.h"
-#include "Assert.h"
 
 namespace happyengine {
 namespace graphics {
 
-SimpleForward3DRenderer::SimpleForward3DRenderer()
-{
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-}
-
-
-SimpleForward3DRenderer::~SimpleForward3DRenderer()
+Texture2D::Texture2D(uint tex, uint width, uint height, uint bpp, uint format): m_Id(tex),
+    m_Width(width), m_Height(height), m_Bpp(bpp), m_Format(format)
 {
 }
 
-void SimpleForward3DRenderer::draw(const Model::pointer& pModel)
+
+Texture2D::~Texture2D()
 {
-    glBindVertexArray(pModel->getVertexArraysID());
+    glDeleteTextures(1, &m_Id);
+}
 
-    glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
 
-    glBindVertexArray(0);
+uint Texture2D::getID() const
+{
+    return m_Id;
 }
 
 } } //end namespace

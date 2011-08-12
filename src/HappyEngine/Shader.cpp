@@ -149,9 +149,60 @@ void Shader::end()
 
 uint Shader::getShaderVarId(const std::string& name) const
 {
-    return glGetUniformLocation(m_Id, name.c_str());
+    uint loc(glGetUniformLocation(m_Id, name.c_str()));
+    if (loc == -1)
+        std::cout << "shader var: '" << name << "' not found!\n";
+    return loc;
+}
+uint Shader::getShaderSamplerId(const std::string& name)
+{
+    std::map<std::string, uint>::const_iterator loc(m_SamplerLocationMap.find(name));
+    if (loc != m_SamplerLocationMap.cend())
+    {
+        return loc->second;
+    }
+    else
+    {
+        uint texLoc(getShaderVarId(name));
+        uint samplerIndex(m_SamplerLocationMap.size());
+        if (m_Bound == false)
+        {
+            begin();
+            glUniform1i(texLoc, samplerIndex);
+            end();
+        }
+        else
+            glUniform1i(texLoc, samplerIndex);
+        m_SamplerLocationMap[name] = samplerIndex;
+        return samplerIndex;
+    }
 }
 
+void Shader::setShaderVar(uint id, int value) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    glUniform1i(id, value);
+}
+void Shader::setShaderVar(uint id, float value) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    glUniform1f(id, value);
+}
+void Shader::setShaderVar(uint id, const math::Vector2& vec) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    glUniform2f(id, vec.x, vec.y);
+}
+void Shader::setShaderVar(uint id, const math::Vector3& vec) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    glUniform3f(id, vec.x, vec.y, vec.z);
+}
+void Shader::setShaderVar(uint id, const math::Vector4& vec) const
+{
+    ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
+    glUniform4f(id, vec.x, vec.y, vec.z, vec.w);
+}
 void Shader::setShaderVar(uint id, const math::Matrix& matrix) const
 {
     ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
@@ -159,10 +210,11 @@ void Shader::setShaderVar(uint id, const math::Matrix& matrix) const
     matrix.toFloatArray(fArr);
     glUniformMatrix4fv(id, 1, GL_FALSE, fArr);
 }
-void Shader::setShaderVar(uint id, const math::Vector3& vec) const
+void Shader::setShaderVar(uint id, const graphics::Texture2D::pointer& tex2D) const
 {
     ASSERT(m_Bound, "shader must be bound before using setShaderVar(...)");
-    glUniform3f(id, vec.x, vec.y, vec.z);
+    glActiveTexture(GL_TEXTURE0 + id);
+    glBindTexture(GL_TEXTURE_2D, tex2D->getID());
 }
 
 } } //end namespace

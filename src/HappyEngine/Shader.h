@@ -20,10 +20,14 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include "VertexLayout.h"
 
 #include "Matrix.h"
+#include "Vector2.h"
 #include "Vector3.h"
+#include "Vector4.h"
+#include "Texture2D.h"
 #include "HappyTypes.h"
 
 namespace happyengine {
@@ -41,9 +45,15 @@ public:
     void end();
 
     uint getShaderVarId(const std::string& name) const;
-
-    void setShaderVar(uint id, const math::Matrix& matrix) const;
+    uint getShaderSamplerId(const std::string& name);
+    
+    void setShaderVar(uint id, int value) const;
+    void setShaderVar(uint id, float value) const;
+    void setShaderVar(uint id, const math::Vector2& vec) const;
     void setShaderVar(uint id, const math::Vector3& vec) const;
+    void setShaderVar(uint id, const math::Vector4& vec) const;
+    void setShaderVar(uint id, const math::Matrix& matrix) const;
+    void setShaderVar(uint id, const graphics::Texture2D::pointer& tex2D) const;
 
 private:
     uint m_Id;
@@ -51,6 +61,8 @@ private:
     uint m_FsId;
 
     bool m_Bound;
+
+    std::map<std::string, uint> m_SamplerLocationMap;
 
     //Disable default copy constructor and default assignment operator
     Shader(const Shader&);

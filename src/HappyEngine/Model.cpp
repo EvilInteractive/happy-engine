@@ -43,7 +43,6 @@ void Model::setVertices(const void* pVertices, uint num, const VertexLayout& ver
     m_NumVertices = num;
 
     glBindVertexArray(m_VaoID[0]);
-    glEnableVertexAttribArray(m_VaoID[0]);
 
     VertexLayout::layout elements(vertexLayout.getElements());
 
@@ -76,10 +75,10 @@ void Model::setVertices(const void* pVertices, uint num, const VertexLayout& ver
         }
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 
+        glEnableVertexAttribArray(e.getElementIndex());
     });
 
     //unbind
-    glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 }
 void Model::setIndices(const void* pIndices, uint num, IndexType type)

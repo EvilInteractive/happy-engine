@@ -52,7 +52,7 @@ void MainGame::init()
 {
     using namespace happyengine;
     io::IniReader reader;
-    try { reader.open("../data/setting.ini"); }
+    try { reader.open("../data/settings.ini"); }
     catch (error::FileNotFoundException& e)
     { std::wcout << e.getMsg() << "\n"; }
     if (reader.isOpen())

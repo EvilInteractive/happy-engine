@@ -14,6 +14,9 @@
     <Filter Include="data\shaders">
       <UniqueIdentifier>{d7784cf1-3904-46fc-bd20-1dcca4742a65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happytest\vertex">
+      <UniqueIdentifier>{09151816-3dd4-4ed8-8b5b-486f5c291c27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -25,6 +28,9 @@
     <ClCompile Include="TestObject.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
+    <ClCompile Include="VertexPNT.cpp">
+      <Filter>happytest\vertex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -32,6 +38,9 @@
     </ClInclude>
     <ClInclude Include="TestObject.h">
       <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexPNT.h">
+      <Filter>happytest\vertex</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -43,6 +52,12 @@
     </None>
     <None Include="data\settings.ini">
       <Filter>data</Filter>
+    </None>
+    <None Include="data\shaders\simpleTextureShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\simpleTextureShader.vert">
+      <Filter>data\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

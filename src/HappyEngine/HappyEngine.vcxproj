@@ -30,6 +30,8 @@
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="HappyEngine.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Vector4.cpp" />
@@ -65,6 +67,8 @@
     <ClInclude Include="I3DRenderer.h" />
     <ClInclude Include="IGame.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />

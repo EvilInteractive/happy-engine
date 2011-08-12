@@ -25,6 +25,7 @@
 #include "Vector3.h"
 #include "Matrix.h"
 #include "I3DRenderer.h"
+#include "Texture2D.h"
 
 namespace happytest {
 
@@ -41,6 +42,11 @@ public:
 private:
     happyengine::graphics::Model::pointer m_pModel;
     happyengine::graphics::Shader* m_pShader;
+    happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
+
+    happyengine::uint m_ShaderWVPpos;
+    happyengine::uint m_ShaderWorldPos;
+    happyengine::uint m_ShaderDiffTexPos;
 
     float m_Rotation;
     happyengine::math::Vector3 m_Position;
