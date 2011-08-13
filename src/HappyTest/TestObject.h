@@ -27,6 +27,8 @@
 #include "I3DRenderer.h"
 #include "Texture2D.h"
 
+#include "Font.h"
+
 namespace happytest {
 
 class TestObject
@@ -37,7 +39,7 @@ public:
 
     void load();
     void tick(float dTime);
-    void draw(happyengine::graphics::I3DRenderer* pRenderer);
+    void draw(happyengine::graphics::I3DRenderer* pRenderer, float dTime);
 
 private:
     happyengine::graphics::Model::pointer m_pModel;
@@ -47,6 +49,9 @@ private:
     happyengine::uint m_ShaderWVPpos;
     happyengine::uint m_ShaderWorldPos;
     happyengine::uint m_ShaderDiffTexPos;
+    happyengine::uint m_ShaderOverlayTexPos;
+
+    happyengine::graphics::Font::pointer m_pFont;
 
     float m_Rotation;
     happyengine::math::Vector3 m_Position;

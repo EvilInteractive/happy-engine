@@ -21,6 +21,9 @@
 #include "HappyEngine.h"
 #include "VertexPNT.h"
 #include "TextureLoader.h"
+#include "FontLoader.h"
+
+#include <sstream>
 
 namespace happytest {
 
@@ -43,6 +46,7 @@ void TestObject::load()
 
     content::models::ObjLoader loader;
     loader.load("../data/models/testModelComplex1.obj");
+    //loader.load("../data/models/cube.obj");
 
     VertexLayout layout;
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
@@ -62,6 +66,10 @@ void TestObject::load()
     m_ShaderWVPpos = m_pShader->getShaderVarId("matWVP");
     m_ShaderWorldPos = m_pShader->getShaderVarId("matWorld");
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
+    m_ShaderOverlayTexPos = m_pShader->getShaderSamplerId("overlayMap");
+
+    happyengine::content::FontLoader fontLoader;
+    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
 }
 void TestObject::tick(float dTime)
 {
@@ -75,7 +83,7 @@ void TestObject::tick(float dTime)
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
         m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
 }
-void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer)
+void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, float dTime)
 {
     using namespace happyengine;
     m_pShader->begin();
@@ -89,6 +97,13 @@ void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer)
 
     m_pShader->setShaderVar(m_ShaderWVPpos, persp * view * world);
     m_pShader->setShaderVar(m_ShaderWorldPos, world);
+
+    std::stringstream stream;
+    stream << "fps: " << (int)(1/dTime);
+    graphics::Texture2D::pointer pTextTex(m_pFont->createTextureText(stream.str(), Color(0.0f, 0.0f, 0.0f, 1.0f),
+                                                     graphics::FontHAlignment_Center, graphics::FontVAlignment_Center));
+
+    m_pShader->setShaderVar(m_ShaderOverlayTexPos, pTextTex);
     m_pShader->setShaderVar(m_ShaderDiffTexPos, m_pDiffuseMap);
 
     pRenderer->draw(m_pModel);

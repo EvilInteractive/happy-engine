@@ -20,25 +20,44 @@
 
 #include "Texture2D.h"
 #include "GL/glew.h"
+#include "SDL_ttf.h"
 
 namespace happyengine {
 namespace graphics {
 
-Texture2D::Texture2D(uint tex, uint width, uint height, uint bpp, uint format): m_Id(tex),
-    m_Width(width), m_Height(height), m_Bpp(bpp), m_Format(format)
+uint Texture2D::s_Count = 0;
+
+Texture2D::Texture2D(uint tex, uint width, uint height, uint format): m_Id(tex),
+    m_Width(width), m_Height(height), m_Format(format)
 {
+    ++s_Count;
 }
 
 
 Texture2D::~Texture2D()
 {
     glDeleteTextures(1, &m_Id);
+    --s_Count;
+}
+
+uint Texture2D::getTextureCount()
+{
+    return s_Count;
 }
 
 
 uint Texture2D::getID() const
 {
     return m_Id;
+}
+
+uint Texture2D::getWidth() const
+{
+    return m_Width;
+}
+uint Texture2D::getHeight() const
+{
+    return m_Height;
 }
 
 } } //end namespace

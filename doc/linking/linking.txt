@@ -1,6 +1,7 @@
 Libraries (windows):
     * DevIL: http://openil.sourceforge.net/download.php (DevIL 1.7.8 SDK for 32-bit Windows)
     * SDL 1.3: http://www.libsdl.org/hg.php (SDL-1.3.*)
+    * SDL_TTF: http://www.libsdl.org/projects/SDL_ttf/
     * Glew-1.6.0: http://glew.sourceforge.net (Windows 32-bit)
     * PhysX3.0
     * Boost-1_46_1: http://www.boost.org/
@@ -12,6 +13,7 @@ Link:
     libboost_thread-vc100-mt-gd-1_46_1.lib
     SDL.lib
     SDLmain.lib
+    SDL_ttf.lib
     glew32s.lib
     glu32.lib
     opengl32.lib

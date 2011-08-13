@@ -64,8 +64,8 @@ bool TextureLoader::load(const std::string& path, graphics::Texture2D::pointer& 
     {
         if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
         {
-            iluRotate(180);
-            iluMirror();
+            /*iluRotate(180);
+            iluMirror();*/
 
             GLuint texID;
             glGenTextures(1, &texID);
@@ -75,12 +75,11 @@ bool TextureLoader::load(const std::string& path, graphics::Texture2D::pointer& 
 
             uint width = ilGetInteger(IL_IMAGE_WIDTH);
             uint height = ilGetInteger(IL_IMAGE_HEIGHT);
-            uint bpp = ilGetInteger(IL_IMAGE_BPP);
             uint format = ilGetInteger(IL_IMAGE_FORMAT);
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, ilGetData());
 
-            graphics::Texture2D::pointer tex2D(new graphics::Texture2D(texID, width, height, bpp, format));
+            graphics::Texture2D::pointer tex2D(new graphics::Texture2D(texID, width, height, format));
             texture2D = tex2D;
         }
         else

@@ -43,18 +43,6 @@
 
 namespace happyengine {
 
-struct VertexPosColor
-{
-public:
-    float x, y, z;
-    float r, g, b;
-
-    VertexPosColor(float x_, float y_, float z_,
-                   float r_, float g_, float b_) : x(x_), y(y_), z(z_),
-                                                   r(r_), g(g_), b(b_)
-    {}
-};
-
 class HappyEngine
 {
 public:

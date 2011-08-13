@@ -16,44 +16,55 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 11/08/2011
+//Created: 12/08/2011
 
-#ifndef _TEXTURE2D_H_
-#define _TEXTURE2D_H_
+#ifndef _FONT_H_
+#define _FONT_H_
 #pragma once
 
-#include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
+#include "SDL_ttf.h"
+#include "Texture2D.h"
+
+#include <string>
+#include "Color.h"
+
+#include "boost/shared_ptr.hpp"
 
 namespace happyengine {
 namespace graphics {
 
-class Texture2D
+
+enum FontHAlignment
+{
+    FontHAlignment_Left, 
+    FontHAlignment_Center, 
+    FontHAlignment_Right
+};
+enum FontVAlignment
+{
+    FontVAlignment_Top, 
+    FontVAlignment_Center, 
+    FontVAlignment_Bottom
+};
+class Font
 {
 public:
-	Texture2D();
-	Texture2D(uint tex, uint width, uint height, uint format);
-    virtual ~Texture2D();
+    explicit Font(TTF_Font* pFont);
+    virtual ~Font();
+    
+    Texture2D::pointer createTextureText(const std::string& text, const Color& color, 
+                                         FontHAlignment hAlignment, FontVAlignment vAlignment);
 
-    typedef boost::shared_ptr<Texture2D> pointer;
-
-    uint getID() const;
-    uint getWidth() const;
-    uint getHeight() const;
-
-    static uint getTextureCount();
+    typedef boost::shared_ptr<Font> pointer;
 
 private:
-    uint m_Width, m_Height;
-    uint m_Format;
 
-    uint m_Id;
-
-    static uint s_Count;
+    TTF_Font* m_pFont;
 
     //Disable default copy constructor and default assignment operator
-    Texture2D(const Texture2D&);
-    Texture2D& operator=(const Texture2D&);
+    Font(const Font&);
+    Font& operator=(const Font&);
 };
 
 } } //end namespace

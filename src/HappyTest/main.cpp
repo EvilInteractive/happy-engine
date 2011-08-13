@@ -3,6 +3,7 @@
 
 #include "HappyEngine.h"
 #include "MainGame.h"
+#include "Texture2D.h"
 
 #include <iostream>
 
@@ -15,11 +16,13 @@ int main( int /*argc*/, char** /*args[]*/ )
     HAPPYENGINE->start(pGame);
     delete pGame;
 
+    std::cout << "\nallocated textures: " << graphics::Texture2D::getTextureCount() << "\n";
+
     #ifdef _DEBUG
     _CrtDumpMemoryLeaks();
     #endif
 
-    std::cout << "press enter to quit\n";
+    std::cout << "\npress enter to quit\n";
     std::cin.get();
 
     return 0;

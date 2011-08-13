@@ -54,7 +54,7 @@ void HappyEngine::cleanup()
 
     SDL_Quit();
 
-    std::cout << "--Thank you for using HappyEngine--\n";
+    std::cout << "\n--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::initSubEngines()
 {

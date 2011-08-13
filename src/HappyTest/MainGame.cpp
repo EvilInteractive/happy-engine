@@ -80,7 +80,7 @@ void MainGame::tick(float dTime)
         HAPPYENGINE->quit();
     m_pTestObject->tick(dTime);
 }
-void MainGame::draw(float /*dTime*/)
+void MainGame::draw(float dTime)
 {
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Return))
     {
@@ -91,7 +91,7 @@ void MainGame::draw(float /*dTime*/)
     }
     GRAPHICS->clearAll();
 
-    m_pTestObject->draw(m_pSimpleForward3DRenderer);
+    m_pTestObject->draw(m_pSimpleForward3DRenderer, dTime);
 }
 
 } //end namespace

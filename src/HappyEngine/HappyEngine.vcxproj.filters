@@ -121,6 +121,12 @@
     <ClCompile Include="TextureLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
+    <ClCompile Include="FontLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -227,6 +233,12 @@
     </ClInclude>
     <ClInclude Include="TextureLoader.h">
       <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="FontLoader.h">
+      <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

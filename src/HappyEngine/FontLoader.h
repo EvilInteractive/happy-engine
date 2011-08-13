@@ -16,44 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 11/08/2011
+//Created: 12/08/2011
 
-#ifndef _TEXTURE2D_H_
-#define _TEXTURE2D_H_
+#ifndef _FONT_LOADER_H_
+#define _FONT_LOADER_H_
 #pragma once
 
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
+#include "Font.h"
+
+#include <string>
 
 namespace happyengine {
-namespace graphics {
+namespace content {
 
-class Texture2D
+class FontLoader
 {
 public:
-	Texture2D();
-	Texture2D(uint tex, uint width, uint height, uint format);
-    virtual ~Texture2D();
+	FontLoader();
+    virtual ~FontLoader();
 
-    typedef boost::shared_ptr<Texture2D> pointer;
-
-    uint getID() const;
-    uint getWidth() const;
-    uint getHeight() const;
-
-    static uint getTextureCount();
+    bool load(const std::string& path, ushort size, graphics::Font::pointer& pOutFont);
 
 private:
-    uint m_Width, m_Height;
-    uint m_Format;
-
-    uint m_Id;
-
-    static uint s_Count;
 
     //Disable default copy constructor and default assignment operator
-    Texture2D(const Texture2D&);
-    Texture2D& operator=(const Texture2D&);
+    FontLoader(const FontLoader&);
+    FontLoader& operator=(const FontLoader&);
 };
 
 } } //end namespace
