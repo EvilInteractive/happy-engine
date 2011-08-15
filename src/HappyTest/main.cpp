@@ -1,4 +1,3 @@
-
 #define BOOST_DISABLE_ASSERTS
 
 #include "HappyEngine.h"
@@ -15,6 +14,7 @@ int main( int /*argc*/, char** /*args[]*/ )
     MainGame* pGame(new MainGame());
     HAPPYENGINE->start(pGame);
     delete pGame;
+    HAPPYENGINE->dispose();
 
     std::cout << "\nallocated textures: " << graphics::Texture2D::getTextureCount() << "\n";
 

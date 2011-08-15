@@ -51,6 +51,7 @@ public:
     virtual ~HappyEngine();
 
     void start(IGame* pGame);
+    void dispose();
 
     static pointer getPointer();
 
@@ -76,7 +77,8 @@ private:
     // Methods
     void initWindow();
     void initSubEngines();
-    void drawThread();
+    void updateLoop();
+    void drawLoop();
     void cleanup();
 
     //Disable default copy constructor and default assignment operator

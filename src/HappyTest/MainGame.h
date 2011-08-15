@@ -22,7 +22,7 @@
 #define BOOST_DISABLE_ASSERTS
 
 #include "IGame.h"
-#include "SimpleForward3DRenderer.h"
+#include "Deferred3DRenderer.h"
 #include "TestObject.h"
 #include "Color.h"
 
@@ -40,7 +40,7 @@ public:
     virtual void draw(float dTime);
 
 private:
-    happyengine::graphics::SimpleForward3DRenderer* m_pSimpleForward3DRenderer;
+    happyengine::graphics::Deferred3DRenderer* m_pDeferred3DRenderer;
     TestObject* m_pTestObject;
 
     happyengine::Color m_BackgroundColors[5];

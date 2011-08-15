@@ -36,9 +36,6 @@ namespace content {
 
 TextureLoader::TextureLoader()
 {
-    ilInit();
-    iluInit();
-    iluSetLanguage(ILU_ENGLISH);
 }
 
 

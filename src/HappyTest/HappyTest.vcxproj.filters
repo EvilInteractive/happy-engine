@@ -59,5 +59,17 @@
     <None Include="data\shaders\simpleTextureShader.vert">
       <Filter>data\shaders</Filter>
     </None>
+    <None Include="data\shaders\deferredPostShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPreShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPreShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPostShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

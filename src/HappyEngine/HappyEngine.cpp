@@ -29,6 +29,8 @@
 
 #include "Assert.h"
 #include "ExternalError.h"
+#include "IL/il.h"
+#include "IL/ilu.h"
 
 namespace happyengine {
 
@@ -46,18 +48,26 @@ void HappyEngine::quit()
 {
     m_Quit = true;
 }
+void HappyEngine::dispose()
+{
+    cleanup();
+    std::cout << "\n--Thank you for using HappyEngine--\n";
+}
 void HappyEngine::cleanup()
 {   
     //dispose/delete all sub engines here
     delete m_pGraphicsEngine;
+    m_pGraphicsEngine = nullptr;
     delete m_pControlsManager;
+    m_pControlsManager = nullptr;
 
     SDL_Quit();
-
-    std::cout << "\n--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::initSubEngines()
 {
+    ilInit();
+    iluInit();
+    iluSetLanguage(ILU_ENGLISH);
     //init all sub engines here
     m_pGraphicsEngine = new graphics::GraphicsEngine();
     m_pControlsManager = new io::ControlsManager();
@@ -65,6 +75,8 @@ void HappyEngine::initSubEngines()
 
 void HappyEngine::start(IGame* pGame)
 {
+    cleanup();
+
     using namespace std;
     cout << "       ******************************       \n";
     cout << "  ****************        ****************  \n";
@@ -84,10 +96,16 @@ void HappyEngine::start(IGame* pGame)
     //Init Game
     pGame->init();
     
-    //Start draw thread
-    boost::thread drawThread(boost::bind(&HappyEngine::drawThread, this));
+    //Run update loop
+    boost::thread updateThread(boost::bind(&HappyEngine::updateLoop, this));
 
-    //Run main update loop
+    //Run draw loop
+    drawLoop();
+    
+    updateThread.join();
+}
+void HappyEngine::updateLoop()
+{
     Uint32 prevTicks = SDL_GetTicks();
     while (m_Quit == false)
     {
@@ -100,12 +118,8 @@ void HappyEngine::start(IGame* pGame)
 
         SDL_Delay(12);
     }
-    
-    drawThread.join();
-
-    cleanup();
 }
-void HappyEngine::drawThread()
+void HappyEngine::drawLoop()
 {
     m_pGraphicsEngine->init();
     m_pGame->load();

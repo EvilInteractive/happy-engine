@@ -49,6 +49,7 @@ private:
     happyengine::uint m_ShaderWVPpos;
     happyengine::uint m_ShaderWorldPos;
     happyengine::uint m_ShaderDiffTexPos;
+    happyengine::uint m_ShaderCamPos;
     happyengine::uint m_ShaderOverlayTexPos;
 
     happyengine::graphics::Font::pointer m_pFont;

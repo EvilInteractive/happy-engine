@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Vector3.h"
+#include "Vector2.h"
 #include "VertexLayout.h"
 
 namespace happyengine {
@@ -34,6 +35,18 @@ public:
 	VertexPosCol();
 	VertexPosCol(const math::Vector3& pos, const math::Vector3& col);
     ~VertexPosCol();
+    //default copy constructor and assignment operator are fine
+};
+
+struct VertexPosTex
+{
+public:
+    math::Vector3 position;
+    math::Vector2 textureCoord;
+
+	VertexPosTex();
+	VertexPosTex(const math::Vector3& pos, const math::Vector2& tex);
+    ~VertexPosTex();
     //default copy constructor and assignment operator are fine
 };
 

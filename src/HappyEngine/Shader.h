@@ -21,6 +21,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "VertexLayout.h"
 
 #include "Matrix.h"
@@ -39,7 +40,8 @@ public:
 	Shader();
     virtual ~Shader();
 
-    bool init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexLayout);
+    bool init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexLayout, 
+              const std::vector<std::string>& outputs = std::vector<std::string>());
 
     void begin();
     void end();

@@ -99,6 +99,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\settings.ini" />
+    <None Include="data\shaders\deferredPostShader.frag" />
+    <None Include="data\shaders\deferredPostShader.vert" />
+    <None Include="data\shaders\deferredPreShader.frag" />
+    <None Include="data\shaders\deferredPreShader.vert" />
     <None Include="data\shaders\simpleShader.frag" />
     <None Include="data\shaders\simpleShader.vert" />
     <None Include="data\shaders\simpleTextureShader.frag" />

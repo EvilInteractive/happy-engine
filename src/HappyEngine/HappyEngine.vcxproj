@@ -14,6 +14,7 @@
     <ClCompile Include="Assert.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ControlsManager.cpp" />
+    <ClCompile Include="Deferred3DRenderer.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="Assert.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ControlsManager.h" />
+    <ClInclude Include="Deferred3DRenderer.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontLoader.h" />
     <ClInclude Include="GraphicsEngine.h" />

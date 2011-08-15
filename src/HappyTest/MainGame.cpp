@@ -31,7 +31,7 @@
 
 namespace happytest {
 
-MainGame::MainGame() : m_pSimpleForward3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0)
+MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -44,7 +44,7 @@ MainGame::MainGame() : m_pSimpleForward3DRenderer(nullptr), m_pTestObject(nullpt
 
 MainGame::~MainGame()
 {
-    delete m_pSimpleForward3DRenderer;
+    delete m_pDeferred3DRenderer;
     delete m_pTestObject;
 }
 
@@ -70,7 +70,7 @@ void MainGame::init()
 }
 void MainGame::load()
 {
-    m_pSimpleForward3DRenderer = new happyengine::graphics::SimpleForward3DRenderer();
+    m_pDeferred3DRenderer = new happyengine::graphics::Deferred3DRenderer();
     m_pTestObject = new TestObject();
     m_pTestObject->load();
 }
@@ -91,7 +91,9 @@ void MainGame::draw(float dTime)
     }
     GRAPHICS->clearAll();
 
-    m_pTestObject->draw(m_pSimpleForward3DRenderer, dTime);
+    m_pDeferred3DRenderer->begin();
+    m_pTestObject->draw(m_pDeferred3DRenderer, dTime);
+    m_pDeferred3DRenderer->end();
 }
 
 } //end namespace

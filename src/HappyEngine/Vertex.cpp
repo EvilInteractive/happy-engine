@@ -20,6 +20,9 @@
 namespace happyengine {
 namespace graphics {
     
+/*----------------------------------------------------------------*/
+/*                          VertexPosCol                          */
+/*----------------------------------------------------------------*/
 VertexPosCol::VertexPosCol() : position(), color()
 {
 }
@@ -27,6 +30,20 @@ VertexPosCol::VertexPosCol(const math::Vector3& pos, const math::Vector3& col): 
 {
 }
 VertexPosCol::~VertexPosCol()
+{
+}
+
+
+/*----------------------------------------------------------------*/
+/*                          VertexPosTex                          */
+/*----------------------------------------------------------------*/
+VertexPosTex::VertexPosTex(): position(), textureCoord()
+{
+}
+VertexPosTex::VertexPosTex(const math::Vector3& pos, const math::Vector2& tex): position(pos), textureCoord(tex)
+{
+}
+VertexPosTex::~VertexPosTex()
 {
 }
 

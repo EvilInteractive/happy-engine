@@ -83,10 +83,10 @@ bool validateProgram(GLuint programID)
 
     return succes;
 }
-bool Shader::init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexlayout)
+bool Shader::init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexlayout, const std::vector<std::string>& outputs)
 {
-    bool succes = true;
     ASSERT(m_Id != -1, "no need to init twice");
+    bool succes = true;
 
     // Read VS and FS files --------------------------->
     io::FileReader reader;
@@ -128,6 +128,11 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
     {
         glBindAttribLocation(m_Id, e.getElementIndex(), e.getShaderVariableName().c_str());
     });
+
+    for (uint i = 0; i < outputs.size(); ++i)
+    {
+        glBindFragDataLocation(m_Id, i, outputs[i].c_str());
+    }
 
     glLinkProgram(m_Id);
     
