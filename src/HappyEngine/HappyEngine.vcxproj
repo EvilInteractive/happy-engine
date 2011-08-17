@@ -21,6 +21,7 @@
     <ClCompile Include="IniReader.cpp" />
     <ClCompile Include="IniWriter.cpp" />
     <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mouse.cpp" />
@@ -55,6 +56,8 @@
     <ClInclude Include="IniWriter.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Keys.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="MathConstants.h" />
     <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="Matrix.h" />

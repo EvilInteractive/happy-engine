@@ -24,17 +24,109 @@ namespace happyengine {
 Color::Color()
 {
 }
-Color::Color(float red, float green, float blue, float alpha): r(red), g(green), b(blue), a(alpha)
+Color::Color(float red, float green, float blue, float alpha): m_rgb(red, green, blue), m_a(alpha)
 {
 }
-Color::Color(byte red, byte green, byte blue, byte alpha) : r(red / 255.0f), g(green / 255.0f), 
-                                                   b(blue / 255.0f), a(alpha / 255.0f)
+Color::Color(byte red, byte green, byte blue, byte alpha) : m_rgb(red / 255.0f, green / 255.0f, blue / 255.0f), 
+                                                            m_a(alpha / 255.0f)
 {
 }
 
 
 Color::~Color()
 {
+}
+
+//-----------------------------------------//
+//                GETTERS                  // 
+//-----------------------------------------//
+float Color::r() const
+{
+    return m_rgb.x;
+}
+float Color::g() const
+{
+    return m_rgb.y;
+}
+float Color::b() const
+{
+    return m_rgb.z;
+}
+float Color::a() const
+{
+    return m_a;
+}
+const math::Vector3& Color::rgb() const
+{
+    return m_rgb;
+}
+math::Vector4 Color::rgba() const
+{
+    return math::Vector4(m_rgb, m_a);
+}
+
+
+byte Color::rByte() const
+{
+    return static_cast<byte>(m_rgb.x * 255);
+}
+byte Color::gByte() const
+{
+    return static_cast<byte>(m_rgb.y * 255);
+}
+byte Color::bByte() const
+{
+    return static_cast<byte>(m_rgb.z * 255);
+}
+byte Color::aByte() const
+{
+    return static_cast<byte>(m_a * 255);
+}
+    
+//-----------------------------------------//
+//                SETTERS                  //
+//-----------------------------------------//
+void Color::r(float r)
+{
+    m_rgb.x = r;
+}
+void Color::g(float g)
+{
+    m_rgb.y = g;
+}
+void Color::b(float b)
+{
+    m_rgb.z = b;
+}
+void Color::a(float a)
+{
+    m_a = a;
+}
+void Color::rgb(const math::Vector3& rgb)
+{
+    m_rgb = rgb;
+}
+void Color::rgba(const math::Vector4& rgba)
+{
+    m_rgb = rgba.xyz();
+    m_a = rgba.w;
+}
+
+void Color::r(byte r)
+{
+    m_rgb.x = r / 255.0f;
+}
+void Color::g(byte g)
+{
+    m_rgb.y = g / 255.0f;
+}
+void Color::b(byte b)
+{
+    m_rgb.z = b / 255.0f;
+}
+void Color::a(byte a)
+{
+    m_a = a / 255.0f;
 }
 
 } //end namespace

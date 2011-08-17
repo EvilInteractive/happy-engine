@@ -19,6 +19,7 @@
 //Created: 10/08/2011
 
 #include "Vector4.h"
+#include "Vector3.h"
 
 namespace happyengine {
 namespace math {
@@ -26,10 +27,13 @@ namespace math {
 Vector4::Vector4(): x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 {
 }
-Vector4::Vector4(float x_, float y_, float z_, float w_): x(x_), y(y_), z(z_), w(w_)
+Vector4::Vector4(physx::pubfnd3::PxVec4 vec) : x(vec.x), y(vec.y), z(vec.z), w(vec.w)
 {
 }
-Vector4::Vector4(physx::pubfnd3::PxVec4 vec) : x(vec.x), y(vec.y), z(vec.z), w(vec.w)
+Vector4::Vector4(const Vector3& vec, float w_): x(vec.x), y(vec.y), z(vec.z), w(w_)
+{
+}
+Vector4::Vector4(float x_, float y_, float z_, float w_): x(x_), y(y_), z(z_), w(w_)
 {
 }
 Vector4::~Vector4()
@@ -51,6 +55,13 @@ Vector4& Vector4::operator=(const Vector4& other)
     w = other.w;
     return *this;
 }
+
+//>---------Getters----------------------->
+Vector3 Vector4::xyz() const
+{
+    return Vector3(x, y, z);
+}
+//<---------------------------------------<
 
 //>---------Operators--------------------->
 Vector4 Vector4::operator-() const

@@ -27,6 +27,8 @@
 namespace happyengine {
 namespace math {
 
+struct Vector3;
+
 struct Vector4
 {
 public:
@@ -34,11 +36,17 @@ public:
 
 	Vector4();
     explicit Vector4(physx::pubfnd3::PxVec4 vec);
+    Vector4(const Vector3& vec, float w);
 	Vector4(float x, float y, float z, float w);
     ~Vector4();
 
     Vector4(const Vector4& other);
     Vector4& operator=(const Vector4& other);
+
+    
+    //>---------Getters----------------------->
+    Vector3 xyz() const;
+    //<---------------------------------------<
 
     //>---------Operators--------------------->
 	Vector4 operator-() const;
@@ -56,7 +64,7 @@ public:
 
 	bool operator==(const Vector4& v) const;
 	bool operator!=(const Vector4& v) const;
-    //<----------------------------------------<
+    //<---------------------------------------<
 };
 
 } } //end namespace

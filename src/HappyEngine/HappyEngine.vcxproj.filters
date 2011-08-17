@@ -130,6 +130,9 @@
     <ClCompile Include="Deferred3DRenderer.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -244,6 +247,12 @@
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="Deferred3DRenderer.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>

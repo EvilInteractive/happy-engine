@@ -158,7 +158,7 @@ void GraphicsEngine::setVSync(bool enable)
 
 void GraphicsEngine::setBackgroundColor(const Color& color)
 {
-    glClearColor(color.r, color.g, color.b, color.r);
+    glClearColor(color.r(), color.g(), color.b(), color.a());
     m_ClearColor = color;
 }
 void GraphicsEngine::clearAll() const

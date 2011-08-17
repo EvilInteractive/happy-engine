@@ -142,14 +142,14 @@ Deferred3DRenderer::~Deferred3DRenderer()
 void Deferred3DRenderer::begin()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FboId);
-    GLenum buffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    const static GLenum buffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, buffers);
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void Deferred3DRenderer::end()
 {
-    GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffers(1, buffers);
     

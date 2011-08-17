@@ -80,9 +80,9 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
                                            FontHAlignment hAlignment, FontVAlignment vAlignment)
 {
     SDL_Color col;
-    col.r = static_cast<byte>(color.r * 255);
-    col.g = static_cast<byte>(color.g * 255);
-    col.b = static_cast<byte>(color.b * 255);
+    col.r = color.rByte();
+    col.g = color.gByte();
+    col.b = color.bByte();
 
     SDL_Surface* pSurf(convertNonP2ToP2Surface(
         TTF_RenderText_Blended(m_pFont, text.c_str(), col), 
