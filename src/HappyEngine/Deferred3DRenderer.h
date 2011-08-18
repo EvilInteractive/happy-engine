@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 13/08/2011
+//Added multiple lights: 18/08/2011
 
 #ifndef _DEFERRED_3D_RENDERER_H_
 #define _DEFERRED_3D_RENDERER_H_
@@ -27,6 +28,7 @@
 #include "Shader.h"
 #include "Model.h"
 #include "Texture2D.h"
+#include "LightManager.h"
 
 namespace happyengine {
 namespace graphics {
@@ -40,9 +42,16 @@ public:
     virtual void draw(const Model::pointer& pModel);
 
     void begin();
-    void end();
+    void end(const math::Vector3& vCamPos);
+
+    LightManager* getLightManager() const;
 
 private:
+    void postAmbientLights();
+    void postPointLights();
+    void postSpotLights();
+    void postDirectionalLights();
+
     uint m_FboId;
 
     // Textures:
@@ -57,12 +66,30 @@ private:
     uint m_TextureId[TEXTURES];
     uint m_DepthBufferId;
 
-    Shader* m_pPostShader;
-    uint m_ShaderColIllMapPos, m_ShaderPosSpecMapPos, m_ShaderNormGlossMapPos;
+    enum LightType
+    {
+        LightType_AmbientLight = 0,
+        LightType_PointLight = 1,
+        LightType_SpotLight = 2,
+        LightType_DirectionalLight = 3
+    };
+
+    static const int SHADERS = 4;
+    Shader* m_pPostShader[SHADERS];
+    uint m_ShaderColIllMapPos[SHADERS], 
+         m_ShaderPosSpecMapPos[SHADERS], 
+         m_ShaderNormGlossMapPos[SHADERS];
+    uint m_ShaderALPos[4]; //4 values
+    uint m_ShaderPLPos[5]; //5 values
+    uint m_ShaderSLPos[7]; //7 values
+    uint m_ShaderDLPos[3]; //3 values
+    uint m_ShaderCamPos[SHADERS];
 
     Model::pointer m_pModel;
 
     Texture2D::pointer m_pTexture[TEXTURES];
+
+    LightManager* m_pLightManager;
 
     //Disable default copy constructor and default assignment operator
     Deferred3DRenderer(const Deferred3DRenderer&);

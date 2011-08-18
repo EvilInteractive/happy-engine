@@ -52,16 +52,13 @@ public:
                                     const math::Vector3&    direction, 
                                     const Color&            color, 
                                     float                   multiplier,
-                                    float                   power, 
+                                    float                   fov, //0 -> piOver2
                                     float                   beginAttenuation, 
                                     float                   endAttentuation);
 
-    DirectionalLight::pointer addDirectionalLight(const math::Vector3&  pos, 
-                                                  const math::Vector3&  direction, 
+    DirectionalLight::pointer addDirectionalLight(const math::Vector3&  direction, 
                                                   const Color&          color, 
-                                                  float                 multiplier, 
-                                                  float                 beginAttenuation, 
-                                                  float                 endAttentuation);
+                                                  float                 multiplier);
 
     const std::vector<AmbientLight::pointer>& getAmbientLights() const;
     const std::vector<PointLight::pointer>& getPointLights() const;

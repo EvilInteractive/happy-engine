@@ -15,23 +15,37 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
+//Author:  Bastian Damman
+//Created: 18/08/2011
+
 #version 150 core
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
+in vec2 passTexCoord;
 
-out vec2 passTexCoord;
-out vec3 passNormal;
-out vec3 passWorldPos;
+out vec4 outColor;
 
-uniform mat4 matWVP;
-uniform mat4 matWorld;
+struct AmbientLight
+{
+	vec3 position;
+    float multiplier;
+    vec3 color;
+	float range;
+};
+
+uniform sampler2D colorIllMap;
+uniform sampler2D posSpecMap;
+
+uniform AmbientLight light;
 
 void main()
 {
-	gl_Position = matWVP * vec4(inPosition, 1.0f);
-	passTexCoord = inTexCoord;
-	passNormal = (matWorld * vec4(inNormal, 0.0f)).xyz;
-	passWorldPos = (matWorld * vec4(inPosition, 1.0f)).xyz;
+	vec4 colorIll = texture2D(colorIllMap, passTexCoord);
+	vec4 posSpec = texture2D(posSpecMap, passTexCoord);
+
+	float lightDist = length(light.position - posSpec.xyz);
+
+	if (lightDist > light.range) //pixel is too far from light
+		discard;
+
+	outColor = vec4(colorIll.rgb * light.color * light.multiplier, 1.0f);						
 }

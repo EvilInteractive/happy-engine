@@ -66,6 +66,8 @@ private:
 
     std::map<std::string, uint> m_SamplerLocationMap;
 
+    std::string m_FragShaderName;
+
     //Disable default copy constructor and default assignment operator
     Shader(const Shader&);
     Shader& operator=(const Shader&);

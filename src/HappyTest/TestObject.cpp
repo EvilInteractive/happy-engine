@@ -71,7 +71,7 @@ void TestObject::load()
     m_ShaderWVPpos = m_pShader->getShaderVarId("matWVP");
     m_ShaderWorldPos = m_pShader->getShaderVarId("matWorld");
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
-    m_ShaderCamPos = m_pShader->getShaderVarId("vCamPos");
+    //m_ShaderCamPos = m_pShader->getShaderVarId("vCamPos");
     //m_ShaderOverlayTexPos = m_pShader->getShaderSamplerId("overlayMap");
 
     happyengine::content::FontLoader fontLoader;
@@ -111,7 +111,7 @@ void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, float dTime
 
     //m_pShader->setShaderVar(m_ShaderOverlayTexPos, pTextTex);
     m_pShader->setShaderVar(m_ShaderDiffTexPos, m_pDiffuseMap);
-    m_pShader->setShaderVar(m_ShaderCamPos, math::Vector3(-5, 5, -4));
+    //m_pShader->setShaderVar(m_ShaderCamPos, math::Vector3(-5, 5, -4));
 
     pRenderer->draw(m_pModel);
 

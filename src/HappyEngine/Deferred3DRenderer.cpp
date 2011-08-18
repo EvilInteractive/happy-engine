@@ -17,12 +17,15 @@
 //
 //Author:  Bastian Damman
 //Created: 13/08/2011
+//Added multiple lights: 18/08/2011
 
 #include "Deferred3DRenderer.h"
 #include "HappyEngine.h"
 #include "GL/glew.h"
 #include "VertexLayout.h"
 #include "Vertex.h"
+#include "Assert.h"
+#include "Light.h"
 
 #include <vector>
 
@@ -33,13 +36,13 @@ const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_
 const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA16F, GL_RGBA16F, GL_DEPTH_COMPONENT16};
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
 
-Deferred3DRenderer::Deferred3DRenderer(): m_pPostShader(nullptr), m_pModel(new Model())
+Deferred3DRenderer::Deferred3DRenderer(): m_pModel(new Model()), m_pLightManager(new LightManager())
 {
     /*------------------------------------------------------------------------------*/
     /*                         LOAD FBO AND RENDER TARGETS                          */
     /*------------------------------------------------------------------------------*/
     int width = GRAPHICS->getViewport().width, 
-        height = GRAPHICS->getViewport().height;
+       height = GRAPHICS->getViewport().height;
 
     //Textures
     glGenTextures(TEXTURES, m_TextureId);
@@ -100,18 +103,55 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pPostShader(nullptr), m_pModel(new M
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     /*------------------------------------------------------------------------------*/
-    /*                               LOAD SHADER                                    */
+    /*                               LOAD SHADERS                                   */
     /*----------------------------------------------------------------------------- */
     VertexLayout layout;
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0, "inPosition"));
     layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 12, "inTexCoord"));
 
-    m_pPostShader = new Shader();
-    m_pPostShader->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostShader.frag", layout);
+    for (int i = 0; i < SHADERS; ++i)
+    {
+        m_pPostShader[i] = new Shader();
+    }
 
-    m_ShaderColIllMapPos = m_pPostShader->getShaderSamplerId("colorIllMap");
-    m_ShaderPosSpecMapPos = m_pPostShader->getShaderSamplerId("posSpecMap");
-    m_ShaderNormGlossMapPos = m_pPostShader->getShaderSamplerId("normGlossMap");
+    m_pPostShader[0]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostALShader.frag", layout);
+    m_pPostShader[1]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostPLShader.frag", layout);
+    m_pPostShader[2]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostSLShader.frag", layout);
+    m_pPostShader[3]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostDLShader.frag", layout);
+
+    for (int i = 0; i < SHADERS; ++i)
+    {
+        m_ShaderColIllMapPos[i] = m_pPostShader[i]->getShaderSamplerId("colorIllMap");
+        m_ShaderPosSpecMapPos[i] = m_pPostShader[i]->getShaderSamplerId("posSpecMap");
+        if (i != LightType_AmbientLight)
+        {
+            m_ShaderNormGlossMapPos[i] = m_pPostShader[i]->getShaderSamplerId("normGlossMap");
+            m_ShaderCamPos[i] = m_pPostShader[i]->getShaderVarId("vCamPos");
+        }
+    }
+    //----AL----------------------------------------------------------------------
+    m_ShaderALPos[0] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.position");
+    m_ShaderALPos[1] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.multiplier");
+    m_ShaderALPos[2] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.color");
+    m_ShaderALPos[3] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.range");
+    //----PL----------------------------------------------------------------------
+    m_ShaderPLPos[0] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.position");
+    m_ShaderPLPos[1] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.multiplier");
+    m_ShaderPLPos[2] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.color");
+    m_ShaderPLPos[3] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.beginAttenuation");
+    m_ShaderPLPos[4] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.endAttenuation");
+    //----SL----------------------------------------------------------------------
+    m_ShaderSLPos[0] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.position");
+    m_ShaderSLPos[1] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.multiplier");
+    m_ShaderSLPos[2] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.direction");
+    m_ShaderSLPos[3] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.beginAttenuation");
+    m_ShaderSLPos[4] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.color");
+    m_ShaderSLPos[5] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.endAttenuation");
+    m_ShaderSLPos[6] = m_pPostShader[LightType_SpotLight]->getShaderVarId("light.cosCutoff");
+    //----DL----------------------------------------------------------------------
+    m_ShaderDLPos[0] = m_pPostShader[LightType_DirectionalLight]->getShaderVarId("light.direction");
+    m_ShaderDLPos[1] = m_pPostShader[LightType_DirectionalLight]->getShaderVarId("light.color");
+    m_ShaderDLPos[2] = m_pPostShader[LightType_DirectionalLight]->getShaderVarId("light.multiplier");
 
     /*------------------------------------------------------------------------------*/
     /*                             LOAD RENDER QUAD                                 */
@@ -136,7 +176,12 @@ Deferred3DRenderer::~Deferred3DRenderer()
     glDeleteFramebuffers(1, &m_FboId);
     glDeleteRenderbuffers(1, &m_DepthBufferId);
 
-    delete m_pPostShader;
+    for (int i = 0; i < SHADERS; ++i)
+    {
+        delete m_pPostShader[i];
+    }
+
+    delete m_pLightManager;
 }
 
 void Deferred3DRenderer::begin()
@@ -147,21 +192,91 @@ void Deferred3DRenderer::begin()
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-void Deferred3DRenderer::end()
+void Deferred3DRenderer::end(const math::Vector3& vCamPos)
 {
     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffers(1, buffers);
     
-    m_pPostShader->begin();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+
+    for (int i = 0; i < SHADERS; ++i)
+    {
+        m_pPostShader[i]->begin();
+        
+        m_pPostShader[i]->setShaderVar(m_ShaderColIllMapPos[i], m_pTexture[0]);
+        m_pPostShader[i]->setShaderVar(m_ShaderPosSpecMapPos[i], m_pTexture[1]);
+        if (i != LightType_AmbientLight)
+        {
+            m_pPostShader[i]->setShaderVar(m_ShaderNormGlossMapPos[i], m_pTexture[2]);
+            m_pPostShader[i]->setShaderVar(m_ShaderCamPos[i], vCamPos);
+        }
     
-    m_pPostShader->setShaderVar(m_ShaderColIllMapPos, m_pTexture[0]);
-    m_pPostShader->setShaderVar(m_ShaderPosSpecMapPos, m_pTexture[1]);
-    m_pPostShader->setShaderVar(m_ShaderNormGlossMapPos, m_pTexture[2]);
+        switch (i)
+        {
+            case LightType_AmbientLight: postAmbientLights(); break;
+            case LightType_PointLight: postPointLights(); break;
+            case LightType_SpotLight: postSpotLights(); break;
+            case LightType_DirectionalLight: postDirectionalLights(); break;
+            default: ASSERT("unkown lighttype"); break;
+        }
 
-    draw(m_pModel);
+        m_pPostShader[i]->end();
+    }
 
-    m_pPostShader->end();
+    glDisable(GL_BLEND);
+}
+void Deferred3DRenderer::postAmbientLights()
+{
+    const std::vector<AmbientLight::pointer>& lights(m_pLightManager->getAmbientLights());
+    std::for_each(lights.cbegin(), lights.cend(), [&](const AmbientLight::pointer& pLight)
+    {
+        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[0], pLight->position);
+        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[1], pLight->multiplier);
+        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[2], pLight->color);
+        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[3], pLight->range);
+        draw(m_pModel);
+    });
+}
+void Deferred3DRenderer::postPointLights()
+{
+    const std::vector<PointLight::pointer>& lights(m_pLightManager->getPointLights());
+    std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
+    {
+        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
+        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
+        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);
+        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->beginAttenuation);
+        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->endAttenuation);
+        draw(m_pModel);
+    });
+}
+void Deferred3DRenderer::postSpotLights()
+{
+    const std::vector<SpotLight::pointer>& lights(m_pLightManager->getSpotLights());
+    std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
+    {
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[0], pLight->position);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[1], pLight->multiplier);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[2], pLight->direction);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[3], pLight->beginAttenuation);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[4], pLight->color);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[5], pLight->endAttenuation);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[6], pLight->cosCutoff);
+        draw(m_pModel);
+    });
+}
+void Deferred3DRenderer::postDirectionalLights()
+{
+    const std::vector<DirectionalLight::pointer>& lights(m_pLightManager->getDirectionalLights());
+    std::for_each(lights.cbegin(), lights.cend(), [&](const DirectionalLight::pointer& pLight)
+    {
+        m_pPostShader[LightType_DirectionalLight]->setShaderVar(m_ShaderDLPos[0], pLight->direction);
+        m_pPostShader[LightType_DirectionalLight]->setShaderVar(m_ShaderDLPos[1], pLight->color);
+        m_pPostShader[LightType_DirectionalLight]->setShaderVar(m_ShaderDLPos[2], pLight->multiplier);
+        draw(m_pModel);
+    });
 }
 void Deferred3DRenderer::draw(const Model::pointer& pModel)
 {
@@ -170,6 +285,11 @@ void Deferred3DRenderer::draw(const Model::pointer& pModel)
     glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
 
     glBindVertexArray(0);
+}
+
+LightManager* Deferred3DRenderer::getLightManager() const
+{
+    return m_pLightManager;
 }
 
 } } //end namespace

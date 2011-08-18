@@ -70,7 +70,10 @@ void MainGame::init()
 }
 void MainGame::load()
 {
-    m_pDeferred3DRenderer = new happyengine::graphics::Deferred3DRenderer();
+    using namespace happyengine;
+    m_pDeferred3DRenderer = new graphics::Deferred3DRenderer();
+    m_pDeferred3DRenderer->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 3.0f, 1, 10);
+    m_pDeferred3DRenderer->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 1.0f);
     m_pTestObject = new TestObject();
     m_pTestObject->load();
 }
@@ -93,7 +96,7 @@ void MainGame::draw(float dTime)
 
     m_pDeferred3DRenderer->begin();
     m_pTestObject->draw(m_pDeferred3DRenderer, dTime);
-    m_pDeferred3DRenderer->end();
+    m_pDeferred3DRenderer->end(happyengine::math::Vector3(-5, 5, -4));
 }
 
 } //end namespace

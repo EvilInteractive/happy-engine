@@ -68,7 +68,19 @@
     <None Include="data\shaders\deferredPreShader.vert">
       <Filter>data\shaders</Filter>
     </None>
-    <None Include="data\shaders\deferredPostShader.frag">
+    <None Include="data\shaders\deferredPostPLShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPostSLShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPostALShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPostDLShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferredPostSelfIllumination.frag">
       <Filter>data\shaders</Filter>
     </None>
   </ItemGroup>

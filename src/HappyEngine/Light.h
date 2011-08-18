@@ -61,7 +61,7 @@ public:
     float beginAttenuation;
     math::Vector3 color;
     float endAttenuation;
-    float power;
+    float cosCutoff;
 
     typedef boost::shared_ptr<SpotLight> pointer;
 };
@@ -69,12 +69,9 @@ class DirectionalLight
 {
 public:
 
-    math::Vector3 position;
-    float multiplier;
     math::Vector3 direction;
-    float beginAttenuation;
     math::Vector3 color;
-    float endAttenuation;
+    float multiplier;
 
     typedef boost::shared_ptr<DirectionalLight> pointer;
 };

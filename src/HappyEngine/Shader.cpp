@@ -87,6 +87,8 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
 {
     ASSERT(m_Id != -1, "no need to init twice");
     bool succes = true;
+    
+    m_FragShaderName = fsPath;
 
     // Read VS and FS files --------------------------->
     io::FileReader reader;
@@ -156,7 +158,7 @@ uint Shader::getShaderVarId(const std::string& name) const
 {
     uint loc(glGetUniformLocation(m_Id, name.c_str()));
     if (loc == -1)
-        std::cout << "shader var: '" << name << "' not found!\n";
+        std::cout << "shader var: '" << name << "' not found!\n" << "in shader: "<< m_FragShaderName << "\n";
     return loc;
 }
 uint Shader::getShaderSamplerId(const std::string& name)

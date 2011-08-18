@@ -68,7 +68,7 @@ SpotLight::pointer LightManager::addSpotLight(const math::Vector3&    pos,
                                               const math::Vector3&    direction, 
                                               const Color&            color, 
                                               float                   multiplier,
-                                              float                   power, 
+                                              float                   fov, 
                                               float                   beginAttenuation, 
                                               float                   endAttentuation)
 {
@@ -78,29 +78,23 @@ SpotLight::pointer LightManager::addSpotLight(const math::Vector3&    pos,
     pLight->position = pos;
     pLight->color = color.rgb();
     pLight->multiplier = multiplier;
-    pLight->direction = direction;
-    pLight->power = power;
+    pLight->direction = -direction;
+    pLight->cosCutoff = cosf(fov);
     pLight->beginAttenuation = beginAttenuation;
     pLight->endAttenuation = endAttentuation;
 
     return pLight;
 }
-DirectionalLight::pointer LightManager::addDirectionalLight(const math::Vector3&  pos, 
-                                                            const math::Vector3&  direction, 
+DirectionalLight::pointer LightManager::addDirectionalLight(const math::Vector3&  direction, 
                                                             const Color&          color, 
-                                                            float                 multiplier, 
-                                                            float                 beginAttenuation, 
-                                                            float                 endAttentuation)
+                                                            float                 multiplier)
 {
     DirectionalLight::pointer pLight(new DirectionalLight());
     m_DirectionalLightVector.push_back(pLight);
 
-    pLight->position = pos;
     pLight->color = color.rgb();
+    pLight->direction = -direction;
     pLight->multiplier = multiplier;
-    pLight->direction = direction;
-    pLight->beginAttenuation = beginAttenuation;
-    pLight->endAttenuation = endAttentuation;
 
     return pLight;
 }
