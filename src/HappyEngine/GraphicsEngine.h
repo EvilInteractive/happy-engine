@@ -65,7 +65,6 @@ public:
 
 private:
     void initWindow();
-    void recreateWindow();
 
     SDL_Window* m_pMainWindow;
     SDL_GLContext m_GLContext;

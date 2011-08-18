@@ -47,9 +47,9 @@ private:
 
     // Textures:
     //      - Color.rgb, ill       GL_RGBA8
-    //      - Position.xyz, spec   GL_RGBA16
-    //      - Normal.xyz, gloss    GL_RGBA16
-    //      - Depth                GL_DEPTH_COMPONENT32
+    //      - Position.xyz, spec   GL_RGBA16F
+    //      - Normal.xyz, gloss    GL_RGBA16F
+    //      - Depth                GL_DEPTH_COMPONENT16
     static const int TEXTURES = 4;
     static const int TEXTURE_FORMAT[TEXTURES];
     static const int TEXTURE_INTERNALFORMAT[TEXTURES];

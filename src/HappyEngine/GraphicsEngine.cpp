@@ -78,12 +78,6 @@ void GraphicsEngine::initWindow()
     m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
     error::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));
 }
-void GraphicsEngine::recreateWindow()
-{
-    SDL_GL_DeleteContext(m_GLContext);
-    SDL_DestroyWindow(m_pMainWindow);
-    initWindow();
-}
 
 void GraphicsEngine::setScreenPosition(int x, int y)
 {

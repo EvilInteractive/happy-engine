@@ -93,9 +93,9 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pPostShader(nullptr), m_pModel(new M
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_TRUE); //disable enable writing to depth buffer
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-    //glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -117,10 +117,10 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pPostShader(nullptr), m_pModel(new M
     /*                             LOAD RENDER QUAD                                 */
     /*----------------------------------------------------------------------------- */
     std::vector<VertexPosTex> vertices;
-    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(0, 1)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(1, 1)));
     vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(0, 0)));
     vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(1, 0)));
+    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(0, 1)));
+    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(1, 1)));
 
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(1); indices.push_back(2);
