@@ -41,10 +41,10 @@ ObjLoader::ObjLoader(): m_NumIndices(0), m_NumVertices(0)
 ObjLoader::~ObjLoader()
 {
 }
-void ObjLoader::load(const std::string& path)
+void ObjLoader::load(const std::string& path, bool allowByteIndices)
 {
     read(path);
-    create();
+    create(allowByteIndices);
 }
 
 void ObjLoader::read(const std::string& path)
@@ -109,7 +109,7 @@ void ObjLoader::read(const std::string& path)
         }
     });
 }
-void ObjLoader::create()
+void ObjLoader::create(bool allowByteIndices)
 {
     m_IndexMap.clear();
     m_VertexData.clear();
@@ -118,7 +118,7 @@ void ObjLoader::create()
     m_IndicesByte.clear();
 
     m_NumIndices = m_FaceData.size() * 3;
-    if (m_NumIndices < UCHAR_MAX)
+    if (m_NumIndices < UCHAR_MAX && allowByteIndices)
     {
         m_IndexType = graphics::IndexType_Byte;
     }

@@ -38,6 +38,15 @@
     <Filter Include="happyengine\error\external">
       <UniqueIdentifier>{ce469388-db5d-4ca6-b40d-350ade7876d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\physics">
+      <UniqueIdentifier>{aa23270e-40f9-4a42-ad6d-5eed50a6c7e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\physics\shapes">
+      <UniqueIdentifier>{d521c08e-facb-4ebe-8cc9-9b3e7ae544e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\physics\shapes\base">
+      <UniqueIdentifier>{5f406ff4-e079-42dc-b779-995adadf816c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -132,6 +141,30 @@
     </ClCompile>
     <ClCompile Include="LightManager.cpp">
       <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternalError.cpp">
+      <Filter>happyengine\error\external</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsMaterial.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsStaticActor.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsConvexShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSphereShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsBoxShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryStream.cpp">
+      <Filter>happyengine\io</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +287,30 @@
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsMaterial.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsStaticActor.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="IPhysicsShape.h">
+      <Filter>happyengine\physics\shapes\base</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsConvexShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSphereShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsBoxShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryStream.h">
+      <Filter>happyengine\io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

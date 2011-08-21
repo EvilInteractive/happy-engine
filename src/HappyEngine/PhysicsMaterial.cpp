@@ -14,34 +14,27 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
-#pragma once
-
-#include <string>
+#include "PhysicsMaterial.h"
+#include "HappyEngine.h"
+#include "Assert.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
-
-namespace details {
-
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
-
-} } } //end namespace
+PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
+{    
+    m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
+    ASSERT(m_pInternalMaterial != nullptr, "physics material creation failed");
+}
 
 
-#endif
+PhysicsMaterial::~PhysicsMaterial()
+{
+    m_pInternalMaterial->release();
+}
+
+} } //end namespace

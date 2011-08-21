@@ -14,34 +14,34 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _PHYSICS_MATERIAL_H_
+#define _PHYSICS_MATERIAL_H_
 #pragma once
 
-#include <string>
+#include "PxMaterial.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+class PhysicsMaterial
+{
+public:
+	PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
+    virtual ~PhysicsMaterial();
 
-namespace details {
+private:
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+    PxMaterial* m_pInternalMaterial;
 
-} } } //end namespace
+    //Disable default copy constructor and default assignment operator
+    PhysicsMaterial(const PhysicsMaterial&);
+    PhysicsMaterial& operator=(const PhysicsMaterial&);
+};
 
+} } //end namespace
 
 #endif

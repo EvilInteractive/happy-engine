@@ -14,34 +14,28 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
-#pragma once
-
-#include <string>
+#include "PhysicsStaticActor.h"
+#include "HappyEngine.h"
+#include "Assert.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+PhysicsStaticActor::PhysicsStaticActor(const math::Vector3 position)
+{
+    m_pActor =  PHYSICS->getSDK()->createRigidStatic(PxTransform(PxVec3(position.x, position.y, position.z)));
+    ASSERT(m_pActor != nullptr, "Actor creation failed");
 
-namespace details {
-
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
-
-} } } //end namespace
+    //m_pActor->createShape(
+}
 
 
-#endif
+PhysicsStaticActor::~PhysicsStaticActor()
+{
+}
+
+} } //end namespace

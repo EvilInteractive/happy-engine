@@ -14,34 +14,37 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _PHYSICS_SPHERE_SHAPE_H_
+#define _PHYSICS_SPHERE_SHAPE_H_
 #pragma once
 
-#include <string>
+#include "IPhysicsShape.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
+namespace shapes {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+class PhysicsSphereShape : public IPhysicsShape
+{
+public:
+	explicit PhysicsSphereShape(float radius);
+    virtual ~PhysicsSphereShape();
 
-namespace details {
+    virtual PxGeometry getNewGeometry() const;
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+private:
+
+    float m_Radius;
+
+    //Disable default copy constructor and default assignment operator
+    PhysicsSphereShape(const PhysicsSphereShape&);
+    PhysicsSphereShape& operator=(const PhysicsSphereShape&);
+};
 
 } } } //end namespace
-
 
 #endif

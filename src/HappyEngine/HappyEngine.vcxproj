@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Assert.cpp" />
+    <ClCompile Include="BinaryStream.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ControlsManager.cpp" />
     <ClCompile Include="Deferred3DRenderer.cpp" />
+    <ClCompile Include="ExternalError.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
@@ -26,6 +28,12 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
+    <ClCompile Include="PhysicsBoxShape.cpp" />
+    <ClCompile Include="PhysicsConvexShape.cpp" />
+    <ClCompile Include="PhysicsSphereShape.cpp" />
+    <ClCompile Include="PhysicsStaticActor.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="PhysicsMaterial.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
@@ -45,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assert.h" />
+    <ClInclude Include="BinaryStream.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ControlsManager.h" />
     <ClInclude Include="Deferred3DRenderer.h" />
@@ -64,6 +73,13 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="ObjLoader.h" />
+    <ClInclude Include="IPhysicsShape.h" />
+    <ClInclude Include="PhysicsBoxShape.h" />
+    <ClInclude Include="PhysicsConvexShape.h" />
+    <ClInclude Include="PhysicsSphereShape.h" />
+    <ClInclude Include="PhysicsStaticActor.h" />
+    <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="PhysicsMaterial.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="ExternalError.h" />
     <ClInclude Include="SimpleForward3DRenderer.h" />

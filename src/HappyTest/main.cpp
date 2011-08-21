@@ -1,4 +1,5 @@
-#define BOOST_DISABLE_ASSERTS
+#include "Assert.h"
+#define assert ASSERT
 
 #include "HappyEngine.h"
 #include "MainGame.h"

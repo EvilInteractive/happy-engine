@@ -53,7 +53,7 @@ public:
 	ObjLoader();
     virtual ~ObjLoader();
 
-    void load(const std::string& path);
+    void load(const std::string& path, bool allowByteIndices = true);
 
     template<typename T>
     std::vector<T> getVertices(const graphics::VertexLayout& vertLayout) const
@@ -74,7 +74,7 @@ public:
 
 private:
     void read(const std::string& path);
-    void create();
+    void create(bool allowByteIndices);
     void addIndex(uint index);
     void fill(void* pdata, const graphics::VertexLayout& vertLayout) const;
 

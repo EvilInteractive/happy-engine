@@ -14,34 +14,38 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _PHYSICS_BOX_SHAPE_H_
+#define _PHYSICS_BOX_SHAPE_H_
 #pragma once
 
-#include <string>
+#include "IPhysicsShape.h"
+#include "Vector3.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
+namespace shapes {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+class PhysicsBoxShape : public IPhysicsShape
+{
+public:
+    explicit PhysicsBoxShape(const math::Vector3& dimension);
+    virtual ~PhysicsBoxShape();
 
-namespace details {
+    virtual PxGeometry getNewGeometry() const;
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+private:
+
+    math::Vector3 m_Dimension;
+
+    //Disable default copy constructor and default assignment operator
+    PhysicsBoxShape(const PhysicsBoxShape&);
+    PhysicsBoxShape& operator=(const PhysicsBoxShape&);
+};
 
 } } } //end namespace
-
 
 #endif

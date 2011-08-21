@@ -14,34 +14,35 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _PHYSICS_STATIC_ACTOR_H_
+#define _PHYSICS_STATIC_ACTOR_H_
 #pragma once
 
-#include <string>
+#include "PxRigidStatic.h"
+#include "Vector3.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+class PhysicsStaticActor
+{
+public:
+	PhysicsStaticActor(const math::Vector3 position);
+    virtual ~PhysicsStaticActor();
 
-namespace details {
+private:
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+    PxRigidStatic* m_pActor;
 
-} } } //end namespace
+    //Disable default copy constructor and default assignment operator
+    PhysicsStaticActor(const PhysicsStaticActor&);
+    PhysicsStaticActor& operator=(const PhysicsStaticActor&);
+};
 
+} } //end namespace
 
 #endif

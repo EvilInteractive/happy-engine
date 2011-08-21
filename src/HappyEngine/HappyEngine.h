@@ -25,6 +25,14 @@
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
 
+#if _DEBUG
+    #undef new
+#endif
+#include "boost/thread.hpp"
+#if _DEBUG
+    #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 #define SDL_NO_COMPAT
 #include "boost/shared_ptr.hpp"
 #include "SDL.h"
@@ -36,10 +44,12 @@
 
 #include "GraphicsEngine.h"
 #include "ControlsManager.h"
+#include "PhysicsEngine.h"
 
 #define HAPPYENGINE happyengine::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
 #define CONTROLS HAPPYENGINE->getControls()
+#define PHYSICS HAPPYENGINE->getPhysics()
 
 namespace happyengine {
 
@@ -60,6 +70,7 @@ public:
     //subengines
     graphics::GraphicsEngine* getGraphicsEngine() const;
     const io::ControlsManager* getControls() const;
+    physics::PhysicsEngine* getPhysics() const;
 
 private:
     // Singleton design pattern
@@ -70,6 +81,7 @@ private:
 
     graphics::GraphicsEngine* m_pGraphicsEngine;
     io::ControlsManager* m_pControlsManager;
+    physics::PhysicsEngine* m_pPhysicsEngine;
 
     bool m_Quit;
     bool m_Loaded;

@@ -1,6 +1,6 @@
 //HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
-//This file is part of HappyEngine.
+//This file is part of HappyCooker.
 //
 //    HappyEngine is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Lesser General Public License as published by
@@ -14,34 +14,29 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 21/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _X_H_
+#define _X_H_
 #pragma once
 
-#include <string>
+namespace happycooker {
 
-namespace happyengine {
-namespace error {
+class X
+{
+public:
+	X();
+    virtual ~X();
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+private:
 
-namespace details {
+    //Disable default copy constructor and default assignment operator
+    X(const X&);
+    X& operator=(const X&);
+};
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
-
-} } } //end namespace
-
+} //end namespace
 
 #endif

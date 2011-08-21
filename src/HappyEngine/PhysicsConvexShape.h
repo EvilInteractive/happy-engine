@@ -14,34 +14,39 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _PHYSICS_CONVEX_SHAPE_H_
+#define _PHYSICS_CONVEX_SHAPE_H_
 #pragma once
 
+#include "IPhysicsShape.h"
+#include "geometry/PxConvexMesh.h"
 #include <string>
 
 namespace happyengine {
-namespace error {
+namespace physics {
+namespace shapes {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+class PhysicsConvexShape : public IPhysicsShape
+{
+public:
+    explicit PhysicsConvexShape(const std::string& path);
+    virtual ~PhysicsConvexShape();
 
-namespace details {
+    virtual PxGeometry getNewGeometry() const;
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+private:
+
+    PxConvexMesh* m_pInternalMesh;
+
+    //Disable default copy constructor and default assignment operator
+    PhysicsConvexShape(const PhysicsConvexShape&);
+    PhysicsConvexShape& operator=(const PhysicsConvexShape&);
+};
 
 } } } //end namespace
-
 
 #endif

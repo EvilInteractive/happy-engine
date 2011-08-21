@@ -25,6 +25,7 @@
 #include "GL/glew.h"
 #include "SDL.h"
 #include <iostream>
+#include "PxPhysicsAPI.h"
 
 namespace happyengine {
 namespace error {
@@ -45,6 +46,15 @@ inline void sdlHandleError(int err)
         std::cout << SDL_GetError();
     }
 }
+
+class HappyPhysicsErrorCallback : public PxErrorCallback
+{
+public:
+    HappyPhysicsErrorCallback();
+    ~HappyPhysicsErrorCallback();
+
+    virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line);
+};
 
 } } //end namespace
 #endif

@@ -14,34 +14,29 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
-#pragma once
-
-#include <string>
+#include "PhysicsBoxShape.h"
+#include "geometry/PxBoxGeometry.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
+namespace shapes {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+PhysicsBoxShape::PhysicsBoxShape(const math::Vector3& dimension): m_Dimension(dimension)
+{
+}
 
-namespace details {
 
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+PhysicsBoxShape::~PhysicsBoxShape()
+{
+}
+
+PxGeometry PhysicsBoxShape::getNewGeometry() const
+{
+    return PxBoxGeometry(m_Dimension.x / 2.0f, m_Dimension.y / 2.0f, m_Dimension.z / 2.0f);
+}
 
 } } } //end namespace
-
-
-#endif

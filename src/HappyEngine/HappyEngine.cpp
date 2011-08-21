@@ -19,14 +19,6 @@
 
 #include <iostream>
 
-#if _DEBUG
-    #undef new
-#endif
-#include "boost/thread.hpp"
-#if _DEBUG
-    #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
-
 #include "Assert.h"
 #include "ExternalError.h"
 #include "IL/il.h"
@@ -37,7 +29,8 @@ namespace happyengine {
 HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
 
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
-                            m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr)
+                            m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
+                            m_pPhysicsEngine(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -71,6 +64,7 @@ void HappyEngine::initSubEngines()
     //init all sub engines here
     m_pGraphicsEngine = new graphics::GraphicsEngine();
     m_pControlsManager = new io::ControlsManager();
+    m_pPhysicsEngine = new physics::PhysicsEngine();
 }
 
 void HappyEngine::start(IGame* pGame)
@@ -106,11 +100,11 @@ void HappyEngine::start(IGame* pGame)
 }
 void HappyEngine::updateLoop()
 {
-    Uint32 prevTicks = SDL_GetTicks();
+    Uint32 prevTicks(SDL_GetTicks());
     while (m_Quit == false)
     {
-        Uint32 ticks = SDL_GetTicks();
-        float dTime = (ticks - prevTicks) / 1000.0f;
+        Uint32 ticks(SDL_GetTicks());
+        float dTime((ticks - prevTicks) / 1000.0f);
         prevTicks = ticks;
 
         if (m_Loaded)
@@ -125,12 +119,12 @@ void HappyEngine::drawLoop()
     m_pGame->load();
 
     m_Loaded = true;
-    Uint32 prevTicks = SDL_GetTicks();
+    Uint32 prevTicks(SDL_GetTicks());
     SDL_Event event;
     while (m_Quit == false)
     {
-        Uint32 ticks = SDL_GetTicks();
-        float dTime = (ticks - prevTicks) / 1000.0f;
+        Uint32 ticks(SDL_GetTicks());
+        float dTime((ticks - prevTicks) / 1000.0f);
         prevTicks = ticks;
 
         while (SDL_PollEvent(&event)) //Events are window related ==> need to be in the same thread
@@ -162,6 +156,10 @@ graphics::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 const io::ControlsManager* HappyEngine::getControls() const
 {
     return m_pControlsManager;
+}
+physics::PhysicsEngine* HappyEngine::getPhysics() const
+{
+    return m_pPhysicsEngine;
 }
 
 } //end namespace

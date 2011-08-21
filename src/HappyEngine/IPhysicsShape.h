@@ -14,34 +14,28 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 20/08/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _IPHYSICS_SHAPE_H_
+#define _IPHYSICS_SHAPE_H_
 #pragma once
 
-#include <string>
+#include "PxShape.h"
 
 namespace happyengine {
-namespace error {
+namespace physics {
+namespace shapes {
 
-#ifdef _DEBUG
-#define ASSERT happyengine::error::details::happyAssert
-#else
-#define ASSERT(...) {}
-#endif
+class IPhysicsShape
+{
+public:
+    virtual ~IPhysicsShape() {}
 
-namespace details {
-
-#ifdef _DEBUG
-void happyAssert(bool isOk, const std::string& message);
-void happyAssert(const std::string& message);
-void happyAssert(bool isOk);
-void happyAssert(int isOk); //for boost
-void happyAssert(void* isOk); //for boost
-void happyAssert();
-#endif
+    virtual PxGeometry getNewGeometry() const = 0;
+};
 
 } } } //end namespace
-
 
 #endif

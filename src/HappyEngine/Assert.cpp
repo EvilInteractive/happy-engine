@@ -22,7 +22,7 @@ namespace happyengine {
 namespace error {
 namespace details {
 
-void happyAssert(bool isOk, const char* message)
+void happyAssert(bool isOk, const std::string& message)
 {
     if (!isOk)
     {
@@ -31,7 +31,23 @@ void happyAssert(bool isOk, const char* message)
         __debugbreak();
     }
 }
-void happyAssert(const char* message)
+void happyAssert(bool isOk)
+{
+    if (!isOk)
+    {
+        std::cout << "**ASSERTION FAILURE!**\n";
+        __debugbreak();
+    }
+}
+void happyAssert(int isOk)
+{
+    happyAssert(isOk == 0);
+}
+void happyAssert(void* isOk)
+{
+    happyAssert(isOk != nullptr);
+}
+void happyAssert(const std::string& message)
 {
     std::cout << "**ASSERTION FAILURE!**\n";
     std::cout << message << "\n";
