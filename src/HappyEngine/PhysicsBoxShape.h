@@ -23,6 +23,7 @@
 #pragma once
 
 #include "IPhysicsShape.h"
+#include "geometry/PxBoxGeometry.h"
 #include "Vector3.h"
 
 namespace happyengine {
@@ -35,10 +36,10 @@ public:
     explicit PhysicsBoxShape(const math::Vector3& dimension);
     virtual ~PhysicsBoxShape();
 
-    virtual PxGeometry getNewGeometry() const;
+    virtual const PxGeometry& getGeometry() const;
 
 private:
-
+    PxBoxGeometry m_Geometry;
     math::Vector3 m_Dimension;
 
     //Disable default copy constructor and default assignment operator

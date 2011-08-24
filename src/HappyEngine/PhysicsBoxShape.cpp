@@ -19,14 +19,15 @@
 //Created: 20/08/2011
 
 #include "PhysicsBoxShape.h"
-#include "geometry/PxBoxGeometry.h"
 
 namespace happyengine {
 namespace physics {
 namespace shapes {
 
-PhysicsBoxShape::PhysicsBoxShape(const math::Vector3& dimension): m_Dimension(dimension)
+PhysicsBoxShape::PhysicsBoxShape(const math::Vector3& dimension): m_Dimension(dimension), 
+    m_Geometry(PxBoxGeometry(dimension.x / 2.0f, dimension.y / 2.0f, dimension.z / 2.0f))
 {
+   
 }
 
 
@@ -34,9 +35,9 @@ PhysicsBoxShape::~PhysicsBoxShape()
 {
 }
 
-PxGeometry PhysicsBoxShape::getNewGeometry() const
+const PxGeometry& PhysicsBoxShape::getGeometry() const
 {
-    return PxBoxGeometry(m_Dimension.x / 2.0f, m_Dimension.y / 2.0f, m_Dimension.z / 2.0f);
+    return m_Geometry;
 }
 
 } } } //end namespace

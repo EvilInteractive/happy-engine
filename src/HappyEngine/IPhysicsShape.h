@@ -33,7 +33,7 @@ class IPhysicsShape
 public:
     virtual ~IPhysicsShape() {}
 
-    virtual PxGeometry getNewGeometry() const = 0;
+    virtual const PxGeometry& getGeometry() const = 0;
 };
 
 } } } //end namespace

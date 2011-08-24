@@ -25,8 +25,9 @@ namespace happyengine {
 namespace physics {
 namespace shapes {
 
-PhysicsSphereShape::PhysicsSphereShape(float radius): m_Radius(radius)
+PhysicsSphereShape::PhysicsSphereShape(float radius): m_Radius(radius), m_Geometry(PxSphereGeometry(m_Radius))
 {
+    
 }
 
 
@@ -34,9 +35,9 @@ PhysicsSphereShape::~PhysicsSphereShape()
 {
 }
 
-PxGeometry PhysicsSphereShape::getNewGeometry() const
+const PxGeometry& PhysicsSphereShape::getGeometry() const
 {
-    return PxSphereGeometry(m_Radius);
+    return m_Geometry;
 }
 
 } } } //end namespace

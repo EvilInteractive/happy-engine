@@ -30,7 +30,7 @@ PhysicsStaticActor::PhysicsStaticActor(const math::Vector3 position, const shape
     m_pActor = PHYSICS->getSDK()->createRigidStatic(PxTransform(PxVec3(position.x, position.y, position.z)));
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
-    PxShape* pShape(m_pActor->createShape(shape.getNewGeometry(), *pMaterial->getInternalMaterial()));
+    PxShape* pShape(m_pActor->createShape(shape.getGeometry(), *pMaterial->getInternalMaterial()));
     ASSERT(pShape != nullptr, "Shape creation failed");
 
     PHYSICS->getScene()->addActor(*m_pActor);

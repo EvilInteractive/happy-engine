@@ -25,11 +25,11 @@
 namespace happyengine {
 namespace physics {
 
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Vector3 position, const shapes::IPhysicsShape& /*shape*/, PhysicsMaterial* pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const math::Vector3 position, const shapes::IPhysicsShape& shape, PhysicsMaterial* pMaterial)
 {
     m_pActor = PxCreateDynamic(*PHYSICS->getSDK(), 
                                PxTransform(PxVec3(position.x, position.y, position.z), PxQuat::createIdentity()), 
-                               PxBoxGeometry(2, 2, 2), *pMaterial->getInternalMaterial(), 1.5f);
+                               shape.getGeometry(), *pMaterial->getInternalMaterial(), 1.5f);
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     PHYSICS->getScene()->addActor(*m_pActor);

@@ -24,7 +24,9 @@
 
 #include "IPhysicsShape.h"
 #include "geometry/PxConvexMesh.h"
+#include "geometry/PxConvexMeshGeometry.h"
 #include <string>
+#include "Vector3.h"
 
 namespace happyengine {
 namespace physics {
@@ -33,14 +35,15 @@ namespace shapes {
 class PhysicsConvexShape : public IPhysicsShape
 {
 public:
-    explicit PhysicsConvexShape(const std::string& path);
+    explicit PhysicsConvexShape(const std::string& path, const math::Vector3& scale);
     virtual ~PhysicsConvexShape();
 
-    virtual PxGeometry getNewGeometry() const;
+    virtual const PxGeometry& getGeometry() const;
 
 private:
 
     PxConvexMesh* m_pInternalMesh;
+    PxConvexMeshGeometry m_Geometry;
 
     //Disable default copy constructor and default assignment operator
     PhysicsConvexShape(const PhysicsConvexShape&);

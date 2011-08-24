@@ -19,7 +19,6 @@
 //Created: 20/08/2011
 
 #include "PhysicsConvexShape.h"
-#include "geometry/PxConvexMeshGeometry.h"
 #include "HappyEngine.h"
 #include "BinaryStream.h"
 
@@ -27,9 +26,10 @@ namespace happyengine {
 namespace physics {
 namespace shapes {
 
-PhysicsConvexShape::PhysicsConvexShape(const std::string& path): m_pInternalMesh(nullptr)
+PhysicsConvexShape::PhysicsConvexShape(const std::string& path, const math::Vector3& scale): m_pInternalMesh(nullptr)
 { 
     m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(io::BinaryStream(path, io::BinaryStream::Read));
+    m_Geometry = PxConvexMeshGeometry(m_pInternalMesh, PxMeshScale(PxVec3(scale.x, scale.y, scale.z), PxQuat::createIdentity()));
 }
 
 
@@ -38,9 +38,9 @@ PhysicsConvexShape::~PhysicsConvexShape()
     m_pInternalMesh->release();
 }
 
-PxGeometry PhysicsConvexShape::getNewGeometry() const
+const PxGeometry& PhysicsConvexShape::getGeometry() const
 {
-    return PxConvexMeshGeometry(m_pInternalMesh, PxMeshScale());
+    return m_Geometry;
 }
 
 } } } //end namespace

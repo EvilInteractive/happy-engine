@@ -23,6 +23,7 @@
 #pragma once
 
 #include "IPhysicsShape.h"
+#include "geometry/PxSphereGeometry.h"
 
 namespace happyengine {
 namespace physics {
@@ -34,11 +35,12 @@ public:
 	explicit PhysicsSphereShape(float radius);
     virtual ~PhysicsSphereShape();
 
-    virtual PxGeometry getNewGeometry() const;
+    virtual const PxGeometry& getGeometry() const;
 
 private:
 
     float m_Radius;
+    PxSphereGeometry m_Geometry;
 
     //Disable default copy constructor and default assignment operator
     PhysicsSphereShape(const PhysicsSphereShape&);
