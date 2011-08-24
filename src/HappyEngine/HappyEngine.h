@@ -19,22 +19,9 @@
 #define _HAPPYENGINE_H_
 #pragma once
 
-#if _DEBUG
-#include <crtdbg.h>
-#define _CRTDBG_MAP_ALLOC
-#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
-
-#if _DEBUG
-    #undef new
-#endif
-#include "boost/thread.hpp"
-#if _DEBUG
-    #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
-
 #define SDL_NO_COMPAT
 #include "boost/shared_ptr.hpp"
+#include "boost/thread.hpp"
 #include "SDL.h"
 #include "GL/glew.h"
 
@@ -45,11 +32,13 @@
 #include "GraphicsEngine.h"
 #include "ControlsManager.h"
 #include "PhysicsEngine.h"
+#include "ContentManager.h"
 
 #define HAPPYENGINE happyengine::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
 #define CONTROLS HAPPYENGINE->getControls()
 #define PHYSICS HAPPYENGINE->getPhysics()
+#define CONTENT HAPPYENGINE->getContentManager()
 
 namespace happyengine {
 
@@ -71,6 +60,7 @@ public:
     graphics::GraphicsEngine* getGraphicsEngine() const;
     const io::ControlsManager* getControls() const;
     physics::PhysicsEngine* getPhysics() const;
+    content::ContentManager* getContentManager() const;
 
 private:
     // Singleton design pattern
@@ -82,6 +72,7 @@ private:
     graphics::GraphicsEngine* m_pGraphicsEngine;
     io::ControlsManager* m_pControlsManager;
     physics::PhysicsEngine* m_pPhysicsEngine;
+    content::ContentManager* m_pContentManager;
 
     bool m_Quit;
     bool m_Loaded;

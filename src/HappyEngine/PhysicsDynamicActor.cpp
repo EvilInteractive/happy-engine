@@ -16,29 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 22/08/2011
 
-#include "PhysicsMaterial.h"
+#include "PhysicsDynamicActor.h"
 #include "HappyEngine.h"
 #include "Assert.h"
 
 namespace happyengine {
 namespace physics {
 
-PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
-{    
-    m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
-    ASSERT(m_pInternalMaterial != nullptr, "physics material creation failed");
+PhysicsDynamicActor::PhysicsDynamicActor(const math::Vector3 position, const shapes::IPhysicsShape& /*shape*/, PhysicsMaterial* pMaterial)
+{
+    m_pActor = PxCreateDynamic(*PHYSICS->getSDK(), 
+                               PxTransform(PxVec3(position.x, position.y, position.z), PxQuat::createIdentity()), 
+                               PxBoxGeometry(2, 2, 2), *pMaterial->getInternalMaterial(), 1.5f);
+    ASSERT(m_pActor != nullptr, "Actor creation failed");
+
+    PHYSICS->getScene()->addActor(*m_pActor);
 }
 
-PhysicsMaterial::~PhysicsMaterial()
+
+PhysicsDynamicActor::~PhysicsDynamicActor()
 {
-    m_pInternalMaterial->release();
+    PHYSICS->getScene()->removeActor(*m_pActor);
+    m_pActor->release();
 }
 
-PxMaterial* PhysicsMaterial::getInternalMaterial() const
+math::Vector3 PhysicsDynamicActor::getPosition() const
 {
-    return m_pInternalMaterial;
+    return math::Vector3(m_pActor->getGlobalPose().p);
+}
+math::Matrix PhysicsDynamicActor::getPose() const
+{
+    return math::Matrix(PxMat44(PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
 }
 
 } } //end namespace

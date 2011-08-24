@@ -27,12 +27,24 @@ namespace graphics {
 
 uint Texture2D::s_Count = 0;
 
-Texture2D::Texture2D(uint tex, uint width, uint height, uint format): m_Id(tex),
-    m_Width(width), m_Height(height), m_Format(format)
+Texture2D::Texture2D(): m_Id(0), m_Width(0), m_Height(0), m_Format(0), m_isInitialized(false)
 {
     ++s_Count;
 }
 
+void Texture2D::init(uint tex, uint width, uint height, uint format)
+{
+    m_Id = tex;
+    m_Width = width;
+    m_Height = height;
+    m_Format = format;
+    m_isInitialized = true;
+}
+
+bool Texture2D::isInitialized() const
+{
+    return m_isInitialized;
+}
 
 Texture2D::~Texture2D()
 {

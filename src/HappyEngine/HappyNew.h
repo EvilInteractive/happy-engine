@@ -16,29 +16,18 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 23/08/2011
 
-#include "PhysicsMaterial.h"
-#include "HappyEngine.h"
-#include "Assert.h"
+#ifndef _HAPPY_NEW_H_
+#define _HAPPY_NEW_H_
+#pragma once
 
-namespace happyengine {
-namespace physics {
+#if _DEBUG
+#include <crtdbg.h>
+#define _CRTDBG_MAP_ALLOC
+#define NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#else
+#define NEW new
+#endif
 
-PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
-{    
-    m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
-    ASSERT(m_pInternalMaterial != nullptr, "physics material creation failed");
-}
-
-PhysicsMaterial::~PhysicsMaterial()
-{
-    m_pInternalMaterial->release();
-}
-
-PxMaterial* PhysicsMaterial::getInternalMaterial() const
-{
-    return m_pInternalMaterial;
-}
-
-} } //end namespace
+#endif

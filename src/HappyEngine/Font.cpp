@@ -22,6 +22,7 @@
 #include "SDL.h"
 #include "GL/glew.h"
 #include "Assert.h"
+#include "HappyNew.h"
 
 namespace happyengine {
 namespace graphics {
@@ -99,7 +100,8 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
     
     SDL_FreeSurface(pSurf);
 
-    graphics::Texture2D::pointer tex2D(new graphics::Texture2D(texID, pSurf->w, pSurf->h, GL_BGRA));
+    graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+    tex2D->init(texID, pSurf->w, pSurf->h, GL_BGRA);
     return tex2D;    
 }
 

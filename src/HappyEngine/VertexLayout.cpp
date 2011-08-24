@@ -16,6 +16,7 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "VertexLayout.h"
+#include "Assert.h"
 
 namespace happyengine {
 namespace graphics {
@@ -27,6 +28,7 @@ m_ElementIndex(elementIndex), m_Type(type), m_Usage(usage),
         m_Size(size), m_ByteOffset(byteOffset), 
         m_NameInShader(nameInShader)
 {
+    ASSERT(m_Size != 0, "element size == 0");
 }
 uint VertexElement::getElementIndex() const
 {
@@ -61,15 +63,6 @@ VertexLayout::VertexLayout(): m_VertexSize(0)
 VertexLayout::~VertexLayout()
 {
 }
-VertexLayout::VertexLayout(const VertexLayout& other)
-{
-    m_Layout = other.m_Layout;
-}
-VertexLayout& VertexLayout::operator=(const VertexLayout& other)
-{
-    m_Layout = other.m_Layout;
-    return *this;
-}
 
 void VertexLayout::addElement(const VertexElement& element)
 {
@@ -83,6 +76,7 @@ const VertexLayout::layout& VertexLayout::getElements() const
 }
 uint VertexLayout::getVertexSize() const
 {
+    ASSERT(m_VertexSize != 0, "Vertex size == 0!");
     return m_VertexSize;
 }
 #pragma endregion

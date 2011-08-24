@@ -19,6 +19,7 @@
 //Created: //
 
 #include "X.h"
+#include "HappyNew.h"
 
 namespace happyengine {
 

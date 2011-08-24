@@ -33,6 +33,8 @@ public:
 	PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
     virtual ~PhysicsMaterial();
 
+    PxMaterial* getInternalMaterial() const;
+
 private:
 
     PxMaterial* m_pInternalMaterial;

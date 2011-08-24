@@ -23,6 +23,8 @@
 
 #include <iostream>
 
+#include "HappyNew.h"
+
 namespace happyengine {
 namespace content {
 
@@ -46,7 +48,7 @@ bool FontLoader::load(const std::string& path, ushort size, graphics::Font::poin
     }
     else
     {
-        pOutFont = graphics::Font::pointer(new graphics::Font(pFont));
+        pOutFont = graphics::Font::pointer(NEW graphics::Font(pFont));
         return true;
     }
 }

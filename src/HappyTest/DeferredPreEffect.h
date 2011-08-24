@@ -15,45 +15,42 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyTest.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _TEST_OBJECT_H_
-#define _TEST_OBJECT_H_
+#ifndef _DEFERRED_PRE_EFFECT_H_
+#define _DEFERRED_PRE_EFFECT_H_
 #pragma once
+#include "HappyTypes.h"
+#include "Shader.h"
 
-#define BOOST_DISABLE_ASSERTS
-#include "Model.h"
-#include "Vector3.h"
 #include "Matrix.h"
-#include "I3DRenderer.h"
+#include "Vector3.h"
 #include "Texture2D.h"
-
-#include "DeferredPreEffect.h" 
-
-#include "Font.h"
 
 namespace happytest {
 
-class TestObject
+class DeferredPreEffect
 {
 public:
-	TestObject();
-    virtual ~TestObject();
+	DeferredPreEffect();
+    virtual ~DeferredPreEffect();
 
     void load();
-    void tick(float dTime);
-    void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float dTime);
+    void begin() const;
+    void end() const;
+
+    void setWVP(const happyengine::math::Matrix& wvp) const;
+    void setWorld(const happyengine::math::Matrix& wvp) const;
+    void setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const;
 
 private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
-    
-    happyengine::graphics::Font::pointer m_pFont;
+    happyengine::graphics::Shader* m_pShader;
 
-    float m_Rotation;
-    happyengine::math::Vector3 m_Position;
+    happyengine::uint m_ShaderWVPpos;
+    happyengine::uint m_ShaderWorldPos;
+    happyengine::uint m_ShaderDiffTexPos;
 
     //Disable default copy constructor and default assignment operator
-    TestObject(const TestObject&);
-    TestObject& operator=(const TestObject&);
+    DeferredPreEffect(const DeferredPreEffect&);
+    DeferredPreEffect& operator=(const DeferredPreEffect&);
 };
 
 } //end namespace

@@ -20,6 +20,11 @@
 #pragma once
 
 #include <string>
+#include "VertexLayout.h"
+#include "Model.h"
+#include "ModelLoader.h"
+#include "Texture2D.h"
+#include "TextureLoader.h"
 
 namespace happyengine {
 namespace content {
@@ -34,9 +39,16 @@ public:
 	// graphics::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
 	// asyncLoadTexture2D(const std::string& path, graphics::Texture2D::pointer*);
 
-	//graphics::Model::pointer loadModel(const std::string& path);
+    void tick(float dTime); //checks for new load operations, if true start thread
+    void glThreadInvoke();  //needed for all of the gl operations
+
+	graphics::Model::pointer asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout);
+	graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
 
 private:
+
+    ModelLoader* m_pModelLoader;
+    TextureLoader* m_pTextureLoader;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

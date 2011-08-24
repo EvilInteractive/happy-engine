@@ -33,18 +33,26 @@ namespace happyengine {
 namespace content {
 namespace models {
 
-ObjLoader::ObjLoader(): m_NumIndices(0), m_NumVertices(0)
+ObjLoader::ObjLoader(): m_NumIndices(0), m_NumVertices(0), m_Vertices(nullptr)
 {
 }
 
 
 ObjLoader::~ObjLoader()
 {
+    free(m_Vertices);
 }
-void ObjLoader::load(const std::string& path, bool allowByteIndices)
+void ObjLoader::load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices)
 {
     read(path);
     create(allowByteIndices);
+
+    free(m_Vertices);
+    m_Vertices = malloc(vertLayout.getVertexSize() * m_NumVertices);
+    std::cout << "malloc " << vertLayout.getVertexSize() * m_NumVertices << " bytes\n";
+    ASSERT(m_Vertices != nullptr, "not enough memory!");
+        
+    fill(m_Vertices, vertLayout);
 }
 
 void ObjLoader::read(const std::string& path)
@@ -213,18 +221,33 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
 
     char* pCharData = static_cast<char*>(pVertexData);
     uint count = 0;
+    uint bytecount(0);
     std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const TempVertex& vert)
     {
         if (pOff != -1)
+        {
             *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+            bytecount += 12;
+        }
         if (tOff != -1)
+        {
             *reinterpret_cast<math::Vector2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+            bytecount += 8;
+        }
         if (nOff != -1)
+        {
             *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+            bytecount += 12;
+        }
         ++count;
     });
+    std::cout << "wrote " << bytecount << " bytes\n";
 }
 
+const void* ObjLoader::getVertices() const
+{
+    return m_Vertices;
+}
 const void* ObjLoader::getIndices() const 
 {
     switch (m_IndexType)

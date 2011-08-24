@@ -87,13 +87,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DeferredPreEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="TestBullet.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="VertexPNT.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeferredPreEffect.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="TestBullet.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="VertexPNT.h" />
   </ItemGroup>

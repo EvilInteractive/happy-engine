@@ -19,11 +19,12 @@
 //Created: 08/08/2011
 
 #include "ControlsManager.h"
+#include "HappyNew.h"
 
 namespace happyengine {
 namespace io {
 
-ControlsManager::ControlsManager(): m_pKeyboard(new Keyboard()), m_pMouse(new Mouse())
+ControlsManager::ControlsManager(): m_pKeyboard(NEW Keyboard()), m_pMouse(NEW Mouse())
 {
 }
 

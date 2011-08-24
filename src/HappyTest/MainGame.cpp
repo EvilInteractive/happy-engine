@@ -29,9 +29,12 @@
 #include "IniReader.h"
 #include "FileNotFoundException.h"
 
+#include "HappyNew.h"
+
 namespace happytest {
 
-MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0)
+MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
+                       m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect())
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -46,6 +49,11 @@ MainGame::~MainGame()
 {
     delete m_pDeferred3DRenderer;
     delete m_pTestObject;
+    delete m_pDeferredPreEffect;
+    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
+    {
+        delete pBullet;
+    });
 }
 
 void MainGame::init()
@@ -71,20 +79,58 @@ void MainGame::init()
 void MainGame::load()
 {
     using namespace happyengine;
-    m_pDeferred3DRenderer = new graphics::Deferred3DRenderer();
+
+    PHYSICS->startSimulation();
+
+    m_pDeferred3DRenderer = NEW graphics::Deferred3DRenderer();
     m_pDeferred3DRenderer->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 3.0f, 1, 10);
     m_pDeferred3DRenderer->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 1.0f);
-    m_pTestObject = new TestObject();
+    m_pTestObject = NEW TestObject();
     m_pTestObject->load();
+
+    TestBullet* pBullet(NEW TestBullet());
+    pBullet->load();
+    m_Bullets.push_back(pBullet);
+
+    m_pDeferredPreEffect->load();
 }
 void MainGame::tick(float dTime)
 {
+    m_UpdateTimer += dTime;
+    if (m_UpdateTimer >= 1.0f)
+    {
+        std::cout << "update fps: " << 1.0f/dTime << "\n";
+        m_UpdateTimer -= 1.0f;
+    }
+
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Escape))
         HAPPYENGINE->quit();
     m_pTestObject->tick(dTime);
+    
+    
+
+    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&dTime](TestBullet* pBullet)
+    {
+        pBullet->tick(dTime);
+    });
+    if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Space))
+    {
+        TestBullet* pBullet(NEW TestBullet());
+        pBullet->load();
+        m_Bullets.push_back(pBullet);
+        std::cout << m_Bullets.size() << "\n";
+    }
 }
 void MainGame::draw(float dTime)
 {
+
+    m_DrawTimer += dTime;
+    if (m_DrawTimer >= 1.0f)
+    {
+        std::cout << "draw fps: " << 1.0f/dTime << "\n";
+        m_DrawTimer -= 1.0f;
+    }
+
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Return))
     {
         ++m_BackgroundIndex;
@@ -95,7 +141,13 @@ void MainGame::draw(float dTime)
     GRAPHICS->clearAll();
 
     m_pDeferred3DRenderer->begin();
-    m_pTestObject->draw(m_pDeferred3DRenderer, dTime);
+    m_pDeferredPreEffect->begin();
+    m_pTestObject->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
+    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
+    {
+        pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
+    });
+    m_pDeferredPreEffect->end();
     m_pDeferred3DRenderer->end(happyengine::math::Vector3(-5, 5, -4));
 }
 

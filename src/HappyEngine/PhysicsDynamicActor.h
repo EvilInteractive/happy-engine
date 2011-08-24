@@ -16,29 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 22/08/2011
 
+#ifndef _PHYSICS_DYNAMIC_ACTOR_H_
+#define _PHYSICS_DYNAMIC_ACTOR_H_
+#pragma once
+
+#include "PxRigidDynamic.h"
+#include "Vector3.h"
+#include "Matrix.h"
+#include "IPhysicsShape.h"
 #include "PhysicsMaterial.h"
-#include "HappyEngine.h"
-#include "Assert.h"
 
 namespace happyengine {
 namespace physics {
 
-PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
-{    
-    m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
-    ASSERT(m_pInternalMaterial != nullptr, "physics material creation failed");
-}
-
-PhysicsMaterial::~PhysicsMaterial()
+class PhysicsDynamicActor
 {
-    m_pInternalMaterial->release();
-}
+public:
+	PhysicsDynamicActor(const math::Vector3 position, const shapes::IPhysicsShape& shape, PhysicsMaterial* pMaterial);
+    virtual ~PhysicsDynamicActor();
 
-PxMaterial* PhysicsMaterial::getInternalMaterial() const
-{
-    return m_pInternalMaterial;
-}
+    math::Vector3 getPosition() const;
+    math::Matrix getPose() const;
+
+private:
+
+    PxRigidDynamic* m_pActor;
+
+    //Disable default copy constructor and default assignment operator
+    PhysicsDynamicActor(const PhysicsDynamicActor&);
+    PhysicsDynamicActor& operator=(const PhysicsDynamicActor&);
+};
 
 } } //end namespace
+
+#endif

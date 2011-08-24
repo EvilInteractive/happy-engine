@@ -24,6 +24,9 @@
 
 #include "PxRigidStatic.h"
 #include "Vector3.h"
+#include "Matrix.h"
+#include "IPhysicsShape.h"
+#include "PhysicsMaterial.h"
 
 namespace happyengine {
 namespace physics {
@@ -31,8 +34,11 @@ namespace physics {
 class PhysicsStaticActor
 {
 public:
-	PhysicsStaticActor(const math::Vector3 position);
+	PhysicsStaticActor(const math::Vector3 position, const shapes::IPhysicsShape& shape, PhysicsMaterial* pMaterial);
     virtual ~PhysicsStaticActor();
+    
+    math::Vector3 getPosition() const;
+    math::Matrix getPose() const;
 
 private:
 

@@ -53,18 +53,10 @@ public:
 	ObjLoader();
     virtual ~ObjLoader();
 
-    void load(const std::string& path, bool allowByteIndices = true);
+    void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true);
 
-    template<typename T>
-    std::vector<T> getVertices(const graphics::VertexLayout& vertLayout) const
-    {
-        std::vector<T> vertData;
-        vertData.resize(m_NumVertices);
-
-        fill(&vertData[0], vertLayout);
-
-        return vertData;
-    }
+    //template<typename T>
+    const void* getVertices() const;
     uint getNumVertices() const;
 
     const void* getIndices() const;
@@ -89,6 +81,8 @@ private:
     std::vector<byte> m_IndicesByte;
     std::vector<ushort> m_IndicesUShort;
     std::vector<uint> m_IndicesUInt;
+
+    void* m_Vertices;
 
     uint m_NumVertices;
     uint m_NumIndices;

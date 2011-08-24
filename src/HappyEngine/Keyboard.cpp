@@ -20,6 +20,7 @@
 
 #include "Keyboard.h"
 #include "SDL.h"
+#include "HappyNew.h"
 
 namespace happyengine {
 namespace io {
@@ -50,7 +51,7 @@ void Keyboard::tick()
     if (m_NumPrevKeys != keys)
     {
         delete[] m_KeyState;
-        m_KeyState = new byte[keys];
+        m_KeyState = NEW byte[keys];
         m_NumPrevKeys = m_NumKeys;
         m_NumKeys = keys;
     }
@@ -59,11 +60,11 @@ void Keyboard::tick()
 
 bool Keyboard::isKeyUp(Key key) const
 {
-    return m_KeyState[SDL_GetScancodeFromKey(key)] != 0;
+    return m_KeyState[SDL_GetScancodeFromKey(key)] == 0;
 }
 bool Keyboard::isKeyDown(Key key) const
 {
-    return m_KeyState[SDL_GetScancodeFromKey(key)] == 0;
+    return m_KeyState[SDL_GetScancodeFromKey(key)] != 0;
 }
 
 bool Keyboard::isKeyPressed(Key key) const

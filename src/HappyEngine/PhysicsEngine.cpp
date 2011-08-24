@@ -23,6 +23,8 @@
 #include "SDL.h"
 #include "HappyTypes.h"
 #include "boost/bind.hpp"
+#include "MathConstants.h"
+#include "HappyNew.h"
 
 
 namespace happyengine {
@@ -30,7 +32,7 @@ namespace physics {
 
 PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr), 
                             m_pCpuDispatcher(nullptr), m_pCudaContextManager(nullptr), 
-                            m_pAllocator(new HappyPhysicsAllocator()), m_pErrorCallback(new error::HappyPhysicsErrorCallback()),
+                            m_pAllocator(NEW HappyPhysicsAllocator()), m_pErrorCallback(NEW error::HappyPhysicsErrorCallback()),
                             m_Simulate(false)
 {
     bool memDebug(false);
@@ -82,6 +84,13 @@ void PhysicsEngine::createScene()
 
     m_pScene = m_pPhysXSDK->createScene(sceneDesc);
     ASSERT(m_pScene != nullptr, "createScene failed!");
+
+    PxRigidStatic* plane = m_pPhysXSDK->createRigidStatic(PxTransform(PxVec3(0, -5, 0), PxQuat(math::piOverTwo, PxVec3(0, 0, 1))));
+    ASSERT(plane != nullptr, "");
+    PxShape* pShape = plane->createShape(PxPlaneGeometry(), *m_pPhysXSDK->createMaterial(0.3f, 0.6f, 0.2f) );
+    ASSERT(pShape != nullptr, "");
+    m_pScene->addActor(*plane);
+
 }
 
 
@@ -97,36 +106,27 @@ PhysicsEngine::~PhysicsEngine()
 
 void PhysicsEngine::startSimulation()
 {
-    if (m_Simulate == false)
-    {
-        m_Simulate = true;
-        m_PhysXThread = boost::thread(boost::bind(&PhysicsEngine::loop, this));
-    }
+    m_Timer = 0.0f;
+    m_Simulate = true;
 }
 void PhysicsEngine::stopSimulation()
 {
-    if (m_Simulate == true)
-    {
-        m_Simulate = false;
-        m_PhysXThread.join();
-    }
+    m_Simulate = false;
 }
-void PhysicsEngine::loop()
+void PhysicsEngine::tick(float dTime)
 {
-    uint prevTicks(SDL_GetTicks());
+    static const PxReal s_fixedStep(1.0f / 60.0f);
 
-    PxReal fixedStep(1.0f / 60.0f);
-    while(m_Simulate)
+    if (m_Simulate)
     {
-        uint curTicks(SDL_GetTicks());
-        double dTime((curTicks - prevTicks) / 1000.0);
-        prevTicks = curTicks;
+        m_Timer += dTime;
+        if (m_Timer >= s_fixedStep)
+        {
+            m_Timer -= s_fixedStep;
 
-        if (dTime < fixedStep)
-            boost::this_thread::sleep(boost::posix_time::milliseconds(static_cast<int64_t>((fixedStep - dTime) * 1000)));
-
-        m_pScene->simulate(fixedStep);
-        m_pScene->fetchResults(true);
+            m_pScene->fetchResults(true);
+            m_pScene->simulate(s_fixedStep);
+        }
     }
 }
 

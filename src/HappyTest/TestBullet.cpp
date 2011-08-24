@@ -15,71 +15,61 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyTest.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "TestObject.h"
+#include "TestBullet.h"
 #include "MathConstants.h"
-#include "HappyEngine.h"
+#include "ObjLoader.h"
 #include "VertexPNT.h"
+#include "VertexLayout.h"
 #include "TextureLoader.h"
-#include "FontLoader.h"
 #include "HappyEngine.h"
-
-#include <sstream>
+#include "HappyNew.h"
 
 namespace happytest {
 
-TestObject::TestObject(): m_Rotation(0), m_Position(0, 0, 0)
+TestBullet::TestBullet(): m_pActor(nullptr), m_pShape(nullptr), m_pMaterial(nullptr)
 {
 }
 
 
-TestObject::~TestObject()
+TestBullet::~TestBullet()
 {
+    delete m_pActor;
+    delete m_pShape;
+    delete m_pMaterial;
 }
 
-
-void TestObject::load()
+void TestBullet::load()
 {
-    using namespace happyengine::graphics;
     using namespace happyengine;
-
+    using namespace graphics;
+    
     VertexLayout layout;
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
     layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
     layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
 
-    m_pModel = CONTENT->asyncLoadModel("../data/models/testModelComplex1.obj", layout);
+    m_pModel = CONTENT->asyncLoadModel("../data/models/cube.obj", layout);
     
     m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/testTex.png");
 
-    happyengine::content::FontLoader fontLoader;
-    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
+    m_pMaterial = NEW physics::PhysicsMaterial(0.5f, 0.8f, 0.4f);
+    m_pShape = NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2));
+    m_pActor = NEW physics::PhysicsDynamicActor(math::Vector3(0, 10, 0), *m_pShape, m_pMaterial);
 }
-void TestObject::tick(float dTime)
+
+void TestBullet::tick(float /*dTime*/)
 {
-    using namespace happyengine;
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Left))
-        m_Rotation -= math::pi * dTime;
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
-        m_Rotation += math::pi * dTime;
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
-        m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
-        m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+    m_mtxWorld = m_pActor->getPose();
 }
-void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/)
+void TestBullet::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/)
 {
     using namespace happyengine;
 
     math::Matrix persp(math::Matrix::createPerspectiveLH(math::piOverFour, 1280, 720, 1, 1000));
     math::Matrix view(math::Matrix::createLookAtLH(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0)));
-    math::Matrix world(
-        math::Matrix::createTranslation(m_Position) *
-        math::Matrix::createRotation(math::Vector3(0.0f, 1.0f, 0.0f), m_Rotation) *
-        math::Matrix::createScale(2.0f)
-                      );
 
-    m_pEffect->setWVP(persp * view * world);
-    m_pEffect->setWorld(world);  
+    m_pEffect->setWVP(persp * view * m_mtxWorld);
+    m_pEffect->setWorld(m_mtxWorld);  
     m_pEffect->setDiffuseMap(m_pDiffuseMap);
 
     pRenderer->draw(m_pModel);

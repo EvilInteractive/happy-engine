@@ -32,10 +32,13 @@ class Texture2D
 {
 public:
 	Texture2D();
-	Texture2D(uint tex, uint width, uint height, uint format);
     virtual ~Texture2D();
 
+    void init(uint tex, uint width, uint height, uint format);
+
     typedef boost::shared_ptr<Texture2D> pointer;
+
+    bool isInitialized() const;
 
     uint getID() const;
     uint getWidth() const;
@@ -50,6 +53,8 @@ private:
     uint m_Id;
 
     static uint s_Count;
+
+    bool m_isInitialized;
 
     //Disable default copy constructor and default assignment operator
     Texture2D(const Texture2D&);

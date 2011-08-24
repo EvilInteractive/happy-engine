@@ -42,6 +42,7 @@ public:
 	Model();
     virtual ~Model();
 
+    void init();
     void setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout);
     void setIndices(const void* pIndices, uint num, IndexType type);
 
@@ -51,6 +52,8 @@ public:
     uint getNumIndices() const;
 
     uint getIndexType() const;
+
+    bool isComplete() const;
 
 private:
 
@@ -62,6 +65,8 @@ private:
     uint m_NumIndices;
 
     uint m_IndexType;
+
+    bool m_Complete;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

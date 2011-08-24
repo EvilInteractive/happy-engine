@@ -34,16 +34,24 @@ inline void glHandleError(GLenum err)
 {
     if (err != GL_NO_ERROR)
     {
-        std::cout << "***GL error*** file: " << __FILE__ << " line: " << __LINE__ << "\n";
-        std::cout << glewGetErrorString(err);
+        std::cout << "***GL error*** " << glewGetErrorString(err) << "\n";
+    }
+}
+inline void glCheckForErrors(bool postErrors = true)
+{
+    GLenum err = glGetError();
+    while (err != GL_NO_ERROR)
+    {
+        if (postErrors)
+            glHandleError(err);
+        err = glGetError();
     }
 }
 inline void sdlHandleError(int err)
 {
     if (err != 0)
     {
-        std::cout << "***SDL error***" << __FILE__ << " line: " << __LINE__ << "\n";
-        std::cout << SDL_GetError();
+        std::cout << "***SDL error*** " << SDL_GetError() << "\n";
     }
 }
 

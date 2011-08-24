@@ -16,58 +16,62 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 11/08/2011
+//Created: 23/08/2011
 
-#ifndef _TEXTURE_LOADER_H_
-#define _TEXTURE_LOADER_H_
+#ifndef _MODEL_LOADER_H_
+#define _MODEL_LOADER_H_
 #pragma once
 
-#include <string>
-#include "Texture2D.h"
+#include "Model.h"
+#include "VertexLayout.h"
+#include "ObjLoader.h"
 
 #include <ppl.h>
 #include <concurrent_queue.h>
+#include <string>
 
 #include "boost/thread.hpp"
-
-#include "HappyTypes.h"
 
 namespace happyengine {
 namespace content {
 
-class TextureLoader
+class ModelLoader
 {
 public:
-	TextureLoader();
-    virtual ~TextureLoader();
+	ModelLoader();
+    virtual ~ModelLoader();
     
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
-
+	graphics::Model::pointer asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout);
 
 private:
-
-    struct TextureLoadData
+    struct ModelLoadData
     {
+    public:
         std::string path;
-        byte* pData;
-        uint id;
-        graphics::Texture2D::pointer tex;
+        graphics::VertexLayout vertexLayout;
+        graphics::Model::pointer pModel;
+        models::ObjLoader loader;
+
+        ModelLoadData() {}
+        virtual ~ModelLoadData() {}
+    private:
+        //Disable default copy constructor and default assignment operator
+        ModelLoadData(const ModelLoadData&);
+        ModelLoadData& operator=(const ModelLoadData&);
     };
 
-    bool m_isLoadThreadRunning;
-    void TextureLoadThread();
-
-    Concurrency::concurrent_queue<TextureLoadData> m_TextureLoadQueue;
-    Concurrency::concurrent_queue<TextureLoadData> m_TextureInvokeQueue;
-
-    boost::thread m_TextureLoadThread;
+    Concurrency::concurrent_queue<ModelLoadData*> m_ModelLoadQueue;
+    Concurrency::concurrent_queue<ModelLoadData*> m_ModelInvokeQueue;
+    boost::thread m_ModelLoadThread;
+    void ModelLoadThread();
+    bool m_isModelThreadRunning;
 
     //Disable default copy constructor and default assignment operator
-    TextureLoader(const TextureLoader&);
-    TextureLoader& operator=(const TextureLoader&);
+    ModelLoader(const ModelLoader&);
+    ModelLoader& operator=(const ModelLoader&);
 };
 
 } } //end namespace

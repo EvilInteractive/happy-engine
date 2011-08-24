@@ -1,9 +1,13 @@
 #include "Assert.h"
 #define assert ASSERT
 
+#include "boost/shared_ptr.hpp"
+
 #include "HappyEngine.h"
 #include "MainGame.h"
 #include "Texture2D.h"
+
+#include "HappyNew.h"
 
 #include <iostream>
 
@@ -12,7 +16,7 @@ int main( int /*argc*/, char** /*args[]*/ )
     using namespace happyengine;
     using namespace happytest;
     
-    MainGame* pGame(new MainGame());
+    MainGame* pGame(NEW MainGame());
     HAPPYENGINE->start(pGame);
     delete pGame;
     HAPPYENGINE->dispose();

@@ -79,8 +79,7 @@ public:
 
 	VertexLayout();
     virtual ~VertexLayout();
-    VertexLayout(const VertexLayout& other);
-    VertexLayout& operator=(const VertexLayout& other);
+    //default copy constructor and assignment operator are fine
 
     void addElement(const VertexElement& element);
 

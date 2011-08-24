@@ -26,6 +26,7 @@
 #include "Vertex.h"
 #include "Assert.h"
 #include "Light.h"
+#include "HappyNew.h"
 
 #include <vector>
 
@@ -36,7 +37,7 @@ const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_
 const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA16F, GL_RGBA16F, GL_DEPTH_COMPONENT16};
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
 
-Deferred3DRenderer::Deferred3DRenderer(): m_pModel(new Model()), m_pLightManager(new LightManager())
+Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW Model()), m_pLightManager(NEW LightManager())
 {
     /*------------------------------------------------------------------------------*/
     /*                         LOAD FBO AND RENDER TARGETS                          */
@@ -56,7 +57,8 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(new Model()), m_pLightManager
         glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_INTERNALFORMAT[i], 
                      width, height,
                      0, TEXTURE_FORMAT[i], GL_UNSIGNED_BYTE, 0);
-        m_pTexture[i] = Texture2D::pointer(new Texture2D(m_TextureId[i], width, height, TEXTURE_FORMAT[i]));
+        m_pTexture[i] = Texture2D::pointer(NEW Texture2D());
+        m_pTexture[i]->init(m_TextureId[i], width, height, TEXTURE_FORMAT[i]);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -111,7 +113,7 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(new Model()), m_pLightManager
 
     for (int i = 0; i < SHADERS; ++i)
     {
-        m_pPostShader[i] = new Shader();
+        m_pPostShader[i] = NEW Shader();
     }
 
     m_pPostShader[0]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostALShader.frag", layout);
@@ -166,6 +168,7 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(new Model()), m_pLightManager
     indices.push_back(0); indices.push_back(1); indices.push_back(2);
     indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
+    m_pModel->init();
     m_pModel->setVertices(&vertices[0], 4, layout);
     m_pModel->setIndices(&indices[0], 6, IndexType_Byte);
 }
@@ -194,7 +197,7 @@ void Deferred3DRenderer::begin()
 }
 void Deferred3DRenderer::end(const math::Vector3& vCamPos)
 {
-    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    const static GLenum buffers[1] = { GL_BACK_LEFT };
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffers(1, buffers);
     
@@ -280,11 +283,14 @@ void Deferred3DRenderer::postDirectionalLights()
 }
 void Deferred3DRenderer::draw(const Model::pointer& pModel)
 {
-    glBindVertexArray(pModel->getVertexArraysID());
+    if (pModel->isComplete()) //possible async load
+    {
+        glBindVertexArray(pModel->getVertexArraysID());
 
-    glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
+        glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
 
-    glBindVertexArray(0);
+        glBindVertexArray(0);
+    }
 }
 
 LightManager* Deferred3DRenderer::getLightManager() const

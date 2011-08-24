@@ -21,10 +21,17 @@
 
 #define BOOST_DISABLE_ASSERTS
 
+
 #include "IGame.h"
 #include "Deferred3DRenderer.h"
 #include "TestObject.h"
 #include "Color.h"
+#include "DeferredPreEffect.h"
+#include "TestBullet.h"
+
+#include <ppl.h>
+#include <concurrent_vector.h>
+#include <vector>
 
 namespace happytest {
 
@@ -45,6 +52,13 @@ private:
 
     happyengine::Color m_BackgroundColors[5];
     happyengine::byte m_BackgroundIndex;
+
+    DeferredPreEffect* m_pDeferredPreEffect;
+
+    float m_DrawTimer;
+    float m_UpdateTimer;
+    
+    Concurrency::concurrent_vector<TestBullet*> m_Bullets;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

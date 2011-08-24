@@ -31,10 +31,12 @@
 #include <iostream>
 #include "Texture2D.h"
 
+#include "HappyNew.h"
+
 namespace happyengine {
 namespace content {
 
-TextureLoader::TextureLoader()
+TextureLoader::TextureLoader(): m_isLoadThreadRunning(false)
 {
 }
 
@@ -53,17 +55,23 @@ inline void handleILError()
         error = ilGetError();
     }
 }
-bool TextureLoader::load(const std::string& path, graphics::Texture2D::pointer& texture2D)
-{
-    ILuint id = ilGenImage();
-    ilBindImage(id);
-    if (ilLoadImage(path.c_str()))
-    {
-        if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-        {
-            /*iluRotate(180);
-            iluMirror();*/
 
+void TextureLoader::tick(float /*dTime*/) //checks for new load operations, if true start thread
+{
+    if (m_isLoadThreadRunning == false)
+        if (m_TextureLoadQueue.empty() == false)
+        {
+            m_isLoadThreadRunning = true; //must be here else it could happen that the load thread starts twice
+            m_TextureLoadThread = boost::thread(boost::bind(&TextureLoader::TextureLoadThread, this));
+        }
+}
+void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
+{
+    while (m_TextureInvokeQueue.empty() == false)
+    {
+        TextureLoadData data;
+        if (m_TextureInvokeQueue.try_pop(data))
+        {
             GLuint texID;
             glGenTextures(1, &texID);
             glBindTexture(GL_TEXTURE_2D, texID);
@@ -74,25 +82,65 @@ bool TextureLoader::load(const std::string& path, graphics::Texture2D::pointer& 
             uint height = ilGetInteger(IL_IMAGE_HEIGHT);
             uint format = ilGetInteger(IL_IMAGE_FORMAT);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, ilGetData());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data.pData);
+            glGenerateMipmap(GL_TEXTURE_2D);
 
-            graphics::Texture2D::pointer tex2D(new graphics::Texture2D(texID, width, height, format));
-            texture2D = tex2D;
-        }
-        else
-        {
-            handleILError();
-            return false;
-        }
-        ilDeleteImage(id);
-        return true;
+            ilDeleteImage(data.id);
 
+            data.tex->init(texID, width, height, format);
+
+            std::cout << "**TL INFO** texture create completed: " << data.path << "\n";
+        }
     }
-    else
+}
+
+graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
+{
+    graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+
+    TextureLoadData data;
+    data.path = path;
+    data.id = 0;
+    data.pData = 0;
+    data.tex = tex2D;
+
+    m_TextureLoadQueue.push(data);
+
+    return tex2D;
+}
+
+void TextureLoader::TextureLoadThread()
+{
+    std::cout << "**TL INFO** load thread started.\n";
+    while (m_TextureLoadQueue.empty() == false)
     {
-        handleILError();
-        return false;
+        TextureLoadData data;
+        if (m_TextureLoadQueue.try_pop(data))
+        {
+            ILuint id = ilGenImage();
+            ilBindImage(id);
+            if (ilLoadImage(data.path.c_str()))
+            {
+                if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+                {
+                    data.id = id;
+                    data.pData = ilGetData();
+                    m_TextureInvokeQueue.push(data);
+                    std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
+                }
+                else
+                {
+                    handleILError();
+                }
+            }
+            else
+            {
+                handleILError();
+            }
+        }
     }
+    m_isLoadThreadRunning = false;
+    std::cout << "**TL INFO** load thread stopped.\n";
 }
 
 } } //end namespace

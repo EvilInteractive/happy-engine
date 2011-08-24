@@ -166,6 +166,12 @@
     <ClCompile Include="BinaryStream.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsDynamicActor.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -311,6 +317,15 @@
     </ClInclude>
     <ClInclude Include="BinaryStream.h">
       <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsDynamicActor.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="HappyNew.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>happyengine\content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

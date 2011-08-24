@@ -15,45 +15,49 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyTest.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _TEST_OBJECT_H_
-#define _TEST_OBJECT_H_
+#ifndef _TEST_BULLET_H_
+#define _TEST_BULLET_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
+#include "Assert.h"
+#define assert ASSERT
+
+#include "PhysicsDynamicActor.h"
+#include "PhysicsMaterial.h"
+#include "PhysicsBoxShape.h"
 #include "Model.h"
-#include "Vector3.h"
 #include "Matrix.h"
-#include "I3DRenderer.h"
 #include "Texture2D.h"
 
-#include "DeferredPreEffect.h" 
-
-#include "Font.h"
+#include "I3DRenderer.h"
+#include "DeferredPreEffect.h"
 
 namespace happytest {
 
-class TestObject
+class TestBullet
 {
 public:
-	TestObject();
-    virtual ~TestObject();
-
+	TestBullet();
+    virtual ~TestBullet();
+    
     void load();
     void tick(float dTime);
     void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float dTime);
 
 private:
+
+    happyengine::physics::PhysicsDynamicActor* m_pActor;
+    happyengine::physics::PhysicsMaterial* m_pMaterial;
+    happyengine::physics::shapes::PhysicsBoxShape* m_pShape;
+
     happyengine::graphics::Model::pointer m_pModel;
     happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
-    
-    happyengine::graphics::Font::pointer m_pFont;
 
-    float m_Rotation;
-    happyengine::math::Vector3 m_Position;
+    happyengine::math::Matrix m_mtxWorld;
 
     //Disable default copy constructor and default assignment operator
-    TestObject(const TestObject&);
-    TestObject& operator=(const TestObject&);
+    TestBullet(const TestBullet&);
+    TestBullet& operator=(const TestBullet&);
 };
 
 } //end namespace

@@ -19,6 +19,7 @@
 //Created: 17/08/2011
 
 #include "LightManager.h"
+#include "HappyNew.h"
 
 namespace happyengine {
 namespace graphics {
@@ -37,7 +38,7 @@ AmbientLight::pointer LightManager::addAmbientLight(const math::Vector3& pos,
                                                     float                multiplier, 
                                                     float                range) 
 {
-    AmbientLight::pointer pLight(new AmbientLight());
+    AmbientLight::pointer pLight(NEW AmbientLight());
     m_AmbientLightVector.push_back(pLight);
 
     pLight->position = pos;
@@ -53,7 +54,7 @@ PointLight::pointer LightManager::addPointLight(const math::Vector3&  pos,
                                                 float                 beginAttenuation, 
                                                 float                 endAttentuation)
 {
-    PointLight::pointer pLight(new PointLight());
+    PointLight::pointer pLight(NEW PointLight());
     m_PointLightVector.push_back(pLight);
 
     pLight->position = pos;
@@ -72,7 +73,7 @@ SpotLight::pointer LightManager::addSpotLight(const math::Vector3&    pos,
                                               float                   beginAttenuation, 
                                               float                   endAttentuation)
 {
-    SpotLight::pointer pLight(new SpotLight());
+    SpotLight::pointer pLight(NEW SpotLight());
     m_SpotLightVector.push_back(pLight);
 
     pLight->position = pos;
@@ -89,7 +90,7 @@ DirectionalLight::pointer LightManager::addDirectionalLight(const math::Vector3&
                                                             const Color&          color, 
                                                             float                 multiplier)
 {
-    DirectionalLight::pointer pLight(new DirectionalLight());
+    DirectionalLight::pointer pLight(NEW DirectionalLight());
     m_DirectionalLightVector.push_back(pLight);
 
     pLight->color = color.rgb();

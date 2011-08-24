@@ -31,6 +31,12 @@
     <ClCompile Include="VertexPNT.cpp">
       <Filter>happytest\vertex</Filter>
     </ClCompile>
+    <ClCompile Include="TestBullet.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredPreEffect.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -41,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="VertexPNT.h">
       <Filter>happytest\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="TestBullet.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredPreEffect.h">
+      <Filter>happytest</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

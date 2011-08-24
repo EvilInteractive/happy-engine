@@ -16,6 +16,7 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "HappyEngine.h"
+#include "HappyNew.h"
 
 #include <iostream>
 
@@ -26,11 +27,11 @@
 
 namespace happyengine {
 
-HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(new HappyEngine());
+HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(NEW HappyEngine());
 
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
-                            m_pPhysicsEngine(nullptr)
+                            m_pPhysicsEngine(nullptr), m_pContentManager(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -53,6 +54,10 @@ void HappyEngine::cleanup()
     m_pGraphicsEngine = nullptr;
     delete m_pControlsManager;
     m_pControlsManager = nullptr;
+    delete m_pPhysicsEngine;
+    m_pPhysicsEngine = nullptr;
+    delete m_pContentManager;
+    m_pContentManager = nullptr;
 
     SDL_Quit();
 }
@@ -62,9 +67,10 @@ void HappyEngine::initSubEngines()
     iluInit();
     iluSetLanguage(ILU_ENGLISH);
     //init all sub engines here
-    m_pGraphicsEngine = new graphics::GraphicsEngine();
-    m_pControlsManager = new io::ControlsManager();
-    m_pPhysicsEngine = new physics::PhysicsEngine();
+    m_pGraphicsEngine = NEW graphics::GraphicsEngine();
+    m_pControlsManager = NEW io::ControlsManager();
+    m_pPhysicsEngine = NEW physics::PhysicsEngine();
+    m_pContentManager = NEW content::ContentManager();
 }
 
 void HappyEngine::start(IGame* pGame)
@@ -108,9 +114,13 @@ void HappyEngine::updateLoop()
         prevTicks = ticks;
 
         if (m_Loaded)
+        {
+            m_pContentManager->tick(dTime);
+            m_pPhysicsEngine->tick(dTime);
             m_pGame->tick(dTime);
+        }
 
-        SDL_Delay(12);
+        SDL_Delay(1);
     }
 }
 void HappyEngine::drawLoop()
@@ -125,7 +135,7 @@ void HappyEngine::drawLoop()
     {
         Uint32 ticks(SDL_GetTicks());
         float dTime((ticks - prevTicks) / 1000.0f);
-        prevTicks = ticks;
+        prevTicks = ticks;     
 
         while (SDL_PollEvent(&event)) //Events are window related ==> need to be in the same thread
         {
@@ -134,7 +144,9 @@ void HappyEngine::drawLoop()
                 case SDL_QUIT: m_Quit = true; break;
             }
         }            
-        m_pControlsManager->tick(); 
+        m_pControlsManager->tick(); //tick here because needs to be in this thread
+
+        m_pContentManager->glThreadInvoke();
 
         m_pGame->draw(dTime);
         
@@ -160,6 +172,10 @@ const io::ControlsManager* HappyEngine::getControls() const
 physics::PhysicsEngine* HappyEngine::getPhysics() const
 {
     return m_pPhysicsEngine;
+}
+content::ContentManager* HappyEngine::getContentManager() const
+{
+    return m_pContentManager;
 }
 
 } //end namespace

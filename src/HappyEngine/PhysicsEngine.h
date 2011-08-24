@@ -53,6 +53,8 @@ public:
 	PhysicsEngine();
     virtual ~PhysicsEngine();
 
+    void tick(float dTime);
+
     void startSimulation();
     void stopSimulation();
 
@@ -72,8 +74,9 @@ private:
 
     boost::thread m_PhysXThread;
 
-    void loop();
     void createScene();
+
+    float m_Timer;
 
     bool m_Simulate;
 

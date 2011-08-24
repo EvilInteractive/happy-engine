@@ -21,15 +21,15 @@
 #include <algorithm>
 #include "Assert.h"
 #include "Color.h"
+#include "ExternalError.h"
 
 namespace happyengine {
 namespace graphics {
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-Model::Model(): m_NumVertices(0), m_NumIndices(0)
+Model::Model(): m_NumVertices(0), m_NumIndices(0), m_Complete(false)
 {
-    glGenVertexArrays(1, &m_VaoID[0]);
 }
 
 
@@ -39,13 +39,22 @@ Model::~Model()
     glDeleteBuffers(1, m_VertexVboID);
     glDeleteBuffers(1, m_IndexVboID);
 }
+
+void Model::init()
+{
+    glGenVertexArrays(1, &m_VaoID[0]);
+}
+
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old contents)
 void Model::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)
 {
+    error::glCheckForErrors(false);
+
     ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModel instead");
     m_NumVertices = num;
 
     glBindVertexArray(m_VaoID[0]);
+    error::glCheckForErrors();
 
     VertexLayout::layout elements(vertexLayout.getElements());
 
@@ -83,6 +92,9 @@ void Model::setVertices(const void* pVertices, uint num, const VertexLayout& ver
 
     //unbind
     glBindVertexArray(0);
+
+    if (m_NumIndices > 0)
+        m_Complete = true;
 }
 void Model::setIndices(const void* pIndices, uint num, IndexType type)
 {
@@ -101,6 +113,9 @@ void Model::setIndices(const void* pIndices, uint num, IndexType type)
         case IndexType_UInt: m_IndexType = GL_UNSIGNED_INT; break;
         default: ASSERT("unkown type"); break;
     }
+
+    if (m_NumVertices > 0)
+        m_Complete = true;
 }
 
 uint Model::getVertexArraysID() const
@@ -120,6 +135,11 @@ uint Model::getNumIndices() const
 uint Model::getIndexType() const
 {
     return m_IndexType;
+}
+
+bool Model::isComplete() const
+{
+    return m_Complete;
 }
 
 
