@@ -33,6 +33,9 @@
 #include <concurrent_vector.h>
 #include <vector>
 
+#include "MyServer.h"
+#include "MyClient.h"
+
 namespace happytest {
 
 class MainGame : public happyengine::IGame
@@ -59,6 +62,9 @@ private:
     float m_UpdateTimer;
     
     Concurrency::concurrent_vector<TestBullet*> m_Bullets;
+
+    MyServer* m_pServer;
+    MyClient* m_pClient;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

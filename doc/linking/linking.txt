@@ -34,3 +34,5 @@ Link:
     RepX3.lib
     PxTask.lib
     PhysX3Vehicle.lib
+   
+C/C++->Preprocessor->PreProcessor Definitions add GLEW_STATIC

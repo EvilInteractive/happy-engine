@@ -16,25 +16,47 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 05/08/2011
+//Created: 25/08/2011
 
-#ifndef _HAPPY_TYPES_H_
-#define _HAPPY_TYPES_H_
+#ifndef _NETWORK_MANAGER_H_
+#define _NETWORK_MANAGER_H_
 #pragma once
 
+#include "Assert.h"
+#undef assert
+#define assert ASSERT
+
+#include "boost/asio.hpp"
+#include "boost/thread.hpp"
+
 namespace happyengine {
+namespace networking {
 
-typedef unsigned long ulong;
-typedef unsigned int uint;
-typedef unsigned short ushort;
-typedef unsigned char byte;
+class NetworkManager
+{
+public:
+	NetworkManager();
+    virtual ~NetworkManager();
+    
+    void start();
+    void stop();
 
-typedef unsigned __int8 uint8;
-typedef unsigned __int16 uint16;
-typedef unsigned __int32 uint32;
-typedef unsigned __int64 uint64;
+    boost::asio::io_service& getIoService();
 
-} //end namespace
+private:
 
+    void asioThread();
+
+    boost::asio::io_service m_IoService;
+    boost::thread m_AsioThread;
+
+    bool m_AsioIsAlive;
+
+    //Disable default copy constructor and default assignment operator
+    NetworkManager(const NetworkManager&);
+    NetworkManager& operator=(const NetworkManager&);
+};
+
+} } //end namespace
 
 #endif

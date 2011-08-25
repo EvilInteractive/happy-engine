@@ -31,7 +31,8 @@ HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine
 
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
-                            m_pPhysicsEngine(nullptr), m_pContentManager(nullptr)
+                            m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
+                            m_pNetworkManager(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -58,6 +59,8 @@ void HappyEngine::cleanup()
     m_pPhysicsEngine = nullptr;
     delete m_pContentManager;
     m_pContentManager = nullptr;
+    delete m_pNetworkManager;
+    m_pNetworkManager = nullptr;
 
     SDL_Quit();
 }
@@ -71,6 +74,7 @@ void HappyEngine::initSubEngines()
     m_pControlsManager = NEW io::ControlsManager();
     m_pPhysicsEngine = NEW physics::PhysicsEngine();
     m_pContentManager = NEW content::ContentManager();
+    m_pNetworkManager = NEW networking::NetworkManager();
 }
 
 void HappyEngine::start(IGame* pGame)
@@ -177,5 +181,10 @@ content::ContentManager* HappyEngine::getContentManager() const
 {
     return m_pContentManager;
 }
+networking::NetworkManager* HappyEngine::getNetworkManager() const
+{
+    return m_pNetworkManager;
+}
+
 
 } //end namespace

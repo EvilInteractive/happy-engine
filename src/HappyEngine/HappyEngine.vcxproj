@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Assert.cpp" />
     <ClCompile Include="BinaryStream.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ControlsManager.cpp" />
     <ClCompile Include="Deferred3DRenderer.cpp" />
@@ -25,9 +26,11 @@
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Message.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="PhysicsBoxShape.cpp" />
     <ClCompile Include="PhysicsConvexShape.cpp" />
@@ -37,6 +40,7 @@
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PhysicsMaterial.cpp" />
     <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
     <ClCompile Include="Exception.cpp" />
@@ -56,6 +60,7 @@
   <ItemGroup>
     <ClInclude Include="Assert.h" />
     <ClInclude Include="BinaryStream.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ControlsManager.h" />
     <ClInclude Include="Deferred3DRenderer.h" />
@@ -73,9 +78,11 @@
     <ClInclude Include="MathConstants.h" />
     <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Message.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="IPhysicsShape.h" />
     <ClInclude Include="PhysicsBoxShape.h" />
@@ -87,6 +94,7 @@
     <ClInclude Include="PhysicsMaterial.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="ExternalError.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="SimpleForward3DRenderer.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="FileNotFoundException.h" />

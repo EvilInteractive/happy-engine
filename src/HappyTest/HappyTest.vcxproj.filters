@@ -37,6 +37,12 @@
     <ClCompile Include="DeferredPreEffect.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
+    <ClCompile Include="MyServer.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClient.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -52,6 +58,12 @@
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="DeferredPreEffect.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="MyServer.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClient.h">
       <Filter>happytest</Filter>
     </ClInclude>
   </ItemGroup>

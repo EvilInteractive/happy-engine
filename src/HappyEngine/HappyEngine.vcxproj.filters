@@ -47,6 +47,12 @@
     <Filter Include="happyengine\physics\shapes\base">
       <UniqueIdentifier>{5f406ff4-e079-42dc-b779-995adadf816c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\networking">
+      <UniqueIdentifier>{7eab6328-4343-4670-a644-f675b0b36d8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\networking\details">
+      <UniqueIdentifier>{d90ac87a-22e9-477f-b1c7-b06a7af220d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -171,6 +177,18 @@
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
       <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>happyengine\networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>happyengine\networking</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkManager.cpp">
+      <Filter>happyengine\networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>happyengine\networking\details</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -326,6 +344,18 @@
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
       <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>happyengine\networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>happyengine\networking</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkManager.h">
+      <Filter>happyengine\networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Message.h">
+      <Filter>happyengine\networking\details</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

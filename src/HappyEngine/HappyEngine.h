@@ -33,12 +33,14 @@
 #include "ControlsManager.h"
 #include "PhysicsEngine.h"
 #include "ContentManager.h"
+#include "NetworkManager.h"
 
 #define HAPPYENGINE happyengine::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
 #define CONTROLS HAPPYENGINE->getControls()
 #define PHYSICS HAPPYENGINE->getPhysics()
 #define CONTENT HAPPYENGINE->getContentManager()
+#define NETWORK HAPPYENGINE->getNetworkManager()
 
 namespace happyengine {
 
@@ -61,6 +63,7 @@ public:
     const io::ControlsManager* getControls() const;
     physics::PhysicsEngine* getPhysics() const;
     content::ContentManager* getContentManager() const;
+    networking::NetworkManager* getNetworkManager() const;
 
 private:
     // Singleton design pattern
@@ -73,6 +76,7 @@ private:
     io::ControlsManager* m_pControlsManager;
     physics::PhysicsEngine* m_pPhysicsEngine;
     content::ContentManager* m_pContentManager;
+    networking::NetworkManager* m_pNetworkManager;
 
     bool m_Quit;
     bool m_Loaded;

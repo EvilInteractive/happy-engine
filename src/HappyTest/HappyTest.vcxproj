@@ -67,6 +67,7 @@
       <AdditionalLibraryDirectories>../HappyEngine/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>HappyEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,6 +91,8 @@
     <ClCompile Include="DeferredPreEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="MyClient.cpp" />
+    <ClCompile Include="MyServer.cpp" />
     <ClCompile Include="TestBullet.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="VertexPNT.cpp" />
@@ -97,6 +100,8 @@
   <ItemGroup>
     <ClInclude Include="DeferredPreEffect.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="MyClient.h" />
+    <ClInclude Include="MyServer.h" />
     <ClInclude Include="TestBullet.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="VertexPNT.h" />

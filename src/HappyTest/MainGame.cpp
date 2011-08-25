@@ -34,7 +34,8 @@
 namespace happytest {
 
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
-                       m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect())
+                       m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
+                       m_pServer(nullptr), m_pClient(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -54,6 +55,11 @@ MainGame::~MainGame()
     {
         delete pBullet;
     });
+
+    delete m_pServer;
+    delete m_pClient;
+    
+    NETWORK->stop();
 }
 
 void MainGame::init()
@@ -107,7 +113,23 @@ void MainGame::tick(float dTime)
         HAPPYENGINE->quit();
     m_pTestObject->tick(dTime);
     
-    
+    if (m_pClient == nullptr && m_pServer == nullptr)
+    {
+        if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_F11))
+        {
+            std::cout << "Starting server\n";
+            m_pServer = NEW MyServer();
+            m_pServer->start(30000, 16);
+            NETWORK->start();
+        }
+        else if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_F12))
+        {
+            std::cout << "Starting client\n";
+            m_pClient = NEW MyClient();
+            m_pClient->asyncConnect("78.21.63.179", 30000);
+            NETWORK->start();
+        }
+    }
 
     std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&dTime](TestBullet* pBullet)
     {
