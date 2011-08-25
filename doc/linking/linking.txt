@@ -17,6 +17,20 @@ Link:
     glew32s.lib
     glu32.lib
     opengl32.lib
-    Foundation.lib
     DevIL.lib
     ILU.lib
+    PhysX3Cooking_x86.lib
+    PhysX3_x86.lib
+    SimulationController.lib
+    LowLevel.lib
+    PhysX3Extensions.lib
+    Foundation.lib
+    SceneQuery.lib
+    GeomUtils.lib
+    PhysX3Common.lib
+    PhysX3CharacterKinematic.lib
+    PvdRuntime.lib
+    PhysX3MetaData.lib
+    RepX3.lib
+    PxTask.lib
+    PhysX3Vehicle.lib
