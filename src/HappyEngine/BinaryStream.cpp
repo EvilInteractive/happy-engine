@@ -49,14 +49,14 @@ byte BinaryStream::readByte() const
 ushort BinaryStream::readWord() const
 {
     ushort s(0);
-    size_t count(fread(&s, sizeof(ushort), 1, m_pFile));
+    size_t count(fread(&s, sizeof(uint16), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return s;
 }
 uint BinaryStream::readDword() const
 {
     uint i(0);
-    size_t count(fread(&i, sizeof(uint), 1, m_pFile));
+    size_t count(fread(&i, sizeof(uint32), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return i;
 }
@@ -130,13 +130,13 @@ PxStream& BinaryStream::storeByte(byte b)
 }
 PxStream& BinaryStream::storeWord(ushort w)
 {
-    size_t count(fwrite(&w, sizeof(ushort), 1, m_pFile));
+    size_t count(fwrite(&w, sizeof(uint16), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 PxStream& BinaryStream::storeDword(uint d)
 {
-    size_t count(fwrite(&d, sizeof(uint), 1, m_pFile));
+    size_t count(fwrite(&d, sizeof(uint32), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }

@@ -7,6 +7,8 @@ namespace HappyCookerGUI
 {
     class Config
     {
+        public string binobjImportPath = "";
+        public string binobjExportPath = "";
         public string convexImportPath = "";
         public string convexExportPath = "";
     }

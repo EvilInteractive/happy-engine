@@ -48,7 +48,7 @@ void TestBullet::load()
     layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
     layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
 
-    m_pModel = CONTENT->asyncLoadModel("../data/models/cube.obj", layout);
+    m_pModel = CONTENT->asyncLoadModel("../data/models/cube.binobj", layout);
     
     m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/testTex.png");
 

@@ -16,10 +16,10 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author: Bastian Damman
-//Created: 04/08/2011
+//Created: 28/08/2011
 
-#ifndef _OBJ_LOADER_H_
-#define _OBJ_LOADER_H_
+#ifndef _BINOBJ_LOADER_H_
+#define _BINOBJ_LOADER_H_
 #pragma once
 
 #include <string>
@@ -38,21 +38,23 @@ namespace happyengine {
 namespace content {
 namespace models {
 
-class ObjLoader : public IModelLoader
+class BinObjLoader : public IModelLoader
 {
 public:
-    struct InternalVertex
-    {
-        math::Vector3 pos;
-        math::Vector2 tex;
-        math::Vector3 norm;
+   struct InternalVertex
+   {
+       math::Vector3 pos;
+       math::Vector2 tex;
+       math::Vector3 norm;
 
-        InternalVertex(math::Vector3 p, math::Vector2 t, math::Vector3 n):
+       InternalVertex(math::Vector3 p, math::Vector2 t, math::Vector3 n):
                             pos(p), tex(t), norm(n)
-        {}       
-    };
-	ObjLoader();
-    virtual ~ObjLoader();
+       {}    
+       InternalVertex(): pos(), tex(), norm()
+       {} 
+   };
+	BinObjLoader();
+    virtual ~BinObjLoader();
 
     virtual void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true);
 
@@ -65,32 +67,21 @@ public:
 
 
 private:
-    void read(const std::string& path);
-    void create(bool allowByteIndices);
-    void addIndex(uint index);
+    void read(const std::string& path, bool allowByteIndices);
     void fill(void* pdata, const graphics::VertexLayout& vertLayout) const;
 
-    std::vector<math::Vector3> m_PositionData;
-    std::vector<math::Vector2> m_TextureData;
-    std::vector<math::Vector3> m_NormalData;
-    std::vector<std::vector<std::vector<uint>>> m_FaceData;
-
     std::vector<InternalVertex> m_VertexData;
-    std::map<std::string, uint> m_IndexMap;
-
-    std::vector<byte> m_IndicesByte;
-    std::vector<ushort> m_IndicesUShort;
-    std::vector<uint> m_IndicesUInt;
-
+    
     void* m_Vertices;
+    void* m_Indices;
 
     uint m_NumVertices;
     uint m_NumIndices;
     graphics::IndexType m_IndexType;
 
     //Disable default copy constructor and default assignment operator
-    ObjLoader(const ObjLoader&);
-    ObjLoader& operator=(const ObjLoader&);
+    BinObjLoader(const BinObjLoader&);
+    BinObjLoader& operator=(const BinObjLoader&);
 };
 
 } } } //end namespace

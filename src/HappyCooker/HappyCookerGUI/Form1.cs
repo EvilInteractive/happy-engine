@@ -16,15 +16,74 @@ namespace HappyCookerGUI
     {
         private Config m_Config;
 
+        private const int COOKERS = 2;
+        private Button[] m_ImportPathBtn = new Button[COOKERS];
+        private Button[] m_ExportPathBtn = new Button[COOKERS];
+        private TextBox[] m_ImportPath = new TextBox[COOKERS];
+        private TextBox[] m_ExportPath = new TextBox[COOKERS];
+        private ListBox[] m_ImportListbox = new ListBox[COOKERS];
+        private ListBox[] m_ConvertListbox = new ListBox[COOKERS];
+        private ListBox[] m_ExportListbox = new ListBox[COOKERS];
+        private Button[] m_ImportToConvertBtn = new Button[COOKERS];
+        private Button[] m_ConvertToImportBtn = new Button[COOKERS];
+        private Button[] m_GoBtn = new Button[COOKERS];
+
+        private string[] m_CookerExtension = new string[COOKERS] { ".pxconvex", ".binobj" };
+
+        private int m_CurrentCooker = 0;
+
         public Form1()
         {
             InitializeComponent();
+
+            #region Convex
+            m_ImportPathBtn[0] = m_ConvexImportSetPathBtn;
+            m_ExportPathBtn[0] = m_ConvexExportSetPathBtn;
+            m_ImportPath[0] = m_ConvexImportPath;
+            m_ExportPath[0] = m_ConvexExportPath;
+            m_ImportListbox[0] = m_ConvexImportLB;
+            m_ConvertListbox[0] = m_ConvexConvertLB;
+            m_ExportListbox[0] = m_ConvexExportLB;
+            m_ImportToConvertBtn[0] = m_ConvexImportToConvertBtn;
+            m_ConvertToImportBtn[0] = m_ConvexConvertToImportBtn;
+            m_GoBtn[0] = m_ConvexGoBtn;
+            #endregion
+            #region BinObj
+            m_ImportPathBtn[1] = m_BinObjImportSetPathBtn;
+            m_ExportPathBtn[1] = m_BinObjExportSetPathBtn;
+            m_ImportPath[1] = m_BinObjImportPath;
+            m_ExportPath[1] = m_BinObjExportPath;
+            m_ImportListbox[1] = m_BinObjImportLB;
+            m_ConvertListbox[1] = m_BinObjConvertLB;
+            m_ExportListbox[1] = m_BinObjExportLB;
+            m_ImportToConvertBtn[1] = m_BinObjImportToConvertBtn;
+            m_ConvertToImportBtn[1] = m_BinObjConvertToImportBtn;
+            m_GoBtn[1] = m_BinObjGoBtn;
+            #endregion
+
+            for (int i = 0; i < COOKERS; i++)
+            {
+                m_ImportPathBtn[i].Tag = i;
+                m_ImportPathBtn[i].Click += importSetPathBtn_Click;
+
+                m_ExportPathBtn[i].Tag = i;
+                m_ExportPathBtn[i].Click += exportSetPathBtn_Click;
+
+                m_ImportToConvertBtn[i].Tag = i;
+                m_ImportToConvertBtn[i].Click += importToConvertBtn_Click;
+
+                m_ConvertToImportBtn[i].Tag = i;
+                m_ConvertToImportBtn[i].Click += convertToImportBtn_Click;
+
+                m_GoBtn[i].Tag = i;
+                m_GoBtn[i].Click += goBtn_Click;
+            }
         }
         
         private void Form1_Load(object sender, EventArgs e)
         {
             readConfigFile();
-            initConvex();
+            init();
         }
 
         private void readConfigFile()
@@ -46,34 +105,55 @@ namespace HappyCookerGUI
                         m_Config.convexImportPath = line.Substring(19);
                     else if (line.StartsWith("convexExportPath = "))
                         m_Config.convexExportPath = line.Substring(19);
+                    else if (line.StartsWith("binobjImportPath = "))
+                        m_Config.binobjImportPath = line.Substring(19);
+                    else if (line.StartsWith("binobjExportPath = "))
+                        m_Config.binobjExportPath = line.Substring(19);
                 }
                 reader.Close();
             }
         }
 
+        private void init()
+        {
+            initConvex();
+            initBinObj();
+        }
         private void initConvex()
         {
-            m_ConvexImportPath.Text = m_Config.convexImportPath;
-            m_ConvexExportPath.Text = m_Config.convexExportPath;
+            m_ImportPath[0].Text = m_Config.convexImportPath;
+            m_ExportPath[0].Text = m_Config.convexExportPath;
 
-            ListBoxFiller filler = new ListBoxFiller(m_ConvexImportLB, m_Config.convexImportPath, "*.obj",
-                                                     m_ConvexConvertLB,
-                                                     m_ConvexExportLB, m_Config.convexExportPath, "*.pxconvex");
+            ListBoxFiller filler = new ListBoxFiller(m_ImportListbox[0], m_Config.convexImportPath, "*.obj",
+                                                     m_ConvertListbox[0],
+                                                     m_ExportListbox[0], m_Config.convexExportPath, "*.pxconvex");
+        }
+        private void initBinObj()
+        {
+            m_ImportPath[1].Text = m_Config.binobjImportPath;
+            m_ExportPath[1].Text = m_Config.binobjExportPath;
+
+            ListBoxFiller filler = new ListBoxFiller(m_ImportListbox[1], m_Config.binobjImportPath, "*.obj",
+                                                     m_ConvertListbox[1],
+                                                     m_ExportListbox[1], m_Config.binobjExportPath, "*.binobj");
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             StreamWriter writer = new StreamWriter("config.cfg");
 
-            writer.WriteLine("convexImportPath = " + m_Config.convexImportPath);
-            writer.WriteLine("convexExportPath = " + m_Config.convexExportPath);
+            writer.WriteLine("convexImportPath = " + m_ImportPath[0].Text);
+            writer.WriteLine("convexExportPath = " + m_ExportPath[0].Text);
+            writer.WriteLine("binobjImportPath = " + m_ImportPath[1].Text);
+            writer.WriteLine("binobjExportPath = " + m_ExportPath[1].Text);
 
             writer.Close();
         }
 
-        private void m_ConvexGoBtn_Click(object sender, EventArgs e)
+        private void goBtn_Click(object sender, EventArgs e)
         {
-            m_ProgressBar.Maximum = m_ConvexConvertLB.Items.Count + 1;
+            m_CurrentCooker = (int)(sender as Button).Tag;
+            m_ProgressBar.Maximum = m_ConvertListbox[m_CurrentCooker].Items.Count + 1;
             m_ProgressBar.Minimum = 0;
             m_ProgressBar.Value = 1;
             m_ProgressBar.Refresh();
@@ -133,16 +213,23 @@ namespace HappyCookerGUI
             HappyCooker cooker = new HappyCooker();
             List<ListboxFile> failList = new List<ListboxFile>();
             List<ListboxFile> successList = new List<ListboxFile>();
-            foreach (ListboxFile lbf in m_ConvexConvertLB.Items)
+            foreach (ListboxFile lbf in m_ConvertListbox[m_CurrentCooker].Items)
             {
                 IncrementProgressbar();
-                string outPath = m_Config.convexExportPath +
+                string outPath = m_ExportPath[m_CurrentCooker].Text +
                     lbf.relativePath.Substring(0, lbf.relativePath.Length - Path.GetExtension(lbf.relativePath).Length) +
-                    ".pxconvex";
+                    m_CookerExtension[m_CurrentCooker];
                 string dir = Path.GetDirectoryName(outPath);
                 if (Directory.Exists(dir) == false)
                     Directory.CreateDirectory(dir);
-                if (cooker.CookObjToConvex(lbf.fullPath, outPath))
+
+                bool success = false;
+                switch (m_CurrentCooker)
+                {
+                    case 0: success = cooker.CookObjToConvex(lbf.fullPath, outPath); break;
+                    case 1: success = cooker.CookObjToBinObj(lbf.fullPath, outPath); break;
+                }
+                if (success)
                     successList.Add(lbf);
                 else
                     failList.Add(lbf);
@@ -150,21 +237,25 @@ namespace HappyCookerGUI
 
             cooker.Dispose();
 
-            ClearListBox(m_ConvexConvertLB);
-            AddItemsListBox(m_ConvexConvertLB, failList.ToArray());
+            ClearListBox(m_ConvertListbox[m_CurrentCooker]);
+            AddItemsListBox(m_ConvertListbox[m_CurrentCooker], failList.ToArray());
 
             Thread.Sleep(1000);
             ResetProgressbar();
         }
 
-        private void m_ConvexImportToExportBtn_Click(object sender, EventArgs e)
+        private void importToConvertBtn_Click(object sender, EventArgs e)
         {
-            MoveSelectedLbToLb(m_ConvexImportLB, m_ConvexConvertLB);
+            Button b = sender as Button;
+            int cooker = (int)b.Tag;
+            MoveSelectedLbToLb(m_ImportListbox[cooker], m_ConvertListbox[cooker]);
         }
 
-        private void m_ConvexExportToImportBtn_Click(object sender, EventArgs e)
+        private void convertToImportBtn_Click(object sender, EventArgs e)
         {
-            MoveSelectedLbToLb(m_ConvexConvertLB, m_ConvexImportLB);
+            Button b = sender as Button;
+            int cooker = (int)b.Tag;
+            MoveSelectedLbToLb(m_ConvertListbox[cooker], m_ImportListbox[cooker]);
         }
 
         private void MoveSelectedLbToLb(ListBox from, ListBox to)
@@ -181,29 +272,33 @@ namespace HappyCookerGUI
             }
         }
 
-        private void m_ConvexImportSetPathBtn_Click(object sender, EventArgs e)
+        private void importSetPathBtn_Click(object sender, EventArgs e)
         {
+            Button b = sender as Button;
+            int cooker = (int)b.Tag;
+
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.Description = "Select import folder";
             dialog.ShowNewFolderButton = true;
-            dialog.SelectedPath = m_Config.convexImportPath;
+            dialog.SelectedPath = m_ImportPath[cooker].Text;
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
-                m_Config.convexImportPath = dialog.SelectedPath + "\\";
-                m_ConvexImportPath.Text = m_Config.convexImportPath;
+                m_ImportPath[cooker].Text = dialog.SelectedPath + "\\";
             }
         }
 
-        private void m_ConvexExportSetPathBtn_Click(object sender, EventArgs e)
+        private void exportSetPathBtn_Click(object sender, EventArgs e)
         {
+            Button b = sender as Button;
+            int cooker = (int)b.Tag;
+
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.Description = "Select export folder";
             dialog.ShowNewFolderButton = true;
-            dialog.SelectedPath = m_Config.convexExportPath;
+            dialog.SelectedPath = m_ExportPath[cooker].Text;
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
-                m_Config.convexExportPath = dialog.SelectedPath + "\\";
-                m_ConvexExportPath.Text = m_Config.convexExportPath;
+                m_ExportPath[cooker].Text = dialog.SelectedPath + "\\";
             }
         }
     }

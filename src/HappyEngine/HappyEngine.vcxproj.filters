@@ -190,6 +190,9 @@
     <ClCompile Include="Message.cpp">
       <Filter>happyengine\networking\details</Filter>
     </ClCompile>
+    <ClCompile Include="BinObjLoader.cpp">
+      <Filter>happyengine\content\models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -356,6 +359,12 @@
     </ClInclude>
     <ClInclude Include="Message.h">
       <Filter>happyengine\networking\details</Filter>
+    </ClInclude>
+    <ClInclude Include="BinObjLoader.h">
+      <Filter>happyengine\content\models</Filter>
+    </ClInclude>
+    <ClInclude Include="IModelLoader.h">
+      <Filter>happyengine\content\models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

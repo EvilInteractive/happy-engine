@@ -20,6 +20,8 @@
 
 #include "ModelLoader.h"
 #include "HappyNew.h"
+#include "BinObjLoader.h"
+#include "ObjLoader.h"
 
 namespace happyengine {
 namespace content {
@@ -50,9 +52,10 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         if (m_ModelInvokeQueue.try_pop(data))
         {
             data->pModel->init();
-            data->pModel->setVertices(data->loader.getVertices(), data->loader.getNumVertices(), data->vertexLayout);
-            data->pModel->setIndices(data->loader.getIndices(), data->loader.getNumIndices(), data->loader.getIndexType());
+            data->pModel->setVertices(data->loader->getVertices(), data->loader->getNumVertices(), data->vertexLayout);
+            data->pModel->setIndices(data->loader->getIndices(), data->loader->getNumIndices(), data->loader->getIndexType());
             std::cout << "**ML INFO** model create completed: " << data->path << "\n";
+            delete data->loader;
             delete data;
         }
     }
@@ -64,6 +67,19 @@ graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, co
     data->path = path;
     data->vertexLayout = vertexLayout;
     data->pModel = graphics::Model::pointer(NEW graphics::Model());
+
+    if (data->path.rfind(".obj") != std::string::npos)
+    {
+        data->loader = NEW models::ObjLoader();
+    }
+    else if (data->path.rfind(".binobj") != std::string::npos)
+    {
+        data->loader = NEW models::BinObjLoader();
+    }
+    else
+    {
+        ASSERT("unkown model extension");
+    }
 
     m_ModelLoadQueue.push(data);
 
@@ -78,14 +94,15 @@ void ModelLoader::ModelLoadThread()
         ModelLoadData* data;
         if (m_ModelLoadQueue.try_pop(data))
         {
-            if (data->path.rfind(".obj") != std::string::npos)
+            if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
             {
-                data->loader.load(data->path, data->vertexLayout);
+                data->loader->load(data->path, data->vertexLayout);
                 std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
                 m_ModelInvokeQueue.push(data);
             }
             else
             {
+                delete data->loader;
                 delete data;
             }
         }

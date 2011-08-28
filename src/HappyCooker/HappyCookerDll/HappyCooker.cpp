@@ -60,7 +60,11 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
 
     content::models::ObjLoader objLoader;
 
-    try { objLoader.load(input, false); }
+    graphics::VertexLayout layout;
+    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position,
+        sizeof(math::Vector3), 0, ""));
+
+    try { objLoader.load(input, layout, false); }
     catch (error::FileNotFoundException e)
     {
         std::wcout << "error while trying to read obj: " << e.getMsg();
@@ -68,10 +72,6 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
     }
     
     std::cout << "read " << objLoader.getNumVertices() << " vertices and " << objLoader.getNumIndices() << " indices\n";
-    graphics::VertexLayout layout;
-    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position,
-        sizeof(math::Vector3), 0, ""));
-    std::vector<VertexPos> vertices( objLoader.getVertices<VertexPos>(layout) );
 
     std::cout << "starting cooking... \n";
     PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), PxCookingParams()));
@@ -91,8 +91,8 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         default: ASSERT("unkown indexType"); break;
     }
  
-    desc.points.count = vertices.size();
-    desc.points.data = &vertices[0];
+    desc.points.count = objLoader.getNumVertices();
+    desc.points.data = objLoader.getVertices();
     desc.points.stride = sizeof(VertexPos);
     desc.triangles.count = objLoader.getNumIndices() / 3;
     desc.triangles.data = objLoader.getIndices();
@@ -109,6 +109,40 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         std::cout << "cooking failed! :(\n";
 
     return succes;
+}
+
+bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
+{
+    using namespace happyengine;
+
+    std::cout << "happycooker cooking: " << input << " to " << output << "\n";
+
+    content::models::ObjLoader objLoader;
+
+    graphics::VertexLayout layout;
+    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position, sizeof(math::Vector3), 0, ""));
+    layout.addElement(graphics::VertexElement(1, graphics::VertexElement::Type_Vector2, graphics::VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, ""));
+    layout.addElement(graphics::VertexElement(2, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Normal, sizeof(math::Vector3), 20, ""));
+
+    try { objLoader.load(input, layout, false); }
+    catch (error::FileNotFoundException e)
+    {
+        std::wcout << "error while trying to read obj: " << e.getMsg();
+        return false;
+    }
+    
+    std::cout << "read " << objLoader.getNumVertices() << " vertices and " << objLoader.getNumIndices() << " indices\n";
+
+    std::cout << "starting cooking... \n";
+
+    io::BinaryStream stream(output, io::BinaryStream::Write);
+    stream.storeDword(objLoader.getNumVertices());
+    stream.storeBuffer(objLoader.getVertices(), 32 * objLoader.getNumVertices());
+    stream.storeDword(objLoader.getNumIndices());
+    stream.storeByte(static_cast<byte>(objLoader.getIndexType()));
+    stream.storeBuffer(objLoader.getIndices(), objLoader.getIndexType() * objLoader.getNumIndices());
+    std::cout << "cooking successful! :)\n";
+    return true;
 }
 
 } //end namespace

@@ -30,9 +30,9 @@ void __stdcall disposeHappyCooker()
 {
     happycooker::HappyCooker::dispose();
 }
-bool __stdcall cookObjToBinObj(const char* /*inputPath*/, const char* /*outputPath*/)
+bool __stdcall cookObjToBinObj(const char* inputPath, const char* outputPath)
 {
-    return false;
+    return happycooker::HappyCooker::getInstance()->cookObjToBinObj(inputPath, outputPath);
 }
 bool __stdcall cookObjToConvex(const char* inputPath, const char* outputPath)
 {

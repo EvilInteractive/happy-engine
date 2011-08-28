@@ -24,7 +24,7 @@
 
 #include "Model.h"
 #include "VertexLayout.h"
-#include "ObjLoader.h"
+#include "IModelLoader.h"
 
 #include <ppl.h>
 #include <concurrent_queue.h>
@@ -53,7 +53,7 @@ private:
         std::string path;
         graphics::VertexLayout vertexLayout;
         graphics::Model::pointer pModel;
-        models::ObjLoader loader;
+        models::IModelLoader* loader;
 
         ModelLoadData() {}
         virtual ~ModelLoadData() {}

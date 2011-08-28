@@ -43,6 +43,7 @@ public:
     static void dispose();
 
     bool cookObjToConvex(const char* input, const char* output);
+    bool cookObjToBinObj(const char* input, const char* output);
 
 private:
     static HappyCooker* s_pSingleton;

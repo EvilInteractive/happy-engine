@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Assert.cpp" />
     <ClCompile Include="BinaryStream.cpp" />
+    <ClCompile Include="BinObjLoader.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ControlsManager.cpp" />
@@ -60,6 +61,7 @@
   <ItemGroup>
     <ClInclude Include="Assert.h" />
     <ClInclude Include="BinaryStream.h" />
+    <ClInclude Include="BinObjLoader.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ControlsManager.h" />
@@ -69,6 +71,7 @@
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="HappyNew.h" />
     <ClInclude Include="HappyTypes.h" />
+    <ClInclude Include="IModelLoader.h" />
     <ClInclude Include="IniReader.h" />
     <ClInclude Include="IniWriter.h" />
     <ClInclude Include="Keyboard.h" />

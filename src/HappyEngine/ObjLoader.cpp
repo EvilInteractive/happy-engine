@@ -156,7 +156,7 @@ void ObjLoader::create(bool allowByteIndices)
                 addIndex(m_VertexData.size());
                 m_IndexMap[stream.str()] = m_VertexData.size();
                 m_VertexData.push_back(
-                    ObjLoader::TempVertex(
+                    ObjLoader::InternalVertex(
                         math::Vector3(m_PositionData[face[i][0] - 1]),
                         math::Vector2(m_TextureData[face[i][1] - 1]),
                         math::Vector3(m_NormalData[face[i][2] - 1])));
@@ -219,10 +219,20 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
             nOff = element.getByteOffset();
     });
 
+    //optimazation for struct == internal struct
+    if (sizeof(InternalVertex) == vertLayout.getVertexSize())
+    {
+        if (pOff == 0 && tOff == 12 && nOff == 20)
+        {
+            memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getVertexSize());
+            return;
+        }
+    }
+
     char* pCharData = static_cast<char*>(pVertexData);
     uint count = 0;
     uint bytecount(0);
-    std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const TempVertex& vert)
+    std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const InternalVertex& vert)
     {
         if (pOff != -1)
         {
