@@ -60,7 +60,6 @@ private:
     happyengine::byte m_BackgroundIndex;
 
     DeferredPreEffect* m_pDeferredPreEffect;
-	happyengine::graphics::Simple2DEffect* m_p2DEffect;
 
     float m_DrawTimer;
     float m_UpdateTimer;

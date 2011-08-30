@@ -68,4 +68,9 @@ void Simple2DEffect::end() const
 	m_pShader->end();
 }
 
+void Simple2DEffect::setWorldMatrix(const happyengine::math::Matrix &mat) const
+{
+	m_pShader->setShaderVar(m_ShaderWVPPos, mat);
+}
+
 } } //end namespace

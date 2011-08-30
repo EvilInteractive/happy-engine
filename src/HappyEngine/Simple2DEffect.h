@@ -40,6 +40,8 @@ public:
 	void begin() const;
 	void end() const;
 
+	void setWorldMatrix(const happyengine::math::Matrix &mat) const;
+
 private:
 	happyengine::graphics::Shader* m_pShader;
 

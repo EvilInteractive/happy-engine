@@ -27,6 +27,8 @@
 #include "Color.h"
 #include "Texture2D.h"
 #include "Simple2DEffect.h"
+#include "Matrix.h"
+#include "SDL.h"
 
 namespace happyengine {
 namespace graphics {
@@ -42,27 +44,22 @@ public:
 
 	void initialize(bool useDefaultShader = true);
 
+	/*----------------*/
+    /*	  SETTERS     */
+    /*----------------*/
 	void setColor(float r, float g, float b, float a = 1.0f);
+	void setTransformationMatrix(const happyengine::math::Matrix &mat) const;
+	void setAntiAliasing(bool bAA);
 
 	/*----------------*/
     /*  DRAW METHODS  */
     /*----------------*/
+	void drawText(const std::string &text, float x, float y) const;
 	void drawRectangle(float x, float y, float width, float height, float strokeSize = 1.0f) const;
+	void fillRectangle(float x, float y, float width, float height) const;
 
 private:
-
-	uint m_FboId;
-
-    // Textures:
-    //      - Color.rgba      GL_RGBA8
-    static const int TEXTURES = 1;
-    static const int TEXTURE_FORMAT;
-    static const int TEXTURE_INTERNALFORMAT;
-    static const int TEXTURE_ATTACHMENT;
-    uint m_TextureId[TEXTURES];
-    uint m_DepthBufferId;
-
-	Texture2D::pointer m_pTexture;
+	bool m_bAntiAliasing;
 
 	Color m_CurrentColor;
 	VertexLayout m_VertexLayout;
