@@ -43,7 +43,7 @@ void Simple2DEffect::load()
 
 	VertexLayout layout;
 	layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0, "inPosition"));
-	layout.addElement(VertexElement(1, VertexElement::Type_Vector3, VertexElement::Usage_Other, 12, 12, "inColor"));
+	layout.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 12, "inColor"));
 
 	m_pShader = NEW Shader();
 	std::vector<std::string> shaderOutputs;

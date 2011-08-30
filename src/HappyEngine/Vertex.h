@@ -19,6 +19,7 @@
 #define _VERTEX_H_
 #pragma once
 
+#include "Vector4.h"
 #include "Vector3.h"
 #include "Vector2.h"
 #include "VertexLayout.h"
@@ -30,10 +31,10 @@ struct VertexPosCol
 {
 public:
     math::Vector3 position;
-    math::Vector3 color;
+    math::Vector4 color;
 
 	VertexPosCol();
-	VertexPosCol(const math::Vector3& pos, const math::Vector3& col);
+	VertexPosCol(const math::Vector3& pos, const math::Vector4& col);
     ~VertexPosCol();
     //default copy constructor and assignment operator are fine
 };

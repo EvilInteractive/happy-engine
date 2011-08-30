@@ -183,7 +183,10 @@ void MainGame::draw(float dTime)
 	m_pSimple2DRenderer->begin();
 	m_p2DEffect->begin();
 
+	m_pSimple2DRenderer->setColor(1.0f,0.0f,0.0f,0.5f);
 	m_pSimple2DRenderer->drawRectangle(50,50,100,100);
+	m_pSimple2DRenderer->setColor(0.0f,1.0f,0.0f,0.5f);
+	m_pSimple2DRenderer->drawRectangle(75,75,100,100);
 
 	m_p2DEffect->end();
 	m_pSimple2DRenderer->end();

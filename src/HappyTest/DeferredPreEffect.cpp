@@ -46,7 +46,7 @@ void DeferredPreEffect::load()
     shaderOutputs.push_back("outColorIll");
     shaderOutputs.push_back("outPosSpec");
     shaderOutputs.push_back("outNormalGloss");
-    m_pShader->init("../data/shaders/deferredPreShader.vert", "../data/shaders/deferredPreShader.frag", layout, shaderOutputs);
+    ASSERT(m_pShader->init("../data/shaders/deferredPreShader.vert", "../data/shaders/deferredPreShader.frag", layout, shaderOutputs) == true);
 
     m_ShaderWVPpos = m_pShader->getShaderVarId("matWVP");
     m_ShaderWorldPos = m_pShader->getShaderVarId("matWorld");

@@ -26,7 +26,7 @@ namespace graphics {
 VertexPosCol::VertexPosCol() : position(), color()
 {
 }
-VertexPosCol::VertexPosCol(const math::Vector3& pos, const math::Vector3& col): position(pos), color(col)
+VertexPosCol::VertexPosCol(const math::Vector3& pos, const math::Vector4& col): position(pos), color(col)
 {
 }
 VertexPosCol::~VertexPosCol()

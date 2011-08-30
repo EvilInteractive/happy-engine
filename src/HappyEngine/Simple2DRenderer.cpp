@@ -47,16 +47,19 @@ Simple2DRenderer::~Simple2DRenderer()
 
 void Simple2DRenderer::begin()
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Simple2DRenderer::end()
 {
+	glDisable(GL_BLEND);
 }
 
 void Simple2DRenderer::initialize(bool)
 {
 	m_VertexLayout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0, "inPosition"));
-	m_VertexLayout.addElement(VertexElement(1, VertexElement::Type_Vector3, VertexElement::Usage_Other, 12, 12, "inColor"));
+	m_VertexLayout.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 12, "inColor"));
 
 	glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -93,10 +96,10 @@ void Simple2DRenderer::drawRectangle(float x, float y, float width, float height
     height = -(height / viewportHeight) * 2;
 
 	std::vector<VertexPosCol> vertices;
-    vertices.push_back(VertexPosCol(math::Vector3(x, y, 0), m_CurrentColor.rgb()));
-    vertices.push_back(VertexPosCol(math::Vector3(x + width, y, 0), m_CurrentColor.rgb()));
-    vertices.push_back(VertexPosCol(math::Vector3(x, y + height, 0), m_CurrentColor.rgb()));
-    vertices.push_back(VertexPosCol(math::Vector3(x + width, y + height, 0), m_CurrentColor.rgb()));
+    vertices.push_back(VertexPosCol(math::Vector3(x, y, 0), m_CurrentColor.rgba()));
+    vertices.push_back(VertexPosCol(math::Vector3(x + width, y, 0), m_CurrentColor.rgba()));
+    vertices.push_back(VertexPosCol(math::Vector3(x, y + height, 0), m_CurrentColor.rgba()));
+    vertices.push_back(VertexPosCol(math::Vector3(x + width, y + height, 0), m_CurrentColor.rgba()));
 
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(2); indices.push_back(1);
