@@ -52,7 +52,6 @@ bool validateShader(GLuint shaderID, const std::string& file)
     {
         std::cout << "Shader " << shaderID << " (" << file << ") compile error: \n" <<
             buffer << "\n";
-        return false;
     }
     return true;
 }
@@ -69,7 +68,6 @@ bool validateProgram(GLuint programID)
     {
         std::cout << "Program " << programID << "link error: \n" <<
             buffer << "\n";
-        succes = false;
     }
 
     glValidateProgram(programID);
@@ -104,8 +102,8 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
         strFS = reader.readToEnd();
         reader.close();
     }
-    catch (const error::FileNotFoundException& /*e*/)
-    { /*PANIC(e.getMsg());*/ return false; }
+    catch (const error::FileNotFoundException& e)
+    { std::wcout << e.getMsg(); return false; }
     // <-----------------------------------------------
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
