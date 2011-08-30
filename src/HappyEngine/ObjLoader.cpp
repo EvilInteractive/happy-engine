@@ -91,7 +91,7 @@ void ObjLoader::read(const std::string& path)
         {
             Vector2 t;
             sscanf_s(line.c_str(), "vt %f %f", &t.x, &t.y);
-            t = -t;
+            //t.y = 1 - t.y;
             m_TextureData.push_back(t);
         }
         else if (line[0] == 'v' && line[1] == 'n')

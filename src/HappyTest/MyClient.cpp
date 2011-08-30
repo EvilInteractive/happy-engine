@@ -28,4 +28,8 @@ MyClient::~MyClient()
 {
 }
 
+void MyClient::handleUserMessage(void* /*msg*/, size_t /*msg_size*/)
+{
+}
+
 } //end namespace

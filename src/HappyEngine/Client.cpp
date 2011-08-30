@@ -102,6 +102,7 @@ void Client::handleReceive(const boost::system::error_code& error, size_t bytesR
         Server::Header* header(static_cast<Server::Header*>(m_pBuffer));
         if (header->type == ServerMessage_None)
         {
+            handleUserMessage(header+1, bytesReceived - sizeof(Server::Header));
         }
         else
         {
@@ -140,6 +141,10 @@ void Client::asycRead()
         m_LastPacketEndpoint,
         boost::bind(&Client::handleReceive, this, boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
+}
+void Client::sendUserMessage(void* msg, size_t msgSize)
+{
+    sendMessage(details::Message::createServerMsg(msg, msgSize));
 }
 void Client::sendMessage(const details::Message::pointer& msg)
 {

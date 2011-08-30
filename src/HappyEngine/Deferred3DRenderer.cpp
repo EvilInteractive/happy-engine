@@ -159,10 +159,10 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW Model()), m_pLightManager
     /*                             LOAD RENDER QUAD                                 */
     /*----------------------------------------------------------------------------- */
     std::vector<VertexPosTex> vertices;
-    vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(0, 0)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(1, 0)));
-    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(0, 1)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(1, 1)));
+    vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(1, 0)));
+    vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(0, 0)));
+    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(1, 1)));
+    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(0, 1)));
 
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(1); indices.push_back(2);

@@ -29,6 +29,9 @@ public:
 	MyClient();
     virtual ~MyClient();
 
+protected:   
+    virtual void handleUserMessage(void* msg, size_t msg_size);
+
 private:
 
     //Disable default copy constructor and default assignment operator

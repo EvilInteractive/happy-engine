@@ -123,6 +123,7 @@ void TextureLoader::TextureLoadThread()
             {
                 if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
                 {
+                    iluFlipImage();
                     data.id = id;
                     data.pData = ilGetData();
                     m_TextureInvokeQueue.push(data);

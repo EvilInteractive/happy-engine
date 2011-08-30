@@ -45,6 +45,20 @@ public:
     void disconnect();
 
     typedef boost::shared_ptr<Client> pointer;
+    
+    /** 
+    \brief Sends a message to the server
+
+    \param[in] msg The message to be send, buffer will be copied: no need to keep it alive
+
+    \param[in] msgSize Size in bytes of the buffer
+
+    @see sendUserMessage
+    */
+    void sendUserMessage(void* msg, size_t msgSize);
+
+protected:
+    virtual void handleUserMessage(void* msg, size_t msg_size) = 0;
 
 private:
 
