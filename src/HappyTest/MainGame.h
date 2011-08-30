@@ -28,6 +28,8 @@
 #include "Color.h"
 #include "DeferredPreEffect.h"
 #include "TestBullet.h"
+#include "Simple2DRenderer.h"
+#include "Simple2DEffect.h"
 
 #include <ppl.h>
 #include <concurrent_vector.h>
@@ -51,12 +53,14 @@ public:
 
 private:
     happyengine::graphics::Deferred3DRenderer* m_pDeferred3DRenderer;
+	happyengine::graphics::Simple2DRenderer* m_pSimple2DRenderer;
     TestObject* m_pTestObject;
 
     happyengine::Color m_BackgroundColors[5];
     happyengine::byte m_BackgroundIndex;
 
     DeferredPreEffect* m_pDeferredPreEffect;
+	happyengine::graphics::Simple2DEffect* m_p2DEffect;
 
     float m_DrawTimer;
     float m_UpdateTimer;

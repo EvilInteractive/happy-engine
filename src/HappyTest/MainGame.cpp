@@ -35,7 +35,7 @@ namespace happytest {
 
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
-                       m_pServer(nullptr), m_pClient(nullptr)
+					   m_pServer(nullptr), m_pClient(nullptr), m_pSimple2DRenderer(nullptr), m_p2DEffect(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -49,6 +49,8 @@ MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m
 MainGame::~MainGame()
 {
     delete m_pDeferred3DRenderer;
+	delete m_pSimple2DRenderer;
+	delete m_p2DEffect;
     delete m_pTestObject;
     delete m_pDeferredPreEffect;
     std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
@@ -99,6 +101,12 @@ void MainGame::load()
     m_Bullets.push_back(pBullet);
 
     m_pDeferredPreEffect->load();
+
+	m_pSimple2DRenderer = NEW graphics::Simple2DRenderer;
+	m_p2DEffect = NEW graphics::Simple2DEffect;
+
+	m_pSimple2DRenderer->initialize();
+	m_p2DEffect->load();
 }
 void MainGame::tick(float dTime)
 {
@@ -171,6 +179,14 @@ void MainGame::draw(float dTime)
     });
     m_pDeferredPreEffect->end();
     m_pDeferred3DRenderer->end(happyengine::math::Vector3(-5, 5, -4));
+
+	m_pSimple2DRenderer->begin();
+	m_p2DEffect->begin();
+
+	m_pSimple2DRenderer->drawRectangle(50,50,100,100);
+
+	m_p2DEffect->end();
+	m_pSimple2DRenderer->end();
 }
 
 } //end namespace

@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Simple2DEffect.cpp" />
+    <ClCompile Include="Simple2DRenderer.cpp" />
     <ClCompile Include="Assert.cpp" />
     <ClCompile Include="BinaryStream.cpp" />
     <ClCompile Include="BinObjLoader.cpp" />
@@ -59,6 +61,8 @@
     <ClCompile Include="X.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Simple2DEffect.h" />
+    <ClInclude Include="Simple2DRenderer.h" />
     <ClInclude Include="Assert.h" />
     <ClInclude Include="BinaryStream.h" />
     <ClInclude Include="BinObjLoader.h" />

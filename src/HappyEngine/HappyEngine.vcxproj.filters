@@ -193,6 +193,12 @@
     <ClCompile Include="BinObjLoader.cpp">
       <Filter>happyengine\content\models</Filter>
     </ClCompile>
+    <ClCompile Include="Simple2DRenderer.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Simple2DEffect.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -365,6 +371,12 @@
     </ClInclude>
     <ClInclude Include="IModelLoader.h">
       <Filter>happyengine\content\models</Filter>
+    </ClInclude>
+    <ClInclude Include="Simple2DRenderer.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Simple2DEffect.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
