@@ -35,7 +35,7 @@ namespace happytest {
 
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
-					   m_pServer(nullptr), m_pClient(nullptr), m_pSimple2DRenderer(nullptr)
+					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happytest::FPSGraph())
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -49,7 +49,6 @@ MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m
 MainGame::~MainGame()
 {
     delete m_pDeferred3DRenderer;
-	delete m_pSimple2DRenderer;
     delete m_pTestObject;
     delete m_pDeferredPreEffect;
     std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
@@ -59,6 +58,8 @@ MainGame::~MainGame()
 
     delete m_pServer;
     delete m_pClient;
+
+	delete m_pFPSGraph;
     
     NETWORK->stop();
 }
@@ -101,8 +102,7 @@ void MainGame::load()
 
     m_pDeferredPreEffect->load();
 
-	m_pSimple2DRenderer = NEW graphics::Simple2DRenderer;
-	m_pSimple2DRenderer->initialize();
+	HE2D->initialize();
 }
 void MainGame::tick(float dTime)
 {
@@ -176,25 +176,29 @@ void MainGame::draw(float dTime)
     m_pDeferredPreEffect->end();
     m_pDeferred3DRenderer->end(happyengine::math::Vector3(-5, 5, -4));
 
-	m_pSimple2DRenderer->begin();
+	HE2D->begin();
 
-	m_pSimple2DRenderer->setColor(1.0f,0.0f,0.0f,0.5f);
+	/*m_pSimple2DRenderer->setColor(1.0f,0.0f,0.0f,0.5f);
 	m_pSimple2DRenderer->drawRectangle(50,50,100,100, 15.0f);
 	m_pSimple2DRenderer->setColor(0.0f,1.0f,0.0f,0.5f);
-	m_pSimple2DRenderer->drawRectangle(75,75,100,100);
+	m_pSimple2DRenderer->drawRectangle(75,75,100,100);*/
 
 	//happyengine::math::Matrix mat = happyengine::math::Matrix::createRotation(happyengine::math::Vector3(0.0f,0.0f,1.0f), happyengine::math::piOverFour);
 	//m_pSimple2DRenderer->setTransformationMatrix(mat);
 
-	m_pSimple2DRenderer->setColor(1.0f,0.0f,0.0f,0.5f);
-	m_pSimple2DRenderer->fillRectangle(250,50,100,100);
-	m_pSimple2DRenderer->setColor(0.0f,1.0f,0.0f,0.5f);
-	m_pSimple2DRenderer->fillRectangle(275,75,100,100);
+	HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
+	HE2D->fillRectangle(250,50,100,100);
+	HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
+	HE2D->fillRectangle(275,75,100,100);
+
+	//HE2D->fillEllipse(300, 250, 50, 200);
 
 	/*mat = happyengine::math::Matrix::createRotation(happyengine::math::Vector3(0.0f,0.0f,1.0f), 0);
 	m_pSimple2DRenderer->setTransformationMatrix(mat);*/
 
-	m_pSimple2DRenderer->end();
+	m_pFPSGraph->show(dTime);
+
+	HE2D->end();
 }
 
 } //end namespace

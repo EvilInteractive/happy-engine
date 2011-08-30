@@ -29,15 +29,23 @@
 #include "Simple2DEffect.h"
 #include "Matrix.h"
 #include "SDL.h"
+#include "Vector2.h"
+#include "HappyTypes.h"
+
+#define HE2D (happyengine::graphics::Simple2DRenderer::GetSingleton())
 
 namespace happyengine {
 namespace graphics {
 
 class Simple2DRenderer
 {
-public:
+private:
 	Simple2DRenderer();
+	static Simple2DRenderer* m_pSingleton;
+
+public:
     virtual ~Simple2DRenderer();
+	static Simple2DRenderer* GetSingleton();
 
 	void begin();
 	void end();
@@ -50,13 +58,16 @@ public:
 	void setColor(float r, float g, float b, float a = 1.0f);
 	void setTransformationMatrix(const happyengine::math::Matrix &mat) const;
 	void setAntiAliasing(bool bAA);
+	void setStrokeSize(float strokeSize = 1.0f);
 
 	/*----------------*/
     /*  DRAW METHODS  */
     /*----------------*/
 	void drawText(const std::string &text, float x, float y) const;
-	void drawRectangle(float x, float y, float width, float height, float strokeSize = 1.0f) const;
+	void drawRectangle(float x, float y, float width, float height) const;
 	void fillRectangle(float x, float y, float width, float height) const;
+	void fillEllipse(float x, float y, float width, float height) const;
+	void drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close = false) const;
 
 private:
 	bool m_bAntiAliasing;

@@ -23,11 +23,14 @@
 #include "GL/glew.h"
 #include "Model.h"
 #include "HappyEngine.h"
+#include <algorithm>
 
 #include <vector>
 
 namespace happyengine {
 namespace graphics {
+
+Simple2DRenderer* Simple2DRenderer::m_pSingleton = nullptr;
 
 Simple2DRenderer::Simple2DRenderer() :	m_pEffect(NEW happyengine::graphics::Simple2DEffect()),
 										m_bAntiAliasing(false)
@@ -40,13 +43,16 @@ Simple2DRenderer::~Simple2DRenderer()
 	delete m_pEffect;
 }
 
+Simple2DRenderer* Simple2DRenderer::GetSingleton()
+{
+	if (m_pSingleton == nullptr) m_pSingleton = NEW happyengine::graphics::Simple2DRenderer();
+	return m_pSingleton;
+}
+
 void Simple2DRenderer::begin()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	if (m_bAntiAliasing)
-		glEnable(GL_LINE_SMOOTH);
 
 	m_pEffect->begin();
 }
@@ -54,11 +60,10 @@ void Simple2DRenderer::begin()
 void Simple2DRenderer::end()
 {
 	glDisable(GL_BLEND);
-	
-	if (m_bAntiAliasing)
-		glDisable(GL_LINE_SMOOTH);
 
 	m_pEffect->end();
+
+	glLineWidth(1.0f);
 }
 
 void Simple2DRenderer::initialize(bool)
@@ -66,9 +71,7 @@ void Simple2DRenderer::initialize(bool)
 	m_VertexLayout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0, "inPosition"));
 	m_VertexLayout.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 12, "inColor"));
 
-	glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
+	//glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
@@ -91,7 +94,15 @@ void Simple2DRenderer::setTransformationMatrix(const happyengine::math::Matrix &
 
 void Simple2DRenderer::setAntiAliasing(bool bAA)
 {
-	m_bAntiAliasing = bAA;
+	if (bAA)
+		glEnable(GL_LINE_SMOOTH);
+	else
+		glDisable(GL_LINE_SMOOTH);
+}
+
+void Simple2DRenderer::setStrokeSize(float strokeSize)
+{
+	glLineWidth(strokeSize);
 }
 
 void Simple2DRenderer::drawText(const std::string &, float, float) const
@@ -99,7 +110,7 @@ void Simple2DRenderer::drawText(const std::string &, float, float) const
 
 }
 
-void Simple2DRenderer::drawRectangle(float x, float y, float width, float height, float strokeSize) const
+void Simple2DRenderer::drawRectangle(float x, float y, float width, float height) const
 {
 	int viewportWidth = GRAPHICS->getViewport().width, 
         viewportHeight = GRAPHICS->getViewport().height;
@@ -124,17 +135,11 @@ void Simple2DRenderer::drawRectangle(float x, float y, float width, float height
     model.setVertices(&vertices[0], 4, m_VertexLayout);
     model.setIndices(&indices[0], 4, IndexType_Byte);
 
-	glLineWidth(strokeSize);
-	glPointSize(strokeSize);
-
 	glBindVertexArray(model.getVertexArraysID());
 
 	glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
 
     glBindVertexArray(0);
-
-	glLineWidth(1.0f);
-	glPointSize(1.0f);
 }
 
 void Simple2DRenderer::fillRectangle(float x, float y, float width, float height) const
@@ -165,6 +170,71 @@ void Simple2DRenderer::fillRectangle(float x, float y, float width, float height
 	glBindVertexArray(model.getVertexArraysID());
 
 	glDrawElements(GL_TRIANGLES, model.getNumIndices(), model.getIndexType(), 0);
+
+    glBindVertexArray(0);
+}
+
+void Simple2DRenderer::fillEllipse(float x, float y, float width, float height) const
+{
+	int viewportWidth = GRAPHICS->getViewport().width, 
+        viewportHeight = GRAPHICS->getViewport().height;
+
+	x = (x / viewportWidth) * 2.0f - 1.0f;
+	y = -((y / viewportHeight) * 2.0f - 1.0f);
+    width = (width / viewportWidth) * 2.0f;
+    height = -(height / viewportHeight) * 2.0f;
+
+	const float DEG2RAD = 3.14159f/180;
+
+	std::vector<VertexPosCol> vertices;
+	std::vector<byte> indices;
+
+	for (int i=0; i < 360; i++)
+	{
+		float degInRad = i*DEG2RAD;
+		vertices.push_back(VertexPosCol(math::Vector3(x + cos(degInRad)*width,y + sin(degInRad)*height, 0), m_CurrentColor.rgba()));
+		indices.push_back(static_cast<byte>(i));
+	}
+
+	Model model;
+    model.init();
+    model.setVertices(&vertices[0], 360, m_VertexLayout);
+    model.setIndices(&indices[0], 360, IndexType_Byte);
+
+	glBindVertexArray(model.getVertexArraysID());
+
+	glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
+
+    glBindVertexArray(0);
+}
+
+void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close) const
+{
+	int viewportWidth = GRAPHICS->getViewport().width, 
+        viewportHeight = GRAPHICS->getViewport().height;
+
+	std::vector<VertexPosCol> vertices;
+	std::vector<byte> indices;
+
+	byte i(0);
+
+	std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 point)
+	{
+		vertices.push_back(VertexPosCol(math::Vector3((point.x / viewportWidth) * 2 - 1, -((point.y / viewportHeight) * 2.0f - 1.0f), 0), m_CurrentColor.rgba()));
+		indices.push_back(i++);
+	});
+
+	Model model;
+    model.init();
+    model.setVertices(&vertices[0], nrPoints, m_VertexLayout);
+    model.setIndices(&indices[0], nrPoints, IndexType_Byte);
+
+	glBindVertexArray(model.getVertexArraysID());
+
+	if (close == false)
+		glDrawElements(GL_LINE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
+	else
+		glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
 
     glBindVertexArray(0);
 }

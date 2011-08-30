@@ -38,6 +38,8 @@
 #include "MyServer.h"
 #include "MyClient.h"
 
+#include "FPSGraph.h"
+
 namespace happytest {
 
 class MainGame : public happyengine::IGame
@@ -53,7 +55,6 @@ public:
 
 private:
     happyengine::graphics::Deferred3DRenderer* m_pDeferred3DRenderer;
-	happyengine::graphics::Simple2DRenderer* m_pSimple2DRenderer;
     TestObject* m_pTestObject;
 
     happyengine::Color m_BackgroundColors[5];
@@ -68,6 +69,8 @@ private:
 
     MyServer* m_pServer;
     MyClient* m_pClient;
+
+	happytest::FPSGraph* m_pFPSGraph;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
