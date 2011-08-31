@@ -47,10 +47,13 @@ void TestBullet::load()
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
     layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
     layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
+    layout.addElement(VertexElement(3, VertexElement::Type_Vector3, VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, "inTangent"));
 
     m_pModel = CONTENT->asyncLoadModel("../data/models/cube.binobj", layout);
     
     m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/testTex.png");
+    m_pNormalMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_normal.png");
+    m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_specGlossIll.png");
 
     m_pMaterial = NEW physics::PhysicsMaterial(0.5f, 0.8f, 0.4f);
     m_pShape = NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2));
@@ -71,6 +74,8 @@ void TestBullet::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPre
     m_pEffect->setWVP(persp * view * m_mtxWorld);
     m_pEffect->setWorld(m_mtxWorld);  
     m_pEffect->setDiffuseMap(m_pDiffuseMap);
+    m_pEffect->setNormalMap(m_pNormalMap);
+    m_pEffect->setSpecGlossIllMap(m_pSGIMap);
 
     pRenderer->draw(m_pModel);
 }

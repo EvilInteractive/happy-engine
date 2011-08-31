@@ -102,7 +102,7 @@ void Client::handleReceive(const boost::system::error_code& error, size_t bytesR
         Server::Header* header(static_cast<Server::Header*>(m_pBuffer));
         if (header->type == ServerMessage_None)
         {
-            handleUserMessage(header+1, bytesReceived - sizeof(Server::Header));
+            handleUserMessage(header+1, bytesReceived - sizeof(Server::Header), header->user);
         }
         else
         {
@@ -142,9 +142,12 @@ void Client::asycRead()
         boost::bind(&Client::handleReceive, this, boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
 }
-void Client::sendUserMessage(void* msg, size_t msgSize)
+void Client::sendUserMessage(const void* msg, size_t msgSize)
 {
-    sendMessage(details::Message::createServerMsg(msg, msgSize));
+    Server::Header header;
+    header.type = ServerMessage_None;
+    header.user = getUserId();
+    sendMessage(details::Message::createServerMsg(msg, msgSize, &header, sizeof(Server::Header)));
 }
 void Client::sendMessage(const details::Message::pointer& msg)
 {
@@ -162,6 +165,7 @@ void Client::handleInternalMessage(void* msg, size_t /*msg_size*/, Server::Heade
             {
                 m_UserId = pHeader->user;
                 std::cout << "logged in successfull got slot: " << (int)m_UserId << "\n";
+                handleLoggedIn();
             }
             else
             {
@@ -175,6 +179,14 @@ void Client::handleInternalMessage(void* msg, size_t /*msg_size*/, Server::Heade
             break;
         default: ASSERT("unkown message type"); break;
     }
+}
+bool Client::isConnected() const
+{
+    return m_Connected;
+}
+byte Client::getUserId() const
+{
+    return m_UserId;
 }
 
 } } //end namespace

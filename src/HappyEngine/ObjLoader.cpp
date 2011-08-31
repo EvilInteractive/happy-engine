@@ -28,6 +28,7 @@
 #include "FileNotFoundException.h"
 
 #include "Assert.h"
+#include "ModelLoaderFunctions.h"
 
 namespace happyengine {
 namespace content {
@@ -128,15 +129,15 @@ void ObjLoader::create(bool allowByteIndices)
     m_NumIndices = m_FaceData.size() * 3;
     if (m_NumIndices < UCHAR_MAX && allowByteIndices)
     {
-        m_IndexType = graphics::IndexType_Byte;
+        m_IndexStride = graphics::IndexStride_Byte;
     }
     else if (m_NumIndices < USHRT_MAX)
     {
-        m_IndexType = graphics::IndexType_UShort;
+        m_IndexStride = graphics::IndexStride_UShort;
     }
     else if (m_NumIndices < UINT_MAX)
     {
-        m_IndexType = graphics::IndexType_UInt;
+        m_IndexStride = graphics::IndexStride_UInt;
     }
     else
     {
@@ -175,17 +176,17 @@ void ObjLoader::create(bool allowByteIndices)
         byte bTemp(0);
         ushort usTemp(0);
         uint uiTemp(0);
-        switch (m_IndexType)
+        switch (m_IndexStride)
         {
-            case graphics::IndexType_Byte:   
+            case graphics::IndexStride_Byte:   
                 bTemp = m_IndicesByte[i + 1];
                 m_IndicesByte[i + 1] = m_IndicesByte[i + 2]; 
                 m_IndicesByte[i + 2] = bTemp; break;
-            case graphics::IndexType_UShort: 
+            case graphics::IndexStride_UShort: 
                 usTemp = m_IndicesUShort[i + 1];
                 m_IndicesUShort[i + 1] = m_IndicesUShort[i + 2]; 
                 m_IndicesUShort[i + 2] = usTemp; break;
-            case graphics::IndexType_UInt:   
+            case graphics::IndexStride_UInt:   
                 uiTemp = m_IndicesUInt[i + 1];
                 m_IndicesUInt[i + 1] = m_IndicesUInt[i + 2]; 
                 m_IndicesUInt[i + 2] = uiTemp; break;
@@ -195,11 +196,11 @@ void ObjLoader::create(bool allowByteIndices)
 }
 void ObjLoader::addIndex(uint index)
 {
-    switch (m_IndexType)
+    switch (m_IndexStride)
     {
-        case graphics::IndexType_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
-        case graphics::IndexType_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
-        case graphics::IndexType_UInt:   m_IndicesUInt.push_back(index); break;
+        case graphics::IndexStride_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
+        case graphics::IndexStride_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
+        case graphics::IndexStride_UInt:   m_IndicesUInt.push_back(index); break;
         default: ASSERT("unkown type"); break;
     }
 }
@@ -208,6 +209,7 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
     int pOff = -1;
     int tOff = -1;
     int nOff = -1;
+    int tanOff = -1;
 
     std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const graphics::VertexElement& element)
     {
@@ -217,6 +219,8 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
             tOff = element.getByteOffset();
         else if (element.getUsage() == graphics::VertexElement::Usage_Normal)
             nOff = element.getByteOffset();
+        else if (element.getUsage() == graphics::VertexElement::Usage_Tangent)
+            tanOff = element.getByteOffset();
     });
 
     //optimazation for struct == internal struct
@@ -228,7 +232,7 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
             return;
         }
     }
-
+    
     char* pCharData = static_cast<char*>(pVertexData);
     uint count = 0;
     uint bytecount(0);
@@ -251,6 +255,22 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
         }
         ++count;
     });
+
+    if (tanOff != -1)
+    {
+        std::cout << "starting calculation tangents...    ";
+        std::vector<math::Vector3> tangents(calculateTangents(&m_VertexData[0], m_VertexData.size(), 0, 12, 20, 
+            sizeof(InternalVertex), getIndices(), getNumIndices(), getIndexStride()));
+        std::cout << "DONE\n";
+
+        count = 0;
+        std::for_each(tangents.cbegin(), tangents.cend(), [&](const math::Vector3& tan)
+        {
+            *reinterpret_cast<math::Vector3*>(&pCharData[count++ * vertLayout.getVertexSize() + tanOff]) = tan;
+            bytecount += 12;
+        });
+    }
+
     std::cout << "wrote " << bytecount << " bytes\n";
 }
 
@@ -260,17 +280,17 @@ const void* ObjLoader::getVertices() const
 }
 const void* ObjLoader::getIndices() const 
 {
-    switch (m_IndexType)
+    switch (m_IndexStride)
     {
-        case graphics::IndexType_Byte:   return &m_IndicesByte[0];
-        case graphics::IndexType_UShort: return &m_IndicesUShort[0];
-        case graphics::IndexType_UInt:   return &m_IndicesUInt[0];
+        case graphics::IndexStride_Byte:   return &m_IndicesByte[0];
+        case graphics::IndexStride_UShort: return &m_IndicesUShort[0];
+        case graphics::IndexStride_UInt:   return &m_IndicesUInt[0];
         default: ASSERT("unkown type");  return 0;
     }
 }
-graphics::IndexType ObjLoader::getIndexType() const
+graphics::IndexStride ObjLoader::getIndexStride() const
 {
-    return m_IndexType;
+    return m_IndexStride;
 }
 uint ObjLoader::getNumVertices() const
 {

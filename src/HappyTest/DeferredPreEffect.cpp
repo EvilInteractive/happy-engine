@@ -40,6 +40,7 @@ void DeferredPreEffect::load()
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
     layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
     layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
+    layout.addElement(VertexElement(3, VertexElement::Type_Vector3, VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, "inTangent"));
 
     m_pShader = NEW Shader();
     std::vector<std::string> shaderOutputs;
@@ -51,6 +52,8 @@ void DeferredPreEffect::load()
     m_ShaderWVPpos = m_pShader->getShaderVarId("matWVP");
     m_ShaderWorldPos = m_pShader->getShaderVarId("matWorld");
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
+    m_ShaderNormTexPos = m_pShader->getShaderSamplerId("normalMap");
+    m_ShaderSGITexPos = m_pShader->getShaderSamplerId("specGlossIllMap");
 }
 void DeferredPreEffect::begin() const
 {
@@ -72,6 +75,14 @@ void DeferredPreEffect::setWorld(const happyengine::math::Matrix& world) const
 void DeferredPreEffect::setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const
 {
     m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+}
+void DeferredPreEffect::setNormalMap(const happyengine::graphics::Texture2D::pointer& normalMap) const
+{
+    m_pShader->setShaderVar(m_ShaderNormTexPos, normalMap);
+}
+void DeferredPreEffect::setSpecGlossIllMap(const happyengine::graphics::Texture2D::pointer& sgiMap) const
+{
+    m_pShader->setShaderVar(m_ShaderSGITexPos, sgiMap);
 }
 
 } //end namespace

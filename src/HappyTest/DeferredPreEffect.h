@@ -40,6 +40,8 @@ public:
     void setWVP(const happyengine::math::Matrix& wvp) const;
     void setWorld(const happyengine::math::Matrix& wvp) const;
     void setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const;
+    void setNormalMap(const happyengine::graphics::Texture2D::pointer& normalMap) const;
+    void setSpecGlossIllMap(const happyengine::graphics::Texture2D::pointer& SpecGlossIllMap) const;
 
 private:
     happyengine::graphics::Shader* m_pShader;
@@ -47,6 +49,8 @@ private:
     happyengine::uint m_ShaderWVPpos;
     happyengine::uint m_ShaderWorldPos;
     happyengine::uint m_ShaderDiffTexPos;
+    happyengine::uint m_ShaderNormTexPos;
+    happyengine::uint m_ShaderSGITexPos;
 
     //Disable default copy constructor and default assignment operator
     DeferredPreEffect(const DeferredPreEffect&);

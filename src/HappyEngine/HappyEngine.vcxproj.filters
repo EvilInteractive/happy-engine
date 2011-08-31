@@ -199,6 +199,9 @@
     <ClCompile Include="Simple2DEffect.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="ModelLoaderFunctions.cpp">
+      <Filter>happyengine\content\models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -377,6 +380,9 @@
     </ClInclude>
     <ClInclude Include="Simple2DEffect.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoaderFunctions.h">
+      <Filter>happyengine\content\models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

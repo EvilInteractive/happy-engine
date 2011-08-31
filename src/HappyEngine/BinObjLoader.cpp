@@ -69,13 +69,13 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
     stream.readBuffer(&m_VertexData[0], m_NumVertices * sizeof(InternalVertex));
 
     m_NumIndices = stream.readDword();
-    m_IndexType = static_cast<graphics::IndexType>(stream.readByte());
-    if (m_IndexType == graphics::IndexType_Byte && allowByteIndices == false)
-        m_IndexType = graphics::IndexType_UShort;
+    m_IndexStride = static_cast<graphics::IndexStride>(stream.readByte());
+    if (m_IndexStride == graphics::IndexStride_Byte && allowByteIndices == false)
+        m_IndexStride = graphics::IndexStride_UShort;
     free(m_Indices);
-    m_Indices = malloc(m_IndexType * m_NumIndices);
+    m_Indices = malloc(m_IndexStride * m_NumIndices);
     ASSERT(m_Indices != nullptr, "not enough memory!");
-    stream.readBuffer(m_Indices, m_IndexType * m_NumIndices);
+    stream.readBuffer(m_Indices, m_IndexStride * m_NumIndices);
 }
 
 void BinObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout) const
@@ -83,6 +83,7 @@ void BinObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLay
     int pOff = -1;
     int tOff = -1;
     int nOff = -1;
+    int tanOff = -1;
 
     std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const graphics::VertexElement& element)
     {
@@ -92,7 +93,19 @@ void BinObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLay
             tOff = element.getByteOffset(); 
         else if (element.getUsage() == graphics::VertexElement::Usage_Normal)
             nOff = element.getByteOffset();
+        else if (element.getUsage() == graphics::VertexElement::Usage_Tangent)
+            tanOff = element.getByteOffset();
     });
+    
+    //optimazation for struct == internal struct
+    if (sizeof(InternalVertex) == vertLayout.getVertexSize())
+    {
+        if (pOff == 0 && tOff == 12 && nOff == 20 && tanOff == 32)
+        {
+            memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getVertexSize());
+            return;
+        }
+    }
 
     char* pCharData = static_cast<char*>(pVertexData);
     uint count = 0;
@@ -114,6 +127,11 @@ void BinObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLay
             *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
             bytecount += 12;
         }
+        if (tanOff != -1)
+        {
+            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + tanOff]) = vert.tan;
+            bytecount += 12;
+        }
         ++count;
     });
     std::cout << "wrote " << bytecount << " bytes\n";
@@ -127,9 +145,9 @@ const void* BinObjLoader::getIndices() const
 {
     return m_Indices;
 }
-graphics::IndexType BinObjLoader::getIndexType() const
+graphics::IndexStride BinObjLoader::getIndexStride() const
 {
-    return m_IndexType;
+    return m_IndexStride;
 }
 uint BinObjLoader::getNumVertices() const
 {

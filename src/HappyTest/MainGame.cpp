@@ -96,9 +96,9 @@ void MainGame::load()
     m_pTestObject = NEW TestObject();
     m_pTestObject->load();
 
-    TestBullet* pBullet(NEW TestBullet());
+    /*TestBullet* pBullet(NEW TestBullet());
     pBullet->load();
-    m_Bullets.push_back(pBullet);
+    m_Bullets.push_back(pBullet);*/
 
     m_pDeferredPreEffect->load();
 

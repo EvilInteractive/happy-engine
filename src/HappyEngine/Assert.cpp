@@ -41,7 +41,7 @@ void happyAssert(bool isOk)
 }
 void happyAssert(int isOk)
 {
-    happyAssert(isOk == 0);
+    happyAssert(isOk != 0);
 }
 void happyAssert(void* isOk)
 {

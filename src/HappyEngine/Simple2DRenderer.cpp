@@ -133,7 +133,7 @@ void Simple2DRenderer::drawRectangle(float x, float y, float width, float height
 	Model model;
     model.init();
     model.setVertices(&vertices[0], 4, m_VertexLayout);
-    model.setIndices(&indices[0], 4, IndexType_Byte);
+    model.setIndices(&indices[0], 4, IndexStride_Byte);
 
 	glBindVertexArray(model.getVertexArraysID());
 
@@ -165,7 +165,7 @@ void Simple2DRenderer::fillRectangle(float x, float y, float width, float height
 	Model model;
     model.init();
     model.setVertices(&vertices[0], 4, m_VertexLayout);
-    model.setIndices(&indices[0], 6, IndexType_Byte);
+    model.setIndices(&indices[0], 6, IndexStride_Byte);
 
 	glBindVertexArray(model.getVertexArraysID());
 
@@ -199,7 +199,7 @@ void Simple2DRenderer::fillEllipse(float x, float y, float width, float height) 
 	Model model;
     model.init();
     model.setVertices(&vertices[0], 360, m_VertexLayout);
-    model.setIndices(&indices[0], 360, IndexType_Byte);
+    model.setIndices(&indices[0], 360, IndexStride_Byte);
 
 	glBindVertexArray(model.getVertexArraysID());
 
@@ -227,7 +227,7 @@ void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2>
 	Model model;
     model.init();
     model.setVertices(&vertices[0], nrPoints, m_VertexLayout);
-    model.setIndices(&indices[0], nrPoints, IndexType_Byte);
+    model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
 
 	glBindVertexArray(model.getVertexArraysID());
 

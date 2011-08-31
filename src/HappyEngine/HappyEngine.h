@@ -43,18 +43,26 @@
 #define NETWORK HAPPYENGINE->getNetworkManager()
 
 namespace happyengine {
-
+enum SubEngine
+{
+    SubEngine_None = 0,
+    SubEngine_Graphics = 1 << 0,
+    SubEngine_Physics = 1 << 1,
+    SubEngine_Networking = 1 << 2,
+    SubEngine_Controls = 1 << 3,
+    SubEngine_Content = 1 << 4,
+    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4
+};
 class HappyEngine
 {
 public:
-    typedef boost::shared_ptr<HappyEngine> pointer;
-
     virtual ~HappyEngine();
 
+    static void init(int subengines);
     void start(IGame* pGame);
-    void dispose();
+    static void dispose();
 
-    static pointer getPointer();
+    static HappyEngine* getPointer();
 
     void quit();
 
@@ -68,7 +76,8 @@ public:
 private:
     // Singleton design pattern
     HappyEngine();
-    static pointer s_pHappyEngine;
+    static HappyEngine* s_pHappyEngine;
+    void initSubEngines(int subengines);
 
     IGame* m_pGame;
 
@@ -81,9 +90,10 @@ private:
     bool m_Quit;
     bool m_Loaded;
 
+    int m_SubEngines;
+
     // Methods
     void initWindow();
-    void initSubEngines();
     void updateLoop();
     void drawLoop();
     void cleanup();

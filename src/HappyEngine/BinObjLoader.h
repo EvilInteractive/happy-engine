@@ -46,11 +46,12 @@ public:
        math::Vector3 pos;
        math::Vector2 tex;
        math::Vector3 norm;
+       math::Vector3 tan;
 
-       InternalVertex(math::Vector3 p, math::Vector2 t, math::Vector3 n):
-                            pos(p), tex(t), norm(n)
+       InternalVertex(math::Vector3 p, math::Vector2 t, math::Vector3 n, math::Vector3 tn):
+                            pos(p), tex(t), norm(n), tan(tn)
        {}    
-       InternalVertex(): pos(), tex(), norm()
+       InternalVertex(): pos(), tex(), norm(), tan()
        {} 
    };
 	BinObjLoader();
@@ -62,7 +63,7 @@ public:
     virtual uint getNumVertices() const;
 
     virtual const void* getIndices() const;
-    virtual graphics::IndexType getIndexType() const;
+    virtual graphics::IndexStride getIndexStride() const;
     virtual uint getNumIndices() const;
 
 
@@ -77,7 +78,7 @@ private:
 
     uint m_NumVertices;
     uint m_NumIndices;
-    graphics::IndexType m_IndexType;
+    graphics::IndexStride m_IndexStride;
 
     //Disable default copy constructor and default assignment operator
     BinObjLoader(const BinObjLoader&);

@@ -30,7 +30,8 @@ public:
     virtual ~MyClient();
 
 protected:   
-    virtual void handleUserMessage(void* msg, size_t msg_size);
+    virtual void handleUserMessage(const void* msg, size_t msg_size, happyengine::byte user);
+    virtual void handleLoggedIn();
 
 private:
 

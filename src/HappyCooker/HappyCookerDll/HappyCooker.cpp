@@ -83,11 +83,11 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
     }
 
     PxConvexMeshDesc desc;   
-    switch (objLoader.getIndexType())
+    switch (objLoader.getIndexStride())
     {
-        case graphics::IndexType_Byte: ASSERT("byte indices are not supported"); break;
-        case graphics::IndexType_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
-        case graphics::IndexType_UInt: break;
+        case graphics::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
+        case graphics::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
+        case graphics::IndexStride_UInt: break;
         default: ASSERT("unkown indexType"); break;
     }
  
@@ -96,7 +96,7 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
     desc.points.stride = sizeof(VertexPos);
     desc.triangles.count = objLoader.getNumIndices() / 3;
     desc.triangles.data = objLoader.getIndices();
-    desc.triangles.stride = objLoader.getIndexType() * 3; //stride of triangle = 3 indices
+    desc.triangles.stride = objLoader.getIndexStride() * 3; //stride of triangle = 3 indices
 
     io::BinaryStream stream(output, io::BinaryStream::Write);
     bool succes(cooking->cookConvexMesh(desc, stream));
@@ -123,8 +123,9 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
     layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position, sizeof(math::Vector3), 0, ""));
     layout.addElement(graphics::VertexElement(1, graphics::VertexElement::Type_Vector2, graphics::VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, ""));
     layout.addElement(graphics::VertexElement(2, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Normal, sizeof(math::Vector3), 20, ""));
+    layout.addElement(graphics::VertexElement(3, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, ""));
 
-    try { objLoader.load(input, layout, false); }
+    try { objLoader.load(input, layout, true); }
     catch (error::FileNotFoundException e)
     {
         std::wcout << "error while trying to read obj: " << e.getMsg();
@@ -137,10 +138,10 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
 
     io::BinaryStream stream(output, io::BinaryStream::Write);
     stream.storeDword(objLoader.getNumVertices());
-    stream.storeBuffer(objLoader.getVertices(), 32 * objLoader.getNumVertices());
+    stream.storeBuffer(objLoader.getVertices(), 44 * objLoader.getNumVertices());
     stream.storeDword(objLoader.getNumIndices());
-    stream.storeByte(static_cast<byte>(objLoader.getIndexType()));
-    stream.storeBuffer(objLoader.getIndices(), objLoader.getIndexType() * objLoader.getNumIndices());
+    stream.storeByte(static_cast<byte>(objLoader.getIndexStride()));
+    stream.storeBuffer(objLoader.getIndices(), objLoader.getIndexStride() * objLoader.getNumIndices());
     std::cout << "cooking successful! :)\n";
     return true;
 }

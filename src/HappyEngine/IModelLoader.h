@@ -42,7 +42,7 @@ public:
     virtual uint getNumVertices() const = 0;
 
     virtual const void* getIndices() const = 0;
-    virtual graphics::IndexType getIndexType() const = 0;
+    virtual graphics::IndexStride getIndexStride() const = 0;
     virtual uint getNumIndices() const = 0;
 };
 

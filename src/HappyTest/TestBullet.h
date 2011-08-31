@@ -52,6 +52,8 @@ private:
 
     happyengine::graphics::Model::pointer m_pModel;
     happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
+    happyengine::graphics::Texture2D::pointer m_pNormalMap;
+    happyengine::graphics::Texture2D::pointer m_pSGIMap;
 
     happyengine::math::Matrix m_mtxWorld;
 

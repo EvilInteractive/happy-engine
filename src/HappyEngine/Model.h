@@ -27,11 +27,11 @@
 namespace happyengine {
 namespace graphics {
 
-enum IndexType
+enum IndexStride
 {
-    IndexType_Byte = sizeof(byte),
-    IndexType_UShort = sizeof(ushort),
-    IndexType_UInt = sizeof(uint)
+    IndexStride_Byte = sizeof(byte),
+    IndexStride_UShort = sizeof(ushort),
+    IndexStride_UInt = sizeof(uint)
 };
 
 class Model
@@ -44,7 +44,7 @@ public:
 
     void init();
     void setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout);
-    void setIndices(const void* pIndices, uint num, IndexType type);
+    void setIndices(const void* pIndices, uint num, IndexStride type);
 
     uint getVertexArraysID() const;
 

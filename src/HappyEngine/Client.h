@@ -55,10 +55,15 @@ public:
 
     @see sendUserMessage
     */
-    void sendUserMessage(void* msg, size_t msgSize);
+    void sendUserMessage(const void* msg, size_t msgSize);
+
+    bool isConnected() const;
+    byte getUserId() const;
+
 
 protected:
-    virtual void handleUserMessage(void* msg, size_t msg_size) = 0;
+    virtual void handleUserMessage(const void* msg, size_t msg_size, byte user) = 0;
+    virtual void handleLoggedIn() = 0;
 
 private:
 

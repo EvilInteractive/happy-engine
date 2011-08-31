@@ -170,7 +170,7 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW Model()), m_pLightManager
 
     m_pModel->init();
     m_pModel->setVertices(&vertices[0], 4, layout);
-    m_pModel->setIndices(&indices[0], 6, IndexType_Byte);
+    m_pModel->setIndices(&indices[0], 6, IndexStride_Byte);
 }
 
 

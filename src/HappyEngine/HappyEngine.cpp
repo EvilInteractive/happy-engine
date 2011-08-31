@@ -27,7 +27,7 @@
 
 namespace happyengine {
 
-HappyEngine::pointer HappyEngine::s_pHappyEngine = boost::shared_ptr<HappyEngine>(NEW HappyEngine());
+HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
@@ -45,7 +45,9 @@ void HappyEngine::quit()
 }
 void HappyEngine::dispose()
 {
-    cleanup();
+    HAPPYENGINE->cleanup();
+    delete s_pHappyEngine;
+    s_pHappyEngine = nullptr;
     std::cout << "\n--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::cleanup()
@@ -61,26 +63,53 @@ void HappyEngine::cleanup()
     m_pContentManager = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
-
-    SDL_Quit();
+    if (m_SubEngines & SubEngine_Graphics)
+    {
+        SDL_Quit();
+    }
 }
-void HappyEngine::initSubEngines()
+void HappyEngine::init(int subengines)
 {
-    ilInit();
-    iluInit();
-    iluSetLanguage(ILU_ENGLISH);
-    //init all sub engines here
-    m_pGraphicsEngine = NEW graphics::GraphicsEngine();
-    m_pControlsManager = NEW io::ControlsManager();
-    m_pPhysicsEngine = NEW physics::PhysicsEngine();
-    m_pContentManager = NEW content::ContentManager();
-    m_pNetworkManager = NEW networking::NetworkManager();
+    if (s_pHappyEngine == nullptr)
+        s_pHappyEngine = NEW HappyEngine();
+    HAPPYENGINE->initSubEngines(subengines);
+}
+void HappyEngine::initSubEngines(int subengines = SubEngine_All)
+{
+    m_SubEngines |= subengines;
+
+    if (subengines & SubEngine_Graphics)
+    {
+        SDL_Init(SDL_INIT_EVERYTHING);
+        m_pGraphicsEngine = NEW graphics::GraphicsEngine();
+    }
+
+    if (subengines & SubEngine_Content)
+    {
+        ilInit();
+        iluInit();
+        iluSetLanguage(ILU_ENGLISH);
+        m_pContentManager = NEW content::ContentManager();
+    }
+    
+    if (subengines & SubEngine_Controls)
+    {
+        m_pControlsManager = NEW io::ControlsManager();
+    }
+
+    if (subengines & SubEngine_Physics)
+    {
+        m_pPhysicsEngine = NEW physics::PhysicsEngine();
+    }
+
+    if (subengines & SubEngine_Networking)
+    {
+        m_pNetworkManager = NEW networking::NetworkManager();
+    }
 }
 
 void HappyEngine::start(IGame* pGame)
 {
-    cleanup();
-
     using namespace std;
     cout << "       ******************************       \n";
     cout << "  ****************        ****************  \n";
@@ -90,12 +119,6 @@ void HappyEngine::start(IGame* pGame)
     cout << "os: " << SDL_GetPlatform() << "\n\n";
 
     m_pGame = pGame;
-
-    //Init SDL
-    SDL_Init(SDL_INIT_EVERYTHING);
-
-    //Init other stuff
-    initSubEngines();
 
     //Init Game
     pGame->init();
@@ -158,7 +181,7 @@ void HappyEngine::drawLoop()
     }
 }
 
-HappyEngine::pointer HappyEngine::getPointer()
+HappyEngine* HappyEngine::getPointer()
 {
     return s_pHappyEngine;
 }

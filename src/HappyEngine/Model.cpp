@@ -96,7 +96,7 @@ void Model::setVertices(const void* pVertices, uint num, const VertexLayout& ver
     if (m_NumIndices > 0)
         m_Complete = true;
 }
-void Model::setIndices(const void* pIndices, uint num, IndexType type)
+void Model::setIndices(const void* pIndices, uint num, IndexStride type)
 {
     ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModel instead");
     m_NumIndices = num;
@@ -108,9 +108,9 @@ void Model::setIndices(const void* pIndices, uint num, IndexType type)
 
     switch (type)
     {
-        case IndexType_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
-        case IndexType_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
-        case IndexType_UInt: m_IndexType = GL_UNSIGNED_INT; break;
+        case IndexStride_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
+        case IndexStride_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
+        case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
         default: ASSERT("unkown type"); break;
     }
 

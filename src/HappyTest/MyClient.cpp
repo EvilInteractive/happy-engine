@@ -28,7 +28,11 @@ MyClient::~MyClient()
 {
 }
 
-void MyClient::handleUserMessage(void* /*msg*/, size_t /*msg_size*/)
+void MyClient::handleUserMessage(const void* /*msg*/, size_t /*msg_size*/, happyengine::byte /*user*/)
+{
+}
+
+void MyClient::handleLoggedIn()
 {
 }
 

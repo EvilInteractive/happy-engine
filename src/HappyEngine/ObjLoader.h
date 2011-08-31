@@ -60,7 +60,7 @@ public:
     virtual uint getNumVertices() const;
 
     virtual const void* getIndices() const;
-    virtual graphics::IndexType getIndexType() const;
+    virtual graphics::IndexStride getIndexStride() const;
     virtual uint getNumIndices() const;
 
 
@@ -86,7 +86,7 @@ private:
 
     uint m_NumVertices;
     uint m_NumIndices;
-    graphics::IndexType m_IndexType;
+    graphics::IndexStride m_IndexStride;
 
     //Disable default copy constructor and default assignment operator
     ObjLoader(const ObjLoader&);

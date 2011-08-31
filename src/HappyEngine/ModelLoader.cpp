@@ -53,7 +53,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         {
             data->pModel->init();
             data->pModel->setVertices(data->loader->getVertices(), data->loader->getNumVertices(), data->vertexLayout);
-            data->pModel->setIndices(data->loader->getIndices(), data->loader->getNumIndices(), data->loader->getIndexType());
+            data->pModel->setIndices(data->loader->getIndices(), data->loader->getNumIndices(), data->loader->getIndexStride());
             std::cout << "**ML INFO** model create completed: " << data->path << "\n";
             delete data->loader;
             delete data;

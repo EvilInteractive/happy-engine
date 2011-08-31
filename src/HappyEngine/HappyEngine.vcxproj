@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ModelLoaderFunctions.cpp" />
     <ClCompile Include="Simple2DEffect.cpp" />
     <ClCompile Include="Simple2DRenderer.cpp" />
     <ClCompile Include="Assert.cpp" />
@@ -61,6 +62,7 @@
     <ClCompile Include="X.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ModelLoaderFunctions.h" />
     <ClInclude Include="Simple2DEffect.h" />
     <ClInclude Include="Simple2DRenderer.h" />
     <ClInclude Include="Assert.h" />

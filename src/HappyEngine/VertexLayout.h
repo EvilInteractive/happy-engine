@@ -49,6 +49,7 @@ public:
         Usage_Position,
         Usage_TextureCoordinate,
         Usage_Normal,
+        Usage_Tangent,
         Usage_Other
     };
     VertexElement(uint elementIndex, Type type, Usage usage, 

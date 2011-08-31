@@ -62,10 +62,9 @@ public:
 protected:
     virtual void handleClientMessage(void* msg, uint msg_size, byte fromUser) = 0;
     
-    void userSendMessageToAll(void* pMsg, uint sizeInBytes);
-    void userSendMessageToAllBut(void* pMsg, uint sizeInBytes, byte userId);
-    void userSendMessageToUser(void* pMsg, uint sizeInBytes, byte userId);
-    void userSendMessageToSender(void* pMsg, uint sizeInBytes);
+    void userSendMessageToAll(void* pMsg, uint sizeInBytes, byte from);
+    void userSendMessageToAllBut(void* pMsg, uint sizeInBytes, byte from, byte userId);
+    void userSendMessageToUser(void* pMsg, uint sizeInBytes, byte from, byte userId);
 
 private:
     struct User

@@ -46,10 +46,13 @@ void TestObject::load()
     layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
     layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
     layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
+    layout.addElement(VertexElement(3, VertexElement::Type_Vector3, VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, "inTangent"));
 
-    m_pModel = CONTENT->asyncLoadModel("../data/models/testModelComplex1.binobj", layout);
+    m_pModel = CONTENT->asyncLoadModel("../data/models/car.binobj", layout);
     
-    m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/testTex.png");
+    m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
+    m_pNormalMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_normal.png");
+    m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_specGlossIll.png");
 
     happyengine::content::FontLoader fontLoader;
     fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
@@ -58,13 +61,13 @@ void TestObject::tick(float dTime)
 {
     using namespace happyengine;
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Left))
-        m_Rotation -= math::pi * dTime;
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
         m_Rotation += math::pi * dTime;
+    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
+        m_Rotation -= math::pi * dTime;
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
-        m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
         m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
+        m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
 }
 void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/)
 {
@@ -81,6 +84,8 @@ void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPre
     m_pEffect->setWVP(persp * view * world);
     m_pEffect->setWorld(world);  
     m_pEffect->setDiffuseMap(m_pDiffuseMap);
+    m_pEffect->setNormalMap(m_pNormalMap);
+    m_pEffect->setSpecGlossIllMap(m_pSGIMap);
 
     pRenderer->draw(m_pModel);
 }

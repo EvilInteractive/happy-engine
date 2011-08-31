@@ -19,6 +19,7 @@
 
 in vec2 passTexCoord;
 in vec3 passNormal;
+in vec3 passTangent;
 in vec3 passWorldPos;
 
 out vec4 outColorIll;
@@ -26,10 +27,32 @@ out vec4 outNormalGloss;
 out vec4 outPosSpec;
 
 uniform sampler2D diffuseMap;
+uniform sampler2D normalMap;
+uniform sampler2D specGlossIllMap;
+
+vec3 calcNormal(vec3 normal, vec3 tangent, vec3 rgb)
+{
+	//NormalMap
+	tangent = normalize(tangent);
+	normal = normalize(normal);
+
+	tangent -= dot(tangent, normal) * normal;
+	vec3 binormal = normalize(cross(tangent, normal));
+
+	mat3 assenstelsel = mat3(binormal, tangent, normal);
+
+	vec3 xyz = vec3(rgb.x * 2 - 1, rgb.y * 2 - 1, rgb.z * 2 - 1);
+
+	return normalize(assenstelsel * xyz);
+}
 
 void main()
 {
-	outColorIll = vec4(texture2D(diffuseMap, passTexCoord).rgb, 0.0f);
-	outPosSpec = vec4(passWorldPos, 1.0f);
-	outNormalGloss = vec4(passNormal, 0.5f);
+	vec4 color = texture2D(diffuseMap, passTexCoord);
+	vec4 normal = texture2D(normalMap, passTexCoord);
+	vec4 specGlossIll = texture2D(specGlossIllMap, passTexCoord);
+
+	outColorIll = vec4(color.rgb, specGlossIll.b);
+	outPosSpec = vec4(passWorldPos, specGlossIll.r);
+	outNormalGloss = vec4(calcNormal(passNormal, passTangent, normal.rgb), specGlossIll.g);
 }

@@ -44,17 +44,20 @@ Server::~Server()
 
 void Server::stop()
 {
-    std::for_each(m_ConnectedUsers.cbegin(), m_ConnectedUsers.cend(), [&](byte userId)
+    if (m_ConnectedUsers.size() > 0)
     {
-        Server::Header header;
-        header.type = ServerMessage_Disconnect;
-        header.user = userId;
+        std::for_each(m_ConnectedUsers.cbegin(), m_ConnectedUsers.cend(), [&](byte userId)
+        {
+            Server::Header header;
+            header.type = ServerMessage_Disconnect;
+            header.user = userId;
 
-        details::Message::pointer msg(details::Message::createServerMsg(0, 0, &header, sizeof(Header)));
+            details::Message::pointer msg(details::Message::createServerMsg(0, 0, &header, sizeof(Header)));
 
-        m_pUdpSocket->send_to(boost::asio::buffer(msg->getMsg(), msg->getSizeInBytes()),
-            m_Users[userId].endpoint);
-    });
+            m_pUdpSocket->send_to(boost::asio::buffer(msg->getMsg(), msg->getSizeInBytes()),
+                m_Users[userId].endpoint);
+        });
+    }
 
     m_pUdpSocket->shutdown(boost::asio::socket_base::shutdown_both);
     m_pUdpSocket->close();
@@ -71,7 +74,7 @@ void Server::start(ushort port, byte maxConnections)
         boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
 
     m_ConnectedUsers.clear();
-    m_ConnectedUsers.resize(maxConnections);
+    m_ConnectedUsers.reserve(maxConnections);
     m_Users.clear();
     m_Users.resize(maxConnections);
 
@@ -148,7 +151,7 @@ void Server::userConnecting()
 
         sendMessageToUser(details::Message::createServerMsg(&msg, sizeof(byte), &header, sizeof(Header)), slot);
 
-        std::cout << "user: " + (int)slot << " connected! ("<< m_LastPacketSender.address().to_string() << ":" << 
+        std::cout << "user: " << (int)slot << " connected! ("<< m_LastPacketSender.address().to_string() << ":" << 
             (int)m_LastPacketSender.port() << ")\n";
     }
     else
@@ -179,33 +182,26 @@ void Server::userDisconnecting(byte userId)
         std::cout << "warning disconnecting disconnected user!\n";
 }
 
-void Server::userSendMessageToAll(void* pMsg, uint sizeInBytes)
+void Server::userSendMessageToAll(void* pMsg, uint sizeInBytes, byte from)
 {
     Header header;
     header.type = ServerMessage_None;
-    header.user = 0;
+    header.user = from;
     sendMessageToAll(details::Message::createServerMsg(pMsg, sizeInBytes, &header, sizeof(Header)));
 }
-void Server::userSendMessageToAllBut(void* pMsg, uint sizeInBytes, byte userId)
+void Server::userSendMessageToAllBut(void* pMsg, uint sizeInBytes, byte from, byte userId)
 {
     Header header;
     header.type = ServerMessage_None;
-    header.user = 0;
+    header.user = from;
     sendMessageToAllBut(details::Message::createServerMsg(pMsg, sizeInBytes, &header, sizeof(Header)), userId);
 }
-void Server::userSendMessageToUser(void* pMsg, uint sizeInBytes, byte userId)
+void Server::userSendMessageToUser(void* pMsg, uint sizeInBytes, byte from, byte userId)
 {
     Header header;
     header.type = ServerMessage_None;
-    header.user = 0;
+    header.user = from;
     sendMessageToUser(details::Message::createServerMsg(pMsg, sizeInBytes, &header, sizeof(Header)), userId);
-}
-void Server::userSendMessageToSender(void* pMsg, uint sizeInBytes)
-{
-    Header header;
-    header.type = ServerMessage_None;
-    header.user = 0;
-    sendMessageToCurrent(details::Message::createServerMsg(pMsg, sizeInBytes, &header, sizeof(Header)));
 }
 
 void Server::sendMessageToAll(const details::Message::pointer& msg)
