@@ -142,6 +142,7 @@ void HappyEngine::updateLoop()
 
         if (m_Loaded)
         {
+            m_pControlsManager->tick();
             m_pContentManager->tick(dTime);
             m_pPhysicsEngine->tick(dTime);
             m_pGame->tick(dTime);
@@ -171,7 +172,7 @@ void HappyEngine::drawLoop()
                 case SDL_QUIT: m_Quit = true; break;
             }
         }            
-        m_pControlsManager->tick(); //tick here because needs to be in this thread
+        m_pControlsManager->sdlThreadInvoke();
 
         m_pContentManager->glThreadInvoke();
 

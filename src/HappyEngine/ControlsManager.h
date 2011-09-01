@@ -35,6 +35,7 @@ public:
     virtual ~ControlsManager();
 
     void tick();
+    void sdlThreadInvoke();
 
     const Keyboard* getKeyboard() const;
     const Mouse* getMouse() const;

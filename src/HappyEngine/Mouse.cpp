@@ -34,6 +34,9 @@ Mouse::~Mouse()
 
 void Mouse::tick()
 {
+}
+void Mouse::sdlThreadInvoke()
+{
     int x, y;
     m_PrevButtonState = m_ButtonState;
     m_ButtonState = SDL_GetMouseState(&x, &y);
