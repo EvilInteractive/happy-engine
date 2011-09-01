@@ -35,7 +35,7 @@ public:
 	FPSGraph();
     virtual ~FPSGraph();
 
-	void show(float dTime);
+	void show(float dTime, float interval = 0.5f);
 
 private:
 

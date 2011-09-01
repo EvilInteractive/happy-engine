@@ -60,7 +60,8 @@ MainGame::~MainGame()
     delete m_pClient;
 
 	delete m_pFPSGraph;
-    
+	delete HE2D;
+
     NETWORK->stop();
 }
 
@@ -176,6 +177,8 @@ void MainGame::draw(float dTime)
     m_pDeferredPreEffect->end();
     m_pDeferred3DRenderer->end(happyengine::math::Vector3(-5, 5, -4));
 
+
+	// 2D test stuff
 	HE2D->begin();
 
 	/*m_pSimple2DRenderer->setColor(1.0f,0.0f,0.0f,0.5f);
@@ -186,17 +189,24 @@ void MainGame::draw(float dTime)
 	//happyengine::math::Matrix mat = happyengine::math::Matrix::createRotation(happyengine::math::Vector3(0.0f,0.0f,1.0f), happyengine::math::piOverFour);
 	//m_pSimple2DRenderer->setTransformationMatrix(mat);
 
-	HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-	HE2D->fillRectangle(250,50,100,100);
-	HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-	HE2D->fillRectangle(275,75,100,100);
+	//for (int i = 0; i < 500; ++i)
+	//{
+	//	/*for (int i2 = 0; i2 < 300; ++i2)
+	//	{*/
+	//	int i2 = 50;
+	//		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
+	//		HE2D->fillRectangle((float)(i*2),(float)(i2*2),100,100);
+	//		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
+	//		HE2D->fillRectangle((float)(i*2 + 1),(float)(i2*2+1),100,100);
+	//	//}
+	//}
 
 	//HE2D->fillEllipse(300, 250, 50, 200);
 
 	/*mat = happyengine::math::Matrix::createRotation(happyengine::math::Vector3(0.0f,0.0f,1.0f), 0);
 	m_pSimple2DRenderer->setTransformationMatrix(mat);*/
 
-	m_pFPSGraph->show(dTime);
+	m_pFPSGraph->show(dTime, 0.25f);
 
 	HE2D->end();
 }

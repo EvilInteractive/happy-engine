@@ -175,4 +175,10 @@ void Matrix::toFloatArray(float arr[16]) const
     arr[15] = m_Matrix.column3.w;
 }
 
+//Static
+const Matrix Matrix::Identity = Matrix(1, 0, 0, 0,
+                                       0, 1, 0, 0,
+                                       0, 0, 1, 0,
+                                       0, 0, 0, 1);
+
 } } //end namespace

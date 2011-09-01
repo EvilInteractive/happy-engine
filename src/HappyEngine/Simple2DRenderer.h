@@ -40,29 +40,29 @@ namespace graphics {
 class Simple2DRenderer
 {
 private:
+
+	// SINGLETON
 	Simple2DRenderer();
 	static Simple2DRenderer* m_pSingleton;
 
 public:
+
+	// CONSTRUCTOR - DESTRUCTOR
     virtual ~Simple2DRenderer();
 	static Simple2DRenderer* GetSingleton();
 
+	// GENERAL
 	void begin();
 	void end();
-
 	void initialize(bool useDefaultShader = true);
 
-	/*----------------*/
-    /*	  SETTERS     */
-    /*----------------*/
+    // SETTERS
 	void setColor(float r, float g, float b, float a = 1.0f);
 	void setTransformationMatrix(const happyengine::math::Matrix &mat) const;
 	void setAntiAliasing(bool bAA);
 	void setStrokeSize(float strokeSize = 1.0f);
 
-	/*----------------*/
-    /*  DRAW METHODS  */
-    /*----------------*/
+    // DRAW METHODS
 	void drawText(const std::string &text, float x, float y) const;
 	void drawRectangle(float x, float y, float width, float height) const;
 	void fillRectangle(float x, float y, float width, float height) const;
@@ -70,6 +70,8 @@ public:
 	void drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close = false) const;
 
 private:
+
+	// DATAMEMBERS
 	bool m_bAntiAliasing;
 
 	Color m_CurrentColor;

@@ -59,6 +59,9 @@ public:
 
     //getters
     void toFloatArray(float arr[16]) const;
+
+	//Static
+    static const Matrix Identity;
 };
 
 } } //end namespace

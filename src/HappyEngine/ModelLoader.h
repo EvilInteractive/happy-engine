@@ -15,8 +15,9 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 23/08/2011
+//Author:	Bastian Damman
+//Created:	23/08/2011
+//Extended:	Sebastiaan Sprengers
 
 #ifndef _MODEL_LOADER_H_
 #define _MODEL_LOADER_H_
@@ -25,6 +26,7 @@
 #include "Model.h"
 #include "VertexLayout.h"
 #include "IModelLoader.h"
+#include "AssetContainer.h"
 
 #include <ppl.h>
 #include <concurrent_queue.h>
@@ -68,6 +70,8 @@ private:
     boost::thread m_ModelLoadThread;
     void ModelLoadThread();
     bool m_isModelThreadRunning;
+
+	AssetContainer<graphics::Model::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     ModelLoader(const ModelLoader&);

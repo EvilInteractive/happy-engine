@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 11/08/2011
+//Extended:	Sebastiaan Sprengers
 
 #include "TextureLoader.h"
 
@@ -36,13 +37,15 @@
 namespace happyengine {
 namespace content {
 
-TextureLoader::TextureLoader(): m_isLoadThreadRunning(false)
+TextureLoader::TextureLoader(): m_isLoadThreadRunning(false),
+								m_pAssetContainer(NEW AssetContainer<graphics::Texture2D::pointer>())
 {
 }
 
 
 TextureLoader::~TextureLoader()
 {
+	delete m_pAssetContainer;
 }
 
 
@@ -92,20 +95,29 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 
 graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
 {
-    graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+	if (m_pAssetContainer->IsAssetPresent(path))
+	{
+		return m_pAssetContainer->GetAsset(path);
+	}
+	else
+	{
+		graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
 
-    TextureLoadData data;
-    data.path = path;
-    data.id = 0;
-    data.pData = 0;
-    data.width = 0;
-    data.height = 0;
-    data.format = 0;
-    data.tex = tex2D;
+		TextureLoadData data;
+		data.path = path;
+		data.id = 0;
+		data.pData = 0;
+		data.width = 0;
+		data.height = 0;
+		data.format = 0;
+		data.tex = tex2D;
 
-    m_TextureLoadQueue.push(data);
+		m_TextureLoadQueue.push(data);
 
-    return tex2D;
+		m_pAssetContainer->AddAsset(path, tex2D);
+
+		return tex2D;
+	}
 }
 
 void TextureLoader::TextureLoadThread()

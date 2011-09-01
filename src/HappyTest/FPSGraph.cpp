@@ -36,26 +36,27 @@ FPSGraph::~FPSGraph()
 {
 }
 
-void FPSGraph::show(float dTime)
+void FPSGraph::show(float dTime, float interval)
 {
 	using namespace happyengine;
 	using namespace graphics;
 	
 	m_GameTime += dTime;
 
-	float delayInterval = 0.5f;
-
-	if( (m_GameTime - m_TBase) >= delayInterval )
+	if( (m_GameTime - m_TBase) >= interval )
 	{
-		m_TBase  += delayInterval;
+		m_TBase  += interval;
 
 		uint fps((uint)(1 / dTime));
 
 		m_FpsHistory.push_back(fps);
 	}
 
-	if (m_GameTime > delayInterval)
+	if (m_GameTime > interval)
 	{
+		if (m_FpsHistory.size() > 51)
+			m_FpsHistory.erase(m_FpsHistory.begin());
+
 		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
 		HE2D->fillRectangle(GRAPHICS->getViewport().width - 105.0f, 5.0f, 100, 40);
 
@@ -70,9 +71,6 @@ void FPSGraph::show(float dTime)
 
 		HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
 		HE2D->drawPolygon(points, points.size());
-
-		if (m_FpsHistory.size() > 51)
-			m_FpsHistory.erase(m_FpsHistory.begin());
 	}
 }
 

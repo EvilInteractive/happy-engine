@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 11/08/2011
+//Extended:	Sebastiaan Sprengers
 
 #ifndef _TEXTURE_LOADER_H_
 #define _TEXTURE_LOADER_H_
@@ -31,6 +32,7 @@
 #include "boost/thread.hpp"
 
 #include "HappyTypes.h"
+#include "AssetContainer.h"
 
 namespace happyengine {
 namespace content {
@@ -67,6 +69,8 @@ private:
     Concurrency::concurrent_queue<TextureLoadData> m_TextureInvokeQueue;
 
     boost::thread m_TextureLoadThread;
+
+	AssetContainer<graphics::Texture2D::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     TextureLoader(const TextureLoader&);

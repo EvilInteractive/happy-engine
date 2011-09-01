@@ -202,6 +202,12 @@
     <ClCompile Include="ModelLoaderFunctions.cpp">
       <Filter>happyengine\content\models</Filter>
     </ClCompile>
+    <ClCompile Include="AssetContainer.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -383,6 +389,12 @@
     </ClInclude>
     <ClInclude Include="ModelLoaderFunctions.h">
       <Filter>happyengine\content\models</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetContainer.h">
+      <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

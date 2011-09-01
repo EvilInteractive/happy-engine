@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 23/08/2011
+//Extended:	Sebastiaan Sprengers
 
 #include "ModelLoader.h"
 #include "HappyNew.h"
@@ -26,13 +27,14 @@
 namespace happyengine {
 namespace content {
 
-ModelLoader::ModelLoader(): m_isModelThreadRunning(false)
+ModelLoader::ModelLoader(): m_isModelThreadRunning(false),
+							m_pAssetContainer(NEW AssetContainer<graphics::Model::pointer>())
 {
 }
 
-
 ModelLoader::~ModelLoader()
 {
+	delete m_pAssetContainer;
 }
 
 void ModelLoader::tick(float /*dTime*/)
@@ -63,27 +65,36 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 
 graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout)
 {
-    ModelLoadData* data(NEW ModelLoadData());
-    data->path = path;
-    data->vertexLayout = vertexLayout;
-    data->pModel = graphics::Model::pointer(NEW graphics::Model());
+	if (m_pAssetContainer->IsAssetPresent(path))
+	{
+		return m_pAssetContainer->GetAsset(path);
+	}
+	else
+	{
+		ModelLoadData* data(NEW ModelLoadData());
+		data->path = path;
+		data->vertexLayout = vertexLayout;
+		data->pModel = graphics::Model::pointer(NEW graphics::Model());
 
-    if (data->path.rfind(".obj") != std::string::npos)
-    {
-        data->loader = NEW models::ObjLoader();
-    }
-    else if (data->path.rfind(".binobj") != std::string::npos)
-    {
-        data->loader = NEW models::BinObjLoader();
-    }
-    else
-    {
-        ASSERT("unkown model extension");
-    }
+		if (data->path.rfind(".obj") != std::string::npos)
+		{
+			data->loader = NEW models::ObjLoader();
+		}
+		else if (data->path.rfind(".binobj") != std::string::npos)
+		{
+			data->loader = NEW models::BinObjLoader();
+		}
+		else
+		{
+			ASSERT("unkown model extension");
+		}
 
-    m_ModelLoadQueue.push(data);
+		m_ModelLoadQueue.push(data);
 
-    return data->pModel;
+		m_pAssetContainer->AddAsset(path, data->pModel);
+
+		return data->pModel;
+	}
 }
 
 void ModelLoader::ModelLoadThread()
