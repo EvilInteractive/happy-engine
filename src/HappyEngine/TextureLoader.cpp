@@ -77,17 +77,13 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
             glBindTexture(GL_TEXTURE_2D, texID);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-            uint width = ilGetInteger(IL_IMAGE_WIDTH);
-            uint height = ilGetInteger(IL_IMAGE_HEIGHT);
-            uint format = ilGetInteger(IL_IMAGE_FORMAT);
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data.pData);
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
             glGenerateMipmap(GL_TEXTURE_2D);
 
             ilDeleteImage(data.id);
 
-            data.tex->init(texID, width, height, format);
+            data.tex->init(texID, data.width, data.height, data.format);
 
             std::cout << "**TL INFO** texture create completed: " << data.path << "\n";
         }
@@ -102,6 +98,9 @@ graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& 
     data.path = path;
     data.id = 0;
     data.pData = 0;
+    data.width = 0;
+    data.height = 0;
+    data.format = 0;
     data.tex = tex2D;
 
     m_TextureLoadQueue.push(data);
@@ -125,6 +124,9 @@ void TextureLoader::TextureLoadThread()
                 {
                     iluFlipImage();
                     data.id = id;
+                    data.width = ilGetInteger(IL_IMAGE_WIDTH);
+                    data.height = ilGetInteger(IL_IMAGE_HEIGHT);
+                    data.format = ilGetInteger(IL_IMAGE_FORMAT);
                     data.pData = ilGetData();
                     m_TextureInvokeQueue.push(data);
                     std::cout << "**TL INFO** obj load completed: " << data.path << "\n";

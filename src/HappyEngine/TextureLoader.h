@@ -53,6 +53,9 @@ private:
     {
         std::string path;
         byte* pData;
+        uint width;
+        uint height;
+        uint format;
         uint id;
         graphics::Texture2D::pointer tex;
     };
