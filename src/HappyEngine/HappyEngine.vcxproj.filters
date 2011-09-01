@@ -208,6 +208,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -395,6 +398,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
