@@ -14,48 +14,50 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 13/06/2011
 
 #include "Assert.h"
 #include <iostream>
 
+#pragma warning(disable:4127)
 namespace happyengine {
 namespace error {
 namespace details {
-
-void happyAssert(bool isOk, const std::string& message)
+void happyAssert(bool isOk, const std::string& message, const char* file, int line)
 {
     if (!isOk)
     {
         std::cout << "**ASSERTION FAILURE!**\n";
-        std::cout << message << "\n";
+        std::cout << "*error in file " << file << "(" << line << ")\n";
+        std::cout << "*" << message << "\n";
         __debugbreak();
     }
 }
-void happyAssert(bool isOk)
+void happyAssert(bool isOk, const char* file, int line)
 {
     if (!isOk)
     {
         std::cout << "**ASSERTION FAILURE!**\n";
+        std::cout << "*error in file " << file << "(" << line << ")\n";
         __debugbreak();
     }
 }
-void happyAssert(int isOk)
+void happyAssert(int isOk, const char* file, int line)
 {
-    happyAssert(isOk != 0);
+    happyAssert(isOk != 0, file, line);
 }
-void happyAssert(void* isOk)
+void happyAssert(void* isOk, const char* file, int line)
 {
-    happyAssert(isOk != nullptr);
+    happyAssert(isOk != nullptr, file, line);
 }
-void happyAssert(const std::string& message)
+void happyAssert(const std::string& message, const char* file, int line)
 {
     std::cout << "**ASSERTION FAILURE!**\n";
-    std::cout << message << "\n";
+    std::cout << "*error in file " << file << "(" << line << ")\n";
+    std::cout << "*" << message << "\n";
      __debugbreak();
 }
-void happyAssert()
-{
-     __debugbreak();
-}
-
 } } } //end namespace
+#pragma warning(default:4127)

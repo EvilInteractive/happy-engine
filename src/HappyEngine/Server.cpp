@@ -68,7 +68,7 @@ void Server::stop()
 void Server::start(ushort port, byte maxConnections)
 {
     ASSERT(m_pUdpSocket == nullptr, "m_pUdpSocket is allready initialized");
-  
+
     m_pUdpSocket = NEW boost::asio::ip::udp::socket(
         NETWORK->getIoService(), 
         boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
@@ -182,21 +182,21 @@ void Server::userDisconnecting(byte userId)
         std::cout << "warning disconnecting disconnected user!\n";
 }
 
-void Server::userSendMessageToAll(void* pMsg, uint sizeInBytes, byte from)
+void Server::userSendMessageToAll(const void* pMsg, uint sizeInBytes, byte from)
 {
     Header header;
     header.type = ServerMessage_None;
     header.user = from;
     sendMessageToAll(details::Message::createServerMsg(pMsg, sizeInBytes, &header, sizeof(Header)));
 }
-void Server::userSendMessageToAllBut(void* pMsg, uint sizeInBytes, byte from, byte userId)
+void Server::userSendMessageToAllBut(const void* pMsg, uint sizeInBytes, byte from, byte userId)
 {
     Header header;
     header.type = ServerMessage_None;
     header.user = from;
     sendMessageToAllBut(details::Message::createServerMsg(pMsg, sizeInBytes, &header, sizeof(Header)), userId);
 }
-void Server::userSendMessageToUser(void* pMsg, uint sizeInBytes, byte from, byte userId)
+void Server::userSendMessageToUser(const void* pMsg, uint sizeInBytes, byte from, byte userId)
 {
     Header header;
     header.type = ServerMessage_None;
@@ -254,6 +254,10 @@ void Server::handleWrite(
     {
         return;
     }
+}
+const std::vector<byte>& Server::getConnectedUsers() const
+{
+    return m_ConnectedUsers;
 }
 
 

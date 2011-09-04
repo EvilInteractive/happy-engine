@@ -25,6 +25,7 @@
 #include "ModelLoader.h"
 #include "Texture2D.h"
 #include "TextureLoader.h"
+#include "Vector3.h"
 
 namespace happyengine {
 namespace content {
@@ -44,6 +45,8 @@ public:
 
 	graphics::Model::pointer asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout);
 	graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
+
+    std::vector<math::Vector3> loadPath(const std::string& path);
 
 private:
 

@@ -83,7 +83,9 @@ void Model::setVertices(const void* pVertices, uint num, const VertexLayout& ver
             case VertexElement::Type_Byte: type = GL_BYTE; break;
             case VertexElement::Type_UByte: type = GL_UNSIGNED_BYTE; break;
             
-            default: ASSERT("unknown type"); break; 
+            #pragma warning(disable:4127)
+            default: ASSERT(false, "unknown type"); break;
+            #pragma warning(default:4127)
         }
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 

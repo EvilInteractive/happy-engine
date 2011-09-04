@@ -29,7 +29,7 @@ public:
 	MyServer();
     virtual ~MyServer();
 
-    virtual void handleClientMessage(void* msg, happyengine::uint msg_size, happyengine::byte fromUser);
+    virtual void handleClientMessage(const void* msg, happyengine::uint msg_size, happyengine::byte fromUser);
 
 private:
 

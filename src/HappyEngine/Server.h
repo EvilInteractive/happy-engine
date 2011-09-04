@@ -60,11 +60,13 @@ public:
     };
 
 protected:
-    virtual void handleClientMessage(void* msg, uint msg_size, byte fromUser) = 0;
+    virtual void handleClientMessage(const void* msg, uint msg_size, byte fromUser) = 0;
     
-    void userSendMessageToAll(void* pMsg, uint sizeInBytes, byte from);
-    void userSendMessageToAllBut(void* pMsg, uint sizeInBytes, byte from, byte userId);
-    void userSendMessageToUser(void* pMsg, uint sizeInBytes, byte from, byte userId);
+    void userSendMessageToAll(const void* pMsg, uint sizeInBytes, byte from);
+    void userSendMessageToAllBut(const void* pMsg, uint sizeInBytes, byte from, byte userId);
+    void userSendMessageToUser(const void* pMsg, uint sizeInBytes, byte from, byte userId);
+
+    const std::vector<byte>& getConnectedUsers() const;
 
 private:
     struct User

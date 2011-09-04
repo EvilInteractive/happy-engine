@@ -14,6 +14,7 @@
     <ClCompile Include="ModelLoaderFunctions.cpp" />
     <ClCompile Include="AssetContainer.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ObjLineLoader.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Simple2DEffect.cpp" />
     <ClCompile Include="Simple2DRenderer.cpp" />
@@ -66,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModelLoaderFunctions.h" />
+    <ClInclude Include="ObjLineLoader.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="AssetContainer.h" />
     <ClInclude Include="Camera.h" />
@@ -170,7 +172,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>

@@ -65,6 +65,18 @@ inline Vector3 cross(const Vector3& vector1, const Vector3& vector2)
         vector1.x * vector2.y - vector1.y * vector2.x);
 }
 
+//template
+//interpolation passes through every point, returns value between p1 and p2, t[0, 1]
+//T must support -T, T*T, T*float, T+T
+template<typename T>
+inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
+{
+    return ((p1 * 2) +
+            (-p0 + p2) * t + 
+            (p0 * 2 - p1 * 5 + p2 * 4 - p3) * sqr(t) +
+            (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
+}
+
 } } //end namespace
 
 #endif
