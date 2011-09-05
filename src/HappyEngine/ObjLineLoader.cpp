@@ -31,7 +31,7 @@
 
 namespace happyengine {
 namespace content {
-namespace models {
+namespace lines {
 
 ObjLineLoader::ObjLineLoader()
 {

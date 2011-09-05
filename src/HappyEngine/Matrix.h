@@ -59,6 +59,7 @@ public:
 
     //getters
     void toFloatArray(float arr[16]) const;
+    math::Vector3 getTranslation() const;
 
 	//Static
     static const Matrix Identity;

@@ -15,55 +15,37 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 11/08/2011
+//Author:	Bastian Damman
+//Created:	05/09/2011
 
-#ifndef _TEXTURE2D_H_
-#define _TEXTURE2D_H_
+#ifndef _LINE_LOADER_H_
+#define _LINE_LOADER_H_
 #pragma once
 
-#include "Assert.h"
-#undef assert
-#define assert ASSERT
+#include "AssetContainer.h"
+#include "Vector3.h"
 
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
+#include <string>
+#include <vector>
 
 namespace happyengine {
-namespace graphics {
-    
+namespace content {
 
-class Texture2D
+class LineLoader
 {
 public:
-	Texture2D();
-    virtual ~Texture2D();
-
-    void init(uint tex, uint width, uint height, uint format);
-
-    typedef boost::shared_ptr<Texture2D> pointer;
-
-    bool isInitialized() const;
-
-    uint getID() const;
-    uint getWidth() const;
-    uint getHeight() const;
-
-    static uint getTextureCount();
+	LineLoader();
+    virtual ~LineLoader();
+ 
+	std::vector<math::Vector3> loadLine(const std::string& path);
 
 private:
-    uint m_Width, m_Height;
-    uint m_Format;
 
-    uint m_Id;
-
-    static uint s_Count;
-
-    bool m_isInitialized;
+	AssetContainer<std::vector<math::Vector3>>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
-    Texture2D(const Texture2D&);
-    Texture2D& operator=(const Texture2D&);
+    LineLoader(const LineLoader&);
+    LineLoader& operator=(const LineLoader&);
 };
 
 } } //end namespace

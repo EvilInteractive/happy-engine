@@ -110,6 +110,9 @@ private:
     boost::asio::ip::udp::socket* m_pUdpSocket;
     boost::asio::ip::udp::endpoint m_LastPacketSender;
     void* m_pBuffer;
+    
+    uint m_ReceivedBytes;
+    uint m_SendBytes;
 
     //----------------------------------------------------------------
     //Disable default copy constructor and default assignment operator

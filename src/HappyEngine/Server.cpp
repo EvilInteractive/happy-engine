@@ -27,7 +27,7 @@
 namespace happyengine {
 namespace networking {
 
-Server::Server(): m_pUdpSocket(nullptr)
+Server::Server(): m_pUdpSocket(nullptr), m_ReceivedBytes(0), m_SendBytes(0)
 {
     m_pBuffer = malloc(MAX_MESSAGE_SIZE + sizeof(Header));
 }
@@ -64,6 +64,8 @@ void Server::stop()
     delete m_pUdpSocket;
     m_pUdpSocket = nullptr;
     std::cout << "Connection closed.\n";
+    std::cout << "Send " << m_SendBytes / 1024.0f / 1024.0f << "MB" << "\n";
+    std::cout << "Received " << m_ReceivedBytes / 1024.0f / 1024.0f << "MB" << "\n";
 }
 void Server::start(ushort port, byte maxConnections)
 {
@@ -96,18 +98,19 @@ void Server::asycRead()
         boost::bind(&Server::handleReceive, this, boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
 }
-void Server::handleReceive(const boost::system::error_code& error, size_t byteReceived)
+void Server::handleReceive(const boost::system::error_code& error, size_t bytesReceived)
 {
+    m_ReceivedBytes += bytesReceived;
     if (!error)
     {
         Header* msg(static_cast<Header*>(m_pBuffer));
         if (msg->type == ServerMessage_None)
         {
-            handleClientMessage(msg+1, byteReceived - sizeof(Header), msg->user);
+            handleClientMessage(msg+1, bytesReceived - sizeof(Header), msg->user);
         }
         else
         {
-            handleServerMessage(msg+1, byteReceived - sizeof(Header), msg);
+            handleServerMessage(msg+1, bytesReceived - sizeof(Header), msg);
         }
         asycRead();
     }
@@ -240,8 +243,9 @@ void Server::sendMessageToCurrent(const details::Message::pointer& msg)
 
 void Server::handleWrite(
     details::Message::pointer /*msg*/, byte /*userId*/,
-    const boost::system::error_code& error, size_t /*bytesWritten*/)
+    const boost::system::error_code& error, size_t bytesWritten)
 {
+    m_SendBytes += bytesWritten;
     if (!error)
     {
 

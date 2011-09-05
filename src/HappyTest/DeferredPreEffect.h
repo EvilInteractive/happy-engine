@@ -32,6 +32,8 @@ class DeferredPreEffect
 public:
 	DeferredPreEffect();
     virtual ~DeferredPreEffect();
+    
+    static happyengine::graphics::VertexLayout getVertexLayout();
 
     void load();
     void begin() const;

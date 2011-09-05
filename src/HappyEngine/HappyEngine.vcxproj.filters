@@ -53,7 +53,7 @@
     <Filter Include="happyengine\networking\details">
       <UniqueIdentifier>{d90ac87a-22e9-477f-b1c7-b06a7af220d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\content\paths">
+    <Filter Include="happyengine\content\lines">
       <UniqueIdentifier>{5ffc2bc4-d445-4fe5-960a-52aa52daab9b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -215,7 +215,10 @@
       <Filter>happyengine</Filter>
     </ClCompile>
     <ClCompile Include="ObjLineLoader.cpp">
-      <Filter>happyengine\content\paths</Filter>
+      <Filter>happyengine\content\lines</Filter>
+    </ClCompile>
+    <ClCompile Include="LineLoader.cpp">
+      <Filter>happyengine\content</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -409,7 +412,10 @@
       <Filter>happyengine</Filter>
     </ClInclude>
     <ClInclude Include="ObjLineLoader.h">
-      <Filter>happyengine\content\paths</Filter>
+      <Filter>happyengine\content\lines</Filter>
+    </ClInclude>
+    <ClInclude Include="LineLoader.h">
+      <Filter>happyengine\content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

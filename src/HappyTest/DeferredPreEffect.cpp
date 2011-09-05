@@ -30,7 +30,18 @@ DeferredPreEffect::~DeferredPreEffect()
 {
     delete m_pShader;
 }
+happyengine::graphics::VertexLayout DeferredPreEffect::getVertexLayout()
+{
+    using namespace happyengine;
+    using namespace graphics;
+    VertexLayout layout;
+    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
+    layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
+    layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
+    layout.addElement(VertexElement(3, VertexElement::Type_Vector3, VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, "inTangent"));
 
+    return layout;
+}
 void DeferredPreEffect::load()
 {
     using namespace happyengine;

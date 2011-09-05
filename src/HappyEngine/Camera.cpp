@@ -94,7 +94,7 @@ void Camera::SetActive(bool active)
 void Camera::BuildViewMatrix()
 {
 	m_matView = math::Matrix::createLookAtLH(m_vPosWorld, m_vPosWorld + m_vLookWorld, -m_vUpWorld);
-	m_matViewProjection = m_matView * m_matProjection;
+	m_matViewProjection = m_matProjection * m_matView;
 }
 
 void Camera::BuildProjectionMatrix()
@@ -104,7 +104,7 @@ void Camera::BuildProjectionMatrix()
 
 	m_matProjection = math::Matrix::createPerspectiveLH(m_FOV, m_AspectRatio, 1, m_NearZ, m_FarZ);
 
-	m_matViewProjection = m_matView * m_matProjection;
+	m_matViewProjection = m_matProjection * m_matView;
 }
 
 } } //end namespace

@@ -23,6 +23,7 @@
 #include "HappyNew.h"
 #include "BinObjLoader.h"
 #include "ObjLoader.h"
+#include "FileNotFoundException.h"
 
 namespace happyengine {
 namespace content {
@@ -107,9 +108,16 @@ void ModelLoader::ModelLoadThread()
         {
             if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
             {
-                data->loader->load(data->path, data->vertexLayout);
-                std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
-                m_ModelInvokeQueue.push(data);
+                try 
+                { 
+                    data->loader->load(data->path, data->vertexLayout); 
+                    std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
+                    m_ModelInvokeQueue.push(data);
+                }
+                catch (error::FileNotFoundException& e)
+                {
+                    std::wcout << e.getMsg() << "\n";
+                }            
             }
             else
             {

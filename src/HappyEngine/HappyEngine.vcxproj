@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="LineLoader.cpp" />
     <ClCompile Include="ModelLoaderFunctions.cpp" />
     <ClCompile Include="AssetContainer.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -66,6 +67,7 @@
     <ClCompile Include="X.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LineLoader.h" />
     <ClInclude Include="ModelLoaderFunctions.h" />
     <ClInclude Include="ObjLineLoader.h" />
     <ClInclude Include="Random.h" />

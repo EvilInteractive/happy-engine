@@ -19,6 +19,10 @@
 #define _MODEL_H_
 #pragma once
 
+#include "Assert.h"
+#undef assert
+#define assert ASSERT
+
 #include <vector>
 #include "VertexLayout.h"
 #include "boost/shared_ptr.hpp"

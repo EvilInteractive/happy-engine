@@ -175,6 +175,11 @@ void Matrix::toFloatArray(float arr[16]) const
     arr[15] = m_Matrix.column3.w;
 }
 
+math::Vector3 Matrix::getTranslation() const
+{
+    return math::Vector3(m_Matrix.column3.x, m_Matrix.column3.y, m_Matrix.column3.z);
+}
+
 //Static
 const Matrix Matrix::Identity = Matrix(1, 0, 0, 0,
                                        0, 1, 0, 0,

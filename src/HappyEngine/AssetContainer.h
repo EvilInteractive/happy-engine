@@ -24,12 +24,11 @@
 
 #include <map>
 #include <string>
+#include <iostream>
 
 namespace happyengine {
 namespace content {
-
-using namespace std;
-
+    
 template<typename T>
 class AssetContainer
 {
@@ -37,21 +36,21 @@ public:
     AssetContainer(void) { }
     virtual ~AssetContainer(void) { RemoveAllAssets(); }
 
-	bool IsAssetPresent(const string &key) const
+	bool IsAssetPresent(const std::string &key) const
     {
 	    return m_Map.find(key) != m_Map.end();
     }
-    void AddAsset(const string &key, T asset)
+    void AddAsset(const std::string &key, T asset)
     {        
         #if defined DEBUG || _DEBUG
-	    cout << "Adding Asset: " << key << "\n\n";
+	    std::cout << "Adding Asset: " << key << "\n\n";
         #endif
 	    m_Map[key] = asset;
     }
-	void RemoveAsset(const string &key)
+	void RemoveAsset(const std::string &key)
     {
 	    #if defined DEBUG || _DEBUG
-	    cout << "Releasing Asset: " << key << "\n";
+	    std::cout << "Releasing Asset: " << key << "\n";
         #endif
 
 	    delete m_Map[key];
@@ -70,13 +69,13 @@ public:
 	    m_Map.clear();
     }
     
-    T GetAsset(const string& key)
+    T GetAsset(const std::string& key)
     {
         return m_Map[key];
     }
 
 private:
-    map<string, T> m_Map;
+    std::map<std::string, T> m_Map;
 	
     //Disable default copy constructor and assignment operator
     AssetContainer(const AssetContainer& copy);
