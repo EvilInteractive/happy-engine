@@ -118,6 +118,10 @@
     <None Include="data\shaders\deferredPostSLShader.frag" />
     <None Include="data\shaders\deferredPreShader.frag" />
     <None Include="data\shaders\deferredPreShader.vert" />
+    <None Include="data\shaders\simple2DShader.frag" />
+    <None Include="data\shaders\simple2DShader.vert" />
+    <None Include="data\shaders\simple2DTextureShader.frag" />
+    <None Include="data\shaders\simple2DTextureShader.vert" />
     <None Include="data\shaders\simpleShader.frag" />
     <None Include="data\shaders\simpleShader.vert" />
     <None Include="data\shaders\simpleTextureShader.frag" />

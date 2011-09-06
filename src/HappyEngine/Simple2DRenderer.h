@@ -27,6 +27,7 @@
 #include "Color.h"
 #include "Texture2D.h"
 #include "Simple2DEffect.h"
+#include "Simple2DTextureEffect.h"
 #include "Matrix.h"
 #include "SDL.h"
 #include "Vector2.h"
@@ -58,26 +59,37 @@ public:
 
     // SETTERS
 	void setColor(float r, float g, float b, float a = 1.0f);
-	void setTransformationMatrix(const happyengine::math::Matrix &mat) const;
+	void setTransformationMatrix(const happyengine::math::Matrix& mat);
 	void setAntiAliasing(bool bAA);
 	void setStrokeSize(float strokeSize = 1.0f);
 
     // DRAW METHODS
-	void drawText(const std::string &text, float x, float y) const;
-	void drawRectangle(float x, float y, float width, float height) const;
-	void fillRectangle(float x, float y, float width, float height) const;
-	void fillEllipse(float x, float y, float width, float height) const;
-	void drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close = false) const;
+	void drawText(const math::Vector2& pos, const std::string& text) const;
+	void drawRectangle(const math::Vector2& pos, const math::Vector2& size) const;
+	void fillRectangle(const math::Vector2& pos, const math::Vector2& size) const;
+	void fillEllipse(const math::Vector2& pos, const math::Vector2& size) const;
+	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints, bool close = false) const;
+	void drawTexture2D(const math::Vector2& pos, const graphics::Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f)) const;
 
 private:
 
+	math::Vector2 getNDCPos(const math::Vector2& pos) const;
+	math::Vector2 getNDCSize(const math::Vector2& size) const;
+
 	// DATAMEMBERS
+	float m_StrokeSize;
 	bool m_bAntiAliasing;
 
 	Color m_CurrentColor;
-	VertexLayout m_VertexLayout;
+	VertexLayout m_VertexLayoutColor;
+	VertexLayout m_VertexLayoutTexture;
 
-	happyengine::graphics::Simple2DEffect* m_pEffect;
+	happyengine::graphics::Simple2DEffect* m_pColorEffect;
+	happyengine::graphics::Simple2DTextureEffect* m_pTextureEffect;
+
+	math::Matrix m_matWorld;
+
+	math::Vector2 m_ViewPortSize;
 
     //Disable default copy constructor and default assignment operator
     Simple2DRenderer(const Simple2DRenderer&);

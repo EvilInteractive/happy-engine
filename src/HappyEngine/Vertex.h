@@ -39,6 +39,18 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
+struct VertexPosCol2D
+{
+public:
+    math::Vector2 position;
+    math::Vector4 color;
+
+	VertexPosCol2D();
+	VertexPosCol2D(const math::Vector2& pos, const math::Vector4& col);
+    ~VertexPosCol2D();
+    //default copy constructor and assignment operator are fine
+};
+
 struct VertexPosTex
 {
 public:
@@ -48,6 +60,18 @@ public:
 	VertexPosTex();
 	VertexPosTex(const math::Vector3& pos, const math::Vector2& tex);
     ~VertexPosTex();
+    //default copy constructor and assignment operator are fine
+};
+
+struct VertexPosTex2D
+{
+public:
+    math::Vector2 position;
+    math::Vector2 textureCoord;
+
+	VertexPosTex2D();
+	VertexPosTex2D(const math::Vector2& pos, const math::Vector2& tex);
+    ~VertexPosTex2D();
     //default copy constructor and assignment operator are fine
 };
 

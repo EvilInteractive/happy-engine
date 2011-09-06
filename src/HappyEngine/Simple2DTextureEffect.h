@@ -18,39 +18,41 @@
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
 
-#ifndef _SIMPLE_2D_EFFECT_H_
-#define _SIMPLE_2D_EFFECT_H_
+#ifndef _SIMPLE_2D_TEXTURE_EFFECT_H_
+#define _SIMPLE_2D_TEXTURE_EFFECT_H_
 #pragma once
 
 #include "HappyTypes.h"
 #include "Shader.h"
 #include "Matrix.h"
 #include "Vector3.h"
+#include "Texture2D.h"
 
 namespace happyengine {
 namespace graphics {
 
-class Simple2DEffect
+class Simple2DTextureEffect
 {
 public:
-	Simple2DEffect();
-    virtual ~Simple2DEffect();
+	Simple2DTextureEffect();
+    virtual ~Simple2DTextureEffect();
 
 	void load();
 	void begin() const;
 	void end() const;
 
 	void setWorldMatrix(const happyengine::math::Matrix& mat) const;
+	void setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const;
 
 private:
-
 	happyengine::graphics::Shader* m_pShader;
 
 	happyengine::uint m_ShaderWVPPos;
+	happyengine::uint m_ShaderDiffTexPos;
 
     //Disable default copy constructor and default assignment operator
-    Simple2DEffect(const Simple2DEffect&);
-    Simple2DEffect& operator=(const Simple2DEffect&);
+    Simple2DTextureEffect(const Simple2DTextureEffect&);
+    Simple2DTextureEffect& operator=(const Simple2DTextureEffect&);
 };
 
 } } //end namespace

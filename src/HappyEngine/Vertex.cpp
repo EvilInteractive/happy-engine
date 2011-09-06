@@ -33,6 +33,19 @@ VertexPosCol::~VertexPosCol()
 {
 }
 
+/*----------------------------------------------------------------*/
+/*                          VertexPosCol2D                        */
+/*----------------------------------------------------------------*/
+VertexPosCol2D::VertexPosCol2D() : position(), color()
+{
+}
+VertexPosCol2D::VertexPosCol2D(const math::Vector2& pos, const math::Vector4& col): position(pos), color(col)
+{
+}
+VertexPosCol2D::~VertexPosCol2D()
+{
+}
+
 
 /*----------------------------------------------------------------*/
 /*                          VertexPosTex                          */
@@ -44,6 +57,19 @@ VertexPosTex::VertexPosTex(const math::Vector3& pos, const math::Vector2& tex): 
 {
 }
 VertexPosTex::~VertexPosTex()
+{
+}
+
+/*----------------------------------------------------------------*/
+/*                          VertexPosTex2D                        */
+/*----------------------------------------------------------------*/
+VertexPosTex2D::VertexPosTex2D(): position(), textureCoord()
+{
+}
+VertexPosTex2D::VertexPosTex2D(const math::Vector2& pos, const math::Vector2& tex): position(pos), textureCoord(tex)
+{
+}
+VertexPosTex2D::~VertexPosTex2D()
 {
 }
 

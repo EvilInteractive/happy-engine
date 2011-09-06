@@ -50,6 +50,7 @@
     <ClCompile Include="PhysicsMaterial.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Simple2DTextureEffect.cpp" />
     <ClCompile Include="SimpleForward3DRenderer.cpp" />
     <ClCompile Include="ContentManager.cpp" />
     <ClCompile Include="Exception.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="Rect.h" />
     <ClInclude Include="ExternalError.h" />
     <ClInclude Include="Server.h" />
+    <ClInclude Include="Simple2DTextureEffect.h" />
     <ClInclude Include="SimpleForward3DRenderer.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="FileNotFoundException.h" />

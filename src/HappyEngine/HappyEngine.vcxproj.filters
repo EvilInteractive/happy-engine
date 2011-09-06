@@ -220,6 +220,9 @@
     <ClCompile Include="LineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
+    <ClCompile Include="Simple2DTextureEffect.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -416,6 +419,9 @@
     </ClInclude>
     <ClInclude Include="LineLoader.h">
       <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="Simple2DTextureEffect.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

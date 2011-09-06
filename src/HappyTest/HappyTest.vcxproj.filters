@@ -113,5 +113,17 @@
     <None Include="data\shaders\deferredPostSelfIllumination.frag">
       <Filter>data\shaders</Filter>
     </None>
+    <None Include="data\shaders\simple2DShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\simple2DShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\simple2DTextureShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\simple2DTextureShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

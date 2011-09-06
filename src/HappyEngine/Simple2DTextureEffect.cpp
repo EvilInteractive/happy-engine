@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
 
-#include "Simple2DEffect.h"
+#include "Simple2DTextureEffect.h"
 #include "HappyNew.h"
 #include "VertexLayout.h"
 #include "Assert.h"
@@ -26,31 +26,32 @@
 namespace happyengine {
 namespace graphics {
 
-Simple2DEffect::Simple2DEffect() : m_pShader(nullptr)
+Simple2DTextureEffect::Simple2DTextureEffect() : m_pShader(nullptr)
 {
 }
 
 
-Simple2DEffect::~Simple2DEffect()
+Simple2DTextureEffect::~Simple2DTextureEffect()
 {
 	delete m_pShader;
 }
 
-void Simple2DEffect::load()
+void Simple2DTextureEffect::load()
 {
 	using namespace happyengine;
 	using namespace graphics;
 
 	VertexLayout layout;
 	layout.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
-	layout.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 8, "inColor"));
+	layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 8, "inTexCoord"));
 
 	m_pShader = NEW Shader();
 	std::vector<std::string> shaderOutputs;
 	shaderOutputs.push_back("outColor");
-	ASSERT(m_pShader->init("../data/shaders/simple2DShader.vert", "../data/shaders/simple2DShader.frag", layout, shaderOutputs) == true);
+	ASSERT(m_pShader->init("../data/shaders/simple2DTextureShader.vert", "../data/shaders/simple2DTextureShader.frag", layout, shaderOutputs) == true);
 
 	m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
+	m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
 
     m_pShader->begin();
 	math::Matrix MatWVP = math::Matrix::createTranslation(math::Vector3(0.0f,0.0f,0.0f));
@@ -58,19 +59,24 @@ void Simple2DEffect::load()
     m_pShader->end();
 }
 
-void Simple2DEffect::begin() const
+void Simple2DTextureEffect::begin() const
 {
 	m_pShader->begin();
 }
 
-void Simple2DEffect::end() const
+void Simple2DTextureEffect::end() const
 {
 	m_pShader->end();
 }
 
-void Simple2DEffect::setWorldMatrix(const happyengine::math::Matrix &mat) const
+void Simple2DTextureEffect::setWorldMatrix(const happyengine::math::Matrix& mat) const
 {
 	m_pShader->setShaderVar(m_ShaderWVPPos, mat);
+}
+
+void Simple2DTextureEffect::setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const
+{
+	m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
 }
 
 } } //end namespace

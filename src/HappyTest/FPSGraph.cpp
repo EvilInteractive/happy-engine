@@ -40,6 +40,7 @@ void FPSGraph::show(float dTime, float interval)
 {
 	using namespace happyengine;
 	using namespace graphics;
+	using namespace math;
 	
 	m_GameTime += dTime;
 
@@ -58,7 +59,7 @@ void FPSGraph::show(float dTime, float interval)
 			m_FpsHistory.erase(m_FpsHistory.begin());
 
 		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
-		HE2D->fillRectangle(GRAPHICS->getViewport().width - 105.0f, 5.0f, 100, 40);
+		HE2D->fillRectangle(Vector2(GRAPHICS->getViewport().width - 105.0f, 5.0f), Vector2(100, 40));
 
 		std::vector<math::Vector2> points;
 		uint i(0);
@@ -70,6 +71,7 @@ void FPSGraph::show(float dTime, float interval)
 		});
 
 		HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
+		HE2D->setStrokeSize();
 		HE2D->drawPolygon(points, points.size());
 	}
 }

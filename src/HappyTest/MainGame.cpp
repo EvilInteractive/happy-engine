@@ -104,6 +104,8 @@ void MainGame::load()
     m_pDeferredPreEffect->load();
 
 	HE2D->initialize();
+
+	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
 }
 void MainGame::tick(float dTime)
 {
@@ -150,6 +152,8 @@ void MainGame::tick(float dTime)
 }
 void MainGame::draw(float dTime)
 {
+	using namespace happyengine;
+	using namespace math;
 
     m_DrawTimer += dTime;
     if (m_DrawTimer >= 1.0f)
@@ -181,30 +185,10 @@ void MainGame::draw(float dTime)
 	// 2D test stuff
 	HE2D->begin();
 
-	/*m_pSimple2DRenderer->setColor(1.0f,0.0f,0.0f,0.5f);
-	m_pSimple2DRenderer->drawRectangle(50,50,100,100, 15.0f);
-	m_pSimple2DRenderer->setColor(0.0f,1.0f,0.0f,0.5f);
-	m_pSimple2DRenderer->drawRectangle(75,75,100,100);*/
+	//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
+	//HE2D->setTransformationMatrix(mat);
 
-	//happyengine::math::Matrix mat = happyengine::math::Matrix::createRotation(happyengine::math::Vector3(0.0f,0.0f,1.0f), happyengine::math::piOverFour);
-	//m_pSimple2DRenderer->setTransformationMatrix(mat);
-
-	//for (int i = 0; i < 500; ++i)
-	//{
-	//	/*for (int i2 = 0; i2 < 300; ++i2)
-	//	{*/
-	//	int i2 = 50;
-	//		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-	//		HE2D->fillRectangle((float)(i*2),(float)(i2*2),100,100);
-	//		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-	//		HE2D->fillRectangle((float)(i*2 + 1),(float)(i2*2+1),100,100);
-	//	//}
-	//}
-
-	//HE2D->fillEllipse(300, 250, 50, 200);
-
-	/*mat = happyengine::math::Matrix::createRotation(happyengine::math::Vector3(0.0f,0.0f,1.0f), 0);
-	m_pSimple2DRenderer->setTransformationMatrix(mat);*/
+	HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
 
 	m_pFPSGraph->show(dTime, 0.25f);
 
