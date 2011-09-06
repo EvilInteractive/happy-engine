@@ -29,11 +29,11 @@
 #include "Simple2DEffect.h"
 #include "Simple2DTextureEffect.h"
 #include "Matrix.h"
-#include "SDL.h"
+#include "Font.h"
 #include "Vector2.h"
 #include "HappyTypes.h"
 
-#define HE2D (happyengine::graphics::Simple2DRenderer::GetSingleton())
+#define HE2D (happyengine::graphics::Simple2DRenderer::getSingleton())
 
 namespace happyengine {
 namespace graphics {
@@ -50,7 +50,7 @@ public:
 
 	// CONSTRUCTOR - DESTRUCTOR
     virtual ~Simple2DRenderer();
-	static Simple2DRenderer* GetSingleton();
+	static Simple2DRenderer* getSingleton();
 
 	// GENERAL
 	void begin();
@@ -62,9 +62,11 @@ public:
 	void setTransformationMatrix(const happyengine::math::Matrix& mat);
 	void setAntiAliasing(bool bAA);
 	void setStrokeSize(float strokeSize = 1.0f);
+	void setFontHorizontalAlignment(FontHAlignment horizontalAlignment);
+	void setFontVerticalAlignment(FontVAlignment verticalAlignment);
 
     // DRAW METHODS
-	void drawText(const math::Vector2& pos, const std::string& text) const;
+	void drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const;
 	void drawRectangle(const math::Vector2& pos, const math::Vector2& size) const;
 	void fillRectangle(const math::Vector2& pos, const math::Vector2& size) const;
 	void fillEllipse(const math::Vector2& pos, const math::Vector2& size) const;
@@ -81,14 +83,16 @@ private:
 	bool m_bAntiAliasing;
 
 	Color m_CurrentColor;
+	FontHAlignment m_FontHAlignment;
+	FontVAlignment m_FontVAlignment;
+
 	VertexLayout m_VertexLayoutColor;
 	VertexLayout m_VertexLayoutTexture;
 
-	happyengine::graphics::Simple2DEffect* m_pColorEffect;
-	happyengine::graphics::Simple2DTextureEffect* m_pTextureEffect;
+	Simple2DEffect* m_pColorEffect;
+	Simple2DTextureEffect* m_pTextureEffect;
 
 	math::Matrix m_matWorld;
-
 	math::Vector2 m_ViewPortSize;
 
     //Disable default copy constructor and default assignment operator

@@ -31,6 +31,8 @@
 #include "Simple2DRenderer.h"
 #include "Simple2DEffect.h"
 #include "Texture2D.h"
+#include "Font.h"
+#include "FontLoader.h"
 
 #include <ppl.h>
 #include <concurrent_vector.h>
@@ -74,6 +76,7 @@ private:
 	happytest::FPSGraph* m_pFPSGraph;
 
 	happyengine::graphics::Texture2D::pointer m_TestImage;
+	happyengine::graphics::Font::pointer m_pFont;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

@@ -38,35 +38,35 @@ public:
     virtual ~Camera();
 
 	// GENERAL
-	virtual void Resize(int viewportWidth, int viewportHeight);
-	virtual void LookAt(const math::Vector3 &pos, const math::Vector3 &target, const math::Vector3 &up);
+	virtual void resize(int viewportWidth, int viewportHeight);
+	virtual void lookAt(const math::Vector3& pos, const math::Vector3& target, const math::Vector3& up);
 
 	// SETTERS
-	virtual void SetPosition(const math::Vector3 &pos);
-	virtual void SetLens(float aspectRatio = (16.0f/9.0f), float fov = math::piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
-	virtual void SetActive(bool active);
+	virtual void setPosition(const math::Vector3& pos);
+	virtual void setLens(float aspectRatio = (16.0f/9.0f), float fov = math::piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
+	virtual void setActive(bool active);
 
 	// GETTERS
-	virtual math::Matrix GetView() const
+	virtual math::Matrix getView() const
 	{ return m_matView; }
-	virtual math::Matrix GetProjection() const
+	virtual math::Matrix getProjection() const
 	{ return m_matProjection; }
-	virtual math::Matrix GetViewProjection() const
+	virtual math::Matrix getViewProjection() const
 	{ return m_matViewProjection; }
 
-	virtual math::Vector3 GetPosition() const
+	virtual math::Vector3 getPosition() const
 	{ return m_vPosWorld; }
-	virtual math::Vector3 GetRight() const
+	virtual math::Vector3 getRight() const
 	{ return m_vRightWorld; }
-	virtual math::Vector3 GetUp() const
+	virtual math::Vector3 getUp() const
 	{ return m_vUpWorld; }
-	virtual math::Vector3 GetLook() const
+	virtual math::Vector3 getLook() const
 	{ return m_vLookWorld; }
 
 protected:
 
-	void BuildViewMatrix();
-	void BuildProjectionMatrix();
+	void buildViewMatrix();
+	void buildProjectionMatrix();
 
 	// DATAMEMBERS
 	math::Matrix m_matView;

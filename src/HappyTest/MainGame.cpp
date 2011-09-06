@@ -106,6 +106,9 @@ void MainGame::load()
 	HE2D->initialize();
 
 	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
+
+	happyengine::content::FontLoader fontLoader;
+    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
 }
 void MainGame::tick(float dTime)
 {
@@ -153,6 +156,7 @@ void MainGame::tick(float dTime)
 void MainGame::draw(float dTime)
 {
 	using namespace happyengine;
+	using namespace graphics;
 	using namespace math;
 
     m_DrawTimer += dTime;
@@ -188,7 +192,14 @@ void MainGame::draw(float dTime)
 	//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
 	//HE2D->setTransformationMatrix(mat);
 
+	HE2D->setColor(1,1,1,0.5f);
+	HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
+
 	HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
+
+	HE2D->setColor(1.0f,0.0f,1.0f);
+	//HE2D->setFontVerticalAlignment(FontVAlignment_Bottom);
+	HE2D->drawText(Vector2(600,600), "test", m_pFont);
 
 	m_pFPSGraph->show(dTime, 0.25f);
 

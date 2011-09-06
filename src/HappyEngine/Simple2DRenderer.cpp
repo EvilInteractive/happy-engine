@@ -37,7 +37,9 @@ Simple2DRenderer::Simple2DRenderer() :	m_pColorEffect(NEW happyengine::graphics:
 										m_bAntiAliasing(false),
 										m_StrokeSize(0.0f),
 										m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
-										m_ViewPortSize(0.0f,0.0f)
+										m_ViewPortSize(0.0f,0.0f),
+										m_FontHAlignment(FontHAlignment_Left),
+										m_FontVAlignment(FontVAlignment_Bottom)
 {
     
 }
@@ -48,7 +50,7 @@ Simple2DRenderer::~Simple2DRenderer()
 	delete m_pTextureEffect;
 }
 
-Simple2DRenderer* Simple2DRenderer::GetSingleton()
+Simple2DRenderer* Simple2DRenderer::getSingleton()
 {
 	if (m_pSingleton == nullptr) m_pSingleton = NEW happyengine::graphics::Simple2DRenderer();
 	return m_pSingleton;
@@ -140,9 +142,19 @@ void Simple2DRenderer::setStrokeSize(float strokeSize)
 	m_StrokeSize = strokeSize;
 }
 
-void Simple2DRenderer::drawText(const math::Vector2&, const std::string&) const
+void Simple2DRenderer::setFontHorizontalAlignment(FontHAlignment horizontalAlignment)
 {
+	m_FontHAlignment = horizontalAlignment;
+}
 
+void Simple2DRenderer::setFontVerticalAlignment(FontVAlignment verticalAlignment)
+{
+	m_FontVAlignment = verticalAlignment;
+}
+
+void Simple2DRenderer::drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const
+{
+	drawTexture2D(pos, font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment));
 }
 
 void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size) const
@@ -152,14 +164,14 @@ void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vecto
 	math::Vector2 ndcStrokeSize(getNDCSize(math::Vector2(m_StrokeSize, m_StrokeSize)));
 
 	std::vector<VertexPosCol2D> vertices;
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x - ndcStrokeSize.x/2.0f, ndcPos.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x + ndcStrokeSize.x/2.0f, ndcPos.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y + ndcSize.y + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x + ndcStrokeSize.x/2.0f , ndcPos.y - ndcSize.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x - ndcStrokeSize.x/2.0f, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y + ndcSize.y + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x - ndcStrokeSize.x/2.0f, ndcPos.y + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x - ndcStrokeSize.x/2.0f, ndcPos.y + ndcSize.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcStrokeSize.x/2.0f, ndcPos.y + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcStrokeSize.x/2.0f, ndcPos.y + ndcSize.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
 	
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(1);

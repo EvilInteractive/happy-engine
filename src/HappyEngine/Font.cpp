@@ -71,6 +71,7 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf,
         case FontVAlignment_Bottom: destRect.y = pP2Surf->h - destRect.h; break;
         default: ASSERT("unkown font alignment");
     }
+
     SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_NONE);
     SDL_BlitSurface(pSurf, 0, pP2Surf, &destRect);
     SDL_FreeSurface(pSurf);

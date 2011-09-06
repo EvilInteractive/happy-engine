@@ -44,12 +44,12 @@ Camera::~Camera()
 }
 
 // GENERAL
-void Camera::Resize(int viewportWidth, int viewportHeight)
+void Camera::resize(int viewportWidth, int viewportHeight)
 {
 	m_AspectRatio = static_cast<float>(viewportWidth/viewportHeight);
 }
 
-void Camera::LookAt(const math::Vector3 &pos, const math::Vector3 &target, const math::Vector3 &up)
+void Camera::lookAt(const math::Vector3 &pos, const math::Vector3 &target, const math::Vector3 &up)
 {
 	using namespace math;
 
@@ -65,39 +65,39 @@ void Camera::LookAt(const math::Vector3 &pos, const math::Vector3 &target, const
 	m_vUpWorld = newUp;
 	m_vLookWorld = lookAt;
 
-	BuildViewMatrix();
+	buildViewMatrix();
 }
 
 // SETTERS
-void Camera::SetPosition(const math::Vector3 &pos)
+void Camera::setPosition(const math::Vector3 &pos)
 {
 	m_vPosWorld = pos;
 
-	BuildViewMatrix();
+	buildViewMatrix();
 }
 
-void Camera::SetLens(float aspectRatio, float fov, float nearZ, float farZ)
+void Camera::setLens(float aspectRatio, float fov, float nearZ, float farZ)
 {
 	m_FOV = fov;
 	m_AspectRatio = aspectRatio;
 	m_NearZ = nearZ;
 	m_FarZ = farZ;
 
-	BuildProjectionMatrix();
+	buildProjectionMatrix();
 }
 
-void Camera::SetActive(bool active)
+void Camera::setActive(bool active)
 {
 	m_bIsActive = active;
 }
 
-void Camera::BuildViewMatrix()
+void Camera::buildViewMatrix()
 {
 	m_matView = math::Matrix::createLookAtLH(m_vPosWorld, m_vPosWorld + m_vLookWorld, -m_vUpWorld);
 	m_matViewProjection = m_matProjection * m_matView;
 }
 
-void Camera::BuildProjectionMatrix()
+void Camera::buildProjectionMatrix()
 {
 	if (m_FOV > math::pi / 5 * 4.0f) m_FOV = static_cast<float>(math::pi / 5 * 4.0f);
 	if (m_FOV < math::pi / 30.0f) m_FOV = static_cast<float>(math::pi / 30.0f);
