@@ -21,10 +21,9 @@
 #include "Simple2DRenderer.h"
 #include "HappyNew.h"
 #include "GL/glew.h"
-#include "Model.h"
 #include "HappyEngine.h"
-#include <algorithm>
 
+#include <algorithm>
 #include <vector>
 
 namespace happyengine {
@@ -39,7 +38,9 @@ Simple2DRenderer::Simple2DRenderer() :	m_pColorEffect(NEW happyengine::graphics:
 										m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
 										m_ViewPortSize(0.0f,0.0f),
 										m_FontHAlignment(FontHAlignment_Left),
-										m_FontVAlignment(FontVAlignment_Bottom)
+										m_FontVAlignment(FontVAlignment_Bottom),
+										m_pModelBuffer(NEW content::AssetContainerP<graphics::Model>()),
+										m_TickCounter(0)
 {
     
 }
@@ -48,6 +49,7 @@ Simple2DRenderer::~Simple2DRenderer()
 {
 	delete m_pColorEffect;
 	delete m_pTextureEffect;
+	delete m_pModelBuffer;
 }
 
 Simple2DRenderer* Simple2DRenderer::getSingleton()
@@ -72,6 +74,30 @@ math::Vector2 Simple2DRenderer::getNDCSize(const math::Vector2& size) const
 
 	return ndcSize;
 }
+void Simple2DRenderer::cleanUpModelBuffer()
+{
+	using namespace std;
+
+	vector<string> keysDeleted; 
+
+	for_each(m_ModelBufferIndex.begin(), m_ModelBufferIndex.end(), [&](pair<string, uint> bufferIndex)
+	{
+		if (bufferIndex.second > 10)
+		{
+			m_pModelBuffer->RemoveAsset(bufferIndex.first);
+			keysDeleted.push_back(bufferIndex.first);
+		}
+		else
+		{
+			++bufferIndex.second;
+		}
+	});
+
+	for_each(keysDeleted.begin(), keysDeleted.end(), [&](string key)
+	{
+		m_ModelBufferIndex.erase(key);
+	});
+}
 
 void Simple2DRenderer::begin()
 {
@@ -86,11 +112,13 @@ void Simple2DRenderer::begin()
 
 void Simple2DRenderer::end()
 {
-	glDisable(GL_BLEND);
-
 	m_pColorEffect->end();
 
-	setStrokeSize(1.0f);
+	glDisable(GL_BLEND);
+
+	setStrokeSize();
+
+	//cleanUpModelBuffer();
 }
 
 void Simple2DRenderer::initialize(bool)
@@ -101,7 +129,6 @@ void Simple2DRenderer::initialize(bool)
 	m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
 	m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 8, "inTexCoord"));
 
-	//glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
@@ -157,103 +184,218 @@ void Simple2DRenderer::drawText(const math::Vector2& pos, const std::string& tex
 	drawTexture2D(pos, font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment));
 }
 
-void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size) const
+void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size)
 {
-	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Vector2 ndcSize(getNDCSize(size));
-	math::Vector2 ndcStrokeSize(getNDCSize(math::Vector2(m_StrokeSize, m_StrokeSize)));
+	Model* pModel;
 
-	std::vector<VertexPosCol2D> vertices;
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x - ndcStrokeSize.x/2.0f, ndcPos.y + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x - ndcStrokeSize.x/2.0f, ndcPos.y + ndcSize.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcStrokeSize.x/2.0f, ndcPos.y + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcStrokeSize.x/2.0f, ndcPos.y + ndcSize.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
-	
-    std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(1);
-	indices.push_back(2); indices.push_back(3);
-	indices.push_back(4); indices.push_back(5);
-	indices.push_back(6); indices.push_back(7);
+	std::stringstream stream;
+	stream << "HR.Width" << size.x << "Height" << size.y;
 
-	Model model;
-    model.init();
-    model.setVertices(&vertices[0], 8, m_VertexLayoutColor);
-    model.setIndices(&indices[0], 8, IndexStride_Byte);
-
-	m_pColorEffect->setWorldMatrix(m_matWorld);
-
-	glBindVertexArray(model.getVertexArraysID());
-
-	glDrawElements(GL_LINES, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
-}
-
-void Simple2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector2& size) const
-{
-	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Vector2 ndcSize(getNDCSize(size));
-
-	std::vector<VertexPosCol2D> vertices;
-    vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
-	vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y + ndcSize.y), m_CurrentColor.rgba()));
-
-    std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(3); indices.push_back(1);
-    indices.push_back(2); indices.push_back(3); indices.push_back(0);
-
-	Model model;
-    model.init();
-    model.setVertices(&vertices[0], 4, m_VertexLayoutColor);
-    model.setIndices(&indices[0], 6, IndexStride_Byte);
-
-	m_pColorEffect->setWorldMatrix(m_matWorld);
-
-	glBindVertexArray(model.getVertexArraysID());
-
-	glDrawElements(GL_TRIANGLES, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
-}
-
-void Simple2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2& size) const
-{
-	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Vector2 ndcSize(getNDCSize(size));
-
-	const float DEG2RAD = 3.14159f/180;
-
-	std::vector<VertexPosCol2D> vertices;
-	std::vector<byte> indices;
-
-	for (int i = 0; i < 360; i++)
+	if (m_pModelBuffer->IsAssetPresent(stream.str()))
 	{
-		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPosCol2D(math::Vector2(ndcPos.x + cos(degInRad) * ndcSize.x, ndcPos.y + sin(degInRad) * ndcSize.y), m_CurrentColor.rgba()));
-		indices.push_back(static_cast<byte>(i));
+		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		//--m_ModelBufferIndex[stream.str()];
+	}
+	else
+	{
+		math::Vector2 ndcSize(getNDCSize(size));
+		math::Vector2 ndcStrokeSize(getNDCSize(math::Vector2(m_StrokeSize, m_StrokeSize)));
+
+		std::vector<VertexPosCol2D> vertices;
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcSize.x, 0), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0, 0), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcSize.x - ndcStrokeSize.x/2.0f, 0 + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcSize.x - ndcStrokeSize.x/2.0f, 0+ ndcSize.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcSize.x, 0 + ndcSize.y), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0, 0 + ndcSize.y), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcStrokeSize.x/2.0f, 0 + ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcStrokeSize.x/2.0f, 0 + ndcSize.y - ndcStrokeSize.y/2.0f), m_CurrentColor.rgba()));
+	
+		std::vector<byte> indices;
+		indices.push_back(0); indices.push_back(1);
+		indices.push_back(2); indices.push_back(3);
+		indices.push_back(4); indices.push_back(5);
+		indices.push_back(6); indices.push_back(7);
+
+		pModel = NEW Model();
+		pModel->init();
+		pModel->setVertices(&vertices[0], 8, m_VertexLayoutColor);
+		pModel->setIndices(&indices[0], 8, IndexStride_Byte);
+
+		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		//m_ModelBufferIndex[stream.str()] = 0;
 	}
 
-	Model model;
-    model.init();
-    model.setVertices(&vertices[0], 360, m_VertexLayoutColor);
-    model.setIndices(&indices[0], 360, IndexStride_Byte);
+	math::Vector2 ndcPos(getNDCPos(pos));
+	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
 
-	m_pColorEffect->setWorldMatrix(m_matWorld);
+	m_pColorEffect->setWorldMatrix(mat);
 
-	glBindVertexArray(model.getVertexArraysID());
+	glBindVertexArray(pModel->getVertexArraysID());
 
-	glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
+	glDrawElements(GL_LINES, pModel->getNumIndices(), pModel->getIndexType(), 0);
 
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close) const
+void Simple2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector2& size)
+{
+	Model* pModel;
+
+	std::stringstream stream;
+	stream << "FR.Width" << size.x << "Height" << size.y;
+
+	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	{
+		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		//--m_ModelBufferIndex[stream.str()];
+	}
+	else
+	{
+		math::Vector2 ndcSize(getNDCSize(size));
+
+		std::vector<VertexPosCol2D> vertices;
+		vertices.push_back(VertexPosCol2D(math::Vector2(0, 0), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcSize.x, 0), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0, 0 + ndcSize.y), m_CurrentColor.rgba()));
+		vertices.push_back(VertexPosCol2D(math::Vector2(0 + ndcSize.x, 0 + ndcSize.y), m_CurrentColor.rgba()));
+
+		std::vector<byte> indices;
+		indices.push_back(0); indices.push_back(3); indices.push_back(1);
+		indices.push_back(2); indices.push_back(3); indices.push_back(0);
+
+		pModel = NEW Model();
+		pModel->init();
+		pModel->setVertices(&vertices[0], 4, m_VertexLayoutColor);
+		pModel->setIndices(&indices[0], 6, IndexStride_Byte);
+
+		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		//m_ModelBufferIndex[stream.str()] = 0;
+	}
+
+	math::Vector2 ndcPos(getNDCPos(pos));
+	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+
+	m_pColorEffect->setWorldMatrix(mat);
+
+	glBindVertexArray(pModel->getVertexArraysID());
+
+	glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
+
+    glBindVertexArray(0);
+}
+
+void Simple2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
+{
+	Model* pModel;
+
+	std::stringstream stream;
+	stream << "HE.Width" << size.x << "Height" << size.y;
+
+	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	{
+		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		//--m_ModelBufferIndex[stream.str()];
+	}
+	else
+	{
+		math::Vector2 ndcSize(getNDCSize(size/2));
+
+		const float DEG2RAD = 3.14159f/180.0f;
+
+		std::vector<VertexPosCol2D> vertices;
+		std::vector<uint> indices;
+
+		uint stepSize(360 / steps);
+		uint index(0);
+
+		for (uint i = 0; i < 360; i += stepSize)
+		{
+			float degInRad = i * DEG2RAD;
+			vertices.push_back(VertexPosCol2D(math::Vector2(0 + cosf(degInRad) * ndcSize.x, 0 + sinf(degInRad) * ndcSize.y), m_CurrentColor.rgba()));
+		
+			indices.push_back(index++);
+		}
+
+		pModel = NEW Model();
+		pModel->init();
+		pModel->setVertices(&vertices[0], steps, m_VertexLayoutColor);
+		pModel->setIndices(&indices[0], steps, IndexStride_UInt);
+
+		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		//m_ModelBufferIndex[stream.str()] = 0;
+	}
+
+	math::Vector2 ndcPos(getNDCPos(pos));
+	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+
+	m_pColorEffect->setWorldMatrix(mat);
+
+	glBindVertexArray(pModel->getVertexArraysID());
+
+	glDrawElements(GL_LINE_LOOP, pModel->getNumIndices(), pModel->getIndexType(), 0);
+
+    glBindVertexArray(0);
+}
+
+void Simple2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
+{
+	Model* pModel;
+
+	std::stringstream stream;
+	stream << "FE.Width" << size.x << "Height" << size.y;
+
+	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	{
+		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		//--m_ModelBufferIndex[stream.str()];
+	}
+	else
+	{
+		math::Vector2 ndcSize(getNDCSize(size/2));
+
+		const float DEG2RAD = 3.14159f/180.0f;
+
+		std::vector<VertexPosCol2D> vertices;
+		std::vector<uint> indices;
+
+		uint stepSize(360 / steps);
+		uint index(0);
+
+		vertices.push_back(VertexPosCol2D(math::Vector2(0, 0), m_CurrentColor.rgba()));
+		indices.push_back(1);
+
+		for (uint i = 0; i < 360; i += stepSize)
+		{
+			float degInRad = i * DEG2RAD;
+			vertices.push_back(VertexPosCol2D(math::Vector2(0 + cosf(degInRad) * ndcSize.x, 0 + sinf(degInRad) * ndcSize.y), m_CurrentColor.rgba()));
+		
+			indices.push_back(steps - index);
+			++index;
+		}
+
+		pModel = NEW Model();
+		pModel->init();
+		pModel->setVertices(&vertices[0], steps + 1, m_VertexLayoutColor);
+		pModel->setIndices(&indices[0], steps + 1, IndexStride_UInt);
+
+		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		//m_ModelBufferIndex[stream.str()] = 0;
+	}
+
+	math::Vector2 ndcPos(getNDCPos(pos));
+	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+
+	m_pColorEffect->setWorldMatrix(mat);
+
+	glBindVertexArray(pModel->getVertexArraysID());
+
+	glDrawElements(GL_TRIANGLE_FAN, pModel->getNumIndices(), pModel->getIndexType(), 0);
+
+    glBindVertexArray(0);
+}
+
+void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close)
 {
 	std::vector<VertexPosCol2D> vertices;
 	std::vector<byte> indices;
@@ -280,6 +422,34 @@ void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2>
 		glDrawElements(GL_LINE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
 	else
 		glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
+
+    glBindVertexArray(0);
+}
+
+void Simple2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints)
+{
+	std::vector<VertexPosCol2D> vertices;
+	std::vector<byte> indices;
+
+	byte i(0);
+
+	std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 point)
+	{
+		math::Vector2 ndcPoint(getNDCPos(point));
+		vertices.push_back(VertexPosCol2D(math::Vector2(ndcPoint.x, ndcPoint.y), m_CurrentColor.rgba()));
+		indices.push_back(i++);
+	});
+
+	Model model;
+    model.init();
+    model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
+    model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
+
+	m_pColorEffect->setWorldMatrix(m_matWorld);
+
+	glBindVertexArray(model.getVertexArraysID());
+	
+	glDrawElements(GL_TRIANGLE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
 
     glBindVertexArray(0);
 }

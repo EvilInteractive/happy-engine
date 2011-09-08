@@ -32,6 +32,10 @@
 #include "Font.h"
 #include "Vector2.h"
 #include "HappyTypes.h"
+#include "AssetContainerP.h"
+#include "Model.h"
+
+#include <map>
 
 #define HE2D (happyengine::graphics::Simple2DRenderer::getSingleton())
 
@@ -67,16 +71,20 @@ public:
 
     // DRAW METHODS
 	void drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const;
-	void drawRectangle(const math::Vector2& pos, const math::Vector2& size) const;
-	void fillRectangle(const math::Vector2& pos, const math::Vector2& size) const;
-	void fillEllipse(const math::Vector2& pos, const math::Vector2& size) const;
-	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints, bool close = false) const;
+	void drawRectangle(const math::Vector2& pos, const math::Vector2& size);
+	void fillRectangle(const math::Vector2& pos, const math::Vector2& size);
+	void drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
+	void fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
+	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints, bool close = false);
+	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints);
 	void drawTexture2D(const math::Vector2& pos, const graphics::Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f)) const;
 
 private:
 
 	math::Vector2 getNDCPos(const math::Vector2& pos) const;
 	math::Vector2 getNDCSize(const math::Vector2& size) const;
+
+	void cleanUpModelBuffer();
 
 	// DATAMEMBERS
 	float m_StrokeSize;
@@ -94,6 +102,10 @@ private:
 
 	math::Matrix m_matWorld;
 	math::Vector2 m_ViewPortSize;
+
+	content::AssetContainerP<graphics::Model>* m_pModelBuffer;
+	std::map<std::string, uint> m_ModelBufferIndex;
+	uint m_TickCounter;
 
     //Disable default copy constructor and default assignment operator
     Simple2DRenderer(const Simple2DRenderer&);

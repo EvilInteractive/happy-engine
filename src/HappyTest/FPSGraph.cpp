@@ -58,6 +58,8 @@ void FPSGraph::show(float dTime, float interval)
 		if (m_FpsHistory.size() > 51)
 			m_FpsHistory.erase(m_FpsHistory.begin());
 
+		HE2D->setAntiAliasing(false);
+
 		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
 		HE2D->fillRectangle(Vector2(GRAPHICS->getViewport().width - 105.0f, 5.0f), Vector2(100, 40));
 		HE2D->setColor(0.0f,0.0f,0.0f,0.5f);

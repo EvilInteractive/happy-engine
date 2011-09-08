@@ -192,14 +192,34 @@ void MainGame::draw(float dTime)
 	//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
 	//HE2D->setTransformationMatrix(mat);
 
-	HE2D->setColor(1,1,1,0.5f);
-	HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
+	//HE2D->setColor(1,1,1,0.5f);
+	//HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
 
-	HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
+	//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
 
-	HE2D->setColor(1.0f,0.0f,1.0f);
-	//HE2D->setFontVerticalAlignment(FontVAlignment_Bottom);
-	HE2D->drawText(Vector2(600,600), "test", m_pFont);
+	//HE2D->setColor(1.0f,0.0f,1.0f);
+	////HE2D->setFontVerticalAlignment(FontVAlignment_Bottom);
+	//HE2D->drawText(Vector2(600,600), "test", m_pFont);
+
+	std::vector<Vector2> points;
+	points.push_back(Vector2(10,10));
+	points.push_back(Vector2(8,20));
+	points.push_back(Vector2(30,50));
+	points.push_back(Vector2(50,40));
+	points.push_back(Vector2(50,20));
+	points.push_back(Vector2(20,10));
+
+	HE2D->setColor(1.0f,1.0f,1.0f);
+	HE2D->fillPolygon(points, points.size());
+
+	HE2D->setColor(1.0f,1.0f,1.0f);
+	HE2D->drawEllipse(Vector2(500,500), Vector2(101,101), 20);
+	
+	HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
+	HE2D->fillEllipse(Vector2(500,500), Vector2(100,100), 20);
+
+	HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
+	HE2D->fillRectangle(Vector2(450,320), Vector2(100,100));
 
 	m_pFPSGraph->show(dTime, 0.25f);
 

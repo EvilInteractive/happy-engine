@@ -223,6 +223,9 @@
     <ClCompile Include="Simple2DTextureEffect.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="AssetContainerP.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -422,6 +425,9 @@
     </ClInclude>
     <ClInclude Include="Simple2DTextureEffect.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetContainerP.h">
+      <Filter>happyengine\content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
