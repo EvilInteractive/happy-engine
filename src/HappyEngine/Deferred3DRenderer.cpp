@@ -195,7 +195,7 @@ void Deferred3DRenderer::begin()
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-void Deferred3DRenderer::end(const math::Vector3& vCamPos)
+void Deferred3DRenderer::end(const Camera* pCamera)
 {
     const static GLenum buffers[1] = { GL_BACK_LEFT };
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -213,7 +213,7 @@ void Deferred3DRenderer::end(const math::Vector3& vCamPos)
         if (i != LightType_AmbientLight)
         {
             m_pPostShader[i]->setShaderVar(m_ShaderNormGlossMapPos[i], m_pTexture[2]);
-            m_pPostShader[i]->setShaderVar(m_ShaderCamPos[i], vCamPos);
+			m_pPostShader[i]->setShaderVar(m_ShaderCamPos[i], pCamera->getPosition());
         }
     
         switch (i)

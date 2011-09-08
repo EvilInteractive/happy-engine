@@ -25,6 +25,7 @@
 #include "Matrix.h"
 #include "I3DRenderer.h"
 #include "Texture2D.h"
+#include "Camera.h"
 
 #include "DeferredPreEffect.h" 
 
@@ -40,7 +41,10 @@ public:
 
     void load();
     void tick(float dTime);
-    void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float dTime);
+    void draw(	happyengine::graphics::I3DRenderer* pRenderer,
+				DeferredPreEffect* m_pEffect,
+				float dTime,
+				const happyengine::graphics::Camera* pCamera);
 
 private:
     happyengine::graphics::Model::pointer m_pModel;
@@ -52,6 +56,8 @@ private:
 
     float m_Rotation;
     happyengine::math::Vector3 m_Position;
+
+	happyengine::math::Matrix m_matWorld;
 
     //Disable default copy constructor and default assignment operator
     TestObject(const TestObject&);

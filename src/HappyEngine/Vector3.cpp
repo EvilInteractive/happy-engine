@@ -48,26 +48,6 @@ Vector3& Vector3::operator=(const Vector3& other)
     return *this;
 }
 
-//----------Getters----------------------->
-float Vector3::Length() const
-{
-	return sqrt(sqr(x) + sqr(y) + sqr(z));
-}
-//<-----------------------------------------
-
-//---Modifiers------------>
-void Vector3::Normalize()
-{
-	float len = Length();
-    if (len != 0)
-    {
-	    x /= len;
-	    y /= len;
-	    z /= len;
-    }
-}
-//<-----------------------
-
 //>---------Operators--------------------->
 Vector3 Vector3::operator-() const
 {
@@ -128,21 +108,6 @@ bool Vector3::operator==(const Vector3& v) const
 bool Vector3::operator!=(const Vector3& v) const
 {
     return x != v.x || y != v.y || z != v.z;
-}
-
-float Vector3::Dot(const Vector3& v) const
-{
-	return x * v.x + y * v.y + z * v.z;
-}
-
-Vector3 Vector3::Cross(const Vector3& v) const
-{
-	Vector3 res;
-	res.x = (y * v.z) - (z * v.y);
-	res.y = (z * v.x) - (x * v.z);
-	res.z = (x * v.y) - (y * v.x);
-
-	return res;
 }
 //<----------------------------------------<
 

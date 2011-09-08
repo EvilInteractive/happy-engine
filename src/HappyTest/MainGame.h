@@ -33,6 +33,7 @@
 #include "Texture2D.h"
 #include "Font.h"
 #include "FontLoader.h"
+#include "FlyCamera.h"
 
 #include <ppl.h>
 #include <concurrent_vector.h>
@@ -58,6 +59,8 @@ public:
 
 private:
     happyengine::graphics::Deferred3DRenderer* m_pDeferred3DRenderer;
+	happytest::FlyCamera* m_pCamera;
+
     TestObject* m_pTestObject;
 
     happyengine::Color m_BackgroundColors[5];

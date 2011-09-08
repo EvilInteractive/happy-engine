@@ -89,6 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DeferredPreEffect.cpp" />
+    <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
@@ -100,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeferredPreEffect.h" />
+    <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MyClient.h" />

@@ -20,7 +20,9 @@
 #pragma once
 
 #include "Vector3.h"
+#include "Vector4.h"
 #include "PxMat44.h"
+#include "Matrix.h"
 #include "MathConstants.h"
 
 namespace happyengine {
@@ -51,7 +53,10 @@ inline float length(const Vector3& vector)
 }
 inline Vector3 normalize(const Vector3& vector)
 {
-    return vector / length(vector);
+	if (vector != Vector3(0,0,0))
+		return vector / length(vector);
+	else
+		return vector;
 }
 inline float dot(const Vector3& vector1, const Vector3& vector2)
 {
@@ -63,6 +68,19 @@ inline Vector3 cross(const Vector3& vector1, const Vector3& vector2)
         vector1.y * vector2.z - vector1.z * vector2.y,
         vector1.z * vector2.x - vector1.x * vector2.z,
         vector1.x * vector2.y - vector1.y * vector2.x);
+}
+inline Vector4 transform(const Vector3& v, const Matrix& m)
+{
+	Vector4 result;
+	float matrix[16];
+	m.toFloatArray(matrix);
+
+	result.x = (v.x * matrix[0]) + (v.y * matrix[1]) + (v.z * matrix[2]) + matrix[3];
+    result.y = (v.x * matrix[4]) + (v.y * matrix[5]) + (v.z * matrix[6]) + matrix[7];
+    result.z = (v.x * matrix[8]) + (v.y * matrix[9]) + (v.z * matrix[10]) + matrix[11];
+	result.w = (v.x * matrix[12]) + (v.y * matrix[13]) + (v.z * matrix[14]) + matrix[15];
+
+	return result;
 }
 
 //template

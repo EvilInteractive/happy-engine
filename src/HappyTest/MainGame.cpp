@@ -35,7 +35,8 @@ namespace happytest {
 
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
-					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happytest::FPSGraph())
+					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happytest::FPSGraph()),
+					   m_pCamera(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -61,6 +62,7 @@ MainGame::~MainGame()
 
 	delete m_pFPSGraph;
 	delete HE2D;
+	delete m_pCamera;
 
     NETWORK->stop();
 }
@@ -91,6 +93,12 @@ void MainGame::load()
 
     PHYSICS->startSimulation();
 
+	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+	m_pCamera->lookAt(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0));
+	m_pCamera->setLens(16.0f/9.0f,math::piOverFour,1.0f,100.0f);
+	m_pCamera->setActive(true);
+	//m_pCamera->controllable(false);
+
     m_pDeferred3DRenderer = NEW graphics::Deferred3DRenderer();
     m_pDeferred3DRenderer->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 3.0f, 1, 10);
     m_pDeferred3DRenderer->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 1.0f);
@@ -113,6 +121,9 @@ void MainGame::load()
 void MainGame::tick(float dTime)
 {
     m_UpdateTimer += dTime;
+
+	m_pCamera->tick(dTime);
+
     if (m_UpdateTimer >= 1.0f)
     {
         std::cout << "update fps: " << 1.0f/dTime << "\n";
@@ -121,6 +132,7 @@ void MainGame::tick(float dTime)
 
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Escape))
         HAPPYENGINE->quit();
+
     m_pTestObject->tick(dTime);
     
     if (m_pClient == nullptr && m_pServer == nullptr)
@@ -145,6 +157,7 @@ void MainGame::tick(float dTime)
     {
         pBullet->tick(dTime);
     });
+
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Space))
     {
         TestBullet* pBullet(NEW TestBullet());
@@ -160,6 +173,7 @@ void MainGame::draw(float dTime)
 	using namespace math;
 
     m_DrawTimer += dTime;
+
     if (m_DrawTimer >= 1.0f)
     {
         std::cout << "draw fps: " << 1.0f/dTime << "\n";
@@ -173,55 +187,59 @@ void MainGame::draw(float dTime)
             m_BackgroundIndex = 0;
         GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
     }
+
     GRAPHICS->clearAll();
 
     m_pDeferred3DRenderer->begin();
     m_pDeferredPreEffect->begin();
-    m_pTestObject->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
-    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
-    {
-        pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
-    });
+
+		m_pTestObject->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime, m_pCamera);
+
+		std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
+		{
+			pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
+		});
+
     m_pDeferredPreEffect->end();
-    m_pDeferred3DRenderer->end(happyengine::math::Vector3(-5, 5, -4));
+    m_pDeferred3DRenderer->end(m_pCamera);
 
 
 	// 2D test stuff
 	HE2D->begin();
 
-	//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
-	//HE2D->setTransformationMatrix(mat);
+		//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
+		//HE2D->setTransformationMatrix(mat);
 
-	//HE2D->setColor(1,1,1,0.5f);
-	//HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
+		//HE2D->setColor(1,1,1,0.5f);
+		//HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
 
-	//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
+		//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
 
-	//HE2D->setColor(1.0f,0.0f,1.0f);
-	////HE2D->setFontVerticalAlignment(FontVAlignment_Bottom);
-	//HE2D->drawText(Vector2(600,600), "test", m_pFont);
+		//HE2D->setColor(1.0f,0.0f,1.0f);
+		//HE2D->setFontVerticalAlignment(FontVAlignment_Bottom);
+		//HE2D->drawText(Vector2(600,600), "test", m_pFont);
 
-	std::vector<Vector2> points;
-	points.push_back(Vector2(10,10));
-	points.push_back(Vector2(8,20));
-	points.push_back(Vector2(30,50));
-	points.push_back(Vector2(50,40));
-	points.push_back(Vector2(50,20));
-	points.push_back(Vector2(20,10));
+		/*std::vector<Vector2> points;
+		points.push_back(Vector2(10,10));
+		points.push_back(Vector2(8,20));
+		points.push_back(Vector2(30,50));
+		points.push_back(Vector2(50,40));
+		points.push_back(Vector2(50,20));
+		points.push_back(Vector2(20,10));
 
-	HE2D->setColor(1.0f,1.0f,1.0f);
-	HE2D->fillPolygon(points, points.size());
+		HE2D->setColor(1.0f,1.0f,1.0f);
+		HE2D->fillPolygon(points, points.size());*/
 
-	HE2D->setColor(1.0f,1.0f,1.0f);
-	HE2D->drawEllipse(Vector2(500,500), Vector2(101,101), 20);
+		HE2D->setColor(1.0f,1.0f,1.0f);
+		HE2D->drawEllipse(Vector2(100,100), Vector2(101,101), 20);
 	
-	HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-	HE2D->fillEllipse(Vector2(500,500), Vector2(100,100), 20);
+		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
+		HE2D->fillEllipse(Vector2(100,100), Vector2(100,100), 20);
 
-	HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-	HE2D->fillRectangle(Vector2(450,320), Vector2(100,100));
+		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
+		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));
 
-	m_pFPSGraph->show(dTime, 0.25f);
+		m_pFPSGraph->show(dTime, 0.25f);
 
 	HE2D->end();
 }

@@ -20,6 +20,7 @@
 
 #include "Camera.h"
 #include "HappyNew.h"
+#include "MathFunctions.h"
 
 namespace happyengine {
 namespace graphics {
@@ -54,11 +55,11 @@ void Camera::lookAt(const math::Vector3 &pos, const math::Vector3 &target, const
 	using namespace math;
 
 	Vector3 lookAt = target - pos;
-	lookAt.Normalize();
+	lookAt = normalize(lookAt);
 
-	Vector3 right = up.Cross(lookAt);
-	Vector3 newUp = up.Cross(right);
-	newUp.Normalize();
+	Vector3 right = cross(lookAt, up);
+	Vector3 newUp = cross(right, up);
+	newUp = normalize(newUp);
 
 	m_vPosWorld = pos;
 	m_vRightWorld = right;

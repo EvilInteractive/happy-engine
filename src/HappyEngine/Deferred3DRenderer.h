@@ -29,6 +29,7 @@
 #include "Model.h"
 #include "Texture2D.h"
 #include "LightManager.h"
+#include "Camera.h"
 
 namespace happyengine {
 namespace graphics {
@@ -42,7 +43,7 @@ public:
     virtual void draw(const Model::pointer& pModel);
 
     void begin();
-    void end(const math::Vector3& vCamPos);
+    void end(const Camera* pCamera);
 
     LightManager* getLightManager() const;
 

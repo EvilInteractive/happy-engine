@@ -68,21 +68,18 @@ void TestObject::tick(float dTime)
         m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
         m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+
+	m_matWorld = math::Matrix(
+        math::Matrix::createTranslation(m_Position) *
+        math::Matrix::createRotation(math::Vector3(0.0f, 1.0f, 0.0f), m_Rotation) *
+        math::Matrix::createScale(2.0f));
 }
-void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/)
+void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/, const happyengine::graphics::Camera* pCamera)
 {
     using namespace happyengine;
 
-    math::Matrix persp(math::Matrix::createPerspectiveLH(math::piOverFour, 1280, 720, 1, 1000));
-    math::Matrix view(math::Matrix::createLookAtLH(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0)));
-    math::Matrix world(
-        math::Matrix::createTranslation(m_Position) *
-        math::Matrix::createRotation(math::Vector3(0.0f, 1.0f, 0.0f), m_Rotation) *
-        math::Matrix::createScale(2.0f)
-                      );
-
-    m_pEffect->setWVP(persp * view * world);
-    m_pEffect->setWorld(world);  
+	m_pEffect->setWVP(pCamera->getViewProjection() * m_matWorld);
+    m_pEffect->setWorld(m_matWorld);  
     m_pEffect->setDiffuseMap(m_pDiffuseMap);
     m_pEffect->setNormalMap(m_pNormalMap);
     m_pEffect->setSpecGlossIllMap(m_pSGIMap);

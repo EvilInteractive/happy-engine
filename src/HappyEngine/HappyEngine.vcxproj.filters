@@ -315,9 +315,6 @@
     <ClInclude Include="Keys.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="IniReader.h">
-      <Filter>happyengine\io</Filter>
-    </ClInclude>
     <ClInclude Include="IniWriter.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
@@ -428,6 +425,9 @@
     </ClInclude>
     <ClInclude Include="AssetContainerP.h">
       <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="IniReader.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

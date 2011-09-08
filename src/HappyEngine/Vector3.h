@@ -37,14 +37,6 @@ public:
     Vector3(const Vector3& other);
     Vector3& operator=(const Vector3& other);
 
-	//---Getters--------->
-	float Length() const; 
-	//<------------------
-
-	//---Modifiers--------->
-	void Normalize();
-	//<---------------------
-
     //>---------Operators--------------------->
 	Vector3 operator-() const;
 
@@ -61,9 +53,6 @@ public:
 
 	bool operator==(const Vector3& v) const;
 	bool operator!=(const Vector3& v) const;
-
-	float Dot(const Vector3& v) const;
-	Vector3 Cross(const Vector3& v) const;
     //<----------------------------------------<
 };
 
