@@ -41,6 +41,10 @@ inline float toDegrees(float radians)
 {
     return radians * 180.0f / pi;
 }
+inline float length(float a)
+{
+    return abs(a);
+}
 
 // Vector3
 inline float lengthSqr(const Vector3& vector)
@@ -93,6 +97,15 @@ inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
             (-p0 + p2) * t + 
             (p0 * 2 - p1 * 5 + p2 * 4 - p3) * sqr(t) +
             (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
+}
+
+//template
+//linear interpolation, t[0, 1]
+//T must support T+T, T-T, T*float,
+template<typename T>
+inline T lerp(const T& p0, const T& p1, float t)
+{
+    return (p1 - p0) * t + p0;
 }
 
 } } //end namespace

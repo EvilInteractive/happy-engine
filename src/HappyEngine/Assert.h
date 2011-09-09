@@ -31,7 +31,7 @@ namespace happyengine {
 namespace error {
 namespace details {
 
-#ifdef _DEBUG
+#if _DEBUG || TEST
 void happyAssert(bool isOk, const std::string& message, const char* file, int line);
 void happyAssert(const std::string& message, const char* file, int line);
 void happyAssert(bool isOk, const char* file, int line);
@@ -44,7 +44,7 @@ static int s_scope = 0;
 } } } //end namespace
 ////
 
-#ifdef _DEBUG
+#if _DEBUG || TEST
 #define ASSERT \
 if (happyengine::error::details::s_scope < 0) {} \
 else \

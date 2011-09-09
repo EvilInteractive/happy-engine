@@ -20,6 +20,7 @@
 
 #include "NetworkManager.h"
 #include "HappyNew.h"
+#include <iostream>
 
 namespace happyengine {
 namespace networking {
