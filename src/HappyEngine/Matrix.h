@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
+#ifndef _HE_MATRIX_H_
+#define _HE_MATRIX_H_
 #pragma once
 
 #include "PxMat44.h"

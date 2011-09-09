@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
 
-#ifndef _SIMPLE_2D_TEXTURE_EFFECT_H_
-#define _SIMPLE_2D_TEXTURE_EFFECT_H_
+#ifndef _HE_SIMPLE_2D_TEXTURE_EFFECT_H_
+#define _HE_SIMPLE_2D_TEXTURE_EFFECT_H_
 #pragma once
 
 #include "HappyTypes.h"

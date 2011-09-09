@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 20/08/2011
 
-#ifndef _PHYSICS_MATERIAL_H_
-#define _PHYSICS_MATERIAL_H_
+#ifndef _HE_PHYSICS_MATERIAL_H_
+#define _HE_PHYSICS_MATERIAL_H_
 #pragma once
 
 #include "PxMaterial.h"

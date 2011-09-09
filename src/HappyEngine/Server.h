@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 24/08/2011
 
-#ifndef _SERVER_H_
-#define _SERVER_H_
+#ifndef _HE_SERVER_H_
+#define _HE_SERVER_H_
 #pragma once
 
 #include "HappyNew.h"

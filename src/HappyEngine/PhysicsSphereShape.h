@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 20/08/2011
 
-#ifndef _PHYSICS_SPHERE_SHAPE_H_
-#define _PHYSICS_SPHERE_SHAPE_H_
+#ifndef _HE_PHYSICS_SPHERE_SHAPE_H_
+#define _HE_PHYSICS_SPHERE_SHAPE_H_
 #pragma once
 
 #include "IPhysicsShape.h"

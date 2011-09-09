@@ -55,8 +55,16 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf,
 
     SDL_Surface* pP2Surf(SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
     SDL_Rect destRect;
+	destRect.x = 0;
+	destRect.y = 0;
     destRect.w = pSurf->w;
     destRect.h = pSurf->h;
+    SDL_Rect srcRect;
+	srcRect.x = 0;
+	srcRect.y = 0;
+    srcRect.w = pSurf->w; 
+    srcRect.h = pSurf->h;
+	
     switch (hAlignment)
     {
         case FontHAlignment_Left: destRect.x = 0; break;
@@ -73,7 +81,7 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf,
     }
 
     SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_NONE);
-    SDL_BlitSurface(pSurf, 0, pP2Surf, &destRect);
+	SDL_BlitScaled(pSurf, &srcRect, pP2Surf, &destRect);
     SDL_FreeSurface(pSurf);
 
     return pP2Surf;

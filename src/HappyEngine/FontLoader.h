@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 12/08/2011
 
-#ifndef _FONT_LOADER_H_
-#define _FONT_LOADER_H_
+#ifndef _HE_FONT_LOADER_H_
+#define _HE_FONT_LOADER_H_
 #pragma once
 
 #include "Font.h"

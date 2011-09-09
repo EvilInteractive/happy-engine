@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 10/08/2011
 
-#ifndef _VECTOR4_H_
-#define _VECTOR4_H_
+#ifndef _HE_VECTOR4_H_
+#define _HE_VECTOR4_H_
 #pragma once
 
 #include "PxVec4.h"

@@ -19,9 +19,6 @@
 #define _MAINGAME_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-
-
 #include "IGame.h"
 #include "Deferred3DRenderer.h"
 #include "TestObject.h"

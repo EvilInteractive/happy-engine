@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 11/08/2011
 
-#ifndef _TEXTURE2D_H_
-#define _TEXTURE2D_H_
+#ifndef _HE_TEXTURE2D_H_
+#define _HE_TEXTURE2D_H_
 #pragma once
 
 #include "Assert.h"

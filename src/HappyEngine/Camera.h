@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 31/08/2011
 
-#ifndef _CAMERA_H_
-#define _CAMERA_H_
+#ifndef _HE_CAMERA_H_
+#define _HE_CAMERA_H_
 #pragma once
 
 #include "Vector3.h"

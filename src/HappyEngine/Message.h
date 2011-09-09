@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 25/08/2011
 
-#ifndef _MESSAGE_H_
-#define _MESSAGE_H_
+#ifndef _HE_MESSAGE_H_
+#define _HE_MESSAGE_H_
 #pragma once
 
 #include "boost/shared_ptr.hpp"

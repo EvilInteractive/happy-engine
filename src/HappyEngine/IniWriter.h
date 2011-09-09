@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 11/08/2011
 
-#ifndef _INI_WRITER_H_
-#define _INI_WRITER_H_
+#ifndef _HE_INI_WRITER_H_
+#define _HE_INI_WRITER_H_
 #pragma once
 
 #include <map>

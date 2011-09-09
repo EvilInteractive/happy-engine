@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 08/08/2011
 
-#ifndef _KEYBOARD_H_
-#define _KEYBOARD_H_
+#ifndef _HE_KEYBOARD_H_
+#define _HE_KEYBOARD_H_
 #pragma once
 
 #include "HappyTypes.h"

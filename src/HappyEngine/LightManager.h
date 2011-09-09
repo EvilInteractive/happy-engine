@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 17/08/2011
 
-#ifndef _LIGHT_MANAGER_H_
-#define _LIGHT_MANAGER_H_
+#ifndef _HE_LIGHT_MANAGER_H_
+#define _HE_LIGHT_MANAGER_H_
 #pragma once
 
 #include <vector>

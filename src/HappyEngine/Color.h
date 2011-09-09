@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 05/08/2011
 
-#ifndef _COLOR_H_
-#define _COLOR_H_
+#ifndef _HE_COLOR_H_
+#define _HE_COLOR_H_
 #pragma once
 
 #include "Color.h"

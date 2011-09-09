@@ -15,11 +15,12 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _MATHFUNCTIONS_H_
-#define _MATHFUNCTIONS_H_
+#ifndef _HE_MATHFUNCTIONS_H_
+#define _HE_MATHFUNCTIONS_H_
 #pragma once
 
 #include "Vector3.h"
+#include "Vector2.h"
 #include "Vector4.h"
 #include "PxMat44.h"
 #include "Matrix.h"
@@ -43,10 +44,20 @@ inline float toDegrees(float radians)
 }
 inline float length(float a)
 {
-    return abs(a);
+    return ::abs(a);
+}
+
+// Vector2
+inline Vector2 abs(const Vector2& vector)
+{
+	return Vector2(::abs(vector.x), ::abs(vector.y));
 }
 
 // Vector3
+inline Vector3 abs(const Vector3& vector)
+{
+	return Vector3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
+}
 inline float lengthSqr(const Vector3& vector)
 {
     return sqr(vector.x) + sqr(vector.y) + sqr(vector.z);

@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 19/08/2011
 
-#ifndef _PHYSICS_ENGINE_H_
-#define _PHYSICS_ENGINE_H_
+#ifndef _HE_PHYSICS_ENGINE_H_
+#define _HE_PHYSICS_ENGINE_H_
 #pragma once
 
 #include "PxPhysics.h"

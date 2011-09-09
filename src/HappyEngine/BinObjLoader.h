@@ -18,8 +18,8 @@
 //Author: Bastian Damman
 //Created: 28/08/2011
 
-#ifndef _BINOBJ_LOADER_H_
-#define _BINOBJ_LOADER_H_
+#ifndef _HE_BINOBJ_LOADER_H_
+#define _HE_BINOBJ_LOADER_H_
 #pragma once
 
 #include <string>

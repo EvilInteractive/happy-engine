@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 31/08/2011
 
-#ifndef _MODELLOADERFUNCTIONS_H_
-#define _MODELLOADERFUNCTIONS_H_
+#ifndef _HE_MODELLOADERFUNCTIONS_H_
+#define _HE_MODELLOADERFUNCTIONS_H_
 #pragma once
 
 #include "IModelLoader.h"

@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 23/08/2011
 
-#ifndef _HAPPY_NEW_H_
-#define _HAPPY_NEW_H_
+#ifndef _HE_HAPPY_NEW_H_
+#define _HE_HAPPY_NEW_H_
 #pragma once
 
 #if _DEBUG

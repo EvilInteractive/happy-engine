@@ -116,7 +116,7 @@ void MainGame::load()
 	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
 
 	happyengine::content::FontLoader fontLoader;
-    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
+    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 200, m_pFont);
 }
 void MainGame::tick(float dTime)
 {
@@ -215,9 +215,11 @@ void MainGame::draw(float dTime)
 
 		//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
 
-		//HE2D->setColor(1.0f,0.0f,1.0f);
-		//HE2D->setFontVerticalAlignment(FontVAlignment_Bottom);
-		//HE2D->drawText(Vector2(600,600), "test", m_pFont);
+		//HE2D->setAntiAliasing(true);	
+
+		HE2D->setColor(1.0f,0.0f,1.0f);
+		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
+		HE2D->drawText(Vector2(0,0), "Test", m_pFont);
 
 		/*std::vector<Vector2> points;
 		points.push_back(Vector2(10,10));
@@ -231,10 +233,10 @@ void MainGame::draw(float dTime)
 		HE2D->fillPolygon(points, points.size());*/
 
 		HE2D->setColor(1.0f,1.0f,1.0f);
-		HE2D->drawEllipse(Vector2(100,100), Vector2(101,101), 20);
+		HE2D->drawEllipse(Vector2(100,100), Vector2(101,101));
 	
 		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-		HE2D->fillEllipse(Vector2(100,100), Vector2(100,100), 20);
+		HE2D->fillEllipse(Vector2(100,100), Vector2(100,100));
 
 		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
 		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));

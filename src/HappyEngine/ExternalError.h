@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 05/08/2011
 
-#ifndef _EXTRERNAL_ERROR_H_
-#define _EXTRERNAL_ERROR_H_
+#ifndef _HE_EXTRERNAL_ERROR_H_
+#define _HE_EXTRERNAL_ERROR_H_
 #pragma once
 
 #include "GL/glew.h"

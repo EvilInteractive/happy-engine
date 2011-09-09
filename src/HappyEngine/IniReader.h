@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 10/08/2011
 
-#ifndef _INI_READER_H_
-#define _INI_READER_H_
+#ifndef _HE_INI_READER_H_
+#define _HE_INI_READER_H_
 #pragma once
 
 #include <string>

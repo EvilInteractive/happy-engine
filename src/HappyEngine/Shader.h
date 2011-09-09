@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _SHADER_H_
-#define _SHADER_H_
+#ifndef _HE_SHADER_H_
+#define _HE_SHADER_H_
 #pragma once
 
 #include <string>

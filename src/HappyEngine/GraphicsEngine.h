@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 04/08/2011
 
-#ifndef _GRAPHICS_ENGINE_H_
-#define _GRAPHICS_ENGINE_H_
+#ifndef _HE_GRAPHICS_ENGINE_H_
+#define _HE_GRAPHICS_ENGINE_H_
 #pragma once
 
 #include "Rect.h"

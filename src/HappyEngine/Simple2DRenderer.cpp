@@ -22,6 +22,7 @@
 #include "HappyNew.h"
 #include "GL/glew.h"
 #include "HappyEngine.h"
+#include "MathFunctions.h"
 
 #include <algorithm>
 #include <vector>
@@ -103,6 +104,7 @@ void Simple2DRenderer::begin()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE); //disable enable writing to depth buffer
 
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
@@ -115,6 +117,7 @@ void Simple2DRenderer::end()
 	m_pColorEffect->end();
 
 	glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
 
 	setStrokeSize();
 
@@ -181,7 +184,8 @@ void Simple2DRenderer::setFontVerticalAlignment(FontVAlignment verticalAlignment
 
 void Simple2DRenderer::drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const
 {
-	drawTexture2D(pos, font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment));
+	Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment));
+	drawTexture2D(pos, texFont, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
 
 void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size)
@@ -461,7 +465,7 @@ void Simple2DRenderer::drawTexture2D(const math::Vector2& pos, const graphics::T
 	
 	if (newDimensions.x != 0.0f || newDimensions.y != 0.0f)
 	{
-		ndcSize = getNDCSize(math::Vector2(newDimensions));
+		ndcSize = getNDCSize(math::abs(newDimensions));
 	}
 	else
 	{
@@ -471,10 +475,22 @@ void Simple2DRenderer::drawTexture2D(const math::Vector2& pos, const graphics::T
 	}
 
 	std::vector<VertexPosTex2D> vertices;
-	vertices.push_back(VertexPosTex2D(math::Vector2(ndcPos.x, ndcPos.y), math::Vector2(0,1)));
-	vertices.push_back(VertexPosTex2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y), math::Vector2(1,1)));
-	vertices.push_back(VertexPosTex2D(math::Vector2(ndcPos.x, ndcPos.y + ndcSize.y), math::Vector2(0,0)));
-	vertices.push_back(VertexPosTex2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y + ndcSize.y), math::Vector2(1,0)));
+
+	vertices.push_back(
+		VertexPosTex2D(math::Vector2(ndcPos.x, ndcPos.y),
+		math::Vector2(newDimensions.x < 0 ? 1.0f : 0.0f, newDimensions.y < 0 ? 0.0f : 1.0f)));
+
+	vertices.push_back(
+		VertexPosTex2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y),
+		math::Vector2(newDimensions.x < 0 ? 0.0f : 1.0f, newDimensions.y < 0 ? 0.0f : 1.0f)));
+
+	vertices.push_back(
+		VertexPosTex2D(math::Vector2(ndcPos.x, ndcPos.y + ndcSize.y),
+		math::Vector2(newDimensions.x < 0 ? 1.0f : 0.0f, newDimensions.y < 0 ? 1.0f : 0.0f)));
+
+	vertices.push_back(
+		VertexPosTex2D(math::Vector2(ndcPos.x + ndcSize.x, ndcPos.y + ndcSize.y),
+		math::Vector2(newDimensions.x < 0 ? 0.0f : 1.0f, newDimensions.y < 0 ? 1.0f : 0.0f)));
 
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(2); indices.push_back(1);

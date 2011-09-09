@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 08/08/2011
 
-#ifndef _MOUSE_H_
-#define _MOUSE_H_
+#ifndef _HE_MOUSE_H_
+#define _HE_MOUSE_H_
 #pragma once
 
 #include "Vector2.h"

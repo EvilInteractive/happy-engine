@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="references">
-      <UniqueIdentifier>{68967bde-5287-4907-bda8-15b9b01b1dd2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="data">
       <UniqueIdentifier>{e569846f-1e8b-4d37-b6a3-aa0b8083c225}</UniqueIdentifier>
     </Filter>
@@ -16,6 +13,9 @@
     </Filter>
     <Filter Include="happytest\vertex">
       <UniqueIdentifier>{09151816-3dd4-4ed8-8b5b-486f5c291c27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happytest\references">
+      <UniqueIdentifier>{68967bde-5287-4907-bda8-15b9b01b1dd2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

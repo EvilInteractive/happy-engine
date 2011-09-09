@@ -18,8 +18,8 @@
 //Author: Bastian Damman 
 //Created: 08/08/2011
 
-#ifndef _CONTROLS_MANAGER_H_
-#define _CONTROLS_MANAGER_H_
+#ifndef _HE_CONTROLS_MANAGER_H_
+#define _HE_CONTROLS_MANAGER_H_
 #pragma once
 
 #include "Keyboard.h"

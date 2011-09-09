@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 17/08/2011
 
-#ifndef _LIGHT_H_
-#define _LIGHT_H_
+#ifndef _HE_LIGHT_H_
+#define _HE_LIGHT_H_
 #pragma once
 
 #include "Vector3.h"

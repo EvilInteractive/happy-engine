@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 24/08/2011
 
-#ifndef _CLIENT_H_
-#define _CLIENT_H_
+#ifndef _HE_CLIENT_H_
+#define _HE_CLIENT_H_
 #pragma once
 
 #include "Assert.h"

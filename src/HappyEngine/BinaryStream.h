@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 20/08/2011
 
-#ifndef _BINARY_STREAM_H_
-#define _BINARY_STREAM_H_
+#ifndef _HE_BINARY_STREAM_H_
+#define _HE_BINARY_STREAM_H_
 #pragma once
 
 #include "common/PxStream.h"

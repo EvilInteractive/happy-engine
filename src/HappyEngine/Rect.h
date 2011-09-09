@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 05/08/2011
 
-#ifndef _RECT_H_
-#define _RECT_H_
+#ifndef _HE_RECT_H_
+#define _HE_RECT_H_
 #pragma once
 
 #include "HappyTypes.h"

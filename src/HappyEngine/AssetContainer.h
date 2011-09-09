@@ -18,8 +18,8 @@
 //Author:	Bastian Damman
 //Modified:	Sebastiaan Sprengers
 
-#ifndef _ASSET_CONTAINER_H_
-#define _ASSET_CONTAINER_H_
+#ifndef _HE_ASSET_CONTAINER_H_
+#define _HE_ASSET_CONTAINER_H_
 #pragma once
 
 #include <map>

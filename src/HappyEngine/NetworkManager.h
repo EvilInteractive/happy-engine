@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 25/08/2011
 
-#ifndef _NETWORK_MANAGER_H_
-#define _NETWORK_MANAGER_H_
+#ifndef _HE_NETWORK_MANAGER_H_
+#define _HE_NETWORK_MANAGER_H_
 #pragma once
 
 #include "Assert.h"

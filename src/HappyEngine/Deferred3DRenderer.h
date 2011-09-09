@@ -19,8 +19,8 @@
 //Created: 13/08/2011
 //Added multiple lights: 18/08/2011
 
-#ifndef _DEFERRED_3D_RENDERER_H_
-#define _DEFERRED_3D_RENDERER_H_
+#ifndef _HE_DEFERRED_3D_RENDERER_H_
+#define _HE_DEFERRED_3D_RENDERER_H_
 #pragma once
 
 #include "I3DRenderer.h"

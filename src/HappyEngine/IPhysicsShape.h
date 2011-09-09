@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 20/08/2011
 
-#ifndef _IPHYSICS_SHAPE_H_
-#define _IPHYSICS_SHAPE_H_
+#ifndef _HE_IPHYSICS_SHAPE_H_
+#define _HE_IPHYSICS_SHAPE_H_
 #pragma once
 
 #include "PxShape.h"

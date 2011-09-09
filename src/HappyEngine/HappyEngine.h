@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _HAPPYENGINE_H_
-#define _HAPPYENGINE_H_
+#ifndef _HE_HAPPYENGINE_H_
+#define _HE_HAPPYENGINE_H_
 #pragma once
 
 #define SDL_NO_COMPAT

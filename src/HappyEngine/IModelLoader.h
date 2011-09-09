@@ -18,8 +18,8 @@
 //Author:  
 //Created: //
 
-#ifndef _IMODEL_LOADER_H_
-#define _IMODEL_LOADER_H_
+#ifndef _HE_IMODEL_LOADER_H_
+#define _HE_IMODEL_LOADER_H_
 #pragma once
 
 #include <string>

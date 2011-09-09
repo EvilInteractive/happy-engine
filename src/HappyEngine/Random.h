@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 01/09/2011
 
-#ifndef _RANDOM_H_
-#define _RANDOM_H_
+#ifndef _HE_RANDOM_H_
+#define _HE_RANDOM_H_
 #pragma once
 
 #include "HappyTypes.h"

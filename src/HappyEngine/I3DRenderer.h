@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _I3DRENDERER_H_
-#define _I3DRENDERER_H_
+#ifndef _HE_I3DRENDERER_H_
+#define _HE_I3DRENDERER_H_
 #pragma once
 
 #include "Model.h"

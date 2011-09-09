@@ -19,8 +19,8 @@
 //Created:	23/08/2011
 //Extended:	Sebastiaan Sprengers
 
-#ifndef _MODEL_LOADER_H_
-#define _MODEL_LOADER_H_
+#ifndef _HE_MODEL_LOADER_H_
+#define _HE_MODEL_LOADER_H_
 #pragma once
 
 #include "Model.h"

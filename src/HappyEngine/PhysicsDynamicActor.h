@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 22/08/2011
 
-#ifndef _PHYSICS_DYNAMIC_ACTOR_H_
-#define _PHYSICS_DYNAMIC_ACTOR_H_
+#ifndef _HE_PHYSICS_DYNAMIC_ACTOR_H_
+#define _HE_PHYSICS_DYNAMIC_ACTOR_H_
 #pragma once
 
 #include "PxRigidDynamic.h"

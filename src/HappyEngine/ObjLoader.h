@@ -18,8 +18,8 @@
 //Author: Bastian Damman
 //Created: 04/08/2011
 
-#ifndef _OBJ_LOADER_H_
-#define _OBJ_LOADER_H_
+#ifndef _HE_OBJ_LOADER_H_
+#define _HE_OBJ_LOADER_H_
 #pragma once
 
 #include <string>

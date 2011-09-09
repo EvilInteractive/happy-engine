@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 08/08/2011
 
-#ifndef _KEYS_H_
-#define _KEYS_H_
+#ifndef _HE_KEYS_H_
+#define _HE_KEYS_H_
 #pragma once
 
 #include "SDL_keycode.h"

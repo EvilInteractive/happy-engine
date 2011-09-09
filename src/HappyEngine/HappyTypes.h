@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 05/08/2011
 
-#ifndef _HAPPY_TYPES_H_
-#define _HAPPY_TYPES_H_
+#ifndef _HE_HAPPY_TYPES_H_
+#define _HE_HAPPY_TYPES_H_
 #pragma once
 
 namespace happyengine {

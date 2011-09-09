@@ -19,8 +19,8 @@
 //Created: 11/08/2011
 //Extended:	Sebastiaan Sprengers
 
-#ifndef _TEXTURE_LOADER_H_
-#define _TEXTURE_LOADER_H_
+#ifndef _HE_TEXTURE_LOADER_H_
+#define _HE_TEXTURE_LOADER_H_
 #pragma once
 
 #include <string>

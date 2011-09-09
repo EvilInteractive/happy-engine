@@ -18,8 +18,8 @@
 //Author:  
 //Created: //
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _HE_X_H_
+#define _HE_X_H_
 #pragma once
 
 namespace happyengine {

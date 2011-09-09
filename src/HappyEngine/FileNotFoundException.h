@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _FILE_NOT_FOUND_EXCEPTION_H_
-#define _FILE_NOT_FOUND_EXCEPTION_H_
+#ifndef _HE_FILE_NOT_FOUND_EXCEPTION_H_
+#define _HE_FILE_NOT_FOUND_EXCEPTION_H_
 #pragma once
 
 #include "Exception.h"

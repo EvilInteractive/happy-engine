@@ -18,8 +18,8 @@
 //Author:	Bastian Damman
 //Created:	05/09/2011
 
-#ifndef _LINE_LOADER_H_
-#define _LINE_LOADER_H_
+#ifndef _HE_LINE_LOADER_H_
+#define _HE_LINE_LOADER_H_
 #pragma once
 
 #include "AssetContainer.h"

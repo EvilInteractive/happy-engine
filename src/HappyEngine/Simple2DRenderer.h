@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 25/08/2011
 
-#ifndef _2D_RENDERER_H_
-#define _2D_RENDERER_H_
+#ifndef _HE_2D_RENDERER_H_
+#define _HE_2D_RENDERER_H_
 #pragma once
 
 #include "I2DRenderer.h"

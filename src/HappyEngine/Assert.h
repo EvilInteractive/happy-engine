@@ -19,8 +19,8 @@
 //Created: 13/06/2011
 //Updated assert: 04/09/2011
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
+#ifndef _HE_ASSERT_H_
+#define _HE_ASSERT_H_
 #pragma once
 
 #include <string>
