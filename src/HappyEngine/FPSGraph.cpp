@@ -61,7 +61,7 @@ void FPSGraph::show(float dTime, float interval)
 
 		if (fps < 0)
 			fps = 0;
-		if (fps > 80)
+		else if (fps > 80)
 			fps = 80;
 
 		m_CurrentFPS = fps;
@@ -94,6 +94,25 @@ void FPSGraph::show(float dTime, float interval)
 
 		HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
 		HE2D->setStrokeSize();
+		HE2D->drawPolygon(points, points.size());
+
+		points.clear();
+		i = 0;
+
+		std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint currentFps)
+		{
+			uint currentDTime = static_cast<uint>((1.0f / currentFps) * 1000.0f);
+
+			if (currentDTime < 0)
+				currentDTime = 0;
+			else if (currentDTime > 80)
+				currentDTime = 80;
+
+			points.push_back(happyengine::math::Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (i * 2)), static_cast<float>(45 - (currentDTime / 2))));
+			++i;
+		});
+
+		HE2D->setColor(1.0f,1.0f,0.0f,0.8f);
 		HE2D->drawPolygon(points, points.size());
 
 		HE2D->setColor(1.0f,1.0f,1.0f);
