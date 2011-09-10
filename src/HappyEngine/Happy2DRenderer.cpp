@@ -30,6 +30,7 @@
 namespace happyengine {
 namespace graphics {
 
+/* CONSTRUCTOR - DESTRUCTOR */
 Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW happyengine::graphics::Simple2DEffect()),
 										m_pTextureEffect(NEW happyengine::graphics::Simple2DTextureEffect()),
 										m_bAntiAliasing(false),
@@ -92,6 +93,14 @@ void Happy2DRenderer::cleanUpModelBuffer()
 	});
 }
 
+void Happy2DRenderer::updateTransformationMatrix()
+{
+	m_matWorld = math::Matrix::createScale(m_Scale.x, m_Scale.y, 1.0f) *
+				 math::Matrix::createRotation(math::Vector3(0.0f,0.0f,-1.0f), m_Rotation) *
+				 math::Matrix::createTranslation(math::Vector3(m_Translation.x, m_Translation.y, 0.0f));
+}
+
+/* GENERAL */
 void Happy2DRenderer::begin()
 {
 	glEnable(GL_BLEND);
@@ -131,6 +140,7 @@ void Happy2DRenderer::initialize(bool)
 	m_pColorEffect->load();
 	m_pTextureEffect->load();
 }
+/* SETTERS */
 
 void Happy2DRenderer::setColor(float r, float g, float b, float a)
 {
@@ -138,11 +148,6 @@ void Happy2DRenderer::setColor(float r, float g, float b, float a)
 	m_CurrentColor.g(g);
 	m_CurrentColor.b(b);
 	m_CurrentColor.a(a);
-}
-
-void Happy2DRenderer::setTransformationMatrix(const happyengine::math::Matrix& mat)
-{
-	m_matWorld = mat;
 }
 
 void Happy2DRenderer::setAntiAliasing(bool bAA)
@@ -174,6 +179,34 @@ void Happy2DRenderer::setFontVerticalAlignment(FontVAlignment verticalAlignment)
 	m_FontVAlignment = verticalAlignment;
 }
 
+void Happy2DRenderer::setTranslation(const math::Vector2& translation)
+{
+	m_Translation = translation;
+	updateTransformationMatrix();
+}
+
+void Happy2DRenderer::setRotation(const float radians)
+{
+	m_Rotation = radians;
+	updateTransformationMatrix();
+}
+
+void Happy2DRenderer::setScale(const math::Vector2& scale)
+{
+	m_Scale = scale;
+	updateTransformationMatrix();
+}
+
+void Happy2DRenderer::resetTransformation()
+{
+	m_matWorld = math::Matrix::Identity;
+
+	m_Translation = math::Vector2(0.0f,0.0f);
+	m_Rotation = 0.0f;
+	m_Scale = math::Vector2(0.0f,0.0f);
+}
+
+/* DRAW METHODS */
 void Happy2DRenderer::drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const
 {
 	Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment, m_bAntiAliasing));
@@ -224,7 +257,7 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 	}
 
 	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+	math::Matrix mat = m_matWorld * math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f));
 
 	m_pColorEffect->setWorldMatrix(mat);
 
@@ -271,7 +304,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 	}
 
 	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+	math::Matrix mat = m_matWorld * math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f));
 
 	m_pColorEffect->setWorldMatrix(mat);
 
@@ -324,7 +357,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 	}
 
 	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+	math::Matrix mat = m_matWorld * math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f));
 
 	m_pColorEffect->setWorldMatrix(mat);
 
@@ -381,7 +414,7 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 	}
 
 	math::Vector2 ndcPos(getNDCPos(pos));
-	math::Matrix mat = math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f)) * m_matWorld;
+	math::Matrix mat = m_matWorld * math::Matrix::createTranslation(math::Vector3(ndcPos.x, ndcPos.y, 0.0f));
 
 	m_pColorEffect->setWorldMatrix(mat);
 

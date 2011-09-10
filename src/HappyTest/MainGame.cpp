@@ -25,6 +25,7 @@
 #include "Vector3.h"
 #include "MathConstants.h"
 #include "HappyEngine.h"
+#include "MathFunctions.h"
 
 #include "IniReader.h"
 #include "FileNotFoundException.h"
@@ -215,10 +216,10 @@ void MainGame::draw(float dTime)
 		//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
 
 		//HE2D->setAntiAliasing(true);	
-
+		
 		HE2D->setColor(0.6f,0.5f,0.2f);
 		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
-		HE2D->drawText(Vector2(0,0), "Test", m_pFont);
+		HE2D->drawText(Vector2(200,100), "Test", m_pFont);
 
 		/*std::vector<Vector2> points;
 		points.push_back(Vector2(10,10));
@@ -236,9 +237,14 @@ void MainGame::draw(float dTime)
 	
 		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
 		HE2D->fillEllipse(Vector2(100,100), Vector2(100,100));
+		*/
+
+		//HE2D->setRotation(math::toRadians(45));
 
 		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));*/
+		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));
+
+		//HE2D->resetTransformation();
 
 		m_pFPSGraph->show(dTime, 0.25f);
 

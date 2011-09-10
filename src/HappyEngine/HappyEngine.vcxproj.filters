@@ -62,6 +62,9 @@
     <Filter Include="happyengine\tools">
       <UniqueIdentifier>{5005515a-f938-403e-93e3-a1840dda4b82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\gui">
+      <UniqueIdentifier>{77ddc30e-7993-437b-878f-329d3d4f79f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -234,6 +237,12 @@
     </ClCompile>
     <ClCompile Include="FPSGraph.cpp">
       <Filter>happyengine\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Hitregion.cpp">
+      <Filter>happyengine\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix2D.cpp">
+      <Filter>happyengine\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -449,6 +458,12 @@
     </ClInclude>
     <ClInclude Include="ISpline.h">
       <Filter>happyengine\math\splines</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitregion.h">
+      <Filter>happyengine\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix2D.h">
+      <Filter>happyengine\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

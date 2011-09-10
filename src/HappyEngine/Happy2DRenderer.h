@@ -44,32 +44,36 @@ class Happy2DRenderer
 {
 public:
 
-	// CONSTRUCTOR - DESTRUCTOR
+	/* CONSTRUCTOR - DESTRUCTOR */
 	Happy2DRenderer();
     virtual ~Happy2DRenderer();
 
-	// GENERAL
+	/* GENERAL */
 	void begin();
 	void end();
 	void initialize(bool useDefaultShader = true);
 
-    // SETTERS
+    /* SETTERS */
 	void setColor(float r, float g, float b, float a = 1.0f);
-	void setTransformationMatrix(const happyengine::math::Matrix& mat);
 	void setAntiAliasing(bool bAA);
 	void setStrokeSize(float strokeSize = 1.0f);
 	void setFontHorizontalAlignment(FontHAlignment horizontalAlignment);
 	void setFontVerticalAlignment(FontVAlignment verticalAlignment);
 
-    // DRAW METHODS
-	void drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const;
+	void setTranslation(const math::Vector2& translation);
+	void setRotation(const float radians);
+	void setScale(const math::Vector2& scale);
+	void resetTransformation();
+
+    /* DRAW METHODS */
+	void drawText(const math::Vector2& pos, const std::string& text, const Font::pointer& font) const;
 	void drawRectangle(const math::Vector2& pos, const math::Vector2& size);
 	void fillRectangle(const math::Vector2& pos, const math::Vector2& size);
 	void drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
 	void fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
-	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints, bool close = false);
-	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints);
-	void drawTexture2D(const math::Vector2& pos, const graphics::Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f)) const;
+	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false);
+	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints);
+	void drawTexture2D(const math::Vector2& pos, const Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f)) const;
 
 private:
 
@@ -77,8 +81,9 @@ private:
 	math::Vector2 getNDCSize(const math::Vector2& size) const;
 
 	void cleanUpModelBuffer();
+	void updateTransformationMatrix();
 
-	// DATAMEMBERS
+	/* DATAMEMBERS */
 	float m_StrokeSize;
 	bool m_bAntiAliasing;
 
@@ -93,13 +98,17 @@ private:
 	Simple2DTextureEffect* m_pTextureEffect;
 
 	math::Matrix m_matWorld;
+	math::Vector2 m_Translation;
+	math::Vector2 m_Scale;
+	float m_Rotation;
+
 	math::Vector2 m_ViewPortSize;
 
 	content::AssetContainerP<graphics::Model>* m_pModelBuffer;
 	std::map<std::string, uint> m_ModelBufferIndex;
 	uint m_TickCounter;
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Happy2DRenderer(const Happy2DRenderer&);
     Happy2DRenderer& operator=(const Happy2DRenderer&);
 };
