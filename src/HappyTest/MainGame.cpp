@@ -35,7 +35,7 @@ namespace happytest {
 
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
-					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happytest::FPSGraph()),
+					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
 					   m_pCamera(nullptr)
 {
     using namespace happyengine;
@@ -61,7 +61,6 @@ MainGame::~MainGame()
     delete m_pClient;
 
 	delete m_pFPSGraph;
-	delete HE2D;
 	delete m_pCamera;
 
     NETWORK->stop();
@@ -116,7 +115,7 @@ void MainGame::load()
 	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
 
 	happyengine::content::FontLoader fontLoader;
-    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 200, m_pFont);
+    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 50, m_pFont);
 }
 void MainGame::tick(float dTime)
 {
@@ -217,7 +216,7 @@ void MainGame::draw(float dTime)
 
 		//HE2D->setAntiAliasing(true);	
 
-		HE2D->setColor(1.0f,0.0f,1.0f);
+		HE2D->setColor(0.6f,0.5f,0.2f);
 		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
 		HE2D->drawText(Vector2(0,0), "Test", m_pFont);
 
@@ -232,14 +231,14 @@ void MainGame::draw(float dTime)
 		HE2D->setColor(1.0f,1.0f,1.0f);
 		HE2D->fillPolygon(points, points.size());*/
 
-		HE2D->setColor(1.0f,1.0f,1.0f);
+		/*HE2D->setColor(1.0f,1.0f,1.0f);
 		HE2D->drawEllipse(Vector2(100,100), Vector2(101,101));
 	
 		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
 		HE2D->fillEllipse(Vector2(100,100), Vector2(100,100));
 
 		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));
+		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));*/
 
 		m_pFPSGraph->show(dTime, 0.25f);
 

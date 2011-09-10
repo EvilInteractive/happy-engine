@@ -59,6 +59,9 @@
     <Filter Include="happyengine\math\splines">
       <UniqueIdentifier>{c61f8b31-a017-4398-a746-3a51e2244a53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\tools">
+      <UniqueIdentifier>{5005515a-f938-403e-93e3-a1840dda4b82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -199,9 +202,6 @@
     <ClCompile Include="BinObjLoader.cpp">
       <Filter>happyengine\content\models</Filter>
     </ClCompile>
-    <ClCompile Include="Simple2DRenderer.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Simple2DEffect.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
@@ -228,6 +228,12 @@
     </ClCompile>
     <ClCompile Include="AssetContainerP.cpp">
       <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="Happy2DRenderer.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSGraph.cpp">
+      <Filter>happyengine\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -399,9 +405,6 @@
     <ClInclude Include="IModelLoader.h">
       <Filter>happyengine\content\models</Filter>
     </ClInclude>
-    <ClInclude Include="Simple2DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Simple2DEffect.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
@@ -426,20 +429,17 @@
     <ClInclude Include="Simple2DTextureEffect.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="ISpline.h">
-      <Filter>happyengine\math\splines</Filter>
-    </ClInclude>
-    <ClInclude Include="CatmullRomSpline.h">
-      <Filter>happyengine\math\splines</Filter>
-    </ClInclude>
-    <ClInclude Include="LinearSpline.h">
-      <Filter>happyengine\math\splines</Filter>
-    </ClInclude>
     <ClInclude Include="AssetContainerP.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
     <ClInclude Include="IniReader.h">
       <Filter>happyengine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="Happy2DRenderer.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSGraph.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,6 +34,7 @@
 #include "PhysicsEngine.h"
 #include "ContentManager.h"
 #include "NetworkManager.h"
+#include "Happy2DRenderer.h"
 
 #define HAPPYENGINE happyengine::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
@@ -41,6 +42,7 @@
 #define PHYSICS HAPPYENGINE->getPhysics()
 #define CONTENT HAPPYENGINE->getContentManager()
 #define NETWORK HAPPYENGINE->getNetworkManager()
+#define HE2D HAPPYENGINE->get2DRenderer()
 
 namespace happyengine {
 enum SubEngine
@@ -51,7 +53,8 @@ enum SubEngine
     SubEngine_Networking = 1 << 2,
     SubEngine_Controls = 1 << 3,
     SubEngine_Content = 1 << 4,
-    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4
+	SubEngine_2DRenderer = 1 << 5,
+    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5
 };
 class HappyEngine
 {
@@ -72,6 +75,7 @@ public:
     physics::PhysicsEngine* getPhysics() const;
     content::ContentManager* getContentManager() const;
     networking::NetworkManager* getNetworkManager() const;
+	graphics::Happy2DRenderer* get2DRenderer() const;
 
 private:
     // Singleton design pattern
@@ -86,6 +90,7 @@ private:
     physics::PhysicsEngine* m_pPhysicsEngine;
     content::ContentManager* m_pContentManager;
     networking::NetworkManager* m_pNetworkManager;
+	graphics::Happy2DRenderer* m_p2DRenderer;
 
     bool m_Quit;
     bool m_Loaded;

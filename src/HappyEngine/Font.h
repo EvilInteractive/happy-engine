@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 12/08/2011
+//Extended:Sebastiaan Sprengers
 
 #ifndef _HE_FONT_H_
 #define _HE_FONT_H_
@@ -54,7 +55,8 @@ public:
     virtual ~Font();
     
     Texture2D::pointer createTextureText(const std::string& text, const Color& color, 
-                                         FontHAlignment hAlignment, FontVAlignment vAlignment);
+                                         FontHAlignment hAlignment, FontVAlignment vAlignment,
+										 bool bAntiAliased = true);
 
     typedef boost::shared_ptr<Font> pointer;
 

@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 25/08/2011
 
-#include "Simple2DRenderer.h"
+#include "Happy2DRenderer.h"
 #include "HappyNew.h"
 #include "GL/glew.h"
 #include "HappyEngine.h"
@@ -30,9 +30,7 @@
 namespace happyengine {
 namespace graphics {
 
-Simple2DRenderer* Simple2DRenderer::m_pSingleton = nullptr;
-
-Simple2DRenderer::Simple2DRenderer() :	m_pColorEffect(NEW happyengine::graphics::Simple2DEffect()),
+Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW happyengine::graphics::Simple2DEffect()),
 										m_pTextureEffect(NEW happyengine::graphics::Simple2DTextureEffect()),
 										m_bAntiAliasing(false),
 										m_StrokeSize(0.0f),
@@ -46,20 +44,14 @@ Simple2DRenderer::Simple2DRenderer() :	m_pColorEffect(NEW happyengine::graphics:
     
 }
 
-Simple2DRenderer::~Simple2DRenderer()
+Happy2DRenderer::~Happy2DRenderer()
 {
 	delete m_pColorEffect;
 	delete m_pTextureEffect;
 	delete m_pModelBuffer;
 }
 
-Simple2DRenderer* Simple2DRenderer::getSingleton()
-{
-	if (m_pSingleton == nullptr) m_pSingleton = NEW happyengine::graphics::Simple2DRenderer();
-	return m_pSingleton;
-}
-
-math::Vector2 Simple2DRenderer::getNDCPos(const math::Vector2& pos) const
+math::Vector2 Happy2DRenderer::getNDCPos(const math::Vector2& pos) const
 {
 	math::Vector2 ndcPos;
 	ndcPos.x = (pos.x / m_ViewPortSize.x) * 2.0f - 1.0f;
@@ -67,7 +59,7 @@ math::Vector2 Simple2DRenderer::getNDCPos(const math::Vector2& pos) const
 
 	return ndcPos;
 }
-math::Vector2 Simple2DRenderer::getNDCSize(const math::Vector2& size) const
+math::Vector2 Happy2DRenderer::getNDCSize(const math::Vector2& size) const
 {
 	math::Vector2 ndcSize;
 	ndcSize.x = (size.x / m_ViewPortSize.x) * 2.0f;
@@ -75,7 +67,7 @@ math::Vector2 Simple2DRenderer::getNDCSize(const math::Vector2& size) const
 
 	return ndcSize;
 }
-void Simple2DRenderer::cleanUpModelBuffer()
+void Happy2DRenderer::cleanUpModelBuffer()
 {
 	using namespace std;
 
@@ -100,7 +92,7 @@ void Simple2DRenderer::cleanUpModelBuffer()
 	});
 }
 
-void Simple2DRenderer::begin()
+void Happy2DRenderer::begin()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -112,7 +104,7 @@ void Simple2DRenderer::begin()
 	m_pColorEffect->begin();
 }
 
-void Simple2DRenderer::end()
+void Happy2DRenderer::end()
 {
 	m_pColorEffect->end();
 
@@ -124,7 +116,7 @@ void Simple2DRenderer::end()
 	//cleanUpModelBuffer();
 }
 
-void Simple2DRenderer::initialize(bool)
+void Happy2DRenderer::initialize(bool)
 {
 	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
 	m_VertexLayoutColor.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 8, "inColor"));
@@ -140,7 +132,7 @@ void Simple2DRenderer::initialize(bool)
 	m_pTextureEffect->load();
 }
 
-void Simple2DRenderer::setColor(float r, float g, float b, float a)
+void Happy2DRenderer::setColor(float r, float g, float b, float a)
 {
 	m_CurrentColor.r(r);
 	m_CurrentColor.g(g);
@@ -148,12 +140,12 @@ void Simple2DRenderer::setColor(float r, float g, float b, float a)
 	m_CurrentColor.a(a);
 }
 
-void Simple2DRenderer::setTransformationMatrix(const happyengine::math::Matrix& mat)
+void Happy2DRenderer::setTransformationMatrix(const happyengine::math::Matrix& mat)
 {
 	m_matWorld = mat;
 }
 
-void Simple2DRenderer::setAntiAliasing(bool bAA)
+void Happy2DRenderer::setAntiAliasing(bool bAA)
 {
 	if (bAA)
 	{
@@ -165,30 +157,31 @@ void Simple2DRenderer::setAntiAliasing(bool bAA)
 	}
 }
 
-void Simple2DRenderer::setStrokeSize(float strokeSize)
+void Happy2DRenderer::setStrokeSize(float strokeSize)
 {
 	glLineWidth(strokeSize);
 
 	m_StrokeSize = strokeSize;
 }
 
-void Simple2DRenderer::setFontHorizontalAlignment(FontHAlignment horizontalAlignment)
+void Happy2DRenderer::setFontHorizontalAlignment(FontHAlignment horizontalAlignment)
 {
 	m_FontHAlignment = horizontalAlignment;
 }
 
-void Simple2DRenderer::setFontVerticalAlignment(FontVAlignment verticalAlignment)
+void Happy2DRenderer::setFontVerticalAlignment(FontVAlignment verticalAlignment)
 {
 	m_FontVAlignment = verticalAlignment;
 }
 
-void Simple2DRenderer::drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const
+void Happy2DRenderer::drawText(const math::Vector2& pos, const std::string& text, const happyengine::graphics::Font::pointer& font) const
 {
-	Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment));
+	Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_FontHAlignment, m_FontVAlignment, m_bAntiAliasing));
+
 	drawTexture2D(pos, texFont, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
 
-void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size)
+void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size)
 {
 	Model* pModel;
 
@@ -242,7 +235,7 @@ void Simple2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vecto
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector2& size)
+void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector2& size)
 {
 	Model* pModel;
 
@@ -289,7 +282,7 @@ void Simple2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vecto
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
+void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
 {
 	Model* pModel;
 
@@ -342,7 +335,7 @@ void Simple2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
+void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
 {
 	Model* pModel;
 
@@ -399,7 +392,7 @@ void Simple2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close)
+void Happy2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close)
 {
 	std::vector<VertexPosCol2D> vertices;
 	std::vector<byte> indices;
@@ -430,7 +423,7 @@ void Simple2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2>
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints)
+void Happy2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>& points, happyengine::uint nrPoints)
 {
 	std::vector<VertexPosCol2D> vertices;
 	std::vector<byte> indices;
@@ -458,7 +451,7 @@ void Simple2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>
     glBindVertexArray(0);
 }
 
-void Simple2DRenderer::drawTexture2D(const math::Vector2& pos, const graphics::Texture2D::pointer& tex2D, const math::Vector2& newDimensions) const
+void Happy2DRenderer::drawTexture2D(const math::Vector2& pos, const graphics::Texture2D::pointer& tex2D, const math::Vector2& newDimensions) const
 {
 	math::Vector2 ndcPos(getNDCPos(pos));
 	math::Vector2 ndcSize;

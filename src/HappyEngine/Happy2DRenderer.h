@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 25/08/2011
 
-#ifndef _HE_2D_RENDERER_H_
-#define _HE_2D_RENDERER_H_
+#ifndef _HE_HAPPY_2D_RENDERER_H_
+#define _HE_HAPPY_2D_RENDERER_H_
 #pragma once
 
 #include "I2DRenderer.h"
@@ -37,24 +37,16 @@
 
 #include <map>
 
-#define HE2D (happyengine::graphics::Simple2DRenderer::getSingleton())
-
 namespace happyengine {
 namespace graphics {
 
-class Simple2DRenderer
+class Happy2DRenderer
 {
-private:
-
-	// SINGLETON
-	Simple2DRenderer();
-	static Simple2DRenderer* m_pSingleton;
-
 public:
 
 	// CONSTRUCTOR - DESTRUCTOR
-    virtual ~Simple2DRenderer();
-	static Simple2DRenderer* getSingleton();
+	Happy2DRenderer();
+    virtual ~Happy2DRenderer();
 
 	// GENERAL
 	void begin();
@@ -108,8 +100,8 @@ private:
 	uint m_TickCounter;
 
     //Disable default copy constructor and default assignment operator
-    Simple2DRenderer(const Simple2DRenderer&);
-    Simple2DRenderer& operator=(const Simple2DRenderer&);
+    Happy2DRenderer(const Happy2DRenderer&);
+    Happy2DRenderer& operator=(const Happy2DRenderer&);
 };
 
 } } //end namespace

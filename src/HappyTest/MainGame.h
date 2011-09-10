@@ -25,12 +25,12 @@
 #include "Color.h"
 #include "DeferredPreEffect.h"
 #include "TestBullet.h"
-#include "Simple2DRenderer.h"
 #include "Simple2DEffect.h"
 #include "Texture2D.h"
 #include "Font.h"
 #include "FontLoader.h"
 #include "FlyCamera.h"
+#include "FPSGraph.h"
 
 #include <ppl.h>
 #include <concurrent_vector.h>
@@ -38,8 +38,6 @@
 
 #include "MyServer.h"
 #include "MyClient.h"
-
-#include "FPSGraph.h"
 
 namespace happytest {
 
@@ -73,7 +71,7 @@ private:
     MyServer* m_pServer;
     MyClient* m_pClient;
 
-	happytest::FPSGraph* m_pFPSGraph;
+	happyengine::tools::FPSGraph* m_pFPSGraph;
 
 	happyengine::graphics::Texture2D::pointer m_TestImage;
 	happyengine::graphics::Font::pointer m_pFont;

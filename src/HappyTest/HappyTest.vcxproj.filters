@@ -43,9 +43,6 @@
     <ClCompile Include="MyClient.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
-    <ClCompile Include="FPSGraph.cpp">
-      <Filter>happytest</Filter>
-    </ClCompile>
     <ClCompile Include="FlyCamera.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
@@ -70,9 +67,6 @@
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="MyClient.h">
-      <Filter>happytest</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSGraph.h">
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="FlyCamera.h">

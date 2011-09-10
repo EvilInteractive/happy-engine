@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetContainerP.cpp" />
+    <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="LineLoader.cpp" />
     <ClCompile Include="ModelLoaderFunctions.cpp" />
     <ClCompile Include="AssetContainer.cpp" />
@@ -23,7 +24,7 @@
     <ClCompile Include="ObjLineLoader.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Simple2DEffect.cpp" />
-    <ClCompile Include="Simple2DRenderer.cpp" />
+    <ClCompile Include="Happy2DRenderer.cpp" />
     <ClCompile Include="Assert.cpp" />
     <ClCompile Include="BinaryStream.cpp" />
     <ClCompile Include="BinObjLoader.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="ISpline.h" />
     <ClInclude Include="LinearSpline.h" />
     <ClInclude Include="AssetContainerP.h" />
+    <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="LineLoader.h" />
     <ClInclude Include="ModelLoaderFunctions.h" />
     <ClInclude Include="ObjLineLoader.h" />
@@ -84,7 +86,7 @@
     <ClInclude Include="AssetContainer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Simple2DEffect.h" />
-    <ClInclude Include="Simple2DRenderer.h" />
+    <ClInclude Include="Happy2DRenderer.h" />
     <ClInclude Include="Assert.h" />
     <ClInclude Include="BinaryStream.h" />
     <ClInclude Include="BinObjLoader.h" />

@@ -32,7 +32,7 @@ HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr)
+                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -63,6 +63,8 @@ void HappyEngine::cleanup()
     m_pContentManager = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
+	delete m_p2DRenderer;
+	m_p2DRenderer = nullptr;
     if (m_SubEngines & SubEngine_Graphics)
     {
         SDL_Quit();
@@ -105,6 +107,11 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     if (subengines & SubEngine_Networking)
     {
         m_pNetworkManager = NEW networking::NetworkManager();
+    }
+
+	if (subengines & SubEngine_2DRenderer)
+    {
+		m_p2DRenderer = NEW graphics::Happy2DRenderer();
     }
 }
 
@@ -208,6 +215,11 @@ content::ContentManager* HappyEngine::getContentManager() const
 networking::NetworkManager* HappyEngine::getNetworkManager() const
 {
     return m_pNetworkManager;
+}
+
+graphics::Happy2DRenderer* HappyEngine::get2DRenderer() const
+{
+	return m_p2DRenderer;
 }
 
 

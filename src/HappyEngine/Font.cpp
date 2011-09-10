@@ -17,12 +17,15 @@
 //
 //Author:  Bastian Damman
 //Created: 12/08/2011
+//Extended:Sebastiaan Sprengers
 
 #include "Font.h"
 #include "SDL.h"
 #include "GL/glew.h"
 #include "Assert.h"
 #include "HappyNew.h"
+
+#include <algorithm>
 
 namespace happyengine {
 namespace graphics {
@@ -87,7 +90,8 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf,
     return pP2Surf;
 }
 Texture2D::pointer Font::createTextureText(const std::string& text, const Color& color, 
-                                           FontHAlignment hAlignment, FontVAlignment vAlignment)
+                                           FontHAlignment hAlignment, FontVAlignment vAlignment,
+										   bool bAntiAliased)
 {
     SDL_Color col;
     col.r = color.rByte();
@@ -95,14 +99,23 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
     col.b = color.bByte();
 
     SDL_Surface* pSurf(convertNonP2ToP2Surface(
-        TTF_RenderText_Blended(m_pFont, text.c_str(), col), 
+		TTF_RenderText_Blended(m_pFont, text.c_str(), col), 
         hAlignment, vAlignment));
 
     GLuint texID;
     glGenTextures(1, &texID);
     glBindTexture(GL_TEXTURE_2D, texID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	if (bAntiAliased)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pSurf->w, pSurf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, pSurf->pixels);
 
