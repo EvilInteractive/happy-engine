@@ -441,5 +441,14 @@
     <ClInclude Include="FPSGraph.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
+    <ClInclude Include="CatmullRomSpline.h">
+      <Filter>happyengine\math\splines</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearSpline.h">
+      <Filter>happyengine\math\splines</Filter>
+    </ClInclude>
+    <ClInclude Include="ISpline.h">
+      <Filter>happyengine\math\splines</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
