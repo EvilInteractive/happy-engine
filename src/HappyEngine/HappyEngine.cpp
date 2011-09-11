@@ -32,7 +32,8 @@ HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr)
+                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
+							m_bInit2D(false)
 {
 }
 HappyEngine::~HappyEngine()
@@ -112,6 +113,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 	if (subengines & SubEngine_2DRenderer)
     {
 		m_p2DRenderer = NEW graphics::Happy2DRenderer();
+		m_bInit2D = true;
     }
 }
 
@@ -132,6 +134,7 @@ void HappyEngine::start(IGame* pGame)
     
     //load stuff
     m_pGraphicsEngine->init();
+	if (m_bInit2D) m_p2DRenderer->initialize();
     m_pGame->load();
 
     Uint32 prevTicks(SDL_GetTicks());

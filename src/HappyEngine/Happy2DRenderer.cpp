@@ -125,7 +125,7 @@ void Happy2DRenderer::end()
 	//cleanUpModelBuffer();
 }
 
-void Happy2DRenderer::initialize(bool)
+void Happy2DRenderer::initialize()
 {
 	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
 	m_VertexLayoutColor.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 8, "inColor"));
@@ -140,8 +140,8 @@ void Happy2DRenderer::initialize(bool)
 	m_pColorEffect->load();
 	m_pTextureEffect->load();
 }
-/* SETTERS */
 
+/* SETTERS */
 void Happy2DRenderer::setColor(float r, float g, float b, float a)
 {
 	m_CurrentColor.r(r);

@@ -51,7 +51,7 @@ public:
 	/* GENERAL */
 	void begin();
 	void end();
-	void initialize(bool useDefaultShader = true);
+	void initialize();
 
     /* SETTERS */
 	void setColor(float r, float g, float b, float a = 1.0f);

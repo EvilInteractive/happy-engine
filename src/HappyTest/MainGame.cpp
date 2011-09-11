@@ -91,6 +91,8 @@ void MainGame::load()
 {
     using namespace happyengine;
 
+	m_SplashImage = CONTENT->asyncLoadTexture("../data/textures/happy_splash.png");
+
     PHYSICS->startSimulation();
 
 	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
@@ -111,11 +113,8 @@ void MainGame::load()
 
     m_pDeferredPreEffect->load();
 
-	HE2D->initialize();
-
 	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
-	m_SplashImage = CONTENT->asyncLoadTexture("../data/textures/happy_splash.png");
-
+	
 	m_SplashTimer.Reset();
 
 	happyengine::content::FontLoader fontLoader;
@@ -197,7 +196,12 @@ void MainGame::draw(float dTime)
 
 	m_SplashTimer.Tick();
 
-	if (m_SplashTimer.GetGameTime() > 5.0f)
+	if(m_SplashTimer.GetGameTime() > 3.1f && m_SplashAlpha > 0.0f)
+	{
+		m_SplashAlpha -= 0.02f;
+	}
+
+	if (m_SplashTimer.GetGameTime() > 4.0f)
 	{
 		m_pDeferred3DRenderer->begin();
 		m_pDeferredPreEffect->begin();
@@ -211,7 +215,6 @@ void MainGame::draw(float dTime)
 
 		m_pDeferredPreEffect->end();
 		m_pDeferred3DRenderer->end(m_pCamera);
-
 
 		// 2D test stuff
 		HE2D->begin();
@@ -261,17 +264,9 @@ void MainGame::draw(float dTime)
 	}
 	else
 	{
-		if(m_SplashTimer.GetGameTime() > 4.2f && m_SplashAlpha > 0.0f)
-		{
-			m_SplashAlpha -= 0.02f;
-		}
-
 		HE2D->begin();
 
 			HE2D->drawTexture2D(Vector2(0,0), m_SplashImage, Vector2(0,0), m_SplashAlpha);
-
-			HE2D->setColor(1,1,1);
-			HE2D->drawText(Vector2(5.0f, GRAPHICS->getScreenHeight() - 20.0f), "Loading...", m_pFont);
 
 		HE2D->end();
 	}
