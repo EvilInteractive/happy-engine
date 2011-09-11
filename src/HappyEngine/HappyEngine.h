@@ -93,14 +93,13 @@ private:
 	graphics::Happy2DRenderer* m_p2DRenderer;
 
     bool m_Quit;
-    bool m_Loaded;
 
     int m_SubEngines;
 
     // Methods
     void initWindow();
-    void updateLoop();
-    void drawLoop();
+    void updateLoop(float dTime);
+    void drawLoop(float dTime);
     void cleanup();
 
     //Disable default copy constructor and default assignment operator

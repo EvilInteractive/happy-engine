@@ -26,13 +26,10 @@
 namespace happyengine {
 namespace io {
 
-Keyboard::Keyboard(): m_KeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0), m_NumPrevKeys(0), 
-                      m_Invoked(false), m_NumNewKeys(0), m_NewKeyState(nullptr)
+Keyboard::Keyboard(): m_KeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0), m_NumPrevKeys(0)
 {
     //Make sure that the prevkeystate is filled in to prevent array errors
-    sdlThreadInvoke();
     tick();
-    sdlThreadInvoke();
     tick();
 }
 
@@ -40,50 +37,18 @@ Keyboard::Keyboard(): m_KeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0)
 Keyboard::~Keyboard()
 {
     delete[] m_PrevKeyState;
-    delete[] m_KeyState;
 }
 void Keyboard::tick()
 {
-    if (m_Invoked == true)
+    if (m_NumPrevKeys != m_NumKeys)
     {
-        byte* temp = m_PrevKeyState;
-        m_PrevKeyState = m_KeyState;
-        m_KeyState = temp;
-    
-        if (m_NumPrevKeys != m_NumNewKeys)
-        {
-            delete[] m_KeyState;
-            m_KeyState = NEW byte[m_NumNewKeys];
-            m_NumPrevKeys = m_NumKeys;
-            m_NumKeys = m_NumNewKeys;
-        }
-        memcpy(m_KeyState, m_NewKeyState, m_NumKeys * sizeof(byte));
-
-        m_Invoked = false;
+        delete[] m_PrevKeyState;
+        m_PrevKeyState = NEW byte[m_NumKeys];
+        m_NumPrevKeys = m_NumKeys;
     }
-    else
-    {
-        byte* temp = m_PrevKeyState;
-        m_PrevKeyState = m_KeyState;
-        m_KeyState = temp;
+    memcpy(m_PrevKeyState, m_PrevKeyState, m_NumKeys * sizeof(byte));
     
-        if (m_NumPrevKeys != m_NumKeys)
-        {
-            delete[] m_KeyState;
-            m_KeyState = NEW byte[m_NumKeys];
-            m_NumPrevKeys = m_NumKeys;
-            //m_NumKeys = m_NumKeys;
-        }
-        memcpy(m_KeyState, m_PrevKeyState, m_NumKeys * sizeof(byte));
-    }
-}
-void Keyboard::sdlThreadInvoke()
-{
-    if (m_Invoked == true)
-        return;
-
-    m_NewKeyState = SDL_GetKeyboardState(&m_NumNewKeys);
-    m_Invoked = true;
+    m_KeyState = SDL_GetKeyboardState(&m_NumKeys);
 }
 
 bool Keyboard::isKeyUp(Key key) const

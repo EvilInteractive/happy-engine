@@ -44,7 +44,6 @@ public:
     virtual ~Mouse();
 
     void tick();
-    void sdlThreadInvoke();
 
     bool isButtonDown(byte button) const;
     bool isButtonUp(byte button) const;

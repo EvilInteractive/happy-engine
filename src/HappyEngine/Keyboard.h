@@ -36,7 +36,6 @@ public:
     virtual ~Keyboard();
 
     void tick();
-    void sdlThreadInvoke();
 
     bool isKeyUp(Key key) const;
     bool isKeyDown(Key key) const;
@@ -47,11 +46,8 @@ public:
 private:
     byte* m_KeyState;
     byte* m_PrevKeyState;
-    byte* m_NewKeyState;
 
-    int m_NumKeys, m_NumPrevKeys, m_NumNewKeys;
-
-    bool m_Invoked;
+    int m_NumKeys, m_NumPrevKeys;
 
     //Disable default copy constructor and default assignment operator
     Keyboard(const Keyboard&);

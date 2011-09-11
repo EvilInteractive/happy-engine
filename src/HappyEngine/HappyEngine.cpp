@@ -29,7 +29,7 @@ namespace happyengine {
 
 HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 
-HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false), m_Loaded(false), 
+HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr)
@@ -130,64 +130,52 @@ void HappyEngine::start(IGame* pGame)
     //Init Game
     pGame->init();
     
-    //Run update loop
-    boost::thread updateThread(boost::bind(&HappyEngine::updateLoop, this));
-
-    //Run draw loop
-    drawLoop();
-    
-    updateThread.join();
-}
-void HappyEngine::updateLoop()
-{
-    Uint32 prevTicks(SDL_GetTicks());
-    while (m_Quit == false)
-    {
-        Uint32 ticks(SDL_GetTicks());
-        float dTime((ticks - prevTicks) / 1000.0f);
-        prevTicks = ticks;
-
-        if (m_Loaded)
-        {
-            m_pControlsManager->tick();
-            m_pContentManager->tick(dTime);
-            m_pPhysicsEngine->tick(dTime);
-            m_pGame->tick(dTime);
-        }
-
-        SDL_Delay(1);
-    }
-}
-void HappyEngine::drawLoop()
-{
+    //load stuff
     m_pGraphicsEngine->init();
     m_pGame->load();
 
-    m_Loaded = true;
     Uint32 prevTicks(SDL_GetTicks());
-    SDL_Event event;
     while (m_Quit == false)
     {
         Uint32 ticks(SDL_GetTicks());
         float dTime((ticks - prevTicks) / 1000.0f);
-        prevTicks = ticks;     
+        prevTicks = ticks;  
 
-        while (SDL_PollEvent(&event)) //Events are window related ==> need to be in the same thread
-        {
-            switch (event.type)
-            {
-                case SDL_QUIT: m_Quit = true; break;
-            }
-        }            
-        m_pControlsManager->sdlThreadInvoke();
-
-        m_pContentManager->glThreadInvoke();
-
-        m_pGame->draw(dTime);
-        
-        m_pGraphicsEngine->present();
-    }
+        updateLoop(dTime);
+        if (m_SubEngines & SubEngine_Graphics)
+            drawLoop(dTime);
+    }   
 }
+void HappyEngine::updateLoop(float dTime)
+{
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+            case SDL_QUIT: m_Quit = true; break;
+        }
+    }  
+    if (m_SubEngines & SubEngine_Controls)
+        m_pControlsManager->tick();
+    if (m_SubEngines & SubEngine_Content)
+    {
+        m_pContentManager->tick(dTime);
+        m_pContentManager->glThreadInvoke();
+    }
+    if (m_SubEngines & SubEngine_Physics)
+        m_pPhysicsEngine->tick(dTime);
+
+    m_pGame->tick(dTime);
+}
+void HappyEngine::drawLoop(float dTime)
+{                
+    m_pGame->draw(dTime);
+        
+    m_pGraphicsEngine->present();
+}
+
+
 
 HappyEngine* HappyEngine::getPointer()
 {
@@ -216,7 +204,6 @@ networking::NetworkManager* HappyEngine::getNetworkManager() const
 {
     return m_pNetworkManager;
 }
-
 graphics::Happy2DRenderer* HappyEngine::get2DRenderer() const
 {
 	return m_p2DRenderer;

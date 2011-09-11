@@ -40,11 +40,6 @@ void ControlsManager::tick()
     m_pKeyboard->tick();
     m_pMouse->tick();
 }
-void ControlsManager::sdlThreadInvoke()
-{
-    m_pKeyboard->sdlThreadInvoke();
-    m_pMouse->sdlThreadInvoke();
-}
 
 const Keyboard* ControlsManager::getKeyboard() const
 {
