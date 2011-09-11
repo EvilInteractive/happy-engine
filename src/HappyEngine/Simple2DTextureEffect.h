@@ -43,12 +43,14 @@ public:
 
 	void setWorldMatrix(const happyengine::math::Matrix& mat) const;
 	void setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const;
+	void setAlpha(const float alpha) const;
 
 private:
-	happyengine::graphics::Shader* m_pShader;
+	graphics::Shader* m_pShader;
 
-	happyengine::uint m_ShaderWVPPos;
-	happyengine::uint m_ShaderDiffTexPos;
+	uint m_ShaderWVPPos;
+	uint m_ShaderDiffTexPos;
+	uint m_ShaderAlphaPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DTextureEffect(const Simple2DTextureEffect&);

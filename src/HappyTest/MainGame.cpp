@@ -37,7 +37,7 @@ namespace happytest {
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr)
+					   m_pCamera(nullptr), m_SplashAlpha(0)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -114,6 +114,9 @@ void MainGame::load()
 	HE2D->initialize();
 
 	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
+	m_SplashImage = CONTENT->asyncLoadTexture("../data/textures/happy_splash.png");
+
+	m_SplashTimer.Reset();
 
 	happyengine::content::FontLoader fontLoader;
     fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 50, m_pFont);
@@ -165,6 +168,8 @@ void MainGame::tick(float dTime)
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";
     }
+
+	m_pFPSGraph->tick(dTime, 0.5f);
 }
 void MainGame::draw(float dTime)
 {
@@ -190,65 +195,87 @@ void MainGame::draw(float dTime)
 
     GRAPHICS->clearAll();
 
-    m_pDeferred3DRenderer->begin();
-    m_pDeferredPreEffect->begin();
+	m_SplashTimer.Tick();
 
-		m_pTestObject->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime, m_pCamera);
+	if (m_SplashTimer.GetGameTime() > 5.0f)
+	{
+		m_pDeferred3DRenderer->begin();
+		m_pDeferredPreEffect->begin();
 
-		std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
-		{
-			pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
-		});
+			m_pTestObject->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime, m_pCamera);
 
-    m_pDeferredPreEffect->end();
-    m_pDeferred3DRenderer->end(m_pCamera);
+			std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
+			{
+				pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
+			});
+
+		m_pDeferredPreEffect->end();
+		m_pDeferred3DRenderer->end(m_pCamera);
 
 
-	// 2D test stuff
-	HE2D->begin();
+		// 2D test stuff
+		HE2D->begin();
 
-		//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
-		//HE2D->setTransformationMatrix(mat);
+			//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
+			//HE2D->setTransformationMatrix(mat);
 
-		//HE2D->setColor(1,1,1,0.5f);
-		//HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
+			//HE2D->setColor(1,1,1,0.5f);
+			//HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
 
-		//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
+			//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
 
-		//HE2D->setAntiAliasing(true);	
+			//HE2D->setAntiAliasing(true);	
 		
-		HE2D->setColor(0.6f,0.5f,0.2f);
-		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
-		HE2D->drawText(Vector2(200,100), "Test", m_pFont);
+			/*HE2D->setColor(0.6f,0.5f,0.2f);
+			HE2D->setFontVerticalAlignment(FontVAlignment_Center);
+			HE2D->drawText(Vector2(200,100), "Test", m_pFont);*/
 
-		/*std::vector<Vector2> points;
-		points.push_back(Vector2(10,10));
-		points.push_back(Vector2(8,20));
-		points.push_back(Vector2(30,50));
-		points.push_back(Vector2(50,40));
-		points.push_back(Vector2(50,20));
-		points.push_back(Vector2(20,10));
+			/*std::vector<Vector2> points;
+			points.push_back(Vector2(10,10));
+			points.push_back(Vector2(8,20));
+			points.push_back(Vector2(30,50));
+			points.push_back(Vector2(50,40));
+			points.push_back(Vector2(50,20));
+			points.push_back(Vector2(20,10));
 
-		HE2D->setColor(1.0f,1.0f,1.0f);
-		HE2D->fillPolygon(points, points.size());*/
+			HE2D->setColor(1.0f,1.0f,1.0f);
+			HE2D->fillPolygon(points, points.size());*/
 
-		/*HE2D->setColor(1.0f,1.0f,1.0f);
-		HE2D->drawEllipse(Vector2(100,100), Vector2(101,101));
+			/*HE2D->setColor(1.0f,1.0f,1.0f);
+			HE2D->drawEllipse(Vector2(100,100), Vector2(101,101));
 	
-		HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-		HE2D->fillEllipse(Vector2(100,100), Vector2(100,100));
-		*/
+			HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
+			HE2D->fillEllipse(Vector2(100,100), Vector2(100,100));
+			*/
 
-		//HE2D->setRotation(math::toRadians(45));
+			//HE2D->setRotation(math::toRadians(45));
 
-		HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-		HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));
+			/*HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
+			HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));*/
 
-		//HE2D->resetTransformation();
+			//HE2D->resetTransformation();
 
-		m_pFPSGraph->show(dTime, 0.25f);
+			m_pFPSGraph->draw();
 
-	HE2D->end();
+		HE2D->end();
+	}
+	else
+	{
+		if (m_SplashTimer.GetGameTime() < 2.0f && m_SplashAlpha < 1.0f)
+		{
+			m_SplashAlpha += 0.05f;
+		}
+		else if(m_SplashTimer.GetGameTime() > 3.0f && m_SplashAlpha > 0.0f)
+		{
+			m_SplashAlpha -= 0.05f;
+		}
+
+		HE2D->begin();
+
+			HE2D->drawTexture2D(Vector2(0,0), m_SplashImage, Vector2(0,0), m_SplashAlpha);
+
+		HE2D->end();
+	}
 }
 
 } //end namespace

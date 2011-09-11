@@ -40,7 +40,8 @@ public:
     virtual ~FPSGraph();
 
 	/* GENERAL */
-	void show(float dTime, float interval = 0.5f);
+	void tick(float dTime, float interval = 0.5f);
+	void draw();
 
 private:
 
@@ -50,6 +51,7 @@ private:
 	float m_GameTime;
 	float m_TBase;
 	float m_CurrentDTime;
+	float m_Interval;
 	uint m_CurrentFPS;
 	
 	graphics::Font::pointer m_pFont;

@@ -33,7 +33,8 @@ namespace tools {
 FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 						m_TBase(0.0f),
 						m_CurrentDTime(0.0f),
-						m_CurrentFPS(0)
+						m_CurrentFPS(0),
+						m_Interval(0.5f)
 {
 	content::FontLoader fontLoader;
     fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 10, m_pFont);
@@ -45,17 +46,18 @@ FPSGraph::~FPSGraph()
 }
 
 /* GENERAL */
-void FPSGraph::show(float dTime, float interval)
+void FPSGraph::tick(float dTime, float interval)
 {
 	using namespace happyengine;
 	using namespace graphics;
 	using namespace math;
 	
 	m_GameTime += dTime;
+	m_Interval = interval;
 
-	if( (m_GameTime - m_TBase) >= interval )
+	if( (m_GameTime - m_TBase) >= m_Interval)
 	{
-		m_TBase  += interval;
+		m_TBase  += m_Interval;
 
 		uint fps((uint)(1 / dTime));
 
@@ -70,11 +72,21 @@ void FPSGraph::show(float dTime, float interval)
 		m_FpsHistory.push_back(fps);
 	}
 
-	if (m_GameTime > interval)
+	if (m_GameTime > m_Interval)
 	{
 		if (m_FpsHistory.size() > 51)
 			m_FpsHistory.erase(m_FpsHistory.begin());
+	}
+}
 
+void FPSGraph::draw()
+{
+	using namespace happyengine;
+	using namespace graphics;
+	using namespace math;
+
+	if (m_GameTime > m_Interval)
+	{
 		HE2D->setAntiAliasing(false);
 
 		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);

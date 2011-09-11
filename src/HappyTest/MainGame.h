@@ -38,6 +38,7 @@
 
 #include "MyServer.h"
 #include "MyClient.h"
+#include "GameTimer.h"
 
 namespace happytest {
 
@@ -74,7 +75,11 @@ private:
 	happyengine::tools::FPSGraph* m_pFPSGraph;
 
 	happyengine::graphics::Texture2D::pointer m_TestImage;
+	happyengine::graphics::Texture2D::pointer m_SplashImage;
 	happyengine::graphics::Font::pointer m_pFont;
+
+	GameTimer m_SplashTimer;
+	float m_SplashAlpha;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

@@ -52,8 +52,9 @@ void Simple2DTextureEffect::load()
 
 	m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
 	m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
-
-    m_pShader->begin();
+	m_ShaderAlphaPos = m_pShader->getShaderVarId("inAlpha");
+	
+	m_pShader->begin();
 	math::Matrix MatWVP = math::Matrix::createTranslation(math::Vector3(0.0f,0.0f,0.0f));
 	m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
     m_pShader->end();
@@ -77,6 +78,11 @@ void Simple2DTextureEffect::setWorldMatrix(const happyengine::math::Matrix& mat)
 void Simple2DTextureEffect::setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const
 {
 	m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+}
+
+void Simple2DTextureEffect::setAlpha(const float alpha) const
+{
+	m_pShader->setShaderVar(m_ShaderAlphaPos, alpha);
 }
 
 } } //end namespace

@@ -484,7 +484,7 @@ void Happy2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>&
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::drawTexture2D(const math::Vector2& pos, const graphics::Texture2D::pointer& tex2D, const math::Vector2& newDimensions) const
+void Happy2DRenderer::drawTexture2D(const math::Vector2& pos, const Texture2D::pointer& tex2D, const math::Vector2& newDimensions, const float alpha) const
 {
 	math::Vector2 ndcPos(getNDCPos(pos));
 	math::Vector2 ndcSize;
@@ -531,6 +531,7 @@ void Happy2DRenderer::drawTexture2D(const math::Vector2& pos, const graphics::Te
 	m_pTextureEffect->begin();
 	m_pTextureEffect->setWorldMatrix(m_matWorld);
 	m_pTextureEffect->setDiffuseMap(tex2D);
+	m_pTextureEffect->setAlpha(alpha);
 
 	glBindVertexArray(model.getVertexArraysID());
 

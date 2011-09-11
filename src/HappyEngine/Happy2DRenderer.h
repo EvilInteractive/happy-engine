@@ -73,7 +73,7 @@ public:
 	void fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
 	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false);
 	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints);
-	void drawTexture2D(const math::Vector2& pos, const Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f)) const;
+	void drawTexture2D(const math::Vector2& pos, const Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f), const float alpha = 1.0f) const;
 
 private:
 
