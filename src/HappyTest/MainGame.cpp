@@ -37,7 +37,7 @@ namespace happytest {
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_SplashAlpha(0)
+					   m_pCamera(nullptr), m_SplashAlpha(1.0f)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -119,7 +119,7 @@ void MainGame::load()
 	m_SplashTimer.Reset();
 
 	happyengine::content::FontLoader fontLoader;
-    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 50, m_pFont);
+    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 12, m_pFont);
 }
 void MainGame::tick(float dTime)
 {
@@ -261,18 +261,17 @@ void MainGame::draw(float dTime)
 	}
 	else
 	{
-		if (m_SplashTimer.GetGameTime() < 2.0f && m_SplashAlpha < 1.0f)
+		if(m_SplashTimer.GetGameTime() > 4.2f && m_SplashAlpha > 0.0f)
 		{
-			m_SplashAlpha += 0.05f;
-		}
-		else if(m_SplashTimer.GetGameTime() > 3.0f && m_SplashAlpha > 0.0f)
-		{
-			m_SplashAlpha -= 0.05f;
+			m_SplashAlpha -= 0.02f;
 		}
 
 		HE2D->begin();
 
 			HE2D->drawTexture2D(Vector2(0,0), m_SplashImage, Vector2(0,0), m_SplashAlpha);
+
+			HE2D->setColor(1,1,1);
+			HE2D->drawText(Vector2(5.0f, GRAPHICS->getScreenHeight() - 20.0f), "Loading...", m_pFont);
 
 		HE2D->end();
 	}
