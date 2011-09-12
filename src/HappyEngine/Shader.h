@@ -62,11 +62,12 @@ private:
     uint m_VsId;
     uint m_FsId;
 
-    bool m_Bound;
-
     std::map<std::string, uint> m_SamplerLocationMap;
 
     std::string m_FragShaderName;
+
+    static uint s_CurrentBoundShader;
+    uint m_prevBoundShader;
 
     //Disable default copy constructor and default assignment operator
     Shader(const Shader&);

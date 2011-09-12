@@ -63,7 +63,7 @@ public:
         float arclength(0);
         T p0(getPoint(t0));
         float approxLength(length(getPoint(t1) - p0));
-        uint precision = static_cast<uint>(approxLength * (ARCLENGTH_PRECISION / 100.0f));
+        uint precision = static_cast<uint>(approxLength * (ARCLENGTH_PRECISION / 100.0f)) + 1;
 
         for (uint i = 1; i <= precision; ++i)
         {

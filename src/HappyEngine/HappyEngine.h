@@ -93,7 +93,6 @@ private:
 	graphics::Happy2DRenderer* m_p2DRenderer;
 
     bool m_Quit;
-	bool m_bInit2D;
 
     int m_SubEngines;
 

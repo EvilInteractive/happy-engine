@@ -92,6 +92,7 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW Model()), m_pLightManager
             case GL_FRAMEBUFFER_UNSUPPORTED: std::cout << "GL_FRAMEBUFFER_UNSUPPORTED\n"; break;
             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE\n"; break;
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS\n"; break;
+            default: std::cout << "GL_UNKOWN_ERROR\n"; break;
         }
     }
 
