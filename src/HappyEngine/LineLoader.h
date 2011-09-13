@@ -28,6 +28,8 @@
 #include <string>
 #include <vector>
 
+#include "Line.h"
+
 namespace happyengine {
 namespace content {
 
@@ -37,11 +39,11 @@ public:
 	LineLoader();
     virtual ~LineLoader();
  
-	std::vector<math::Vector3> loadLine(const std::string& path);
+	graphics::Line::pointer loadLine(const std::string& path);
 
 private:
 
-	AssetContainer<std::vector<math::Vector3>>* m_pAssetContainer;
+	AssetContainer<graphics::Line::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     LineLoader(const LineLoader&);

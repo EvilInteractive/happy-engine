@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace HappyCookerGUI
 {
@@ -16,7 +17,7 @@ namespace HappyCookerGUI
     {
         private Config m_Config;
 
-        private const int COOKERS = 2;
+        private const int COOKERS = 3;
         private Button[] m_ImportPathBtn = new Button[COOKERS];
         private Button[] m_ExportPathBtn = new Button[COOKERS];
         private TextBox[] m_ImportPath = new TextBox[COOKERS];
@@ -28,7 +29,7 @@ namespace HappyCookerGUI
         private Button[] m_ConvertToImportBtn = new Button[COOKERS];
         private Button[] m_GoBtn = new Button[COOKERS];
 
-        private string[] m_CookerExtension = new string[COOKERS] { ".pxconvex", ".binobj" };
+        private string[] m_CookerExtension = new string[COOKERS] { ".pxconvex", ".binobj", ".binobj" };
 
         private int m_CurrentCooker = 0;
 
@@ -59,6 +60,18 @@ namespace HappyCookerGUI
             m_ImportToConvertBtn[1] = m_BinObjImportToConvertBtn;
             m_ConvertToImportBtn[1] = m_BinObjConvertToImportBtn;
             m_GoBtn[1] = m_BinObjGoBtn;
+            #endregion
+            #region BinObjLine
+            m_ImportPathBtn[2] = m_BinObjLineImportSetPathBtn;
+            m_ExportPathBtn[2] = m_BinObjLineExportSetPathBtn;
+            m_ImportPath[2] = m_BinObjLineImportPath;
+            m_ExportPath[2] = m_BinObjLineExportPath;
+            m_ImportListbox[2] = m_BinObjLineImportLB;
+            m_ConvertListbox[2] = m_BinObjLineConvertLB;
+            m_ExportListbox[2] = m_BinObjLineExportLB;
+            m_ImportToConvertBtn[2] = m_BinObjLineImportToConvertBtn;
+            m_ConvertToImportBtn[2] = m_BinObjLineConvertToImportBtn;
+            m_GoBtn[2] = m_BinObjLineGoBtn;
             #endregion
 
             for (int i = 0; i < COOKERS; i++)
@@ -109,6 +122,10 @@ namespace HappyCookerGUI
                         m_Config.binobjImportPath = line.Substring(19);
                     else if (line.StartsWith("binobjExportPath = "))
                         m_Config.binobjExportPath = line.Substring(19);
+                    else if (line.StartsWith("binobjLineImportPath = "))
+                        m_Config.binobjLineImportPath = line.Substring(23);
+                    else if (line.StartsWith("binobjLineExportPath = "))
+                        m_Config.binobjLineExportPath = line.Substring(23);
                 }
                 reader.Close();
             }
@@ -118,6 +135,7 @@ namespace HappyCookerGUI
         {
             initConvex();
             initBinObj();
+            initBinObjLine();
         }
         private void initConvex()
         {
@@ -137,6 +155,15 @@ namespace HappyCookerGUI
                                                      m_ConvertListbox[1],
                                                      m_ExportListbox[1], m_Config.binobjExportPath, "*.binobj");
         }
+        private void initBinObjLine()
+        {
+            m_ImportPath[2].Text = m_Config.binobjLineImportPath;
+            m_ExportPath[2].Text = m_Config.binobjLineExportPath;
+
+            ListBoxFiller filler = new ListBoxFiller(m_ImportListbox[2], m_Config.binobjLineImportPath, "*.obj",
+                                                     m_ConvertListbox[2],
+                                                     m_ExportListbox[2], m_Config.binobjLineExportPath, "*.binobj");
+        }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -146,6 +173,8 @@ namespace HappyCookerGUI
             writer.WriteLine("convexExportPath = " + m_ExportPath[0].Text);
             writer.WriteLine("binobjImportPath = " + m_ImportPath[1].Text);
             writer.WriteLine("binobjExportPath = " + m_ExportPath[1].Text);
+            writer.WriteLine("binobjLineImportPath = " + m_ImportPath[2].Text);
+            writer.WriteLine("binobjLineExportPath = " + m_ExportPath[2].Text);
 
             writer.Close();
         }
@@ -228,6 +257,8 @@ namespace HappyCookerGUI
                 {
                     case 0: success = cooker.CookObjToConvex(lbf.fullPath, outPath); break;
                     case 1: success = cooker.CookObjToBinObj(lbf.fullPath, outPath); break;
+                    case 2: success = cooker.CookObjLineToBinObj(lbf.fullPath, outPath); break;
+                    default: Debug.Assert(false, ""); break;
                 }
                 if (success)
                     successList.Add(lbf);

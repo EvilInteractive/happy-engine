@@ -50,6 +50,7 @@ void ObjLineLoader::read(const std::string& path)
 {
     //Clean
     m_PointData.clear();
+    m_Indices.clear();
 
     using namespace std;
 
@@ -75,11 +76,39 @@ void ObjLineLoader::read(const std::string& path)
             sscanf_s(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
             m_PointData.push_back(v);
         }
+        else if (line[0] == 'l')
+        {
+            std::stringstream stream;
+            std::vector<ushort>& indices(m_Indices); //fix for_each scope loss
+            std::for_each(line.cbegin() + 2, line.cend(), [&](char c)
+            {
+                if (c == ' ')
+                {
+                    ushort i;
+                    stream >> i;
+                    indices.push_back(i);
+                    stream.clear();
+                    stream.str("");
+                }
+                else
+                {
+                    stream << c;
+                }
+            });
+            
+            ushort i;
+            stream >> i;
+            indices.push_back(i);
+        }
     });
 }
 const std::vector<math::Vector3>& ObjLineLoader::getPoints() const
 {
     return m_PointData;
+}
+const std::vector<ushort>& ObjLineLoader::getIndices() const
+{
+    return m_Indices;
 }
 
 } } } //end namespace

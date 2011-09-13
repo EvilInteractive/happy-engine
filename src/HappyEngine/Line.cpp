@@ -16,45 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 08/08/2011
+//Created: 13/09/2011
 
-#ifndef _HE_KEYBOARD_H_
-#define _HE_KEYBOARD_H_
-#pragma once
-
-#include "HappyTypes.h"
-#include "Keys.h"
-#include <vector>
+#include "Line.h"
+#include "HappyNew.h"
 
 namespace happyengine {
-namespace io {
+namespace graphics {
 
-class Keyboard
+Line::Line()
 {
-public:
-	Keyboard();
-    virtual ~Keyboard();
+}
 
-    void tick();
 
-    bool isKeyUp(Key key) const;
-    bool isKeyDown(Key key) const;
+Line::~Line()
+{
+}
 
-    bool isKeyPressed(Key key) const;  //true when state goes from up to down
-    bool isKeyReleased(Key key) const; //true when state goes from down to up
+void Line::setVertices(const std::vector<math::Vector3>& vert)
+{
+    m_Vertices = vert;
+}
+void Line::setIndices(const std::vector<ushort>& ind)
+{
+    m_Indices = ind;
+}
 
-private:
-    byte* m_NewKeyState;
-    byte* m_CurrentKeyState;
-    byte* m_PrevKeyState;
-
-    int m_NumKeys;
-
-    //Disable default copy constructor and default assignment operator
-    Keyboard(const Keyboard&);
-    Keyboard& operator=(const Keyboard&);
-};
+const std::vector<math::Vector3>& Line::getVertices() const
+{
+    return m_Vertices;
+}
+const std::vector<ushort>& Line::getIndices() const
+{
+    return m_Indices;
+}
 
 } } //end namespace
-
-#endif

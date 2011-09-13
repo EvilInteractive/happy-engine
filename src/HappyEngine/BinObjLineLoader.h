@@ -15,33 +15,37 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author: Bastian Damman
-//Created: 01/09/2011
+//Author:  Bastian Damman
+//Created: 13/09/2011
 
-#ifndef _HE_OBJ_LINE_LOADER_H_
-#define _HE_OBJ_LINE_LOADER_H_
+#ifndef _HE_BINOBJLINE_LOADER_H_
+#define _HE_BINOBJLINE_LOADER_H_
 #pragma once
 
 #include <string>
 #include <vector>
+#include <map>
 
+#include "VertexLayout.h"
+#include "boost/shared_ptr.hpp"
 #include "Vector3.h"
+#include "Vector2.h"
+#include "Model.h"
 #include "HappyTypes.h"
-
-#include "Line.h"
+#include "IModelLoader.h"
 
 namespace happyengine {
 namespace content {
 namespace lines {
 
-class ObjLineLoader
+class BinObjLineLoader
 {
 public:
-	ObjLineLoader();
-    virtual ~ObjLineLoader();
+	BinObjLineLoader();
+    virtual ~BinObjLineLoader();
 
     virtual void load(const std::string& path);
-
+        
     virtual const std::vector<math::Vector3>& getPoints() const;
     virtual const std::vector<ushort>& getIndices() const;
 
@@ -52,8 +56,8 @@ private:
     std::vector<ushort> m_Indices;
 
     //Disable default copy constructor and default assignment operator
-    ObjLineLoader(const ObjLineLoader&);
-    ObjLineLoader& operator=(const ObjLineLoader&);
+    BinObjLineLoader(const BinObjLineLoader&);
+    BinObjLineLoader& operator=(const BinObjLineLoader&);
 };
 
 } } } //end namespace

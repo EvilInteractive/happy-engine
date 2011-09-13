@@ -25,6 +25,7 @@
 #include <vector>
 #include "VertexLayout.h"
 #include "FileNotFoundException.h"
+#include "ObjLineLoader.h"
 
 namespace happycooker {
 
@@ -142,6 +143,34 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
     stream.storeDword(objLoader.getNumIndices());
     stream.storeByte(static_cast<byte>(objLoader.getIndexStride()));
     stream.storeBuffer(objLoader.getIndices(), objLoader.getIndexStride() * objLoader.getNumIndices());
+    std::cout << "cooking successful! :)\n";
+    return true;
+}
+
+bool HappyCooker::cookObjLineToBinObj(const char* input, const char* output)
+{
+    using namespace happyengine;
+
+    std::cout << "happycooker cooking: " << input << " to " << output << "\n";
+
+    content::lines::ObjLineLoader objLoader;
+
+    try { objLoader.load(input); }
+    catch (error::FileNotFoundException e)
+    {
+        std::wcout << "error while trying to read obj: " << e.getMsg();
+        return false;
+    }
+    
+    std::cout << "read " << objLoader.getPoints().size() << " vertices and " << objLoader.getIndices().size() << " indices\n";
+
+    std::cout << "starting cooking... \n";
+
+    io::BinaryStream stream(output, io::BinaryStream::Write);
+    stream.storeDword(objLoader.getPoints().size());
+    stream.storeBuffer(&objLoader.getPoints()[0], sizeof(math::Vector3) * objLoader.getPoints().size());
+    stream.storeDword(objLoader.getIndices().size());
+    stream.storeBuffer(&objLoader.getIndices()[0], sizeof(ushort) * objLoader.getIndices().size());
     std::cout << "cooking successful! :)\n";
     return true;
 }

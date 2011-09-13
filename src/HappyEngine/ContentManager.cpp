@@ -38,7 +38,7 @@ graphics::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string&
     return m_pTextureLoader->asyncLoadTexture(path);
 }
 
-std::vector<math::Vector3> ContentManager::loadLine(const std::string& path)
+graphics::Line::pointer ContentManager::loadLine(const std::string& path)
 {
     return m_pLineLoader->loadLine(path);
 }

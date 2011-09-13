@@ -26,9 +26,13 @@
 namespace happyengine {
 namespace io {
 
-Keyboard::Keyboard(): m_KeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0), m_NumPrevKeys(0)
+Keyboard::Keyboard(): m_NewKeyState(nullptr), m_CurrentKeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0)
 {
     //Make sure that the prevkeystate is filled in to prevent array errors
+    m_NewKeyState = SDL_GetKeyboardState(&m_NumKeys);
+    m_CurrentKeyState = NEW byte[m_NumKeys];
+    m_PrevKeyState = NEW byte[m_NumKeys];
+
     tick();
     tick();
 }
@@ -39,34 +43,27 @@ Keyboard::~Keyboard()
     delete[] m_PrevKeyState;
 }
 void Keyboard::tick()
-{
-    if (m_NumPrevKeys != m_NumKeys)
-    {
-        delete[] m_PrevKeyState;
-        m_PrevKeyState = NEW byte[m_NumKeys];
-        m_NumPrevKeys = m_NumKeys;
-    }
-    memcpy(m_PrevKeyState, m_PrevKeyState, m_NumKeys * sizeof(byte));
-    
-    m_KeyState = SDL_GetKeyboardState(&m_NumKeys);
+{   
+    std::swap(m_PrevKeyState, m_CurrentKeyState);  
+    ASSERT(memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(byte)));  
 }
 
 bool Keyboard::isKeyUp(Key key) const
 {
-    return m_KeyState[SDL_GetScancodeFromKey(key)] == 0;
+    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] == 0;
 }
 bool Keyboard::isKeyDown(Key key) const
 {
-    return m_KeyState[SDL_GetScancodeFromKey(key)] != 0;
+    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] != 0;
 }
 
 bool Keyboard::isKeyPressed(Key key) const
 {
-    return m_KeyState[SDL_GetScancodeFromKey(key)] != 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] == 0;
+    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] != 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] == 0;
 }
 bool Keyboard::isKeyReleased(Key key) const
 {
-    return m_KeyState[SDL_GetScancodeFromKey(key)] == 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] != 0;
+    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] == 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] != 0;
 }
 
 } } //end namespace

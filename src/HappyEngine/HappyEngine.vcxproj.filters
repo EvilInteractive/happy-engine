@@ -244,6 +244,12 @@
     <ClCompile Include="Matrix2D.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
+    <ClCompile Include="BinObjLineLoader.cpp">
+      <Filter>happyengine\content\lines</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -464,6 +470,12 @@
     </ClInclude>
     <ClInclude Include="Matrix2D.h">
       <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="BinObjLineLoader.h">
+      <Filter>happyengine\content\lines</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

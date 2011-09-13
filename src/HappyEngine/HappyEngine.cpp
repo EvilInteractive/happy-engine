@@ -157,7 +157,7 @@ void HappyEngine::updateLoop(float dTime)
             case SDL_QUIT: m_Quit = true; break;
         }
     }  
-    if (m_SubEngines & SubEngine_Controls)
+    if (m_SubEngines & SubEngine_Controls) //need to be before the events are updated
         m_pControlsManager->tick();
     if (m_SubEngines & SubEngine_Content)
     {

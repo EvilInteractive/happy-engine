@@ -57,16 +57,31 @@
             this.m_BinObjImportLB = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.m_ProgressBar = new System.Windows.Forms.ProgressBar();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.m_BinObjLineGoBtn = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.m_BinObjLineConvertToImportBtn = new System.Windows.Forms.Button();
+            this.m_BinObjLineImportToConvertBtn = new System.Windows.Forms.Button();
+            this.m_BinObjLineExportPath = new System.Windows.Forms.TextBox();
+            this.m_BinObjLineImportPath = new System.Windows.Forms.TextBox();
+            this.m_BinObjLineExportSetPathBtn = new System.Windows.Forms.Button();
+            this.m_BinObjLineImportSetPathBtn = new System.Windows.Forms.Button();
+            this.m_BinObjLineConvertLB = new System.Windows.Forms.ListBox();
+            this.m_BinObjLineExportLB = new System.Windows.Forms.ListBox();
+            this.m_BinObjLineImportLB = new System.Windows.Forms.ListBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -93,7 +108,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(958, 553);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Convex";
+            this.tabPage1.Text = "Obj Model To Convex";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // m_ConvexRefreshBtn
@@ -232,7 +247,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(958, 553);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "BinObj";
+            this.tabPage2.Text = "Obj Model To BinObj";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // m_BinObjRefreshBtn
@@ -261,7 +276,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(396, 31);
             this.label2.TabIndex = 16;
-            this.label2.Text = "Obj To BinObj Exporter";
+            this.label2.Text = "Obj Model To BinObj Exporter";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_BinObjConvertToImportBtn
@@ -370,6 +385,145 @@
             this.m_ProgressBar.Size = new System.Drawing.Size(960, 23);
             this.m_ProgressBar.TabIndex = 0;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.button1);
+            this.tabPage3.Controls.Add(this.m_BinObjLineGoBtn);
+            this.tabPage3.Controls.Add(this.label3);
+            this.tabPage3.Controls.Add(this.m_BinObjLineConvertToImportBtn);
+            this.tabPage3.Controls.Add(this.m_BinObjLineImportToConvertBtn);
+            this.tabPage3.Controls.Add(this.m_BinObjLineExportPath);
+            this.tabPage3.Controls.Add(this.m_BinObjLineImportPath);
+            this.tabPage3.Controls.Add(this.m_BinObjLineExportSetPathBtn);
+            this.tabPage3.Controls.Add(this.m_BinObjLineImportSetPathBtn);
+            this.tabPage3.Controls.Add(this.m_BinObjLineConvertLB);
+            this.tabPage3.Controls.Add(this.m_BinObjLineExportLB);
+            this.tabPage3.Controls.Add(this.m_BinObjLineImportLB);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(958, 553);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Obj Line To BinObj";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(300, 236);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(52, 56);
+            this.button1.TabIndex = 30;
+            this.button1.Text = "Re-  load";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // m_BinObjLineGoBtn
+            // 
+            this.m_BinObjLineGoBtn.Location = new System.Drawing.Point(300, 435);
+            this.m_BinObjLineGoBtn.Name = "m_BinObjLineGoBtn";
+            this.m_BinObjLineGoBtn.Size = new System.Drawing.Size(52, 76);
+            this.m_BinObjLineGoBtn.TabIndex = 29;
+            this.m_BinObjLineGoBtn.Text = "GO";
+            this.m_BinObjLineGoBtn.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(281, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(396, 31);
+            this.label3.TabIndex = 28;
+            this.label3.Text = "Obj Line To BinObj Exporter";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // m_BinObjLineConvertToImportBtn
+            // 
+            this.m_BinObjLineConvertToImportBtn.Location = new System.Drawing.Point(300, 131);
+            this.m_BinObjLineConvertToImportBtn.Name = "m_BinObjLineConvertToImportBtn";
+            this.m_BinObjLineConvertToImportBtn.Size = new System.Drawing.Size(52, 50);
+            this.m_BinObjLineConvertToImportBtn.TabIndex = 26;
+            this.m_BinObjLineConvertToImportBtn.Text = "<<";
+            this.m_BinObjLineConvertToImportBtn.UseVisualStyleBackColor = true;
+            // 
+            // m_BinObjLineImportToConvertBtn
+            // 
+            this.m_BinObjLineImportToConvertBtn.Location = new System.Drawing.Point(300, 75);
+            this.m_BinObjLineImportToConvertBtn.Name = "m_BinObjLineImportToConvertBtn";
+            this.m_BinObjLineImportToConvertBtn.Size = new System.Drawing.Size(52, 50);
+            this.m_BinObjLineImportToConvertBtn.TabIndex = 27;
+            this.m_BinObjLineImportToConvertBtn.Text = ">>";
+            this.m_BinObjLineImportToConvertBtn.UseVisualStyleBackColor = true;
+            // 
+            // m_BinObjLineExportPath
+            // 
+            this.m_BinObjLineExportPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_BinObjLineExportPath.Location = new System.Drawing.Point(664, 43);
+            this.m_BinObjLineExportPath.Name = "m_BinObjLineExportPath";
+            this.m_BinObjLineExportPath.ReadOnly = true;
+            this.m_BinObjLineExportPath.Size = new System.Drawing.Size(286, 22);
+            this.m_BinObjLineExportPath.TabIndex = 25;
+            // 
+            // m_BinObjLineImportPath
+            // 
+            this.m_BinObjLineImportPath.Location = new System.Drawing.Point(8, 43);
+            this.m_BinObjLineImportPath.Name = "m_BinObjLineImportPath";
+            this.m_BinObjLineImportPath.ReadOnly = true;
+            this.m_BinObjLineImportPath.Size = new System.Drawing.Size(286, 22);
+            this.m_BinObjLineImportPath.TabIndex = 24;
+            // 
+            // m_BinObjLineExportSetPathBtn
+            // 
+            this.m_BinObjLineExportSetPathBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_BinObjLineExportSetPathBtn.Location = new System.Drawing.Point(836, 6);
+            this.m_BinObjLineExportSetPathBtn.Name = "m_BinObjLineExportSetPathBtn";
+            this.m_BinObjLineExportSetPathBtn.Size = new System.Drawing.Size(114, 31);
+            this.m_BinObjLineExportSetPathBtn.TabIndex = 22;
+            this.m_BinObjLineExportSetPathBtn.Text = "Set Export Path";
+            this.m_BinObjLineExportSetPathBtn.UseVisualStyleBackColor = true;
+            // 
+            // m_BinObjLineImportSetPathBtn
+            // 
+            this.m_BinObjLineImportSetPathBtn.Location = new System.Drawing.Point(8, 6);
+            this.m_BinObjLineImportSetPathBtn.Name = "m_BinObjLineImportSetPathBtn";
+            this.m_BinObjLineImportSetPathBtn.Size = new System.Drawing.Size(114, 31);
+            this.m_BinObjLineImportSetPathBtn.TabIndex = 23;
+            this.m_BinObjLineImportSetPathBtn.Text = "Set Import Path";
+            this.m_BinObjLineImportSetPathBtn.UseVisualStyleBackColor = true;
+            // 
+            // m_BinObjLineConvertLB
+            // 
+            this.m_BinObjLineConvertLB.FormattingEnabled = true;
+            this.m_BinObjLineConvertLB.ItemHeight = 16;
+            this.m_BinObjLineConvertLB.Location = new System.Drawing.Point(358, 75);
+            this.m_BinObjLineConvertLB.Name = "m_BinObjLineConvertLB";
+            this.m_BinObjLineConvertLB.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.m_BinObjLineConvertLB.Size = new System.Drawing.Size(286, 436);
+            this.m_BinObjLineConvertLB.Sorted = true;
+            this.m_BinObjLineConvertLB.TabIndex = 19;
+            // 
+            // m_BinObjLineExportLB
+            // 
+            this.m_BinObjLineExportLB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_BinObjLineExportLB.FormattingEnabled = true;
+            this.m_BinObjLineExportLB.ItemHeight = 16;
+            this.m_BinObjLineExportLB.Location = new System.Drawing.Point(664, 75);
+            this.m_BinObjLineExportLB.Name = "m_BinObjLineExportLB";
+            this.m_BinObjLineExportLB.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.m_BinObjLineExportLB.Size = new System.Drawing.Size(286, 436);
+            this.m_BinObjLineExportLB.Sorted = true;
+            this.m_BinObjLineExportLB.TabIndex = 20;
+            // 
+            // m_BinObjLineImportLB
+            // 
+            this.m_BinObjLineImportLB.FormattingEnabled = true;
+            this.m_BinObjLineImportLB.ItemHeight = 16;
+            this.m_BinObjLineImportLB.Location = new System.Drawing.Point(8, 75);
+            this.m_BinObjLineImportLB.Name = "m_BinObjLineImportLB";
+            this.m_BinObjLineImportLB.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.m_BinObjLineImportLB.Size = new System.Drawing.Size(286, 436);
+            this.m_BinObjLineImportLB.Sorted = true;
+            this.m_BinObjLineImportLB.TabIndex = 21;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -387,6 +541,8 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -422,6 +578,19 @@
         private System.Windows.Forms.ListBox m_BinObjConvertLB;
         private System.Windows.Forms.ListBox m_BinObjExportLB;
         private System.Windows.Forms.ListBox m_BinObjImportLB;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button m_BinObjLineGoBtn;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button m_BinObjLineConvertToImportBtn;
+        private System.Windows.Forms.Button m_BinObjLineImportToConvertBtn;
+        private System.Windows.Forms.TextBox m_BinObjLineExportPath;
+        private System.Windows.Forms.TextBox m_BinObjLineImportPath;
+        private System.Windows.Forms.Button m_BinObjLineExportSetPathBtn;
+        private System.Windows.Forms.Button m_BinObjLineImportSetPathBtn;
+        private System.Windows.Forms.ListBox m_BinObjLineConvertLB;
+        private System.Windows.Forms.ListBox m_BinObjLineExportLB;
+        private System.Windows.Forms.ListBox m_BinObjLineImportLB;
     }
 }
 

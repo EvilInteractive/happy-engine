@@ -30,6 +30,14 @@ namespace happyengine {
 namespace math {
    
 // Float
+inline float min(float a, float b)
+{
+    return a <= b? a : b;
+}
+inline float max(float a, float b)
+{
+    return a >= b? a : b;
+}
 inline float sqr(float a)
 {
     return a * a;
@@ -51,6 +59,33 @@ inline float length(float a)
 inline Vector2 abs(const Vector2& vector)
 {
 	return Vector2(::abs(vector.x), ::abs(vector.y));
+}
+inline float lengthSqr(const Vector2& vector)
+{
+    return sqr(vector.x) + sqr(vector.y);
+}
+inline float length(const Vector2& vector)
+{
+    return sqrtf(lengthSqr(vector));
+}
+inline Vector2 normalize(const Vector2& vector)
+{
+	if (vector != Vector2(0, 0))
+		return vector / length(vector);
+	else
+		return vector;
+}
+inline float dot(const Vector2& vector1, const Vector2& vector2)
+{
+    return vector1.x * vector2.x + vector1.y * vector2.y;
+}
+inline const Vector2& min(const Vector2& a, const Vector2& b)
+{
+    return lengthSqr(a) <= lengthSqr(b)? a : b;
+}
+inline const Vector2& max(const Vector2& a, const Vector2& b)
+{
+    return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
 
 // Vector3
@@ -83,6 +118,14 @@ inline Vector3 cross(const Vector3& vector1, const Vector3& vector2)
         vector1.y * vector2.z - vector1.z * vector2.y,
         vector1.z * vector2.x - vector1.x * vector2.z,
         vector1.x * vector2.y - vector1.y * vector2.x);
+}
+inline const Vector3& min(const Vector3& a, const Vector3& b)
+{
+    return lengthSqr(a) <= lengthSqr(b)? a : b;
+}
+inline const Vector3& max(const Vector3& a, const Vector3& b)
+{
+    return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
 inline Vector4 transform(const Vector3& v, const Matrix& m)
 {

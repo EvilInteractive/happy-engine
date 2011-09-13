@@ -34,6 +34,10 @@ bool __stdcall cookObjToBinObj(const char* inputPath, const char* outputPath)
 {
     return happycooker::HappyCooker::getInstance()->cookObjToBinObj(inputPath, outputPath);
 }
+bool __stdcall cookObjLineToBinObj(const char* inputPath, const char* outputPath)
+{
+    return happycooker::HappyCooker::getInstance()->cookObjLineToBinObj(inputPath, outputPath);
+}
 bool __stdcall cookObjToConvex(const char* inputPath, const char* outputPath)
 {
     return happycooker::HappyCooker::getInstance()->cookObjToConvex(inputPath, outputPath);

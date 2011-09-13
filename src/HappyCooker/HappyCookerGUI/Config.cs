@@ -9,6 +9,8 @@ namespace HappyCookerGUI
     {
         public string binobjImportPath = "";
         public string binobjExportPath = "";
+        public string binobjLineImportPath = "";
+        public string binobjLineExportPath = "";
         public string convexImportPath = "";
         public string convexExportPath = "";
     }

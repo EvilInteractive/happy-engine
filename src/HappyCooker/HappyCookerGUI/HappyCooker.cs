@@ -20,6 +20,10 @@ namespace HappyCookerGUI
                                                    [MarshalAs(UnmanagedType.LPStr)]string outputPath);
 
         [DllImport("HappyCookerDll.dll", CharSet=CharSet.Auto, CallingConvention=CallingConvention.StdCall)]
+        private static extern bool cookObjLineToBinObj([MarshalAs(UnmanagedType.LPStr)]string inputPath, 
+                                                       [MarshalAs(UnmanagedType.LPStr)]string outputPath);
+
+        [DllImport("HappyCookerDll.dll", CharSet=CharSet.Auto, CallingConvention=CallingConvention.StdCall)]
         private static extern bool cookObjToConvex([MarshalAs(UnmanagedType.LPStr)]string inputPath, 
                                                    [MarshalAs(UnmanagedType.LPStr)]string outputPath);
 
@@ -60,6 +64,19 @@ namespace HappyCookerGUI
             try
             {
                 bool success = cookObjToBinObj(inputPath, outputPath);
+                return success;
+            }
+            catch (SEHException)
+            {
+                
+            }
+            return false;
+        }
+        public bool CookObjLineToBinObj(string inputPath, string outputPath)
+        {
+            try
+            {
+                bool success = cookObjLineToBinObj(inputPath, outputPath);
                 return success;
             }
             catch (SEHException)
