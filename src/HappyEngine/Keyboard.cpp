@@ -41,6 +41,7 @@ Keyboard::Keyboard(): m_NewKeyState(nullptr), m_CurrentKeyState(nullptr), m_Prev
 Keyboard::~Keyboard()
 {
     delete[] m_PrevKeyState;
+    delete[] m_CurrentKeyState;
 }
 void Keyboard::tick()
 {   
