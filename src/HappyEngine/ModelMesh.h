@@ -16,11 +16,10 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 13/07/2011
-//Changed: 15/09/2011 -Model class became ModelMesh
+//Created: 15/09/2011 (copy of the previous Model class)
 
-#ifndef _HE_MODEL_H_
-#define _HE_MODEL_H_
+#ifndef _HE_MODELMESH_H_
+#define _HE_MODELMESH_H_
 #pragma once
 
 #include "Assert.h"
@@ -28,40 +27,62 @@
 #define assert ASSERT
 
 #include <vector>
+#include <string>
 #include "VertexLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
-#include "ModelMesh.h"
 
 namespace happyengine {
 namespace graphics {
 
-class Model
+enum IndexStride
+{
+    IndexStride_Byte = sizeof(byte),
+    IndexStride_UShort = sizeof(ushort),
+    IndexStride_UInt = sizeof(uint)
+};
+
+class ModelMesh
 {
 public:
-    typedef boost::shared_ptr<Model> pointer;
+    typedef boost::shared_ptr<ModelMesh> pointer;
 
-	Model();
-    virtual ~Model();
-    
-    void addMesh(const ModelMesh::pointer& pMesh);
-    uint getNumMeshes() const;
-    ModelMesh::pointer getMesh(int index) const;
+	explicit ModelMesh(const std::string& name);
+    virtual ~ModelMesh();
 
-    std::vector<ModelMesh::pointer>::const_iterator cbegin() const;
-    std::vector<ModelMesh::pointer>::const_iterator cend() const;
+    void init();
+    void setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout);
+    void setIndices(const void* pIndices, uint num, IndexStride type);
+
+    uint getVertexArraysID() const;
+
+    uint getNumVertices() const;
+    uint getNumIndices() const;
+
+    uint getIndexType() const;
+
+    const std::string& getName() const;
 
     bool isComplete() const;
-    void setComplete();
 
 private:
 
-    std::vector<ModelMesh::pointer> m_Meshes;
+    uint m_VaoID[1];
+    uint m_VertexVboID[1];
+    uint m_IndexVboID[1];
+
+    uint m_NumVertices;
+    uint m_NumIndices;
+
+    uint m_IndexType;
+
+    std::string m_Name;
+
     bool m_Complete;
 
     //Disable default copy constructor and default assignment operator
-    Model(const Model&);
-    Model& operator=(const Model&);
+    ModelMesh(const ModelMesh&);
+    ModelMesh& operator=(const ModelMesh&);
 };
 
 } } //end namespace

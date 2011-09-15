@@ -31,6 +31,7 @@ public:
     virtual ~SimpleForward3DRenderer();
 
     virtual void draw(const Model::pointer& pModel);
+    virtual void draw(const ModelMesh::pointer& pMesh);
 
 private:
 

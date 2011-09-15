@@ -37,7 +37,7 @@ const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_
 const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA16F, GL_RGBA16F, GL_DEPTH_COMPONENT16};
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
 
-Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW Model()), m_pLightManager(NEW LightManager())
+Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRenderer_QUAD")), m_pLightManager(NEW LightManager())
 {
     /*------------------------------------------------------------------------------*/
     /*                         LOAD FBO AND RENDER TARGETS                          */
@@ -284,11 +284,20 @@ void Deferred3DRenderer::postDirectionalLights()
 }
 void Deferred3DRenderer::draw(const Model::pointer& pModel)
 {
-    if (pModel->isComplete()) //possible async load
+    if (pModel->isComplete() == false)
+        return;
+    std::for_each(pModel->cbegin(), pModel->cend(), [&](const ModelMesh::pointer& pMesh)
+    {  
+        draw(pMesh);
+    });
+}
+void Deferred3DRenderer::draw(const ModelMesh::pointer& pMesh)
+{
+    if (pMesh->isComplete()) //possible async load
     {
-        glBindVertexArray(pModel->getVertexArraysID());
+        glBindVertexArray(pMesh->getVertexArraysID());
 
-        glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
+        glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
 
         glBindVertexArray(0);
     }

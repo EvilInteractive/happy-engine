@@ -54,10 +54,18 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         ModelLoadData* data;
         if (m_ModelInvokeQueue.try_pop(data))
         {
-            data->pModel->init();
-            data->pModel->setVertices(data->loader->getVertices(0), data->loader->getNumVertices(0), data->vertexLayout);
-            data->pModel->setIndices(data->loader->getIndices(0), data->loader->getNumIndices(0), data->loader->getIndexStride(0));
-            std::cout << "**ML INFO** model create completed: " << data->path << "\n";
+            for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
+            {
+                graphics::ModelMesh::pointer pMesh(NEW graphics::ModelMesh(data->loader->getMeshName(i)));
+
+                pMesh->init();
+                pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
+                pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
+
+                data->pModel->addMesh(pMesh);
+                std::cout << "**ML INFO** model create completed: " << data->path << "\n";
+            }
+            data->pModel->setComplete();
             delete data->loader;
             delete data;
         }

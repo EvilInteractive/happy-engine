@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Model.h"
+#include "ModelMesh.h"
 
 namespace happyengine {
 namespace graphics {
@@ -30,6 +31,7 @@ public:
     virtual ~I3DRenderer() {}
 
 	virtual void draw(const Model::pointer& pModel) = 0;
+	virtual void draw(const ModelMesh::pointer& pModel) = 0;
 };
 
 } } //end namespace

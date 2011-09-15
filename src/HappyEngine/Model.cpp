@@ -14,6 +14,10 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 13/07/2011
+//Changed: 15/09/2011 -Model class became ModelMesh
 
 #include "Model.h"
 
@@ -25,124 +29,45 @@
 
 namespace happyengine {
 namespace graphics {
-
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-Model::Model(): m_NumVertices(0), m_NumIndices(0), m_Complete(false)
+    
+Model::Model(): m_Complete(false)
 {
 }
 
 
 Model::~Model()
 {
-    glDeleteVertexArrays(1, m_VaoID);
-    glDeleteBuffers(1, m_VertexVboID);
-    glDeleteBuffers(1, m_IndexVboID);
 }
 
-void Model::init()
+void Model::addMesh(const ModelMesh::pointer& pMesh)
 {
-    glGenVertexArrays(1, &m_VaoID[0]);
+    m_Meshes.push_back(pMesh);
+}
+uint Model::getNumMeshes() const
+{
+    return m_Meshes.size();
+}
+ModelMesh::pointer Model::getMesh(int index) const
+{
+    return m_Meshes[index];
 }
 
-//Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old contents)
-void Model::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)
+std::vector<ModelMesh::pointer>::const_iterator Model::cbegin() const
 {
-    error::glCheckForErrors(false);
-
-    ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModel instead");
-    m_NumVertices = num;
-
-    glBindVertexArray(m_VaoID[0]);
-    error::glCheckForErrors();
-
-    VertexLayout::layout elements(vertexLayout.getElements());
-
-    glGenBuffers(1, m_VertexVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertexLayout.getVertexSize() * num, pVertices, GL_STATIC_DRAW);
-
-    std::for_each(elements.cbegin(), elements.cend(), [&](const VertexElement& e)
-    {
-        GLint components = 1;
-        GLenum type = 0;
-        switch (e.getType())
-        {
-            case VertexElement::Type_Vector2: type = GL_FLOAT; components = 2; break;
-            case VertexElement::Type_Vector3: type = GL_FLOAT; components = 3; break;
-            case VertexElement::Type_Vector4: type = GL_FLOAT; components = 4; break;
-            case VertexElement::Type_Float: type = GL_FLOAT; break;
-            case VertexElement::Type_Double: type = GL_DOUBLE; break;
-
-            case VertexElement::Type_Int: type = GL_INT; break;
-            case VertexElement::Type_UInt: type = GL_UNSIGNED_INT; break;
-                
-            case VertexElement::Type_Short: type = GL_SHORT; break;
-            case VertexElement::Type_UShort: type = GL_UNSIGNED_SHORT; break;
-
-            case VertexElement::Type_Byte: type = GL_BYTE; break;
-            case VertexElement::Type_UByte: type = GL_UNSIGNED_BYTE; break;
-            
-            #pragma warning(disable:4127)
-            default: ASSERT(false, "unknown type"); break;
-            #pragma warning(default:4127)
-        }
-        glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
-            BUFFER_OFFSET(e.getByteOffset())); 
-        glEnableVertexAttribArray(e.getElementIndex());
-    });
-
-    //unbind
-    glBindVertexArray(0);
-
-    if (m_NumIndices > 0)
-        m_Complete = true;
+    return m_Meshes.cbegin();
 }
-void Model::setIndices(const void* pIndices, uint num, IndexStride type)
+std::vector<ModelMesh::pointer>::const_iterator Model::cend() const
 {
-    ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModel instead");
-    m_NumIndices = num;
-    
-    glBindVertexArray(m_VaoID[0]);
-    glGenBuffers(1, m_IndexVboID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
-
-    switch (type)
-    {
-        case IndexStride_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
-        case IndexStride_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
-        case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
-        default: ASSERT("unkown type"); break;
-    }
-
-    if (m_NumVertices > 0)
-        m_Complete = true;
-}
-
-uint Model::getVertexArraysID() const
-{
-    return m_VaoID[0];
-}
-
-uint Model::getNumVertices() const
-{
-    return m_NumVertices;
-}
-uint Model::getNumIndices() const
-{
-    return m_NumIndices;
-}
-
-uint Model::getIndexType() const
-{
-    return m_IndexType;
+    return m_Meshes.cend();
 }
 
 bool Model::isComplete() const
 {
     return m_Complete;
 }
-
+void Model::setComplete()
+{
+    m_Complete = true;
+}
 
 } } //end namespace

@@ -253,6 +253,9 @@
     <ClCompile Include="PhysicsShapeLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
+    <ClCompile Include="ModelMesh.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -482,6 +485,9 @@
     </ClInclude>
     <ClInclude Include="PhysicsShapeLoader.h">
       <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelMesh.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

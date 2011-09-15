@@ -33,7 +33,7 @@
 #include "Vector2.h"
 #include "HappyTypes.h"
 #include "AssetContainerP.h"
-#include "Model.h"
+#include "ModelMesh.h"
 
 #include <map>
 
@@ -104,7 +104,7 @@ private:
 
 	math::Vector2 m_ViewPortSize;
 
-	content::AssetContainerP<graphics::Model>* m_pModelBuffer;
+	content::AssetContainerP<graphics::ModelMesh>* m_pModelBuffer;
 	std::map<std::string, uint> m_ModelBufferIndex;
 	uint m_TickCounter;
 

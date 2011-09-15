@@ -39,9 +39,18 @@ SimpleForward3DRenderer::~SimpleForward3DRenderer()
 
 void SimpleForward3DRenderer::draw(const Model::pointer& pModel)
 {
-    glBindVertexArray(pModel->getVertexArraysID());
+    if (pModel->isComplete() == false)
+        return;
+    std::for_each(pModel->cbegin(), pModel->cend(), [&](const ModelMesh::pointer& pMesh)
+    {  
+        draw(pMesh);
+    });
+}
+void SimpleForward3DRenderer::draw(const ModelMesh::pointer& pMesh)
+{
+    glBindVertexArray(pMesh->getVertexArraysID());
 
-    glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
+    glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
 
     glBindVertexArray(0);
 }

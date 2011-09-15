@@ -39,7 +39,7 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW happyengine::graphics::S
 										m_ViewPortSize(0.0f,0.0f),
 										m_FontHAlignment(FontHAlignment_Left),
 										m_FontVAlignment(FontVAlignment_Bottom),
-										m_pModelBuffer(NEW content::AssetContainerP<graphics::Model>()),
+										m_pModelBuffer(NEW content::AssetContainerP<graphics::ModelMesh>()),
 										m_TickCounter(0)
 {
     
@@ -216,7 +216,7 @@ void Happy2DRenderer::drawText(const math::Vector2& pos, const std::string& text
 
 void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size)
 {
-	Model* pModel;
+	ModelMesh* pModel;
 
 	std::stringstream stream;
 	stream << "HR.Width" << size.x << "Height" << size.y;
@@ -247,7 +247,7 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 		indices.push_back(4); indices.push_back(5);
 		indices.push_back(6); indices.push_back(7);
 
-		pModel = NEW Model();
+		pModel = NEW ModelMesh(stream.str());
 		pModel->init();
 		pModel->setVertices(&vertices[0], 8, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], 8, IndexStride_Byte);
@@ -270,7 +270,7 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 
 void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector2& size)
 {
-	Model* pModel;
+	ModelMesh* pModel;
 
 	std::stringstream stream;
 	stream << "FR.Width" << size.x << "Height" << size.y;
@@ -294,7 +294,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 		indices.push_back(0); indices.push_back(3); indices.push_back(1);
 		indices.push_back(2); indices.push_back(3); indices.push_back(0);
 
-		pModel = NEW Model();
+		pModel = NEW ModelMesh(stream.str());
 		pModel->init();
 		pModel->setVertices(&vertices[0], 4, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], 6, IndexStride_Byte);
@@ -317,7 +317,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 
 void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
 {
-	Model* pModel;
+	ModelMesh* pModel;
 
 	std::stringstream stream;
 	stream << "HE.Width" << size.x << "Height" << size.y;
@@ -347,7 +347,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 			indices.push_back(index++);
 		}
 
-		pModel = NEW Model();
+		pModel = NEW ModelMesh(stream.str());
 		pModel->init();
 		pModel->setVertices(&vertices[0], steps, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], steps, IndexStride_UInt);
@@ -370,7 +370,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 
 void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
 {
-	Model* pModel;
+	ModelMesh* pModel;
 
 	std::stringstream stream;
 	stream << "FE.Width" << size.x << "Height" << size.y;
@@ -404,7 +404,7 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 			++index;
 		}
 
-		pModel = NEW Model();
+		pModel = NEW ModelMesh(stream.str());
 		pModel->init();
 		pModel->setVertices(&vertices[0], steps + 1, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], steps + 1, IndexStride_UInt);
@@ -439,7 +439,7 @@ void Happy2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> 
 		indices.push_back(i++);
 	});
 
-	Model model;
+    ModelMesh model("");
     model.init();
     model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
     model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
@@ -470,7 +470,7 @@ void Happy2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>&
 		indices.push_back(i++);
 	});
 
-	Model model;
+	ModelMesh model("");
     model.init();
     model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
     model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
@@ -522,7 +522,7 @@ void Happy2DRenderer::drawTexture2D(const math::Vector2& pos, const Texture2D::p
     indices.push_back(0); indices.push_back(2); indices.push_back(1);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
-	Model model;
+	ModelMesh model("");
     model.init();
     model.setVertices(&vertices[0], 4, m_VertexLayoutTexture);
     model.setIndices(&indices[0], 6, IndexStride_Byte);

@@ -26,7 +26,7 @@
 #include "I3DRenderer.h"
 #include "HappyTypes.h"
 #include "Shader.h"
-#include "Model.h"
+#include "ModelMesh.h"
 #include "Texture2D.h"
 #include "LightManager.h"
 #include "Camera.h"
@@ -41,6 +41,7 @@ public:
     virtual ~Deferred3DRenderer();
         
     virtual void draw(const Model::pointer& pModel);
+    virtual void draw(const ModelMesh::pointer& pModel);
 
     void begin();
     void end(const Camera* pCamera);
@@ -86,7 +87,7 @@ private:
     uint m_ShaderDLPos[3]; //3 values
     uint m_ShaderCamPos[SHADERS];
 
-    Model::pointer m_pModel;
+    ModelMesh::pointer m_pModel;
 
     Texture2D::pointer m_pTexture[TEXTURES];
 
