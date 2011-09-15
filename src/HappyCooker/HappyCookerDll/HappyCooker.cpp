@@ -26,6 +26,7 @@
 #include "VertexLayout.h"
 #include "FileNotFoundException.h"
 #include "ObjLineLoader.h"
+#include "MathFunctions.h"
 
 namespace happycooker {
 
@@ -71,9 +72,6 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         std::wcout << "error while trying to read obj: " << e.getMsg();
         return false;
     }
-    
-    std::cout << "read " << objLoader.getNumVertices(0) << " vertices and " << objLoader.getNumIndices(0) << " indices\n";
-
     std::cout << "starting cooking... \n";
     PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), PxCookingParams()));
 
@@ -82,27 +80,41 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         std::cout << "cooking failed to start\n";
         return false;
     }
-    
     io::BinaryStream stream(output, io::BinaryStream::Write);
-    stream.storeByte(1);
 
-    PxConvexMeshDesc desc;   
-    switch (objLoader.getIndexStride(0))
+    byte numMeshes(static_cast<byte>(math::min<uint>(objLoader.getNumMeshes(), 255)));
+    stream.storeByte(numMeshes);
+    bool succes(true);
+    for (uint i = 0; i < numMeshes; ++i)
     {
-        case graphics::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
-        case graphics::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
-        case graphics::IndexStride_UInt: break;
-        default: ASSERT("unkown indexType"); break;
-    }
- 
-    desc.points.count = objLoader.getNumVertices(0);
-    desc.points.data = objLoader.getVertices(0);
-    desc.points.stride = sizeof(VertexPos);
-    desc.triangles.count = objLoader.getNumIndices(0) / 3;
-    desc.triangles.data = objLoader.getIndices(0);
-    desc.triangles.stride = objLoader.getIndexStride(0) * 3; //stride of triangle = 3 indices
+        std::cout << "   cooking " << objLoader.getMeshName(i) << " - " << objLoader.getNumVertices(i) << " vertices and " << objLoader.getNumIndices(i) << " indices";    
 
-    bool succes(cooking->cookConvexMesh(desc, stream));
+        PxConvexMeshDesc desc;   
+        switch (objLoader.getIndexStride(i))
+        {
+            case graphics::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
+            case graphics::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
+            case graphics::IndexStride_UInt: break;
+            default: ASSERT("unkown indexType"); break;
+        }
+ 
+        desc.points.count = objLoader.getNumVertices(i);
+        desc.points.data = objLoader.getVertices(i);
+        desc.points.stride = sizeof(VertexPos);
+        desc.triangles.count = objLoader.getNumIndices(i) / 3;
+        desc.triangles.data = objLoader.getIndices(i);
+        desc.triangles.stride = objLoader.getIndexStride(i) * 3; //stride of triangle = 3 indices
+
+        if (cooking->cookConvexMesh(desc, stream))
+        {
+            std::cout << "     DONE!\n";
+        }
+        else
+        {
+            std::cout << "     FAILED!\n";
+            succes = false;
+        }        
+    }
     cooking->release();
 
     std::cout << "cooking done! \n";
