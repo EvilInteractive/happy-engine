@@ -34,7 +34,7 @@ namespace physics {
 class PhysicsStaticActor
 {
 public:
-	PhysicsStaticActor(const math::Vector3 position, const shapes::IPhysicsShape& shape, PhysicsMaterial* pMaterial);
+	PhysicsStaticActor(const math::Vector3& position, const shapes::IPhysicsShape::pointer& shape, PhysicsMaterial* pMaterial);
     virtual ~PhysicsStaticActor();
     
     math::Vector3 getPosition() const;

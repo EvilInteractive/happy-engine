@@ -20,15 +20,14 @@
 
 #include "PhysicsConvexShape.h"
 #include "HappyEngine.h"
-#include "BinaryStream.h"
 
 namespace happyengine {
 namespace physics {
 namespace shapes {
 
-PhysicsConvexShape::PhysicsConvexShape(const std::string& path, const math::Vector3& scale): m_pInternalMesh(nullptr)
+PhysicsConvexShape::PhysicsConvexShape(const io::BinaryStream& stream, const math::Vector3& scale): m_pInternalMesh(nullptr)
 { 
-    m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(io::BinaryStream(path, io::BinaryStream::Read));
+    m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(stream);
     m_Geometry = PxConvexMeshGeometry(m_pInternalMesh, PxMeshScale(PxVec3(scale.x, scale.y, scale.z), PxQuat::createIdentity()));
 }
 

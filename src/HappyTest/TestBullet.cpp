@@ -26,7 +26,7 @@
 
 namespace happytest {
 
-TestBullet::TestBullet(): m_pActor(nullptr), m_pShape(nullptr), m_pMaterial(nullptr)
+TestBullet::TestBullet(): m_pActor(nullptr), m_pMaterial(nullptr)
 {
 }
 
@@ -34,7 +34,6 @@ TestBullet::TestBullet(): m_pActor(nullptr), m_pShape(nullptr), m_pMaterial(null
 TestBullet::~TestBullet()
 {
     delete m_pActor;
-    delete m_pShape;
     delete m_pMaterial;
 }
 
@@ -56,8 +55,8 @@ void TestBullet::load()
     m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_specGlossIll.png");
 
     m_pMaterial = NEW physics::PhysicsMaterial(0.5f, 0.8f, 0.4f);
-    m_pShape = NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2));
-    m_pActor = NEW physics::PhysicsDynamicActor(math::Vector3(0, 10, 0), *m_pShape, m_pMaterial);
+    m_pShape = physics::shapes::IPhysicsShape::pointer(NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2)));
+    m_pActor = NEW physics::PhysicsDynamicActor(math::Vector3(0, 10, 0), m_pShape, 1.5f, m_pMaterial);
 }
 
 void TestBullet::tick(float /*dTime*/)

@@ -55,8 +55,8 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         if (m_ModelInvokeQueue.try_pop(data))
         {
             data->pModel->init();
-            data->pModel->setVertices(data->loader->getVertices(), data->loader->getNumVertices(), data->vertexLayout);
-            data->pModel->setIndices(data->loader->getIndices(), data->loader->getNumIndices(), data->loader->getIndexStride());
+            data->pModel->setVertices(data->loader->getVertices(0), data->loader->getNumVertices(0), data->vertexLayout);
+            data->pModel->setIndices(data->loader->getIndices(0), data->loader->getNumIndices(0), data->loader->getIndexStride(0));
             std::cout << "**ML INFO** model create completed: " << data->path << "\n";
             delete data->loader;
             delete data;

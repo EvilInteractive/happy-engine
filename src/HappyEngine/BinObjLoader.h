@@ -59,26 +59,30 @@ public:
 
     virtual void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true);
 
-    virtual const void* getVertices() const;
-    virtual uint getNumVertices() const;
+    virtual uint getNumMeshes() const;
+    virtual const std::string& getMeshName(uint mesh) const;
 
-    virtual const void* getIndices() const;
-    virtual graphics::IndexStride getIndexStride() const;
-    virtual uint getNumIndices() const;
+    virtual const void* getVertices(uint mesh) const;
+    virtual uint getNumVertices(uint mesh) const;
+
+    virtual const void* getIndices(uint mesh) const;
+    virtual graphics::IndexStride getIndexStride(uint mesh) const;
+    virtual uint getNumIndices(uint mesh) const;
 
 
 private:
     void read(const std::string& path, bool allowByteIndices);
-    void fill(void* pdata, const graphics::VertexLayout& vertLayout) const;
+    void fill(const graphics::VertexLayout& vertLayout) const;
 
-    std::vector<InternalVertex> m_VertexData;
+    std::vector<std::vector<InternalVertex>> m_VertexData;
     
-    void* m_Vertices;
-    void* m_Indices;
+    std::vector<std::string> m_MeshName;
 
-    uint m_NumVertices;
-    uint m_NumIndices;
-    graphics::IndexStride m_IndexStride;
+    std::vector<void*> m_Vertices;
+    std::vector<void*> m_Indices;
+
+    std::vector<uint> m_NumIndices;
+    std::vector<graphics::IndexStride> m_IndexStride;
 
     //Disable default copy constructor and default assignment operator
     BinObjLoader(const BinObjLoader&);

@@ -42,7 +42,7 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
     
     m_pPhysXSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pAllocator, *m_pErrorCallback, 
                                     PxTolerancesScale(), memDebug);
-
+    
     ASSERT(m_pPhysXSDK != nullptr, "init of physX failed");
 
     

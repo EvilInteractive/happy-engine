@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 22/08/2011
+//Updated: 14/09/2011 -added addForce/velocity and kinematic methods
 
 #ifndef _HE_PHYSICS_DYNAMIC_ACTOR_H_
 #define _HE_PHYSICS_DYNAMIC_ACTOR_H_
@@ -27,6 +28,7 @@
 #include "Matrix.h"
 #include "IPhysicsShape.h"
 #include "PhysicsMaterial.h"
+#include <vector>
 
 namespace happyengine {
 namespace physics {
@@ -34,11 +36,20 @@ namespace physics {
 class PhysicsDynamicActor
 {
 public:
-	PhysicsDynamicActor(const math::Vector3 position, const shapes::IPhysicsShape& shape, PhysicsMaterial* pMaterial);
+	PhysicsDynamicActor(const math::Vector3& position, const shapes::IPhysicsShape::pointer& shape, float density, PhysicsMaterial* pMaterial);
+    PhysicsDynamicActor(const math::Vector3& position, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, PhysicsMaterial* pMaterial);
     virtual ~PhysicsDynamicActor();
 
     math::Vector3 getPosition() const;
     math::Matrix getPose() const;
+
+    void setVelocity(const math::Vector3& velocity);
+    void addVelocity(const math::Vector3& velocity);
+    void addForce(const math::Vector3& force);
+
+    void setKeyframed(bool keyframed);
+    void keyframedMove(const math::Vector3& move);
+    void keyframedRotate(const math::Vector3& axis, float angle);
 
 private:
 

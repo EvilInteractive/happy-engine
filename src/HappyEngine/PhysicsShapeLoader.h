@@ -1,4 +1,3 @@
-
 //HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
@@ -17,40 +16,37 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 14/09/2011
 
-#ifndef _HE_PHYSICS_CONVEX_SHAPE_H_
-#define _HE_PHYSICS_CONVEX_SHAPE_H_
+#ifndef _HE_PHYSICS_SHAPE_LOADER_H_
+#define _HE_PHYSICS_SHAPE_LOADER_H_
 #pragma once
 
 #include "IPhysicsShape.h"
-#include "geometry/PxConvexMesh.h"
-#include "geometry/PxConvexMeshGeometry.h"
-#include "Vector3.h"
-#include "BinaryStream.h"
+#include "AssetContainer.h"
+
+#include <vector>
+#include <string>
 
 namespace happyengine {
-namespace physics {
-namespace shapes {
+namespace content {
 
-class PhysicsConvexShape : public IPhysicsShape
+class PhysicsShapeLoader
 {
 public:
-    explicit PhysicsConvexShape(const io::BinaryStream& stream, const math::Vector3& scale = math::Vector3(1.0f, 1.0f, 1.0f));
-    virtual ~PhysicsConvexShape();
+	PhysicsShapeLoader();
+    virtual ~PhysicsShapeLoader();
 
-    virtual const PxGeometry& getGeometry() const;
+    std::vector<physics::shapes::IPhysicsShape::pointer> load(const std::string& path);
 
 private:
-
-    PxConvexMesh* m_pInternalMesh;
-    PxConvexMeshGeometry m_Geometry;
+	AssetContainer<std::vector<physics::shapes::IPhysicsShape::pointer>>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
-    PhysicsConvexShape(const PhysicsConvexShape&);
-    PhysicsConvexShape& operator=(const PhysicsConvexShape&);
+    PhysicsShapeLoader(const PhysicsShapeLoader&);
+    PhysicsShapeLoader& operator=(const PhysicsShapeLoader&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

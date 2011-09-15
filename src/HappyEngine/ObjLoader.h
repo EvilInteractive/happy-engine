@@ -56,37 +56,52 @@ public:
 
     virtual void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true);
 
-    virtual const void* getVertices() const;
-    virtual uint getNumVertices() const;
+    virtual uint getNumMeshes() const;
+    virtual const std::string& getMeshName(uint mesh) const;
 
-    virtual const void* getIndices() const;
-    virtual graphics::IndexStride getIndexStride() const;
-    virtual uint getNumIndices() const;
+    virtual const void* getVertices(uint mesh) const;
+    virtual uint getNumVertices(uint mesh) const;
+
+    virtual const void* getIndices(uint mesh) const;
+    virtual graphics::IndexStride getIndexStride(uint mesh) const;
+    virtual uint getNumIndices(uint mesh) const;
 
 
 private:
+    struct Range
+    {
+        uint begin;
+        uint end;
+    };
+
     void read(const std::string& path);
+    void flushCreateGroup(uint group);
     void create(bool allowByteIndices);
-    void addIndex(uint index);
+    void addIndex(uint index, uint group);
     void fill(void* pdata, const graphics::VertexLayout& vertLayout) const;
 
     std::vector<math::Vector3> m_PositionData;
     std::vector<math::Vector2> m_TextureData;
     std::vector<math::Vector3> m_NormalData;
     std::vector<std::vector<std::vector<uint>>> m_FaceData;
+    std::vector<Range> m_FaceDataMeshRange;
+    std::vector<std::string> m_GroupData;
 
     std::vector<InternalVertex> m_VertexData;
+    std::vector<Range> m_VertexMeshRange;
     std::map<std::string, uint> m_IndexMap;
 
+    std::vector<Range> m_IndexMeshRange;
     std::vector<byte> m_IndicesByte;
     std::vector<ushort> m_IndicesUShort;
     std::vector<uint> m_IndicesUInt;
 
     void* m_Vertices;
+    graphics::VertexLayout m_VertexLayout;
 
     uint m_NumVertices;
-    uint m_NumIndices;
-    graphics::IndexStride m_IndexStride;
+    std::vector<uint> m_NumIndices;
+    std::vector<graphics::IndexStride> m_IndexStride;
 
     //Disable default copy constructor and default assignment operator
     ObjLoader(const ObjLoader&);

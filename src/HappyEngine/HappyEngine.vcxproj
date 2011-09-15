@@ -26,6 +26,7 @@
     <ClCompile Include="AssetContainer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ObjLineLoader.cpp" />
+    <ClCompile Include="PhysicsShapeLoader.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Simple2DEffect.cpp" />
     <ClCompile Include="Happy2DRenderer.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="ModelLoaderFunctions.h" />
     <ClInclude Include="ObjLineLoader.h" />
+    <ClInclude Include="PhysicsShapeLoader.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="AssetContainer.h" />
     <ClInclude Include="Camera.h" />

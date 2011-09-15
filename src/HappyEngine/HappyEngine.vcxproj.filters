@@ -250,6 +250,9 @@
     <ClCompile Include="Line.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsShapeLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -476,6 +479,9 @@
     </ClInclude>
     <ClInclude Include="Line.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsShapeLoader.h">
+      <Filter>happyengine\content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -179,6 +179,10 @@ math::Vector3 Matrix::getTranslation() const
 {
     return math::Vector3(m_Matrix.column3.x, m_Matrix.column3.y, m_Matrix.column3.z);
 }
+const physx::pubfnd3::PxMat44& Matrix::getPhyicsMatrix() const
+{
+    return m_Matrix;
+}
 
 //Static
 const Matrix Matrix::Identity = Matrix(1, 0, 0, 0,

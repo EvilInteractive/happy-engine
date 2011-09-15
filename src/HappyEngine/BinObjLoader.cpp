@@ -33,52 +33,81 @@ namespace happyengine {
 namespace content {
 namespace models {
 
-BinObjLoader::BinObjLoader(): m_NumIndices(0), m_NumVertices(0), m_Vertices(nullptr), m_Indices(nullptr)
+BinObjLoader::BinObjLoader(): m_NumIndices(0)
 {
 }
 
 
 BinObjLoader::~BinObjLoader()
 {
-    free(m_Vertices);
-    free(m_Indices);
+    std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
+    {
+        free(pVert);
+    });
+    std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
+    {
+        free(pInd);
+    });
 }
 void BinObjLoader::load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices)
 {
     read(path, allowByteIndices);
+    
+    std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
+    {
+        free(pVert);
+    });
+    m_Vertices.clear();
 
-    free(m_Vertices);
-    m_Vertices = malloc(vertLayout.getVertexSize() * m_NumVertices);
-    std::cout << "malloc " << vertLayout.getVertexSize() * m_NumVertices << " bytes\n";
-    ASSERT(m_Vertices != nullptr, "not enough memory!");
-        
-    fill(m_Vertices, vertLayout);
+    for (uint i = 0; i < m_VertexData.size(); ++i)
+    {
+        void* pVert(malloc(vertLayout.getVertexSize() * m_VertexData[i].size()));
+        ASSERT(pVert != nullptr, "not enough memory!");
+        m_Vertices.push_back(pVert);
+    }
+    
+    fill(vertLayout);
 }
 
 void BinObjLoader::read(const std::string& path, bool allowByteIndices)
 {
     //Clean
+    std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
+    {
+        free(pInd);
+    });
+    m_Indices.clear();
     m_VertexData.clear();
 
     using namespace std;
 
     io::BinaryStream stream(path, io::BinaryStream::Read); //throws error::FileNotFoundException
     
-    m_NumVertices = stream.readDword();
-    m_VertexData.resize(m_NumVertices);
-    stream.readBuffer(&m_VertexData[0], m_NumVertices * sizeof(InternalVertex));
+    uint meshes(stream.readDword());
 
-    m_NumIndices = stream.readDword();
-    m_IndexStride = static_cast<graphics::IndexStride>(stream.readByte());
-    if (m_IndexStride == graphics::IndexStride_Byte && allowByteIndices == false)
-        m_IndexStride = graphics::IndexStride_UShort;
-    free(m_Indices);
-    m_Indices = malloc(m_IndexStride * m_NumIndices);
-    ASSERT(m_Indices != nullptr, "not enough memory!");
-    stream.readBuffer(m_Indices, m_IndexStride * m_NumIndices);
+    for(uint i = 0; i < meshes; ++i)
+    {
+        m_MeshName.push_back(stream.readString());
+
+        uint numVertices(stream.readDword());
+        m_VertexData.push_back(std::vector<InternalVertex>(numVertices));
+        stream.readBuffer(&m_VertexData[m_VertexData.size() - 1][0], numVertices * sizeof(InternalVertex));
+
+        m_NumIndices.push_back(stream.readDword());
+        graphics::IndexStride stride(static_cast<graphics::IndexStride>(stream.readByte()));
+        if (stride == graphics::IndexStride_Byte && allowByteIndices == false)
+            m_IndexStride.push_back(graphics::IndexStride_UShort);
+        else
+            m_IndexStride.push_back(stride);
+        
+        void* pInd = malloc(stride * m_NumIndices.back());
+        ASSERT(pInd != nullptr, "not enough memory!");
+        stream.readBuffer(pInd, stride * m_NumIndices.back());
+        m_Indices.push_back(pInd);
+    }
 }
 
-void BinObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout) const
+void BinObjLoader::fill(const graphics::VertexLayout& vertLayout) const
 {
     int pOff = -1;
     int tOff = -1;
@@ -97,65 +126,71 @@ void BinObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLay
             tanOff = element.getByteOffset();
     });
     
-    //optimazation for struct == internal struct
-    if (sizeof(InternalVertex) == vertLayout.getVertexSize())
+    for (uint i = 0; i < m_VertexData.size(); ++i)
     {
-        if (pOff == 0 && tOff == 12 && nOff == 20 && tanOff == 32)
+        //optimazation for struct == internal struct
+        if (sizeof(InternalVertex) == vertLayout.getVertexSize())
         {
-            memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getVertexSize());
-            return;
+            if (pOff == 0 && tOff == 12 && nOff == 20 && tanOff == 32)
+            {
+                memcpy(m_Vertices[i], &m_VertexData[i][0], m_VertexData[i].size() * vertLayout.getVertexSize());
+                break;
+            }
         }
+
+        char* pCharData = static_cast<char*>(m_Vertices[i]);
+        uint count = 0;
+        std::for_each(m_VertexData[i].cbegin(), m_VertexData[i].cend(), [&](const InternalVertex& vert)
+        {
+            if (pOff != -1)
+            {
+                *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+            }
+            if (tOff != -1)
+            {
+                *reinterpret_cast<math::Vector2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+            }
+            if (nOff != -1)
+            {
+                *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+            }
+            if (tanOff != -1)
+            {
+                *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + tanOff]) = vert.tan;
+            }
+            ++count;
+        });
     }
-
-    char* pCharData = static_cast<char*>(pVertexData);
-    uint count = 0;
-    uint bytecount(0);
-    std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const InternalVertex& vert)
-    {
-        if (pOff != -1)
-        {
-            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
-            bytecount += 12;
-        }
-        if (tOff != -1)
-        {
-            *reinterpret_cast<math::Vector2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
-            bytecount += 8;
-        }
-        if (nOff != -1)
-        {
-            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
-            bytecount += 12;
-        }
-        if (tanOff != -1)
-        {
-            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + tanOff]) = vert.tan;
-            bytecount += 12;
-        }
-        ++count;
-    });
-    std::cout << "wrote " << bytecount << " bytes\n";
 }
 
-const void* BinObjLoader::getVertices() const
+const void* BinObjLoader::getVertices(uint mesh) const
 {
-    return m_Vertices;
+    return m_Vertices[mesh];
 }
-const void* BinObjLoader::getIndices() const 
+const void* BinObjLoader::getIndices(uint mesh) const 
 {
-    return m_Indices;
+    return m_Indices[mesh];
 }
-graphics::IndexStride BinObjLoader::getIndexStride() const
+graphics::IndexStride BinObjLoader::getIndexStride(uint mesh) const
 {
-    return m_IndexStride;
+    return m_IndexStride[mesh];
 }
-uint BinObjLoader::getNumVertices() const
+uint BinObjLoader::getNumVertices(uint mesh) const
 {
-    return m_NumVertices;
+    return m_VertexData[mesh].size();
 }
-uint BinObjLoader::getNumIndices() const
+uint BinObjLoader::getNumIndices(uint mesh) const
 {
-    return m_NumIndices;
+    return m_NumIndices[mesh];
+}
+
+uint BinObjLoader::getNumMeshes() const
+{
+    return m_MeshName.size();
+}
+const std::string& BinObjLoader::getMeshName(uint mesh) const
+{
+    return m_MeshName[mesh];
 }
 
 } } } //end namespace

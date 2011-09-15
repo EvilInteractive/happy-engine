@@ -38,12 +38,15 @@ public:
   
     virtual void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true) = 0;
 
-    virtual const void* getVertices() const = 0;
-    virtual uint getNumVertices() const = 0;
+    virtual uint getNumMeshes() const = 0;
+    virtual const std::string& getMeshName(uint mesh) const = 0;
 
-    virtual const void* getIndices() const = 0;
-    virtual graphics::IndexStride getIndexStride() const = 0;
-    virtual uint getNumIndices() const = 0;
+    virtual const void* getVertices(uint mesh) const = 0;
+    virtual uint getNumVertices(uint mesh) const = 0;
+
+    virtual const void* getIndices(uint mesh) const = 0;
+    virtual graphics::IndexStride getIndexStride(uint mesh) const = 0;
+    virtual uint getNumIndices(uint mesh) const = 0;
 };
 
 } } } //end namespace

@@ -48,7 +48,7 @@ private:
 
     happyengine::physics::PhysicsDynamicActor* m_pActor;
     happyengine::physics::PhysicsMaterial* m_pMaterial;
-    happyengine::physics::shapes::PhysicsBoxShape* m_pShape;
+    happyengine::physics::shapes::PhysicsBoxShape::pointer m_pShape;
 
     happyengine::graphics::Model::pointer m_pModel;
     happyengine::graphics::Texture2D::pointer m_pDiffuseMap;

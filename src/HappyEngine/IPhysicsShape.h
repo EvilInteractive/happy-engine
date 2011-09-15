@@ -23,6 +23,7 @@
 #pragma once
 
 #include "PxShape.h"
+#include "boost/shared_ptr.hpp"
 
 namespace happyengine {
 namespace physics {
@@ -34,6 +35,8 @@ public:
     virtual ~IPhysicsShape() {}
 
     virtual const PxGeometry& getGeometry() const = 0;
+
+    typedef boost::shared_ptr<IPhysicsShape> pointer;
 };
 
 } } } //end namespace

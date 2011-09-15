@@ -60,6 +60,7 @@ public:
     //getters
     void toFloatArray(float arr[16]) const;
     math::Vector3 getTranslation() const;
+    const physx::pubfnd3::PxMat44& getPhyicsMatrix() const;
 
 	//Static
     static const Matrix Identity;

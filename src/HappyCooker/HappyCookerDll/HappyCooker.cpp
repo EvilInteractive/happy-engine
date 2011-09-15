@@ -57,7 +57,7 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
 {
     using namespace happyengine;
 
-    std::cout << "happycooker cooking: " << input << " to " << output << "\n";
+    std::cout << "\nhappycooker cooking: " << input << " to " << output << "\n";
 
     content::models::ObjLoader objLoader;
 
@@ -72,7 +72,7 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         return false;
     }
     
-    std::cout << "read " << objLoader.getNumVertices() << " vertices and " << objLoader.getNumIndices() << " indices\n";
+    std::cout << "read " << objLoader.getNumVertices(0) << " vertices and " << objLoader.getNumIndices(0) << " indices\n";
 
     std::cout << "starting cooking... \n";
     PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), PxCookingParams()));
@@ -82,9 +82,12 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         std::cout << "cooking failed to start\n";
         return false;
     }
+    
+    io::BinaryStream stream(output, io::BinaryStream::Write);
+    stream.storeByte(1);
 
     PxConvexMeshDesc desc;   
-    switch (objLoader.getIndexStride())
+    switch (objLoader.getIndexStride(0))
     {
         case graphics::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
         case graphics::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
@@ -92,14 +95,13 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         default: ASSERT("unkown indexType"); break;
     }
  
-    desc.points.count = objLoader.getNumVertices();
-    desc.points.data = objLoader.getVertices();
+    desc.points.count = objLoader.getNumVertices(0);
+    desc.points.data = objLoader.getVertices(0);
     desc.points.stride = sizeof(VertexPos);
-    desc.triangles.count = objLoader.getNumIndices() / 3;
-    desc.triangles.data = objLoader.getIndices();
-    desc.triangles.stride = objLoader.getIndexStride() * 3; //stride of triangle = 3 indices
+    desc.triangles.count = objLoader.getNumIndices(0) / 3;
+    desc.triangles.data = objLoader.getIndices(0);
+    desc.triangles.stride = objLoader.getIndexStride(0) * 3; //stride of triangle = 3 indices
 
-    io::BinaryStream stream(output, io::BinaryStream::Write);
     bool succes(cooking->cookConvexMesh(desc, stream));
     cooking->release();
 
@@ -116,7 +118,7 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
 {
     using namespace happyengine;
 
-    std::cout << "happycooker cooking: " << input << " to " << output << "\n";
+    std::cout << "\nhappycooker cooking: " << input << " to " << output << "\n";
 
     content::models::ObjLoader objLoader;
 
@@ -133,17 +135,22 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
         return false;
     }
     
-    std::cout << "read " << objLoader.getNumVertices() << " vertices and " << objLoader.getNumIndices() << " indices\n";
-
-    std::cout << "starting cooking... \n";
-
     io::BinaryStream stream(output, io::BinaryStream::Write);
-    stream.storeDword(objLoader.getNumVertices());
-    stream.storeBuffer(objLoader.getVertices(), 44 * objLoader.getNumVertices());
-    stream.storeDword(objLoader.getNumIndices());
-    stream.storeByte(static_cast<byte>(objLoader.getIndexStride()));
-    stream.storeBuffer(objLoader.getIndices(), objLoader.getIndexStride() * objLoader.getNumIndices());
-    std::cout << "cooking successful! :)\n";
+    stream.storeDword(objLoader.getNumMeshes());
+    std::cout << "starting cooking " << objLoader.getNumMeshes() << "meshes...\n";
+    for (uint i = 0; i < objLoader.getNumMeshes(); ++i)
+    {
+        std::cout << "    cooking: " << objLoader.getMeshName(i) << " - " << objLoader.getNumVertices(i) << " vertices and " << objLoader.getNumIndices(i) << " indices";
+        
+        stream.storeString(objLoader.getMeshName(i));
+        stream.storeDword(objLoader.getNumVertices(i));
+        stream.storeBuffer(objLoader.getVertices(i), 44 * objLoader.getNumVertices(i));
+        stream.storeDword(objLoader.getNumIndices(i));
+        stream.storeByte(static_cast<byte>(objLoader.getIndexStride(i)));
+        stream.storeBuffer(objLoader.getIndices(i), objLoader.getIndexStride(i) * objLoader.getNumIndices(i));
+        std::cout << "    DONE!\n";
+    }
+ 
     return true;
 }
 
