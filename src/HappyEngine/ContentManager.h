@@ -28,6 +28,7 @@
 #include "LineLoader.h"
 #include "Vector3.h"
 #include "Line.h"
+#include "PhysicsShapeLoader.h"
 
 namespace happyengine {
 namespace content {
@@ -50,11 +51,14 @@ public:
 
     graphics::Line::pointer loadLine(const std::string& path);
 
+    const std::vector<physics::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
+
 private:
 
     ModelLoader* m_pModelLoader;
     TextureLoader* m_pTextureLoader;
     LineLoader* m_pLineLoader;
+    PhysicsShapeLoader* m_pPhysicsShapeLoader;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

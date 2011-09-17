@@ -26,8 +26,13 @@
 
 namespace happytest {
 
-TestBullet::TestBullet(): m_pActor(nullptr), m_pMaterial(nullptr)
+TestBullet::TestBullet(const happyengine::math::Vector3& pos, const happyengine::math::Vector3& velocity): m_pActor(nullptr), m_pMaterial(nullptr)
 {
+    using namespace happyengine;
+    m_pMaterial = NEW physics::PhysicsMaterial(0.5f, 0.8f, 0.4f);
+    m_pActor = NEW physics::PhysicsDynamicActor(pos, 
+        physics::shapes::IPhysicsShape::pointer(NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2))), 1.5f, m_pMaterial);
+    m_pActor->setVelocity(velocity);
 }
 
 
@@ -42,35 +47,22 @@ void TestBullet::load()
     using namespace happyengine;
     using namespace graphics;
     
-    VertexLayout layout;
-    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, sizeof(math::Vector3), 0, "inPosition"));
-    layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, "inTexCoord"));
-    layout.addElement(VertexElement(2, VertexElement::Type_Vector3, VertexElement::Usage_Normal, sizeof(math::Vector3), 20, "inNormal"));
-    layout.addElement(VertexElement(3, VertexElement::Type_Vector3, VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, "inTangent"));
-
-    m_pModel = CONTENT->asyncLoadModel("../data/models/cube.binobj", layout);
+    m_pModel = CONTENT->asyncLoadModel("../data/models/cube.binobj", DeferredPreEffect::getVertexLayout());
     
     m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/testTex.png");
     m_pNormalMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_normal.png");
     m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_specGlossIll.png");
-
-    m_pMaterial = NEW physics::PhysicsMaterial(0.5f, 0.8f, 0.4f);
-    m_pShape = physics::shapes::IPhysicsShape::pointer(NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2)));
-    m_pActor = NEW physics::PhysicsDynamicActor(math::Vector3(0, 10, 0), m_pShape, 1.5f, m_pMaterial);
 }
 
 void TestBullet::tick(float /*dTime*/)
 {
     m_mtxWorld = m_pActor->getPose();
 }
-void TestBullet::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/)
+void TestBullet::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, const happyengine::graphics::Camera* pCamera)
 {
     using namespace happyengine;
-
-    math::Matrix persp(math::Matrix::createPerspectiveLH(math::piOverFour, 1280, 720, 1, 1000));
-    math::Matrix view(math::Matrix::createLookAtLH(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0)));
-
-    m_pEffect->setWVP(persp * view * m_mtxWorld);
+    
+    m_pEffect->setWVP(pCamera->getViewProjection() * m_mtxWorld);
     m_pEffect->setWorld(m_mtxWorld);  
     m_pEffect->setDiffuseMap(m_pDiffuseMap);
     m_pEffect->setNormalMap(m_pNormalMap);

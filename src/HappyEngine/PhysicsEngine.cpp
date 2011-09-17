@@ -85,7 +85,7 @@ void PhysicsEngine::createScene()
     m_pScene = m_pPhysXSDK->createScene(sceneDesc);
     ASSERT(m_pScene != nullptr, "createScene failed!");
 
-    PxRigidStatic* plane = m_pPhysXSDK->createRigidStatic(PxTransform(PxVec3(0, -5, 0), PxQuat(math::piOverTwo, PxVec3(0, 0, 1))));
+    PxRigidStatic* plane = m_pPhysXSDK->createRigidStatic(PxTransform(PxVec3(0, 0, 0), PxQuat(math::piOverTwo, PxVec3(0, 0, 1))));
     ASSERT(plane != nullptr, "");
     PxShape* pShape = plane->createShape(PxPlaneGeometry(), *m_pPhysXSDK->createMaterial(0.3f, 0.6f, 0.2f) );
     ASSERT(pShape != nullptr, "");

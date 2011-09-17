@@ -48,8 +48,7 @@ public:
     void addForce(const math::Vector3& force);
 
     void setKeyframed(bool keyframed);
-    void keyframedMove(const math::Vector3& move);
-    void keyframedRotate(const math::Vector3& axis, float angle);
+    void PhysicsDynamicActor::keyframedSetPose(const math::Vector3& move, const math::Vector3& axis, float angle);
 
 private:
 

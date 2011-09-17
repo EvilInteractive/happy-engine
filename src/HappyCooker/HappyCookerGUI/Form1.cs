@@ -29,7 +29,7 @@ namespace HappyCookerGUI
         private Button[] m_ConvertToImportBtn = new Button[COOKERS];
         private Button[] m_GoBtn = new Button[COOKERS];
 
-        private string[] m_CookerExtension = new string[COOKERS] { ".pxconvex", ".binobj", ".binobj" };
+        private string[] m_CookerExtension = new string[COOKERS] { ".bphys", ".binobj", ".binobj" };
 
         private int m_CurrentCooker = 0;
 
@@ -144,7 +144,7 @@ namespace HappyCookerGUI
 
             ListBoxFiller filler = new ListBoxFiller(m_ImportListbox[0], m_Config.convexImportPath, "*.obj",
                                                      m_ConvertListbox[0],
-                                                     m_ExportListbox[0], m_Config.convexExportPath, "*.pxconvex");
+                                                     m_ExportListbox[0], m_Config.convexExportPath, "*.bphys");
         }
         private void initBinObj()
         {

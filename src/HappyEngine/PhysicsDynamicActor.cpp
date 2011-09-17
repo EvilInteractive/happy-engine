@@ -83,15 +83,10 @@ void PhysicsDynamicActor::setKeyframed(bool keyframed)
 {
     m_pActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, keyframed);
 }
-void PhysicsDynamicActor::keyframedMove(const math::Vector3& move)
+void PhysicsDynamicActor::keyframedSetPose(const math::Vector3& move, const math::Vector3& axis, float angle)
 {
-    m_pActor->moveKinematic(physx::pubfnd3::PxTransform(physx::pubfnd3::PxVec3(move.x, move.y, move.z)));
-}
-void PhysicsDynamicActor::keyframedRotate(const math::Vector3& axis, float angle)
-{
-    m_pActor->moveKinematic(
-        physx::pubfnd3::PxTransform(
-            physx::pubfnd3::PxQuat(angle, physx::pubfnd3::PxVec3(axis.x, axis.y, axis.z))));
+    m_pActor->moveKinematic(physx::pubfnd3::PxTransform(physx::pubfnd3::PxVec3(move.x, move.y, move.z),
+        physx::pubfnd3::PxQuat(angle, physx::pubfnd3::PxVec3(axis.x, axis.y, axis.z))));
 }
 
 } } //end namespace

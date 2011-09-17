@@ -17,6 +17,7 @@
 //
 //Author:	Bastian Damman
 //Modified:	Sebastiaan Sprengers
+//Modified (17/09/2011, Bastian Damman), now returning and adding const T& 
 
 #ifndef _HE_ASSET_CONTAINER_H_
 #define _HE_ASSET_CONTAINER_H_
@@ -40,10 +41,10 @@ public:
     {
 	    return m_Map.find(key) != m_Map.end();
     }
-    void AddAsset(const std::string &key, T asset)
+    void AddAsset(const std::string &key, const T& asset)
     {        
         #if defined DEBUG || _DEBUG
-	    std::cout << "Adding Asset: " << key << "\n\n";
+	    std::cout << "Adding Asset: " << key << "\n";
         #endif
 	    m_Map[key] = asset;
     }
@@ -69,7 +70,7 @@ public:
 	    m_Map.clear();
     }
     
-    T GetAsset(const std::string& key)
+    const T& GetAsset(const std::string& key)
     {
         return m_Map[key];
     }

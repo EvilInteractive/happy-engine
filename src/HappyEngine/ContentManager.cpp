@@ -5,7 +5,7 @@ namespace happyengine {
 namespace content {
 
 ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureLoader(NEW TextureLoader()),
-    m_pLineLoader(NEW LineLoader())
+    m_pLineLoader(NEW LineLoader()), m_pPhysicsShapeLoader(NEW PhysicsShapeLoader())
 {
 }
 
@@ -14,6 +14,7 @@ ContentManager::~ContentManager()
     delete m_pModelLoader;
     delete m_pTextureLoader;
     delete m_pLineLoader;
+    delete m_pPhysicsShapeLoader;
 }
 
 
@@ -41,6 +42,11 @@ graphics::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string&
 graphics::Line::pointer ContentManager::loadLine(const std::string& path)
 {
     return m_pLineLoader->loadLine(path);
+}
+
+const std::vector<physics::shapes::IPhysicsShape::pointer>& ContentManager::loadPhysicsShape(const std::string& path)
+{
+    return m_pPhysicsShapeLoader->load(path);
 }
 
 } } //end namespace

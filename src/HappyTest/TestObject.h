@@ -29,6 +29,8 @@
 
 #include "DeferredPreEffect.h" 
 
+#include "PhysicsDynamicActor.h"
+
 #include "Font.h"
 
 namespace happytest {
@@ -58,6 +60,9 @@ private:
     happyengine::math::Vector3 m_Position;
 
 	happyengine::math::Matrix m_matWorld;
+
+    happyengine::physics::PhysicsDynamicActor* m_pActor;
+    happyengine::physics::PhysicsMaterial* m_pMaterial;
 
     //Disable default copy constructor and default assignment operator
     TestObject(const TestObject&);

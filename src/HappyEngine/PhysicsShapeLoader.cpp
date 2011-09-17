@@ -27,7 +27,7 @@
 namespace happyengine {
 namespace content {
 
-PhysicsShapeLoader::PhysicsShapeLoader()
+PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<std::vector<physics::shapes::IPhysicsShape::pointer>>())
 {
 }
 
@@ -36,7 +36,7 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
 {
 }
 
-std::vector<physics::shapes::IPhysicsShape::pointer> PhysicsShapeLoader::load(const std::string& path)
+const std::vector<physics::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(const std::string& path)
 {
     if (m_pAssetContainer->IsAssetPresent(path))
 	{
@@ -57,12 +57,12 @@ std::vector<physics::shapes::IPhysicsShape::pointer> PhysicsShapeLoader::load(co
             }
 
             m_pAssetContainer->AddAsset(path, shapes);
-            return shapes;
+            return m_pAssetContainer->GetAsset(path);
         }
         else
         {
             ASSERT("no loader defined for this extension");
-            return std::vector<physics::shapes::IPhysicsShape::pointer>();
+            return m_pAssetContainer->GetAsset("");
         }
     }
 }

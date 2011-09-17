@@ -31,24 +31,24 @@
 
 #include "I3DRenderer.h"
 #include "DeferredPreEffect.h"
+#include "Camera.h"
 
 namespace happytest {
 
 class TestBullet
 {
 public:
-	TestBullet();
+	TestBullet(const happyengine::math::Vector3& pos, const happyengine::math::Vector3& velocity);
     virtual ~TestBullet();
     
     void load();
     void tick(float dTime);
-    void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float dTime);
+    void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, const happyengine::graphics::Camera* pCamera);
 
 private:
 
     happyengine::physics::PhysicsDynamicActor* m_pActor;
     happyengine::physics::PhysicsMaterial* m_pMaterial;
-    happyengine::physics::shapes::PhysicsBoxShape::pointer m_pShape;
 
     happyengine::graphics::Model::pointer m_pModel;
     happyengine::graphics::Texture2D::pointer m_pDiffuseMap;

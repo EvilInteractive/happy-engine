@@ -37,7 +37,7 @@ public:
 	PhysicsShapeLoader();
     virtual ~PhysicsShapeLoader();
 
-    std::vector<physics::shapes::IPhysicsShape::pointer> load(const std::string& path);
+    const std::vector<physics::shapes::IPhysicsShape::pointer>& load(const std::string& path);
 
 private:
 	AssetContainer<std::vector<physics::shapes::IPhysicsShape::pointer>>* m_pAssetContainer;

@@ -162,7 +162,7 @@ void MainGame::tick(float dTime)
 
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Space))
     {
-        TestBullet* pBullet(NEW TestBullet());
+        TestBullet* pBullet(NEW TestBullet(m_pCamera->getPosition(), m_pCamera->getLook() * 20));
         pBullet->load();
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";
@@ -210,7 +210,7 @@ void MainGame::draw(float dTime)
 
 			std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
 			{
-				pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime);
+				pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, m_pCamera);
 			});
 
 		m_pDeferredPreEffect->end();

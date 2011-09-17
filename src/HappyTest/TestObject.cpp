@@ -15,6 +15,7 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyTest.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "HappyNew.h"
 #include "TestObject.h"
 #include "MathConstants.h"
 #include "HappyEngine.h"
@@ -27,7 +28,7 @@
 
 namespace happytest {
 
-TestObject::TestObject(): m_Rotation(0), m_Position(0, 0, 0)
+TestObject::TestObject(): m_Rotation(0), m_Position(0, 0, 0), m_pActor(nullptr)
 {
 }
 
@@ -56,23 +57,34 @@ void TestObject::load()
 
     happyengine::content::FontLoader fontLoader;
     fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
+    
+    m_pMaterial = NEW happyengine::physics::PhysicsMaterial(0.7f, 0.5f, 0.2f);
+    m_pActor = NEW happyengine::physics::PhysicsDynamicActor(m_Position,
+        CONTENT->loadPhysicsShape("../data/physics/car.bphys"), 2.0f, m_pMaterial);
+    m_pActor->setKeyframed(true);
 }
 void TestObject::tick(float dTime)
 {
     using namespace happyengine;
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Left))
+    {
         m_Rotation += math::pi * dTime;
+    }
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
+    {
         m_Rotation -= math::pi * dTime;
+    }
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
+    {
         m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+    }
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
+    {
         m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+    }
+    m_pActor->keyframedSetPose(m_Position, math::Vector3(0, 1, 0), m_Rotation);
 
-	m_matWorld = math::Matrix(
-        math::Matrix::createTranslation(m_Position) *
-        math::Matrix::createRotation(math::Vector3(0.0f, 1.0f, 0.0f), m_Rotation) *
-        math::Matrix::createScale(2.0f));
+    m_matWorld = m_pActor->getPose();
 }
 void TestObject::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, float /*dTime*/, const happyengine::graphics::Camera* pCamera)
 {
