@@ -25,9 +25,11 @@
 namespace happyengine {
 namespace physics {
 
-PhysicsStaticActor::PhysicsStaticActor(const math::Vector3& position, const shapes::IPhysicsShape::pointer& shape, PhysicsMaterial* pMaterial)
+PhysicsStaticActor::PhysicsStaticActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, PhysicsMaterial* pMaterial)
 {
-    m_pActor = PHYSICS->getSDK()->createRigidStatic(PxTransform(PxVec3(position.x, position.y, position.z)));
+    m_pActor = PHYSICS->getSDK()->createRigidStatic(PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+                                                        PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 
+                                                    pose.getPhyicsMatrix().column2.getXYZ()))));
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     PxShape* pShape(m_pActor->createShape(shape->getGeometry(), *pMaterial->getInternalMaterial()));

@@ -50,8 +50,8 @@ public:
 
 private:
     void postAmbientLights();
-    void postPointLights();
-    void postSpotLights();
+    void postPointLights(const Camera* pCamera);
+    void postSpotLights(const Camera* pCamera);
     void postDirectionalLights();
 
     uint m_FboId;

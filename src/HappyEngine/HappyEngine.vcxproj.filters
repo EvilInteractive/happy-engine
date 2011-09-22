@@ -65,6 +65,9 @@
     <Filter Include="happyengine\gui">
       <UniqueIdentifier>{77ddc30e-7993-437b-878f-329d3d4f79f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\math\shapes">
+      <UniqueIdentifier>{f1c2151b-2c55-46d0-abb3-01ed3ceb1b20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -255,6 +258,12 @@
     </ClCompile>
     <ClCompile Include="ModelMesh.cpp">
       <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Circle.cpp">
+      <Filter>happyengine\math\shapes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -488,6 +497,9 @@
     </ClInclude>
     <ClInclude Include="ModelMesh.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>happyengine\math\shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

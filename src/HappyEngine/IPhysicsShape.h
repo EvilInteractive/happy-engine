@@ -22,6 +22,10 @@
 #define _HE_IPHYSICS_SHAPE_H_
 #pragma once
 
+#include "Assert.h"
+#undef assert
+#define assert ASSERT
+
 #include "PxShape.h"
 #include "boost/shared_ptr.hpp"
 

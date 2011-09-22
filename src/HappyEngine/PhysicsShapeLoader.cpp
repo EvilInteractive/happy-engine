@@ -34,6 +34,7 @@ PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<s
 
 PhysicsShapeLoader::~PhysicsShapeLoader()
 {
+    delete m_pAssetContainer;
 }
 
 const std::vector<physics::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(const std::string& path)

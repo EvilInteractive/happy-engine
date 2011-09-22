@@ -27,14 +27,21 @@ Matrix::Matrix(): m_Matrix(physx::pubfnd3::PxVec4(1.0f, 1.0f, 1.0f, 1.0f))
 Matrix::Matrix(physx::pubfnd3::PxMat44 mat): m_Matrix(mat)
 {
 }
+Matrix::Matrix(const Vector4& col0, const Vector4& col1, const Vector4& col2, const Vector4& col3):
+    m_Matrix(physx::pubfnd3::PxVec4(col0.x, col0.y, col0.z, col0.w),
+             physx::pubfnd3::PxVec4(col1.x, col1.y, col1.z, col1.w),
+             physx::pubfnd3::PxVec4(col2.x, col2.y, col2.z, col2.w),
+             physx::pubfnd3::PxVec4(col3.x, col3.y, col3.z, col3.w))
+{
+}
 Matrix::Matrix( float _00, float _01, float _02, float _03,
                 float _10, float _11, float _12, float _13,
                 float _20, float _21, float _22, float _23,
                 float _30, float _31, float _32, float _33 ) : 
-    m_Matrix(physx::pubfnd3::PxVec4(_00, _10, _20, _30),
-             physx::pubfnd3::PxVec4(_01, _11, _21, _31),
-             physx::pubfnd3::PxVec4(_02, _12, _22, _32),
-             physx::pubfnd3::PxVec4(_03, _13, _23, _33))
+m_Matrix(physx::pubfnd3::PxVec4(_00, _10, _20, _30),
+         physx::pubfnd3::PxVec4(_01, _11, _21, _31),
+         physx::pubfnd3::PxVec4(_02, _12, _22, _32),
+         physx::pubfnd3::PxVec4(_03, _13, _23, _33))
 {
 }
 Matrix::~Matrix()
@@ -151,6 +158,10 @@ Vector3 Matrix::operator*(const Vector3& vec)
 {
     return Vector3(m_Matrix.transform(physx::pubfnd3::PxVec3(vec.x, vec.y, vec.z)));
 }
+Vector4 Matrix::operator*(const Vector4& vec)
+{
+    return Vector4(m_Matrix.transform(physx::pubfnd3::PxVec4(vec.x, vec.y, vec.z, vec.w)));
+}
 
 void Matrix::toFloatArray(float arr[16]) const
 {
@@ -182,6 +193,10 @@ math::Vector3 Matrix::getTranslation() const
 const physx::pubfnd3::PxMat44& Matrix::getPhyicsMatrix() const
 {
     return m_Matrix;
+}
+math::Matrix Matrix::inverse() const
+{
+    return Matrix(m_Matrix.inverseRT());
 }
 
 //Static

@@ -203,6 +203,7 @@ void Deferred3DRenderer::end(const Camera* pCamera)
     glDrawBuffers(1, buffers);
     
     glEnable(GL_BLEND);
+    glEnable(GL_SCISSOR_TEST);
     glBlendFunc(GL_ONE, GL_ONE);
 
     for (int i = 0; i < SHADERS; ++i)
@@ -220,8 +221,8 @@ void Deferred3DRenderer::end(const Camera* pCamera)
         switch (i)
         {
             case LightType_AmbientLight: postAmbientLights(); break;
-            case LightType_PointLight: postPointLights(); break;
-            case LightType_SpotLight: postSpotLights(); break;
+            case LightType_PointLight: postPointLights(pCamera); break;
+            case LightType_SpotLight: postSpotLights(pCamera); break;
             case LightType_DirectionalLight: postDirectionalLights(); break;
             default: ASSERT("unkown lighttype"); break;
         }
@@ -230,9 +231,26 @@ void Deferred3DRenderer::end(const Camera* pCamera)
     }
 
     glDisable(GL_BLEND);
+    glDisable(GL_SCISSOR_TEST);
+
+    #if _DEBUG
+    HE2D->begin();
+    std::for_each(m_pLightManager->getPointLights().cbegin(), m_pLightManager->getPointLights().cend(), [&](const PointLight::pointer& pLight)
+    {
+        if ( !(math::dot(math::normalize(pLight->position - pCamera->getPosition()), pCamera->getLook()) < 0 && 
+               math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
+            pLight->debugDraw(pCamera);
+    });
+    std::for_each(m_pLightManager->getSpotLights().cbegin(), m_pLightManager->getSpotLights().cend(), [&](const SpotLight::pointer& pLight)
+    {
+        pLight->debugDraw(pCamera);
+    });
+    HE2D->end();
+    #endif
 }
 void Deferred3DRenderer::postAmbientLights()
 {
+    glScissor(0, 0, GRAPHICS->getViewport().width, GRAPHICS->getViewport().height);
     const std::vector<AmbientLight::pointer>& lights(m_pLightManager->getAmbientLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const AmbientLight::pointer& pLight)
     {
@@ -243,24 +261,32 @@ void Deferred3DRenderer::postAmbientLights()
         draw(m_pModel);
     });
 }
-void Deferred3DRenderer::postPointLights()
+void Deferred3DRenderer::postPointLights(const Camera* pCamera)
 {
     const std::vector<PointLight::pointer>& lights(m_pLightManager->getPointLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
     {
-        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
-        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
-        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);
-        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->beginAttenuation);
-        m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->endAttenuation);
-        draw(m_pModel);
+        if ( !(math::dot(math::normalize(pLight->position - pCamera->getPosition()), pCamera->getLook()) < 0 && 
+               math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
+        {
+            RectI scissor(pLight->getScissor(pCamera));
+            glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
+            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
+            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);
+            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->beginAttenuation);
+            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->endAttenuation);
+            draw(m_pModel);
+        }
     });
 }
-void Deferred3DRenderer::postSpotLights()
+void Deferred3DRenderer::postSpotLights(const Camera* pCamera)
 {
     const std::vector<SpotLight::pointer>& lights(m_pLightManager->getSpotLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
     {
+        RectI scissor(pLight->getScissor(pCamera));
+        glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
         m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[0], pLight->position);
         m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[1], pLight->multiplier);
         m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[2], pLight->direction);
@@ -273,6 +299,7 @@ void Deferred3DRenderer::postSpotLights()
 }
 void Deferred3DRenderer::postDirectionalLights()
 {
+    glScissor(0, 0, GRAPHICS->getViewport().width, GRAPHICS->getViewport().height);
     const std::vector<DirectionalLight::pointer>& lights(m_pLightManager->getDirectionalLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const DirectionalLight::pointer& pLight)
     {

@@ -16,39 +16,41 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 22/09/2011
 
-#ifndef _HE_PHYSICS_STATIC_ACTOR_H_
-#define _HE_PHYSICS_STATIC_ACTOR_H_
+#ifndef _HE_Circle_H_
+#define _HE_Circle_H_
 #pragma once
 
-#include "PxRigidStatic.h"
-#include "Vector3.h"
-#include "Matrix.h"
-#include "IPhysicsShape.h"
-#include "PhysicsMaterial.h"
+#include "Vector2.h"
+#include <utility>
 
 namespace happyengine {
-namespace physics {
+namespace math {
+namespace shapes {
 
-class PhysicsStaticActor
+class Circle
 {
 public:
-	PhysicsStaticActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, PhysicsMaterial* pMaterial);
-    virtual ~PhysicsStaticActor();
-    
-    math::Vector3 getPosition() const;
-    math::Matrix getPose() const;
+    Circle(const math::Vector2& position, float radius);
+    virtual ~Circle();
+
+    std::pair<float, float> fx(float x) const;
+    std::pair<float, float> fy(float y) const;
+    std::pair<math::Vector2, math::Vector2> intersect(const Circle& other) const;
+
+    bool isOnCircle(const math::Vector2& point) const;
 
 private:
 
-    PxRigidStatic* m_pActor;
+    math::Vector2 m_Position;
+    float m_Radius;
 
     //Disable default copy constructor and default assignment operator
-    PhysicsStaticActor(const PhysicsStaticActor&);
-    PhysicsStaticActor& operator=(const PhysicsStaticActor&);
+    Circle(const Circle&);
+    Circle& operator=(const Circle&);
 };
 
-} } //end namespace
+} } } //end namespace
 
 #endif

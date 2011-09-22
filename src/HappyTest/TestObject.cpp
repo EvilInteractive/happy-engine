@@ -59,7 +59,7 @@ void TestObject::load()
     fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 14, m_pFont);
     
     m_pMaterial = NEW happyengine::physics::PhysicsMaterial(0.7f, 0.5f, 0.2f);
-    m_pActor = NEW happyengine::physics::PhysicsDynamicActor(m_Position,
+    m_pActor = NEW happyengine::physics::PhysicsDynamicActor(math::Matrix::createTranslation(m_Position),
         CONTENT->loadPhysicsShape("../data/physics/car.bphys"), 2.0f, m_pMaterial);
     m_pActor->setKeyframed(true);
 }

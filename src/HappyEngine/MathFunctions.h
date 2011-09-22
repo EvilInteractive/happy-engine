@@ -144,6 +144,11 @@ inline T max(T a, T b)
 {
     return a >= b? a : b;
 }
+template<typename T>
+inline T clamp(T p_value, T p_min, T p_max)
+{
+    return max(p_min, min(p_max, p_value));
+}
 //interpolation passes through every point, returns value between p1 and p2, t[0, 1]
 //T must support -T, T*T, T*float, T+T
 template<typename T>

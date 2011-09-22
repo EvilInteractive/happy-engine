@@ -26,18 +26,22 @@
 namespace happyengine {
 namespace physics {
 
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Vector3& position, const shapes::IPhysicsShape::pointer& shape, float density, PhysicsMaterial* pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, PhysicsMaterial* pMaterial)
 {
     m_pActor = PxCreateDynamic(*PHYSICS->getSDK(), 
-                               PxTransform(PxVec3(position.x, position.y, position.z), PxQuat::createIdentity()), 
+                               PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+                                            PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 
+                                                    pose.getPhyicsMatrix().column2.getXYZ()))), 
                                shape->getGeometry(), *pMaterial->getInternalMaterial(), density);
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     PHYSICS->getScene()->addActor(*m_pActor);
 }
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Vector3& position, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, PhysicsMaterial* pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, PhysicsMaterial* pMaterial)
 {  
-    m_pActor = PHYSICS->getSDK()->createRigidDynamic(PxTransform(PxVec3(position.x, position.y, position.z)));
+    m_pActor = PHYSICS->getSDK()->createRigidDynamic(PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+                                                        PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 
+                                                                pose.getPhyicsMatrix().column2.getXYZ()))));
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     std::for_each(shapes.cbegin(), shapes.cend(), [&](const shapes::IPhysicsShape::pointer& shape)

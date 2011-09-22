@@ -61,13 +61,14 @@ void FPSGraph::tick(float dTime, float interval)
 
 		uint fps((uint)(1 / dTime));
 
+		m_CurrentFPS = fps;
+		m_CurrentDTime = dTime;
+
 		if (fps < 0)
 			fps = 0;
 		else if (fps > 80)
 			fps = 80;
 
-		m_CurrentFPS = fps;
-		m_CurrentDTime = dTime;
 
 		m_FpsHistory.push_back(fps);
 	}

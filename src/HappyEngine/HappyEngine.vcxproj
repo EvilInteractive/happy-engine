@@ -17,8 +17,10 @@
   <ItemGroup>
     <ClCompile Include="AssetContainerP.cpp" />
     <ClCompile Include="BinObjLineLoader.cpp" />
+    <ClCompile Include="Circle.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="Hitregion.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineLoader.cpp" />
     <ClCompile Include="Matrix2D.cpp" />
@@ -82,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="BinObjLineLoader.h" />
     <ClInclude Include="CatmullRomSpline.h" />
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="Hitregion.h" />
     <ClInclude Include="ISpline.h" />
     <ClInclude Include="Line.h" />

@@ -218,7 +218,7 @@ void MainGame::draw(float dTime)
 
 		// 2D test stuff
 		HE2D->begin();
-
+            
 			//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
 			//HE2D->setTransformationMatrix(mat);
 

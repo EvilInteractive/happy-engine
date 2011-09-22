@@ -24,6 +24,9 @@
 
 #include "Vector3.h"
 #include "boost/shared_ptr.hpp"
+#include "Rect.h"
+#include "Camera.h"
+#include "MathFunctions.h"
 
 namespace happyengine {
 namespace graphics {
@@ -49,6 +52,12 @@ public:
     float beginAttenuation;
     float endAttenuation;
 
+    RectI getScissor(const Camera* pCamera) const;
+
+    #if _DEBUG
+    void debugDraw(const Camera* pCamera) const;
+    #endif
+
     typedef boost::shared_ptr<PointLight> pointer;
 };
 class SpotLight
@@ -62,6 +71,11 @@ public:
     math::Vector3 color;
     float endAttenuation;
     float cosCutoff;
+    
+    RectI getScissor(const Camera* pCamera) const;
+    #if _DEBUG
+    void debugDraw(const Camera* pCamera) const;
+    #endif
 
     typedef boost::shared_ptr<SpotLight> pointer;
 };

@@ -21,6 +21,7 @@
 
 #include "PxMat44.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 namespace happyengine {
 namespace math {
@@ -32,7 +33,8 @@ private:
 
 public:
 	Matrix();
-	Matrix(physx::pubfnd3::PxMat44 mat);
+	explicit Matrix(physx::pubfnd3::PxMat44 mat);
+	Matrix(const Vector4& col0, const Vector4& col1, const Vector4& col2, const Vector4& col3);
 	Matrix( float _00, float _01, float _02, float _03,
             float _10, float _11, float _12, float _13,
             float _20, float _21, float _22, float _23,
@@ -56,11 +58,13 @@ public:
     //operators
     Matrix operator*(const Matrix& mat);
     Vector3 operator*(const Vector3& vec);
+    Vector4 operator*(const Vector4& vec);
 
     //getters
     void toFloatArray(float arr[16]) const;
     math::Vector3 getTranslation() const;
     const physx::pubfnd3::PxMat44& getPhyicsMatrix() const;
+    math::Matrix inverse() const;
 
 	//Static
     static const Matrix Identity;

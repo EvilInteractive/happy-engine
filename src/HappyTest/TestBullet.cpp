@@ -30,7 +30,7 @@ TestBullet::TestBullet(const happyengine::math::Vector3& pos, const happyengine:
 {
     using namespace happyengine;
     m_pMaterial = NEW physics::PhysicsMaterial(0.5f, 0.8f, 0.4f);
-    m_pActor = NEW physics::PhysicsDynamicActor(pos, 
+    m_pActor = NEW physics::PhysicsDynamicActor(math::Matrix::createTranslation(pos), 
         physics::shapes::IPhysicsShape::pointer(NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2))), 1.5f, m_pMaterial);
     m_pActor->setVelocity(velocity);
 }

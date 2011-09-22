@@ -34,7 +34,6 @@ PhysicsConvexShape::PhysicsConvexShape(const io::BinaryStream& stream, const mat
 
 PhysicsConvexShape::~PhysicsConvexShape()
 {
-    m_pInternalMesh->release();
 }
 
 const PxGeometry& PhysicsConvexShape::getGeometry() const
