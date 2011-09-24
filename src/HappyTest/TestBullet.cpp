@@ -50,8 +50,8 @@ void TestBullet::load()
     m_pModel = CONTENT->asyncLoadModel("../data/models/cube.binobj", DeferredPreEffect::getVertexLayout());
     
     m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/testTex.png");
-    m_pNormalMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_normal.png");
-    m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_specGlossIll.png");
+    m_pNormalMap = CONTENT->asyncLoadTexture("../data/textures/gravel_normal.png");
+    m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/gravel_sgi.png");
 }
 
 void TestBullet::tick(float /*dTime*/)

@@ -37,7 +37,7 @@ namespace happytest {
 MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_SplashAlpha(1.0f)
+					   m_pCamera(nullptr), m_SplashAlpha(1.0f), m_pGroundPlane(NEW GroundPlane())
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -63,6 +63,8 @@ MainGame::~MainGame()
 
 	delete m_pFPSGraph;
 	delete m_pCamera;
+
+    delete m_pGroundPlane;
 
     NETWORK->stop();
 }
@@ -102,8 +104,9 @@ void MainGame::load()
 	//m_pCamera->controllable(false);
 
     m_pDeferred3DRenderer = NEW graphics::Deferred3DRenderer();
-    m_pDeferred3DRenderer->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 3.0f, 1, 10);
-    m_pDeferred3DRenderer->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 1.0f);
+    m_pDeferred3DRenderer->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 2.0f, 1, 10);
+    m_pSpotLight = m_pDeferred3DRenderer->getLightManager()->addSpotLight(math::Vector3(-1, 0, -1), math::Vector3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, sinf(math::piOverFour/2), 1, 30);
+    m_pDeferred3DRenderer->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
     m_pTestObject = NEW TestObject();
     m_pTestObject->load();
 
@@ -119,6 +122,8 @@ void MainGame::load()
 
 	happyengine::content::FontLoader fontLoader;
     fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 12, m_pFont);
+
+    m_pGroundPlane->load();
 }
 void MainGame::tick(float dTime)
 {
@@ -168,6 +173,9 @@ void MainGame::tick(float dTime)
         std::cout << m_Bullets.size() << "\n";
     }
 
+    m_pSpotLight->position = m_pCamera->getPosition();
+    m_pSpotLight->direction = -happyengine::math::normalize(m_pCamera->getLook());
+
 	m_pFPSGraph->tick(dTime, 0.5f);
 }
 void MainGame::draw(float dTime)
@@ -212,7 +220,7 @@ void MainGame::draw(float dTime)
 			{
 				pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, m_pCamera);
 			});
-
+            m_pGroundPlane->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, m_pCamera);
 		m_pDeferredPreEffect->end();
 		m_pDeferred3DRenderer->end(m_pCamera);
 

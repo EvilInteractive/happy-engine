@@ -73,4 +73,15 @@ VertexPosTex2D::~VertexPosTex2D()
 {
 }
 
+/*----------------------------------------------------------------*/
+/*                          VertexPTNT                            */
+/*----------------------------------------------------------------*/
+VertexPTNT::VertexPTNT(): position(), textureCoord(), normal(), tangent()
+{
+}
+VertexPTNT::VertexPTNT(const math::Vector3& pos, const math::Vector2& tex, const math::Vector3& norm, const math::Vector3& tan): 
+        position(pos), textureCoord(tex), normal(norm), tangent(tan)
+{
+}
+
 } } //end namespace

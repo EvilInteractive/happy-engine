@@ -93,6 +93,7 @@
     <ClCompile Include="DeferredPreEffect.cpp" />
     <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="GroundPlane.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MyClient.cpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="DeferredPreEffect.h" />
     <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="GroundPlane.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="MyServer.h" />

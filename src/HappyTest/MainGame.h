@@ -31,6 +31,7 @@
 #include "FontLoader.h"
 #include "FlyCamera.h"
 #include "FPSGraph.h"
+#include "GroundPlane.h"
 
 #include <ppl.h>
 #include <concurrent_vector.h>
@@ -39,6 +40,9 @@
 #include "MyServer.h"
 #include "MyClient.h"
 #include "GameTimer.h"
+
+#include "Light.h"
+
 
 namespace happytest {
 
@@ -77,6 +81,10 @@ private:
 	happyengine::graphics::Texture2D::pointer m_TestImage;
 	happyengine::graphics::Texture2D::pointer m_SplashImage;
 	happyengine::graphics::Font::pointer m_pFont;
+
+    GroundPlane* m_pGroundPlane;
+
+    happyengine::graphics::SpotLight::pointer m_pSpotLight;
 
 	GameTimer m_SplashTimer;
 	float m_SplashAlpha;

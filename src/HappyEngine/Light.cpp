@@ -157,39 +157,50 @@ void PointLight::debugDraw(const Camera* pCamera) const
 #pragma region SpotLight
 RectI SpotLight::getScissor(const Camera* pCamera) const
 {
-    math::Vector3 lookDir(normalize(position - pCamera->getPosition()));
-    math::Vector3 lookRight(normalize(cross(lookDir, pCamera->getUp())));
-    math::Vector3 lookUp(normalize(cross(lookDir, lookRight)));
-    
-    math::Vector4 rightPos(position + lookRight * endAttenuation, 1);
-    math::Vector4 leftPos(position - lookRight * endAttenuation, 1);
-    math::Vector4 upPos(position + lookUp * endAttenuation, 1);
-    math::Vector4 downPos(position - lookUp * endAttenuation, 1);
-
-    math::Matrix mtxTransform(pCamera->getViewProjection());
-
-    math::Vector4 projRightPos(mtxTransform * rightPos);
-    math::Vector4 projLeftPos(mtxTransform * leftPos);
-    math::Vector4 projUpPos(mtxTransform * upPos);
-    math::Vector4 projDownPos(mtxTransform * downPos);
-
-    projRightPos /= projRightPos.w;
-    projLeftPos /= projLeftPos.w;
-    projUpPos /= projUpPos.w;
-    projDownPos /= projDownPos.w;
-
-    projRightPos.x = 1 - (projRightPos.x + 1) * 0.5f;
-    projLeftPos.x = 1 - (projLeftPos.x + 1) * 0.5f;
-    projUpPos.y = (projUpPos.y + 1) * 0.5f;
-    projDownPos.y = (projDownPos.y + 1) * 0.5f;
-
     RectI scissor(GRAPHICS->getViewport());
-    //scissor.height = scissor.width;
+    math::Vector2 min(FLT_MAX, FLT_MAX);
+    math::Vector2 max(FLT_MIN, FLT_MIN);
+    if (lengthSqr(pCamera->getPosition() - position) > endAttenuation * endAttenuation)
+    {
+        std::vector<math::Vector4> points;
+        points.push_back(math::Vector4(position + math::Vector3(-1, -1, -1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(1, -1, -1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(-1, 1, -1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(1, 1, -1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(-1, -1, 1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(1, -1, 1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(-1, 1, 1) * endAttenuation, 1));
+        points.push_back(math::Vector4(position + math::Vector3(1, 1, 1) * endAttenuation, 1));
 
-    scissor.x += static_cast<int>(scissor.width * math::min(projRightPos.x, projLeftPos.x));
-    scissor.y += static_cast<int>(scissor.height * math::min(projUpPos.y, projDownPos.y));
-    scissor.width = static_cast<int>(scissor.width * (math::max(projRightPos.x, projLeftPos.x) - math::min(projRightPos.x, projLeftPos.x)));
-    scissor.height = static_cast<int>(scissor.height * (math::max(projUpPos.y, projDownPos.y) - math::min(projUpPos.y, projDownPos.y)));
+        std::for_each(points.begin(), points.end(), [&](math::Vector4& p)
+        {
+            p = pCamera->getViewProjection() * p;
+            p.x = 1 - (p.x / p.w + 1) * 0.5f;
+            p.y = (p.y / p.w + 1) * 0.5f;
+        });
+        std::for_each(points.begin(), points.end(), [&](math::Vector4& p)
+        {
+            min.x = math::min(min.x, p.x);
+            min.y = math::min(min.y, p.y);
+            max.x = math::max(max.x, p.x);
+            max.y = math::max(max.y, p.y);
+        });
+        min.x = math::clamp(min.x, 0.0f, 1.0f);
+        min.y = math::clamp(min.y, 0.0f, 1.0f);
+        max.x = math::clamp(max.x, 0.0f, 1.0f);
+        max.y = math::clamp(max.y, 0.0f, 1.0f);
+    }
+    else
+    {
+        min.x = 0.0f;
+        max.x = 1.0f;
+        min.y = 0.0f;
+        max.y = 1.0f;
+    }
+    scissor.x += static_cast<int>(scissor.width * min.x);
+    scissor.y += static_cast<int>(scissor.height * min.y);
+    scissor.width = static_cast<int>(scissor.width * (max.x - min.x));
+    scissor.height = static_cast<int>(scissor.height * (max.y - min.y));
 
     ASSERT(scissor.width >= 0, "must be >= 0");
     ASSERT(scissor.height >= 0, "must be >= 0");

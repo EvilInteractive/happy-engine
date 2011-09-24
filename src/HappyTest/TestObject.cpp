@@ -35,6 +35,8 @@ TestObject::TestObject(): m_Rotation(0), m_Position(0, 0, 0), m_pActor(nullptr)
 
 TestObject::~TestObject()
 {
+    delete m_pActor;
+    delete m_pMaterial;
 }
 
 

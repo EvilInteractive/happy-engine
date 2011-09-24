@@ -49,6 +49,9 @@
     <ClCompile Include="GameTimer.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
+    <ClCompile Include="GroundPlane.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -76,6 +79,9 @@
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="GameTimer.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="GroundPlane.h">
       <Filter>happytest</Filter>
     </ClInclude>
   </ItemGroup>

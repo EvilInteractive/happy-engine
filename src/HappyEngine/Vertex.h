@@ -75,6 +75,20 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
+struct VertexPTNT
+{
+public:
+    math::Vector3 position;
+    math::Vector2 textureCoord;
+    math::Vector3 normal;
+    math::Vector3 tangent;
+
+	VertexPTNT();
+	VertexPTNT(const math::Vector3& pos, const math::Vector2& tex, const math::Vector3& norm, const math::Vector3& tan);
+    ~VertexPTNT() {}
+    //default copy constructor and assignment operator are fine
+};
+
 } } //end namespace
 
 #endif
