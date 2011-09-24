@@ -35,20 +35,20 @@ class AssetContainer
 {
 public:
     AssetContainer(void) { }
-    virtual ~AssetContainer(void) { RemoveAllAssets(); }
+    virtual ~AssetContainer(void) { removeAllAssets(); }
 
-	bool IsAssetPresent(const std::string &key) const
+	bool isAssetPresent(const std::string &key) const
     {
 	    return m_Map.find(key) != m_Map.end();
     }
-    void AddAsset(const std::string &key, const T& asset)
+    void addAsset(const std::string &key, const T& asset)
     {        
         #if defined DEBUG || _DEBUG
 	    std::cout << "Adding Asset: " << key << "\n";
         #endif
 	    m_Map[key] = asset;
     }
-	void RemoveAsset(const std::string &key)
+	void removeAsset(const std::string &key)
     {
 	    #if defined DEBUG || _DEBUG
 	    std::cout << "Releasing Asset: " << key << "\n";
@@ -57,7 +57,7 @@ public:
 	    delete m_Map[key];
 	    m_Map.erase(key);
     }
-	void RemoveAllAssets()
+	void removeAllAssets()
     {
 	    /*for_each(m_Map.begin(), m_Map.end(), [&](pair<string, T> obj)
 	    {
@@ -70,7 +70,7 @@ public:
 	    m_Map.clear();
     }
     
-    const T& GetAsset(const std::string& key)
+    const T& getAsset(const std::string& key)
     {
         return m_Map[key];
     }

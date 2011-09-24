@@ -78,7 +78,7 @@ void Happy2DRenderer::cleanUpModelBuffer()
 	{
 		if (bufferIndex.second > 10)
 		{
-			m_pModelBuffer->RemoveAsset(bufferIndex.first);
+			m_pModelBuffer->removeAsset(bufferIndex.first);
 			keysDeleted.push_back(bufferIndex.first);
 		}
 		else
@@ -221,9 +221,9 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 	std::stringstream stream;
 	stream << "HR.Width" << size.x << "Height" << size.y;
 
-	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	if (m_pModelBuffer->isAssetPresent(stream.str()))
 	{
-		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		pModel =  m_pModelBuffer->getAsset(stream.str());
 		//--m_ModelBufferIndex[stream.str()];
 	}
 	else
@@ -252,7 +252,7 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 		pModel->setVertices(&vertices[0], 8, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], 8, IndexStride_Byte);
 
-		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		m_pModelBuffer->addAsset(stream.str(), pModel);
 		//m_ModelBufferIndex[stream.str()] = 0;
 	}
 
@@ -275,9 +275,9 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 	std::stringstream stream;
 	stream << "FR.Width" << size.x << "Height" << size.y;
 
-	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	if (m_pModelBuffer->isAssetPresent(stream.str()))
 	{
-		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		pModel =  m_pModelBuffer->getAsset(stream.str());
 		//--m_ModelBufferIndex[stream.str()];
 	}
 	else
@@ -299,7 +299,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 		pModel->setVertices(&vertices[0], 4, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], 6, IndexStride_Byte);
 
-		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		m_pModelBuffer->addAsset(stream.str(), pModel);
 		//m_ModelBufferIndex[stream.str()] = 0;
 	}
 
@@ -322,9 +322,9 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 	std::stringstream stream;
 	stream << "HE.Width" << size.x << "Height" << size.y;
 
-	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	if (m_pModelBuffer->isAssetPresent(stream.str()))
 	{
-		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		pModel =  m_pModelBuffer->getAsset(stream.str());
 		//--m_ModelBufferIndex[stream.str()];
 	}
 	else
@@ -352,7 +352,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 		pModel->setVertices(&vertices[0], steps, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], steps, IndexStride_UInt);
 
-		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		m_pModelBuffer->addAsset(stream.str(), pModel);
 		//m_ModelBufferIndex[stream.str()] = 0;
 	}
 
@@ -375,9 +375,9 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 	std::stringstream stream;
 	stream << "FE.Width" << size.x << "Height" << size.y;
 
-	if (m_pModelBuffer->IsAssetPresent(stream.str()))
+	if (m_pModelBuffer->isAssetPresent(stream.str()))
 	{
-		pModel =  m_pModelBuffer->GetAsset(stream.str());
+		pModel =  m_pModelBuffer->getAsset(stream.str());
 		//--m_ModelBufferIndex[stream.str()];
 	}
 	else
@@ -409,7 +409,7 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 		pModel->setVertices(&vertices[0], steps + 1, m_VertexLayoutColor);
 		pModel->setIndices(&indices[0], steps + 1, IndexStride_UInt);
 
-		m_pModelBuffer->AddAsset(stream.str(), pModel);
+		m_pModelBuffer->addAsset(stream.str(), pModel);
 		//m_ModelBufferIndex[stream.str()] = 0;
 	}
 

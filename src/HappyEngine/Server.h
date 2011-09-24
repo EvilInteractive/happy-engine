@@ -68,6 +68,8 @@ protected:
 
     const std::vector<byte>& getConnectedUsers() const;
 
+    void disconnectUser(byte userId);
+
 private:
     struct User
     {

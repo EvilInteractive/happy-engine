@@ -15,7 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssetContainerP.cpp" />
     <ClCompile Include="BinObjLineLoader.cpp" />
     <ClCompile Include="Circle.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
@@ -25,7 +24,6 @@
     <ClCompile Include="LineLoader.cpp" />
     <ClCompile Include="Matrix2D.cpp" />
     <ClCompile Include="ModelLoaderFunctions.cpp" />
-    <ClCompile Include="AssetContainer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ModelMesh.cpp" />
     <ClCompile Include="ObjLineLoader.cpp" />

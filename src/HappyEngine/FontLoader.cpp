@@ -22,13 +22,14 @@
 #include "SDL_ttf.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "HappyNew.h"
 
 namespace happyengine {
 namespace content {
 
-FontLoader::FontLoader()
+FontLoader::FontLoader(): m_pAssetContainer(NEW AssetContainer<graphics::Font::pointer>())
 {
     TTF_Init();
 }
@@ -36,19 +37,32 @@ FontLoader::FontLoader()
 
 FontLoader::~FontLoader()
 {
+    delete m_pAssetContainer;
 }
 
 bool FontLoader::load(const std::string& path, ushort size, graphics::Font::pointer& pOutFont)
 {
-    TTF_Font* pFont(TTF_OpenFont(path.c_str(), size));
-    if (pFont == nullptr)
+    std::stringstream stream;
+    stream << path << size;
+
+    if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
     {
-        std::cout << "Error loading font: " << TTF_GetError() << "\n";
-        return false;
+        TTF_Font* pFont(TTF_OpenFont(path.c_str(), size));
+        if (pFont == nullptr)
+        {
+            std::cout << "Error loading font: " << TTF_GetError() << "\n";
+            return false;
+        }
+        else
+        {
+            pOutFont = graphics::Font::pointer(NEW graphics::Font(pFont));
+            m_pAssetContainer->addAsset(stream.str(), pOutFont);
+            return true;
+        }
     }
     else
     {
-        pOutFont = graphics::Font::pointer(NEW graphics::Font(pFont));
+        pOutFont = m_pAssetContainer->getAsset(stream.str());
         return true;
     }
 }

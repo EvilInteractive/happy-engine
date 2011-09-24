@@ -95,9 +95,9 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 
 graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
 {
-	if (m_pAssetContainer->IsAssetPresent(path))
+	if (m_pAssetContainer->isAssetPresent(path))
 	{
-		return m_pAssetContainer->GetAsset(path);
+		return m_pAssetContainer->getAsset(path);
 	}
 	else
 	{
@@ -114,7 +114,7 @@ graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& 
 
 		m_TextureLoadQueue.push(data);
 
-		m_pAssetContainer->AddAsset(path, tex2D);
+		m_pAssetContainer->addAsset(path, tex2D);
 
 		return tex2D;
 	}

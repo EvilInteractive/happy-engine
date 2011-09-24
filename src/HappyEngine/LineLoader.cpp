@@ -39,9 +39,9 @@ LineLoader::~LineLoader()
 
 graphics::Line::pointer LineLoader::loadLine(const std::string& path)
 {
-	if (m_pAssetContainer->IsAssetPresent(path))
+	if (m_pAssetContainer->isAssetPresent(path))
 	{
-		return m_pAssetContainer->GetAsset(path);
+		return m_pAssetContainer->getAsset(path);
 	}
 	else
 	{
@@ -57,7 +57,7 @@ graphics::Line::pointer LineLoader::loadLine(const std::string& path)
             graphics::Line::pointer pLine(NEW graphics::Line());
             pLine->setVertices(loader.getPoints());
             pLine->setIndices(loader.getIndices());
-            m_pAssetContainer->AddAsset(path, pLine);
+            m_pAssetContainer->addAsset(path, pLine);
 
 		    return pLine;
 		}
@@ -73,7 +73,7 @@ graphics::Line::pointer LineLoader::loadLine(const std::string& path)
             graphics::Line::pointer pLine(NEW graphics::Line());
             pLine->setVertices(loader.getPoints());
             pLine->setIndices(loader.getIndices());
-            m_pAssetContainer->AddAsset(path, pLine);
+            m_pAssetContainer->addAsset(path, pLine);
 
 		    return pLine;
 		}

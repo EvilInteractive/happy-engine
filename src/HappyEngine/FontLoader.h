@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Font.h"
+#include "AssetContainer.h"
 
 #include <string>
 
@@ -38,6 +39,8 @@ public:
     bool load(const std::string& path, ushort size, graphics::Font::pointer& pOutFont);
 
 private:
+
+    AssetContainer<graphics::Font::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     FontLoader(const FontLoader&);

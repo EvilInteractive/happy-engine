@@ -39,9 +39,9 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
 
 const std::vector<physics::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(const std::string& path)
 {
-    if (m_pAssetContainer->IsAssetPresent(path))
+    if (m_pAssetContainer->isAssetPresent(path))
 	{
-		return m_pAssetContainer->GetAsset(path);
+		return m_pAssetContainer->getAsset(path);
 	}
 	else
 	{
@@ -57,13 +57,13 @@ const std::vector<physics::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::
                     NEW physics::shapes::PhysicsConvexShape(stream)));
             }
 
-            m_pAssetContainer->AddAsset(path, shapes);
-            return m_pAssetContainer->GetAsset(path);
+            m_pAssetContainer->addAsset(path, shapes);
+            return m_pAssetContainer->getAsset(path);
         }
         else
         {
             ASSERT("no loader defined for this extension");
-            return m_pAssetContainer->GetAsset("");
+            return m_pAssetContainer->getAsset("");
         }
     }
 }

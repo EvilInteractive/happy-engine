@@ -22,13 +22,15 @@
 #include <string>
 #include "VertexLayout.h"
 #include "Model.h"
-#include "ModelLoader.h"
 #include "Texture2D.h"
-#include "TextureLoader.h"
-#include "LineLoader.h"
 #include "Vector3.h"
 #include "Line.h"
+
 #include "PhysicsShapeLoader.h"
+#include "TextureLoader.h"
+#include "ModelLoader.h"
+#include "LineLoader.h"
+#include "FontLoader.h"
 
 namespace happyengine {
 namespace content {
@@ -53,12 +55,15 @@ public:
 
     const std::vector<physics::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
 
+    graphics::Font::pointer loadFont(const std::string& path, ushort size);
+
 private:
 
     ModelLoader* m_pModelLoader;
     TextureLoader* m_pTextureLoader;
     LineLoader* m_pLineLoader;
     PhysicsShapeLoader* m_pPhysicsShapeLoader;
+    FontLoader* m_pFontLoader;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

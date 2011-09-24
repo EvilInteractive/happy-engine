@@ -42,6 +42,16 @@ Server::~Server()
     }
 }
 
+void Server::disconnectUser(byte userId)
+{
+    Server::Header header;
+    header.type = ServerMessage_Disconnect;
+    header.user = userId;
+
+    details::Message::pointer msg(details::Message::createServerMsg(0, 0, &header, sizeof(Header)));
+
+    userSendMessageToUser(msg->getMsg(), msg->getSizeInBytes(), 0, userId);
+}
 void Server::stop()
 {
     if (m_ConnectedUsers.size() > 0)
@@ -55,7 +65,7 @@ void Server::stop()
             details::Message::pointer msg(details::Message::createServerMsg(0, 0, &header, sizeof(Header)));
 
             m_pUdpSocket->send_to(boost::asio::buffer(msg->getMsg(), msg->getSizeInBytes()),
-                m_Users[userId].endpoint);
+            m_Users[userId].endpoint);
         });
     }
 

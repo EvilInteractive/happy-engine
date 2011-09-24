@@ -74,9 +74,9 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 
 graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout)
 {
-	if (m_pAssetContainer->IsAssetPresent(path))
+	if (m_pAssetContainer->isAssetPresent(path))
 	{
-		return m_pAssetContainer->GetAsset(path);
+		return m_pAssetContainer->getAsset(path);
 	}
 	else
 	{
@@ -100,7 +100,7 @@ graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, co
 
 		m_ModelLoadQueue.push(data);
 
-		m_pAssetContainer->AddAsset(path, data->pModel);
+		m_pAssetContainer->addAsset(path, data->pModel);
 
 		return data->pModel;
 	}
