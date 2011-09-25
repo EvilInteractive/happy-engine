@@ -61,6 +61,7 @@ public:
 
 protected:
     virtual void handleClientMessage(const void* msg, uint msg_size, byte fromUser) = 0;
+    virtual void handleUserDisconnecting(byte userId);
     
     void userSendMessageToAll(const void* pMsg, uint sizeInBytes, byte from);
     void userSendMessageToAllBut(const void* pMsg, uint sizeInBytes, byte from, byte userId);

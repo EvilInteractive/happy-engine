@@ -186,6 +186,7 @@ void Server::userDisconnecting(byte userId)
     ASSERT(userId < m_Users.size(), "userID > than allowed users");
     if (m_Users[userId].connected == true)
     {
+        handleUserDisconnecting(userId);
         m_Users[userId].connected = false;
         m_FreeSlots.push(userId);
         m_ConnectedUsers.erase(std::remove(m_ConnectedUsers.begin(), m_ConnectedUsers.end(), userId), m_ConnectedUsers.end());
@@ -193,6 +194,9 @@ void Server::userDisconnecting(byte userId)
     }
     else
         std::cout << "warning disconnecting disconnected user!\n";
+}
+void Server::handleUserDisconnecting(byte /*userId*/)
+{
 }
 
 void Server::userSendMessageToAll(const void* pMsg, uint sizeInBytes, byte from)
