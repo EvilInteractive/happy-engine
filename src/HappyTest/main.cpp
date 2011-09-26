@@ -16,8 +16,8 @@ int main( int /*argc*/, char** /*args[]*/ )
     using namespace happyengine;
     using namespace happytest;
     
-    MainGame* pGame(NEW MainGame());
     HAPPYENGINE->init(SubEngine_All);
+    MainGame* pGame(NEW MainGame());
     HAPPYENGINE->start(pGame);
     delete pGame;
     HAPPYENGINE->dispose();
