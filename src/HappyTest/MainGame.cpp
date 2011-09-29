@@ -29,6 +29,7 @@
 
 #include "IniReader.h"
 #include "FileNotFoundException.h"
+#include "Circle.h"
 
 #include "HappyNew.h"
 
@@ -267,6 +268,29 @@ void MainGame::draw(float dTime)
 			//HE2D->resetTransformation();
 
 			m_pFPSGraph->draw();
+
+			/*shapes::Circle c(Vector2(200, 200), 128);
+			HE2D->drawEllipse(c.getPosition(), Vector2(c.getRadius()*2, c.getRadius()*2));
+
+			Vector2 mPos(CONTROLS->getMouse()->getPosition());
+			HE2D->drawEllipse(mPos, Vector2(8, 8));
+
+			shapes::Circle c2((mPos + Vector2(200, 200))/2.0f, length(mPos - c.getPosition())/2.0f);
+			std::vector<Vector2> tan(c.intersect(c2));
+			HE2D->drawEllipse(c2.getPosition(), Vector2(c2.getRadius()*2, c2.getRadius()*2));*/
+
+			/*if (tan.size() > 0)
+			{
+				std::vector<Vector2> line1;
+				line1.push_back(mPos);
+				line1.push_back(tan[0]);
+				HE2D->drawPolygon(line1, 2);
+
+				std::vector<Vector2> line2;
+				line2.push_back(mPos);
+				line2.push_back(tan[1]);
+				HE2D->drawPolygon(line2, 2);
+			}*/
 
 		HE2D->end();
 	}

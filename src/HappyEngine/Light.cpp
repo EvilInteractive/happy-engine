@@ -127,29 +127,31 @@ void PointLight::debugDraw(const Camera* pCamera) const
     math::Vector2 midPoint((posCam2D.x + pos2D.x) / 2.0f, (posCam2D.y + pos2D.y) / 2.0f);
     math::shapes::Circle c2(midPoint, length(math::Vector2(pos2D.x, pos2D.y) - midPoint));
 
-    std::pair<math::Vector2, math::Vector2> tangents(c1.intersect(c2));
-    //r^2 - x^2 - y^2 = z^2
-    float z1(sqrtf( math::sqr(endAttenuation) - math::sqr(tangents.first.x - pos2D.x) - math::sqr(tangents.first.y - pos2D.y) ) + pos2D.z);
-    float z2(sqrtf( math::sqr(endAttenuation) - math::sqr(tangents.second.x - pos2D.x) - math::sqr(tangents.second.y - pos2D.y) ) + pos2D.z);
+    std::vector<math::Vector2> tangents(c1.intersect(c2));
+    if (tangents.size() == 2)
+	{
+		float z1(sqrtf( math::sqr(endAttenuation) - math::sqr(tangents[0].x - pos2D.x) - math::sqr(tangents[0].y - pos2D.y) ) + pos2D.z);
+		float z2(sqrtf( math::sqr(endAttenuation) - math::sqr(tangents[1].x - pos2D.x) - math::sqr(tangents[1].y - pos2D.y) ) + pos2D.z);
 
-    math::Vector4 tan1(tangents.first.x, tangents.first.y, z1, 1);
-    tan1 = m.inverse() * tan1;
-    math::Vector4 tan2(tangents.second.x, tangents.second.y, z2, 1);
-    tan2 = m.inverse() * tan2;
+		math::Vector4 tan1(tangents[0].x, tangents[0].y, z1, 1);
+		tan1 = m.inverse() * tan1;
+		math::Vector4 tan2(tangents[1].x, tangents[1].y, z2, 1);
+		tan2 = m.inverse() * tan2;
 
-    math::Vector4 projTan1(pCamera->getViewProjection() * tan1);
-    math::Vector4 projTan2(pCamera->getViewProjection() * tan2);
+		math::Vector4 projTan1(pCamera->getViewProjection() * tan1);
+		math::Vector4 projTan2(pCamera->getViewProjection() * tan2);
 
-    projTan1.x = 1 - (projTan1.x / projTan1.w + 1) * 0.5f;
-    projTan1.y = (projTan1.y / projTan1.w + 1) * 0.5f;
-    projTan2.x = 1 - (projTan2.x / projTan2.w + 1) * 0.5f;
-    projTan2.y = (projTan2.y / projTan2.w + 1) * 0.5f;
+		projTan1.x = 1 - (projTan1.x / projTan1.w + 1) * 0.5f;
+		projTan1.y = (projTan1.y / projTan1.w + 1) * 0.5f;
+		projTan2.x = 1 - (projTan2.x / projTan2.w + 1) * 0.5f;
+		projTan2.y = (projTan2.y / projTan2.w + 1) * 0.5f;
 
-    std::vector<math::Vector2> points;
-    points.push_back(math::Vector2(projTan1.x * GRAPHICS->getViewport().width, projTan1.y * GRAPHICS->getViewport().height));
-    points.push_back(math::Vector2(projTan2.x * GRAPHICS->getViewport().width, projTan2.y * GRAPHICS->getViewport().height));
+		std::vector<math::Vector2> points;
+		points.push_back(math::Vector2(projTan1.x * GRAPHICS->getViewport().width, projTan1.y * GRAPHICS->getViewport().height));
+		points.push_back(math::Vector2(projTan2.x * GRAPHICS->getViewport().width, projTan2.y * GRAPHICS->getViewport().height));
 
-    HE2D->drawPolygon(points, 2, false);
+		HE2D->drawPolygon(points, 2, false);
+	}
 }
 #endif
 #pragma endregion
