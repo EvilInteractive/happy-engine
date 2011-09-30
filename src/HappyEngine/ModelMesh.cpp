@@ -56,6 +56,17 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
 
+    uint posOffset = 0;
+    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&posOffset](const VertexElement& e)
+    {
+        if (e.getUsage() == graphics::VertexElement::Usage_Position)
+        {
+            posOffset = e.getByteOffset();
+            return;
+        }
+    });
+    m_BoundingSphere = math::shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
+
     glBindVertexArray(m_VaoID[0]);
     error::glCheckForErrors();
 
@@ -150,6 +161,11 @@ uint ModelMesh::getIndexType() const
 bool ModelMesh::isComplete() const
 {
     return m_Complete;
+}
+
+const math::shapes::Sphere& ModelMesh::getBoundingSphere() const
+{
+    return m_BoundingSphere;
 }
 
 

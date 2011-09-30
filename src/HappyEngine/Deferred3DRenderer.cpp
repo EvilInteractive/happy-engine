@@ -266,17 +266,21 @@ void Deferred3DRenderer::postPointLights(const Camera* pCamera)
     const std::vector<PointLight::pointer>& lights(m_pLightManager->getPointLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
     {
-        if ( !(math::dot(math::normalize(pLight->position - pCamera->getPosition()), pCamera->getLook()) < 0 && 
-               math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
+        if (math::lengthSqr(pLight->position - pCamera->getPosition()) + pLight->endAttenuation * pLight->endAttenuation 
+            < m_Settings.getFogEnd() * m_Settings.getFogEnd())
         {
-            RectI scissor(pLight->getScissor(pCamera));
-            glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
-            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
-            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
-            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);
-            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->beginAttenuation);
-            m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->endAttenuation);
-            draw(m_pModel);
+            if ( !(math::dot(math::normalize(pLight->position - pCamera->getPosition()), pCamera->getLook()) < 0 && 
+                   math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
+            {
+                RectI scissor(pLight->getScissor(pCamera));
+                glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->beginAttenuation);
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->endAttenuation);
+                draw(m_pModel);
+            }
         }
     });
 }
@@ -309,7 +313,7 @@ void Deferred3DRenderer::postDirectionalLights()
         draw(m_pModel);
     });
 }
-void Deferred3DRenderer::draw(const Model::pointer& pModel)
+void Deferred3DRenderer::draw(const Model::pointer& pModel)//, const Camera* pCamera)
 {
     if (pModel->isComplete() == false)
         return;
@@ -318,15 +322,18 @@ void Deferred3DRenderer::draw(const Model::pointer& pModel)
         draw(pMesh);
     });
 }
-void Deferred3DRenderer::draw(const ModelMesh::pointer& pMesh)
+void Deferred3DRenderer::draw(const ModelMesh::pointer& pMesh)//, const Camera* pCamera)
 {
     if (pMesh->isComplete()) //possible async load
     {
-        glBindVertexArray(pMesh->getVertexArraysID());
+        //if (viewDistanceCheck(pMesh->getBoundingSphere(), pCamera))
+        //{
+            glBindVertexArray(pMesh->getVertexArraysID());
 
-        glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
+            glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
 
-        glBindVertexArray(0);
+            glBindVertexArray(0);
+        //}
     }
 }
 

@@ -35,9 +35,9 @@ Camera::Camera(int viewportWidth, int viewportHeight) :	m_FOV(math::piOverFour),
 														m_matViewProjection(math::Matrix::Identity)
 {
 	m_vPosWorld = math::Vector3(0.0f,0.0f,0.0f);
-	m_vRightWorld = math::Vector3(1.0f,0.0f,0.0f);
+	m_vRightWorld = math::Vector3(0.0f,0.0f,1.0f);
 	m_vUpWorld = math::Vector3(0.0f,1.0f,0.0f);
-	m_vLookWorld = math::Vector3(0.0f,1.0f,1.0f);
+	m_vLookWorld = math::Vector3(1.0f,0.0f,0.0f);
 }
 
 Camera::~Camera()
@@ -57,9 +57,8 @@ void Camera::lookAt(const math::Vector3 &pos, const math::Vector3 &target, const
 	Vector3 lookAt = target - pos;
 	lookAt = normalize(lookAt);
 
-	Vector3 right = cross(lookAt, up);
-	Vector3 newUp = cross(right, up);
-	newUp = normalize(newUp);
+	Vector3 right = normalize(cross(lookAt, up));
+	Vector3 newUp = normalize(cross(right, up));
 
 	m_vPosWorld = pos;
 	m_vRightWorld = right;

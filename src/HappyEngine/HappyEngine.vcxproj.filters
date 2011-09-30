@@ -68,6 +68,9 @@
     <Filter Include="happyengine\math\shapes">
       <UniqueIdentifier>{f1c2151b-2c55-46d0-abb3-01ed3ceb1b20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\deferred">
+      <UniqueIdentifier>{39b46aa4-740f-4e49-bb06-68fd8b724b60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -258,6 +261,15 @@
     </ClCompile>
     <ClCompile Include="Circle.cpp">
       <Filter>happyengine\math\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>happyengine\math\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>happyengine\math\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Deferred3DRendererSettings.cpp">
+      <Filter>happyengine\graphics\deferred</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -494,6 +506,15 @@
     </ClInclude>
     <ClInclude Include="Circle.h">
       <Filter>happyengine\math\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>happyengine\math\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>happyengine\math\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Deferred3DRendererSettings.h">
+      <Filter>happyengine\graphics\deferred</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

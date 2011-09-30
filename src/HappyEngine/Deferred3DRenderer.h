@@ -30,6 +30,7 @@
 #include "Texture2D.h"
 #include "LightManager.h"
 #include "Camera.h"
+#include "Deferred3DRendererSettings.h"
 
 namespace happyengine {
 namespace graphics {
@@ -40,8 +41,8 @@ public:
 	Deferred3DRenderer();
     virtual ~Deferred3DRenderer();
         
-    virtual void draw(const Model::pointer& pModel);
-    virtual void draw(const ModelMesh::pointer& pModel);
+    virtual void draw(const Model::pointer& pModel);//, const Camera* pCamera);
+    virtual void draw(const ModelMesh::pointer& pModel);//, const Camera* pCamera);
 
     void begin();
     void end(const Camera* pCamera);
@@ -93,6 +94,8 @@ private:
 
     LightManager* m_pLightManager;
 
+    Deferred3DRendererSettings m_Settings;
+    
     //Disable default copy constructor and default assignment operator
     Deferred3DRenderer(const Deferred3DRenderer&);
     Deferred3DRenderer& operator=(const Deferred3DRenderer&);

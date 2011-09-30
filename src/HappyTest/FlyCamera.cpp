@@ -91,14 +91,14 @@ void FlyCamera::tick(const float dTime)
 		float pitch = mouseMovement.y / m_MouseSensitivity;
 		float yAngle = mouseMovement.x / m_MouseSensitivity;
 
-		Matrix R(Matrix::createRotation(m_vRightWorld, pitch));
-		m_vLookWorld = transform(m_vLookWorld, R).xyz();
-        m_vUpWorld = transform(m_vUpWorld, R).xyz();
+		Matrix R(Matrix::createRotation(m_vRightWorld, -pitch));
+		m_vLookWorld = normalize(R * m_vLookWorld);
+        m_vUpWorld = normalize(R * m_vUpWorld);
 
-		R = Matrix::createRotation(Vector3(0,1,0), yAngle);
-        m_vLookWorld = transform(m_vLookWorld, R).xyz();
-        m_vUpWorld = transform(m_vUpWorld, R).xyz();
-        m_vRightWorld = transform(m_vRightWorld, R).xyz();
+		R = Matrix::createRotation(Vector3(0,1,0), -yAngle);
+        m_vLookWorld = normalize(R * m_vLookWorld);
+        m_vRightWorld = normalize(R * m_vRightWorld);
+        m_vUpWorld = cross(m_vLookWorld, m_vRightWorld);
 	}
 	else
 		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();

@@ -119,19 +119,6 @@ inline const Vector3& max(const Vector3& a, const Vector3& b)
 {
     return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
-inline Vector4 transform(const Vector3& v, const Matrix& m)
-{
-	Vector4 result;
-	float matrix[16];
-	m.toFloatArray(matrix);
-
-	result.x = (v.x * matrix[0]) + (v.y * matrix[1]) + (v.z * matrix[2]) + matrix[3];
-    result.y = (v.x * matrix[4]) + (v.y * matrix[5]) + (v.z * matrix[6]) + matrix[7];
-    result.z = (v.x * matrix[8]) + (v.y * matrix[9]) + (v.z * matrix[10]) + matrix[11];
-	result.w = (v.x * matrix[12]) + (v.y * matrix[13]) + (v.z * matrix[14]) + matrix[15];
-
-	return result;
-}
 
 //template
 template<typename T>

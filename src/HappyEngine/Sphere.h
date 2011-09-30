@@ -14,32 +14,41 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 28/09/2011
 
-#ifndef _HE_I3DRENDERER_H_
-#define _HE_I3DRENDERER_H_
+#ifndef _HE_SPHERE_H_
+#define _HE_SPHERE_H_
 #pragma once
 
-#include "Model.h"
-#include "ModelMesh.h"
-#include "Sphere.h"
+#include "Vector3.h"
+#include <vector>
+#include "HappyTypes.h"
 
 namespace happyengine {
-namespace graphics {
+namespace math {
+namespace shapes {
 
-class I3DRenderer
+class Sphere
 {
 public:
-    virtual ~I3DRenderer() {}
+    Sphere();
+    Sphere(const Vector3& pos, float radius);
+    virtual ~Sphere();
+    //default copy and assignment are fine
 
-	virtual void draw(const Model::pointer& pModel) = 0;//, const Camera* pCamera) = 0;
-	virtual void draw(const ModelMesh::pointer& pModel) = 0;//, const Camera* pCamera) = 0;
+    const Vector3& getPosition() const;
+    float getRadius() const;
 
-    //bool viewDistanceCheck(const math::shapes::Sphere& sphere, const Camera* pCamera)
-    //{
-    //    math::Vector3 pos = pCamera->
-    //}
+    static Sphere getBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset);
+
+private:
+
+    Vector3 m_Position;
+    float m_Radius;
 };
 
-} } //end namespace
+} } } //end namespace
 
 #endif

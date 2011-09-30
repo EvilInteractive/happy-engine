@@ -31,6 +31,7 @@
 #include "VertexLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
+#include "Sphere.h"
 
 namespace happyengine {
 namespace graphics {
@@ -65,6 +66,8 @@ public:
 
     bool isComplete() const;
 
+    const math::shapes::Sphere& getBoundingSphere() const;
+
 private:
 
     uint m_VaoID[1];
@@ -79,6 +82,8 @@ private:
     std::string m_Name;
 
     bool m_Complete;
+
+    math::shapes::Sphere m_BoundingSphere;
 
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);

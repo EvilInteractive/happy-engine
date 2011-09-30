@@ -53,6 +53,7 @@ public:
     float endAttenuation;
 
     RectI getScissor(const Camera* pCamera) const;
+    RectI getOldScissor(const Camera* pCamera) const;
 
     #if _DEBUG
     void debugDraw(const Camera* pCamera) const;

@@ -14,32 +14,31 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 28/09/2011
 
-#ifndef _HE_I3DRENDERER_H_
-#define _HE_I3DRENDERER_H_
+#ifndef _HE_AABB_H_
+#define _HE_AABB_H_
 #pragma once
 
-#include "Model.h"
-#include "ModelMesh.h"
-#include "Sphere.h"
-
 namespace happyengine {
-namespace graphics {
+namespace math {
+namespace shapes {
 
-class I3DRenderer
+class AABB
 {
 public:
-    virtual ~I3DRenderer() {}
+	AABB();
+    virtual ~AABB();
 
-	virtual void draw(const Model::pointer& pModel) = 0;//, const Camera* pCamera) = 0;
-	virtual void draw(const ModelMesh::pointer& pModel) = 0;//, const Camera* pCamera) = 0;
+private:
 
-    //bool viewDistanceCheck(const math::shapes::Sphere& sphere, const Camera* pCamera)
-    //{
-    //    math::Vector3 pos = pCamera->
-    //}
+    //Disable default copy constructor and default assignment operator
+    AABB(const AABB&);
+    AABB& operator=(const AABB&);
 };
 
-} } //end namespace
+} } } //end namespace
 
 #endif

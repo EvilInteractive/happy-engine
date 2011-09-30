@@ -56,9 +56,9 @@ public:
     static Matrix createScale(float scale);
 
     //operators
-    Matrix operator*(const Matrix& mat);
-    Vector3 operator*(const Vector3& vec);
-    Vector4 operator*(const Vector4& vec);
+    Matrix operator*(const Matrix& mat) const;
+    Vector3 operator*(const Vector3& vec) const;
+    Vector4 operator*(const Vector4& vec) const;
 
     //getters
     void toFloatArray(float arr[16]) const;

@@ -87,9 +87,9 @@ Matrix Matrix::createOrthoRH(float left, float right, float top, float bottom, f
 }
 Matrix Matrix::createLookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up)
 {
-    Vector3 zaxis = normalize(target - eye);
-    Vector3 xaxis = normalize(cross(normalize(up), zaxis));
-    Vector3 yaxis = cross(zaxis, xaxis);
+    Vector3 zaxis(normalize(target - eye));
+    Vector3 xaxis(normalize(cross(normalize(up), zaxis)));
+    Vector3 yaxis(cross(zaxis, xaxis));
 
     return Matrix(
            xaxis.x,  xaxis.y,  xaxis.z, -dot(xaxis, eye),
@@ -99,9 +99,9 @@ Matrix Matrix::createLookAtLH(const Vector3& eye, const Vector3& target, const V
 }
 Matrix Matrix::createLookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up)
 {
-    Vector3 zaxis = normalize(eye - target);
-    Vector3 xaxis = normalize(cross(normalize(up), zaxis));
-    Vector3 yaxis = cross(zaxis, xaxis);
+    Vector3 zaxis(normalize(eye - target));
+    Vector3 xaxis(normalize(cross(normalize(up), zaxis)));
+    Vector3 yaxis(cross(zaxis, xaxis));
 
     return Matrix(
            -xaxis.x,  -xaxis.y,  -xaxis.z,  dot(xaxis, eye),
@@ -150,15 +150,15 @@ Matrix Matrix::createScale(float scale)
                   0.0f,   0.0f,  0.0f,  1.0f);
 }
 
-Matrix Matrix::operator*(const Matrix& mat)
+Matrix Matrix::operator*(const Matrix& mat) const
 {
     return Matrix(m_Matrix * mat.m_Matrix);
 }
-Vector3 Matrix::operator*(const Vector3& vec)
+Vector3 Matrix::operator*(const Vector3& vec) const
 {
     return Vector3(m_Matrix.transform(physx::pubfnd3::PxVec3(vec.x, vec.y, vec.z)));
 }
-Vector4 Matrix::operator*(const Vector4& vec)
+Vector4 Matrix::operator*(const Vector4& vec) const
 {
     return Vector4(m_Matrix.transform(physx::pubfnd3::PxVec4(vec.x, vec.y, vec.z, vec.w)));
 }

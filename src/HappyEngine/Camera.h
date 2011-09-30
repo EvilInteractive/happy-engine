@@ -47,20 +47,20 @@ public:
 	virtual void setActive(bool active);
 
 	// GETTERS
-	virtual math::Matrix getView() const
+	virtual const math::Matrix& getView() const
 	{ return m_matView; }
-	virtual math::Matrix getProjection() const
+	virtual const math::Matrix& getProjection() const
 	{ return m_matProjection; }
-	virtual math::Matrix getViewProjection() const
+	virtual const math::Matrix& getViewProjection() const
 	{ return m_matViewProjection; }
 
-	virtual math::Vector3 getPosition() const
+	virtual const math::Vector3& getPosition() const
 	{ return m_vPosWorld; }
-	virtual math::Vector3 getRight() const
+	virtual const math::Vector3& getRight() const
 	{ return m_vRightWorld; }
-	virtual math::Vector3 getUp() const
+	virtual const math::Vector3& getUp() const
 	{ return m_vUpWorld; }
-	virtual math::Vector3 getLook() const
+	virtual const math::Vector3& getLook() const
 	{ return m_vLookWorld; }
 
 protected:

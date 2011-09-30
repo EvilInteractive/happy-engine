@@ -15,8 +15,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="BinObjLineLoader.cpp" />
     <ClCompile Include="Circle.cpp" />
+    <ClCompile Include="Deferred3DRendererSettings.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="Hitregion.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -70,6 +72,7 @@
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="HappyEngine.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -80,9 +83,11 @@
     <ClCompile Include="X.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="BinObjLineLoader.h" />
     <ClInclude Include="CatmullRomSpline.h" />
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="Deferred3DRendererSettings.h" />
     <ClInclude Include="Hitregion.h" />
     <ClInclude Include="ISpline.h" />
     <ClInclude Include="Line.h" />
@@ -150,6 +155,7 @@
     <ClInclude Include="I3DRenderer.h" />
     <ClInclude Include="IGame.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Vector2.h" />
