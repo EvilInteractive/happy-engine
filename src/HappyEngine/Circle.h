@@ -23,7 +23,6 @@
 #pragma once
 
 #include "Vector2.h"
-#include <vector>
 #include <utility>
 
 namespace happyengine {
@@ -38,12 +37,9 @@ public:
 
     std::pair<float, float> fx(float x) const;
     std::pair<float, float> fy(float y) const;
-    std::vector<Vector2> intersect(const Circle& other) const;
+    std::pair<math::Vector2, math::Vector2> intersect(const Circle& other) const;
 
     bool isOnCircle(const math::Vector2& point) const;
-
-	const math::Vector2& getPosition() const;
-	float getRadius() const;
 
 private:
 

@@ -65,8 +65,8 @@ void FPSGraph::tick(float dTime, float interval)
 
 		if (fps < 0)
 			fps = 0;
-		else if (fps > 80)
-			fps = 80;
+		else if (fps > 999)
+			fps = 999;
 
 
 		m_FpsHistory.push_back(fps);
@@ -88,12 +88,13 @@ void FPSGraph::draw()
 	if (m_GameTime > m_Interval)
 	{
 		HE2D->setAntiAliasing(false);
+		HE2D->resetTransformation();
 
 		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
-		HE2D->fillRectangle(Vector2(GRAPHICS->getViewport().width - 105.0f, 5.0f), Vector2(100, 40));
+		HE2D->fillRectangleInstanced(Vector2(GRAPHICS->getViewport().width - 105.0f, 5.0f), Vector2(100, 40));
 		HE2D->setColor(0.0f,0.0f,0.0f,0.5f);
 		HE2D->setStrokeSize();
-		HE2D->drawRectangle(Vector2(GRAPHICS->getViewport().width - 106.0f, 4.0f), Vector2(102, 42));
+		HE2D->drawRectangleInstanced(Vector2(GRAPHICS->getViewport().width - 106.0f, 4.0f), Vector2(102, 42));
 
 		std::vector<math::Vector2> points;
 		uint i(0);
@@ -105,7 +106,7 @@ void FPSGraph::draw()
 		});
 
 		HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
-		HE2D->setStrokeSize();
+		HE2D->resetTransformation();
 		HE2D->drawPolygon(points, points.size());
 
 		points.clear();
@@ -131,13 +132,38 @@ void FPSGraph::draw()
 		HE2D->setFontVerticalAlignment(FontVAlignment_Top);
 
 		std::stringstream stream;
-		stream << "FPS: " << m_CurrentFPS;
-		HE2D->drawText(Vector2(GRAPHICS->getViewport().width - 105.0f, 45), stream.str(), m_pFont);
+		stream << "FPS: " << m_CurrentFPS;// << " (" << getMinFPS() << "/" << getMaxFPS() << ")";
+		HE2D->drawText(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 45));
 
 		stream.str("");
 		stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-		HE2D->drawText(Vector2(GRAPHICS->getViewport().width - 105.0f, 58), stream.str(), m_pFont);
+		HE2D->drawText(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 58));
 	}
+}
+
+/* GETTERS */
+uint FPSGraph::getMaxFPS() const
+{
+	uint maxFPS(0);
+	std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint FPS)
+	{
+		if (FPS > maxFPS)
+			maxFPS = FPS;
+	});
+
+	return maxFPS;
+}
+
+uint FPSGraph::getMinFPS() const
+{
+	uint minFPS(9999);
+	std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint FPS)
+	{
+		if (FPS < minFPS)
+			minFPS = FPS;
+	});
+
+	return minFPS;
 }
 
 } } //end namespace

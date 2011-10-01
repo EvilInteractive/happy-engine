@@ -30,7 +30,8 @@
 namespace happyengine {
 namespace graphics {
 
-Font::Font(TTF_Font* pFont): m_pFont(pFont)
+Font::Font(TTF_Font* pFont):	m_pFont(pFont),
+								m_Path("")
 {
 
 }
@@ -127,5 +128,14 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
     return tex2D;    
 }
 
+void Font::setPath(const std::string& path)
+{
+	m_Path = path;
+}
+
+const std::string& Font::getPath() const
+{
+	return m_Path;
+}
 
 } } //end namespace

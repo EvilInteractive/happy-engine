@@ -58,11 +58,16 @@ public:
                                          FontHAlignment hAlignment, FontVAlignment vAlignment,
 										 bool bAntiAliased = true);
 
+	void setPath(const std::string& path);
+	const std::string& getPath() const;
+
     typedef boost::shared_ptr<Font> pointer;
 
 private:
 
     TTF_Font* m_pFont;
+
+	std::string m_Path;
 
     //Disable default copy constructor and default assignment operator
     Font(const Font&);

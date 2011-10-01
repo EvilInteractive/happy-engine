@@ -6,10 +6,12 @@ out vec4 outColor;
 
 uniform sampler2D diffuseMap;
 uniform float inAlpha;
+uniform vec2 texCoordOffset;
+uniform vec2 texCoordScale;
 
 void main()
 {
-	vec4 color = texture2D(diffuseMap, passTexCoord);
+	vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale) + texCoordOffset);
 
 	float alpha = color.a - (1.0f - inAlpha);
 

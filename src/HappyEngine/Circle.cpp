@@ -35,15 +35,6 @@ Circle::~Circle()
 {
 }
 
-const math::Vector2& Circle::getPosition() const
-{
-	return m_Position;
-}
-float Circle::getRadius() const
-{
-	return m_Radius;
-}
-
 std::pair<float, float> Circle::fx(float x) const
 {
     return std::make_pair(
@@ -61,41 +52,37 @@ bool Circle::isOnCircle(const math::Vector2& point) const
     return (fabs(math::sqr(point.x - m_Position.x) + math::sqr(point.y - m_Position.y) - math::sqr(m_Radius)) < 0.0001f);
 }
 
-std::vector<Vector2> Circle::intersect(const Circle& other) const
+std::pair<math::Vector2, math::Vector2> Circle::intersect(const Circle& other) const
 {
-    float d(math::length(m_Position - other.getPosition()));
+    const float& xA(m_Position.x), 
+                 xB(other.m_Position.x), 
+                 yA(m_Position.y), 
+                 yB(other.m_Position.y), 
+                 rA(m_Radius), 
+                 rB(other.m_Radius);
 
-	if (d > m_Radius + other.m_Radius)
-	{
-		return std::vector<Vector2>();
-	}
-	else if (d < fabs(m_Radius - other.m_Radius))
-	{
-		return std::vector<Vector2>();
-	}
-	else
-	{
-		//line connecting 2 points = 
-		const float& x1(m_Position.x), 
-					 x2(other.m_Position.x), 
-					 y1(m_Position.y), 
-					 y2(other.m_Position.y), 
-					 r1(m_Radius), 
-					 r2(other.m_Radius);
-		float d2(lengthSqr(other.m_Position - m_Position));
+    float d2(math::sqr(xB - xA) + math::sqr(yB - yA));
+    float K(0.25f * sqrt((math::sqr(rA + rB) - d2) * (d2 - math::sqr(rA - rB))));
 
-		float xPart1( (x2 + x1) / 2.0f + ((x2 - x1) * (math::sqr(r1) - math::sqr(r2))) / (2.0f * d2));
-		float xPart2( ((y2 - y1) / (2.0f * d2)) * sqrtf( (math::sqr(r1 + r2) - d2) * (d2 - math::sqr(r2 - r1))));
+    float x1(0.5f * (xB + xA) + 0.5f * (xB - xA) * (math::sqr(rA) - math::sqr(rB)) / d2 + 2.0f * (yB - yA) * K / d2);
+    float x2(0.5f * (xB + xA) + 0.5f * (xB - xA) * (math::sqr(rA) - math::sqr(rB)) / d2 - 2.0f * (yB - yA) * K / d2);
 
-		float yPart1( (y2 + y1) / 2.0f + ((y2 - y1) * (math::sqr(r1) - math::sqr(r2))) / (2.0f * d2));
-		float yPart2( ((x2 - x1) / (2.0f * d2)) * sqrtf( (math::sqr(r1 + r2) - d2) * (d2 - math::sqr(r2 - r1))));
+    std::pair<float, float> y1s(fx(x1));
+    std::pair<float, float> y2s(fx(x2));
 
-		std::vector<Vector2> ret;
-		ret.push_back( math::Vector2(xPart1 + xPart2, yPart1 - yPart2) );
-		ret.push_back( math::Vector2(xPart1 - xPart2, yPart1 + yPart2) );
-		
-		return ret;
-	}
+    std::pair<math::Vector2, math::Vector2> ret(std::make_pair(math::Vector2(x1, y1s.first), math::Vector2(x2, y2s.first)));
+    if (isOnCircle(ret.first) == false)
+    {
+        ret.first.y = y1s.second;
+        //ASSERT(isOnCircle(ret.first), "Circle: no point intersects circle");
+    }
+    if (isOnCircle(ret.second) == false)
+    {
+        ret.second.y = y2s.second;
+        //ASSERT(isOnCircle(ret.second), "Circle: no point intersects circle");
+    }
+
+    return ret;
 }
 
 } } } //end namespace

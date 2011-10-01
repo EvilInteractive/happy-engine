@@ -9,6 +9,6 @@ uniform mat4 matWVP;
 
 void main()
 {
-	gl_Position = matWVP * vec4(inPosition, 0.0f, 1.0f);
+	gl_Position = matWVP * vec4(inPosition, 0.1f, 1.0f);
 	passTexCoord = inTexCoord;
 }

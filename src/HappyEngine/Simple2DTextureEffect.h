@@ -25,6 +25,7 @@
 #include "HappyTypes.h"
 #include "Shader.h"
 #include "Matrix.h"
+#include "Vector2.h"
 #include "Vector3.h"
 #include "Texture2D.h"
 
@@ -44,6 +45,8 @@ public:
 	void setWorldMatrix(const happyengine::math::Matrix& mat) const;
 	void setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const;
 	void setAlpha(const float alpha) const;
+	void setTCOffset(const math::Vector2& offset) const;
+	void setTCScale(const math::Vector2& scale) const;
 
 private:
 	graphics::Shader* m_pShader;
@@ -51,6 +54,8 @@ private:
 	uint m_ShaderWVPPos;
 	uint m_ShaderDiffTexPos;
 	uint m_ShaderAlphaPos;
+	uint m_ShaderTCOffsetPos;
+	uint m_ShaderTCScalePos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DTextureEffect(const Simple2DTextureEffect&);

@@ -17,12 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 05/08/2011
+//Extended:Sebastiaan Sprengers
 
 #ifndef _HE_RECT_H_
 #define _HE_RECT_H_
 #pragma once
 
 #include "HappyTypes.h"
+#include "Vector2.h"
 
 namespace happyengine {
 
@@ -34,8 +36,12 @@ public:
 
     RectF();
 	RectF(float x, float y, float width, float height);
+	RectF(const math::Vector2& pos, const math::Vector2& size);
     explicit RectF(const RectI& rect);
     ~RectF();
+
+	bool operator==(const RectF& r) const;
+	bool operator!=(const RectF& r) const;
     //Default copy constructor and assignment operator are fine
 };
 struct RectI

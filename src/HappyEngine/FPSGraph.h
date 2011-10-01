@@ -43,6 +43,10 @@ public:
 	void tick(float dTime, float interval = 0.5f);
 	void draw();
 
+	/* GETTERS */
+	uint FPSGraph::getMaxFPS() const;
+	uint FPSGraph::getMinFPS() const;
+
 private:
 
 	/* DATAMEMBERS */

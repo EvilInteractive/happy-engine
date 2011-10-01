@@ -32,8 +32,10 @@
 #include "Font.h"
 #include "Vector2.h"
 #include "HappyTypes.h"
+#include "AssetContainer.h"
 #include "AssetContainerP.h"
 #include "ModelMesh.h"
+#include "Rect.h"
 
 #include <map>
 
@@ -49,38 +51,68 @@ public:
     virtual ~Happy2DRenderer();
 
 	/* GENERAL */
+	void initialize();
 	void begin();
 	void end();
-	void initialize();
+
+	void clearInstancingBuffer();
 
     /* SETTERS */
+
+	// * Set the color of the 2D brush. *
 	void setColor(float r, float g, float b, float a = 1.0f);
+	void setColor(const Color& color);
+	// * Turn on/off anti-aliasing. *
 	void setAntiAliasing(bool bAA);
-	void setStrokeSize(float strokeSize = 1.0f);
+	// * Set the strokesize. *
+	void setStrokeSize(const float strokeSize = 1.0f);
+	// * Alignment options for text. *
 	void setFontHorizontalAlignment(FontHAlignment horizontalAlignment);
 	void setFontVerticalAlignment(FontVAlignment verticalAlignment);
-
+	// * Set the transformation matrix. *
+	void setTransformation(const math::Matrix& mat);
+	// * Set the world translation. *
 	void setTranslation(const math::Vector2& translation);
-	void setRotation(const float radians);
+	// * Set the world rotation. *
+	void setRotation(const float degrees);
+	// * Set the world scale. *
 	void setScale(const math::Vector2& scale);
+	// * Reset world transformation. *
 	void resetTransformation();
 
     /* DRAW METHODS */
-	void drawText(const math::Vector2& pos, const std::string& text, const Font::pointer& font) const;
+
+	// * Draws the text as a 2D texture on the screen. *
+	void drawText(const std::string& text, const Font::pointer& font, const math::Vector2& pos);
+	void drawTextInstanced(const std::string& text, const Font::pointer& font, const math::Vector2& pos);
+	// * Draws a line between 2 points with the current strokesize. *
+	void drawLine(const math::Vector2& point1, const math::Vector2& point2) const;
+	void drawLineInstanced(const math::Vector2& point1, const math::Vector2& point2) const;
+	// * Draws the outline of a rectangle with the current strokesize. *
 	void drawRectangle(const math::Vector2& pos, const math::Vector2& size);
+	void drawRectangleInstanced(const math::Vector2& pos, const math::Vector2& size);
+	// * Draws a filled rectangle. *
 	void fillRectangle(const math::Vector2& pos, const math::Vector2& size);
-	void drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
-	void fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 360);
-	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false);
-	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints);
-	void drawTexture2D(const math::Vector2& pos, const Texture2D::pointer& tex2D, const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f), const float alpha = 1.0f) const;
+	void fillRectangleInstanced(const math::Vector2& pos, const math::Vector2& size);
+	// * Draws the outline of an ellipse. *
+	void drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
+	void drawEllipseInstanced(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
+	// * Draws a filled ellipse. *
+	void fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
+	void fillEllipseInstanced(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
+	// * Draws a polygon - open or closed. *
+	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false) const;
+	void drawPolygonInstanced(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false) const;
+	// * Draws a filled polygon. *
+	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints) const;
+	void fillPolygonInstanced(const std::vector<happyengine::math::Vector2>& points, uint nrPoints) const;
+	// * Draws a 2D texture with options for resizing, alpha, cliprect. *
+	void drawTexture2D(	const Texture2D::pointer& tex2D, const math::Vector2& pos,
+						const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f),
+						const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
 
 private:
 
-	math::Vector2 getNDCPos(const math::Vector2& pos) const;
-	math::Vector2 getNDCSize(const math::Vector2& size) const;
-
-	void cleanUpModelBuffer();
 	void updateTransformationMatrix();
 
 	/* DATAMEMBERS */
@@ -98,15 +130,17 @@ private:
 	Simple2DTextureEffect* m_pTextureEffect;
 
 	math::Matrix m_matWorld;
+	math::Matrix m_matOrthoGraphic;
 	math::Vector2 m_Translation;
 	math::Vector2 m_Scale;
 	float m_Rotation;
 
+	ModelMesh* m_pTextureQuad;
+
 	math::Vector2 m_ViewPortSize;
 
 	content::AssetContainerP<graphics::ModelMesh>* m_pModelBuffer;
-	std::map<std::string, uint> m_ModelBufferIndex;
-	uint m_TickCounter;
+	content::AssetContainer<graphics::Texture2D::pointer>* m_pTextureBuffer;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Happy2DRenderer(const Happy2DRenderer&);

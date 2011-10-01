@@ -203,6 +203,7 @@ void MainGame::draw(float dTime)
 
     GRAPHICS->clearAll();
 
+
 	m_SplashTimer.Tick();
 
 	if(m_SplashTimer.GetGameTime() > 3.1f && m_SplashAlpha > 0.0f)
@@ -253,22 +254,37 @@ void MainGame::draw(float dTime)
 			HE2D->setColor(1.0f,1.0f,1.0f);
 			HE2D->fillPolygon(points, points.size());*/
 
-			/*HE2D->setColor(1.0f,1.0f,1.0f);
-			HE2D->drawEllipse(Vector2(100,100), Vector2(101,101));
+			HE2D->setColor(1.0f,1.0f,1.0f);
+			HE2D->drawEllipseInstanced(Vector2(150,150), Vector2(101,101));
 	
 			HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-			HE2D->fillEllipse(Vector2(100,100), Vector2(100,100));
-			*/
+			HE2D->fillEllipseInstanced(Vector2(150,150), Vector2(100,100));
 
 			//HE2D->setRotation(math::toRadians(45));
 
 			/*HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
 			HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));*/
 
+			HE2D->setColor(1.0f,1.0f,1.0f,0.2f);
+
+			for (int i = 0; i < 2; ++i)
+			{
+				HE2D->setRotation((float)i*45);
+				HE2D->fillRectangleInstanced(Vector2(150,300), Vector2(50,50));
+				HE2D->resetTransformation();
+			}
+
+			for (int i = 0; i < 2; ++i)
+			{
+				HE2D->setScale(Vector2(2.0f, 2.0f));
+				HE2D->setRotation((float)i*45);
+				HE2D->fillRectangleInstanced(Vector2(150,420), Vector2(50,50));
+				HE2D->resetTransformation();
+			}
+
+			//HE2D->fillRectangleInstanced(math::Vector2(500,200), math::Vector2(50,50));
 			//HE2D->resetTransformation();
-
-			m_pFPSGraph->draw();
-
+			
 			/*shapes::Circle c(Vector2(200, 200), 128);
 			HE2D->drawEllipse(c.getPosition(), Vector2(c.getRadius()*2, c.getRadius()*2));
 
@@ -292,13 +308,18 @@ void MainGame::draw(float dTime)
 				HE2D->drawPolygon(line2, 2);
 			}*/
 
+			m_pFPSGraph->draw();
+
 		HE2D->end();
 	}
 	else
 	{
 		HE2D->begin();
 
-			HE2D->drawTexture2D(Vector2(0,0), m_SplashImage, Vector2(0,0), m_SplashAlpha);
+			//HE2D->setRotation(45);
+			HE2D->drawTexture2D(m_SplashImage, Vector2(0,0), Vector2(0,0), m_SplashAlpha);
+			//HE2D->drawTexture2D(m_SplashImage, Vector2(200,500), Vector2(500,200), 1.0f, RectF(200,500,500,200));
+			//HE2D->resetTransformation();
 
 		HE2D->end();
 	}
