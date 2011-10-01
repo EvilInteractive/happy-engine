@@ -16,37 +16,7 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
 
-#ifndef _HE_PHYSICS_MATERIAL_H_
-#define _HE_PHYSICS_MATERIAL_H_
-#pragma once
-
-#include "PxMaterial.h"
-#include "boost/shared_ptr.hpp"
-
-namespace happyengine {
-namespace physics {
-
-class PhysicsMaterial
+void main()
 {
-public:
-	PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
-    virtual ~PhysicsMaterial();
-
-    PxMaterial* getInternalMaterial() const;
-
-    typedef boost::shared_ptr<PhysicsMaterial> pointer;
-
-private:
-
-    PxMaterial* m_pInternalMaterial;
-
-    //Disable default copy constructor and default assignment operator
-    PhysicsMaterial(const PhysicsMaterial&);
-    PhysicsMaterial& operator=(const PhysicsMaterial&);
-};
-
-} } //end namespace
-
-#endif
+}

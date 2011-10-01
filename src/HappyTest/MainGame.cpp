@@ -33,12 +33,14 @@
 
 #include "HappyNew.h"
 
+#include "boost/timer.hpp"
+
 namespace happytest {
 
-MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m_BackgroundIndex(0),
-                       m_DrawTimer(0), m_UpdateTimer(0), m_pDeferredPreEffect(NEW DeferredPreEffect()),                   
+MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
+                       m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_SplashAlpha(1.0f), m_pGroundPlane(NEW GroundPlane())
+					   m_pCamera(nullptr), m_SplashAlpha(1.0f), m_pGroundPlane(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -46,14 +48,13 @@ MainGame::MainGame() : m_pDeferred3DRenderer(nullptr), m_pTestObject(nullptr), m
     m_BackgroundColors[2] = Color((byte)255, (byte)127, (byte)80, (byte)255);
     m_BackgroundColors[3] = Color((byte)255, (byte)165, (byte)0, (byte)255);
     m_BackgroundColors[4] = Color((byte)30, (byte)144, (byte)255, (byte)255);
+
 }
 
 
 MainGame::~MainGame()
 {
-    delete m_pDeferred3DRenderer;
     delete m_pTestObject;
-    delete m_pDeferredPreEffect;
     std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
     {
         delete pBullet;
@@ -94,7 +95,33 @@ void MainGame::load()
 {
     using namespace happyengine;
 
-	m_SplashImage = CONTENT->asyncLoadTexture("../data/textures/happy_splash.png");
+    //{
+    //    graphics::PointLight::pointer light(NEW graphics::PointLight());
+    //    light->beginAttenuation = 0;
+    //    light->endAttenuation = 10;
+    //    light->position = math::Vector3(1, 0, 1);
+
+    //    graphics::Camera* pCamera(NEW graphics::Camera(1280, 720));
+    //    pCamera->lookAt(math::Vector3(10, 20, 20), math::Vector3(1, 0, 1), math::Vector3(0, 1 ,0));
+	   // pCamera->setLens(16.0f/9.0f,math::piOverFour,1.0f,100.0f);
+
+    //    boost::timer t;
+    //    for (int i = 0; i < 10000; ++i)
+    //    {
+    //        light->getScissor(pCamera);
+    //    }
+    //    std::cout << "new scissor: " << t.elapsed() << " sec\n";
+    //    t.restart();
+    //    for (int i = 0; i < 10000; ++i)
+    //    {
+    //        light->getOldScissor(pCamera);
+    //    }
+    //    std::cout << "old scissor: " << t.elapsed() << " sec\n";
+    //    delete pCamera;
+    //}
+
+
+	m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
 
     PHYSICS->startSimulation();
 
@@ -104,39 +131,22 @@ void MainGame::load()
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
-    m_pDeferred3DRenderer = NEW graphics::Deferred3DRenderer();
-    m_pDeferred3DRenderer->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 2.0f, 1, 10);
-    m_pSpotLight = m_pDeferred3DRenderer->getLightManager()->addSpotLight(math::Vector3(-1, 0, -1), math::Vector3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, sinf(math::piOverFour/2), 1, 30);
-    m_pDeferred3DRenderer->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
-    m_pTestObject = NEW TestObject();
-    m_pTestObject->load();
-
-    /*TestBullet* pBullet(NEW TestBullet());
-    pBullet->load();
-    m_Bullets.push_back(pBullet);*/
-
-    m_pDeferredPreEffect->load();
-
-	m_TestImage = CONTENT->asyncLoadTexture("../data/textures/v8_vantage_color.png");
+    GRAPHICS->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 2.0f, 1, 10);
+    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(math::Vector3(-1, 0, -1), math::Vector3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, sinf(math::piOverFour/2), 1, 30);
+    GRAPHICS->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
+   
+    m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
+    m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
+        
+	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 	
 	m_SplashTimer.Reset();
 
-	happyengine::content::FontLoader fontLoader;
-    fontLoader.load("../data/fonts/Ubuntu-Regular.ttf", 12, m_pFont);
-
-    m_pGroundPlane->load();
+    CONTENT->loadFont("Ubuntu-Regular.ttf", 12);
 }
 void MainGame::tick(float dTime)
 {
-    m_UpdateTimer += dTime;
-
 	m_pCamera->tick(dTime);
-
-    if (m_UpdateTimer >= 1.0f)
-    {
-        std::cout << "update fps: " << 1.0f/dTime << "\n";
-        m_UpdateTimer -= 1.0f;
-    }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Escape))
         HAPPYENGINE->quit();
@@ -168,8 +178,7 @@ void MainGame::tick(float dTime)
 
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Space))
     {
-        TestBullet* pBullet(NEW TestBullet(m_pCamera->getPosition(), m_pCamera->getLook() * 20));
-        pBullet->load();
+        TestBullet* pBullet(NEW TestBullet(CONTENT->loadEntity("bullet.entity"), m_pCamera->getPosition(), m_pCamera->getLook() * 20));
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";
     }
@@ -179,19 +188,11 @@ void MainGame::tick(float dTime)
 
 	m_pFPSGraph->tick(dTime, 0.5f);
 }
-void MainGame::draw(float dTime)
+void MainGame::draw(float /*dTime*/)
 {
 	using namespace happyengine;
 	using namespace graphics;
 	using namespace math;
-
-    m_DrawTimer += dTime;
-
-    if (m_DrawTimer >= 1.0f)
-    {
-        std::cout << "draw fps: " << 1.0f/dTime << "\n";
-        m_DrawTimer -= 1.0f;
-    }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Return))
     {
@@ -213,18 +214,15 @@ void MainGame::draw(float dTime)
 
 	if (m_SplashTimer.GetGameTime() > 4.0f)
 	{
-		m_pDeferred3DRenderer->begin();
-		m_pDeferredPreEffect->begin();
-
-			m_pTestObject->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, dTime, m_pCamera);
+        GRAPHICS->begin(m_pCamera);
+        GRAPHICS->draw(m_pTestObject);
 
 			std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
 			{
-				pBullet->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, m_pCamera);
+				GRAPHICS->draw(pBullet);
 			});
-            m_pGroundPlane->draw(m_pDeferred3DRenderer, m_pDeferredPreEffect, m_pCamera);
-		m_pDeferredPreEffect->end();
-		m_pDeferred3DRenderer->end(m_pCamera);
+        GRAPHICS->draw(m_pGroundPlane);
+        GRAPHICS->end();
 
 		// 2D test stuff
 		HE2D->begin();

@@ -15,26 +15,44 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-#version 150 core
+//Author:  Bastian Damman
+//Created: 30/09/2011
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
-in vec3 inTangent;
+#include "Entity.h"
+#include "HappyNew.h"
 
-out vec2 passTexCoord;
-out vec3 passNormal;
-out vec3 passTangent;
-out vec3 passWorldPos;
+namespace happyengine {
+namespace game {
 
-uniform mat4 matWVP;
-uniform mat4 matWorld;
-
-void main()
+Entity::Entity(const EntityDesc& desc): m_Material(desc.material), m_pModel(desc.pModel)
 {
-	gl_Position = matWVP * vec4(inPosition, 1.0f);
-	passTexCoord = inTexCoord;
-	passNormal = (matWorld * vec4(inNormal, 0.0f)).xyz;
-	passTangent = (matWorld * vec4(inTangent, 0.0f)).xyz;
-	passWorldPos = (matWorld * vec4(inPosition, 1.0f)).xyz;
 }
+
+
+Entity::~Entity()
+{
+}
+
+const math::Matrix& Entity::getWorldMatrix() const
+{
+    return m_mtxWorld;
+}
+
+void Entity::setModel(const graphics::Model::pointer& pModel)
+{
+    m_pModel = pModel;
+}
+void Entity::setWorldMatrix(const math::Matrix& mtxWorld)
+{
+    m_mtxWorld = mtxWorld;
+}
+const graphics::Material& Entity::getMaterial() const
+{
+    return m_Material;
+}
+const graphics::Model::pointer Entity::getModel() const
+{
+    return m_pModel;
+}
+
+} } //end namespace

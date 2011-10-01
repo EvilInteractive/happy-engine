@@ -26,9 +26,12 @@
 #include "Vector2.h"
 #include "HappyTypes.h"
 #include "Color.h"
+#include "Deferred3DRenderer.h"
+#include "IDrawable.h"
 
 #include "SDL.h"
 #include <string>
+
 
 namespace happyengine {
 namespace graphics {
@@ -61,7 +64,14 @@ public:
     void clearColor() const;
     void clearDepth() const;
 
+    void begin(const Camera* pCamera);
+    void end();
+    void draw(const IDrawable* pEntity);
+    void draw(const Model::pointer& pModel);
+    void draw(const ModelMesh::pointer& pModelMesh);
     void present() const;
+
+    LightManager* getLightManager() const;
 
 private:
     void initWindow();
@@ -77,6 +87,9 @@ private:
     std::string m_WindowTitle;
 
     Color m_ClearColor;
+    Deferred3DRenderer* m_pDeferred3DRenderer;
+
+    const Camera* m_pCurrentCamera;
 
     //Disable default copy constructor and default assignment operator
     GraphicsEngine(const GraphicsEngine&);

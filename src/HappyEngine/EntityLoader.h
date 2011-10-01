@@ -16,56 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 13/07/2011
-//Changed: 15/09/2011 -Model class became ModelMesh
+//Created: 30/09/2011
 
-#ifndef _HE_MODEL_H_
-#define _HE_MODEL_H_
+#ifndef _HE_ENTITY_LOADER_H_
+#define _HE_ENTITY_LOADER_H_
 #pragma once
 
-#include "Assert.h"
-#undef assert
-#define assert ASSERT
-
-#include <vector>
-#include "VertexLayout.h"
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
-#include "ModelMesh.h"
-#include "VertexLayout.h"
+#include "Entity.h"
+#include "AssetContainer.h"
 
 namespace happyengine {
-namespace graphics {
+namespace content {
 
-class Model
+class EntityLoader
 {
 public:
-    typedef boost::shared_ptr<Model> pointer;
-
-	Model(const VertexLayout& vertexLayout);
-    virtual ~Model();
+	EntityLoader();
+    virtual ~EntityLoader();
     
-    void addMesh(const ModelMesh::pointer& pMesh);
-    uint getNumMeshes() const;
-    ModelMesh::pointer getMesh(int index) const;
-
-    std::vector<ModelMesh::pointer>::const_iterator cbegin() const;
-    std::vector<ModelMesh::pointer>::const_iterator cend() const;
-
-    bool isComplete() const;
-    void setComplete();
-
-    const VertexLayout& getVertexLayout() const;
+    game::EntityDesc load(const std::string& path);
 
 private:
-
-    VertexLayout m_VertexLayout;
-    std::vector<ModelMesh::pointer> m_Meshes;
-    bool m_Complete;
+    AssetContainer<game::EntityDesc>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
-    Model(const Model&);
-    Model& operator=(const Model&);
+    EntityLoader(const EntityLoader&);
+    EntityLoader& operator=(const EntityLoader&);
 };
 
 } } //end namespace

@@ -19,12 +19,12 @@
 #define _HE_SIMPLE_FORWARD_3D_RENDERER_H_
 #pragma once
 
-#include "I3DRenderer.h"
+#include "Model.h"
 
 namespace happyengine {
 namespace graphics {
 
-class SimpleForward3DRenderer : public I3DRenderer
+class SimpleForward3DRenderer
 {
 public:
 	SimpleForward3DRenderer();

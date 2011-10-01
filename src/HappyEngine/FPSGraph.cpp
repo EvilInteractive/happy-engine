@@ -35,7 +35,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 						m_CurrentDTime(0.0f),
 						m_CurrentFPS(0),
 						m_Interval(0.5f),
-                        m_pFont(CONTENT->loadFont("../data/fonts/Ubuntu-Regular.ttf", 10))
+                        m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 10))
 {
 }
 

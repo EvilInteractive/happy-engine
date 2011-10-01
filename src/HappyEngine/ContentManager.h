@@ -31,6 +31,8 @@
 #include "ModelLoader.h"
 #include "LineLoader.h"
 #include "FontLoader.h"
+#include "ShaderLoader.h"
+#include "EntityLoader.h"
 
 namespace happyengine {
 namespace content {
@@ -49,13 +51,38 @@ public:
     void glThreadInvoke();  //needed for all of the gl operations
 
 	graphics::Model::pointer asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout);
+
 	graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
+    graphics::Texture2D::pointer asyncMakeTexture(const Color& color);
 
     graphics::Line::pointer loadLine(const std::string& path);
 
     const std::vector<physics::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
 
     graphics::Font::pointer loadFont(const std::string& path, ushort size);
+
+    graphics::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+   
+    game::EntityDesc loadEntity(const std::string& path);
+
+    void setRootDir(const std::string& root);
+    void setTextureFolder(const std::string& folder);
+    void setModelFolder(const std::string& folder);
+    void setLineFolder(const std::string& folder);
+    void setPhysicsFolder(const std::string& folder);
+    void setFontFolder(const std::string& folder);
+    void setShaderFolder(const std::string& folder);
+    void setEntityFolder(const std::string& folder);
+    //void setFolder(const std::string& folder);
+
+    const std::string& getRootDir() const;
+    const std::string& getTextureFolder() const;
+    const std::string& getModelFolder() const;
+    const std::string& getLineFolder() const;
+    const std::string& getPhysicsFolder() const;
+    const std::string& getFontFolder() const;
+    const std::string& getShaderFolder() const;
+    const std::string& getEntityFolder() const;
 
 private:
 
@@ -64,6 +91,12 @@ private:
     LineLoader* m_pLineLoader;
     PhysicsShapeLoader* m_pPhysicsShapeLoader;
     FontLoader* m_pFontLoader;
+    ShaderLoader* m_pShaderLoader;
+    EntityLoader* m_pEntityLoader;
+
+    std::string m_ContentRootDir;   //include trailing /
+    std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /
+                m_ShaderFolder, m_EntityFolder;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

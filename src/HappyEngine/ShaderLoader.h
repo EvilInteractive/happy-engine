@@ -16,56 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 13/07/2011
-//Changed: 15/09/2011 -Model class became ModelMesh
+//Created: 30/09/2011
 
-#ifndef _HE_MODEL_H_
-#define _HE_MODEL_H_
+#ifndef _HE_SHADER_LOADER_H_
+#define _HE_SHADER_LOADER_H_
 #pragma once
 
-#include "Assert.h"
-#undef assert
-#define assert ASSERT
-
-#include <vector>
-#include "VertexLayout.h"
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
-#include "ModelMesh.h"
-#include "VertexLayout.h"
+#include "AssetContainer.h"
+#include "Shader.h"
 
 namespace happyengine {
-namespace graphics {
+namespace content {
 
-class Model
+class ShaderLoader
 {
 public:
-    typedef boost::shared_ptr<Model> pointer;
-
-	Model(const VertexLayout& vertexLayout);
-    virtual ~Model();
+	ShaderLoader();
+    virtual ~ShaderLoader();
     
-    void addMesh(const ModelMesh::pointer& pMesh);
-    uint getNumMeshes() const;
-    ModelMesh::pointer getMesh(int index) const;
-
-    std::vector<ModelMesh::pointer>::const_iterator cbegin() const;
-    std::vector<ModelMesh::pointer>::const_iterator cend() const;
-
-    bool isComplete() const;
-    void setComplete();
-
-    const VertexLayout& getVertexLayout() const;
+    graphics::Shader::pointer load(const std::string& vsPath, const std::string& fsPath, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
 
 private:
-
-    VertexLayout m_VertexLayout;
-    std::vector<ModelMesh::pointer> m_Meshes;
-    bool m_Complete;
+    AssetContainer<graphics::Shader::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
-    Model(const Model&);
-    Model& operator=(const Model&);
+    ShaderLoader(const ShaderLoader&);
+    ShaderLoader& operator=(const ShaderLoader&);
 };
 
 } } //end namespace

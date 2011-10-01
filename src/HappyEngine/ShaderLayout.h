@@ -14,76 +14,47 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author: Bastian Damman
+//Created: 01/10/2011
 
-#ifndef _HE_VERTEXLAYOUT_H_
-#define _HE_VERTEXLAYOUT_H_
+#ifndef _HE_ShaderLayout_H_
+#define _HE_ShaderLayout_H_
 #pragma once
 
-#include <string>
 #include <vector>
-
 #include "HappyTypes.h"
 
 namespace happyengine {
 namespace graphics {
 
-class VertexElement
+class ShaderLayoutElement
 {
 public:
-    enum Type
-    {
-        Type_Vector2,
-        Type_Vector3,
-        Type_Vector4,
-        Type_Float,
-        Type_Double,
-        Type_Int,
-        Type_UInt,
-        Type_Short,
-        Type_UShort,
-        Type_Byte,
-        Type_UByte,
-    };
-    enum Usage
-    {
-        Usage_Position,
-        Usage_TextureCoordinate,
-        Usage_Normal,
-        Usage_Tangent,
-        Usage_Other
-    };
-    VertexElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset);
-    virtual ~VertexElement() {}
+    ShaderLayoutElement(uint elementIndex, const std::string& nameInShader);
+    virtual ~ShaderLayoutElement() {}
     //default copy constructor and assignment operator are fine
 
     uint getElementIndex() const;
-    uint getSize() const; 
-    uint getByteOffset() const; 
-    Type getType() const;
-    Usage getUsage() const;
+    const std::string& getShaderVariableName() const;
 
 private:
     uint m_ElementIndex;
-    Type m_Type;
-    Usage m_Usage;
-    uint m_Size;
-    uint m_ByteOffset;
+    std::string m_NameInShader;
 };
 
-class VertexLayout
+class ShaderLayout
 {
 public:
-    typedef std::vector<VertexElement> layout;
+	ShaderLayout();
+    virtual ~ShaderLayout();
+    //default copy constructor and default assignment operator are OK
+    
+    typedef std::vector<ShaderLayoutElement> layout;
 
-	VertexLayout();
-    virtual ~VertexLayout();
-    //default copy constructor and assignment operator are fine
-
-    void addElement(const VertexElement& element);
+    void addElement(const ShaderLayoutElement& element);
 
     const layout& getElements() const;
-    uint getVertexSize() const;
-
 
 private:
     layout m_Layout;

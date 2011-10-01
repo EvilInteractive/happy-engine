@@ -33,6 +33,7 @@
 
 #include "HappyTypes.h"
 #include "AssetContainer.h"
+#include "Color.h"
 
 namespace happyengine {
 namespace content {
@@ -47,6 +48,7 @@ public:
     void glThreadInvoke();  //needed for all of the gl operations
 
     graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
+    graphics::Texture2D::pointer asyncMakeTexture(const Color& color);
 
 
 private:
@@ -59,6 +61,7 @@ private:
         uint height;
         uint format;
         uint id;
+        Color color;
         graphics::Texture2D::pointer tex;
     };
 

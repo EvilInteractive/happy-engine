@@ -36,8 +36,8 @@ namespace physics {
 class PhysicsDynamicActor
 {
 public:
-	PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, PhysicsMaterial* pMaterial);
-    PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, PhysicsMaterial* pMaterial);
+	PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial);
+    PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial);
     virtual ~PhysicsDynamicActor();
 
     math::Vector3 getPosition() const;

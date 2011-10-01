@@ -90,7 +90,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DeferredPreEffect.cpp" />
     <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GroundPlane.cpp" />
@@ -103,7 +102,6 @@
     <ClCompile Include="VertexPNT.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DeferredPreEffect.h" />
     <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="GroundPlane.h" />
@@ -116,14 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\settings.ini" />
-    <None Include="data\shaders\deferredPostALShader.frag" />
-    <None Include="data\shaders\deferredPostDLShader.frag" />
-    <None Include="data\shaders\deferredPostPLShader.frag" />
-    <None Include="data\shaders\deferredPostSelfIllumination.frag" />
-    <None Include="data\shaders\deferredPostShader.vert" />
-    <None Include="data\shaders\deferredPostSLShader.frag" />
-    <None Include="data\shaders\deferredPreShader.frag" />
-    <None Include="data\shaders\deferredPreShader.vert" />
     <None Include="data\shaders\simple2DShader.frag" />
     <None Include="data\shaders\simple2DShader.vert" />
     <None Include="data\shaders\simple2DTextureShader.frag" />

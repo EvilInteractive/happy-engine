@@ -19,30 +19,19 @@
 #define _GROUND_PLANE_H_
 #pragma once
 
-#include "DeferredPreEffect.h"
-#include "I3DRenderer.h"
 #include "Camera.h"
-#include "ModelMesh.h"
-#include "Texture2D.h"
+#include "Entity.h"
 
 namespace happytest {
 
-class GroundPlane
+class GroundPlane : public happyengine::game::Entity
 {
 public:
-	GroundPlane();
+	GroundPlane(const happyengine::game::EntityDesc& desc);
     virtual ~GroundPlane();
-
-    void load();
-    void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, const happyengine::graphics::Camera* pCamera);
 
 private:
     
-    happyengine::graphics::ModelMesh::pointer m_pModel;
-    happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
-    happyengine::graphics::Texture2D::pointer m_pNormalMap;
-    happyengine::graphics::Texture2D::pointer m_pSGIMap;
-
     //Disable default copy constructor and default assignment operator
     GroundPlane(const GroundPlane&);
     GroundPlane& operator=(const GroundPlane&);

@@ -83,7 +83,7 @@ graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, co
 		ModelLoadData* data(NEW ModelLoadData());
 		data->path = path;
 		data->vertexLayout = vertexLayout;
-		data->pModel = graphics::Model::pointer(NEW graphics::Model());
+		data->pModel = graphics::Model::pointer(NEW graphics::Model(vertexLayout));
 
 		if (data->path.rfind(".obj") != std::string::npos)
 		{
@@ -95,7 +95,10 @@ graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, co
 		}
 		else
 		{
-			ASSERT("unkown model extension");
+            graphics::Model::pointer m(data->pModel);
+            m->setComplete();
+            delete data;
+			return m;
 		}
 
 		m_ModelLoadQueue.push(data);

@@ -19,50 +19,30 @@
 #define _TEST_OBJECT_H_
 #pragma once
 
-#define BOOST_DISABLE_ASSERTS
-#include "Model.h"
 #include "Vector3.h"
 #include "Matrix.h"
-#include "I3DRenderer.h"
-#include "Texture2D.h"
-#include "Camera.h"
-
-#include "DeferredPreEffect.h" 
-
 #include "PhysicsDynamicActor.h"
-
 #include "Font.h"
+#include "Entity.h"
 
 namespace happytest {
 
-class TestObject
+class TestObject : public happyengine::game::Entity
 {
 public:
-	TestObject();
+	TestObject(const happyengine::game::EntityDesc& desc);
     virtual ~TestObject();
 
-    void load();
-    void tick(float dTime);
-    void draw(	happyengine::graphics::I3DRenderer* pRenderer,
-				DeferredPreEffect* m_pEffect,
-				float dTime,
-				const happyengine::graphics::Camera* pCamera);
+    virtual void tick(float dTime);
 
-private:
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
-    happyengine::graphics::Texture2D::pointer m_pNormalMap;
-    happyengine::graphics::Texture2D::pointer m_pSGIMap;
-    
+private:    
     happyengine::graphics::Font::pointer m_pFont;
 
     float m_Rotation;
     happyengine::math::Vector3 m_Position;
-
-	happyengine::math::Matrix m_matWorld;
-
+    
     happyengine::physics::PhysicsDynamicActor* m_pActor;
-    happyengine::physics::PhysicsMaterial* m_pMaterial;
+    happyengine::physics::PhysicsMaterial::pointer m_pMaterial;
 
     //Disable default copy constructor and default assignment operator
     TestObject(const TestObject&);

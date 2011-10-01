@@ -20,28 +20,16 @@
 #include "HappyNew.h"
 #include "Vertex.h"
 #include "ModelLoaderFunctions.h"
+#include "ModelMesh.h"
 
 namespace happytest {
 
-GroundPlane::GroundPlane(): m_pModel(NEW happyengine::graphics::ModelMesh(""))
+GroundPlane::GroundPlane(const happyengine::game::EntityDesc& desc): Entity(desc)
 {
-}
-
-
-GroundPlane::~GroundPlane()
-{
-}
-
-void GroundPlane::load()
-{
-    m_pDiffuseMap = CONTENT->asyncLoadTexture("../data/textures/gravel_diffuse.png");
-    m_pNormalMap = CONTENT->asyncLoadTexture("../data/textures/gravel_normal.png");
-    m_pSGIMap = CONTENT->asyncLoadTexture("../data/textures/gravel_sgi.png");
-
     using namespace happyengine;
     int width = 1024, depth = 1024;
     float texRes = 4;
-
+    
     std::vector<graphics::VertexPTNT> vertices;
     vertices.push_back(graphics::VertexPTNT(math::Vector3(-width / 2.0f, 0.0f, -depth / 2.0f), math::Vector2(0, 0), math::Vector3(0, 1, 0), math::Vector3()));
     vertices.push_back(graphics::VertexPTNT(math::Vector3(width / 2.0f, 0.0f, -depth / 2.0f), math::Vector2(width/texRes, 0), math::Vector3(0, 1, 0), math::Vector3()));
@@ -59,19 +47,17 @@ void GroundPlane::load()
         vertices[i].tangent = tan[i];
     }
 
-    m_pModel->init();
-    m_pModel->setVertices(&vertices[0], 4, DeferredPreEffect::getVertexLayout());
-    m_pModel->setIndices(&indices[0], 6, graphics::IndexStride_Byte);
+    graphics::ModelMesh::pointer pModelMesh(NEW graphics::ModelMesh("groundPlane"));
+    pModelMesh->init();
+    pModelMesh->setVertices(&vertices[0], 4, getModel()->getVertexLayout());
+    pModelMesh->setIndices(&indices[0], 6, graphics::IndexStride_Byte);
+    
+    getModel()->addMesh(pModelMesh);
 }
-void GroundPlane::draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, const happyengine::graphics::Camera* pCamera)
-{
-    m_pEffect->setDiffuseMap(m_pDiffuseMap);
-    m_pEffect->setNormalMap(m_pNormalMap);
-    m_pEffect->setSpecGlossIllMap(m_pSGIMap);
-    m_pEffect->setWorld(happyengine::math::Matrix::Identity);
-    m_pEffect->setWVP(pCamera->getViewProjection());
 
-    pRenderer->draw(m_pModel);
+
+GroundPlane::~GroundPlane()
+{
 }
 
 } //end namespace

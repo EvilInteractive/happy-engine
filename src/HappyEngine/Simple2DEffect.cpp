@@ -20,7 +20,6 @@
 
 #include "Simple2DEffect.h"
 #include "HappyNew.h"
-#include "VertexLayout.h"
 #include "Assert.h"
 
 namespace happyengine {
@@ -41,9 +40,9 @@ void Simple2DEffect::load()
 	using namespace happyengine;
 	using namespace graphics;
 
-	VertexLayout layout;
-	layout.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
-	layout.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 8, "inColor"));
+    ShaderLayout layout;
+	layout.addElement(ShaderLayoutElement(0, "inPosition"));
+	layout.addElement(ShaderLayoutElement(1, "inColor"));
 
 	m_pShader = NEW Shader();
 	std::vector<std::string> shaderOutputs;

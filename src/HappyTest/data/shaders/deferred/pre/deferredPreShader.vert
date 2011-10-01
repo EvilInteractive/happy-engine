@@ -14,22 +14,29 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author: Bastian Damman
 
-#ifndef _HE_I2DRENDERER_H_
-#define _HE_I2DRENDERER_H_
-#pragma once
+#version 150 core
 
-namespace happyengine {
-namespace graphics {
+in vec3 inPosition;
+in vec2 inTexCoord;
+in vec3 inNormal;
+in vec3 inTangent;
 
-class I2DRenderer
+out vec2 passTexCoord;
+out vec3 passNormal;
+out vec3 passTangent;
+out vec3 passWorldPos;
+
+uniform mat4 matWVP;
+uniform mat4 matWorld;
+
+void main()
 {
-public:
-    virtual ~I2DRenderer() {}
-
-    virtual void draw() = 0;
-};
-
-} } //end namespace
-
-#endif
+	gl_Position = matWVP * vec4(inPosition, 1.0f);
+	passTexCoord = inTexCoord;
+	passNormal = (matWorld * vec4(inNormal, 0.0f)).xyz;
+	passTangent = (matWorld * vec4(inTangent, 0.0f)).xyz;
+	passWorldPos = (matWorld * vec4(inPosition, 1.0f)).xyz;
+}

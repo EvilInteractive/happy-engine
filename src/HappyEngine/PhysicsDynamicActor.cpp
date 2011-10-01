@@ -26,7 +26,7 @@
 namespace happyengine {
 namespace physics {
 
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, PhysicsMaterial* pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial)
 {
     m_pActor = PxCreateDynamic(*PHYSICS->getSDK(), 
                                PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
@@ -37,7 +37,7 @@ PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const shapes:
 
     PHYSICS->getScene()->addActor(*m_pActor);
 }
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, PhysicsMaterial* pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial)
 {  
     m_pActor = PHYSICS->getSDK()->createRigidDynamic(PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
                                                         PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 

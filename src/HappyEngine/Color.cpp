@@ -31,6 +31,9 @@ Color::Color(byte red, byte green, byte blue, byte alpha) : m_rgb(red / 255.0f, 
                                                             m_a(alpha / 255.0f)
 {
 }
+Color::Color(const math::Vector4& col): m_rgb(col.xyz()), m_a(col.w)
+{
+}
 
 
 Color::~Color()

@@ -23,7 +23,6 @@
 #include "Deferred3DRenderer.h"
 #include "TestObject.h"
 #include "Color.h"
-#include "DeferredPreEffect.h"
 #include "TestBullet.h"
 #include "Simple2DEffect.h"
 #include "Texture2D.h"
@@ -33,8 +32,6 @@
 #include "FPSGraph.h"
 #include "GroundPlane.h"
 
-#include <ppl.h>
-#include <concurrent_vector.h>
 #include <vector>
 
 #include "MyServer.h"
@@ -58,20 +55,17 @@ public:
     virtual void draw(float dTime);
 
 private:
-    happyengine::graphics::Deferred3DRenderer* m_pDeferred3DRenderer;
 	happytest::FlyCamera* m_pCamera;
 
     TestObject* m_pTestObject;
 
     happyengine::Color m_BackgroundColors[5];
     happyengine::byte m_BackgroundIndex;
-
-    DeferredPreEffect* m_pDeferredPreEffect;
-
+    
     float m_DrawTimer;
     float m_UpdateTimer;
     
-    Concurrency::concurrent_vector<TestBullet*> m_Bullets;
+    std::vector<TestBullet*> m_Bullets;
 
     MyServer* m_pServer;
     MyClient* m_pClient;

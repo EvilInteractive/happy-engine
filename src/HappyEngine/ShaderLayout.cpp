@@ -15,38 +15,48 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 20/08/2011
+//Author: Bastian Damman
+//Created: 01/10/2011
 
-#ifndef _HE_PHYSICS_MATERIAL_H_
-#define _HE_PHYSICS_MATERIAL_H_
-#pragma once
-
-#include "PxMaterial.h"
-#include "boost/shared_ptr.hpp"
+#include "ShaderLayout.h"
+#include "HappyNew.h"
 
 namespace happyengine {
-namespace physics {
+namespace graphics {
 
-class PhysicsMaterial
+
+
+ShaderLayoutElement::ShaderLayoutElement(uint elementIndex, const std::string& nameInShader): m_ElementIndex(elementIndex), m_NameInShader(nameInShader)
 {
-public:
-	PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
-    virtual ~PhysicsMaterial();
+}
 
-    PxMaterial* getInternalMaterial() const;
+uint ShaderLayoutElement::getElementIndex() const
+{
+    return m_ElementIndex;
+}
+const std::string& ShaderLayoutElement::getShaderVariableName() const
+{
+    return m_NameInShader;
+}
 
-    typedef boost::shared_ptr<PhysicsMaterial> pointer;
 
-private:
 
-    PxMaterial* m_pInternalMaterial;
+ShaderLayout::ShaderLayout()
+{
+}
 
-    //Disable default copy constructor and default assignment operator
-    PhysicsMaterial(const PhysicsMaterial&);
-    PhysicsMaterial& operator=(const PhysicsMaterial&);
-};
+ShaderLayout::~ShaderLayout()
+{
+}
+
+void ShaderLayout::addElement(const ShaderLayoutElement& element)
+{
+    m_Layout.push_back(element);
+}
+
+const ShaderLayout::layout& ShaderLayout::getElements() const
+{
+    return m_Layout;
+}
 
 } } //end namespace
-
-#endif

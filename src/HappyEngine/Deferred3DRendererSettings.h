@@ -22,6 +22,8 @@
 #define _HE_DEFERRED_3D_RENDERER_SETTINGS_H_
 #pragma once
 
+#include "HappyTypes.h"
+
 namespace happyengine {
 namespace graphics {
 
@@ -65,10 +67,20 @@ public:
     float getFogStart() const;
     float getFogEnd() const;
 
+    void setShadowQuality(ShadowQuality quality) const;
+    bool getShadowsEnabled() const;
+    bool getDynamicShadowsEnabled() const;
+    byte getShadowMapMultiplier() const;
+
 private:
 
     //ViewDistanceQuality
     float m_FogStart, m_FogEnd;
+
+    //ShadowQuality
+    byte m_ShadowMapSizeMuliplier;
+    bool m_EnableShadows;
+    bool m_EnableDynamicShadows;
 
     //Disable default copy constructor and default assignment operator
     Deferred3DRendererSettings(const Deferred3DRendererSettings&);

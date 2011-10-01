@@ -34,9 +34,6 @@
     <ClCompile Include="TestBullet.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
-    <ClCompile Include="DeferredPreEffect.cpp">
-      <Filter>happytest</Filter>
-    </ClCompile>
     <ClCompile Include="MyServer.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
@@ -64,9 +61,6 @@
       <Filter>happytest\vertex</Filter>
     </ClInclude>
     <ClInclude Include="TestBullet.h">
-      <Filter>happytest</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredPreEffect.h">
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="MyServer.h">
@@ -99,30 +93,6 @@
       <Filter>data\shaders</Filter>
     </None>
     <None Include="data\shaders\simpleTextureShader.vert">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPostShader.vert">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPreShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPreShader.vert">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPostPLShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPostSLShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPostALShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPostDLShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferredPostSelfIllumination.frag">
       <Filter>data\shaders</Filter>
     </None>
     <None Include="data\shaders\simple2DShader.frag">

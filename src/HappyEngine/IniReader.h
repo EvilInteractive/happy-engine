@@ -57,6 +57,10 @@ public:
     std::string readString(const std::wstring& root, const std::wstring& node, const std::string& defaultReturn = "") const;
     std::wstring readWString(const std::wstring& root, const std::wstring& node, const std::wstring& defaultReturn = L"") const;
 
+    const std::map<std::wstring, std::wstring>& getNodes(const std::wstring& root) const;
+
+    bool containsRoot(const std::wstring& root) const;
+
 private:
     bool readRaw(const std::wstring& root, const std::wstring& node, std::wstring& returnValue) const;
 

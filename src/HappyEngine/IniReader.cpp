@@ -307,5 +307,19 @@ bool IniReader::readRaw(const std::wstring& root, const std::wstring& node, std:
         return false;
     }
 }
+const std::map<std::wstring, std::wstring>& IniReader::getNodes(const std::wstring& root) const
+{
+    ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
+
+    IniReadData::const_iterator itRoot = m_Data.find(root);
+    return itRoot->second;
+}
+bool IniReader::containsRoot(const std::wstring& root) const
+{
+    ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
+
+    IniReadData::const_iterator itRoot = m_Data.find(root);
+    return itRoot != m_Data.cend();
+}
 
 } } //end namespace

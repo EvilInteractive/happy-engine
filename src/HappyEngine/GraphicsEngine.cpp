@@ -23,6 +23,8 @@
 #include "GL/glew.h"
 #include "ExternalError.h"
 
+#include "HappyNew.h"
+
 namespace happyengine {
 namespace graphics {
 
@@ -38,6 +40,7 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
 
 GraphicsEngine::~GraphicsEngine()
 {
+    delete m_pDeferred3DRenderer;
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
 }
@@ -59,6 +62,8 @@ void GraphicsEngine::init()
 
     setBackgroundColor(m_ClearColor);
     glClearDepth(1.0f);
+
+    m_pDeferred3DRenderer = NEW Deferred3DRenderer();
 }
 void GraphicsEngine::initWindow()
 {
@@ -167,9 +172,36 @@ void GraphicsEngine::clearDepth() const
 {
     glClear(GL_DEPTH_BUFFER_BIT);
 }
+
+void GraphicsEngine::begin(const Camera* pCamera)
+{
+    m_pCurrentCamera = pCamera;
+    m_pDeferred3DRenderer->begin(pCamera);
+}
+void GraphicsEngine::end()
+{
+    m_pDeferred3DRenderer->end();
+}
+void GraphicsEngine::draw(const IDrawable* pEntity)
+{
+    pEntity->getMaterial().begin(pEntity, m_pCurrentCamera);
+    m_pDeferred3DRenderer->draw(pEntity->getModel());
+}
+void GraphicsEngine::draw(const Model::pointer& pModel)
+{
+    m_pDeferred3DRenderer->draw(pModel);
+}
+void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
+{
+    m_pDeferred3DRenderer->draw(pModelMesh);
+}
 void GraphicsEngine::present() const
 {    
     SDL_GL_SwapWindow(m_pMainWindow);
+}
+LightManager* GraphicsEngine::getLightManager() const
+{
+    return m_pDeferred3DRenderer->getLightManager();
 }
 
 } } //end namespace

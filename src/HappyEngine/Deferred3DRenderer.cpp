@@ -108,19 +108,24 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     /*------------------------------------------------------------------------------*/
     /*                               LOAD SHADERS                                   */
     /*----------------------------------------------------------------------------- */
-    VertexLayout layout;
-    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0, "inPosition"));
-    layout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 12, "inTexCoord"));
+    ShaderLayout shaderLayout;
+    shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+    shaderLayout.addElement(ShaderLayoutElement(1, "inTexCoord"));
+
+    VertexLayout vertexLayout;
+    vertexLayout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
+    vertexLayout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 12));
 
     for (int i = 0; i < SHADERS; ++i)
     {
         m_pPostShader[i] = NEW Shader();
     }
 
-    m_pPostShader[0]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostALShader.frag", layout);
-    m_pPostShader[1]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostPLShader.frag", layout);
-    m_pPostShader[2]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostSLShader.frag", layout);
-    m_pPostShader[3]->init("../data/shaders/deferredPostShader.vert", "../data/shaders/deferredPostDLShader.frag", layout);
+    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    m_pPostShader[0]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostALShader.frag", shaderLayout);
+    m_pPostShader[1]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostPLShader.frag", shaderLayout);
+    m_pPostShader[2]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout);
+    m_pPostShader[3]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostDLShader.frag", shaderLayout);
 
     for (int i = 0; i < SHADERS; ++i)
     {
@@ -170,7 +175,7 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
     m_pModel->init();
-    m_pModel->setVertices(&vertices[0], 4, layout);
+    m_pModel->setVertices(&vertices[0], 4, vertexLayout);
     m_pModel->setIndices(&indices[0], 6, IndexStride_Byte);
 }
 
@@ -188,15 +193,16 @@ Deferred3DRenderer::~Deferred3DRenderer()
     delete m_pLightManager;
 }
 
-void Deferred3DRenderer::begin()
+void Deferred3DRenderer::begin(const Camera* pCamera)
 {
+    m_pCamera = pCamera;
     glBindFramebuffer(GL_FRAMEBUFFER, m_FboId);
     const static GLenum buffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, buffers);
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-void Deferred3DRenderer::end(const Camera* pCamera)
+void Deferred3DRenderer::end()
 {
     const static GLenum buffers[1] = { GL_BACK_LEFT };
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -215,14 +221,14 @@ void Deferred3DRenderer::end(const Camera* pCamera)
         if (i != LightType_AmbientLight)
         {
             m_pPostShader[i]->setShaderVar(m_ShaderNormGlossMapPos[i], m_pTexture[2]);
-			m_pPostShader[i]->setShaderVar(m_ShaderCamPos[i], pCamera->getPosition());
+			m_pPostShader[i]->setShaderVar(m_ShaderCamPos[i], m_pCamera->getPosition());
         }
     
         switch (i)
         {
             case LightType_AmbientLight: postAmbientLights(); break;
-            case LightType_PointLight: postPointLights(pCamera); break;
-            case LightType_SpotLight: postSpotLights(pCamera); break;
+            case LightType_PointLight: postPointLights(m_pCamera); break;
+            case LightType_SpotLight: postSpotLights(m_pCamera); break;
             case LightType_DirectionalLight: postDirectionalLights(); break;
             default: ASSERT("unkown lighttype"); break;
         }
@@ -237,13 +243,13 @@ void Deferred3DRenderer::end(const Camera* pCamera)
     HE2D->begin();
     std::for_each(m_pLightManager->getPointLights().cbegin(), m_pLightManager->getPointLights().cend(), [&](const PointLight::pointer& pLight)
     {
-        if ( !(math::dot(math::normalize(pLight->position - pCamera->getPosition()), pCamera->getLook()) < 0 && 
-               math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
-            pLight->debugDraw(pCamera);
+        if ( !(math::dot(math::normalize(pLight->position - m_pCamera->getPosition()), m_pCamera->getLook()) < 0 && 
+               math::length(pLight->position - m_pCamera->getPosition()) > pLight->endAttenuation)) 
+            pLight->debugDraw(m_pCamera);
     });
     std::for_each(m_pLightManager->getSpotLights().cbegin(), m_pLightManager->getSpotLights().cend(), [&](const SpotLight::pointer& pLight)
     {
-        pLight->debugDraw(pCamera);
+        pLight->debugDraw(m_pCamera);
     });
     HE2D->end();
     #endif

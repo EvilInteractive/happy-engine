@@ -57,10 +57,10 @@ void HappyEngine::cleanup()
     m_pGraphicsEngine = nullptr;
     delete m_pControlsManager;
     m_pControlsManager = nullptr;
-    delete m_pPhysicsEngine;
-    m_pPhysicsEngine = nullptr;
     delete m_pContentManager;
     m_pContentManager = nullptr;
+    delete m_pPhysicsEngine;
+    m_pPhysicsEngine = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
 	delete m_p2DRenderer;

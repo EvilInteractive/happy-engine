@@ -99,11 +99,11 @@ void Happy2DRenderer::end()
 
 void Happy2DRenderer::initialize()
 {
-	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
-	m_VertexLayoutColor.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 8, "inColor"));
+	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0));
+	m_VertexLayoutColor.addElement(VertexElement(1, VertexElement::Type_Vector4, VertexElement::Usage_Other, 16, 8));
 
-	m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0, "inPosition"));
-	m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 8, "inTexCoord"));
+	m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0));
+	m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 8));
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);

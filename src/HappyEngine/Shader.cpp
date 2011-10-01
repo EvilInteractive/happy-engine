@@ -83,7 +83,7 @@ bool validateProgram(GLuint programID)
 
     return succes;
 }
-bool Shader::init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexlayout, const std::vector<std::string>& outputs)
+bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderlayout, const std::vector<std::string>& outputs)
 {
     ASSERT(m_Id != -1, "no need to init twice");
     bool succes = true;
@@ -125,8 +125,8 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Ve
     glAttachShader(m_Id, m_VsId);
     glAttachShader(m_Id, m_FsId);
 
-    const VertexLayout::layout& layout(vertexlayout.getElements());
-    std::for_each(layout.cbegin(), layout.cend(), [&](VertexElement e)
+    const ShaderLayout::layout& layout(shaderlayout.getElements());
+    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
     {
         glBindAttribLocation(m_Id, e.getElementIndex(), e.getShaderVariableName().c_str());
     });

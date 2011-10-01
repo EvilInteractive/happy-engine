@@ -22,7 +22,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "VertexLayout.h"
+#include "ShaderLayout.h"
 
 #include "Matrix.h"
 #include "Vector2.h"
@@ -30,6 +30,8 @@
 #include "Vector4.h"
 #include "Texture2D.h"
 #include "HappyTypes.h"
+
+#include "boost/shared_ptr.hpp"
 
 namespace happyengine {
 namespace graphics {
@@ -40,7 +42,7 @@ public:
 	Shader();
     virtual ~Shader();
 
-    bool init(const std::string& vsPath, const std::string& fsPath, const VertexLayout& vertexLayout, 
+    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, 
               const std::vector<std::string>& outputs = std::vector<std::string>());
 
     void begin();
@@ -56,6 +58,8 @@ public:
     void setShaderVar(uint id, const math::Vector4& vec) const;
     void setShaderVar(uint id, const math::Matrix& matrix) const;
     void setShaderVar(uint id, const graphics::Texture2D::pointer& tex2D) const;
+
+    typedef boost::shared_ptr<Shader> pointer;
 
 private:
     uint m_Id;

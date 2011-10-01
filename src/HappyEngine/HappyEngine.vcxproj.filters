@@ -68,7 +68,25 @@
     <Filter Include="happyengine\math\shapes">
       <UniqueIdentifier>{f1c2151b-2c55-46d0-abb3-01ed3ceb1b20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\deferred">
+    <Filter Include="happyengine\game">
+      <UniqueIdentifier>{26fe970f-e719-44c6-ad0a-039ff021cefd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\light">
+      <UniqueIdentifier>{7d1f1a66-6e66-458d-9a34-22fbaa062ff2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\renderer">
+      <UniqueIdentifier>{64c93d49-a806-47ab-adfd-8ab11223fe69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\shader">
+      <UniqueIdentifier>{136165c9-032d-4c46-8a11-b3513b5ab4dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\model">
+      <UniqueIdentifier>{4a6a6e2a-2da6-46fc-9667-de7a4f660abf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\texture">
+      <UniqueIdentifier>{b2d662f8-3f2d-44cb-ab75-19030d9aa64e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\renderer\deferred">
       <UniqueIdentifier>{39b46aa4-740f-4e49-bb06-68fd8b724b60}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -88,23 +106,8 @@
     <ClCompile Include="Exception.cpp">
       <Filter>happyengine\error\exceptions</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Vector3.cpp">
       <Filter>happyengine\math</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexLayout.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleForward3DRenderer.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="Assert.cpp">
       <Filter>happyengine\error\logicerror</Filter>
@@ -148,9 +151,6 @@
     <ClCompile Include="FileNotFoundException.cpp">
       <Filter>happyengine\error\exceptions\io</Filter>
     </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="TextureLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
@@ -158,12 +158,6 @@
       <Filter>happyengine\content</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Deferred3DRenderer.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="LightManager.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsEngine.cpp">
@@ -211,9 +205,6 @@
     <ClCompile Include="BinObjLoader.cpp">
       <Filter>happyengine\content\models</Filter>
     </ClCompile>
-    <ClCompile Include="Simple2DEffect.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="ModelLoaderFunctions.cpp">
       <Filter>happyengine\content\models</Filter>
     </ClCompile>
@@ -229,12 +220,6 @@
     <ClCompile Include="LineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="Simple2DTextureEffect.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Happy2DRenderer.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="FPSGraph.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
@@ -247,17 +232,8 @@
     <ClCompile Include="BinObjLineLoader.cpp">
       <Filter>happyengine\content\lines</Filter>
     </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsShapeLoader.cpp">
       <Filter>happyengine\content</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelMesh.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="Circle.cpp">
       <Filter>happyengine\math\shapes</Filter>
@@ -269,7 +245,64 @@
       <Filter>happyengine\math\shapes</Filter>
     </ClCompile>
     <ClCompile Include="Deferred3DRendererSettings.cpp">
-      <Filter>happyengine\graphics\deferred</Filter>
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>happyengine\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="Deferred3DRenderer.cpp">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Happy2DRenderer.cpp">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleForward3DRenderer.cpp">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Simple2DEffect.cpp">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Simple2DTextureEffect.cpp">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexLayout.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelMesh.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>happyengine\graphics\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLayout.cpp">
+      <Filter>happyengine\graphics\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,12 +311,6 @@
     </ClInclude>
     <ClInclude Include="ContentManager.h">
       <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="I3DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="I2DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="HappyEngine.h">
       <Filter>happyengine</Filter>
@@ -297,23 +324,8 @@
     <ClInclude Include="Exception.h">
       <Filter>happyengine\error\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Vector3.h">
       <Filter>happyengine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexLayout.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleForward3DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="Assert.h">
       <Filter>happyengine\error\logicerror</Filter>
@@ -369,9 +381,6 @@
     <ClInclude Include="FileNotFoundException.h">
       <Filter>happyengine\error\exceptions\io</Filter>
     </ClInclude>
-    <ClInclude Include="Texture2D.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="TextureLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
@@ -379,15 +388,6 @@
       <Filter>happyengine\content</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Deferred3DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="LightManager.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsEngine.h">
@@ -441,9 +441,6 @@
     <ClInclude Include="IModelLoader.h">
       <Filter>happyengine\content\models</Filter>
     </ClInclude>
-    <ClInclude Include="Simple2DEffect.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="ModelLoaderFunctions.h">
       <Filter>happyengine\content\models</Filter>
     </ClInclude>
@@ -462,17 +459,11 @@
     <ClInclude Include="LineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="Simple2DTextureEffect.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="AssetContainerP.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
     <ClInclude Include="IniReader.h">
       <Filter>happyengine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="Happy2DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="FPSGraph.h">
       <Filter>happyengine\tools</Filter>
@@ -495,14 +486,8 @@
     <ClInclude Include="BinObjLineLoader.h">
       <Filter>happyengine\content\lines</Filter>
     </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsShapeLoader.h">
       <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelMesh.h">
-      <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="Circle.h">
       <Filter>happyengine\math\shapes</Filter>
@@ -514,7 +499,70 @@
       <Filter>happyengine\math\shapes</Filter>
     </ClInclude>
     <ClInclude Include="Deferred3DRendererSettings.h">
-      <Filter>happyengine\graphics\deferred</Filter>
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>happyengine\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="Deferred3DRenderer.h">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Happy2DRenderer.h">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleForward3DRenderer.h">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Simple2DTextureEffect.h">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Simple2DEffect.h">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexLayout.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelMesh.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>happyengine\graphics\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="IDrawable.h">
+      <Filter>happyengine\graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderVar.h">
+      <Filter>happyengine\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityLoader.h">
+      <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLoader.h">
+      <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLayout.h">
+      <Filter>happyengine\graphics\shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,7 +30,7 @@
 namespace happyengine {
 namespace graphics {
     
-Model::Model(): m_Complete(false)
+Model::Model(const VertexLayout& vertexLayout): m_Complete(false), m_VertexLayout(vertexLayout)
 {
 }
 
@@ -68,6 +68,11 @@ bool Model::isComplete() const
 void Model::setComplete()
 {
     m_Complete = true;
+}
+
+const VertexLayout& Model::getVertexLayout() const
+{
+    return m_VertexLayout;
 }
 
 } } //end namespace

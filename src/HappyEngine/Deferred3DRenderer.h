@@ -23,9 +23,9 @@
 #define _HE_DEFERRED_3D_RENDERER_H_
 #pragma once
 
-#include "I3DRenderer.h"
 #include "HappyTypes.h"
 #include "Shader.h"
+#include "Model.h"
 #include "ModelMesh.h"
 #include "Texture2D.h"
 #include "LightManager.h"
@@ -35,7 +35,7 @@
 namespace happyengine {
 namespace graphics {
 
-class Deferred3DRenderer : public I3DRenderer
+class Deferred3DRenderer
 {
 public:
 	Deferred3DRenderer();
@@ -44,8 +44,8 @@ public:
     virtual void draw(const Model::pointer& pModel);//, const Camera* pCamera);
     virtual void draw(const ModelMesh::pointer& pModel);//, const Camera* pCamera);
 
-    void begin();
-    void end(const Camera* pCamera);
+    void begin(const Camera* pCamera);
+    void end();
 
     LightManager* getLightManager() const;
 
@@ -95,6 +95,8 @@ private:
     LightManager* m_pLightManager;
 
     Deferred3DRendererSettings m_Settings;
+
+    const Camera* m_pCamera;
     
     //Disable default copy constructor and default assignment operator
     Deferred3DRenderer(const Deferred3DRenderer&);

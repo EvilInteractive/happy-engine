@@ -19,44 +19,25 @@
 #define _TEST_BULLET_H_
 #pragma once
 
-#include "Assert.h"
-#define assert ASSERT
-
 #include "PhysicsDynamicActor.h"
 #include "PhysicsMaterial.h"
-#include "PhysicsBoxShape.h"
-#include "Model.h"
-#include "Matrix.h"
-#include "Texture2D.h"
-
-#include "I3DRenderer.h"
-#include "DeferredPreEffect.h"
-#include "Camera.h"
+#include "Entity.h"
 
 namespace happytest {
 
-class TestBullet
+class TestBullet : public happyengine::game::Entity
 {
 public:
-	TestBullet(const happyengine::math::Vector3& pos, const happyengine::math::Vector3& velocity);
+	TestBullet(const happyengine::game::EntityDesc& desc, const happyengine::math::Vector3& pos, const happyengine::math::Vector3& velocity);
     virtual ~TestBullet();
     
-    void load();
-    void tick(float dTime);
-    void draw(happyengine::graphics::I3DRenderer* pRenderer, DeferredPreEffect* m_pEffect, const happyengine::graphics::Camera* pCamera);
+    virtual void tick(float dTime);
 
 private:
 
     happyengine::physics::PhysicsDynamicActor* m_pActor;
-    happyengine::physics::PhysicsMaterial* m_pMaterial;
-
-    happyengine::graphics::Model::pointer m_pModel;
-    happyengine::graphics::Texture2D::pointer m_pDiffuseMap;
-    happyengine::graphics::Texture2D::pointer m_pNormalMap;
-    happyengine::graphics::Texture2D::pointer m_pSGIMap;
-
-    happyengine::math::Matrix m_mtxWorld;
-
+    happyengine::physics::PhysicsMaterial::pointer m_pMaterial;
+    
     //Disable default copy constructor and default assignment operator
     TestBullet(const TestBullet&);
     TestBullet& operator=(const TestBullet&);

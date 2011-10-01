@@ -29,6 +29,12 @@ struct Vector3
 public:
     float x, y, z;
 
+    const static Vector3 up;
+    const static Vector3 forward;
+    const static Vector3 right;
+    const static Vector3 one;
+    const static Vector3 zero;
+
 	Vector3();
     explicit Vector3(physx::pubfnd3::PxVec3 vec);
 	Vector3(float x, float y, float z);

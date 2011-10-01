@@ -22,7 +22,6 @@
 #define _HE_HAPPY_2D_RENDERER_H_
 #pragma once
 
-#include "I2DRenderer.h"
 #include "Vertex.h"
 #include "Color.h"
 #include "Texture2D.h"

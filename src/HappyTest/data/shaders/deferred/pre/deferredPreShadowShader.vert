@@ -14,32 +14,19 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
 
-#ifndef _HE_I3DRENDERER_H_
-#define _HE_I3DRENDERER_H_
-#pragma once
+#version 150 core
 
-#include "Model.h"
-#include "ModelMesh.h"
-#include "Sphere.h"
+in vec3 inPosition;
+in vec2 inTexCoord;
+in vec3 inNormal;
+in vec3 inTangent;
 
-namespace happyengine {
-namespace graphics {
+uniform mat4 matWVP;
 
-class I3DRenderer
+void main()
 {
-public:
-    virtual ~I3DRenderer() {}
-
-	virtual void draw(const Model::pointer& pModel) = 0;//, const Camera* pCamera) = 0;
-	virtual void draw(const ModelMesh::pointer& pModel) = 0;//, const Camera* pCamera) = 0;
-
-    //bool viewDistanceCheck(const math::shapes::Sphere& sphere, const Camera* pCamera)
-    //{
-    //    math::Vector3 pos = pCamera->
-    //}
-};
-
-} } //end namespace
-
-#endif
+	gl_Position = matWVP * vec4(inPosition, 1.0f);
+}
