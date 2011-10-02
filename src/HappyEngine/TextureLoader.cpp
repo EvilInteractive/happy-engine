@@ -99,7 +99,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 graphics::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
 {
     std::stringstream stream;
-    stream << "__" << color.rByte() << " " << color.gByte() << " " << color.bByte();
+    stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
 	if (m_pAssetContainer->isAssetPresent(stream.str()))
 	{
 		return m_pAssetContainer->getAsset(stream.str());
@@ -160,10 +160,10 @@ void TextureLoader::TextureLoadThread()
         TextureLoadData data;
         if (m_TextureLoadQueue.try_pop(data))
         {
-            ILuint id = ilGenImage();
-            ilBindImage(id);
             if (data.path != "")
             {
+                ILuint id = ilGenImage();
+                ilBindImage(id);
                 if (ilLoadImage(data.path.c_str()))
                 {
                     if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
@@ -189,11 +189,11 @@ void TextureLoader::TextureLoadThread()
             }
             else
             {
-                data.id = id;
+                data.id = 0;
                 data.width = 8;
                 data.height = 8;
                 data.format = GL_RGBA;
-                data.pData = new byte[64];
+                data.pData = NEW byte[8*8*4];
                 for (uint i = 0; i < 64*4; i += 4)
                 {
                     data.pData[i] = data.color.rByte();

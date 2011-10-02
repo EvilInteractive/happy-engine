@@ -107,7 +107,7 @@ void Happy2DRenderer::initialize()
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CW);
 
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
@@ -123,7 +123,7 @@ void Happy2DRenderer::initialize()
 
 	std::vector<VertexPosTex2D> vertices;
 	vertices.push_back(
-		VertexPosTex2D(math::Vector2(-0.5f,0.5f),
+		VertexPosTex2D(math::Vector2(-0.5f, 0.5f),
 		math::Vector2(0, 0)));
 
 	vertices.push_back(
@@ -156,8 +156,8 @@ void Happy2DRenderer::initialize()
 		math::Vector2(1, 1)));*/
 
     std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
-	indices.push_back(3); indices.push_back(2); indices.push_back(1);
+    indices.push_back(2); indices.push_back(1); indices.push_back(0);
+	indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
     m_pTextureQuad->setVertices(&vertices[0], 4, m_VertexLayoutTexture);
     m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
@@ -438,8 +438,8 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 	vertices.push_back(VertexPosCol2D(math::Vector2(size.x/2, -size.y/2), m_CurrentColor.rgba()));
 
 	std::vector<byte> indices;
-	indices.push_back(0); indices.push_back(1); indices.push_back(2);
-	indices.push_back(3); indices.push_back(2); indices.push_back(1);
+	indices.push_back(2); indices.push_back(1); indices.push_back(1);
+	indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
 	model.init();
 	model.setVertices(&vertices[0], 4, m_VertexLayoutColor);
@@ -481,8 +481,8 @@ void Happy2DRenderer::fillRectangleInstanced(const math::Vector2& pos, const mat
 		vertices.push_back(VertexPosCol2D(math::Vector2(size.x/2, -size.y/2), m_CurrentColor.rgba()));
 
 		std::vector<byte> indices;
-		indices.push_back(0); indices.push_back(1); indices.push_back(2);
-		indices.push_back(3); indices.push_back(2); indices.push_back(1);
+		indices.push_back(2); indices.push_back(1); indices.push_back(0);
+		indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
 		pModel = NEW ModelMesh(stream.str());
 		pModel->init();

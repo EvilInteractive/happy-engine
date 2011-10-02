@@ -37,8 +37,8 @@ GroundPlane::GroundPlane(const happyengine::game::EntityDesc& desc): Entity(desc
     vertices.push_back(graphics::VertexPTNT(math::Vector3(width / 2.0f, 0.0f, depth / 2.0f), math::Vector2(width/texRes, depth/texRes), math::Vector3(0, 1, 0), math::Vector3()));
 
     std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
-    indices.push_back(1); indices.push_back(3); indices.push_back(2);
+    indices.push_back(2); indices.push_back(1); indices.push_back(0);
+    indices.push_back(2); indices.push_back(3); indices.push_back(1);
 
     std::vector<math::Vector3> tan(happyengine::content::models::calculateTangents(&vertices[0], 4, 0, 12, 20, 44, &indices[0], 6, graphics::IndexStride_Byte));
 

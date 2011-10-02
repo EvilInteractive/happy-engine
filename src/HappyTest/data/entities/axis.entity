@@ -1,0 +1,12 @@
+[Entity]
+class = ""
+model = "axis.binobj"
+
+[Shader]
+shader = "deferred/pre/default.shader"
+
+[TEXTURE2D]
+diffuseMap = "rgb.png"
+normalMap = 128, 128, 255, 255
+specGlossIllMap = 1, 1, 1, 0
+

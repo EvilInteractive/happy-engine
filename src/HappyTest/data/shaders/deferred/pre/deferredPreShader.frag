@@ -43,7 +43,7 @@ vec3 calcNormal(vec3 normal, vec3 tangent, vec3 rgb)
 
 	mat3 assenstelsel = mat3(binormal, tangent, normal);
 
-	vec3 xyz = vec3(rgb.x * 2 - 1, rgb.y * 2 - 1, rgb.z * 2 - 1);
+	vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
 
 	return normalize(assenstelsel * xyz);
 }

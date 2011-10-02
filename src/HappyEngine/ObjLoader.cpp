@@ -239,28 +239,28 @@ void ObjLoader::create(bool allowByteIndices)
     });
     flushCreateGroup(group);
 
-    //flip indices for CCW culling
-    for (uint i = 0; i < m_IndicesByte.size(); i += 3)
-    {
-        byte bTemp(0);
-        bTemp = m_IndicesByte[i + 1];
-        m_IndicesByte[i + 1] = m_IndicesByte[i + 2]; 
-        m_IndicesByte[i + 2] = bTemp;
-    }
-    for (uint i = 0; i < m_IndicesUShort.size(); i += 3)
-    {
-        ushort usTemp(0);
-        usTemp = m_IndicesUShort[i + 1];
-        m_IndicesUShort[i + 1] = m_IndicesUShort[i + 2]; 
-        m_IndicesUShort[i + 2] = usTemp;
-    }
-    for (uint i = 0; i < m_IndicesUInt.size(); i += 3)
-    {
-        uint uiTemp(0);
-        uiTemp = m_IndicesUInt[i + 1];
-        m_IndicesUInt[i + 1] = m_IndicesUInt[i + 2]; 
-        m_IndicesUInt[i + 2] = uiTemp;
-    }
+    //flip indices for CW culling
+    //for (uint i = 0; i < m_IndicesByte.size(); i += 3)
+    //{
+    //    byte bTemp(0);
+    //    bTemp = m_IndicesByte[i + 1];
+    //    m_IndicesByte[i + 1] = m_IndicesByte[i + 2]; 
+    //    m_IndicesByte[i + 2] = bTemp;
+    //}
+    //for (uint i = 0; i < m_IndicesUShort.size(); i += 3)
+    //{
+    //    ushort usTemp(0);
+    //    usTemp = m_IndicesUShort[i + 1];
+    //    m_IndicesUShort[i + 1] = m_IndicesUShort[i + 2]; 
+    //    m_IndicesUShort[i + 2] = usTemp;
+    //}
+    //for (uint i = 0; i < m_IndicesUInt.size(); i += 3)
+    //{
+    //    uint uiTemp(0);
+    //    uiTemp = m_IndicesUInt[i + 1];
+    //    m_IndicesUInt[i + 1] = m_IndicesUInt[i + 2]; 
+    //    m_IndicesUInt[i + 2] = uiTemp;
+    //}
 }
 void ObjLoader::addIndex(uint index, uint group)
 {

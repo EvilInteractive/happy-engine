@@ -34,7 +34,7 @@ namespace happyengine {
 namespace graphics {
 
 const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_RGBA, GL_DEPTH_COMPONENT };
-const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA16F, GL_RGBA16F, GL_DEPTH_COMPONENT16};
+const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA32F, GL_RGBA16F, GL_DEPTH_COMPONENT16};
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
 
 Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRenderer_QUAD")), m_pLightManager(NEW LightManager())
@@ -101,7 +101,7 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     glDepthMask(GL_TRUE); //disable enable writing to depth buffer
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CW);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -165,10 +165,14 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     /*                             LOAD RENDER QUAD                                 */
     /*----------------------------------------------------------------------------- */
     std::vector<VertexPosTex> vertices;
-    vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(1, 0)));
+    /*vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(1, 0)));
     vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(0, 0)));
     vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(1, 1)));
+    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(0, 1)));*/
+    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(1, 1)));
     vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(0, 1)));
+    vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(1, 0)));
+    vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(0, 0)));
 
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(1); indices.push_back(2);
@@ -209,8 +213,9 @@ void Deferred3DRenderer::end()
     glDrawBuffers(1, buffers);
     
     glEnable(GL_BLEND);
-    glEnable(GL_SCISSOR_TEST);
+    //glEnable(GL_SCISSOR_TEST);
     glBlendFunc(GL_ONE, GL_ONE);
+    glDisable(GL_DEPTH_TEST);
 
     for (int i = 0; i < SHADERS; ++i)
     {
@@ -238,6 +243,7 @@ void Deferred3DRenderer::end()
 
     glDisable(GL_BLEND);
     glDisable(GL_SCISSOR_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     #if _DEBUG
     HE2D->begin();
@@ -279,7 +285,7 @@ void Deferred3DRenderer::postPointLights(const Camera* pCamera)
                    math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
             {
                 RectI scissor(pLight->getScissor(pCamera));
-                glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+                //glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
                 m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
                 m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
                 m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);

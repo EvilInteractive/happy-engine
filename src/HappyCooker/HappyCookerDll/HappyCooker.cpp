@@ -64,7 +64,7 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
 
     graphics::VertexLayout layout;
     layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position,
-        sizeof(math::Vector3), 0, ""));
+        sizeof(math::Vector3), 0));
 
     try { objLoader.load(input, layout, false); }
     catch (error::FileNotFoundException e)
@@ -135,10 +135,10 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
     content::models::ObjLoader objLoader;
 
     graphics::VertexLayout layout;
-    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position, sizeof(math::Vector3), 0, ""));
-    layout.addElement(graphics::VertexElement(1, graphics::VertexElement::Type_Vector2, graphics::VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12, ""));
-    layout.addElement(graphics::VertexElement(2, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Normal, sizeof(math::Vector3), 20, ""));
-    layout.addElement(graphics::VertexElement(3, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Tangent, sizeof(math::Vector3), 32, ""));
+    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position, sizeof(math::Vector3), 0));
+    layout.addElement(graphics::VertexElement(1, graphics::VertexElement::Type_Vector2, graphics::VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12));
+    layout.addElement(graphics::VertexElement(2, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Normal, sizeof(math::Vector3), 20));
+    layout.addElement(graphics::VertexElement(3, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Tangent, sizeof(math::Vector3), 32));
 
     try { objLoader.load(input, layout, true); }
     catch (error::FileNotFoundException e)

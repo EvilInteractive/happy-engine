@@ -55,6 +55,7 @@ struct EntityDesc
 class Entity : public graphics::IDrawable
 {
 public:
+	Entity(const EntityDesc& desc);
     virtual ~Entity();
 
     virtual void tick(float /*dTime*/) {}
@@ -62,13 +63,11 @@ public:
     virtual const math::Matrix& getWorldMatrix() const;
     virtual const graphics::Material& getMaterial() const;
     virtual const graphics::Model::pointer getModel() const;
+    void setWorldMatrix(const math::Matrix& mtxWorld);
 
 protected:
-    //Protected constructor
-	Entity(const EntityDesc& desc);
 
     void setModel(const graphics::Model::pointer& pModel);
-    void setWorldMatrix(const math::Matrix& mtxWorld);
 
 private:
     graphics::Model::pointer m_pModel;

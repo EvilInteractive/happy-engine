@@ -59,7 +59,7 @@ private:
 
     // Textures:
     //      - Color.rgb, ill       GL_RGBA8
-    //      - Position.xyz, spec   GL_RGBA16F
+    //      - Position.xyz, spec   GL_RGBA32F
     //      - Normal.xyz, gloss    GL_RGBA16F
     //      - Depth                GL_DEPTH_COMPONENT16
     static const int TEXTURES = 4;

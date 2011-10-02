@@ -18,6 +18,7 @@
 //Author:  Bastian Damman
 //Created: 05/08/2011
 #include "Color.h"
+#include "MathFunctions.h"
 
 namespace happyengine {
 
@@ -71,19 +72,19 @@ math::Vector4 Color::rgba() const
 
 byte Color::rByte() const
 {
-    return static_cast<byte>(m_rgb.x * 255);
+    return static_cast<byte>(math::clamp(m_rgb.x * 255.0f, 0.0f, 255.0f));
 }
 byte Color::gByte() const
 {
-    return static_cast<byte>(m_rgb.y * 255);
+    return static_cast<byte>(math::clamp(m_rgb.y * 255, 0.0f, 255.0f));
 }
 byte Color::bByte() const
 {
-    return static_cast<byte>(m_rgb.z * 255);
+    return static_cast<byte>(math::clamp(m_rgb.z * 255, 0.0f, 255.0f));
 }
 byte Color::aByte() const
 {
-    return static_cast<byte>(m_a * 255);
+    return static_cast<byte>(math::clamp(m_a * 255, 0.0f, 255.0f));
 }
     
 //-----------------------------------------//

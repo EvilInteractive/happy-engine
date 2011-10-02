@@ -40,6 +40,8 @@
 
 #include "Light.h"
 
+#include "Entity.h"
+
 
 namespace happytest {
 
@@ -77,6 +79,7 @@ private:
 	happyengine::graphics::Font::pointer m_pFont;
 
     GroundPlane* m_pGroundPlane;
+    happyengine::game::Entity* m_pAxis;
 
     happyengine::graphics::SpotLight::pointer m_pSpotLight;
 

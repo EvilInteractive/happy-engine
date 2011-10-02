@@ -40,7 +40,7 @@ namespace happytest {
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_SplashAlpha(1.0f), m_pGroundPlane(nullptr)
+					   m_pCamera(nullptr), m_SplashAlpha(1.0f), m_pGroundPlane(nullptr), m_pAxis(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -67,6 +67,7 @@ MainGame::~MainGame()
 	delete m_pCamera;
 
     delete m_pGroundPlane;
+    delete m_pAxis;
 
     NETWORK->stop();
 }
@@ -137,6 +138,7 @@ void MainGame::load()
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
+    m_pAxis = NEW happyengine::game::Entity(CONTENT->loadEntity("axis.entity"));
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 	
@@ -222,6 +224,7 @@ void MainGame::draw(float /*dTime*/)
 				GRAPHICS->draw(pBullet);
 			});
         GRAPHICS->draw(m_pGroundPlane);
+        GRAPHICS->draw(m_pAxis);
         GRAPHICS->end();
 
 		// 2D test stuff
