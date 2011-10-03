@@ -40,7 +40,7 @@ namespace happytest {
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_SplashAlpha(1.0f), m_pGroundPlane(nullptr), m_pAxis(nullptr)
+					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -67,7 +67,8 @@ MainGame::~MainGame()
 	delete m_pCamera;
 
     delete m_pGroundPlane;
-    delete m_pAxis;
+	delete m_pTestButton;
+	delete m_pAxis;
 
     NETWORK->stop();
 }
@@ -138,13 +139,14 @@ void MainGame::load()
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
-    m_pAxis = NEW happyengine::game::Entity(CONTENT->loadEntity("axis.entity"));
+	m_pAxis = NEW happyengine::game::Entity(CONTENT->loadEntity("axis.entity"));
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
-	
-	m_SplashTimer.Reset();
 
-    CONTENT->loadFont("Ubuntu-Regular.ttf", 12);
+    m_pFont = CONTENT->loadFont("Ubuntu-Regular.ttf", 50);
+
+	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, math::Vector2(150,600), math::Vector2(60,20));
+	m_pTestButton->setText("Button", 12);
 }
 void MainGame::tick(float dTime)
 {
@@ -188,6 +190,8 @@ void MainGame::tick(float dTime)
     m_pSpotLight->position = m_pCamera->getPosition();
     m_pSpotLight->direction = -happyengine::math::normalize(m_pCamera->getLook());
 
+	m_pTestButton->tick();
+
 	m_pFPSGraph->tick(dTime, 0.5f);
 }
 void MainGame::draw(float /*dTime*/)
@@ -206,124 +210,57 @@ void MainGame::draw(float /*dTime*/)
 
     GRAPHICS->clearAll();
 
+    GRAPHICS->begin(m_pCamera);
+    GRAPHICS->draw(m_pTestObject);
 
-	m_SplashTimer.Tick();
+		std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
+		{
+			GRAPHICS->draw(pBullet);
+		});
+    GRAPHICS->draw(m_pGroundPlane);
+	GRAPHICS->draw(m_pAxis);
+    GRAPHICS->end();
 
-	if(m_SplashTimer.GetGameTime() > 3.1f && m_SplashAlpha > 0.0f)
-	{
-		m_SplashAlpha -= 0.02f;
-	}
-
-	if (m_SplashTimer.GetGameTime() > 4.0f)
-	{
-        GRAPHICS->begin(m_pCamera);
-        GRAPHICS->draw(m_pTestObject);
-
-			std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
-			{
-				GRAPHICS->draw(pBullet);
-			});
-        GRAPHICS->draw(m_pGroundPlane);
-        GRAPHICS->draw(m_pAxis);
-        GRAPHICS->end();
-
-		// 2D test stuff
-		HE2D->begin();
-            
-			//Matrix mat = Matrix::createRotation(Vector3(0,0,1), piOverFour);
-			//HE2D->setTransformationMatrix(mat);
-
-			//HE2D->setColor(1,1,1,0.5f);
-			//HE2D->drawRectangle(Vector2(200,20), Vector2(500,50));
-
-			//HE2D->drawTexture2D(Vector2(100,100), m_TestImage, Vector2(500,500));
-
-			//HE2D->setAntiAliasing(true);	
-		
-			/*HE2D->setColor(0.6f,0.5f,0.2f);
-			HE2D->setFontVerticalAlignment(FontVAlignment_Center);
-			HE2D->drawText(Vector2(200,100), "Test", m_pFont);*/
-
-			/*std::vector<Vector2> points;
-			points.push_back(Vector2(10,10));
-			points.push_back(Vector2(8,20));
-			points.push_back(Vector2(30,50));
-			points.push_back(Vector2(50,40));
-			points.push_back(Vector2(50,20));
-			points.push_back(Vector2(20,10));
-
-			HE2D->setColor(1.0f,1.0f,1.0f);
-			HE2D->fillPolygon(points, points.size());*/
-
-			HE2D->setColor(1.0f,1.0f,1.0f);
-			HE2D->drawEllipseInstanced(Vector2(150,150), Vector2(101,101));
-	
-			HE2D->setColor(1.0f,0.0f,0.0f,0.5f);
-			HE2D->fillEllipseInstanced(Vector2(150,150), Vector2(100,100));
-
-			//HE2D->setRotation(math::toRadians(45));
-
-			/*HE2D->setColor(0.0f,1.0f,0.0f,0.5f);
-			HE2D->fillRectangle(Vector2(50,200), Vector2(100,100));*/
-
-			HE2D->setColor(1.0f,1.0f,1.0f,0.2f);
-
-			for (int i = 0; i < 2; ++i)
-			{
-				HE2D->setRotation((float)i*45);
-				HE2D->fillRectangleInstanced(Vector2(150,300), Vector2(50,50));
-				HE2D->resetTransformation();
-			}
-
-			for (int i = 0; i < 2; ++i)
-			{
-				HE2D->setScale(Vector2(2.0f, 2.0f));
-				HE2D->setRotation((float)i*45);
-				HE2D->fillRectangleInstanced(Vector2(150,420), Vector2(50,50));
-				HE2D->resetTransformation();
-			}
-
-			//HE2D->fillRectangleInstanced(math::Vector2(500,200), math::Vector2(50,50));
-			//HE2D->resetTransformation();
+	// 2D test stuff
+	HE2D->begin();
 			
-			/*shapes::Circle c(Vector2(200, 200), 128);
-			HE2D->drawEllipse(c.getPosition(), Vector2(c.getRadius()*2, c.getRadius()*2));
+		/*shapes::Circle c(Vector2(200, 200), 128);
+		HE2D->drawEllipse(c.getPosition(), Vector2(c.getRadius()*2, c.getRadius()*2));
 
-			Vector2 mPos(CONTROLS->getMouse()->getPosition());
-			HE2D->drawEllipse(mPos, Vector2(8, 8));
+		Vector2 mPos(CONTROLS->getMouse()->getPosition());
+		HE2D->drawEllipse(mPos, Vector2(8, 8));
 
-			shapes::Circle c2((mPos + Vector2(200, 200))/2.0f, length(mPos - c.getPosition())/2.0f);
-			std::vector<Vector2> tan(c.intersect(c2));
-			HE2D->drawEllipse(c2.getPosition(), Vector2(c2.getRadius()*2, c2.getRadius()*2));*/
+		shapes::Circle c2((mPos + Vector2(200, 200))/2.0f, length(mPos - c.getPosition())/2.0f);
+		std::vector<Vector2> tan(c.intersect(c2));
+		HE2D->drawEllipse(c2.getPosition(), Vector2(c2.getRadius()*2, c2.getRadius()*2));*/
 
-			/*if (tan.size() > 0)
-			{
-				std::vector<Vector2> line1;
-				line1.push_back(mPos);
-				line1.push_back(tan[0]);
-				HE2D->drawPolygon(line1, 2);
+		/*if (tan.size() > 0)
+		{
+			std::vector<Vector2> line1;
+			line1.push_back(mPos);
+			line1.push_back(tan[0]);
+			HE2D->drawPolygon(line1, 2);
 
-				std::vector<Vector2> line2;
-				line2.push_back(mPos);
-				line2.push_back(tan[1]);
-				HE2D->drawPolygon(line2, 2);
-			}*/
+			std::vector<Vector2> line2;
+			line2.push_back(mPos);
+			line2.push_back(tan[1]);
+			HE2D->drawPolygon(line2, 2);
+		}*/
 
-			m_pFPSGraph->draw();
+		HE2D->setColor(1.0f,0.0f,0.0f);
+		HE2D->fillEllipse(Vector2(200,200), Vector2(50,50));
 
-		HE2D->end();
-	}
-	else
-	{
-		HE2D->begin();
+		// GUI elements need to be drawn inside HE2D renderer
+		m_pTestButton->draw();
 
-			//HE2D->setRotation(45);
-			HE2D->drawTexture2D(m_SplashImage, Vector2(0,0), Vector2(0,0), m_SplashAlpha);
-			//HE2D->drawTexture2D(m_SplashImage, Vector2(200,500), Vector2(500,200), 1.0f, RectF(200,500,500,200));
-			//HE2D->resetTransformation();
+		HE2D->setColor(1.0f,0.5f,0.0f);
+		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
+		HE2D->setFontHorizontalAlignment(FontHAlignment_Center);
+		HE2D->drawText("Testing this new shit", m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
 
-		HE2D->end();
-	}
+		m_pFPSGraph->draw();
+
+	HE2D->end();
 }
 
 } //end namespace

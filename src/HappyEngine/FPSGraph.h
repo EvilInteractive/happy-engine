@@ -44,13 +44,14 @@ public:
 	void draw();
 
 	/* GETTERS */
-	uint FPSGraph::getMaxFPS() const;
-	uint FPSGraph::getMinFPS() const;
+	uint getMaxFPS() const;
+	uint getMinFPS() const;
+	uint getAverageFPS() const;
 
 private:
 
 	/* DATAMEMBERS */
-	std::vector<happyengine::uint> m_FpsHistory;
+	std::vector<uint> m_FpsHistory;
 
 	float m_GameTime;
 	float m_TBase;

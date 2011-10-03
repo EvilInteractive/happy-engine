@@ -59,7 +59,7 @@ public:
 
     const std::vector<physics::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
 
-    graphics::Font::pointer loadFont(const std::string& path, ushort size);
+    graphics::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
 
     graphics::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    

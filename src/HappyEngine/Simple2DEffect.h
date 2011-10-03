@@ -26,6 +26,7 @@
 #include "Shader.h"
 #include "Matrix.h"
 #include "Vector3.h"
+#include "Color.h"
 
 namespace happyengine {
 namespace graphics {
@@ -40,6 +41,7 @@ public:
 	void begin() const;
 	void end() const;
 
+	void setColor(const Color& color) const;
 	void setWorldMatrix(const happyengine::math::Matrix& mat) const;
 
 private:
@@ -47,6 +49,7 @@ private:
 	happyengine::graphics::Shader* m_pShader;
 
 	happyengine::uint m_ShaderWVPPos;
+	happyengine::uint m_ShaderColorPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

@@ -34,6 +34,19 @@ VertexPosCol::~VertexPosCol()
 }
 
 /*----------------------------------------------------------------*/
+/*                          VertexPos2D                           */
+/*----------------------------------------------------------------*/
+VertexPos2D::VertexPos2D() : position()
+{
+}
+VertexPos2D::VertexPos2D(const math::Vector2& pos): position(pos)
+{
+}
+VertexPos2D::~VertexPos2D()
+{
+}
+
+/*----------------------------------------------------------------*/
 /*                          VertexPosCol2D                        */
 /*----------------------------------------------------------------*/
 VertexPosCol2D::VertexPosCol2D() : position(), color()

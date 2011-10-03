@@ -36,7 +36,7 @@ public:
 	FontLoader();
     virtual ~FontLoader();
 
-    bool load(const std::string& path, ushort size, graphics::Font::pointer& pOutFont);
+    bool load(const std::string& path, ushort size, bool bold, bool italic, graphics::Font::pointer& pOutFont);
 
 private:
 

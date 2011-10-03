@@ -63,19 +63,10 @@ void FPSGraph::tick(float dTime, float interval)
 		m_CurrentFPS = fps;
 		m_CurrentDTime = dTime;
 
-		if (fps < 0)
-			fps = 0;
-		else if (fps > 999)
-			fps = 999;
-
+		if (fps > 99)
+			fps = 99;
 
 		m_FpsHistory.push_back(fps);
-	}
-
-	if (m_GameTime > m_Interval)
-	{
-		if (m_FpsHistory.size() > 51)
-			m_FpsHistory.erase(m_FpsHistory.begin());
 	}
 }
 
@@ -96,43 +87,92 @@ void FPSGraph::draw()
 		HE2D->setStrokeSize();
 		HE2D->drawRectangleInstanced(Vector2(GRAPHICS->getViewport().width - 106.0f, 4.0f), Vector2(102, 42));
 
-		std::vector<math::Vector2> points;
-		uint i(0);
+		uint avFPS(getAverageFPS());
 
-		std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint currentFps)
+		if (avFPS > 80)
+			avFPS = 80;
+
+		HE2D->setColor(0.0f,0.0f,1.0f,0.8f);
+		HE2D->resetTransformation();
+		HE2D->drawLine(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
+						Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
+
+		std::vector<math::Vector2> points;
+
+		uint i(0);
+		
+		if (static_cast<uint>(m_GameTime) / m_Interval > 50)
 		{
-			points.push_back(happyengine::math::Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (i * 2)), static_cast<float>(45 - (currentFps / 2))));
-			++i;
-		});
+			i = static_cast<uint>((m_GameTime / m_Interval) - 50);
+		}
+
+		uint j(0);
+		
+		if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+		{
+			j = static_cast<uint>(m_GameTime / m_Interval);
+		}
+		else
+		{
+			j = m_FpsHistory.size();
+		}
+
+		uint k(1);
+
+		for (; i < j ; ++i)
+		{
+			uint currentFPS(m_FpsHistory[i]);
+
+			if (currentFPS > 80)
+				currentFPS = 80;
+
+			points.push_back(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
+
+			++k;
+		}
 
 		HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
+		
 		HE2D->resetTransformation();
-		HE2D->drawPolygon(points, points.size());
+		HE2D->setStrokeSize();
+
+		if (points.size() > 0) 
+			HE2D->drawPolygon(points, points.size());
 
 		points.clear();
-		i = 0;
 
-		std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint currentFps)
+		if (static_cast<uint>(m_GameTime) / m_Interval > 50)
 		{
-			uint currentDTime = static_cast<uint>((1.0f / currentFps) * 1000.0f);
+			i = static_cast<uint>((m_GameTime / m_Interval) - 50);
+		}
+		else
+		{
+			i = 0;
+		}
 
-			if (currentDTime < 0)
-				currentDTime = 0;
-			else if (currentDTime > 80)
+		k = 1;
+
+		for (; i < j ; ++i)
+		{
+			uint currentDTime(static_cast<uint>((1.0f / m_FpsHistory[i]) * 1000.0f));
+
+			if (currentDTime > 80)
 				currentDTime = 80;
 
-			points.push_back(happyengine::math::Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (i * 2)), static_cast<float>(45 - (currentDTime / 2))));
-			++i;
-		});
+			points.push_back(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+
+			++k;
+		}
 
 		HE2D->setColor(1.0f,1.0f,0.0f,0.8f);
-		HE2D->drawPolygon(points, points.size());
+
+		if (points.size() > 0) 
+			HE2D->drawPolygon(points, points.size());
 
 		HE2D->setColor(1.0f,1.0f,1.0f);
-		HE2D->setFontVerticalAlignment(FontVAlignment_Top);
 
 		std::stringstream stream;
-		stream << "FPS: " << m_CurrentFPS;// << " (" << getMinFPS() << "/" << getMaxFPS() << ")";
+		stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
 		HE2D->drawText(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 45));
 
 		stream.str("");
@@ -164,6 +204,45 @@ uint FPSGraph::getMinFPS() const
 	});
 
 	return minFPS;
+}
+
+uint FPSGraph::getAverageFPS() const
+{
+	uint i(0);
+		
+	if (static_cast<uint>(m_GameTime) > 60)
+	{
+		i = static_cast<uint>((m_GameTime / m_Interval) - (60 / m_Interval));
+	}
+
+	uint j(0);
+		
+	if (static_cast<uint>(m_GameTime) > 60)
+	{
+		j = static_cast<uint>(m_GameTime / m_Interval);
+	}
+	else
+	{
+		j = m_FpsHistory.size();
+	}
+
+	uint avFPS(0);
+
+	for (; i < j ; ++i)
+	{
+		avFPS += m_FpsHistory[i];
+	}
+
+	if (static_cast<uint>(m_GameTime) > 60)
+	{
+		avFPS /= (60 / m_Interval);
+	}
+	else
+	{
+		avFPS /= m_FpsHistory.size();
+	}
+
+	return avFPS;
 }
 
 } } //end namespace

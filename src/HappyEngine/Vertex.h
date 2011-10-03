@@ -39,6 +39,17 @@ public:
     //default copy constructor and assignment operator are fine
 };
 
+struct VertexPos2D
+{
+public:
+    math::Vector2 position;
+
+	VertexPos2D();
+	VertexPos2D(const math::Vector2& pos);
+    ~VertexPos2D();
+    //default copy constructor and assignment operator are fine
+};
+
 struct VertexPosCol2D
 {
 public:

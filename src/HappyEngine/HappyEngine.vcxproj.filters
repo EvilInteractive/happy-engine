@@ -62,9 +62,6 @@
     <Filter Include="happyengine\tools">
       <UniqueIdentifier>{5005515a-f938-403e-93e3-a1840dda4b82}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\gui">
-      <UniqueIdentifier>{77ddc30e-7993-437b-878f-329d3d4f79f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\math\shapes">
       <UniqueIdentifier>{f1c2151b-2c55-46d0-abb3-01ed3ceb1b20}</UniqueIdentifier>
     </Filter>
@@ -88,6 +85,9 @@
     </Filter>
     <Filter Include="happyengine\graphics\renderer\deferred">
       <UniqueIdentifier>{39b46aa4-740f-4e49-bb06-68fd8b724b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\gui">
+      <UniqueIdentifier>{77ddc30e-7993-437b-878f-329d3d4f79f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,9 +123,6 @@
     </ClCompile>
     <ClCompile Include="GraphicsEngine.cpp">
       <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Rect.cpp">
-      <Filter>happyengine</Filter>
     </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>happyengine</Filter>
@@ -224,7 +221,7 @@
       <Filter>happyengine\tools</Filter>
     </ClCompile>
     <ClCompile Include="Hitregion.cpp">
-      <Filter>happyengine\gui</Filter>
+      <Filter>happyengine\graphics\gui</Filter>
     </ClCompile>
     <ClCompile Include="Matrix2D.cpp">
       <Filter>happyengine\math</Filter>
@@ -304,6 +301,12 @@
     <ClCompile Include="ShaderLayout.cpp">
       <Filter>happyengine\graphics\shader</Filter>
     </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Rect.cpp">
+      <Filter>happyengine\math\shapes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -347,9 +350,6 @@
     </ClInclude>
     <ClInclude Include="GraphicsEngine.h">
       <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Rect.h">
-      <Filter>happyengine</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>happyengine</Filter>
@@ -477,9 +477,6 @@
     <ClInclude Include="ISpline.h">
       <Filter>happyengine\math\splines</Filter>
     </ClInclude>
-    <ClInclude Include="Hitregion.h">
-      <Filter>happyengine\gui</Filter>
-    </ClInclude>
     <ClInclude Include="Matrix2D.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
@@ -563,6 +560,15 @@
     </ClInclude>
     <ClInclude Include="ShaderLayout.h">
       <Filter>happyengine\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitregion.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.h">
+      <Filter>happyengine\math\shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

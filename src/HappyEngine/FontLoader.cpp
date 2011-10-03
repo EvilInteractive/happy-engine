@@ -40,7 +40,7 @@ FontLoader::~FontLoader()
     delete m_pAssetContainer;
 }
 
-bool FontLoader::load(const std::string& path, ushort size, graphics::Font::pointer& pOutFont)
+bool FontLoader::load(const std::string& path, ushort size, bool bold, bool italic, graphics::Font::pointer& pOutFont)
 {
     std::stringstream stream;
     stream << path << size;
@@ -55,6 +55,19 @@ bool FontLoader::load(const std::string& path, ushort size, graphics::Font::poin
         }
         else
         {
+			if (bold && italic)
+			{
+				TTF_SetFontStyle(pFont, TTF_STYLE_BOLD | TTF_STYLE_ITALIC);
+			}
+			else if (bold && !italic)
+			{
+				TTF_SetFontStyle(pFont, TTF_STYLE_BOLD);
+			}
+			else if (!bold && italic)
+			{
+				TTF_SetFontStyle(pFont, TTF_STYLE_ITALIC);
+			}
+
             pOutFont = graphics::Font::pointer(NEW graphics::Font(pFont));
             m_pAssetContainer->addAsset(stream.str(), pOutFont);
             return true;

@@ -39,6 +39,7 @@
 #include "GameTimer.h"
 
 #include "Light.h"
+#include "Button.h"
 
 #include "Entity.h"
 
@@ -83,8 +84,7 @@ private:
 
     happyengine::graphics::SpotLight::pointer m_pSpotLight;
 
-	GameTimer m_SplashTimer;
-	float m_SplashAlpha;
+	happyengine::gui::Button* m_pTestButton;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

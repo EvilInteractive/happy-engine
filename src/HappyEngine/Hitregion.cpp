@@ -26,7 +26,8 @@ namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Hitregion::Hitregion(TYPE hitregionType, const math::Vector2& centerPos, const math::Vector2& size) :	m_Type(hitregionType),
-																										m_Size(size)
+																										m_Size(size),
+																										m_Pos(centerPos)
 {
 	m_matWorld = math::Matrix2D::createTranslaton(centerPos);
 }
@@ -53,13 +54,29 @@ Hitregion& Hitregion::operator=(const Hitregion& second)
 }
 
 /* GETTERS */
-bool Hitregion::hitTest(const Hitregion* /*pHitrect*/) const
+bool Hitregion::hitTest(const Hitregion* pHitrect) const
 {
+	if (m_Type == TYPE_RECTANGLE && pHitrect->getType() == TYPE_RECTANGLE)
+	{
+		//if (
+	}
+
 	return false;
 }
 
-bool Hitregion::hitTest(const math::Vector2& /*point*/) const
+bool Hitregion::hitTest(const math::Vector2& point) const
 {
+	if (m_Type == TYPE_RECTANGLE)
+	{
+		if (point.x < m_Pos.x + m_Size.x / 2 &&
+			point.x > m_Pos.x - m_Size.x / 2 &&
+			point.y < m_Pos.y + m_Size.y / 2 &&
+			point.y > m_Pos.y - m_Size.y / 2)
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -81,7 +98,7 @@ Hitregion::TYPE Hitregion::getType() const
 /* SETTERS */
 void Hitregion::setPosition(const math::Vector2& pos)
 {
-	m_matWorld * math::Matrix2D::createTranslaton(getPosition() - pos);
+	m_Pos = pos;
 }
 
 void Hitregion::setSize(const math::Vector2& size)

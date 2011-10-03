@@ -36,7 +36,7 @@ public:
 	{
 		TYPE_RECTANGLE = 0,
 		TYPE_ELLIPSE = 1,
-		TYPE_POLYGON = 2
+		TYPE_CONVEX = 2
 	};
 
 	/* CONSTRUCTOR - DESTRUCTOR */
@@ -68,6 +68,7 @@ private:
 
 	math::Matrix2D m_matWorld;
 	math::Vector2 m_Size;
+	math::Vector2 m_Pos;
 };
 
 } } //end namespace

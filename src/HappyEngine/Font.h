@@ -26,6 +26,7 @@
 #include "HappyTypes.h"
 #include "SDL_ttf.h"
 #include "Texture2D.h"
+#include "Vector2.h"
 
 #include <string>
 #include "Color.h"
@@ -54,9 +55,8 @@ public:
     explicit Font(TTF_Font* pFont);
     virtual ~Font();
     
-    Texture2D::pointer createTextureText(const std::string& text, const Color& color, 
-                                         FontHAlignment hAlignment, FontVAlignment vAlignment,
-										 bool bAntiAliased = true);
+    Texture2D::pointer createTextureText(const std::string& text, const Color& color,
+										 bool bAntiAliased = true, math::Vector2* sizeText = nullptr);
 
 	void setPath(const std::string& path);
 	const std::string& getPath() const;

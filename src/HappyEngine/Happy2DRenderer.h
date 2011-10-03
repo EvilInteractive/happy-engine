@@ -84,6 +84,9 @@ public:
 	// * Draws the text as a 2D texture on the screen. *
 	void drawText(const std::string& text, const Font::pointer& font, const math::Vector2& pos);
 	void drawTextInstanced(const std::string& text, const Font::pointer& font, const math::Vector2& pos);
+	// * Draws the text as a 2D texture in a rectangle the screen. *
+	void drawText(const std::string& text, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
+	void drawTextInstanced(const std::string& text, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
 	// * Draws a line between 2 points with the current strokesize. *
 	void drawLine(const math::Vector2& point1, const math::Vector2& point2) const;
 	void drawLineInstanced(const math::Vector2& point1, const math::Vector2& point2) const;
@@ -119,6 +122,7 @@ private:
 	bool m_bAntiAliasing;
 
 	Color m_CurrentColor;
+
 	FontHAlignment m_FontHAlignment;
 	FontVAlignment m_FontVAlignment;
 

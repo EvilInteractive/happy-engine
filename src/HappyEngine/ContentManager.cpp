@@ -66,10 +66,10 @@ const std::vector<physics::shapes::IPhysicsShape::pointer>& ContentManager::load
     return m_pPhysicsShapeLoader->load(m_ContentRootDir + m_PhysicsFolder + asset);
 }
 
-graphics::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size)
+graphics::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
 {
     graphics::Font::pointer p;
-    m_pFontLoader->load(m_ContentRootDir + m_FontFolder + asset, size, p);
+    m_pFontLoader->load(m_ContentRootDir + m_FontFolder + asset, size, bold, italic, p);
     return p;
 }
 

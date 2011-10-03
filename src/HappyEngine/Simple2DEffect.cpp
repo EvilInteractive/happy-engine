@@ -42,7 +42,6 @@ void Simple2DEffect::load()
 
     ShaderLayout layout;
 	layout.addElement(ShaderLayoutElement(0, "inPosition"));
-	layout.addElement(ShaderLayoutElement(1, "inColor"));
 
 	m_pShader = NEW Shader();
 	std::vector<std::string> shaderOutputs;
@@ -50,10 +49,12 @@ void Simple2DEffect::load()
 	ASSERT(m_pShader->init("../data/shaders/simple2DShader.vert", "../data/shaders/simple2DShader.frag", layout, shaderOutputs) == true);
 
 	m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
+	m_ShaderColorPos = m_pShader->getShaderVarId("color");
 
     m_pShader->begin();
 	math::Matrix MatWVP = math::Matrix::createTranslation(math::Vector3(0.0f,0.0f,0.0f));
 	m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
+	m_pShader->setShaderVar(m_ShaderColorPos, math::Vector4(1.0f,1.0f,1.0f,1.0f));
     m_pShader->end();
 }
 
@@ -65,6 +66,11 @@ void Simple2DEffect::begin() const
 void Simple2DEffect::end() const
 {
 	m_pShader->end();
+}
+
+void Simple2DEffect::setColor(const Color& color) const
+{
+	m_pShader->setShaderVar(m_ShaderColorPos, math::Vector4(color.rgba()));
 }
 
 void Simple2DEffect::setWorldMatrix(const happyengine::math::Matrix &mat) const
