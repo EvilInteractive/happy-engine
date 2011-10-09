@@ -17,9 +17,10 @@
 //
 //Author:  Bastian Damman
 //Created: 28/09/2011
+//Renamed: 04/10/2011
 
-#ifndef _HE_DEFERRED_3D_RENDERER_SETTINGS_H_
-#define _HE_DEFERRED_3D_RENDERER_SETTINGS_H_
+#ifndef _HE_DRAW_SETTINGS_H_
+#define _HE_DRAW_SETTINGS_H_
 #pragma once
 
 #include "HappyTypes.h"
@@ -57,11 +58,11 @@ enum ViewDistanceQuality
     ViewDistanceQuality_High        //fog from .. to ..
 };
 
-class Deferred3DRendererSettings
+class DrawSettings
 {
 public:
-	Deferred3DRendererSettings();
-    virtual ~Deferred3DRendererSettings();
+	DrawSettings();
+    virtual ~DrawSettings();
 
     void setViewDistanceQuality(ViewDistanceQuality quality);
     float getFogStart() const;
@@ -83,8 +84,8 @@ private:
     bool m_EnableDynamicShadows;
 
     //Disable default copy constructor and default assignment operator
-    Deferred3DRendererSettings(const Deferred3DRendererSettings&);
-    Deferred3DRendererSettings& operator=(const Deferred3DRendererSettings&);
+    DrawSettings(const DrawSettings&);
+    DrawSettings& operator=(const DrawSettings&);
 };
 
 } } //end namespace

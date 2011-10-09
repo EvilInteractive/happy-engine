@@ -98,7 +98,7 @@ void FlyCamera::tick(const float dTime)
 		R = Matrix::createRotation(Vector3(0,1,0), -yAngle);
         m_vLookWorld = normalize(R * m_vLookWorld);
         m_vRightWorld = normalize(R * m_vRightWorld);
-        m_vUpWorld = cross(m_vLookWorld, m_vRightWorld);
+        m_vUpWorld = -normalize(cross(m_vLookWorld, m_vRightWorld));
 	}
 	else
 		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();

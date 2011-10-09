@@ -17,12 +17,16 @@
 
 #include "Shader.h"
 
-#include "GL/glew.h"
+#include "Assert.h"
+
 #include "FileReader.h"
 #include "FileNotFoundException.h"
+#include "ShaderPreProcessor.h"
+
 #include <iostream>
 #include <algorithm>
-#include "Assert.h"
+
+#include "GL/glew.h"
 
 namespace happyengine {
 namespace graphics {
@@ -96,13 +100,8 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Sh
     std::string strFS;
     try 
     {
-        reader.open(vsPath, io::FileReader::OpenType_ASCII);
-        strVS = reader.readToEnd();
-        reader.close();
-
-        reader.open(fsPath,  io::FileReader::OpenType_ASCII);
-        strFS = reader.readToEnd();
-        reader.close();
+        strVS = content::details::ShaderPreProcessor::process(vsPath, std::set<std::string>());       
+        strFS = content::details::ShaderPreProcessor::process(fsPath, std::set<std::string>());
     }
     catch (const error::FileNotFoundException& e)
     { std::wcout << e.getMsg(); return false; }
@@ -157,10 +156,8 @@ void Shader::end()
     if (m_prevBoundShader != m_Id)
     {
         glUseProgram(m_prevBoundShader);
-        //glUseProgram(0);
     }
     s_CurrentBoundShader = m_prevBoundShader;
-    //s_CurrentBoundShader = 0;
 }
 
 uint Shader::getShaderVarId(const std::string& name) const

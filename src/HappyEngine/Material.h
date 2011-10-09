@@ -39,7 +39,7 @@ class Material
 public:
 	Material();
     virtual ~Material();
-    //default copy constructor and default assignment operator are OK
+    // default copy constructor and default assignment operator are OK
 
     void addVar(const ShaderVar::pointer& var);
     void setShader(const Shader::pointer& pShader);

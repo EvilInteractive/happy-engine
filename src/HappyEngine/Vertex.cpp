@@ -34,6 +34,19 @@ VertexPosCol::~VertexPosCol()
 }
 
 /*----------------------------------------------------------------*/
+/*                          VertexPos                             */
+/*----------------------------------------------------------------*/
+VertexPos::VertexPos() : position()
+{
+}
+VertexPos::VertexPos(const math::Vector3& pos): position(pos)
+{
+}
+VertexPos::~VertexPos()
+{
+}
+
+/*----------------------------------------------------------------*/
 /*                          VertexPos2D                           */
 /*----------------------------------------------------------------*/
 VertexPos2D::VertexPos2D() : position()

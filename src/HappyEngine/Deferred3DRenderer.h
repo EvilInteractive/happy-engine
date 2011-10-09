@@ -30,7 +30,6 @@
 #include "Texture2D.h"
 #include "LightManager.h"
 #include "Camera.h"
-#include "Deferred3DRendererSettings.h"
 
 namespace happyengine {
 namespace graphics {
@@ -41,27 +40,31 @@ public:
 	Deferred3DRenderer();
     virtual ~Deferred3DRenderer();
         
-    virtual void draw(const Model::pointer& pModel);//, const Camera* pCamera);
-    virtual void draw(const ModelMesh::pointer& pModel);//, const Camera* pCamera);
+    virtual void draw(const Model::pointer& pModel);
+    virtual void draw(const ModelMesh::pointer& pModel);
 
     void begin(const Camera* pCamera);
     void end();
 
     LightManager* getLightManager() const;
 
+    static const VertexLayout& getVertexLayoutLightVolume();
+
 private:
+    static VertexLayout s_VertexLayoutLightVolume;
+
     void postAmbientLights();
-    void postPointLights(const Camera* pCamera);
-    void postSpotLights(const Camera* pCamera);
+    void postPointLights();
+    void postSpotLights();
     void postDirectionalLights();
 
     uint m_FboId;
 
     // Textures:
     //      - Color.rgb, ill       GL_RGBA8
-    //      - Position.xyz, spec   GL_RGBA32F
-    //      - Normal.xyz, gloss    GL_RGBA16F
-    //      - Depth                GL_DEPTH_COMPONENT16
+    //      - spec, gloss, depth   GL_RGBA8
+    //      - Normal.xy            GL_R16G16
+    //      - Depth                GL_DEPTH24_STENCIL8
     static const int TEXTURES = 4;
     static const int TEXTURE_FORMAT[TEXTURES];
     static const int TEXTURE_INTERNALFORMAT[TEXTURES];
@@ -79,23 +82,27 @@ private:
 
     static const int SHADERS = 4;
     Shader* m_pPostShader[SHADERS];
-    uint m_ShaderColIllMapPos[SHADERS], 
-         m_ShaderPosSpecMapPos[SHADERS], 
-         m_ShaderNormGlossMapPos[SHADERS];
-    uint m_ShaderALPos[4]; //4 values
+    uint m_ShaderColMapPos[SHADERS], 
+         m_ShaderNormalMapPos[SHADERS], 
+         m_ShaderSGIMapPos[SHADERS],
+         m_ShaderDepthMapPos[SHADERS];
+    uint m_ShaderALPos[2]; //2 values
     uint m_ShaderPLPos[5]; //5 values
     uint m_ShaderSLPos[7]; //7 values
     uint m_ShaderDLPos[3]; //3 values
-    uint m_ShaderCamPos[SHADERS];
+    uint m_ShaderProjAB[SHADERS],
+         m_ShaderWVP[SHADERS],
+         m_ShaderWV[SHADERS],
+         m_ShaderNearFar[SHADERS],
+         m_ShaderTopRight[SHADERS],
+         m_ShaderInvMtxProj[SHADERS];
 
     ModelMesh::pointer m_pModel;
 
     Texture2D::pointer m_pTexture[TEXTURES];
 
     LightManager* m_pLightManager;
-
-    Deferred3DRendererSettings m_Settings;
-
+    
     const Camera* m_pCamera;
     
     //Disable default copy constructor and default assignment operator

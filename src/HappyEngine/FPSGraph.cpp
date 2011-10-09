@@ -235,7 +235,7 @@ uint FPSGraph::getAverageFPS() const
 
 	if (static_cast<uint>(m_GameTime) > 60)
 	{
-		avFPS /= (60 / m_Interval);
+		avFPS /= static_cast<uint>(60 / m_Interval);
 	}
 	else
 	{

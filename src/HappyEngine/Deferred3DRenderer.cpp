@@ -33,9 +33,15 @@
 namespace happyengine {
 namespace graphics {
 
+// Textures:
+//      - Color.rgb, ill       GL_RGBA8
+//      - spec, gloss,         GL_RGBA8
+//      - Normal.xy            GL_RG16F
+//      - Depth                GL_DEPTH24_STENCIL8
 const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_RGBA, GL_DEPTH_COMPONENT };
-const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA32F, GL_RGBA16F, GL_DEPTH_COMPONENT16};
+const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA8, GL_RG16F, GL_DEPTH_COMPONENT32F};
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
+VertexLayout Deferred3DRenderer::s_VertexLayoutLightVolume = VertexLayout();
 
 Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRenderer_QUAD")), m_pLightManager(NEW LightManager())
 {
@@ -50,8 +56,8 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     for (int i = 0; i < TEXTURES; ++i)
     {
         glBindTexture(GL_TEXTURE_2D, m_TextureId[i]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_INTERNALFORMAT[i], 
@@ -63,11 +69,10 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     glBindTexture(GL_TEXTURE_2D, 0);
 
     //Renderbuffers
-    glGenRenderbuffers(1, &m_DepthBufferId);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_DepthBufferId);
-    glRenderbufferStorage(GL_RENDERBUFFER, TEXTURE_INTERNALFORMAT[3], width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
+    //glGenRenderbuffers(1, &m_DepthBufferId);
+    //glBindRenderbuffer(GL_RENDERBUFFER, m_DepthBufferId);
+    //glRenderbufferStorage(GL_RENDERBUFFER, TEXTURE_INTERNALFORMAT[3], width, height);
+    
     //Framebuffer
     glGenFramebuffers(1, &m_FboId);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FboId);
@@ -76,7 +81,8 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, TEXTURE_ATTACHMENT[i], GL_TEXTURE_2D, m_TextureId[i], 0);
     }
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthBufferId);
+    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthBufferId);
+    //glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     GLenum error = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (error != GL_FRAMEBUFFER_COMPLETE)
@@ -96,6 +102,8 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
         }
     }
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_TRUE); //disable enable writing to depth buffer
@@ -103,18 +111,14 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     glCullFace(GL_BACK);
     glFrontFace(GL_CW);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     /*------------------------------------------------------------------------------*/
     /*                               LOAD SHADERS                                   */
     /*----------------------------------------------------------------------------- */
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
-    shaderLayout.addElement(ShaderLayoutElement(1, "inTexCoord"));
 
-    VertexLayout vertexLayout;
-    vertexLayout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
-    vertexLayout.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 12));
+    s_VertexLayoutLightVolume.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
 
     for (int i = 0; i < SHADERS; ++i)
     {
@@ -122,26 +126,30 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     }
 
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
-    m_pPostShader[0]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostALShader.frag", shaderLayout);
+    m_pPostShader[0]->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/deferredPostALShader.frag", shaderLayout);
     m_pPostShader[1]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostPLShader.frag", shaderLayout);
     m_pPostShader[2]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout);
     m_pPostShader[3]->init(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostDLShader.frag", shaderLayout);
-
+    
     for (int i = 0; i < SHADERS; ++i)
     {
-        m_ShaderColIllMapPos[i] = m_pPostShader[i]->getShaderSamplerId("colorIllMap");
-        m_ShaderPosSpecMapPos[i] = m_pPostShader[i]->getShaderSamplerId("posSpecMap");
+        m_ShaderColMapPos[i] = m_pPostShader[i]->getShaderSamplerId("colorMap");
         if (i != LightType_AmbientLight)
         {
-            m_ShaderNormGlossMapPos[i] = m_pPostShader[i]->getShaderSamplerId("normGlossMap");
-            m_ShaderCamPos[i] = m_pPostShader[i]->getShaderVarId("vCamPos");
+            m_ShaderWVP[i] = m_pPostShader[i]->getShaderVarId("mtxWVP");
+            //m_ShaderWV[i] = m_pPostShader[i]->getShaderVarId("mtxWV");
+            m_ShaderNormalMapPos[i] = m_pPostShader[i]->getShaderSamplerId("normalMap");
+            m_ShaderSGIMapPos[i] = m_pPostShader[i]->getShaderSamplerId("sgiMap");
+            m_ShaderDepthMapPos[i] = m_pPostShader[i]->getShaderSamplerId("depthMap");
+            //m_ShaderProjAB[i] = m_pPostShader[i]->getShaderVarId("projAB"),
+            //m_ShaderNearFar[i] = m_pPostShader[i]->getShaderVarId("nearFar"),
+            //m_ShaderTopRight[i] = m_pPostShader[i]->getShaderVarId("topRight");
+            m_ShaderInvMtxProj[i] = m_pPostShader[i]->getShaderVarId("invMtxProj");
         }
     }
     //----AL----------------------------------------------------------------------
-    m_ShaderALPos[0] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.position");
-    m_ShaderALPos[1] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.multiplier");
-    m_ShaderALPos[2] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.color");
-    m_ShaderALPos[3] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.range");
+    m_ShaderALPos[0] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.multiplier");
+    m_ShaderALPos[1] = m_pPostShader[LightType_AmbientLight]->getShaderVarId("light.color");
     //----PL----------------------------------------------------------------------
     m_ShaderPLPos[0] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.position");
     m_ShaderPLPos[1] = m_pPostShader[LightType_PointLight]->getShaderVarId("light.multiplier");
@@ -164,22 +172,18 @@ Deferred3DRenderer::Deferred3DRenderer(): m_pModel(NEW ModelMesh("deferred3DRend
     /*------------------------------------------------------------------------------*/
     /*                             LOAD RENDER QUAD                                 */
     /*----------------------------------------------------------------------------- */
-    std::vector<VertexPosTex> vertices;
-    /*vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(1, 0)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(0, 0)));
-    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(1, 1)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(0, 1)));*/
-    vertices.push_back(VertexPosTex(math::Vector3(-1, 1, 0.5f), math::Vector2(1, 1)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, 1, 0.5f), math::Vector2(0, 1)));
-    vertices.push_back(VertexPosTex(math::Vector3(-1, -1, 0.5f), math::Vector2(1, 0)));
-    vertices.push_back(VertexPosTex(math::Vector3(1, -1, 0.5f), math::Vector2(0, 0)));
+    std::vector<VertexPos> vertices;
+    vertices.push_back(VertexPos(math::Vector3(-1, 1, 0.5f)));
+    vertices.push_back(VertexPos(math::Vector3(1, 1, 0.5f)));
+    vertices.push_back(VertexPos(math::Vector3(-1, -1, 0.5f)));
+    vertices.push_back(VertexPos(math::Vector3(1, -1, 0.5f)));
 
     std::vector<byte> indices;
     indices.push_back(0); indices.push_back(1); indices.push_back(2);
     indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
     m_pModel->init();
-    m_pModel->setVertices(&vertices[0], 4, vertexLayout);
+    m_pModel->setVertices(&vertices[0], 4, getVertexLayoutLightVolume());
     m_pModel->setIndices(&indices[0], 6, IndexStride_Byte);
 }
 
@@ -197,21 +201,45 @@ Deferred3DRenderer::~Deferred3DRenderer()
     delete m_pLightManager;
 }
 
+const VertexLayout& Deferred3DRenderer::getVertexLayoutLightVolume() 
+{
+    return s_VertexLayoutLightVolume; 
+}
 void Deferred3DRenderer::begin(const Camera* pCamera)
 {
     m_pCamera = pCamera;
     glBindFramebuffer(GL_FRAMEBUFFER, m_FboId);
-    const static GLenum buffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    const static GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, buffers);
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 void Deferred3DRenderer::end()
-{
+{    
+    #if _DEBUG
+    glDisable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(4.0f);
+    std::for_each(m_pLightManager->getPointLights().cbegin(), m_pLightManager->getPointLights().cend(), [&](const PointLight::pointer& pLight)
+    {
+        pLight->getMaterial().begin(pLight.get(), m_pCamera);
+        GRAPHICS->draw(pLight->getModel());
+        pLight->getMaterial().end();
+    });
+    std::for_each(m_pLightManager->getSpotLights().cbegin(), m_pLightManager->getSpotLights().cend(), [&](const SpotLight::pointer& pLight)
+    {
+        pLight->getMaterial().begin(pLight.get(), m_pCamera);
+        GRAPHICS->draw(pLight->getModel());
+        pLight->getMaterial().end();      
+    });
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_CULL_FACE);
+    #endif
     const static GLenum buffers[1] = { GL_BACK_LEFT };
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffers(1, buffers);
-    
+
     glEnable(GL_BLEND);
     //glEnable(GL_SCISSOR_TEST);
     glBlendFunc(GL_ONE, GL_ONE);
@@ -219,21 +247,28 @@ void Deferred3DRenderer::end()
 
     for (int i = 0; i < SHADERS; ++i)
     {
+        if ((i == 0 || i == 1) == false)
+            continue;
         m_pPostShader[i]->begin();
         
-        m_pPostShader[i]->setShaderVar(m_ShaderColIllMapPos[i], m_pTexture[0]);
-        m_pPostShader[i]->setShaderVar(m_ShaderPosSpecMapPos[i], m_pTexture[1]);
+        m_pPostShader[i]->setShaderVar(m_ShaderColMapPos[i], m_pTexture[0]);
         if (i != LightType_AmbientLight)
         {
-            m_pPostShader[i]->setShaderVar(m_ShaderNormGlossMapPos[i], m_pTexture[2]);
-			m_pPostShader[i]->setShaderVar(m_ShaderCamPos[i], m_pCamera->getPosition());
+            m_pPostShader[i]->setShaderVar(m_ShaderSGIMapPos[i], m_pTexture[1]);
+            m_pPostShader[i]->setShaderVar(m_ShaderNormalMapPos[i], m_pTexture[2]);
+            m_pPostShader[i]->setShaderVar(m_ShaderDepthMapPos[i], m_pTexture[3]);
+            /*float zfar(m_pCamera->getFarClip()), znear(m_pCamera->getNearClip());
+            m_pPostShader[i]->setShaderVar(m_ShaderProjAB[i], 
+                math::Vector2(
+                    zfar / (zfar - znear),
+                    (-zfar * znear) / (zfar - znear)));*/
         }
     
         switch (i)
         {
             case LightType_AmbientLight: postAmbientLights(); break;
-            case LightType_PointLight: postPointLights(m_pCamera); break;
-            case LightType_SpotLight: postSpotLights(m_pCamera); break;
+            case LightType_PointLight: postPointLights(); break;
+            case LightType_SpotLight: postSpotLights(); break;
             case LightType_DirectionalLight: postDirectionalLights(); break;
             default: ASSERT("unkown lighttype"); break;
         }
@@ -244,21 +279,6 @@ void Deferred3DRenderer::end()
     glDisable(GL_BLEND);
     glDisable(GL_SCISSOR_TEST);
     glEnable(GL_DEPTH_TEST);
-
-    #if _DEBUG
-    HE2D->begin();
-    std::for_each(m_pLightManager->getPointLights().cbegin(), m_pLightManager->getPointLights().cend(), [&](const PointLight::pointer& pLight)
-    {
-        if ( !(math::dot(math::normalize(pLight->position - m_pCamera->getPosition()), m_pCamera->getLook()) < 0 && 
-               math::length(pLight->position - m_pCamera->getPosition()) > pLight->endAttenuation)) 
-            pLight->debugDraw(m_pCamera);
-    });
-    std::for_each(m_pLightManager->getSpotLights().cbegin(), m_pLightManager->getSpotLights().cend(), [&](const SpotLight::pointer& pLight)
-    {
-        pLight->debugDraw(m_pCamera);
-    });
-    HE2D->end();
-    #endif
 }
 void Deferred3DRenderer::postAmbientLights()
 {
@@ -266,51 +286,59 @@ void Deferred3DRenderer::postAmbientLights()
     const std::vector<AmbientLight::pointer>& lights(m_pLightManager->getAmbientLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const AmbientLight::pointer& pLight)
     {
-        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[0], pLight->position);
-        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[1], pLight->multiplier);
-        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[2], pLight->color);
-        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[3], pLight->range);
+        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[0], pLight->multiplier);
+        m_pPostShader[LightType_AmbientLight]->setShaderVar(m_ShaderALPos[1], pLight->color);
         draw(m_pModel);
     });
 }
-void Deferred3DRenderer::postPointLights(const Camera* pCamera)
+void Deferred3DRenderer::postPointLights()
 {
     const std::vector<PointLight::pointer>& lights(m_pLightManager->getPointLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
     {
-        if (math::lengthSqr(pLight->position - pCamera->getPosition()) + pLight->endAttenuation * pLight->endAttenuation 
+        /*if (math::lengthSqr(pLight->position - pCamera->getPosition()) + pLight->endAttenuation * pLight->endAttenuation 
             < m_Settings.getFogEnd() * m_Settings.getFogEnd())
-        {
-            if ( !(math::dot(math::normalize(pLight->position - pCamera->getPosition()), pCamera->getLook()) < 0 && 
-                   math::length(pLight->position - pCamera->getPosition()) > pLight->endAttenuation)) 
+        {*/
+            if ( !(math::dot(math::normalize(pLight->getPosition() - m_pCamera->getPosition()), m_pCamera->getLook()) < 0 && 
+                   math::length(pLight->getPosition() - m_pCamera->getPosition()) > pLight->getEndAttenuation())) 
             {
-                RectI scissor(pLight->getScissor(pCamera));
+                //RectI scissor(pLight->getScissor(pCamera));
                 //glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
-                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], pLight->position);
-                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->multiplier);
-                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->color);
-                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->beginAttenuation);
-                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->endAttenuation);
-                draw(m_pModel);
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[0], m_pCamera->getView() * pLight->getPosition());
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[1], pLight->getMultiplier());
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[2], pLight->getColor());
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[3], pLight->getBeginAttenuation());
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderPLPos[4], pLight->getEndAttenuation());
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderWVP[LightType_PointLight], m_pCamera->getViewProjection() * pLight->getWorldMatrix());
+                m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderInvMtxProj[LightType_PointLight], m_pCamera->getProjection().inverse());
+                //m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderWV[LightType_PointLight], m_pCamera->getView() * pLight->getWorldMatrix());
+                //m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderNearFar[LightType_PointLight], math::Vector2(m_pCamera->getNearClip(), m_pCamera->getFarClip()));
+                //math::Vector2 topRight(m_pCamera->getNearClip() * tan(0.5f * m_pCamera->getFov()), m_pCamera->getAspectRatio());
+                //topRight.y *= topRight.x;
+                //m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderTopRight[LightType_PointLight], topRight);
+                //m_pPostShader[LightType_PointLight]->setShaderVar(m_ShaderWorldPos[LightType_PointLight], math::Matrix::Identity);
+                draw(pLight->getLightVolume());
+                //draw(m_pModel);
             }
-        }
+        //}
     });
 }
-void Deferred3DRenderer::postSpotLights(const Camera* pCamera)
+void Deferred3DRenderer::postSpotLights()
 {
     const std::vector<SpotLight::pointer>& lights(m_pLightManager->getSpotLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
     {
-        RectI scissor(pLight->getScissor(pCamera));
-        glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[0], pLight->position);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[1], pLight->multiplier);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[2], pLight->direction);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[3], pLight->beginAttenuation);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[4], pLight->color);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[5], pLight->endAttenuation);
-        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[6], pLight->cosCutoff);
-        draw(m_pModel);
+        //RectI scissor(pLight->getScissor(pCamera));
+        //glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[0], pLight->getPosition());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[1], pLight->getMultiplier());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[2], pLight->getDirection());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[3], pLight->getBeginAttenuation());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[4], pLight->getColor());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[5], pLight->getEndAttenuation());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderSLPos[6], pLight->getCosCutoff());
+        m_pPostShader[LightType_SpotLight]->setShaderVar(m_ShaderWVP[LightType_SpotLight], m_pCamera->getViewProjection() * pLight->getWorldMatrix());
+        draw(pLight->getLightVolume());
     });
 }
 void Deferred3DRenderer::postDirectionalLights()

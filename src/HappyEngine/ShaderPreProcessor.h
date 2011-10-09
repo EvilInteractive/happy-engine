@@ -16,27 +16,25 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 18/08/2011
+//Created: 08/10/2011
 
-#version 150 core
+#ifndef _HE_ShaderPreProcessor_H_
+#define _HE_ShaderPreProcessor_H_
+#pragma once
 
-in vec2 texCoord;
+#include <set>
 
-out vec4 outColor;
+namespace happyengine {
+namespace content {
+namespace details {
 
-struct AmbientLight
+class ShaderPreProcessor
 {
-    float multiplier;
-    vec3 color;
+public:
+    static std::string process(const std::string& file, const std::set<std::string>& defines);
+
 };
 
-uniform sampler2D colorMap;
+} } } //end namespace
 
-uniform AmbientLight light;
-
-void main()
-{    
-	vec4 color = texture2D(colorMap, texCoord);
-	
-	outColor = vec4(color.rgb * light.color * light.multiplier, 1.0f);						
-}
+#endif

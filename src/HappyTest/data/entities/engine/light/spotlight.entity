@@ -1,0 +1,12 @@
+[Entity]
+class = ""
+model = "engine/lightvolume/spotlight.binobj"
+
+[Shader]
+shader = "deferred/pre/default.shader"
+
+[TEXTURE2D]
+diffuseMap = 1,0,1,1
+normalMap = 0.5, 0.5, 1, 1
+specGlossIllMap = 0.1, 0.1, 1, 0
+

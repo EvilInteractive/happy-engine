@@ -58,7 +58,7 @@ void Material::begin(const IDrawable* pEntity, const Camera* pCamera) const
             switch (pVar->getType())
             {
                 case ShaderVarType_WVP: m_pShader->setShaderVar(pVar->getId(), pCamera->getViewProjection() * pEntity->getWorldMatrix()); break;
-                case ShaderVarType_World:  m_pShader->setShaderVar(pVar->getId(), pEntity->getWorldMatrix()); break;
+                case ShaderVarType_World:  m_pShader->setShaderVar(pVar->getId(), /*pCamera->getView() */ pEntity->getWorldMatrix()); break;
 
                 case ShaderVarType_WorldPosition: m_pShader->setShaderVar(pVar->getId(), pEntity->getWorldMatrix().getTranslation()); break;
             }

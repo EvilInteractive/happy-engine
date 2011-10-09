@@ -27,7 +27,6 @@ in vec3 inTangent;
 out vec2 passTexCoord;
 out vec3 passNormal;
 out vec3 passTangent;
-out vec3 passWorldPos;
 
 uniform mat4 matWVP;
 uniform mat4 matWorld;
@@ -38,5 +37,4 @@ void main()
 	passTexCoord = inTexCoord;
 	passNormal = (matWorld * vec4(inNormal, 0.0f)).xyz;
 	passTangent = (matWorld * vec4(inTangent, 0.0f)).xyz;
-	passWorldPos = (matWorld * vec4(inPosition, 1.0f)).xyz;
 }

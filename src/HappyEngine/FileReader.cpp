@@ -55,6 +55,13 @@ void FileReader::close()
         m_Wfstream.close();
 }
 
+bool FileReader::eof() const
+{
+    if (m_fstream.is_open())
+        return m_fstream.eof();
+    else
+        return m_Wfstream.eof();
+}
 std::string FileReader::readLine()
 {
     ASSERT(m_fstream.is_open(), "ASCII line reader is not open, did you check for open exceptions? or did you open it for unicode?");

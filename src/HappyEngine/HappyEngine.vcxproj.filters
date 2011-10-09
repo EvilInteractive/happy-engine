@@ -89,6 +89,9 @@
     <Filter Include="happyengine\graphics\gui">
       <UniqueIdentifier>{77ddc30e-7993-437b-878f-329d3d4f79f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\content\shader">
+      <UniqueIdentifier>{dc7ffe9b-692d-491a-8de7-031913139d46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="X.cpp">
@@ -241,9 +244,6 @@
     <ClCompile Include="AABB.cpp">
       <Filter>happyengine\math\shapes</Filter>
     </ClCompile>
-    <ClCompile Include="Deferred3DRendererSettings.cpp">
-      <Filter>happyengine\graphics\renderer\deferred</Filter>
-    </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>happyengine\game</Filter>
     </ClCompile>
@@ -252,9 +252,6 @@
     </ClCompile>
     <ClCompile Include="LightManager.cpp">
       <Filter>happyengine\graphics\light</Filter>
-    </ClCompile>
-    <ClCompile Include="Deferred3DRenderer.cpp">
-      <Filter>happyengine\graphics\renderer</Filter>
     </ClCompile>
     <ClCompile Include="Happy2DRenderer.cpp">
       <Filter>happyengine\graphics\renderer</Filter>
@@ -306,6 +303,24 @@
     </ClCompile>
     <ClCompile Include="Rect.cpp">
       <Filter>happyengine\math\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawManager.cpp">
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawSettings.cpp">
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="Deferred3DRenderer.cpp">
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderPreProcessor.cpp">
+      <Filter>happyengine\content\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -495,9 +510,6 @@
     <ClInclude Include="AABB.h">
       <Filter>happyengine\math\shapes</Filter>
     </ClInclude>
-    <ClInclude Include="Deferred3DRendererSettings.h">
-      <Filter>happyengine\graphics\renderer\deferred</Filter>
-    </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>happyengine\game</Filter>
     </ClInclude>
@@ -506,9 +518,6 @@
     </ClInclude>
     <ClInclude Include="LightManager.h">
       <Filter>happyengine\graphics\light</Filter>
-    </ClInclude>
-    <ClInclude Include="Deferred3DRenderer.h">
-      <Filter>happyengine\graphics\renderer</Filter>
     </ClInclude>
     <ClInclude Include="Happy2DRenderer.h">
       <Filter>happyengine\graphics\renderer</Filter>
@@ -569,6 +578,24 @@
     </ClInclude>
     <ClInclude Include="Rect.h">
       <Filter>happyengine\math\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawManager.h">
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawSettings.h">
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="Deferred3DRenderer.h">
+      <Filter>happyengine\graphics\renderer\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderPreProcessor.h">
+      <Filter>happyengine\content\shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

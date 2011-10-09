@@ -18,6 +18,8 @@
 #include "MainGame.h"
 
 #include <vector>
+#include <set>
+#include <list>
 #include <sstream>
 #include <iostream>
 
@@ -35,6 +37,8 @@
 
 #include "boost/timer.hpp"
 
+#include "Random.h"
+
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
@@ -48,7 +52,6 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
     m_BackgroundColors[2] = Color((byte)255, (byte)127, (byte)80, (byte)255);
     m_BackgroundColors[3] = Color((byte)255, (byte)165, (byte)0, (byte)255);
     m_BackgroundColors[4] = Color((byte)30, (byte)144, (byte)255, (byte)255);
-
 }
 
 
@@ -97,45 +100,24 @@ void MainGame::load()
 {
     using namespace happyengine;
 
-    //{
-    //    graphics::PointLight::pointer light(NEW graphics::PointLight());
-    //    light->beginAttenuation = 0;
-    //    light->endAttenuation = 10;
-    //    light->position = math::Vector3(1, 0, 1);
-
-    //    graphics::Camera* pCamera(NEW graphics::Camera(1280, 720));
-    //    pCamera->lookAt(math::Vector3(10, 20, 20), math::Vector3(1, 0, 1), math::Vector3(0, 1 ,0));
-	   // pCamera->setLens(16.0f/9.0f,math::piOverFour,1.0f,100.0f);
-
-    //    boost::timer t;
-    //    for (int i = 0; i < 10000; ++i)
-    //    {
-    //        light->getScissor(pCamera);
-    //    }
-    //    std::cout << "new scissor: " << t.elapsed() << " sec\n";
-    //    t.restart();
-    //    for (int i = 0; i < 10000; ++i)
-    //    {
-    //        light->getOldScissor(pCamera);
-    //    }
-    //    std::cout << "old scissor: " << t.elapsed() << " sec\n";
-    //    delete pCamera;
-    //}
-
-
 	m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
 
     PHYSICS->startSimulation();
 
 	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
 	m_pCamera->lookAt(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0));
-	m_pCamera->setLens(16.0f/9.0f,math::piOverFour,1.0f,100.0f);
+	m_pCamera->setLens(16.0f/9.0f,math::piOverFour,10.0f,100.0f);
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
-    GRAPHICS->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 2.0f, 1, 10);
-    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(math::Vector3(-1, 0, -1), math::Vector3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, sinf(math::piOverFour/2), 1, 30);
-    GRAPHICS->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
+    GRAPHICS->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 5.0f, 1, 10);
+    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(math::Vector3(-1, 0, -1), math::Vector3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, math::piOverFour, 1, 30);
+
+    Random r;
+    for (int i = 0; i < 200; ++i)
+        GRAPHICS->getLightManager()->addSpotLight(math::Vector3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), math::Vector3(0, -1, 0), Color((byte)255, 255, 200, 255), 3.0f, math::piOverTwo, 1, 20);
+    //GRAPHICS->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
+    GRAPHICS->getLightManager()->addAmbientLight(math::Vector3::zero, Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, 1000);
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
@@ -187,8 +169,8 @@ void MainGame::tick(float dTime)
         std::cout << m_Bullets.size() << "\n";
     }
 
-    m_pSpotLight->position = m_pCamera->getPosition();
-    m_pSpotLight->direction = -happyengine::math::normalize(m_pCamera->getLook());
+    m_pSpotLight->setPosition(m_pCamera->getPosition());
+    m_pSpotLight->setDirection(-happyengine::math::normalize(m_pCamera->getLook()));
 
 	m_pTestButton->tick();
 

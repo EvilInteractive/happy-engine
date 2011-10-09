@@ -58,7 +58,7 @@ void Camera::lookAt(const math::Vector3 &pos, const math::Vector3 &target, const
 	lookAt = normalize(lookAt);
 
 	Vector3 right = normalize(cross(lookAt, up));
-	Vector3 newUp = normalize(cross(right, up));
+	Vector3 newUp = -normalize(cross(right, up));
 
 	m_vPosWorld = pos;
 	m_vRightWorld = right;
@@ -93,7 +93,7 @@ void Camera::setActive(bool active)
 
 void Camera::buildViewMatrix()
 {
-	m_matView = math::Matrix::createLookAtLH(m_vPosWorld, m_vPosWorld + m_vLookWorld, -m_vUpWorld);
+	m_matView = math::Matrix::createLookAtLH(m_vPosWorld, m_vPosWorld + m_vLookWorld, m_vUpWorld);
 	m_matViewProjection = m_matProjection * m_matView;
 }
 

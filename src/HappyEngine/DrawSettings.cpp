@@ -18,23 +18,23 @@
 //Author:  Bastian Damman
 //Created: 28/09/2011
 
-#include "Deferred3DRendererSettings.h"
+#include "DrawSettings.h"
 #include "HappyNew.h"
 
 namespace happyengine {
 namespace graphics {
 
-Deferred3DRendererSettings::Deferred3DRendererSettings()
+DrawSettings::DrawSettings()
 {
     setViewDistanceQuality(ViewDistanceQuality_Medium);
 }
 
 
-Deferred3DRendererSettings::~Deferred3DRendererSettings()
+DrawSettings::~DrawSettings()
 {
 }
 
-void Deferred3DRendererSettings::setViewDistanceQuality(ViewDistanceQuality quality)
+void DrawSettings::setViewDistanceQuality(ViewDistanceQuality quality)
 {
     switch (quality)
     {
@@ -52,11 +52,11 @@ void Deferred3DRendererSettings::setViewDistanceQuality(ViewDistanceQuality qual
             break;
     };
 }
-float Deferred3DRendererSettings::getFogStart() const
+float DrawSettings::getFogStart() const
 {
     return m_FogStart;
 }
-float Deferred3DRendererSettings::getFogEnd() const
+float DrawSettings::getFogEnd() const
 {
     return m_FogEnd;
 }

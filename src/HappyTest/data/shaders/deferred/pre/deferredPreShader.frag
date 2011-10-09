@@ -22,17 +22,16 @@
 in vec2 passTexCoord;
 in vec3 passNormal;
 in vec3 passTangent;
-in vec3 passWorldPos;
 
-out vec4 outColorIll;
-out vec4 outNormalGloss;
-out vec4 outPosSpec;
+out vec4 outColor;
+out vec2 outNormal;
+out vec4 outSGI;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D specGlossIllMap;
 
-vec3 calcNormal(vec3 normal, vec3 tangent, vec3 rgb)
+vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
 	//NormalMap
 	tangent = normalize(tangent);
@@ -54,7 +53,7 @@ void main()
 	vec4 normal = texture2D(normalMap, passTexCoord);
 	vec4 specGlossIll = texture2D(specGlossIllMap, passTexCoord);
 
-	outColorIll = vec4(color.rgb, specGlossIll.b);
-	outPosSpec = vec4(passWorldPos, specGlossIll.r);
-	outNormalGloss = vec4(calcNormal(passNormal, passTangent, normal.rgb), specGlossIll.g);
+	outColor = color.rgba;
+	outNormal = calcNormal(passNormal, passTangent, normal.rgb).xy * 0.5f + 0.5f;
+	outSGI = vec4(specGlossIll.rgb, 0);
 }

@@ -57,11 +57,10 @@ PointLight::pointer LightManager::addPointLight(const math::Vector3&  pos,
     PointLight::pointer pLight(NEW PointLight());
     m_PointLightVector.push_back(pLight);
 
-    pLight->position = pos;
-    pLight->color = color.rgb();
-    pLight->multiplier = multiplier;
-    pLight->beginAttenuation = beginAttenuation;
-    pLight->endAttenuation = endAttentuation;
+    pLight->setPosition(pos);
+    pLight->setColor(color);
+    pLight->setMultiplier(multiplier);
+    pLight->setAttenuation(beginAttenuation, endAttentuation);
 
     return pLight;
 }
@@ -76,13 +75,12 @@ SpotLight::pointer LightManager::addSpotLight(const math::Vector3&    pos,
     SpotLight::pointer pLight(NEW SpotLight());
     m_SpotLightVector.push_back(pLight);
 
-    pLight->position = pos;
-    pLight->color = color.rgb();
-    pLight->multiplier = multiplier;
-    pLight->direction = -direction;
-    pLight->cosCutoff = cosf(fov);
-    pLight->beginAttenuation = beginAttenuation;
-    pLight->endAttenuation = endAttentuation;
+    pLight->setPosition(pos);
+    pLight->setColor(color);
+    pLight->setMultiplier(multiplier);
+    pLight->setDirection(-direction);
+    pLight->setFov(fov);
+    pLight->setAttenuation(beginAttenuation, endAttentuation);
 
     return pLight;
 }

@@ -20,13 +20,18 @@
 
 #version 150 core
 
-in vec4 inPosition;
-in vec2 inTexCoord;
+in vec3 inPosition;
 
-out vec2 passTexCoord;
+out vec4 passPos;
+//out vec4 passWVPos;
+
+uniform mat4 mtxWVP;
+//uniform mat4 mtxWV;
 
 void main()
 {
-	gl_Position = inPosition;
-	passTexCoord = inTexCoord;
+	//vec4 pos = ;
+    gl_Position = mtxWVP * vec4(inPosition, 1.0f);
+	passPos = gl_Position;
+    //passWVPos = mtxWV * vec4(inPosition, 1.0f);
 }

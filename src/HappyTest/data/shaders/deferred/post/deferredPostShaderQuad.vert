@@ -16,27 +16,17 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 18/08/2011
+//Created: 11/08/2011
 
 #version 150 core
 
-in vec2 texCoord;
+in vec3 inPosition;
 
-out vec4 outColor;
-
-struct AmbientLight
-{
-    float multiplier;
-    vec3 color;
-};
-
-uniform sampler2D colorMap;
-
-uniform AmbientLight light;
+out vec2 texCoord;
 
 void main()
-{    
-	vec4 color = texture2D(colorMap, texCoord);
-	
-	outColor = vec4(color.rgb * light.color * light.multiplier, 1.0f);						
+{
+    gl_Position = vec4(inPosition, 1.0f);
+	texCoord = inPosition.xy * 0.5 + 0.5f;
+	//texCoord.x = 1 - texCoord.x;
 }

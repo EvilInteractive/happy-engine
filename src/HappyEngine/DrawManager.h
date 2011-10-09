@@ -16,44 +16,57 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 17/08/2011
+//Created: 04/10/2011
 
-#ifndef _HE_LIGHT_H_
-#define _HE_LIGHT_H_
+#ifndef _HE_DRAW_MANAGER_H_
+#define _HE_DRAW_MANAGER_H_
 #pragma once
 
-#include "Vector3.h"
-#include "boost/shared_ptr.hpp"
-#include "Rect.h"
+#include "IDrawable.h"
 #include "Camera.h"
-#include "MathFunctions.h"
-
-#include "SpotLight.h"
-#include "PointLight.h"
 
 namespace happyengine {
 namespace graphics {
 
-class AmbientLight
+class DrawManager
 {
 public:
+    enum Type
+    {
+        Type_Immediate,
+        Type_FrontToBack,
+        Type_BackToFront
+    };
 
-    math::Vector3 position;
-    float multiplier;
-    math::Vector3 color;
-    float range;
+	DrawManager();
+    virtual ~DrawManager();
 
-    typedef boost::shared_ptr<AmbientLight> pointer;
-};
-class DirectionalLight
-{
-public:
+    void begin(Type type, const Camera* pCamera);
+    void end();
+    
+    void draw(const IDrawable* pDrawabe);
 
-    math::Vector3 direction;
-    math::Vector3 color;
-    float multiplier;
+    bool viewClip(const math::shapes::Sphere& boundingSphere);
 
-    typedef boost::shared_ptr<DirectionalLight> pointer;
+private:
+    struct DrawElement
+    {
+        const IDrawable* pDrawable;
+        float sorter;
+        bool operator<(const DrawElement& other)
+        {
+            return sorter < other.sorter;
+        }
+    };
+
+    Type m_Type;
+    const Camera* m_pCamera;
+
+    std::vector<DrawElement> m_DrawList;
+
+    //Disable default copy constructor and default assignment operator
+    DrawManager(const DrawManager&);
+    DrawManager& operator=(const DrawManager&);
 };
 
 } } //end namespace

@@ -49,6 +49,8 @@ public:
     std::wstring readToEndW();
     std::vector<std::wstring> readToEndSplitW();
 
+    bool eof() const;
+
 private:
     std::wfstream m_Wfstream;
     std::fstream m_fstream;

@@ -17,11 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 18/08/2011
+//Modified: 08/10/2011: optimizing rendertargets
 
 #version 150 core
 
-in vec2 passTexCoord;
+#include "decode.frag"
 
+in vec4 passPos;
+//in vec4 passWVPos;
 out vec4 outColor;
 
 struct PointLight
@@ -33,40 +36,79 @@ struct PointLight
     float endAttenuation;
 };
 
-uniform sampler2D colorIllMap;
-uniform sampler2D posSpecMap;
-uniform sampler2D normGlossMap;
+uniform sampler2D colorMap;
+uniform sampler2D normalMap;
+uniform sampler2D sgiMap;
+uniform sampler2D depthMap;
 
-uniform vec3 vCamPos;
+//uniform vec2 projAB;
+uniform mat4 invMtxProj;
 uniform PointLight light;
+
+//vec3 viewSpacePos(vec2 winPos, vec2 winSize, vec4 depthSample, vec2 nearFar)
+//{
+    //vec3 position;
+//
+    //float depth = depthSample.x;
+    //position.z = -nearFar.x / (nearFar.y - (depth * (nearFar.y - nearFar.x))) * nearFar.y;
+//
+    //position.x = (((winPos.x / winSize.x) * 2.0) - 1.0) * u_right;
+    //position.y = (((winPos.y / winSize.y) * 2.0) - 1.0) * u_top;
+//
+    //float scale = -position.z / nearFar.x;
+    //position.x *= scale;
+    //position.y *= scale;
+//
+    //return position;
+//}
+
 
 void main()
 {
-	vec4 colorIll = texture2D(colorIllMap, passTexCoord);
-	vec4 posSpec = texture2D(posSpecMap, passTexCoord);
-	vec4 normGloss = texture2D(normGlossMap, passTexCoord);
+    vec4 ndc = vec4(passPos.xy / passPos.w, 1.0f, 1.0f);
+    vec2 texCoord = ndc.xy * 0.5f + 0.5f;
+	//texCoord.x = 1 - texCoord.x;
+    
+	//vec3 viewRay = vec3(passWVPos.xy / passWVPos.z, 1.0f);
 
-	vec3 normal = normalize(normGloss.xyz);
+    float depth = texture2D(depthMap, texCoord).x;
+	//float linDepth = projAB.y / (depth - projAB.x);
 
-	vec3 lightDir = light.position - posSpec.xyz;
+	vec4 projPos = vec4(ndc.xy, depth, 1.0f);
+
+	vec4 vPosVS = invMtxProj * projPos;
+
+	vec3 position = vPosVS.xyz / vPosVS.w;
+
+	//vec3 vsPos = viewRay * linDepth;
+	
+	//vec3 position = vsPos; //in viewspace
+
+	vec3 lightDir = light.position - position;
 	float lightDist = length(lightDir);
 
 	if (lightDist > light.endAttenuation) //pixel is too far from light
 		discard;
 
 	lightDir /= lightDist;
-
+    
+    //vec3 getNormal(in vec2 packedNormal)
+	vec3 normal = getNormal(texture2D(normalMap, texCoord).xy);
+    
 	float dotLightNormal = dot(lightDir, normal);
 
 	if (dotLightNormal <= 0.0f) //pixel is in selfshadow
 		discard;
-		
-	vec3 vCamDir = normalize(vCamPos - posSpec.xyz);
-	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), normGloss.a * 100.0f) * posSpec.a);
+	
+	vec4 sgi = texture2D(sgiMap, texCoord);	
+	vec3 vCamDir = normalize(-position);
+	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.g * 100.0f) * sgi.r);
 
 	float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
 
+	vec4 color = texture2D(colorMap, texCoord);
 	outColor = vec4(
-		  (dotLightNormal * colorIll.rgb + vec3(spec, spec, spec)) * 
-		  light.color * light.multiplier * attenuationValue, 1.0f);						
+		  (dotLightNormal * color.rgb + vec3(spec, spec, spec)) *
+		  light.color * light.multiplier * attenuationValue, 1.0f);		
+	//outColor = vec4(depth, depth, depth, outColor.r);				
 }

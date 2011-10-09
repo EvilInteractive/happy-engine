@@ -20,7 +20,7 @@
 
 #version 150 core
 
-in vec2 passTexCoord;
+in vec4 passPos;
 
 out vec4 outColor;
 
@@ -44,9 +44,11 @@ uniform SpotLight light;
 
 void main()
 {
-	vec4 colorIll = texture2D(colorIllMap, passTexCoord);
-	vec4 posSpec = texture2D(posSpecMap, passTexCoord);
-	vec4 normGloss = texture2D(normGlossMap, passTexCoord);
+    vec2 texCoord = ((passPos.xy / passPos.w) + 1.0f) * 0.5f;
+    
+	vec4 colorIll = texture2D(colorIllMap, texCoord);
+	vec4 posSpec = texture2D(posSpecMap, texCoord);
+	vec4 normGloss = texture2D(normGlossMap, texCoord);
 
 	vec3 normal = normalize(normGloss.xyz);
 

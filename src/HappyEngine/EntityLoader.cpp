@@ -85,11 +85,11 @@ game::EntityDesc EntityLoader::load(const std::string& path)
                         shaderOutputs.resize(3);
                         std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                         {
-                            if (p.second == L"GBUFFER_COLOR_ILLUMINATION")
+                            if (p.second == L"GBUFFER_COLOR")
                                 shaderOutputs[0] = std::string(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_POSITION_SPECULAR")
+                            else if (p.second == L"GBUFFER_SGI")
                                 shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_NORMAL_GLOSSINESS")
+                            else if (p.second == L"GBUFFER_NORMAL")
                                 shaderOutputs[2] = std::string(p.first.cbegin(), p.first.cend());
                             else
                                 ASSERT(false, "unknow semantic");

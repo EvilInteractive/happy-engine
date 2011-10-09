@@ -63,6 +63,15 @@ public:
 	virtual const math::Vector3& getLook() const
 	{ return m_vLookWorld; }
 
+    virtual float getNearClip() const
+    { return m_NearZ; }
+    virtual float getFarClip() const
+    { return m_FarZ; }
+    virtual float getFov() const
+    { return m_FOV; }
+    virtual float getAspectRatio() const
+    { return m_AspectRatio; }
+
 protected:
 
 	void buildViewMatrix();

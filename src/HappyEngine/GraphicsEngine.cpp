@@ -33,13 +33,15 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_Viewport(0, 0, 1280, 720),
                                   m_IsFullScreen(false),
                                   m_WindowTitle("HappyEngine"),
-                                  m_VSyncEnabled(true)
+                                  m_VSyncEnabled(true),
+                                  m_pDrawManager(NEW DrawManager())
 {
 }
 
 
 GraphicsEngine::~GraphicsEngine()
 {
+    delete m_pDrawManager;
     delete m_pDeferred3DRenderer;
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
@@ -176,16 +178,17 @@ void GraphicsEngine::clearDepth() const
 void GraphicsEngine::begin(const Camera* pCamera)
 {
     m_pCurrentCamera = pCamera;
+    m_pDrawManager->begin(DrawManager::Type_FrontToBack, pCamera);
     m_pDeferred3DRenderer->begin(pCamera);
 }
 void GraphicsEngine::end()
 {
+    m_pDrawManager->end();
     m_pDeferred3DRenderer->end();
 }
-void GraphicsEngine::draw(const IDrawable* pEntity)
+void GraphicsEngine::draw(const IDrawable* pDrawable)
 {
-    pEntity->getMaterial().begin(pEntity, m_pCurrentCamera);
-    m_pDeferred3DRenderer->draw(pEntity->getModel());
+    m_pDrawManager->draw(pDrawable);
 }
 void GraphicsEngine::draw(const Model::pointer& pModel)
 {
@@ -202,6 +205,10 @@ void GraphicsEngine::present() const
 LightManager* GraphicsEngine::getLightManager() const
 {
     return m_pDeferred3DRenderer->getLightManager();
+}
+const DrawSettings& GraphicsEngine::getSettings() const
+{
+    return m_Settings;
 }
 
 } } //end namespace

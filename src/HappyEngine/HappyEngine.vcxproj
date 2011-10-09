@@ -19,7 +19,8 @@
     <ClCompile Include="BinObjLineLoader.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Circle.cpp" />
-    <ClCompile Include="Deferred3DRendererSettings.cpp" />
+    <ClCompile Include="DrawManager.cpp" />
+    <ClCompile Include="DrawSettings.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityLoader.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
@@ -34,9 +35,11 @@
     <ClCompile Include="ModelMesh.cpp" />
     <ClCompile Include="ObjLineLoader.cpp" />
     <ClCompile Include="PhysicsShapeLoader.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="ShaderLayout.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
+    <ClCompile Include="ShaderPreProcessor.cpp" />
     <ClCompile Include="Simple2DEffect.cpp" />
     <ClCompile Include="Happy2DRenderer.cpp" />
     <ClCompile Include="Assert.cpp" />
@@ -79,6 +82,7 @@
     <ClCompile Include="HappyEngine.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -94,7 +98,8 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="CatmullRomSpline.h" />
     <ClInclude Include="Circle.h" />
-    <ClInclude Include="Deferred3DRendererSettings.h" />
+    <ClInclude Include="DrawManager.h" />
+    <ClInclude Include="DrawSettings.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityLoader.h" />
     <ClInclude Include="Hitregion.h" />
@@ -111,11 +116,13 @@
     <ClInclude Include="ModelMesh.h" />
     <ClInclude Include="ObjLineLoader.h" />
     <ClInclude Include="PhysicsShapeLoader.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="AssetContainer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ShaderLayout.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="ShaderPreProcessor.h" />
     <ClInclude Include="ShaderVar.h" />
     <ClInclude Include="Simple2DEffect.h" />
     <ClInclude Include="Happy2DRenderer.h" />
@@ -168,6 +175,7 @@
     <ClInclude Include="IGame.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SpotLight.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Vector2.h" />

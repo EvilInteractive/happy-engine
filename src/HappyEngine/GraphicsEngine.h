@@ -32,6 +32,9 @@
 #include "SDL.h"
 #include <string>
 
+#include "DrawManager.h"
+#include "DrawSettings.h"
+
 
 namespace happyengine {
 namespace graphics {
@@ -66,12 +69,13 @@ public:
 
     void begin(const Camera* pCamera);
     void end();
-    void draw(const IDrawable* pEntity);
+    void draw(const IDrawable* pDrawable);
     void draw(const Model::pointer& pModel);
     void draw(const ModelMesh::pointer& pModelMesh);
     void present() const;
 
     LightManager* getLightManager() const;
+    const DrawSettings& getSettings() const;
 
 private:
     void initWindow();
@@ -88,6 +92,9 @@ private:
 
     Color m_ClearColor;
     Deferred3DRenderer* m_pDeferred3DRenderer;
+
+    DrawManager* m_pDrawManager;
+    DrawSettings m_Settings;
 
     const Camera* m_pCurrentCamera;
 
