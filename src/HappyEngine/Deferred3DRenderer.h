@@ -31,8 +31,8 @@
 #include "LightManager.h"
 #include "Camera.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Deferred3DRenderer
 {

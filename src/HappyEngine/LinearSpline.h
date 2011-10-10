@@ -24,8 +24,8 @@
 
 #include "MathFunctions.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace splines {
 
 template<typename T>
@@ -87,6 +87,6 @@ private:
     LinearSpline& operator=(const LinearSpline&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

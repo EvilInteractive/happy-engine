@@ -17,10 +17,12 @@
 //
 //Author:  Bastian Damman
 //Created: 05/08/2011
+#include "StdAfx.h" 
+
 #include "Color.h"
 #include "MathFunctions.h"
 
-namespace happyengine {
+namespace he {
 
 Color::Color()
 {
@@ -32,7 +34,7 @@ Color::Color(byte red, byte green, byte blue, byte alpha) : m_rgb(red / 255.0f, 
                                                             m_a(alpha / 255.0f)
 {
 }
-Color::Color(const math::Vector4& col): m_rgb(col.xyz()), m_a(col.w)
+Color::Color(const vec4& col): m_rgb(col.xyz()), m_a(col.w)
 {
 }
 
@@ -60,31 +62,31 @@ float Color::a() const
 {
     return m_a;
 }
-const math::Vector3& Color::rgb() const
+const vec3& Color::rgb() const
 {
     return m_rgb;
 }
-math::Vector4 Color::rgba() const
+vec4 Color::rgba() const
 {
-    return math::Vector4(m_rgb, m_a);
+    return vec4(m_rgb, m_a);
 }
 
 
 byte Color::rByte() const
 {
-    return static_cast<byte>(math::clamp(m_rgb.x * 255.0f, 0.0f, 255.0f));
+    return static_cast<byte>(clamp(m_rgb.x * 255.0f, 0.0f, 255.0f));
 }
 byte Color::gByte() const
 {
-    return static_cast<byte>(math::clamp(m_rgb.y * 255, 0.0f, 255.0f));
+    return static_cast<byte>(clamp(m_rgb.y * 255, 0.0f, 255.0f));
 }
 byte Color::bByte() const
 {
-    return static_cast<byte>(math::clamp(m_rgb.z * 255, 0.0f, 255.0f));
+    return static_cast<byte>(clamp(m_rgb.z * 255, 0.0f, 255.0f));
 }
 byte Color::aByte() const
 {
-    return static_cast<byte>(math::clamp(m_a * 255, 0.0f, 255.0f));
+    return static_cast<byte>(clamp(m_a * 255, 0.0f, 255.0f));
 }
     
 //-----------------------------------------//
@@ -106,11 +108,11 @@ void Color::a(float a)
 {
     m_a = a;
 }
-void Color::rgb(const math::Vector3& rgb)
+void Color::rgb(const vec3& rgb)
 {
     m_rgb = rgb;
 }
-void Color::rgba(const math::Vector4& rgba)
+void Color::rgba(const vec4& rgba)
 {
     m_rgb = rgba.xyz();
     m_a = rgba.w;

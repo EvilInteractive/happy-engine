@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 07/10/2011
+#include "StdAfx.h" 
 
 #include "PointLight.h"
 #include "HappyNew.h"
@@ -25,8 +26,8 @@
 #include "Deferred3DRenderer.h"
 #include "Entity.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenuation(0.0f),
     m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f)
@@ -39,7 +40,7 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
 }
 void PointLight::calculateWorld()
 {
-    m_mtxWorld =  math::Matrix::createTranslation(m_Position) * math::Matrix::createScale(m_EndAttenuation);
+    m_mtxWorld =  mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation);
 }
 
 
@@ -47,7 +48,7 @@ PointLight::~PointLight()
 {
 }
 
-void PointLight::setPosition(const math::Vector3& position)
+void PointLight::setPosition(const vec3& position)
 {
     m_Position = position;
     calculateWorld();
@@ -62,7 +63,7 @@ void PointLight::setAttenuation(float begin, float end)
     m_EndAttenuation = end;
     calculateWorld();
 }
-void PointLight::setColor(const math::Vector3& color)
+void PointLight::setColor(const vec3& color)
 {
     m_Color = color;
 }
@@ -71,7 +72,7 @@ void PointLight::setColor(const Color& color)
     m_Color = color.rgb();
 }
 
-const math::Vector3& PointLight::getPosition() const
+const vec3& PointLight::getPosition() const
 {
     return m_Position;
 }
@@ -87,12 +88,12 @@ float PointLight::getEndAttenuation() const
 {
     return m_EndAttenuation;
 }
-const math::Vector3& PointLight::getColor() const
+const vec3& PointLight::getColor() const
 {
     return m_Color;
 }
     
-const math::Matrix& PointLight::getWorldMatrix() const
+const mat44& PointLight::getWorldMatrix() const
 {
     return m_mtxWorld;
 }

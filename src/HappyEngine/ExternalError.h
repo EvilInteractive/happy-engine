@@ -27,14 +27,14 @@
 #include <iostream>
 #include "PxPhysicsAPI.h"
 
-namespace happyengine {
-namespace error {
+namespace he {
+namespace err {
 
 inline void glHandleError(GLenum err)
 {
     if (err != GL_NO_ERROR)
     {
-        std::cout << "***GL error*** " << glewGetErrorString(err) << "\n";
+        std::cout << "***GL err*** " << glewGetErrorString(err) << "\n";
     }
 }
 inline void glCheckForErrors(bool postErrors = true)
@@ -51,7 +51,7 @@ inline void sdlHandleError(int err)
 {
     if (err != 0)
     {
-        std::cout << "***SDL error*** " << SDL_GetError() << "\n";
+        std::cout << "***SDL err*** " << SDL_GetError() << "\n";
     }
 }
 

@@ -23,39 +23,38 @@
 #pragma once
 
 #include "PxMat33.h"
-#include "Vector2.h"
+#include "vec2.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
 
-class Matrix2D
+class mat33
 {
 public:
 
 	/* CONSTRUCTOR - DESTRUCTOR */
-	Matrix2D();
-	Matrix2D(physx::pubfnd3::PxMat33 mat);
-	Matrix2D( float _00, float _01, float _02,
+	mat33();
+	mat33(physx::pubfnd3::PxMat33 mat);
+	mat33( float _00, float _01, float _02,
 			  float _10, float _11, float _12,
 			  float _20, float _21, float _22 );
-    ~Matrix2D();
+    ~mat33();
 
 	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
 
 	/* STATIC CONSTRUCTORS */
-	static Matrix2D createTranslaton(const Vector2& translation);
-	static Matrix2D createRotation(const float radians);
-	static Matrix2D createScale(const Vector2& scale);
+	static mat33 createTranslaton(const vec2& translation);
+	static mat33 createRotation(const float radians);
+	static mat33 createScale(const vec2& scale);
 
 	/* OPERATORS */
-    Matrix2D operator*(const Matrix2D& mat);
-    Vector2 operator*(const Vector2& vec);
+    mat33 operator*(const mat33& mat);
+    vec2 operator*(const vec2& vec);
 
 	/* GETTERS */
-	math::Vector2 getTranslation() const;
+	vec2 getTranslation() const;
 
 	/* STATIC */
-	static const Matrix2D Identity;
+	static const mat33 Identity;
 
 private:
 
@@ -63,6 +62,6 @@ private:
 	physx::pubfnd3::PxMat33 m_Matrix;
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 05/09/2011
+#include "StdAfx.h" 
 
 #include "LineLoader.h"
 #include "HappyNew.h"
@@ -24,10 +25,10 @@
 #include "BinObjLineLoader.h"
 #include "FileNotFoundException.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
-LineLoader::LineLoader(): m_pAssetContainer(NEW AssetContainer<graphics::Line::pointer>())
+LineLoader::LineLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Line::pointer>())
 {
 }
 
@@ -37,7 +38,7 @@ LineLoader::~LineLoader()
 }
 
 
-graphics::Line::pointer LineLoader::loadLine(const std::string& path)
+gfx::Line::pointer LineLoader::loadLine(const std::string& path)
 {
 	if (m_pAssetContainer->isAssetPresent(path))
 	{
@@ -49,12 +50,12 @@ graphics::Line::pointer LineLoader::loadLine(const std::string& path)
 		{
             lines::ObjLineLoader loader;
             try { loader.load(path); }
-            catch (error::FileNotFoundException& e)
+            catch (err::FileNotFoundException& e)
             {
                 std::wcout << e.getMsg() << "\n";
             }
             
-            graphics::Line::pointer pLine(NEW graphics::Line());
+            gfx::Line::pointer pLine(NEW gfx::Line());
             pLine->setVertices(loader.getPoints());
             pLine->setIndices(loader.getIndices());
             m_pAssetContainer->addAsset(path, pLine);
@@ -65,12 +66,12 @@ graphics::Line::pointer LineLoader::loadLine(const std::string& path)
 		{
             lines::BinObjLineLoader loader;
             try { loader.load(path); }
-            catch (error::FileNotFoundException& e)
+            catch (err::FileNotFoundException& e)
             {
                 std::wcout << e.getMsg() << "\n";
             }
             
-            graphics::Line::pointer pLine(NEW graphics::Line());
+            gfx::Line::pointer pLine(NEW gfx::Line());
             pLine->setVertices(loader.getPoints());
             pLine->setIndices(loader.getIndices());
             m_pAssetContainer->addAsset(path, pLine);
@@ -80,7 +81,7 @@ graphics::Line::pointer LineLoader::loadLine(const std::string& path)
 		else
 		{
 			ASSERT("unkown model extension");
-            graphics::Line::pointer pLine(NEW graphics::Line());
+            gfx::Line::pointer pLine(NEW gfx::Line());
             return pLine;
 		}
 	}

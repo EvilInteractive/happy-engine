@@ -28,7 +28,7 @@
 #include "HappyTypes.h"
 #include "Font.h"
 
-namespace happyengine {
+namespace he {
 namespace tools {
 
 class FPSGraph
@@ -59,7 +59,7 @@ private:
 	float m_Interval;
 	uint m_CurrentFPS;
 	
-	graphics::Font::pointer m_pFont;
+	gfx::Font::pointer m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

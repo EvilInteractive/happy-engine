@@ -18,6 +18,7 @@
 //Author:  Bastian Damman
 //Created: 23/08/2011
 //Extended:	Sebastiaan Sprengers
+#include "StdAfx.h" 
 
 #include "ModelLoader.h"
 #include "HappyNew.h"
@@ -25,11 +26,11 @@
 #include "ObjLoader.h"
 #include "FileNotFoundException.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 ModelLoader::ModelLoader(): m_isModelThreadRunning(false),
-							m_pAssetContainer(NEW AssetContainer<graphics::Model::pointer>())
+							m_pAssetContainer(NEW AssetContainer<gfx::Model::pointer>())
 {
 }
 
@@ -56,7 +57,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         {
             for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
             {
-                graphics::ModelMesh::pointer pMesh(NEW graphics::ModelMesh(data->loader->getMeshName(i)));
+                gfx::ModelMesh::pointer pMesh(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
 
                 pMesh->init();
                 pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
@@ -72,7 +73,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
     }
 }
 
-graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout)
+gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout)
 {
 	if (m_pAssetContainer->isAssetPresent(path))
 	{
@@ -83,7 +84,7 @@ graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, co
 		ModelLoadData* data(NEW ModelLoadData());
 		data->path = path;
 		data->vertexLayout = vertexLayout;
-		data->pModel = graphics::Model::pointer(NEW graphics::Model(vertexLayout));
+		data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
 
 		if (data->path.rfind(".obj") != std::string::npos)
 		{
@@ -95,7 +96,7 @@ graphics::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, co
 		}
 		else
 		{
-            graphics::Model::pointer m(data->pModel);
+            gfx::Model::pointer m(data->pModel);
             m->setComplete();
             delete data;
 			return m;
@@ -125,7 +126,7 @@ void ModelLoader::ModelLoadThread()
                     std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
                     m_ModelInvokeQueue.push(data);
                 }
-                catch (error::FileNotFoundException& e)
+                catch (err::FileNotFoundException& e)
                 {
                     std::wcout << e.getMsg() << "\n";
                 }            

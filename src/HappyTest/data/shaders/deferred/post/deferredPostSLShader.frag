@@ -21,6 +21,7 @@
 #version 150 core
 
 in vec4 passPos;
+in vec4 passWVPos;
 
 out vec4 outColor;
 
@@ -35,24 +36,33 @@ struct SpotLight
 	float cosCutoff;
 };
 
-uniform sampler2D colorIllMap;
-uniform sampler2D posSpecMap;
-uniform sampler2D normGlossMap;
+uniform sampler2D colorMap;
+uniform sampler2D normalMap;
+uniform sampler2D sgiMap;
+uniform sampler2D depthMap;
 
-uniform vec3 vCamPos;
+uniform vec2 projAB;
 uniform SpotLight light;
 
 void main()
 {
-    vec2 texCoord = ((passPos.xy / passPos.w) + 1.0f) * 0.5f;
+    vec4 ndc = vec4(passPos.xy / passPos.w, 1.0f, 1.0f);
+    vec2 texCoord = ndc.xy * 0.5f + 0.5f;
+	//texCoord.y = 1 - texCoord.y;
+	//texCoord.x = 1 - texCoord.x;
     
-	vec4 colorIll = texture2D(colorIllMap, texCoord);
-	vec4 posSpec = texture2D(posSpecMap, texCoord);
-	vec4 normGloss = texture2D(normGlossMap, texCoord);
+	vec3 viewRay = vec3(passWVPos.xy / passWVPos.z, 1.0f);
 
-	vec3 normal = normalize(normGloss.xyz);
+    float depth = texture2D(depthMap, texCoord).x;
+	float linDepth = projAB.y / (depth - projAB.x);
 
-	vec3 lightDir = light.position - posSpec.xyz;
+	/*vec4 projPos = vec4(ndc.xy, depth, 1.0f);
+	vec4 vPosVS = invMtxProj * projPos;
+	vec3 position = vPosVS.xyz / vPosVS.w;*/
+
+	vec3 position = viewRay * linDepth; //in viewspace
+	
+	vec3 lightDir = light.position - position;
 	float lightDist = length(lightDir);
 
 	if (lightDist > light.endAttenuation) //pixel is too far from light
@@ -69,17 +79,20 @@ void main()
 	float maxInnerSpot = light.cosCutoff + maxFalloffSpot;
 	spot = min(0, (spot - maxInnerSpot)) / (maxFalloffSpot) + 1;
 	
+	vec3 normal = texture2D(normalMap, texCoord).xyz;
 	float dotLightNormal = dot(lightDir, normal);
 
 	if (dotLightNormal <= 0.0f) //pixel is in selfshadow
 		discard; 
-		
-	vec3 vCamDir = normalize(vCamPos - posSpec.xyz);
-	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), normGloss.a * 100.0f) * posSpec.a);
+	
+	vec4 sgi = texture2D(sgiMap, texCoord);	
+	vec3 vCamDir = normalize(-position);
+	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.b * 100.0f) * sgi.r);
 
 	float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
-
+	
+	vec4 color = texture2D(colorMap, texCoord);
 	outColor = vec4(
-		  (dotLightNormal * colorIll.rgb + vec3(spec, spec, spec)) 
+		  (dotLightNormal * color.rgb + vec3(spec, spec, spec)) 
 		  * light.color * light.multiplier * attenuationValue * spot, 1.0f);						
 }

@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 13/09/2011
+#include "StdAfx.h" 
 
 #include "BinObjLineLoader.h"
 
@@ -29,8 +30,8 @@
 
 #include "Assert.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace lines {
 
 BinObjLineLoader::BinObjLineLoader()
@@ -54,17 +55,17 @@ void BinObjLineLoader::read(const std::string& path)
 
     using namespace std;
 
-    io::BinaryStream stream(path, io::BinaryStream::Read); //throws error::FileNotFoundException
+    io::BinaryStream stream(path, io::BinaryStream::Read); //throws err::FileNotFoundException
     
     m_PointData.resize(stream.readDword());
-    stream.readBuffer(&m_PointData[0], m_PointData.size() * sizeof(math::Vector3));
+    stream.readBuffer(&m_PointData[0], m_PointData.size() * sizeof(vec3));
 
     m_Indices.resize(stream.readDword());
     stream.readBuffer(&m_Indices[0], m_Indices.size() * sizeof(ushort));
 }
 
 
-const std::vector<math::Vector3>& BinObjLineLoader::getPoints() const
+const std::vector<vec3>& BinObjLineLoader::getPoints() const
 {
     return m_PointData;
 }

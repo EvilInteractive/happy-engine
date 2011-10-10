@@ -13,7 +13,7 @@
 
 int main( int /*argc*/, char** /*args[]*/ )
 {
-    using namespace happyengine;
+    using namespace he;
     using namespace happytest;
     
     HAPPYENGINE->init(SubEngine_All);
@@ -22,7 +22,7 @@ int main( int /*argc*/, char** /*args[]*/ )
     delete pGame;
     HAPPYENGINE->dispose();
 
-    std::cout << "\nallocated textures: " << graphics::Texture2D::getTextureCount() << "\n";
+    std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
 
     #ifdef _DEBUG
     _CrtDumpMemoryLeaks();

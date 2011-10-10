@@ -27,8 +27,8 @@
 #include "HappyTypes.h"
 #include "ISpline.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace splines {
 
 template<typename T>
@@ -141,6 +141,6 @@ private:
     CatmullRomSpline& operator=(const CatmullRomSpline& other);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

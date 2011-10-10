@@ -17,12 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
+#include "StdAfx.h" 
 
 #include "PhysicsSphereShape.h"
 #include "geometry/PxSphereGeometry.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
 PhysicsSphereShape::PhysicsSphereShape(float radius): m_Radius(radius), m_Geometry(PxSphereGeometry(m_Radius))

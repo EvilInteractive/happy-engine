@@ -17,11 +17,12 @@
 //
 //Author:  Bastian Damman
 //Created: 01/09/2011
+#include "StdAfx.h" 
 
 #include "Random.h"
 #include "HappyNew.h"
 
-namespace happyengine {
+namespace he {
 
 Random::Random(uint seed): 
     m_RandomEngine(seed),

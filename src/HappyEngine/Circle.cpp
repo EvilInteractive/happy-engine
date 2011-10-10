@@ -17,16 +17,17 @@
 //
 //Author:  Bastian Damman
 //Created: 22/09/2011
+#include "StdAfx.h" 
 
 #include "Circle.h"
 #include "HappyNew.h"
 #include "MathFunctions.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace shapes {
 
-Circle::Circle(const math::Vector2& position, float radius): m_Position(position), m_Radius(radius)
+Circle::Circle(const vec2& position, float radius): m_Position(position), m_Radius(radius)
 {
 }
 
@@ -35,7 +36,7 @@ Circle::~Circle()
 {
 }
 
-const math::Vector2& Circle::getPosition() const
+const vec2& Circle::getPosition() const
 {
 	return m_Position;
 }
@@ -47,31 +48,31 @@ float Circle::getRadius() const
 std::pair<float, float> Circle::fx(float x) const
 {
     return std::make_pair(
-        sqrt(math::sqr(m_Radius) - math::sqr(x - m_Position.x)) + m_Position.y,
-        -sqrt(math::sqr(m_Radius) - math::sqr(x - m_Position.x)) + m_Position.y);
+        sqrt(sqr(m_Radius) - sqr(x - m_Position.x)) + m_Position.y,
+        -sqrt(sqr(m_Radius) - sqr(x - m_Position.x)) + m_Position.y);
 }
 std::pair<float, float> Circle::fy(float y) const
 {
     return std::make_pair(
-        sqrt(math::sqr(m_Radius) - math::sqr(y - m_Position.y)) + m_Position.x,
-        -sqrt(math::sqr(m_Radius) - math::sqr(y - m_Position.y)) + m_Position.x);
+        sqrt(sqr(m_Radius) - sqr(y - m_Position.y)) + m_Position.x,
+        -sqrt(sqr(m_Radius) - sqr(y - m_Position.y)) + m_Position.x);
 }
-bool Circle::isOnCircle(const math::Vector2& point) const
+bool Circle::isOnCircle(const vec2& point) const
 {
-    return (fabs(math::sqr(point.x - m_Position.x) + math::sqr(point.y - m_Position.y) - math::sqr(m_Radius)) < 0.0001f);
+    return (fabs(sqr(point.x - m_Position.x) + sqr(point.y - m_Position.y) - sqr(m_Radius)) < 0.0001f);
 }
 
-std::vector<Vector2> Circle::intersect(const Circle& other) const
+std::vector<vec2> Circle::intersect(const Circle& other) const
 {
-    float d(math::length(m_Position - other.getPosition()));
+    float d(length(m_Position - other.getPosition()));
 
 	if (d > m_Radius + other.m_Radius)
 	{
-		return std::vector<Vector2>();
+		return std::vector<vec2>();
 	}
 	else if (d < fabs(m_Radius - other.m_Radius))
 	{
-		return std::vector<Vector2>();
+		return std::vector<vec2>();
 	}
 	else
 	{
@@ -84,18 +85,18 @@ std::vector<Vector2> Circle::intersect(const Circle& other) const
 					 r2(other.m_Radius);
 		float d2(lengthSqr(other.m_Position - m_Position));
 
-		float xPart1( (x2 + x1) / 2.0f + ((x2 - x1) * (math::sqr(r1) - math::sqr(r2))) / (2.0f * d2));
-		float xPart2( ((y2 - y1) / (2.0f * d2)) * sqrtf( (math::sqr(r1 + r2) - d2) * (d2 - math::sqr(r2 - r1))));
+		float xPart1( (x2 + x1) / 2.0f + ((x2 - x1) * (sqr(r1) - sqr(r2))) / (2.0f * d2));
+		float xPart2( ((y2 - y1) / (2.0f * d2)) * sqrtf( (sqr(r1 + r2) - d2) * (d2 - sqr(r2 - r1))));
 
-		float yPart1( (y2 + y1) / 2.0f + ((y2 - y1) * (math::sqr(r1) - math::sqr(r2))) / (2.0f * d2));
-		float yPart2( ((x2 - x1) / (2.0f * d2)) * sqrtf( (math::sqr(r1 + r2) - d2) * (d2 - math::sqr(r2 - r1))));
+		float yPart1( (y2 + y1) / 2.0f + ((y2 - y1) * (sqr(r1) - sqr(r2))) / (2.0f * d2));
+		float yPart2( ((x2 - x1) / (2.0f * d2)) * sqrtf( (sqr(r1 + r2) - d2) * (d2 - sqr(r2 - r1))));
 
-		std::vector<Vector2> ret;
-		ret.push_back( math::Vector2(xPart1 + xPart2, yPart1 - yPart2) );
-		ret.push_back( math::Vector2(xPart1 - xPart2, yPart1 + yPart2) );
+		std::vector<vec2> ret;
+		ret.push_back( vec2(xPart1 + xPart2, yPart1 - yPart2) );
+		ret.push_back( vec2(xPart1 - xPart2, yPart1 + yPart2) );
 		
 		return ret;
 	}
 }
 
-} } } //end namespace
+} } //end namespace

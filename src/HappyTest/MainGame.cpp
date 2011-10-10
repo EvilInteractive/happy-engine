@@ -23,8 +23,8 @@
 #include <sstream>
 #include <iostream>
 
-#include "Matrix.h"
-#include "Vector3.h"
+#include "mat44.h"
+#include "vec3.h"
 #include "MathConstants.h"
 #include "HappyEngine.h"
 #include "MathFunctions.h"
@@ -43,11 +43,11 @@ namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
-					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
+					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
 					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
 					   m_pTextBox(nullptr)
 {
-    using namespace happyengine;
+    using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
     m_BackgroundColors[1] = Color((byte)122, (byte)186, (byte)122, (byte)255);
     m_BackgroundColors[2] = Color((byte)255, (byte)127, (byte)80, (byte)255);
@@ -80,18 +80,18 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    using namespace happyengine;
+    using namespace he;
     io::IniReader reader;
     try { reader.open("../data/settings.ini"); }
-    catch (error::FileNotFoundException& e)
+    catch (err::FileNotFoundException& e)
     { std::wcout << e.getMsg() << "\n"; }
     if (reader.isOpen())
     {
-        math::Vector2 windowDim(reader.readVector2(L"Window", L"dimension", math::Vector2(1280, 720)));
+        vec2 windowDim(reader.readVector2(L"Window", L"dimension", vec2(1280, 720)));
         GRAPHICS->setScreenDimension(static_cast<int>(windowDim.x), static_cast<int>(windowDim.y));
         GRAPHICS->setWindowTitle(reader.readString(L"Window", L"title", "Test"));
 
-        math::Vector4 bColor(reader.readVector4(L"Background", L"color"));
+        vec4 bColor(reader.readVector4(L"Background", L"color"));
         GRAPHICS->setBackgroundColor(Color(bColor.x, bColor.y, bColor.z, bColor.w));
 
         GRAPHICS->setVSync(reader.readBool(L"Graphics", L"vsync", true));
@@ -100,63 +100,63 @@ void MainGame::init()
 }
 void MainGame::load()
 {
-    using namespace happyengine;
+    using namespace he;
 
 	m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
 
     PHYSICS->startSimulation();
 
 	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-	m_pCamera->lookAt(math::Vector3(-5, 5, -4), math::Vector3(0, 0, 0), math::Vector3(0, 1, 0));
-	m_pCamera->setLens(16.0f/9.0f,math::piOverFour,10.0f,100.0f);
+	m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
+	m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,100.0f);
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
-    GRAPHICS->getLightManager()->addPointLight(math::Vector3(-1, 0, -1), Color((byte)255, 50, 50, 255), 5.0f, 1, 10);
-    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(math::Vector3(-1, 0, -1), math::Vector3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, math::piOverFour, 1, 30);
+    GRAPHICS->getLightManager()->addPointLight(vec3(0, 1, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10);
+    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
     Random r;
-    for (int i = 0; i < 200; ++i)
-        GRAPHICS->getLightManager()->addSpotLight(math::Vector3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), math::Vector3(0, -1, 0), Color((byte)255, 255, 200, 255), 3.0f, math::piOverTwo, 1, 20);
-    //GRAPHICS->getLightManager()->addDirectionalLight(math::Vector3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
-    GRAPHICS->getLightManager()->addAmbientLight(math::Vector3::zero, Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, 1000);
+    for (int i = 0; i < 5; ++i)
+       GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverTwo, 1, 20);
+    //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
+    GRAPHICS->getLightManager()->addAmbientLight(vec3::zero, Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, 1000);
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
-	m_pAxis = NEW happyengine::game::Entity(CONTENT->loadEntity("axis.entity"));
+	m_pAxis = NEW he::game::Entity(CONTENT->loadEntity("axis.entity"));
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
     m_pFont = CONTENT->loadFont("MODES.ttf", 12);
 
-	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, math::Vector2(150,600), math::Vector2(60,20));
+	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(150,600), vec2(60,20));
 	m_pTestButton->setText("Button", 12);
 
 	m_pTextBox = NEW gui::TextBox(RectF(50,500,200,20), "testing", 10);
 
 	CONSOLE->registerValue<float>(&m_DrawTimer, "c_timer");
-	CONSOLE->registerValue<happyengine::Color>(m_BackgroundColors, "c_color");
+	CONSOLE->registerValue<he::Color>(m_BackgroundColors, "c_color");
 	CONSOLE->registerValue<MyServer>(m_pServer, "c_server");
 }
 void MainGame::tick(float dTime)
 {
 	m_pCamera->tick(dTime);
 
-    if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Escape))
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
 
     m_pTestObject->tick(dTime);
     
     if (m_pClient == nullptr && m_pServer == nullptr)
     {
-        if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_F11))
+        if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F11))
         {
             std::cout << "Starting server\n";
             m_pServer = NEW MyServer();
             m_pServer->start(30000, 16);
             NETWORK->start();
         }
-        else if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_F12))
+        else if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F12))
         {
             std::cout << "Starting client\n";
             m_pClient = NEW MyClient();
@@ -170,7 +170,7 @@ void MainGame::tick(float dTime)
         pBullet->tick(dTime);
     });
 
-    if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Space))
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
     {
         TestBullet* pBullet(NEW TestBullet(CONTENT->loadEntity("bullet.entity"), m_pCamera->getPosition(), m_pCamera->getLook() * 20));
         m_Bullets.push_back(pBullet);
@@ -178,7 +178,7 @@ void MainGame::tick(float dTime)
     }
 
     m_pSpotLight->setPosition(m_pCamera->getPosition());
-    m_pSpotLight->setDirection(-happyengine::math::normalize(m_pCamera->getLook()));
+    m_pSpotLight->setDirection(-he::normalize(m_pCamera->getLook()));
 
 	m_pTestButton->tick();
 
@@ -190,11 +190,10 @@ void MainGame::tick(float dTime)
 }
 void MainGame::draw(float /*dTime*/)
 {
-	using namespace happyengine;
-	using namespace graphics;
-	using namespace math;
+	using namespace he;
+	using namespace gfx;
 
-    if (CONTROLS->getKeyboard()->isKeyPressed(happyengine::io::Key_Return))
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
     {
         ++m_BackgroundIndex;
         if (m_BackgroundIndex > 4)
@@ -206,7 +205,6 @@ void MainGame::draw(float /*dTime*/)
 
     GRAPHICS->begin(m_pCamera);
     GRAPHICS->draw(m_pTestObject);
-
 		std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
 		{
 			GRAPHICS->draw(pBullet);
@@ -218,31 +216,31 @@ void MainGame::draw(float /*dTime*/)
 	// 2D test stuff
 	HE2D->begin();
 			
-		/*shapes::Circle c(Vector2(200, 200), 128);
-		HE2D->drawEllipse(c.getPosition(), Vector2(c.getRadius()*2, c.getRadius()*2));
+		/*shapes::Circle c(vec2(200, 200), 128);
+		HE2D->drawEllipse(c.getPosition(), vec2(c.getRadius()*2, c.getRadius()*2));
 
-		Vector2 mPos(CONTROLS->getMouse()->getPosition());
-		HE2D->drawEllipse(mPos, Vector2(8, 8));
+		vec2 mPos(CONTROLS->getMouse()->getPosition());
+		HE2D->drawEllipse(mPos, vec2(8, 8));
 
-		shapes::Circle c2((mPos + Vector2(200, 200))/2.0f, length(mPos - c.getPosition())/2.0f);
-		std::vector<Vector2> tan(c.intersect(c2));
-		HE2D->drawEllipse(c2.getPosition(), Vector2(c2.getRadius()*2, c2.getRadius()*2));*/
+		shapes::Circle c2((mPos + vec2(200, 200))/2.0f, length(mPos - c.getPosition())/2.0f);
+		std::vector<vec2> tan(c.intersect(c2));
+		HE2D->drawEllipse(c2.getPosition(), vec2(c2.getRadius()*2, c2.getRadius()*2));*/
 
 		/*if (tan.size() > 0)
 		{
-			std::vector<Vector2> line1;
+			std::vector<vec2> line1;
 			line1.push_back(mPos);
 			line1.push_back(tan[0]);
 			HE2D->drawPolygon(line1, 2);
 
-			std::vector<Vector2> line2;
+			std::vector<vec2> line2;
 			line2.push_back(mPos);
 			line2.push_back(tan[1]);
 			HE2D->drawPolygon(line2, 2);
 		}*/
 
 		//HE2D->setColor(1.0f,0.0f,0.0f);
-		//HE2D->fillEllipse(Vector2(200,200), Vector2(50,50));
+		//HE2D->fillEllipse(vec2(200,200), vec2(50,50));
 
 		// GUI elements need to be drawn inside HE2D renderer
 		m_pTestButton->draw();

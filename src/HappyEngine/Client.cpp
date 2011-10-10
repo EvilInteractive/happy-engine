@@ -17,13 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 24/08/2011
+#include "StdAfx.h" 
 
 #include "Client.h"
 #include "HappyNew.h"
 #include "HappyEngine.h"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 
 Client::Client(): m_pUdpSocket(nullptr), m_UserId(0), m_Connected(false)
 {
@@ -73,9 +74,9 @@ void Client::asyncConnect(const std::string& ip, ushort port)
     std::cout << "Connecting... \n";
 }
 
-void Client::handleConnect(const boost::system::error_code& error)
+void Client::handleConnect(const boost::system::error_code& err)
 {
-    if (!error)
+    if (!err)
     {
         std::cout << "successful connected to " << m_ServerEndpoint.address().to_string() << ":" << 
             m_ServerEndpoint.port() << "\n";
@@ -95,9 +96,9 @@ void Client::handleConnect(const boost::system::error_code& error)
         disconnect();
     }
 }
-void Client::handleReceive(const boost::system::error_code& error, size_t bytesReceived)
+void Client::handleReceive(const boost::system::error_code& err, size_t bytesReceived)
 {
-    if (!error)
+    if (!err)
     {
         Server::Header* header(static_cast<Server::Header*>(m_pBuffer));
         if (header->type == ServerMessage_None)
@@ -111,9 +112,9 @@ void Client::handleReceive(const boost::system::error_code& error, size_t bytesR
         if (m_Connected)
             asycRead();
     }
-    else if (error != boost::asio::error::eof)
+    else if (err != boost::asio::error::eof)
     {
-        std::cout << "Error receiving message from server (" << error << ")\n";
+        std::cout << "Error receiving message from server (" << err << ")\n";
     }
     else
     {

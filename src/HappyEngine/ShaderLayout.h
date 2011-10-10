@@ -25,8 +25,8 @@
 #include <vector>
 #include "HappyTypes.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class ShaderLayoutElement
 {

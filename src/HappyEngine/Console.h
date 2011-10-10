@@ -33,7 +33,7 @@
 #include "TextBox.h"
 #include "Text.h"
 
-namespace happyengine {
+namespace he {
 namespace tools {
 
 class Console
@@ -70,7 +70,7 @@ public:
 			std::wstring wstr;
 			wstr.assign(str.cbegin(), str.cend());
 
-			throw (error::Exception(wstr));
+			throw (err::Exception(wstr));
 		}
 		else
 		{
@@ -108,7 +108,7 @@ private:
 
 	gui::TextBox* m_pTextBox;
 
-	graphics::Font::pointer m_pFont;
+	gfx::Font::pointer m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

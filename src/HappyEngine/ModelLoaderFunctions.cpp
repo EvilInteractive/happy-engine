@@ -17,22 +17,23 @@
 //
 //Author:  Bastian Damman
 //Created: 31/08/2011
+#include "StdAfx.h" 
 
 #include "ModelLoaderFunctions.h"
 #include "HappyNew.h"
-#include "Vector2.h"
+#include "vec2.h"
 #include "MathFunctions.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace models {
 
-std::vector<math::Vector3> calculateTangents(const void* pVertices, uint numVertices,
+std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
                                              uint posOff, uint texOff, uint normOff, uint vertStride,
-                                             const void* pIndices, uint numIndices, graphics::IndexStride indexStride)
+                                             const void* pIndices, uint numIndices, gfx::IndexStride indexStride)
 {
-    std::vector<math::Vector3> tan1(numVertices, math::Vector3(0, 0, 0));
-    std::vector<math::Vector3> returnTan(numVertices, math::Vector3(0, 0, 0));
+    std::vector<vec3> tan1(numVertices, vec3(0, 0, 0));
+    std::vector<vec3> returnTan(numVertices, vec3(0, 0, 0));
 
     const char* pCharVertices(static_cast<const char*>(pVertices));
 
@@ -40,11 +41,11 @@ std::vector<math::Vector3> calculateTangents(const void* pVertices, uint numVert
     const ushort* pIndicesUShort(nullptr); 
     const uint* pIndicesUInt(nullptr); 
     
-    if (indexStride == graphics::IndexStride_Byte)
+    if (indexStride == gfx::IndexStride_Byte)
         pIndicesByte = static_cast<const byte*>(pIndices);
-    else if (indexStride == graphics::IndexStride_UShort)
+    else if (indexStride == gfx::IndexStride_UShort)
         pIndicesUShort = static_cast<const ushort*>(pIndices);
-    else if (indexStride == graphics::IndexStride_UInt)
+    else if (indexStride == gfx::IndexStride_UInt)
         pIndicesUInt = static_cast<const uint*>(pIndices);
     else
         ASSERT("unkown index stride");
@@ -52,32 +53,32 @@ std::vector<math::Vector3> calculateTangents(const void* pVertices, uint numVert
     for (uint i = 0; i < numIndices; i += 3) //per triangle
     {
         uint i1(0), i2(0), i3(0);
-        if (indexStride == graphics::IndexStride_Byte)
+        if (indexStride == gfx::IndexStride_Byte)
         {
             i1 = pIndicesByte[i];
             i2 = pIndicesByte[i + 1];
             i3 = pIndicesByte[i + 2];
         }
-        else if (indexStride == graphics::IndexStride_UShort)
+        else if (indexStride == gfx::IndexStride_UShort)
         {
             i1 = pIndicesUShort[i];
             i2 = pIndicesUShort[i + 1];
             i3 = pIndicesUShort[i + 2];
         }
-        else if (indexStride == graphics::IndexStride_UInt)
+        else if (indexStride == gfx::IndexStride_UInt)
         {
             i1 = pIndicesUInt[i];
             i2 = pIndicesUInt[i + 1];
             i3 = pIndicesUInt[i + 2];
         }
 
-        const math::Vector3& v1 = *reinterpret_cast<const math::Vector3*>(pCharVertices + (i1 * vertStride + posOff));
-	    const math::Vector3& v2 = *reinterpret_cast<const math::Vector3*>(pCharVertices + (i2 * vertStride + posOff));
-	    const math::Vector3& v3 = *reinterpret_cast<const math::Vector3*>(pCharVertices + (i3 * vertStride + posOff));
+        const vec3& v1 = *reinterpret_cast<const vec3*>(pCharVertices + (i1 * vertStride + posOff));
+	    const vec3& v2 = *reinterpret_cast<const vec3*>(pCharVertices + (i2 * vertStride + posOff));
+	    const vec3& v3 = *reinterpret_cast<const vec3*>(pCharVertices + (i3 * vertStride + posOff));
 
-        const math::Vector2& tx1 = *reinterpret_cast<const math::Vector2*>(pCharVertices + (i1 * vertStride + texOff));
-	    const math::Vector2& tx2 = *reinterpret_cast<const math::Vector2*>(pCharVertices + (i2 * vertStride + texOff));
-	    const math::Vector2& tx3 = *reinterpret_cast<const math::Vector2*>(pCharVertices + (i3 * vertStride + texOff));
+        const vec2& tx1 = *reinterpret_cast<const vec2*>(pCharVertices + (i1 * vertStride + texOff));
+	    const vec2& tx2 = *reinterpret_cast<const vec2*>(pCharVertices + (i2 * vertStride + texOff));
+	    const vec2& tx3 = *reinterpret_cast<const vec2*>(pCharVertices + (i3 * vertStride + texOff));
 
 	    float x1 = v2.x - v1.x;
 	    float x2 = v3.x - v1.x;
@@ -93,11 +94,11 @@ std::vector<math::Vector3> calculateTangents(const void* pVertices, uint numVert
 
 	    float r = 1.0f / (s1 * t2 - s2 * t1);
 
-	    math::Vector3 sdir(
+	    vec3 sdir(
             (t2 * x1 - t1 * x2) * r, 
             (t2 * y1 - t1 * y2) * r, 
             (t2 * z1 - t1 * z2) * r );
-	    math::Vector3 tdir(
+	    vec3 tdir(
             (s1 * x2 - s2 * x1) * r, 
             (s1 * y2 - s2 * y1) * r, 
             (s1 * z2 - s2 * z1) * r );
@@ -109,8 +110,8 @@ std::vector<math::Vector3> calculateTangents(const void* pVertices, uint numVert
 
     for (uint i = 0; i < numVertices; ++i)
     {
-        const math::Vector3& n = *reinterpret_cast<const math::Vector3*>(pCharVertices + (i * vertStride + normOff));
-        const math::Vector3& t = tan1[i];
+        const vec3& n = *reinterpret_cast<const vec3*>(pCharVertices + (i * vertStride + normOff));
+        const vec3& t = tan1[i];
 
         returnTan[i] = normalize(t - n * dot(n, t));
     }

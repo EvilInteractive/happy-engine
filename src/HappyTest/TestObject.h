@@ -19,30 +19,30 @@
 #define _TEST_OBJECT_H_
 #pragma once
 
-#include "Vector3.h"
-#include "Matrix.h"
+#include "vec3.h"
+#include "mat44.h"
 #include "PhysicsDynamicActor.h"
 #include "Font.h"
 #include "Entity.h"
 
 namespace happytest {
 
-class TestObject : public happyengine::game::Entity
+class TestObject : public he::game::Entity
 {
 public:
-	TestObject(const happyengine::game::EntityDesc& desc);
+	TestObject(const he::game::EntityDesc& desc);
     virtual ~TestObject();
 
     virtual void tick(float dTime);
 
 private:    
-    happyengine::graphics::Font::pointer m_pFont;
+    he::gfx::Font::pointer m_pFont;
 
     float m_Rotation;
-    happyengine::math::Vector3 m_Position;
+    he::vec3 m_Position;
     
-    happyengine::physics::PhysicsDynamicActor* m_pActor;
-    happyengine::physics::PhysicsMaterial::pointer m_pMaterial;
+    he::px::PhysicsDynamicActor* m_pActor;
+    he::px::PhysicsMaterial::pointer m_pMaterial;
 
     //Disable default copy constructor and default assignment operator
     TestObject(const TestObject&);

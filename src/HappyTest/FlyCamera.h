@@ -21,11 +21,11 @@
 #pragma once
 
 #include "Camera.h"
-#include "Vector2.h"
+#include "vec2.h"
 
 namespace happytest {
 
-class FlyCamera : public happyengine::graphics::Camera
+class FlyCamera : public he::gfx::Camera
 {
 public:
 	// CONSTRUCTOR - DESTRUCTOR
@@ -46,7 +46,7 @@ private:
 	float m_FastForward;
 	float m_MouseSensitivity;
 
-	happyengine::math::Vector2 m_PreviousMousePos;
+	he::vec2 m_PreviousMousePos;
 
     //Disable default copy constructor and default assignment operator
     FlyCamera(const FlyCamera&);

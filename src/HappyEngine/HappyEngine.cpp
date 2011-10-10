@@ -14,6 +14,7 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+#include "StdAfx.h" 
 
 #include "HappyEngine.h"
 #include "HappyNew.h"
@@ -25,7 +26,7 @@
 #include "IL/il.h"
 #include "IL/ilu.h"
 
-namespace happyengine {
+namespace he {
 
 HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 
@@ -86,7 +87,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     if (subengines & SubEngine_Graphics)
     {
         SDL_Init(SDL_INIT_EVERYTHING);
-        m_pGraphicsEngine = NEW graphics::GraphicsEngine();
+        m_pGraphicsEngine = NEW gfx::GraphicsEngine();
     }
 
     if (subengines & SubEngine_Content)
@@ -94,7 +95,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilInit();
         iluInit();
         iluSetLanguage(ILU_ENGLISH);
-        m_pContentManager = NEW content::ContentManager();
+        m_pContentManager = NEW ct::ContentManager();
     }
     
     if (subengines & SubEngine_Controls)
@@ -104,17 +105,17 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     if (subengines & SubEngine_Physics)
     {
-        m_pPhysicsEngine = NEW physics::PhysicsEngine();
+        m_pPhysicsEngine = NEW px::PhysicsEngine();
     }
 
     if (subengines & SubEngine_Networking)
     {
-        m_pNetworkManager = NEW networking::NetworkManager();
+        m_pNetworkManager = NEW net::NetworkManager();
     }
 
 	if (subengines & SubEngine_2DRenderer)
     {
-		m_p2DRenderer = NEW graphics::Happy2DRenderer();
+		m_p2DRenderer = NEW gfx::Happy2DRenderer();
     }
 
 	m_pConsole = NEW tools::Console();
@@ -196,7 +197,7 @@ const std::vector<SDL_Event>& HappyEngine::getSDLEvents() const
 }
 
 //SubEngines
-graphics::GraphicsEngine* HappyEngine::getGraphicsEngine() const
+gfx::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 {
     return m_pGraphicsEngine;
 }
@@ -204,19 +205,19 @@ const io::ControlsManager* HappyEngine::getControls() const
 {
     return m_pControlsManager;
 }
-physics::PhysicsEngine* HappyEngine::getPhysics() const
+px::PhysicsEngine* HappyEngine::getPhysics() const
 {
     return m_pPhysicsEngine;
 }
-content::ContentManager* HappyEngine::getContentManager() const
+ct::ContentManager* HappyEngine::getContentManager() const
 {
     return m_pContentManager;
 }
-networking::NetworkManager* HappyEngine::getNetworkManager() const
+net::NetworkManager* HappyEngine::getNetworkManager() const
 {
     return m_pNetworkManager;
 }
-graphics::Happy2DRenderer* HappyEngine::get2DRenderer() const
+gfx::Happy2DRenderer* HappyEngine::get2DRenderer() const
 {
 	return m_p2DRenderer;
 }

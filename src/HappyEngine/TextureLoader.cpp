@@ -18,6 +18,7 @@
 //Author:  Bastian Damman
 //Created: 11/08/2011
 //Extended:	Sebastiaan Sprengers
+#include "StdAfx.h" 
 
 #include "TextureLoader.h"
 
@@ -34,11 +35,11 @@
 
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 TextureLoader::TextureLoader(): m_isLoadThreadRunning(false),
-								m_pAssetContainer(NEW AssetContainer<graphics::Texture2D::pointer>())
+								m_pAssetContainer(NEW AssetContainer<gfx::Texture2D::pointer>())
 {
 }
 
@@ -51,11 +52,11 @@ TextureLoader::~TextureLoader()
 
 inline void handleILError()
 {
-    ILenum error = ilGetError();
-    while (error != IL_NO_ERROR)
+    ILenum err = ilGetError();
+    while (err != IL_NO_ERROR)
     {
-        std::cout << iluErrorString(error);
-        error = ilGetError();
+        std::cout << iluErrorString(err);
+        err = ilGetError();
     }
 }
 
@@ -96,7 +97,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
     }
 }
 
-graphics::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
+gfx::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
@@ -106,7 +107,7 @@ graphics::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
 	}
 	else
 	{
-		graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+		gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
 
 		TextureLoadData data;
 		data.path = "";
@@ -125,7 +126,7 @@ graphics::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
 		return tex2D;
 	}
 }
-graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
+gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
 {
 	if (m_pAssetContainer->isAssetPresent(path))
 	{
@@ -133,7 +134,7 @@ graphics::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& 
 	}
 	else
 	{
-		graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+		gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
 
 		TextureLoadData data;
 		data.path = path;

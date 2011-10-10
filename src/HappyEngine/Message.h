@@ -25,8 +25,8 @@
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 namespace details {
 
 /*

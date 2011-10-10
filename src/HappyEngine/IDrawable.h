@@ -25,8 +25,8 @@
 #include "Model.h"
 #include "Material.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
     
 class IDrawable
 {
@@ -36,7 +36,7 @@ public:
     virtual const Material& getMaterial() const = 0;
     virtual const Model::pointer getModel() const = 0;
 
-    virtual const math::Matrix& getWorldMatrix() const = 0;
+    virtual const mat44& getWorldMatrix() const = 0;
 };
 
 } } //end namespace

@@ -17,13 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 25/08/2011
+#include "StdAfx.h" 
 
 #include "Message.h"
 #include "HappyNew.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 namespace details {
 
 Message::Message(): m_pMsg(nullptr), m_SizeInBytes(0)

@@ -14,12 +14,13 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+#include "StdAfx.h" 
 
 #include "VertexLayout.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 #pragma region VertexElement
 VertexElement::VertexElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset):

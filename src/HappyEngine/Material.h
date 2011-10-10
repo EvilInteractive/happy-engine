@@ -29,8 +29,8 @@
 #include "Camera.h"
 #include "Color.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class IDrawable;
 
@@ -55,9 +55,9 @@ public:
     void setSGIMap(const std::string& path);
     void setSGIMap(const Color& color);
 
-    const graphics::Texture2D::pointer& getDiffuseMap() const;
-    const graphics::Texture2D::pointer& getNormalMap() const;
-    const graphics::Texture2D::pointer& getSGIMap() const;
+    const gfx::Texture2D::pointer& getDiffuseMap() const;
+    const gfx::Texture2D::pointer& getNormalMap() const;
+    const gfx::Texture2D::pointer& getSGIMap() const;
 
 private:
     bool isTranslucent;
@@ -65,9 +65,9 @@ private:
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;
 
-    graphics::Texture2D::pointer m_pDiffuseMap;
-    graphics::Texture2D::pointer m_pNormalMap;
-    graphics::Texture2D::pointer m_pSGIMap;
+    gfx::Texture2D::pointer m_pDiffuseMap;
+    gfx::Texture2D::pointer m_pNormalMap;
+    gfx::Texture2D::pointer m_pSGIMap;
 
 };
 

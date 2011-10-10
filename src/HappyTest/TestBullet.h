@@ -25,18 +25,18 @@
 
 namespace happytest {
 
-class TestBullet : public happyengine::game::Entity
+class TestBullet : public he::game::Entity
 {
 public:
-	TestBullet(const happyengine::game::EntityDesc& desc, const happyengine::math::Vector3& pos, const happyengine::math::Vector3& velocity);
+	TestBullet(const he::game::EntityDesc& desc, const he::vec3& pos, const he::vec3& velocity);
     virtual ~TestBullet();
     
     virtual void tick(float dTime);
 
 private:
 
-    happyengine::physics::PhysicsDynamicActor* m_pActor;
-    happyengine::physics::PhysicsMaterial::pointer m_pMaterial;
+    he::px::PhysicsDynamicActor* m_pActor;
+    he::px::PhysicsMaterial::pointer m_pMaterial;
     
     //Disable default copy constructor and default assignment operator
     TestBullet(const TestBullet&);

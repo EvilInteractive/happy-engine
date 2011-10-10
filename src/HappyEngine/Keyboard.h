@@ -27,7 +27,7 @@
 #include <vector>
 #include "SDL_scancode.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 class Keyboard

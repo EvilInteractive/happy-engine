@@ -17,15 +17,16 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
+#include "StdAfx.h" 
 
 #include "PhysicsStaticActor.h"
 #include "HappyEngine.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 
-PhysicsStaticActor::PhysicsStaticActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, const PhysicsMaterial::pointer& pMaterial)
+PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, const PhysicsMaterial::pointer& pMaterial)
 {
     m_pActor = PHYSICS->getSDK()->createRigidStatic(PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
                                                         PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 
@@ -45,13 +46,13 @@ PhysicsStaticActor::~PhysicsStaticActor()
     m_pActor->release();
 }
 
-math::Vector3 PhysicsStaticActor::getPosition() const
+vec3 PhysicsStaticActor::getPosition() const
 {
-    return math::Vector3(m_pActor->getGlobalPose().p);
+    return vec3(m_pActor->getGlobalPose().p);
 }
-math::Matrix PhysicsStaticActor::getPose() const
+mat44 PhysicsStaticActor::getPose() const
 {
-    return math::Matrix(PxMat44(PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
+    return mat44(PxMat44(PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
 }
 
 } } //end namespace

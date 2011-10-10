@@ -24,49 +24,49 @@
 
 #include "PxVec4.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
 
-struct Vector3;
 
-struct Vector4
+struct vec3;
+
+struct vec4
 {
 public:
     float x, y, z, w;
 
-	Vector4();
-    explicit Vector4(physx::pubfnd3::PxVec4 vec);
-    Vector4(const Vector3& vec, float w);
-	Vector4(float x, float y, float z, float w);
-    ~Vector4();
+	vec4();
+    explicit vec4(physx::pubfnd3::PxVec4 vec);
+    vec4(const vec3& vec, float w);
+	vec4(float x, float y, float z, float w);
+    ~vec4();
 
-    Vector4(const Vector4& other);
-    Vector4& operator=(const Vector4& other);
+    vec4(const vec4& other);
+    vec4& operator=(const vec4& other);
 
     
     //>---------Getters----------------------->
-    Vector3 xyz() const;
+    vec3 xyz() const;
     //<---------------------------------------<
 
     //>---------Operators--------------------->
-	Vector4 operator-() const;
+	vec4 operator-() const;
 
-	Vector4 operator*(float a) const;
-	Vector4 operator/(float a) const;
+	vec4 operator*(float a) const;
+	vec4 operator/(float a) const;
 
-	Vector4 operator+(const Vector4& v) const;
-	Vector4 operator-(const Vector4& v) const;
+	vec4 operator+(const vec4& v) const;
+	vec4 operator-(const vec4& v) const;
 
-	Vector4& operator+=(const Vector4& v);
-	Vector4& operator-=(const Vector4& v);
-	Vector4& operator*=(float a);
-	Vector4& operator/=(float a);
+	vec4& operator+=(const vec4& v);
+	vec4& operator-=(const vec4& v);
+	vec4& operator*=(float a);
+	vec4& operator/=(float a);
 
-	bool operator==(const Vector4& v) const;
-	bool operator!=(const Vector4& v) const;
+	bool operator==(const vec4& v) const;
+	bool operator!=(const vec4& v) const;
     //<---------------------------------------<
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

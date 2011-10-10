@@ -25,13 +25,13 @@
 #include <string>
 #include <vector>
 
-#include "Vector3.h"
+#include "vec3.h"
 #include "HappyTypes.h"
 
 #include "Line.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace lines {
 
 class ObjLineLoader
@@ -42,13 +42,13 @@ public:
 
     virtual void load(const std::string& path);
 
-    virtual const std::vector<math::Vector3>& getPoints() const;
+    virtual const std::vector<vec3>& getPoints() const;
     virtual const std::vector<ushort>& getIndices() const;
 
 private:
     void read(const std::string& path);
 
-    std::vector<math::Vector3> m_PointData;
+    std::vector<vec3> m_PointData;
     std::vector<ushort> m_Indices;
 
     //Disable default copy constructor and default assignment operator

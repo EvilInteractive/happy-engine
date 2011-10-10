@@ -23,7 +23,7 @@
 #include "VertexLayout.h"
 #include "Model.h"
 #include "Texture2D.h"
-#include "Vector3.h"
+#include "vec3.h"
 #include "Line.h"
 
 #include "PhysicsShapeLoader.h"
@@ -34,8 +34,8 @@
 #include "ShaderLoader.h"
 #include "EntityLoader.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class ContentManager
 {
@@ -43,25 +43,25 @@ public:
 	ContentManager();
     virtual ~ContentManager();
 
-	//graphics::Texture2D::pointer loadTexture2D(const std::string& path);
-	// graphics::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
-	// asyncLoadTexture2D(const std::string& path, graphics::Texture2D::pointer*);
+	//gfx::Texture2D::pointer loadTexture2D(const std::string& path);
+	// gfx::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
+	// asyncLoadTexture2D(const std::string& path, gfx::Texture2D::pointer*);
 
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-	graphics::Model::pointer asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout);
+	gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
 
-	graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
-    graphics::Texture2D::pointer asyncMakeTexture(const Color& color);
+	gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
+    gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
 
-    graphics::Line::pointer loadLine(const std::string& path);
+    gfx::Line::pointer loadLine(const std::string& path);
 
-    const std::vector<physics::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
+    const std::vector<px::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
 
-    graphics::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
+    gfx::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
 
-    graphics::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    
     game::EntityDesc loadEntity(const std::string& path);
 

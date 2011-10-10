@@ -34,8 +34,8 @@
 
 #include "boost/thread.hpp"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class ModelLoader
 {
@@ -46,15 +46,15 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-	graphics::Model::pointer asyncLoadModel(const std::string& path, const graphics::VertexLayout& vertexLayout);
+	gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
 
 private:
     struct ModelLoadData
     {
     public:
         std::string path;
-        graphics::VertexLayout vertexLayout;
-        graphics::Model::pointer pModel;
+        gfx::VertexLayout vertexLayout;
+        gfx::Model::pointer pModel;
         models::IModelLoader* loader;
 
         ModelLoadData() {}
@@ -71,7 +71,7 @@ private:
     void ModelLoadThread();
     bool m_isModelThreadRunning;
 
-	AssetContainer<graphics::Model::pointer>* m_pAssetContainer;
+	AssetContainer<gfx::Model::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     ModelLoader(const ModelLoader&);

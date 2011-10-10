@@ -24,9 +24,9 @@
 #pragma once
 
 #include "HappyTypes.h"
-#include "Vector2.h"
+#include "vec2.h"
 
-namespace happyengine {
+namespace he {
 
 struct RectI;
 struct RectF
@@ -36,7 +36,7 @@ public:
 
     RectF();
 	RectF(float x, float y, float width, float height);
-	RectF(const math::Vector2& pos, const math::Vector2& size);
+	RectF(const vec2& pos, const vec2& size);
     explicit RectF(const RectI& rect);
     ~RectF();
 

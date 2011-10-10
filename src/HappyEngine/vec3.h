@@ -21,47 +21,46 @@
 
 #include "PxVec3.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
 
-struct Vector3
+struct vec3
 {
 public:
     float x, y, z;
 
-    const static Vector3 up;
-    const static Vector3 forward;
-    const static Vector3 right;
-    const static Vector3 one;
-    const static Vector3 zero;
+    const static vec3 up;
+    const static vec3 forward;
+    const static vec3 right;
+    const static vec3 one;
+    const static vec3 zero;
 
-	Vector3();
-    explicit Vector3(physx::pubfnd3::PxVec3 vec);
-	Vector3(float x, float y, float z);
-    ~Vector3();
+	vec3();
+    explicit vec3(const physx::pubfnd3::PxVec3& vec);
+	vec3(float x, float y, float z);
+    ~vec3();
 
-    Vector3(const Vector3& other);
-    Vector3& operator=(const Vector3& other);
+    vec3(const vec3& other);
+    vec3& operator=(const vec3& other);
 
     //>---------Operators--------------------->
-	Vector3 operator-() const;
+	vec3 operator-() const;
 
-	Vector3 operator*(float a) const;
-	Vector3 operator/(float a) const;
+	vec3 operator*(float a) const;
+	vec3 operator/(float a) const;
 
-	Vector3 operator+(const Vector3& v) const;
-	Vector3 operator-(const Vector3& v) const;
+	vec3 operator+(const vec3& v) const;
+	vec3 operator-(const vec3& v) const;
 
-	Vector3& operator+=(const Vector3& v);
-	Vector3& operator-=(const Vector3& v);
-	Vector3& operator*=(float a);
-	Vector3& operator/=(float a);
+	vec3& operator+=(const vec3& v);
+	vec3& operator-=(const vec3& v);
+	vec3& operator*=(float a);
+	vec3& operator/=(float a);
 
-	bool operator==(const Vector3& v) const;
-	bool operator!=(const Vector3& v) const;
+	bool operator==(const vec3& v) const;
+	bool operator!=(const vec3& v) const;
     //<----------------------------------------<
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

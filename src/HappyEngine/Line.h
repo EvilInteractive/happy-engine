@@ -22,14 +22,14 @@
 #define _HE_LINE_H_
 #pragma once
 
-#include "Vector3.h"
+#include "vec3.h"
 #include "HappyTypes.h"
 #include "boost/shared_ptr.hpp"
 
 #include <vector>
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Line
 {
@@ -37,17 +37,17 @@ public:
 	Line();
     virtual ~Line();
 
-    void setVertices(const std::vector<math::Vector3>& vert);
+    void setVertices(const std::vector<vec3>& vert);
     void setIndices(const std::vector<ushort>& ind);
 
-    const std::vector<math::Vector3>& getVertices() const;
+    const std::vector<vec3>& getVertices() const;
     const std::vector<ushort>& getIndices() const;
 
     typedef boost::shared_ptr<Line> pointer;
 
 private:
 
-    std::vector<math::Vector3> m_Vertices;
+    std::vector<vec3> m_Vertices;
     std::vector<ushort> m_Indices;
 
     //Disable default copy constructor and default assignment operator

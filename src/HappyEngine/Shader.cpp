@@ -14,6 +14,7 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+#include "StdAfx.h" 
 
 #include "Shader.h"
 
@@ -28,8 +29,8 @@
 
 #include "GL/glew.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 uint Shader::s_CurrentBoundShader = 0;
 
@@ -56,7 +57,7 @@ bool validateShader(GLuint shaderID, const std::string& file)
 
     if (length > 0)
     {
-        std::cout << "Shader " << shaderID << " (" << file << ") compile error: \n" <<
+        std::cout << "Shader " << shaderID << " (" << file << ") compile err: \n" <<
             buffer << "\n";
     }
     return true;
@@ -72,7 +73,7 @@ bool validateProgram(GLuint programID)
     glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
     if (length > 0)
     {
-        std::cout << "Program " << programID << "link error: \n" <<
+        std::cout << "Program " << programID << "link err: \n" <<
             buffer << "\n";
     }
 
@@ -100,10 +101,10 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Sh
     std::string strFS;
     try 
     {
-        strVS = content::details::ShaderPreProcessor::process(vsPath, std::set<std::string>());       
-        strFS = content::details::ShaderPreProcessor::process(fsPath, std::set<std::string>());
+        strVS = ct::details::ShaderPreProcessor::process(vsPath, std::set<std::string>());       
+        strFS = ct::details::ShaderPreProcessor::process(fsPath, std::set<std::string>());
     }
-    catch (const error::FileNotFoundException& e)
+    catch (const err::FileNotFoundException& e)
     { std::wcout << e.getMsg(); return false; }
     // <-----------------------------------------------
 
@@ -201,29 +202,29 @@ void Shader::setShaderVar(uint id, float value) const
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1f(id, value);
 }
-void Shader::setShaderVar(uint id, const math::Vector2& vec) const
+void Shader::setShaderVar(uint id, const vec2& vec) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform2f(id, vec.x, vec.y);
 }
-void Shader::setShaderVar(uint id, const math::Vector3& vec) const
+void Shader::setShaderVar(uint id, const vec3& vec) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform3f(id, vec.x, vec.y, vec.z);
 }
-void Shader::setShaderVar(uint id, const math::Vector4& vec) const
+void Shader::setShaderVar(uint id, const vec4& vec) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform4f(id, vec.x, vec.y, vec.z, vec.w);
 }
-void Shader::setShaderVar(uint id, const math::Matrix& matrix) const
+void Shader::setShaderVar(uint id, const mat44& matrix) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     float fArr[16];
     matrix.toFloatArray(fArr);
     glUniformMatrix4fv(id, 1, GL_FALSE, fArr);
 }
-void Shader::setShaderVar(uint id, const graphics::Texture2D::pointer& tex2D) const
+void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glActiveTexture(GL_TEXTURE0 + id);

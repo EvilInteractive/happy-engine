@@ -37,7 +37,7 @@
 #include "Happy2DRenderer.h"
 #include "Console.h"
 
-#define HAPPYENGINE happyengine::HappyEngine::getPointer()
+#define HAPPYENGINE he::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
 #define CONTROLS HAPPYENGINE->getControls()
 #define PHYSICS HAPPYENGINE->getPhysics()
@@ -46,7 +46,7 @@
 #define HE2D HAPPYENGINE->get2DRenderer()
 #define CONSOLE HAPPYENGINE->getConsole()
 
-namespace happyengine {
+namespace he {
 enum SubEngine
 {
     SubEngine_None = 0,
@@ -74,12 +74,12 @@ public:
 	const std::vector<SDL_Event>& getSDLEvents() const;
 
     //subengines
-    graphics::GraphicsEngine* getGraphicsEngine() const;
+    gfx::GraphicsEngine* getGraphicsEngine() const;
     const io::ControlsManager* getControls() const;
-    physics::PhysicsEngine* getPhysics() const;
-    content::ContentManager* getContentManager() const;
-    networking::NetworkManager* getNetworkManager() const;
-	graphics::Happy2DRenderer* get2DRenderer() const;
+    px::PhysicsEngine* getPhysics() const;
+    ct::ContentManager* getContentManager() const;
+    net::NetworkManager* getNetworkManager() const;
+	gfx::Happy2DRenderer* get2DRenderer() const;
 	tools::Console* getConsole() const;
 
 private:
@@ -90,12 +90,12 @@ private:
 
     IGame* m_pGame;
 
-    graphics::GraphicsEngine* m_pGraphicsEngine;
+    gfx::GraphicsEngine* m_pGraphicsEngine;
     io::ControlsManager* m_pControlsManager;
-    physics::PhysicsEngine* m_pPhysicsEngine;
-    content::ContentManager* m_pContentManager;
-    networking::NetworkManager* m_pNetworkManager;
-	graphics::Happy2DRenderer* m_p2DRenderer;
+    px::PhysicsEngine* m_pPhysicsEngine;
+    ct::ContentManager* m_pContentManager;
+    net::NetworkManager* m_pNetworkManager;
+	gfx::Happy2DRenderer* m_p2DRenderer;
 	tools::Console* m_pConsole;
 
     bool m_Quit;

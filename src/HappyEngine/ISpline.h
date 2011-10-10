@@ -22,8 +22,8 @@
 #define _ISPLINE_H_
 #pragma once
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace splines {
 
 template<typename T>
@@ -43,6 +43,6 @@ public:
     virtual void reset() = 0;
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

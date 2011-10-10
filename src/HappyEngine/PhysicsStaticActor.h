@@ -23,22 +23,22 @@
 #pragma once
 
 #include "PxRigidStatic.h"
-#include "Vector3.h"
-#include "Matrix.h"
+#include "vec3.h"
+#include "mat44.h"
 #include "IPhysicsShape.h"
 #include "PhysicsMaterial.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 
 class PhysicsStaticActor
 {
 public:
-	PhysicsStaticActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, const PhysicsMaterial::pointer& pMaterial);
+	PhysicsStaticActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, const PhysicsMaterial::pointer& pMaterial);
     virtual ~PhysicsStaticActor();
     
-    math::Vector3 getPosition() const;
-    math::Matrix getPose() const;
+    vec3 getPosition() const;
+    mat44 getPose() const;
 
 private:
 

@@ -17,20 +17,21 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
+#include "StdAfx.h" 
 
 #include "BinaryStream.h"
 #include "FileNotFoundException.h"
 #include "Assert.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 BinaryStream::BinaryStream(const std::string& path, OpenType openType):
     m_pFile(nullptr), m_FileName(path)
 {
-    errno_t error(fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb"));
-    if (error != 0)
-        throw error::FileNotFoundException(path);
+    errno_t err(fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb"));
+    if (err != 0)
+        throw err::FileNotFoundException(path);
 }
 
 
@@ -74,28 +75,28 @@ double BinaryStream::readDouble() const
     ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return d;
 }
-math::Vector2 BinaryStream::readVector2() const
+vec2 BinaryStream::readVector2() const
 {
-    math::Vector2 v;
-    readBuffer(&v, sizeof(math::Vector2));
+    vec2 v;
+    readBuffer(&v, sizeof(vec2));
     return v;
 }
-math::Vector3 BinaryStream::readVector3() const
+vec3 BinaryStream::readVector3() const
 {
-    math::Vector3 v;
-    readBuffer(&v, sizeof(math::Vector3));
+    vec3 v;
+    readBuffer(&v, sizeof(vec3));
     return v;
 }
-math::Vector4 BinaryStream::readVector4() const
+vec4 BinaryStream::readVector4() const
 {
-    math::Vector4 v;
-    readBuffer(&v, sizeof(math::Vector4));
+    vec4 v;
+    readBuffer(&v, sizeof(vec4));
     return v;
 }
-math::Matrix BinaryStream::readMatrix() const
+mat44 BinaryStream::readMatrix() const
 {
-    math::Matrix m;
-    readBuffer(&m, sizeof(math::Matrix));
+    mat44 m;
+    readBuffer(&m, sizeof(mat44));
     return m;
 }
 
@@ -153,24 +154,24 @@ PxStream& BinaryStream::storeDouble(double d)
     return *this;
 }
 
-PxStream& BinaryStream::storeVector2(const math::Vector2& v)
+PxStream& BinaryStream::storeVector2(const vec2& v)
 {
-    storeBuffer(&v, sizeof(math::Vector2));
+    storeBuffer(&v, sizeof(vec2));
     return *this;
 }
-PxStream& BinaryStream::storeVector3(const math::Vector3& v)
+PxStream& BinaryStream::storeVector3(const vec3& v)
 {
-    storeBuffer(&v, sizeof(math::Vector3));
+    storeBuffer(&v, sizeof(vec3));
     return *this;
 }
-PxStream& BinaryStream::storeVector4(const math::Vector4& v)
+PxStream& BinaryStream::storeVector4(const vec4& v)
 {
-    storeBuffer(&v, sizeof(math::Vector4));
+    storeBuffer(&v, sizeof(vec4));
     return *this;
 }
-PxStream& BinaryStream::storeMatrix(const math::Matrix& m)
+PxStream& BinaryStream::storeMatrix(const mat44& m)
 {
-    storeBuffer(&m, sizeof(math::Matrix));
+    storeBuffer(&m, sizeof(mat44));
     return *this;
 }
 

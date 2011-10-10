@@ -17,6 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 01/10/2011
+#include "StdAfx.h" 
 
 #include "Button.h"
 #include "HappyNew.h"
@@ -24,11 +25,11 @@
 #include "ContentManager.h"
 #include "Rect.h"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Button::Button(TYPE type, const math::Vector2& centerPos, const math::Vector2& size) :	m_Type(type),
+Button::Button(TYPE type, const vec2& centerPos, const vec2& size) :	m_Type(type),
 																						m_Pos(centerPos),
 																						m_Size(size),
 																						m_State(STATE_NORMAL),
@@ -86,15 +87,15 @@ void Button::draw()
 }
 
 /* SETTERS */
-void Button::setSpriteSheet(const graphics::Texture2D::pointer& pSpriteSheet)
+void Button::setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet)
 {
 	m_pSpriteSheet = pSpriteSheet;
 }
 
-void Button::setSprites(	const graphics::Texture2D::pointer& pNormalSprite,
-							const graphics::Texture2D::pointer& pHoverSprite,
-							const graphics::Texture2D::pointer& pDownSprite,
-							const graphics::Texture2D::pointer& pDisabledSprite)
+void Button::setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
+							const gfx::Texture2D::pointer& pHoverSprite,
+							const gfx::Texture2D::pointer& pDownSprite,
+							const gfx::Texture2D::pointer& pDisabledSprite)
 {
 	m_Sprites.push_back(pNormalSprite);
 	m_Sprites.push_back(pHoverSprite);
@@ -112,7 +113,7 @@ void Button::setActivationMode(ACTIVATION activationMode)
 	m_ActivationType = activationMode;
 }
 
-void Button::setPosition(const math::Vector2& centerPos)
+void Button::setPosition(const vec2& centerPos)
 {
 	m_Pos = centerPos;
 }
@@ -208,8 +209,8 @@ void Button::drawColor()
 	if (m_pFont != nullptr)
 	{
 		HE2D->setColor(0.25f,0.25f,0.25f);
-		HE2D->setFontHorizontalAlignment(graphics::Font::HAlignment_Center);
-		HE2D->setFontVerticalAlignment(graphics::Font::VAlignment_Center);
+		HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Center);
+		HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Center);
 		HE2D->drawString(m_Text, m_pFont, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
 	}
 }

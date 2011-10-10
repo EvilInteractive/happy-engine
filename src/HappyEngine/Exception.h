@@ -21,8 +21,8 @@
 
 #include <string>
 
-namespace happyengine {
-namespace error {
+namespace he {
+namespace err {
 
 class Exception
 {

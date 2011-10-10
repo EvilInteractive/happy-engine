@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 19/09/2011
+#include "StdAfx.h" 
 
 #include "Light.h"
 #include "HappyNew.h"
@@ -24,44 +25,44 @@
 #include "Assert.h"
 #include "Circle.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 //#pragma region PointLight
 //RectI PointLight::getOldScissor(const Camera* pCamera) const
 //{
 //    RectI scissor(GRAPHICS->getViewport());
-//    math::Vector2 min(FLT_MAX, FLT_MAX);
-//    math::Vector2 max(FLT_MIN, FLT_MIN);
+//    vec2 min(FLT_MAX, FLT_MAX);
+//    vec2 max(FLT_MIN, FLT_MIN);
 //    if (lengthSqr(pCamera->getPosition() - position) > endAttenuation * endAttenuation)
 //    {
-//        std::vector<math::Vector4> points;
-//        points.push_back(math::Vector4(position + math::Vector3(-1, -1, -1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(1, -1, -1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(-1, 1, -1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(1, 1, -1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(-1, -1, 1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(1, -1, 1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(-1, 1, 1) * endAttenuation, 1));
-//        points.push_back(math::Vector4(position + math::Vector3(1, 1, 1) * endAttenuation, 1));
+//        std::vector<vec4> points;
+//        points.push_back(vec4(position + vec3(-1, -1, -1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(1, -1, -1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(-1, 1, -1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(1, 1, -1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(-1, -1, 1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(1, -1, 1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(-1, 1, 1) * endAttenuation, 1));
+//        points.push_back(vec4(position + vec3(1, 1, 1) * endAttenuation, 1));
 //
-//        std::for_each(points.begin(), points.end(), [&](math::Vector4& p)
+//        std::for_each(points.begin(), points.end(), [&](vec4& p)
 //        {
 //            p = pCamera->getViewProjection() * p;
 //            p.x = 1 - (p.x / p.w + 1) * 0.5f;
 //            p.y = (p.y / p.w + 1) * 0.5f;
 //        });
-//        std::for_each(points.begin(), points.end(), [&](math::Vector4& p)
+//        std::for_each(points.begin(), points.end(), [&](vec4& p)
 //        {
-//            min.x = math::min(min.x, p.x);
-//            min.y = math::min(min.y, p.y);
-//            max.x = math::max(max.x, p.x);
-//            max.y = math::max(max.y, p.y);
+//            min.x = min(min.x, p.x);
+//            min.y = min(min.y, p.y);
+//            max.x = max(max.x, p.x);
+//            max.y = max(max.y, p.y);
 //        });
-//        min.x = math::clamp(min.x, 0.0f, 1.0f);
-//        min.y = math::clamp(min.y, 0.0f, 1.0f);
-//        max.x = math::clamp(max.x, 0.0f, 1.0f);
-//        max.y = math::clamp(max.y, 0.0f, 1.0f);
+//        min.x = clamp(min.x, 0.0f, 1.0f);
+//        min.y = clamp(min.y, 0.0f, 1.0f);
+//        max.x = clamp(max.x, 0.0f, 1.0f);
+//        max.y = clamp(max.y, 0.0f, 1.0f);
 //    }
 //    else
 //    {
@@ -82,46 +83,46 @@ namespace graphics {
 //}
 //RectI PointLight::getScissor(const Camera* pCamera) const
 //{
-//    const math::Matrix& m(pCamera->getView());
+//    const mat44& m(pCamera->getView());
 //   
-//    math::Vector3 posCamSpace(m * position);
+//    vec3 posCamSpace(m * position);
 //
 //    //from right
-//    math::shapes::Circle c1(math::Vector2(posCamSpace.z, posCamSpace.y), endAttenuation);
-//    math::Vector2 midPoint12((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.y) / 2.0f);
-//    math::shapes::Circle c2(midPoint12, length(math::Vector2(posCamSpace.z, posCamSpace.y) - midPoint12));
+//    shapes::Circle c1(vec2(posCamSpace.z, posCamSpace.y), endAttenuation);
+//    vec2 midPoint12((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.y) / 2.0f);
+//    shapes::Circle c2(midPoint12, length(vec2(posCamSpace.z, posCamSpace.y) - midPoint12));
 //
 //    //from top
-//    math::shapes::Circle c3(math::Vector2(posCamSpace.z, posCamSpace.x), endAttenuation);
-//    math::Vector2 midPoint34((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.x) / 2.0f);
-//    math::shapes::Circle c4(midPoint34, length(math::Vector2(posCamSpace.z, posCamSpace.x) - midPoint34));
+//    shapes::Circle c3(vec2(posCamSpace.z, posCamSpace.x), endAttenuation);
+//    vec2 midPoint34((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.x) / 2.0f);
+//    shapes::Circle c4(midPoint34, length(vec2(posCamSpace.z, posCamSpace.x) - midPoint34));
 //
-//    std::vector<math::Vector2> tangents12(c1.intersect(c2));
-//    std::vector<math::Vector2> tangents34(c3.intersect(c4));
+//    std::vector<vec2> tangents12(c1.intersect(c2));
+//    std::vector<vec2> tangents34(c3.intersect(c4));
 //    if (tangents12.size() == 2 && tangents34.size() == 2) //check, it could be that we are in the pointlight
 //    {
-//	    math::Vector3 tan1(0, tangents12[0].y, tangents12[0].x);
-//        tan1.x = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan1.y - posCamSpace.y) - math::sqr(tan1.z - posCamSpace.z)) ) + posCamSpace.x;
+//	    vec3 tan1(0, tangents12[0].y, tangents12[0].x);
+//        tan1.x = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan1.y - posCamSpace.y) - sqr(tan1.z - posCamSpace.z)) ) + posCamSpace.x;
 //
-//	    math::Vector3 tan2(0, tangents12[1].y, tangents12[1].x);
-//        tan2.x = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan2.y - posCamSpace.y) - math::sqr(tan2.z - posCamSpace.z)) ) + posCamSpace.x;
+//	    vec3 tan2(0, tangents12[1].y, tangents12[1].x);
+//        tan2.x = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan2.y - posCamSpace.y) - sqr(tan2.z - posCamSpace.z)) ) + posCamSpace.x;
 //
-//	    math::Vector3 tan3(tangents34[0].y, 0, tangents34[0].x);
-//        tan3.y = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan3.x - posCamSpace.x) - math::sqr(tan3.z - posCamSpace.z)) ) + posCamSpace.y;
+//	    vec3 tan3(tangents34[0].y, 0, tangents34[0].x);
+//        tan3.y = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan3.x - posCamSpace.x) - sqr(tan3.z - posCamSpace.z)) ) + posCamSpace.y;
 //
-//	    math::Vector3 tan4(tangents34[1].y, 0, tangents34[1].x);
-//        tan4.y = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan4.x - posCamSpace.x) - math::sqr(tan4.z - posCamSpace.z)) ) + posCamSpace.y;
+//	    vec3 tan4(tangents34[1].y, 0, tangents34[1].x);
+//        tan4.y = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan4.x - posCamSpace.x) - sqr(tan4.z - posCamSpace.z)) ) + posCamSpace.y;
 //
-//        math::Matrix mInv(m.inverse());
+//        mat44 mInv(m.inverse());
 //	    tan1 = mInv * tan1;
 //	    tan2 = mInv * tan2;
 //	    tan3 = mInv * tan3;
 //	    tan4 = mInv * tan4;
 //
-//	    math::Vector4 projTan1(pCamera->getViewProjection() * math::Vector4(tan1, 1));
-//	    math::Vector4 projTan2(pCamera->getViewProjection() * math::Vector4(tan2, 1));
-//	    math::Vector4 projTan3(pCamera->getViewProjection() * math::Vector4(tan3, 1));
-//	    math::Vector4 projTan4(pCamera->getViewProjection() * math::Vector4(tan4, 1));
+//	    vec4 projTan1(pCamera->getViewProjection() * vec4(tan1, 1));
+//	    vec4 projTan2(pCamera->getViewProjection() * vec4(tan2, 1));
+//	    vec4 projTan3(pCamera->getViewProjection() * vec4(tan3, 1));
+//	    vec4 projTan4(pCamera->getViewProjection() * vec4(tan4, 1));
 //
 //	    projTan1.x = 1-(projTan1.x / projTan1.w + 1) * 0.5f;
 //	    projTan1.y = (projTan1.y / projTan1.w + 1) * 0.5f;
@@ -132,12 +133,12 @@ namespace graphics {
 //	    projTan4.x = 1-(projTan4.x / projTan4.w + 1) * 0.5f;
 //	    projTan4.y = (projTan4.y / projTan4.w + 1) * 0.5f;
 //                
-//        math::Vector2 min(0.0f, 0.0f), 
+//        vec2 min(0.0f, 0.0f), 
 //                      max(0.0f, 0.0f);
-//        min.x = math::clamp(math::min(math::min(math::min(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
-//        min.y = math::clamp(math::min(math::min(math::min(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
-//        max.x = math::clamp(math::max(math::max(math::max(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
-//        max.y = math::clamp(math::max(math::max(math::max(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
+//        min.x = clamp(min(min(min(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
+//        min.y = clamp(min(min(min(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
+//        max.x = clamp(max(max(max(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
+//        max.y = clamp(max(max(max(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
 //
 //        return RectI(static_cast<int>(min.x), static_cast<int>(min.y), static_cast<int>(max.x - min.x), static_cast<int>(max.y - min.y));
 //    }
@@ -156,7 +157,7 @@ namespace graphics {
 //        rect.y = p2;
 //        rect.height = p1 - p2;
 //        HE2D->setColor(0, 1, 0);
-//        HE2D->drawRectangle(math::Vector2((float)rect.x, (float)rect.y), math::Vector2((float)rect.width, (float)rect.height));
+//        HE2D->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
 //    }
 //    {
 //        RectI rect(getOldScissor(pCamera));
@@ -165,7 +166,7 @@ namespace graphics {
 //        rect.y = p2;
 //        rect.height = p1 - p2;
 //        HE2D->setColor(1, 0, 0);
-//        HE2D->drawRectangle(math::Vector2((float)rect.x, (float)rect.y), math::Vector2((float)rect.width, (float)rect.height));
+//        HE2D->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
 //    }
 //}
 //#endif
@@ -174,46 +175,46 @@ namespace graphics {
 //#pragma region SpotLight
 //RectI SpotLight::getScissor(const Camera* pCamera) const
 //{
-//    const math::Matrix& m(pCamera->getView());
+//    const mat44& m(pCamera->getView());
 //   
-//    math::Vector3 posCamSpace(m * position);
+//    vec3 posCamSpace(m * position);
 //
 //    //from right
-//    math::shapes::Circle c1(math::Vector2(posCamSpace.z, posCamSpace.y), endAttenuation);
-//    math::Vector2 midPoint12((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.y) / 2.0f);
-//    math::shapes::Circle c2(midPoint12, length(math::Vector2(posCamSpace.z, posCamSpace.y) - midPoint12));
+//    shapes::Circle c1(vec2(posCamSpace.z, posCamSpace.y), endAttenuation);
+//    vec2 midPoint12((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.y) / 2.0f);
+//    shapes::Circle c2(midPoint12, length(vec2(posCamSpace.z, posCamSpace.y) - midPoint12));
 //
 //    //from top
-//    math::shapes::Circle c3(math::Vector2(posCamSpace.z, posCamSpace.x), endAttenuation);
-//    math::Vector2 midPoint34((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.x) / 2.0f);
-//    math::shapes::Circle c4(midPoint34, length(math::Vector2(posCamSpace.z, posCamSpace.x) - midPoint34));
+//    shapes::Circle c3(vec2(posCamSpace.z, posCamSpace.x), endAttenuation);
+//    vec2 midPoint34((0 + posCamSpace.z) / 2.0f, (0 + posCamSpace.x) / 2.0f);
+//    shapes::Circle c4(midPoint34, length(vec2(posCamSpace.z, posCamSpace.x) - midPoint34));
 //
-//    std::vector<math::Vector2> tangents12(c1.intersect(c2));
-//    std::vector<math::Vector2> tangents34(c3.intersect(c4));
+//    std::vector<vec2> tangents12(c1.intersect(c2));
+//    std::vector<vec2> tangents34(c3.intersect(c4));
 //    if (tangents12.size() == 2 && tangents34.size() == 2) //check, it could be that we are in the pointlight
 //    {
-//	    math::Vector3 tan1(0, tangents12[0].y, tangents12[0].x);
-//        tan1.x = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan1.y - posCamSpace.y) - math::sqr(tan1.z - posCamSpace.z)) ) + posCamSpace.x;
+//	    vec3 tan1(0, tangents12[0].y, tangents12[0].x);
+//        tan1.x = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan1.y - posCamSpace.y) - sqr(tan1.z - posCamSpace.z)) ) + posCamSpace.x;
 //
-//	    math::Vector3 tan2(0, tangents12[1].y, tangents12[1].x);
-//        tan2.x = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan2.y - posCamSpace.y) - math::sqr(tan2.z - posCamSpace.z)) ) + posCamSpace.x;
+//	    vec3 tan2(0, tangents12[1].y, tangents12[1].x);
+//        tan2.x = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan2.y - posCamSpace.y) - sqr(tan2.z - posCamSpace.z)) ) + posCamSpace.x;
 //
-//	    math::Vector3 tan3(tangents34[0].y, 0, tangents34[0].x);
-//        tan3.y = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan3.x - posCamSpace.x) - math::sqr(tan3.z - posCamSpace.z)) ) + posCamSpace.y;
+//	    vec3 tan3(tangents34[0].y, 0, tangents34[0].x);
+//        tan3.y = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan3.x - posCamSpace.x) - sqr(tan3.z - posCamSpace.z)) ) + posCamSpace.y;
 //
-//	    math::Vector3 tan4(tangents34[1].y, 0, tangents34[1].x);
-//        tan4.y = sqrtf( math::max(0.0f, math::sqr(endAttenuation) - math::sqr(tan4.x - posCamSpace.x) - math::sqr(tan4.z - posCamSpace.z)) ) + posCamSpace.y;
+//	    vec3 tan4(tangents34[1].y, 0, tangents34[1].x);
+//        tan4.y = sqrtf( max(0.0f, sqr(endAttenuation) - sqr(tan4.x - posCamSpace.x) - sqr(tan4.z - posCamSpace.z)) ) + posCamSpace.y;
 //
-//        math::Matrix mInv(m.inverse());
+//        mat44 mInv(m.inverse());
 //	    tan1 = mInv * tan1;
 //	    tan2 = mInv * tan2;
 //	    tan3 = mInv * tan3;
 //	    tan4 = mInv * tan4;
 //
-//	    math::Vector4 projTan1(pCamera->getViewProjection() * math::Vector4(tan1, 1));
-//	    math::Vector4 projTan2(pCamera->getViewProjection() * math::Vector4(tan2, 1));
-//	    math::Vector4 projTan3(pCamera->getViewProjection() * math::Vector4(tan3, 1));
-//	    math::Vector4 projTan4(pCamera->getViewProjection() * math::Vector4(tan4, 1));
+//	    vec4 projTan1(pCamera->getViewProjection() * vec4(tan1, 1));
+//	    vec4 projTan2(pCamera->getViewProjection() * vec4(tan2, 1));
+//	    vec4 projTan3(pCamera->getViewProjection() * vec4(tan3, 1));
+//	    vec4 projTan4(pCamera->getViewProjection() * vec4(tan4, 1));
 //
 //	    projTan1.x = 1-(projTan1.x / projTan1.w + 1) * 0.5f;
 //	    projTan1.y = (projTan1.y / projTan1.w + 1) * 0.5f;
@@ -224,12 +225,12 @@ namespace graphics {
 //	    projTan4.x = 1-(projTan4.x / projTan4.w + 1) * 0.5f;
 //	    projTan4.y = (projTan4.y / projTan4.w + 1) * 0.5f;
 //                
-//        math::Vector2 min(0.0f, 0.0f), 
+//        vec2 min(0.0f, 0.0f), 
 //                      max(0.0f, 0.0f);
-//        min.x = math::clamp(math::min(math::min(math::min(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
-//        min.y = math::clamp(math::min(math::min(math::min(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
-//        max.x = math::clamp(math::max(math::max(math::max(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
-//        max.y = math::clamp(math::max(math::max(math::max(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
+//        min.x = clamp(min(min(min(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
+//        min.y = clamp(min(min(min(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
+//        max.x = clamp(max(max(max(projTan1.x, projTan2.x), projTan3.x), projTan4.x), 0.0f, 1.0f) * GRAPHICS->getViewport().width;
+//        max.y = clamp(max(max(max(projTan1.y, projTan2.y), projTan3.y), projTan4.y), 0.0f, 1.0f) * GRAPHICS->getViewport().height;
 //
 //        return RectI(static_cast<int>(min.x), static_cast<int>(min.y), static_cast<int>(max.x - min.x), static_cast<int>(max.y - min.y));
 //    }
@@ -247,7 +248,7 @@ namespace graphics {
 //    int p1(GRAPHICS->getViewport().height - rect.y);
 //    rect.y = p2;
 //    rect.height = p1 - p2;
-//    HE2D->drawRectangle(math::Vector2((float)rect.x, (float)rect.y), math::Vector2((float)rect.width, (float)rect.height));
+//    HE2D->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
 //}
 //#endif
 //#pragma endregion

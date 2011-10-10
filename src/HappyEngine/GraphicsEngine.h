@@ -23,7 +23,7 @@
 #pragma once
 
 #include "Rect.h"
-#include "Vector2.h"
+#include "vec2.h"
 #include "HappyTypes.h"
 #include "Color.h"
 #include "Deferred3DRenderer.h"
@@ -36,8 +36,8 @@
 #include "DrawSettings.h"
 
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class GraphicsEngine
 {

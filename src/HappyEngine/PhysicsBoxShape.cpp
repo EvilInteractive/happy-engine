@@ -17,14 +17,15 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
+#include "StdAfx.h" 
 
 #include "PhysicsBoxShape.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
-PhysicsBoxShape::PhysicsBoxShape(const math::Vector3& dimension): m_Dimension(dimension), 
+PhysicsBoxShape::PhysicsBoxShape(const vec3& dimension): m_Dimension(dimension), 
     m_Geometry(PxBoxGeometry(dimension.x / 2.0f, dimension.y / 2.0f, dimension.z / 2.0f))
 {
    

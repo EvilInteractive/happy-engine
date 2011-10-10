@@ -13,7 +13,7 @@ matWVP = WORLDVIEWPROJECTION
 matWorld = WORLD
 diffuseMap = TEXTURE2D
 normalMap = TEXTURE2D
-specGlossIllMap = "TEXTURE2D
+specGlossIllMap = TEXTURE2D
 
 [out]
 outColor = GBUFFER_COLOR

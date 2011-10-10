@@ -17,12 +17,13 @@
 //
 //Author: Bastian Damman
 //Created: 01/10/2011
+#include "StdAfx.h" 
 
 #include "ShaderLayout.h"
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 
 

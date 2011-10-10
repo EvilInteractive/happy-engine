@@ -28,8 +28,8 @@
 #include "al.h"
 #include "alc.h"
 
-namespace happyengine {
-namespace audio {
+namespace he {
+namespace sfx {
 
 class SoundManager
 {
@@ -53,7 +53,7 @@ private:
 	////Sound::pointer loadOgg(const std::string& path, bool stream = false);
 
 	/* DATAMEMBERS */
-	content::AssetContainer<Sound::pointer> m_SoundBank;
+	ct::AssetContainer<Sound::pointer> m_SoundBank;
 
 	ALCcontext* m_pALContext;
 	ALCdevice* m_pALDevice;

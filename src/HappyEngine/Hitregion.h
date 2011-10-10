@@ -22,10 +22,10 @@
 #define _HE_HITREGION_H_
 #pragma once
 
-#include "Vector2.h"
-#include "Matrix2D.h"
+#include "vec2.h"
+#include "mat33.h"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 class Hitregion
@@ -40,7 +40,7 @@ public:
 	};
 
 	/* CONSTRUCTOR - DESTRUCTOR */
-	Hitregion(TYPE hitregionType, const math::Vector2& centerPos, const math::Vector2& size);
+	Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size);
     virtual ~Hitregion();
 
 	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
@@ -49,26 +49,26 @@ public:
 
 	/* GETTERS */
 	bool hitTest(const Hitregion* pHitrect) const;
-	bool hitTest(const math::Vector2& point) const;
+	bool hitTest(const vec2& point) const;
 
-	math::Vector2 getSize() const;
-	math::Vector2 getPosition() const;
+	vec2 getSize() const;
+	vec2 getPosition() const;
 	Hitregion::TYPE getType() const;
 
 	/* SETTERS */
-	void setPosition(const math::Vector2& pos);
-	void setSize(const math::Vector2& size);
-	void move(const math::Vector2& translation);
-	void setTransformationMatrix(const math::Matrix2D& mat);
+	void setPosition(const vec2& pos);
+	void setSize(const vec2& size);
+	void move(const vec2& translation);
+	void setTransformationMatrix(const mat33& mat);
 
 private:
 
 	/* DATAMEMBERS */
 	TYPE m_Type;
 
-	math::Matrix2D m_matWorld;
-	math::Vector2 m_Size;
-	math::Vector2 m_Pos;
+	mat33 m_matWorld;
+	vec2 m_Size;
+	vec2 m_Pos;
 };
 
 } } //end namespace

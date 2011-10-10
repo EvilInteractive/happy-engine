@@ -25,9 +25,9 @@ namespace happytest {
 VertexPNT::VertexPNT()
 {
 }
-VertexPNT::VertexPNT(const happyengine::math::Vector3& position_,
-                     const happyengine::math::Vector2& texCoord_,
-                     const happyengine::math::Vector3& normal_): position(position_), texCoord(texCoord_), normal(normal_)
+VertexPNT::VertexPNT(const he::vec3& position_,
+                     const he::vec2& texCoord_,
+                     const he::vec3& normal_): position(position_), texCoord(texCoord_), normal(normal_)
 {}
 
 

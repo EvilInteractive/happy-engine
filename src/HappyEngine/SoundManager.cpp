@@ -17,6 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 03/10/2011
+#include "StdAfx.h" 
 
 #include "SoundManager.h"
 #include "HappyNew.h"
@@ -25,8 +26,8 @@
 #include <iostream>
 #include <sstream>
 
-namespace happyengine {
-namespace audio {
+namespace he {
+namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 SoundManager::SoundManager() :	m_pALContext(nullptr),
@@ -103,12 +104,12 @@ void SoundManager::initialize()
 		{
 			alcCloseDevice(m_pALDevice);
 
-			throw(error::Exception(L"Creating OpenAL context failed!"));
+			throw(err::Exception(L"Creating OpenAL context failed!"));
 		}
 	}
 	else
 	{
-		throw(error::Exception(L"Init OpenAL device failed!"));
+		throw(err::Exception(L"Init OpenAL device failed!"));
 	}
 }
 

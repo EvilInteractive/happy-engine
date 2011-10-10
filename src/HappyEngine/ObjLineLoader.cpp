@@ -17,6 +17,7 @@
 //
 //Author: Bastian Damman
 //Created: 01/09/2011
+#include "StdAfx.h" 
 
 #include "ObjLineLoader.h"
 
@@ -29,8 +30,8 @@
 
 #include "Assert.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace lines {
 
 ObjLineLoader::ObjLineLoader()
@@ -61,7 +62,7 @@ void ObjLineLoader::read(const std::string& path)
         reader.open(path, io::FileReader::OpenType_ASCII); 
         objData = reader.readToEndSplit();
     }
-    catch (error::FileNotFoundException&)
+    catch (err::FileNotFoundException&)
     {
         reader.close();
         throw;
@@ -69,10 +70,9 @@ void ObjLineLoader::read(const std::string& path)
     
     for_each(objData.cbegin(), objData.cend(), [&](const string& line)
     {
-        using namespace math;
         if (line[0] == 'v' && line[1] == ' ')
         {
-            Vector3 v;
+            vec3 v;
             sscanf_s(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
             m_PointData.push_back(v);
         }
@@ -102,7 +102,7 @@ void ObjLineLoader::read(const std::string& path)
         }
     });
 }
-const std::vector<math::Vector3>& ObjLineLoader::getPoints() const
+const std::vector<vec3>& ObjLineLoader::getPoints() const
 {
     return m_PointData;
 }

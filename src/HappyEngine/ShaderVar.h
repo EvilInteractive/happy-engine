@@ -26,8 +26,8 @@
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 enum ShaderVarType
 {

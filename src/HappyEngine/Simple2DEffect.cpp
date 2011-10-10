@@ -17,13 +17,14 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
+#include "StdAfx.h" 
 
 #include "Simple2DEffect.h"
 #include "HappyNew.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 Simple2DEffect::Simple2DEffect() : m_pShader(nullptr)
 {
@@ -37,8 +38,8 @@ Simple2DEffect::~Simple2DEffect()
 
 void Simple2DEffect::load()
 {
-	using namespace happyengine;
-	using namespace graphics;
+	using namespace he;
+	using namespace gfx;
 
     ShaderLayout layout;
 	layout.addElement(ShaderLayoutElement(0, "inPosition"));
@@ -52,9 +53,9 @@ void Simple2DEffect::load()
 	m_ShaderColorPos = m_pShader->getShaderVarId("color");
 
     m_pShader->begin();
-	math::Matrix MatWVP = math::Matrix::createTranslation(math::Vector3(0.0f,0.0f,0.0f));
+	mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
 	m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
-	m_pShader->setShaderVar(m_ShaderColorPos, math::Vector4(1.0f,1.0f,1.0f,1.0f));
+	m_pShader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
     m_pShader->end();
 }
 
@@ -70,10 +71,10 @@ void Simple2DEffect::end() const
 
 void Simple2DEffect::setColor(const Color& color) const
 {
-	m_pShader->setShaderVar(m_ShaderColorPos, math::Vector4(color.rgba()));
+	m_pShader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
 }
 
-void Simple2DEffect::setWorldMatrix(const happyengine::math::Matrix &mat) const
+void Simple2DEffect::setWorldMatrix(const he::mat44 &mat) const
 {
 	m_pShader->setShaderVar(m_ShaderWVPPos, mat);
 }

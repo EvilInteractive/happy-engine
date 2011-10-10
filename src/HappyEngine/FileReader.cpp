@@ -14,13 +14,14 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+#include "StdAfx.h" 
 
 #include "FileReader.h"
 #include "FileNotFoundException.h"
 #include <sstream>
 #include "Assert.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 FileReader::FileReader()
@@ -38,13 +39,13 @@ void FileReader::open(const std::string& path, OpenType type)
     {
         m_Wfstream.open(path.c_str(), std::ios_base::in);
         if (m_Wfstream.is_open() == false)
-            throw error::FileNotFoundException(path);
+            throw err::FileNotFoundException(path);
     }
     else
     {
         m_fstream.open(path.c_str(), std::ios_base::in);
         if (m_fstream.is_open() == false)
-            throw error::FileNotFoundException(path);
+            throw err::FileNotFoundException(path);
     }
 }
 void FileReader::close()

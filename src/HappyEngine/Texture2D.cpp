@@ -17,13 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 11/08/2011
+#include "StdAfx.h" 
 
 #include "Texture2D.h"
 #include "GL/glew.h"
 #include "SDL_ttf.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 uint Texture2D::s_Count = 0;
 

@@ -19,7 +19,7 @@
 #define _HE_IGAME_H_
 #pragma once
 
-namespace happyengine {
+namespace he {
 
 class IGame
 {

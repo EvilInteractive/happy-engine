@@ -17,12 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 28/09/2011
+#include "StdAfx.h" 
 
 #include "AABB.h"
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace shapes {
 
 AABB::AABB()
@@ -34,4 +35,4 @@ AABB::~AABB()
 {
 }
 
-} } } //end namespace
+} } //end namespace

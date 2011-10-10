@@ -17,13 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 08/08/2011
+#include "StdAfx.h" 
 
 #include "Keyboard.h"
 #include "SDL.h"
 #include "HappyNew.h"
 #include "boost/thread.hpp"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 Keyboard::Keyboard(): m_NewKeyState(nullptr), m_CurrentKeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0)

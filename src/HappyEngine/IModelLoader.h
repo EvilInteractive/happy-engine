@@ -27,8 +27,8 @@
 #include "HappyTypes.h"
 #include "Model.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace models {
 
 class IModelLoader
@@ -36,7 +36,7 @@ class IModelLoader
 public:
     virtual ~IModelLoader() {}
   
-    virtual void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true) = 0;
+    virtual void load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices = true) = 0;
 
     virtual uint getNumMeshes() const = 0;
     virtual const std::string& getMeshName(uint mesh) const = 0;
@@ -45,7 +45,7 @@ public:
     virtual uint getNumVertices(uint mesh) const = 0;
 
     virtual const void* getIndices(uint mesh) const = 0;
-    virtual graphics::IndexStride getIndexStride(uint mesh) const = 0;
+    virtual gfx::IndexStride getIndexStride(uint mesh) const = 0;
     virtual uint getNumIndices(uint mesh) const = 0;
 };
 

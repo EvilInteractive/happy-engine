@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 11/08/2011
+#include "StdAfx.h" 
 
 #include "IniWriter.h"
 
@@ -24,7 +25,7 @@
 #include <fstream>
 #include <algorithm>
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 IniWriter::IniWriter()
@@ -90,19 +91,19 @@ void IniWriter::writeFloat(const std::wstring& root, const std::wstring& node, f
     writeRaw(root, node, stream.str());
 }
 
-void IniWriter::writeVector2(const std::wstring& root, const std::wstring& node, const math::Vector2& value)
+void IniWriter::writeVector2(const std::wstring& root, const std::wstring& node, const vec2& value)
 {
     std::wstringstream stream;
     stream << value.x << L", " << value.y;
     writeRaw(root, node, stream.str());
 }
-void IniWriter::writeVector3(const std::wstring& root, const std::wstring& node, const math::Vector3& value)
+void IniWriter::writeVector3(const std::wstring& root, const std::wstring& node, const vec3& value)
 {
     std::wstringstream stream;
     stream << value.x << L", " << value.y << L", " << value.z;
     writeRaw(root, node, stream.str());
 }
-void IniWriter::writeVector4(const std::wstring& root, const std::wstring& node, const math::Vector4& value)
+void IniWriter::writeVector4(const std::wstring& root, const std::wstring& node, const vec4& value)
 {
     std::wstringstream stream;
     stream << value.x << L", " << value.y << L", " << value.z << L", " << value.w;

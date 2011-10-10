@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 07/10/2011
+#include "StdAfx.h" 
 
 #include "SpotLight.h"
 #include "HappyNew.h"
@@ -25,8 +26,8 @@
 #include "Deferred3DRenderer.h"
 #include "Entity.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 SpotLight::SpotLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_Direction(0, -1, 0), m_BeginAttenuation(0.0f),
     m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f), m_CosCutoff(0.5f)
@@ -40,18 +41,18 @@ SpotLight::SpotLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_Direction(0, 
 }
 void SpotLight::calculateWorld()
 {
-    float rangeScale = (sqrtf(1 - math::sqr(m_CosCutoff)) / m_CosCutoff) * m_EndAttenuation;
-    m_mtxWorld = math::Matrix::createTranslation(m_Position) * 
-        math::Matrix::createRotation(math::Vector3::up, -atan2f(m_Direction.z, m_Direction.x)) *
-        math::Matrix::createRotation(math::Vector3::right, -atan2f(m_Direction.y, m_Direction.z)) *   
-        math::Matrix::createScale(rangeScale, rangeScale, m_EndAttenuation);
+    float rangeScale = (sqrtf(1 - sqr(m_CosCutoff)) / m_CosCutoff) * m_EndAttenuation;
+    m_mtxWorld = mat44::createTranslation(m_Position) * 
+        mat44::createRotation(vec3::up, -atan2f(m_Direction.z, m_Direction.x)) *
+        mat44::createRotation(vec3::right, -atan2f(m_Direction.y, m_Direction.z)) *   
+        mat44::createScale(rangeScale, rangeScale, m_EndAttenuation);
 }
 
 SpotLight::~SpotLight()
 {
 }
 
-void SpotLight::setPosition(const math::Vector3& position)
+void SpotLight::setPosition(const vec3& position)
 {
     m_Position = position;
     calculateWorld();
@@ -60,7 +61,7 @@ void SpotLight::setMultiplier(float multiplier)
 {
     m_Multiplier = multiplier;
 }
-void SpotLight::setDirection(const math::Vector3& direction)
+void SpotLight::setDirection(const vec3& direction)
 {
     m_Direction = direction;
     calculateWorld();
@@ -71,7 +72,7 @@ void SpotLight::setAttenuation(float begin, float end)
     m_EndAttenuation = end;
     calculateWorld();
 }
-void SpotLight::setColor(const math::Vector3& color)
+void SpotLight::setColor(const vec3& color)
 {
     m_Color = color;
 }
@@ -85,7 +86,7 @@ void SpotLight::setFov(float angle)
     calculateWorld();
 }
 
-const math::Vector3& SpotLight::getPosition() const
+const vec3& SpotLight::getPosition() const
 {
     return m_Position;
 }
@@ -93,7 +94,7 @@ float SpotLight::getMultiplier() const
 {
     return m_Multiplier;
 }
-const math::Vector3& SpotLight::getDirection() const
+const vec3& SpotLight::getDirection() const
 {
     return m_Direction;
 }
@@ -105,7 +106,7 @@ float SpotLight::getEndAttenuation() const
 {
     return m_EndAttenuation;
 }
-const math::Vector3& SpotLight::getColor() const
+const vec3& SpotLight::getColor() const
 {
     return m_Color;
 }
@@ -114,7 +115,7 @@ float SpotLight::getCosCutoff() const
     return m_CosCutoff;
 }
     
-const math::Matrix& SpotLight::getWorldMatrix() const
+const mat44& SpotLight::getWorldMatrix() const
 {
     return m_mtxWorld;
 }

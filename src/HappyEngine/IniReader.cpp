@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 10/08/2011
+#include "StdAfx.h" 
 
 #include "IniReader.h"
 #include "Assert.h"
@@ -26,7 +27,7 @@
 #include <sstream>
 #include <algorithm>
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 IniReader::IniReader()
@@ -131,7 +132,7 @@ void IniReader::open(const std::string& path)
     }
     else
     {
-        throw error::FileNotFoundException(path);
+        throw err::FileNotFoundException(path);
     }
 }
 bool IniReader::isOpen() const
@@ -193,13 +194,13 @@ float IniReader::readFloat(const std::wstring& root, const std::wstring& node, f
     }
 }
 
-math::Vector2 IniReader::readVector2(const std::wstring& root, const std::wstring& node, const math::Vector2& defaultReturn) const
+vec2 IniReader::readVector2(const std::wstring& root, const std::wstring& node, const vec2& defaultReturn) const
 {
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
         std::string raw(wraw.cbegin(), wraw.cend());
-        math::Vector2 ret(FLT_MAX, FLT_MAX);
+        vec2 ret(FLT_MAX, FLT_MAX);
         if (sscanf_s(raw.c_str(), "%f,%f", &ret.x, &ret.y) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX)
             return defaultReturn;
         else
@@ -210,13 +211,13 @@ math::Vector2 IniReader::readVector2(const std::wstring& root, const std::wstrin
         return defaultReturn;
     }
 }
-math::Vector3 IniReader::readVector3(const std::wstring& root, const std::wstring& node, const math::Vector3& defaultReturn) const
+vec3 IniReader::readVector3(const std::wstring& root, const std::wstring& node, const vec3& defaultReturn) const
 {
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
         std::string raw(wraw.cbegin(), wraw.cend());
-        math::Vector3 ret(FLT_MAX, FLT_MAX, FLT_MAX);
+        vec3 ret(FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf_s(raw.c_str(), "%f,%f,%f", &ret.x, &ret.y, &ret.z) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || ret.z == FLT_MAX)
             return defaultReturn;
         else
@@ -227,13 +228,13 @@ math::Vector3 IniReader::readVector3(const std::wstring& root, const std::wstrin
         return defaultReturn;
     }
 }
-math::Vector4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, const math::Vector4& defaultReturn) const
+vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, const vec4& defaultReturn) const
 {
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
         std::string raw(wraw.cbegin(), wraw.cend());
-        math::Vector4 ret(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+        vec4 ret(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf_s(raw.c_str(), "%f,%f,%f,%f", &ret.x, &ret.y, &ret.z, &ret.w) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || 
                                                                                            ret.z == FLT_MAX || ret.w == FLT_MAX)
             return defaultReturn;

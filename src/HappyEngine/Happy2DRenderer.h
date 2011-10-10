@@ -27,9 +27,9 @@
 #include "Texture2D.h"
 #include "Simple2DEffect.h"
 #include "Simple2DTextureEffect.h"
-#include "Matrix.h"
+#include "mat44.h"
 #include "Font.h"
-#include "Vector2.h"
+#include "vec2.h"
 #include "HappyTypes.h"
 #include "AssetContainer.h"
 #include "AssetContainerP.h"
@@ -39,8 +39,8 @@
 
 #include <map>
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Happy2DRenderer
 {
@@ -70,48 +70,48 @@ public:
 	void setFontHorizontalAlignment(Font::HAlignment horizontalAlignment);
 	void setFontVerticalAlignment(Font::VAlignment verticalAlignment);
 	// * Set the transformation matrix. *
-	void setTransformation(const math::Matrix& mat);
+	void setTransformation(const mat44& mat);
 	// * Set the world translation. *
-	void setTranslation(const math::Vector2& translation);
+	void setTranslation(const vec2& translation);
 	// * Set the world rotation. *
 	void setRotation(const float degrees);
 	// * Set the world scale. *
-	void setScale(const math::Vector2& scale);
+	void setScale(const vec2& scale);
 	// * Reset world transformation. *
 	void resetTransformation();
 
     /* DRAW METHODS */
 
 	// * Draws the text as a 2D texture on the screen. *
-	void drawString(const std::string& str, const Font::pointer& font, const math::Vector2& pos);
-	void drawStringInstanced(const std::string& str, const Font::pointer& font, const math::Vector2& pos);
+	void drawString(const std::string& str, const Font::pointer& font, const vec2& pos);
+	void drawStringInstanced(const std::string& str, const Font::pointer& font, const vec2& pos);
 	// * Draws the text as a 2D texture in a rectangle the screen. *
 	void drawString(const std::string& str, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
 	void drawStringInstanced(const std::string& str, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
 	// * Draws a line between 2 points with the current strokesize. *
-	void drawLine(const math::Vector2& point1, const math::Vector2& point2) const;
-	void drawLineInstanced(const math::Vector2& point1, const math::Vector2& point2) const;
+	void drawLine(const vec2& point1, const vec2& point2) const;
+	void drawLineInstanced(const vec2& point1, const vec2& point2) const;
 	// * Draws the outline of a rectangle with the current strokesize. *
-	void drawRectangle(const math::Vector2& pos, const math::Vector2& size);
-	void drawRectangleInstanced(const math::Vector2& pos, const math::Vector2& size);
+	void drawRectangle(const vec2& pos, const vec2& size);
+	void drawRectangleInstanced(const vec2& pos, const vec2& size);
 	// * Draws a filled rectangle. *
-	void fillRectangle(const math::Vector2& pos, const math::Vector2& size);
-	void fillRectangleInstanced(const math::Vector2& pos, const math::Vector2& size);
+	void fillRectangle(const vec2& pos, const vec2& size);
+	void fillRectangleInstanced(const vec2& pos, const vec2& size);
 	// * Draws the outline of an ellipse. *
-	void drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
-	void drawEllipseInstanced(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
+	void drawEllipse(const vec2& pos, const vec2& size, uint steps = 120);
+	void drawEllipseInstanced(const vec2& pos, const vec2& size, uint steps = 120);
 	// * Draws a filled ellipse. *
-	void fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
-	void fillEllipseInstanced(const math::Vector2& pos, const math::Vector2& size, uint steps = 120);
+	void fillEllipse(const vec2& pos, const vec2& size, uint steps = 120);
+	void fillEllipseInstanced(const vec2& pos, const vec2& size, uint steps = 120);
 	// * Draws a polygon - open or closed. *
-	void drawPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false) const;
-	void drawPolygonInstanced(const std::vector<happyengine::math::Vector2>& points, uint nrPoints, bool close = false) const;
+	void drawPolygon(const std::vector<he::vec2>& points, uint nrPoints, bool close = false) const;
+	void drawPolygonInstanced(const std::vector<he::vec2>& points, uint nrPoints, bool close = false) const;
 	// * Draws a filled polygon. *
-	void fillPolygon(const std::vector<happyengine::math::Vector2>& points, uint nrPoints) const;
-	void fillPolygonInstanced(const std::vector<happyengine::math::Vector2>& points, uint nrPoints) const;
+	void fillPolygon(const std::vector<he::vec2>& points, uint nrPoints) const;
+	void fillPolygonInstanced(const std::vector<he::vec2>& points, uint nrPoints) const;
 	// * Draws a 2D texture with options for resizing, alpha, cliprect. *
-	void drawTexture2D(	const Texture2D::pointer& tex2D, const math::Vector2& pos,
-						const math::Vector2& newDimensions = math::Vector2(0.0f,0.0f),
+	void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
+						const vec2& newDimensions = vec2(0.0f,0.0f),
 						const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
 
 private:
@@ -133,18 +133,18 @@ private:
 	Simple2DEffect* m_pColorEffect;
 	Simple2DTextureEffect* m_pTextureEffect;
 
-	math::Matrix m_matWorld;
-	math::Matrix m_matOrthoGraphic;
-	math::Vector2 m_Translation;
-	math::Vector2 m_Scale;
+	mat44 m_matWorld;
+	mat44 m_matOrthoGraphic;
+	vec2 m_Translation;
+	vec2 m_Scale;
 	float m_Rotation;
 
 	ModelMesh* m_pTextureQuad;
 
-	math::Vector2 m_ViewPortSize;
+	vec2 m_ViewPortSize;
 
-	content::AssetContainerP<graphics::ModelMesh>* m_pModelBuffer;
-	content::AssetContainer<graphics::Texture2D::pointer>* m_pTextureBuffer;
+	ct::AssetContainerP<gfx::ModelMesh>* m_pModelBuffer;
+	ct::AssetContainer<gfx::Texture2D::pointer>* m_pTextureBuffer;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Happy2DRenderer(const Happy2DRenderer&);

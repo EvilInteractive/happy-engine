@@ -27,8 +27,8 @@
 
 #include <string>
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class FontLoader
 {
@@ -36,11 +36,11 @@ public:
 	FontLoader();
     virtual ~FontLoader();
 
-    bool load(const std::string& path, ushort size, bool bold, bool italic, graphics::Font::pointer& pOutFont);
+    bool load(const std::string& path, ushort size, bool bold, bool italic, gfx::Font::pointer& pOutFont);
 
 private:
 
-    AssetContainer<graphics::Font::pointer>* m_pAssetContainer;
+    AssetContainer<gfx::Font::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     FontLoader(const FontLoader&);

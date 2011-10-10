@@ -19,22 +19,22 @@
 #define _HE_VERTEX_H_
 #pragma once
 
-#include "Vector4.h"
-#include "Vector3.h"
-#include "Vector2.h"
+#include "vec4.h"
+#include "vec3.h"
+#include "vec2.h"
 #include "VertexLayout.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 struct VertexPosCol
 {
 public:
-    math::Vector3 position;
-    math::Vector4 color;
+    vec3 position;
+    vec4 color;
 
 	VertexPosCol();
-	VertexPosCol(const math::Vector3& pos, const math::Vector4& col);
+	VertexPosCol(const vec3& pos, const vec4& col);
     ~VertexPosCol();
     //default copy constructor and assignment operator are fine
 };
@@ -42,10 +42,10 @@ public:
 struct VertexPos
 {
 public:
-    math::Vector3 position;
+    vec3 position;
 
 	VertexPos();
-	VertexPos(const math::Vector3& pos);
+	VertexPos(const vec3& pos);
     ~VertexPos();
     //default copy constructor and assignment operator are fine
 };
@@ -53,10 +53,10 @@ public:
 struct VertexPos2D
 {
 public:
-    math::Vector2 position;
+    vec2 position;
 
 	VertexPos2D();
-	VertexPos2D(const math::Vector2& pos);
+	VertexPos2D(const vec2& pos);
     ~VertexPos2D();
     //default copy constructor and assignment operator are fine
 };
@@ -64,11 +64,11 @@ public:
 struct VertexPosCol2D
 {
 public:
-    math::Vector2 position;
-    math::Vector4 color;
+    vec2 position;
+    vec4 color;
 
 	VertexPosCol2D();
-	VertexPosCol2D(const math::Vector2& pos, const math::Vector4& col);
+	VertexPosCol2D(const vec2& pos, const vec4& col);
     ~VertexPosCol2D();
     //default copy constructor and assignment operator are fine
 };
@@ -76,11 +76,11 @@ public:
 struct VertexPosTex
 {
 public:
-    math::Vector3 position;
-    math::Vector2 textureCoord;
+    vec3 position;
+    vec2 textureCoord;
 
 	VertexPosTex();
-	VertexPosTex(const math::Vector3& pos, const math::Vector2& tex);
+	VertexPosTex(const vec3& pos, const vec2& tex);
     ~VertexPosTex();
     //default copy constructor and assignment operator are fine
 };
@@ -88,11 +88,11 @@ public:
 struct VertexPosTex2D
 {
 public:
-    math::Vector2 position;
-    math::Vector2 textureCoord;
+    vec2 position;
+    vec2 textureCoord;
 
 	VertexPosTex2D();
-	VertexPosTex2D(const math::Vector2& pos, const math::Vector2& tex);
+	VertexPosTex2D(const vec2& pos, const vec2& tex);
     ~VertexPosTex2D();
     //default copy constructor and assignment operator are fine
 };
@@ -100,13 +100,13 @@ public:
 struct VertexPTNT
 {
 public:
-    math::Vector3 position;
-    math::Vector2 textureCoord;
-    math::Vector3 normal;
-    math::Vector3 tangent;
+    vec3 position;
+    vec2 textureCoord;
+    vec3 normal;
+    vec3 tangent;
 
 	VertexPTNT();
-	VertexPTNT(const math::Vector3& pos, const math::Vector2& tex, const math::Vector3& norm, const math::Vector3& tan);
+	VertexPTNT(const vec3& pos, const vec2& tex, const vec3& norm, const vec3& tan);
     ~VertexPTNT() {}
     //default copy constructor and assignment operator are fine
 };

@@ -23,7 +23,7 @@
 #include <fstream>
 #include <vector>
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 class FileReader

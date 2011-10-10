@@ -28,12 +28,12 @@
 #include <string>
 #include <iostream>
 
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Matrix.h"
+#include "vec2.h"
+#include "vec3.h"
+#include "vec4.h"
+#include "mat44.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 class BinaryStream : public PxStream
@@ -52,10 +52,10 @@ public:
 	virtual		float			readFloat()								const;
 	virtual		double			readDouble()							const;
 
-    virtual     math::Vector2   readVector2()                           const;
-    virtual     math::Vector3   readVector3()                           const;
-    virtual     math::Vector4   readVector4()                           const;
-    virtual     math::Matrix    readMatrix()                            const;
+    virtual     vec2   readVector2()                           const;
+    virtual     vec3   readVector3()                           const;
+    virtual     vec4   readVector4()                           const;
+    virtual     mat44    readMatrix()                            const;
 
     virtual     std::string     readString()                            const;
     virtual     std::wstring    readWString()                           const;
@@ -68,10 +68,10 @@ public:
 	virtual		PxStream&		storeFloat(float f);
 	virtual		PxStream&		storeDouble(double d);
 
-    virtual     PxStream&       storeVector2(const math::Vector2& v);
-    virtual     PxStream&       storeVector3(const math::Vector3& v);
-    virtual     PxStream&       storeVector4(const math::Vector4& v);
-    virtual     PxStream&       storeMatrix(const math::Matrix& m);
+    virtual     PxStream&       storeVector2(const vec2& v);
+    virtual     PxStream&       storeVector3(const vec3& v);
+    virtual     PxStream&       storeVector4(const vec4& v);
+    virtual     PxStream&       storeMatrix(const mat44& m);
 
     virtual     PxStream&       storeString(const std::string& s);
     virtual     PxStream&       storeWString(const std::wstring& s);

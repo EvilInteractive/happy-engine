@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/09/2011
+#include "StdAfx.h" 
 
 #include "ShaderLoader.h"
 #include "HappyNew.h"
@@ -24,10 +25,10 @@
 #include "HappyEngine.h"
 #include "VertexLayout.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
-ShaderLoader::ShaderLoader(): m_pAssetContainer(NEW AssetContainer<graphics::Shader::pointer>())
+ShaderLoader::ShaderLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Shader::pointer>())
 {
 }
 
@@ -37,7 +38,7 @@ ShaderLoader::~ShaderLoader()
     delete m_pAssetContainer;
 }
 
-graphics::Shader::pointer ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+gfx::Shader::pointer ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
     std::string key(vsPath+fsPath);
     if (m_pAssetContainer->isAssetPresent(key))
@@ -46,7 +47,7 @@ graphics::Shader::pointer ShaderLoader::load(const std::string& vsPath, const st
     }
     else
     {
-        graphics::Shader::pointer pShader(NEW graphics::Shader());
+        gfx::Shader::pointer pShader(NEW gfx::Shader());
         pShader->init(vsPath, fsPath, shaderLayout, outputs);
         m_pAssetContainer->addAsset(key, pShader);
         return pShader;

@@ -4,7 +4,7 @@ model = "cube.binobj"
 
 [Physics]
 model = "cube.bphys"
-material = 0.9 0.7 0.6
+material = 0.9, 0.7, 0.6
 density = 5.0
 
 [Shader]

@@ -25,7 +25,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 class ControlsManager

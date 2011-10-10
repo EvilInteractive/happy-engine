@@ -27,7 +27,7 @@
 #include <vector>
 #include "boost/shared_ptr.hpp"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 class Text
@@ -37,7 +37,7 @@ public:
 	typedef boost::shared_ptr<Text> pointer;
 
 	/* CONSTRUCTOR - DESTRUCTOR */
-	Text(const graphics::Font::pointer& pFont, uint width = 0, uint height = 0);
+	Text(const gfx::Font::pointer& pFont, uint width = 0, uint height = 0);
     virtual ~Text();
 
 	/* GENERAL */
@@ -61,7 +61,7 @@ private:
 	void calculateWidthHeight();
 
 	/* DATAMEMBERS */
-	graphics::Font::pointer m_pFont;
+	gfx::Font::pointer m_pFont;
 
 	std::vector<std::string> m_Text;
 

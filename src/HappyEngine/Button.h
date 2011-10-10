@@ -22,7 +22,7 @@
 #define _HE_BUTTON_H_
 #pragma once
 
-#include "Vector2.h"
+#include "vec2.h"
 #include "HappyEngine.h"
 #include "Texture2D.h"
 #include <vector>
@@ -30,7 +30,7 @@
 #include <string>
 #include "Font.h"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 class Button
@@ -59,7 +59,7 @@ public:
 	};
 
 	/* CONSTRUCTOR - DESTRUCTOR */
-	Button(TYPE type, const math::Vector2& centerPos, const math::Vector2& size);
+	Button(TYPE type, const vec2& centerPos, const vec2& size);
     virtual ~Button();
 
 	/* GENERAL */
@@ -67,14 +67,14 @@ public:
 	void draw();
 
 	/* SETTERS */
-	void setSpriteSheet(const graphics::Texture2D::pointer& pSpriteSheet);
-	void setSprites(	const graphics::Texture2D::pointer& pNormalSprite,
-						const graphics::Texture2D::pointer& pHoverSprite,
-						const graphics::Texture2D::pointer& pDownSprite,
-						const graphics::Texture2D::pointer& pDisabledSprite);
+	void setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet);
+	void setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
+						const gfx::Texture2D::pointer& pHoverSprite,
+						const gfx::Texture2D::pointer& pDownSprite,
+						const gfx::Texture2D::pointer& pDisabledSprite);
 	void setState(STATE state);
 	void setActivationMode(ACTIVATION activationMode);
-	void setPosition(const math::Vector2& centerPos);
+	void setPosition(const vec2& centerPos);
 	void setText(const std::string& text, ushort fontSize = 12);
 
 	/* GETTERS */
@@ -92,8 +92,8 @@ private:
 	void drawSpriteSheet();
 
 	/* DATAMEMBERS */
-	math::Vector2 m_Pos;
-	math::Vector2 m_Size;
+	vec2 m_Pos;
+	vec2 m_Size;
 
 	bool m_bClicked;
 
@@ -101,13 +101,13 @@ private:
 	STATE m_State;
 	ACTIVATION m_ActivationType;
 
-	std::vector<graphics::Texture2D::pointer> m_Sprites;
-	graphics::Texture2D::pointer m_pSpriteSheet;
+	std::vector<gfx::Texture2D::pointer> m_Sprites;
+	gfx::Texture2D::pointer m_pSpriteSheet;
 
 	Hitregion* m_pHitregion;
 
 	std::string m_Text;
-	graphics::Font::pointer m_pFont;
+	gfx::Font::pointer m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Button(const Button&);

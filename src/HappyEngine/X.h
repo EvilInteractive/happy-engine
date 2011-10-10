@@ -22,7 +22,7 @@
 #define _HE_X_H_
 #pragma once
 
-namespace happyengine {
+namespace he {
 
 class X
 {

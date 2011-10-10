@@ -23,17 +23,17 @@
 
 namespace happytest {
 
-TestObject::TestObject(const happyengine::game::EntityDesc& desc): 
+TestObject::TestObject(const he::game::EntityDesc& desc): 
     m_Rotation(0), m_Position(0, 0, 0), 
     m_pActor(nullptr),
     m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 14)),
     m_pMaterial(desc.physicsDesc.pMaterial),
     Entity(desc)
 {
-    using namespace happyengine;
+    using namespace he;
         
-    ASSERT(desc.physicsDesc.usePhysics, "this class must have physics properties");
-    m_pActor = NEW happyengine::physics::PhysicsDynamicActor(math::Matrix::createTranslation(m_Position),
+    ASSERT(desc.physicsDesc.usePhysics, "this class must have px properties");
+    m_pActor = NEW he::px::PhysicsDynamicActor(mat44::createTranslation(m_Position),
         CONTENT->loadPhysicsShape(desc.physicsDesc.shape), desc.physicsDesc.density, m_pMaterial);
     m_pActor->setKeyframed(true);
 }
@@ -47,24 +47,24 @@ TestObject::~TestObject()
 
 void TestObject::tick(float dTime)
 {
-    using namespace happyengine;
+    using namespace he;
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Left))
     {
-        m_Rotation += math::pi * dTime;
+        m_Rotation += pi * dTime;
     }
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
     {
-        m_Rotation -= math::pi * dTime;
+        m_Rotation -= pi * dTime;
     }
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
     {
-        m_Position -= math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+        m_Position -= vec3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
     }
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
     {
-        m_Position += math::Vector3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+        m_Position += vec3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
     }
-    m_pActor->keyframedSetPose(m_Position, math::Vector3(0, 1, 0), m_Rotation);
+    m_pActor->keyframedSetPose(m_Position, vec3(0, 1, 0), m_Rotation);
 
     setWorldMatrix(m_pActor->getPose());
 }

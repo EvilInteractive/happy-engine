@@ -22,7 +22,7 @@
 #define _HE_LIGHT_H_
 #pragma once
 
-#include "Vector3.h"
+#include "vec3.h"
 #include "boost/shared_ptr.hpp"
 #include "Rect.h"
 #include "Camera.h"
@@ -31,16 +31,16 @@
 #include "SpotLight.h"
 #include "PointLight.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class AmbientLight
 {
 public:
 
-    math::Vector3 position;
+    vec3 position;
     float multiplier;
-    math::Vector3 color;
+    vec3 color;
     float range;
 
     typedef boost::shared_ptr<AmbientLight> pointer;
@@ -49,8 +49,8 @@ class DirectionalLight
 {
 public:
 
-    math::Vector3 direction;
-    math::Vector3 color;
+    vec3 direction;
+    vec3 color;
     float multiplier;
 
     typedef boost::shared_ptr<DirectionalLight> pointer;

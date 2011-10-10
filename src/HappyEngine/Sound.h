@@ -26,8 +26,8 @@
 
 #include "boost/shared_ptr.hpp"
 
-namespace happyengine {
-namespace audio {
+namespace he {
+namespace sfx {
 
 class Sound
 {

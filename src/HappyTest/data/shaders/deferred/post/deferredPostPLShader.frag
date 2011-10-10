@@ -24,7 +24,7 @@
 #include "decode.frag"
 
 in vec4 passPos;
-//in vec4 passWVPos;
+in vec4 passWVPos;
 out vec4 outColor;
 
 struct PointLight
@@ -41,48 +41,27 @@ uniform sampler2D normalMap;
 uniform sampler2D sgiMap;
 uniform sampler2D depthMap;
 
-//uniform vec2 projAB;
-uniform mat4 invMtxProj;
+uniform vec2 projAB;
+//uniform mat4 invMtxProj;
 uniform PointLight light;
-
-//vec3 viewSpacePos(vec2 winPos, vec2 winSize, vec4 depthSample, vec2 nearFar)
-//{
-    //vec3 position;
-//
-    //float depth = depthSample.x;
-    //position.z = -nearFar.x / (nearFar.y - (depth * (nearFar.y - nearFar.x))) * nearFar.y;
-//
-    //position.x = (((winPos.x / winSize.x) * 2.0) - 1.0) * u_right;
-    //position.y = (((winPos.y / winSize.y) * 2.0) - 1.0) * u_top;
-//
-    //float scale = -position.z / nearFar.x;
-    //position.x *= scale;
-    //position.y *= scale;
-//
-    //return position;
-//}
-
 
 void main()
 {
     vec4 ndc = vec4(passPos.xy / passPos.w, 1.0f, 1.0f);
     vec2 texCoord = ndc.xy * 0.5f + 0.5f;
+	//texCoord.y = 1 - texCoord.y;
 	//texCoord.x = 1 - texCoord.x;
     
-	//vec3 viewRay = vec3(passWVPos.xy / passWVPos.z, 1.0f);
+	vec3 viewRay = vec3(passWVPos.xy / passWVPos.z, 1.0f);
 
     float depth = texture2D(depthMap, texCoord).x;
-	//float linDepth = projAB.y / (depth - projAB.x);
+	float linDepth = projAB.y / (depth - projAB.x);
 
-	vec4 projPos = vec4(ndc.xy, depth, 1.0f);
-
+	/*vec4 projPos = vec4(ndc.xy, depth, 1.0f);
 	vec4 vPosVS = invMtxProj * projPos;
+	vec3 position = vPosVS.xyz / vPosVS.w;*/
 
-	vec3 position = vPosVS.xyz / vPosVS.w;
-
-	//vec3 vsPos = viewRay * linDepth;
-	
-	//vec3 position = vsPos; //in viewspace
+	vec3 position = viewRay * linDepth; //in viewspace
 
 	vec3 lightDir = light.position - position;
 	float lightDist = length(lightDir);
@@ -93,7 +72,7 @@ void main()
 	lightDir /= lightDist;
     
     //vec3 getNormal(in vec2 packedNormal)
-	vec3 normal = getNormal(texture2D(normalMap, texCoord).xy);
+	vec3 normal = normalize(texture2D(normalMap, texCoord).xyz);//getNormal(texture2D(normalMap, texCoord).xy);
     
 	float dotLightNormal = dot(lightDir, normal);
 

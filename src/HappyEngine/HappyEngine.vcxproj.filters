@@ -112,20 +112,11 @@
     <ClCompile Include="Exception.cpp">
       <Filter>happyengine\error\exceptions</Filter>
     </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>happyengine\math</Filter>
-    </ClCompile>
     <ClCompile Include="Assert.cpp">
       <Filter>happyengine\error\logicerror</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix.cpp">
-      <Filter>happyengine\math</Filter>
-    </ClCompile>
     <ClCompile Include="ObjLoader.cpp">
       <Filter>happyengine\content\models</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector2.cpp">
-      <Filter>happyengine\math</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine.cpp">
       <Filter>happyengine\graphics</Filter>
@@ -147,9 +138,6 @@
     </ClCompile>
     <ClCompile Include="IniWriter.cpp">
       <Filter>happyengine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector4.cpp">
-      <Filter>happyengine\math</Filter>
     </ClCompile>
     <ClCompile Include="FileNotFoundException.cpp">
       <Filter>happyengine\error\exceptions\io</Filter>
@@ -228,9 +216,6 @@
     </ClCompile>
     <ClCompile Include="Hitregion.cpp">
       <Filter>happyengine\graphics\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix2D.cpp">
-      <Filter>happyengine\math</Filter>
     </ClCompile>
     <ClCompile Include="BinObjLineLoader.cpp">
       <Filter>happyengine\content\lines</Filter>
@@ -340,6 +325,24 @@
     <ClCompile Include="ShaderPreProcessor.cpp">
       <Filter>happyengine\content\shader</Filter>
     </ClCompile>
+    <ClCompile Include="vec4.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="vec3.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="vec2.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="mat44.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="mat33.cpp">
+      <Filter>happyengine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="X.h">
@@ -360,14 +363,8 @@
     <ClInclude Include="Exception.h">
       <Filter>happyengine\error\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>happyengine\math</Filter>
-    </ClInclude>
     <ClInclude Include="Assert.h">
       <Filter>happyengine\error\logicerror</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
-      <Filter>happyengine\math</Filter>
     </ClInclude>
     <ClInclude Include="MathFunctions.h">
       <Filter>happyengine\math</Filter>
@@ -377,9 +374,6 @@
     </ClInclude>
     <ClInclude Include="ObjLoader.h">
       <Filter>happyengine\content\models</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>happyengine\math</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine.h">
       <Filter>happyengine\graphics</Filter>
@@ -407,9 +401,6 @@
     </ClInclude>
     <ClInclude Include="IniWriter.h">
       <Filter>happyengine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>happyengine\math</Filter>
     </ClInclude>
     <ClInclude Include="FileNotFoundException.h">
       <Filter>happyengine\error\exceptions\io</Filter>
@@ -509,9 +500,6 @@
     </ClInclude>
     <ClInclude Include="ISpline.h">
       <Filter>happyengine\math\splines</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix2D.h">
-      <Filter>happyengine\math</Filter>
     </ClInclude>
     <ClInclude Include="BinObjLineLoader.h">
       <Filter>happyengine\content\lines</Filter>
@@ -629,6 +617,24 @@
     </ClInclude>
     <ClInclude Include="ShaderPreProcessor.h">
       <Filter>happyengine\content\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="vec4.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="vec3.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="vec2.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="mat44.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="mat33.h">
+      <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

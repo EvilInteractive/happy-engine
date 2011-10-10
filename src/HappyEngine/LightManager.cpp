@@ -17,12 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 17/08/2011
+#include "StdAfx.h" 
 
 #include "LightManager.h"
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 LightManager::LightManager()
 {
@@ -33,7 +34,7 @@ LightManager::~LightManager()
 {
 }
 
-AmbientLight::pointer LightManager::addAmbientLight(const math::Vector3& pos, 
+AmbientLight::pointer LightManager::addAmbientLight(const vec3& pos, 
                                                     const Color&         color, 
                                                     float                multiplier, 
                                                     float                range) 
@@ -48,7 +49,7 @@ AmbientLight::pointer LightManager::addAmbientLight(const math::Vector3& pos,
 
     return pLight;
 }
-PointLight::pointer LightManager::addPointLight(const math::Vector3&  pos, 
+PointLight::pointer LightManager::addPointLight(const vec3&  pos, 
                                                 const Color&          color, 
                                                 float                 multiplier, 
                                                 float                 beginAttenuation, 
@@ -64,8 +65,8 @@ PointLight::pointer LightManager::addPointLight(const math::Vector3&  pos,
 
     return pLight;
 }
-SpotLight::pointer LightManager::addSpotLight(const math::Vector3&    pos, 
-                                              const math::Vector3&    direction, 
+SpotLight::pointer LightManager::addSpotLight(const vec3&    pos, 
+                                              const vec3&    direction, 
                                               const Color&            color, 
                                               float                   multiplier,
                                               float                   fov, 
@@ -84,7 +85,7 @@ SpotLight::pointer LightManager::addSpotLight(const math::Vector3&    pos,
 
     return pLight;
 }
-DirectionalLight::pointer LightManager::addDirectionalLight(const math::Vector3&  direction, 
+DirectionalLight::pointer LightManager::addDirectionalLight(const vec3&  direction, 
                                                             const Color&          color, 
                                                             float                 multiplier)
 {

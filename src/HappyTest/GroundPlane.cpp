@@ -24,33 +24,33 @@
 
 namespace happytest {
 
-GroundPlane::GroundPlane(const happyengine::game::EntityDesc& desc): Entity(desc)
+GroundPlane::GroundPlane(const he::game::EntityDesc& desc): Entity(desc)
 {
-    using namespace happyengine;
+    using namespace he;
     int width = 1024, depth = 1024;
     float texRes = 4;
     
-    std::vector<graphics::VertexPTNT> vertices;
-    vertices.push_back(graphics::VertexPTNT(math::Vector3(-width / 2.0f, 0.0f, -depth / 2.0f), math::Vector2(0, 0), math::Vector3(0, 1, 0), math::Vector3()));
-    vertices.push_back(graphics::VertexPTNT(math::Vector3(width / 2.0f, 0.0f, -depth / 2.0f), math::Vector2(width/texRes, 0), math::Vector3(0, 1, 0), math::Vector3()));
-    vertices.push_back(graphics::VertexPTNT(math::Vector3(-width / 2.0f, 0.0f, depth / 2.0f), math::Vector2(0, depth/texRes), math::Vector3(0, 1, 0), math::Vector3()));
-    vertices.push_back(graphics::VertexPTNT(math::Vector3(width / 2.0f, 0.0f, depth / 2.0f), math::Vector2(width/texRes, depth/texRes), math::Vector3(0, 1, 0), math::Vector3()));
+    std::vector<gfx::VertexPTNT> vertices;
+    vertices.push_back(gfx::VertexPTNT(vec3(-width / 2.0f, 0.0f, -depth / 2.0f), vec2(0, 0), vec3(0, 1, 0), vec3()));
+    vertices.push_back(gfx::VertexPTNT(vec3(width / 2.0f, 0.0f, -depth / 2.0f), vec2(width/texRes, 0), vec3(0, 1, 0), vec3()));
+    vertices.push_back(gfx::VertexPTNT(vec3(-width / 2.0f, 0.0f, depth / 2.0f), vec2(0, depth/texRes), vec3(0, 1, 0), vec3()));
+    vertices.push_back(gfx::VertexPTNT(vec3(width / 2.0f, 0.0f, depth / 2.0f), vec2(width/texRes, depth/texRes), vec3(0, 1, 0), vec3()));
 
     std::vector<byte> indices;
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(2); indices.push_back(3); indices.push_back(1);
 
-    std::vector<math::Vector3> tan(happyengine::content::models::calculateTangents(&vertices[0], 4, 0, 12, 20, 44, &indices[0], 6, graphics::IndexStride_Byte));
+    std::vector<vec3> tan(he::ct::models::calculateTangents(&vertices[0], 4, 0, 12, 20, 44, &indices[0], 6, gfx::IndexStride_Byte));
 
     for (int i = 0; i < 4; ++i)
     {
         vertices[i].tangent = tan[i];
     }
 
-    graphics::ModelMesh::pointer pModelMesh(NEW graphics::ModelMesh("groundPlane"));
+    gfx::ModelMesh::pointer pModelMesh(NEW gfx::ModelMesh("groundPlane"));
     pModelMesh->init();
     pModelMesh->setVertices(&vertices[0], 4, getModel()->getVertexLayout());
-    pModelMesh->setIndices(&indices[0], 6, graphics::IndexStride_Byte);
+    pModelMesh->setIndices(&indices[0], 6, gfx::IndexStride_Byte);
     
     getModel()->addMesh(pModelMesh);
 }

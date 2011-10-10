@@ -17,6 +17,7 @@
 //
 //Author: Bastian Damman
 //Created: 28/08/2011
+#include "StdAfx.h" 
 
 #include "BinObjLoader.h"
 
@@ -29,8 +30,8 @@
 
 #include "Assert.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace models {
 
 BinObjLoader::BinObjLoader(): m_NumIndices(0)
@@ -49,7 +50,7 @@ BinObjLoader::~BinObjLoader()
         free(pInd);
     });
 }
-void BinObjLoader::load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices)
+void BinObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices)
 {
     read(path, allowByteIndices);
     
@@ -81,7 +82,7 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
 
     using namespace std;
 
-    io::BinaryStream stream(path, io::BinaryStream::Read); //throws error::FileNotFoundException
+    io::BinaryStream stream(path, io::BinaryStream::Read); //throws err::FileNotFoundException
     
     uint meshes(stream.readDword());
 
@@ -94,9 +95,9 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
         stream.readBuffer(&m_VertexData[m_VertexData.size() - 1][0], numVertices * sizeof(InternalVertex));
 
         m_NumIndices.push_back(stream.readDword());
-        graphics::IndexStride stride(static_cast<graphics::IndexStride>(stream.readByte()));
-        if (stride == graphics::IndexStride_Byte && allowByteIndices == false)
-            m_IndexStride.push_back(graphics::IndexStride_UShort);
+        gfx::IndexStride stride(static_cast<gfx::IndexStride>(stream.readByte()));
+        if (stride == gfx::IndexStride_Byte && allowByteIndices == false)
+            m_IndexStride.push_back(gfx::IndexStride_UShort);
         else
             m_IndexStride.push_back(stride);
         
@@ -107,22 +108,22 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
     }
 }
 
-void BinObjLoader::fill(const graphics::VertexLayout& vertLayout) const
+void BinObjLoader::fill(const gfx::VertexLayout& vertLayout) const
 {
     int pOff = -1;
     int tOff = -1;
     int nOff = -1;
     int tanOff = -1;
 
-    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const graphics::VertexElement& element)
+    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::VertexElement& element)
     {
-        if (element.getUsage() == graphics::VertexElement::Usage_Position)
+        if (element.getUsage() == gfx::VertexElement::Usage_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == graphics::VertexElement::Usage_TextureCoordinate)
+        else if (element.getUsage() == gfx::VertexElement::Usage_TextureCoordinate)
             tOff = element.getByteOffset(); 
-        else if (element.getUsage() == graphics::VertexElement::Usage_Normal)
+        else if (element.getUsage() == gfx::VertexElement::Usage_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == graphics::VertexElement::Usage_Tangent)
+        else if (element.getUsage() == gfx::VertexElement::Usage_Tangent)
             tanOff = element.getByteOffset();
     });
     
@@ -144,19 +145,19 @@ void BinObjLoader::fill(const graphics::VertexLayout& vertLayout) const
         {
             if (pOff != -1)
             {
-                *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+                *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
             }
             if (tOff != -1)
             {
-                *reinterpret_cast<math::Vector2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+                *reinterpret_cast<vec2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
             }
             if (nOff != -1)
             {
-                *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+                *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
             }
             if (tanOff != -1)
             {
-                *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + tanOff]) = vert.tan;
+                *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + tanOff]) = vert.tan;
             }
             ++count;
         });
@@ -171,7 +172,7 @@ const void* BinObjLoader::getIndices(uint mesh) const
 {
     return m_Indices[mesh];
 }
-graphics::IndexStride BinObjLoader::getIndexStride(uint mesh) const
+gfx::IndexStride BinObjLoader::getIndexStride(uint mesh) const
 {
     return m_IndexStride[mesh];
 }

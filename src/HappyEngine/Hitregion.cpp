@@ -17,19 +17,20 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 10/09/2011
+#include "StdAfx.h" 
 
 #include "Hitregion.h"
 #include "HappyNew.h"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Hitregion::Hitregion(TYPE hitregionType, const math::Vector2& centerPos, const math::Vector2& size) :	m_Type(hitregionType),
+Hitregion::Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size) :	m_Type(hitregionType),
 																										m_Size(size),
 																										m_Pos(centerPos)
 {
-	m_matWorld = math::Matrix2D::createTranslaton(centerPos);
+	m_matWorld = mat33::createTranslaton(centerPos);
 }
 
 Hitregion::~Hitregion()
@@ -64,7 +65,7 @@ bool Hitregion::hitTest(const Hitregion* pHitrect) const
 	return false;
 }
 
-bool Hitregion::hitTest(const math::Vector2& point) const
+bool Hitregion::hitTest(const vec2& point) const
 {
 	if (m_Type == TYPE_RECTANGLE)
 	{
@@ -80,12 +81,12 @@ bool Hitregion::hitTest(const math::Vector2& point) const
 	return false;
 }
 
-math::Vector2 Hitregion::getSize() const
+vec2 Hitregion::getSize() const
 {
 	return m_Size;
 }
 
-math::Vector2 Hitregion::getPosition() const
+vec2 Hitregion::getPosition() const
 {
 	return m_matWorld.getTranslation();
 }
@@ -96,22 +97,22 @@ Hitregion::TYPE Hitregion::getType() const
 }
 
 /* SETTERS */
-void Hitregion::setPosition(const math::Vector2& pos)
+void Hitregion::setPosition(const vec2& pos)
 {
 	m_Pos = pos;
 }
 
-void Hitregion::setSize(const math::Vector2& size)
+void Hitregion::setSize(const vec2& size)
 {
 	m_Size = size;
 }
 
-void Hitregion::move(const math::Vector2& translation)
+void Hitregion::move(const vec2& translation)
 {
 	setPosition(getPosition() + translation);
 }
 
-void Hitregion::setTransformationMatrix(const math::Matrix2D& mat)
+void Hitregion::setTransformationMatrix(const mat33& mat)
 {
 	m_matWorld = mat;
 }

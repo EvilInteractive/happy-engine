@@ -34,8 +34,8 @@
 #include "ModelMesh.h"
 #include "VertexLayout.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Model
 {

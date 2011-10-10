@@ -40,8 +40,7 @@ FlyCamera::~FlyCamera()
 // GENERAL
 void FlyCamera::tick(const float dTime)
 {
-	using namespace happyengine;
-	using namespace math;
+	using namespace he;
 
 	if (!m_bIsActive) return;
 
@@ -50,7 +49,7 @@ void FlyCamera::tick(const float dTime)
 		bool bRunning = false;
 
 		// camera controls
-		Vector3 dir(0.0f, 0.0f, 0.0f);
+		vec3 dir(0.0f, 0.0f, 0.0f);
 
 		if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
 			dir += m_vLookWorld;
@@ -86,16 +85,16 @@ void FlyCamera::tick(const float dTime)
 
 	if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right))
 	{
-		Vector2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
+		vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
 		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
 		float pitch = mouseMovement.y / m_MouseSensitivity;
 		float yAngle = mouseMovement.x / m_MouseSensitivity;
 
-		Matrix R(Matrix::createRotation(m_vRightWorld, -pitch));
+		mat44 R(mat44::createRotation(m_vRightWorld, -pitch));
 		m_vLookWorld = normalize(R * m_vLookWorld);
         m_vUpWorld = normalize(R * m_vUpWorld);
 
-		R = Matrix::createRotation(Vector3(0,1,0), -yAngle);
+		R = mat44::createRotation(vec3(0,1,0), -yAngle);
         m_vLookWorld = normalize(R * m_vLookWorld);
         m_vRightWorld = normalize(R * m_vRightWorld);
         m_vUpWorld = -normalize(cross(m_vLookWorld, m_vRightWorld));

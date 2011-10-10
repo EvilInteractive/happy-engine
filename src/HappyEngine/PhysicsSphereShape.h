@@ -25,8 +25,8 @@
 #include "IPhysicsShape.h"
 #include "geometry/PxSphereGeometry.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
 class PhysicsSphereShape : public IPhysicsShape

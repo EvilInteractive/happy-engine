@@ -24,17 +24,17 @@
 #include <vector>
 #include "ShaderLayout.h"
 
-#include "Matrix.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "mat44.h"
+#include "vec2.h"
+#include "vec3.h"
+#include "vec4.h"
 #include "Texture2D.h"
 #include "HappyTypes.h"
 
 #include "boost/shared_ptr.hpp"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Shader
 {
@@ -53,11 +53,11 @@ public:
     
     void setShaderVar(uint id, int value) const;
     void setShaderVar(uint id, float value) const;
-    void setShaderVar(uint id, const math::Vector2& vec) const;
-    void setShaderVar(uint id, const math::Vector3& vec) const;
-    void setShaderVar(uint id, const math::Vector4& vec) const;
-    void setShaderVar(uint id, const math::Matrix& matrix) const;
-    void setShaderVar(uint id, const graphics::Texture2D::pointer& tex2D) const;
+    void setShaderVar(uint id, const vec2& vec) const;
+    void setShaderVar(uint id, const vec3& vec) const;
+    void setShaderVar(uint id, const vec4& vec) const;
+    void setShaderVar(uint id, const mat44& matrix) const;
+    void setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const;
 
     typedef boost::shared_ptr<Shader> pointer;
 

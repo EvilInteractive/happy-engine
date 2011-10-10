@@ -23,13 +23,13 @@
 
 namespace happytest {
 
-class MyServer : public happyengine::networking::Server
+class MyServer : public he::net::Server
 {
 public:
 	MyServer();
     virtual ~MyServer();
 
-    virtual void handleClientMessage(const void* msg, happyengine::uint msg_size, happyengine::byte fromUser);
+    virtual void handleClientMessage(const void* msg, he::uint msg_size, he::byte fromUser);
 
 private:
 

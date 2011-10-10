@@ -25,8 +25,8 @@
 #include "AssetContainer.h"
 #include "Shader.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class ShaderLoader
 {
@@ -34,10 +34,10 @@ public:
 	ShaderLoader();
     virtual ~ShaderLoader();
     
-    graphics::Shader::pointer load(const std::string& vsPath, const std::string& fsPath, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    gfx::Shader::pointer load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
 
 private:
-    AssetContainer<graphics::Shader::pointer>* m_pAssetContainer;
+    AssetContainer<gfx::Shader::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     ShaderLoader(const ShaderLoader&);

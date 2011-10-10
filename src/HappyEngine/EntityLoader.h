@@ -25,8 +25,8 @@
 #include "Entity.h"
 #include "AssetContainer.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class EntityLoader
 {

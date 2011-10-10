@@ -23,15 +23,15 @@
 #pragma once
 
 #include "AssetContainer.h"
-#include "Vector3.h"
+#include "vec3.h"
 
 #include <string>
 #include <vector>
 
 #include "Line.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class LineLoader
 {
@@ -39,11 +39,11 @@ public:
 	LineLoader();
     virtual ~LineLoader();
  
-	graphics::Line::pointer loadLine(const std::string& path);
+	gfx::Line::pointer loadLine(const std::string& path);
 
 private:
 
-	AssetContainer<graphics::Line::pointer>* m_pAssetContainer;
+	AssetContainer<gfx::Line::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     LineLoader(const LineLoader&);

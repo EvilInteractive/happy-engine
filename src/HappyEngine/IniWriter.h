@@ -26,11 +26,11 @@
 #include <string>
 #include <vector>
 
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "vec2.h"
+#include "vec3.h"
+#include "vec4.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 class IniWriter
@@ -49,9 +49,9 @@ public:
     void writeInt(const std::wstring& root, const std::wstring& node, int value);
     void writeFloat(const std::wstring& root, const std::wstring& node, float value);
 
-    void writeVector2(const std::wstring& root, const std::wstring& node, const math::Vector2& value);
-    void writeVector3(const std::wstring& root, const std::wstring& node, const math::Vector3& value);
-    void writeVector4(const std::wstring& root, const std::wstring& node, const math::Vector4& value);
+    void writeVector2(const std::wstring& root, const std::wstring& node, const vec2& value);
+    void writeVector3(const std::wstring& root, const std::wstring& node, const vec3& value);
+    void writeVector4(const std::wstring& root, const std::wstring& node, const vec4& value);
 
     void writeString(const std::wstring& root, const std::wstring& node, const std::string& value);
     void writeWString(const std::wstring& root, const std::wstring& node, const std::wstring& value);

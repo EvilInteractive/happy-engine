@@ -17,6 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 25/08/2011
+#include "StdAfx.h" 
 
 #include "Happy2DRenderer.h"
 #include "HappyNew.h"
@@ -27,23 +28,23 @@
 #include <algorithm>
 #include <vector>
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW happyengine::graphics::Simple2DEffect()),
-										m_pTextureEffect(NEW happyengine::graphics::Simple2DTextureEffect()),
+Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW he::gfx::Simple2DEffect()),
+										m_pTextureEffect(NEW he::gfx::Simple2DTextureEffect()),
 										m_bAntiAliasing(false),
 										m_StrokeSize(0.0f),
 										m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
 										m_ViewPortSize(0.0f,0.0f),
 										m_FontHAlignment(Font::HAlignment_Left),
 										m_FontVAlignment(Font::VAlignment_Bottom),
-										m_pModelBuffer(NEW content::AssetContainerP<graphics::ModelMesh>()),
-										m_pTextureBuffer(NEW content::AssetContainer<graphics::Texture2D::pointer>()),
+										m_pModelBuffer(NEW ct::AssetContainerP<gfx::ModelMesh>()),
+										m_pTextureBuffer(NEW ct::AssetContainer<gfx::Texture2D::pointer>()),
 										m_pTextureQuad(NEW ModelMesh("")),
-										m_Translation(math::Vector2(0.0f,0.0f)),
-										m_Scale(math::Vector2(1.0f,1.0f)),
+										m_Translation(vec2(0.0f,0.0f)),
+										m_Scale(vec2(1.0f,1.0f)),
 										m_Rotation(0.0f)
 {
     
@@ -66,9 +67,9 @@ void Happy2DRenderer::clearInstancingBuffer()
 
 void Happy2DRenderer::updateTransformationMatrix()
 {
-	m_matWorld = math::Matrix::createTranslation(math::Vector3(m_Translation.x, m_Translation.y, 0.0f)) *
-				 math::Matrix::createRotation(math::Vector3(0.0f,0.0f,1.0f), m_Rotation) *
-				 math::Matrix::createScale(m_Scale.x, m_Scale.y, 1.0f);
+	m_matWorld = mat44::createTranslation(vec3(m_Translation.x, m_Translation.y, 0.0f)) *
+				 mat44::createRotation(vec3(0.0f,0.0f,1.0f), m_Rotation) *
+				 mat44::createScale(m_Scale.x, m_Scale.y, 1.0f);
 }
 
 /* GENERAL */
@@ -94,7 +95,7 @@ void Happy2DRenderer::end()
 	setStrokeSize();
 
 	resetTransformation();
-	m_matOrthoGraphic = math::Matrix::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 10.0f);
+	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 10.0f);
 }
 
 void Happy2DRenderer::initialize()
@@ -111,7 +112,7 @@ void Happy2DRenderer::initialize()
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
 
-	m_matOrthoGraphic = math::Matrix::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 10.0f);
+	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 10.0f);
 
 	// effects
 	m_pColorEffect->load();
@@ -122,20 +123,20 @@ void Happy2DRenderer::initialize()
 
 	std::vector<VertexPosTex2D> vertices;
 	vertices.push_back(
-		VertexPosTex2D(math::Vector2(-0.5f, 0.5f),
-		math::Vector2(0, 0)));
+		VertexPosTex2D(vec2(-0.5f, 0.5f),
+		vec2(0, 0)));
 
 	vertices.push_back(
-		VertexPosTex2D(math::Vector2(0.5f, 0.5f),
-		math::Vector2(1, 0)));
+		VertexPosTex2D(vec2(0.5f, 0.5f),
+		vec2(1, 0)));
 
 	vertices.push_back(
-		VertexPosTex2D(math::Vector2(-0.5f, -0.5f),
-		math::Vector2(0, 1)));
+		VertexPosTex2D(vec2(-0.5f, -0.5f),
+		vec2(0, 1)));
 
 	vertices.push_back(
-		VertexPosTex2D(math::Vector2(0.5f, -0.5f),
-		math::Vector2(1, 1)));
+		VertexPosTex2D(vec2(0.5f, -0.5f),
+		vec2(1, 1)));
 
     std::vector<byte> indices;
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
@@ -188,12 +189,12 @@ void Happy2DRenderer::setFontVerticalAlignment(Font::VAlignment verticalAlignmen
 	m_FontVAlignment = verticalAlignment;
 }
 
-void Happy2DRenderer::setTransformation(const math::Matrix& mat)
+void Happy2DRenderer::setTransformation(const mat44& mat)
 {
 	m_matWorld = m_matOrthoGraphic * mat;
 }
 
-void Happy2DRenderer::setTranslation(const math::Vector2& translation)
+void Happy2DRenderer::setTranslation(const vec2& translation)
 {
 	m_Translation = translation;
 	updateTransformationMatrix();
@@ -201,11 +202,11 @@ void Happy2DRenderer::setTranslation(const math::Vector2& translation)
 
 void Happy2DRenderer::setRotation(const float degrees)
 {
-	m_Rotation = math::toRadians(degrees);
+	m_Rotation = toRadians(degrees);
 	updateTransformationMatrix();
 }
 
-void Happy2DRenderer::setScale(const math::Vector2& scale)
+void Happy2DRenderer::setScale(const vec2& scale)
 {
 	m_Scale = scale;
 	updateTransformationMatrix();
@@ -213,21 +214,21 @@ void Happy2DRenderer::setScale(const math::Vector2& scale)
 
 void Happy2DRenderer::resetTransformation()
 {
-	m_Translation = math::Vector2(0.0f,0.0f);
+	m_Translation = vec2(0.0f,0.0f);
 	m_Rotation = 0.0f;
-	m_Scale = math::Vector2(1.0f,1.0f);
+	m_Scale = vec2(1.0f,1.0f);
 
 	updateTransformationMatrix();
 }
 
 /* DRAW METHODS */
-void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const math::Vector2& pos)
+void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const vec2& pos)
 {
 	Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing));
 
-	drawTexture2D(texFont, pos, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+	drawTexture2D(texFont, pos, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
-void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const math::Vector2& pos)
+void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const vec2& pos)
 {
 	std::stringstream stream;
 	stream << "TEXT." << m_CurrentColor.r() << "." << m_CurrentColor.g()
@@ -237,7 +238,7 @@ void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::po
 	if (m_pTextureBuffer->isAssetPresent(stream.str()))
 	{
 		Texture2D::pointer texFont = m_pTextureBuffer->getAsset(stream.str());
-		drawTexture2D(texFont, pos, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+		drawTexture2D(texFont, pos, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 	}
 	else
 	{
@@ -245,16 +246,16 @@ void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::po
 
 		m_pTextureBuffer->addAsset(stream.str(), texFont);
 
-		drawTexture2D(texFont, pos, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+		drawTexture2D(texFont, pos, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 	}
 }
 
 void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const RectF& rect)
 {
-	math::Vector2 textSize;
+	vec2 textSize;
 	Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing, &textSize));
 
-	math::Vector2 position;
+	vec2 position;
 
 	switch (m_FontHAlignment)
     {
@@ -271,7 +272,7 @@ void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& fo
         default: ASSERT("unkown font alignment");
     }
 
-	drawTexture2D(texFont, position, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+	drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
 void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const RectF& rect)
 {
@@ -283,7 +284,7 @@ void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::po
 
 	Texture2D::pointer texFont;
 
-	//math::Vector2 textSize;
+	//vec2 textSize;
 
 	if (m_pTextureBuffer->isAssetPresent(stream.str()))
 	{
@@ -296,7 +297,7 @@ void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::po
 		m_pTextureBuffer->addAsset(stream.str(), texFont);
 	}
 
-	math::Vector2 position;
+	vec2 position;
 
 	switch (m_FontHAlignment)
     {
@@ -313,10 +314,10 @@ void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::po
         default: ASSERT("unkown font alignment");
     }
 
-	drawTexture2D(texFont, position, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+	drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
 
-void Happy2DRenderer::drawLine(const math::Vector2& point1, const math::Vector2& point2) const
+void Happy2DRenderer::drawLine(const vec2& point1, const vec2& point2) const
 {
 	ModelMesh model("");
 
@@ -325,10 +326,10 @@ void Happy2DRenderer::drawLine(const math::Vector2& point1, const math::Vector2&
 
 	byte i(0);
 
-	vertices.push_back(VertexPos2D(math::Vector2(point1.x, point1.y)));
+	vertices.push_back(VertexPos2D(vec2(point1.x, point1.y)));
 	indices.push_back(i++);
 
-	vertices.push_back(VertexPos2D(math::Vector2(point2.x, point2.y)));
+	vertices.push_back(VertexPos2D(vec2(point2.x, point2.y)));
 	indices.push_back(i++);
 
 	model.init();
@@ -344,7 +345,7 @@ void Happy2DRenderer::drawLine(const math::Vector2& point1, const math::Vector2&
 
     glBindVertexArray(0);
 }
-void Happy2DRenderer::drawLineInstanced(const math::Vector2& point1, const math::Vector2& point2) const
+void Happy2DRenderer::drawLineInstanced(const vec2& point1, const vec2& point2) const
 {
 	ModelMesh* pModel;
 
@@ -362,10 +363,10 @@ void Happy2DRenderer::drawLineInstanced(const math::Vector2& point1, const math:
 
 		byte i(0);
 
-		vertices.push_back(VertexPos2D(math::Vector2(point1.x, point1.y)));
+		vertices.push_back(VertexPos2D(vec2(point1.x, point1.y)));
 		indices.push_back(i++);
 
-		vertices.push_back(VertexPos2D(math::Vector2(point2.x, point2.y)));
+		vertices.push_back(VertexPos2D(vec2(point2.x, point2.y)));
 		indices.push_back(i++);
 
 		pModel = NEW ModelMesh(stream.str());
@@ -386,19 +387,19 @@ void Happy2DRenderer::drawLineInstanced(const math::Vector2& point1, const math:
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector2& size)
+void Happy2DRenderer::drawRectangle(const vec2& pos, const vec2& size)
 {
 	ModelMesh model("");
 
 	std::vector<VertexPos2D> vertices;
-	vertices.push_back(VertexPos2D(math::Vector2(size.x, 0)));
-	vertices.push_back(VertexPos2D(math::Vector2(0, 0)));
-	vertices.push_back(VertexPos2D(math::Vector2(size.x - m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-	vertices.push_back(VertexPos2D(math::Vector2(size.x - m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
-	vertices.push_back(VertexPos2D(math::Vector2(size.x, size.y)));
-	vertices.push_back(VertexPos2D(math::Vector2(0, size.y)));
-	vertices.push_back(VertexPos2D(math::Vector2(m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-	vertices.push_back(VertexPos2D(math::Vector2(m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
+	vertices.push_back(VertexPos2D(vec2(size.x, 0)));
+	vertices.push_back(VertexPos2D(vec2(0, 0)));
+	vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
+	vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
+	vertices.push_back(VertexPos2D(vec2(size.x, size.y)));
+	vertices.push_back(VertexPos2D(vec2(0, size.y)));
+	vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
+	vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
 	
 	std::vector<byte> indices;
 	indices.push_back(0); indices.push_back(1);
@@ -410,7 +411,7 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 	model.setVertices(&vertices[0], 8, m_VertexLayoutColor);
 	model.setIndices(&indices[0], 8, IndexStride_Byte);
 
-	math::Vector2 translation(pos.x, pos.y);
+	vec2 translation(pos.x, pos.y);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -427,7 +428,7 @@ void Happy2DRenderer::drawRectangle(const math::Vector2& pos, const math::Vector
 
     glBindVertexArray(0);
 }
-void Happy2DRenderer::drawRectangleInstanced(const math::Vector2& pos, const math::Vector2& size)
+void Happy2DRenderer::drawRectangleInstanced(const vec2& pos, const vec2& size)
 {
 	ModelMesh* pModel;
 
@@ -441,14 +442,14 @@ void Happy2DRenderer::drawRectangleInstanced(const math::Vector2& pos, const mat
 	else
 	{
 		std::vector<VertexPos2D> vertices;
-		vertices.push_back(VertexPos2D(math::Vector2(size.x, 0)));
-		vertices.push_back(VertexPos2D(math::Vector2(0, 0)));
-		vertices.push_back(VertexPos2D(math::Vector2(size.x - m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-		vertices.push_back(VertexPos2D(math::Vector2(size.x - m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
-		vertices.push_back(VertexPos2D(math::Vector2(size.x, size.y)));
-		vertices.push_back(VertexPos2D(math::Vector2(0, size.y)));
-		vertices.push_back(VertexPos2D(math::Vector2(m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-		vertices.push_back(VertexPos2D(math::Vector2(m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
+		vertices.push_back(VertexPos2D(vec2(size.x, 0)));
+		vertices.push_back(VertexPos2D(vec2(0, 0)));
+		vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
+		vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
+		vertices.push_back(VertexPos2D(vec2(size.x, size.y)));
+		vertices.push_back(VertexPos2D(vec2(0, size.y)));
+		vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
+		vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
 	
 		std::vector<byte> indices;
 		indices.push_back(0); indices.push_back(1);
@@ -464,7 +465,7 @@ void Happy2DRenderer::drawRectangleInstanced(const math::Vector2& pos, const mat
 		m_pModelBuffer->addAsset(pModel->getName(), pModel);
 	}
 
-	math::Vector2 translation(pos.x, pos.y);
+	vec2 translation(pos.x, pos.y);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -482,15 +483,15 @@ void Happy2DRenderer::drawRectangleInstanced(const math::Vector2& pos, const mat
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector2& size)
+void Happy2DRenderer::fillRectangle(const vec2& pos, const vec2& size)
 {
 	ModelMesh model("");
 
 	std::vector<VertexPos2D> vertices;
-	vertices.push_back(VertexPos2D(math::Vector2(-size.x/2, size.y/2)));
-	vertices.push_back(VertexPos2D(math::Vector2(size.x/2, size.y/2)));
-	vertices.push_back(VertexPos2D(math::Vector2(-size.x/2, -size.y/2)));
-	vertices.push_back(VertexPos2D(math::Vector2(size.x/2, -size.y/2)));
+	vertices.push_back(VertexPos2D(vec2(-size.x/2, size.y/2)));
+	vertices.push_back(VertexPos2D(vec2(size.x/2, size.y/2)));
+	vertices.push_back(VertexPos2D(vec2(-size.x/2, -size.y/2)));
+	vertices.push_back(VertexPos2D(vec2(size.x/2, -size.y/2)));
 
 	std::vector<byte> indices;
 	indices.push_back(2); indices.push_back(1); indices.push_back(0);
@@ -500,7 +501,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 	model.setVertices(&vertices[0], 4, m_VertexLayoutColor);
 	model.setIndices(&indices[0], 6, IndexStride_Byte);
 
-	math::Vector2 translation(pos.x + size.x/2, pos.y + size.y/2);
+	vec2 translation(pos.x + size.x/2, pos.y + size.y/2);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -517,7 +518,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 
     glBindVertexArray(0);
 }
-void Happy2DRenderer::fillRectangleInstanced(const math::Vector2& pos, const math::Vector2& size)
+void Happy2DRenderer::fillRectangleInstanced(const vec2& pos, const vec2& size)
 {
 	ModelMesh* pModel;
 
@@ -531,10 +532,10 @@ void Happy2DRenderer::fillRectangleInstanced(const math::Vector2& pos, const mat
 	else
 	{
 		std::vector<VertexPos2D> vertices;
-		vertices.push_back(VertexPos2D(math::Vector2(-size.x/2, size.y/2)));
-		vertices.push_back(VertexPos2D(math::Vector2(size.x/2, size.y/2)));
-		vertices.push_back(VertexPos2D(math::Vector2(-size.x/2, -size.y/2)));
-		vertices.push_back(VertexPos2D(math::Vector2(size.x/2, -size.y/2)));
+		vertices.push_back(VertexPos2D(vec2(-size.x/2, size.y/2)));
+		vertices.push_back(VertexPos2D(vec2(size.x/2, size.y/2)));
+		vertices.push_back(VertexPos2D(vec2(-size.x/2, -size.y/2)));
+		vertices.push_back(VertexPos2D(vec2(size.x/2, -size.y/2)));
 
 		std::vector<byte> indices;
 		indices.push_back(2); indices.push_back(1); indices.push_back(0);
@@ -548,7 +549,7 @@ void Happy2DRenderer::fillRectangleInstanced(const math::Vector2& pos, const mat
 		m_pModelBuffer->addAsset(pModel->getName(), pModel);
 	}
 
-	math::Vector2 translation(pos.x + size.x/2, pos.y + size.y/2);
+	vec2 translation(pos.x + size.x/2, pos.y + size.y/2);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -566,7 +567,7 @@ void Happy2DRenderer::fillRectangleInstanced(const math::Vector2& pos, const mat
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
+void Happy2DRenderer::drawEllipse(const vec2& pos, const vec2& size, uint steps)
 {
 	ModelMesh model("");
 
@@ -581,7 +582,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 	for (uint i = 0; i < 360; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
+		vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 		indices.push_back(index++);
 	}
@@ -590,7 +591,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 	model.setVertices(&vertices[0], steps, m_VertexLayoutColor);
 	model.setIndices(&indices[0], steps, IndexStride_UInt);
 
-	math::Vector2 translation(pos.x, pos.y);
+	vec2 translation(pos.x, pos.y);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -607,7 +608,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 
     glBindVertexArray(0);
 }
-void Happy2DRenderer::drawEllipseInstanced(const math::Vector2& pos, const math::Vector2& size, uint steps)
+void Happy2DRenderer::drawEllipseInstanced(const vec2& pos, const vec2& size, uint steps)
 {
 	ModelMesh* pModel;
 
@@ -631,7 +632,7 @@ void Happy2DRenderer::drawEllipseInstanced(const math::Vector2& pos, const math:
 		for (uint i = 0; i < 360; i += stepSize)
 		{
 			float degInRad = i * DEG2RAD;
-			vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
+			vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 			indices.push_back(index++);
 		}
@@ -644,7 +645,7 @@ void Happy2DRenderer::drawEllipseInstanced(const math::Vector2& pos, const math:
 		m_pModelBuffer->addAsset(pModel->getName(), pModel);
 	}
 
-	math::Vector2 translation(pos.x, pos.y);
+	vec2 translation(pos.x, pos.y);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -662,7 +663,7 @@ void Happy2DRenderer::drawEllipseInstanced(const math::Vector2& pos, const math:
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2& size, uint steps)
+void Happy2DRenderer::fillEllipse(const vec2& pos, const vec2& size, uint steps)
 {
 	ModelMesh model("");
 
@@ -674,13 +675,13 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 	uint stepSize(360 / steps);
 	uint index(0);
 
-	vertices.push_back(VertexPos2D(math::Vector2(0, 0)));
+	vertices.push_back(VertexPos2D(vec2(0, 0)));
 	indices.push_back(1);
 
 	for (int i = 0; i > -360; i -= stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
+		vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 		indices.push_back(steps - index);
 		++index;
@@ -690,7 +691,7 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 	model.setVertices(&vertices[0], steps + 1, m_VertexLayoutColor);
 	model.setIndices(&indices[0], steps + 1, IndexStride_UInt);
 
-	math::Vector2 translation(pos.x, pos.y);
+	vec2 translation(pos.x, pos.y);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -707,7 +708,7 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 
     glBindVertexArray(0);
 }
-void Happy2DRenderer::fillEllipseInstanced(const math::Vector2& pos, const math::Vector2& size, uint steps)
+void Happy2DRenderer::fillEllipseInstanced(const vec2& pos, const vec2& size, uint steps)
 {
 	ModelMesh* pModel;
 
@@ -728,13 +729,13 @@ void Happy2DRenderer::fillEllipseInstanced(const math::Vector2& pos, const math:
 		uint stepSize(360 / steps);
 		uint index(0);
 
-		vertices.push_back(VertexPos2D(math::Vector2(0, 0)));
+		vertices.push_back(VertexPos2D(vec2(0, 0)));
 		indices.push_back(1);
 
 		for (int i = 0; i < 360; i -= stepSize)
 		{
 			float degInRad = i * DEG2RAD;
-			vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
+			vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 			indices.push_back(steps - index);
 			++index;
@@ -748,7 +749,7 @@ void Happy2DRenderer::fillEllipseInstanced(const math::Vector2& pos, const math:
 		m_pModelBuffer->addAsset(pModel->getName(), pModel);
 	}
 
-	math::Vector2 translation(pos.x, pos.y);
+	vec2 translation(pos.x, pos.y);
 
 	m_Translation += translation;
 	updateTransformationMatrix();
@@ -766,16 +767,16 @@ void Happy2DRenderer::fillEllipseInstanced(const math::Vector2& pos, const math:
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close) const
+void Happy2DRenderer::drawPolygon(const std::vector<he::vec2> &points, he::uint nrPoints, bool close) const
 {
 	std::vector<VertexPos2D> vertices;
 	std::vector<byte> indices;
 
 	byte i(0);
 
-	std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 point)
+	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
 	{
-		vertices.push_back(VertexPos2D(math::Vector2(point.x, point.y)));
+		vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
 		indices.push_back(i++);
 	});
 
@@ -796,14 +797,14 @@ void Happy2DRenderer::drawPolygon(const std::vector<happyengine::math::Vector2> 
 
     glBindVertexArray(0);
 }
-void Happy2DRenderer::drawPolygonInstanced(const std::vector<happyengine::math::Vector2> &points, happyengine::uint nrPoints, bool close) const
+void Happy2DRenderer::drawPolygonInstanced(const std::vector<he::vec2> &points, he::uint nrPoints, bool close) const
 {
 	ModelMesh* pModel;
 
 	std::stringstream stream;
 	stream << "P";
 
-	std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 p)
+	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 p)
 	{
 		stream << ".X." << p.x << ".Y." << p.y;
 	});
@@ -819,9 +820,9 @@ void Happy2DRenderer::drawPolygonInstanced(const std::vector<happyengine::math::
 
 		byte i(0);
 
-		std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 point)
+		std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
 		{
-			vertices.push_back(VertexPos2D(math::Vector2(point.x, point.y)));
+			vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
 			indices.push_back(i++);
 		});
 
@@ -847,7 +848,7 @@ void Happy2DRenderer::drawPolygonInstanced(const std::vector<happyengine::math::
     glBindVertexArray(0);
 }
 
-void Happy2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>& /*points*/, happyengine::uint /*nrPoints*/) const
+void Happy2DRenderer::fillPolygon(const std::vector<he::vec2>& /*points*/, he::uint /*nrPoints*/) const
 {
 	/*
 	std::vector<VertexPos2D> vertices;
@@ -855,9 +856,9 @@ void Happy2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>&
 
 	byte i(0);
 
-	std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 point)
+	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
 	{
-		vertices.push_back(VertexPos2D(math::Vector2(point.x, point.y)));
+		vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
 		indices.push_back(i++);
 	});
 
@@ -876,7 +877,7 @@ void Happy2DRenderer::fillPolygon(const std::vector<happyengine::math::Vector2>&
     glBindVertexArray(0);
 	*/
 }
-void Happy2DRenderer::fillPolygonInstanced(const std::vector<happyengine::math::Vector2>& /*points*/, happyengine::uint /*nrPoints*/) const
+void Happy2DRenderer::fillPolygonInstanced(const std::vector<he::vec2>& /*points*/, he::uint /*nrPoints*/) const
 {
 	/*
 	std::vector<VertexPos2D> vertices;
@@ -884,9 +885,9 @@ void Happy2DRenderer::fillPolygonInstanced(const std::vector<happyengine::math::
 
 	byte i(0);
 
-	std::for_each(points.cbegin(), points.cend(), [&](happyengine::math::Vector2 point)
+	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
 	{
-		vertices.push_back(VertexPos2D(math::Vector2(point.x, point.y)));
+		vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
 		indices.push_back(i++);
 	});
 
@@ -906,13 +907,13 @@ void Happy2DRenderer::fillPolygonInstanced(const std::vector<happyengine::math::
 	*/
 }
 
-void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const math::Vector2& pos, const math::Vector2& newDimensions, const float alpha, const RectF& regionToDraw)
+void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
 {
-	math::Vector2 tcOffset(0.0f,0.0f);
-	math::Vector2 tcScale(1.0f,1.0f);
-	math::Vector2 size;
+	vec2 tcOffset(0.0f,0.0f);
+	vec2 tcScale(1.0f,1.0f);
+	vec2 size;
 
-	if (regionToDraw != RectF(math::Vector2(0.0f,0.0f), math::Vector2(0.0f,0.0f)))
+	if (regionToDraw != RectF(vec2(0.0f,0.0f), vec2(0.0f,0.0f)))
 	{
 		tcScale.x = regionToDraw.width / tex2D->getWidth();
 		tcScale.y = regionToDraw.height / tex2D->getHeight();
@@ -921,22 +922,22 @@ void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const math:
 		tcOffset.y = 1 - (regionToDraw.y / tex2D->getHeight()) - tcScale.y;
 	}
 
-	if (newDimensions != math::Vector2(0.0f,0.0f))
+	if (newDimensions != vec2(0.0f,0.0f))
 	{
-		size = math::Vector2(abs(newDimensions.x), abs(newDimensions.y));
+		size = vec2(abs(newDimensions.x), abs(newDimensions.y));
 
 		if (newDimensions.x < 0) tcScale.x *= -1.0f;
 		if (newDimensions.y < 0) tcScale.y *= -1.0f;
 	}
 	else
 	{
-		size = math::Vector2(static_cast<float>(tex2D->getWidth()), static_cast<float>(tex2D->getHeight()));
+		size = vec2(static_cast<float>(tex2D->getWidth()), static_cast<float>(tex2D->getHeight()));
 	}
 
-	math::Matrix world(	math::Matrix::createScale(size.x, size.y, 1.0f) *
-						math::Matrix::createTranslation(math::Vector3(pos.x / size.x, pos.y / size.y, 0.0f)));
+	mat44 world(	mat44::createScale(size.x, size.y, 1.0f) *
+						mat44::createTranslation(vec3(pos.x / size.x, pos.y / size.y, 0.0f)));
 
-	math::Vector2 translation(pos.x + size.x/2, pos.y + size.y/2);
+	vec2 translation(pos.x + size.x/2, pos.y + size.y/2);
 
 	m_Translation += translation;
 	m_Scale *= size;

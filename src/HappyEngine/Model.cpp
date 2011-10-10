@@ -18,6 +18,7 @@
 //Author:  Bastian Damman
 //Created: 13/07/2011
 //Changed: 15/09/2011 -Model class became ModelMesh
+#include "StdAfx.h" 
 
 #include "Model.h"
 
@@ -27,8 +28,8 @@
 #include "Color.h"
 #include "ExternalError.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
     
 Model::Model(const VertexLayout& vertexLayout): m_Complete(false), m_VertexLayout(vertexLayout)
 {

@@ -28,7 +28,7 @@ MyServer::~MyServer()
 {
 }
 
-void MyServer::handleClientMessage(const void* /*msg*/, happyengine::uint /*msg_size*/, happyengine::byte /*fromUser*/)
+void MyServer::handleClientMessage(const void* /*msg*/, he::uint /*msg_size*/, he::byte /*fromUser*/)
 {
 }
 

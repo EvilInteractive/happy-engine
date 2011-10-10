@@ -17,13 +17,14 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
+#include "StdAfx.h" 
 
 #include "Simple2DTextureEffect.h"
 #include "HappyNew.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 Simple2DTextureEffect::Simple2DTextureEffect() : m_pShader(nullptr)
 {
@@ -37,8 +38,8 @@ Simple2DTextureEffect::~Simple2DTextureEffect()
 
 void Simple2DTextureEffect::load()
 {
-	using namespace happyengine;
-	using namespace graphics;
+	using namespace he;
+	using namespace gfx;
 
     ShaderLayout layout;
 	layout.addElement(ShaderLayoutElement(0, "inPosition"));
@@ -56,7 +57,7 @@ void Simple2DTextureEffect::load()
 	m_ShaderTCScalePos = m_pShader->getShaderVarId("texCoordScale");
 
 	m_pShader->begin();
-	math::Matrix MatWVP = math::Matrix::createTranslation(math::Vector3(0.0f,0.0f,0.0f));
+	mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
 	m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
     m_pShader->end();
 }
@@ -71,12 +72,12 @@ void Simple2DTextureEffect::end() const
 	m_pShader->end();
 }
 
-void Simple2DTextureEffect::setWorldMatrix(const happyengine::math::Matrix& mat) const
+void Simple2DTextureEffect::setWorldMatrix(const he::mat44& mat) const
 {
 	m_pShader->setShaderVar(m_ShaderWVPPos, mat);
 }
 
-void Simple2DTextureEffect::setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const
+void Simple2DTextureEffect::setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const
 {
 	m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
 }
@@ -86,12 +87,12 @@ void Simple2DTextureEffect::setAlpha(const float alpha) const
 	m_pShader->setShaderVar(m_ShaderAlphaPos, alpha);
 }
 
-void Simple2DTextureEffect::setTCOffset(const math::Vector2& offset) const
+void Simple2DTextureEffect::setTCOffset(const vec2& offset) const
 {
 	m_pShader->setShaderVar(m_ShaderTCOffsetPos, offset);
 }
 
-void Simple2DTextureEffect::setTCScale(const math::Vector2& scale) const
+void Simple2DTextureEffect::setTCScale(const vec2& scale) const
 {
 	m_pShader->setShaderVar(m_ShaderTCScalePos, scale);
 }

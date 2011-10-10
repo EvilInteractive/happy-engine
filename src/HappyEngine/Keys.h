@@ -24,7 +24,7 @@
 
 #include "SDL_keycode.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 enum Key

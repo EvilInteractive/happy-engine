@@ -25,11 +25,11 @@
 #include <vector>
 
 #include "Light.h"
-#include "Vector3.h"
+#include "vec3.h"
 #include "Color.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class LightManager
 {
@@ -37,26 +37,26 @@ public:
 	LightManager();
     virtual ~LightManager();
 
-    AmbientLight::pointer addAmbientLight(const math::Vector3& pos, 
+    AmbientLight::pointer addAmbientLight(const vec3& pos, 
                                           const Color&         color, 
                                           float                multiplier, 
                                           float                range);
 
-    PointLight::pointer addPointLight(const math::Vector3&  pos, 
+    PointLight::pointer addPointLight(const vec3&  pos, 
                                       const Color&          color, 
                                       float                 multiplier, 
                                       float                 beginAttenuation, 
                                       float                 endAttentuation);
 
-    SpotLight::pointer addSpotLight(const math::Vector3&    pos, 
-                                    const math::Vector3&    direction, 
+    SpotLight::pointer addSpotLight(const vec3&    pos, 
+                                    const vec3&    direction, 
                                     const Color&            color, 
                                     float                   multiplier,
                                     float                   fov, //0 -> piOver2
                                     float                   beginAttenuation, 
                                     float                   endAttentuation);
 
-    DirectionalLight::pointer addDirectionalLight(const math::Vector3&  direction, 
+    DirectionalLight::pointer addDirectionalLight(const vec3&  direction, 
                                                   const Color&          color, 
                                                   float                 multiplier);
 

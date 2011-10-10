@@ -23,15 +23,15 @@
 in vec3 inPosition;
 
 out vec4 passPos;
-//out vec4 passWVPos;
+out vec4 passWVPos;
 
 uniform mat4 mtxWVP;
-//uniform mat4 mtxWV;
+uniform mat4 mtxWV;
 
 void main()
 {
 	//vec4 pos = ;
     gl_Position = mtxWVP * vec4(inPosition, 1.0f);
 	passPos = gl_Position;
-    //passWVPos = mtxWV * vec4(inPosition, 1.0f);
+    passWVPos = mtxWV * vec4(inPosition, 1.0f);
 }

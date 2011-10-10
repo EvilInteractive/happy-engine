@@ -29,8 +29,8 @@
 #include "PxShape.h"
 #include "boost/shared_ptr.hpp"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
 class IPhysicsShape

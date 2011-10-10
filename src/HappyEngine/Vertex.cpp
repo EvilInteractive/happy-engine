@@ -14,11 +14,12 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+#include "StdAfx.h" 
 
 #include "Vertex.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
     
 /*----------------------------------------------------------------*/
 /*                          VertexPosCol                          */
@@ -26,7 +27,7 @@ namespace graphics {
 VertexPosCol::VertexPosCol() : position(), color()
 {
 }
-VertexPosCol::VertexPosCol(const math::Vector3& pos, const math::Vector4& col): position(pos), color(col)
+VertexPosCol::VertexPosCol(const vec3& pos, const vec4& col): position(pos), color(col)
 {
 }
 VertexPosCol::~VertexPosCol()
@@ -39,7 +40,7 @@ VertexPosCol::~VertexPosCol()
 VertexPos::VertexPos() : position()
 {
 }
-VertexPos::VertexPos(const math::Vector3& pos): position(pos)
+VertexPos::VertexPos(const vec3& pos): position(pos)
 {
 }
 VertexPos::~VertexPos()
@@ -52,7 +53,7 @@ VertexPos::~VertexPos()
 VertexPos2D::VertexPos2D() : position()
 {
 }
-VertexPos2D::VertexPos2D(const math::Vector2& pos): position(pos)
+VertexPos2D::VertexPos2D(const vec2& pos): position(pos)
 {
 }
 VertexPos2D::~VertexPos2D()
@@ -65,7 +66,7 @@ VertexPos2D::~VertexPos2D()
 VertexPosCol2D::VertexPosCol2D() : position(), color()
 {
 }
-VertexPosCol2D::VertexPosCol2D(const math::Vector2& pos, const math::Vector4& col): position(pos), color(col)
+VertexPosCol2D::VertexPosCol2D(const vec2& pos, const vec4& col): position(pos), color(col)
 {
 }
 VertexPosCol2D::~VertexPosCol2D()
@@ -79,7 +80,7 @@ VertexPosCol2D::~VertexPosCol2D()
 VertexPosTex::VertexPosTex(): position(), textureCoord()
 {
 }
-VertexPosTex::VertexPosTex(const math::Vector3& pos, const math::Vector2& tex): position(pos), textureCoord(tex)
+VertexPosTex::VertexPosTex(const vec3& pos, const vec2& tex): position(pos), textureCoord(tex)
 {
 }
 VertexPosTex::~VertexPosTex()
@@ -92,7 +93,7 @@ VertexPosTex::~VertexPosTex()
 VertexPosTex2D::VertexPosTex2D(): position(), textureCoord()
 {
 }
-VertexPosTex2D::VertexPosTex2D(const math::Vector2& pos, const math::Vector2& tex): position(pos), textureCoord(tex)
+VertexPosTex2D::VertexPosTex2D(const vec2& pos, const vec2& tex): position(pos), textureCoord(tex)
 {
 }
 VertexPosTex2D::~VertexPosTex2D()
@@ -105,7 +106,7 @@ VertexPosTex2D::~VertexPosTex2D()
 VertexPTNT::VertexPTNT(): position(), textureCoord(), normal(), tangent()
 {
 }
-VertexPTNT::VertexPTNT(const math::Vector3& pos, const math::Vector2& tex, const math::Vector3& norm, const math::Vector3& tan): 
+VertexPTNT::VertexPTNT(const vec3& pos, const vec2& tex, const vec3& norm, const vec3& tan): 
         position(pos), textureCoord(tex), normal(norm), tangent(tan)
 {
 }

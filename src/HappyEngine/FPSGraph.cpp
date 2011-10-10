@@ -17,16 +17,17 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 30/08/2011
+#include "StdAfx.h" 
 
 #include "FPSGraph.h"
 #include "HappyEngine.h"
-#include "Vector2.h"
+#include "vec2.h"
 #include "FontLoader.h"
 
 #include <algorithm>
 #include <string>
 
-namespace happyengine {
+namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
@@ -47,9 +48,8 @@ FPSGraph::~FPSGraph()
 /* GENERAL */
 void FPSGraph::tick(float dTime, float interval)
 {
-	using namespace happyengine;
-	using namespace graphics;
-	using namespace math;
+	using namespace he;
+	using namespace gfx;
 	
 	m_GameTime += dTime;
 	m_Interval = interval;
@@ -72,9 +72,8 @@ void FPSGraph::tick(float dTime, float interval)
 
 void FPSGraph::draw()
 {
-	using namespace happyengine;
-	using namespace graphics;
-	using namespace math;
+	using namespace he;
+	using namespace gfx;
 
 	if (m_GameTime > m_Interval)
 	{
@@ -82,10 +81,10 @@ void FPSGraph::draw()
 		HE2D->resetTransformation();
 
 		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
-		HE2D->fillRectangleInstanced(Vector2(GRAPHICS->getViewport().width - 105.0f, 5.0f), Vector2(100, 40));
+		HE2D->fillRectangleInstanced(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 40));
 		HE2D->setColor(0.0f,0.0f,0.0f,0.5f);
 		HE2D->setStrokeSize();
-		HE2D->drawRectangleInstanced(Vector2(GRAPHICS->getViewport().width - 106.0f, 4.0f), Vector2(102, 42));
+		HE2D->drawRectangleInstanced(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42));
 
 		uint avFPS(getAverageFPS());
 
@@ -93,10 +92,10 @@ void FPSGraph::draw()
 			avFPS = 80;
 
 		HE2D->setColor(0.0f,0.0f,1.0f,0.4f);
-		HE2D->drawLine(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
-						Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
+		HE2D->drawLine(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
+						vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
 
-		std::vector<math::Vector2> points;
+		std::vector<vec2> points;
 
 		uint i(0);
 		
@@ -125,7 +124,7 @@ void FPSGraph::draw()
 			if (currentFPS > 80)
 				currentFPS = 80;
 
-			points.push_back(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
+			points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
 
 			++k;
 		}
@@ -158,7 +157,7 @@ void FPSGraph::draw()
 			if (currentDTime > 80)
 				currentDTime = 80;
 
-			points.push_back(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+			points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
 
 			++k;
 		}
@@ -172,11 +171,11 @@ void FPSGraph::draw()
 
 		std::stringstream stream;
 		stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-		HE2D->drawString(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 45));
+		HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 45));
 
 		stream.str("");
 		stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-		HE2D->drawString(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 58));
+		HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 58));
 	}
 }
 

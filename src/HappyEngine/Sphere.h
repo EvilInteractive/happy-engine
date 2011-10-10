@@ -22,33 +22,33 @@
 #define _HE_SPHERE_H_
 #pragma once
 
-#include "Vector3.h"
+#include "vec3.h"
 #include <vector>
 #include "HappyTypes.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace shapes {
 
 class Sphere
 {
 public:
     Sphere();
-    Sphere(const Vector3& pos, float radius);
+    Sphere(const vec3& pos, float radius);
     virtual ~Sphere();
     //default copy and assignment are fine
 
-    const Vector3& getPosition() const;
+    const vec3& getPosition() const;
     float getRadius() const;
 
     static Sphere getBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset);
 
 private:
 
-    Vector3 m_Position;
+    vec3 m_Position;
     float m_Radius;
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

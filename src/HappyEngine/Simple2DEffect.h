@@ -24,12 +24,12 @@
 
 #include "HappyTypes.h"
 #include "Shader.h"
-#include "Matrix.h"
-#include "Vector3.h"
+#include "mat44.h"
+#include "vec3.h"
 #include "Color.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Simple2DEffect
 {
@@ -42,14 +42,14 @@ public:
 	void end() const;
 
 	void setColor(const Color& color) const;
-	void setWorldMatrix(const happyengine::math::Matrix& mat) const;
+	void setWorldMatrix(const he::mat44& mat) const;
 
 private:
 
-	happyengine::graphics::Shader* m_pShader;
+	he::gfx::Shader* m_pShader;
 
-	happyengine::uint m_ShaderWVPPos;
-	happyengine::uint m_ShaderColorPos;
+	he::uint m_ShaderWVPPos;
+	he::uint m_ShaderColorPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

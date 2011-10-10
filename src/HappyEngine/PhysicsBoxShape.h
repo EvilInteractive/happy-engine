@@ -24,23 +24,23 @@
 
 #include "IPhysicsShape.h"
 #include "geometry/PxBoxGeometry.h"
-#include "Vector3.h"
+#include "vec3.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
 class PhysicsBoxShape : public IPhysicsShape
 {
 public:
-    explicit PhysicsBoxShape(const math::Vector3& dimension);
+    explicit PhysicsBoxShape(const vec3& dimension);
     virtual ~PhysicsBoxShape();
 
     virtual const PxGeometry& getGeometry() const;
 
 private:
     PxBoxGeometry m_Geometry;
-    math::Vector3 m_Dimension;
+    vec3 m_Dimension;
 
     //Disable default copy constructor and default assignment operator
     PhysicsBoxShape(const PhysicsBoxShape&);

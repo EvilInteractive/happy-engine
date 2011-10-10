@@ -17,20 +17,21 @@
 //
 //Author:  Bastian Damman
 //Created: 28/09/2011
+#include "StdAfx.h" 
 
 #include "Sphere.h"
 #include "HappyNew.h"
 #include "MathFunctions.h"
 #include <algorithm>
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace shapes {
 
 Sphere::Sphere(): m_Position(0, 0, 0), m_Radius(0.0f)
 {
 }
-Sphere::Sphere(const Vector3& pos, float radius): m_Position(pos), m_Radius(radius)
+Sphere::Sphere(const vec3& pos, float radius): m_Position(pos), m_Radius(radius)
 {
 }
 
@@ -39,7 +40,7 @@ Sphere::~Sphere()
 {
 }
 
-const Vector3& Sphere::getPosition() const
+const vec3& Sphere::getPosition() const
 {
     return m_Position;
 }
@@ -50,24 +51,24 @@ float Sphere::getRadius() const
 
 Sphere Sphere::getBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset)
 {
-    Vector3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
-            max(FLT_MIN, FLT_MIN, FLT_MIN);
+    vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
+         max(FLT_MIN, FLT_MIN, FLT_MIN);
     const char* charPointCloud = static_cast<const char*>(pointCloud);
     for(uint i = 0; i < num; ++i)
     {
-        const Vector3& p(*reinterpret_cast<const Vector3*>(charPointCloud + stride * i + posOffset));
-        min.x = math::min(min.x, p.x);
-        min.y = math::min(min.y, p.y);
-        min.z = math::min(min.z, p.z);
+        const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
+        min.x = he::min(min.x, p.x);
+        min.y = he::min(min.y, p.y);
+        min.z = he::min(min.z, p.z);
 
-        max.x = math::max(min.x, p.x);
-        max.y = math::max(min.y, p.y);
-        max.z = math::max(min.z, p.z);
+        max.x = he::max(min.x, p.x);
+        max.y = he::max(min.y, p.y);
+        max.z = he::max(min.z, p.z);
     }
-    Vector3 center((min + max) / 2.0f);
+    vec3 center((min + max) / 2.0f);
     float radius(length(min - center));
 
     return Sphere(center, radius);
 }
 
-} } }//end namespace
+} }//end namespace

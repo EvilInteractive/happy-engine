@@ -18,6 +18,7 @@
 //Author:  Bastian Damman
 //Created: 12/08/2011
 //Extended:Sebastiaan Sprengers
+#include "StdAfx.h" 
 
 #include "Font.h"
 #include "SDL.h"
@@ -28,8 +29,8 @@
 
 #include <algorithm>
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 Font::Font(TTF_Font* pFont):	m_pFont(pFont),
 								m_Path("")
@@ -67,7 +68,7 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf)
     return pP2Surf;
 }
 Texture2D::pointer Font::createTextureText(const std::string& text, const Color& color,
-											bool bAntiAliased, math::Vector2* sizeText)
+											bool bAntiAliased, vec2* sizeText)
 {
     SDL_Color col;
     col.r = color.rByte();
@@ -108,7 +109,7 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
     
     SDL_FreeSurface(pSurf);
 
-    graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+    gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
     tex2D->init(texID, pSurf->w, pSurf->h, GL_BGRA);
     return tex2D;    
 }
@@ -166,7 +167,7 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
     
     SDL_FreeSurface(pSurf);
 
-    graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+    gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
     tex2D->init(texID, pSurf->w, pSurf->h, GL_BGRA);
     return tex2D;    
 }

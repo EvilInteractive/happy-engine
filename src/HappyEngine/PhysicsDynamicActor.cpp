@@ -18,15 +18,16 @@
 //Author:  Bastian Damman
 //Created: 22/08/2011
 //Updated: 14/09/2011 -added addForce/velocity and kinematic methods
+#include "StdAfx.h" 
 
 #include "PhysicsDynamicActor.h"
 #include "HappyEngine.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial)
 {
     m_pActor = PxCreateDynamic(*PHYSICS->getSDK(), 
                                PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
@@ -37,7 +38,7 @@ PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const shapes:
 
     PHYSICS->getScene()->addActor(*m_pActor);
 }
-PhysicsDynamicActor::PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial)
+PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial)
 {  
     m_pActor = PHYSICS->getSDK()->createRigidDynamic(PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
                                                         PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 
@@ -61,24 +62,24 @@ PhysicsDynamicActor::~PhysicsDynamicActor()
     m_pActor->release();
 }
 
-math::Vector3 PhysicsDynamicActor::getPosition() const
+vec3 PhysicsDynamicActor::getPosition() const
 {
-    return math::Vector3(m_pActor->getGlobalPose().p);
+    return vec3(m_pActor->getGlobalPose().p);
 }
-math::Matrix PhysicsDynamicActor::getPose() const
+mat44 PhysicsDynamicActor::getPose() const
 {
-    return math::Matrix(PxMat44(PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
+    return mat44(PxMat44(PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
 }
 
-void PhysicsDynamicActor::setVelocity(const math::Vector3& velocity)
+void PhysicsDynamicActor::setVelocity(const vec3& velocity)
 {
     m_pActor->setLinearVelocity(physx::pubfnd3::PxVec3(velocity.x, velocity.y, velocity.z));
 }
-void PhysicsDynamicActor::addVelocity(const math::Vector3& velocity)
+void PhysicsDynamicActor::addVelocity(const vec3& velocity)
 {
     m_pActor->addForce(physx::pubfnd3::PxVec3(velocity.x, velocity.y, velocity.z), PxForceMode::eVELOCITY_CHANGE);
 }
-void PhysicsDynamicActor::addForce(const math::Vector3& force)
+void PhysicsDynamicActor::addForce(const vec3& force)
 {
     m_pActor->addForce(physx::pubfnd3::PxVec3(force.x, force.y, force.z), PxForceMode::eFORCE);
 }
@@ -87,7 +88,7 @@ void PhysicsDynamicActor::setKeyframed(bool keyframed)
 {
     m_pActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, keyframed);
 }
-void PhysicsDynamicActor::keyframedSetPose(const math::Vector3& move, const math::Vector3& axis, float angle)
+void PhysicsDynamicActor::keyframedSetPose(const vec3& move, const vec3& axis, float angle)
 {
     m_pActor->moveKinematic(physx::pubfnd3::PxTransform(physx::pubfnd3::PxVec3(move.x, move.y, move.z),
         physx::pubfnd3::PxQuat(angle, physx::pubfnd3::PxVec3(axis.x, axis.y, axis.z))));

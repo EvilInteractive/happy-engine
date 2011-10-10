@@ -27,16 +27,16 @@
 
 namespace happytest {
 
-TestBullet::TestBullet(const happyengine::game::EntityDesc& desc, 
-                       const happyengine::math::Vector3& pos, const happyengine::math::Vector3& velocity): 
+TestBullet::TestBullet(const he::game::EntityDesc& desc, 
+                       const he::vec3& pos, const he::vec3& velocity): 
                         Entity(desc), m_pActor(nullptr), m_pMaterial(desc.physicsDesc.pMaterial)
 {
-    using namespace happyengine;
+    using namespace he;
 
-    ASSERT(desc.physicsDesc.usePhysics, "this class must have physics properties");
+    ASSERT(desc.physicsDesc.usePhysics, "this class must have px properties");
 
-    m_pActor = NEW happyengine::physics::PhysicsDynamicActor(math::Matrix::createTranslation(pos),
-        physics::shapes::IPhysicsShape::pointer(NEW physics::shapes::PhysicsBoxShape(math::Vector3(2, 2, 2))), desc.physicsDesc.density, m_pMaterial);
+    m_pActor = NEW he::px::PhysicsDynamicActor(mat44::createTranslation(pos),
+        px::shapes::IPhysicsShape::pointer(NEW px::shapes::PhysicsBoxShape(vec3(2, 2, 2))), desc.physicsDesc.density, m_pMaterial);
 
     m_pActor->setVelocity(velocity);
 }

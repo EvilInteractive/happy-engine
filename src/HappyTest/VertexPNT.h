@@ -22,22 +22,22 @@
 #define _VERTEX_PNT_H_
 #pragma once
 
-#include "Vector3.h"
-#include "Vector2.h"
+#include "vec3.h"
+#include "vec2.h"
 
 namespace happytest {
 
 struct VertexPNT
 {
 public:
-    happyengine::math::Vector3 position;
-    happyengine::math::Vector2 texCoord;
-    happyengine::math::Vector3 normal;
+    he::vec3 position;
+    he::vec2 texCoord;
+    he::vec3 normal;
 
     VertexPNT();
-	VertexPNT(const happyengine::math::Vector3& position,
-              const happyengine::math::Vector2& texCoord,
-              const happyengine::math::Vector3& normal);
+	VertexPNT(const he::vec3& position,
+              const he::vec2& texCoord,
+              const he::vec3& normal);
     ~VertexPNT();
     //default assignment operator and copyconstructor are fine
 };

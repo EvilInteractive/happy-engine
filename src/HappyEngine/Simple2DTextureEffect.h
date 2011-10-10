@@ -24,13 +24,13 @@
 
 #include "HappyTypes.h"
 #include "Shader.h"
-#include "Matrix.h"
-#include "Vector2.h"
-#include "Vector3.h"
+#include "mat44.h"
+#include "vec2.h"
+#include "vec3.h"
 #include "Texture2D.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Simple2DTextureEffect
 {
@@ -42,14 +42,14 @@ public:
 	void begin() const;
 	void end() const;
 
-	void setWorldMatrix(const happyengine::math::Matrix& mat) const;
-	void setDiffuseMap(const happyengine::graphics::Texture2D::pointer& diffuseMap) const;
+	void setWorldMatrix(const he::mat44& mat) const;
+	void setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const;
 	void setAlpha(const float alpha) const;
-	void setTCOffset(const math::Vector2& offset) const;
-	void setTCScale(const math::Vector2& scale) const;
+	void setTCOffset(const vec2& offset) const;
+	void setTCScale(const vec2& scale) const;
 
 private:
-	graphics::Shader* m_pShader;
+	gfx::Shader* m_pShader;
 
 	uint m_ShaderWVPPos;
 	uint m_ShaderDiffTexPos;

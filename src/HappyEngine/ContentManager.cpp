@@ -1,8 +1,9 @@
+#include "StdAfx.h" 
 #include "ContentManager.h"
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureLoader(NEW TextureLoader()),
     m_pLineLoader(NEW LineLoader()), m_pPhysicsShapeLoader(NEW PhysicsShapeLoader()), m_pFontLoader(NEW FontLoader()),
@@ -42,38 +43,38 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
     m_pTextureLoader->glThreadInvoke();
 }
 
-graphics::Model::pointer ContentManager::asyncLoadModel(const std::string& asset, const graphics::VertexLayout& vertexLayout)
+gfx::Model::pointer ContentManager::asyncLoadModel(const std::string& asset, const gfx::VertexLayout& vertexLayout)
 {
     return m_pModelLoader->asyncLoadModel(m_ContentRootDir + m_ModelFolder + asset, vertexLayout);
 }
 
-graphics::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string& asset)
+gfx::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string& asset)
 {
     return m_pTextureLoader->asyncLoadTexture(m_ContentRootDir + m_TextureFolder + asset);
 }
-graphics::Texture2D::pointer ContentManager::asyncMakeTexture(const Color& color)
+gfx::Texture2D::pointer ContentManager::asyncMakeTexture(const Color& color)
 {
     return m_pTextureLoader->asyncMakeTexture(color);
 }
 
-graphics::Line::pointer ContentManager::loadLine(const std::string& asset)
+gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
 {
     return m_pLineLoader->loadLine(m_ContentRootDir + m_LineFolder + asset);
 }
 
-const std::vector<physics::shapes::IPhysicsShape::pointer>& ContentManager::loadPhysicsShape(const std::string& asset)
+const std::vector<px::shapes::IPhysicsShape::pointer>& ContentManager::loadPhysicsShape(const std::string& asset)
 {
     return m_pPhysicsShapeLoader->load(m_ContentRootDir + m_PhysicsFolder + asset);
 }
 
-graphics::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
+gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
 {
-    graphics::Font::pointer p;
+    gfx::Font::pointer p;
     m_pFontLoader->load(m_ContentRootDir + m_FontFolder + asset, size, bold, italic, p);
     return p;
 }
 
-graphics::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const graphics::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
     return m_pShaderLoader->load(m_ContentRootDir + m_ShaderFolder + vsAsset, m_ContentRootDir + m_ShaderFolder + fsAsset, shaderLayout, outputs);
 }

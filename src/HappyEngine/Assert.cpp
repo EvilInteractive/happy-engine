@@ -17,20 +17,21 @@
 //
 //Author:  Bastian Damman
 //Created: 13/06/2011
+#include "StdAfx.h" 
 
 #include "Assert.h"
 #include <iostream>
 
 #pragma warning(disable:4127)
-namespace happyengine {
-namespace error {
+namespace he {
+namespace err {
 namespace details {
 void happyAssert(bool isOk, const std::string& message, const char* file, int line)
 {
     if (!isOk)
     {
         std::cout << "**ASSERTION FAILURE!**\n";
-        std::cout << "*error in file " << file << "(" << line << ")\n";
+        std::cout << "*err in file " << file << "(" << line << ")\n";
         std::cout << "*" << message << "\n";
         __debugbreak();
     }
@@ -40,7 +41,7 @@ void happyAssert(bool isOk, const char* file, int line)
     if (!isOk)
     {
         std::cout << "**ASSERTION FAILURE!**\n";
-        std::cout << "*error in file " << file << "(" << line << ")\n";
+        std::cout << "*err in file " << file << "(" << line << ")\n";
         __debugbreak();
     }
 }
@@ -55,7 +56,7 @@ void happyAssert(void* isOk, const char* file, int line)
 void happyAssert(const std::string& message, const char* file, int line)
 {
     std::cout << "**ASSERTION FAILURE!**\n";
-    std::cout << "*error in file " << file << "(" << line << ")\n";
+    std::cout << "*err in file " << file << "(" << line << ")\n";
     std::cout << "*" << message << "\n";
      __debugbreak();
 }

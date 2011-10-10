@@ -25,11 +25,11 @@
 #include <string>
 #include <map>
 
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "vec2.h"
+#include "vec3.h"
+#include "vec4.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 class IniReader
@@ -50,9 +50,9 @@ public:
     int readInt(const std::wstring& root, const std::wstring& node, int defaultReturn = 0) const;
     float readFloat(const std::wstring& root, const std::wstring& node, float defaultReturn = 0.0f) const;
 
-    math::Vector2 readVector2(const std::wstring& root, const std::wstring& node, const math::Vector2& defaultReturn = math::Vector2(0.0f, 0.0f)) const;
-    math::Vector3 readVector3(const std::wstring& root, const std::wstring& node, const math::Vector3& defaultReturn = math::Vector3(0.0f, 0.0f, 0.0f)) const;
-    math::Vector4 readVector4(const std::wstring& root, const std::wstring& node, const math::Vector4& defaultReturn = math::Vector4(0.0f, 0.0f, 0.0f, 0.0f)) const;
+    vec2 readVector2(const std::wstring& root, const std::wstring& node, const vec2& defaultReturn = vec2(0.0f, 0.0f)) const;
+    vec3 readVector3(const std::wstring& root, const std::wstring& node, const vec3& defaultReturn = vec3(0.0f, 0.0f, 0.0f)) const;
+    vec4 readVector4(const std::wstring& root, const std::wstring& node, const vec4& defaultReturn = vec4(0.0f, 0.0f, 0.0f, 0.0f)) const;
 
     std::string readString(const std::wstring& root, const std::wstring& node, const std::string& defaultReturn = "") const;
     std::wstring readWString(const std::wstring& root, const std::wstring& node, const std::wstring& defaultReturn = L"") const;

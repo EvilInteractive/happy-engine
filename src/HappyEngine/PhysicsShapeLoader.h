@@ -28,8 +28,8 @@
 #include <vector>
 #include <string>
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class PhysicsShapeLoader
 {
@@ -37,10 +37,10 @@ public:
 	PhysicsShapeLoader();
     virtual ~PhysicsShapeLoader();
 
-    const std::vector<physics::shapes::IPhysicsShape::pointer>& load(const std::string& path);
+    const std::vector<px::shapes::IPhysicsShape::pointer>& load(const std::string& path);
 
 private:
-	AssetContainer<std::vector<physics::shapes::IPhysicsShape::pointer>>* m_pAssetContainer;
+	AssetContainer<std::vector<px::shapes::IPhysicsShape::pointer>>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     PhysicsShapeLoader(const PhysicsShapeLoader&);

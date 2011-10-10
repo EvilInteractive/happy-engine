@@ -17,15 +17,16 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
+#include "StdAfx.h" 
 
 #include "PhysicsConvexShape.h"
 #include "HappyEngine.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
-PhysicsConvexShape::PhysicsConvexShape(const io::BinaryStream& stream, const math::Vector3& scale): m_pInternalMesh(nullptr)
+PhysicsConvexShape::PhysicsConvexShape(const io::BinaryStream& stream, const vec3& scale): m_pInternalMesh(nullptr)
 { 
     m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(stream);
     m_Geometry = PxConvexMeshGeometry(m_pInternalMesh, PxMeshScale(PxVec3(scale.x, scale.y, scale.z), PxQuat::createIdentity()));

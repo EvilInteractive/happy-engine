@@ -22,32 +22,32 @@
 #define _HE_Circle_H_
 #pragma once
 
-#include "Vector2.h"
+#include "vec2.h"
 #include <vector>
 #include <utility>
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace shapes {
 
 class Circle
 {
 public:
-    Circle(const math::Vector2& position, float radius);
+    Circle(const vec2& position, float radius);
     virtual ~Circle();
 
     std::pair<float, float> fx(float x) const;
     std::pair<float, float> fy(float y) const;
-    std::vector<Vector2> intersect(const Circle& other) const;
+    std::vector<vec2> intersect(const Circle& other) const;
 
-    bool isOnCircle(const math::Vector2& point) const;
+    bool isOnCircle(const vec2& point) const;
 
-	const math::Vector2& getPosition() const;
+	const vec2& getPosition() const;
 	float getRadius() const;
 
 private:
 
-    math::Vector2 m_Position;
+    vec2 m_Position;
     float m_Radius;
 
     //Disable default copy constructor and default assignment operator
@@ -55,6 +55,6 @@ private:
     Circle& operator=(const Circle&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

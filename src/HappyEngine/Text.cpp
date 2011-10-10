@@ -17,16 +17,17 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 09/10/2011
+#include "StdAfx.h" 
 
 #include "Text.h"
 #include "HappyNew.h"
 #include <algorithm>
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Text::Text(const graphics::Font::pointer& pFont, uint width, uint height) :	m_pFont(pFont),
+Text::Text(const gfx::Font::pointer& pFont, uint width, uint height) :	m_pFont(pFont),
 																			m_Width(width),
 																			m_Height(height)
 {

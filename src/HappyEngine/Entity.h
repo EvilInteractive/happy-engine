@@ -25,13 +25,13 @@
 #include "Texture2D.h"
 #include "Model.h"
 #include "Color.h"
-#include "Matrix.h"
+#include "mat44.h"
 #include <string>
 #include "Material.h"
 #include "IDrawable.h"
 #include "PhysicsMaterial.h"
 
-namespace happyengine {
+namespace he {
 namespace game {
 
 
@@ -41,18 +41,18 @@ struct EntityPhysicsDesc
     bool isDynamic;
     float density;
     std::string shape;
-    physics::PhysicsMaterial::pointer pMaterial;
+    px::PhysicsMaterial::pointer pMaterial;
 };
 struct EntityDesc
 {
-    graphics::Model::pointer pModel;
-    graphics::Material material;
+    gfx::Model::pointer pModel;
+    gfx::Material material;
     std::string className;
     EntityPhysicsDesc physicsDesc;
 };
 
 
-class Entity : public graphics::IDrawable
+class Entity : public gfx::IDrawable
 {
 public:
 	Entity(const EntityDesc& desc);
@@ -60,20 +60,20 @@ public:
 
     virtual void tick(float /*dTime*/) {}
 
-    virtual const math::Matrix& getWorldMatrix() const;
-    virtual const graphics::Material& getMaterial() const;
-    virtual const graphics::Model::pointer getModel() const;
-    void setWorldMatrix(const math::Matrix& mtxWorld);
+    virtual const mat44& getWorldMatrix() const;
+    virtual const gfx::Material& getMaterial() const;
+    virtual const gfx::Model::pointer getModel() const;
+    void setWorldMatrix(const mat44& mtxWorld);
 
 protected:
 
-    void setModel(const graphics::Model::pointer& pModel);
+    void setModel(const gfx::Model::pointer& pModel);
 
 private:
-    graphics::Model::pointer m_pModel;
-    graphics::Material m_Material;
+    gfx::Model::pointer m_pModel;
+    gfx::Material m_Material;
 
-    math::Matrix m_mtxWorld;
+    mat44 m_mtxWorld;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

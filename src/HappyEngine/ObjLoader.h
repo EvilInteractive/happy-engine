@@ -28,14 +28,14 @@
 
 #include "VertexLayout.h"
 #include "boost/shared_ptr.hpp"
-#include "Vector3.h"
-#include "Vector2.h"
+#include "vec3.h"
+#include "vec2.h"
 #include "Model.h"
 #include "HappyTypes.h"
 #include "IModelLoader.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace models {
 
 class ObjLoader : public IModelLoader
@@ -43,18 +43,18 @@ class ObjLoader : public IModelLoader
 public:
     struct InternalVertex
     {
-        math::Vector3 pos;
-        math::Vector2 tex;
-        math::Vector3 norm;
+        vec3 pos;
+        vec2 tex;
+        vec3 norm;
 
-        InternalVertex(math::Vector3 p, math::Vector2 t, math::Vector3 n):
+        InternalVertex(vec3 p, vec2 t, vec3 n):
                             pos(p), tex(t), norm(n)
         {}       
     };
 	ObjLoader();
     virtual ~ObjLoader();
 
-    virtual void load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices = true);
+    virtual void load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices = true);
 
     virtual uint getNumMeshes() const;
     virtual const std::string& getMeshName(uint mesh) const;
@@ -63,7 +63,7 @@ public:
     virtual uint getNumVertices(uint mesh) const;
 
     virtual const void* getIndices(uint mesh) const;
-    virtual graphics::IndexStride getIndexStride(uint mesh) const;
+    virtual gfx::IndexStride getIndexStride(uint mesh) const;
     virtual uint getNumIndices(uint mesh) const;
 
 
@@ -78,11 +78,11 @@ private:
     void flushCreateGroup(uint group);
     void create(bool allowByteIndices);
     void addIndex(uint index, uint group);
-    void fill(void* pdata, const graphics::VertexLayout& vertLayout) const;
+    void fill(void* pdata, const gfx::VertexLayout& vertLayout) const;
 
-    std::vector<math::Vector3> m_PositionData;
-    std::vector<math::Vector2> m_TextureData;
-    std::vector<math::Vector3> m_NormalData;
+    std::vector<vec3> m_PositionData;
+    std::vector<vec2> m_TextureData;
+    std::vector<vec3> m_NormalData;
     std::vector<std::vector<std::vector<uint>>> m_FaceData;
     std::vector<Range> m_FaceDataMeshRange;
     std::vector<std::string> m_GroupData;
@@ -97,11 +97,11 @@ private:
     std::vector<uint> m_IndicesUInt;
 
     void* m_Vertices;
-    graphics::VertexLayout m_VertexLayout;
+    gfx::VertexLayout m_VertexLayout;
 
     uint m_NumVertices;
     std::vector<uint> m_NumIndices;
-    std::vector<graphics::IndexStride> m_IndexStride;
+    std::vector<gfx::IndexStride> m_IndexStride;
 
     //Disable default copy constructor and default assignment operator
     ObjLoader(const ObjLoader&);

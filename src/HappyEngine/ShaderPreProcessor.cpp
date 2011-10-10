@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 08/10/2011
+#include "StdAfx.h" 
 
 #include "ShaderPreProcessor.h"
 #include "HappyNew.h"
@@ -25,8 +26,8 @@
 #include "FileReader.h"
 #include <sstream>
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace details {
 
 std::string ShaderPreProcessor::process(const std::string& filepath, const std::set<std::string>& defines)

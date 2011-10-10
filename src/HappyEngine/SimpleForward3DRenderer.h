@@ -21,8 +21,8 @@
 
 #include "Model.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class SimpleForward3DRenderer
 {

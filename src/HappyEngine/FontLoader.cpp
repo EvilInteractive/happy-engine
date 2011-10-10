@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 12/08/2011
+#include "StdAfx.h" 
 
 #include "FontLoader.h"
 #include "SDL_ttf.h"
@@ -26,10 +27,10 @@
 
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
-FontLoader::FontLoader(): m_pAssetContainer(NEW AssetContainer<graphics::Font::pointer>())
+FontLoader::FontLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Font::pointer>())
 {
     TTF_Init();
 }
@@ -40,7 +41,7 @@ FontLoader::~FontLoader()
     delete m_pAssetContainer;
 }
 
-bool FontLoader::load(const std::string& path, ushort size, bool bold, bool italic, graphics::Font::pointer& pOutFont)
+bool FontLoader::load(const std::string& path, ushort size, bool bold, bool italic, gfx::Font::pointer& pOutFont)
 {
     std::stringstream stream;
     stream << path << size;
@@ -68,7 +69,7 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
 				TTF_SetFontStyle(pFont, TTF_STYLE_ITALIC);
 			}
 
-            pOutFont = graphics::Font::pointer(NEW graphics::Font(pFont));
+            pOutFont = gfx::Font::pointer(NEW gfx::Font(pFont));
             m_pAssetContainer->addAsset(stream.str(), pOutFont);
             return true;
         }

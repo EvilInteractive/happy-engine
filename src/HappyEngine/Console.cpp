@@ -17,6 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 08/10/2011
+#include "StdAfx.h" 
 
 #include "Console.h"
 #include "HappyNew.h"
@@ -28,7 +29,7 @@
 #include <algorithm>
 #include "Exception.h"
 
-namespace happyengine {
+namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
@@ -171,18 +172,18 @@ void Console::draw()
 	if (m_bOpen)
 	{
 		HE2D->setColor(0.70f,0.70f,0.70f,0.8f);
-		HE2D->fillRectangleInstanced(	math::Vector2(0,0),
-										math::Vector2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
+		HE2D->fillRectangleInstanced(	vec2(0,0),
+										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
 
 		HE2D->setStrokeSize();
 		HE2D->setColor(0.19f,0.19f,0.19f);
-		HE2D->drawRectangleInstanced(	math::Vector2(0,0),
-										math::Vector2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
+		HE2D->drawRectangleInstanced(	vec2(0,0),
+										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
 
 		m_pTextBox->draw();
 
-		HE2D->setFontHorizontalAlignment(graphics::Font::HAlignment_Left);
-		HE2D->setFontVerticalAlignment(graphics::Font::VAlignment_Bottom);
+		HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Left);
+		HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Bottom);
 
 		uint i(0);
 		std::for_each(m_MsgHistory.crbegin(), m_MsgHistory.crend(), [&](std::pair<MSG_TYPE, std::string> p)

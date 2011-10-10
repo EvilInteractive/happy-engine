@@ -24,22 +24,22 @@
 
 #include "Color.h"
 #include "HappyTypes.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "vec3.h"
+#include "vec4.h"
 
-namespace happyengine {
+namespace he {
     
 struct Color
 {
 private:
-    math::Vector3 m_rgb;
+    vec3 m_rgb;
     float m_a;
 
 public:
 	Color();
 	Color(float r, float g, float b, float a = 1.0f);
 	Color(byte r, byte g, byte b, byte a);
-	Color(const math::Vector4& col);
+	Color(const vec4& col);
     ~Color();
     //Default copy constructor and assignment operator are fine
 
@@ -50,8 +50,8 @@ public:
     float g() const;
     float b() const;
     float a() const;
-    const math::Vector3& rgb() const;
-    math::Vector4 rgba() const;
+    const vec3& rgb() const;
+    vec4 rgba() const;
 
     byte rByte() const;
     byte gByte() const;
@@ -65,8 +65,8 @@ public:
     void g(float g);
     void b(float b);
     void a(float a);
-    void rgb(const math::Vector3& rgb);
-    void rgba(const math::Vector4& rgba);
+    void rgb(const vec3& rgb);
+    void rgba(const vec4& rgba);
 
     void r(byte r);
     void g(byte g);

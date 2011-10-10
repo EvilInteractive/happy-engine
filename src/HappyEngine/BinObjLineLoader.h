@@ -28,14 +28,14 @@
 
 #include "VertexLayout.h"
 #include "boost/shared_ptr.hpp"
-#include "Vector3.h"
-#include "Vector2.h"
+#include "vec3.h"
+#include "vec2.h"
 #include "Model.h"
 #include "HappyTypes.h"
 #include "IModelLoader.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace lines {
 
 class BinObjLineLoader
@@ -46,13 +46,13 @@ public:
 
     virtual void load(const std::string& path);
         
-    virtual const std::vector<math::Vector3>& getPoints() const;
+    virtual const std::vector<vec3>& getPoints() const;
     virtual const std::vector<ushort>& getIndices() const;
 
 private:
     void read(const std::string& path);
 
-    std::vector<math::Vector3> m_PointData;
+    std::vector<vec3> m_PointData;
     std::vector<ushort> m_Indices;
 
     //Disable default copy constructor and default assignment operator

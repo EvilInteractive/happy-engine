@@ -17,13 +17,14 @@
 //
 //Author:  Bastian Damman
 //Created: 25/08/2011
+#include "StdAfx.h" 
 
 #include "NetworkManager.h"
 #include "HappyNew.h"
 #include <iostream>
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 
 NetworkManager::NetworkManager(): m_IoService(), m_AsioIsAlive(false)
 {

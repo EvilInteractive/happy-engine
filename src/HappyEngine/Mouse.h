@@ -22,11 +22,11 @@
 #define _HE_MOUSE_H_
 #pragma once
 
-#include "Vector2.h"
+#include "vec2.h"
 #include "HappyTypes.h"
 #include "SDL.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 enum MouseButton
@@ -50,10 +50,10 @@ public:
     bool isButtonReleased(byte button) const; //true when it goes from down to up
     bool isButtonPressed(byte button) const;  //true when it goes from up to down
 
-    math::Vector2 getPosition() const;
+    vec2 getPosition() const;
 
 private:
-    math::Vector2 m_Position;
+    vec2 m_Position;
     byte m_ButtonState;
     byte m_PrevButtonState;
 

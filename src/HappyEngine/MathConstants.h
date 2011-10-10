@@ -19,8 +19,7 @@
 #define _HE_MATH_CONSTANTS_H_
 #pragma once
 
-namespace happyengine {
-namespace math {
+namespace he {
 
 static const float pi(3.141592654f);
 static const float piOverTwo(1.570796327f);
@@ -30,6 +29,6 @@ static const float twoPi(6.283185307f);
 static const float e(2.718281828459045f);
 static const float phi(1.618033988749894f);
 
-} } //end namespace
+} //end namespace
 
 #endif

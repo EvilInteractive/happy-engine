@@ -45,7 +45,7 @@
 
 namespace happytest {
 
-class MainGame : public happyengine::IGame
+class MainGame : public he::IGame
 {
 public:
 	MainGame();
@@ -61,8 +61,8 @@ private:
 
     TestObject* m_pTestObject;
 
-    happyengine::Color m_BackgroundColors[5];
-    happyengine::byte m_BackgroundIndex;
+    he::Color m_BackgroundColors[5];
+    he::byte m_BackgroundIndex;
     
     float m_DrawTimer;
     float m_UpdateTimer;
@@ -72,20 +72,20 @@ private:
     MyServer* m_pServer;
     MyClient* m_pClient;
 
-	happyengine::tools::FPSGraph* m_pFPSGraph;
+	he::tools::FPSGraph* m_pFPSGraph;
 
-	happyengine::graphics::Texture2D::pointer m_TestImage;
-	happyengine::graphics::Texture2D::pointer m_SplashImage;
-	happyengine::graphics::Font::pointer m_pFont;
+	he::gfx::Texture2D::pointer m_TestImage;
+	he::gfx::Texture2D::pointer m_SplashImage;
+	he::gfx::Font::pointer m_pFont;
 
     GroundPlane* m_pGroundPlane;
-    happyengine::game::Entity* m_pAxis;
+    he::game::Entity* m_pAxis;
 
-    happyengine::graphics::SpotLight::pointer m_pSpotLight;
+    he::gfx::SpotLight::pointer m_pSpotLight;
 
-	happyengine::gui::Button* m_pTestButton;
+	he::gui::Button* m_pTestButton;
 
-	happyengine::gui::TextBox* m_pTextBox;
+	he::gui::TextBox* m_pTextBox;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

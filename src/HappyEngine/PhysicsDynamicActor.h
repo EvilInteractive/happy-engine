@@ -24,31 +24,31 @@
 #pragma once
 
 #include "PxRigidDynamic.h"
-#include "Vector3.h"
-#include "Matrix.h"
+#include "vec3.h"
+#include "mat44.h"
 #include "IPhysicsShape.h"
 #include "PhysicsMaterial.h"
 #include <vector>
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 
 class PhysicsDynamicActor
 {
 public:
-	PhysicsDynamicActor(const math::Matrix& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial);
-    PhysicsDynamicActor(const math::Matrix& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial);
+	PhysicsDynamicActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial);
+    PhysicsDynamicActor(const mat44& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial);
     virtual ~PhysicsDynamicActor();
 
-    math::Vector3 getPosition() const;
-    math::Matrix getPose() const;
+    vec3 getPosition() const;
+    mat44 getPose() const;
 
-    void setVelocity(const math::Vector3& velocity);
-    void addVelocity(const math::Vector3& velocity);
-    void addForce(const math::Vector3& force);
+    void setVelocity(const vec3& velocity);
+    void addVelocity(const vec3& velocity);
+    void addForce(const vec3& force);
 
     void setKeyframed(bool keyframed);
-    void PhysicsDynamicActor::keyframedSetPose(const math::Vector3& move, const math::Vector3& axis, float angle);
+    void PhysicsDynamicActor::keyframedSetPose(const vec3& move, const vec3& axis, float angle);
 
 private:
 

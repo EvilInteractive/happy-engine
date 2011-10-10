@@ -22,7 +22,7 @@
 #define _HE_HAPPY_TYPES_H_
 #pragma once
 
-namespace happyengine {
+namespace he {
 
 typedef unsigned long ulong;
 typedef unsigned int uint;

@@ -17,12 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 13/09/2011
+#include "StdAfx.h" 
 
 #include "Line.h"
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 Line::Line()
 {
@@ -33,7 +34,7 @@ Line::~Line()
 {
 }
 
-void Line::setVertices(const std::vector<math::Vector3>& vert)
+void Line::setVertices(const std::vector<vec3>& vert)
 {
     m_Vertices = vert;
 }
@@ -42,7 +43,7 @@ void Line::setIndices(const std::vector<ushort>& ind)
     m_Indices = ind;
 }
 
-const std::vector<math::Vector3>& Line::getVertices() const
+const std::vector<vec3>& Line::getVertices() const
 {
     return m_Vertices;
 }

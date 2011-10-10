@@ -32,8 +32,8 @@
 #include "Message.h"
 #include "Server.h"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 
 class Client
 {
@@ -70,9 +70,9 @@ private:
     void asycRead();
     void sendMessage(const details::Message::pointer& msg);
 
-    void handleConnect(const boost::system::error_code& error);
-    void handleReceive(const boost::system::error_code& error, size_t byteReceived);
-    void handleWrite(details::Message::pointer msg, const boost::system::error_code& error, size_t bytesWritten);
+    void handleConnect(const boost::system::error_code& err);
+    void handleReceive(const boost::system::error_code& err, size_t byteReceived);
+    void handleWrite(details::Message::pointer msg, const boost::system::error_code& err, size_t bytesWritten);
 
     void handleInternalMessage(void* msg, size_t msg_size, Server::Header* pHeader);
 

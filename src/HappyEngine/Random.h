@@ -26,7 +26,7 @@
 #include "boost/random.hpp"
 #include <time.h>
 
-namespace happyengine {
+namespace he {
 
 class Random
 {

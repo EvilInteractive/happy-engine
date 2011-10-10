@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 04/08/2011
+#include "StdAfx.h" 
 
 #include "GraphicsEngine.h"
 
@@ -25,8 +26,8 @@
 
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr), 
                                   m_ScreenRect(-1, -1, 1280, 720),
@@ -48,7 +49,7 @@ GraphicsEngine::~GraphicsEngine()
 }
 void GraphicsEngine::init()
 {
-    using namespace error;
+    using namespace err;
     sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3));
     sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2));
 
@@ -83,7 +84,7 @@ void GraphicsEngine::initWindow()
     SDL_SetWindowFullscreen(m_pMainWindow, static_cast<SDL_bool>(m_IsFullScreen));
 
     m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
-    error::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));
+    err::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));
 }
 
 void GraphicsEngine::setScreenPosition(int x, int y)
@@ -146,9 +147,9 @@ void GraphicsEngine::setVSync(bool enable)
     if (m_pMainWindow != nullptr)
     {
         if (enable)
-            error::sdlHandleError(SDL_GL_SetSwapInterval(1));
+            err::sdlHandleError(SDL_GL_SetSwapInterval(1));
         else
-            error::sdlHandleError(SDL_GL_SetSwapInterval(0));
+            err::sdlHandleError(SDL_GL_SetSwapInterval(0));
         m_VSyncEnabled = enable;
     }
     else

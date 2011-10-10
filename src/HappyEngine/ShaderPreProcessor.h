@@ -24,8 +24,8 @@
 
 #include <set>
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace details {
 
 class ShaderPreProcessor

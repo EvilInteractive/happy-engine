@@ -24,10 +24,10 @@
 
 namespace happytest {
 
-class GroundPlane : public happyengine::game::Entity
+class GroundPlane : public he::game::Entity
 {
 public:
-	GroundPlane(const happyengine::game::EntityDesc& desc);
+	GroundPlane(const he::game::EntityDesc& desc);
     virtual ~GroundPlane();
 
 private:

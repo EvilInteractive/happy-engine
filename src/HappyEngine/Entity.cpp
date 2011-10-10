@@ -17,11 +17,12 @@
 //
 //Author:  Bastian Damman
 //Created: 30/09/2011
+#include "StdAfx.h" 
 
 #include "Entity.h"
 #include "HappyNew.h"
 
-namespace happyengine {
+namespace he {
 namespace game {
 
 Entity::Entity(const EntityDesc& desc): m_Material(desc.material), m_pModel(desc.pModel)
@@ -33,24 +34,24 @@ Entity::~Entity()
 {
 }
 
-const math::Matrix& Entity::getWorldMatrix() const
+const mat44& Entity::getWorldMatrix() const
 {
     return m_mtxWorld;
 }
 
-void Entity::setModel(const graphics::Model::pointer& pModel)
+void Entity::setModel(const gfx::Model::pointer& pModel)
 {
     m_pModel = pModel;
 }
-void Entity::setWorldMatrix(const math::Matrix& mtxWorld)
+void Entity::setWorldMatrix(const mat44& mtxWorld)
 {
     m_mtxWorld = mtxWorld;
 }
-const graphics::Material& Entity::getMaterial() const
+const gfx::Material& Entity::getMaterial() const
 {
     return m_Material;
 }
-const graphics::Model::pointer Entity::getModel() const
+const gfx::Model::pointer Entity::getModel() const
 {
     return m_pModel;
 }

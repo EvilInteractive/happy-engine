@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 15/09/2011 (copy of the previous Model class)
+#include "StdAfx.h" 
 
 #include "ModelMesh.h"
 
@@ -26,8 +27,8 @@
 #include "Color.h"
 #include "ExternalError.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -48,10 +49,10 @@ void ModelMesh::init()
     glGenVertexArrays(1, &m_VaoID[0]);
 }
 
-//Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old contents)
+//Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
 void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)
 {
-    error::glCheckForErrors(false);
+    err::glCheckForErrors(false);
 
     ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
@@ -59,16 +60,16 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     uint posOffset = 0;
     std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&posOffset](const VertexElement& e)
     {
-        if (e.getUsage() == graphics::VertexElement::Usage_Position)
+        if (e.getUsage() == gfx::VertexElement::Usage_Position)
         {
             posOffset = e.getByteOffset();
             return;
         }
     });
-    m_BoundingSphere = math::shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
+    m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
 
     glBindVertexArray(m_VaoID[0]);
-    error::glCheckForErrors();
+    err::glCheckForErrors();
 
     VertexLayout::layout elements(vertexLayout.getElements());
 
@@ -163,7 +164,7 @@ bool ModelMesh::isComplete() const
     return m_Complete;
 }
 
-const math::shapes::Sphere& ModelMesh::getBoundingSphere() const
+const shapes::Sphere& ModelMesh::getBoundingSphere() const
 {
     return m_BoundingSphere;
 }

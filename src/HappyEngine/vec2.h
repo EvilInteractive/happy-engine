@@ -21,43 +21,42 @@
 
 #include "PxVec2.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
 
-struct Vector2
+struct vec2
 {
 public:
     float x, y;
 
-	Vector2();
-    explicit Vector2(physx::pubfnd3::PxVec2 vec);
-	Vector2(float x, float y);
-    ~Vector2();
+	vec2();
+    explicit vec2(physx::pubfnd3::PxVec2 vec);
+	vec2(float x, float y);
+    ~vec2();
 
-    Vector2(const Vector2& other);
-    Vector2& operator=(const Vector2& other);
+    vec2(const vec2& other);
+    vec2& operator=(const vec2& other);
 
     //>---------Operators--------------------->
-	Vector2 operator-() const;
+	vec2 operator-() const;
 
-	Vector2 operator*(float a) const;
-	Vector2 operator/(float a) const;
+	vec2 operator*(float a) const;
+	vec2 operator/(float a) const;
 
-	Vector2 operator+(const Vector2& v) const;
-	Vector2 operator-(const Vector2& v) const;
+	vec2 operator+(const vec2& v) const;
+	vec2 operator-(const vec2& v) const;
 
-	Vector2& operator+=(const Vector2& v);
-	Vector2& operator-=(const Vector2& v);
-	Vector2& operator*=(float a);
-	Vector2& operator/=(float a);
-	Vector2& operator*=(const Vector2& v);
-	Vector2& operator/=(const Vector2& v);
+	vec2& operator+=(const vec2& v);
+	vec2& operator-=(const vec2& v);
+	vec2& operator*=(float a);
+	vec2& operator/=(float a);
+	vec2& operator*=(const vec2& v);
+	vec2& operator/=(const vec2& v);
 
-	bool operator==(const Vector2& v) const;
-	bool operator!=(const Vector2& v) const;
+	bool operator==(const vec2& v) const;
+	bool operator!=(const vec2& v) const;
     //<----------------------------------------<
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

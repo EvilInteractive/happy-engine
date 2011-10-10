@@ -17,18 +17,19 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
+#include "StdAfx.h" 
 
 #include "PhysicsMaterial.h"
 #include "HappyEngine.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 
 PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
 {    
     m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
-    ASSERT(m_pInternalMaterial != nullptr, "physics material creation failed");
+    ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
 }
 
 PhysicsMaterial::~PhysicsMaterial()

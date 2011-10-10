@@ -26,7 +26,7 @@
 #include "HappyTypes.h"
 #include "SDL_ttf.h"
 #include "Texture2D.h"
-#include "Vector2.h"
+#include "vec2.h"
 
 #include <string>
 #include "Color.h"
@@ -34,13 +34,13 @@
 #include "boost/shared_ptr.hpp"
 #include <vector>
 
-namespace happyengine {
+namespace he {
 
 namespace gui {
 	class Text;
 }
 
-namespace graphics {
+namespace gfx {
 
 class Font
 {
@@ -67,7 +67,7 @@ public:
     
 	/* GETTERS */
     Texture2D::pointer createTextureText(const std::string& text, const Color& color,
-										 bool bAntiAliased = true, math::Vector2* sizeText = nullptr);
+										 bool bAntiAliased = true, vec2* sizeText = nullptr);
 	Texture2D::pointer createTextureText(const gui::Text& text, const Color& color,
 										 bool bAntiAliased = true);
 

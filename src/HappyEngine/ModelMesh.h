@@ -33,8 +33,8 @@
 #include "HappyTypes.h"
 #include "Sphere.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 enum IndexStride
 {
@@ -66,7 +66,7 @@ public:
 
     bool isComplete() const;
 
-    const math::shapes::Sphere& getBoundingSphere() const;
+    const shapes::Sphere& getBoundingSphere() const;
 
 private:
 
@@ -83,7 +83,7 @@ private:
 
     bool m_Complete;
 
-    math::shapes::Sphere m_BoundingSphere;
+    shapes::Sphere m_BoundingSphere;
 
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);

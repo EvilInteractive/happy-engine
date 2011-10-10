@@ -22,12 +22,12 @@
 #define _HE_CAMERA_H_
 #pragma once
 
-#include "Vector3.h"
-#include "Matrix.h"
+#include "vec3.h"
+#include "mat44.h"
 #include "MathConstants.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class Camera
 {
@@ -39,28 +39,28 @@ public:
 
 	// GENERAL
 	virtual void resize(int viewportWidth, int viewportHeight);
-	virtual void lookAt(const math::Vector3& pos, const math::Vector3& target, const math::Vector3& up);
+	virtual void lookAt(const vec3& pos, const vec3& target, const vec3& up);
 
 	// SETTERS
-	virtual void setPosition(const math::Vector3& pos);
-	virtual void setLens(float aspectRatio = (16.0f/9.0f), float fov = math::piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
+	virtual void setPosition(const vec3& pos);
+	virtual void setLens(float aspectRatio = (16.0f/9.0f), float fov = piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
 	virtual void setActive(bool active);
 
 	// GETTERS
-	virtual const math::Matrix& getView() const
+	virtual const mat44& getView() const
 	{ return m_matView; }
-	virtual const math::Matrix& getProjection() const
+	virtual const mat44& getProjection() const
 	{ return m_matProjection; }
-	virtual const math::Matrix& getViewProjection() const
+	virtual const mat44& getViewProjection() const
 	{ return m_matViewProjection; }
 
-	virtual const math::Vector3& getPosition() const
+	virtual const vec3& getPosition() const
 	{ return m_vPosWorld; }
-	virtual const math::Vector3& getRight() const
+	virtual const vec3& getRight() const
 	{ return m_vRightWorld; }
-	virtual const math::Vector3& getUp() const
+	virtual const vec3& getUp() const
 	{ return m_vUpWorld; }
-	virtual const math::Vector3& getLook() const
+	virtual const vec3& getLook() const
 	{ return m_vLookWorld; }
 
     virtual float getNearClip() const
@@ -78,14 +78,14 @@ protected:
 	void buildProjectionMatrix();
 
 	// DATAMEMBERS
-	math::Matrix m_matView;
-	math::Matrix m_matProjection;
-	math::Matrix m_matViewProjection;
+	mat44 m_matView;
+	mat44 m_matProjection;
+	mat44 m_matViewProjection;
 
-	math::Vector3 m_vPosWorld;
-	math::Vector3 m_vRightWorld;
-	math::Vector3 m_vUpWorld;
-	math::Vector3 m_vLookWorld;
+	vec3 m_vPosWorld;
+	vec3 m_vRightWorld;
+	vec3 m_vUpWorld;
+	vec3 m_vLookWorld;
 
 	float m_FOV;
 	float m_AspectRatio;

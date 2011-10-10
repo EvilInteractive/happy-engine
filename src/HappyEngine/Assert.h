@@ -27,8 +27,8 @@
 
 #pragma warning(disable:4127)
 
-namespace happyengine {
-namespace error {
+namespace he {
+namespace err {
 namespace details {
 
 #if _DEBUG || TEST
@@ -46,7 +46,7 @@ static int s_scope = 0;
 
 #if _DEBUG || TEST
 #define ASSERT \
-if (happyengine::error::details::s_scope < 0) {} \
+if (he::err::details::s_scope < 0) {} \
 else \
     struct HappyAssert \
     { \
@@ -56,19 +56,19 @@ else \
         } \
         explicit HappyAssert(bool isOk, const std::string& message = "") \
         { \
-            happyengine::error::details::happyAssert(isOk, message, __FILE__, HappyAssert::getLine()); \
+            he::err::details::happyAssert(isOk, message, __FILE__, HappyAssert::getLine()); \
         } \
         explicit HappyAssert(const std::string& message) \
         { \
-            happyengine::error::details::happyAssert(message, __FILE__, HappyAssert::getLine()); \
+            he::err::details::happyAssert(message, __FILE__, HappyAssert::getLine()); \
         } \
         explicit HappyAssert(void* isOk) \
         { \
-            happyengine::error::details::happyAssert(isOk, __FILE__, HappyAssert::getLine()); \
+            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getLine()); \
         } \
         explicit HappyAssert(int isOk) \
         { \
-            happyengine::error::details::happyAssert(isOk, __FILE__, HappyAssert::getLine()); \
+            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getLine()); \
         } \
     } myAssert = HappyAssert
 #else

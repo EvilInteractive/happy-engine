@@ -26,17 +26,17 @@
 #include "IPhysicsShape.h"
 #include "geometry/PxConvexMesh.h"
 #include "geometry/PxConvexMeshGeometry.h"
-#include "Vector3.h"
+#include "vec3.h"
 #include "BinaryStream.h"
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 namespace shapes {
 
 class PhysicsConvexShape : public IPhysicsShape
 {
 public:
-    explicit PhysicsConvexShape(const io::BinaryStream& stream, const math::Vector3& scale = math::Vector3(1.0f, 1.0f, 1.0f));
+    explicit PhysicsConvexShape(const io::BinaryStream& stream, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
     virtual ~PhysicsConvexShape();
 
     virtual const PxGeometry& getGeometry() const;

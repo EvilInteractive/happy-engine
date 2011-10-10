@@ -17,11 +17,12 @@
 //
 //Author:  
 //Created: //
+#include "StdAfx.h" 
 
 #include "X.h"
 #include "HappyNew.h"
 
-namespace happyengine {
+namespace he {
 
 X::X()
 {

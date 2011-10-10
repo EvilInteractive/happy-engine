@@ -35,8 +35,8 @@
 #include "AssetContainer.h"
 #include "Color.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 class TextureLoader
 {
@@ -47,8 +47,8 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    graphics::Texture2D::pointer asyncLoadTexture(const std::string& path);
-    graphics::Texture2D::pointer asyncMakeTexture(const Color& color);
+    gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
+    gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
 
 
 private:
@@ -62,7 +62,7 @@ private:
         uint format;
         uint id;
         Color color;
-        graphics::Texture2D::pointer tex;
+        gfx::Texture2D::pointer tex;
     };
 
     bool m_isLoadThreadRunning;
@@ -73,7 +73,7 @@ private:
 
     boost::thread m_TextureLoadThread;
 
-	AssetContainer<graphics::Texture2D::pointer>* m_pAssetContainer;
+	AssetContainer<gfx::Texture2D::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     TextureLoader(const TextureLoader&);

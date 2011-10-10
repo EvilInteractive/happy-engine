@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 14/09/2011
+#include "StdAfx.h" 
 
 #include "PhysicsShapeLoader.h"
 #include "HappyNew.h"
@@ -24,10 +25,10 @@
 #include "BinaryStream.h"
 #include "PhysicsConvexShape.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
-PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<std::vector<physics::shapes::IPhysicsShape::pointer>>())
+PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<std::vector<px::shapes::IPhysicsShape::pointer>>())
 {
 }
 
@@ -37,7 +38,7 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
     delete m_pAssetContainer;
 }
 
-const std::vector<physics::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(const std::string& path)
+const std::vector<px::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(const std::string& path)
 {
     if (m_pAssetContainer->isAssetPresent(path))
 	{
@@ -50,11 +51,11 @@ const std::vector<physics::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::
             io::BinaryStream stream(path, io::BinaryStream::Read);
             byte numConvex(stream.readByte());
 
-            std::vector<physics::shapes::IPhysicsShape::pointer> shapes;
+            std::vector<px::shapes::IPhysicsShape::pointer> shapes;
             for (int i = 0; i < numConvex; ++i)
             {
-                shapes.push_back(physics::shapes::IPhysicsShape::pointer(
-                    NEW physics::shapes::PhysicsConvexShape(stream)));
+                shapes.push_back(px::shapes::IPhysicsShape::pointer(
+                    NEW px::shapes::PhysicsConvexShape(stream)));
             }
 
             m_pAssetContainer->addAsset(path, shapes);

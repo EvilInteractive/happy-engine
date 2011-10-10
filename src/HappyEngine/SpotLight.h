@@ -23,8 +23,8 @@
 #pragma once
 
 
-#include "Vector3.h"
-#include "Matrix.h"
+#include "vec3.h"
+#include "mat44.h"
 #include "Color.h"
 #include "Model.h"
 
@@ -32,21 +32,21 @@
 
 #include "IDrawable.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class SpotLight : public IDrawable
 {
 private:
-    math::Vector3 m_Position;
+    vec3 m_Position;
     float m_Multiplier;
-    math::Vector3 m_Direction;
+    vec3 m_Direction;
     float m_BeginAttenuation;
-    math::Vector3 m_Color;
+    vec3 m_Color;
     float m_EndAttenuation;
     float m_CosCutoff;
 
-    math::Matrix m_mtxWorld;
+    mat44 m_mtxWorld;
     void calculateWorld();
 
     Model::pointer m_pLightVolume;
@@ -58,23 +58,23 @@ public:
     ~SpotLight();
     //default copy constructor and assignment operator are fine
 
-    void setPosition(const math::Vector3& position);
+    void setPosition(const vec3& position);
     void setMultiplier(float multiplier);
-    void setDirection(const math::Vector3& direction);
+    void setDirection(const vec3& direction);
     void setAttenuation(float begin, float end);
-    void setColor(const math::Vector3& color);
+    void setColor(const vec3& color);
     void setColor(const Color& color);
     void setFov(float angle);
 
-    const math::Vector3& getPosition() const;
+    const vec3& getPosition() const;
     float getMultiplier() const;
-    const math::Vector3& getDirection() const;
+    const vec3& getDirection() const;
     float getBeginAttenuation() const;
     float getEndAttenuation() const;
-    const math::Vector3& getColor() const;
+    const vec3& getColor() const;
     float getCosCutoff() const;
     
-    const math::Matrix& getWorldMatrix() const;
+    const mat44& getWorldMatrix() const;
     const Model::pointer& getLightVolume() const;
     
     virtual const Material& getMaterial() const;

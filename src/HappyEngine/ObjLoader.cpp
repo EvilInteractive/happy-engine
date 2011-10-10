@@ -17,6 +17,7 @@
 //
 //Author: Bastian Damman
 //Created: 04/08/2011
+#include "StdAfx.h" 
 
 #include "ObjLoader.h"
 
@@ -30,8 +31,8 @@
 #include "Assert.h"
 #include "ModelLoaderFunctions.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace models {
 
 ObjLoader::ObjLoader(): m_NumIndices(0), m_NumVertices(0), m_Vertices(nullptr)
@@ -43,7 +44,7 @@ ObjLoader::~ObjLoader()
 {
     free(m_Vertices);
 }
-void ObjLoader::load(const std::string& path, const graphics::VertexLayout& vertLayout, bool allowByteIndices)
+void ObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices)
 {
     std::cout << "reading...\n";
     m_VertexLayout = vertLayout;
@@ -79,7 +80,7 @@ void ObjLoader::read(const std::string& path)
         reader.open(path, io::FileReader::OpenType_ASCII); 
         objData = reader.readToEndSplit();
     }
-    catch (error::FileNotFoundException&)
+    catch (err::FileNotFoundException&)
     {
         reader.close();
         throw;
@@ -87,23 +88,22 @@ void ObjLoader::read(const std::string& path)
     
     for_each(objData.cbegin(), objData.cend(), [&](const string& line)
     {
-        using namespace math;
         if (line[0] == 'v' && line[1] == ' ')
         {
-            Vector3 v;
+            vec3 v;
             sscanf_s(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
             m_PositionData.push_back(v);
         }
         else if (line[0] == 'v' && line[1] == 't')
         {
-            Vector2 t;
+            vec2 t;
             sscanf_s(line.c_str(), "vt %f %f", &t.x, &t.y);
             //t.y = 1 - t.y;
             m_TextureData.push_back(t);
         }
         else if (line[0] == 'v' && line[1] == 'n')
         {
-            Vector3 n;
+            vec3 n;
             sscanf_s(line.c_str(), "vn %f %f %f", &n.x, &n.y, &n.z);
             m_NormalData.push_back(n);
         }
@@ -154,9 +154,9 @@ void ObjLoader::flushCreateGroup(uint group)
     //Index range
     switch (m_IndexStride[group])
     {
-        case graphics::IndexStride_Byte:   r.end = m_IndicesByte.size(); break;
-        case graphics::IndexStride_UShort: r.end = m_IndicesUShort.size(); break;
-        case graphics::IndexStride_UInt:   r.end = m_IndicesUInt.size(); break;
+        case gfx::IndexStride_Byte:   r.end = m_IndicesByte.size(); break;
+        case gfx::IndexStride_UShort: r.end = m_IndicesUShort.size(); break;
+        case gfx::IndexStride_UInt:   r.end = m_IndicesUInt.size(); break;
         default: ASSERT("unkown type"); r.end = 0; break;
     }
     r.begin = r.end - m_NumIndices[group];
@@ -188,15 +188,15 @@ void ObjLoader::create(bool allowByteIndices)
         m_NumIndices.push_back(numIndices);
         if (numIndices < UCHAR_MAX && allowByteIndices)
         {
-            m_IndexStride.push_back(graphics::IndexStride_Byte);
+            m_IndexStride.push_back(gfx::IndexStride_Byte);
         }
         else if (numIndices < USHRT_MAX)
         {
-            m_IndexStride.push_back(graphics::IndexStride_UShort);
+            m_IndexStride.push_back(gfx::IndexStride_UShort);
         }
         else if (numIndices < UINT_MAX)
         {
-            m_IndexStride.push_back(graphics::IndexStride_UInt);
+            m_IndexStride.push_back(gfx::IndexStride_UInt);
         }
         else
         {
@@ -226,9 +226,9 @@ void ObjLoader::create(bool allowByteIndices)
                 m_IndexMap[stream.str()] = m_VertexData.size();
                 m_VertexData.push_back(
                     ObjLoader::InternalVertex(
-                        math::Vector3(m_PositionData[face[i][0] - 1]),
-                        math::Vector2(m_TextureData[face[i][1] - 1]),
-                        math::Vector3(m_NormalData[face[i][2] - 1])));
+                        vec3(m_PositionData[face[i][0] - 1]),
+                        vec2(m_TextureData[face[i][1] - 1]),
+                        vec3(m_NormalData[face[i][2] - 1])));
                 ++m_NumVertices;
             }
             else
@@ -268,28 +268,28 @@ void ObjLoader::addIndex(uint index, uint group)
         index -= m_VertexMeshRange.back().end;
     switch (m_IndexStride[group])
     {
-        case graphics::IndexStride_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
-        case graphics::IndexStride_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
-        case graphics::IndexStride_UInt:   m_IndicesUInt.push_back(index); break;
+        case gfx::IndexStride_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
+        case gfx::IndexStride_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
+        case gfx::IndexStride_UInt:   m_IndicesUInt.push_back(index); break;
         default: ASSERT("unkown type"); break;
     }
 }
-void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout) const
+void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) const
 {
     int pOff = -1;
     int tOff = -1;
     int nOff = -1;
     int tanOff = -1;
 
-    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const graphics::VertexElement& element)
+    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::VertexElement& element)
     {
-        if (element.getUsage() == graphics::VertexElement::Usage_Position)
+        if (element.getUsage() == gfx::VertexElement::Usage_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == graphics::VertexElement::Usage_TextureCoordinate)
+        else if (element.getUsage() == gfx::VertexElement::Usage_TextureCoordinate)
             tOff = element.getByteOffset();
-        else if (element.getUsage() == graphics::VertexElement::Usage_Normal)
+        else if (element.getUsage() == gfx::VertexElement::Usage_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == graphics::VertexElement::Usage_Tangent)
+        else if (element.getUsage() == gfx::VertexElement::Usage_Tangent)
             tanOff = element.getByteOffset();
     });
 
@@ -310,17 +310,17 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
     {
         if (pOff != -1)
         {
-            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
             bytecount += 12;
         }
         if (tOff != -1)
         {
-            *reinterpret_cast<math::Vector2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+            *reinterpret_cast<vec2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
             bytecount += 8;
         }
         if (nOff != -1)
         {
-            *reinterpret_cast<math::Vector3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
             bytecount += 12;
         }
         ++count;
@@ -334,15 +334,15 @@ void ObjLoader::fill(void* pVertexData, const graphics::VertexLayout& vertLayout
         {
             std::cout << "    calculating tan's of " << m_GroupData[i] << " start: " << m_VertexMeshRange[i].begin << " num: " << m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin <<
                 "vdSize: " << m_VertexData.size() << ", vmrSize" << m_VertexMeshRange.size() << "\n";
-            std::vector<math::Vector3> tangents(calculateTangents(&m_VertexData[m_VertexMeshRange[i].begin], 
+            std::vector<vec3> tangents(calculateTangents(&m_VertexData[m_VertexMeshRange[i].begin], 
                                                                    m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin,
                                                                    0, 12, 20, sizeof(InternalVertex), 
                                                                    getIndices(i), getNumIndices(i), getIndexStride(i)));
             std::cout << "    FILL";
             count = 0;
-            std::for_each(tangents.cbegin(), tangents.cend(), [&](const math::Vector3& tan)
+            std::for_each(tangents.cbegin(), tangents.cend(), [&](const vec3& tan)
             {
-                *reinterpret_cast<math::Vector3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * vertLayout.getVertexSize() + tanOff]) = tan;
+                *reinterpret_cast<vec3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * vertLayout.getVertexSize() + tanOff]) = tan;
                 bytecount += 12;
             });
             std::cout << "    DONE\n";
@@ -364,13 +364,13 @@ const void* ObjLoader::getIndices(uint mesh) const
 {
     switch (m_IndexStride[mesh])
     {
-        case graphics::IndexStride_Byte:   return &m_IndicesByte[m_IndexMeshRange[mesh].begin];
-        case graphics::IndexStride_UShort: return &m_IndicesUShort[m_IndexMeshRange[mesh].begin];
-        case graphics::IndexStride_UInt:   return &m_IndicesUInt[m_IndexMeshRange[mesh].begin];
+        case gfx::IndexStride_Byte:   return &m_IndicesByte[m_IndexMeshRange[mesh].begin];
+        case gfx::IndexStride_UShort: return &m_IndicesUShort[m_IndexMeshRange[mesh].begin];
+        case gfx::IndexStride_UInt:   return &m_IndicesUInt[m_IndexMeshRange[mesh].begin];
         default: ASSERT("unkown type");  return 0;
     }
 }
-graphics::IndexStride ObjLoader::getIndexStride(uint mesh) const
+gfx::IndexStride ObjLoader::getIndexStride(uint mesh) const
 {
     return m_IndexStride[mesh];
 }

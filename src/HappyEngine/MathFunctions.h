@@ -19,17 +19,20 @@
 #define _HE_MATHFUNCTIONS_H_
 #pragma once
 
-#include "Vector3.h"
-#include "Vector2.h"
-#include "Vector4.h"
+#include "vec3.h"
+#include "vec2.h"
+#include "vec4.h"
 #include "PxMat44.h"
-#include "Matrix.h"
+#include "mat44.h"
 #include "MathConstants.h"
 
-namespace happyengine {
-namespace math {
+namespace he {
    
 // Float
+inline float abs(float a)
+{
+	return ::fabs(a);
+}
 inline float sqr(float a)
 {
     return a * a;
@@ -47,75 +50,75 @@ inline float length(float a)
     return ::abs(a);
 }
 
-// Vector2
-inline Vector2 abs(const Vector2& vector)
+// vec2
+inline vec2 abs(const vec2& vector)
 {
-	return Vector2(::abs(vector.x), ::abs(vector.y));
+	return vec2(::abs(vector.x), ::abs(vector.y));
 }
-inline float lengthSqr(const Vector2& vector)
+inline float lengthSqr(const vec2& vector)
 {
     return sqr(vector.x) + sqr(vector.y);
 }
-inline float length(const Vector2& vector)
+inline float length(const vec2& vector)
 {
     return sqrtf(lengthSqr(vector));
 }
-inline Vector2 normalize(const Vector2& vector)
+inline vec2 normalize(const vec2& vector)
 {
-	if (vector != Vector2(0, 0))
+	if (vector != vec2(0, 0))
 		return vector / length(vector);
 	else
 		return vector;
 }
-inline float dot(const Vector2& vector1, const Vector2& vector2)
+inline float dot(const vec2& vector1, const vec2& vector2)
 {
     return vector1.x * vector2.x + vector1.y * vector2.y;
 }
-inline const Vector2& min(const Vector2& a, const Vector2& b)
+inline const vec2& min(const vec2& a, const vec2& b)
 {
     return lengthSqr(a) <= lengthSqr(b)? a : b;
 }
-inline const Vector2& max(const Vector2& a, const Vector2& b)
+inline const vec2& max(const vec2& a, const vec2& b)
 {
     return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
 
-// Vector3
-inline Vector3 abs(const Vector3& vector)
+// vec3
+inline vec3 abs(const vec3& vector)
 {
-	return Vector3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
+	return vec3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
 }
-inline float lengthSqr(const Vector3& vector)
+inline float lengthSqr(const vec3& vector)
 {
     return sqr(vector.x) + sqr(vector.y) + sqr(vector.z);
 }
-inline float length(const Vector3& vector)
+inline float length(const vec3& vector)
 {
     return sqrtf(lengthSqr(vector));
 }
-inline Vector3 normalize(const Vector3& vector)
+inline vec3 normalize(const vec3& vector)
 {
-	if (vector != Vector3(0,0,0))
+	if (vector != vec3(0,0,0))
 		return vector / length(vector);
 	else
 		return vector;
 }
-inline float dot(const Vector3& vector1, const Vector3& vector2)
+inline float dot(const vec3& vector1, const vec3& vector2)
 {
     return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
 }
-inline Vector3 cross(const Vector3& vector1, const Vector3& vector2)
+inline vec3 cross(const vec3& vector1, const vec3& vector2)
 {
-    return Vector3(
+    return vec3(
         vector1.y * vector2.z - vector1.z * vector2.y,
         vector1.z * vector2.x - vector1.x * vector2.z,
         vector1.x * vector2.y - vector1.y * vector2.x);
 }
-inline const Vector3& min(const Vector3& a, const Vector3& b)
+inline const vec3& min(const vec3& a, const vec3& b)
 {
     return lengthSqr(a) <= lengthSqr(b)? a : b;
 }
-inline const Vector3& max(const Vector3& a, const Vector3& b)
+inline const vec3& max(const vec3& a, const vec3& b)
 {
     return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
@@ -156,6 +159,6 @@ inline T lerp(const T& p0, const T& p1, float t)
     return (p1 - p0) * t + p0;
 }
 
-} } //end namespace
+} //end namespace
 
 #endif

@@ -25,8 +25,8 @@
 #include "IDrawable.h"
 #include "Camera.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 class DrawManager
 {
@@ -46,7 +46,7 @@ public:
     
     void draw(const IDrawable* pDrawabe);
 
-    bool viewClip(const math::shapes::Sphere& boundingSphere);
+    bool viewClip(const shapes::Sphere& boundingSphere);
 
 private:
     struct DrawElement

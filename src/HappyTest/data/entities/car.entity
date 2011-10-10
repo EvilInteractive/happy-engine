@@ -4,7 +4,7 @@ model = "car.binobj"
 
 [Physics]
 model = "car.bphys"
-material = 0.7 0.5 0.2
+material = 0.7, 0.5, 0.2
 density = 2.0
 
 [Shader]

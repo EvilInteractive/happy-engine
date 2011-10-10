@@ -22,8 +22,8 @@
 #define _HE_AABB_H_
 #pragma once
 
-namespace happyengine {
-namespace math {
+namespace he {
+
 namespace shapes {
 
 class AABB
@@ -39,6 +39,6 @@ private:
     AABB& operator=(const AABB&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

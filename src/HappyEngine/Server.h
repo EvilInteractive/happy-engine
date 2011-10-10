@@ -32,8 +32,8 @@
 #include "boost/asio.hpp"
 #include "Message.h"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 
 enum ServerMessage
 {
@@ -89,7 +89,7 @@ private:
     };
 
     //------Private Methods------------------------------------------
-    void handleReceive(const boost::system::error_code& error, size_t byteReceived);
+    void handleReceive(const boost::system::error_code& err, size_t byteReceived);
     void handleServerMessage(void* msg, size_t msg_size, Header* pHeader);
     void asycRead();
 
@@ -103,7 +103,7 @@ private:
 
     void handleWrite(
         details::Message::pointer msg, byte userId,
-        const boost::system::error_code& error, size_t bytesWritten);
+        const boost::system::error_code& err, size_t bytesWritten);
 
     //------Private Members-------------------------------------------
     std::vector<User> m_Users;

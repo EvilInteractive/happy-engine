@@ -30,7 +30,7 @@
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineLoader.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Matrix2D.cpp" />
+    <ClCompile Include="mat33.cpp" />
     <ClCompile Include="ModelLoaderFunctions.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ModelMesh.cpp" />
@@ -58,7 +58,7 @@
     <ClCompile Include="IniWriter.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="LightManager.cpp" />
-    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="mat44.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -86,13 +86,14 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SpotLight.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
-    <ClCompile Include="Vector2.cpp" />
-    <ClCompile Include="Vector3.cpp" />
-    <ClCompile Include="Vector4.cpp" />
+    <ClCompile Include="vec2.cpp" />
+    <ClCompile Include="vec3.cpp" />
+    <ClCompile Include="vec4.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="X.cpp" />
@@ -117,7 +118,7 @@
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="LineLoader.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="Matrix2D.h" />
+    <ClInclude Include="mat33.h" />
     <ClInclude Include="ModelLoaderFunctions.h" />
     <ClInclude Include="ModelMesh.h" />
     <ClInclude Include="ObjLineLoader.h" />
@@ -153,7 +154,7 @@
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="MathConstants.h" />
     <ClInclude Include="MathFunctions.h" />
-    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="mat44.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelLoader.h" />
@@ -184,13 +185,14 @@
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureLoader.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
-    <ClInclude Include="Vector4.h" />
+    <ClInclude Include="vec2.h" />
+    <ClInclude Include="vec3.h" />
+    <ClInclude Include="vec4.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="X.h" />
@@ -248,15 +250,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>
-      </PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>

@@ -17,6 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 08/10/2011
+#include "StdAfx.h" 
 
 #include "TextBox.h"
 #include "HappyNew.h"
@@ -24,7 +25,7 @@
 #include <algorithm>
 #include "HappyEngine.h"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
@@ -45,8 +46,8 @@ TextBox::TextBox(RectF posSize,
 
 	m_pHitrect = NEW gui::Hitregion(
 		gui::Hitregion::TYPE_RECTANGLE,
-		math::Vector2(posSize.x + (posSize.width/2.0f), posSize.y + (posSize.height/2.0f)),
-		math::Vector2(posSize.width, posSize.height));
+		vec2(posSize.x + (posSize.width/2.0f), posSize.y + (posSize.height/2.0f)),
+		vec2(posSize.width, posSize.height));
 
 	m_Colors["background"] = Color(0.9f,0.9f,0.9f);
 	m_Colors["text"] = Color(0.2f,0.2f,0.2f);
@@ -146,24 +147,24 @@ void TextBox::draw()
 {
 	HE2D->setStrokeSize();
 
-	HE2D->setFontHorizontalAlignment(graphics::Font::HAlignment_Left);
-	HE2D->setFontVerticalAlignment(graphics::Font::VAlignment_Center);
+	HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Left);
+	HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Center);
 
 	RectF textRect(m_Rect.x + 4, m_Rect.y + 4, m_Rect.width - 8, m_Rect.height - 8);
 
 	if (m_bActive)
 	{
 		HE2D->setColor(m_Colors["background"]);
-		HE2D->fillRectangleInstanced(math::Vector2(m_Rect.x, m_Rect.y), math::Vector2(m_Rect.width, m_Rect.height));
+		HE2D->fillRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 			
 		HE2D->setColor(m_Colors["edge"]);
-		HE2D->drawRectangleInstanced(math::Vector2(m_Rect.x, m_Rect.y), math::Vector2(m_Rect.width, m_Rect.height));
+		HE2D->drawRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
 		if (m_bHasFocus)
 		{
 			HE2D->setColor(m_Colors["focus"]);
-			HE2D->drawRectangleInstanced(	math::Vector2(m_Rect.x + 1 , m_Rect.y + 1),
-											math::Vector2(m_Rect.width - 2, m_Rect.height - 2));
+			HE2D->drawRectangleInstanced(	vec2(m_Rect.x + 1 , m_Rect.y + 1),
+											vec2(m_Rect.width - 2, m_Rect.height - 2));
 		}
 
 		HE2D->setColor(m_Colors["text"]);
@@ -183,10 +184,10 @@ void TextBox::draw()
 	else
 	{
 		HE2D->setColor(Color(0.3f,0.3f,0.3f));
-		HE2D->fillRectangleInstanced(math::Vector2(m_Rect.x, m_Rect.y), math::Vector2(m_Rect.width, m_Rect.height));
+		HE2D->fillRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
 		HE2D->setColor(Color(0.1f,0.1f,0.1f));
-		HE2D->drawRectangleInstanced(math::Vector2(m_Rect.x, m_Rect.y), math::Vector2(m_Rect.width, m_Rect.height));
+		HE2D->drawRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
 		HE2D->setColor(Color(0.5f,0.5f,0.5f));
 		

@@ -29,8 +29,8 @@
 #include "boost/asio.hpp"
 #include "boost/thread.hpp"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 
 class NetworkManager
 {

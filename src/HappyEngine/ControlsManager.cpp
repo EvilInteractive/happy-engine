@@ -17,11 +17,12 @@
 //
 //Author:  Bastian Damman
 //Created: 08/08/2011
+#include "StdAfx.h" 
 
 #include "ControlsManager.h"
 #include "HappyNew.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 ControlsManager::ControlsManager(): m_pKeyboard(NEW Keyboard()), m_pMouse(NEW Mouse())

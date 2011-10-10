@@ -17,10 +17,11 @@
 //
 //Author:  Bastian Damman
 //Created: 08/08/2011
+#include "StdAfx.h" 
 
 #include "Mouse.h"
 
-namespace happyengine {
+namespace he {
 namespace io {
 
 Mouse::Mouse(): m_Position(0.0f, 0.0f), m_ButtonState(0), m_PrevButtonState(0)
@@ -58,7 +59,7 @@ bool Mouse::isButtonPressed(byte button) const
     return ((m_ButtonState & button) == button) && ((!m_PrevButtonState & button) == button);
 }
 
-math::Vector2 Mouse::getPosition() const
+vec2 Mouse::getPosition() const
 {
     return m_Position;
 }

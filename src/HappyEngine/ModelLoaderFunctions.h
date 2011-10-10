@@ -24,16 +24,16 @@
 
 #include "IModelLoader.h"
 #include "VertexLayout.h"
-#include "Vector3.h"
+#include "vec3.h"
 #include <vector>
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 namespace models {
 
-std::vector<math::Vector3> calculateTangents(const void* pVertices, uint numVertices,
+std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
                                              uint posOff, uint texOff, uint normOff, uint vertStride,
-                                             const void* pIndices, uint numIndices, graphics::IndexStride indexStride);
+                                             const void* pIndices, uint numIndices, gfx::IndexStride indexStride);
 
 } } } //end namespace
 

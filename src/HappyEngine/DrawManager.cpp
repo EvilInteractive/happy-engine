@@ -17,14 +17,15 @@
 //
 //Author:  Bastian Damman
 //Created: 04/10/2011
+#include "StdAfx.h" 
 
 #include "DrawManager.h"
 #include "HappyNew.h"
 #include "HappyEngine.h"
 #include "Assert.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 DrawManager::DrawManager()
 {
@@ -53,7 +54,7 @@ void DrawManager::end()
         DrawManager* this_(this);
         std::for_each(e.pDrawable->getModel()->cbegin(), e.pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
         {
-            math::shapes::Sphere bS(m->getBoundingSphere().getPosition() + e.pDrawable->getWorldMatrix().getTranslation(), m->getBoundingSphere().getRadius());
+            shapes::Sphere bS(m->getBoundingSphere().getPosition() + e.pDrawable->getWorldMatrix().getTranslation(), m->getBoundingSphere().getRadius());
             if (this_->viewClip(bS) == false)
             {
                 GRAPHICS->draw(m);
@@ -63,11 +64,11 @@ void DrawManager::end()
     });
 }
 
-bool DrawManager::viewClip(const math::shapes::Sphere& boundingSphere)
+bool DrawManager::viewClip(const shapes::Sphere& boundingSphere)
 {
     ASSERT(m_pCamera != nullptr, "call begin first");
-    math::Vector3 vec(boundingSphere.getPosition() - m_pCamera->getPosition());
-    float len(math::length(vec));
+    vec3 vec(boundingSphere.getPosition() - m_pCamera->getPosition());
+    float len(length(vec));
     if (len < boundingSphere.getRadius() == false) //if not in bounding sphere
     {
         if (len - boundingSphere.getRadius() > GRAPHICS->getSettings().getFogEnd()) //if bounding outside fog
@@ -77,7 +78,7 @@ bool DrawManager::viewClip(const math::shapes::Sphere& boundingSphere)
         else //check behind camera
         {
             vec /= len;
-            return math::dot(math::normalize(m_pCamera->getLook()), vec) < 0;
+            return dot(normalize(m_pCamera->getLook()), vec) < 0;
         }
     }
     else
@@ -91,7 +92,7 @@ void DrawManager::draw(const IDrawable* pDrawable)
         pDrawable->getMaterial().begin(pDrawable, m_pCamera);
         std::for_each(pDrawable->getModel()->cbegin(), pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
         {
-            math::shapes::Sphere bS(m->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), m->getBoundingSphere().getRadius());
+            shapes::Sphere bS(m->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), m->getBoundingSphere().getRadius());
             if (viewClip(bS) == false)
             {
                 GRAPHICS->draw(m);
@@ -103,7 +104,7 @@ void DrawManager::draw(const IDrawable* pDrawable)
     {
         DrawElement e;
         e.pDrawable = pDrawable;
-        e.sorter = math::lengthSqr(m_pCamera->getPosition() - pDrawable->getWorldMatrix().getTranslation());
+        e.sorter = lengthSqr(m_pCamera->getPosition() - pDrawable->getWorldMatrix().getTranslation());
         if (m_Type == Type_BackToFront)
             e.sorter = FLT_MAX - e.sorter;
         m_DrawList.push_back(e);

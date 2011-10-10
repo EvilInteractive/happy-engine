@@ -17,12 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 28/09/2011
+#include "StdAfx.h" 
 
 #include "DrawSettings.h"
 #include "HappyNew.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
 DrawSettings::DrawSettings()
 {

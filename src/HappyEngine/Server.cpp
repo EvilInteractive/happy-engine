@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 24/08/2011
+#include "StdAfx.h" 
 
 #include "Server.h"
 #include "HappyNew.h"
@@ -24,8 +25,8 @@
 #include "boost/bind.hpp"
 #include "HappyEngine.h"
 
-namespace happyengine {
-namespace networking {
+namespace he {
+namespace net {
 
 Server::Server(): m_pUdpSocket(nullptr), m_ReceivedBytes(0), m_SendBytes(0)
 {
@@ -126,7 +127,7 @@ void Server::handleReceive(const boost::system::error_code& error, size_t bytesR
     }
     else if (error != boost::asio::error::eof)
     {
-        std::cout << "Server receive error\n";
+        std::cout << "Server receive err\n";
     }
     else
     {
@@ -141,7 +142,7 @@ void Server::handleServerMessage(void* /*raw_msg*/, size_t /*msg_size*/, Header*
         case ServerMessage_None: ASSERT("should be handled in previous method"); break;
         case ServerMessage_Connect: userConnecting(); break;
         case ServerMessage_Disconnect: userDisconnecting(pHeader->user); break;
-        default: std::cout << "unkown servermessage received: " << pHeader->type << "\n";
+        default: std::cout << "unkown server message received: " << pHeader->type << "\n";
     }
 }
 void Server::userConnecting()
@@ -266,7 +267,7 @@ void Server::handleWrite(
     }
     else if (error != boost::asio::error::eof)
     {
-        std::cout << "error while sending message\n";
+        std::cout << "err while sending message\n";
     }
     else
     {

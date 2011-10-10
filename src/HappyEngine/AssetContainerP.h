@@ -26,8 +26,8 @@
 #include <string>
 #include <iostream>
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
     
 template<typename T>
 class AssetContainerP

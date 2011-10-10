@@ -21,8 +21,8 @@
 
 #include "Exception.h"
 
-namespace happyengine {
-namespace error {
+namespace he {
+namespace err {
 
 class FileNotFoundException : public Exception
 {

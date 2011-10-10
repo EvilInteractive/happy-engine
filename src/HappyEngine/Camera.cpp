@@ -17,27 +17,28 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 31/08/2011
+#include "StdAfx.h" 
 
 #include "Camera.h"
 #include "HappyNew.h"
 #include "MathFunctions.h"
 
-namespace happyengine {
-namespace graphics {
+namespace he {
+namespace gfx {
 
-Camera::Camera(int viewportWidth, int viewportHeight) :	m_FOV(math::piOverFour),
+Camera::Camera(int viewportWidth, int viewportHeight) :	m_FOV(piOverFour),
 														m_AspectRatio(static_cast<float>(viewportWidth/viewportHeight)),
 														m_NearZ(0.1f),
 														m_FarZ(1000.0f),
 														m_bIsActive(false),
-														m_matView(math::Matrix::Identity),
-														m_matProjection(math::Matrix::Identity),
-														m_matViewProjection(math::Matrix::Identity)
+														m_matView(mat44::Identity),
+														m_matProjection(mat44::Identity),
+														m_matViewProjection(mat44::Identity)
 {
-	m_vPosWorld = math::Vector3(0.0f,0.0f,0.0f);
-	m_vRightWorld = math::Vector3(0.0f,0.0f,1.0f);
-	m_vUpWorld = math::Vector3(0.0f,1.0f,0.0f);
-	m_vLookWorld = math::Vector3(1.0f,0.0f,0.0f);
+	m_vPosWorld = vec3(0.0f,0.0f,0.0f);
+	m_vRightWorld = vec3(0.0f,0.0f,1.0f);
+	m_vUpWorld = vec3(0.0f,1.0f,0.0f);
+	m_vLookWorld = vec3(1.0f,0.0f,0.0f);
 }
 
 Camera::~Camera()
@@ -50,15 +51,13 @@ void Camera::resize(int viewportWidth, int viewportHeight)
 	m_AspectRatio = static_cast<float>(viewportWidth/viewportHeight);
 }
 
-void Camera::lookAt(const math::Vector3 &pos, const math::Vector3 &target, const math::Vector3 &up)
+void Camera::lookAt(const vec3 &pos, const vec3 &target, const vec3 &up)
 {
-	using namespace math;
-
-	Vector3 lookAt = target - pos;
+	vec3 lookAt = target - pos;
 	lookAt = normalize(lookAt);
 
-	Vector3 right = normalize(cross(lookAt, up));
-	Vector3 newUp = -normalize(cross(right, up));
+	vec3 right = normalize(cross(lookAt, up));
+	vec3 newUp = -normalize(cross(right, up));
 
 	m_vPosWorld = pos;
 	m_vRightWorld = right;
@@ -69,7 +68,7 @@ void Camera::lookAt(const math::Vector3 &pos, const math::Vector3 &target, const
 }
 
 // SETTERS
-void Camera::setPosition(const math::Vector3 &pos)
+void Camera::setPosition(const vec3 &pos)
 {
 	m_vPosWorld = pos;
 
@@ -93,16 +92,16 @@ void Camera::setActive(bool active)
 
 void Camera::buildViewMatrix()
 {
-	m_matView = math::Matrix::createLookAtLH(m_vPosWorld, m_vPosWorld + m_vLookWorld, m_vUpWorld);
+	m_matView = mat44::createLookAtLH(m_vPosWorld, m_vPosWorld + m_vLookWorld, m_vUpWorld);
 	m_matViewProjection = m_matProjection * m_matView;
 }
 
 void Camera::buildProjectionMatrix()
 {
-	if (m_FOV > math::pi / 5 * 4.0f) m_FOV = static_cast<float>(math::pi / 5 * 4.0f);
-	if (m_FOV < math::pi / 30.0f) m_FOV = static_cast<float>(math::pi / 30.0f);
+	if (m_FOV > pi / 5 * 4.0f) m_FOV = static_cast<float>(pi / 5 * 4.0f);
+	if (m_FOV < pi / 30.0f) m_FOV = static_cast<float>(pi / 30.0f);
 
-	m_matProjection = math::Matrix::createPerspectiveLH(m_FOV, m_AspectRatio, 1, m_NearZ, m_FarZ);
+	m_matProjection = mat44::createPerspectiveLH(m_FOV, m_AspectRatio, 1, m_NearZ, m_FarZ);
 
 	m_matViewProjection = m_matProjection * m_matView;
 }

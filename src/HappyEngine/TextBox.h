@@ -33,7 +33,7 @@
 #include <vector>
 #include "Keyboard.h"
 
-namespace happyengine {
+namespace he {
 namespace gui {
 
 class TextBox
@@ -71,7 +71,7 @@ private:
 	/* DATAMEMBERS */
 	RectF m_Rect;
 
-	graphics::Font::pointer m_pFont;
+	gfx::Font::pointer m_pFont;
 
 	std::string m_DefaultString;
 	std::string m_String;

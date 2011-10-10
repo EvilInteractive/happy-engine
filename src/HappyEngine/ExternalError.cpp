@@ -17,44 +17,45 @@
 //
 //Author:  Bastian Damman
 //Created: 19/08/2011
+#include "StdAfx.h" 
 
 #include "ExternalError.h"
 #include <sstream>
 
-namespace happyengine {
-namespace error {
+namespace he {
+namespace err {
 
 HappyPhysicsErrorCallback::HappyPhysicsErrorCallback() {}
 HappyPhysicsErrorCallback::~HappyPhysicsErrorCallback(){}
 
 void HappyPhysicsErrorCallback::reportError(PxErrorCode::Enum code, const char* message, const char* file, int line)
 {
-    std::stringstream error;
-    error << "physicsEngine '";
+    std::stringstream err;
+    err << "physicsEngine '";
 
     switch (code)
     {
         case PxErrorCode::eINVALID_PARAMETER:
-            error << "invalid parameter";
+            err << "invalid parameter";
             break;
         case PxErrorCode::eINVALID_OPERATION:
-            error << "invalid operation";
+            err << "invalid operation";
             break;
         case PxErrorCode::eOUT_OF_MEMORY:
-            error << "out of memory";
+            err << "out of memory";
             break;
         case PxErrorCode::eDEBUG_INFO:
-            error << "info";
+            err << "info";
             break;
         case PxErrorCode::eDEBUG_WARNING:
-            error << "warning";
+            err << "warning";
             break;
         default:
-            error << "unknown error";
+            err << "unknown err";
             break;
     }
 
-    error << "': " << message << " [" << file << "(" << line << ")] \n";
+    err << "': " << message << " [" << file << "(" << line << ")] \n";
 }
 
 } } //end namespace

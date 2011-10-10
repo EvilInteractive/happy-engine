@@ -31,8 +31,8 @@
 #include "boost/thread.hpp"
 #pragma warning(default:4244)
 
-namespace happyengine {
-namespace physics {
+namespace he {
+namespace px {
 
 class HappyPhysicsAllocator : public PxAllocatorCallback
 {

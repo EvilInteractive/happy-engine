@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/09/2011
+#include "StdAfx.h" 
 
 #include "EntityLoader.h"
 #include "HappyNew.h"
@@ -26,8 +27,8 @@
 #include "Texture2D.h"
 #include "FileNotFoundException.h"
 
-namespace happyengine {
-namespace content {
+namespace he {
+namespace ct {
 
 EntityLoader::EntityLoader(): m_pAssetContainer(NEW AssetContainer<game::EntityDesc>())
 {
@@ -50,7 +51,7 @@ game::EntityDesc EntityLoader::load(const std::string& path)
         io::IniReader reader;
         
         try { reader.open(path); }
-        catch (error::FileNotFoundException& e)
+        catch (err::FileNotFoundException& e)
         { std::wcout << e.getMsg() << "\n"; }
         
         game::EntityDesc desc;
@@ -61,17 +62,17 @@ game::EntityDesc EntityLoader::load(const std::string& path)
             {
                 desc.physicsDesc.usePhysics = true;
                 desc.physicsDesc.shape = reader.readString(L"Physics", L"model", "");
-                math::Vector3 mat(reader.readVector3(L"Physics", L"material", math::Vector3(0.8f, 0.7f, 0.1f)));
-                desc.physicsDesc.pMaterial = physics::PhysicsMaterial::pointer(NEW physics::PhysicsMaterial(mat.x, mat.y, mat.z));
+                vec3 mat(reader.readVector3(L"Physics", L"material", vec3(0.8f, 0.7f, 0.1f)));
+                desc.physicsDesc.pMaterial = px::PhysicsMaterial::pointer(NEW px::PhysicsMaterial(mat.x, mat.y, mat.z));
                 desc.physicsDesc.density = reader.readFloat(L"Physics", L"density", 1.0f);
             }
 
-            graphics::VertexLayout vertexLayout;
+            gfx::VertexLayout vertexLayout;
             // [Shader]
             {
                 io::IniReader shaderReader;               
                 try { shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + reader.readString(L"Shader", L"shader", "")); }
-                catch (error::FileNotFoundException& e)
+                catch (err::FileNotFoundException& e)
                 { std::wcout << e.getMsg() << "\n"; }
 
                 std::vector<std::string> shaderOutputs;
@@ -98,32 +99,32 @@ game::EntityDesc EntityLoader::load(const std::string& path)
                 }
 
                 // [in]
-                graphics::ShaderLayout shaderLayout;
+                gfx::ShaderLayout shaderLayout;
                 uint count(0);
                 const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"in"));
                 std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                 {
                     if (p.second == L"POSITION")
                     {
-                        vertexLayout.addElement(graphics::VertexElement(count, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position, sizeof(math::Vector3), 0));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Position, sizeof(vec3), 0));
                     }
                     else if (p.second == L"TEXCOORD")
                     {
-                        vertexLayout.addElement(graphics::VertexElement(count, graphics::VertexElement::Type_Vector2, graphics::VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector2, gfx::VertexElement::Usage_TextureCoordinate, sizeof(vec2), 12));
                     }
                     else if (p.second == L"NORMAL")
                     {
-                        vertexLayout.addElement(graphics::VertexElement(count, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Normal, sizeof(math::Vector3), 20));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Normal, sizeof(vec3), 20));
                     }
                     else if (p.second == L"TANGENT")
                     {
-                        vertexLayout.addElement(graphics::VertexElement(count, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Tangent, sizeof(math::Vector3), 32));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Tangent, sizeof(vec3), 32));
                     }
-                    shaderLayout.addElement(graphics::ShaderLayoutElement(count++, std::string(p.first.cbegin(), p.first.cend())));
+                    shaderLayout.addElement(gfx::ShaderLayoutElement(count++, std::string(p.first.cbegin(), p.first.cend())));
                 }); 
 
                 // [Shader]
-                graphics::Shader::pointer pShader(CONTENT->loadShader(shaderReader.readString(L"Shader", L"vsPath", ""),
+                gfx::Shader::pointer pShader(CONTENT->loadShader(shaderReader.readString(L"Shader", L"vsPath", ""),
                                                                       shaderReader.readString(L"Shader", L"fsPath", ""),
                                                                       shaderLayout,
                                                                       shaderOutputs));
@@ -137,24 +138,24 @@ game::EntityDesc EntityLoader::load(const std::string& path)
                     {
                         if (node.second == L"WORLDVIEWPROJECTION")
                         {
-                            desc.material.addVar(graphics::ShaderVar::pointer(
-                                NEW graphics::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), graphics::ShaderVarType_WVP)));
+                            desc.material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_WVP)));
                         }
                         else if (node.second == L"WORLD")
                         {
-                            desc.material.addVar(graphics::ShaderVar::pointer(
-                                NEW graphics::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), graphics::ShaderVarType_World)));
+                            desc.material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_World)));
                         }
                         else if (node.second == L"TEXTURE2D")
                         {
-                            graphics::Texture2D::pointer tex; 
-                            math::Vector4 testColorMap(reader.readVector4(L"TEXTURE2D", node.first, math::Vector4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN)));
-                            if (testColorMap == math::Vector4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN))
+                            gfx::Texture2D::pointer tex; 
+                            vec4 testColorMap(reader.readVector4(L"TEXTURE2D", node.first, vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN)));
+                            if (testColorMap == vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN))
                                 tex = CONTENT->asyncLoadTexture(reader.readString(L"TEXTURE2D", node.first, ""));
                             else
                                 tex = CONTENT->asyncMakeTexture(Color(testColorMap));
-                            graphics::ShaderVar::pointer var(
-                                NEW graphics::ShaderUserVar<graphics::Texture2D::pointer>(
+                            gfx::ShaderVar::pointer var(
+                                NEW gfx::ShaderUserVar<gfx::Texture2D::pointer>(
                                     pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), 
                                     tex));             
                             desc.material.addVar(var);
