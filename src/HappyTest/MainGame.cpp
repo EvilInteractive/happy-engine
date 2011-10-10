@@ -44,7 +44,8 @@ namespace happytest {
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW happyengine::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr)
+					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
+					   m_pTextBox(nullptr)
 {
     using namespace happyengine;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -72,6 +73,7 @@ MainGame::~MainGame()
     delete m_pGroundPlane;
 	delete m_pTestButton;
 	delete m_pAxis;
+	delete m_pTextBox;
 
     NETWORK->stop();
 }
@@ -125,10 +127,16 @@ void MainGame::load()
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
-    m_pFont = CONTENT->loadFont("Ubuntu-Regular.ttf", 50);
+    m_pFont = CONTENT->loadFont("MODES.ttf", 12);
 
 	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, math::Vector2(150,600), math::Vector2(60,20));
 	m_pTestButton->setText("Button", 12);
+
+	m_pTextBox = NEW gui::TextBox(RectF(50,500,200,20), "testing", 10);
+
+	CONSOLE->registerValue<float>(&m_DrawTimer, "c_timer");
+	CONSOLE->registerValue<happyengine::Color>(m_BackgroundColors, "c_color");
+	CONSOLE->registerValue<MyServer>(m_pServer, "c_server");
 }
 void MainGame::tick(float dTime)
 {
@@ -174,7 +182,11 @@ void MainGame::tick(float dTime)
 
 	m_pTestButton->tick();
 
+	m_pTextBox->tick();
+
 	m_pFPSGraph->tick(dTime, 0.5f);
+
+	CONSOLE->tick();
 }
 void MainGame::draw(float /*dTime*/)
 {
@@ -229,16 +241,19 @@ void MainGame::draw(float /*dTime*/)
 			HE2D->drawPolygon(line2, 2);
 		}*/
 
-		HE2D->setColor(1.0f,0.0f,0.0f);
-		HE2D->fillEllipse(Vector2(200,200), Vector2(50,50));
+		//HE2D->setColor(1.0f,0.0f,0.0f);
+		//HE2D->fillEllipse(Vector2(200,200), Vector2(50,50));
 
 		// GUI elements need to be drawn inside HE2D renderer
 		m_pTestButton->draw();
+		m_pTextBox->draw();
 
-		HE2D->setColor(1.0f,0.5f,0.0f);
+		/*HE2D->setColor(1.0f,0.5f,0.0f);
 		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
 		HE2D->setFontHorizontalAlignment(FontHAlignment_Center);
-		HE2D->drawText("Testing this new shit", m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
+		HE2D->drawText("Testing this new shit", m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));*/
+
+		CONSOLE->draw();
 
 		m_pFPSGraph->draw();
 

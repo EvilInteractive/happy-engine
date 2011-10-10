@@ -20,6 +20,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Circle.cpp" />
     <ClCompile Include="DrawManager.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="DrawSettings.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityLoader.cpp" />
@@ -81,8 +82,12 @@
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="HappyEngine.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SpotLight.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -99,6 +104,7 @@
     <ClInclude Include="CatmullRomSpline.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="DrawManager.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="DrawSettings.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityLoader.h" />
@@ -174,8 +180,12 @@
     <ClInclude Include="ContentManager.h" />
     <ClInclude Include="IGame.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Sound.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="TextBox.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Vector2.h" />

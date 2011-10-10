@@ -201,15 +201,16 @@ void Button::drawColor()
 		}
 	}
 
+	HE2D->setStrokeSize();
 	HE2D->setColor(140.0f/255,140.0f/255,140.0f/255);
 	HE2D->drawRectangleInstanced(m_Pos - m_Size/2, m_Size);
 
 	if (m_pFont != nullptr)
 	{
 		HE2D->setColor(0.25f,0.25f,0.25f);
-		HE2D->setFontHorizontalAlignment(graphics::FontHAlignment_Center);
-		HE2D->setFontVerticalAlignment(graphics::FontVAlignment_Center);
-		HE2D->drawText(m_Text, m_pFont, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
+		HE2D->setFontHorizontalAlignment(graphics::Font::HAlignment_Center);
+		HE2D->setFontVerticalAlignment(graphics::Font::VAlignment_Center);
+		HE2D->drawString(m_Text, m_pFont, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
 	}
 }
 

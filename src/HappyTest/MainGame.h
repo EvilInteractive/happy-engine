@@ -36,13 +36,12 @@
 
 #include "MyServer.h"
 #include "MyClient.h"
-#include "GameTimer.h"
 
 #include "Light.h"
 #include "Button.h"
 
 #include "Entity.h"
-
+#include "TextBox.h"
 
 namespace happytest {
 
@@ -85,6 +84,8 @@ private:
     happyengine::graphics::SpotLight::pointer m_pSpotLight;
 
 	happyengine::gui::Button* m_pTestButton;
+
+	happyengine::gui::TextBox* m_pTextBox;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

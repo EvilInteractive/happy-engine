@@ -35,6 +35,7 @@
 #include "AssetContainerP.h"
 #include "ModelMesh.h"
 #include "Rect.h"
+#include "Text.h"
 
 #include <map>
 
@@ -66,8 +67,8 @@ public:
 	// * Set the strokesize. *
 	void setStrokeSize(const float strokeSize = 1.0f);
 	// * Alignment options for text. *
-	void setFontHorizontalAlignment(FontHAlignment horizontalAlignment);
-	void setFontVerticalAlignment(FontVAlignment verticalAlignment);
+	void setFontHorizontalAlignment(Font::HAlignment horizontalAlignment);
+	void setFontVerticalAlignment(Font::VAlignment verticalAlignment);
 	// * Set the transformation matrix. *
 	void setTransformation(const math::Matrix& mat);
 	// * Set the world translation. *
@@ -82,11 +83,11 @@ public:
     /* DRAW METHODS */
 
 	// * Draws the text as a 2D texture on the screen. *
-	void drawText(const std::string& text, const Font::pointer& font, const math::Vector2& pos);
-	void drawTextInstanced(const std::string& text, const Font::pointer& font, const math::Vector2& pos);
+	void drawString(const std::string& str, const Font::pointer& font, const math::Vector2& pos);
+	void drawStringInstanced(const std::string& str, const Font::pointer& font, const math::Vector2& pos);
 	// * Draws the text as a 2D texture in a rectangle the screen. *
-	void drawText(const std::string& text, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
-	void drawTextInstanced(const std::string& text, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
+	void drawString(const std::string& str, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
+	void drawStringInstanced(const std::string& str, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
 	// * Draws a line between 2 points with the current strokesize. *
 	void drawLine(const math::Vector2& point1, const math::Vector2& point2) const;
 	void drawLineInstanced(const math::Vector2& point1, const math::Vector2& point2) const;
@@ -123,8 +124,8 @@ private:
 
 	Color m_CurrentColor;
 
-	FontHAlignment m_FontHAlignment;
-	FontVAlignment m_FontVAlignment;
+	Font::HAlignment m_FontHAlignment;
+	Font::VAlignment m_FontVAlignment;
 
 	VertexLayout m_VertexLayoutColor;
 	VertexLayout m_VertexLayoutTexture;

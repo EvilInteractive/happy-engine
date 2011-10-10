@@ -35,6 +35,7 @@
 #include "ContentManager.h"
 #include "NetworkManager.h"
 #include "Happy2DRenderer.h"
+#include "Console.h"
 
 #define HAPPYENGINE happyengine::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
@@ -43,6 +44,7 @@
 #define CONTENT HAPPYENGINE->getContentManager()
 #define NETWORK HAPPYENGINE->getNetworkManager()
 #define HE2D HAPPYENGINE->get2DRenderer()
+#define CONSOLE HAPPYENGINE->getConsole()
 
 namespace happyengine {
 enum SubEngine
@@ -69,6 +71,8 @@ public:
 
     void quit();
 
+	const std::vector<SDL_Event>& getSDLEvents() const;
+
     //subengines
     graphics::GraphicsEngine* getGraphicsEngine() const;
     const io::ControlsManager* getControls() const;
@@ -76,6 +80,7 @@ public:
     content::ContentManager* getContentManager() const;
     networking::NetworkManager* getNetworkManager() const;
 	graphics::Happy2DRenderer* get2DRenderer() const;
+	tools::Console* getConsole() const;
 
 private:
     // Singleton design pattern
@@ -91,10 +96,13 @@ private:
     content::ContentManager* m_pContentManager;
     networking::NetworkManager* m_pNetworkManager;
 	graphics::Happy2DRenderer* m_p2DRenderer;
+	tools::Console* m_pConsole;
 
     bool m_Quit;
 
     int m_SubEngines;
+
+	std::vector<SDL_Event> m_SDLEvents;
 
     // Methods
     void initWindow();

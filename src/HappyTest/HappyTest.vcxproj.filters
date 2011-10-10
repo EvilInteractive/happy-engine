@@ -43,9 +43,6 @@
     <ClCompile Include="FlyCamera.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
-    <ClCompile Include="GameTimer.cpp">
-      <Filter>happytest</Filter>
-    </ClCompile>
     <ClCompile Include="GroundPlane.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
@@ -70,9 +67,6 @@
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="FlyCamera.h">
-      <Filter>happytest</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTimer.h">
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="GroundPlane.h">

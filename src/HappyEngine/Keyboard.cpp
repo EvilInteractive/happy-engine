@@ -62,9 +62,17 @@ bool Keyboard::isKeyPressed(Key key) const
 {
     return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] != 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] == 0;
 }
+bool Keyboard::isKeyPressed(SDL_Scancode code) const
+{
+	return m_CurrentKeyState[code] != 0 && m_PrevKeyState[code] == 0;
+}
 bool Keyboard::isKeyReleased(Key key) const
 {
     return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] == 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] != 0;
+}
+bool Keyboard::isKeyReleased(SDL_Scancode code) const
+{
+	return m_CurrentKeyState[code] == 0 && m_PrevKeyState[code] != 0;
 }
 
 } } //end namespace

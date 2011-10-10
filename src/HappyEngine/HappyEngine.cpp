@@ -32,7 +32,8 @@ HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr)
+                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
+							m_pConsole(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -65,6 +66,8 @@ void HappyEngine::cleanup()
     m_pNetworkManager = nullptr;
 	delete m_p2DRenderer;
 	m_p2DRenderer = nullptr;
+	delete m_pConsole;
+	m_pConsole = nullptr;
     if (m_SubEngines & SubEngine_Graphics)
     {
         SDL_Quit();
@@ -113,6 +116,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     {
 		m_p2DRenderer = NEW graphics::Happy2DRenderer();
     }
+
+	m_pConsole = NEW tools::Console();
 }
 
 void HappyEngine::start(IGame* pGame)
@@ -150,12 +155,16 @@ void HappyEngine::start(IGame* pGame)
 void HappyEngine::updateLoop(float dTime)
 {
     SDL_Event event;
+	m_SDLEvents.clear();
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
         {
             case SDL_QUIT: m_Quit = true; break;
         }
+
+		// needed for checking events in other places in program
+		m_SDLEvents.push_back(event);
     }  
     if (m_SubEngines & SubEngine_Controls) //need to be before the events are updated
         m_pControlsManager->tick();
@@ -176,13 +185,15 @@ void HappyEngine::drawLoop(float dTime)
     m_pGraphicsEngine->present();
 }
 
-
-
 HappyEngine* HappyEngine::getPointer()
 {
     return s_pHappyEngine;
 }
 
+const std::vector<SDL_Event>& HappyEngine::getSDLEvents() const
+{
+	return m_SDLEvents;
+}
 
 //SubEngines
 graphics::GraphicsEngine* HappyEngine::getGraphicsEngine() const
@@ -209,6 +220,9 @@ graphics::Happy2DRenderer* HappyEngine::get2DRenderer() const
 {
 	return m_p2DRenderer;
 }
-
+tools::Console* HappyEngine::getConsole() const
+{
+	return m_pConsole;
+}
 
 } //end namespace

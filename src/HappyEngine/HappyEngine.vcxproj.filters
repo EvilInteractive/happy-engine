@@ -89,6 +89,9 @@
     <Filter Include="happyengine\graphics\gui">
       <UniqueIdentifier>{77ddc30e-7993-437b-878f-329d3d4f79f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\audio">
+      <UniqueIdentifier>{1c728e43-c436-46fa-87e4-fa29858fec58}</UniqueIdentifier>
+    </Filter>
     <Filter Include="happyengine\content\shader">
       <UniqueIdentifier>{dc7ffe9b-692d-491a-8de7-031913139d46}</UniqueIdentifier>
     </Filter>
@@ -303,6 +306,21 @@
     </ClCompile>
     <ClCompile Include="Rect.cpp">
       <Filter>happyengine\math\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>happyengine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>happyengine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>happyengine\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
     </ClCompile>
     <ClCompile Include="DrawManager.cpp">
       <Filter>happyengine\graphics\renderer\deferred</Filter>
@@ -578,6 +596,21 @@
     </ClInclude>
     <ClInclude Include="Rect.h">
       <Filter>happyengine\math\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBox.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>happyengine\graphics\gui</Filter>
     </ClInclude>
     <ClInclude Include="DrawManager.h">
       <Filter>happyengine\graphics\renderer\deferred</Filter>

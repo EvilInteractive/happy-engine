@@ -92,8 +92,7 @@ void FPSGraph::draw()
 		if (avFPS > 80)
 			avFPS = 80;
 
-		HE2D->setColor(0.0f,0.0f,1.0f,0.8f);
-		HE2D->resetTransformation();
+		HE2D->setColor(0.0f,0.0f,1.0f,0.4f);
 		HE2D->drawLine(Vector2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
 						Vector2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
 
@@ -173,11 +172,11 @@ void FPSGraph::draw()
 
 		std::stringstream stream;
 		stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-		HE2D->drawText(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 45));
+		HE2D->drawString(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 45));
 
 		stream.str("");
 		stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-		HE2D->drawText(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 58));
+		HE2D->drawString(stream.str(), m_pFont, Vector2(GRAPHICS->getViewport().width - 105.0f, 58));
 	}
 }
 

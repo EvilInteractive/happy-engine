@@ -24,6 +24,7 @@
 #include "GL/glew.h"
 #include "Assert.h"
 #include "HappyNew.h"
+#include "Text.h"
 
 #include <algorithm>
 
@@ -75,20 +76,76 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
 
 	if (sizeText != nullptr)
 	{
-		int* textWidth = NEW int(0);
-		int* textHeight = NEW int(0);
+		int h(0);
+		int w(0);
 
-		TTF_SizeText(m_pFont, text.c_str(), textWidth, textHeight);
+		TTF_SizeText(m_pFont, text.c_str(), &w, &h);
 
-		sizeText->x = static_cast<float>(*textWidth);
-		sizeText->y = static_cast<float>(*textHeight);
-
-		delete textWidth;
-		delete textHeight;
+		sizeText->x = static_cast<float>(w);
+		sizeText->y = static_cast<float>(h);
 	}
 
-    SDL_Surface* pSurf(convertNonP2ToP2Surface(
-		TTF_RenderText_Blended(m_pFont, text.c_str(), col)));
+	SDL_Surface* pSurf(nullptr);
+
+	pSurf = convertNonP2ToP2Surface(TTF_RenderText_Blended(m_pFont, text.c_str(), col));
+
+    GLuint texID;
+    glGenTextures(1, &texID);
+    glBindTexture(GL_TEXTURE_2D, texID);
+
+	if (bAntiAliased)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pSurf->w, pSurf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, pSurf->pixels);
+    
+    SDL_FreeSurface(pSurf);
+
+    graphics::Texture2D::pointer tex2D(NEW graphics::Texture2D());
+    tex2D->init(texID, pSurf->w, pSurf->h, GL_BGRA);
+    return tex2D;    
+}
+
+Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& color,
+										   bool bAntiAliased)
+{
+	SDL_Color col;
+    col.r = color.rByte();
+    col.g = color.gByte();
+    col.b = color.bByte();
+
+	SDL_Surface* pSurf(SDL_CreateRGBSurface(0, text.getWidth(), text.getHeight(), 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
+
+	SDL_Surface* pSTemp(nullptr);
+
+	SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_NONE);
+
+	uint i(0);
+	std::for_each(text.getText().cbegin(), text.getText().cend(), [&] (std::string str)
+	{
+		pSTemp = TTF_RenderText_Blended(m_pFont, str.c_str(), col);
+
+		SDL_Rect r;
+		r.x = 0;
+		r.y = i * getFontLineSpacing();
+		r.w = 0;
+		r.h = 0;
+
+		SDL_BlitSurface(pSTemp, 0, pSurf, &r);
+
+		SDL_FreeSurface(pSTemp);
+
+		++i;
+	});
+
+	pSurf = convertNonP2ToP2Surface(pSurf);
 
     GLuint texID;
     glGenTextures(1, &texID);
@@ -122,6 +179,26 @@ void Font::setPath(const std::string& path)
 const std::string& Font::getPath() const
 {
 	return m_Path;
+}
+
+uint Font::getFontPixelHeight() const
+{
+	return TTF_FontHeight(m_pFont);
+}
+
+uint Font::getFontLineSpacing() const
+{
+	return TTF_FontLineSkip(m_pFont);
+}
+
+uint Font::getStringWidth(const std::string& string) const
+{
+	int w(0);
+	int h(0);
+
+	TTF_SizeText(m_pFont, string.c_str(), &w, &h);
+
+	return static_cast<uint>(w);
 }
 
 } } //end namespace

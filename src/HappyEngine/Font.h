@@ -32,44 +32,62 @@
 #include "Color.h"
 
 #include "boost/shared_ptr.hpp"
+#include <vector>
 
 namespace happyengine {
+
+namespace gui {
+	class Text;
+}
+
 namespace graphics {
 
-
-enum FontHAlignment
-{
-    FontHAlignment_Left, 
-    FontHAlignment_Center, 
-    FontHAlignment_Right
-};
-enum FontVAlignment
-{
-    FontVAlignment_Top, 
-    FontVAlignment_Center, 
-    FontVAlignment_Bottom
-};
 class Font
 {
 public:
+
+	enum HAlignment
+	{
+		HAlignment_Left, 
+		HAlignment_Center, 
+		HAlignment_Right
+	};
+	enum VAlignment
+	{
+		VAlignment_Top, 
+		VAlignment_Center, 
+		VAlignment_Bottom
+	};
+
+	typedef boost::shared_ptr<Font> pointer;
+
+	/* CONSTRUCTOR - DESTRUCTOR */
     explicit Font(TTF_Font* pFont);
     virtual ~Font();
     
+	/* GETTERS */
     Texture2D::pointer createTextureText(const std::string& text, const Color& color,
 										 bool bAntiAliased = true, math::Vector2* sizeText = nullptr);
+	Texture2D::pointer createTextureText(const gui::Text& text, const Color& color,
+										 bool bAntiAliased = true);
 
-	void setPath(const std::string& path);
 	const std::string& getPath() const;
 
-    typedef boost::shared_ptr<Font> pointer;
+	uint getFontPixelHeight() const;
+	uint getFontLineSpacing() const;
+	uint getStringWidth(const std::string& string) const;
+
+	/* SETTERS */
+	void setPath(const std::string& path);
 
 private:
 
+	/* DATAMEMBERS */
     TTF_Font* m_pFont;
 
 	std::string m_Path;
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Font(const Font&);
     Font& operator=(const Font&);
 };

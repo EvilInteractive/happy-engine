@@ -15,48 +15,52 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 08/08/2011
+//Author:  Sebastiaan Sprengers
+//Created: 03/10/2011
 
-#ifndef _HE_KEYBOARD_H_
-#define _HE_KEYBOARD_H_
+#ifndef _HE_SOUND_MANAGER_H_
+#define _HE_SOUND_MANAGER_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "Keys.h"
-#include <vector>
-#include "SDL_scancode.h"
+#include "Sound.h"
+#include "AssetContainer.h"
+#include <string>
+#include "al.h"
+#include "alc.h"
 
 namespace happyengine {
-namespace io {
+namespace audio {
 
-class Keyboard
+class SoundManager
 {
 public:
-	Keyboard();
-    virtual ~Keyboard();
 
-    void tick();
+	/* CONSTRUCTOR - DESTRUCTOR */
+	SoundManager();
+    virtual ~SoundManager();
 
-    bool isKeyUp(Key key) const;
-    bool isKeyDown(Key key) const;
+	/* GENERAL */
+	void initialize();
+	void deleteAllSounds();
 
-    bool isKeyPressed(Key key) const;  //true when state goes from up to down
-	bool isKeyPressed(SDL_Scancode code) const;
-    bool isKeyReleased(Key key) const; //true when state goes from down to up
-	bool isKeyReleased(SDL_Scancode code) const;
-
+	/*Sound::pointer loadSound(const std::string& path, bool stream = false);*/
 
 private:
-    byte* m_NewKeyState;
-    byte* m_CurrentKeyState;
-    byte* m_PrevKeyState;
 
-    int m_NumKeys;
+	void shutdown();
 
-    //Disable default copy constructor and default assignment operator
-    Keyboard(const Keyboard&);
-    Keyboard& operator=(const Keyboard&);
+	//Sound::pointer loadWave(const std::string& path, bool stream = false);
+	////Sound::pointer loadOgg(const std::string& path, bool stream = false);
+
+	/* DATAMEMBERS */
+	content::AssetContainer<Sound::pointer> m_SoundBank;
+
+	ALCcontext* m_pALContext;
+	ALCdevice* m_pALDevice;
+
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    SoundManager(const SoundManager&);
+    SoundManager& operator=(const SoundManager&);
 };
 
 } } //end namespace

@@ -37,8 +37,8 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW happyengine::graphics::S
 										m_StrokeSize(0.0f),
 										m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
 										m_ViewPortSize(0.0f,0.0f),
-										m_FontHAlignment(FontHAlignment_Left),
-										m_FontVAlignment(FontVAlignment_Bottom),
+										m_FontHAlignment(Font::HAlignment_Left),
+										m_FontVAlignment(Font::VAlignment_Bottom),
 										m_pModelBuffer(NEW content::AssetContainerP<graphics::ModelMesh>()),
 										m_pTextureBuffer(NEW content::AssetContainer<graphics::Texture2D::pointer>()),
 										m_pTextureQuad(NEW ModelMesh("")),
@@ -178,12 +178,12 @@ void Happy2DRenderer::setStrokeSize(const float strokeSize)
 	m_StrokeSize = strokeSize;
 }
 
-void Happy2DRenderer::setFontHorizontalAlignment(FontHAlignment horizontalAlignment)
+void Happy2DRenderer::setFontHorizontalAlignment(Font::HAlignment horizontalAlignment)
 {
 	m_FontHAlignment = horizontalAlignment;
 }
 
-void Happy2DRenderer::setFontVerticalAlignment(FontVAlignment verticalAlignment)
+void Happy2DRenderer::setFontVerticalAlignment(Font::VAlignment verticalAlignment)
 {
 	m_FontVAlignment = verticalAlignment;
 }
@@ -221,18 +221,18 @@ void Happy2DRenderer::resetTransformation()
 }
 
 /* DRAW METHODS */
-void Happy2DRenderer::drawText(const std::string& text, const Font::pointer& font, const math::Vector2& pos)
+void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const math::Vector2& pos)
 {
-	Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_bAntiAliasing));
+	Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing));
 
 	drawTexture2D(texFont, pos, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
-void Happy2DRenderer::drawTextInstanced(const std::string& text, const Font::pointer& font, const math::Vector2& pos)
+void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const math::Vector2& pos)
 {
 	std::stringstream stream;
 	stream << "TEXT." << m_CurrentColor.r() << "." << m_CurrentColor.g()
 		<< "." << m_CurrentColor.b() << "." << m_CurrentColor.a() << "."
-		<< text << font->getPath();
+		<< str << font->getPath();
 
 	if (m_pTextureBuffer->isAssetPresent(stream.str()))
 	{
@@ -241,7 +241,7 @@ void Happy2DRenderer::drawTextInstanced(const std::string& text, const Font::poi
 	}
 	else
 	{
-		Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_bAntiAliasing));
+		Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing));
 
 		m_pTextureBuffer->addAsset(stream.str(), texFont);
 
@@ -249,40 +249,37 @@ void Happy2DRenderer::drawTextInstanced(const std::string& text, const Font::poi
 	}
 }
 
-void Happy2DRenderer::drawText(const std::string& text, const Font::pointer& font, const RectF& rect)
+void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const RectF& rect)
 {
-	math::Vector2* textSize = NEW math::Vector2();
-
-	Texture2D::pointer texFont(font->createTextureText(text, m_CurrentColor, m_bAntiAliasing, textSize));
+	math::Vector2 textSize;
+	Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing, &textSize));
 
 	math::Vector2 position;
 
 	switch (m_FontHAlignment)
     {
-		case FontHAlignment_Left: position.x = rect.x; break;
-		case FontHAlignment_Center: position.x = rect.x + rect.width/2 - textSize->x/2; break;
-        case FontHAlignment_Right: position.x = rect.x + rect.width - textSize->x; break;
+		case Font::HAlignment_Left: position.x = rect.x; break;
+		case Font::HAlignment_Center: position.x = rect.x + rect.width/2 - textSize.x/2; break;
+        case Font::HAlignment_Right: position.x = rect.x + rect.width - textSize.x; break;
         default: ASSERT("unkown font alignment");
     }
 	switch (m_FontVAlignment)
     {
-        case FontVAlignment_Top: position.y = rect.y; break;
-        case FontVAlignment_Center: position.y = rect.y + rect.height/2 - textSize->y/2; break;
-        case FontVAlignment_Bottom: position.y = rect.y + rect.height - textSize->y; break;
+        case Font::VAlignment_Top: position.y = rect.y; break;
+        case Font::VAlignment_Center: position.y = rect.y + rect.height/2 - textSize.y/2; break;
+        case Font::VAlignment_Bottom: position.y = rect.y + rect.height - textSize.y; break;
         default: ASSERT("unkown font alignment");
     }
 
-	delete textSize;
-
 	drawTexture2D(texFont, position, math::Vector2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
-void Happy2DRenderer::drawTextInstanced(const std::string& text, const Font::pointer& font, const RectF& rect)
+void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const RectF& rect)
 {
 	std::stringstream stream;
 	stream << "TEXTR." << m_CurrentColor.r() << "." << m_CurrentColor.g()
 		<< "." << m_CurrentColor.b() << "." << m_CurrentColor.a() << "."
 		<< rect.x << "." << rect.y << "." << rect.width << "." << rect.height
-		<< "." << text << font->getPath();
+		<< "." << str << font->getPath();
 
 	Texture2D::pointer texFont;
 
@@ -291,11 +288,10 @@ void Happy2DRenderer::drawTextInstanced(const std::string& text, const Font::poi
 	if (m_pTextureBuffer->isAssetPresent(stream.str()))
 	{
 		texFont = m_pTextureBuffer->getAsset(stream.str());
-		
 	}
 	else
 	{
-		texFont = font->createTextureText(text, m_CurrentColor, m_bAntiAliasing);
+		texFont = font->createTextureText(str, m_CurrentColor, m_bAntiAliasing);
 
 		m_pTextureBuffer->addAsset(stream.str(), texFont);
 	}
@@ -304,16 +300,16 @@ void Happy2DRenderer::drawTextInstanced(const std::string& text, const Font::poi
 
 	switch (m_FontHAlignment)
     {
-		case FontHAlignment_Left: position.x = rect.x; break;
-		case FontHAlignment_Center: position.x = rect.x + rect.width/2 - texFont->getWidth()/2; break;
-        case FontHAlignment_Right: position.x = rect.x + rect.width - texFont->getWidth(); break;
+		case Font::HAlignment_Left: position.x = rect.x; break;
+		case Font::HAlignment_Center: position.x = rect.x + rect.width/2 - texFont->getWidth()/2; break;
+        case Font::HAlignment_Right: position.x = rect.x + rect.width - texFont->getWidth(); break;
         default: ASSERT("unkown font alignment");
     }
 	switch (m_FontVAlignment)
     {
-        case FontVAlignment_Top: position.y = rect.y; break;
-        case FontVAlignment_Center: position.y = rect.y + rect.height/2 - texFont->getHeight()/2; break;
-        case FontVAlignment_Bottom: position.y = rect.y + rect.height - texFont->getHeight(); break;
+        case Font::VAlignment_Top: position.y = rect.y; break;
+        case Font::VAlignment_Center: position.y = rect.y + rect.height/2 - texFont->getHeight()/2; break;
+        case Font::VAlignment_Bottom: position.y = rect.y + rect.height - texFont->getHeight(); break;
         default: ASSERT("unkown font alignment");
     }
 
@@ -497,7 +493,7 @@ void Happy2DRenderer::fillRectangle(const math::Vector2& pos, const math::Vector
 	vertices.push_back(VertexPos2D(math::Vector2(size.x/2, -size.y/2)));
 
 	std::vector<byte> indices;
-	indices.push_back(2); indices.push_back(1); indices.push_back(1);
+	indices.push_back(2); indices.push_back(1); indices.push_back(0);
 	indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
 	model.init();
@@ -585,7 +581,7 @@ void Happy2DRenderer::drawEllipse(const math::Vector2& pos, const math::Vector2&
 	for (uint i = 0; i < 360; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x, 0 + sinf(degInRad) * size.y)));
+		vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 		indices.push_back(index++);
 	}
@@ -635,7 +631,7 @@ void Happy2DRenderer::drawEllipseInstanced(const math::Vector2& pos, const math:
 		for (uint i = 0; i < 360; i += stepSize)
 		{
 			float degInRad = i * DEG2RAD;
-			vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x, 0 + sinf(degInRad) * size.y)));
+			vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 			indices.push_back(index++);
 		}
@@ -684,7 +680,7 @@ void Happy2DRenderer::fillEllipse(const math::Vector2& pos, const math::Vector2&
 	for (int i = 0; i > -360; i -= stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x, 0 + sinf(degInRad) * size.y)));
+		vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 		indices.push_back(steps - index);
 		++index;
@@ -738,7 +734,7 @@ void Happy2DRenderer::fillEllipseInstanced(const math::Vector2& pos, const math:
 		for (int i = 0; i < 360; i -= stepSize)
 		{
 			float degInRad = i * DEG2RAD;
-			vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x, 0 + sinf(degInRad) * size.y)));
+			vertices.push_back(VertexPos2D(math::Vector2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
 		
 			indices.push_back(steps - index);
 			++index;

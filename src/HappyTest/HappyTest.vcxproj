@@ -91,7 +91,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FlyCamera.cpp" />
-    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GroundPlane.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
@@ -103,7 +102,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlyCamera.h" />
-    <ClInclude Include="GameTimer.h" />
     <ClInclude Include="GroundPlane.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MyClient.h" />

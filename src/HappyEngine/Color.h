@@ -37,7 +37,7 @@ private:
 
 public:
 	Color();
-	Color(float r, float g, float b, float a);
+	Color(float r, float g, float b, float a = 1.0f);
 	Color(byte r, byte g, byte b, byte a);
 	Color(const math::Vector4& col);
     ~Color();
