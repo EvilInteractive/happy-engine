@@ -18,46 +18,63 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/10/2011
 
-#ifndef _HE_UINT_TYPE_HANDLER_H_
-#define _HE_UINT_TYPE_HANDLER_H_
+#ifndef _HE_VEC4_TYPE_HANDLER_H_
+#define _HE_VEC4_TYPE_HANDLER_H_
 #pragma once
 
 #include "ITypeHandler.h"
-#include "HappyTypes.h"
+#include "vec4.h"
 
 namespace he {
-namespace tools {
+namespace tools  {
 
-class UIntTypeHandler : public ITypeHandler
+class Vec4TypeHandler : public ITypeHandler
 {
 public:
 
-	UIntTypeHandler() : ITypeHandler()
+	Vec4TypeHandler()
 	{
-		m_InputTypes.push_back(typeid(uint).name());
+		m_InputTypes.push_back(typeid(float).name());
+		m_InputTypes.push_back(typeid(float).name());
+		m_InputTypes.push_back(typeid(float).name());
+		m_InputTypes.push_back(typeid(float).name());
 	}
 
-    virtual ~UIntTypeHandler();
+	virtual ~Vec4TypeHandler() {}
 
-	void parse(const std::vector<boost::any>& values, boost::any& pValueToAssign) const
+	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		uint i(boost::any_cast<uint>(values[0]));
-	
-		uint& pI = *boost::any_cast<uint*>(pValueToAssign);
+		float i[4];
 
-		pI = i;
+		if (sscanf(values.c_str(), "%f,%f,%f,%f", &i[0], &i[1], &i[2], &i[3]) != static_cast<int>(m_InputTypes.size()))
+			return false;
+
+		vec4 v(i[0],i[1],i[2],i[3]);
+	
+		vec4& pV = *boost::any_cast<vec4*>(pValueToAssign);
+
+		pV = v;
+
+		return true;
+	}
+
+	const std::vector<std::string>& getInputTypes() const
+	{
+		return m_InputTypes;
 	}
 
 	std::string getType() const
 	{
-		return typeid(uint).name();
+		return typeid(vec4).name();
 	}
 
 private:
 
+	std::vector<std::string> m_InputTypes;
+
     //Disable default copy constructor and default assignment operator
-    UIntTypeHandler(const UIntTypeHandler&);
-    UIntTypeHandler& operator=(const UIntTypeHandler&);
+    Vec4TypeHandler(const Vec4TypeHandler&);
+    Vec4TypeHandler& operator=(const Vec4TypeHandler&);
 };
 
 } } //end namespace

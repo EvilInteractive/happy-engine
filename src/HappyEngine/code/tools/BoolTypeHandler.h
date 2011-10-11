@@ -18,50 +18,61 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/10/2011
 
-#ifndef _HE_VEC4_TYPE_HANDLER_H_
-#define _HE_VEC4_TYPE_HANDLER_H_
+#ifndef _HE_BOOL_TYPE_HANDLER_H_
+#define _HE_BOOL_TYPE_HANDLER_H_
 #pragma once
 
 #include "ITypeHandler.h"
-#include "vec4.h"
+#include "Assert.h"
 
 namespace he {
-namespace tools  {
+namespace tools {
 
-class Vec4TypeHandler : public ITypeHandler
+class BoolTypeHandler :	public ITypeHandler
 {
 public:
 
-	Vec4TypeHandler() : ITypeHandler()
+	BoolTypeHandler()
 	{
-		m_InputTypes.push_back(typeid(float).name());
-		m_InputTypes.push_back(typeid(float).name());
-		m_InputTypes.push_back(typeid(float).name());
-		m_InputTypes.push_back(typeid(float).name());
+		m_InputTypes.push_back(typeid(int).name());
 	}
 
-    virtual ~Vec4TypeHandler();
+	virtual ~BoolTypeHandler() {}
 
-	void parse(const std::vector<boost::any>& values, boost::any& pValueToAssign) const
+	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		vec4 v(boost::any_cast<float>(values[0]), boost::any_cast<float>(values[1]),
-				boost::any_cast<float>(values[2]), boost::any_cast<float>(values[2]));
-	
-		vec4& pV = *boost::any_cast<vec4*>(pValueToAssign);
+		int i;
 
-		pV = v;
+		if (sscanf(values.c_str(), "%d", &i) != static_cast<int>(m_InputTypes.size()))
+			return false;
+	
+		bool& pB = *boost::any_cast<bool*>(pValueToAssign);
+
+		if (i != 0)
+			pB = true;
+		else
+			pB = false;
+
+		return true;
+	}
+
+	const std::vector<std::string>& getInputTypes() const
+	{
+		return m_InputTypes;
 	}
 
 	std::string getType() const
 	{
-		return typeid(vec4).name();
+		return typeid(bool).name();
 	}
 
 private:
 
+	std::vector<std::string> m_InputTypes;
+
     //Disable default copy constructor and default assignment operator
-    Vec4TypeHandler(const Vec4TypeHandler&);
-    Vec4TypeHandler& operator=(const Vec4TypeHandler&);
+    BoolTypeHandler(const BoolTypeHandler&);
+    BoolTypeHandler& operator=(const BoolTypeHandler&);
 };
 
 } } //end namespace

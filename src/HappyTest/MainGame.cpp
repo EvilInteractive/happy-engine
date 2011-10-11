@@ -45,7 +45,7 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
 					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
-					   m_pTextBox(nullptr)
+					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3(845)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -127,16 +127,16 @@ void MainGame::load()
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
-    m_pFont = CONTENT->loadFont("MODES.ttf", 12);
+    m_pFont = CONTENT->loadFont("MODES.ttf", 32);
 
-	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(150,600), vec2(60,20));
+	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(50,600), vec2(60,20));
 	m_pTestButton->setText("Button", 12);
 
-	m_pTextBox = NEW gui::TextBox(RectF(50,500,200,20), "testing", 10);
+	m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
-	CONSOLE->registerValue<float>(&m_DrawTimer, "c_timer");
-	CONSOLE->registerValue<he::Color>(m_BackgroundColors, "c_color");
-	CONSOLE->registerValue<MyServer>(m_pServer, "c_server");
+	CONSOLE->registerValue<bool>(&m_bTest, "fps_graph");
+	CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
+	CONSOLE->registerValue<int>(&m_Test3, "test_number");
 }
 void MainGame::tick(float dTime)
 {
@@ -246,14 +246,22 @@ void MainGame::draw(float /*dTime*/)
 		m_pTestButton->draw();
 		m_pTextBox->draw();
 
-		/*HE2D->setColor(1.0f,0.5f,0.0f);
-		HE2D->setFontVerticalAlignment(FontVAlignment_Center);
-		HE2D->setFontHorizontalAlignment(FontHAlignment_Center);
-		HE2D->drawText("Testing this new shit", m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));*/
+		if (m_bTest2)
+		{
+			std::stringstream stream;
+			stream << "Testing console: " << m_Test3;
+
+			HE2D->setColor(1.0f,0.5f,0.0f);
+			HE2D->setFontVerticalAlignment(Font::VAlignment_Center);
+			HE2D->setFontHorizontalAlignment(Font::HAlignment_Center);
+
+			HE2D->drawString(stream.str(), m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
+		}
 
 		CONSOLE->draw();
 
-		m_pFPSGraph->draw();
+		if (m_bTest)
+			m_pFPSGraph->draw();
 
 	HE2D->end();
 }

@@ -98,7 +98,7 @@ public:
 		}
 	}
 
-	void addTypeHandler(const ITypeHandler& typeHandler);
+	void addTypeHandler(ITypeHandler* typeHandler);
 
 	/* SETTERS */
 	void setKeyboardShortcut(io::Key key);
@@ -119,7 +119,7 @@ private:
 	/* DATAMEMBERS */
 	std::map<std::string, boost::any> m_ValueContainer;
 	std::map<MSG_TYPE, Color> m_MsgColors;
-	std::map<std::string, ITypeHandler> m_TypeHandlers;
+	std::map<std::string, ITypeHandler*> m_TypeHandlers;
 	std::vector<std::pair<MSG_TYPE, std::string> > m_MsgHistory;
 	std::map<std::string, char> m_ParseTypes;
 

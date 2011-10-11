@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/10/2011
 
-#ifndef _HE_BOOL_TYPE_HANDLER_H_
-#define _HE_BOOL_TYPE_HANDLER_H_
+#ifndef _HE_FLOAT_TYPE_HANDLER_H_
+#define _HE_FLOAT_TYPE_HANDLER_H_
 #pragma once
 
 #include "ITypeHandler.h"
@@ -27,36 +27,48 @@
 namespace he {
 namespace tools {
 
-class BoolTypeHandler :	public ITypeHandler
+class FloatTypeHandler : public ITypeHandler
 {
 public:
 
-	BoolTypeHandler() : ITypeHandler()
+	FloatTypeHandler()
 	{
-		m_InputTypes.push_back(typeid(bool).name());
+		m_InputTypes.push_back(typeid(float).name());
 	}
 
-    virtual ~BoolTypeHandler();
+	virtual ~FloatTypeHandler() {}
 
-	void parse(const std::vector<boost::any>& values, boost::any& pValueToAssign) const
+	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		bool b(boost::any_cast<bool>(values[0]));
+		float i;
+
+		if (sscanf(values.c_str(), "%f", &i) != static_cast<int>(m_InputTypes.size()))
+			return false;
 	
-		bool& pB = *boost::any_cast<bool*>(pValueToAssign);
+		float& pF = *boost::any_cast<float*>(pValueToAssign);
 
-		pB = b;
+		pF = i;
+
+		return true;
 	}
 
-	virtual std::string getType() const
+	const std::vector<std::string>& getInputTypes() const
 	{
-		return typeid(bool).name();
+		return m_InputTypes;
+	}
+
+	std::string getType() const
+	{
+		return typeid(float).name();
 	}
 
 private:
 
+	std::vector<std::string> m_InputTypes;
+
     //Disable default copy constructor and default assignment operator
-    BoolTypeHandler(const BoolTypeHandler&);
-    BoolTypeHandler& operator=(const BoolTypeHandler&);
+    FloatTypeHandler(const FloatTypeHandler&);
+    FloatTypeHandler& operator=(const FloatTypeHandler&);
 };
 
 } } //end namespace

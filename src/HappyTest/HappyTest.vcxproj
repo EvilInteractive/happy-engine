@@ -60,7 +60,7 @@
       </PrecompiledHeaderOutputFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\HappyEngine;..\HappyEngine\code files\physics;..\HappyEngine\code files\template;..\HappyEngine\code files\tools;..\HappyEngine\code files\networking;..\HappyEngine\code files\math;..\HappyEngine\code files\io;..\HappyEngine\code files\graphics;..\HappyEngine\code files\game;..\HappyEngine\code files\error;..\HappyEngine\code files\content;..\HappyEngine\code files\audio;..\HappyEngine\code files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\HappyEngine;..\HappyEngine\code\physics;..\HappyEngine\code\template;..\HappyEngine\code\tools;..\HappyEngine\code\networking;..\HappyEngine\code\math;..\HappyEngine\code\io;..\HappyEngine\code\graphics;..\HappyEngine\code\game;..\HappyEngine\code\error;..\HappyEngine\code\content;..\HappyEngine\code\audio;..\HappyEngine\code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>

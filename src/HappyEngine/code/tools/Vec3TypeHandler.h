@@ -18,35 +18,62 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/10/2011
 
-#ifndef _HE_I_TYPE_HANDLER_H_
-#define _HE_I_TYPE_HANDLER_H_
+#ifndef _HE_VEC3_TYPE_HANDLER_H_
+#define _HE_VEC3_TYPE_HANDLER_H_
 #pragma once
 
-#include "boost\any.hpp"
-#include <typeinfo>
-#include <vector>
+#include "ITypeHandler.h"
+#include "vec3.h"
 
 namespace he {
 namespace tools {
 
-class ITypeHandler
+class Vec3TypeHandler : public ITypeHandler
 {
 public:
 
-    virtual ~ITypeHandler();
+	Vec3TypeHandler()
+	{
+		m_InputTypes.push_back(typeid(float).name());
+		m_InputTypes.push_back(typeid(float).name());
+		m_InputTypes.push_back(typeid(float).name());
+	}
 
-	virtual void parse(const std::vector<boost::any>& values, boost::any& pValueToAssign) const;
+	virtual ~Vec3TypeHandler() {}
+
+	bool parse(const std::string& values, boost::any& pValueToAssign) const
+	{
+		float i[3];
+
+		if (sscanf(values.c_str(), "%f,%f,%f", &i[0], &i[1], &i[2]) != static_cast<int>(m_InputTypes.size()))
+			return false;
+
+		vec3 v(i[0],i[1],i[2]);
+	
+		vec3& pV = *boost::any_cast<vec3*>(pValueToAssign);
+
+		pV = v;
+
+		return true;
+	}
 
 	const std::vector<std::string>& getInputTypes() const
 	{
 		return m_InputTypes;
 	}
 
-	virtual std::string getType() const;
+	std::string getType() const
+	{
+		return typeid(vec3).name();
+	}
 
-protected:
+private:
 
 	std::vector<std::string> m_InputTypes;
+
+    //Disable default copy constructor and default assignment operator
+    Vec3TypeHandler(const Vec3TypeHandler&);
+    Vec3TypeHandler& operator=(const Vec3TypeHandler&);
 };
 
 } } //end namespace

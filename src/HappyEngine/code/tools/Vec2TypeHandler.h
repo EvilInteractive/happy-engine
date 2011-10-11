@@ -18,48 +18,61 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/10/2011
 
-#ifndef _HE_VEC3_TYPE_HANDLER_H_
-#define _HE_VEC3_TYPE_HANDLER_H_
+#ifndef _HE_VEC2_TYPE_HANDLER_H_
+#define _HE_VEC2_TYPE_HANDLER_H_
 #pragma once
 
 #include "ITypeHandler.h"
-#include "vec3.h"
+#include "vec2.h"
 
 namespace he {
 namespace tools {
 
-class Vec3TypeHandler : public ITypeHandler
+class Vec2TypeHandler : public ITypeHandler
 {
 public:
 
-	Vec3TypeHandler() : ITypeHandler()
+	Vec2TypeHandler()
 	{
-		m_InputTypes.push_back(typeid(float).name());
 		m_InputTypes.push_back(typeid(float).name());
 		m_InputTypes.push_back(typeid(float).name());
 	}
 
-    virtual ~Vec3TypeHandler();
+	virtual ~Vec2TypeHandler() {}
 
-	void parse(const std::vector<boost::any>& values, boost::any& pValueToAssign) const
+	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		vec3 v(boost::any_cast<float>(values[0]), boost::any_cast<float>(values[1]), boost::any_cast<float>(values[2]));
+		float i[2];
+
+		if (sscanf(values.c_str(), "%f,%f", &i[0], &i[1]) != static_cast<int>(m_InputTypes.size()))
+			return false;
+
+		vec2 v(i[0],i[1]);
 	
-		vec3& pV = *boost::any_cast<vec3*>(pValueToAssign);
+		vec2& pV = *boost::any_cast<vec2*>(pValueToAssign);
 
 		pV = v;
+
+		return true;
+	}
+
+	const std::vector<std::string>& getInputTypes() const
+	{
+		return m_InputTypes;
 	}
 
 	std::string getType() const
 	{
-		return typeid(vec3).name();
+		return typeid(vec2).name();
 	}
 
 private:
 
+	std::vector<std::string> m_InputTypes;
+
     //Disable default copy constructor and default assignment operator
-    Vec3TypeHandler(const Vec3TypeHandler&);
-    Vec3TypeHandler& operator=(const Vec3TypeHandler&);
+    Vec2TypeHandler(const Vec2TypeHandler&);
+    Vec2TypeHandler& operator=(const Vec2TypeHandler&);
 };
 
 } } //end namespace

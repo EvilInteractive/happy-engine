@@ -31,20 +31,30 @@ class IntTypeHandler : public ITypeHandler
 {
 public:
 
-	IntTypeHandler() : ITypeHandler()
+	IntTypeHandler()
 	{
 		m_InputTypes.push_back(typeid(int).name());
 	}
 
-    virtual ~IntTypeHandler();
+	virtual ~IntTypeHandler() {}
 
-	void parse(const std::vector<boost::any>& values, boost::any& pValueToAssign) const
+	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		int i(boost::any_cast<int>(values[0]));
+		int i;
+
+		if (sscanf(values.c_str(), "%d", &i) != static_cast<int>(m_InputTypes.size()))
+			return false;
 	
 		int& pI = *boost::any_cast<int*>(pValueToAssign);
 
 		pI = i;
+
+		return true;
+	}
+
+	const std::vector<std::string>& getInputTypes() const
+	{
+		return m_InputTypes;
 	}
 
 	std::string getType() const
@@ -53,6 +63,8 @@ public:
 	}
 
 private:
+
+	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     IntTypeHandler(const IntTypeHandler&);

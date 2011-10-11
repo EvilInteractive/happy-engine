@@ -41,7 +41,7 @@ namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-	Console::Console() :	m_Shortcut(io::Key_C),
+Console::Console() :	m_Shortcut(io::Key_C),
 						m_MaxMsg(0),
 						m_bOpen(false),
 						m_pTextBox(nullptr)
@@ -52,15 +52,15 @@ namespace tools {
 	m_MsgColors[MSG_TYPE_ENGINE] = Color(0.2f,0.8f,0.2f);
 	m_MsgColors[MSG_TYPE_COMMAND] = Color(0.2f,0.2f,0.8f);
 
-	m_pFont = CONTENT->loadFont("MODES.TTF", 10);
+	m_pFont = CONTENT->loadFont("Ubuntu-Regular.ttf", 11);
 
 	m_pTextBox = NEW gui::TextBox(
 		RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
-		"Enter command...", 10, "MODES.TTF");
+		"Enter command...", 11, "Ubuntu-Regular.ttf");
 
 	m_pTextBox->setColors(	Color(0.6f,0.6f,0.6f,0.8f),
 							Color(0.9f,0.9f,0.9f),
-							Color(0.2f,0.3f,0.8f),
+							Color(0.0f,0.75f,1.0f),
 							Color(0.19f,0.19f,0.19f));
 
 	m_Help = gui::Text::pointer(NEW gui::Text(m_pFont));
@@ -75,17 +75,25 @@ namespace tools {
 	m_ParseTypes[typeid(uint).name()] = 'u';
 	m_ParseTypes[typeid(char).name()] = 'c';
 
-	addTypeHandler(BoolTypeHandler());
-	addTypeHandler(FloatTypeHandler());
-	addTypeHandler(IntTypeHandler());
-	addTypeHandler(UIntTypeHandler());
-	addTypeHandler(Vec2TypeHandler());
-	addTypeHandler(Vec3TypeHandler());
-	addTypeHandler(Vec4TypeHandler());
+	addTypeHandler(NEW BoolTypeHandler());
+	addTypeHandler(NEW FloatTypeHandler());
+	addTypeHandler(NEW IntTypeHandler());
+	addTypeHandler(NEW UIntTypeHandler());
+	addTypeHandler(NEW Vec2TypeHandler());
+	addTypeHandler(NEW Vec3TypeHandler());
+	addTypeHandler(NEW Vec4TypeHandler());
 }
 
 Console::~Console()
 {
+	std::for_each(m_TypeHandlers.begin(), m_TypeHandlers.end(), [&](std::pair<std::string, ITypeHandler*> p)
+	{
+		delete p.second;
+		p.second = nullptr;
+	});
+
+	m_TypeHandlers.clear();
+
 	delete m_pTextBox;
 }
 
@@ -118,46 +126,31 @@ void Console::processCommand(const std::string& command)
 			// check for correct usage of " "
 			if (firstQ != -1 && secondQ != -1 && secondQ != firstQ + 1)
 			{
-				std::string values(s.substr(firstQ + 1, secondQ - 1));
+				std::string values(s.substr(firstQ + 1, (secondQ - firstQ) - 1));
 
-				if (m_TypeHandlers.find(m_ValueContainer[keyWord].type().name()) != m_TypeHandlers.cend())
+				std::string type(m_ValueContainer[keyWord].type().name());
+				type = type.substr(0, type.size() - 2);
+
+				if (m_TypeHandlers.find(type) != m_TypeHandlers.cend())
 				{
-					std::string scanfCommand;
-
-					uint i(0);
-					std::for_each(	m_TypeHandlers[m_ValueContainer[keyWord].type().name()].getInputTypes().cbegin(),
-									m_TypeHandlers[m_ValueContainer[keyWord].type().name()].getInputTypes().cend(),
-									[&](boost::any type)
+					
+					if (m_TypeHandlers[type]->parse(values, m_ValueContainer[keyWord]))
 					{
-						if (i > 0)
-						{
-							scanfCommand += ",";
-						}
-
-						scanfCommand += "%" + m_ParseTypes[type.type().name()];
-
-						++i;
-					});
-
-					std::vector<boost::any> vars;
-
-					if (sscanf(values.c_str(), scanfCommand.c_str(), &vars)  == static_cast<int>(m_TypeHandlers[m_ValueContainer[keyWord].type().name()].getInputTypes().size()))
-					{
-						m_TypeHandlers[m_ValueContainer[keyWord].type().name()].parse(vars, m_ValueContainer[keyWord]);
+						addMessage(m_pTextBox->getString(), MSG_TYPE_COMMAND);
 					}
 					else
 					{
-						addMessage("\"" + values + "\" can't be assigned to" + keyWord + "!", MSG_TYPE_ERROR);
+						addMessage("\"" + values + "\" can't be assigned to '" + keyWord + "'!", MSG_TYPE_ERROR);
 					}
 				}
 				else
 				{
-					addMessage("no type handler specified for this keyword '" + keyWord + "' - type: " + m_ValueContainer[keyWord].type().name() + "!", MSG_TYPE_ERROR);
+					addMessage("no type handler specified for this keyword '" + keyWord + "' - type: " + type + "!", MSG_TYPE_ERROR);
 				}
 			}
 			else
 			{
-				addMessage("please use \"" + keyWord + "\" to assign a value(s)!", MSG_TYPE_ERROR);
+				addMessage("please use '" + keyWord + " = \"...\"' to assign a value(s)!", MSG_TYPE_ERROR);
 			}
 		}
 		else
@@ -190,7 +183,10 @@ void Console::displayVars()
 	{
 		std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<std::string, boost::any> p)
 		{
-			txt.addLine("'" + p.first + "' (" + p.second.type().name() + ")");
+			std::string type(p.second.type().name());
+			type = type.substr(0, type.size() - 2);
+
+			txt.addLine("'" + p.first + "' (" + type + ")");
 		});
 	}
 
@@ -266,13 +262,13 @@ void Console::addMessage(const std::string& msg, MSG_TYPE type)
 	m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, msg));
 }
 
-void Console::addTypeHandler(const ITypeHandler& typeHandler)
+void Console::addTypeHandler(ITypeHandler* typeHandler)
 {
-	if (m_TypeHandlers.find(typeHandler.getType()) == m_TypeHandlers.cend())
+	if (m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend())
 	{
 		bool success(true);
 
-		std::for_each(typeHandler.getInputTypes().cbegin(), typeHandler.getInputTypes().cend(), [&](std::string typeName)
+		std::for_each(typeHandler->getInputTypes().cbegin(), typeHandler->getInputTypes().cend(), [&](std::string typeName)
 		{
 			if (m_ParseTypes.find(typeName) == m_ParseTypes.cend())
 			{
@@ -282,7 +278,7 @@ void Console::addTypeHandler(const ITypeHandler& typeHandler)
 
 		if (success)
 		{
-			m_TypeHandlers[typeHandler.getType()] = typeHandler;
+			m_TypeHandlers[typeHandler->getType()] = typeHandler;
 		}
 		else
 		{
@@ -291,7 +287,7 @@ void Console::addTypeHandler(const ITypeHandler& typeHandler)
 	}
 	else
 	{
-		std::string s(typeHandler.getType());
+		std::string s(typeHandler->getType());
 
 		std::wstring t;
 		t.append(s.begin(), s.end());

@@ -6,605 +6,602 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="happyengine\audio">
-      <UniqueIdentifier>{749c4f44-9551-41e6-abeb-5a2733149f50}</UniqueIdentifier>
+      <UniqueIdentifier>{b92fc61f-7d3b-454a-a3ae-9b08bf6ac24d}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\content">
-      <UniqueIdentifier>{fda7e520-b1dd-4702-a60d-cb6935986d08}</UniqueIdentifier>
+      <UniqueIdentifier>{b5c1b4ae-1a1d-4dbb-9512-f601255f6b81}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\error">
-      <UniqueIdentifier>{8a39bcdb-d24e-4e92-a7e4-c428d60de480}</UniqueIdentifier>
+      <UniqueIdentifier>{2a335150-4829-4cb2-b72e-1d6f5b57d84c}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\game">
-      <UniqueIdentifier>{8f14cd1f-d814-49c4-b89f-08e75c9bb6d0}</UniqueIdentifier>
+      <UniqueIdentifier>{8b074e8a-b997-4ac7-884d-76f3bd7e4f7c}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\graphics">
-      <UniqueIdentifier>{00313f2f-0fa1-46a6-8eb1-a8dbf8b03c31}</UniqueIdentifier>
+      <UniqueIdentifier>{09e62c86-71c1-42f2-a6ea-34bb4bda4c3a}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\io">
-      <UniqueIdentifier>{e4ca4592-ffa2-45fa-9193-89880fe48b3e}</UniqueIdentifier>
+      <UniqueIdentifier>{8a973bba-4796-4903-bdcc-b591ecf4936f}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\math">
-      <UniqueIdentifier>{8afcab01-08e6-4556-a4d9-b2510e331dc8}</UniqueIdentifier>
+      <UniqueIdentifier>{b2da78b4-adb7-4407-b4fd-3e404f46a2a1}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\networking">
-      <UniqueIdentifier>{62e8ac62-82d5-4e3b-95cc-070e84aed227}</UniqueIdentifier>
+      <UniqueIdentifier>{cfb27d51-3b71-413c-ab9c-4dec52d5f9d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\physics">
-      <UniqueIdentifier>{767ca262-f223-4337-993f-97d48603a99a}</UniqueIdentifier>
+      <UniqueIdentifier>{83d24057-e96f-41be-979f-1f0b11b33c1b}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\template">
-      <UniqueIdentifier>{f1f551a1-bea9-445d-9036-d7c3d49b16ae}</UniqueIdentifier>
+      <UniqueIdentifier>{c96ef572-b747-41e7-91b9-1c732931b4f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\tools">
-      <UniqueIdentifier>{439e0d01-9335-4d97-b884-0878b028cb52}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="happyengine\tools\typehandlers">
-      <UniqueIdentifier>{e208091b-69d1-41c5-98d9-932785e4c06d}</UniqueIdentifier>
+      <UniqueIdentifier>{a409c7a0-f663-490c-9d53-2cfe5fd03e70}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="code files\audio\Sound.cpp">
+    <ClCompile Include="code\audio\Sound.cpp">
       <Filter>happyengine\audio</Filter>
     </ClCompile>
-    <ClCompile Include="code files\audio\SoundManager.cpp">
+    <ClCompile Include="code\audio\SoundManager.cpp">
       <Filter>happyengine\audio</Filter>
     </ClCompile>
-    <ClCompile Include="code files\HappyEngine.cpp">
-      <Filter>happyengine</Filter>
-    </ClCompile>
-    <ClCompile Include="code files\StdAfx.cpp">
-      <Filter>happyengine</Filter>
-    </ClCompile>
-    <ClCompile Include="code files\content\BinObjLineLoader.cpp">
+    <ClCompile Include="code\content\BinObjLineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\BinObjLoader.cpp">
+    <ClCompile Include="code\content\BinObjLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ContentManager.cpp">
+    <ClCompile Include="code\content\ContentManager.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\EntityLoader.cpp">
+    <ClCompile Include="code\content\EntityLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\FontLoader.cpp">
+    <ClCompile Include="code\content\FontLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\LineLoader.cpp">
+    <ClCompile Include="code\content\LineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ModelLoader.cpp">
+    <ClCompile Include="code\content\ModelLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ModelLoaderFunctions.cpp">
+    <ClCompile Include="code\content\ModelLoaderFunctions.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ObjLineLoader.cpp">
+    <ClCompile Include="code\content\ObjLineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ObjLoader.cpp">
+    <ClCompile Include="code\content\ObjLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\PhysicsShapeLoader.cpp">
+    <ClCompile Include="code\content\PhysicsShapeLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ShaderLoader.cpp">
+    <ClCompile Include="code\content\ShaderLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\ShaderPreProcessor.cpp">
+    <ClCompile Include="code\content\ShaderPreProcessor.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\content\TextureLoader.cpp">
+    <ClCompile Include="code\content\TextureLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code files\error\Assert.cpp">
+    <ClCompile Include="code\error\Assert.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
-    <ClCompile Include="code files\error\Exception.cpp">
+    <ClCompile Include="code\error\Exception.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
-    <ClCompile Include="code files\error\ExternalError.cpp">
+    <ClCompile Include="code\error\ExternalError.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
-    <ClCompile Include="code files\error\FileNotFoundException.cpp">
+    <ClCompile Include="code\error\FileNotFoundException.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
-    <ClCompile Include="code files\game\Entity.cpp">
+    <ClCompile Include="code\game\Entity.cpp">
       <Filter>happyengine\game</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Button.cpp">
+    <ClCompile Include="code\graphics\Button.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Camera.cpp">
+    <ClCompile Include="code\graphics\Camera.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Color.cpp">
+    <ClCompile Include="code\graphics\Color.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Deferred3DRenderer.cpp">
+    <ClCompile Include="code\graphics\Deferred3DRenderer.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\DrawManager.cpp">
+    <ClCompile Include="code\graphics\DrawManager.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\DrawSettings.cpp">
+    <ClCompile Include="code\graphics\DrawSettings.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Font.cpp">
+    <ClCompile Include="code\graphics\Font.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\GraphicsEngine.cpp">
+    <ClCompile Include="code\graphics\GraphicsEngine.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Happy2DRenderer.cpp">
+    <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Hitregion.cpp">
+    <ClCompile Include="code\graphics\Hitregion.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Light.cpp">
+    <ClCompile Include="code\graphics\Light.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\LightManager.cpp">
+    <ClCompile Include="code\graphics\LightManager.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Line.cpp">
+    <ClCompile Include="code\graphics\Line.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Material.cpp">
+    <ClCompile Include="code\graphics\Material.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Model.cpp">
+    <ClCompile Include="code\graphics\Model.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\ModelMesh.cpp">
+    <ClCompile Include="code\graphics\ModelMesh.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\PointLight.cpp">
+    <ClCompile Include="code\graphics\PointLight.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Shader.cpp">
+    <ClCompile Include="code\graphics\Shader.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\ShaderLayout.cpp">
+    <ClCompile Include="code\graphics\ShaderLayout.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Simple2DEffect.cpp">
+    <ClCompile Include="code\graphics\Simple2DEffect.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Simple2DTextureEffect.cpp">
+    <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\SimpleForward3DRenderer.cpp">
+    <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\SpotLight.cpp">
+    <ClCompile Include="code\graphics\SpotLight.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Text.cpp">
+    <ClCompile Include="code\graphics\Text.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\TextBox.cpp">
+    <ClCompile Include="code\graphics\TextBox.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Texture2D.cpp">
+    <ClCompile Include="code\graphics\Texture2D.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\Vertex.cpp">
+    <ClCompile Include="code\graphics\Vertex.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\graphics\VertexLayout.cpp">
+    <ClCompile Include="code\graphics\VertexLayout.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\BinaryStream.cpp">
+    <ClCompile Include="code\io\BinaryStream.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\ControlsManager.cpp">
+    <ClCompile Include="code\io\ControlsManager.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\FileReader.cpp">
+    <ClCompile Include="code\io\FileReader.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\IniReader.cpp">
+    <ClCompile Include="code\io\IniReader.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\IniWriter.cpp">
+    <ClCompile Include="code\io\IniWriter.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\Keyboard.cpp">
+    <ClCompile Include="code\io\Keyboard.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\io\Mouse.cpp">
+    <ClCompile Include="code\io\Mouse.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\AABB.cpp">
+    <ClCompile Include="code\math\AABB.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\Circle.cpp">
+    <ClCompile Include="code\math\Circle.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\mat33.cpp">
+    <ClCompile Include="code\math\mat33.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\mat44.cpp">
+    <ClCompile Include="code\math\mat44.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\Random.cpp">
+    <ClCompile Include="code\math\Random.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\Rect.cpp">
+    <ClCompile Include="code\math\Rect.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\Sphere.cpp">
+    <ClCompile Include="code\math\Sphere.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\vec2.cpp">
+    <ClCompile Include="code\math\vec2.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\vec3.cpp">
+    <ClCompile Include="code\math\vec3.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\math\vec4.cpp">
+    <ClCompile Include="code\math\vec4.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="code files\networking\Client.cpp">
+    <ClCompile Include="code\networking\Client.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
-    <ClCompile Include="code files\networking\Message.cpp">
+    <ClCompile Include="code\networking\Message.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
-    <ClCompile Include="code files\networking\NetworkManager.cpp">
+    <ClCompile Include="code\networking\NetworkManager.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
-    <ClCompile Include="code files\networking\Server.cpp">
+    <ClCompile Include="code\networking\Server.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsBoxShape.cpp">
+    <ClCompile Include="code\HappyEngine.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
+    <ClCompile Include="code\StdAfx.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsBoxShape.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsConvexShape.cpp">
+    <ClCompile Include="code\physics\PhysicsConvexShape.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsDynamicActor.cpp">
+    <ClCompile Include="code\physics\PhysicsDynamicActor.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsEngine.cpp">
+    <ClCompile Include="code\physics\PhysicsEngine.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsMaterial.cpp">
+    <ClCompile Include="code\physics\PhysicsMaterial.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsSphereShape.cpp">
+    <ClCompile Include="code\physics\PhysicsSphereShape.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\physics\PhysicsStaticActor.cpp">
+    <ClCompile Include="code\physics\PhysicsStaticActor.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
-    <ClCompile Include="code files\template\X.cpp">
+    <ClCompile Include="code\template\X.cpp">
       <Filter>happyengine\template</Filter>
     </ClCompile>
-    <ClCompile Include="code files\tools\Console.cpp">
+    <ClCompile Include="code\tools\Console.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
-    <ClCompile Include="code files\tools\FPSGraph.cpp">
+    <ClCompile Include="code\tools\FPSGraph.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="code files\audio\Sound.h">
+    <ClInclude Include="code\audio\Sound.h">
       <Filter>happyengine\audio</Filter>
     </ClInclude>
-    <ClInclude Include="code files\audio\SoundManager.h">
+    <ClInclude Include="code\audio\SoundManager.h">
       <Filter>happyengine\audio</Filter>
     </ClInclude>
-    <ClInclude Include="code files\HappyEngine.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
-    <ClInclude Include="code files\HappyNew.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
-    <ClInclude Include="code files\HappyTypes.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
-    <ClInclude Include="code files\StdAfx.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
-    <ClInclude Include="code files\content\AssetContainer.h">
+    <ClInclude Include="code\content\AssetContainer.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\AssetContainerP.h">
+    <ClInclude Include="code\content\AssetContainerP.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\BinObjLineLoader.h">
+    <ClInclude Include="code\content\BinObjLineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\BinObjLoader.h">
+    <ClInclude Include="code\content\BinObjLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ContentManager.h">
+    <ClInclude Include="code\content\ContentManager.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\EntityLoader.h">
+    <ClInclude Include="code\content\EntityLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\FontLoader.h">
+    <ClInclude Include="code\content\FontLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\IModelLoader.h">
+    <ClInclude Include="code\content\IModelLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\LineLoader.h">
+    <ClInclude Include="code\content\LineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ModelLoader.h">
+    <ClInclude Include="code\content\ModelLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ModelLoaderFunctions.h">
+    <ClInclude Include="code\content\ModelLoaderFunctions.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ObjLineLoader.h">
+    <ClInclude Include="code\content\ObjLineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ObjLoader.h">
+    <ClInclude Include="code\content\ObjLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\PhysicsShapeLoader.h">
+    <ClInclude Include="code\content\PhysicsShapeLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ShaderLoader.h">
+    <ClInclude Include="code\content\ShaderLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\ShaderPreProcessor.h">
+    <ClInclude Include="code\content\ShaderPreProcessor.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\content\TextureLoader.h">
+    <ClInclude Include="code\content\TextureLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code files\error\Assert.h">
+    <ClInclude Include="code\error\Assert.h">
       <Filter>happyengine\error</Filter>
     </ClInclude>
-    <ClInclude Include="code files\error\Exception.h">
+    <ClInclude Include="code\error\Exception.h">
       <Filter>happyengine\error</Filter>
     </ClInclude>
-    <ClInclude Include="code files\error\ExternalError.h">
+    <ClInclude Include="code\error\ExternalError.h">
       <Filter>happyengine\error</Filter>
     </ClInclude>
-    <ClInclude Include="code files\error\FileNotFoundException.h">
+    <ClInclude Include="code\error\FileNotFoundException.h">
       <Filter>happyengine\error</Filter>
     </ClInclude>
-    <ClInclude Include="code files\game\Entity.h">
+    <ClInclude Include="code\game\Entity.h">
       <Filter>happyengine\game</Filter>
     </ClInclude>
-    <ClInclude Include="code files\game\IGame.h">
+    <ClInclude Include="code\game\IGame.h">
       <Filter>happyengine\game</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Button.h">
+    <ClInclude Include="code\graphics\Button.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Camera.h">
+    <ClInclude Include="code\graphics\Camera.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Color.h">
+    <ClInclude Include="code\graphics\Color.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Deferred3DRenderer.h">
+    <ClInclude Include="code\graphics\Deferred3DRenderer.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\DrawManager.h">
+    <ClInclude Include="code\graphics\DrawManager.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\DrawSettings.h">
+    <ClInclude Include="code\graphics\DrawSettings.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Font.h">
+    <ClInclude Include="code\graphics\Font.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\GraphicsEngine.h">
+    <ClInclude Include="code\graphics\GraphicsEngine.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Happy2DRenderer.h">
+    <ClInclude Include="code\graphics\Happy2DRenderer.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Hitregion.h">
+    <ClInclude Include="code\graphics\Hitregion.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\IDrawable.h">
+    <ClInclude Include="code\graphics\IDrawable.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Light.h">
+    <ClInclude Include="code\graphics\Light.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\LightManager.h">
+    <ClInclude Include="code\graphics\LightManager.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Line.h">
+    <ClInclude Include="code\graphics\Line.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Material.h">
+    <ClInclude Include="code\graphics\Material.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Model.h">
+    <ClInclude Include="code\graphics\Model.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\ModelMesh.h">
+    <ClInclude Include="code\graphics\ModelMesh.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\PointLight.h">
+    <ClInclude Include="code\graphics\PointLight.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Shader.h">
+    <ClInclude Include="code\graphics\Shader.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\ShaderLayout.h">
+    <ClInclude Include="code\graphics\ShaderLayout.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\ShaderVar.h">
+    <ClInclude Include="code\graphics\ShaderVar.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Simple2DEffect.h">
+    <ClInclude Include="code\graphics\Simple2DEffect.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Simple2DTextureEffect.h">
+    <ClInclude Include="code\graphics\Simple2DTextureEffect.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\SimpleForward3DRenderer.h">
+    <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\SpotLight.h">
+    <ClInclude Include="code\graphics\SpotLight.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Text.h">
+    <ClInclude Include="code\graphics\Text.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\TextBox.h">
+    <ClInclude Include="code\graphics\TextBox.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Texture2D.h">
+    <ClInclude Include="code\graphics\Texture2D.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\Vertex.h">
+    <ClInclude Include="code\graphics\Vertex.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\graphics\VertexLayout.h">
+    <ClInclude Include="code\graphics\VertexLayout.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\BinaryStream.h">
+    <ClInclude Include="code\io\BinaryStream.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\ControlsManager.h">
+    <ClInclude Include="code\io\ControlsManager.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\FileReader.h">
+    <ClInclude Include="code\io\FileReader.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\IniReader.h">
+    <ClInclude Include="code\io\IniReader.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\IniWriter.h">
+    <ClInclude Include="code\io\IniWriter.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\Keyboard.h">
+    <ClInclude Include="code\io\Keyboard.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\Keys.h">
+    <ClInclude Include="code\io\Keys.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\io\Mouse.h">
+    <ClInclude Include="code\io\Mouse.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\AABB.h">
+    <ClInclude Include="code\math\AABB.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\CatmullRomSpline.h">
+    <ClInclude Include="code\math\CatmullRomSpline.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\Circle.h">
+    <ClInclude Include="code\math\Circle.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\ISpline.h">
+    <ClInclude Include="code\math\ISpline.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\LinearSpline.h">
+    <ClInclude Include="code\math\LinearSpline.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\mat33.h">
+    <ClInclude Include="code\math\mat33.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\mat44.h">
+    <ClInclude Include="code\math\mat44.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\MathConstants.h">
+    <ClInclude Include="code\math\MathConstants.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\MathFunctions.h">
+    <ClInclude Include="code\math\MathFunctions.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\Random.h">
+    <ClInclude Include="code\math\Random.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\Rect.h">
+    <ClInclude Include="code\math\Rect.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\Sphere.h">
+    <ClInclude Include="code\math\Sphere.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\vec2.h">
+    <ClInclude Include="code\math\vec2.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\vec3.h">
+    <ClInclude Include="code\math\vec3.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\math\vec4.h">
+    <ClInclude Include="code\math\vec4.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="code files\networking\Client.h">
+    <ClInclude Include="code\networking\Client.h">
       <Filter>happyengine\networking</Filter>
     </ClInclude>
-    <ClInclude Include="code files\networking\Message.h">
+    <ClInclude Include="code\networking\Message.h">
       <Filter>happyengine\networking</Filter>
     </ClInclude>
-    <ClInclude Include="code files\networking\NetworkManager.h">
+    <ClInclude Include="code\networking\NetworkManager.h">
       <Filter>happyengine\networking</Filter>
     </ClInclude>
-    <ClInclude Include="code files\networking\Server.h">
+    <ClInclude Include="code\networking\Server.h">
       <Filter>happyengine\networking</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\IPhysicsShape.h">
+    <ClInclude Include="code\HappyEngine.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\HappyNew.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\HappyTypes.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\StdAfx.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\IPhysicsShape.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsBoxShape.h">
+    <ClInclude Include="code\physics\PhysicsBoxShape.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsConvexShape.h">
+    <ClInclude Include="code\physics\PhysicsConvexShape.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsDynamicActor.h">
+    <ClInclude Include="code\physics\PhysicsDynamicActor.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsEngine.h">
+    <ClInclude Include="code\physics\PhysicsEngine.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsMaterial.h">
+    <ClInclude Include="code\physics\PhysicsMaterial.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsSphereShape.h">
+    <ClInclude Include="code\physics\PhysicsSphereShape.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\physics\PhysicsStaticActor.h">
+    <ClInclude Include="code\physics\PhysicsStaticActor.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
-    <ClInclude Include="code files\template\X.h">
+    <ClInclude Include="code\template\X.h">
       <Filter>happyengine\template</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\Console.h">
+    <ClInclude Include="code\tools\BoolTypeHandler.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\FPSGraph.h">
+    <ClInclude Include="code\tools\Console.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\Vec4TypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\FloatTypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\IntTypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\FPSGraph.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\ITypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\IntTypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\UIntTypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\ITypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\Vec2TypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\UIntTypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\FloatTypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\Vec2TypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\BoolTypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\Vec3TypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code files\tools\Vec3TypeHandler.h">
-      <Filter>happyengine\tools\typehandlers</Filter>
+    <ClInclude Include="code\tools\Vec4TypeHandler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

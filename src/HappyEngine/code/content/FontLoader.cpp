@@ -26,6 +26,7 @@
 #include <sstream>
 
 #include "HappyNew.h"
+#include "Assert.h"
 
 namespace he {
 namespace ct {
@@ -52,6 +53,9 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
         if (pFont == nullptr)
         {
             std::cout << "Error loading font: " << TTF_GetError() << "\n";
+
+			ASSERT(false, "Error loading font!");
+
             return false;
         }
         else
