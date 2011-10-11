@@ -24,7 +24,7 @@ in vec3 passNormal;
 in vec3 passTangent;
 
 out vec4 outColor;
-out vec3 outNormal;
+out vec2 outNormal;
 out vec4 outSGI;
 
 uniform sampler2D diffuseMap;
@@ -54,6 +54,11 @@ void main()
 	vec4 specGlossIll = texture2D(specGlossIllMap, passTexCoord);
 
 	outColor = color.rgba;
-	outNormal = calcNormal(passNormal, passTangent, normal.rgb).xyz;// * 0.5f + 0.5f;
+
+	vec3 n = calcNormal(passNormal, passTangent, normal.rgb);
+	vec2 encNormal = normalize(n.xy) * sqrt(-n.z * 0.5f + 0.5f);
+	encNormal = encNormal * 0.5f + 0.5f;
+	outNormal = encNormal;
+
 	outSGI = vec4(specGlossIll.rgb, 0);
 }

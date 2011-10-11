@@ -141,12 +141,11 @@ void HappyEngine::start(IGame* pGame)
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->initialize();
     m_pGame->load();
 
-    Uint32 prevTicks(SDL_GetTicks());
+    boost::timer t;
     while (m_Quit == false)
     {
-        Uint32 ticks(SDL_GetTicks());
-        float dTime((ticks - prevTicks) / 1000.0f);
-        prevTicks = ticks;  
+        float dTime(static_cast<float>(t.elapsed()));
+        t.restart();
 
         updateLoop(dTime);
         if (m_SubEngines & SubEngine_Graphics)

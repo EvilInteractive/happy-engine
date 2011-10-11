@@ -108,16 +108,16 @@ void MainGame::load()
 
 	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
 	m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-	m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,100.0f);
+	m_pCamera->setLens(16.0f/9.0f,piOverFour,1.0f,1000.0f);
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
-    GRAPHICS->getLightManager()->addPointLight(vec3(0, 1, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10);
-    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
+    GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10);
+    //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
     Random r;
-    for (int i = 0; i < 5; ++i)
-       GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverTwo, 1, 20);
+    for (int i = 0; i < 200; ++i)
+       GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
     GRAPHICS->getLightManager()->addAmbientLight(vec3::zero, Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, 1000);
    
@@ -177,8 +177,8 @@ void MainGame::tick(float dTime)
         std::cout << m_Bullets.size() << "\n";
     }
 
-    m_pSpotLight->setPosition(m_pCamera->getPosition());
-    m_pSpotLight->setDirection(-he::normalize(m_pCamera->getLook()));
+    //m_pSpotLight->setPosition(m_pCamera->getPosition());
+    //m_pSpotLight->setDirection(-he::normalize(m_pCamera->getLook()));
 
 	m_pTestButton->tick();
 

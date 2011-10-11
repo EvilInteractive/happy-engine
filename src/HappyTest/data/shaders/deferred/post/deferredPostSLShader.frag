@@ -20,8 +20,9 @@
 
 #version 150 core
 
-in vec4 passPos;
-in vec4 passWVPos;
+#include "decode.frag"
+
+in vec3 passPos;
 
 out vec4 outColor;
 
@@ -41,26 +42,15 @@ uniform sampler2D normalMap;
 uniform sampler2D sgiMap;
 uniform sampler2D depthMap;
 
-uniform vec2 projAB;
+uniform vec4 projParams;
 uniform SpotLight light;
 
 void main()
 {
-    vec4 ndc = vec4(passPos.xy / passPos.w, 1.0f, 1.0f);
-    vec2 texCoord = ndc.xy * 0.5f + 0.5f;
-	//texCoord.y = 1 - texCoord.y;
-	//texCoord.x = 1 - texCoord.x;
-    
-	vec3 viewRay = vec3(passWVPos.xy / passWVPos.z, 1.0f);
-
-    float depth = texture2D(depthMap, texCoord).x;
-	float linDepth = projAB.y / (depth - projAB.x);
-
-	/*vec4 projPos = vec4(ndc.xy, depth, 1.0f);
-	vec4 vPosVS = invMtxProj * projPos;
-	vec3 position = vPosVS.xyz / vPosVS.w;*/
-
-	vec3 position = viewRay * linDepth; //in viewspace
+    vec2 ndc = passPos.xy / passPos.z;
+    vec2 texCoord = ndc * 0.5f + 0.5f;
+    	
+	vec3 position = getPosition( texture2D(depthMap, texCoord).x, ndc, projParams );
 	
 	vec3 lightDir = light.position - position;
 	float lightDist = length(lightDir);
@@ -79,7 +69,7 @@ void main()
 	float maxInnerSpot = light.cosCutoff + maxFalloffSpot;
 	spot = min(0, (spot - maxInnerSpot)) / (maxFalloffSpot) + 1;
 	
-	vec3 normal = texture2D(normalMap, texCoord).xyz;
+	vec3 normal = getNormal(texture2D(normalMap, texCoord).xy);
 	float dotLightNormal = dot(lightDir, normal);
 
 	if (dotLightNormal <= 0.0f) //pixel is in selfshadow

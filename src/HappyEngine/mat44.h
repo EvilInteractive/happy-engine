@@ -58,13 +58,14 @@ public:
     mat44 operator*(const mat44& mat) const;
     vec3 operator*(const vec3& vec) const;
     vec4 operator*(const vec4& vec) const;
+    float operator()(int row, int column) const;
 
     //getters
     void toFloatArray(float arr[16]) const;
     vec3 getTranslation() const;
     const physx::pubfnd3::PxMat44& getPhyicsMatrix() const;
     mat44 inverse() const;
-
+    
 	//Static
     static const mat44 Identity;
 };

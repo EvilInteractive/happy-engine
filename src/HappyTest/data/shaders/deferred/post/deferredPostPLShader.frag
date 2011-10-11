@@ -23,8 +23,7 @@
 
 #include "decode.frag"
 
-in vec4 passPos;
-in vec4 passWVPos;
+in vec3 passPos;
 out vec4 outColor;
 
 struct PointLight
@@ -41,27 +40,15 @@ uniform sampler2D normalMap;
 uniform sampler2D sgiMap;
 uniform sampler2D depthMap;
 
-uniform vec2 projAB;
-//uniform mat4 invMtxProj;
+uniform vec4 projParams;
 uniform PointLight light;
 
 void main()
 {
-    vec4 ndc = vec4(passPos.xy / passPos.w, 1.0f, 1.0f);
-    vec2 texCoord = ndc.xy * 0.5f + 0.5f;
-	//texCoord.y = 1 - texCoord.y;
-	//texCoord.x = 1 - texCoord.x;
+    vec2 ndc = passPos.xy / passPos.z;
+    vec2 texCoord = ndc * 0.5f + 0.5f;
     
-	vec3 viewRay = vec3(passWVPos.xy / passWVPos.z, 1.0f);
-
-    float depth = texture2D(depthMap, texCoord).x;
-	float linDepth = projAB.y / (depth - projAB.x);
-
-	/*vec4 projPos = vec4(ndc.xy, depth, 1.0f);
-	vec4 vPosVS = invMtxProj * projPos;
-	vec3 position = vPosVS.xyz / vPosVS.w;*/
-
-	vec3 position = viewRay * linDepth; //in viewspace
+	vec3 position = getPosition( texture2D(depthMap, texCoord).x, ndc, projParams );
 
 	vec3 lightDir = light.position - position;
 	float lightDist = length(lightDir);
@@ -72,7 +59,7 @@ void main()
 	lightDir /= lightDist;
     
     //vec3 getNormal(in vec2 packedNormal)
-	vec3 normal = normalize(texture2D(normalMap, texCoord).xyz);//getNormal(texture2D(normalMap, texCoord).xy);
+	vec3 normal = getNormal(texture2D(normalMap, texCoord).xy);
     
 	float dotLightNormal = dot(lightDir, normal);
 
@@ -88,6 +75,5 @@ void main()
 	vec4 color = texture2D(colorMap, texCoord);
 	outColor = vec4(
 		  (dotLightNormal * color.rgb + vec3(spec, spec, spec)) *
-		  light.color * light.multiplier * attenuationValue, 1.0f);		
-	//outColor = vec4(depth, depth, depth, outColor.r);				
+		  light.color * light.multiplier * attenuationValue, 1.0f);
 }

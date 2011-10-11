@@ -90,7 +90,7 @@ private:
     uint m_ShaderPLPos[5]; //5 values
     uint m_ShaderSLPos[7]; //7 values
     uint m_ShaderDLPos[3]; //3 values
-    uint m_ShaderProjAB[SHADERS],
+    uint m_ShaderProjParams[SHADERS],
          m_ShaderWVP[SHADERS],
          m_ShaderWV[SHADERS],
          m_ShaderNearFar[SHADERS],

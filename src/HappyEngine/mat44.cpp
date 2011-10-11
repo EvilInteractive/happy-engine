@@ -199,6 +199,11 @@ mat44 mat44::inverse() const
     return mat44(m_Matrix.inverseRT());
 }
 
+float mat44::operator()( int row, int column ) const
+{
+    return m_Matrix(row, column);
+}
+
 //Static
 const mat44 mat44::Identity = mat44(1, 0, 0, 0,
                                        0, 1, 0, 0,
