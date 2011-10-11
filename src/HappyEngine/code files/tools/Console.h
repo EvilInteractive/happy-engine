@@ -32,6 +32,8 @@
 #include "Font.h"
 #include "TextBox.h"
 #include "Text.h"
+#include <typeinfo>
+#include "ITypeHandler.h"
 
 namespace he {
 namespace tools {
@@ -56,30 +58,50 @@ public:
 	/* GENERAL */
 	void tick();
 	void draw();
+
 	void addMessage(const gui::Text& msg, MSG_TYPE type = MSG_TYPE_INFO);
 	void addMessage(const std::string& msg, MSG_TYPE type = MSG_TYPE_INFO);
 
 	template <typename T>
 	void registerValue(T* pValue, const std::string& valueKey)
 	{
-		if (m_ValueContainer.find(valueKey) != m_ValueContainer.end())
+		if (m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend())
 		{
-			std::string str;
-			str = "Value: '" + valueKey + "' already registered!";
+			if (m_ValueContainer.find(valueKey) != m_ValueContainer.end())
+			{
+				std::string s(valueKey);
 
-			std::wstring wstr;
-			wstr.assign(str.cbegin(), str.cend());
+				std::wstring t;
+				t.append(s.begin(), s.end());
 
-			throw (err::Exception(wstr));
+				std::wstring str;
+				str = L"Value: '" + t + L"' already registered!";
+
+				throw (err::Exception(str));
+			}
+			else
+			{
+				m_ValueContainer[valueKey] = pValue;
+			}
 		}
 		else
 		{
-			m_ValueContainer[valueKey] = pValue;
+			std::string s(typeid(T).name());
+
+			std::wstring t;
+			t.append(s.begin(), s.end());
+
+			std::wstring str;
+			str = L"Type handler for '" + t + L"'not specfied!";
+
+			throw(err::Exception(str));
 		}
 	}
 
+	void addTypeHandler(const ITypeHandler& typeHandler);
+
 	/* SETTERS */
-	void setKeyboardShortcut(SDL_Scancode key);
+	void setKeyboardShortcut(io::Key key);
 	void setMessageColors(	const Color& infoColor = Color(1.0f,1.0f,1.0f),
 							const Color& warningColor = Color(1.0f,1.0f,0.0f),
 							const Color& errorColor = Color(1.0f,0.0f,0.0f),
@@ -97,16 +119,18 @@ private:
 	/* DATAMEMBERS */
 	std::map<std::string, boost::any> m_ValueContainer;
 	std::map<MSG_TYPE, Color> m_MsgColors;
+	std::map<std::string, ITypeHandler> m_TypeHandlers;
 	std::vector<std::pair<MSG_TYPE, std::string> > m_MsgHistory;
-	gui::Text::pointer m_Help;
+	std::map<std::string, char> m_ParseTypes;
 
-	SDL_Scancode m_Shortcut;
+	io::Key m_Shortcut;
 
 	uint m_MaxMsg;
 
 	bool m_bOpen;
 
 	gui::TextBox* m_pTextBox;
+	gui::Text::pointer m_Help;
 
 	gfx::Font::pointer m_pFont;
 

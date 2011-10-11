@@ -29,11 +29,19 @@
 #include <algorithm>
 #include "Exception.h"
 
+#include "BoolTypeHandler.h"
+#include "FloatTypeHandler.h"
+#include "IntTypeHandler.h"
+#include "UIntTypeHandler.h"
+#include "Vec2TypeHandler.h"
+#include "Vec3TypeHandler.h"
+#include "Vec4TypeHandler.h"
+
 namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Console::Console() :	m_Shortcut(SDL_SCANCODE_GRAVE),
+	Console::Console() :	m_Shortcut(io::Key_C),
 						m_MaxMsg(0),
 						m_bOpen(false),
 						m_pTextBox(nullptr)
@@ -60,6 +68,20 @@ Console::Console() :	m_Shortcut(SDL_SCANCODE_GRAVE),
 	m_Help->addLine("'help' (displays help)");
 	m_Help->addLine("'listvars' (displays registered variables and their type)");
 	m_Help->addLine("[ HELP ]");
+
+	m_ParseTypes[typeid(float).name()] = 'f';
+	m_ParseTypes[typeid(std::string).name()] = 's';
+	m_ParseTypes[typeid(int).name()] = 'd';
+	m_ParseTypes[typeid(uint).name()] = 'u';
+	m_ParseTypes[typeid(char).name()] = 'c';
+
+	addTypeHandler(BoolTypeHandler());
+	addTypeHandler(FloatTypeHandler());
+	addTypeHandler(IntTypeHandler());
+	addTypeHandler(UIntTypeHandler());
+	addTypeHandler(Vec2TypeHandler());
+	addTypeHandler(Vec3TypeHandler());
+	addTypeHandler(Vec4TypeHandler());
 }
 
 Console::~Console()
@@ -98,7 +120,40 @@ void Console::processCommand(const std::string& command)
 			{
 				std::string values(s.substr(firstQ + 1, secondQ - 1));
 
+				if (m_TypeHandlers.find(m_ValueContainer[keyWord].type().name()) != m_TypeHandlers.cend())
+				{
+					std::string scanfCommand;
 
+					uint i(0);
+					std::for_each(	m_TypeHandlers[m_ValueContainer[keyWord].type().name()].getInputTypes().cbegin(),
+									m_TypeHandlers[m_ValueContainer[keyWord].type().name()].getInputTypes().cend(),
+									[&](boost::any type)
+					{
+						if (i > 0)
+						{
+							scanfCommand += ",";
+						}
+
+						scanfCommand += "%" + m_ParseTypes[type.type().name()];
+
+						++i;
+					});
+
+					std::vector<boost::any> vars;
+
+					if (sscanf(values.c_str(), scanfCommand.c_str(), &vars)  == static_cast<int>(m_TypeHandlers[m_ValueContainer[keyWord].type().name()].getInputTypes().size()))
+					{
+						m_TypeHandlers[m_ValueContainer[keyWord].type().name()].parse(vars, m_ValueContainer[keyWord]);
+					}
+					else
+					{
+						addMessage("\"" + values + "\" can't be assigned to" + keyWord + "!", MSG_TYPE_ERROR);
+					}
+				}
+				else
+				{
+					addMessage("no type handler specified for this keyword '" + keyWord + "' - type: " + m_ValueContainer[keyWord].type().name() + "!", MSG_TYPE_ERROR);
+				}
 			}
 			else
 			{
@@ -211,8 +266,45 @@ void Console::addMessage(const std::string& msg, MSG_TYPE type)
 	m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, msg));
 }
 
+void Console::addTypeHandler(const ITypeHandler& typeHandler)
+{
+	if (m_TypeHandlers.find(typeHandler.getType()) == m_TypeHandlers.cend())
+	{
+		bool success(true);
+
+		std::for_each(typeHandler.getInputTypes().cbegin(), typeHandler.getInputTypes().cend(), [&](std::string typeName)
+		{
+			if (m_ParseTypes.find(typeName) == m_ParseTypes.cend())
+			{
+				success = false;
+			}
+		});
+
+		if (success)
+		{
+			m_TypeHandlers[typeHandler.getType()] = typeHandler;
+		}
+		else
+		{
+			throw(err::Exception(L"Input types of type handler are not basic types!"));
+		}
+	}
+	else
+	{
+		std::string s(typeHandler.getType());
+
+		std::wstring t;
+		t.append(s.begin(), s.end());
+
+		std::wstring str;
+		str = L"Type handler for '" + t + L"' already added!";
+
+		throw(err::Exception(str));
+	}
+}
+
 /* SETTERS */
-void Console::setKeyboardShortcut(SDL_Scancode key)
+void Console::setKeyboardShortcut(io::Key key)
 {
 	m_Shortcut = key;
 }
