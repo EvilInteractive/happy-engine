@@ -45,7 +45,7 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
 					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
-					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3(845)
+					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console")
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -134,9 +134,8 @@ void MainGame::load()
 
 	m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
-	CONSOLE->registerValue<bool>(&m_bTest, "fps_graph");
 	CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
-	CONSOLE->registerValue<int>(&m_Test3, "test_number");
+	CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
 }
 void MainGame::tick(float dTime)
 {
@@ -193,13 +192,13 @@ void MainGame::draw(float /*dTime*/)
 	using namespace he;
 	using namespace gfx;
 
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
+    /*if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
     {
         ++m_BackgroundIndex;
         if (m_BackgroundIndex > 4)
             m_BackgroundIndex = 0;
         GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
-    }
+    }*/
 
     GRAPHICS->clearAll();
 
@@ -215,32 +214,6 @@ void MainGame::draw(float /*dTime*/)
 
 	// 2D test stuff
 	HE2D->begin();
-			
-		/*shapes::Circle c(vec2(200, 200), 128);
-		HE2D->drawEllipse(c.getPosition(), vec2(c.getRadius()*2, c.getRadius()*2));
-
-		vec2 mPos(CONTROLS->getMouse()->getPosition());
-		HE2D->drawEllipse(mPos, vec2(8, 8));
-
-		shapes::Circle c2((mPos + vec2(200, 200))/2.0f, length(mPos - c.getPosition())/2.0f);
-		std::vector<vec2> tan(c.intersect(c2));
-		HE2D->drawEllipse(c2.getPosition(), vec2(c2.getRadius()*2, c2.getRadius()*2));*/
-
-		/*if (tan.size() > 0)
-		{
-			std::vector<vec2> line1;
-			line1.push_back(mPos);
-			line1.push_back(tan[0]);
-			HE2D->drawPolygon(line1, 2);
-
-			std::vector<vec2> line2;
-			line2.push_back(mPos);
-			line2.push_back(tan[1]);
-			HE2D->drawPolygon(line2, 2);
-		}*/
-
-		//HE2D->setColor(1.0f,0.0f,0.0f);
-		//HE2D->fillEllipse(vec2(200,200), vec2(50,50));
 
 		// GUI elements need to be drawn inside HE2D renderer
 		m_pTestButton->draw();
@@ -248,20 +221,16 @@ void MainGame::draw(float /*dTime*/)
 
 		if (m_bTest2)
 		{
-			std::stringstream stream;
-			stream << "Testing console: " << m_Test3;
-
 			HE2D->setColor(1.0f,0.5f,0.0f);
 			HE2D->setFontVerticalAlignment(Font::VAlignment_Center);
 			HE2D->setFontHorizontalAlignment(Font::HAlignment_Center);
 
-			HE2D->drawString(stream.str(), m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
+			HE2D->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
 		}
 
-		CONSOLE->draw();
+		m_pFPSGraph->draw();
 
-		if (m_bTest)
-			m_pFPSGraph->draw();
+		CONSOLE->draw();
 
 	HE2D->end();
 }

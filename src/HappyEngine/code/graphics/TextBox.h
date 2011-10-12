@@ -75,11 +75,12 @@ private:
 
 	std::string m_DefaultString;
 	std::string m_String;
-	std::string m_StringToDraw;
+	std::string m_Cursor;
 
 	bool m_bActive;
 	bool m_bHasFocus;
 	bool m_bEntered;
+	bool m_bKeyDown;
 
 	gui::Hitregion* m_pHitrect;
 

@@ -36,8 +36,10 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 						m_CurrentDTime(0.0f),
 						m_CurrentFPS(0),
 						m_Interval(0.5f),
-                        m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 10))
+                        m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 10)),
+						m_FPSGraphState(2)
 {
+	CONSOLE->registerValue<int>(&m_FPSGraphState, "show_fps");
 }
 
 
@@ -48,9 +50,6 @@ FPSGraph::~FPSGraph()
 /* GENERAL */
 void FPSGraph::tick(float dTime, float interval)
 {
-	using namespace he;
-	using namespace gfx;
-	
 	m_GameTime += dTime;
 	m_Interval = interval;
 
@@ -72,111 +71,147 @@ void FPSGraph::tick(float dTime, float interval)
 
 void FPSGraph::draw()
 {
-	using namespace he;
-	using namespace gfx;
-
 	if (m_GameTime > m_Interval)
 	{
-		HE2D->setAntiAliasing(false);
-		HE2D->resetTransformation();
-
-		HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
-		HE2D->fillRectangleInstanced(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 40));
-		HE2D->setColor(0.0f,0.0f,0.0f,0.5f);
-		HE2D->setStrokeSize();
-		HE2D->drawRectangleInstanced(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42));
-
-		uint avFPS(getAverageFPS());
-
-		if (avFPS > 80)
-			avFPS = 80;
-
-		HE2D->setColor(0.0f,0.0f,1.0f,0.4f);
-		HE2D->drawLine(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
-						vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
-
-		std::vector<vec2> points;
-
-		uint i(0);
-		
-		if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+		switch (m_FPSGraphState)
 		{
-			i = static_cast<uint>((m_GameTime / m_Interval) - 50);
+			case 0:
+			{
+				break;
+			}
+			case 1:
+			{
+				drawTextOnly();
+				break;
+			}
+			case 2:
+			{
+				drawFull();
+				break;
+			}
 		}
-
-		uint j(0);
-		
-		if (static_cast<uint>(m_GameTime) / m_Interval > 50)
-		{
-			j = static_cast<uint>(m_GameTime / m_Interval);
-		}
-		else
-		{
-			j = m_FpsHistory.size();
-		}
-
-		uint k(1);
-
-		for (; i < j ; ++i)
-		{
-			uint currentFPS(m_FpsHistory[i]);
-
-			if (currentFPS > 80)
-				currentFPS = 80;
-
-			points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
-
-			++k;
-		}
-
-		HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
-		
-		HE2D->resetTransformation();
-		HE2D->setStrokeSize();
-
-		if (points.size() > 0) 
-			HE2D->drawPolygon(points, points.size());
-
-		points.clear();
-
-		if (static_cast<uint>(m_GameTime) / m_Interval > 50)
-		{
-			i = static_cast<uint>((m_GameTime / m_Interval) - 50);
-		}
-		else
-		{
-			i = 0;
-		}
-
-		k = 1;
-
-		for (; i < j ; ++i)
-		{
-			uint currentDTime(static_cast<uint>((1.0f / m_FpsHistory[i]) * 1000.0f));
-
-			if (currentDTime > 80)
-				currentDTime = 80;
-
-			points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
-
-			++k;
-		}
-
-		HE2D->setColor(1.0f,1.0f,0.0f,0.8f);
-
-		if (points.size() > 0) 
-			HE2D->drawPolygon(points, points.size());
-
-		HE2D->setColor(1.0f,1.0f,1.0f);
-
-		std::stringstream stream;
-		stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-		HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 45));
-
-		stream.str("");
-		stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-		HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 58));
 	}
+}
+
+void FPSGraph::drawTextOnly()
+{
+	HE2D->setAntiAliasing(false);
+	HE2D->resetTransformation();
+
+	HE2D->setColor(1.0f,1.0f,1.0f);
+
+	std::stringstream stream;
+	stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
+	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 5));
+
+	stream.str("");
+	stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
+	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 18));
+}
+
+void FPSGraph::drawFull()
+{
+	//using namespace gfx;
+
+	HE2D->setAntiAliasing(false);
+	HE2D->resetTransformation();
+
+	HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
+	HE2D->fillRectangleInstanced(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 40));
+	HE2D->setColor(0.0f,0.0f,0.0f,0.5f);
+	HE2D->setStrokeSize();
+	HE2D->drawRectangleInstanced(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42));
+
+	uint avFPS(getAverageFPS());
+
+	if (avFPS > 80)
+		avFPS = 80;
+
+	HE2D->setColor(0.0f,0.0f,1.0f,0.4f);
+	HE2D->drawLine(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
+					vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
+
+	std::vector<vec2> points;
+
+	uint i(0);
+		
+	if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+	{
+		i = static_cast<uint>((m_GameTime / m_Interval) - 51);
+	}
+
+	uint j(0);
+		
+	if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+	{
+		j = static_cast<uint>(m_GameTime / m_Interval);
+	}
+	else
+	{
+		j = m_FpsHistory.size();
+	}
+
+	uint k(0);
+
+	for (; i < j ; ++i)
+	{
+		uint currentFPS(m_FpsHistory[i]);
+
+		if (currentFPS > 80)
+			currentFPS = 80;
+
+		points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
+
+		++k;
+	}
+
+	HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
+		
+	HE2D->resetTransformation();
+	HE2D->setStrokeSize();
+
+	if (points.size() > 0) 
+		HE2D->drawPolygon(points, points.size());
+
+	points.clear();
+
+	if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+	{
+		i = static_cast<uint>((m_GameTime / m_Interval) - 51);
+	}
+	else
+	{
+		i = 0;
+	}
+
+	k = 0;
+
+	for (; i < j ; ++i)
+	{
+		uint currentDTime(static_cast<uint>((1.0f / m_FpsHistory[i]) * 1000.0f));
+
+		if (currentDTime > 80)
+			currentDTime = 80;
+
+		points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+
+		++k;
+	}
+
+	HE2D->setColor(1.0f,1.0f,0.0f,0.8f);
+
+	if (points.size() > 0) 
+		HE2D->drawPolygon(points, points.size());
+
+	HE2D->setColor(1.0f,1.0f,1.0f);
+
+	std::stringstream stream;
+	stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
+	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 45));
+
+	stream.str("");
+	stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
+	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 58));
 }
 
 /* GETTERS */

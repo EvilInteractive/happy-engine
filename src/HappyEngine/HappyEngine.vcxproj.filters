@@ -603,5 +603,8 @@
     <ClInclude Include="code\tools\Vec4TypeHandler.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
+    <ClInclude Include="code\tools\StringTypeHandler.h">
+      <Filter>happyengine\tools</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

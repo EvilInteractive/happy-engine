@@ -200,6 +200,7 @@
     <ClInclude Include="code\tools\FPSGraph.h" />
     <ClInclude Include="code\tools\IntTypeHandler.h" />
     <ClInclude Include="code\tools\ITypeHandler.h" />
+    <ClInclude Include="code\tools\StringTypeHandler.h" />
     <ClInclude Include="code\tools\UIntTypeHandler.h" />
     <ClInclude Include="code\tools\Vec2TypeHandler.h" />
     <ClInclude Include="code\tools\Vec3TypeHandler.h" />

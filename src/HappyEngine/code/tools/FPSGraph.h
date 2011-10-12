@@ -50,6 +50,9 @@ public:
 
 private:
 
+	void drawTextOnly();
+	void drawFull();
+
 	/* DATAMEMBERS */
 	std::vector<uint> m_FpsHistory;
 
@@ -57,9 +60,12 @@ private:
 	float m_TBase;
 	float m_CurrentDTime;
 	float m_Interval;
+
 	uint m_CurrentFPS;
 	
 	gfx::Font::pointer m_pFont;
+
+	int m_FPSGraphState;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

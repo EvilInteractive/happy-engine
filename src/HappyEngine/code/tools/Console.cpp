@@ -36,6 +36,7 @@
 #include "Vec2TypeHandler.h"
 #include "Vec3TypeHandler.h"
 #include "Vec4TypeHandler.h"
+#include "StringTypeHandler.h"
 
 namespace he {
 namespace tools {
@@ -46,28 +47,29 @@ Console::Console() :	m_Shortcut(io::Key_C),
 						m_bOpen(false),
 						m_pTextBox(nullptr)
 {
-	m_MsgColors[MSG_TYPE_INFO] = Color(0.9f,0.9f,0.9f);
-	m_MsgColors[MSG_TYPE_WARNING] = Color(0.8f,0.8f,0.2f);
-	m_MsgColors[MSG_TYPE_ERROR] = Color(0.8f,0.2f,0.2f);
-	m_MsgColors[MSG_TYPE_ENGINE] = Color(0.2f,0.8f,0.2f);
-	m_MsgColors[MSG_TYPE_COMMAND] = Color(0.2f,0.2f,0.8f);
+	m_MsgColors[MSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
+	m_MsgColors[MSG_TYPE_WARNING] = Color(1.0f,1.0f,0.2f);
+	m_MsgColors[MSG_TYPE_ERROR] = Color(1.0f,0.3f,0.3f);
+	m_MsgColors[MSG_TYPE_ENGINE] = Color(0.2f,1.0f,0.2f);
+	m_MsgColors[MSG_TYPE_COMMAND] = Color(0.2f,0.6f,1.0f);
 
-	m_pFont = CONTENT->loadFont("Ubuntu-Regular.ttf", 11);
+	m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
 	m_pTextBox = NEW gui::TextBox(
 		RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
-		"Enter command...", 11, "Ubuntu-Regular.ttf");
+		"Enter command...", 10, "Ubuntu-Medium.ttf");
 
-	m_pTextBox->setColors(	Color(0.6f,0.6f,0.6f,0.8f),
-							Color(0.9f,0.9f,0.9f),
-							Color(0.0f,0.75f,1.0f),
+	m_pTextBox->setColors(	Color(0.3f,0.3f,0.3f,0.9f),
+							Color(1.0f,1.0f,1.0f),
+							Color(0.4f,0.4f,0.4f),
 							Color(0.19f,0.19f,0.19f));
 
 	m_Help = gui::Text::pointer(NEW gui::Text(m_pFont));
-	m_Help->addLine("[ HELP ]");
-	m_Help->addLine("'help' (displays help)");
+	m_Help->addLine("******** HELP ********");
 	m_Help->addLine("'listvars' (displays registered variables and their type)");
-	m_Help->addLine("[ HELP ]");
+	m_Help->addLine("******** HELP ********");
+
+	m_HelpCommand = "type 'help' to see available commands...";
 
 	m_ParseTypes[typeid(float).name()] = 'f';
 	m_ParseTypes[typeid(std::string).name()] = 's';
@@ -82,6 +84,9 @@ Console::Console() :	m_Shortcut(io::Key_C),
 	addTypeHandler(NEW Vec2TypeHandler());
 	addTypeHandler(NEW Vec3TypeHandler());
 	addTypeHandler(NEW Vec4TypeHandler());
+	addTypeHandler(NEW StringTypeHandler());
+
+	addMessage(m_HelpCommand, MSG_TYPE_INFO);
 }
 
 Console::~Console()
@@ -107,10 +112,14 @@ void Console::processCommand(const std::string& command)
 	// console commands
 	if (s == "help")
 	{
+		addMessage(m_pTextBox->getString(), MSG_TYPE_COMMAND);
+
 		displayHelp();
 	}
 	else if (s == "listvars")
 	{
+		addMessage(m_pTextBox->getString(), MSG_TYPE_COMMAND);
+
 		displayVars();
 	}
 	else if (s.find('=') != -1)
@@ -173,7 +182,7 @@ void Console::displayVars()
 {
 	gui::Text txt(m_pFont);
 
-	txt.addLine("[ VARS ]");
+	txt.addLine("******** VARS ********");
 
 	if (m_ValueContainer.empty())
 	{
@@ -190,7 +199,7 @@ void Console::displayVars()
 		});
 	}
 
-	txt.addLine("[ VARS ]");
+	txt.addLine("******** VARS ********");
 
 	addMessage(txt, MSG_TYPE_INFO);
 }
@@ -203,7 +212,10 @@ void Console::tick()
 		m_bOpen =! m_bOpen;
 		m_pTextBox->resetText();
 
-		addMessage("type 'help' to see available commands...", MSG_TYPE_INFO);
+		if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+		{
+			addMessage(m_HelpCommand, MSG_TYPE_INFO);
+		}
 	}
 
 	if (m_bOpen)
@@ -222,7 +234,7 @@ void Console::draw()
 {
 	if (m_bOpen)
 	{
-		HE2D->setColor(0.70f,0.70f,0.70f,0.8f);
+		HE2D->setColor(0.3f,0.3f,0.3f,0.9f);
 		HE2D->fillRectangleInstanced(	vec2(0,0),
 										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
 
@@ -230,6 +242,8 @@ void Console::draw()
 		HE2D->setColor(0.19f,0.19f,0.19f);
 		HE2D->drawRectangleInstanced(	vec2(0,0),
 										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
+
+		HE2D->setAntiAliasing(false);
 
 		m_pTextBox->draw();
 
@@ -242,7 +256,7 @@ void Console::draw()
 			HE2D->setColor(m_MsgColors[p.first]);
 			HE2D->drawString(p.second, m_pFont, RectF(5,5,
 							static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-							190.0f - (i * (m_pFont->getFontLineSpacing() * 2))));
+							190.0f - (i * m_pFont->getFontLineSpacing())));
 
 			++i;
 		});
@@ -253,13 +267,19 @@ void Console::addMessage(const gui::Text& msg, MSG_TYPE type)
 {
 	std::for_each(msg.getText().cbegin(), msg.getText().cend(), [&](std::string str)
 	{
-		m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, str));
+		if (type == MSG_TYPE_COMMAND)
+			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, "] " + str));
+		else
+			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, str));
 	});
 }
 
 void Console::addMessage(const std::string& msg, MSG_TYPE type)
 {
-	m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, msg));
+	if (type == MSG_TYPE_COMMAND)
+			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, "] " + msg));
+		else
+			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, msg));
 }
 
 void Console::addTypeHandler(ITypeHandler* typeHandler)

@@ -69,15 +69,10 @@ public:
 		{
 			if (m_ValueContainer.find(valueKey) != m_ValueContainer.end())
 			{
-				std::string s(valueKey);
+				std::stringstream str;
+				str << "Value: '" << valueKey << "' already registered!";
 
-				std::wstring t;
-				t.append(s.begin(), s.end());
-
-				std::wstring str;
-				str = L"Value: '" + t + L"' already registered!";
-
-				throw (err::Exception(str));
+				ASSERT(false, str.str());
 			}
 			else
 			{
@@ -86,15 +81,10 @@ public:
 		}
 		else
 		{
-			std::string s(typeid(T).name());
+			std::stringstream str;
+			str << "Type handler for '" << typeid(T).name() << "'not specfied!";
 
-			std::wstring t;
-			t.append(s.begin(), s.end());
-
-			std::wstring str;
-			str = L"Type handler for '" + t + L"'not specfied!";
-
-			throw(err::Exception(str));
+			ASSERT(false, str.str());
 		}
 	}
 
@@ -131,6 +121,7 @@ private:
 
 	gui::TextBox* m_pTextBox;
 	gui::Text::pointer m_Help;
+	std::string m_HelpCommand;
 
 	gfx::Font::pointer m_pFont;
 

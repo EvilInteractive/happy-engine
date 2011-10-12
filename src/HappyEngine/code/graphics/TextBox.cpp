@@ -39,8 +39,9 @@ TextBox::TextBox(RectF posSize,
 													m_bHasFocus(false),
 													m_pHitrect(nullptr),
 													m_CursorPos(0),
-													m_StringToDraw(""),
-													m_bEntered(false)
+													m_Cursor("|"),
+													m_bEntered(false),
+													m_bKeyDown(false)
 {
 	m_pFont = CONTENT->loadFont(customFont, fontSize);
 
@@ -95,16 +96,23 @@ void TextBox::tick()
 				++m_CursorPos;
 			}
 		}
-
 		// check for backspace
-		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Backspace))
+		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Backspace))
 		{
-			// remove last char
+			// remove char before cursor
 			if (m_String.size() > 0)
 			{
-				m_String.erase(m_CursorPos - 1);
+				m_String.erase(m_CursorPos - 1, 1);
 
 				--m_CursorPos;
+			}
+		}
+		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Delete))
+		{
+			// remove char after cursor
+			if (m_String.size() > 0 && m_CursorPos < m_String.size())
+			{
+				m_String.erase(m_CursorPos, 1);
 			}
 		}
 		else
@@ -120,13 +128,6 @@ void TextBox::tick()
 			});
 		}
 
-		m_StringToDraw = m_String;
-
-		if (static_cast<int>(m_BlinkTimer.elapsed() * 100) % 100 < 50)
-		{
-			m_StringToDraw.insert(m_CursorPos, 1, '|');
-		}
-
 		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return) ||
 			CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2))
 		{
@@ -136,10 +137,6 @@ void TextBox::tick()
 		{
 			m_bEntered = false;
 		}
-	}
-	else
-	{
-		m_StringToDraw = m_String;
 	}
 }
 
@@ -178,7 +175,27 @@ void TextBox::draw()
 		}
 		else
 		{
-			HE2D->drawString(m_StringToDraw, m_pFont, textRect);
+			HE2D->drawString(m_String, m_pFont, textRect);
+		}
+
+		if (m_bHasFocus)
+		{
+			if (static_cast<int>(m_BlinkTimer.elapsed() * 100) % 100 < 50)
+			{
+				std::string cursorText(m_String.substr(0, m_CursorPos));
+
+				RectF cursorRect(textRect);
+
+				if (cursorText != "")
+				{
+					uint cursorX(m_pFont->getStringWidth(cursorText));
+					cursorX -= 1;
+
+					cursorRect.x += cursorX;
+				}
+
+				HE2D->drawString(m_Cursor, m_pFont, cursorRect);
+			}
 		}
 	}
 	else
@@ -200,7 +217,7 @@ void TextBox::draw()
 		}
 		else
 		{
-			HE2D->drawString(m_StringToDraw, m_pFont, textRect);
+			HE2D->drawString(m_String, m_pFont, textRect);
 		}
 	}
 }

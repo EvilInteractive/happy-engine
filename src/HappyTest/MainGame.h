@@ -69,7 +69,7 @@ private:
 
 	bool m_bTest;
 	bool m_bTest2;
-	int m_Test3;
+	std::string m_Test3;
     
     std::vector<TestBullet*> m_Bullets;
 
