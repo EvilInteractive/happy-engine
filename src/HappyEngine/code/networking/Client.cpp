@@ -22,6 +22,7 @@
 #include "Client.h"
 #include "HappyNew.h"
 #include "HappyEngine.h"
+#include "NetworkManager.h"
 
 namespace he {
 namespace net {

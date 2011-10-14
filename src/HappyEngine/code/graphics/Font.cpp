@@ -59,7 +59,9 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf)
 	uint width(ceilToPowerOfTwo(pSurf->w)), 
         height(ceilToPowerOfTwo(pSurf->h));
 
-    SDL_Surface* pP2Surf(SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
+	SDL_Surface* pP2Surf(nullptr);
+
+	pP2Surf = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 
     SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_NONE);
 	SDL_BlitSurface(pSurf, 0, pP2Surf, 0);
@@ -122,11 +124,22 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
     col.g = color.gByte();
     col.b = color.bByte();
 
-	SDL_Surface* pSurf(SDL_CreateRGBSurface(0, text.getWidth(), text.getHeight(), 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
+	uint width(0);
+    uint height(0);
+
+	std::for_each(text.getText().cbegin(), text.getText().cend(), [&](std::string str)
+    {
+            if (getStringWidth(str) > width)
+                    width = getStringWidth(str);
+    });
+
+    height = (text.getText().size() * getFontPixelHeight()) + ((text.getText().size() - 1) * getFontLineSpacing());
+
+	SDL_Surface* pSurf(SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
 
 	SDL_Surface* pSTemp(nullptr);
 
-	SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_NONE);
+	SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_ADD);
 
 	uint i(0);
 	std::for_each(text.getText().cbegin(), text.getText().cend(), [&] (std::string str)

@@ -32,10 +32,7 @@ class UIntTypeHandler : public ITypeHandler
 {
 public:
 
-	UIntTypeHandler()
-	{
-		m_InputTypes.push_back(typeid(uint).name());
-	}
+	UIntTypeHandler() {}
 
 	virtual ~UIntTypeHandler() {}
 
@@ -43,7 +40,7 @@ public:
 	{
 		uint i;
 
-		if (sscanf(values.c_str(), "%u", &i) != static_cast<int>(m_InputTypes.size()))
+		if (sscanf(values.c_str(), "%u", &i) != 1)
 			return false;
 	
 		uint& pI = *boost::any_cast<uint*>(pValueToAssign);
@@ -53,19 +50,10 @@ public:
 		return true;
 	}
 
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
-	}
-
 	std::string getType() const
 	{
 		return typeid(uint).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     UIntTypeHandler(const UIntTypeHandler&);

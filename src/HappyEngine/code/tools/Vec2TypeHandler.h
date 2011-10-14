@@ -32,11 +32,7 @@ class Vec2TypeHandler : public ITypeHandler
 {
 public:
 
-	Vec2TypeHandler()
-	{
-		m_InputTypes.push_back(typeid(float).name());
-		m_InputTypes.push_back(typeid(float).name());
-	}
+	Vec2TypeHandler() {}
 
 	virtual ~Vec2TypeHandler() {}
 
@@ -44,7 +40,7 @@ public:
 	{
 		float i[2];
 
-		if (sscanf(values.c_str(), "%f,%f", &i[0], &i[1]) != static_cast<int>(m_InputTypes.size()))
+		if (sscanf(values.c_str(), "%f,%f", &i[0], &i[1]) != 2)
 			return false;
 
 		vec2 v(i[0],i[1]);
@@ -56,19 +52,10 @@ public:
 		return true;
 	}
 
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
-	}
-
 	std::string getType() const
 	{
 		return typeid(vec2).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     Vec2TypeHandler(const Vec2TypeHandler&);

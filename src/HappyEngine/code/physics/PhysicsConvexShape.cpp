@@ -21,6 +21,7 @@
 
 #include "PhysicsConvexShape.h"
 #include "HappyEngine.h"
+#include "PhysicsEngine.h"
 
 namespace he {
 namespace px {

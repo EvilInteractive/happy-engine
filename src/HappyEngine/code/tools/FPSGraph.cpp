@@ -22,7 +22,10 @@
 #include "FPSGraph.h"
 #include "HappyEngine.h"
 #include "vec2.h"
-#include "FontLoader.h"
+#include "ContentManager.h"
+#include "Console.h"
+#include "Happy2DRenderer.h"
+#include "GraphicsEngine.h"
 
 #include <algorithm>
 #include <string>
@@ -39,7 +42,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 10)),
 						m_FPSGraphState(2)
 {
-	CONSOLE->registerValue<int>(&m_FPSGraphState, "show_fps");
+	CONSOLE->registerValue<int>(&m_FPSGraphState, "fps_graph");
 }
 
 

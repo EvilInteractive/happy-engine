@@ -20,6 +20,7 @@
 #include "HappyNew.h"
 #include "HappyEngine.h"
 #include "MathFunctions.h"
+#include "ControlsManager.h"
 
 namespace happytest {
 

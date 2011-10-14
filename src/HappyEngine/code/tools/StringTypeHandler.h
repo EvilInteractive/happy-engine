@@ -32,40 +32,35 @@ class StringTypeHandler : public ITypeHandler
 {
 public:
 
-	StringTypeHandler()
-	{
-		m_InputTypes.push_back(typeid(std::string).name());
-	}
+	StringTypeHandler() {}
 
 	virtual ~StringTypeHandler() {}
 
 	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		char i[256];
-
-		if (sscanf(values.c_str(), "%s", i) != static_cast<int>(m_InputTypes.size()))
-			return false;
-	
 		std::string& pF = *boost::any_cast<std::string*>(pValueToAssign);
 
-		pF = std::string(i);
+		std::string s(values);
 
+		size_t firstQ(s.find("\""));
+        size_t secondQ(s.find("\"", firstQ + 1));
+
+		if (firstQ != -1 && secondQ != -1 && secondQ != firstQ + 1)
+		{
+			s = s.substr(firstQ + 1, (secondQ - firstQ) - 1);
+
+			pF = s;
+		}
+		else
+			return false;
+	
 		return true;
-	}
-
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
 	}
 
 	std::string getType() const
 	{
 		return typeid(std::string).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     StringTypeHandler(const StringTypeHandler&);

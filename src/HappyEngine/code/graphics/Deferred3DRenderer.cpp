@@ -28,6 +28,8 @@
 #include "Assert.h"
 #include "Light.h"
 #include "HappyNew.h"
+#include "GraphicsEngine.h"
+#include "ContentManager.h"
 
 #include <vector>
 

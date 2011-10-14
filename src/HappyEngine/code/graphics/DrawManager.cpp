@@ -23,6 +23,7 @@
 #include "HappyNew.h"
 #include "HappyEngine.h"
 #include "Assert.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {

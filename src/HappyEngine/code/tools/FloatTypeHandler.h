@@ -31,10 +31,7 @@ class FloatTypeHandler : public ITypeHandler
 {
 public:
 
-	FloatTypeHandler()
-	{
-		m_InputTypes.push_back(typeid(float).name());
-	}
+	FloatTypeHandler() {}
 
 	virtual ~FloatTypeHandler() {}
 
@@ -42,7 +39,7 @@ public:
 	{
 		float i;
 
-		if (sscanf(values.c_str(), "%f", &i) != static_cast<int>(m_InputTypes.size()))
+		if (sscanf(values.c_str(), "%f", &i) != 1)
 			return false;
 	
 		float& pF = *boost::any_cast<float*>(pValueToAssign);
@@ -52,19 +49,10 @@ public:
 		return true;
 	}
 
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
-	}
-
 	std::string getType() const
 	{
 		return typeid(float).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     FloatTypeHandler(const FloatTypeHandler&);

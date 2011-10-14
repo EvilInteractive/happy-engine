@@ -22,6 +22,7 @@
 #include "PhysicsStaticActor.h"
 #include "HappyEngine.h"
 #include "Assert.h"
+#include "PhysicsEngine.h"
 
 namespace he {
 namespace px {

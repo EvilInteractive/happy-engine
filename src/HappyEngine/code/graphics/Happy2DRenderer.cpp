@@ -24,6 +24,7 @@
 #include "GL/glew.h"
 #include "HappyEngine.h"
 #include "MathFunctions.h"
+#include "GraphicsEngine.h"
 
 #include <algorithm>
 #include <vector>

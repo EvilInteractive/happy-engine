@@ -32,12 +32,7 @@ class Vec3TypeHandler : public ITypeHandler
 {
 public:
 
-	Vec3TypeHandler()
-	{
-		m_InputTypes.push_back(typeid(float).name());
-		m_InputTypes.push_back(typeid(float).name());
-		m_InputTypes.push_back(typeid(float).name());
-	}
+	Vec3TypeHandler() {}
 
 	virtual ~Vec3TypeHandler() {}
 
@@ -45,7 +40,7 @@ public:
 	{
 		float i[3];
 
-		if (sscanf(values.c_str(), "%f,%f,%f", &i[0], &i[1], &i[2]) != static_cast<int>(m_InputTypes.size()))
+		if (sscanf(values.c_str(), "%f,%f,%f", &i[0], &i[1], &i[2]) != 3)
 			return false;
 
 		vec3 v(i[0],i[1],i[2]);
@@ -57,19 +52,10 @@ public:
 		return true;
 	}
 
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
-	}
-
 	std::string getType() const
 	{
 		return typeid(vec3).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     Vec3TypeHandler(const Vec3TypeHandler&);

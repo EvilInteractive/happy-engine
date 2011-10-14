@@ -26,6 +26,9 @@
 #include <string>
 #include <iostream>
 
+#include "HappyEngine.h"
+#include "Console.h"
+
 namespace he {
 namespace ct {
     
@@ -42,16 +45,13 @@ public:
     }
     void addAsset(const std::string &key, T* asset)
     {        
-        #if defined DEBUG || _DEBUG
-	    std::cout << "Adding Asset: " << key << "\n\n";
-        #endif
+		CONSOLE->addMessage("adding asset: " + key, CMSG_TYPE_ENGINE);
+
 	    m_Map[key] = asset;
     }
 	void removeAsset(const std::string &key)
     {
-	    #if defined DEBUG || _DEBUG
-	    std::cout << "Releasing Asset: " << key << "\n\n";
-        #endif
+	    CONSOLE->addMessage("releasing asset: " + key, CMSG_TYPE_ENGINE);
 
 	    delete m_Map[key];
 	    m_Map.erase(key);
@@ -60,9 +60,7 @@ public:
     {
 	    std::for_each(m_Map.begin(), m_Map.end(), [&](std::pair<std::string, T*> obj)
 	    {
-	        #if defined DEBUG || _DEBUG
-	        std::cout << "Releasing Asset: " << obj.first << "\n\n";
-            #endif
+	        CONSOLE->addMessage("adding asset: " + obj.first, CMSG_TYPE_ENGINE);
 
 			delete obj.second;
 	    });

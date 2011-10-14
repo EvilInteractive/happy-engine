@@ -61,6 +61,7 @@ public:
 	/* SETTERS */
 	void setActive(bool isActive);
 	void setFocus(bool focus);
+	void setString(const std::string& string);
 	void setColors(	const Color& backgroundColor = Color(0.9f,0.9f,0.9f),
 					const Color& textColor = Color(0.2f,0.2f,0.2f),
 					const Color& focusColor = Color(0.0f,0.75f,1.0f),

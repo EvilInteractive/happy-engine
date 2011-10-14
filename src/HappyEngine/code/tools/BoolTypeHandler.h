@@ -23,7 +23,8 @@
 #pragma once
 
 #include "ITypeHandler.h"
-#include "Assert.h"
+#include <string>
+#include <algorithm>
 
 namespace he {
 namespace tools {
@@ -32,43 +33,43 @@ class BoolTypeHandler :	public ITypeHandler
 {
 public:
 
-	BoolTypeHandler()
-	{
-		m_InputTypes.push_back(typeid(int).name());
-	}
+	BoolTypeHandler() {}
 
 	virtual ~BoolTypeHandler() {}
 
 	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		int i;
-
-		if (sscanf(values.c_str(), "%d", &i) != static_cast<int>(m_InputTypes.size()))
-			return false;
-	
 		bool& pB = *boost::any_cast<bool*>(pValueToAssign);
 
-		if (i != 0)
+		std::string s(values);
+
+		s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+		std::transform(s.begin(), s.end(), s.begin(),tolower);
+
+		if (s == "true")
 			pB = true;
-		else
+		else if (s == "false")
 			pB = false;
+		else
+		{
+			int i;
+
+			if (sscanf(values.c_str(), "%d", &i) != 1)
+				return false;
+
+			if (i == 0)
+				pB = false;
+			else if (i > 0)
+				pB = true;
+		}
 
 		return true;
-	}
-
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
 	}
 
 	std::string getType() const
 	{
 		return typeid(bool).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     BoolTypeHandler(const BoolTypeHandler&);

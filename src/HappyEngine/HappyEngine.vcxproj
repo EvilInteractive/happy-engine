@@ -53,6 +53,7 @@
     <ClCompile Include="code\graphics\Model.cpp" />
     <ClCompile Include="code\graphics\ModelMesh.cpp" />
     <ClCompile Include="code\graphics\PointLight.cpp" />
+    <ClCompile Include="code\graphics\Scrollbar.cpp" />
     <ClCompile Include="code\graphics\Shader.cpp" />
     <ClCompile Include="code\graphics\ShaderLayout.cpp" />
     <ClCompile Include="code\graphics\Simple2DEffect.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="code\graphics\Model.h" />
     <ClInclude Include="code\graphics\ModelMesh.h" />
     <ClInclude Include="code\graphics\PointLight.h" />
+    <ClInclude Include="code\graphics\Scrollbar.h" />
     <ClInclude Include="code\graphics\Shader.h" />
     <ClInclude Include="code\graphics\ShaderLayout.h" />
     <ClInclude Include="code\graphics\ShaderVar.h" />

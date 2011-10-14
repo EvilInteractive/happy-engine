@@ -28,6 +28,10 @@
 #include "HappyEngine.h"
 #include <algorithm>
 #include "Exception.h"
+#include "GraphicsEngine.h"
+#include "ContentManager.h"
+#include "ControlsManager.h"
+#include "Happy2DRenderer.h"
 
 #include "BoolTypeHandler.h"
 #include "FloatTypeHandler.h"
@@ -43,15 +47,18 @@ namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Console::Console() :	m_Shortcut(io::Key_C),
-						m_MaxMsg(0),
+						m_MaxMessages(0),
 						m_bOpen(false),
-						m_pTextBox(nullptr)
+						m_pTextBox(nullptr),
+						m_MsgHistory(0),
+						m_CmdHistoryPos(0),
+						m_pScrollBar(nullptr)
 {
-	m_MsgColors[MSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
-	m_MsgColors[MSG_TYPE_WARNING] = Color(1.0f,1.0f,0.2f);
-	m_MsgColors[MSG_TYPE_ERROR] = Color(1.0f,0.3f,0.3f);
-	m_MsgColors[MSG_TYPE_ENGINE] = Color(0.2f,1.0f,0.2f);
-	m_MsgColors[MSG_TYPE_COMMAND] = Color(0.2f,0.6f,1.0f);
+	m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
+	m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.8f,0.2f);
+	m_MsgColors[CMSG_TYPE_ERROR] = Color(1.0f,0.3f,0.3f);
+	m_MsgColors[CMSG_TYPE_ENGINE] = Color(0.2f,1.0f,0.2f);
+	m_MsgColors[CMSG_TYPE_COMMAND] = Color(0.2f,0.6f,1.0f);
 
 	m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
@@ -64,7 +71,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
 							Color(0.4f,0.4f,0.4f),
 							Color(0.19f,0.19f,0.19f));
 
-	m_Help = gui::Text::pointer(NEW gui::Text(m_pFont));
+	m_Help = gui::Text::pointer(NEW gui::Text());
 	m_Help->addLine("******** HELP ********");
 	m_Help->addLine("'listvars' (displays registered variables and their type)");
 	m_Help->addLine("******** HELP ********");
@@ -86,7 +93,24 @@ Console::Console() :	m_Shortcut(io::Key_C),
 	addTypeHandler(NEW Vec4TypeHandler());
 	addTypeHandler(NEW StringTypeHandler());
 
-	addMessage(m_HelpCommand, MSG_TYPE_INFO);
+	addMessage(m_HelpCommand);
+
+	m_CmdHistory.push_back("");
+
+	m_pScrollBar = NEW gui::Scrollbar(
+		vec2(static_cast<float>(GRAPHICS->getScreenWidth()) - 20.0f, 0.0f), vec2(20,200), 50.0f);
+
+	m_pScrollBar->setBarPos(1.0f);
+
+	m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getFontLineSpacing());
+
+	m_ShowMessageTypes[CMSG_TYPE_COMMAND] = true;
+	m_ShowMessageTypes[CMSG_TYPE_INFO] = true;
+	m_ShowMessageTypes[CMSG_TYPE_WARNING] = true;
+	m_ShowMessageTypes[CMSG_TYPE_ERROR] = true;
+	m_ShowMessageTypes[CMSG_TYPE_ENGINE] = true;
+
+	registerValue<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
 }
 
 Console::~Console()
@@ -100,6 +124,7 @@ Console::~Console()
 	m_TypeHandlers.clear();
 
 	delete m_pTextBox;
+	delete m_pScrollBar;
 }
 
 void Console::processCommand(const std::string& command)
@@ -112,13 +137,13 @@ void Console::processCommand(const std::string& command)
 	// console commands
 	if (s == "help")
 	{
-		addMessage(m_pTextBox->getString(), MSG_TYPE_COMMAND);
+		addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
 
 		displayHelp();
 	}
 	else if (s == "listvars")
 	{
-		addMessage(m_pTextBox->getString(), MSG_TYPE_COMMAND);
+		addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
 
 		displayVars();
 	}
@@ -129,58 +154,46 @@ void Console::processCommand(const std::string& command)
 
 		if (m_ValueContainer.find(keyWord) != m_ValueContainer.end())
 		{
-			size_t firstQ(s.find("\"", s.find('=')));
-			size_t secondQ(s.find("\"", firstQ + 1));
+			std::string values(command.substr(command.find('=') + 1, command.size() - 1));
 
-			// check for correct usage of " "
-			if (firstQ != -1 && secondQ != -1 && secondQ != firstQ + 1)
+			std::string type(m_ValueContainer[keyWord].type().name());
+			type = type.substr(0, type.size() - 2);
+
+			if (m_TypeHandlers.find(type) != m_TypeHandlers.cend())
 			{
-				std::string values(s.substr(firstQ + 1, (secondQ - firstQ) - 1));
-
-				std::string type(m_ValueContainer[keyWord].type().name());
-				type = type.substr(0, type.size() - 2);
-
-				if (m_TypeHandlers.find(type) != m_TypeHandlers.cend())
+				if (m_TypeHandlers[type]->parse(values, m_ValueContainer[keyWord]))
 				{
-					
-					if (m_TypeHandlers[type]->parse(values, m_ValueContainer[keyWord]))
-					{
-						addMessage(m_pTextBox->getString(), MSG_TYPE_COMMAND);
-					}
-					else
-					{
-						addMessage("\"" + values + "\" can't be assigned to '" + keyWord + "'!", MSG_TYPE_ERROR);
-					}
+					addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
 				}
 				else
 				{
-					addMessage("no type handler specified for this keyword '" + keyWord + "' - type: " + type + "!", MSG_TYPE_ERROR);
+					addMessage("\"" + values + "\" can't be assigned to '" + keyWord + "' !", CMSG_TYPE_ERROR);
 				}
 			}
 			else
 			{
-				addMessage("please use '" + keyWord + " = \"...\"' to assign a value(s)!", MSG_TYPE_ERROR);
+				addMessage("no type handler specified for this keyword '" + keyWord + "' - type: " + type + "!", CMSG_TYPE_ERROR);
 			}
 		}
 		else
 		{
-			addMessage("the keyword '" + keyWord + "' was not found!", MSG_TYPE_ERROR); 
+			addMessage("the keyword '" + keyWord + "' was not found!", CMSG_TYPE_ERROR); 
 		}
 	}
 	else
 	{
-		addMessage("the command '" + s + "' was not found!", MSG_TYPE_ERROR);
+		addMessage("the command '" + s + "' was not found!", CMSG_TYPE_ERROR);
 	}
 }
 
 void Console::displayHelp()
 {
-	addMessage(*(m_Help.get()), MSG_TYPE_INFO);
+	addMessage(*(m_Help.get()), CMSG_TYPE_INFO);
 }
 
 void Console::displayVars()
 {
-	gui::Text txt(m_pFont);
+	gui::Text txt;
 
 	txt.addLine("******** VARS ********");
 
@@ -201,7 +214,7 @@ void Console::displayVars()
 
 	txt.addLine("******** VARS ********");
 
-	addMessage(txt, MSG_TYPE_INFO);
+	addMessage(txt, CMSG_TYPE_INFO);
 }
 
 /* GENERAL */
@@ -214,7 +227,7 @@ void Console::tick()
 
 		if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
 		{
-			addMessage(m_HelpCommand, MSG_TYPE_INFO);
+			addMessage(m_HelpCommand, CMSG_TYPE_INFO);
 		}
 	}
 
@@ -222,10 +235,49 @@ void Console::tick()
 	{
 		m_pTextBox->tick();
 
+		if (m_MsgHistory.size() > m_MaxMessagesInWindow)
+			m_pScrollBar->tick();
+
+		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
+		{
+			m_pTextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
+
+			if (m_CmdHistoryPos > 0)
+			{
+				--m_CmdHistoryPos;
+			}
+			else
+			{
+				m_CmdHistoryPos = m_CmdHistory.size() - 1;
+			}
+		}
+		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Up))
+		{
+			m_pTextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
+
+			if (m_CmdHistoryPos < m_CmdHistory.size() - 1)
+			{
+				++m_CmdHistoryPos;
+			}
+			else
+			{
+				m_CmdHistoryPos =0;
+			}
+		}
+
 		if (m_pTextBox->entered())
 		{
 			processCommand(m_pTextBox->getString());;
+
+			if (m_CmdHistory[m_CmdHistory.size() - 1] != m_pTextBox->getString())
+			{
+				m_CmdHistory.push_back(m_pTextBox->getString());
+				m_CmdHistoryPos = m_CmdHistory.size() - 1;
+			}
+
 			m_pTextBox->resetText();
+
+			m_pScrollBar->setBarPos(1.0f);
 		}
 	}
 }
@@ -234,6 +286,9 @@ void Console::draw()
 {
 	if (m_bOpen)
 	{
+		HE2D->setAntiAliasing(false);
+		HE2D->setStrokeSize();
+
 		HE2D->setColor(0.3f,0.3f,0.3f,0.9f);
 		HE2D->fillRectangleInstanced(	vec2(0,0),
 										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
@@ -243,80 +298,109 @@ void Console::draw()
 		HE2D->drawRectangleInstanced(	vec2(0,0),
 										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
 
-		HE2D->setAntiAliasing(false);
-
 		m_pTextBox->draw();
 
 		HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Left);
 		HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Bottom);
 
-		uint i(0);
-		std::for_each(m_MsgHistory.crbegin(), m_MsgHistory.crend(), [&](std::pair<MSG_TYPE, std::string> p)
+		std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
+
+		std::for_each(m_MsgHistory.cbegin(), m_MsgHistory.cend(), [&] (std::pair<CMSG_TYPE, std::string> p)
+		{
+			if (m_ShowMessageTypes[p.first] == true)
+				msgHistory.push_back(p);
+		});
+
+		uint startPos(0);
+
+		if (msgHistory.size() > m_MaxMessagesInWindow)
+		{
+			startPos = static_cast<uint>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
+		}
+
+		uint i(startPos);
+		
+		std::vector<std::pair<CMSG_TYPE, std::string> > msg;
+
+		if (msgHistory.size() > m_MaxMessagesInWindow)
+		{
+			for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
+			{
+				msg.push_back(msgHistory[i]);
+			}
+		}
+		else
+		{
+			for (; i < msgHistory.size(); ++i)
+			{
+				msg.push_back(msgHistory[i]);
+			}
+		}
+
+		uint k(0);
+		std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
 		{
 			HE2D->setColor(m_MsgColors[p.first]);
 			HE2D->drawString(p.second, m_pFont, RectF(5,5,
 							static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-							190.0f - (i * m_pFont->getFontLineSpacing())));
+							190.0f - (k * m_pFont->getFontLineSpacing())));
 
-			++i;
+			++k;
 		});
+
+		if (msgHistory.size() > m_MaxMessagesInWindow)
+			m_pScrollBar->draw();
 	}
 }
 
-void Console::addMessage(const gui::Text& msg, MSG_TYPE type)
+void Console::addMessage(const gui::Text& msg, CMSG_TYPE type)
 {
 	std::for_each(msg.getText().cbegin(), msg.getText().cend(), [&](std::string str)
 	{
-		if (type == MSG_TYPE_COMMAND)
-			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, "] " + str));
+		if (type == CMSG_TYPE_COMMAND)
+			m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, "] " + str));
 		else
-			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, str));
+			m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, str));
 	});
+
+	if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
+	{
+		m_MsgHistory.erase(m_MsgHistory.begin());
+	}
 }
 
-void Console::addMessage(const std::string& msg, MSG_TYPE type)
+void Console::addMessage(const std::string& msg, CMSG_TYPE type)
 {
-	if (type == MSG_TYPE_COMMAND)
-			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, "] " + msg));
-		else
-			m_MsgHistory.push_back(std::pair<MSG_TYPE, std::string>(type, msg));
+	if (type == CMSG_TYPE_COMMAND)
+		m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, "] " + msg));
+	else
+		m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, msg));
+
+	if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
+	{
+		m_MsgHistory.erase(m_MsgHistory.begin());
+	}
 }
 
 void Console::addTypeHandler(ITypeHandler* typeHandler)
 {
 	if (m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend())
 	{
-		bool success(true);
-
-		std::for_each(typeHandler->getInputTypes().cbegin(), typeHandler->getInputTypes().cend(), [&](std::string typeName)
-		{
-			if (m_ParseTypes.find(typeName) == m_ParseTypes.cend())
-			{
-				success = false;
-			}
-		});
-
-		if (success)
-		{
-			m_TypeHandlers[typeHandler->getType()] = typeHandler;
-		}
-		else
-		{
-			throw(err::Exception(L"Input types of type handler are not basic types!"));
-		}
+		m_TypeHandlers[typeHandler->getType()] = typeHandler;
 	}
 	else
 	{
 		std::string s(typeHandler->getType());
 
-		std::wstring t;
-		t.append(s.begin(), s.end());
-
-		std::wstring str;
-		str = L"Type handler for '" + t + L"' already added!";
-
-		throw(err::Exception(str));
+		ASSERT(false, "Type handler for '" + s + "' already added!");
 	}
+}
+
+void Console::flushMessageHistory()
+{
+	m_MsgHistory.clear();
+
+	addMessage(m_HelpCommand);
 }
 
 /* SETTERS */
@@ -331,16 +415,21 @@ void Console::setMessageColors(	const Color& infoColor,
 								const Color& engineColor,
 								const Color& commandColor)
 {
-	m_MsgColors[MSG_TYPE_INFO] = infoColor;
-	m_MsgColors[MSG_TYPE_WARNING] = warningColor;
-	m_MsgColors[MSG_TYPE_ERROR] = errorColor;
-	m_MsgColors[MSG_TYPE_ENGINE] = engineColor;
-	m_MsgColors[MSG_TYPE_COMMAND] = commandColor;
+	m_MsgColors[CMSG_TYPE_INFO] = infoColor;
+	m_MsgColors[CMSG_TYPE_WARNING] = warningColor;
+	m_MsgColors[CMSG_TYPE_ERROR] = errorColor;
+	m_MsgColors[CMSG_TYPE_ENGINE] = engineColor;
+	m_MsgColors[CMSG_TYPE_COMMAND] = commandColor;
 }
 
 void Console::setMaxMsgHistory(uint maxMessages)
 {
-	m_MaxMsg = maxMessages;
+	m_MaxMessages = maxMessages;
+}
+
+void Console::toggleShowMessages(CMSG_TYPE type, bool show)
+{
+	m_ShowMessageTypes[type] = show;
 }
 
 } } //end namespace

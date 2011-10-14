@@ -16,56 +16,60 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 09/10/2011
+//Created: 12/10/2011
 
-#ifndef _HE_TEXT_H_
-#define _HE_TEXT_H_
+#ifndef _HE_SCROLLBAR_H_
+#define _HE_SCROLLBAR_H_
 #pragma once
 
-#include "Font.h"
-#include <string>
-#include <vector>
-#include "boost/shared_ptr.hpp"
+#include "Vec2.h"
+#include <map>
+#include "Hitregion.h"
+#include "Color.h"
 
 namespace he {
 namespace gui {
 
-class Text
+class Scrollbar
 {
 public:
 
-	typedef boost::shared_ptr<Text> pointer;
-
 	/* CONSTRUCTOR - DESTRUCTOR */
-	Text(uint maxWidth = 0, uint maxHeight = 0);
-    virtual ~Text();
+	Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar);
+    virtual ~Scrollbar();
 
 	/* GENERAL */
-	void addLine(const std::string& string);
+	void tick();
+	void draw();
 
 	/* SETTERS */
-	void setLine(const std::string& string, uint lineNumber);
+	void setBarPos(float barPos);
+	void setColors(	const Color& backgroundColor = Color(0.6f,0.6f,0.6f),
+					const Color& scrollbarColor = Color(0.7f,0.7f,0.7f),
+					const Color& edgeColor = Color(0.1f,0.1f,0.1f));
 
 	/* GETTERS */
-	const std::string& getLine(uint lineNumber) const;
-	const std::vector<std::string>& getText() const;
-
-	bool isEmpty() const;
-
-	uint getMaxWidth() const;
-	uint getMaxHeight() const;
+	float getBarPos() const;
 
 private:
 
 	/* DATAMEMBERS */
-	std::vector<std::string> m_Text;
+	std::map<std::string, Color> m_Colors;
 
-	uint m_MaxWidth;
-	uint m_MaxHeight;
+	Hitregion* m_pHitregion;
 
-    /* DEFAULT COPY & ASSIGNMENT */
-    Text(const Text&);
-    Text& operator=(const Text&);
+	float m_BarPos;
+	float m_ScrollbarHeight;
+
+	bool m_bDragging;
+
+	vec2 m_Pos;
+	vec2 m_Size;
+	vec2 m_PreviousMousePos;
+
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    Scrollbar(const Scrollbar&);
+    Scrollbar& operator=(const Scrollbar&);
 };
 
 } } //end namespace

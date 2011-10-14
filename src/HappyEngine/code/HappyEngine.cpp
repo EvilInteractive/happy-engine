@@ -26,6 +26,14 @@
 #include "IL/il.h"
 #include "IL/ilu.h"
 
+#include "GraphicsEngine.h"
+#include "ControlsManager.h"
+#include "PhysicsEngine.h"
+#include "ContentManager.h"
+#include "NetworkManager.h"
+#include "Happy2DRenderer.h"
+#include "Console.h"
+
 namespace he {
 
 HappyEngine* HappyEngine::s_pHappyEngine = nullptr;

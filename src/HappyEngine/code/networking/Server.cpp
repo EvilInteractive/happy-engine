@@ -24,6 +24,7 @@
 #include "Assert.h"
 #include "boost/bind.hpp"
 #include "HappyEngine.h"
+#include "NetworkManager.h"
 
 namespace he {
 namespace net {

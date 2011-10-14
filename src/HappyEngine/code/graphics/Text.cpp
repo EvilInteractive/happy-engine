@@ -27,9 +27,8 @@ namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Text::Text(const gfx::Font::pointer& pFont, uint width, uint height) :	m_pFont(pFont),
-																			m_Width(width),
-																			m_Height(height)
+Text::Text(uint maxWidth, uint maxHeight) :	m_MaxWidth(maxWidth),
+											m_MaxHeight(maxHeight)
 {
 }
 
@@ -37,27 +36,10 @@ Text::~Text()
 {
 }
 
-void Text::calculateWidthHeight()
-{
-	m_Width = 0;
-	m_Height = 0;
-
-	std::for_each(m_Text.cbegin(), m_Text.cend(), [&](std::string str)
-	{
-		if (m_pFont->getStringWidth(str) > m_Width)
-			m_Width = m_pFont->getStringWidth(str);
-	});
-
-	m_Height = (m_Text.size() * m_pFont->getFontPixelHeight()) + 
-			((m_Text.size() - 1) * m_pFont->getFontLineSpacing());
-}
-
 /* GENERAL */
 void Text::addLine(const std::string& string)
 {
 	m_Text.push_back(string);
-
-	calculateWidthHeight();
 }
 
 /* SETTERS */
@@ -66,16 +48,7 @@ void Text::setLine(const std::string& string, uint lineNumber)
 	if (lineNumber < m_Text.size())
 	{
 		m_Text[lineNumber] = string;
-
-		calculateWidthHeight();
 	}
-}
-
-void Text::setText(const std::vector<std::string> text)
-{
-	m_Text = text;
-
-	calculateWidthHeight();
 }
 
 /* GETTERS */
@@ -94,14 +67,14 @@ bool Text::isEmpty() const
 	return m_Text.empty();
 }
 
-uint Text::getWidth() const
+uint Text::getMaxWidth() const
 {
-	return m_Width;
+	return m_MaxWidth;
 }
 
-uint Text::getHeight() const
+uint Text::getMaxHeight() const
 {
-	return m_Height;
+	return m_MaxHeight;
 }
 
 } } //end namespace

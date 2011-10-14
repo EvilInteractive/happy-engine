@@ -29,13 +29,28 @@
 
 #include "IGame.h"
 
-#include "GraphicsEngine.h"
-#include "ControlsManager.h"
-#include "PhysicsEngine.h"
-#include "ContentManager.h"
-#include "NetworkManager.h"
-#include "Happy2DRenderer.h"
-#include "Console.h"
+// forward declaration
+namespace he {
+namespace gfx {
+	class GraphicsEngine;
+	class Happy2DRenderer;
+}
+namespace io {
+	class ControlsManager;
+}
+namespace px {
+	class PhysicsEngine;
+}
+namespace ct {
+	class ContentManager;
+}
+namespace net {
+	class NetworkManager;
+}
+namespace tools {
+	class Console;
+}
+}
 
 #define HAPPYENGINE he::HappyEngine::getPointer()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()

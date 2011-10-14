@@ -88,7 +88,7 @@ vec2 Hitregion::getSize() const
 
 vec2 Hitregion::getPosition() const
 {
-	return m_matWorld.getTranslation();
+	return m_Pos;
 }
 
 Hitregion::TYPE Hitregion::getType() const

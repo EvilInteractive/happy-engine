@@ -20,6 +20,8 @@
 #include "MathConstants.h"
 #include "HappyEngine.h"
 #include "HappyEngine.h"
+#include "ContentManager.h"
+#include "ControlsManager.h"
 
 namespace happytest {
 

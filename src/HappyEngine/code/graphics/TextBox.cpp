@@ -24,6 +24,9 @@
 #include "SDL.h"
 #include <algorithm>
 #include "HappyEngine.h"
+#include "ContentManager.h"
+#include "Happy2DRenderer.h"
+#include "ControlsManager.h"
 
 namespace he {
 namespace gui {
@@ -253,6 +256,12 @@ void TextBox::setActive(bool isActive)
 void TextBox::setFocus(bool focus)
 {
 	m_bHasFocus = focus;
+}
+
+void TextBox::setString(const std::string& string)
+{
+	m_String = string;
+	m_CursorPos = string.size();
 }
 
 void TextBox::setColors(	const Color& backgroundColor,

@@ -31,10 +31,7 @@ class IntTypeHandler : public ITypeHandler
 {
 public:
 
-	IntTypeHandler()
-	{
-		m_InputTypes.push_back(typeid(int).name());
-	}
+	IntTypeHandler() {}
 
 	virtual ~IntTypeHandler() {}
 
@@ -42,7 +39,7 @@ public:
 	{
 		int i;
 
-		if (sscanf(values.c_str(), "%d", &i) != static_cast<int>(m_InputTypes.size()))
+		if (sscanf(values.c_str(), "%d", &i) != 1)
 			return false;
 	
 		int& pI = *boost::any_cast<int*>(pValueToAssign);
@@ -52,19 +49,10 @@ public:
 		return true;
 	}
 
-	const std::vector<std::string>& getInputTypes() const
-	{
-		return m_InputTypes;
-	}
-
 	std::string getType() const
 	{
 		return typeid(int).name();
 	}
-
-private:
-
-	std::vector<std::string> m_InputTypes;
 
     //Disable default copy constructor and default assignment operator
     IntTypeHandler(const IntTypeHandler&);

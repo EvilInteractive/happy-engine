@@ -286,6 +286,9 @@
     <ClCompile Include="code\tools\FPSGraph.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\Scrollbar.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\audio\Sound.h">
@@ -605,6 +608,9 @@
     </ClInclude>
     <ClInclude Include="code\tools\StringTypeHandler.h">
       <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Scrollbar.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

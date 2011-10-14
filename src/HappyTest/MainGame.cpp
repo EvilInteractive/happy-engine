@@ -28,6 +28,13 @@
 #include "MathConstants.h"
 #include "HappyEngine.h"
 #include "MathFunctions.h"
+#include "NetworkManager.h"
+#include "GraphicsEngine.h"
+#include "ContentManager.h"
+#include "Console.h"
+#include "ControlsManager.h"
+#include "Happy2DRenderer.h"
+#include "PhysicsEngine.h"
 
 #include "IniReader.h"
 #include "FileNotFoundException.h"
@@ -136,6 +143,7 @@ void MainGame::load()
 
 	CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
 	CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
+	CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
 }
 void MainGame::tick(float dTime)
 {

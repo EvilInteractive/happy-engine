@@ -26,6 +26,7 @@
 #include "VertexLayout.h"
 #include "Texture2D.h"
 #include "FileNotFoundException.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace ct {
