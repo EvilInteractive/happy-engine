@@ -44,7 +44,7 @@ void HappyCooker::dispose()
     s_pSingleton = nullptr;
 }
 
-HappyCooker::HappyCooker(): m_pPhysicsEngine(new happyengine::physics::PhysicsEngine())
+HappyCooker::HappyCooker(): m_pPhysicsEngine(new he::px::PhysicsEngine())
 {
 }
 
@@ -56,20 +56,20 @@ HappyCooker::~HappyCooker()
 
 bool HappyCooker::cookObjToConvex(const char* input, const char* output)
 {
-    using namespace happyengine;
+    using namespace he;
 
     std::cout << "\nhappycooker cooking: " << input << " to " << output << "\n";
 
-    content::models::ObjLoader objLoader;
+    ct::models::ObjLoader objLoader;
 
-    graphics::VertexLayout layout;
-    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position,
-        sizeof(math::Vector3), 0));
+    gfx::VertexLayout layout;
+    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Position,
+        sizeof(vec3), 0));
 
     try { objLoader.load(input, layout, false); }
-    catch (error::FileNotFoundException e)
+    catch (err::FileNotFoundException e)
     {
-        std::wcout << "error while trying to read obj: " << e.getMsg();
+        std::wcout << "err while trying to read obj: " << e.getMsg();
         return false;
     }
     std::cout << "starting cooking... \n";
@@ -82,7 +82,7 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
     }
     io::BinaryStream stream(output, io::BinaryStream::Write);
 
-    byte numMeshes(static_cast<byte>(math::min<uint>(objLoader.getNumMeshes(), 255)));
+    byte numMeshes(static_cast<byte>(min<uint>(objLoader.getNumMeshes(), 255)));
     stream.storeByte(numMeshes);
     bool succes(true);
     for (uint i = 0; i < numMeshes; ++i)
@@ -92,9 +92,9 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
         PxConvexMeshDesc desc;   
         switch (objLoader.getIndexStride(i))
         {
-            case graphics::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
-            case graphics::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
-            case graphics::IndexStride_UInt: break;
+            case gfx::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
+            case gfx::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
+            case gfx::IndexStride_UInt: break;
             default: ASSERT("unkown indexType"); break;
         }
  
@@ -128,22 +128,22 @@ bool HappyCooker::cookObjToConvex(const char* input, const char* output)
 
 bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
 {
-    using namespace happyengine;
+    using namespace he;
 
     std::cout << "\nhappycooker cooking: " << input << " to " << output << "\n";
 
-    content::models::ObjLoader objLoader;
+    ct::models::ObjLoader objLoader;
 
-    graphics::VertexLayout layout;
-    layout.addElement(graphics::VertexElement(0, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Position, sizeof(math::Vector3), 0));
-    layout.addElement(graphics::VertexElement(1, graphics::VertexElement::Type_Vector2, graphics::VertexElement::Usage_TextureCoordinate, sizeof(math::Vector2), 12));
-    layout.addElement(graphics::VertexElement(2, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Normal, sizeof(math::Vector3), 20));
-    layout.addElement(graphics::VertexElement(3, graphics::VertexElement::Type_Vector3, graphics::VertexElement::Usage_Tangent, sizeof(math::Vector3), 32));
+    gfx::VertexLayout layout;
+    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Position, sizeof(vec3), 0));
+    layout.addElement(gfx::VertexElement(1, gfx::VertexElement::Type_Vector2, gfx::VertexElement::Usage_TextureCoordinate, sizeof(vec2), 12));
+    layout.addElement(gfx::VertexElement(2, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Normal, sizeof(vec3), 20));
+    layout.addElement(gfx::VertexElement(3, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Tangent, sizeof(vec3), 32));
 
     try { objLoader.load(input, layout, true); }
-    catch (error::FileNotFoundException e)
+    catch (err::FileNotFoundException e)
     {
-        std::wcout << "error while trying to read obj: " << e.getMsg();
+        std::wcout << "err while trying to read obj: " << e.getMsg();
         return false;
     }
     
@@ -168,16 +168,16 @@ bool HappyCooker::cookObjToBinObj(const char* input, const char* output)
 
 bool HappyCooker::cookObjLineToBinObj(const char* input, const char* output)
 {
-    using namespace happyengine;
+    using namespace he;
 
     std::cout << "happycooker cooking: " << input << " to " << output << "\n";
 
-    content::lines::ObjLineLoader objLoader;
+    ct::lines::ObjLineLoader objLoader;
 
     try { objLoader.load(input); }
-    catch (error::FileNotFoundException e)
+    catch (err::FileNotFoundException e)
     {
-        std::wcout << "error while trying to read obj: " << e.getMsg();
+        std::wcout << "err while trying to read obj: " << e.getMsg();
         return false;
     }
     
@@ -187,7 +187,7 @@ bool HappyCooker::cookObjLineToBinObj(const char* input, const char* output)
 
     io::BinaryStream stream(output, io::BinaryStream::Write);
     stream.storeDword(objLoader.getPoints().size());
-    stream.storeBuffer(&objLoader.getPoints()[0], sizeof(math::Vector3) * objLoader.getPoints().size());
+    stream.storeBuffer(&objLoader.getPoints()[0], sizeof(vec3) * objLoader.getPoints().size());
     stream.storeDword(objLoader.getIndices().size());
     stream.storeBuffer(&objLoader.getIndices()[0], sizeof(ushort) * objLoader.getIndices().size());
     std::cout << "cooking successful! :)\n";

@@ -16,41 +16,49 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 17/08/2011
+//Created: 14/10/2011
 
-#ifndef _HE_LIGHT_H_
-#define _HE_LIGHT_H_
+#ifndef _HE_DOWNSAMPLER_H_
+#define _HE_DOWNSAMPLER_H_
 #pragma once
 
-#include "vec3.h"
-#include "boost/shared_ptr.hpp"
-#include "Rect.h"
-#include "Camera.h"
-#include "MathFunctions.h"
-
-#include "SpotLight.h"
-#include "PointLight.h"
+#include <vector>
+#include "HappyTypes.h"
+#include "Texture2D.h"
+#include "Shader.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
 
-class AmbientLight
+class DownSampler
 {
 public:
-    float multiplier;
-    vec3 color;
+	DownSampler();
+    virtual ~DownSampler();
 
-    typedef boost::shared_ptr<AmbientLight> pointer;
-};
-class DirectionalLight
-{
-public:
+    void init(byte downScales);
 
-    vec3 direction;
-    vec3 color;
-    float multiplier;
+    byte getDownSampleLevels() const;
+    const Texture2D::pointer& getSample(byte downSampleLevel);
 
-    typedef boost::shared_ptr<DirectionalLight> pointer;
+    void downSample(const Texture2D::pointer& pTexture);
+
+private:
+    
+    std::vector<uint> m_TextureId;
+    std::vector<uint> m_FboId;
+    std::vector<Texture2D::pointer> m_Texture;
+
+    Shader::pointer m_pDownSamplerShader;
+    uint m_TexMapPos;
+    uint m_InvScalePos;
+
+    ModelMesh::pointer m_pMesh;
+
+    //Disable default copy constructor and default assignment operator
+    DownSampler(const DownSampler&);
+    DownSampler& operator=(const DownSampler&);
 };
 
 } } //end namespace

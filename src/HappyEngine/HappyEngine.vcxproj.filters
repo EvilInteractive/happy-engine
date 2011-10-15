@@ -38,6 +38,15 @@
     <Filter Include="happyengine\tools">
       <UniqueIdentifier>{a409c7a0-f663-490c-9d53-2cfe5fd03e70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\light">
+      <UniqueIdentifier>{c37f6bf1-e922-4f8c-9827-674c1ec4529c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\deferred">
+      <UniqueIdentifier>{8f6bfd73-75d8-41f0-8754-3b64a5ee31b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\material">
+      <UniqueIdentifier>{51f036ce-23dc-4044-8152-5d90d1537473}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\audio\Sound.cpp">
@@ -112,9 +121,6 @@
     <ClCompile Include="code\graphics\Color.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Deferred3DRenderer.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\DrawManager.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
@@ -133,31 +139,13 @@
     <ClCompile Include="code\graphics\Hitregion.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Light.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\LightManager.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Line.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Material.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Model.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\ModelMesh.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\PointLight.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Shader.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\ShaderLayout.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Simple2DEffect.cpp">
@@ -167,9 +155,6 @@
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\SpotLight.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Text.cpp">
@@ -289,6 +274,36 @@
     <ClCompile Include="code\graphics\Scrollbar.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\PointLight.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Light.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\LightManager.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\SpotLight.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Deferred3DRenderer.cpp">
+      <Filter>happyengine\graphics\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Shader.cpp">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\ShaderLayout.cpp">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Material.cpp">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DownSampler.cpp">
+      <Filter>happyengine\graphics\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Bloom.cpp">
+      <Filter>happyengine\graphics\deferred</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\audio\Sound.h">
@@ -372,12 +387,6 @@
     <ClInclude Include="code\graphics\Camera.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Color.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Deferred3DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\DrawManager.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
@@ -399,34 +408,13 @@
     <ClInclude Include="code\graphics\IDrawable.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Light.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\LightManager.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Line.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Material.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Model.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\ModelMesh.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\PointLight.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Shader.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\ShaderLayout.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\ShaderVar.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Simple2DEffect.h">
@@ -436,9 +424,6 @@
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\SpotLight.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Text.h">
@@ -611,6 +596,42 @@
     </ClInclude>
     <ClInclude Include="code\graphics\Scrollbar.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Color.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\PointLight.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Light.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\LightManager.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\SpotLight.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Deferred3DRenderer.h">
+      <Filter>happyengine\graphics\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Shader.h">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ShaderLayout.h">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ShaderVar.h">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Material.h">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DownSampler.h">
+      <Filter>happyengine\graphics\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Bloom.h">
+      <Filter>happyengine\graphics\deferred</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,6 +30,7 @@
 #include "Texture2D.h"
 #include "LightManager.h"
 #include "Camera.h"
+#include "DownSampler.h"
 
 namespace he {
 namespace gfx {
@@ -53,16 +54,16 @@ public:
 private:
     static VertexLayout s_VertexLayoutLightVolume;
 
-    void postAmbientLights();
+    void postAmbIllLight();
     void postPointLights();
     void postSpotLights();
-    void postDirectionalLights();
+    void postToneMap();
 
-    uint m_FboId;
-
+    //FBO 1
+    uint m_CollectionFboId;
     // Textures:
     //      - Color.rgb, ill       GL_RGBA8
-    //      - spec, gloss, depth   GL_RGBA8
+    //      - spec, gloss,         GL_RGBA8
     //      - Normal.xy            GL_R16G16
     //      - Depth                GL_DEPTH24_STENCIL8
     static const int TEXTURES = 4;
@@ -70,40 +71,48 @@ private:
     static const int TEXTURE_INTERNALFORMAT[TEXTURES];
     static const int TEXTURE_ATTACHMENT[TEXTURES];
     uint m_TextureId[TEXTURES];
-    uint m_DepthBufferId;
-
-    enum LightType
-    {
-        LightType_AmbientLight = 0,
-        LightType_PointLight = 1,
-        LightType_SpotLight = 2,
-        LightType_DirectionalLight = 3
-    };
-
-    static const int SHADERS = 4;
-    Shader* m_pPostShader[SHADERS];
-    uint m_ShaderColMapPos[SHADERS], 
-         m_ShaderNormalMapPos[SHADERS], 
-         m_ShaderSGIMapPos[SHADERS],
-         m_ShaderDepthMapPos[SHADERS];
-    uint m_ShaderALPos[2]; //2 values
-    uint m_ShaderPLPos[5]; //5 values
-    uint m_ShaderSLPos[7]; //7 values
-    uint m_ShaderDLPos[3]; //3 values
-    uint m_ShaderProjParams[SHADERS],
-         m_ShaderWVP[SHADERS],
-         m_ShaderWV[SHADERS],
-         m_ShaderNearFar[SHADERS],
-         m_ShaderTopRight[SHADERS],
-         m_ShaderInvMtxProj[SHADERS];
-
-    ModelMesh::pointer m_pModel;
-
     Texture2D::pointer m_pTexture[TEXTURES];
 
-    LightManager* m_pLightManager;
+    //FBO 2
+    uint m_RenderFboId;
+    uint m_RenderTextureId;
+    Texture2D::pointer m_pRenderTexture;
+
+    //SHARED FBO
+    uint m_DepthBufferId;
+
+    enum LightVolumeType
+    {
+        LightVolumeType_PointLight = 0,
+        LightVolumeType_SpotLight = 1
+    };
+
+    static const int LIGHTVOLUME_SHADERS = 2;
+    Shader* m_pPostLightVolumeShader[LIGHTVOLUME_SHADERS];
+    uint m_ShaderLVColMapPos[LIGHTVOLUME_SHADERS], 
+         m_ShaderLVNormalMapPos[LIGHTVOLUME_SHADERS], 
+         m_ShaderLVSGMapPos[LIGHTVOLUME_SHADERS],
+         m_ShaderLVDepthMapPos[LIGHTVOLUME_SHADERS];
+    uint m_ShaderLVPLPos[5]; //5 values
+    uint m_ShaderLVSLPos[7]; //7 values
+    uint m_ShaderLVProjParams[LIGHTVOLUME_SHADERS],
+         m_ShaderLVWVP[LIGHTVOLUME_SHADERS];
     
+    Shader* m_pAmbIllShader;
+    uint m_ShaderAmbIllPos[3]; //3 values
+
+    Shader* m_pToneMapShader;
+    uint m_ToneMapShaderPos[7]; //7 values
+    float m_Exposure;
+    float m_Gamma;
+
+    ModelMesh::pointer m_pQuad;
+    LightManager* m_pLightManager;   
     const Camera* m_pCamera;
+    DownSampler* m_pDownSampler;
+
+    bool m_ShowDebugTextures;
+    bool m_Bloom;
     
     //Disable default copy constructor and default assignment operator
     Deferred3DRenderer(const Deferred3DRenderer&);

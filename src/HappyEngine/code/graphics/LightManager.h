@@ -37,10 +37,8 @@ public:
 	LightManager();
     virtual ~LightManager();
 
-    AmbientLight::pointer addAmbientLight(const vec3& pos, 
-                                          const Color&         color, 
-                                          float                multiplier, 
-                                          float                range);
+    const AmbientLight::pointer& setAmbientLight(const Color&         color, 
+                                                 float                multiplier);
 
     PointLight::pointer addPointLight(const vec3&  pos, 
                                       const Color&          color, 
@@ -56,27 +54,26 @@ public:
                                     float                   beginAttenuation, 
                                     float                   endAttentuation);
 
-    DirectionalLight::pointer addDirectionalLight(const vec3&  direction, 
-                                                  const Color&          color, 
-                                                  float                 multiplier);
+    //DirectionalLight::pointer addDirectionalLight(const vec3&  direction, 
+    //                                              const Color&          color, 
+    //                                             float                 multiplier);
 
-    const std::vector<AmbientLight::pointer>& getAmbientLights() const;
+    const AmbientLight::pointer& getAmbientLight() const;
     const std::vector<PointLight::pointer>& getPointLights() const;
     const std::vector<SpotLight::pointer>& getSpotLights() const;
-    const std::vector<DirectionalLight::pointer>& getDirectionalLights() const;
+    //const std::vector<DirectionalLight::pointer>& getDirectionalLights() const;
 
     void removeAllLights();
-    void remove(const AmbientLight::pointer& pLight);
     void remove(const PointLight::pointer& pLight);
     void remove(const SpotLight::pointer& pLight);
-    void remove(const DirectionalLight::pointer& pLight);
+    //void remove(const DirectionalLight::pointer& pLight);
 
 private:
 
-    std::vector<AmbientLight::pointer> m_AmbientLightVector;
+    AmbientLight::pointer m_pAmbientLight;
     std::vector<PointLight::pointer> m_PointLightVector;
     std::vector<SpotLight::pointer> m_SpotLightVector;
-    std::vector<DirectionalLight::pointer> m_DirectionalLightVector;
+    //std::vector<DirectionalLight::pointer> m_DirectionalLightVector;
 
     //Disable default copy constructor and default assignment operator
     LightManager(const LightManager&);

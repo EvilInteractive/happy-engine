@@ -25,13 +25,13 @@
 #include "Assert.h"
 #define assert ASSERT
 #include "PhysicsEngine.h"
-#include "Vector3.h"
+#include "vec3.h"
 
 namespace happycooker {
 
 struct VertexPos
 {
-    happyengine::math::Vector3 position;
+    he::vec3 position;
 };
 
 class HappyCooker
@@ -50,7 +50,7 @@ private:
     static HappyCooker* s_pSingleton;
 	HappyCooker();
 
-    happyengine::physics::PhysicsEngine* m_pPhysicsEngine;
+    he::px::PhysicsEngine* m_pPhysicsEngine;
 
     //Disable default copy constructor and default assignment operator
     HappyCooker(const HappyCooker&);

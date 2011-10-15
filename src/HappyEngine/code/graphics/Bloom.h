@@ -15,44 +15,28 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 17/08/2011
+//Author:  
+//Created: //
 
-#ifndef _HE_LIGHT_H_
-#define _HE_LIGHT_H_
+#ifndef _HE_X_H_
+#define _HE_X_H_
 #pragma once
 
-#include "vec3.h"
-#include "boost/shared_ptr.hpp"
-#include "Rect.h"
-#include "Camera.h"
-#include "MathFunctions.h"
-
-#include "SpotLight.h"
-#include "PointLight.h"
-
 namespace he {
-namespace gfx {
 
-class AmbientLight
+class X
 {
 public:
-    float multiplier;
-    vec3 color;
+	X();
+    virtual ~X();
 
-    typedef boost::shared_ptr<AmbientLight> pointer;
-};
-class DirectionalLight
-{
-public:
+private:
 
-    vec3 direction;
-    vec3 color;
-    float multiplier;
-
-    typedef boost::shared_ptr<DirectionalLight> pointer;
+    //Disable default copy constructor and default assignment operator
+    X(const X&);
+    X& operator=(const X&);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

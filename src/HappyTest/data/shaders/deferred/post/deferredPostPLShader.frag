@@ -35,9 +35,9 @@ struct PointLight
     float endAttenuation;
 };
 
-uniform sampler2D colorMap;
+uniform sampler2D colorIllMap;
 uniform sampler2D normalMap;
-uniform sampler2D sgiMap;
+uniform sampler2D sgMap;
 uniform sampler2D depthMap;
 
 uniform vec4 projParams;
@@ -58,21 +58,20 @@ void main()
 
 	lightDir /= lightDist;
     
-    //vec3 getNormal(in vec2 packedNormal)
-	vec3 normal = getNormal(texture2D(normalMap, texCoord).xy);
+	vec3 normal = decodeNormal(texture2D(normalMap, texCoord).xy);
     
 	float dotLightNormal = dot(lightDir, normal);
 
 	if (dotLightNormal <= 0.0f) //pixel is in selfshadow
 		discard;
 	
-	vec4 sgi = texture2D(sgiMap, texCoord);	
+	vec4 sg = texture2D(sgMap, texCoord);	
 	vec3 vCamDir = normalize(-position);
-	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.g * 100.0f) * sgi.r);
+	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
 
 	float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
 
-	vec4 color = texture2D(colorMap, texCoord);
+	vec4 color = texture2D(colorIllMap, texCoord);
 	outColor = vec4(
 		  (dotLightNormal * color.rgb + vec3(spec, spec, spec)) *
 		  light.color * light.multiplier * attenuationValue, 1.0f);

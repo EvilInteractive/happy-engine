@@ -19,6 +19,8 @@
 
 #version 150 core
 
+#include "encode.frag"
+
 in vec2 passTexCoord;
 in vec3 passNormal;
 in vec3 passTangent;
@@ -53,12 +55,9 @@ void main()
 	vec4 normal = texture2D(normalMap, passTexCoord);
 	vec4 specGlossIll = texture2D(specGlossIllMap, passTexCoord);
 
-	outColor = color.rgba;
+	outColor = vec4(color.rgb, specGlossIll.b);
 
-	vec3 n = calcNormal(passNormal, passTangent, normal.rgb);
-	vec2 encNormal = normalize(n.xy) * sqrt(-n.z * 0.5f + 0.5f);
-	encNormal = encNormal * 0.5f + 0.5f;
-	outNormal = encNormal;
+	outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal.rgb));
 
-	outSGI = vec4(specGlossIll.rgb, 0);
+	outSGI = vec4(specGlossIll.rg, 0.0f, 0.0f);
 }

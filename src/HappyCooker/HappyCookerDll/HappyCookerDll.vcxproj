@@ -50,7 +50,7 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>..\..\HappyEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\HappyEngine\code\math;..\..\HappyEngine\code\graphics;..\..\HappyEngine\code\content;..\..\HappyEngine\code\error;..\..\HappyEngine\code;..\..\HappyEngine\code\physics;..\..\HappyEngine\code\io;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>

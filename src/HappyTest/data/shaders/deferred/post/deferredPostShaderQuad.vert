@@ -22,11 +22,10 @@
 
 in vec3 inPosition;
 
-out vec2 texCoord;
+noperspective out vec2 texCoord;
 
 void main()
 {
     gl_Position = vec4(inPosition, 1.0f);
 	texCoord = inPosition.xy * 0.5 + 0.5f;
-	//texCoord.x = 1 - texCoord.x;
 }

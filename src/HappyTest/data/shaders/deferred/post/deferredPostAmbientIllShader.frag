@@ -16,43 +16,27 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 17/08/2011
+//Created: 18/08/2011
 
-#ifndef _HE_LIGHT_H_
-#define _HE_LIGHT_H_
-#pragma once
+#version 150 core
 
-#include "vec3.h"
-#include "boost/shared_ptr.hpp"
-#include "Rect.h"
-#include "Camera.h"
-#include "MathFunctions.h"
+noperspective in vec2 texCoord;
 
-#include "SpotLight.h"
-#include "PointLight.h"
+out vec4 outColor;
 
-namespace he {
-namespace gfx {
-
-class AmbientLight
+struct AmbientLight
 {
-public:
     float multiplier;
     vec3 color;
-
-    typedef boost::shared_ptr<AmbientLight> pointer;
-};
-class DirectionalLight
-{
-public:
-
-    vec3 direction;
-    vec3 color;
-    float multiplier;
-
-    typedef boost::shared_ptr<DirectionalLight> pointer;
 };
 
-} } //end namespace
+uniform sampler2D colorIllMap;
 
-#endif
+uniform AmbientLight light;
+
+void main()
+{    
+	vec4 color = texture2D(colorIllMap, texCoord);
+	
+	outColor = vec4(color.rgb * light.color * light.multiplier + color.rgb * color.a * 100.0f, 1.0f);						
+}

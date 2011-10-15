@@ -36,6 +36,8 @@
     <ClCompile Include="code\error\ExternalError.cpp" />
     <ClCompile Include="code\error\FileNotFoundException.cpp" />
     <ClCompile Include="code\game\Entity.cpp" />
+    <ClCompile Include="code\graphics\Bloom.cpp" />
+    <ClCompile Include="code\graphics\DownSampler.cpp" />
     <ClCompile Include="code\graphics\Button.cpp" />
     <ClCompile Include="code\graphics\Camera.cpp" />
     <ClCompile Include="code\graphics\Color.cpp" />
@@ -125,6 +127,8 @@
     <ClInclude Include="code\error\FileNotFoundException.h" />
     <ClInclude Include="code\game\Entity.h" />
     <ClInclude Include="code\game\IGame.h" />
+    <ClInclude Include="code\graphics\Bloom.h" />
+    <ClInclude Include="code\graphics\DownSampler.h" />
     <ClInclude Include="code\graphics\Button.h" />
     <ClInclude Include="code\graphics\Camera.h" />
     <ClInclude Include="code\graphics\Color.h" />

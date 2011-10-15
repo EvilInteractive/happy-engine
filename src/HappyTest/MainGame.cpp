@@ -119,14 +119,20 @@ void MainGame::load()
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
-    GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10);
+    gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
     //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
     Random r;
-    for (int i = 0; i < 200; ++i)
-       GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
+    for (int i = 0; i < 50; ++i)
+    {
+        vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
+        color = normalize(color);
+        GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(0, -100), r.nextFloat(3, 7), r.nextFloat(0, 100)), 
+                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 50), 1, r.nextFloat(10, 30));
+    }
+       //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
-    GRAPHICS->getLightManager()->addAmbientLight(vec3::zero, Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f, 1000);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f);
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
