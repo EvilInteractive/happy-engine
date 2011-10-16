@@ -15,28 +15,62 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 16/10/2011
 
-#ifndef _HE_X_H_
-#define _HE_X_H_
+#ifndef _HE_BLOOM_H_
+#define _HE_BLOOM_H_
 #pragma once
 
-namespace he {
+#include <vector>
+#include "HappyTypes.h"
+#include "Texture2D.h"
+#include "Shader.h"
+#include "ModelMesh.h"
 
-class X
+namespace he {
+namespace gfx {
+
+class Bloom
 {
 public:
-	X();
-    virtual ~X();
+	Bloom();
+    virtual ~Bloom();
+
+    void init();
+
+    const Texture2D::pointer& getBloom(byte level) const;
+
+    void render( const Texture2D::pointer& pTexture, float exposure );
 
 private:
+    
+    std::vector<uint> m_FboId[2];
+    std::vector<Texture2D::pointer> m_Texture[2];
+    
+    Shader::pointer m_pDownSampleBrightPassShader;
+    uint m_DownSampleBrightPassMap;
+    uint m_DownSampleBrightPassInvScale;
+    uint m_DownSampleBrightPassExposure;
+
+    Shader::pointer m_pDownSampleShader;
+    uint m_DownSampleMap;
+    uint m_DownSampleInvScale;
+
+    Shader::pointer m_pBlurShaderPass[2];
+    uint m_BlurMapPos[2];
+    uint m_BlurTexelSize[2];
+    uint m_BlurInvScale[2];
+        
+    byte m_DownSamples;
+
+    ModelMesh::pointer m_pMesh;
 
     //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
+    Bloom(const Bloom&);
+    Bloom& operator=(const Bloom&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

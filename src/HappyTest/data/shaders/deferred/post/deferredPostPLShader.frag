@@ -73,6 +73,6 @@ void main()
 
 	vec4 color = texture2D(colorIllMap, texCoord);
 	outColor = vec4(
-		  (dotLightNormal * color.rgb + vec3(spec, spec, spec)) *
+		  (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 20) *
 		  light.color * light.multiplier * attenuationValue, 1.0f);
 }

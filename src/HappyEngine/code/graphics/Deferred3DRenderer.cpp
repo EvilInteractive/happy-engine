@@ -31,6 +31,7 @@
 #include "HappyNew.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
+#include "ExternalError.h"
 
 #include <vector>
 
@@ -50,7 +51,7 @@ VertexLayout Deferred3DRenderer::s_VertexLayoutLightVolume = VertexLayout();
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_pQuad(NEW ModelMesh("deferred3DRenderer_QUAD")), 
             m_pLightManager(NEW LightManager()),
-            m_pDownSampler(NEW DownSampler()),
+            m_pBloom(NEW Bloom()),
             m_pRenderTexture(NEW Texture2D()),
             m_Exposure(0.5f),
             m_Gamma(1.0f),
@@ -97,11 +98,13 @@ Deferred3DRenderer::Deferred3DRenderer():
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    m_pDownSampler->init(4);
+    m_pBloom->init();
 
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
     //////////////////////////////////////////////////////////////////////////
+
+    //FBO Collection
     glGenFramebuffers(1, &m_CollectionFboId);
     glBindFramebuffer(GL_FRAMEBUFFER, m_CollectionFboId);
 
@@ -109,51 +112,22 @@ Deferred3DRenderer::Deferred3DRenderer():
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, TEXTURE_ATTACHMENT[i], GL_TEXTURE_2D, m_TextureId[i], 0);
     }
+    err::checkFboStatus("deferred collection");
 
-    GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (err != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Woops something went wrong with the collect framebuffer\n";
-        switch (err)
-        {
-            case GL_FRAMEBUFFER_UNDEFINED: std::cout << "GL_FRAMEBUFFER_UNDEFINED\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER\n"; break;
-            case GL_FRAMEBUFFER_UNSUPPORTED: std::cout << "GL_FRAMEBUFFER_UNSUPPORTED\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS\n"; break;
-            default: std::cout << "GL_UNKOWN_ERROR\n"; break;
-        }
-    }
-
+    //Fbo Render
     glGenFramebuffers(1, &m_RenderFboId);
     glBindFramebuffer(GL_FRAMEBUFFER, m_RenderFboId);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RenderTextureId, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_TextureId[3], 0);
 
-    err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (err != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Woops something went wrong with the render framebuffer\n";
-        switch (err)
-        {
-            case GL_FRAMEBUFFER_UNDEFINED: std::cout << "GL_FRAMEBUFFER_UNDEFINED\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER\n"; break;
-            case GL_FRAMEBUFFER_UNSUPPORTED: std::cout << "GL_FRAMEBUFFER_UNSUPPORTED\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE\n"; break;
-            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: std::cout << "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS\n"; break;
-            default: std::cout << "GL_UNKOWN_ERROR\n"; break;
-        }
-    }
+    err::checkFboStatus("deferred render");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    //////////////////////////////////////////////////////////////////////////
+    ///                                                                    ///
+    //////////////////////////////////////////////////////////////////////////
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_TRUE); //disable enable writing to depth buffer
@@ -219,8 +193,9 @@ Deferred3DRenderer::Deferred3DRenderer():
     m_ToneMapShaderPos[2] = m_pToneMapShader->getShaderSamplerId("blur1");
     m_ToneMapShaderPos[3] = m_pToneMapShader->getShaderSamplerId("blur2");
     m_ToneMapShaderPos[4] = m_pToneMapShader->getShaderSamplerId("blur3");
-    m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderVarId("exposure");
-    m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderVarId("gamma");
+    //m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderSamplerId("depth");
+    m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderVarId("exposure");
+    m_ToneMapShaderPos[7] = m_pToneMapShader->getShaderVarId("gamma");
 
     //////////////////////////////////////////////////////////////////////////
     ///                         LOAD RENDER QUAD                           ///
@@ -253,7 +228,7 @@ Deferred3DRenderer::~Deferred3DRenderer()
     delete m_pAmbIllShader;
     delete m_pToneMapShader;
     delete m_pLightManager;
-    delete m_pDownSampler;
+    delete m_pBloom;
 }
 
 const VertexLayout& Deferred3DRenderer::getVertexLayoutLightVolume() 
@@ -336,7 +311,7 @@ void Deferred3DRenderer::end()
 
     glDisable(GL_BLEND);
     if (m_Bloom)
-        m_pDownSampler->downSample(m_pRenderTexture);
+        m_pBloom->render(m_pRenderTexture, m_Exposure);
     //////////////////////////////////////////////////////////////////////////
     ///                             Pass 2                                 ///
     //////////////////////////////////////////////////////////////////////////
@@ -362,10 +337,10 @@ void Deferred3DRenderer::end()
         HE2D->drawTexture2D(m_pTexture[1], vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
         HE2D->drawTexture2D(m_pTexture[2], vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
         HE2D->drawTexture2D(m_pTexture[3], vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
-        HE2D->drawTexture2D(m_pDownSampler->getSample(0), vec2(12 * 1 + 256 * 0, 12*2+144), vec2(256, 144));
-        HE2D->drawTexture2D(m_pDownSampler->getSample(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
-        HE2D->drawTexture2D(m_pDownSampler->getSample(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
-        HE2D->drawTexture2D(m_pDownSampler->getSample(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
+        HE2D->drawTexture2D(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12*2+144), vec2(256, 144));
+        HE2D->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
+        HE2D->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
+        HE2D->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
         glEnable(GL_BLEND);
         HE2D->end();
     }
@@ -425,12 +400,13 @@ void Deferred3DRenderer::postSpotLights()
 void Deferred3DRenderer::postToneMap()
 {
     m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[0], m_pRenderTexture);
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[1], m_pDownSampler->getSample(0));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[2], m_pDownSampler->getSample(1));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[3], m_pDownSampler->getSample(2));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[4], m_pDownSampler->getSample(3));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_Exposure);
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_Gamma);
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[1], m_pBloom->getBloom(0));
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[2], m_pBloom->getBloom(1));
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[3], m_pBloom->getBloom(2));
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[4], m_pBloom->getBloom(3));
+    //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_pTexture[3]);
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_Exposure);
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_Gamma);
     draw(m_pQuad);
 }
 

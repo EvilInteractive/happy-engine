@@ -30,7 +30,7 @@
 #include "Texture2D.h"
 #include "LightManager.h"
 #include "Camera.h"
-#include "DownSampler.h"
+#include "Bloom.h"
 
 namespace he {
 namespace gfx {
@@ -102,14 +102,14 @@ private:
     uint m_ShaderAmbIllPos[3]; //3 values
 
     Shader* m_pToneMapShader;
-    uint m_ToneMapShaderPos[7]; //7 values
+    uint m_ToneMapShaderPos[8]; //8 values
     float m_Exposure;
     float m_Gamma;
 
     ModelMesh::pointer m_pQuad;
     LightManager* m_pLightManager;   
     const Camera* m_pCamera;
-    DownSampler* m_pDownSampler;
+    Bloom* m_pBloom;
 
     bool m_ShowDebugTextures;
     bool m_Bloom;

@@ -88,7 +88,15 @@ bool validateProgram(GLuint programID)
 
     return succes;
 }
-bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderlayout, const std::vector<std::string>& outputs)
+bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout)
+{
+    return init(vsPath, fsPath, shaderLayout, std::set<std::string>(), std::vector<std::string>());
+}
+bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+{
+    return init(vsPath, fsPath, shaderLayout, std::set<std::string>(), outputs);
+}
+bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
 {
     ASSERT(m_Id != -1, "no need to init twice");
     bool succes = true;
@@ -101,8 +109,8 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Sh
     std::string strFS;
     try 
     {
-        strVS = ct::details::ShaderPreProcessor::process(vsPath, std::set<std::string>());       
-        strFS = ct::details::ShaderPreProcessor::process(fsPath, std::set<std::string>());
+        strVS = ct::details::ShaderPreProcessor::process(vsPath, defines);       
+        strFS = ct::details::ShaderPreProcessor::process(fsPath, defines);
     }
     catch (const err::FileNotFoundException& e)
     { std::wcout << e.getMsg(); return false; }
@@ -125,7 +133,7 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Sh
     glAttachShader(m_Id, m_VsId);
     glAttachShader(m_Id, m_FsId);
 
-    const ShaderLayout::layout& layout(shaderlayout.getElements());
+    const ShaderLayout::layout& layout(shaderLayout.getElements());
     std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
     {
         glBindAttribLocation(m_Id, e.getElementIndex(), e.getShaderVariableName().c_str());

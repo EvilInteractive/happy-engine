@@ -26,6 +26,8 @@
 #include "SDL.h"
 #include <iostream>
 #include "PxPhysicsAPI.h"
+#include "HappyEngine.h"
+#include "Console.h"
 
 namespace he {
 namespace err {
@@ -52,6 +54,26 @@ inline void sdlHandleError(int err)
     if (err != 0)
     {
         std::cout << "***SDL err*** " << SDL_GetError() << "\n";
+    }
+}
+inline void checkFboStatus(const std::string& name)
+{
+    GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (err != GL_FRAMEBUFFER_COMPLETE)
+    {
+        CONSOLE->addMessage("Woops something went wrong with the " + name + " framebuffer", CMSG_TYPE_ERROR);
+        switch (err)
+        {
+            case GL_FRAMEBUFFER_UNDEFINED: CONSOLE->addMessage("GL_FRAMEBUFFER_UNDEFINED", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: CONSOLE->addMessage("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: CONSOLE->addMessage("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: CONSOLE->addMessage("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: CONSOLE->addMessage("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_UNSUPPORTED: CONSOLE->addMessage("GL_FRAMEBUFFER_UNSUPPORTED", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: CONSOLE->addMessage("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE", CMSG_TYPE_ERROR); break;
+            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: CONSOLE->addMessage("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS", CMSG_TYPE_ERROR); break;
+            default: CONSOLE->addMessage("GL_UNKOWN_ERROR", CMSG_TYPE_ERROR); break;
+        }
     }
 }
 

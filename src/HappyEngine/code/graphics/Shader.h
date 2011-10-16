@@ -22,6 +22,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 #include "ShaderLayout.h"
 
 #include "mat44.h"
@@ -42,8 +43,9 @@ public:
 	Shader();
     virtual ~Shader();
 
-    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, 
-              const std::vector<std::string>& outputs = std::vector<std::string>());
+    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout);
+    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
 
     void begin();
     void end();

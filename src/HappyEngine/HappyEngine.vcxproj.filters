@@ -298,9 +298,6 @@
     <ClCompile Include="code\graphics\Material.cpp">
       <Filter>happyengine\graphics\material</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\DownSampler.cpp">
-      <Filter>happyengine\graphics\deferred</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Bloom.cpp">
       <Filter>happyengine\graphics\deferred</Filter>
     </ClCompile>
@@ -626,9 +623,6 @@
     </ClInclude>
     <ClInclude Include="code\graphics\Material.h">
       <Filter>happyengine\graphics\material</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\DownSampler.h">
-      <Filter>happyengine\graphics\deferred</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Bloom.h">
       <Filter>happyengine\graphics\deferred</Filter>

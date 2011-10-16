@@ -34,16 +34,6 @@ uniform sampler2D blur3;
 uniform float exposure;
 uniform float gamma;
 
-vec3 bloom(in vec3 hdr)
-{
-    vec3 value = hdr * exposure;
-    value -= vec3(1.0f, 1.0f, 1.0f);
-    value = vec3(max(value.r, 0.0f), max(value.g, 0.0f), max(value.b, 0.0f));
-    value /= exposure;
-
-    return value;
-}
-
 float vignette(vec2 pos, float inner, float outer)
 {
   float r = length(pos);
@@ -55,10 +45,10 @@ void main()
 {
     vec3 color = texture2D(hdrMap, texCoord).rgb;
     
-    color += bloom(texture2D(blur0, texCoord).rgb);  
-    color += bloom(texture2D(blur1, texCoord).rgb);  
-    color += bloom(texture2D(blur2, texCoord).rgb);  
-    color += bloom(texture2D(blur3, texCoord).rgb);    
+    color += texture2D(blur0, texCoord).rgb * 0.5f;  
+    color += texture2D(blur1, texCoord).rgb * 0.5f;  
+    color += texture2D(blur2, texCoord).rgb * 1.0f;  
+    color += texture2D(blur3, texCoord).rgb * 1.0f;    
     color *= exposure;
     
 	color *= vignette(texCoord * 2.0f - 1.0f, 0.7f, 1.5f);

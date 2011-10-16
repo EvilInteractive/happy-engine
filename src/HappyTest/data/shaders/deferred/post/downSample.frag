@@ -24,10 +24,25 @@ noperspective in vec2 texCoord;
 
 out vec4 outColor;
 
-uniform sampler2D texMap;
+uniform sampler2D map;
 uniform float invScale;
+#if BRIGHTPASS
+uniform float exposure;
+#endif
 
 void main()
 {
-	outColor = texture2D(texMap, texCoord * invScale);
+    vec3 color = texture2D(map, texCoord * invScale).rgb;
+    
+#if BRIGHTPASS
+    color *= exposure;
+    color -= vec3(1.0f, 1.0f, 1.0f);
+    color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
+    //color += vec3(1.0f, 1.0f, 1.0f);
+    color /= exposure;
+#endif
+
+	outColor = vec4(color, 1.0f);
 }
+
+

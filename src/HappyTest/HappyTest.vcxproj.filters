@@ -17,6 +17,15 @@
     <Filter Include="happytest\references">
       <UniqueIdentifier>{68967bde-5287-4907-bda8-15b9b01b1dd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="data\shaders\deferred">
+      <UniqueIdentifier>{a28eea04-0da9-4b0f-b34f-821992fffb31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\deferred\pre">
+      <UniqueIdentifier>{25509af6-eee4-4345-bbbe-4eeb7a1e0d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\deferred\post">
+      <UniqueIdentifier>{98a8853b-0370-4b27-a0fc-c96a7b95c383}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -100,6 +109,57 @@
     </None>
     <None Include="data\shaders\simple2DTextureShader.vert">
       <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\default.shader">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\deferredPreShader.frag">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\deferredPreShader.vert">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\deferredPreShadowShader.frag">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\deferredPreShadowShader.vert">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\encode.frag">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\decode.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostALShader.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostAmbientIllShader.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostDLShader.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostPLShader.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostSelfIllumination.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostShader.vert">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostShaderQuad.vert">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\deferredPostSLShader.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\downScale.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\HDRtoLDR.frag">
+      <Filter>data\shaders\deferred\post</Filter>
     </None>
   </ItemGroup>
 </Project>
