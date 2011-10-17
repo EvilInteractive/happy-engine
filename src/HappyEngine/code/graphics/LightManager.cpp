@@ -25,7 +25,7 @@
 namespace he {
 namespace gfx {
 
-LightManager::LightManager(): m_pAmbientLight(new AmbientLight())
+LightManager::LightManager(): m_pAmbientLight(NEW AmbientLight()), m_pDirectionalLight(NEW DirectionalLight())
 {
 }
 
@@ -78,19 +78,16 @@ SpotLight::pointer LightManager::addSpotLight(const vec3&    pos,
 
     return pLight;
 }
-//DirectionalLight::pointer LightManager::addDirectionalLight(const vec3&  direction, 
-//                                                            const Color&          color, 
-//                                                            float                 multiplier)
-//{
-//    DirectionalLight::pointer pLight(NEW DirectionalLight());
-//    m_DirectionalLightVector.push_back(pLight);
-//
-//    pLight->color = color.rgb();
-//    pLight->direction = -direction;
-//    pLight->multiplier = multiplier;
-//
-//    return pLight;
-//}
+DirectionalLight::pointer LightManager::setDirectionalLight(const vec3&  direction, 
+															const Color& color, 
+															float multiplier)
+{
+	m_pDirectionalLight->setDirection(direction);
+	m_pDirectionalLight->setColor(color);
+	m_pDirectionalLight->setMultiplier(multiplier);
+
+	return m_pDirectionalLight;
+}
 
 const AmbientLight::pointer& LightManager::getAmbientLight() const
 {
@@ -104,10 +101,10 @@ const std::vector<SpotLight::pointer>& LightManager::getSpotLights() const
 {
     return m_SpotLightVector;
 }
-//const std::vector<DirectionalLight::pointer>& LightManager::getDirectionalLights() const
-//{
-//    return m_DirectionalLightVector;
-//}
+const DirectionalLight::pointer& LightManager::getDirectionalLight() const
+{
+	return m_pDirectionalLight;
+}
 
 void LightManager::removeAllLights()
 {
@@ -123,9 +120,6 @@ void LightManager::remove(const SpotLight::pointer& pLight)
 {
     m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), pLight), m_SpotLightVector.cend());
 }
-//void LightManager::remove(const DirectionalLight::pointer& pLight)
-//{
-//    m_DirectionalLightVector.erase(std::remove(m_DirectionalLightVector.begin(), m_DirectionalLightVector.end(), pLight), m_DirectionalLightVector.cend());
-//}
+
 
 } } //end namespace

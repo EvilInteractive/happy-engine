@@ -54,26 +54,26 @@ public:
                                     float                   beginAttenuation, 
                                     float                   endAttentuation);
 
-    //DirectionalLight::pointer addDirectionalLight(const vec3&  direction, 
-    //                                              const Color&          color, 
-    //                                             float                 multiplier);
+    DirectionalLight::pointer setDirectionalLight(const vec3&  direction, 
+                                                  const Color&          color, 
+                                                  float                 multiplier);
 
-    const AmbientLight::pointer& getAmbientLight() const;
+	const AmbientLight::pointer& getAmbientLight() const;
+	const DirectionalLight::pointer& getDirectionalLight() const;
     const std::vector<PointLight::pointer>& getPointLights() const;
     const std::vector<SpotLight::pointer>& getSpotLights() const;
-    //const std::vector<DirectionalLight::pointer>& getDirectionalLights() const;
 
     void removeAllLights();
     void remove(const PointLight::pointer& pLight);
     void remove(const SpotLight::pointer& pLight);
-    //void remove(const DirectionalLight::pointer& pLight);
 
 private:
 
     AmbientLight::pointer m_pAmbientLight;
+	DirectionalLight::pointer m_pDirectionalLight;
+
     std::vector<PointLight::pointer> m_PointLightVector;
     std::vector<SpotLight::pointer> m_SpotLightVector;
-    //std::vector<DirectionalLight::pointer> m_DirectionalLightVector;
 
     //Disable default copy constructor and default assignment operator
     LightManager(const LightManager&);

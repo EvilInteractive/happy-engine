@@ -16,32 +16,49 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 17/08/2011
+//Created: 17/10/2011
 
-#ifndef _HE_LIGHT_H_
-#define _HE_LIGHT_H_
+#ifndef _HE_DIRECTIONAL_LIGHT_H_
+#define _HE_DIRECTIONAL_LIGHT_H_
 #pragma once
 
 #include "vec3.h"
-#include "boost/shared_ptr.hpp"
-#include "Rect.h"
-#include "Camera.h"
-#include "MathFunctions.h"
+#include "mat44.h"
+#include "Color.h"
+#include "Model.h"
 
-#include "SpotLight.h"
-#include "PointLight.h"
-#include "DirectionalLight.h"
+#include "boost/shared_ptr.hpp"
+
+#include "IDrawable.h"
 
 namespace he {
 namespace gfx {
 
-class AmbientLight
+class DirectionalLight
 {
-public:
-    float multiplier;
-    vec3 color;
+private:
+    float m_Multiplier;
+    vec3 m_Color;
+	vec3 m_Direction;
 
-    typedef boost::shared_ptr<AmbientLight> pointer;
+public:
+    DirectionalLight();
+    ~DirectionalLight();
+    //default copy constructor and assignment operator are fine
+
+    void setMultiplier(float multiplier);
+    void setColor(const vec3& color);
+    void setColor(const Color& color);
+	void setDirection(const vec3& direction);
+
+	void makeAwesomeGame(); 
+
+    float getMultiplier() const;
+    const vec3& getColor() const;
+	const vec3& getDirection() const;
+
+	typedef boost::shared_ptr<DirectionalLight> pointer;
+    
 };
 
 } } //end namespace

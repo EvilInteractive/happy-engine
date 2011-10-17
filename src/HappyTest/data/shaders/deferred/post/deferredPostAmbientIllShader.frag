@@ -20,23 +20,49 @@
 
 #version 150 core
 
+#include "decode.frag"
+
 noperspective in vec2 texCoord;
 
 out vec4 outColor;
 
 struct AmbientLight
 {
-    float multiplier;
     vec3 color;
 };
 
-uniform sampler2D colorIllMap;
+struct DirectionalLight
+{
+	vec3 color;
+	vec3 direction;
+};
 
-uniform AmbientLight light;
+uniform sampler2D colorIllMap;
+uniform sampler2D normalMap;
+uniform sampler2D sgMap;
+uniform sampler2D depthMap;
+
+uniform vec4 projParams;
+
+uniform AmbientLight ambLight;
+uniform DirectionalLight dirLight;
 
 void main()
 {    
+    vec2 ndc = texCoord * 2.0f - 1.0f;
 	vec4 color = texture2D(colorIllMap, texCoord);
+
+	//DirectionalLight
+	vec3 position = getPosition( texture2D(depthMap, texCoord).x, ndc, projParams );
+	vec3 normal = decodeNormal(texture2D(normalMap, texCoord).xy);
+	vec2 sg = texture2D(sgMap, texCoord).xy;
 	
-	outColor = vec4(color.rgb * light.color * light.multiplier + color.rgb * color.a * 100.0f, 1.0f);						
+	float dotLightNormal = max(0.0f, dot(dirLight.direction, normal));
+			
+	vec3 vCamDir = normalize(-position);
+	float spec = max(0, pow(dot(reflect(-dirLight.direction, normal), vCamDir), sg.y * 100.0f) * sg.x);
+	
+	outColor = vec4(color.rgb * ambLight.color + 
+					color.rgb * color.a * 20.0f + 
+					(dotLightNormal * color.rgb + vec3(spec, spec, spec)) * dirLight.color, 1.0f);						
 }

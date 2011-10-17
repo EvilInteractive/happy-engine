@@ -43,15 +43,17 @@ float vignette(vec2 pos, float inner, float outer)
 
 void main()
 {
-    vec3 color = texture2D(hdrMap, texCoord).rgb;
+	vec2 tex = vec2(1 - texCoord.x, texCoord.y);
+
+    vec3 color = texture2D(hdrMap, tex).rgb;
     
-    color += texture2D(blur0, texCoord).rgb * 0.5f;  
-    color += texture2D(blur1, texCoord).rgb * 0.5f;  
-    color += texture2D(blur2, texCoord).rgb * 1.0f;  
-    color += texture2D(blur3, texCoord).rgb * 1.0f;    
+    color += texture2D(blur0, tex).rgb * 0.5f;  
+    color += texture2D(blur1, tex).rgb * 0.5f;  
+    color += texture2D(blur2, tex).rgb * 1.0f;  
+    color += texture2D(blur3, tex).rgb * 1.0f;    
     color *= exposure;
     
-	color *= vignette(texCoord * 2.0f - 1.0f, 0.7f, 1.5f);
+	color *= vignette(tex * 2.0f - 1.0f, 0.7f, 1.5f);
 	color = pow(color, vec3(gamma, gamma, gamma));
 
 	outColor = vec4(color, 1.0f);

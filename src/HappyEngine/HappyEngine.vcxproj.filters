@@ -301,6 +301,9 @@
     <ClCompile Include="code\graphics\Bloom.cpp">
       <Filter>happyengine\graphics\deferred</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\DirectionalLight.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\audio\Sound.h">
@@ -626,6 +629,9 @@
     </ClInclude>
     <ClInclude Include="code\graphics\Bloom.h">
       <Filter>happyengine\graphics\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DirectionalLight.h">
+      <Filter>happyengine\graphics\light</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

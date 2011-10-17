@@ -181,9 +181,14 @@ Deferred3DRenderer::Deferred3DRenderer():
     //----AL----------------------------------------------------------------------
     m_pAmbIllShader = NEW Shader();
     m_pAmbIllShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/deferredPostAmbientIllShader.frag", shaderLayout);
-    m_ShaderAmbIllPos[0] = m_pAmbIllShader->getShaderVarId("light.multiplier");
-    m_ShaderAmbIllPos[1] = m_pAmbIllShader->getShaderVarId("light.color");
-    m_ShaderAmbIllPos[2] = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
+	m_ShaderAmbIllPos[0] = m_pAmbIllShader->getShaderVarId("ambLight.color");
+	m_ShaderAmbIllPos[1] = m_pAmbIllShader->getShaderVarId("dirLight.color");
+	m_ShaderAmbIllPos[2] = m_pAmbIllShader->getShaderVarId("dirLight.direction");
+	m_ShaderAmbIllPos[3] = m_pAmbIllShader->getShaderVarId("projParams");
+	m_ShaderAmbIllPos[4] = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
+	m_ShaderAmbIllPos[5] = m_pAmbIllShader->getShaderSamplerId("normalMap");
+	m_ShaderAmbIllPos[6] = m_pAmbIllShader->getShaderSamplerId("sgMap");
+	m_ShaderAmbIllPos[7] = m_pAmbIllShader->getShaderSamplerId("depthMap");
 
     //----ToneMap-----------------------------------------------------------------
     m_pToneMapShader = NEW Shader();
@@ -347,10 +352,19 @@ void Deferred3DRenderer::end()
 }
 void Deferred3DRenderer::postAmbIllLight()
 {
-    const AmbientLight::pointer& pLight(m_pLightManager->getAmbientLight());
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[0], pLight->multiplier);
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[1], pLight->color);
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[2], m_pTexture[0]);
+	const AmbientLight::pointer& pAmbLight(m_pLightManager->getAmbientLight());
+	const DirectionalLight::pointer& pDirLight(m_pLightManager->getDirectionalLight());
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[0], pAmbLight->color * pAmbLight->multiplier);
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[1], pDirLight->getColor() * pDirLight->getMultiplier());
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[2], pDirLight->getDirection());
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[3], vec4(m_pCamera->getProjection()(0, 0),
+															 m_pCamera->getProjection()(1, 1),
+															 m_pCamera->getProjection()(2, 2),
+															 m_pCamera->getProjection()(2, 3)));
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[4], m_pTexture[0]);
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[5], m_pTexture[1]);
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[6], m_pTexture[2]);
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[7], m_pTexture[3]);
     draw(m_pQuad);
 }
 void Deferred3DRenderer::postPointLights()

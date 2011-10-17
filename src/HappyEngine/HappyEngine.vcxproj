@@ -41,6 +41,7 @@
     <ClCompile Include="code\graphics\Camera.cpp" />
     <ClCompile Include="code\graphics\Color.cpp" />
     <ClCompile Include="code\graphics\Deferred3DRenderer.cpp" />
+    <ClCompile Include="code\graphics\DirectionalLight.cpp" />
     <ClCompile Include="code\graphics\DrawManager.cpp" />
     <ClCompile Include="code\graphics\DrawSettings.cpp" />
     <ClCompile Include="code\graphics\Font.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="code\graphics\Camera.h" />
     <ClInclude Include="code\graphics\Color.h" />
     <ClInclude Include="code\graphics\Deferred3DRenderer.h" />
+    <ClInclude Include="code\graphics\DirectionalLight.h" />
     <ClInclude Include="code\graphics\DrawManager.h" />
     <ClInclude Include="code\graphics\DrawSettings.h" />
     <ClInclude Include="code\graphics\Font.h" />

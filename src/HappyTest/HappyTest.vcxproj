@@ -121,7 +121,6 @@
     <None Include="data\shaders\deferred\post\deferredPostShader.vert" />
     <None Include="data\shaders\deferred\post\deferredPostShaderQuad.vert" />
     <None Include="data\shaders\deferred\post\deferredPostSLShader.frag" />
-    <None Include="data\shaders\deferred\post\downScale.frag" />
     <None Include="data\shaders\deferred\post\HDRtoLDR.frag" />
     <None Include="data\shaders\deferred\pre\default.shader" />
     <None Include="data\shaders\deferred\pre\deferredPreShader.frag" />

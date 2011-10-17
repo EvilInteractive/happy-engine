@@ -155,9 +155,6 @@
     <None Include="data\shaders\deferred\post\deferredPostSLShader.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
-    <None Include="data\shaders\deferred\post\downScale.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
     <None Include="data\shaders\deferred\post\HDRtoLDR.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
