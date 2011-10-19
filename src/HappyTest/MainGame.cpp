@@ -132,8 +132,8 @@ void MainGame::load()
     }
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
-    GRAPHICS->getLightManager()->setAmbientLight(Color(1.0f, 1.0f, 1.0f, 1.0f), 0.3f);
-	GRAPHICS->getLightManager()->setDirectionalLight(-normalize(vec3(-6.3f, 5.17f, 3.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 10.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(1.0f, 1.0f, 1.0f, 1.0f), 0.0f);
+	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 3.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 10.0f);
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 

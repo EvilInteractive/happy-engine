@@ -50,19 +50,24 @@ uniform DirectionalLight dirLight;
 void main()
 {    
     vec2 ndc = texCoord * 2.0f - 1.0f;
+	    
+	vec3 position = getPosition( texture2D(depthMap, texCoord).x, ndc, projParams );
+
+	vec3 lightDir = dirLight.direction;
+	    
+	vec3 normal = decodeNormal(texture2D(normalMap, texCoord).xy);
+    
+	float dotLightNormal = max(0.0f, dot(lightDir, normal));
+	
+	vec4 sg = texture2D(sgMap, texCoord);	
+	vec3 vCamDir = normalize(-position);
+	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
+	
 	vec4 color = texture2D(colorIllMap, texCoord);
 
-	//DirectionalLight
-	vec3 position = getPosition( texture2D(depthMap, texCoord).x, ndc, projParams );
-	vec3 normal = decodeNormal(texture2D(normalMap, texCoord).xy);
-	vec2 sg = texture2D(sgMap, texCoord).xy;
-	
-	float dotLightNormal = max(0.0f, dot(dirLight.direction, normal));
-			
-	vec3 vCamDir = normalize(-position);
-	float spec = max(0, pow(dot(reflect(-dirLight.direction, normal), vCamDir), sg.y * 100.0f) * sg.x);
+	vec3 dirColor = (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 5.0f) * dirLight.color;
 	
 	outColor = vec4(color.rgb * ambLight.color + 
-					color.rgb * color.a * 20.0f + 
-					(dotLightNormal * color.rgb + vec3(spec, spec, spec)) * dirLight.color, 1.0f);						
+					color.rgb * color.a * 10.0f + 
+					dirColor, 1.0f);						
 }

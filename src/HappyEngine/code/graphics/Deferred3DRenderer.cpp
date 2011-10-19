@@ -185,9 +185,9 @@ Deferred3DRenderer::Deferred3DRenderer():
 	m_ShaderAmbIllPos[1] = m_pAmbIllShader->getShaderVarId("dirLight.color");
 	m_ShaderAmbIllPos[2] = m_pAmbIllShader->getShaderVarId("dirLight.direction");
 	m_ShaderAmbIllPos[3] = m_pAmbIllShader->getShaderVarId("projParams");
-	m_ShaderAmbIllPos[4] = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
-	m_ShaderAmbIllPos[5] = m_pAmbIllShader->getShaderSamplerId("normalMap");
-	m_ShaderAmbIllPos[6] = m_pAmbIllShader->getShaderSamplerId("sgMap");
+    m_ShaderAmbIllPos[4] = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
+    m_ShaderAmbIllPos[5] = m_pAmbIllShader->getShaderSamplerId("sgMap");
+	m_ShaderAmbIllPos[6] = m_pAmbIllShader->getShaderSamplerId("normalMap");
 	m_ShaderAmbIllPos[7] = m_pAmbIllShader->getShaderSamplerId("depthMap");
 
     //----ToneMap-----------------------------------------------------------------
@@ -356,7 +356,7 @@ void Deferred3DRenderer::postAmbIllLight()
 	const DirectionalLight::pointer& pDirLight(m_pLightManager->getDirectionalLight());
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[0], pAmbLight->color * pAmbLight->multiplier);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[1], pDirLight->getColor() * pDirLight->getMultiplier());
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[2], pDirLight->getDirection());
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[2], normalize((m_pCamera->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz()));
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[3], vec4(m_pCamera->getProjection()(0, 0),
 															 m_pCamera->getProjection()(1, 1),
 															 m_pCamera->getProjection()(2, 2),
