@@ -58,7 +58,7 @@ void FPSGraph::tick(float dTime, float interval)
 
 	if( (m_GameTime - m_TBase) >= m_Interval)
 	{
-		m_TBase  += m_Interval;
+		m_TBase += m_Interval;
 
 		uint fps((uint)(1 / dTime));
 
@@ -138,21 +138,12 @@ void FPSGraph::drawFull()
 
 	uint i(0);
 		
-	if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+	if (m_FpsHistory.size() > 50)
 	{
-		i = static_cast<uint>((m_GameTime / m_Interval) - 51);
+		i = m_FpsHistory.size() - 51;
 	}
 
-	uint j(0);
-		
-	if (static_cast<uint>(m_GameTime) / m_Interval > 50)
-	{
-		j = static_cast<uint>(m_GameTime / m_Interval);
-	}
-	else
-	{
-		j = m_FpsHistory.size();
-	}
+	uint j(m_FpsHistory.size());
 
 	uint k(0);
 
@@ -178,9 +169,9 @@ void FPSGraph::drawFull()
 
 	points.clear();
 
-	if (static_cast<uint>(m_GameTime) / m_Interval > 50)
+	if (m_FpsHistory.size() > 50)
 	{
-		i = static_cast<uint>((m_GameTime / m_Interval) - 51);
+		i = m_FpsHistory.size() - 51;
 	}
 	else
 	{
@@ -246,21 +237,12 @@ uint FPSGraph::getAverageFPS() const
 {
 	uint i(0);
 		
-	if (static_cast<uint>(m_GameTime) > 60)
+	if ((m_FpsHistory.size() * m_Interval) > 60)
 	{
-		i = static_cast<uint>((m_GameTime / m_Interval) - (60 / m_Interval));
+		i = static_cast<uint>(m_FpsHistory.size() - (60 / m_Interval));
 	}
 
-	uint j(0);
-		
-	if (static_cast<uint>(m_GameTime) > 60)
-	{
-		j = static_cast<uint>(m_GameTime / m_Interval);
-	}
-	else
-	{
-		j = m_FpsHistory.size();
-	}
+	uint j(m_FpsHistory.size());
 
 	uint avFPS(0);
 
@@ -269,7 +251,7 @@ uint FPSGraph::getAverageFPS() const
 		avFPS += m_FpsHistory[i];
 	}
 
-	if (static_cast<uint>(m_GameTime) > 60)
+	if ((m_FpsHistory.size() * m_Interval) > 60)
 	{
 		avFPS /= static_cast<uint>(60 / m_Interval);
 	}
