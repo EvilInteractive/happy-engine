@@ -27,7 +27,7 @@
 #include "GraphicsEngine.h"
 #include "Vertex.h"
 
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include "ExternalError.h"
 
 namespace he {
@@ -43,6 +43,8 @@ Bloom::Bloom(): m_pMesh(NEW ModelMesh("DownSamplerQuad")), m_DownSamples(4),
 
 Bloom::~Bloom()
 {
+    glDeleteFramebuffers(m_DownSamples, &m_FboId[0][0]);
+    glDeleteFramebuffers(m_DownSamples, &m_FboId[1][0]);
 }
 
 void Bloom::init()
@@ -59,7 +61,7 @@ void Bloom::init()
         glGenTextures(m_DownSamples, &downSampleTextureId[pass][0]);
         for (int i = 0; i < m_DownSamples; ++i)
         {
-            glBindTexture(GL_TEXTURE_2D, downSampleTextureId[pass][i]);
+            GL::heBindTexture2D(downSampleTextureId[pass][i]);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -71,7 +73,7 @@ void Bloom::init()
             m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
         }
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+        GL::heBindTexture2D(0);
         //////////////////////////////////////////////////////////////////////////
         ///                               Fbo's                                ///
         //////////////////////////////////////////////////////////////////////////
@@ -82,7 +84,7 @@ void Bloom::init()
 
         for (int i = 0; i < m_DownSamples; ++i)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, m_FboId[pass][i]);
+            GL::heBindFbo(m_FboId[pass][i]);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, downSampleTextureId[pass][i], 0);       
         }
     }
@@ -145,40 +147,38 @@ void Bloom::init()
 
 void Bloom::render( const Texture2D::pointer& pTexture, float exposure )
 {
-    glBindTexture(GL_TEXTURE_2D, pTexture->getID());
+    GL::heBindTexture2D(pTexture->getID());
     glGenerateMipmap(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GL::heBindTexture2D(0);
 
-    glBindVertexArray(m_pMesh->getVertexArraysID());
+    GL::heBindVao(m_pMesh->getVertexArraysID());
 
     //BrightPass
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FboId[0][0]);
-    m_pDownSampleBrightPassShader->begin();
+    GL::heBindFbo(m_FboId[0][0]);
+    m_pDownSampleBrightPassShader->bind();
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassMap, pTexture);
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassInvScale, 2.0f);
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassExposure, exposure);
     glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
-    m_pDownSampleBrightPassShader->end();
 
     //DownSample further
-    m_pDownSampleShader->begin();
+    m_pDownSampleShader->bind();
     for (uint fboId = 1; fboId < m_FboId[0].size(); ++fboId)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FboId[0][fboId]);
+        GL::heBindFbo(m_FboId[0][fboId]);
         m_pDownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
         m_pDownSampleShader->setShaderVar(m_DownSampleInvScale, (fboId + 1) * 2.0f);
 
         glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
     }
-    m_pDownSampleShader->end();
 
     //Blur
     for (int pass = 0; pass < 2; ++pass)
     {
-        m_pBlurShaderPass[pass]->begin();
+        m_pBlurShaderPass[pass]->bind();
         for (uint fboId = 1; fboId < m_FboId[pass].size(); ++fboId)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, m_FboId[pass == 0?1:0][fboId]);
+            GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
             float invScale(((fboId + 1) * 2.0f));
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurTexelSize[pass], 
@@ -187,11 +187,10 @@ void Bloom::render( const Texture2D::pointer& pTexture, float exposure )
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurInvScale[pass], invScale);
             glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
         }
-        m_pBlurShaderPass[pass]->end();
     }
 
-    glBindVertexArray(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL::heBindVao(0);
+    GL::heBindFbo(0);
 }
 
 const Texture2D::pointer& Bloom::getBloom( byte level ) const

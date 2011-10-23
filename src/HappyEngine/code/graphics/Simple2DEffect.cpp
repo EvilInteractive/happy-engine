@@ -52,21 +52,19 @@ void Simple2DEffect::load()
 	m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
 	m_ShaderColorPos = m_pShader->getShaderVarId("color");
 
-    m_pShader->begin();
+    m_pShader->bind();
 	mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
 	m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
 	m_pShader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
-    m_pShader->end();
 }
 
 void Simple2DEffect::begin() const
 {
-	m_pShader->begin();
+	m_pShader->bind();
 }
 
 void Simple2DEffect::end() const
 {
-	m_pShader->end();
 }
 
 void Simple2DEffect::setColor(const Color& color) const

@@ -72,6 +72,13 @@ public:
     void g(byte g);
     void b(byte b);
     void a(byte a);
+
+
+    //-----------------------------------------//
+    //                Operators                //
+    //-----------------------------------------//
+    bool operator==(const Color& other) const;
+    bool operator!=(const Color& other) const;
 };
 
 } //end namespace

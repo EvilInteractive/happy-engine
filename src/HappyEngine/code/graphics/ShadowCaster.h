@@ -16,49 +16,47 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 05/08/2011
-//Extended:Sebastiaan Sprengers
+//Created: 22/10/2011
 
-#ifndef _HE_RECT_H_
-#define _HE_RECT_H_
+#ifndef _HE_SHADOW_CASTER_H_
+#define _HE_SHADOW_CASTER_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "vec2.h"
+#include "Camera.h"
+#include "Light.h"
+#include "Texture2D.h"
+#include "Shader.h"
+#include "DrawManager.h"
 
 namespace he {
+namespace gfx {
 
-struct RectI;
-struct RectF
+class ShadowCaster
 {
 public:
-    float x, y, width, height;
+	ShadowCaster();
+    virtual ~ShadowCaster();
 
-    RectF();
-	RectF(float x, float y, float width, float height);
-	RectF(const vec2& pos, const vec2& size);
-    explicit RectF(const RectI& rect);
-    ~RectF();
-    //Default copy constructor and assignment operator are fine
+    void init();
 
-	bool operator==(const RectF& r) const;
-	bool operator!=(const RectF& r) const;
-};
-struct RectI
-{
-public:
-    int x, y, width, height;
+    const Texture2D::pointer getShadowMap() const;
 
-	RectI();
-	RectI(int x, int y, int width, int height);
-    explicit RectI(const RectF& rect);
-    ~RectI();
-    //Default copy constructor and assignment operator are fine
+    void render(const std::vector<DrawManager::DrawElement>& elements, const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight);
 
-	bool operator==(const RectI& r) const;
-	bool operator!=(const RectI& r) const;
+private:
+
+    uint m_FboId;
+    Texture2D::pointer m_pShadowTexture;
+    Texture2D::pointer m_pTempTexture;
+
+    Shader::pointer m_pShadowShader;
+    uint m_shaderWVPpos;
+
+    //Disable default copy constructor and default assignment operator
+    ShadowCaster(const ShadowCaster&);
+    ShadowCaster& operator=(const ShadowCaster&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

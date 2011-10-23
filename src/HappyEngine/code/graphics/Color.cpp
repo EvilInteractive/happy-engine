@@ -135,4 +135,17 @@ void Color::a(byte a)
     m_a = a / 255.0f;
 }
 
+//-----------------------------------------//
+//                Operators                //
+//-----------------------------------------//
+bool Color::operator==(const Color& other) const
+{
+    return m_a == other.m_a && m_rgb == other.m_rgb;
+}
+bool Color::operator!=(const Color& other) const
+{
+    return m_a != other.m_a || m_rgb != other.m_rgb;
+}
+
+
 } //end namespace

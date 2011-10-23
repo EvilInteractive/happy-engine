@@ -56,6 +56,7 @@ public:
     void setIndices(const void* pIndices, uint num, IndexStride type);
 
     uint getVertexArraysID() const;
+    uint getVertexShadowArraysID() const;
 
     uint getNumVertices() const;
     uint getNumIndices() const;
@@ -72,6 +73,8 @@ private:
 
     uint m_VaoID[1];
     uint m_VertexVboID[1];
+    uint m_VaoShadowID[1];
+    uint m_VertexVboShadowID[1];
     uint m_IndexVboID[1];
 
     uint m_NumVertices;

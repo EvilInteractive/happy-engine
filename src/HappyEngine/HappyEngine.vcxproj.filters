@@ -41,11 +41,14 @@
     <Filter Include="happyengine\graphics\light">
       <UniqueIdentifier>{c37f6bf1-e922-4f8c-9827-674c1ec4529c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\deferred">
-      <UniqueIdentifier>{8f6bfd73-75d8-41f0-8754-3b64a5ee31b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\graphics\material">
       <UniqueIdentifier>{51f036ce-23dc-4044-8152-5d90d1537473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\rendering">
+      <UniqueIdentifier>{948b6541-842f-4489-8092-8daa63f6806a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\rendering\deferred">
+      <UniqueIdentifier>{8f6bfd73-75d8-41f0-8754-3b64a5ee31b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -121,19 +124,7 @@
     <ClCompile Include="code\graphics\Color.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\DrawManager.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\DrawSettings.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Font.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\GraphicsEngine.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Hitregion.cpp">
@@ -146,15 +137,6 @@
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\ModelMesh.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Simple2DEffect.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Text.cpp">
@@ -287,7 +269,7 @@
       <Filter>happyengine\graphics\light</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Deferred3DRenderer.cpp">
-      <Filter>happyengine\graphics\deferred</Filter>
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Shader.cpp">
       <Filter>happyengine\graphics\material</Filter>
@@ -299,10 +281,37 @@
       <Filter>happyengine\graphics\material</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Bloom.cpp">
-      <Filter>happyengine\graphics\deferred</Filter>
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\DirectionalLight.cpp">
       <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="code\OpenGL.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DrawManager.cpp">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DrawSettings.cpp">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\GraphicsEngine.cpp">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Simple2DEffect.cpp">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\ShadowCaster.cpp">
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -387,19 +396,7 @@
     <ClInclude Include="code\graphics\Camera.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\DrawManager.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\DrawSettings.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Font.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\GraphicsEngine.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Happy2DRenderer.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Hitregion.h">
@@ -415,15 +412,6 @@
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\ModelMesh.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Simple2DEffect.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Simple2DTextureEffect.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Text.h">
@@ -613,7 +601,7 @@
       <Filter>happyengine\graphics\light</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Deferred3DRenderer.h">
-      <Filter>happyengine\graphics\deferred</Filter>
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Shader.h">
       <Filter>happyengine\graphics\material</Filter>
@@ -628,10 +616,37 @@
       <Filter>happyengine\graphics\material</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Bloom.h">
-      <Filter>happyengine\graphics\deferred</Filter>
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\DirectionalLight.h">
       <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\OpenGL.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DrawManager.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DrawSettings.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\GraphicsEngine.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Happy2DRenderer.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Simple2DEffect.h">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Simple2DTextureEffect.h">
+      <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ShadowCaster.h">
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

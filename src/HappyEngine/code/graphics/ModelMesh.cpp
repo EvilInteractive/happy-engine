@@ -21,7 +21,7 @@
 
 #include "ModelMesh.h"
 
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include <algorithm>
 #include "Assert.h"
 #include "Color.h"
@@ -40,13 +40,16 @@ ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0)
 ModelMesh::~ModelMesh()
 {
     glDeleteVertexArrays(1, m_VaoID);
+    glDeleteVertexArrays(1, m_VaoShadowID);
     glDeleteBuffers(1, m_VertexVboID);
+    glDeleteBuffers(1, m_VertexVboShadowID);
     glDeleteBuffers(1, m_IndexVboID);
 }
 
 void ModelMesh::init()
 {
     glGenVertexArrays(1, &m_VaoID[0]);
+    glGenVertexArrays(1, &m_VaoShadowID[0]);
 }
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
@@ -68,7 +71,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     });
     m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
 
-    glBindVertexArray(m_VaoID[0]);
+    GL::heBindVao(m_VaoID[0]);
     err::glCheckForErrors();
 
     VertexLayout::layout elements(vertexLayout.getElements());
@@ -105,10 +108,32 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 
         glEnableVertexAttribArray(e.getElementIndex());
+        err::glCheckForErrors();
     });
 
+
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Shadow                                 ///
+    //////////////////////////////////////////////////////////////////////////
+    std::vector<vec3> shadowVertices(num);
+    const char* charPointCloud = static_cast<const char*>(pVertices);
+    for(uint i = 0; i < num; ++i)
+    {
+        const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getVertexSize() * i + posOffset));
+        shadowVertices[i] = p;
+    }
+
+    GL::heBindVao(m_VaoShadowID[0]);
+    glGenBuffers(1, m_VertexVboShadowID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboShadowID[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * num, &shadowVertices[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), BUFFER_OFFSET(0)); 
+    glEnableVertexAttribArray(0);
+
+
     //unbind
-    glBindVertexArray(0);
+    GL::heBindVao(0);
 
     if (m_NumIndices > 0)
         m_Complete = true;
@@ -118,8 +143,12 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
     ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModelMesh instead");
     m_NumIndices = num;
     
-    glBindVertexArray(m_VaoID[0]);
+    GL::heBindVao(m_VaoID[0]);
     glGenBuffers(1, m_IndexVboID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID[0]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
+
+    GL::heBindVao(m_VaoShadowID[0]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID[0]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
 
@@ -133,6 +162,8 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
 
     if (m_NumVertices > 0)
         m_Complete = true;
+    //unbind
+    GL::heBindVao(0);
 }
 
 const std::string& ModelMesh::getName() const
@@ -167,6 +198,11 @@ bool ModelMesh::isComplete() const
 const shapes::Sphere& ModelMesh::getBoundingSphere() const
 {
     return m_BoundingSphere;
+}
+
+he::uint ModelMesh::getVertexShadowArraysID() const
+{
+    return m_VaoShadowID[0];
 }
 
 

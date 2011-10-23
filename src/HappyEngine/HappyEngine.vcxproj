@@ -58,6 +58,7 @@
     <ClCompile Include="code\graphics\Scrollbar.cpp" />
     <ClCompile Include="code\graphics\Shader.cpp" />
     <ClCompile Include="code\graphics\ShaderLayout.cpp" />
+    <ClCompile Include="code\graphics\ShadowCaster.cpp" />
     <ClCompile Include="code\graphics\Simple2DEffect.cpp" />
     <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp" />
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp" />
@@ -89,6 +90,7 @@
     <ClCompile Include="code\networking\Message.cpp" />
     <ClCompile Include="code\networking\NetworkManager.cpp" />
     <ClCompile Include="code\networking\Server.cpp" />
+    <ClCompile Include="code\OpenGL.cpp" />
     <ClCompile Include="code\physics\PhysicsBoxShape.cpp" />
     <ClCompile Include="code\physics\PhysicsConvexShape.cpp" />
     <ClCompile Include="code\physics\PhysicsDynamicActor.cpp" />
@@ -151,6 +153,7 @@
     <ClInclude Include="code\graphics\Shader.h" />
     <ClInclude Include="code\graphics\ShaderLayout.h" />
     <ClInclude Include="code\graphics\ShaderVar.h" />
+    <ClInclude Include="code\graphics\ShadowCaster.h" />
     <ClInclude Include="code\graphics\Simple2DEffect.h" />
     <ClInclude Include="code\graphics\Simple2DTextureEffect.h" />
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h" />
@@ -190,6 +193,7 @@
     <ClInclude Include="code\networking\Message.h" />
     <ClInclude Include="code\networking\NetworkManager.h" />
     <ClInclude Include="code\networking\Server.h" />
+    <ClInclude Include="code\OpenGL.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
     <ClInclude Include="code\physics\PhysicsConvexShape.h" />

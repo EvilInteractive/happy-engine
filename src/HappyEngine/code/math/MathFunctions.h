@@ -27,7 +27,44 @@
 #include "MathConstants.h"
 
 namespace he {
-   
+
+//template
+template<typename T>
+inline T min(T a, T b)
+{
+    return a <= b? a : b;
+}
+template<typename T>
+inline T max(T a, T b)
+{
+    return a >= b? a : b;
+}
+template<typename T>
+inline T clamp(T p_value, T p_min, T p_max)
+{
+    return max(p_min, min(p_max, p_value));
+}
+
+//interpolation passes through every point, returns value between p1 and p2, t[0, 1]
+//T must support -T, T*T, T*float, T+T
+template<typename T>
+inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
+{
+    return ((p1 * 2) +
+        (-p0 + p2) * t + 
+        (p0 * 2 - p1 * 5 + p2 * 4 - p3) * sqr(t) +
+        (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
+}
+
+//template
+//linear interpolation, t[0, 1]
+//T must support T+T, T-T, T*float,
+template<typename T>
+inline T lerp(const T& p0, const T& p1, float t)
+{
+    return (p1 - p0) * t + p0;
+}
+
 // Float
 inline float abs(float a)
 {
@@ -122,41 +159,23 @@ inline const vec3& max(const vec3& a, const vec3& b)
 {
     return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
+inline vec3 minPerComponent(const vec3& a, const vec3& b)
+{
+    vec3 minP;
+    minP.x = min<float>(a.x, b.x);
+    minP.y = min<float>(a.y, b.y);
+    minP.z = min<float>(a.z, b.z);
 
-//template
-template<typename T>
-inline T min(T a, T b)
-{
-    return a <= b? a : b;
+    return minP;
 }
-template<typename T>
-inline T max(T a, T b)
+inline vec3 maxPerComponent(const vec3& a, const vec3& b)
 {
-    return a >= b? a : b;
-}
-template<typename T>
-inline T clamp(T p_value, T p_min, T p_max)
-{
-    return max(p_min, min(p_max, p_value));
-}
-//interpolation passes through every point, returns value between p1 and p2, t[0, 1]
-//T must support -T, T*T, T*float, T+T
-template<typename T>
-inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
-{
-    return ((p1 * 2) +
-            (-p0 + p2) * t + 
-            (p0 * 2 - p1 * 5 + p2 * 4 - p3) * sqr(t) +
-            (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
-}
+    vec3 maxP;
+    maxP.x = max<float>(a.x, b.x);
+    maxP.y = max<float>(a.y, b.y);
+    maxP.z = max<float>(a.z, b.z);
 
-//template
-//linear interpolation, t[0, 1]
-//T must support T+T, T-T, T*float,
-template<typename T>
-inline T lerp(const T& p0, const T& p1, float t)
-{
-    return (p1 - p0) * t + p0;
+    return maxP;
 }
 
 } //end namespace

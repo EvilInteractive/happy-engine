@@ -71,4 +71,24 @@ const vec3& DirectionalLight::getDirection() const
 	return m_Direction;
 }
 
+void DirectionalLight::setShadowMap( const Texture2D::pointer& map )
+{
+    m_pShadowMap = map;
+}
+
+const Texture2D::pointer& DirectionalLight::getShadowMap() const
+{
+    return m_pShadowMap;
+}
+
+void DirectionalLight::setShadowMatrix( const mat44& mtx )
+{
+    m_ShadowMatrix = mtx;
+}
+
+const mat44& DirectionalLight::getShadowMatrix() const
+{
+    return m_ShadowMatrix;
+}
+
 } } //end namespace

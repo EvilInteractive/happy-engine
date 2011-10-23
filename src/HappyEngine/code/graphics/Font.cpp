@@ -22,7 +22,7 @@
 
 #include "Font.h"
 #include "SDL.h"
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include "Assert.h"
 #include "HappyNew.h"
 #include "Text.h"
@@ -94,7 +94,7 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
 
     GLuint texID;
     glGenTextures(1, &texID);
-    glBindTexture(GL_TEXTURE_2D, texID);
+    GL::heBindTexture2D(texID);
 
 	if (bAntiAliased)
 	{
@@ -163,7 +163,7 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
 
     GLuint texID;
     glGenTextures(1, &texID);
-    glBindTexture(GL_TEXTURE_2D, texID);
+    GL::heBindTexture2D(texID);
 
 	if (bAntiAliased)
 	{

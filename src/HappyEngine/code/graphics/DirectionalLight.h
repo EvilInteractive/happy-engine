@@ -26,6 +26,7 @@
 #include "mat44.h"
 #include "Color.h"
 #include "Model.h"
+#include "Texture2D.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -39,8 +40,11 @@ class DirectionalLight
 private:
     float m_Multiplier;
     vec3 m_Color;
-	vec3 m_Direction;
+    vec3 m_Direction;
 
+    mat44 m_ShadowMatrix;
+    Texture2D::pointer m_pShadowMap;
+    
 public:
     DirectionalLight();
     ~DirectionalLight();
@@ -49,16 +53,18 @@ public:
     void setMultiplier(float multiplier);
     void setColor(const vec3& color);
     void setColor(const Color& color);
-	void setDirection(const vec3& direction);
-
-	void makeAwesomeGame(); 
-
+    void setDirection(const vec3& direction);
+    void setShadowMap(const Texture2D::pointer& map);
+    void setShadowMatrix(const mat44& mtx);
+    
     float getMultiplier() const;
     const vec3& getColor() const;
 	const vec3& getDirection() const;
+    const mat44& getShadowMatrix() const;
+
+    const Texture2D::pointer& getShadowMap() const;
 
 	typedef boost::shared_ptr<DirectionalLight> pointer;
-    
 };
 
 } } //end namespace

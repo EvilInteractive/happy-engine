@@ -43,11 +43,7 @@ RectF::~RectF()
 
 bool RectF::operator==(const RectF& r) const
 {
-	if (vec2(x,y) == vec2(r.x,r.y) &&
-		vec2(width,height) == vec2(r.width,r.height))
-		return true;
-	else
-		return false;
+	return x == r.x && y == r.y && width == r.width && height == r.height;
 }
 
 bool RectF::operator!=(const RectF& r) const
@@ -69,6 +65,15 @@ RectI::RectI(const RectF& rect): x(static_cast<int>(rect.x)),
 }
 RectI::~RectI()
 {
+}
+bool RectI::operator==(const RectI& r) const
+{
+    return x == r.x && y == r.y && width == r.width && height == r.height;
+}
+
+bool RectI::operator!=(const RectI& r) const
+{
+    return !(*this == r);
 }
 
 } //end namespace

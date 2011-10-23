@@ -28,9 +28,20 @@
 namespace he {
 namespace gfx {
 
+class ShadowCaster;
+
 class DrawManager
 {
 public:
+    struct DrawElement
+    {
+        const IDrawable* pDrawable;
+        float sorter;
+        bool operator<(const DrawElement& other)
+        {
+            return sorter < other.sorter;
+        }
+    };
     enum Type
     {
         Type_Immediate,
@@ -41,28 +52,25 @@ public:
 	DrawManager();
     virtual ~DrawManager();
 
+    void init();
+
     void begin(Type type, const Camera* pCamera);
     void end();
     
+    void renderShadow();
+
     void draw(const IDrawable* pDrawabe);
 
     bool viewClip(const shapes::Sphere& boundingSphere);
 
 private:
-    struct DrawElement
-    {
-        const IDrawable* pDrawable;
-        float sorter;
-        bool operator<(const DrawElement& other)
-        {
-            return sorter < other.sorter;
-        }
-    };
 
     Type m_Type;
     const Camera* m_pCamera;
 
     std::vector<DrawElement> m_DrawList;
+
+    ShadowCaster* m_pShadowCaster;
 
     //Disable default copy constructor and default assignment operator
     DrawManager(const DrawManager&);

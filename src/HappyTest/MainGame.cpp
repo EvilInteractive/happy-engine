@@ -52,7 +52,8 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
 					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
-					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console")
+					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
+                       m_pScene(0)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -80,6 +81,7 @@ MainGame::~MainGame()
     delete m_pGroundPlane;
 	delete m_pTestButton;
 	delete m_pAxis;
+    delete m_pScene;
 	delete m_pTextBox;
 
     NETWORK->stop();
@@ -115,7 +117,7 @@ void MainGame::load()
 
 	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
 	m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-	m_pCamera->setLens(16.0f/9.0f,piOverFour,1.0f,1000.0f);
+	m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,100.0f);
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
@@ -138,6 +140,7 @@ void MainGame::load()
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
 	m_pAxis = NEW he::game::Entity(CONTENT->loadEntity("axis.entity"));
+    m_pScene = NEW he::game::Entity(CONTENT->loadEntity("testScene.entity"));
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
@@ -223,8 +226,9 @@ void MainGame::draw(float /*dTime*/)
 		{
 			GRAPHICS->draw(pBullet);
 		});
-    GRAPHICS->draw(m_pGroundPlane);
-	GRAPHICS->draw(m_pAxis);
+    //GRAPHICS->draw(m_pGroundPlane);
+    GRAPHICS->draw(m_pAxis);
+    GRAPHICS->draw(m_pScene);
     GRAPHICS->end();
 
 	// 2D test stuff

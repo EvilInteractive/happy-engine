@@ -21,7 +21,7 @@
 
 #include "Happy2DRenderer.h"
 #include "HappyNew.h"
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include "HappyEngine.h"
 #include "MathFunctions.h"
 #include "GraphicsEngine.h"
@@ -76,9 +76,9 @@ void Happy2DRenderer::updateTransformationMatrix()
 /* GENERAL */
 void Happy2DRenderer::begin()
 {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDepthMask(GL_FALSE); //disable enable writing to depth buffer
+    GL::heBlendEnabled(true);
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heSetDepthWrite(false);
 
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
@@ -90,8 +90,9 @@ void Happy2DRenderer::end()
 {
 	m_pColorEffect->end();
 
-	glDisable(GL_BLEND);
-    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
+    GL::heBlendEnabled(false);
+    GL::heSetDepthWrite(true);
+    GL::heBindVao(0);
 
 	setStrokeSize();
 
@@ -105,11 +106,7 @@ void Happy2DRenderer::initialize()
 
 	m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vector2, VertexElement::Usage_Position, 8, 0));
 	m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vector2, VertexElement::Usage_TextureCoordinate, 8, 8));
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
-
+    
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
 
@@ -340,11 +337,8 @@ void Happy2DRenderer::drawLine(const vec2& point1, const vec2& point2) const
 	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
 	m_pColorEffect->setColor(m_CurrentColor);
 
-	glBindVertexArray(model.getVertexArraysID());
-
+	GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_LINE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 void Happy2DRenderer::drawLineInstanced(const vec2& point1, const vec2& point2) const
 {
@@ -381,11 +375,8 @@ void Happy2DRenderer::drawLineInstanced(const vec2& point1, const vec2& point2) 
 	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
 	m_pColorEffect->setColor(m_CurrentColor);
 
-	glBindVertexArray(pModel->getVertexArraysID());
-
+    GL::heBindVao(pModel->getVertexArraysID());
 	glDrawElements(GL_LINE_STRIP, pModel->getNumIndices(), pModel->getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 
 void Happy2DRenderer::drawRectangle(const vec2& pos, const vec2& size)
@@ -422,12 +413,9 @@ void Happy2DRenderer::drawRectangle(const vec2& pos, const vec2& size)
 
 	m_Translation -= translation;
 	updateTransformationMatrix();
-
-	glBindVertexArray(model.getVertexArraysID());
-
+    
+    GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_LINES, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 void Happy2DRenderer::drawRectangleInstanced(const vec2& pos, const vec2& size)
 {
@@ -477,11 +465,8 @@ void Happy2DRenderer::drawRectangleInstanced(const vec2& pos, const vec2& size)
 	m_Translation -= translation;
 	updateTransformationMatrix();
 
-	glBindVertexArray(pModel->getVertexArraysID());
-
+    GL::heBindVao(pModel->getVertexArraysID());
 	glDrawElements(GL_LINES, pModel->getNumIndices(), pModel->getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 
 void Happy2DRenderer::fillRectangle(const vec2& pos, const vec2& size)
@@ -513,11 +498,8 @@ void Happy2DRenderer::fillRectangle(const vec2& pos, const vec2& size)
 	m_Translation -= translation;
 	updateTransformationMatrix();
 
-	glBindVertexArray(model.getVertexArraysID());
-
+    GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_TRIANGLES, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 void Happy2DRenderer::fillRectangleInstanced(const vec2& pos, const vec2& size)
 {
@@ -560,12 +542,9 @@ void Happy2DRenderer::fillRectangleInstanced(const vec2& pos, const vec2& size)
 
 	m_Translation -= translation;
 	updateTransformationMatrix();
-
-	glBindVertexArray(pModel->getVertexArraysID());
-
+    
+    GL::heBindVao(pModel->getVertexArraysID());
 	glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 
 void Happy2DRenderer::drawEllipse(const vec2& pos, const vec2& size, uint steps)
@@ -603,11 +582,8 @@ void Happy2DRenderer::drawEllipse(const vec2& pos, const vec2& size, uint steps)
 	m_Translation -= translation;
 	updateTransformationMatrix();
 
-	glBindVertexArray(model.getVertexArraysID());
-
+    GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 void Happy2DRenderer::drawEllipseInstanced(const vec2& pos, const vec2& size, uint steps)
 {
@@ -657,11 +633,8 @@ void Happy2DRenderer::drawEllipseInstanced(const vec2& pos, const vec2& size, ui
 	m_Translation -= translation;
 	updateTransformationMatrix();
 
-	glBindVertexArray(pModel->getVertexArraysID());
-
+    GL::heBindVao(pModel->getVertexArraysID());
 	glDrawElements(GL_LINE_LOOP, pModel->getNumIndices(), pModel->getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 
 void Happy2DRenderer::fillEllipse(const vec2& pos, const vec2& size, uint steps)
@@ -703,11 +676,8 @@ void Happy2DRenderer::fillEllipse(const vec2& pos, const vec2& size, uint steps)
 	m_Translation -= translation;
 	updateTransformationMatrix();
 
-	glBindVertexArray(model.getVertexArraysID());
-
+    GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_TRIANGLE_FAN, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 void Happy2DRenderer::fillEllipseInstanced(const vec2& pos, const vec2& size, uint steps)
 {
@@ -761,11 +731,8 @@ void Happy2DRenderer::fillEllipseInstanced(const vec2& pos, const vec2& size, ui
 	m_Translation -= translation;
 	updateTransformationMatrix();
 
-	glBindVertexArray(pModel->getVertexArraysID());
-
+    GL::heBindVao(pModel->getVertexArraysID());
 	glDrawElements(GL_TRIANGLE_FAN, pModel->getNumIndices(), pModel->getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 
 void Happy2DRenderer::drawPolygon(const std::vector<he::vec2> &points, he::uint nrPoints, bool close) const
@@ -789,14 +756,12 @@ void Happy2DRenderer::drawPolygon(const std::vector<he::vec2> &points, he::uint 
 	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
 	m_pColorEffect->setColor(m_CurrentColor);
 
-	glBindVertexArray(model.getVertexArraysID());
+    GL::heBindVao(model.getVertexArraysID());
 
 	if (close == false)
 		glDrawElements(GL_LINE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
 	else
 		glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 void Happy2DRenderer::drawPolygonInstanced(const std::vector<he::vec2> &points, he::uint nrPoints, bool close) const
 {
@@ -839,14 +804,11 @@ void Happy2DRenderer::drawPolygonInstanced(const std::vector<he::vec2> &points, 
 	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
 	m_pColorEffect->setColor(m_CurrentColor);
 
-	glBindVertexArray(pModel->getVertexArraysID());
-
+    GL::heBindVao(pModel->getVertexArraysID());
 	if (close == false)
 		glDrawElements(GL_LINE_STRIP, pModel->getNumIndices(), pModel->getIndexType(), 0);
 	else
 		glDrawElements(GL_LINE_LOOP, pModel->getNumIndices(), pModel->getIndexType(), 0);
-
-    glBindVertexArray(0);
 }
 
 void Happy2DRenderer::fillPolygon(const std::vector<he::vec2>& /*points*/, he::uint /*nrPoints*/) const
@@ -871,11 +833,8 @@ void Happy2DRenderer::fillPolygon(const std::vector<he::vec2>& /*points*/, he::u
 	m_pColorEffect->setWorldMatrix(m_matWorld);
 	m_pColorEffect->setColor(m_CurrentColor);
 
-	glBindVertexArray(model.getVertexArraysID());
-	
+    GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_TRIANGLE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 	*/
 }
 void Happy2DRenderer::fillPolygonInstanced(const std::vector<he::vec2>& /*points*/, he::uint /*nrPoints*/) const
@@ -900,11 +859,8 @@ void Happy2DRenderer::fillPolygonInstanced(const std::vector<he::vec2>& /*points
 	m_pColorEffect->setWorldMatrix(m_matWorld);
 	m_pColorEffect->setColor(m_CurrentColor);
 
-	glBindVertexArray(model.getVertexArraysID());
-	
+    GL::heBindVao(model.getVertexArraysID());
 	glDrawElements(GL_TRIANGLE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-
-    glBindVertexArray(0);
 	*/
 }
 
@@ -958,11 +914,8 @@ void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const vec2&
 	m_pTextureEffect->setTCOffset(tcOffset);
 	m_pTextureEffect->setTCScale(tcScale);
 
-	glBindVertexArray(m_pTextureQuad->getVertexArraysID());
-
+    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
 	glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
-
-    glBindVertexArray(0);
 
 	m_pTextureEffect->end();
 	m_pColorEffect->begin();

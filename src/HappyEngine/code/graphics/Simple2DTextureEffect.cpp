@@ -56,20 +56,18 @@ void Simple2DTextureEffect::load()
 	m_ShaderTCOffsetPos = m_pShader->getShaderVarId("texCoordOffset");
 	m_ShaderTCScalePos = m_pShader->getShaderVarId("texCoordScale");
 
-	m_pShader->begin();
+	m_pShader->bind();
 	mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
 	m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
-    m_pShader->end();
 }
 
 void Simple2DTextureEffect::begin() const
 {
-	m_pShader->begin();
+	m_pShader->bind();
 }
 
 void Simple2DTextureEffect::end() const
 {
-	m_pShader->end();
 }
 
 void Simple2DTextureEffect::setWorldMatrix(const he::mat44& mat) const

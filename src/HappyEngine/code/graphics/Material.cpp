@@ -47,7 +47,7 @@ void Material::setShader(const Shader::pointer& pShader)
 void Material::begin(const IDrawable* pEntity, const Camera* pCamera) const
 {
     ASSERT(m_pShader != nullptr, "set shader first!");
-    m_pShader->begin();
+    m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
     {
         if (pVar->getType() == ShaderVarType_User)
@@ -68,7 +68,6 @@ void Material::begin(const IDrawable* pEntity, const Camera* pCamera) const
 }
 void Material::end() const
 {
-    m_pShader->end();
 }
 
 } } //end namespace

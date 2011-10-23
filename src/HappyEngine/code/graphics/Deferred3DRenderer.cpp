@@ -23,7 +23,7 @@
 #include "Deferred3DRenderer.h"
 #include "Happy2DRenderer.h"
 #include "HappyEngine.h"
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include "VertexLayout.h"
 #include "Vertex.h"
 #include "Assert.h"
@@ -68,12 +68,11 @@ Deferred3DRenderer::Deferred3DRenderer():
     int width = GRAPHICS->getViewport().width, 
        height = GRAPHICS->getViewport().height;
 
-
     //Textures
     glGenTextures(TEXTURES, m_TextureId);
     for (int i = 0; i < TEXTURES; ++i)
     {
-        glBindTexture(GL_TEXTURE_2D, m_TextureId[i]);
+        GL::heBindTexture2D(m_TextureId[i]);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -86,7 +85,7 @@ Deferred3DRenderer::Deferred3DRenderer():
     }
 
     glGenTextures(1, &m_RenderTextureId);
-    glBindTexture(GL_TEXTURE_2D, m_RenderTextureId);
+    GL::heBindTexture2D(m_RenderTextureId);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -96,7 +95,7 @@ Deferred3DRenderer::Deferred3DRenderer():
         0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     m_pRenderTexture->init(m_RenderTextureId, width, height, GL_RGBA16F);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GL::heBindTexture2D(0);
 
     m_pBloom->init();
 
@@ -106,7 +105,7 @@ Deferred3DRenderer::Deferred3DRenderer():
 
     //FBO Collection
     glGenFramebuffers(1, &m_CollectionFboId);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_CollectionFboId);
+    GL::heBindFbo(m_CollectionFboId);
 
     for (int i = 0; i < TEXTURES; ++i)
     {
@@ -116,26 +115,14 @@ Deferred3DRenderer::Deferred3DRenderer():
 
     //Fbo Render
     glGenFramebuffers(1, &m_RenderFboId);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RenderFboId);
+    GL::heBindFbo(m_RenderFboId);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RenderTextureId, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_TextureId[3], 0);
 
     err::checkFboStatus("deferred render");
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                                                                    ///
-    //////////////////////////////////////////////////////////////////////////
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
-    glDepthRange(0.0f, 1.0f);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
-
+    GL::heBindFbo(0);
 
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD SHADERS                              ///
@@ -188,7 +175,9 @@ Deferred3DRenderer::Deferred3DRenderer():
     m_ShaderAmbIllPos[4] = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
     m_ShaderAmbIllPos[5] = m_pAmbIllShader->getShaderSamplerId("sgMap");
 	m_ShaderAmbIllPos[6] = m_pAmbIllShader->getShaderSamplerId("normalMap");
-	m_ShaderAmbIllPos[7] = m_pAmbIllShader->getShaderSamplerId("depthMap");
+    m_ShaderAmbIllPos[7] = m_pAmbIllShader->getShaderSamplerId("depthMap");
+    m_ShaderAmbIllPos[8] = m_pAmbIllShader->getShaderVarId("mtxDirLight");
+    m_ShaderAmbIllPos[9] = m_pAmbIllShader->getShaderSamplerId("shadowMap");
 
     //----ToneMap-----------------------------------------------------------------
     m_pToneMapShader = NEW Shader();
@@ -243,10 +232,10 @@ const VertexLayout& Deferred3DRenderer::getVertexLayoutLightVolume()
 void Deferred3DRenderer::begin(const Camera* pCamera)
 {
     m_pCamera = pCamera;
-    glBindFramebuffer(GL_FRAMEBUFFER, m_CollectionFboId);
-    const static GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    GL::heBindFbo(m_CollectionFboId);
+    const static GLenum buffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, buffers);
-    glClearColor(0, 0, 0, 0);
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void Deferred3DRenderer::end()
@@ -271,7 +260,7 @@ void Deferred3DRenderer::end()
     //glEnable(GL_CULL_FACE);
     //#endif
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RenderFboId);
+    GL::heBindFbo(m_RenderFboId);
     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -279,15 +268,14 @@ void Deferred3DRenderer::end()
     ///                             Pass 1                                 ///
     //////////////////////////////////////////////////////////////////////////
 
-    glEnable(GL_BLEND);
-    //glEnable(GL_SCISSOR_TEST);
-    glBlendFunc(GL_ONE, GL_ONE);
-    glDisable(GL_DEPTH_TEST);
+    GL::heBlendEnabled(true);
+    GL::heBlendFunc(BlendFunc_One, BlendFunc_One);
+    GL::heSetDepthRead(false);
 
-	glCullFace(GL_FRONT);
+    GL::heSetCullFace(true);
     for (int i = 0; i < LIGHTVOLUME_SHADERS; ++i)
     {
-        m_pPostLightVolumeShader[i]->begin();
+        m_pPostLightVolumeShader[i]->bind();
         
         m_pPostLightVolumeShader[i]->setShaderVar(m_ShaderLVColMapPos[i], m_pTexture[0]);
         m_pPostLightVolumeShader[i]->setShaderVar(m_ShaderLVSGMapPos[i], m_pTexture[1]);
@@ -305,39 +293,35 @@ void Deferred3DRenderer::end()
             case LightVolumeType_SpotLight: postSpotLights(); break;
             default: ASSERT("unkown lighttype"); break;
         }
-
-        m_pPostLightVolumeShader[i]->end();
     }
-	glCullFace(GL_BACK);
+    GL::heSetCullFace(false);
 
-    m_pAmbIllShader->begin();
+    m_pAmbIllShader->bind();
     postAmbIllLight();
-    m_pAmbIllShader->end();
 
-    glDisable(GL_BLEND);
+    GL::heBlendEnabled(false);
     if (m_Bloom)
         m_pBloom->render(m_pRenderTexture, m_Exposure);
     //////////////////////////////////////////////////////////////////////////
     ///                             Pass 2                                 ///
     //////////////////////////////////////////////////////////////////////////
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL::heBindFbo(0);
     const static GLenum buffers2[1] = { GL_BACK_LEFT };
     glDrawBuffers(1, buffers2);
     glClear(GL_COLOR_BUFFER_BIT);
 
     //Tonemap
-    m_pToneMapShader->begin();
+    m_pToneMapShader->bind();
     postToneMap();
-    m_pToneMapShader->end();
 
-    glBindVertexArray(0);
-    glDisable(GL_SCISSOR_TEST);
-    glEnable(GL_DEPTH_TEST);
+    GL::heBindVao(0);
+    GL::heScissorEnabled(false);
+    GL::heSetDepthRead(true);
 
     if (m_ShowDebugTextures)
     {
         HE2D->begin();
-        glDisable(GL_BLEND);
+        GL::heBlendEnabled(false);
         HE2D->drawTexture2D(m_pTexture[0], vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
         HE2D->drawTexture2D(m_pTexture[1], vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
         HE2D->drawTexture2D(m_pTexture[2], vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
@@ -346,9 +330,13 @@ void Deferred3DRenderer::end()
         HE2D->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
         HE2D->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
         HE2D->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
-        glEnable(GL_BLEND);
+        if (getLightManager()->getDirectionalLight()->getShadowMap() != nullptr)
+        HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(), vec2(12 * 1 + 256 * 0, 12*2 + 144*2), vec2(256, 256));
+        GL::heBlendEnabled(true);
         HE2D->end();
     }
+
+    GL::heBindTexture2D(0);
 }
 void Deferred3DRenderer::postAmbIllLight()
 {
@@ -365,6 +353,8 @@ void Deferred3DRenderer::postAmbIllLight()
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[5], m_pTexture[1]);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[6], m_pTexture[2]);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[7], m_pTexture[3]);
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[8], m_pLightManager->getDirectionalLight()->getShadowMatrix());
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[9], m_pLightManager->getDirectionalLight()->getShadowMap());
     draw(m_pQuad);
 }
 void Deferred3DRenderer::postPointLights()
@@ -379,7 +369,6 @@ void Deferred3DRenderer::postPointLights()
                    length(pLight->getPosition() - m_pCamera->getPosition()) > pLight->getEndAttenuation())) 
             {
                 //RectI scissor(pLight->getScissor(pCamera));
-                //glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
                 m_pPostLightVolumeShader[LightVolumeType_PointLight]->setShaderVar(m_ShaderLVPLPos[0], m_pCamera->getView() * pLight->getPosition());
                 m_pPostLightVolumeShader[LightVolumeType_PointLight]->setShaderVar(m_ShaderLVPLPos[1], pLight->getMultiplier());
                 m_pPostLightVolumeShader[LightVolumeType_PointLight]->setShaderVar(m_ShaderLVPLPos[2], pLight->getColor());
@@ -398,7 +387,6 @@ void Deferred3DRenderer::postSpotLights()
     std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
     {
         //RectI scissor(pLight->getScissor(pCamera));
-        //glScissor(scissor.x, scissor.y, scissor.width, scissor.height);
         m_pPostLightVolumeShader[LightVolumeType_SpotLight]->setShaderVar(m_ShaderLVSLPos[0], m_pCamera->getView() * pLight->getPosition());
         m_pPostLightVolumeShader[LightVolumeType_SpotLight]->setShaderVar(m_ShaderLVSLPos[1], pLight->getMultiplier());
         m_pPostLightVolumeShader[LightVolumeType_SpotLight]->setShaderVar(m_ShaderLVSLPos[2], normalize((m_pCamera->getView() * vec4(pLight->getDirection(), 0)).xyz()));
@@ -437,7 +425,7 @@ void Deferred3DRenderer::draw(const ModelMesh::pointer& pMesh)//, const Camera* 
 {
     if (pMesh->isComplete()) //possible async load
     {
-        glBindVertexArray(pMesh->getVertexArraysID());
+        GL::heBindVao(pMesh->getVertexArraysID());
         glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
     }
 }

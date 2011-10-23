@@ -21,7 +21,7 @@
 
 #include "GraphicsEngine.h"
 
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include "ExternalError.h"
 
 #include "HappyNew.h"
@@ -66,7 +66,15 @@ void GraphicsEngine::init()
     setBackgroundColor(m_ClearColor);
     glClearDepth(1.0f);
 
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetWindingFrontFace(true);
+    GL::heSetCullFace(false);
+    glEnable(GL_CULL_FACE);
+
     m_pDeferred3DRenderer = NEW Deferred3DRenderer();
+    m_pDrawManager->init();
 }
 void GraphicsEngine::initWindow()
 {
@@ -160,7 +168,7 @@ void GraphicsEngine::setVSync(bool enable)
 
 void GraphicsEngine::setBackgroundColor(const Color& color)
 {
-    glClearColor(color.r(), color.g(), color.b(), color.a());
+    GL::heClearColor(color);
     m_ClearColor = color;
 }
 void GraphicsEngine::clearAll() const
@@ -185,6 +193,7 @@ void GraphicsEngine::begin(const Camera* pCamera)
 void GraphicsEngine::end()
 {
     m_pDrawManager->end();
+    m_pDrawManager->renderShadow();
     m_pDeferred3DRenderer->end();
 }
 void GraphicsEngine::draw(const IDrawable* pDrawable)

@@ -27,14 +27,14 @@
 #include <iostream>
 #include <algorithm>
 
-#include "GL/glew.h"
+#include "OpenGL.h"
 
 namespace he {
 namespace gfx {
 
 uint Shader::s_CurrentBoundShader = 0;
 
-Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0), m_prevBoundShader(0)
+Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {
 }
 
@@ -151,22 +151,13 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Sh
     return succes;
 }
 
-void Shader::begin()
+void Shader::bind()
 {
     if (s_CurrentBoundShader != m_Id)
     {
         glUseProgram(m_Id);
+        s_CurrentBoundShader = m_Id;
     }
-    m_prevBoundShader = s_CurrentBoundShader;
-    s_CurrentBoundShader = m_Id;
-}
-void Shader::end()
-{
-    if (m_prevBoundShader != m_Id)
-    {
-        glUseProgram(m_prevBoundShader);
-    }
-    s_CurrentBoundShader = m_prevBoundShader;
 }
 
 uint Shader::getShaderVarId(const std::string& name) const
@@ -187,14 +178,8 @@ uint Shader::getShaderSamplerId(const std::string& name)
     {
         uint texLoc(getShaderVarId(name));
         uint samplerIndex(m_SamplerLocationMap.size());
-        if (s_CurrentBoundShader != m_Id)
-        {
-            begin();
-            glUniform1i(texLoc, samplerIndex);
-            end();
-        }
-        else
-            glUniform1i(texLoc, samplerIndex);
+        bind();
+        glUniform1i(texLoc, samplerIndex);
         m_SamplerLocationMap[name] = samplerIndex;
         return samplerIndex;
     }
@@ -235,8 +220,8 @@ void Shader::setShaderVar(uint id, const mat44& matrix) const
 void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    glActiveTexture(GL_TEXTURE0 + id);
-    glBindTexture(GL_TEXTURE_2D, tex2D->getID());
+    GL::heSetActiveTexture(GL_TEXTURE0 + id);
+    GL::heBindTexture2D(tex2D->getID());
 }
 
 } } //end namespace

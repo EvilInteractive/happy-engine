@@ -47,6 +47,34 @@ uniform vec4 projParams;
 uniform AmbientLight ambLight;
 uniform DirectionalLight dirLight;
 
+uniform mat4 mtxDirLight;
+uniform sampler2D shadowMap;
+
+float shadowCheck(vec3 position)
+{
+	vec4 coord = mtxDirLight * vec4(position, 1.0f);
+	coord.xyz /= coord.w;
+	if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1 ||
+		coord.z < 0)
+		return 0.25f;
+
+	//NDC -> texturespace
+	coord.x = (coord.x + 1.0f) / 2.0f;
+	coord.y = (coord.y + 1.0f) / 2.0f;
+	coord.z = (coord.z + 1.0f) / 2.0f;
+	
+	float shadow = 0;
+	//[unroll]
+	//for (int tx = -1.3f; tx <= 1.3; tx += 1.3f)
+		//[unroll]
+		//for (int ty = -1.3f; ty <= 1.3f; ty += 1.3f)
+	shadow += (texture2D(shadowMap, coord.xy).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	
+	//shadow /= 9.0f;
+
+	return shadow;
+}
+
 void main()
 {    
     vec2 ndc = texCoord * 2.0f - 1.0f;
@@ -66,6 +94,7 @@ void main()
 	vec4 color = texture2D(colorIllMap, texCoord);
 
 	vec3 dirColor = (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 5.0f) * dirLight.color;
+	dirColor *= shadowCheck(position);
 	
 	outColor = vec4(color.rgb * ambLight.color + 
 					color.rgb * color.a * 10.0f + 

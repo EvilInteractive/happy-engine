@@ -15,8 +15,20 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
+//Author: Bastian Damman
+
+#version 150 core
+
+#include "encode.frag"
+
+//in vec2 passTexCoord;
+//in vec3 passNormal;
+//in vec3 passTangent;
+
+out vec4 outColor;
 
 void main()
 {
+	//outColor = vec4(1.0f, passNormal.x, passTangent.x, passTexCoord.x);
+	outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

@@ -47,8 +47,7 @@ public:
     bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
     bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
 
-    void begin();
-    void end();
+    void bind();
 
     uint getShaderVarId(const std::string& name) const;
     uint getShaderSamplerId(const std::string& name);
@@ -73,7 +72,6 @@ private:
     std::string m_FragShaderName;
 
     static uint s_CurrentBoundShader;
-    uint m_prevBoundShader;
 
     //Disable default copy constructor and default assignment operator
     Shader(const Shader&);

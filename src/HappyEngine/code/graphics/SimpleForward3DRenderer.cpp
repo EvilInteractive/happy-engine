@@ -17,43 +17,11 @@
 #include "StdAfx.h" 
 
 #include "SimpleForward3DRenderer.h"
-#include "GL/glew.h"
+#include "OpenGL.h"
 #include "Assert.h"
 
 namespace he {
 namespace gfx {
 
-SimpleForward3DRenderer::SimpleForward3DRenderer()
-{
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDepthMask(GL_TRUE); //disable enable writing to depth buffer
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-}
-
-
-SimpleForward3DRenderer::~SimpleForward3DRenderer()
-{
-}
-
-void SimpleForward3DRenderer::draw(const Model::pointer& pModel)
-{
-    if (pModel->isComplete() == false)
-        return;
-    std::for_each(pModel->cbegin(), pModel->cend(), [&](const ModelMesh::pointer& pMesh)
-    {  
-        draw(pMesh);
-    });
-}
-void SimpleForward3DRenderer::draw(const ModelMesh::pointer& pMesh)
-{
-    glBindVertexArray(pMesh->getVertexArraysID());
-
-    glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
-
-    glBindVertexArray(0);
-}
 
 } } //end namespace

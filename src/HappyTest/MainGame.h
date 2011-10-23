@@ -84,6 +84,7 @@ private:
 
     GroundPlane* m_pGroundPlane;
     he::game::Entity* m_pAxis;
+    he::game::Entity* m_pScene;
 
     he::gfx::SpotLight::pointer m_pSpotLight;
 

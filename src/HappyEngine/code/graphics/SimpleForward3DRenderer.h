@@ -24,22 +24,6 @@
 namespace he {
 namespace gfx {
 
-class SimpleForward3DRenderer
-{
-public:
-	SimpleForward3DRenderer();
-    virtual ~SimpleForward3DRenderer();
-
-    virtual void draw(const Model::pointer& pModel);
-    virtual void draw(const ModelMesh::pointer& pMesh);
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    SimpleForward3DRenderer(const SimpleForward3DRenderer&);
-    SimpleForward3DRenderer& operator=(const SimpleForward3DRenderer&);
-};
-
 } } //end namespace
 
 #endif
