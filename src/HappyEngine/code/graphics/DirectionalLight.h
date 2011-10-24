@@ -37,15 +37,19 @@ namespace gfx {
 
 class DirectionalLight
 {
+public:
+    static const int CASCADES = 3;
+
 private:
     float m_Multiplier;
     vec3 m_Color;
     vec3 m_Direction;
 
-    mat44 m_ShadowMatrix;
-    Texture2D::pointer m_pShadowMap;
+    mat44 m_ShadowMatrix[CASCADES];
+    Texture2D::pointer m_pShadowMap[CASCADES];
     
 public:
+
     DirectionalLight();
     ~DirectionalLight();
     //default copy constructor and assignment operator are fine
@@ -54,15 +58,15 @@ public:
     void setColor(const vec3& color);
     void setColor(const Color& color);
     void setDirection(const vec3& direction);
-    void setShadowMap(const Texture2D::pointer& map);
-    void setShadowMatrix(const mat44& mtx);
+    void setShadowMap(int index, const Texture2D::pointer& map);
+    void setShadowMatrix(int index, const mat44& mtx);
     
     float getMultiplier() const;
     const vec3& getColor() const;
 	const vec3& getDirection() const;
-    const mat44& getShadowMatrix() const;
 
-    const Texture2D::pointer& getShadowMap() const;
+    const mat44& getShadowMatrix(int index) const;
+    const Texture2D::pointer& getShadowMap(int index) const;
 
 	typedef boost::shared_ptr<DirectionalLight> pointer;
 };

@@ -176,8 +176,12 @@ Deferred3DRenderer::Deferred3DRenderer():
     m_ShaderAmbIllPos[5] = m_pAmbIllShader->getShaderSamplerId("sgMap");
 	m_ShaderAmbIllPos[6] = m_pAmbIllShader->getShaderSamplerId("normalMap");
     m_ShaderAmbIllPos[7] = m_pAmbIllShader->getShaderSamplerId("depthMap");
-    m_ShaderAmbIllPos[8] = m_pAmbIllShader->getShaderVarId("mtxDirLight");
-    m_ShaderAmbIllPos[9] = m_pAmbIllShader->getShaderSamplerId("shadowMap");
+    m_ShaderAmbIllPos[8] = m_pAmbIllShader->getShaderVarId("mtxDirLight0");
+    m_ShaderAmbIllPos[9] = m_pAmbIllShader->getShaderVarId("mtxDirLight1");
+    m_ShaderAmbIllPos[10] = m_pAmbIllShader->getShaderVarId("mtxDirLight2");
+    m_ShaderAmbIllPos[11] = m_pAmbIllShader->getShaderSamplerId("shadowMap0");
+    m_ShaderAmbIllPos[12] = m_pAmbIllShader->getShaderSamplerId("shadowMap1");
+    m_ShaderAmbIllPos[13] = m_pAmbIllShader->getShaderSamplerId("shadowMap2");
 
     //----ToneMap-----------------------------------------------------------------
     m_pToneMapShader = NEW Shader();
@@ -330,8 +334,12 @@ void Deferred3DRenderer::end()
         HE2D->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
         HE2D->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
         HE2D->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
-        if (getLightManager()->getDirectionalLight()->getShadowMap() != nullptr)
-        HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(), vec2(12 * 1 + 256 * 0, 12*2 + 144*2), vec2(256, 256));
+        if (getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
+            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
+        if (getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
+            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
+        if (getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
+            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
         GL::heBlendEnabled(true);
         HE2D->end();
     }
@@ -353,8 +361,12 @@ void Deferred3DRenderer::postAmbIllLight()
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[5], m_pTexture[1]);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[6], m_pTexture[2]);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[7], m_pTexture[3]);
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[8], m_pLightManager->getDirectionalLight()->getShadowMatrix());
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[9], m_pLightManager->getDirectionalLight()->getShadowMap());
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[8], m_pLightManager->getDirectionalLight()->getShadowMatrix(0));
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[9], m_pLightManager->getDirectionalLight()->getShadowMatrix(1));
+	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[10], m_pLightManager->getDirectionalLight()->getShadowMatrix(2));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[11], m_pLightManager->getDirectionalLight()->getShadowMap(0));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[12], m_pLightManager->getDirectionalLight()->getShadowMap(1));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[13], m_pLightManager->getDirectionalLight()->getShadowMap(2));
     draw(m_pQuad);
 }
 void Deferred3DRenderer::postPointLights()

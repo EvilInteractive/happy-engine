@@ -47,12 +47,18 @@ uniform vec4 projParams;
 uniform AmbientLight ambLight;
 uniform DirectionalLight dirLight;
 
-uniform mat4 mtxDirLight;
-uniform sampler2D shadowMap;
+uniform mat4 mtxDirLight0;
+uniform mat4 mtxDirLight1;
+uniform mat4 mtxDirLight2;
+uniform sampler2D shadowMap0;
+uniform sampler2D shadowMap1;
+uniform sampler2D shadowMap2;
 
-float shadowCheck(vec3 position)
+vec2 texelSize = vec2(1/2048.0f, 1/2048.0f);
+
+float shadowCheck(vec3 position, sampler2D sampler, mat4 lightMatrix)
 {
-	vec4 coord = mtxDirLight * vec4(position, 1.0f);
+	vec4 coord = lightMatrix * vec4(position, 1.0f);
 	coord.xyz /= coord.w;
 	if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1 ||
 		coord.z < 0)
@@ -68,9 +74,19 @@ float shadowCheck(vec3 position)
 	//for (int tx = -1.3f; tx <= 1.3; tx += 1.3f)
 		//[unroll]
 		//for (int ty = -1.3f; ty <= 1.3f; ty += 1.3f)
-	shadow += (texture2D(shadowMap, coord.xy).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(-1.5f, -1.5f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(0.0f, -1.5f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(1.5f, -1.5f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(-1.5f, 1.5f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(0.0f, 1.5f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(1.5f, 1.5f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(-1.5f, 0.0f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(0.0f, 0.0f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
+	shadow += (texture2D(sampler, coord.xy + texelSize * vec2(1.5f, 0.0f)).r <= coord.z - 0.000025f)? 0.25f : 1.0f;
 	
-	//shadow /= 9.0f;
+	shadow /= 9.0f;
 
 	return shadow;
 }
@@ -94,9 +110,25 @@ void main()
 	vec4 color = texture2D(colorIllMap, texCoord);
 
 	vec3 dirColor = (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 5.0f) * dirLight.color;
-	dirColor *= shadowCheck(position);
 	
-	outColor = vec4(color.rgb * ambLight.color + 
+	vec3 testColor = vec3(1, 1, 1);
+	if (position.z < 50)
+	{
+		//testColor = vec3(1, 0, 1);
+		dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0);
+	}
+	else if (position.z < 100)
+	{
+		//testColor = vec3(0, 1, 0);
+		dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1);
+	}
+	else if (position.z < 250)
+	{
+		//testColor = vec3(0, 0, 1);
+		dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2);
+	}
+
+	outColor = vec4((color.rgb * ambLight.color + 
 					color.rgb * color.a * 10.0f + 
-					dirColor, 1.0f);						
+					dirColor)*testColor, 1.0f);						
 }

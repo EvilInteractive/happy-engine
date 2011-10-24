@@ -99,7 +99,7 @@ private:
          m_ShaderLVWVP[LIGHTVOLUME_SHADERS];
     
     Shader* m_pAmbIllShader;
-    uint m_ShaderAmbIllPos[10]; //10 values
+    uint m_ShaderAmbIllPos[14]; //14 values
 
     Shader* m_pToneMapShader;
     uint m_ToneMapShaderPos[8]; //8 values

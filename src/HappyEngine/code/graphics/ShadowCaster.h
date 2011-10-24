@@ -38,19 +38,20 @@ public:
     virtual ~ShadowCaster();
 
     void init();
-
-    const Texture2D::pointer getShadowMap() const;
-
+    
     void render(const std::vector<DrawManager::DrawElement>& elements, const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight);
 
 private:
 
     uint m_FboId;
-    Texture2D::pointer m_pShadowTexture;
-    Texture2D::pointer m_pTempTexture;
+
+    const static int COUNT = DirectionalLight::CASCADES;
+    Texture2D::pointer m_pShadowTexture[COUNT];
 
     Shader::pointer m_pShadowShader;
     uint m_shaderWVPpos;
+
+    ushort m_ShadowSize;
 
     //Disable default copy constructor and default assignment operator
     ShadowCaster(const ShadowCaster&);
