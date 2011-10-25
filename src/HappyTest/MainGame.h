@@ -31,6 +31,7 @@
 #include "FlyCamera.h"
 #include "FPSGraph.h"
 #include "GroundPlane.h"
+#include "Sound2D.h"
 
 #include <vector>
 
@@ -89,8 +90,11 @@ private:
     he::gfx::SpotLight::pointer m_pSpotLight;
 
 	he::gui::Button* m_pTestButton;
+	he::gui::Button* m_pTestButton2;
 
 	he::gui::TextBox* m_pTextBox;
+
+	he::sfx::Sound2D* m_pStillAllive;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

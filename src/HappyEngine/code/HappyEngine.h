@@ -21,7 +21,11 @@
 
 #define SDL_NO_COMPAT
 #include "boost/shared_ptr.hpp"
+
+#pragma warning (disable : 4244)
 #include "boost/thread.hpp"
+#pragma warning (default : 4244)
+
 #include "SDL.h"
 #include "GL/glew.h"
 
@@ -50,6 +54,9 @@ namespace net {
 namespace tools {
 	class Console;
 }
+namespace sfx {
+	class SoundEngine;
+}
 }
 
 #define HAPPYENGINE he::HappyEngine::getPointer()
@@ -60,6 +67,7 @@ namespace tools {
 #define NETWORK HAPPYENGINE->getNetworkManager()
 #define HE2D HAPPYENGINE->get2DRenderer()
 #define CONSOLE HAPPYENGINE->getConsole()
+#define AUDIO HAPPYENGINE->getSoundEngine()
 
 namespace he {
 enum SubEngine
@@ -71,7 +79,8 @@ enum SubEngine
     SubEngine_Controls = 1 << 3,
     SubEngine_Content = 1 << 4,
 	SubEngine_2DRenderer = 1 << 5,
-    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5
+	SubEngine_Audio = 1 << 6,
+    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6
 };
 class HappyEngine
 {
@@ -88,6 +97,8 @@ public:
 
 	const std::vector<SDL_Event>& getSDLEvents() const;
 
+	void audioLoop();
+
     //subengines
     gfx::GraphicsEngine* getGraphicsEngine() const;
     const io::ControlsManager* getControls() const;
@@ -96,6 +107,7 @@ public:
     net::NetworkManager* getNetworkManager() const;
 	gfx::Happy2DRenderer* get2DRenderer() const;
 	tools::Console* getConsole() const;
+	sfx::SoundEngine* getSoundEngine() const;
 
 private:
     // Singleton design pattern
@@ -112,12 +124,14 @@ private:
     net::NetworkManager* m_pNetworkManager;
 	gfx::Happy2DRenderer* m_p2DRenderer;
 	tools::Console* m_pConsole;
+	sfx::SoundEngine* m_pSoundEngine;
 
     bool m_Quit;
 
     int m_SubEngines;
 
 	std::vector<SDL_Event> m_SDLEvents;
+	boost::thread m_AudioThread;
 
     // Methods
     void initWindow();

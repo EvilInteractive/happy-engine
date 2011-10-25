@@ -35,6 +35,7 @@
 #include "ControlsManager.h"
 #include "Happy2DRenderer.h"
 #include "PhysicsEngine.h"
+#include "SoundEngine.h"
 
 #include "IniReader.h"
 #include "FileNotFoundException.h"
@@ -53,7 +54,8 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
 					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
 					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
-                       m_pScene(0)
+                       m_pScene(0),
+					   m_pStillAllive(nullptr)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -83,6 +85,7 @@ MainGame::~MainGame()
 	delete m_pAxis;
     delete m_pScene;
 	delete m_pTextBox;
+	delete m_pStillAllive;
 
     NETWORK->stop();
 }
@@ -146,14 +149,18 @@ void MainGame::load()
 
     m_pFont = CONTENT->loadFont("MODES.ttf", 32);
 
-	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(50,600), vec2(60,20));
-	m_pTestButton->setText("Button", 12);
+	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,600), vec2(60,20));
+	m_pTestButton->setText("Play me", 12);
+	m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,630), vec2(60,20));
+	m_pTestButton2->setText("Stop", 12);
 
 	m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
 	CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
 	CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
 	CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
+
+	m_pStillAllive = AUDIO->loadSound2D("../data/audio/still_alive.ogg", true);
 }
 void MainGame::tick(float dTime)
 {
@@ -198,6 +205,16 @@ void MainGame::tick(float dTime)
     //m_pSpotLight->setDirection(-he::normalize(m_pCamera->getLook()));
 
 	m_pTestButton->tick();
+	m_pTestButton2->tick();
+
+	if (m_pTestButton->isClicked())
+	{
+		m_pStillAllive->play(true);
+	}
+	else if (m_pTestButton2->isClicked())
+	{
+		m_pStillAllive->stop();
+	}
 
 	m_pTextBox->tick();
 
@@ -236,7 +253,9 @@ void MainGame::draw(float /*dTime*/)
 
 		// GUI elements need to be drawn inside HE2D renderer
 		m_pTestButton->draw();
-		m_pTextBox->draw();
+		m_pTestButton2->draw();
+		
+		/*m_pTextBox->draw();
 
 		if (m_bTest2)
 		{
@@ -245,7 +264,7 @@ void MainGame::draw(float /*dTime*/)
 			HE2D->setFontHorizontalAlignment(Font::HAlignment_Center);
 
 			HE2D->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
-		}
+		}*/
 
 		m_pFPSGraph->draw();
 

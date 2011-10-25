@@ -33,6 +33,7 @@
 #include "NetworkManager.h"
 #include "Happy2DRenderer.h"
 #include "Console.h"
+#include "SoundEngine.h"
 
 namespace he {
 
@@ -42,7 +43,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
-							m_pConsole(nullptr)
+							m_pConsole(nullptr), m_pSoundEngine(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -61,7 +62,9 @@ void HappyEngine::dispose()
     std::cout << "\n--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::cleanup()
-{   
+{  
+	m_AudioThread.join(); // wait for audiothread to finish
+
     //dispose/delete all sub engines here
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
@@ -77,6 +80,8 @@ void HappyEngine::cleanup()
 	m_p2DRenderer = nullptr;
 	delete m_pConsole;
 	m_pConsole = nullptr;
+	delete m_pSoundEngine;
+	m_pSoundEngine = nullptr;
     if (m_SubEngines & SubEngine_Graphics)
     {
         SDL_Quit();
@@ -126,6 +131,12 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 		m_p2DRenderer = NEW gfx::Happy2DRenderer();
     }
 
+	if (subengines & SubEngine_Audio)
+    {
+		m_pSoundEngine = NEW sfx::SoundEngine();
+		m_pSoundEngine->initialize();
+    }
+
 	m_pConsole = NEW tools::Console();
 }
 
@@ -148,6 +159,8 @@ void HappyEngine::start(IGame* pGame)
     if (m_SubEngines & SubEngine_Graphics) m_pGraphicsEngine->init();
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->initialize();
     m_pGame->load();
+
+	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 
     boost::timer t;
     while (m_Quit == false)
@@ -203,6 +216,18 @@ const std::vector<SDL_Event>& HappyEngine::getSDLEvents() const
 	return m_SDLEvents;
 }
 
+void HappyEngine::audioLoop()
+{
+	boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(1);
+
+	while (m_Quit == false)
+	{
+		m_pSoundEngine->tick();
+
+		boost::this_thread::sleep(waitTime);
+	}
+}
+
 //SubEngines
 gfx::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 {
@@ -231,6 +256,11 @@ gfx::Happy2DRenderer* HappyEngine::get2DRenderer() const
 tools::Console* HappyEngine::getConsole() const
 {
 	return m_pConsole;
+}
+
+sfx::SoundEngine* HappyEngine::getSoundEngine() const
+{
+	return m_pSoundEngine;
 }
 
 } //end namespace

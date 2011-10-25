@@ -15,8 +15,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="code\audio\Sound.cpp" />
-    <ClCompile Include="code\audio\SoundManager.cpp" />
+    <ClCompile Include="code\audio\Sound2D.cpp" />
+    <ClCompile Include="code\audio\Sound3D.cpp" />
+    <ClCompile Include="code\audio\SoundEngine.cpp" />
     <ClCompile Include="code\content\BinObjLineLoader.cpp" />
     <ClCompile Include="code\content\BinObjLoader.cpp" />
     <ClCompile Include="code\content\ContentManager.cpp" />
@@ -104,8 +105,10 @@
     <ClCompile Include="code\tools\FPSGraph.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="code\audio\Sound.h" />
-    <ClInclude Include="code\audio\SoundManager.h" />
+    <ClInclude Include="code\audio\ISound.h" />
+    <ClInclude Include="code\audio\Sound2D.h" />
+    <ClInclude Include="code\audio\Sound3D.h" />
+    <ClInclude Include="code\audio\SoundEngine.h" />
     <ClInclude Include="code\content\AssetContainer.h" />
     <ClInclude Include="code\content\AssetContainerP.h" />
     <ClInclude Include="code\content\BinObjLineLoader.h" />

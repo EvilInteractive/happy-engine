@@ -52,12 +52,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="code\audio\Sound.cpp">
-      <Filter>happyengine\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="code\audio\SoundManager.cpp">
-      <Filter>happyengine\audio</Filter>
-    </ClCompile>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
@@ -295,6 +289,15 @@
     <ClCompile Include="code\graphics\DrawSettings.cpp">
       <Filter>happyengine\graphics\rendering</Filter>
     </ClCompile>
+    <ClCompile Include="code\audio\SoundEngine.cpp">
+      <Filter>happyengine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="code\audio\Sound2D.cpp">
+      <Filter>happyengine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="code\audio\Sound3D.cpp">
+      <Filter>happyengine\audio</Filter>
+    </ClCompile>
     <ClCompile Include="code\graphics\GraphicsEngine.cpp">
       <Filter>happyengine\graphics\rendering</Filter>
     </ClCompile>
@@ -315,12 +318,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="code\audio\Sound.h">
-      <Filter>happyengine\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="code\audio\SoundManager.h">
-      <Filter>happyengine\audio</Filter>
-    </ClInclude>
     <ClInclude Include="code\content\AssetContainer.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
@@ -647,6 +644,18 @@
     </ClInclude>
     <ClInclude Include="code\graphics\ShadowCaster.h">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="code\audio\SoundEngine.h">
+      <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="code\audio\Sound2D.h">
+      <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="code\audio\Sound3D.h">
+      <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="code\audio\ISound.h">
+      <Filter>happyengine\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
