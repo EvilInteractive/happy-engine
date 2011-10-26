@@ -33,7 +33,7 @@
 namespace he {
 namespace gfx {
 
-Bloom::Bloom(): m_pMesh(NEW ModelMesh("DownSamplerQuad")), m_DownSamples(4),
+Bloom::Bloom(): m_DownSamples(4),
                 m_pDownSampleShader(NEW Shader()), m_pDownSampleBrightPassShader(NEW Shader())
 {
     m_pBlurShaderPass[0] = Shader::pointer(NEW Shader());
@@ -102,7 +102,8 @@ void Bloom::init()
                                         folder +  "deferred/post/downSample.frag", layout, defineBrightPass);
     m_DownSampleBrightPassMap = m_pDownSampleBrightPassShader->getShaderSamplerId("map");
     m_DownSampleBrightPassInvScale = m_pDownSampleBrightPassShader->getShaderVarId("invScale");
-    m_DownSampleBrightPassExposure = m_pDownSampleBrightPassShader->getShaderVarId("exposure");
+    m_DownSampleBrightPassLumMap = m_pDownSampleBrightPassShader->getShaderSamplerId("lumMap");
+    //m_DownSampleBrightPassExposure = m_pDownSampleBrightPassShader->getShaderVarId("exposure");
 
     m_pDownSampleShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
                               folder + "deferred/post/downSample.frag", layout);
@@ -127,30 +128,11 @@ void Bloom::init()
     //////////////////////////////////////////////////////////////////////////
     ///                             Quad                                   ///
     //////////////////////////////////////////////////////////////////////////
-    std::vector<VertexPos> vertices;
-    vertices.push_back(VertexPos(vec3(-1, 1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(1, 1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
-
-    std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
-    indices.push_back(1); indices.push_back(3); indices.push_back(2);
-
-    VertexLayout vLayout;
-    vLayout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
-
-    m_pMesh->init();
-    m_pMesh->setVertices(&vertices[0], 4, vLayout);
-    m_pMesh->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pMesh = CONTENT->getFullscreenQuad();
 }
 
-void Bloom::render( const Texture2D::pointer& pTexture, float exposure )
+void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& lumMap )
 {
-    GL::heBindTexture2D(pTexture->getID());
-    glGenerateMipmap(GL_TEXTURE_2D);
-    GL::heBindTexture2D(0);
-
     GL::heBindVao(m_pMesh->getVertexArraysID());
 
     //BrightPass
@@ -158,7 +140,7 @@ void Bloom::render( const Texture2D::pointer& pTexture, float exposure )
     m_pDownSampleBrightPassShader->bind();
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassMap, pTexture);
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassInvScale, 2.0f);
-    m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassExposure, exposure);
+    m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
     glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
 
     //DownSample further

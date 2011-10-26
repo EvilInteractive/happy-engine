@@ -131,19 +131,10 @@
     <None Include="data\shaders\deferred\post\decode.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
-    <None Include="data\shaders\deferred\post\deferredPostALShader.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
     <None Include="data\shaders\deferred\post\deferredPostAmbientIllShader.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
-    <None Include="data\shaders\deferred\post\deferredPostDLShader.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
     <None Include="data\shaders\deferred\post\deferredPostPLShader.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\deferred\post\deferredPostSelfIllumination.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
     <None Include="data\shaders\deferred\post\deferredPostShader.vert">
@@ -156,6 +147,12 @@
       <Filter>data\shaders\deferred\post</Filter>
     </None>
     <None Include="data\shaders\deferred\post\HDRtoLDR.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\downSample.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\post\lum.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
   </ItemGroup>

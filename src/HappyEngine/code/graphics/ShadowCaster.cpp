@@ -40,9 +40,10 @@ ShadowCaster::~ShadowCaster()
     glDeleteFramebuffers(1, &m_FboId);
 }
 
-void ShadowCaster::init()
+void ShadowCaster::init(const DrawSettings& settings)
 {
-    m_ShadowSize = 1024;
+    m_ShadowSize = 512 * settings.getShadowMapMultiplier();
+    ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
     //////////////////////////////////////////////////////////////////////////
     ///                             Textures                               ///
     //////////////////////////////////////////////////////////////////////////
@@ -106,9 +107,9 @@ void ShadowCaster::init()
 
 mat44 getProjection(const Camera* pCamera, const mat44& mtxShadowView, float nearClip, float farClip)
 {
-    float wFar = farClip * tan(pCamera->getFov()),   //half width
+    float wFar = farClip * tan(pCamera->getFov()),          //half width
           hFar = wFar / pCamera->getAspectRatio();          //half height
-    float wNear = nearClip * tan(pCamera->getFov()), //half width
+    float wNear = nearClip * tan(pCamera->getFov()),        //half width
           hNear = wNear / pCamera->getAspectRatio();        //half height
 
     std::vector<vec3> frustumPoints;
@@ -145,15 +146,16 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
 
     mat44 mtxShadowView(mat44::createLookAtLH(pCamera->getPosition() - shadowLook, pCamera->getPosition(), up));
     mat44 mtxShadowProjection[COUNT];
-    mtxShadowProjection[0] = getProjection(pCamera, mtxShadowView, pCamera->getNearClip(), 60);
-    mtxShadowProjection[1] = getProjection(pCamera, mtxShadowView, 60, 110);
-    mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 110, pCamera->getFarClip());
+    mtxShadowProjection[0] = getProjection(pCamera, mtxShadowView, pCamera->getNearClip(), 25);
+    mtxShadowProjection[1] = getProjection(pCamera, mtxShadowView, 25, 50);
+    mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 50, 100);
+    mtxShadowProjection[3] = getProjection(pCamera, mtxShadowView, 100, pCamera->getFarClip());
     
 
 
     //Begin drawing
     GL::heBindFbo(m_FboId);
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
@@ -172,20 +174,23 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
 
         std::for_each(elements.cbegin(), elements.cend(), [&](const DrawManager::DrawElement& e)
         {
-            m_pShadowShader->setShaderVar(m_shaderWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
-            std::for_each(e.pDrawable->getModel()->cbegin(), e.pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
-            {   
-                GL::heBindVao(m->getVertexShadowArraysID());
-                glDrawElements(GL_TRIANGLES, m->getNumIndices(), m->getIndexType(), 0);   
-            });
+            if (e.pDrawable->getCastsShadow())
+            {
+                m_pShadowShader->setShaderVar(m_shaderWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
+                std::for_each(e.pDrawable->getModel()->cbegin(), e.pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
+                {   
+                    GL::heBindVao(m->getVertexShadowArraysID());
+                    glDrawElements(GL_TRIANGLES, m->getNumIndices(), m->getIndexType(), 0);   
+                });
+            }
         });
         pDirectionalLight->setShadowMap(i, m_pShadowTexture[i]);
         pDirectionalLight->setShadowMatrix(i, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
 
-    GL::heSetCullFace(false);
+    GL::heSetCullFace(true);
     glViewport(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    //glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 }
     

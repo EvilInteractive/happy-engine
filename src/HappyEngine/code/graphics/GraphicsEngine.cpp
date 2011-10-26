@@ -26,6 +26,8 @@
 
 #include "HappyNew.h"
 
+#include "IniReader.h"
+
 namespace he {
 namespace gfx {
 
@@ -73,8 +75,16 @@ void GraphicsEngine::init()
     GL::heSetCullFace(false);
     glEnable(GL_CULL_FACE);
 
-    m_pDeferred3DRenderer = NEW Deferred3DRenderer();
-    m_pDrawManager->init();
+
+    io::IniReader reader;
+    reader.open("gfxSettings.ini");
+
+    DrawSettings settings;
+    settings.setBloomEnabled(reader.readBool(L"GFX", L"bloom", false));
+    settings.setShadowQuality((ShadowQuality)reader.readInt(L"GFX", L"shadowQuality", 1));
+
+    m_pDeferred3DRenderer = NEW Deferred3DRenderer(settings);
+    m_pDrawManager->init(settings);
 }
 void GraphicsEngine::initWindow()
 {

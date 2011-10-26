@@ -16,29 +16,47 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 30/09/2011
+//Created: 26/10/2011
 
-#ifndef _HE_IDRAWABLE_H_
-#define _HE_IDRAWABLE_H_
+#ifndef _HE_AUTO_EXPOSURE_H_
+#define _HE_AUTO_EXPOSURE_H_
 #pragma once
 
-#include "Model.h"
-#include "Material.h"
+#include "Shader.h"
+#include "Texture2D.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
-    
-class IDrawable
+
+class AutoExposure
 {
 public:
-    virtual ~IDrawable() {}
+	AutoExposure();
+    virtual ~AutoExposure();
 
-    virtual const Material& getMaterial() const = 0;
-    virtual const Model::pointer getModel() const = 0;
+    void init();
 
-    virtual const mat44& getWorldMatrix() const = 0;
+    void calculate(const Texture2D::pointer& hdrMap);
 
-    virtual bool getCastsShadow() const = 0;
+    const Texture2D::pointer& getLuminanceMap() const;
+
+private:
+
+    Shader::pointer m_pLumShader;
+    uint m_HDRmapPos;
+    uint m_PrevLumMapPos;
+
+    Texture2D::pointer m_pLumTexture[2]; //double buffered
+    bool m_FirstBuffer;
+
+    uint m_FboID;
+
+    ModelMesh::pointer m_pQuad;
+
+    //Disable default copy constructor and default assignment operator
+    AutoExposure(const AutoExposure&);
+    AutoExposure& operator=(const AutoExposure&);
 };
 
 } } //end namespace

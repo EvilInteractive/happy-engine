@@ -38,7 +38,7 @@ namespace gfx {
 class DirectionalLight
 {
 public:
-    static const int CASCADES = 3;
+    static const int CASCADES = 4;
 
 private:
     float m_Multiplier;

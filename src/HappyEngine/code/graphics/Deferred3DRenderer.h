@@ -31,6 +31,8 @@
 #include "LightManager.h"
 #include "Camera.h"
 #include "Bloom.h"
+#include "AutoExposure.h"
+#include "DrawSettings.h"
 
 namespace he {
 namespace gfx {
@@ -38,7 +40,7 @@ namespace gfx {
 class Deferred3DRenderer
 {
 public:
-	Deferred3DRenderer();
+	Deferred3DRenderer(const DrawSettings& settings);
     virtual ~Deferred3DRenderer();
         
     virtual void draw(const Model::pointer& pModel);
@@ -52,12 +54,15 @@ public:
     static const VertexLayout& getVertexLayoutLightVolume();
 
 private:
-    static VertexLayout s_VertexLayoutLightVolume;
+    static VertexLayout s_VertexLayoutFullscreenQuad;
 
     void postAmbIllLight();
     void postPointLights();
     void postSpotLights();
     void postToneMap();
+    void calculateExposure();
+
+    void initToneMapShader(const std::string& folder, const ShaderLayout& layout);
 
     //FBO 1
     uint m_CollectionFboId;
@@ -99,7 +104,7 @@ private:
          m_ShaderLVWVP[LIGHTVOLUME_SHADERS];
     
     Shader* m_pAmbIllShader;
-    uint m_ShaderAmbIllPos[14]; //14 values
+    uint m_ShaderAmbIllPos[17]; //17 values
 
     Shader* m_pToneMapShader;
     uint m_ToneMapShaderPos[8]; //8 values
@@ -110,6 +115,7 @@ private:
     LightManager* m_pLightManager;   
     const Camera* m_pCamera;
     Bloom* m_pBloom;
+    AutoExposure* m_pAutoExposure;
 
     bool m_ShowDebugTextures;
     bool m_Bloom;

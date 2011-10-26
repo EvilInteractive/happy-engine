@@ -316,6 +316,9 @@
     <ClCompile Include="code\graphics\ShadowCaster.cpp">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\AutoExposure.cpp">
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\AssetContainer.h">
@@ -656,6 +659,9 @@
     </ClInclude>
     <ClInclude Include="code\audio\ISound.h">
       <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\AutoExposure.h">
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

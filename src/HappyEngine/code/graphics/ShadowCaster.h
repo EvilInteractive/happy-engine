@@ -27,6 +27,7 @@
 #include "Texture2D.h"
 #include "Shader.h"
 #include "DrawManager.h"
+#include "DrawSettings.h"
 
 namespace he {
 namespace gfx {
@@ -37,7 +38,7 @@ public:
 	ShadowCaster();
     virtual ~ShadowCaster();
 
-    void init();
+    void init(const DrawSettings& settings);
     
     void render(const std::vector<DrawManager::DrawElement>& elements, const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight);
 

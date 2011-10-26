@@ -70,6 +70,8 @@ public:
     const mat44& getWorldMatrix() const;
     const Model::pointer& getLightVolume() const;
 
+    virtual bool getCastsShadow() const { return false; }
+
     virtual const Material& getMaterial() const;
     virtual const Model::pointer getModel() const;
 

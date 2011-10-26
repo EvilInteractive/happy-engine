@@ -62,4 +62,32 @@ float DrawSettings::getFogEnd() const
     return m_FogEnd;
 }
 
+void DrawSettings::setBloomEnabled( bool enabled )
+{
+    m_BloomEnabled = enabled;
+}
+
+bool DrawSettings::getBloomEnabled() const
+{
+    return m_BloomEnabled;
+}
+
+void DrawSettings::setShadowQuality( ShadowQuality quality )
+{
+    m_ShadowMapSizeMuliplier = 1;
+    switch (quality)
+    {
+    case ShadowQuality_Low:
+        m_ShadowMapSizeMuliplier = 1; break;
+    case ShadowQuality_Medium:
+        m_ShadowMapSizeMuliplier = 2; break;
+    case ShadowQuality_High:
+        m_ShadowMapSizeMuliplier = 4; break;
+    }
+}
+byte DrawSettings::getShadowMapMultiplier() const
+{
+    return m_ShadowMapSizeMuliplier;
+}
+
 } } //end namespace

@@ -27,19 +27,21 @@ out vec4 outColor;
 uniform sampler2D map;
 uniform float invScale;
 #if BRIGHTPASS
-uniform float exposure;
+//uniform float exposure;
+uniform sampler2D lumMap;
 #endif
 
 void main()
 {
-    vec3 color = texture2D(map, texCoord * invScale).rgb;
+    vec3 color = texture(map, texCoord * invScale).rgb;
     
 #if BRIGHTPASS
-    color *= exposure;
+	float ex = (1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f)) / 4.0f;
+	color *= ex;
     color -= vec3(1.0f, 1.0f, 1.0f);
     color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
+	color /= ex;
     //color += vec3(1.0f, 1.0f, 1.0f);
-    color /= exposure;
 #endif
 
 	outColor = vec4(color, 1.0f);

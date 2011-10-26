@@ -24,6 +24,7 @@
 
 #include "IDrawable.h"
 #include "Camera.h"
+#include "DrawSettings.h"
 
 namespace he {
 namespace gfx {
@@ -52,7 +53,7 @@ public:
 	DrawManager();
     virtual ~DrawManager();
 
-    void init();
+    void init(const DrawSettings& settings);
 
     void begin(Type type, const Camera* pCamera);
     void end();

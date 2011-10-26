@@ -54,7 +54,7 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
 					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
 					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
-                       m_pScene(0),
+                       m_pScene(0), m_pSky(0),
 					   m_pStillAllive(nullptr)
 {
     using namespace he;
@@ -84,6 +84,7 @@ MainGame::~MainGame()
 	delete m_pTestButton;
 	delete m_pAxis;
     delete m_pScene;
+    delete m_pSky;
 	delete m_pTextBox;
 
     NETWORK->stop();
@@ -119,7 +120,7 @@ void MainGame::load()
 
 	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
 	m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-	m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,250.0f);
+	m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
 	m_pCamera->setActive(true);
 	//m_pCamera->controllable(false);
 
@@ -132,17 +133,20 @@ void MainGame::load()
         vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
         color = normalize(color);
         GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(0, -100), r.nextFloat(3, 7), r.nextFloat(0, 100)), 
-                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 50), 1, r.nextFloat(10, 30));
+                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 10), 1, r.nextFloat(10, 30));
     }
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
-    GRAPHICS->getLightManager()->setAmbientLight(Color(1.0f, 1.0f, 1.0f, 1.0f), 0.0f);
-	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 10.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
+	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 20.0f);
    
     m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
     m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
 	m_pAxis = NEW he::game::Entity(CONTENT->loadEntity("axis.entity"));
     m_pScene = NEW he::game::Entity(CONTENT->loadEntity("testScene.entity"));
+    m_pSky = NEW he::game::Entity(CONTENT->loadEntity("sky.entity"));
+    m_pSky->setWorldMatrix(mat44::createScale(200));
+    m_pSky->setCastsShadow(false);
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
@@ -245,6 +249,7 @@ void MainGame::draw(float /*dTime*/)
     //GRAPHICS->draw(m_pGroundPlane);
     GRAPHICS->draw(m_pAxis);
     GRAPHICS->draw(m_pScene);
+    GRAPHICS->draw(m_pSky);
     GRAPHICS->end();
 
 	// 2D test stuff

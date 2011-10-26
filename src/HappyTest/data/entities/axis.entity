@@ -7,6 +7,6 @@ shader = "deferred/pre/default.shader"
 
 [TEXTURE2D]
 diffuseMap = "rgb.png"
-normalMap = 128, 128, 255, 255
+normalMap = 0.5, 0.5, 1, 1
 specGlossIllMap = 1, 1, 1, 0
 

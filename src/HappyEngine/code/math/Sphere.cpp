@@ -57,13 +57,8 @@ Sphere Sphere::getBoundingSphere(const void* pointCloud, uint num, uint stride, 
     for(uint i = 0; i < num; ++i)
     {
         const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
-        min.x = he::min(min.x, p.x);
-        min.y = he::min(min.y, p.y);
-        min.z = he::min(min.z, p.z);
-
-        max.x = he::max(min.x, p.x);
-        max.y = he::max(min.y, p.y);
-        max.z = he::max(min.z, p.z);
+        min = he::minPerComponent(min, p);
+        max = he::maxPerComponent(max, p);
     }
     vec3 center((min + max) / 2.0f);
     float radius(length(min - center));

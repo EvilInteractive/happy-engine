@@ -50,7 +50,8 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-	gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
+    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
+    gfx::ModelMesh::pointer getFullscreenQuad() const;
 
 	gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
     gfx::Texture2D::pointer asyncMakeTexture(const Color& color);

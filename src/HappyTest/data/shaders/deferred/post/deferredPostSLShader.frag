@@ -49,7 +49,7 @@ void main()
     vec2 ndc = passPos.xy / passPos.z;
     vec2 texCoord = ndc * 0.5f + 0.5f;
     	
-	vec3 position = getPosition( texture2D(depthMap, texCoord).x, ndc, projParams );
+	vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
 	
 	vec3 lightDir = light.position - position;
 	float lightDist = length(lightDir);
@@ -68,21 +68,21 @@ void main()
 	float maxInnerSpot = light.cosCutoff + maxFalloffSpot;
 	spot = min(0, (spot - maxInnerSpot)) / (maxFalloffSpot) + 1;
 	
-	vec3 normal = decodeNormal(texture2D(normalMap, texCoord).xy);
+	vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
 
 	float dotLightNormal = dot(lightDir, normal);
 
 	if (dotLightNormal <= 0.0f) //pixel is in selfshadow
 		discard; 
 	
-	vec4 sg = texture2D(sgMap, texCoord);	
+	vec4 sg = texture(sgMap, texCoord);	
 	vec3 vCamDir = normalize(-position);
 	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.b * 100.0f) * sg.r);
 
 	float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
 	
-	vec4 color = texture2D(colorIllMap, texCoord);
+	vec4 color = texture(colorIllMap, texCoord);
 	outColor = vec4(
 		  (dotLightNormal * color.rgb + vec3(spec, spec, spec)) 
-		  * light.color * light.multiplier * /*attenuationValue **/ spot, 1.0f);						
+		  * light.color * light.multiplier * attenuationValue * spot, 0.0f);						
 }

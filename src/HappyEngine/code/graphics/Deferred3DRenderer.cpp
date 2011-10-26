@@ -46,21 +46,24 @@ namespace gfx {
 const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_RG, GL_DEPTH_COMPONENT };
 const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA8, GL_RG16F, GL_DEPTH_COMPONENT32F };
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
-VertexLayout Deferred3DRenderer::s_VertexLayoutLightVolume = VertexLayout();
+VertexLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = VertexLayout();
 
-Deferred3DRenderer::Deferred3DRenderer(): 
+Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings): 
             m_pQuad(NEW ModelMesh("deferred3DRenderer_QUAD")), 
             m_pLightManager(NEW LightManager()),
             m_pBloom(NEW Bloom()),
+            m_pAutoExposure(NEW AutoExposure()),
             m_pRenderTexture(NEW Texture2D()),
+            m_pToneMapShader(nullptr),
+            m_Bloom(settings.getBloomEnabled()),
             m_Exposure(0.5f),
             m_Gamma(1.0f),
-            m_ShowDebugTextures(true), m_Bloom(true)
+            m_ShowDebugTextures(false)
 {
-    CONSOLE->registerValue(&m_Exposure, "exposure");
-    CONSOLE->registerValue(&m_Gamma, "gamma");
-    CONSOLE->registerValue(&m_ShowDebugTextures, "showDebugTextures");
-    CONSOLE->registerValue(&m_Bloom, "bloom");
+    //CONSOLE->registerValue(&m_Exposure, "exposure");
+    //CONSOLE->registerValue(&m_Gamma, "gamma");
+    CONSOLE->registerValue(&m_ShowDebugTextures, "debugTex");
+    //CONSOLE->registerValue(&m_Bloom, "bloom");
 
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
@@ -68,7 +71,7 @@ Deferred3DRenderer::Deferred3DRenderer():
     int width = GRAPHICS->getViewport().width, 
        height = GRAPHICS->getViewport().height;
 
-    //Textures
+    //Collection Textures
     glGenTextures(TEXTURES, m_TextureId);
     for (int i = 0; i < TEXTURES; ++i)
     {
@@ -84,6 +87,7 @@ Deferred3DRenderer::Deferred3DRenderer():
         m_pTexture[i]->init(m_TextureId[i], width, height, TEXTURE_FORMAT[i]);
     }
 
+    //HDR Texture
     glGenTextures(1, &m_RenderTextureId);
     GL::heBindTexture2D(m_RenderTextureId);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -97,7 +101,9 @@ Deferred3DRenderer::Deferred3DRenderer():
 
     GL::heBindTexture2D(0);
 
-    m_pBloom->init();
+    if (m_Bloom)
+        m_pBloom->init();
+    m_pAutoExposure->init();
 
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
@@ -123,6 +129,7 @@ Deferred3DRenderer::Deferred3DRenderer():
     err::checkFboStatus("deferred render");
 
     GL::heBindFbo(0);
+    
 
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD SHADERS                              ///
@@ -130,7 +137,7 @@ Deferred3DRenderer::Deferred3DRenderer():
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    s_VertexLayoutLightVolume.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
+    s_VertexLayoutFullscreenQuad.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
 
     for (int i = 0; i < LIGHTVOLUME_SHADERS; ++i)
     {
@@ -179,39 +186,45 @@ Deferred3DRenderer::Deferred3DRenderer():
     m_ShaderAmbIllPos[8] = m_pAmbIllShader->getShaderVarId("mtxDirLight0");
     m_ShaderAmbIllPos[9] = m_pAmbIllShader->getShaderVarId("mtxDirLight1");
     m_ShaderAmbIllPos[10] = m_pAmbIllShader->getShaderVarId("mtxDirLight2");
-    m_ShaderAmbIllPos[11] = m_pAmbIllShader->getShaderSamplerId("shadowMap0");
-    m_ShaderAmbIllPos[12] = m_pAmbIllShader->getShaderSamplerId("shadowMap1");
-    m_ShaderAmbIllPos[13] = m_pAmbIllShader->getShaderSamplerId("shadowMap2");
+    m_ShaderAmbIllPos[11] = m_pAmbIllShader->getShaderVarId("mtxDirLight3");
+    m_ShaderAmbIllPos[12] = m_pAmbIllShader->getShaderSamplerId("shadowMap0");
+    m_ShaderAmbIllPos[13] = m_pAmbIllShader->getShaderSamplerId("shadowMap1");
+    m_ShaderAmbIllPos[14] = m_pAmbIllShader->getShaderSamplerId("shadowMap2");
+    m_ShaderAmbIllPos[15] = m_pAmbIllShader->getShaderSamplerId("shadowMap3");
+    m_ShaderAmbIllPos[16] = m_pAmbIllShader->getShaderVarId("texelSize");
 
     //----ToneMap-----------------------------------------------------------------
-    m_pToneMapShader = NEW Shader();
-    m_pToneMapShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/HDRtoLDR.frag", shaderLayout);
-    m_ToneMapShaderPos[0] = m_pToneMapShader->getShaderSamplerId("hdrMap");
-    m_ToneMapShaderPos[1] = m_pToneMapShader->getShaderSamplerId("blur0");
-    m_ToneMapShaderPos[2] = m_pToneMapShader->getShaderSamplerId("blur1");
-    m_ToneMapShaderPos[3] = m_pToneMapShader->getShaderSamplerId("blur2");
-    m_ToneMapShaderPos[4] = m_pToneMapShader->getShaderSamplerId("blur3");
-    //m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderSamplerId("depth");
-    m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderVarId("exposure");
-    m_ToneMapShaderPos[7] = m_pToneMapShader->getShaderVarId("gamma");
+    initToneMapShader(folder, shaderLayout);
+
 
     //////////////////////////////////////////////////////////////////////////
     ///                         LOAD RENDER QUAD                           ///
     //////////////////////////////////////////////////////////////////////////
-    std::vector<VertexPos> vertices;
-    vertices.push_back(VertexPos(vec3(-1, 1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(1, 1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
-
-    std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
-    indices.push_back(1); indices.push_back(3); indices.push_back(2);
-
-    m_pQuad->init();
-    m_pQuad->setVertices(&vertices[0], 4, getVertexLayoutLightVolume());
-    m_pQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pQuad = CONTENT->getFullscreenQuad();
 }
+void Deferred3DRenderer::initToneMapShader(const std::string& folder, const ShaderLayout& layout)
+{
+    std::set<std::string> toneMapDefines;
+    if (m_Bloom)
+        toneMapDefines.insert("BLOOM");
+
+    delete m_pToneMapShader;
+    m_pToneMapShader = NEW Shader();
+    m_pToneMapShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/HDRtoLDR.frag", layout, toneMapDefines);
+    m_ToneMapShaderPos[0] = m_pToneMapShader->getShaderSamplerId("hdrMap");
+    if (m_Bloom)
+    {
+        m_ToneMapShaderPos[1] = m_pToneMapShader->getShaderSamplerId("blur0");
+        m_ToneMapShaderPos[2] = m_pToneMapShader->getShaderSamplerId("blur1");
+        m_ToneMapShaderPos[3] = m_pToneMapShader->getShaderSamplerId("blur2");
+        m_ToneMapShaderPos[4] = m_pToneMapShader->getShaderSamplerId("blur3");
+    }
+    //m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderSamplerId("depth");
+    m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderSamplerId("lumMap");
+    //m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderVarId("exposure");
+    //m_ToneMapShaderPos[7] = m_pToneMapShader->getShaderVarId("gamma");
+}
+
 
 
 Deferred3DRenderer::~Deferred3DRenderer()
@@ -227,11 +240,12 @@ Deferred3DRenderer::~Deferred3DRenderer()
     delete m_pToneMapShader;
     delete m_pLightManager;
     delete m_pBloom;
+    delete m_pAutoExposure;
 }
 
 const VertexLayout& Deferred3DRenderer::getVertexLayoutLightVolume() 
 {
-    return s_VertexLayoutLightVolume; 
+    return s_VertexLayoutFullscreenQuad; 
 }
 void Deferred3DRenderer::begin(const Camera* pCamera)
 {
@@ -267,6 +281,7 @@ void Deferred3DRenderer::end()
     GL::heBindFbo(m_RenderFboId);
     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
     glClear(GL_COLOR_BUFFER_BIT);
     //////////////////////////////////////////////////////////////////////////
     ///                             Pass 1                                 ///
@@ -303,9 +318,15 @@ void Deferred3DRenderer::end()
     m_pAmbIllShader->bind();
     postAmbIllLight();
 
+    GL::heBindFbo(0);
+
+    GL::heBindTexture2D(m_pRenderTexture->getID());
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    calculateExposure();
     GL::heBlendEnabled(false);
     if (m_Bloom)
-        m_pBloom->render(m_pRenderTexture, m_Exposure);
+        m_pBloom->render(m_pRenderTexture, m_pAutoExposure->getLuminanceMap());
     //////////////////////////////////////////////////////////////////////////
     ///                             Pass 2                                 ///
     //////////////////////////////////////////////////////////////////////////
@@ -313,7 +334,7 @@ void Deferred3DRenderer::end()
     const static GLenum buffers2[1] = { GL_BACK_LEFT };
     glDrawBuffers(1, buffers2);
     glClear(GL_COLOR_BUFFER_BIT);
-
+    
     //Tonemap
     m_pToneMapShader->bind();
     postToneMap();
@@ -330,16 +351,21 @@ void Deferred3DRenderer::end()
         HE2D->drawTexture2D(m_pTexture[1], vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
         HE2D->drawTexture2D(m_pTexture[2], vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
         HE2D->drawTexture2D(m_pTexture[3], vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
-        HE2D->drawTexture2D(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12*2+144), vec2(256, 144));
-        HE2D->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
-        HE2D->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
-        HE2D->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
+        if (m_Bloom)
+        {
+            HE2D->drawTexture2D(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12*2+144), vec2(256, 144));
+            HE2D->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
+            HE2D->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
+            HE2D->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
+        }
         if (getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
             HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
         if (getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
             HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
         if (getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
             HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
+        if (getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
+            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
         GL::heBlendEnabled(true);
         HE2D->end();
     }
@@ -361,12 +387,18 @@ void Deferred3DRenderer::postAmbIllLight()
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[5], m_pTexture[1]);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[6], m_pTexture[2]);
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[7], m_pTexture[3]);
+
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[8], m_pLightManager->getDirectionalLight()->getShadowMatrix(0));
 	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[9], m_pLightManager->getDirectionalLight()->getShadowMatrix(1));
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[10], m_pLightManager->getDirectionalLight()->getShadowMatrix(2));
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[11], m_pLightManager->getDirectionalLight()->getShadowMap(0));
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[12], m_pLightManager->getDirectionalLight()->getShadowMap(1));
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[13], m_pLightManager->getDirectionalLight()->getShadowMap(2));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[10], m_pLightManager->getDirectionalLight()->getShadowMatrix(2));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[11], m_pLightManager->getDirectionalLight()->getShadowMatrix(3));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[12], m_pLightManager->getDirectionalLight()->getShadowMap(0));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[13], m_pLightManager->getDirectionalLight()->getShadowMap(1));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[14], m_pLightManager->getDirectionalLight()->getShadowMap(2));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[15], m_pLightManager->getDirectionalLight()->getShadowMap(3));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[16], vec2(1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getWidth(),
+                                                              1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getHeight()));
+
     draw(m_pQuad);
 }
 void Deferred3DRenderer::postPointLights()
@@ -414,13 +446,16 @@ void Deferred3DRenderer::postSpotLights()
 void Deferred3DRenderer::postToneMap()
 {
     m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[0], m_pRenderTexture);
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[1], m_pBloom->getBloom(0));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[2], m_pBloom->getBloom(1));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[3], m_pBloom->getBloom(2));
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[4], m_pBloom->getBloom(3));
+    if (m_Bloom)
+    {
+        m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[1], m_pBloom->getBloom(0));
+        m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[2], m_pBloom->getBloom(1));
+        m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[3], m_pBloom->getBloom(2));
+        m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[4], m_pBloom->getBloom(3));
+    }
     //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_pTexture[3]);
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_Exposure);
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_Gamma);
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_pAutoExposure->getLuminanceMap());
+    //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_Gamma);
     draw(m_pQuad);
 }
 
@@ -445,6 +480,11 @@ void Deferred3DRenderer::draw(const ModelMesh::pointer& pMesh)//, const Camera* 
 LightManager* Deferred3DRenderer::getLightManager() const
 {
     return m_pLightManager;
+}
+
+void Deferred3DRenderer::calculateExposure()
+{
+    m_pAutoExposure->calculate(m_pRenderTexture);
 }
 
 } } //end namespace

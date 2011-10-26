@@ -25,7 +25,7 @@
 namespace he {
 namespace game {
 
-Entity::Entity(const EntityDesc& desc): m_Material(desc.material), m_pModel(desc.pModel)
+Entity::Entity(const EntityDesc& desc): m_Material(desc.material), m_pModel(desc.pModel), m_CastShadow(true)
 {
 }
 
@@ -54,6 +54,16 @@ const gfx::Material& Entity::getMaterial() const
 const gfx::Model::pointer Entity::getModel() const
 {
     return m_pModel;
+}
+
+bool Entity::getCastsShadow() const
+{
+    return m_CastShadow;
+}
+
+void Entity::setCastsShadow( bool casts )
+{
+    m_CastShadow = casts;
 }
 
 } } //end namespace

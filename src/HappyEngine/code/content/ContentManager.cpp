@@ -1,6 +1,7 @@
 #include "StdAfx.h" 
 #include "ContentManager.h"
 #include "HappyNew.h"
+#include "Vertex.h"
 
 namespace he {
 namespace ct {
@@ -149,6 +150,31 @@ const std::string& ContentManager::getShaderFolder() const
 const std::string& ContentManager::getEntityFolder() const
 {
     return m_EntityFolder;
+}
+
+gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const
+{
+    using namespace gfx;
+    VertexLayout layout;
+    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
+
+    gfx::ModelMesh::pointer pQuad(NEW gfx::ModelMesh("fullscreenQuad"));
+
+    std::vector<VertexPos> vertices;
+    vertices.push_back(VertexPos(vec3(-1, 1, 1.0f)));
+    vertices.push_back(VertexPos(vec3(1, 1, 1.0f)));
+    vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
+    vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
+
+    std::vector<byte> indices;
+    indices.push_back(0); indices.push_back(1); indices.push_back(2);
+    indices.push_back(1); indices.push_back(3); indices.push_back(2);
+
+    pQuad->init();
+    pQuad->setVertices(&vertices[0], 4, layout);
+    pQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+
+    return pQuad;
 }
 
 } } //end namespace

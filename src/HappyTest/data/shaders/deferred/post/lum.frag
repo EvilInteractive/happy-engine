@@ -22,45 +22,33 @@
 
 noperspective in vec2 texCoord;
 
-out vec4 outColor;
+out float outColor;
 
 uniform sampler2D hdrMap;
+uniform sampler2D prevLumMap;
 
-#if BLOOM
-uniform sampler2D blur0;
-uniform sampler2D blur1;
-uniform sampler2D blur2;
-uniform sampler2D blur3;
-#endif
-
-uniform sampler2D lumMap;
-//uniform float gamma;
-
-float vignette(vec2 pos, float inner, float outer)
+float getLum(in vec3 col)
 {
-  float r = length(pos);
-  r = 1.0 - smoothstep(inner, outer, r);
-  return r;
+	return (col.r + col.g + col.b) / 3.0f;
 }
 
 void main()
 {
-	vec2 tex = vec2(1 - texCoord.x, texCoord.y);
+	float lum = 0;
+	lum += getLum(textureLod(hdrMap, vec2(0.1f, 0.5f), 2).rgb);
+	lum += getLum(textureLod(hdrMap, vec2(0.9f, 0.5f), 2).rgb);
+	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.1f), 2).rgb);
+	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.9f), 2).rgb);
 
-    vec3 color = textureLod(hdrMap, tex, 0.0f).rgb;
-    
-#if BLOOM
-    color += texture(blur0, tex).rgb * 0.5f;  
-    color += texture(blur1, tex).rgb * 0.5f;  
-    color += texture(blur2, tex).rgb * 1.0f;  
-    color += texture(blur3, tex).rgb * 1.0f;  
-#endif
-  
-	float ex = 1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f);
-	color *= ex / 4.0f;  //0 -> 20
-    
-	color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
-	//color = pow(color, vec3(gamma, gamma, gamma));
+	lum += getLum(textureLod(hdrMap, vec2(0.3f, 0.3f), 2).rgb);
+	lum += getLum(textureLod(hdrMap, vec2(0.3f, 0.7f), 2).rgb);
+	lum += getLum(textureLod(hdrMap, vec2(0.7f, 0.3f), 2).rgb);
+	lum += getLum(textureLod(hdrMap, vec2(0.7f, 0.7f), 2).rgb);
 
-	outColor = vec4(color, 1.0f);
+	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.5f), 2).rgb);
+	lum /= 9.0f;
+	
+	outColor = max(0, (lum * 0.01f + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * 0.99f));
 }
+
+

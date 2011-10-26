@@ -41,7 +41,7 @@ public:
 
     const Texture2D::pointer& getBloom(byte level) const;
 
-    void render( const Texture2D::pointer& pTexture, float exposure );
+    void render( const Texture2D::pointer& pTexture, const Texture2D::pointer& exposure );
 
 private:
     
@@ -51,7 +51,8 @@ private:
     Shader::pointer m_pDownSampleBrightPassShader;
     uint m_DownSampleBrightPassMap;
     uint m_DownSampleBrightPassInvScale;
-    uint m_DownSampleBrightPassExposure;
+    uint m_DownSampleBrightPassLumMap;
+    //uint m_DownSampleBrightPassExposure;
 
     Shader::pointer m_pDownSampleShader;
     uint m_DownSampleMap;

@@ -88,7 +88,8 @@ void DrawManager::draw(const IDrawable* pDrawable)
     ASSERT(pDrawable != nullptr, "");
     if (pDrawable->getModel()->isComplete() == false)
         return;
-    shapes::Sphere bS(pDrawable->getModel()->getMesh(0)->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), pDrawable->getModel()->getMesh(0)->getBoundingSphere().getRadius());
+    shapes::Sphere bS(pDrawable->getModel()->getMesh(0)->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
+                      pDrawable->getModel()->getMesh(0)->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
     if (viewClip(bS) == false)
     {
         if (m_Type == Type_Immediate)
@@ -112,9 +113,9 @@ void DrawManager::draw(const IDrawable* pDrawable)
     }
 }
 
-void DrawManager::init()
+void DrawManager::init(const DrawSettings& settings)
 {
-    m_pShadowCaster->init();
+    m_pShadowCaster->init(settings);
 }
 
 void DrawManager::renderShadow()

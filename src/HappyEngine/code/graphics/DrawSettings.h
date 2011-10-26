@@ -31,18 +31,16 @@ namespace gfx {
 enum BloomQuality
 {
     BloomQuality_None,   //No Bloom
-    BloomQuality_Low,    //Simple bloom (1 blur)
-    BloomQuality_High    //Advanced bloom (multiple blurs)
+    BloomQuality_High,   //Bloom
 };
 enum ShadowQuality
 {
-    ShadowQuality_None,
-    ShadowQuality_LowNoDynamic,    //(static only low quality)
-    ShadowQuality_Low,             //static+dynamic low quality
-    ShadowQuality_MediumNoDynamic, //(static only medium quality)
-    ShadowQuality_Medium,          //static+dynamic medium quality
-    ShadowQuality_HighNoDynamic,   //static high quality
-    ShadowQuality_High             //static+dynamic high quality
+    //ShadowQuality_LowNoDynamic,    //(static only low quality)
+    ShadowQuality_Low = 0,             //static+dynamic low quality
+    //ShadowQuality_MediumNoDynamic, //(static only medium quality)
+    ShadowQuality_Medium = 1,          //static+dynamic medium quality
+    //ShadowQuality_HighNoDynamic,   //static high quality
+    ShadowQuality_High = 2             //static+dynamic high quality
 };
 enum ModelQuality
 {
@@ -68,10 +66,11 @@ public:
     float getFogStart() const;
     float getFogEnd() const;
 
-    void setShadowQuality(ShadowQuality quality) const;
-    bool getShadowsEnabled() const;
-    bool getDynamicShadowsEnabled() const;
+    void setShadowQuality(ShadowQuality quality);
     byte getShadowMapMultiplier() const;
+
+    void setBloomEnabled(bool enabled);
+    bool getBloomEnabled() const;
 
 private:
 
@@ -80,8 +79,10 @@ private:
 
     //ShadowQuality
     byte m_ShadowMapSizeMuliplier;
-    bool m_EnableShadows;
-    bool m_EnableDynamicShadows;
+    bool m_ShadowsEnabled;
+
+    //Bloom
+    bool m_BloomEnabled;
 
     //Disable default copy constructor and default assignment operator
     DrawSettings(const DrawSettings&);

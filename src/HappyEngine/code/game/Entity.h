@@ -65,6 +65,9 @@ public:
     virtual const gfx::Model::pointer getModel() const;
     void setWorldMatrix(const mat44& mtxWorld);
 
+    virtual bool getCastsShadow() const;
+    virtual void setCastsShadow(bool casts);
+
 protected:
 
     void setModel(const gfx::Model::pointer& pModel);
@@ -74,6 +77,8 @@ private:
     gfx::Material m_Material;
 
     mat44 m_mtxWorld;
+
+    bool m_CastShadow;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

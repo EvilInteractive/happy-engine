@@ -36,24 +36,25 @@ uniform sampler2D specGlossIllMap;
 vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
 	//NormalMap
-	tangent = normalize(tangent);
-	normal = normalize(normal);
-
-	tangent -= dot(tangent, normal) * normal;
-	vec3 binormal = normalize(cross(tangent, normal));
-
-	mat3 assenstelsel = mat3(binormal, tangent, normal);
-
-	vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
-
-	return normalize(assenstelsel * xyz);
+	//tangent = normalize(tangent);
+	//normal = normalize(normal);
+//
+	//tangent -= dot(tangent, normal) * normal;
+	//vec3 binormal = normalize(cross(tangent, normal));
+//
+	//mat3 assenstelsel = mat3(binormal, tangent, normal);
+//
+	//vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
+//
+	//return normalize(assenstelsel * xyz);
+	return normalize(normal);
 }
 
 void main()
 {
-	vec4 color = texture2D(diffuseMap, passTexCoord);
-	vec4 normal = texture2D(normalMap, passTexCoord);
-	vec4 specGlossIll = texture2D(specGlossIllMap, passTexCoord);
+	vec4 color = texture(diffuseMap, passTexCoord);
+	vec4 normal = texture(normalMap, passTexCoord);
+	vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
 
 	outColor = vec4(color.rgb, specGlossIll.b);
 
