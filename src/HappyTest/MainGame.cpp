@@ -85,7 +85,6 @@ MainGame::~MainGame()
 	delete m_pAxis;
     delete m_pScene;
 	delete m_pTextBox;
-	delete m_pStillAllive;
 
     NETWORK->stop();
 }

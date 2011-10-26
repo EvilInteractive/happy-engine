@@ -39,7 +39,7 @@ Sound2D::Sound2D(uint source, uint buffer, SOUND_TYPE type) :	m_Source(source),
 
 Sound2D::~Sound2D()
 {
-	stop();
+	
 }
 
 /* GENERAL */
