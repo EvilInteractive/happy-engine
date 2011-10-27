@@ -66,26 +66,28 @@ void HappyEngine::cleanup()
 	m_AudioThread.join(); // wait for audiothread to finish
 
     //dispose/delete all sub engines here
-    delete m_pGraphicsEngine;
-    m_pGraphicsEngine = nullptr;
-    delete m_pControlsManager;
-    m_pControlsManager = nullptr;
     delete m_pContentManager;
     m_pContentManager = nullptr;
+	delete m_p2DRenderer;
+	m_p2DRenderer = nullptr;
+	delete m_pSoundEngine;
+	m_pSoundEngine = nullptr;
+    delete m_pControlsManager;
+    m_pControlsManager = nullptr;
     delete m_pPhysicsEngine;
     m_pPhysicsEngine = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
-	delete m_p2DRenderer;
-	m_p2DRenderer = nullptr;
-	delete m_pConsole;
-	m_pConsole = nullptr;
-	delete m_pSoundEngine;
-	m_pSoundEngine = nullptr;
+
+    delete m_pGraphicsEngine;
+    m_pGraphicsEngine = nullptr;
     if (m_SubEngines & SubEngine_Graphics)
     {
         SDL_Quit();
     }
+
+    delete m_pConsole;
+    m_pConsole = nullptr;
 }
 void HappyEngine::init(int subengines)
 {

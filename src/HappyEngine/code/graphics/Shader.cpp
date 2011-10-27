@@ -213,15 +213,12 @@ void Shader::setShaderVar(uint id, const vec4& vec) const
 void Shader::setShaderVar(uint id, const mat44& matrix) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    float fArr[16];
-    matrix.toFloatArray(fArr);
-    glUniformMatrix4fv(id, 1, GL_FALSE, fArr);
+    glUniformMatrix4fv(id, 1, GL_FALSE, matrix.toFloatArray());
 }
 void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    GL::heSetActiveTexture(GL_TEXTURE0 + id);
-    GL::heBindTexture2D(tex2D->getID());
+    GL::heBindTexture2D(id, tex2D->getID());
 }
 
 } } //end namespace

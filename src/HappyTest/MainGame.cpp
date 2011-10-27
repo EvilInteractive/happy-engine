@@ -86,6 +86,7 @@ MainGame::~MainGame()
     delete m_pScene;
     delete m_pSky;
 	delete m_pTextBox;
+    delete m_pTestButton2;
 
     NETWORK->stop();
 }

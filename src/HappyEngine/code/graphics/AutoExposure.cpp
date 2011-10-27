@@ -39,6 +39,7 @@ AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true)
 
 AutoExposure::~AutoExposure()
 {
+    glDeleteFramebuffers(1, &m_FboID);
 }
 
 void AutoExposure::init()
@@ -51,7 +52,7 @@ void AutoExposure::init()
 
     for (int i = 0; i < 2; ++i)
     {
-        GL::heBindTexture2D(lumTexId[i]);
+        GL::heBindTexture2D(0, lumTexId[i]);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

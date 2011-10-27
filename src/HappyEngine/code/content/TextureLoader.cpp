@@ -78,7 +78,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
         {
             GLuint texID;
             glGenTextures(1, &texID);
-            GL::heBindTexture2D(texID);
+            GL::heBindTexture2D(0, texID);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             

@@ -61,7 +61,7 @@ public:
     float operator()(int row, int column) const;
 
     //getters
-    void toFloatArray(float arr[16]) const;
+    const float* toFloatArray() const;
     vec3 getTranslation() const;
     const physx::pubfnd3::PxMat44& getPhyicsMatrix() const;
     mat44 inverse() const;

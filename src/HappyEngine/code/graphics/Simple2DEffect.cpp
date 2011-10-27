@@ -47,7 +47,8 @@ void Simple2DEffect::load()
 	m_pShader = NEW Shader();
 	std::vector<std::string> shaderOutputs;
 	shaderOutputs.push_back("outColor");
-	ASSERT(m_pShader->init("../data/shaders/simple2DShader.vert", "../data/shaders/simple2DShader.frag", layout, shaderOutputs) == true);
+    bool shaderInited(m_pShader->init("../data/shaders/simple2DShader.vert", "../data/shaders/simple2DShader.frag", layout, shaderOutputs));
+	ASSERT(shaderInited == true);
 
 	m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
 	m_ShaderColorPos = m_pShader->getShaderVarId("color");

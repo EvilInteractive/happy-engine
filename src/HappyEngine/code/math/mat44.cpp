@@ -163,27 +163,9 @@ vec4 mat44::operator*(const vec4& vec) const
     return vec4(m_Matrix.transform(physx::pubfnd3::PxVec4(vec.x, vec.y, vec.z, vec.w)));
 }
 
-void mat44::toFloatArray(float arr[16]) const
+const float* mat44::toFloatArray() const
 {
-    arr[0] = m_Matrix.column0.x;
-    arr[1] = m_Matrix.column0.y;
-    arr[2] = m_Matrix.column0.z;
-    arr[3] = m_Matrix.column0.w;
-
-    arr[4] = m_Matrix.column1.x;
-    arr[5] = m_Matrix.column1.y;
-    arr[6] = m_Matrix.column1.z;
-    arr[7] = m_Matrix.column1.w;
-
-    arr[8] = m_Matrix.column2.x;
-    arr[9] = m_Matrix.column2.y;
-    arr[10] = m_Matrix.column2.z;
-    arr[11] = m_Matrix.column2.w;
-
-    arr[12] = m_Matrix.column3.x;
-    arr[13] = m_Matrix.column3.y;
-    arr[14] = m_Matrix.column3.z;
-    arr[15] = m_Matrix.column3.w;
+    return &m_Matrix.column0.x;
 }
 
 vec3 mat44::getTranslation() const

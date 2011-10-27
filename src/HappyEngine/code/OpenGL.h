@@ -94,8 +94,7 @@ public:
     //Binding
     static void heBindFbo(uint fbo);
     static void heBindVao(uint vao);
-    static void heBindTexture2D(uint tex);
-    static void heSetActiveTexture(uint tex);
+    static void heBindTexture2D(uint texPos, uint tex);
 
     //Blending
     static void heBlendEnabled(bool enabled);
@@ -120,7 +119,11 @@ private:
     static bool m_CullCWFrontFace;
 
     //Binding
-    static uint m_BoundFbo, m_BoundVao, m_BoundTex2D, m_ActiveTex;
+    static uint m_BoundFbo, m_BoundVao;
+    const static int MAX_SAMPLERS = 31;
+    static uint m_BoundTex2D[MAX_SAMPLERS];
+    static uint m_ActiveTex;
+
 
     //Blending
     static bool m_BlendEnabled;

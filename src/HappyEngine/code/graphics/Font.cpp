@@ -94,7 +94,7 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
 
     GLuint texID;
     glGenTextures(1, &texID);
-    GL::heBindTexture2D(texID);
+    GL::heBindTexture2D(0, texID);
 
 	if (bAntiAliased)
 	{
@@ -163,7 +163,7 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
 
     GLuint texID;
     glGenTextures(1, &texID);
-    GL::heBindTexture2D(texID);
+    GL::heBindTexture2D(0, texID);
 
 	if (bAntiAliased)
 	{

@@ -61,7 +61,7 @@ void Bloom::init()
         glGenTextures(m_DownSamples, &downSampleTextureId[pass][0]);
         for (int i = 0; i < m_DownSamples; ++i)
         {
-            GL::heBindTexture2D(downSampleTextureId[pass][i]);
+            GL::heBindTexture2D(0, downSampleTextureId[pass][i]);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -73,7 +73,6 @@ void Bloom::init()
             m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
         }
 
-        GL::heBindTexture2D(0);
         //////////////////////////////////////////////////////////////////////////
         ///                               Fbo's                                ///
         //////////////////////////////////////////////////////////////////////////

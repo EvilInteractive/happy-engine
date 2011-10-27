@@ -36,8 +36,8 @@ bool GL::m_CullFrontFace = false;
 bool GL::m_CullCWFrontFace = false;
 
 //Binding
-uint GL::m_BoundFbo = 0, GL::m_BoundVao = 0, GL::m_BoundTex2D = 0, GL::m_ActiveTex = GL_TEXTURE0;
-
+uint GL::m_BoundFbo = 0, GL::m_BoundVao = 0, GL::m_ActiveTex = 0;
+uint GL::m_BoundTex2D[MAX_SAMPLERS] = {UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX } ;
 //Blending
 bool GL::m_BlendEnabled = false;
 BlendFunc GL::m_BlendSrc = BlendFunc_One, GL::m_BlendDest = BlendFunc_Zero;
@@ -123,26 +123,19 @@ void GL::heBindVao(uint vao)
         glBindVertexArray(vao);
     //}
 }
-void GL::heBindTexture2D(uint tex)
+void GL::heBindTexture2D(uint samplerPos, uint tex)
 {
-    //if (m_BoundTex2D != tex)
+    ASSERT(samplerPos < MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
+    //if (m_BoundTex2D[samplerPos] != tex)
     //{
-        m_BoundTex2D = tex;
+        //if (m_ActiveTex != samplerPos)
+        //{
+            m_ActiveTex = samplerPos;
+            glActiveTexture(GL_TEXTURE0 + samplerPos);
+        //}
         glBindTexture(GL_TEXTURE_2D, tex);
+        m_BoundTex2D[samplerPos] = tex;
     //}
-    //else
-    //{
-    //    ASSERT(false,"");
-    //}
-}
-void GL::heSetActiveTexture(uint tex)
-{
-    if (m_ActiveTex != tex)
-    {
-        m_ActiveTex = tex;
-        glActiveTexture(tex);
-        m_BoundTex2D = 0;
-    }
 }
 
 //Blending

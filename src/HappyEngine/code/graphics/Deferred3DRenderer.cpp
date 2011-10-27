@@ -75,7 +75,7 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     glGenTextures(TEXTURES, m_TextureId);
     for (int i = 0; i < TEXTURES; ++i)
     {
-        GL::heBindTexture2D(m_TextureId[i]);
+        GL::heBindTexture2D(0, m_TextureId[i]);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -89,7 +89,7 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
 
     //HDR Texture
     glGenTextures(1, &m_RenderTextureId);
-    GL::heBindTexture2D(m_RenderTextureId);
+    GL::heBindTexture2D(0, m_RenderTextureId);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -98,9 +98,7 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
         width, height,
         0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     m_pRenderTexture->init(m_RenderTextureId, width, height, GL_RGBA16F);
-
-    GL::heBindTexture2D(0);
-
+    
     if (m_Bloom)
         m_pBloom->init();
     m_pAutoExposure->init();
@@ -320,7 +318,7 @@ void Deferred3DRenderer::end()
 
     GL::heBindFbo(0);
 
-    GL::heBindTexture2D(m_pRenderTexture->getID());
+    GL::heBindTexture2D(0, m_pRenderTexture->getID());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     calculateExposure();
@@ -369,8 +367,6 @@ void Deferred3DRenderer::end()
         GL::heBlendEnabled(true);
         HE2D->end();
     }
-
-    GL::heBindTexture2D(0);
 }
 void Deferred3DRenderer::postAmbIllLight()
 {

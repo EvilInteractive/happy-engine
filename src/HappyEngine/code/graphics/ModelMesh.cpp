@@ -55,7 +55,7 @@ void ModelMesh::init()
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
 void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)
 {
-    err::glCheckForErrors(false);
+    //err::glCheckForErrors(false);
 
     ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
@@ -72,7 +72,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
 
     GL::heBindVao(m_VaoID[0]);
-    err::glCheckForErrors();
+    //err::glCheckForErrors();
 
     VertexLayout::layout elements(vertexLayout.getElements());
 
@@ -108,7 +108,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 
         glEnableVertexAttribArray(e.getElementIndex());
-        err::glCheckForErrors();
+        //err::glCheckForErrors();
     });
 
 
