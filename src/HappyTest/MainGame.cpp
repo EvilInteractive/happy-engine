@@ -198,7 +198,7 @@ void MainGame::tick(float dTime)
         pBullet->tick(dTime);
     });
 
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
+    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space))
     {
         TestBullet* pBullet(NEW TestBullet(CONTENT->loadEntity("bullet.entity"), m_pCamera->getPosition(), m_pCamera->getLook() * 20));
         m_Bullets.push_back(pBullet);

@@ -278,16 +278,10 @@ void SoundEngine::setListenerPos(const vec3& pos)
 /* GETTERS */
 vec3 SoundEngine::getListenerPos() const
 {
-	float* x(NEW float(0.0f));
-	float* y(NEW float(0.0f));
-	float* z(NEW float(0.0f));
+	vec3 pos(0, 0, 0);
 
-	alGetListener3f(AL_POSITION, x, y, z);
-
-	vec3 pos(*x,*y,*z);
-
-	delete x, y, z;
-
+	alGetListener3f(AL_POSITION, &pos.x, &pos.y, &pos.z);
+        
 	return pos;
 }
 

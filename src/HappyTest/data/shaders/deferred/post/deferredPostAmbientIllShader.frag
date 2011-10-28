@@ -51,15 +51,12 @@ uniform mat4 mtxDirLight0;
 uniform mat4 mtxDirLight1;
 uniform mat4 mtxDirLight2;
 uniform mat4 mtxDirLight3;
-uniform sampler2D shadowMap0;
-uniform sampler2D shadowMap1;
-uniform sampler2D shadowMap2;
-uniform sampler2D shadowMap3;
+uniform sampler2DShadow shadowMap0;
+uniform sampler2DShadow shadowMap1;
+uniform sampler2DShadow shadowMap2;
+uniform sampler2DShadow shadowMap3;
 
-uniform vec2 texelSize;
-float bias = -0.00025f;
-
-float shadowCheck(vec3 position, sampler2D sampler, mat4 lightMatrix)
+float shadowCheck(in vec3 position, in sampler2DShadow sampler, in mat4 lightMatrix, in float bias)
 {
 	vec4 coord = lightMatrix * vec4(position, 1.0f);
 	coord.xyz /= coord.w;
@@ -70,20 +67,20 @@ float shadowCheck(vec3 position, sampler2D sampler, mat4 lightMatrix)
 	//NDC -> texturespace
 	coord.x = (coord.x + 1.0f) / 2.0f;
 	coord.y = (coord.y + 1.0f) / 2.0f;
-	coord.z = (coord.z + 1.0f) / 2.0f;
+	coord.z = (coord.z + 1.0f) / 2.0f - bias;
 	
 	float shadow = 0;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(-1.0f, -1.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(0.0f, -1.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(1.0f, -1.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, -1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(0, -1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(1, -1));
+	
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, 0));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(0, 0));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(1, 0));
 
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(-1.0f, 1.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(0.0f, 1.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(1.0f, 1.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(-1.0f, 0.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(1.0f, 0.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
-	shadow += (texture(sampler, coord.xy + texelSize * vec2(0.0f, 0.0f)).r <= coord.z - bias)? 0.0f : 1.0f;
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, 1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(0, 1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(1, 1));
 	
 	shadow /= 9.0f;
 
@@ -115,22 +112,22 @@ void main()
 	if (position.z < 25)
 	{
 		//testColor = vec3(1, 0, 1);
-		dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0);
+		dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0, -0.001f);
 	}
 	else if (position.z < 50)
 	{
 		//testColor = vec3(0, 1, 0);
-		dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1);
+		dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1, -0.001f);
 	}
 	else if (position.z < 100)
 	{
 		//testColor = vec3(0, 0, 1);
-		dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2);
+		dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2, -0.0001f);
 	}
 	else
 	{
 		//testColor = vec3(0, 1, 1);
-		dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3);
+		dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3, -0.0001f);
 	}
 
 	outColor = vec4((color.rgb * ambLight.color + 

@@ -120,7 +120,7 @@ void Bloom::init()
         m_pBlurShaderPass[pass]->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
                                       folder + "deferred/post/blur.frag", layout, definePass);
         m_BlurMapPos[pass] = m_pBlurShaderPass[pass]->getShaderSamplerId("map");
-        m_BlurTexelSize[pass] = m_pBlurShaderPass[pass]->getShaderVarId("texelSize");
+        //m_BlurTexelSize[pass] = m_pBlurShaderPass[pass]->getShaderVarId("texelSize");
         m_BlurInvScale[pass] = m_pBlurShaderPass[pass]->getShaderVarId("invScale");
     }
 
@@ -162,9 +162,9 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
             GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
             float invScale(((fboId + 1) * 2.0f));
-            m_pBlurShaderPass[pass]->setShaderVar(m_BlurTexelSize[pass], 
-                vec2(1.0f / (GRAPHICS->getScreenWidth() / invScale), 
-                     1.0f / (GRAPHICS->getScreenHeight() / invScale)));
+            //m_pBlurShaderPass[pass]->setShaderVar(m_BlurTexelSize[pass], 
+            //    vec2(1.0f / (GRAPHICS->getScreenWidth() / invScale), 
+            //         1.0f / (GRAPHICS->getScreenHeight() / invScale)));
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurInvScale[pass], invScale);
             glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
         }

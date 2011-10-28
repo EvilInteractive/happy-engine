@@ -50,6 +50,9 @@
     <Filter Include="happyengine\graphics\rendering\deferred">
       <UniqueIdentifier>{8f6bfd73-75d8-41f0-8754-3b64a5ee31b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\game\components">
+      <UniqueIdentifier>{5aab81c4-d941-4264-bbdf-33705b0e2126}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">

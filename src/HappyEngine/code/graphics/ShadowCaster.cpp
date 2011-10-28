@@ -57,6 +57,9 @@ void ShadowCaster::init(const DrawSettings& settings)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 
             m_ShadowSize, m_ShadowSize, 
             0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
@@ -167,7 +170,7 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
 
     for (int i = 0; i < COUNT; ++i)
     {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
         glClear(GL_DEPTH_BUFFER_BIT);
         mat44 mtxShadowViewProjection(mtxShadowProjection[i] * mtxShadowView);
@@ -188,7 +191,7 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
         pDirectionalLight->setShadowMatrix(i, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
 
-    GL::heSetCullFace(true);
+    GL::heSetCullFace(false);
     glViewport(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
     //glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 

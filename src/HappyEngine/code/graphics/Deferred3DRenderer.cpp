@@ -189,7 +189,7 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     m_ShaderAmbIllPos[13] = m_pAmbIllShader->getShaderSamplerId("shadowMap1");
     m_ShaderAmbIllPos[14] = m_pAmbIllShader->getShaderSamplerId("shadowMap2");
     m_ShaderAmbIllPos[15] = m_pAmbIllShader->getShaderSamplerId("shadowMap3");
-    m_ShaderAmbIllPos[16] = m_pAmbIllShader->getShaderVarId("texelSize");
+    //m_ShaderAmbIllPos[16] = m_pAmbIllShader->getShaderVarId("texelSize");
 
     //----ToneMap-----------------------------------------------------------------
     initToneMapShader(folder, shaderLayout);
@@ -392,8 +392,8 @@ void Deferred3DRenderer::postAmbIllLight()
     m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[13], m_pLightManager->getDirectionalLight()->getShadowMap(1));
     m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[14], m_pLightManager->getDirectionalLight()->getShadowMap(2));
     m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[15], m_pLightManager->getDirectionalLight()->getShadowMap(3));
-    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[16], vec2(1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getWidth(),
-                                                              1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getHeight()));
+    //m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[16], vec2(1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getWidth(),
+    //                                                          1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getHeight()));
 
     draw(m_pQuad);
 }

@@ -25,7 +25,6 @@ noperspective in vec2 texCoord;
 out vec4 outColor;
 
 uniform sampler2D map;
-uniform vec2 texelSize;
 uniform float invScale;
 
 void main()
@@ -33,18 +32,18 @@ void main()
     vec3 color = vec3(0, 0, 0);
     
 #if PASS1
-    color += texture2D(map, invScale*texCoord + vec2(-2.0f * texelSize.x, 0.0f)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(-1.0f * texelSize.x, 0.0f)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(0.0f * texelSize.x, 0.0f)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(1.0f * texelSize.x, 0.0f)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(2.0f * texelSize.x, 0.0f)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(-4,  0)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(-2, 0)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(0, 0)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(2, 0)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(4, 0)).rgb;
 #endif
 #if PASS2
-    color += texture2D(map, invScale*texCoord + vec2(0.0f, -2.0f * texelSize.y)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(0.0f, -1.0f * texelSize.y)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(0.0f, 0.0f * texelSize.y)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(0.0f, 1.0f * texelSize.y)).rgb;
-    color += texture2D(map, invScale*texCoord + vec2(0.0f, 2.0f * texelSize.y)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(0, -4)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(0, -2)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(0, 0)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(0, 2)).rgb;
+    color += textureOffset(map, invScale*texCoord, ivec2(0, 4)).rgb;
 #endif
         
         
