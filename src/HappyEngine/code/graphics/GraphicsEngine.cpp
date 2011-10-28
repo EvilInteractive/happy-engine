@@ -196,6 +196,7 @@ void GraphicsEngine::clearDepth() const
 
 void GraphicsEngine::begin(const Camera* pCamera)
 {
+    GL::reset();
     m_pCurrentCamera = pCamera;
     m_pDrawManager->begin(DrawManager::Type_FrontToBack, pCamera);
     m_pDeferred3DRenderer->begin(pCamera);

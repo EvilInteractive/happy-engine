@@ -46,8 +46,9 @@ Keyboard::~Keyboard()
 }
 void Keyboard::tick()
 {   
-    std::swap(m_PrevKeyState, m_CurrentKeyState);  
-    ASSERT(memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(byte)));  
+    std::swap(m_PrevKeyState, m_CurrentKeyState); 
+    bool succes(memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(byte)) != 0);
+    ASSERT(succes);
 }
 
 bool Keyboard::isKeyUp(Key key) const

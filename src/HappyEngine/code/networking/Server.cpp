@@ -26,6 +26,8 @@
 #include "HappyEngine.h"
 #include "NetworkManager.h"
 
+#include <iostream>
+
 namespace he {
 namespace net {
 

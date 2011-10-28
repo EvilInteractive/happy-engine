@@ -111,17 +111,16 @@ void GL::heBindFbo(uint fbo)
     if (m_BoundFbo != fbo)
     {
         m_BoundFbo = fbo;
-        m_BoundVao = 0;
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
 }
 void GL::heBindVao(uint vao)
 {
-   // if (m_BoundVao != vao)
-    //{
+    if (m_BoundVao != vao)
+    {
         m_BoundVao = vao;
         glBindVertexArray(vao);
-    //}
+    }
 }
 void GL::heBindTexture2D(uint samplerPos, uint tex)
 {
@@ -130,12 +129,12 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
     //{
         //if (m_ActiveTex != samplerPos)
         //{
-            m_ActiveTex = samplerPos;
             glActiveTexture(GL_TEXTURE0 + samplerPos);
+            m_ActiveTex = samplerPos;
         //}
-        glBindTexture(GL_TEXTURE_2D, tex);
         m_BoundTex2D[samplerPos] = tex;
-    //}
+        glBindTexture(GL_TEXTURE_2D, tex);
+   // }
 }
 
 //Blending
@@ -187,6 +186,18 @@ void GL::heScissorRect(const RectI& rect)
         m_ScissorRect = rect;
         glScissor(rect.x, rect.y, rect.width, rect.height);
     }
+}
+
+void GL::reset()
+{
+    m_BoundFbo = UINT_MAX, m_BoundVao = UINT_MAX;
+    m_BoundTex2D[0] = UINT_MAX;
+    m_BoundTex2D[1] = UINT_MAX;
+    m_BoundTex2D[2] = UINT_MAX;
+    m_BoundTex2D[3] = UINT_MAX;
+    m_BoundTex2D[4] = UINT_MAX;
+    m_BoundTex2D[5] = UINT_MAX;
+    m_ActiveTex = UINT_MAX;;
 }
 
 

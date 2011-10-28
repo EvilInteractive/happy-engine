@@ -79,6 +79,9 @@ enum BlendEquation
 class GL
 {
 public:
+    //Reset
+    static void reset();
+
     //Clear
     static void heClearColor(const Color& color);
 
