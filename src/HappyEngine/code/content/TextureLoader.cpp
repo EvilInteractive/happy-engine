@@ -18,6 +18,7 @@
 //Author:  Bastian Damman
 //Created: 11/08/2011
 //Extended:	Sebastiaan Sprengers
+//Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
 #include "StdAfx.h" 
 
 #include "TextureLoader.h"
@@ -32,6 +33,9 @@
 #include "HappyTypes.h"
 #include <iostream>
 #include "Texture2D.h"
+
+#include "HappyEngine.h"
+#include "Console.h"
 
 #include "HappyNew.h"
 
@@ -55,7 +59,9 @@ inline void handleILError()
     ILenum err = ilGetError();
     while (err != IL_NO_ERROR)
     {
-        std::cout << iluErrorString(err);
+        const char* errorstr(iluErrorString(err));
+        std::cout << errorstr;
+        CONSOLE->addMessage(errorstr, CMSG_TYPE_ERROR);
         err = ilGetError();
     }
 }
@@ -73,27 +79,28 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_TextureInvokeQueue.empty() == false)
     {
-        TextureLoadData data;
-        if (m_TextureInvokeQueue.try_pop(data))
-        {
-            GLuint texID;
-            glGenTextures(1, &texID);
-            GL::heBindTexture2D(0, texID);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        m_TextureInvokeQueueMutex.lock();
+        TextureLoadData data(m_TextureInvokeQueue.front());
+        m_TextureInvokeQueue.pop();
+        m_TextureInvokeQueueMutex.unlock();
+
+        GLuint texID;
+        glGenTextures(1, &texID);
+        GL::heBindTexture2D(0, texID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
-            glGenerateMipmap(GL_TEXTURE_2D);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
+        glGenerateMipmap(GL_TEXTURE_2D);
 
-            if (data.path != "")
-                ilDeleteImage(data.id);
-            else
-                delete data.pData;
+        if (data.path != "")
+            ilDeleteImage(data.id);
+        else
+            delete data.pData;
 
-            data.tex->init(texID, data.width, data.height, data.format);
+        data.tex->init(texID, data.width, data.height, data.format);
 
-            std::cout << "**TL INFO** texture create completed: " << data.path << "\n";
-        }
+        std::cout << "**TL INFO** texture create completed: " << data.path << "\n";
     }
 }
 
@@ -119,7 +126,9 @@ gfx::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
         data.color = color;
 		data.tex = tex2D;
 
+        m_TextureLoadQueueMutex.lock();
 		m_TextureLoadQueue.push(data);
+        m_TextureLoadQueueMutex.unlock();
 
 		m_pAssetContainer->addAsset(stream.str(), tex2D);
 
@@ -145,7 +154,9 @@ gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
 		data.format = 0;
 		data.tex = tex2D;
 
-		m_TextureLoadQueue.push(data);
+        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueue.push(data);
+        m_TextureLoadQueueMutex.unlock();
 
 		m_pAssetContainer->addAsset(path, tex2D);
 
@@ -158,30 +169,31 @@ void TextureLoader::TextureLoadThread()
     std::cout << "**TL INFO** load thread started.\n";
     while (m_TextureLoadQueue.empty() == false)
     {
-        TextureLoadData data;
-        if (m_TextureLoadQueue.try_pop(data))
+        m_TextureLoadQueueMutex.lock();
+        TextureLoadData data(m_TextureLoadQueue.front());
+        m_TextureLoadQueue.pop();
+        m_TextureLoadQueueMutex.unlock();
+
+        if (data.path != "")
         {
-            if (data.path != "")
+            ILuint id = ilGenImage();
+            ilBindImage(id);
+            if (ilLoadImage(data.path.c_str()))
             {
-                ILuint id = ilGenImage();
-                ilBindImage(id);
-                if (ilLoadImage(data.path.c_str()))
+                if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
                 {
-                    if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-                    {
-                        iluFlipImage();
-                        data.id = id;
-                        data.width = ilGetInteger(IL_IMAGE_WIDTH);
-                        data.height = ilGetInteger(IL_IMAGE_HEIGHT);
-                        data.format = ilGetInteger(IL_IMAGE_FORMAT);
-                        data.pData = ilGetData();
-                        m_TextureInvokeQueue.push(data);
-                        std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
-                    }
-                    else
-                    {
-                        handleILError();
-                    }
+                    iluFlipImage();
+                    data.id = id;
+                    data.width = ilGetInteger(IL_IMAGE_WIDTH);
+                    data.height = ilGetInteger(IL_IMAGE_HEIGHT);
+                    data.format = ilGetInteger(IL_IMAGE_FORMAT);
+                    data.pData = ilGetData();
+
+                    m_TextureInvokeQueueMutex.lock();
+                    m_TextureInvokeQueue.push(data);
+                    m_TextureInvokeQueueMutex.unlock();
+
+                    std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
                 }
                 else
                 {
@@ -190,21 +202,27 @@ void TextureLoader::TextureLoadThread()
             }
             else
             {
-                data.id = 0;
-                data.width = 8;
-                data.height = 8;
-                data.format = GL_RGBA;
-                data.pData = NEW byte[8*8*4];
-                for (uint i = 0; i < 64*4; i += 4)
-                {
-                    data.pData[i] = data.color.rByte();
-                    data.pData[i+1] = data.color.gByte();
-                    data.pData[i+2] = data.color.bByte();
-                    data.pData[i+3] = data.color.aByte();
-                }
-                m_TextureInvokeQueue.push(data);
-                std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
+                handleILError();
             }
+        }
+        else
+        {
+            data.id = 0;
+            data.width = 8;
+            data.height = 8;
+            data.format = GL_RGBA;
+            data.pData = NEW byte[8*8*4];
+            for (uint i = 0; i < 64*4; i += 4)
+            {
+                data.pData[i] = data.color.rByte();
+                data.pData[i+1] = data.color.gByte();
+                data.pData[i+2] = data.color.bByte();
+                data.pData[i+3] = data.color.aByte();
+            }
+            m_TextureInvokeQueueMutex.lock();
+            m_TextureInvokeQueue.push(data);
+            m_TextureInvokeQueueMutex.unlock();
+            std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
         }
     }
     m_isLoadThreadRunning = false;

@@ -36,15 +36,18 @@ namespace gfx {
 Bloom::Bloom(): m_DownSamples(4),
                 m_pDownSampleShader(NEW Shader()), m_pDownSampleBrightPassShader(NEW Shader())
 {
-    m_pBlurShaderPass[0] = Shader::pointer(NEW Shader());
-    m_pBlurShaderPass[1] = Shader::pointer(NEW Shader());
 }
 
 
 Bloom::~Bloom()
 {
-    glDeleteFramebuffers(m_DownSamples, &m_FboId[0][0]);
-    glDeleteFramebuffers(m_DownSamples, &m_FboId[1][0]);
+    for (int pass = 0; pass < 2; ++pass)
+    {
+        std::for_each(m_FboId[pass].cbegin(), m_FboId[pass].cend(), [](const uint& id)
+        {
+            glDeleteFramebuffers(1, &id);
+        });
+    }
 }
 
 void Bloom::init()
@@ -111,6 +114,8 @@ void Bloom::init()
 
     for (int pass = 0; pass < 2; ++pass)
     {
+        m_pBlurShaderPass[pass] = Shader::pointer(NEW Shader());
+
         std::set<std::string> definePass;
         if (pass == 0)
             definePass.insert("PASS1");

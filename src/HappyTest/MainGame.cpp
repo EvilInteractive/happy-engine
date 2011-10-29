@@ -111,6 +111,7 @@ void MainGame::init()
         GRAPHICS->toggleFullscreen(reader.readBool(L"Graphics", L"fullscreen"));
     }
 }
+
 void MainGame::load()
 {
     using namespace he;

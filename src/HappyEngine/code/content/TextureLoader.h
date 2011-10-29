@@ -18,16 +18,15 @@
 //Author:  Bastian Damman
 //Created: 11/08/2011
 //Extended:	Sebastiaan Sprengers
+//Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
 
 #ifndef _HE_TEXTURE_LOADER_H_
 #define _HE_TEXTURE_LOADER_H_
 #pragma once
 
 #include <string>
+#include <queue>
 #include "Texture2D.h"
-
-#include <ppl.h>
-#include <concurrent_queue.h>
 
 #include "boost/thread.hpp"
 
@@ -68,8 +67,12 @@ private:
     bool m_isLoadThreadRunning;
     void TextureLoadThread();
 
-    Concurrency::concurrent_queue<TextureLoadData> m_TextureLoadQueue;
-    Concurrency::concurrent_queue<TextureLoadData> m_TextureInvokeQueue;
+    
+    std::queue<TextureLoadData> m_TextureLoadQueue;
+    boost::mutex m_TextureLoadQueueMutex;
+
+    std::queue<TextureLoadData> m_TextureInvokeQueue;
+    boost::mutex m_TextureInvokeQueueMutex;
 
     boost::thread m_TextureLoadThread;
 

@@ -666,5 +666,8 @@
     <ClInclude Include="code\graphics\AutoExposure.h">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
+    <ClInclude Include="code\game\IComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -132,6 +132,7 @@
     <ClInclude Include="code\error\ExternalError.h" />
     <ClInclude Include="code\error\FileNotFoundException.h" />
     <ClInclude Include="code\game\Entity.h" />
+    <ClInclude Include="code\game\IComponent.h" />
     <ClInclude Include="code\game\IGame.h" />
     <ClInclude Include="code\graphics\AutoExposure.h" />
     <ClInclude Include="code\graphics\Bloom.h" />

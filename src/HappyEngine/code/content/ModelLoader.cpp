@@ -18,6 +18,8 @@
 //Author:  Bastian Damman
 //Created: 23/08/2011
 //Extended:	Sebastiaan Sprengers
+//Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
+
 #include "StdAfx.h" 
 
 #include "ModelLoader.h"
@@ -25,6 +27,8 @@
 #include "BinObjLoader.h"
 #include "ObjLoader.h"
 #include "FileNotFoundException.h"
+#include "HappyEngine.h"
+#include "Console.h"
 
 namespace he {
 namespace ct {
@@ -52,24 +56,25 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_ModelInvokeQueue.empty() == false)
     {
-        ModelLoadData* data;
-        if (m_ModelInvokeQueue.try_pop(data))
+        m_ModelInvokeQueueMutex.lock();
+        ModelLoadData* data(m_ModelInvokeQueue.front());
+        m_ModelInvokeQueue.pop();
+        m_ModelInvokeQueueMutex.unlock();
+
+        for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
         {
-            for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
-            {
-                gfx::ModelMesh::pointer pMesh(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
+            gfx::ModelMesh::pointer pMesh(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
 
-                pMesh->init();
-                pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
-                pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
+            pMesh->init();
+            pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
+            pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
 
-                data->pModel->addMesh(pMesh);
-                std::cout << "**ML INFO** model create completed: " << data->path << "\n";
-            }
-            data->pModel->setComplete();
-            delete data->loader;
-            delete data;
+            data->pModel->addMesh(pMesh);
+            std::cout << "**ML INFO** model create completed: " << data->path << "\n";
         }
+        data->pModel->setComplete();
+        delete data->loader;
+        delete data;
     }
 }
 
@@ -102,7 +107,9 @@ gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const g
 			return m;
 		}
 
+        m_ModelLoadQueueMutex.lock();
 		m_ModelLoadQueue.push(data);
+        m_ModelLoadQueueMutex.unlock();
 
 		m_pAssetContainer->addAsset(path, data->pModel);
 
@@ -115,31 +122,31 @@ void ModelLoader::ModelLoadThread()
     std::cout << "**ML INFO** load thread started.\n";
     while (m_ModelLoadQueue.empty() == false)
     {
-        ModelLoadData* data;
-        if (m_ModelLoadQueue.try_pop(data))
+        m_ModelLoadQueueMutex.lock();
+        ModelLoadData* data(m_ModelLoadQueue.front());
+        m_ModelLoadQueue.pop();
+        m_ModelLoadQueueMutex.unlock();
+
+        if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
         {
-            if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
-            {
-                try 
-                { 
-                    data->loader->load(data->path, data->vertexLayout); 
-                    std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
-                    m_ModelInvokeQueue.push(data);
-                }
-                catch (err::FileNotFoundException& e)
-                {
-                    std::wcout << e.getMsg() << "\n";
-                }            
+            try 
+            { 
+                data->loader->load(data->path, data->vertexLayout); 
+                std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
+                m_ModelInvokeQueueMutex.lock();
+                m_ModelInvokeQueue.push(data);
+                m_ModelInvokeQueueMutex.unlock();
             }
-            else
+            catch (err::FileNotFoundException& e)
             {
-                delete data->loader;
-                delete data;
-            }
+                CONSOLE->addMessage(std::string(e.getMsg().cbegin(), e.getMsg().cend()), CMSG_TYPE_ERROR);
+                std::wcout << e.getMsg() << "\n";
+            }            
         }
         else
         {
-            //boost::this_thread::yield(); //yes/no?
+            delete data->loader;
+            delete data;
         }
     }
     std::cout << "**ML INFO** load thread stopped.\n";

@@ -18,6 +18,7 @@
 //Author:	Bastian Damman
 //Created:	23/08/2011
 //Extended:	Sebastiaan Sprengers
+//Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
 
 #ifndef _HE_MODEL_LOADER_H_
 #define _HE_MODEL_LOADER_H_
@@ -28,9 +29,8 @@
 #include "IModelLoader.h"
 #include "AssetContainer.h"
 
-#include <ppl.h>
-#include <concurrent_queue.h>
 #include <string>
+#include <queue>
 
 #include "boost/thread.hpp"
 
@@ -65,9 +65,13 @@ private:
         ModelLoadData& operator=(const ModelLoadData&);
     };
 
-    Concurrency::concurrent_queue<ModelLoadData*> m_ModelLoadQueue;
-    Concurrency::concurrent_queue<ModelLoadData*> m_ModelInvokeQueue;
+    std::queue<ModelLoadData*> m_ModelLoadQueue;
+    boost::mutex m_ModelLoadQueueMutex;
+    std::queue<ModelLoadData*> m_ModelInvokeQueue;
+    boost::mutex m_ModelInvokeQueueMutex;
+
     boost::thread m_ModelLoadThread;
+
     void ModelLoadThread();
     bool m_isModelThreadRunning;
 
