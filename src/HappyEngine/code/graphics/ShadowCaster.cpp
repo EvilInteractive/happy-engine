@@ -57,9 +57,9 @@ void ShadowCaster::init(const DrawSettings& settings)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 
             m_ShadowSize, m_ShadowSize, 
             0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
@@ -160,8 +160,7 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
     GL::heBindFbo(m_FboId);
     //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers(1, buffers);
+    glDrawBuffers(0, 0);
 
     glViewport(0, 0, m_ShadowSize, m_ShadowSize);
     GL::heSetCullFace(true);
