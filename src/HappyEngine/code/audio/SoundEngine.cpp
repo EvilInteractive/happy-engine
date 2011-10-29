@@ -22,7 +22,7 @@
 #include "SoundEngine.h"
 #include "HappyNew.h"
 
-#include "Assert.h"
+#include "HeAssert.h"
 #include <iostream>
 #include <sstream>
 #include "Sound2D.h"

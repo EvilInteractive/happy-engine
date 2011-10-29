@@ -23,7 +23,7 @@
 #define _HE_MODEL_H_
 #pragma once
 
-#include "Assert.h"
+#include "HeAssert.h"
 #undef assert
 #define assert ASSERT
 

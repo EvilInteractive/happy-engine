@@ -19,7 +19,7 @@
 #include "FileReader.h"
 #include "FileNotFoundException.h"
 #include <sstream>
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace io {

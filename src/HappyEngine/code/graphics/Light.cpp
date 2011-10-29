@@ -22,7 +22,7 @@
 #include "Light.h"
 #include "HappyNew.h"
 #include "HappyEngine.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "Circle.h"
 
 namespace he {

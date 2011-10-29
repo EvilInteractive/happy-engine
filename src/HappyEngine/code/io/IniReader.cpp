@@ -20,7 +20,7 @@
 #include "StdAfx.h" 
 
 #include "IniReader.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "FileNotFoundException.h"
 
 #include <fstream>

@@ -21,7 +21,7 @@
 
 #include "BinaryStream.h"
 #include "FileNotFoundException.h"
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace io {

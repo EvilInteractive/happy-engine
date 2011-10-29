@@ -26,7 +26,7 @@
 #include "OpenGL.h"
 #include "VertexLayout.h"
 #include "Vertex.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "Light.h"
 #include "HappyNew.h"
 #include "GraphicsEngine.h"

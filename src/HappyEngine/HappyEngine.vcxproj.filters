@@ -97,9 +97,6 @@
     <ClCompile Include="code\content\TextureLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code\error\Assert.cpp">
-      <Filter>happyengine\error</Filter>
-    </ClCompile>
     <ClCompile Include="code\error\Exception.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
@@ -322,6 +319,12 @@
     <ClCompile Include="code\graphics\AutoExposure.cpp">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
+    <ClCompile Include="code\game\ModelComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\error\HeAssert.cpp">
+      <Filter>happyengine\error</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\AssetContainer.h">
@@ -374,9 +377,6 @@
     </ClInclude>
     <ClInclude Include="code\content\TextureLoader.h">
       <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="code\error\Assert.h">
-      <Filter>happyengine\error</Filter>
     </ClInclude>
     <ClInclude Include="code\error\Exception.h">
       <Filter>happyengine\error</Filter>
@@ -668,6 +668,12 @@
     </ClInclude>
     <ClInclude Include="code\game\IComponent.h">
       <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\ModelComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\error\HeAssert.h">
+      <Filter>happyengine\error</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

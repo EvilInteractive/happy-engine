@@ -26,7 +26,7 @@
 #include <sstream>
 
 #include "HappyNew.h"
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace ct {

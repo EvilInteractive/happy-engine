@@ -23,7 +23,7 @@
 #include "Font.h"
 #include "SDL.h"
 #include "OpenGL.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "HappyNew.h"
 #include "Text.h"
 

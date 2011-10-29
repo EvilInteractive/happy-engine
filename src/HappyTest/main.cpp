@@ -1,4 +1,4 @@
-#include "Assert.h"
+#include "HeAssert.h"
 #define assert ASSERT
 
 #include "boost/shared_ptr.hpp"

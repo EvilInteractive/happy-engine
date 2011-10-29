@@ -18,7 +18,7 @@
 
 #include "Shader.h"
 
-#include "Assert.h"
+#include "HeAssert.h"
 
 #include "FileReader.h"
 #include "FileNotFoundException.h"

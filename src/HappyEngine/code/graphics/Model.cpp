@@ -24,7 +24,7 @@
 
 #include "GL/glew.h"
 #include <algorithm>
-#include "Assert.h"
+#include "HeAssert.h"
 #include "Color.h"
 #include "ExternalError.h"
 

@@ -21,7 +21,7 @@
 
 #include "Server.h"
 #include "HappyNew.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "boost/bind.hpp"
 #include "HappyEngine.h"
 #include "NetworkManager.h"

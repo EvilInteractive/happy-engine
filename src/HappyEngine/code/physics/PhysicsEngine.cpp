@@ -20,7 +20,7 @@
 #include "StdAfx.h" 
 
 #include "PhysicsEngine.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "SDL.h"
 #include "HappyTypes.h"
 #include "boost/bind.hpp"

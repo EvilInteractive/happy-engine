@@ -28,7 +28,7 @@
 #include "FileReader.h"
 #include "FileNotFoundException.h"
 
-#include "Assert.h"
+#include "HeAssert.h"
 #include "ModelLoaderFunctions.h"
 
 namespace he {

@@ -17,7 +17,7 @@
 #include "StdAfx.h" 
 
 #include "VertexLayout.h"
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace gfx {

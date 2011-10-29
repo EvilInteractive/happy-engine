@@ -22,7 +22,7 @@
 #define _HE_CLIENT_H_
 #pragma once
 
-#include "Assert.h"
+#include "HeAssert.h"
 #undef assert
 #define assert ASSERT
 

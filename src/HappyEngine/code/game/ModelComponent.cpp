@@ -16,31 +16,22 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 29/10/2011
 #include "StdAfx.h" 
 
-#include "PhysicsMaterial.h"
-#include "HappyEngine.h"
-#include "HeAssert.h"
-#include "PhysicsEngine.h"
+#include "ModelComponent.h"
+#include "HappyNew.h"
 
 namespace he {
-namespace px {
+namespace game {
 
-PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
-{    
-    m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
-    ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
+ModelComponent::ModelComponent()
+{
 }
 
-PhysicsMaterial::~PhysicsMaterial()
-{
-    m_pInternalMaterial->release();
-}
 
-PxMaterial* PhysicsMaterial::getInternalMaterial() const
+ModelComponent::~ModelComponent()
 {
-    return m_pInternalMaterial;
 }
 
 } } //end namespace

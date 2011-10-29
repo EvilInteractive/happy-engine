@@ -22,7 +22,7 @@
 #include "DrawManager.h"
 #include "HappyNew.h"
 #include "HappyEngine.h"
-#include "Assert.h"
+#include "HeAssert.h"
 #include "GraphicsEngine.h"
 #include "ShadowCaster.h"
 

@@ -21,7 +21,7 @@
 
 #include "Simple2DEffect.h"
 #include "HappyNew.h"
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace gfx {

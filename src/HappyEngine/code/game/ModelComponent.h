@@ -16,54 +16,34 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 11/08/2011
+//Created: 29/10/2011
 
-#ifndef _HE_TEXTURE2D_H_
-#define _HE_TEXTURE2D_H_
+#ifndef _HE_MODEL_COMPONENT_H_
+#define _HE_MODEL_COMPONENT_H_
 #pragma once
 
-#include "HeAssert.h"
-#undef assert
-#define assert ASSERT
-
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
+#include "IComponent.h"
 
 namespace he {
-namespace gfx {
+namespace game {
     
-
-class Texture2D
+class ModelComponent : public IComponent
 {
 public:
-	Texture2D();
-    virtual ~Texture2D();
+	ModelComponent();
+    virtual ~ModelComponent();
 
-    void init(uint tex, uint width, uint height, uint format);
+    virtual void tick(float /*dTime*/) {}
+    virtual void init(Entity* pParent);
 
-    typedef boost::shared_ptr<Texture2D> pointer;
-
-    bool isInitialized() const;
-
-    uint getID() const;
-    uint getWidth() const;
-    uint getHeight() const;
-
-    static uint getTextureCount();
+    virtual void serialize();
+    virtual void deserialize();
 
 private:
-    uint m_Width, m_Height;
-    uint m_Format;
-
-    uint m_Id;
-
-    static uint s_Count;
-
-    bool m_isInitialized;
 
     //Disable default copy constructor and default assignment operator
-    Texture2D(const Texture2D&);
-    Texture2D& operator=(const Texture2D&);
+    ModelComponent(const ModelComponent&);
+    ModelComponent& operator=(const ModelComponent&);
 };
 
 } } //end namespace

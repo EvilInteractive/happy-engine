@@ -22,7 +22,7 @@
 #define _HE_NETWORK_MANAGER_H_
 #pragma once
 
-#include "Assert.h"
+#include "HeAssert.h"
 #undef assert
 #define assert ASSERT
 

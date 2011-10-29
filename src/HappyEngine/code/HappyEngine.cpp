@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-#include "Assert.h"
+#include "HeAssert.h"
 #include "ExternalError.h"
 #include "IL/il.h"
 #include "IL/ilu.h"
@@ -34,6 +34,9 @@
 #include "Happy2DRenderer.h"
 #include "Console.h"
 #include "SoundEngine.h"
+
+#include "boost/chrono.hpp"
+
 
 namespace he {
 
@@ -164,12 +167,16 @@ void HappyEngine::start(IGame* pGame)
 
 	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 
-    boost::timer t;
+    //boost::timer t;
+    boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
+    
     while (m_Quit == false)
     {
-        float dTime(static_cast<float>(t.elapsed()));
-        t.restart();
-
+        //float dTime(static_cast<float>(t.elapsed() * 1000));
+        //t.restart();
+        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
+        prevTime = boost::chrono::high_resolution_clock::now();
+        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
         updateLoop(dTime);
         if (m_SubEngines & SubEngine_Graphics)
             drawLoop(dTime);

@@ -18,7 +18,7 @@
 
 #include "SimpleForward3DRenderer.h"
 #include "OpenGL.h"
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace gfx {

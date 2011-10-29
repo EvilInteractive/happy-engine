@@ -22,7 +22,7 @@
 #define _HE_IPHYSICS_SHAPE_H_
 #pragma once
 
-#include "Assert.h"
+#include "HeAssert.h"
 #undef assert
 #define assert ASSERT
 

@@ -21,7 +21,7 @@
 
 #include "Simple2DTextureEffect.h"
 #include "HappyNew.h"
-#include "Assert.h"
+#include "HeAssert.h"
 
 namespace he {
 namespace gfx {
