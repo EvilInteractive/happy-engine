@@ -49,20 +49,24 @@ void SoundEngine::shutdown()
 	{
 		pSound->stop();
 
+		emptyBuffers(pSound->getSource());
+
 		if (pSound->getType() == SOUND_TYPE_STREAM)
 		{
-			emptyBuffers(pSound->getSource());
+			alDeleteBuffers(STREAM_BUFFERS, m_SoundBuffers[pSound->getBuffer()]);
 
-			alDeleteBuffers(2, m_SoundBuffers[pSound->getBuffer()]);
+			delete []m_SoundBuffers[pSound->getBuffer()];
 
 			ov_clear(&m_SoundStreams[m_SoundStreamIndex[pSound]]);
 		}
 		else
 		{
 			alDeleteBuffers(1, m_SoundBuffers[pSound->getBuffer()]);
+
+			delete m_SoundBuffers[pSound->getBuffer()];
 		}
 
-		alDeleteSources(1, m_SoundSources[pSound->getSource()]);
+		alDeleteSources(1, &m_SoundSources[pSound->getSource()]);
 
 		delete pSound;
 		pSound = nullptr;
@@ -89,14 +93,14 @@ uint SoundEngine::loadOggStream(const std::string& path)
 
 bool SoundEngine::streamOgg(OggVorbis_File& stream, ALuint buffer)
 {
-	char data[BUFFER_SIZE];
+	char data[STREAM_BUFFER_SIZE];
 	int size(0);
 	int section(0);
 	int result(0);
 
-	while (size < BUFFER_SIZE)
+	while (size < STREAM_BUFFER_SIZE)
 	{
-		result = ov_read(&stream, data + size, BUFFER_SIZE - size, 0, 2, 1, &section);
+		result = ov_read(&stream, data + size, STREAM_BUFFER_SIZE - size, 0, 2, 1, &section);
 
 		if (result > 0)
 			size += result;
@@ -131,7 +135,7 @@ void SoundEngine::emptyBuffers(uint source)
 {
 	int queued;
 
-	ALuint alSource(*m_SoundSources[source]);
+	ALuint alSource(m_SoundSources[source]);
 
 	alGetSourcei(alSource, AL_BUFFERS_QUEUED, &queued);
 
@@ -178,7 +182,7 @@ void SoundEngine::tick()
 			if (pSound->getState() == SOUND_STATE_PLAYING)
 			{
 				int processed(0);
-				ALuint source(*m_SoundSources[pSound->getSource()]);
+				ALuint source(m_SoundSources[pSound->getSource()]);
 
 				alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
 
@@ -199,7 +203,7 @@ void SoundEngine::tick()
 
 		if (pS2D != nullptr)
 		{
-			alSource3f(*m_SoundSources[pS2D->getSource()], AL_POSITION, getListenerPos().x, getListenerPos().y, getListenerPos().z);
+			alSource3f(m_SoundSources[pS2D->getSource()], AL_POSITION, getListenerPos().x, getListenerPos().y, getListenerPos().z);
 		}
 	});
 }
@@ -219,10 +223,10 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 		{
 			uint stream = loadOggStream(path);
 
-			ALuint *source(NEW ALuint()), *buffers(NEW ALuint[2]);
+			ALuint source(0), *buffers(NEW ALuint[STREAM_BUFFERS]);
 
-			alGenSources(1, source);
-			alGenBuffers(2, buffers);
+			alGenSources(1, &source);
+			alGenBuffers(STREAM_BUFFERS, buffers);
 
 			m_SoundSources.push_back(source);
 			m_SoundBuffers.push_back(buffers);
@@ -250,20 +254,21 @@ void SoundEngine::playSound(ISound* pSound, bool forceRestart)
 
 	if (pSound->getType() == SOUND_TYPE_STREAM)
 	{
-		if (!streamOgg(m_SoundStreams[m_SoundStreamIndex[pSound]], m_SoundBuffers[pSound->getBuffer()][0]))
-			return;
-		if (!streamOgg(m_SoundStreams[m_SoundStreamIndex[pSound]], m_SoundBuffers[pSound->getBuffer()][1]))
-			return;
+		for (uint i(0); i < STREAM_BUFFERS; ++i)
+		{
+			if (!streamOgg(m_SoundStreams[m_SoundStreamIndex[pSound]], m_SoundBuffers[pSound->getBuffer()][i]))
+				return;
+		}
 			
-		alSourceQueueBuffers(*m_SoundSources[pSound->getSource()], 2, m_SoundBuffers[pSound->getBuffer()]);
+		alSourceQueueBuffers(m_SoundSources[pSound->getSource()], STREAM_BUFFERS, m_SoundBuffers[pSound->getBuffer()]);
 	}
 
-	alSourcePlay(*m_SoundSources[pSound->getSource()]);
+	alSourcePlay(m_SoundSources[pSound->getSource()]);
 }
 
 void SoundEngine::stopSound(ISound* pSound)
 {
-	alSourceStop(*m_SoundSources[pSound->getSource()]);
+	alSourceStop(m_SoundSources[pSound->getSource()]);
 	emptyBuffers(pSound->getSource());
 
 	ov_time_seek(&m_SoundStreams[m_SoundStreamIndex[pSound]], 0.0);
@@ -287,12 +292,12 @@ vec3 SoundEngine::getListenerPos() const
 
 ALuint SoundEngine::getSource(uint source)
 {
-	return *m_SoundSources[source];
+	return m_SoundSources[source];
 }
 
-ALuint SoundEngine::getBuffer(uint buffer)
+ALuint* SoundEngine::getBuffer(uint buffer)
 {
-	return *m_SoundBuffers[buffer];
+	return m_SoundBuffers[buffer];
 }
 
 } } //end namespace

@@ -35,14 +35,15 @@
 namespace he {
 namespace sfx {
 
-#define BUFFER_SIZE (4096 * 8)
-
 class Sound2D;
 class Sound3D;
 
 class SoundEngine
 {
 public:
+
+	static const uint STREAM_BUFFER_SIZE = 4096 * 8;
+	static const uint STREAM_BUFFERS = 2;
 
 	/* CONSTRUCTOR - DESTRUCTOR */
 	SoundEngine();
@@ -66,7 +67,7 @@ public:
 	vec3 getListenerPos() const;
 
 	ALuint getSource(uint source);
-	ALuint getBuffer(uint buffer);
+	ALuint* getBuffer(uint buffer);
 
 private:
 
@@ -79,7 +80,7 @@ private:
 	/* DATAMEMBERS */
 	std::vector<ISound*> m_SoundBank;
 	std::vector<ALuint*> m_SoundBuffers;
-	std::vector<ALuint*> m_SoundSources;
+	std::vector<ALuint> m_SoundSources;
 	std::vector<OggVorbis_File> m_SoundStreams;
 	std::map<ISound*, uint> m_SoundStreamIndex;
 
