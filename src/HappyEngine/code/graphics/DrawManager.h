@@ -45,7 +45,6 @@ public:
     };
     enum Type
     {
-        Type_Immediate,
         Type_FrontToBack,
         Type_BackToFront
     };
@@ -55,21 +54,19 @@ public:
 
     void init(const DrawSettings& settings);
 
-    void begin(Type type, const Camera* pCamera);
-    void end();
-    
-    void renderShadow();
+    void draw(const Camera* pCamera);
 
-    void draw(const IDrawable* pDrawabe);
+    void addDrawable(const IDrawable* pDrawabe);
 
-    bool viewClip(const shapes::Sphere& boundingSphere);
+    static bool viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere);
+    static bool viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere);
 
 private:
+    void renderShadow(const Camera* pCamera);
 
     Type m_Type;
-    const Camera* m_pCamera;
 
-    std::vector<DrawElement> m_DrawList;
+    std::vector<const IDrawable*> m_DrawList;
 
     ShadowCaster* m_pShadowCaster;
 

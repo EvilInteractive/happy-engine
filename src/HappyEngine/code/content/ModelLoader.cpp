@@ -61,18 +61,38 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
         m_ModelInvokeQueue.pop();
         m_ModelInvokeQueueMutex.unlock();
 
+        m_WaitListMutex.lock();
+
+        uint unloadedMeshes(data->pModel->getNumMeshes());
         for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
         {
-            gfx::ModelMesh::pointer pMesh(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
+            gfx::ModelMesh::pointer pMesh;
+            if (unloadedMeshes > 0)
+            {
+                for (uint iUnloaded = 0; iUnloaded < unloadedMeshes; ++iUnloaded) // TODO: optimize
+                {
+                    if (data->loader->getMeshName(i) == data->pModel->getMesh(iUnloaded)->getName())
+                    {
+                        pMesh = data->pModel->getMesh(iUnloaded);
+                        break;
+                    }
+                }
+            }
+            if (pMesh == nullptr)
+            {
+                pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
+                data->pModel->addMesh(pMesh);
+            }
 
             pMesh->init();
             pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
             pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
+            pMesh->setBones(data->loader->getBones(i));
 
-            data->pModel->addMesh(pMesh);
             std::cout << "**ML INFO** model create completed: " << data->path << "\n";
         }
         data->pModel->setComplete();
+        m_WaitListMutex.unlock();
         delete data->loader;
         delete data;
     }
@@ -116,6 +136,73 @@ gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const g
 		return data->pModel;
 	}
 }
+gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::VertexLayout& vertexLayout )
+{
+    if (m_pAssetContainer->isAssetPresent(path))
+    {
+        gfx::ModelMesh::pointer pMesh;
+        m_WaitListMutex.lock();
+
+        gfx::Model::pointer pModel(m_pAssetContainer->getAsset(path));
+        if (pModel->isComplete())
+        {
+            pMesh = pModel->getMesh(meshName);
+            if (pMesh == nullptr)
+                pMesh = pModel->getMesh(0);
+        }
+        else
+        {
+            if (pModel->getNumMeshes() > 0)
+            {
+                pMesh = pModel->getMesh(meshName);
+            }
+            if (pMesh == nullptr)
+            {
+                gfx::ModelMesh::pointer pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName));
+                
+                pModel->addMesh(pMesh);
+            }
+        }
+
+        m_WaitListMutex.unlock();
+        return pMesh;
+    }
+    else
+    {
+        ModelLoadData* data(NEW ModelLoadData());
+        data->path = path;
+        data->vertexLayout = vertexLayout;
+        data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
+        data->pModel->addMesh(gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName)));
+
+        if (data->path.rfind(".obj") != std::string::npos)
+        {
+            data->loader = NEW models::ObjLoader();
+        }
+        else if (data->path.rfind(".binobj") != std::string::npos)
+        {
+            data->loader = NEW models::BinObjLoader();
+        }
+        else
+        {
+            gfx::ModelMesh::pointer m(data->pModel->getMesh(0));
+            delete data;
+            std::stringstream stream;
+            stream << "Model error: unkown extension (" << path << ")";
+            CONSOLE->addMessage(stream.str(), CMSG_TYPE_ERROR);
+            return m;
+        }
+
+        m_ModelLoadQueueMutex.lock();
+        m_ModelLoadQueue.push(data);
+        m_ModelLoadQueueMutex.unlock();
+
+        m_pAssetContainer->addAsset(path, data->pModel);
+
+        return data->pModel->getMesh(0);
+    }
+}
+
 
 void ModelLoader::ModelLoadThread()
 {

@@ -53,6 +53,33 @@ ModelMesh::pointer Model::getMesh(int index) const
     return m_Meshes[index];
 }
 
+ModelMesh::pointer Model::getMesh( const std::string& name ) const
+{
+    ModelMesh::pointer retMesh;
+    std::for_each(cbegin(), cend(), [&](const ModelMesh::pointer& pMesh)
+    {
+        if (pMesh->getName() == name)
+        {
+            retMesh = pMesh;
+            return;
+        }
+    });
+    return retMesh;
+}
+
+std::vector<ModelMesh::pointer> Model::getMeshesWithPrefix( const std::string& prefix ) const
+{
+    std::vector<ModelMesh::pointer> meshes;
+    std::for_each(cbegin(), cend(), [&](const ModelMesh::pointer& pMesh)
+    {
+        if (pMesh->getName().find(prefix) == 0)
+        {
+            meshes.push_back(pMesh);
+        }
+    });
+    return meshes;
+}
+
 std::vector<ModelMesh::pointer>::const_iterator Model::cbegin() const
 {
     return m_Meshes.cbegin();

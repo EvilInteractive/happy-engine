@@ -1,0 +1,8 @@
+[Shader]
+shader = "deferred/pre/default.shader"
+
+[TEXTURE2D]
+diffuseMap = "sky.png"
+normalMap = 0.5, 0.5, 1.0, 1.0
+specGlossIllMap = 0, 0, 20, 0
+

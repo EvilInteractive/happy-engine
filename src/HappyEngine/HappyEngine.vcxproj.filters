@@ -53,18 +53,24 @@
     <Filter Include="happyengine\game\components">
       <UniqueIdentifier>{5aab81c4-d941-4264-bbdf-33705b0e2126}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\game\serialize">
+      <UniqueIdentifier>{71211a36-ea2c-473d-8a43-905ef4efc4ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\model">
+      <UniqueIdentifier>{c2ea999c-fd95-4d75-84db-ee21a4c295a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\gui">
+      <UniqueIdentifier>{e3f48277-3fa6-4f32-8c59-e4dff2a0e546}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\content\model">
+      <UniqueIdentifier>{36bc8286-ef47-4e72-b8f5-a09a4f511ee6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code\content\BinObjLoader.cpp">
-      <Filter>happyengine\content</Filter>
-    </ClCompile>
     <ClCompile Include="code\content\ContentManager.cpp">
-      <Filter>happyengine\content</Filter>
-    </ClCompile>
-    <ClCompile Include="code\content\EntityLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
     <ClCompile Include="code\content\FontLoader.cpp">
@@ -73,16 +79,7 @@
     <ClCompile Include="code\content\LineLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code\content\ModelLoader.cpp">
-      <Filter>happyengine\content</Filter>
-    </ClCompile>
-    <ClCompile Include="code\content\ModelLoaderFunctions.cpp">
-      <Filter>happyengine\content</Filter>
-    </ClCompile>
     <ClCompile Include="code\content\ObjLineLoader.cpp">
-      <Filter>happyengine\content</Filter>
-    </ClCompile>
-    <ClCompile Include="code\content\ObjLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
     <ClCompile Include="code\content\PhysicsShapeLoader.cpp">
@@ -109,34 +106,13 @@
     <ClCompile Include="code\game\Entity.cpp">
       <Filter>happyengine\game</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Button.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Camera.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Color.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Font.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Hitregion.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Line.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Model.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\ModelMesh.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Text.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\TextBox.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Texture2D.cpp">
@@ -247,9 +223,6 @@
     <ClCompile Include="code\tools\FPSGraph.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Scrollbar.cpp">
-      <Filter>happyengine\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\PointLight.cpp">
       <Filter>happyengine\graphics\light</Filter>
     </ClCompile>
@@ -325,6 +298,57 @@
     <ClCompile Include="code\error\HeAssert.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
+    <ClCompile Include="code\game\PhysicsComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\game\SerializerStream.cpp">
+      <Filter>happyengine\game\serialize</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\ModelMesh.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Model.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Line.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Button.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Text.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\TextBox.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Font.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Scrollbar.cpp">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Bone.cpp">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\game\RiggedModelComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\content\BinObjLoader.cpp">
+      <Filter>happyengine\content\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\content\ModelLoader.cpp">
+      <Filter>happyengine\content\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\content\ModelLoaderFunctions.cpp">
+      <Filter>happyengine\content\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\content\ObjLoader.cpp">
+      <Filter>happyengine\content\model</Filter>
+    </ClCompile>
+    <ClCompile Include="code\content\MaterialLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\AssetContainer.h">
@@ -336,34 +360,16 @@
     <ClInclude Include="code\content\BinObjLineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code\content\BinObjLoader.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
     <ClInclude Include="code\content\ContentManager.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="code\content\EntityLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
     <ClInclude Include="code\content\FontLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code\content\IModelLoader.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
     <ClInclude Include="code\content\LineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code\content\ModelLoader.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="code\content\ModelLoaderFunctions.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
     <ClInclude Include="code\content\ObjLineLoader.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="code\content\ObjLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
     <ClInclude Include="code\content\PhysicsShapeLoader.h">
@@ -393,34 +399,13 @@
     <ClInclude Include="code\game\IGame.h">
       <Filter>happyengine\game</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Button.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Camera.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Font.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Hitregion.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\IDrawable.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Line.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Model.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\ModelMesh.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\Text.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\TextBox.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Texture2D.h">
@@ -585,9 +570,6 @@
     <ClInclude Include="code\tools\StringTypeHandler.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Scrollbar.h">
-      <Filter>happyengine\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Color.h">
       <Filter>happyengine\graphics\light</Filter>
     </ClInclude>
@@ -674,6 +656,63 @@
     </ClInclude>
     <ClInclude Include="code\error\HeAssert.h">
       <Filter>happyengine\error</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\PhysicsComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\SerializerStream.h">
+      <Filter>happyengine\game\serialize</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ModelMesh.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Model.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Line.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Button.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Text.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\TextBox.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Font.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Scrollbar.h">
+      <Filter>happyengine\graphics\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Bone.h">
+      <Filter>happyengine\graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\RiggedModelComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\BinObjLoader.h">
+      <Filter>happyengine\content\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\IModelLoader.h">
+      <Filter>happyengine\content\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\ModelLoader.h">
+      <Filter>happyengine\content\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\ModelLoaderFunctions.h">
+      <Filter>happyengine\content\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\ObjLoader.h">
+      <Filter>happyengine\content\model</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\ITickable.h">
+      <Filter>happyengine\game</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\MaterialLoader.h">
+      <Filter>happyengine\content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

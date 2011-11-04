@@ -62,6 +62,8 @@ public:
     virtual const void* getVertices(uint mesh) const;
     virtual uint getNumVertices(uint mesh) const;
 
+    virtual const std::vector<gfx::Bone>& getBones(uint /*mesh*/) const { return m_NoBones; } //No bones in a OBJ
+
     virtual const void* getIndices(uint mesh) const;
     virtual gfx::IndexStride getIndexStride(uint mesh) const;
     virtual uint getNumIndices(uint mesh) const;
@@ -102,6 +104,8 @@ private:
     uint m_NumVertices;
     std::vector<uint> m_NumIndices;
     std::vector<gfx::IndexStride> m_IndexStride;
+
+    std::vector<gfx::Bone> m_NoBones;
 
     //Disable default copy constructor and default assignment operator
     ObjLoader(const ObjLoader&);

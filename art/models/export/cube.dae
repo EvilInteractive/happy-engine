@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author></author>
+      <authoring_tool>FBX COLLADA exporter</authoring_tool>
+      <comments></comments>
+    </contributor>
+    <created>2011-11-04T20:26:41Z</created>
+    <keywords></keywords>
+    <modified>2011-11-04T20:26:41Z</modified>
+    <revision></revision>
+    <subject></subject>
+    <title></title>
+    <unit meter="0.010000" name="centimeter"></unit>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_geometries>
+    <geometry id="M_Cube-lib" name="M_CubeMesh">
+      <mesh>
+        <source id="M_Cube-POSITION">
+          <float_array id="M_Cube-POSITION-array" count="24">
+-100.000000 -100.000000 -100.000000
+-100.000000 100.000000 -100.000000
+100.000000 100.000000 -100.000000
+100.000000 -100.000000 -100.000000
+-100.000000 -100.000000 100.000000
+100.000000 -100.000000 100.000000
+100.000000 100.000000 100.000000
+-100.000000 100.000000 100.000000
+</float_array>
+          <technique_common>
+            <accessor source="#M_Cube-POSITION-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="M_Cube-Normal0">
+          <float_array id="M_Cube-Normal0-array" count="108">
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#M_Cube-Normal0-array" count="36" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="M_Cube-UV0">
+          <float_array id="M_Cube-UV0-array" count="8">
+1.000000 0.000000
+1.000000 1.000000
+0.000000 1.000000
+0.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#M_Cube-UV0-array" count="4" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="M_Cube-VERTEX">
+          <input semantic="POSITION" source="#M_Cube-POSITION"/>
+        </vertices>
+        <triangles count="12">
+          <input semantic="VERTEX" offset="0" source="#M_Cube-VERTEX"/>
+          <input semantic="NORMAL" offset="1" source="#M_Cube-Normal0"/>
+          <input semantic="TEXCOORD" offset="2" set="0" source="#M_Cube-UV0"/>
+          <p> 0 0 0 1 1 1 2 2 2 2 3 2 3 4 3 0 5 0 4 6 3 5 7 0 6 8 1 6 9 1 7 10 2 4 11 3 0 12 3 3 13 0 5 14 1 5 15 1 4 16 2 0 17 3 3 18 3 2 19 0 6 20 1 6 21 1 5 22 2 3 23 3 2 24 3 1 25 0 7 26 1 7 27 1 6 28 2 2 29 3 1 30 3 0 31 0 4 32 1 4 33 1 7 34 2 1 35 3</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="" name="">
+      <node name="M_Cube" id="M_Cube" sid="M_Cube">
+        <matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix>
+        <instance_geometry url="#M_Cube-lib"/>
+        <extra>
+          <technique profile="FCOLLADA">
+            <visibility>1.000000</visibility>
+          </technique>
+        </extra>
+      </node>
+      <extra>
+        <technique profile="MAX3D">
+          <frame_rate>30.000000</frame_rate>
+        </technique>
+        <technique profile="FCOLLADA">
+          <start_time>0.000000</start_time>
+          <end_time>3.333333</end_time>
+        </technique>
+      </extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#"></instance_visual_scene>
+  </scene>
+</COLLADA>
+

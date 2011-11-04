@@ -28,6 +28,7 @@
 #include "ShaderVar.h"
 #include "Camera.h"
 #include "Color.h"
+#include "VertexLayout.h"
 
 namespace he {
 namespace gfx {
@@ -42,22 +43,11 @@ public:
     // default copy constructor and default assignment operator are OK
 
     void addVar(const ShaderVar::pointer& var);
-    void setShader(const Shader::pointer& pShader);
+    void setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL);
 
-    void begin(const IDrawable* pObj, const Camera* pCamera) const;
-    void end() const;
+    const VertexLayout& getCompatibleVertexLayout() const;
 
-    //Texture
-    void setDiffuseMap(const std::string& path);
-    void setDiffuseMap(const Color& color);
-    void setNormalMap(const std::string& path);
-    void setNormalMap(const Color& color);
-    void setSGIMap(const std::string& path);
-    void setSGIMap(const Color& color);
-
-    const gfx::Texture2D::pointer& getDiffuseMap() const;
-    const gfx::Texture2D::pointer& getNormalMap() const;
-    const gfx::Texture2D::pointer& getSGIMap() const;
+    void apply(const IDrawable* pObj, const Camera* pCamera) const;
 
 private:
     bool isTranslucent;
@@ -65,10 +55,7 @@ private:
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;
 
-    gfx::Texture2D::pointer m_pDiffuseMap;
-    gfx::Texture2D::pointer m_pNormalMap;
-    gfx::Texture2D::pointer m_pSGIMap;
-
+    VertexLayout m_CompatibleVL;
 };
 
 } } //end namespace

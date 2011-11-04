@@ -33,29 +33,37 @@ namespace HappyCookerGUI
 
         private void AddExportFiles()
         {
-            IEnumerable<string> files = Directory.EnumerateFiles(m_ExportPath, m_ExportFilter, SearchOption.AllDirectories);
-            foreach (string file in files)
+            try
             {
-                ListboxFile lbf = new ListboxFile();
-                lbf.fullPath = file;
-                lbf.relativePath = file.Substring(m_ExportPath.Length);
-                m_Export.Items.Add(lbf);
+                IEnumerable<string> files = Directory.EnumerateFiles(m_ExportPath, m_ExportFilter, SearchOption.AllDirectories);
+                foreach (string file in files)
+                {
+                    ListboxFile lbf = new ListboxFile();
+                    lbf.fullPath = file;
+                    lbf.relativePath = file.Substring(m_ExportPath.Length);
+                    m_Export.Items.Add(lbf);
+                }
             }
+            catch (Exception) { }
         }
         private void AddImportFiles()
         {
-            IEnumerable<string> files = Directory.EnumerateFiles(m_ImportPath, m_ImportFilter, SearchOption.AllDirectories);
-            foreach (string file in files)
+            try
             {
-                ListboxFile lbf = new ListboxFile();
-                lbf.fullPath = file;
-                lbf.relativePath = file.Substring(m_ImportPath.Length);
+                IEnumerable<string> files = Directory.EnumerateFiles(m_ImportPath, m_ImportFilter, SearchOption.AllDirectories);
+                foreach (string file in files)
+                {
+                    ListboxFile lbf = new ListboxFile();
+                    lbf.fullPath = file;
+                    lbf.relativePath = file.Substring(m_ImportPath.Length);
 
-                if (needsUpdate(lbf))
-                    m_Convert.Items.Add(lbf);
-                else
-                    m_Import.Items.Add(lbf);
+                    if (needsUpdate(lbf))
+                        m_Convert.Items.Add(lbf);
+                    else
+                        m_Import.Items.Add(lbf);
+                }
             }
+            catch (Exception) { }
         }
         private bool needsUpdate(ListboxFile importFile)
         {

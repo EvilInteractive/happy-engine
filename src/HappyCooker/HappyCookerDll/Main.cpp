@@ -30,15 +30,21 @@ void __stdcall disposeHappyCooker()
 {
     happycooker::HappyCooker::dispose();
 }
-bool __stdcall cookObjToBinObj(const char* inputPath, const char* outputPath)
+bool __stdcall cookToBinObj(const char* inputPath, const char* outputPath)
 {
-    return happycooker::HappyCooker::getInstance()->cookObjToBinObj(inputPath, outputPath);
+    return happycooker::HappyCooker::getInstance()->cookToBinObj(inputPath, outputPath);
 }
-bool __stdcall cookObjLineToBinObj(const char* inputPath, const char* outputPath)
+bool __stdcall cookLineToBinObj(const char* inputPath, const char* outputPath)
 {
-    return happycooker::HappyCooker::getInstance()->cookObjLineToBinObj(inputPath, outputPath);
+    return happycooker::HappyCooker::getInstance()->cookLineToBinObj(inputPath, outputPath);
 }
-bool __stdcall cookObjToConvex(const char* inputPath, const char* outputPath)
+bool __stdcall cookToConvex(const char* inputPath, const char* outputPath)
 {
-    return happycooker::HappyCooker::getInstance()->cookObjToConvex(inputPath, outputPath);
+    return happycooker::HappyCooker::getInstance()->cookToConvex(inputPath, outputPath);
+}
+
+void __stdcall setInfoCallback(bool (__stdcall *infoCallback)(const char*))
+{
+    happycooker::HappyCooker::getInstance()->setInfoCallback(infoCallback);
+    return;
 }

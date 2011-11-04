@@ -94,7 +94,7 @@ void IniReader::open(const std::string& path)
     using namespace std;
 
     m_Data.clear();
-
+    m_IsOpen = false;
     std::wifstream file;
     file.open(path, ios::in);
     

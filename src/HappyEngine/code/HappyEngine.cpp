@@ -145,7 +145,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 	m_pConsole = NEW tools::Console();
 }
 
-void HappyEngine::start(IGame* pGame)
+void HappyEngine::start(game::IGame* pGame)
 {
     using namespace std;
     cout << "       ******************************       \n";

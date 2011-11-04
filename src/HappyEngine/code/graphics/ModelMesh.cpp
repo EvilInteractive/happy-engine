@@ -32,7 +32,7 @@ namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0), m_Complete(false), m_Name(name)
+ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0), m_isComplete(false), m_isVisible(true), m_Name(name)
 {
 }
 
@@ -136,7 +136,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     GL::heBindVao(0);
 
     if (m_NumIndices > 0)
-        m_Complete = true;
+        m_isComplete = true;
 }
 void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
 {
@@ -161,7 +161,7 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
     }
 
     if (m_NumVertices > 0)
-        m_Complete = true;
+        m_isComplete = true;
     //unbind
     GL::heBindVao(0);
 }
@@ -190,9 +190,9 @@ uint ModelMesh::getIndexType() const
     return m_IndexType;
 }
 
-bool ModelMesh::isComplete() const
+bool ModelMesh::isVisible() const
 {
-    return m_Complete;
+    return m_isComplete && m_isVisible;
 }
 
 const shapes::Sphere& ModelMesh::getBoundingSphere() const
@@ -203,6 +203,16 @@ const shapes::Sphere& ModelMesh::getBoundingSphere() const
 he::uint ModelMesh::getVertexShadowArraysID() const
 {
     return m_VaoShadowID[0];
+}
+
+void ModelMesh::setBones( const std::vector<Bone>& boneList )
+{
+    m_BoneList = boneList;
+}
+
+const std::vector<Bone>& ModelMesh::getBones() const
+{
+    return m_BoneList;
 }
 
 

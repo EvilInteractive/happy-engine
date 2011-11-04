@@ -35,10 +35,9 @@ SpotLight::SpotLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_Direction(0, 
 {
     calculateWorld();
 
-    game::EntityDesc desc(CONTENT->loadEntity("engine/light/spotlight.entity"));
-    m_Material = desc.material;
-    m_pLightVolume = CONTENT->asyncLoadModel("engine/lightvolume/spotLight.binobj", Deferred3DRenderer::getVertexLayoutLightVolume());
-    m_pModel = desc.pModel;
+    m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
+    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight", Deferred3DRenderer::getVertexLayoutLightVolume());
+    m_pModel = m_pLightVolume;
 }
 void SpotLight::calculateWorld()
 {
@@ -116,11 +115,11 @@ float SpotLight::getCosCutoff() const
     return m_CosCutoff;
 }
     
-const mat44& SpotLight::getWorldMatrix() const
+mat44 SpotLight::getWorldMatrix() const
 {
     return m_mtxWorld;
 }
-const Model::pointer& SpotLight::getLightVolume() const
+const ModelMesh::pointer& SpotLight::getLightVolume() const
 {
     return m_pLightVolume;
 }
@@ -128,7 +127,7 @@ const Material& SpotLight::getMaterial() const
 {
     return m_Material;
 }
-const Model::pointer SpotLight::getModel() const
+const ModelMesh::pointer& SpotLight::getModel() const
 {
     return m_pModel;
 }

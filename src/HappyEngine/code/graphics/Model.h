@@ -34,6 +34,8 @@
 #include "ModelMesh.h"
 #include "VertexLayout.h"
 
+#include "Sphere.h"
+
 namespace he {
 namespace gfx {
 
@@ -48,11 +50,13 @@ public:
     void addMesh(const ModelMesh::pointer& pMesh);
     uint getNumMeshes() const;
     ModelMesh::pointer getMesh(int index) const;
+    ModelMesh::pointer getMesh(const std::string& name) const;
+    std::vector<ModelMesh::pointer> getMeshesWithPrefix(const std::string& prefix) const;
 
     std::vector<ModelMesh::pointer>::const_iterator cbegin() const;
     std::vector<ModelMesh::pointer>::const_iterator cend() const;
 
-    bool isComplete() const;
+    bool isComplete() const; //used as mutex
     void setComplete();
 
     const VertexLayout& getVertexLayout() const;
@@ -60,8 +64,11 @@ public:
 private:
 
     VertexLayout m_VertexLayout;
+    //std::vector<std::vector<ModelMesh::pointer>> m_MeshesPerLod;
     std::vector<ModelMesh::pointer> m_Meshes;
     bool m_Complete;
+
+    shapes::Sphere m_BoundingSphere;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

@@ -30,7 +30,6 @@
 #include "FontLoader.h"
 #include "FlyCamera.h"
 #include "FPSGraph.h"
-#include "GroundPlane.h"
 #include "Sound2D.h"
 
 #include <vector>
@@ -46,7 +45,7 @@
 
 namespace happytest {
 
-class MainGame : public he::IGame
+class MainGame : public he::game::IGame
 {
 public:
 	MainGame();
@@ -83,7 +82,6 @@ private:
 	he::gfx::Texture2D::pointer m_SplashImage;
 	he::gfx::Font::pointer m_pFont;
 
-    GroundPlane* m_pGroundPlane;
     he::game::Entity* m_pAxis;
     he::game::Entity* m_pScene;
     he::game::Entity* m_pSky;

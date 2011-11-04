@@ -31,9 +31,12 @@ namespace gfx {
 
 enum ShaderVarType
 {
-    ShaderVarType_WVP,
+    ShaderVarType_WorldViewProjection,
+    ShaderVarType_ViewProjection,
     ShaderVarType_World,
+    ShaderVarType_WorldView,
     ShaderVarType_WorldPosition,
+    ShaderVarType_BoneTransforms,
     ShaderVarType_User
 };
 class ShaderVar

@@ -50,6 +50,8 @@ public:
         Usage_TextureCoordinate,
         Usage_Normal,
         Usage_Tangent,
+        Usage_BoneIDs,
+        Usage_BoneWeigths,
         Usage_Other
     };
     VertexElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset);

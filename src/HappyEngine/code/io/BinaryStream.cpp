@@ -31,7 +31,10 @@ BinaryStream::BinaryStream(const std::string& path, OpenType openType):
 {
     errno_t err(fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb"));
     if (err != 0)
+    {
+        std::cout << "Bin open failed: errno: " << err << "\n";
         throw err::FileNotFoundException(path);
+    }
 }
 
 
@@ -119,8 +122,11 @@ std::wstring BinaryStream::readWString() const
 
 void BinaryStream::readBuffer(void* buffer, PxU32 size)	const
 {
-    size_t count(fread(buffer, size, 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    if (size > 0)
+    {
+        size_t count(fread(buffer, size, 1, m_pFile));
+        ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    }
 }
 
 PxStream& BinaryStream::storeByte(byte b)
@@ -190,8 +196,11 @@ PxStream& BinaryStream::storeWString(const std::wstring& s)
 
 PxStream& BinaryStream::storeBuffer(const void* buffer, PxU32 size)
 {
-    size_t count(fwrite(buffer, size, 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    if (size > 0)
+    {
+        size_t count(fwrite(buffer, size, 1, m_pFile));
+        ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    }
     return *this;
 }
 

@@ -1,0 +1,8 @@
+[Shader]
+shader = "deferred/pre/default.shader"
+
+[TEXTURE2D]
+diffuseMap = "v8_vantage_color.png"
+normalMap = "v8_vantage_normal.png"
+specGlossIllMap = "v8_vantage_specGlossIll.png"
+

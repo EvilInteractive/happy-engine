@@ -34,10 +34,9 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
     m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f)
 {
     calculateWorld();
-    game::EntityDesc desc(CONTENT->loadEntity("engine/light/pointlight.entity"));
-    m_Material = desc.material;
-    m_pLightVolume = CONTENT->asyncLoadModel("engine/lightvolume/pointlight.binobj", Deferred3DRenderer::getVertexLayoutLightVolume());
-    m_pModel = desc.pModel;
+    m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
+    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", Deferred3DRenderer::getVertexLayoutLightVolume());
+    m_pModel = m_pLightVolume;
 }
 void PointLight::calculateWorld()
 {
@@ -94,11 +93,11 @@ const vec3& PointLight::getColor() const
     return m_Color;
 }
     
-const mat44& PointLight::getWorldMatrix() const
+mat44 PointLight::getWorldMatrix() const
 {
     return m_mtxWorld;
 }
-const Model::pointer& PointLight::getLightVolume() const
+const ModelMesh::pointer& PointLight::getLightVolume() const
 {
     return m_pLightVolume;
 }
@@ -106,7 +105,7 @@ const Material& PointLight::getMaterial() const
 {
     return m_Material;
 }
-const Model::pointer PointLight::getModel() const
+const ModelMesh::pointer& PointLight::getModel() const
 {
     return m_pModel;
 }

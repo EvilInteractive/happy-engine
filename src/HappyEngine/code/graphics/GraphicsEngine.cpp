@@ -198,26 +198,17 @@ void GraphicsEngine::begin(const Camera* pCamera)
 {
     GL::reset();
     m_pCurrentCamera = pCamera;
-    m_pDrawManager->begin(DrawManager::Type_FrontToBack, pCamera);
     m_pDeferred3DRenderer->begin(pCamera);
+    m_pDrawManager->draw(pCamera);
 }
 void GraphicsEngine::end()
 {
-    m_pDrawManager->end();
-    m_pDrawManager->renderShadow();
     m_pDeferred3DRenderer->end();
-}
-void GraphicsEngine::draw(const IDrawable* pDrawable)
-{
-    m_pDrawManager->draw(pDrawable);
-}
-void GraphicsEngine::draw(const Model::pointer& pModel)
-{
-    m_pDeferred3DRenderer->draw(pModel);
 }
 void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
 {
-    m_pDeferred3DRenderer->draw(pModelMesh);
+    GL::heBindVao(pModelMesh->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, pModelMesh->getNumIndices(), pModelMesh->getIndexType(), 0);
 }
 void GraphicsEngine::present() const
 {    
@@ -230,6 +221,11 @@ LightManager* GraphicsEngine::getLightManager() const
 const DrawSettings& GraphicsEngine::getSettings() const
 {
     return m_Settings;
+}
+
+void GraphicsEngine::addToDrawList( const IDrawable* pDrawable )
+{
+    m_pDrawManager->addDrawable(pDrawable);
 }
 
 } } //end namespace

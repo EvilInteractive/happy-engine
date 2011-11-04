@@ -47,12 +47,23 @@
 
 #include "Random.h"
 
+#pragma warning(disable:4100) //unreferenced formal parameter
+#include "assimp.hpp"
+#pragma warning(default:4100)
+#include "aiScene.h"
+#include "aiPostProcess.h"
+#include "BinaryStream.h"
+
+#include "ModelComponent.h"
+
+#include "../../HappyCooker/HappyCookerDll/HappyCooker.cpp"
+
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
 					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_pGroundPlane(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
+					   m_pCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
 					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
 					   m_pStillAllive(nullptr)
@@ -80,7 +91,6 @@ MainGame::~MainGame()
 	delete m_pFPSGraph;
 	delete m_pCamera;
 
-    delete m_pGroundPlane;
 	delete m_pTestButton;
 	delete m_pAxis;
     delete m_pScene;
@@ -116,6 +126,12 @@ void MainGame::load()
 {
     using namespace he;
 
+    //happycooker::HappyCooker* cooker(happycooker::HappyCooker::getInstance());
+    //cooker->cookToBinObj("D:/File Server/Programming/happy-engine/art/models/export/car.dae", "D:/File Server/Programming/happy-engine/src/HappyTest/data/models/car.binobj");
+
+
+    using namespace he;
+
 	m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
 
     PHYSICS->startSimulation();
@@ -142,19 +158,33 @@ void MainGame::load()
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
 	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 20.0f);
    
-    m_pTestObject = NEW TestObject(CONTENT->loadEntity("car.entity"));
-    m_pGroundPlane = NEW GroundPlane(CONTENT->loadEntity("groundPlane.entity")); 
-	m_pAxis = NEW he::game::Entity(CONTENT->loadEntity("axis.entity"));
-    m_pScene = NEW he::game::Entity(CONTENT->loadEntity("testScene.entity"));
-    m_pSky = NEW he::game::Entity(CONTENT->loadEntity("sky.entity"));
-    m_pSky->setWorldMatrix(mat44::createScale(200));
-    m_pSky->setCastsShadow(false);
+    m_pTestObject = NEW TestObject();
+
+    m_pAxis = NEW he::game::Entity();
+    game::ModelComponent* pAxisModelComp(NEW game::ModelComponent());
+    pAxisModelComp->setMaterial(CONTENT->loadMaterial("axis.material"));
+    pAxisModelComp->setModel(CONTENT->asyncLoadModelMesh("axis.binobj", "M_Axis", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    m_pAxis->addComponent(pAxisModelComp);
+
+    m_pScene = NEW he::game::Entity();
+    game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
+    pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Scene", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    m_pScene->addComponent(pSceneModelComp);
+
+    m_pSky = NEW he::game::Entity();
+    game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
+    pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
+    pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSkyModelComp->setLocalTransform(mat44::createScale(200));
+    pSkyModelComp->setCastsShadow(false);
+    m_pSky->addComponent(pSkyModelComp);
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
     m_pFont = CONTENT->loadFont("MODES.ttf", 32);
 
-	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,600), vec2(60,20));
+	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 600), vec2(60,20));
 	m_pTestButton->setText("Play me", 12);
 	m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,630), vec2(60,20));
 	m_pTestButton2->setText("Stop", 12);
@@ -201,7 +231,7 @@ void MainGame::tick(float dTime)
 
     if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space))
     {
-        TestBullet* pBullet(NEW TestBullet(CONTENT->loadEntity("bullet.entity"), m_pCamera->getPosition(), m_pCamera->getLook() * 20));
+        TestBullet* pBullet(NEW TestBullet(m_pCamera->getPosition(), m_pCamera->getLook() * 20));
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";
     }
@@ -243,15 +273,6 @@ void MainGame::draw(float /*dTime*/)
     GRAPHICS->clearAll();
 
     GRAPHICS->begin(m_pCamera);
-    GRAPHICS->draw(m_pTestObject);
-		std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
-		{
-			GRAPHICS->draw(pBullet);
-		});
-    //GRAPHICS->draw(m_pGroundPlane);
-    GRAPHICS->draw(m_pAxis);
-    GRAPHICS->draw(m_pScene);
-    GRAPHICS->draw(m_pSky);
     GRAPHICS->end();
 
 	// 2D test stuff

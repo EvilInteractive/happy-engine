@@ -22,7 +22,7 @@
 #define _HE_IDRAWABLE_H_
 #pragma once
 
-#include "Model.h"
+#include "ModelMesh.h"
 #include "Material.h"
 
 namespace he {
@@ -34,11 +34,29 @@ public:
     virtual ~IDrawable() {}
 
     virtual const Material& getMaterial() const = 0;
-    virtual const Model::pointer getModel() const = 0;
+    virtual const ModelMesh::pointer& getModel() const = 0;
+    virtual const std::vector<mat44>& getBoneTransforms() const { return m_NoBones; };
 
-    virtual const mat44& getWorldMatrix() const = 0;
+    virtual mat44 getWorldMatrix() const = 0;
 
     virtual bool getCastsShadow() const = 0;
+
+private:
+    std::vector<mat44> m_NoBones;
+};  
+class ISkinnedDrawable : public IDrawable
+{
+public:
+    virtual ~ISkinnedDrawable() {}
+
+    virtual const Material& getMaterial() const = 0;
+    virtual const ModelMesh::pointer& getModel() const = 0;
+    virtual const std::vector<mat44>& getBoneTransforms() const = 0;
+
+    virtual mat44 getWorldMatrix() const = 0;
+
+    virtual bool getCastsShadow() const = 0;
+
 };
 
 } } //end namespace

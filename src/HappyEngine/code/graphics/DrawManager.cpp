@@ -39,78 +39,59 @@ DrawManager::~DrawManager()
     delete m_pShadowCaster;
 }
 
-void DrawManager::begin(Type type, const Camera* pCamera)
+void DrawManager::draw(const Camera* pCamera)
 {
-    m_Type = type;
-    m_pCamera = pCamera;
-    m_DrawList.clear();
-}
-void DrawManager::end()
-{
-    if (m_Type == Type_Immediate)
-        return;
-
-    std::sort(m_DrawList.begin(), m_DrawList.end());
-    std::for_each(m_DrawList.cbegin(), m_DrawList.cend(), [&](const DrawElement& e)
+    std::vector<DrawElement> culledDrawList;
+    culledDrawList.reserve(m_DrawList.size());
+    std::for_each(m_DrawList.cbegin(), m_DrawList.cend(), [&](const IDrawable* pDrawable)
     {
-        e.pDrawable->getMaterial().begin(e.pDrawable, m_pCamera);
-        std::for_each(e.pDrawable->getModel()->cbegin(), e.pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
-        {            
-            GRAPHICS->draw(m);
-        });
-        e.pDrawable->getMaterial().end();
+        if (pDrawable->getModel()->isVisible())
+        {
+            shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
+                              pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
+
+            if (viewClip(pCamera, bS) == false)
+            {
+                DrawElement e;
+                e.pDrawable = pDrawable;
+                e.sorter = lengthSqr(pCamera->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
+                culledDrawList.push_back(e);
+            }
+        }
     });
 
+    std::sort(culledDrawList.begin(), culledDrawList.end());
+    std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawElement& e)
+    {
+        e.pDrawable->getMaterial().apply(e.pDrawable, pCamera);        
+        GRAPHICS->draw(e.pDrawable->getModel());
+    });
+    
+    renderShadow(pCamera);
 }
 
-bool DrawManager::viewClip(const shapes::Sphere& boundingSphere)
+bool DrawManager::viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere)
 {
-    ASSERT(m_pCamera != nullptr, "call begin first");
-    vec3 vec(boundingSphere.getPosition() - m_pCamera->getPosition());
+    return viewClip(pCamera->getPosition(), pCamera->getLook(), pCamera->getFarClip(), boundingSphere);
+}
+bool DrawManager::viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere)
+{
+    vec3 vec(boundingSphere.getPosition() - camPos);
     float len(length(vec));
     if (len < boundingSphere.getRadius() == false) //if not in bounding sphere
     {
-        if (len - boundingSphere.getRadius() > GRAPHICS->getSettings().getFogEnd()) //if bounding outside fog
+        if (len - boundingSphere.getRadius() > camFar) //if bounding outside clip
         {
             return true;
         }
         else //check behind camera
         {
             vec /= len;
-            return dot(normalize(m_pCamera->getLook()), vec) < 0;
+            return dot(camLook, vec) < 0;
         }
     }
     else
         return false;
-}
-void DrawManager::draw(const IDrawable* pDrawable)
-{
-    ASSERT(pDrawable != nullptr, "");
-    if (pDrawable->getModel()->isComplete() == false)
-        return;
-    shapes::Sphere bS(pDrawable->getModel()->getMesh(0)->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
-                      pDrawable->getModel()->getMesh(0)->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
-    if (viewClip(bS) == false)
-    {
-        if (m_Type == Type_Immediate)
-        {
-            pDrawable->getMaterial().begin(pDrawable, m_pCamera);
-            std::for_each(pDrawable->getModel()->cbegin(), pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
-            {
-                GRAPHICS->draw(m);
-            });
-            pDrawable->getMaterial().end();
-        }
-        else
-        {
-            DrawElement e;
-            e.pDrawable = pDrawable;
-            e.sorter = lengthSqr(m_pCamera->getPosition() - pDrawable->getWorldMatrix().getTranslation());
-            if (m_Type == Type_BackToFront)
-                e.sorter = FLT_MAX - e.sorter;
-            m_DrawList.push_back(e);
-        }
-    }
 }
 
 void DrawManager::init(const DrawSettings& settings)
@@ -118,9 +99,15 @@ void DrawManager::init(const DrawSettings& settings)
     m_pShadowCaster->init(settings);
 }
 
-void DrawManager::renderShadow()
+void DrawManager::renderShadow(const Camera* pCamera)
 {
-    m_pShadowCaster->render(m_DrawList, m_pCamera, GRAPHICS->getLightManager()->getDirectionalLight());
+    m_pShadowCaster->render(m_DrawList, pCamera, GRAPHICS->getLightManager()->getDirectionalLight());
+}
+
+void DrawManager::addDrawable( const IDrawable* pDrawable )
+{
+    ASSERT(pDrawable != nullptr, "adding a nullptr drawable");
+    m_DrawList.push_back(pDrawable);
 }
 
 } } //end namespace

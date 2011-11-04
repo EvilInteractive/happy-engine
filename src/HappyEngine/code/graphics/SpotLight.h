@@ -26,7 +26,7 @@
 #include "vec3.h"
 #include "mat44.h"
 #include "Color.h"
-#include "Model.h"
+#include "ModelMesh.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -49,8 +49,8 @@ private:
     mat44 m_mtxWorld;
     void calculateWorld();
 
-    Model::pointer m_pLightVolume;
-    Model::pointer m_pModel;
+    ModelMesh::pointer m_pLightVolume;
+    ModelMesh::pointer m_pModel;
     Material m_Material;
 
 public:
@@ -74,13 +74,13 @@ public:
     const vec3& getColor() const;
     float getCosCutoff() const;
     
-    const mat44& getWorldMatrix() const;
-    const Model::pointer& getLightVolume() const;
+    mat44 getWorldMatrix() const;
+    const ModelMesh::pointer& getLightVolume() const;
 
     virtual bool getCastsShadow() const { return false; }
     
     virtual const Material& getMaterial() const;
-    virtual const Model::pointer getModel() const;
+    virtual const ModelMesh::pointer& getModel() const;
     
     typedef boost::shared_ptr<SpotLight> pointer;
 };

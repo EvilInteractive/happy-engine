@@ -30,7 +30,7 @@ namespace happytest {
 class TestObject : public he::game::Entity
 {
 public:
-	TestObject(const he::game::EntityDesc& desc);
+	TestObject();
     virtual ~TestObject();
 
     virtual void tick(float dTime);

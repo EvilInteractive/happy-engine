@@ -23,9 +23,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "VertexLayout.h"
 #include "HappyTypes.h"
 #include "Model.h"
+#include "Bone.h"
 
 namespace he {
 namespace ct {
@@ -43,6 +45,8 @@ public:
 
     virtual const void* getVertices(uint mesh) const = 0;
     virtual uint getNumVertices(uint mesh) const = 0;
+
+    virtual const std::vector<gfx::Bone>& getBones(uint mesh) const = 0;
 
     virtual const void* getIndices(uint mesh) const = 0;
     virtual gfx::IndexStride getIndexStride(uint mesh) const = 0;

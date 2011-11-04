@@ -28,7 +28,7 @@ namespace happytest {
 class TestBullet : public he::game::Entity
 {
 public:
-	TestBullet(const he::game::EntityDesc& desc, const he::vec3& pos, const he::vec3& velocity);
+	TestBullet(const he::vec3& pos, const he::vec3& velocity);
     virtual ~TestBullet();
     
     virtual void tick(float dTime);

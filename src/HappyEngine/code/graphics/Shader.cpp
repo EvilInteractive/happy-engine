@@ -215,6 +215,11 @@ void Shader::setShaderVar(uint id, const mat44& matrix) const
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniformMatrix4fv(id, 1, GL_FALSE, matrix.toFloatArray());
 }
+void Shader::setShaderVar(uint id, const std::vector<mat44>& matrixArray) const
+{
+    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    glUniformMatrix4fv(id, matrixArray.size(), GL_FALSE, matrixArray[0].toFloatArray());
+}
 void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");

@@ -67,10 +67,10 @@ public:
     void clearColor() const;
     void clearDepth() const;
 
+    void addToDrawList(const IDrawable* pDrawable);
+
     void begin(const Camera* pCamera);
     void end();
-    void draw(const IDrawable* pDrawable);
-    void draw(const Model::pointer& pModel);
     void draw(const ModelMesh::pointer& pModelMesh);
     void present() const;
 

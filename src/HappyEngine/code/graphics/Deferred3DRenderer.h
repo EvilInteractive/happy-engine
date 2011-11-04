@@ -42,9 +42,6 @@ class Deferred3DRenderer
 public:
 	Deferred3DRenderer(const DrawSettings& settings);
     virtual ~Deferred3DRenderer();
-        
-    virtual void draw(const Model::pointer& pModel);
-    virtual void draw(const ModelMesh::pointer& pModel);
 
     void begin(const Camera* pCamera);
     void end();

@@ -32,7 +32,7 @@
 #include "LineLoader.h"
 #include "FontLoader.h"
 #include "ShaderLoader.h"
-#include "EntityLoader.h"
+#include "MaterialLoader.h"
 
 namespace he {
 namespace ct {
@@ -51,6 +51,7 @@ public:
     void glThreadInvoke();  //needed for all of the gl operations
 
     gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
+    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::VertexLayout& vertexLayout);
     gfx::ModelMesh::pointer getFullscreenQuad() const;
 
 	gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
@@ -64,7 +65,7 @@ public:
 
     gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    
-    game::EntityDesc loadEntity(const std::string& path);
+    gfx::Material loadMaterial(const std::string& path);
 
     void setRootDir(const std::string& root);
     void setTextureFolder(const std::string& folder);
@@ -73,7 +74,7 @@ public:
     void setPhysicsFolder(const std::string& folder);
     void setFontFolder(const std::string& folder);
     void setShaderFolder(const std::string& folder);
-    void setEntityFolder(const std::string& folder);
+    void setMaterialFolder(const std::string& folder);
     //void setFolder(const std::string& folder);
 
     const std::string& getRootDir() const;
@@ -83,7 +84,7 @@ public:
     const std::string& getPhysicsFolder() const;
     const std::string& getFontFolder() const;
     const std::string& getShaderFolder() const;
-    const std::string& getEntityFolder() const;
+    const std::string& getMaterialFolder() const;
 
 private:
 
@@ -93,11 +94,11 @@ private:
     PhysicsShapeLoader* m_pPhysicsShapeLoader;
     FontLoader* m_pFontLoader;
     ShaderLoader* m_pShaderLoader;
-    EntityLoader* m_pEntityLoader;
+    MaterialLoader* m_pMaterialLoader;
 
     std::string m_ContentRootDir;   //include trailing /
     std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /
-                m_ShaderFolder, m_EntityFolder;
+                m_ShaderFolder, m_MaterialFolder;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

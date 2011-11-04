@@ -88,7 +88,7 @@ public:
     virtual ~HappyEngine();
 
     static void init(int subengines);
-    void start(IGame* pGame);
+    void start(game::IGame* pGame);
     static void dispose();
 
     static HappyEngine* getPointer();
@@ -115,7 +115,7 @@ private:
     static HappyEngine* s_pHappyEngine;
     void initSubEngines(int subengines);
 
-    IGame* m_pGame;
+    game::IGame* m_pGame;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
     io::ControlsManager* m_pControlsManager;

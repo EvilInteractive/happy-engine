@@ -22,6 +22,8 @@
 #define _HE_ICOMPONENT_H_
 #pragma once
 
+#include "SerializerStream.h"
+
 namespace he {
 namespace game {
 
@@ -30,13 +32,12 @@ class Entity;
 class IComponent
 {
 public:
-    virtual ~IComponent();
+    virtual ~IComponent() {}
 
-    virtual void tick(float dTime) = 0;
     virtual void init(Entity* pParent) = 0;
 
-    virtual void serialize() = 0;
-    virtual void deserialize() = 0;
+    virtual void serialize(SerializerStream& stream) = 0;
+    virtual void deserialize(const SerializerStream& stream) = 0;
 };
 
 } } //end namespace

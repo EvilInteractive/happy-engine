@@ -58,6 +58,7 @@ public:
     void setShaderVar(uint id, const vec3& vec) const;
     void setShaderVar(uint id, const vec4& vec) const;
     void setShaderVar(uint id, const mat44& matrix) const;
+    void setShaderVar(uint id, const std::vector<mat44>& matrixArray) const;
     void setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const;
 
     typedef boost::shared_ptr<Shader> pointer;

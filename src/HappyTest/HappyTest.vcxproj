@@ -96,7 +96,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FlyCamera.cpp" />
-    <ClCompile Include="GroundPlane.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MyClient.cpp" />
@@ -107,7 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlyCamera.h" />
-    <ClInclude Include="GroundPlane.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="MyServer.h" />

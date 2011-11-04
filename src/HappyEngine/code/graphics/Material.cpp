@@ -39,12 +39,13 @@ void Material::addVar(const ShaderVar::pointer& var)
 {
     m_ShaderVar.push_back(var);
 }
-void Material::setShader(const Shader::pointer& pShader)
+void Material::setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL)
 {
     m_pShader = pShader;
+    m_CompatibleVL = compatibleVL;
 }
 
-void Material::begin(const IDrawable* pEntity, const Camera* pCamera) const
+void Material::apply(const IDrawable* pDrawable, const Camera* pCamera) const
 {
     ASSERT(m_pShader != nullptr, "set shader first!");
     m_pShader->bind();
@@ -57,17 +58,25 @@ void Material::begin(const IDrawable* pEntity, const Camera* pCamera) const
         else
         {
             switch (pVar->getType())
-            {
-                case ShaderVarType_WVP: m_pShader->setShaderVar(pVar->getId(), pCamera->getViewProjection() * pEntity->getWorldMatrix()); break;
-                case ShaderVarType_World:  m_pShader->setShaderVar(pVar->getId(), pCamera->getView() * pEntity->getWorldMatrix()); break;
+            {      
+                case ShaderVarType_WorldViewProjection: m_pShader->setShaderVar(pVar->getId(), pCamera->getViewProjection() * pDrawable->getWorldMatrix()); break;
+                case ShaderVarType_ViewProjection: m_pShader->setShaderVar(pVar->getId(), pCamera->getViewProjection()); break;
+                case ShaderVarType_World: m_pShader->setShaderVar(pVar->getId(), pCamera->getView() * pDrawable->getWorldMatrix()); break;
+                case ShaderVarType_WorldView: m_pShader->setShaderVar(pVar->getId(), pCamera->getView() * pDrawable->getWorldMatrix()); break;
 
-                case ShaderVarType_WorldPosition: m_pShader->setShaderVar(pVar->getId(), pEntity->getWorldMatrix().getTranslation()); break;
+                case ShaderVarType_BoneTransforms: m_pShader->setShaderVar(pVar->getId(), pDrawable->getBoneTransforms()); break;
+
+                case ShaderVarType_WorldPosition: m_pShader->setShaderVar(pVar->getId(), pDrawable->getWorldMatrix().getTranslation()); break;
+
+                default: ASSERT(false, "unkown shaderVartype"); break;
             }
         }
     });
 }
-void Material::end() const
+
+const VertexLayout& Material::getCompatibleVertexLayout() const
 {
+    return m_CompatibleVL;
 }
 
 } } //end namespace

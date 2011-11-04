@@ -138,7 +138,8 @@ mat44 getProjection(const Camera* pCamera, const mat44& mtxShadowView, float nea
 
     return mat44::createOrthoLH(minP.x, maxP.x, maxP.y, minP.y, min<float>(minP.z, 10), maxP.z);
 }
-void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,  const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight )
+
+void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight )
 {
     vec3 shadowLook(-normalize(pDirectionalLight->getDirection()));
     vec3 up(vec3::up);
@@ -154,7 +155,6 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
     mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 50, 100);
     mtxShadowProjection[3] = getProjection(pCamera, mtxShadowView, 100, pCamera->getFarClip());
     
-
 
     //Begin drawing
     GL::heBindFbo(m_FboId);
@@ -174,17 +174,38 @@ void ShadowCaster::render(const std::vector<DrawManager::DrawElement>& elements,
         glClear(GL_DEPTH_BUFFER_BIT);
         mat44 mtxShadowViewProjection(mtxShadowProjection[i] * mtxShadowView);
 
-        std::for_each(elements.cbegin(), elements.cend(), [&](const DrawManager::DrawElement& e)
+        //////////////////////////////////////////////////////////////////////////
+        ///                         `Build DrawList                            ///
+        //////////////////////////////////////////////////////////////////////////
+        std::vector<DrawManager::DrawElement> culledDrawList;
+        culledDrawList.reserve(drawables.size());
+        std::for_each(drawables.cbegin(), drawables.cend(), [&](const IDrawable* pDrawable)
         {
-            if (e.pDrawable->getCastsShadow())
+            if (pDrawable->getModel()->isVisible() && pDrawable->getCastsShadow())
             {
-                m_pShadowShader->setShaderVar(m_shaderWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
-                std::for_each(e.pDrawable->getModel()->cbegin(), e.pDrawable->getModel()->cend(), [&](const ModelMesh::pointer& m)
-                {   
-                    GL::heBindVao(m->getVertexShadowArraysID());
-                    glDrawElements(GL_TRIANGLES, m->getNumIndices(), m->getIndexType(), 0);   
-                });
+                shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
+                    pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
+
+                if (DrawManager::viewClip(pCamera, bS) == false)
+                {
+                    DrawManager::DrawElement e;
+                    e.pDrawable = pDrawable;
+                    e.sorter = lengthSqr(pCamera->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
+                    culledDrawList.push_back(e);
+                }
             }
+        });
+
+        std::sort(culledDrawList.begin(), culledDrawList.end());
+
+        //////////////////////////////////////////////////////////////////////////
+        ///                                 Draw                               ///
+        //////////////////////////////////////////////////////////////////////////
+        std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawManager::DrawElement& e)
+        {
+            m_pShadowShader->setShaderVar(m_shaderWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
+            GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
+            glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
         });
         pDirectionalLight->setShadowMap(i, m_pShadowTexture[i]);
         pDirectionalLight->setShadowMatrix(i, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace

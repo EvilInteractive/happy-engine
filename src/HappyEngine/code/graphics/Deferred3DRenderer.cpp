@@ -395,7 +395,7 @@ void Deferred3DRenderer::postAmbIllLight()
     //m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[16], vec2(1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getWidth(),
     //                                                          1.0f / m_pLightManager->getDirectionalLight()->getShadowMap(0)->getHeight()));
 
-    draw(m_pQuad);
+    GRAPHICS->draw(m_pQuad);
 }
 void Deferred3DRenderer::postPointLights()
 {
@@ -415,7 +415,7 @@ void Deferred3DRenderer::postPointLights()
                 m_pPostLightVolumeShader[LightVolumeType_PointLight]->setShaderVar(m_ShaderLVPLPos[3], pLight->getBeginAttenuation());
                 m_pPostLightVolumeShader[LightVolumeType_PointLight]->setShaderVar(m_ShaderLVPLPos[4], pLight->getEndAttenuation());
                 m_pPostLightVolumeShader[LightVolumeType_PointLight]->setShaderVar(m_ShaderLVWVP[LightVolumeType_PointLight], m_pCamera->getViewProjection() * pLight->getWorldMatrix());
-                draw(pLight->getLightVolume());
+                GRAPHICS->draw(pLight->getLightVolume());
                 //draw(m_pModel);
             }
         //}
@@ -435,7 +435,7 @@ void Deferred3DRenderer::postSpotLights()
         m_pPostLightVolumeShader[LightVolumeType_SpotLight]->setShaderVar(m_ShaderLVSLPos[5], pLight->getEndAttenuation());
         m_pPostLightVolumeShader[LightVolumeType_SpotLight]->setShaderVar(m_ShaderLVSLPos[6], pLight->getCosCutoff());
         m_pPostLightVolumeShader[LightVolumeType_SpotLight]->setShaderVar(m_ShaderLVWVP[LightVolumeType_SpotLight], m_pCamera->getViewProjection() * pLight->getWorldMatrix());      
-        draw(pLight->getLightVolume());
+        GRAPHICS->draw(pLight->getLightVolume());
     });
 }
 
@@ -452,25 +452,7 @@ void Deferred3DRenderer::postToneMap()
     //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_pTexture[3]);
     m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_pAutoExposure->getLuminanceMap());
     //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_Gamma);
-    draw(m_pQuad);
-}
-
-void Deferred3DRenderer::draw(const Model::pointer& pModel)//, const Camera* pCamera)
-{
-    if (pModel->isComplete() == false)
-        return;
-    std::for_each(pModel->cbegin(), pModel->cend(), [&](const ModelMesh::pointer& pMesh)
-    {  
-        draw(pMesh);
-    });
-}
-void Deferred3DRenderer::draw(const ModelMesh::pointer& pMesh)//, const Camera* pCamera)
-{
-    if (pMesh->isComplete()) //possible async load
-    {
-        GL::heBindVao(pMesh->getVertexArraysID());
-        glDrawElements(GL_TRIANGLES, pMesh->getNumIndices(), pMesh->getIndexType(), 0);
-    }
+     GRAPHICS->draw(m_pQuad);
 }
 
 LightManager* Deferred3DRenderer::getLightManager() const

@@ -17,68 +17,33 @@
 //
 //Author:  Bastian Damman
 //Created: 30/09/2011
+//Changed: 04/11/2011
 
 #ifndef _HE_ENTITY_H_
 #define _HE_ENTITY_H_
 #pragma once
 
-#include "Texture2D.h"
-#include "Model.h"
-#include "Color.h"
 #include "mat44.h"
-#include <string>
-#include "Material.h"
-#include "IDrawable.h"
-#include "PhysicsMaterial.h"
+#include "IComponent.h"
+#include <vector>
 
 namespace he {
 namespace game {
 
-
-struct EntityPhysicsDesc
-{
-    bool usePhysics;
-    bool isDynamic;
-    float density;
-    std::string shape;
-    px::PhysicsMaterial::pointer pMaterial;
-};
-struct EntityDesc
-{
-    gfx::Model::pointer pModel;
-    gfx::Material material;
-    std::string className;
-    EntityPhysicsDesc physicsDesc;
-};
-
-
-class Entity : public gfx::IDrawable
+class Entity
 {
 public:
-	Entity(const EntityDesc& desc);
+	Entity();
     virtual ~Entity();
+    
+    void addComponent(IComponent* pComponent); //will clean up pComponent
 
-    virtual void tick(float /*dTime*/) {}
-
-    virtual const mat44& getWorldMatrix() const;
-    virtual const gfx::Material& getMaterial() const;
-    virtual const gfx::Model::pointer getModel() const;
+    virtual mat44 getWorldMatrix() const;
     void setWorldMatrix(const mat44& mtxWorld);
 
-    virtual bool getCastsShadow() const;
-    virtual void setCastsShadow(bool casts);
-
-protected:
-
-    void setModel(const gfx::Model::pointer& pModel);
-
 private:
-    gfx::Model::pointer m_pModel;
-    gfx::Material m_Material;
-
     mat44 m_mtxWorld;
-
-    bool m_CastShadow;
+    std::vector<IComponent*> m_Components;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

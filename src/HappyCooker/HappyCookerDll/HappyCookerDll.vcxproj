@@ -50,8 +50,9 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>..\..\HappyEngine\code\math;..\..\HappyEngine\code\graphics;..\..\HappyEngine\code\content;..\..\HappyEngine\code\error;..\..\HappyEngine\code;..\..\HappyEngine\code\physics;..\..\HappyEngine\code\io;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../HappyEngine/code/physics;../../HappyEngine/code/template;../../HappyEngine/code/tools;../../HappyEngine/code/networking;../../HappyEngine/code/math;../../HappyEngine/code/io;../../HappyEngine/code/graphics;../../HappyEngine/code/game;../../HappyEngine/code/error;../../HappyEngine/code/content;../../HappyEngine/code/audio;../../HappyEngine/code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -59,6 +60,9 @@
       <AdditionalDependencies>HappyEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "$(TargetDir)$(TargetFileName)" "..\..\HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\bin\Debug\$(TargetFileName)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -66,6 +70,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>HAPPYCOOKER_DLL;_DEBUG;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -17,53 +17,43 @@
 //
 //Author:  Bastian Damman
 //Created: 30/09/2011
+//Changed: 04/11/2011
 #include "StdAfx.h" 
 
 #include "Entity.h"
 #include "HappyNew.h"
+#include <algorithm>
 
 namespace he {
 namespace game {
 
-Entity::Entity(const EntityDesc& desc): m_Material(desc.material), m_pModel(desc.pModel), m_CastShadow(true)
+Entity::Entity()
 {
 }
 
 
 Entity::~Entity()
 {
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [](IComponent* pComponent)
+    {
+        delete pComponent;
+    });
 }
 
-const mat44& Entity::getWorldMatrix() const
+mat44 Entity::getWorldMatrix() const
 {
     return m_mtxWorld;
 }
 
-void Entity::setModel(const gfx::Model::pointer& pModel)
-{
-    m_pModel = pModel;
-}
 void Entity::setWorldMatrix(const mat44& mtxWorld)
 {
     m_mtxWorld = mtxWorld;
 }
-const gfx::Material& Entity::getMaterial() const
-{
-    return m_Material;
-}
-const gfx::Model::pointer Entity::getModel() const
-{
-    return m_pModel;
-}
 
-bool Entity::getCastsShadow() const
+void Entity::addComponent( IComponent* pComponent )
 {
-    return m_CastShadow;
-}
-
-void Entity::setCastsShadow( bool casts )
-{
-    m_CastShadow = casts;
+    m_Components.push_back(pComponent);
+    pComponent->init(this);
 }
 
 } } //end namespace

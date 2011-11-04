@@ -40,7 +40,7 @@ public:
 
     void init(const DrawSettings& settings);
     
-    void render(const std::vector<DrawManager::DrawElement>& elements, const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight);
+    void render(const std::vector<const IDrawable*>& elements, const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight);
 
 private:
 

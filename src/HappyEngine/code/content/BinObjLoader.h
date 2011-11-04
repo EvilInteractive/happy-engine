@@ -33,6 +33,7 @@
 #include "Model.h"
 #include "HappyTypes.h"
 #include "IModelLoader.h"
+#include "Bone.h"
 
 namespace he {
 namespace ct {
@@ -41,19 +42,35 @@ namespace models {
 class BinObjLoader : public IModelLoader
 {
 public:
-   struct InternalVertex
-   {
-       vec3 pos;
-       vec2 tex;
-       vec3 norm;
-       vec3 tan;
+    struct InternalVertex
+    {
+        vec3 pos;
+        vec2 tex;
+        vec3 norm;
+        vec3 tan;
+        byte boneID[gfx::Bone::MAX_BONEWEIGHTS];
+        float boneWeight[gfx::Bone::MAX_BONEWEIGHTS];
 
-       InternalVertex(vec3 p, vec2 t, vec3 n, vec3 tn):
-                            pos(p), tex(t), norm(n), tan(tn)
-       {}    
-       InternalVertex(): pos(), tex(), norm(), tan()
-       {} 
-   };
+        InternalVertex(): pos(), tex(), norm(), tan()
+        {
+            for (int i = 0; i < gfx::Bone::MAX_BONEWEIGHTS; ++i)
+            {
+                boneID[i] = 0;
+                boneWeight[i] = 0.0f;
+            }
+        } 
+    };
+    struct InternalVertexNoBones
+    {
+        vec3 pos;
+        vec2 tex;
+        vec3 norm;
+        vec3 tan;
+ 
+        InternalVertexNoBones(): pos(), tex(), norm(), tan()
+        {
+        } 
+    };
 	BinObjLoader();
     virtual ~BinObjLoader();
 
@@ -61,6 +78,8 @@ public:
 
     virtual uint getNumMeshes() const;
     virtual const std::string& getMeshName(uint mesh) const;
+    
+    virtual const std::vector<gfx::Bone>& getBones(uint mesh) const;
 
     virtual const void* getVertices(uint mesh) const;
     virtual uint getNumVertices(uint mesh) const;
@@ -75,6 +94,7 @@ private:
     void fill(const gfx::VertexLayout& vertLayout) const;
 
     std::vector<std::vector<InternalVertex>> m_VertexData;
+    std::vector<std::vector<gfx::Bone>> m_BoneData;
     
     std::vector<std::string> m_MeshName;
 

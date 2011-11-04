@@ -46,7 +46,8 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-	gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
+    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
+    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::VertexLayout& vertexLayout);
 
 private:
     struct ModelLoadData
@@ -69,6 +70,8 @@ private:
     boost::mutex m_ModelLoadQueueMutex;
     std::queue<ModelLoadData*> m_ModelInvokeQueue;
     boost::mutex m_ModelInvokeQueueMutex;
+
+    boost::mutex m_WaitListMutex;
 
     boost::thread m_ModelLoadThread;
 

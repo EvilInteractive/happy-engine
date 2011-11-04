@@ -8,7 +8,7 @@ namespace ct {
 
 ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureLoader(NEW TextureLoader()),
     m_pLineLoader(NEW LineLoader()), m_pPhysicsShapeLoader(NEW PhysicsShapeLoader()), m_pFontLoader(NEW FontLoader()),
-    m_pShaderLoader(NEW ShaderLoader()), m_pEntityLoader(NEW EntityLoader()),
+    m_pShaderLoader(NEW ShaderLoader()), m_pMaterialLoader(NEW MaterialLoader()),
 
     m_ContentRootDir("../data/"),
     m_TextureFolder("textures/"), 
@@ -17,7 +17,7 @@ ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureL
     m_PhysicsFolder("physics/"), 
     m_FontFolder("fonts/"),
     m_ShaderFolder("shaders/"), 
-    m_EntityFolder("entities/")
+    m_MaterialFolder("materials/")
 {
 }
 
@@ -29,7 +29,7 @@ ContentManager::~ContentManager()
     delete m_pPhysicsShapeLoader;
     delete m_pFontLoader;
     delete m_pShaderLoader;
-    delete m_pEntityLoader;
+    delete m_pMaterialLoader;
 }
 
 
@@ -48,6 +48,11 @@ gfx::Model::pointer ContentManager::asyncLoadModel(const std::string& asset, con
 {
     return m_pModelLoader->asyncLoadModel(m_ContentRootDir + m_ModelFolder + asset, vertexLayout);
 }
+gfx::ModelMesh::pointer ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::VertexLayout& vertexLayout )
+{
+    return m_pModelLoader->asyncLoadModelMesh(m_ContentRootDir + m_ModelFolder + asset, meshName, vertexLayout);
+}
+
 
 gfx::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string& asset)
 {
@@ -81,9 +86,9 @@ gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, cons
 }
 
 
-game::EntityDesc ContentManager::loadEntity(const std::string& asset)
+gfx::Material ContentManager::loadMaterial(const std::string& asset)
 {
-    return m_pEntityLoader->load(m_ContentRootDir + m_EntityFolder + asset);
+    return m_pMaterialLoader->load(m_ContentRootDir + m_MaterialFolder + asset);
 }
 
 
@@ -115,9 +120,9 @@ void ContentManager::setShaderFolder(const std::string& folder)
 {
     m_ShaderFolder = folder;
 }
-void ContentManager::setEntityFolder(const std::string& folder)
+void ContentManager::setMaterialFolder(const std::string& folder)
 {
-    m_EntityFolder = folder;
+    m_MaterialFolder = folder;
 }
 const std::string& ContentManager::getRootDir() const
 {
@@ -147,9 +152,9 @@ const std::string& ContentManager::getShaderFolder() const
 {
     return m_ShaderFolder;
 }
-const std::string& ContentManager::getEntityFolder() const
+const std::string& ContentManager::getMaterialFolder() const
 {
-    return m_EntityFolder;
+    return m_MaterialFolder;
 }
 
 gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const

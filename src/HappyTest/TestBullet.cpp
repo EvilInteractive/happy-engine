@@ -24,21 +24,26 @@
 #include "HappyEngine.h"
 #include "HappyNew.h"
 #include "PhysicsBoxShape.h"
+#include "PhysicsMaterial.h"
+#include "ModelComponent.h"
+#include "ContentManager.h"
 
 namespace happytest {
 
-TestBullet::TestBullet(const he::game::EntityDesc& desc, 
-                       const he::vec3& pos, const he::vec3& velocity): 
-                        Entity(desc), m_pActor(nullptr), m_pMaterial(desc.physicsDesc.pMaterial)
+TestBullet::TestBullet(const he::vec3& pos, const he::vec3& velocity): 
+                       m_pActor(nullptr), m_pMaterial(NEW he::px::PhysicsMaterial(0.8f, 0.5f, 0.2f))
 {
     using namespace he;
-
-    ASSERT(desc.physicsDesc.usePhysics, "this class must have px properties");
-
-    m_pActor = NEW he::px::PhysicsDynamicActor(mat44::createTranslation(pos),
-        px::shapes::IPhysicsShape::pointer(NEW px::shapes::PhysicsBoxShape(vec3(2, 2, 2))), desc.physicsDesc.density, m_pMaterial);
+    
+    m_pActor = NEW px::PhysicsDynamicActor(mat44::createTranslation(pos),
+        px::shapes::IPhysicsShape::pointer(NEW px::shapes::PhysicsBoxShape(vec3(2, 2, 2))), 2.0f, m_pMaterial);
 
     m_pActor->setVelocity(velocity);
+
+    game::ModelComponent* pModelComp(NEW game::ModelComponent());
+    pModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
+    pModelComp->setModel(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", pModelComp->getMaterial().getCompatibleVertexLayout()));
+    addComponent(pModelComp);
 }
 
 

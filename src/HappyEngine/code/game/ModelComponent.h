@@ -23,23 +23,55 @@
 #pragma once
 
 #include "IComponent.h"
+#include "IDrawable.h"
 
 namespace he {
 namespace game {
     
-class ModelComponent : public IComponent
+class ModelComponent : public IComponent, public gfx::IDrawable
 {
 public:
 	ModelComponent();
     virtual ~ModelComponent();
 
-    virtual void tick(float /*dTime*/) {}
+    //////////////////////////////////////////////////////////////////////////
+    ///                         IComponent                                 ///
+    //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
 
-    virtual void serialize();
-    virtual void deserialize();
+    virtual void serialize(SerializerStream& stream);
+    virtual void deserialize(const SerializerStream& stream);
+    //////////////////////////////////////////////////////////////////////////
+    
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                         IDrawable                                  ///
+    //////////////////////////////////////////////////////////////////////////
+    virtual const gfx::Material& getMaterial() const;
+    virtual const gfx::ModelMesh::pointer& getModel() const;   
+    virtual mat44 getWorldMatrix() const;
+
+    virtual bool getCastsShadow() const;
+    virtual void setCastsShadow(bool casts);
+    //////////////////////////////////////////////////////////////////////////
+    
+    void setLocalTransform(const mat44& mtxWorld);
+    const mat44& getLocalTransform() const;
+   
+    void setModel(const gfx::ModelMesh::pointer& pModel);
+
+    void setMaterial(const gfx::Material& material);
 
 private:
+    gfx::ModelMesh::pointer m_pModel;
+    gfx::Material m_Material;
+
+    mat44 m_mtxLocalTransform;
+
+    bool m_CastShadow;
+
+    Entity* m_pParent;
+    
 
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);

@@ -22,22 +22,27 @@
 #include "HappyEngine.h"
 #include "ContentManager.h"
 #include "ControlsManager.h"
+#include "ModelComponent.h"
+#include "PhysicsMaterial.h"
 
 namespace happytest {
 
-TestObject::TestObject(const he::game::EntityDesc& desc): 
+TestObject::TestObject(): 
     m_Rotation(0), m_Position(0, 0, 0), 
     m_pActor(nullptr),
     m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 14)),
-    m_pMaterial(desc.physicsDesc.pMaterial),
-    Entity(desc)
+    m_pMaterial(NEW he::px::PhysicsMaterial(0.8f, 0.5f, 0.1f))
 {
     using namespace he;
         
-    ASSERT(desc.physicsDesc.usePhysics, "this class must have px properties");
-    m_pActor = NEW he::px::PhysicsDynamicActor(mat44::createTranslation(m_Position),
-        CONTENT->loadPhysicsShape(desc.physicsDesc.shape), desc.physicsDesc.density, m_pMaterial);
+    m_pActor = NEW px::PhysicsDynamicActor(mat44::createTranslation(m_Position),
+        CONTENT->loadPhysicsShape("car.bphys"), 5.0f, m_pMaterial);
     m_pActor->setKeyframed(true);
+
+    game::ModelComponent* pModelComp(NEW game::ModelComponent());
+    pModelComp->setMaterial(CONTENT->loadMaterial("car.material"));
+    pModelComp->setModel(CONTENT->asyncLoadModelMesh("car.binobj", "M_Car", pModelComp->getMaterial().getCompatibleVertexLayout()));
+    addComponent(pModelComp);
 }
 
 

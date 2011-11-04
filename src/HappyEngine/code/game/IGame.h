@@ -20,6 +20,7 @@
 #pragma once
 
 namespace he {
+namespace game {
 
 class IGame
 {
@@ -32,6 +33,6 @@ public:
     virtual void draw(float dTime) = 0;
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

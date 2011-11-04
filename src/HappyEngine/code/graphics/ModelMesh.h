@@ -32,6 +32,7 @@
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
 #include "Sphere.h"
+#include "Bone.h"
 
 namespace he {
 namespace gfx {
@@ -55,6 +56,9 @@ public:
     void setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout);
     void setIndices(const void* pIndices, uint num, IndexStride type);
 
+    void setBones(const std::vector<Bone>& boneList);
+    const std::vector<Bone>& getBones() const;
+
     uint getVertexArraysID() const;
     uint getVertexShadowArraysID() const;
 
@@ -65,7 +69,8 @@ public:
 
     const std::string& getName() const;
 
-    bool isComplete() const;
+    bool isVisible() const;
+    void setVisible(bool visible) const;
 
     const shapes::Sphere& getBoundingSphere() const;
 
@@ -84,9 +89,12 @@ private:
 
     std::string m_Name;
 
-    bool m_Complete;
+    bool m_isVisible;
+    bool m_isComplete;
 
     shapes::Sphere m_BoundingSphere;
+
+    std::vector<Bone> m_BoneList;
 
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);
