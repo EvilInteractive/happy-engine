@@ -32,17 +32,13 @@ class VertexElement
 public:
     enum Type
     {
-        Type_Vector2,
-        Type_Vector3,
-        Type_Vector4,
+        Type_Vec2,
+        Type_Vec3,
+        Type_Vec4,
         Type_Float,
-        Type_Double,
         Type_Int,
+        Type_IVec4,
         Type_UInt,
-        Type_Short,
-        Type_UShort,
-        Type_Byte,
-        Type_UByte,
     };
     enum Usage
     {
@@ -51,7 +47,7 @@ public:
         Usage_Normal,
         Usage_Tangent,
         Usage_BoneIDs,
-        Usage_BoneWeigths,
+        Usage_BoneWeights,
         Usage_Other
     };
     VertexElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset);

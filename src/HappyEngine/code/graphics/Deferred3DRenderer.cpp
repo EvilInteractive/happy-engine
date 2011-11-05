@@ -135,7 +135,7 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    s_VertexLayoutFullscreenQuad.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
+    s_VertexLayoutFullscreenQuad.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
 
     for (int i = 0; i < LIGHTVOLUME_SHADERS; ++i)
     {

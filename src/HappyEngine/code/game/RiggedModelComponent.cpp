@@ -24,6 +24,7 @@
 #include "Entity.h"
 #include "HappyEngine.h"
 #include "GraphicsEngine.h"
+#include "Console.h"
 
 namespace he {
 namespace game {
@@ -40,6 +41,7 @@ RiggedModelComponent::~RiggedModelComponent()
 void RiggedModelComponent::init( Entity* pParent )
 {
     m_pParent = pParent;
+    setVisible(false);
     GRAPHICS->addToDrawList(this);
 }
 
@@ -93,12 +95,37 @@ void RiggedModelComponent::setModel( const gfx::ModelMesh::pointer& pModel )
     m_pModel = pModel;
     m_BoneTransform.clear();
     m_Bones.clear();
-    std::for_each(pModel->getBones().cbegin(), pModel->getBones().cend(), [&](const gfx::Bone& bone)
-    {
-        m_BoneTransform.push_back(bone.m_BaseTransform);
-        m_Bones[bone.m_Name] = &m_BoneTransform.back();
-    });
+
+    pModel->callbackIfLoaded(boost::bind(&RiggedModelComponent::modelLoadedCallback, this, pModel));
 }
+void RiggedModelComponent::modelLoadedCallback( const gfx::ModelMesh::pointer& pMesh )
+{
+    if (pMesh == m_pModel) //Mesh could've changed
+    {
+        m_BoneTransform.reserve(pMesh->getBones().size());
+        std::for_each(pMesh->getBones().cbegin(), pMesh->getBones().cend(), [&](const gfx::Bone& bone)
+        {
+            //m_BoneTransform.push_back(bone.m_BaseTransform);
+            m_BoneTransform.push_back(mat44::Identity);
+
+            BoneTransform transform;
+            transform.m_ToOrigTransform = bone.m_BaseTransform;
+            transform.m_FromOrigTransform = bone.m_BaseTransform.inverse();
+            transform.m_RealTransform = &m_BoneTransform.back();
+
+            m_Bones[bone.m_Name] = transform;
+        });
+
+        if (m_BoneTransform.size() > 0)
+        {
+            setVisible(true);
+            onModelLoaded();
+        }
+        else
+            CONSOLE->addMessage("SkinnedMesh error: no bones found in " + pMesh->getName(), CMSG_TYPE_ERROR);
+    }
+}
+
 
 void RiggedModelComponent::setMaterial( const gfx::Material& material )
 {
@@ -109,5 +136,17 @@ const std::vector<mat44>& RiggedModelComponent::getBoneTransforms() const
 {
     return m_BoneTransform;
 }
+
+RiggedModelComponent::BoneTransform RiggedModelComponent::getBone( const std::string& name ) const
+{
+    std::map<std::string, BoneTransform>::const_iterator it(m_Bones.find(name));
+    if (it == m_Bones.cend())
+    {
+        CONSOLE->addMessage("RiggedModelComponent error: No bone exists with name: " + name, CMSG_TYPE_ERROR);
+        return BoneTransform();
+    }
+    return m_Bones.at(name);
+}
+
 
 } } //end namespace

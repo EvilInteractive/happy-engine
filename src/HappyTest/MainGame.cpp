@@ -153,10 +153,13 @@ void MainGame::load()
         GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(0, -100), r.nextFloat(3, 7), r.nextFloat(0, 100)), 
                                     Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 10), 1, r.nextFloat(10, 30));
     }
+
+    m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 1, 30);
+
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
-	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 20.0f);
+	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
    
     m_pTestObject = NEW TestObject();
 
@@ -205,6 +208,7 @@ void MainGame::tick(float dTime)
         HAPPYENGINE->quit();
 
     m_pTestObject->tick(dTime);
+    m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + he::vec3(0, 2, 0));
     
     if (m_pClient == nullptr && m_pServer == nullptr)
     {

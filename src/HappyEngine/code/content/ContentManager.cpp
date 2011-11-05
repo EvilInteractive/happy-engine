@@ -161,7 +161,7 @@ gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const
 {
     using namespace gfx;
     VertexLayout layout;
-    layout.addElement(VertexElement(0, VertexElement::Type_Vector3, VertexElement::Usage_Position, 12, 0));
+    layout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
 
     gfx::ModelMesh::pointer pQuad(NEW gfx::ModelMesh("fullscreenQuad"));
 

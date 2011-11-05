@@ -85,9 +85,9 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
             }
 
             pMesh->init();
+            pMesh->setBones(data->loader->getBones(i));
             pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
             pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
-            pMesh->setBones(data->loader->getBones(i));
 
             std::cout << "**ML INFO** model create completed: " << data->path << "\n";
         }

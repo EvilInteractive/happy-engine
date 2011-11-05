@@ -154,6 +154,15 @@ mat44 mat44::operator*(const mat44& mat) const
 {
     return mat44(m_Matrix * mat.m_Matrix);
 }
+mat44 mat44::operator*(float scale) const
+{
+    return mat44(m_Matrix * scale);
+}
+void mat44::operator*=( float scale )
+{
+    m_Matrix *= scale;
+}
+
 vec3 mat44::operator*(const vec3& vec) const
 {
     return vec3(m_Matrix.transform(physx::pubfnd3::PxVec3(vec.x, vec.y, vec.z)));
@@ -176,12 +185,91 @@ const physx::pubfnd3::PxMat44& mat44::getPhyicsMatrix() const
 {
     return m_Matrix;
 }
+
+//http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
 mat44 mat44::inverse() const
 {
-    return mat44(m_Matrix.inverseRT());
+    const float& m00(m_Matrix.column0.x);
+    const float& m10(m_Matrix.column0.y);
+    const float& m20(m_Matrix.column0.z);
+    const float& m30(m_Matrix.column0.w);
+
+    const float& m01(m_Matrix.column1.x);
+    const float& m11(m_Matrix.column1.y);
+    const float& m21(m_Matrix.column1.z);
+    const float& m31(m_Matrix.column1.w);
+
+    const float& m02(m_Matrix.column2.x);
+    const float& m12(m_Matrix.column2.y);
+    const float& m22(m_Matrix.column2.z);
+    const float& m32(m_Matrix.column2.w);
+
+    const float& m03(m_Matrix.column3.x);
+    const float& m13(m_Matrix.column3.y);
+    const float& m23(m_Matrix.column3.z);
+    const float& m33(m_Matrix.column3.w);
+
+    mat44 mtxInverse(
+        m12*m23*m31 - m13*m22*m31 + m13*m21*m32 - m11*m23*m32 - m12*m21*m33 + m11*m22*m33,
+        m03*m22*m31 - m02*m23*m31 - m03*m21*m32 + m01*m23*m32 + m02*m21*m33 - m01*m22*m33,
+        m02*m13*m31 - m03*m12*m31 + m03*m11*m32 - m01*m13*m32 - m02*m11*m33 + m01*m12*m33,
+        m03*m12*m21 - m02*m13*m21 - m03*m11*m22 + m01*m13*m22 + m02*m11*m23 - m01*m12*m23,
+
+        m13*m22*m30 - m12*m23*m30 - m13*m20*m32 + m10*m23*m32 + m12*m20*m33 - m10*m22*m33,
+        m02*m23*m30 - m03*m22*m30 + m03*m20*m32 - m00*m23*m32 - m02*m20*m33 + m00*m22*m33,
+        m03*m12*m30 - m02*m13*m30 - m03*m10*m32 + m00*m13*m32 + m02*m10*m33 - m00*m12*m33,
+        m02*m13*m20 - m03*m12*m20 + m03*m10*m22 - m00*m13*m22 - m02*m10*m23 + m00*m12*m23,
+
+        m11*m23*m30 - m13*m21*m30 + m13*m20*m31 - m10*m23*m31 - m11*m20*m33 + m10*m21*m33,
+        m03*m21*m30 - m01*m23*m30 - m03*m20*m31 + m00*m23*m31 + m01*m20*m33 - m00*m21*m33,
+        m01*m13*m30 - m03*m11*m30 + m03*m10*m31 - m00*m13*m31 - m01*m10*m33 + m00*m11*m33,
+        m03*m11*m20 - m01*m13*m20 - m03*m10*m21 + m00*m13*m21 + m01*m10*m23 - m00*m11*m23,
+
+        m12*m21*m30 - m11*m22*m30 - m12*m20*m31 + m10*m22*m31 + m11*m20*m32 - m10*m21*m32,
+        m01*m22*m30 - m02*m21*m30 + m02*m20*m31 - m00*m22*m31 - m01*m20*m32 + m00*m21*m32,
+        m02*m11*m30 - m01*m12*m30 - m02*m10*m31 + m00*m12*m31 + m01*m10*m32 - m00*m11*m32,
+        m01*m12*m20 - m02*m11*m20 + m02*m10*m21 - m00*m12*m21 - m01*m10*m22 + m00*m11*m22
+    );
+    mtxInverse *= 1.0f / getDeterminant();
+
+    return mtxInverse;
+}
+float mat44::getDeterminant() const
+{
+    const float& m00(m_Matrix.column0.x);
+    const float& m10(m_Matrix.column0.y);
+    const float& m20(m_Matrix.column0.z);
+    const float& m30(m_Matrix.column0.w);
+
+    const float& m01(m_Matrix.column1.x);
+    const float& m11(m_Matrix.column1.y);
+    const float& m21(m_Matrix.column1.z);
+    const float& m31(m_Matrix.column1.w);
+
+    const float& m02(m_Matrix.column2.x);
+    const float& m12(m_Matrix.column2.y);
+    const float& m22(m_Matrix.column2.z);
+    const float& m32(m_Matrix.column2.w);
+
+    const float& m03(m_Matrix.column3.x);
+    const float& m13(m_Matrix.column3.y);
+    const float& m23(m_Matrix.column3.z);
+    const float& m33(m_Matrix.column3.w);
+
+    return m03*m12*m21*m30 - m02*m13*m21*m30 - m03*m11*m22*m30 + m01*m13*m22*m30 +
+           m02*m11*m23*m30 - m01*m12*m23*m30 - m03*m12*m20*m31 + m02*m13*m20*m31 +
+           m03*m10*m22*m31 - m00*m13*m22*m31 - m02*m10*m23*m31 + m00*m12*m23*m31 +
+           m03*m11*m20*m32 - m01*m13*m20*m32 - m03*m10*m21*m32 + m00*m13*m21*m32 +
+           m01*m10*m23*m32 - m00*m11*m23*m32 - m02*m11*m20*m33 + m01*m12*m20*m33 +
+           m02*m10*m21*m33 - m00*m12*m21*m33 - m01*m10*m22*m33 + m00*m11*m22*m33;
 }
 
 float mat44::operator()( int row, int column ) const
+{
+    return m_Matrix(row, column);
+}
+
+float& mat44::operator()( int row, int column )
 {
     return m_Matrix(row, column);
 }

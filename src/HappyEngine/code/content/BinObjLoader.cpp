@@ -95,7 +95,7 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
         //////////////////////////////////////////////////////////////////////////
         uint numBones(stream.readByte());
         m_BoneData.push_back(std::vector<gfx::Bone>());
-        m_BoneData.reserve(numBones);
+        m_BoneData.back().reserve(numBones);
         for (uint iBone = 0; iBone < numBones; ++iBone)
         {
             gfx::Bone bone;
@@ -149,7 +149,7 @@ void BinObjLoader::fill(const gfx::VertexLayout& vertLayout) const
             tanOff = element.getByteOffset();
         else if (element.getUsage() == gfx::VertexElement::Usage_BoneIDs)
             boneOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_BoneWeigths)
+        else if (element.getUsage() == gfx::VertexElement::Usage_BoneWeights)
             weightOff = element.getByteOffset();
     });
     
@@ -166,28 +166,30 @@ void BinObjLoader::fill(const gfx::VertexLayout& vertLayout) const
         } 
 
         char* pCharData = static_cast<char*>(m_Vertices[i]);
-        uint count = 0;
+        uint count(0);
         std::for_each(m_VertexData[i].cbegin(), m_VertexData[i].cend(), [&](const InternalVertex& vert)
         {
             if (pOff != -1)
             {
-                *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+                memcpy(&pCharData[count * vertLayout.getVertexSize() + pOff], &vert.pos, sizeof(vec3));
             }
             if (tOff != -1)
             {
-                *reinterpret_cast<vec2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+                memcpy(&pCharData[count * vertLayout.getVertexSize() + tOff], &vert.tex, sizeof(vec2));
             }
             if (nOff != -1)
             {
-                *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+                memcpy(&pCharData[count * vertLayout.getVertexSize() + nOff], &vert.norm, sizeof(vec3));
             }
             if (tanOff != -1)
             {
-                *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + tanOff]) = vert.tan;
+                memcpy(&pCharData[count * vertLayout.getVertexSize() + tanOff], &vert.tan, sizeof(vec3));
             }
             if (boneOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + boneOff], vert.boneID, sizeof(byte) * gfx::Bone::MAX_BONEWEIGHTS);
+                ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "Unsupported max boneWeight value only 4 is supported");
+                vec4 boneIDs(vert.boneID[0], vert.boneID[1], vert.boneID[2], vert.boneID[3]);
+                memcpy(&pCharData[count * vertLayout.getVertexSize() + boneOff], &boneIDs, sizeof(vec4));
             }
             if (weightOff != -1)
             {

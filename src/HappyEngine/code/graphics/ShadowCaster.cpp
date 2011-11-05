@@ -181,7 +181,7 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
         culledDrawList.reserve(drawables.size());
         std::for_each(drawables.cbegin(), drawables.cend(), [&](const IDrawable* pDrawable)
         {
-            if (pDrawable->getModel()->isVisible() && pDrawable->getCastsShadow())
+            if (pDrawable->isVisible() && pDrawable->getCastsShadow() && pDrawable->getModel()->isLoaded())
             {
                 shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
                     pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales

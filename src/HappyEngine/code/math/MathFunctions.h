@@ -178,6 +178,24 @@ inline vec3 maxPerComponent(const vec3& a, const vec3& b)
     return maxP;
 }
 
+//vec4
+inline float lengthSqr(const vec4& vector)
+{
+    return sqr(vector.x) + sqr(vector.y) + sqr(vector.z) + sqr(vector.w);
+}
+inline float length(const vec4& vector)
+{
+    return sqrtf(lengthSqr(vector));
+}
+inline vec4 normalize(const vec4& vector)
+{
+    if (vector != vec4(0,0,0,0))
+        return vector / length(vector);
+    else
+        return vector;
+}
+
+
 } //end namespace
 
 #endif

@@ -34,6 +34,13 @@ public:
 	RiggedModelComponent();
     virtual ~RiggedModelComponent();
 
+    struct BoneTransform
+    {
+        mat44 m_ToOrigTransform;
+        mat44 m_FromOrigTransform;
+        mat44* m_RealTransform;
+    };
+
     //////////////////////////////////////////////////////////////////////////
     ///                         IComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
@@ -55,7 +62,7 @@ public:
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool casts);
     //////////////////////////////////////////////////////////////////////////
-    
+        
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
    
@@ -63,12 +70,19 @@ public:
 
     void setMaterial(const gfx::Material& material);
 
+    BoneTransform getBone(const std::string& name) const;
+
+protected:
+    virtual void onModelLoaded() {}
+
 private:
+    void modelLoadedCallback(const gfx::ModelMesh::pointer& pMesh);
+
     gfx::ModelMesh::pointer m_pModel;
     gfx::Material m_Material;
 
     std::vector<mat44> m_BoneTransform;
-    std::map<std::string, mat44*> m_Bones;
+    std::map<std::string, BoneTransform> m_Bones;
 
     mat44 m_mtxLocalTransform;
 

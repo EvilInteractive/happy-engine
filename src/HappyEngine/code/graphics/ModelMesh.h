@@ -34,6 +34,9 @@
 #include "Sphere.h"
 #include "Bone.h"
 
+#include "boost/function.hpp"
+#include "boost/thread/mutex.hpp"
+
 namespace he {
 namespace gfx {
 
@@ -69,12 +72,16 @@ public:
 
     const std::string& getName() const;
 
-    bool isVisible() const;
-    void setVisible(bool visible) const;
+    bool isLoaded() const;
 
     const shapes::Sphere& getBoundingSphere() const;
 
+    void callbackIfLoaded(const boost::function<void()>& callback);
+
 private:
+    void setLoaded();
+    std::vector<boost::function<void()>> m_LoadedCallback;
+    boost::mutex m_LoadMutex;
 
     uint m_VaoID[1];
     uint m_VertexVboID[1];
@@ -90,7 +97,7 @@ private:
     std::string m_Name;
 
     bool m_isVisible;
-    bool m_isComplete;
+    bool m_isLoaded;
 
     shapes::Sphere m_BoundingSphere;
 

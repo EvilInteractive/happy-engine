@@ -61,7 +61,8 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetDir)$(TargetFileName)" "..\..\HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\bin\Debug\$(TargetFileName)"</Command>
+      <Command>copy "$(TargetDir)$(TargetFileName)" "..\..\HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\bin\Debug\$(TargetFileName)"
+copy "$(TargetDir)$(TargetFileName)" "..\..\HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\bin\Release\$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

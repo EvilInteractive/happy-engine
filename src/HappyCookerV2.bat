@@ -35,7 +35,7 @@
 
 @REM -----------------------------------------------------------------------
 :build
-"%VSINSTALLDIR%Common7\IDE\devenv" "HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\HappyCookerGUIv2.sln" /Rebuild Release 
+"%VSINSTALLDIR%Common7\IDE\devenv" "HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\HappyCookerGUIv2.sln" /build Release 
 @exit /B 0
 
 @REM -----------------------------------------------------------------------

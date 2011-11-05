@@ -24,6 +24,7 @@
 #include "PhysicsDynamicActor.h"
 #include "Font.h"
 #include "Entity.h"
+#include "RiggedModelComponent.h"
 
 namespace happytest {
 
@@ -35,14 +36,19 @@ public:
 
     virtual void tick(float dTime);
 
-private:    
+private:   
     he::gfx::Font::pointer m_pFont;
 
+    float m_WheelOrientation, m_WheelMax, m_WheelTurnSpeed, m_WheelSpeedRotation;
     float m_Rotation;
     he::vec3 m_Position;
     
     he::px::PhysicsDynamicActor* m_pActor;
     he::px::PhysicsMaterial::pointer m_pMaterial;
+    
+    he::game::RiggedModelComponent* m_pRiggedModelComponent;
+    he::game::RiggedModelComponent::BoneTransform m_LeftWheelBone, m_RightWheelBone;
+    void onModelLoaded();
 
     //Disable default copy constructor and default assignment operator
     TestObject(const TestObject&);

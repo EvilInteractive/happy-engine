@@ -27,7 +27,7 @@
 
 namespace he {
 namespace gfx {
-    
+
 class IDrawable
 {
 public:
@@ -41,9 +41,17 @@ public:
 
     virtual bool getCastsShadow() const = 0;
 
+    virtual bool isVisible() const { return m_IsVisible; }
+    virtual void setVisible(bool visible) { m_IsVisible = visible; }
+
+protected:
+    bool m_IsVisible;
+
 private:
     std::vector<mat44> m_NoBones;
 };  
+
+
 class ISkinnedDrawable : public IDrawable
 {
 public:

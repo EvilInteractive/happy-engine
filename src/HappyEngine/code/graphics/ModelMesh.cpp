@@ -32,7 +32,7 @@ namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0), m_isComplete(false), m_isVisible(true), m_Name(name)
+ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0), m_isLoaded(false), m_isVisible(true), m_Name(name)
 {
 }
 
@@ -86,20 +86,14 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
         GLenum type = 0;
         switch (e.getType())
         {
-            case VertexElement::Type_Vector2: type = GL_FLOAT; components = 2; break;
-            case VertexElement::Type_Vector3: type = GL_FLOAT; components = 3; break;
-            case VertexElement::Type_Vector4: type = GL_FLOAT; components = 4; break;
+            case VertexElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
+            case VertexElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
+            case VertexElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
             case VertexElement::Type_Float: type = GL_FLOAT; break;
-            case VertexElement::Type_Double: type = GL_DOUBLE; break;
 
             case VertexElement::Type_Int: type = GL_INT; break;
+            case VertexElement::Type_IVec4: type = GL_INT; components = 4; break;
             case VertexElement::Type_UInt: type = GL_UNSIGNED_INT; break;
-                
-            case VertexElement::Type_Short: type = GL_SHORT; break;
-            case VertexElement::Type_UShort: type = GL_UNSIGNED_SHORT; break;
-
-            case VertexElement::Type_Byte: type = GL_BYTE; break;
-            case VertexElement::Type_UByte: type = GL_UNSIGNED_BYTE; break;
             
             #pragma warning(disable:4127)
             default: ASSERT(false, "unknown type"); break;
@@ -136,7 +130,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     GL::heBindVao(0);
 
     if (m_NumIndices > 0)
-        m_isComplete = true;
+        setLoaded();
 }
 void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
 {
@@ -161,7 +155,7 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
     }
 
     if (m_NumVertices > 0)
-        m_isComplete = true;
+        setLoaded();
     //unbind
     GL::heBindVao(0);
 }
@@ -190,11 +184,6 @@ uint ModelMesh::getIndexType() const
     return m_IndexType;
 }
 
-bool ModelMesh::isVisible() const
-{
-    return m_isComplete && m_isVisible;
-}
-
 const shapes::Sphere& ModelMesh::getBoundingSphere() const
 {
     return m_BoundingSphere;
@@ -213,6 +202,39 @@ void ModelMesh::setBones( const std::vector<Bone>& boneList )
 const std::vector<Bone>& ModelMesh::getBones() const
 {
     return m_BoneList;
+}
+
+bool ModelMesh::isLoaded() const
+{
+    return m_isLoaded;
+}
+
+void ModelMesh::callbackIfLoaded( const boost::function<void()>& callback )
+{
+    m_LoadMutex.lock();
+    if (m_isLoaded)
+    {
+        m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
+        callback();
+    }
+    else
+    {
+        m_LoadedCallback.push_back(callback);
+        m_LoadMutex.unlock();
+    }
+}
+
+void ModelMesh::setLoaded()
+{
+    m_isLoaded = true;
+    m_LoadMutex.lock();
+    std::for_each(m_LoadedCallback.cbegin(), m_LoadedCallback.cend(), [](const boost::function<void()>& callback)
+    {
+        callback();
+    });
+    m_LoadMutex.unlock();
+    m_LoadedCallback.clear();
+    m_LoadedCallback.resize(0);
 }
 
 

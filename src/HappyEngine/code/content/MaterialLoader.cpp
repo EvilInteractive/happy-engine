@@ -99,33 +99,38 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 {
                     if (p.second == L"POSITION")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Position, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"TEXCOORD")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector2, gfx::VertexElement::Usage_TextureCoordinate, sizeof(vec2), offset));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec2, gfx::VertexElement::Usage_TextureCoordinate, sizeof(vec2), offset));
                         offset += sizeof(vec2);
                     }
                     else if (p.second == L"NORMAL")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Normal, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Normal, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"TANGENT")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Tangent, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Tangent, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"BONEIDS")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Byte, gfx::VertexElement::Usage_BoneIDs, sizeof(byte) * gfx::Bone::MAX_BONEWEIGHTS, offset));
-                        offset += sizeof(byte) * gfx::Bone::MAX_BONEWEIGHTS;
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec4, gfx::VertexElement::Usage_BoneIDs, sizeof(vec4), offset));
+                        offset += sizeof(vec4);
                     }
                     else if (p.second == L"BONEWEIGHTS")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Float, gfx::VertexElement::Usage_BoneWeigths, sizeof(float) * gfx::Bone::MAX_BONEWEIGHTS, offset));
-                        offset += sizeof(float) * gfx::Bone::MAX_BONEWEIGHTS;
+                        ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
+                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec4, gfx::VertexElement::Usage_BoneWeights, sizeof(vec4), offset));
+                        offset += sizeof(vec4);
+                    }
+                    else
+                    {
+                        std::wcout << "**Material Error**: unkown attribute " << p.second << "\n";
                     }
                     shaderLayout.addElement(gfx::ShaderLayoutElement(count++, std::string(p.first.cbegin(), p.first.cend())));
                 }); 
@@ -186,6 +191,10 @@ gfx::Material MaterialLoader::load(const std::string& path)
                                     pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), 
                                     tex));
                             material.addVar(var);
+                        }
+                        else
+                        {
+                            std::wcout << "**Material Error**: unkown semantic " << node.second << "\n";
                         }
                     });
                 }

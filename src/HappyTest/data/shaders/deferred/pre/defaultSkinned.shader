@@ -1,5 +1,5 @@
 [Shader]
-vsPath = "deferred/pre/deferredPreShader.vert"
+vsPath = "deferred/pre/deferredPreShaderSkinned.vert"
 fsPath = "deferred/pre/deferredPreShader.frag"
 
 [in]
@@ -8,12 +8,12 @@ inTexCoord = TEXCOORD
 inNormal = NORMAL
 inTangent = TANGENT
 inBoneId = BONEIDS
-inBoneWeight = BONEWEIGHTS;
+inBoneWeight = BONEWEIGHTS
 
 [uniform]
 matWVP = WORLDVIEWPROJECTION
-matBones = BONETRANSFORMS;
-matWorld = WORLD
+matBones = BONETRANSFORMS
+matWorld = WORLDVIEW
 diffuseMap = TEXTURE2D
 normalMap = TEXTURE2D
 specGlossIllMap = TEXTURE2D

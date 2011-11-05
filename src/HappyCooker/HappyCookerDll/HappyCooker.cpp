@@ -70,7 +70,7 @@ bool HappyCooker::cookToConvex(const char* input, const char* output)
     ct::models::ObjLoader objLoader;
 
     gfx::VertexLayout layout;
-    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vector3, gfx::VertexElement::Usage_Position,
+    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position,
         sizeof(vec3), 0));
 
     try { objLoader.load(input, layout, false); }
@@ -137,10 +137,10 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
 {
     using namespace he;
     aiMatrix4x4 mtxLocalTransform = pNode->mTransformation;
-    mat44 mtxTransformation = p_Transformation * mat44(mtxLocalTransform.a1, mtxLocalTransform.a2, mtxLocalTransform.a3, mtxLocalTransform.a4,
-                                                       mtxLocalTransform.b1, mtxLocalTransform.b2, mtxLocalTransform.b3, mtxLocalTransform.b4,
-                                                       mtxLocalTransform.c1, mtxLocalTransform.c2, mtxLocalTransform.c3, mtxLocalTransform.c4,
-                                                       mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4);
+    mat44 mtxTransformation = mat44(mtxLocalTransform.a1, mtxLocalTransform.a2, mtxLocalTransform.a3, mtxLocalTransform.a4,
+                                    mtxLocalTransform.b1, mtxLocalTransform.b2, mtxLocalTransform.b3, mtxLocalTransform.b4,
+                                    mtxLocalTransform.c1, mtxLocalTransform.c2, mtxLocalTransform.c3, mtxLocalTransform.c4,
+                                    mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4) * p_Transformation;
 
     ASSERT(pNode->mNumMeshes <= 1, "more than one mesh in a node... didn't know this could happen, what is this?");
     for (uint iMesh = 0; iMesh < pNode->mNumMeshes; ++iMesh)
@@ -188,6 +188,7 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
                                         mtxLocalTransform.b1, mtxLocalTransform.b2, mtxLocalTransform.b3, mtxLocalTransform.b4,
                                         mtxLocalTransform.c1, mtxLocalTransform.c2, mtxLocalTransform.c3, mtxLocalTransform.c4,
                                         mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4);
+            boneList.push_back(bone);
             for (uint iWeight = 0; iWeight < pMesh->mBones[iBone]->mNumWeights; ++iWeight)
             {
                 BoneWeight weight;
@@ -198,18 +199,26 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
         }
 
         std::stringstream infoStream;
-        infoStream << "    cooking: " << pNode->mName.data << " - " << pMesh->mNumVertices << " vertices and " << pMesh->mNumFaces * 3 << " indices";
+        infoStream << "    cooking: " << pNode->mName.data << " - " << pMesh->mNumVertices << " vertices, " << pMesh->mNumFaces * 3 << " indices";
+        infoStream << ", " << pMesh->mNumBones << " bones";
         addInfo(infoStream.str());
         std::cout << "mesh: " << pNode->mMeshes[iMesh] << "," << iMesh << "\n";
 
         //store #bones
         stream.storeByte(static_cast<byte>(boneList.size()));
-        std::for_each(boneList.cbegin(), boneList.cend(), [&stream](const Bone& bone)
+        std::for_each(boneList.cbegin(), boneList.cend(), [&](const Bone& bone)
         {
             //store bone name
             stream.storeString(bone.name);
             //store bone transform
-            stream.storeMatrix(bone.transformation);
+            using namespace he;
+
+            mat44 transformation(bone.transformation);
+            transformation(0, 3) *= 0.01f;
+            transformation(1, 3) *= 0.01f;
+            transformation(2, 3) *= 0.01f;
+            transformation(3, 3) = 1.0f;
+            stream.storeMatrix(transformation * mtxTransformation.inverse());
         });
 
         //////////////////////////////////////////////////////////////////////////
@@ -220,13 +229,13 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
         for (uint iVert = 0; iVert < pMesh->mNumVertices; ++iVert)
         {
             //store position
-            stream.storeVector3((p_Transformation * vec4(pMesh->mVertices[iVert].x, pMesh->mVertices[iVert].y, pMesh->mVertices[iVert].z, 1.0f)).xyz());
+            stream.storeVector3((mtxTransformation * mat44::createScale(0.01f) * vec4(pMesh->mVertices[iVert].x, pMesh->mVertices[iVert].y, pMesh->mVertices[iVert].z, 1.0f)).xyz());
             //store texture coordinate  
             stream.storeVector2(vec2(pMesh->mTextureCoords[0][iVert].x, pMesh->mTextureCoords[0][iVert].y));
             //store normal
-            stream.storeVector3((p_Transformation * vec4(pMesh->mNormals[iVert].x, pMesh->mNormals[iVert].y, pMesh->mNormals[iVert].z, 0.0f)).xyz());
+            stream.storeVector3((mtxTransformation * vec4(pMesh->mNormals[iVert].x, pMesh->mNormals[iVert].y, pMesh->mNormals[iVert].z, 0.0f)).xyz());
             //store tangent
-            stream.storeVector3((p_Transformation * vec4(pMesh->mTangents[iVert].x, pMesh->mTangents[iVert].y, pMesh->mTangents[iVert].z, 0.0f)).xyz());
+            stream.storeVector3((mtxTransformation * vec4(pMesh->mTangents[iVert].x, pMesh->mTangents[iVert].y, pMesh->mTangents[iVert].z, 0.0f)).xyz());
             //store bone thingies
             for (uint i = 0; i < he::gfx::Bone::MAX_BONEWEIGHTS; ++i)
             {
@@ -329,7 +338,7 @@ bool HappyCooker::cookToBinObj(const char* input, const char* output)
     infoStream << "Cooking " << pScene->mNumMeshes << "meshes...";
     addInfo(infoStream.str());
 
-    return binobjNodeRunner(stream, pScene->mRootNode, pScene, mat44::createScale(0.01f));
+    return binobjNodeRunner(stream, pScene->mRootNode, pScene, mat44::Identity);
 }
 
 bool HappyCooker::cookLineToBinObj(const char* input, const char* output)

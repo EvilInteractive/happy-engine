@@ -45,7 +45,7 @@ void DrawManager::draw(const Camera* pCamera)
     culledDrawList.reserve(m_DrawList.size());
     std::for_each(m_DrawList.cbegin(), m_DrawList.cend(), [&](const IDrawable* pDrawable)
     {
-        if (pDrawable->getModel()->isVisible())
+        if (pDrawable->isVisible() && pDrawable->getModel()->isLoaded())
         {
             shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
                               pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales

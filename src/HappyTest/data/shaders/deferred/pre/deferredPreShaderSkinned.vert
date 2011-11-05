@@ -23,8 +23,8 @@ in vec3 inPosition;
 in vec2 inTexCoord;
 in vec3 inNormal;
 in vec3 inTangent;
-in byte[4] inBoneId;
-in float[4] inBoneWeight;
+in vec4 inBoneId;
+in vec4 inBoneWeight;
 
 out vec2 passTexCoord;
 out vec3 passNormal;
@@ -39,24 +39,26 @@ void main()
 {
     mat4 world = matWorld;
     
-    vec4 position = matBones[inBoneId[0]] * vec4(inPosition, 1.0f) * inBoneWeight[0];
-    position += matBones[inBoneId[1]] * vec4(inPosition, 1.0f) * inBoneWeight[1];
-    position += matBones[inBoneId[2]] * vec4(inPosition, 1.0f) * inBoneWeight[2];
-    position += matBones[inBoneId[3]] * vec4(inPosition, 1.0f) * inBoneWeight[3]; 
-	gl_Position = matWVP * vec4(position, 1.0f);
+    ivec4 boneId = ivec4(inBoneId);
+    
+    vec4 position = matBones[boneId.x] * vec4(inPosition, 1.0f) * inBoneWeight.x;
+    position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
+    position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
+    position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
+	gl_Position = matWVP * vec4(position.xyz, 1.0f);
 	
     passTexCoord = inTexCoord;
     
-    vec4 normal = matBones[inBoneId[0]] * vec4(inNormal, 0.0f) * inBoneWeight[0];
-    normal += matBones[inBoneId[1]] * vec4(inNormal, 0.0f) * inBoneWeight[1];
-    normal += matBones[inBoneId[2]] * vec4(inNormal, 0.0f) * inBoneWeight[2];
-    normal += matBones[inBoneId[3]] * vec4(inNormal, 0.0f) * inBoneWeight[3]; 
+    vec4 normal = matBones[boneId.x] * vec4(inNormal, 0.0f) * inBoneWeight.x;
+    normal += matBones[boneId.y] * vec4(inNormal, 0.0f) * inBoneWeight.y;
+    normal += matBones[boneId.z] * vec4(inNormal, 0.0f) * inBoneWeight.z;
+    normal += matBones[boneId.w] * vec4(inNormal, 0.0f) * inBoneWeight.w; 
 	passNormal = (matWorld * normal).xyz;
     
-    vec4 tangent = matBones[inBoneId[0]] * vec4(inTangent, 0.0f) * inBoneWeight[0];
-    tangent += matBones[inBoneId[1]] * vec4(inTangent, 0.0f) * inBoneWeight[1];
-    tangent += matBones[inBoneId[2]] * vec4(inTangent, 0.0f) * inBoneWeight[2];
-    tangent += matBones[inBoneId[3]] * vec4(inTangent, 0.0f) * inBoneWeight[3]; 
+    vec4 tangent = matBones[boneId.x] * vec4(inTangent, 0.0f) * inBoneWeight.x;
+    tangent += matBones[boneId.y] * vec4(inTangent, 0.0f) * inBoneWeight.y;
+    tangent += matBones[boneId.z] * vec4(inTangent, 0.0f) * inBoneWeight.z;
+    tangent += matBones[boneId.w] * vec4(inTangent, 0.0f) * inBoneWeight.w; 
 	passTangent = (matWorld * tangent).xyz;
 }
 
