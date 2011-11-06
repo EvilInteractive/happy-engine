@@ -36,12 +36,14 @@ namespace px {
 class PhysicsDynamicActor
 {
 public:
-	PhysicsDynamicActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, float density, const PhysicsMaterial::pointer& pMaterial);
-    PhysicsDynamicActor(const mat44& pose, const std::vector<shapes::IPhysicsShape::pointer>& shapes, float density, const PhysicsMaterial::pointer& pMaterial);
+	PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass);
+    PhysicsDynamicActor(const mat44& pose);
     virtual ~PhysicsDynamicActor();
 
     vec3 getPosition() const;
     mat44 getPose() const;
+
+    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass) const;
 
     void setVelocity(const vec3& velocity);
     void addVelocity(const vec3& velocity);
@@ -52,7 +54,7 @@ public:
 
 private:
 
-    PxRigidDynamic* m_pActor;
+    physx::PxRigidDynamic* m_pActor;
 
     //Disable default copy constructor and default assignment operator
     PhysicsDynamicActor(const PhysicsDynamicActor&);

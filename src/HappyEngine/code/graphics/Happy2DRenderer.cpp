@@ -41,7 +41,7 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW he::gfx::Simple2DEffect(
 										m_ViewPortSize(0.0f,0.0f),
 										m_FontHAlignment(Font::HAlignment_Left),
 										m_FontVAlignment(Font::VAlignment_Bottom),
-										m_pModelBuffer(NEW ct::AssetContainerP<gfx::ModelMesh>()),
+                                        m_pModelBuffer(NEW ct::AssetContainer<gfx::ModelMesh*>( [](gfx::ModelMesh* pMesh) { delete pMesh; } )),
 										m_pTextureBuffer(NEW ct::AssetContainer<gfx::Texture2D::pointer>()),
 										m_pTextureQuad(NEW ModelMesh("")),
 										m_Translation(vec2(0.0f,0.0f)),

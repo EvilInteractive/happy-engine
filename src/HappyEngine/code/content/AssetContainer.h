@@ -17,15 +17,18 @@
 //
 //Author:	Bastian Damman
 //Modified:	Sebastiaan Sprengers
-//Modified (17/09/2011, Bastian Damman), now returning and adding const T& 
 
-#ifndef _HE_ASSET_CONTAINER_H_
-#define _HE_ASSET_CONTAINER_H_
+#ifndef _HE_ASSET_CONTAINER_P_H_
+#define _HE_ASSET_CONTAINER_P_H_
 #pragma once
 
 #include <map>
 #include <string>
 #include <iostream>
+#include <functional>
+
+#include "HappyEngine.h"
+#include "Console.h"
 
 namespace he {
 namespace ct {
@@ -34,7 +37,8 @@ template<typename T>
 class AssetContainer
 {
 public:
-    AssetContainer(void) { }
+    AssetContainer(): f_DestroyAction(nullptr) { }
+    AssetContainer(const std::function<void (const T&)>& destroyAction): f_DestroyAction(destroyAction) { }
     virtual ~AssetContainer(void) { removeAllAssets(); }
 
 	bool isAssetPresent(const std::string &key) const
@@ -43,30 +47,29 @@ public:
     }
     void addAsset(const std::string &key, const T& asset)
     {        
-        #if defined DEBUG || _DEBUG
-	    std::cout << "Adding Asset: " << key << "\n";
-        #endif
+		CONSOLE->addMessage("adding asset: " + key, CMSG_TYPE_ENGINE);
+
 	    m_Map[key] = asset;
     }
 	void removeAsset(const std::string &key)
     {
-	    #if defined DEBUG || _DEBUG
-	    std::cout << "Releasing Asset: " << key << "\n";
-        #endif
+	    CONSOLE->addMessage("releasing asset: " + key, CMSG_TYPE_ENGINE);
 
-	    delete m_Map[key];
+        if (f_DestroyAction != nullptr)
+            f_DestroyAction(m_Map[key]);
+
 	    m_Map.erase(key);
     }
 	void removeAllAssets()
     {
-	    /*for_each(m_Map.begin(), m_Map.end(), [&](pair<string, T> obj)
+	    std::for_each(m_Map.cbegin(), m_Map.cend(), [&](const std::pair<std::string, T>& obj)
 	    {
-	        #if defined DEBUG || _DEBUG
-	        cout << "Releasing Asset: " << obj.first << "\n";
-            #endif
+	        CONSOLE->addMessage("releasing asset: " + obj.first, CMSG_TYPE_ENGINE);
+            
+            if (f_DestroyAction != nullptr)
+                f_DestroyAction(obj.second);
+	    });
 
-			delete obj.second;
-	    });*/
 	    m_Map.clear();
     }
     
@@ -77,7 +80,8 @@ public:
 
 private:
     std::map<std::string, T> m_Map;
-	
+    std::function<void (const T&)> f_DestroyAction;	
+
     //Disable default copy constructor and assignment operator
     AssetContainer(const AssetContainer& copy);
     AssetContainer& operator=(const AssetContainer& other);

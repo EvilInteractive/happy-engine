@@ -23,12 +23,9 @@
 
 namespace he {
 namespace px {
-namespace shapes {
 
-PhysicsBoxShape::PhysicsBoxShape(const vec3& dimension): m_Dimension(dimension), 
-    m_Geometry(PxBoxGeometry(dimension.x / 2.0f, dimension.y / 2.0f, dimension.z / 2.0f))
+PhysicsBoxShape::PhysicsBoxShape(const vec3& dimension): m_Dimension(dimension)
 {
-   
 }
 
 
@@ -36,9 +33,11 @@ PhysicsBoxShape::~PhysicsBoxShape()
 {
 }
 
-const PxGeometry& PhysicsBoxShape::getGeometry() const
+
+
+const vec3 PhysicsBoxShape::getDimension() const
 {
-    return m_Geometry;
+    return m_Dimension;
 }
 
-} } } //end namespace
+} } //end namespace

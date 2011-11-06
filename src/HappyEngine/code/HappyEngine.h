@@ -31,8 +31,6 @@
 
 #include <vector>
 
-#include "IGame.h"
-
 // forward declaration
 namespace he {
 namespace gfx {
@@ -57,6 +55,9 @@ namespace tools {
 namespace sfx {
 	class SoundEngine;
 }
+namespace game {
+    class Game;
+}
 }
 
 #define HAPPYENGINE he::HappyEngine::getPointer()
@@ -68,6 +69,7 @@ namespace sfx {
 #define HE2D HAPPYENGINE->get2DRenderer()
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
+#define GAME HAPPYENGINE->getGame()
 
 namespace he {
 enum SubEngine
@@ -88,7 +90,7 @@ public:
     virtual ~HappyEngine();
 
     static void init(int subengines);
-    void start(game::IGame* pGame);
+    void start(game::Game* pGame);
     static void dispose();
 
     static HappyEngine* getPointer();
@@ -108,6 +110,7 @@ public:
 	gfx::Happy2DRenderer* get2DRenderer() const;
 	tools::Console* getConsole() const;
 	sfx::SoundEngine* getSoundEngine() const;
+    game::Game* getGame() const;
 
 private:
     // Singleton design pattern
@@ -115,7 +118,7 @@ private:
     static HappyEngine* s_pHappyEngine;
     void initSubEngines(int subengines);
 
-    game::IGame* m_pGame;
+    game::Game* m_pGame;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
     io::ControlsManager* m_pControlsManager;

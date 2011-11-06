@@ -25,12 +25,10 @@
 
 namespace he {
 namespace px {
-namespace shapes {
 
-PhysicsConvexShape::PhysicsConvexShape(const io::BinaryStream& stream, const vec3& scale): m_pInternalMesh(nullptr)
+PhysicsConvexShape::PhysicsConvexShape(const PhysicsConvexMesh::pointer& mesh, const vec3& scale): 
+        m_pInternalMesh(mesh->getInternalMesh()), m_Scale(scale)
 { 
-    m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(stream);
-    m_Geometry = PxConvexMeshGeometry(m_pInternalMesh, PxMeshScale(PxVec3(scale.x, scale.y, scale.z), PxQuat::createIdentity()));
 }
 
 
@@ -38,9 +36,15 @@ PhysicsConvexShape::~PhysicsConvexShape()
 {
 }
 
-const PxGeometry& PhysicsConvexShape::getGeometry() const
+physx::PxConvexMesh* PhysicsConvexShape::getInternalMesh() const
 {
-    return m_Geometry;
+    return m_pInternalMesh;
 }
 
-} } } //end namespace
+const vec3 PhysicsConvexShape::getScale() const
+{
+    return m_Scale;
+}
+
+
+} } //end namespace

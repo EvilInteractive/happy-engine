@@ -65,6 +65,9 @@
     <Filter Include="happyengine\content\model">
       <UniqueIdentifier>{36bc8286-ef47-4e72-b8f5-a09a4f511ee6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\physics\shapes">
+      <UniqueIdentifier>{4eeb95cb-74a4-41d4-b757-4d6624ffc6a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -193,12 +196,6 @@
     <ClCompile Include="code\StdAfx.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
-    <ClCompile Include="code\physics\PhysicsBoxShape.cpp">
-      <Filter>happyengine\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\physics\PhysicsConvexShape.cpp">
-      <Filter>happyengine\physics</Filter>
-    </ClCompile>
     <ClCompile Include="code\physics\PhysicsDynamicActor.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
@@ -206,9 +203,6 @@
       <Filter>happyengine\physics</Filter>
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsMaterial.cpp">
-      <Filter>happyengine\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="code\physics\PhysicsSphereShape.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsStaticActor.cpp">
@@ -298,9 +292,6 @@
     <ClCompile Include="code\error\HeAssert.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
-    <ClCompile Include="code\game\PhysicsComponent.cpp">
-      <Filter>happyengine\game\components</Filter>
-    </ClCompile>
     <ClCompile Include="code\game\SerializerStream.cpp">
       <Filter>happyengine\game\serialize</Filter>
     </ClCompile>
@@ -349,14 +340,26 @@
     <ClCompile Include="code\content\MaterialLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
+    <ClCompile Include="code\game\DynamicPhysicsComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsBoxShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsConvexShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsSphereShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsConvexMesh.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\game\StaticPhysicsComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="code\content\AssetContainer.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="code\content\AssetContainerP.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
     <ClInclude Include="code\content\BinObjLineLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
@@ -394,9 +397,6 @@
       <Filter>happyengine\error</Filter>
     </ClInclude>
     <ClInclude Include="code\game\Entity.h">
-      <Filter>happyengine\game</Filter>
-    </ClInclude>
-    <ClInclude Include="code\game\IGame.h">
       <Filter>happyengine\game</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Camera.h">
@@ -510,15 +510,6 @@
     <ClInclude Include="code\StdAfx.h">
       <Filter>happyengine</Filter>
     </ClInclude>
-    <ClInclude Include="code\physics\IPhysicsShape.h">
-      <Filter>happyengine\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\physics\PhysicsBoxShape.h">
-      <Filter>happyengine\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\physics\PhysicsConvexShape.h">
-      <Filter>happyengine\physics</Filter>
-    </ClInclude>
     <ClInclude Include="code\physics\PhysicsDynamicActor.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
@@ -526,9 +517,6 @@
       <Filter>happyengine\physics</Filter>
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsMaterial.h">
-      <Filter>happyengine\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="code\physics\PhysicsSphereShape.h">
       <Filter>happyengine\physics</Filter>
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsStaticActor.h">
@@ -657,9 +645,6 @@
     <ClInclude Include="code\error\HeAssert.h">
       <Filter>happyengine\error</Filter>
     </ClInclude>
-    <ClInclude Include="code\game\PhysicsComponent.h">
-      <Filter>happyengine\game\components</Filter>
-    </ClInclude>
     <ClInclude Include="code\game\SerializerStream.h">
       <Filter>happyengine\game\serialize</Filter>
     </ClInclude>
@@ -712,6 +697,33 @@
       <Filter>happyengine\game</Filter>
     </ClInclude>
     <ClInclude Include="code\content\MaterialLoader.h">
+      <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\DynamicPhysicsComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\IPhysicsShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsBoxShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsConvexShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsSphereShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\Game.h">
+      <Filter>happyengine\game</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsConvexMesh.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\StaticPhysicsComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\AssetContainer.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
   </ItemGroup>

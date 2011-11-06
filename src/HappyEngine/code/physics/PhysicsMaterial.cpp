@@ -29,16 +29,15 @@ namespace px {
 
 PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
 {    
-    m_pInternalMaterial = PHYSICS->getSDK()->createMaterial(staticFriction, dynamicFriction, restitution);
+    m_pInternalMaterial = PHYSICS->createMaterial(staticFriction, dynamicFriction, restitution);
     ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
 }
 
 PhysicsMaterial::~PhysicsMaterial()
 {
-    m_pInternalMaterial->release();
 }
 
-PxMaterial* PhysicsMaterial::getInternalMaterial() const
+physx::PxMaterial* PhysicsMaterial::getInternalMaterial() const
 {
     return m_pInternalMaterial;
 }

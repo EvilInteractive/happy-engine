@@ -19,11 +19,10 @@
 #define _MAINGAME_H_
 #pragma once
 
-#include "IGame.h"
+#include "Game.h"
 #include "Deferred3DRenderer.h"
 #include "TestObject.h"
 #include "Color.h"
-#include "TestBullet.h"
 #include "Simple2DEffect.h"
 #include "Texture2D.h"
 #include "Font.h"
@@ -45,7 +44,7 @@
 
 namespace happytest {
 
-class MainGame : public he::game::IGame
+class MainGame : public he::game::Game
 {
 public:
 	MainGame();
@@ -71,7 +70,7 @@ private:
 	bool m_bTest2;
 	std::string m_Test3;
     
-    std::vector<TestBullet*> m_Bullets;
+    std::vector<he::game::Entity*> m_Bullets;
 
     MyServer* m_pServer;
     MyClient* m_pClient;

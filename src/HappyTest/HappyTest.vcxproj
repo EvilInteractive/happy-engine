@@ -100,7 +100,6 @@
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MyClient.cpp" />
     <ClCompile Include="MyServer.cpp" />
-    <ClCompile Include="TestBullet.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="VertexPNT.cpp" />
   </ItemGroup>
@@ -109,7 +108,6 @@
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="MyServer.h" />
-    <ClInclude Include="TestBullet.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="VertexPNT.h" />
   </ItemGroup>

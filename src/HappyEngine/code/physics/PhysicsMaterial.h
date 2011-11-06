@@ -34,13 +34,11 @@ public:
 	PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
     virtual ~PhysicsMaterial();
 
-    PxMaterial* getInternalMaterial() const;
-
-    typedef boost::shared_ptr<PhysicsMaterial> pointer;
+    physx::PxMaterial* getInternalMaterial() const;
 
 private:
 
-    PxMaterial* m_pInternalMaterial;
+    physx::PxMaterial* m_pInternalMaterial;
 
     //Disable default copy constructor and default assignment operator
     PhysicsMaterial(const PhysicsMaterial&);

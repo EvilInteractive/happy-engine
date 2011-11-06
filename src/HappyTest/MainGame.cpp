@@ -35,6 +35,7 @@
 #include "ControlsManager.h"
 #include "Happy2DRenderer.h"
 #include "PhysicsEngine.h"
+#include "PhysicsBoxShape.h"
 #include "SoundEngine.h"
 
 #include "IniReader.h"
@@ -55,8 +56,6 @@
 #include "BinaryStream.h"
 
 #include "ModelComponent.h"
-
-#include "../../HappyCooker/HappyCookerDll/HappyCooker.cpp"
 
 namespace happytest {
 
@@ -80,7 +79,7 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 MainGame::~MainGame()
 {
     delete m_pTestObject;
-    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](TestBullet* pBullet)
+    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](he::game::Entity* pBullet)
     {
         delete pBullet;
     });
@@ -172,13 +171,13 @@ void MainGame::load()
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Scene", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Scene", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     m_pScene->addComponent(pSceneModelComp);
 
     m_pSky = NEW he::game::Entity();
     game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
     pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
-    pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
     pSkyModelComp->setLocalTransform(mat44::createScale(200));
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
@@ -202,24 +201,26 @@ void MainGame::load()
 }
 void MainGame::tick(float dTime)
 {
+    using namespace he;
+
 	m_pCamera->tick(dTime);
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
 
     m_pTestObject->tick(dTime);
-    m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + he::vec3(0, 2, 0));
+    m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
     if (m_pClient == nullptr && m_pServer == nullptr)
     {
-        if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F11))
+        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_F11))
         {
             std::cout << "Starting server\n";
             m_pServer = NEW MyServer();
             m_pServer->start(30000, 16);
             NETWORK->start();
         }
-        else if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F12))
+        else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_F12))
         {
             std::cout << "Starting client\n";
             m_pClient = NEW MyClient();
@@ -228,17 +229,30 @@ void MainGame::tick(float dTime)
         }
     }
 
-    std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&dTime](TestBullet* pBullet)
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
     {
-        pBullet->tick(dTime);
-    });
+        game::Entity* pBullet(NEW game::Entity());
+        
+        pBullet->setWorldMatrix(mat44::createTranslation(m_pCamera->getPosition()));
 
-    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space))
-    {
-        TestBullet* pBullet(NEW TestBullet(m_pCamera->getPosition(), m_pCamera->getLook() * 20));
+        game::DynamicPhysicsComponent* pPhysicsComponent(NEW game::DynamicPhysicsComponent());
+        pBullet->addComponent(pPhysicsComponent);
+        px::PhysicsMaterial material(0.8f, 0.5f, 0.1f);
+        px::PhysicsBoxShape boxShape(vec3(2, 2, 2));
+        pPhysicsComponent->addShape(&boxShape, material, 5);
+
+        game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());
+        pBulletModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
+        pBulletModelComp->setModel(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", pBulletModelComp->getMaterial().getCompatibleVertexLayout()));
+        pBullet->addComponent(pBulletModelComp);
+
+        pPhysicsComponent->getDynamicActor()->addVelocity(m_pCamera->getLook() * 20);
+
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";
     }
+
+    he::game::Game::tick(dTime); //tick all components
 
     //m_pSpotLight->setPosition(m_pCamera->getPosition());
     //m_pSpotLight->setDirection(-he::normalize(m_pCamera->getLook()));

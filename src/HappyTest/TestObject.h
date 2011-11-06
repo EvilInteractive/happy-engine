@@ -21,10 +21,11 @@
 
 #include "vec3.h"
 #include "mat44.h"
-#include "PhysicsDynamicActor.h"
 #include "Font.h"
 #include "Entity.h"
+
 #include "RiggedModelComponent.h"
+#include "DynamicPhysicsComponent.h"
 
 namespace happytest {
 
@@ -43,9 +44,8 @@ private:
     float m_Rotation;
     he::vec3 m_Position;
     
-    he::px::PhysicsDynamicActor* m_pActor;
-    he::px::PhysicsMaterial::pointer m_pMaterial;
-    
+    he::game::DynamicPhysicsComponent* m_PhysicsComponent;
+
     he::game::RiggedModelComponent* m_pRiggedModelComponent;
     he::game::RiggedModelComponent::BoneTransform m_LeftWheelBone, m_RightWheelBone;
     void onModelLoaded();

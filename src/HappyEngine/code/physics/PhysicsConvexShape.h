@@ -24,33 +24,34 @@
 #pragma once
 
 #include "IPhysicsShape.h"
-#include "geometry/PxConvexMesh.h"
 #include "geometry/PxConvexMeshGeometry.h"
+#include "PhysicsConvexMesh.h"
 #include "vec3.h"
-#include "BinaryStream.h"
 
 namespace he {
 namespace px {
-namespace shapes {
 
 class PhysicsConvexShape : public IPhysicsShape
 {
 public:
-    explicit PhysicsConvexShape(const io::BinaryStream& stream, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
+    explicit PhysicsConvexShape(const PhysicsConvexMesh::pointer& mesh, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
     virtual ~PhysicsConvexShape();
 
-    virtual const PxGeometry& getGeometry() const;
+    virtual PhysicsShapeType getType() const { return PhysicsShapeType_Convex; }
+
+    physx::PxConvexMesh* getInternalMesh() const;
+    const vec3 getScale() const;
 
 private:
 
-    PxConvexMesh* m_pInternalMesh;
-    PxConvexMeshGeometry m_Geometry;
+    physx::PxConvexMesh* m_pInternalMesh;
+    vec3 m_Scale;
 
     //Disable default copy constructor and default assignment operator
     PhysicsConvexShape(const PhysicsConvexShape&);
     PhysicsConvexShape& operator=(const PhysicsConvexShape&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

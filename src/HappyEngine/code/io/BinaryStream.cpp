@@ -120,7 +120,7 @@ std::wstring BinaryStream::readWString() const
     return s;
 }
 
-void BinaryStream::readBuffer(void* buffer, PxU32 size)	const
+void BinaryStream::readBuffer(void* buffer, physx::PxU32 size)	const
 {
     if (size > 0)
     {
@@ -129,72 +129,72 @@ void BinaryStream::readBuffer(void* buffer, PxU32 size)	const
     }
 }
 
-PxStream& BinaryStream::storeByte(byte b)
+physx::PxStream& BinaryStream::storeByte(byte b)
 {
     size_t count(fwrite(&b, sizeof(byte), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
-PxStream& BinaryStream::storeWord(ushort w)
+physx::PxStream& BinaryStream::storeWord(ushort w)
 {
     size_t count(fwrite(&w, sizeof(uint16), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
-PxStream& BinaryStream::storeDword(uint d)
+physx::PxStream& BinaryStream::storeDword(uint d)
 {
     size_t count(fwrite(&d, sizeof(uint32), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
-PxStream& BinaryStream::storeFloat(float f)
+physx::PxStream& BinaryStream::storeFloat(float f)
 {
     size_t count(fwrite(&f, sizeof(float), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
-PxStream& BinaryStream::storeDouble(double d)
+physx::PxStream& BinaryStream::storeDouble(double d)
 {
     size_t count(fwrite(&d, sizeof(double), 1, m_pFile));
     ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 
-PxStream& BinaryStream::storeVector2(const vec2& v)
+physx::PxStream& BinaryStream::storeVector2(const vec2& v)
 {
     storeBuffer(&v, sizeof(vec2));
     return *this;
 }
-PxStream& BinaryStream::storeVector3(const vec3& v)
+physx::PxStream& BinaryStream::storeVector3(const vec3& v)
 {
     storeBuffer(&v, sizeof(vec3));
     return *this;
 }
-PxStream& BinaryStream::storeVector4(const vec4& v)
+physx::PxStream& BinaryStream::storeVector4(const vec4& v)
 {
     storeBuffer(&v, sizeof(vec4));
     return *this;
 }
-PxStream& BinaryStream::storeMatrix(const mat44& m)
+physx::PxStream& BinaryStream::storeMatrix(const mat44& m)
 {
     storeBuffer(&m, sizeof(mat44));
     return *this;
 }
 
-PxStream& BinaryStream::storeString(const std::string& s)
+physx::PxStream& BinaryStream::storeString(const std::string& s)
 {
     storeDword(s.size());
     storeBuffer(s.c_str(), sizeof(char) * s.size());
     return *this;
 }
-PxStream& BinaryStream::storeWString(const std::wstring& s)
+physx::PxStream& BinaryStream::storeWString(const std::wstring& s)
 {
     storeDword(s.size());
     storeBuffer(s.c_str(), sizeof(wchar_t) * s.size());
     return *this;
 }
 
-PxStream& BinaryStream::storeBuffer(const void* buffer, PxU32 size)
+physx::PxStream& BinaryStream::storeBuffer(const void* buffer, physx::PxU32 size)
 {
     if (size > 0)
     {

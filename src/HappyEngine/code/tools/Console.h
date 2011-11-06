@@ -58,6 +58,7 @@ public:
     virtual ~Console();
 
 	/* GENERAL */
+    void load();
 	void tick();
 	void draw();
 

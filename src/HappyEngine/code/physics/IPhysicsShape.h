@@ -31,18 +31,28 @@
 
 namespace he {
 namespace px {
-namespace shapes {
+
+enum PhysicsShapeType
+{
+    PhysicsShapeType_Box,
+    PhysicsShapeType_Convex,
+    PhysicsShapeType_Sphere,
+    PhysicsShapeType_Capsule,
+
+    //Only for static actors
+    PhysicsShapeType_TriangleMesh,
+    PhysicsShapeType_Plane,
+    PhysicsShapeType_HeightField
+};
 
 class IPhysicsShape
 {
 public:
     virtual ~IPhysicsShape() {}
 
-    virtual const PxGeometry& getGeometry() const = 0;
-
-    typedef boost::shared_ptr<IPhysicsShape> pointer;
+    virtual PhysicsShapeType getType() const = 0;
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

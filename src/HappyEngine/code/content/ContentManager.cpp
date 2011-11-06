@@ -68,9 +68,9 @@ gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
     return m_pLineLoader->loadLine(m_ContentRootDir + m_LineFolder + asset);
 }
 
-const std::vector<px::shapes::IPhysicsShape::pointer>& ContentManager::loadPhysicsShape(const std::string& asset)
+const std::vector<px::PhysicsConvexMesh::pointer>& ContentManager::loadPhysicsConvex(const std::string& asset)
 {
-    return m_pPhysicsShapeLoader->load(m_ContentRootDir + m_PhysicsFolder + asset);
+    return m_pPhysicsShapeLoader->loadConvex(m_ContentRootDir + m_PhysicsFolder + asset);
 }
 
 gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)

@@ -60,17 +60,6 @@ Console::Console() :	m_Shortcut(io::Key_C),
 	m_MsgColors[CMSG_TYPE_ENGINE] = Color(0.2f,1.0f,0.2f);
 	m_MsgColors[CMSG_TYPE_COMMAND] = Color(0.2f,0.6f,1.0f);
 
-	m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
-
-	m_pTextBox = NEW gui::TextBox(
-		RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
-		"Enter command...", 10, "Ubuntu-Medium.ttf");
-
-	m_pTextBox->setColors(	Color(0.3f,0.3f,0.3f,0.9f),
-							Color(1.0f,1.0f,1.0f),
-							Color(0.4f,0.4f,0.4f),
-							Color(0.19f,0.19f,0.19f));
-
 	m_Help = gui::Text::pointer(NEW gui::Text());
 	m_Help->addLine("******** HELP ********");
 	m_Help->addLine("'listvars' (displays registered variables and their type)");
@@ -95,15 +84,6 @@ Console::Console() :	m_Shortcut(io::Key_C),
 
 	addMessage(m_HelpCommand);
 
-	m_CmdHistory.push_back("");
-
-	m_pScrollBar = NEW gui::Scrollbar(
-		vec2(static_cast<float>(GRAPHICS->getScreenWidth()) - 20.0f, 0.0f), vec2(20,200), 50.0f);
-
-	m_pScrollBar->setBarPos(1.0f);
-
-	m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getFontLineSpacing());
-
 	m_ShowMessageTypes[CMSG_TYPE_COMMAND] = true;
 	m_ShowMessageTypes[CMSG_TYPE_INFO] = true;
 	m_ShowMessageTypes[CMSG_TYPE_WARNING] = true;
@@ -111,6 +91,28 @@ Console::Console() :	m_Shortcut(io::Key_C),
 	m_ShowMessageTypes[CMSG_TYPE_ENGINE] = true;
 
 	registerValue<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
+}
+void Console::load()
+{	
+    m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
+
+    m_pTextBox = NEW gui::TextBox(
+        RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
+        "Enter command...", 10, "Ubuntu-Medium.ttf");
+
+    m_pTextBox->setColors(	Color(0.3f,0.3f,0.3f,0.9f),
+        Color(1.0f,1.0f,1.0f),
+        Color(0.4f,0.4f,0.4f),
+        Color(0.19f,0.19f,0.19f));
+
+    m_CmdHistory.push_back("");
+
+    m_pScrollBar = NEW gui::Scrollbar(
+        vec2(static_cast<float>(GRAPHICS->getScreenWidth()) - 20.0f, 0.0f), vec2(20,200), 50.0f);
+
+    m_pScrollBar->setBarPos(1.0f);
+
+    m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getFontLineSpacing());
 }
 
 Console::~Console()

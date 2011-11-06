@@ -28,7 +28,7 @@
 namespace he {
 namespace ct {
 
-PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<std::vector<px::shapes::IPhysicsShape::pointer>>())
+PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>())
 {
 }
 
@@ -38,7 +38,7 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
     delete m_pAssetContainer;
 }
 
-const std::vector<px::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(const std::string& path)
+const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConvex(const std::string& path)
 {
     if (m_pAssetContainer->isAssetPresent(path))
 	{
@@ -51,11 +51,10 @@ const std::vector<px::shapes::IPhysicsShape::pointer>& PhysicsShapeLoader::load(
             io::BinaryStream stream(path, io::BinaryStream::Read);
             byte numConvex(stream.readByte());
 
-            std::vector<px::shapes::IPhysicsShape::pointer> shapes;
+            std::vector<px::PhysicsConvexMesh::pointer> shapes;
             for (int i = 0; i < numConvex; ++i)
             {
-                shapes.push_back(px::shapes::IPhysicsShape::pointer(
-                    NEW px::shapes::PhysicsConvexShape(stream)));
+                shapes.push_back(px::PhysicsConvexMesh::pointer(NEW px::PhysicsConvexMesh(stream)));
             }
 
             m_pAssetContainer->addAsset(path, shapes);

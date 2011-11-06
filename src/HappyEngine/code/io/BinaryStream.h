@@ -36,7 +36,7 @@
 namespace he {
 namespace io {
 
-class BinaryStream : public PxStream
+class BinaryStream : public physx::PxStream
 {
 public:
     enum OpenType
@@ -52,31 +52,31 @@ public:
 	virtual		float			readFloat()								const;
 	virtual		double			readDouble()							const;
 
-    virtual     vec2   readVector2()                           const;
-    virtual     vec3   readVector3()                           const;
-    virtual     vec4   readVector4()                           const;
-    virtual     mat44    readMatrix()                            const;
+    virtual     vec2            readVector2()                           const;
+    virtual     vec3            readVector3()                           const;
+    virtual     vec4            readVector4()                           const;
+    virtual     mat44           readMatrix()                            const;
 
     virtual     std::string     readString()                            const;
     virtual     std::wstring    readWString()                           const;
 
-	virtual		void			readBuffer(void* buffer, PxU32 size)	const;
+	virtual		void			readBuffer(void* buffer, physx::PxU32 size)	const;
 
-	virtual		PxStream&		storeByte(byte b);
-	virtual		PxStream&		storeWord(ushort w);
-	virtual		PxStream&		storeDword(uint d);
-	virtual		PxStream&		storeFloat(float f);
-	virtual		PxStream&		storeDouble(double d);
+	virtual		physx::PxStream&		storeByte(byte b);
+	virtual		physx::PxStream&		storeWord(ushort w);
+	virtual		physx::PxStream&		storeDword(uint d);
+	virtual		physx::PxStream&		storeFloat(float f);
+	virtual		physx::PxStream&		storeDouble(double d);
 
-    virtual     PxStream&       storeVector2(const vec2& v);
-    virtual     PxStream&       storeVector3(const vec3& v);
-    virtual     PxStream&       storeVector4(const vec4& v);
-    virtual     PxStream&       storeMatrix(const mat44& m);
+    virtual     physx::PxStream&        storeVector2(const vec2& v);
+    virtual     physx::PxStream&        storeVector3(const vec3& v);
+    virtual     physx::PxStream&        storeVector4(const vec4& v);
+    virtual     physx::PxStream&        storeMatrix(const mat44& m);
 
-    virtual     PxStream&       storeString(const std::string& s);
-    virtual     PxStream&       storeWString(const std::wstring& s);
+    virtual     physx::PxStream&        storeString(const std::string& s);
+    virtual     physx::PxStream&        storeWString(const std::wstring& s);
 
-	virtual		PxStream&		storeBuffer(const void* buffer, PxU32 size);
+	virtual		physx::PxStream&		storeBuffer(const void* buffer, physx::PxU32 size);
 
 private:
     FILE* m_pFile;

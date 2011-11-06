@@ -58,6 +58,8 @@ public:
 
 	bool operator==(const vec3& v) const;
 	bool operator!=(const vec3& v) const;
+
+    bool operator<(const vec3& v) const; //FOR std::MAP doesn't make any sense else
     //<----------------------------------------<
 };
 

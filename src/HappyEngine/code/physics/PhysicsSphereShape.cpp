@@ -24,9 +24,8 @@
 
 namespace he {
 namespace px {
-namespace shapes {
 
-PhysicsSphereShape::PhysicsSphereShape(float radius): m_Radius(radius), m_Geometry(PxSphereGeometry(m_Radius))
+PhysicsSphereShape::PhysicsSphereShape(float radius): m_Radius(radius)
 {
     
 }
@@ -36,9 +35,9 @@ PhysicsSphereShape::~PhysicsSphereShape()
 {
 }
 
-const PxGeometry& PhysicsSphereShape::getGeometry() const
+float PhysicsSphereShape::getRadius() const
 {
-    return m_Geometry;
+    return m_Radius;
 }
 
-} } } //end namespace
+} } //end namespace

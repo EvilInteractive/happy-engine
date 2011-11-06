@@ -116,6 +116,23 @@ bool vec3::operator!=(const vec3& v) const
 {
     return x != v.x || y != v.y || z != v.z;
 }
+
+bool vec3::operator<(const vec3& v) const //FOR std::MAP doesn't make any sense else
+{
+    if (x < v.x)
+        return true;
+    if (x == v.x)
+    {
+        if (y < v.y)
+            return true;
+        if (y == v.y)
+        {
+            if (z < v.z)
+                return true;
+        }
+    }
+    return false;
+}
 //<----------------------------------------<
 
 } //end namespace

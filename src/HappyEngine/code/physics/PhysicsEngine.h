@@ -31,10 +31,12 @@
 #include "boost/thread.hpp"
 #pragma warning(default:4244)
 
+#include "AssetContainer.h"
+
 namespace he {
 namespace px {
 
-class HappyPhysicsAllocator : public PxAllocatorCallback
+class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
     void* allocate(size_t size, const char*, const char*, int)
     {
@@ -58,19 +60,23 @@ public:
     void startSimulation();
     void stopSimulation();
 
-    PxPhysics* getSDK() const;
-    PxScene* getScene() const;
+    physx::PxPhysics* getSDK() const;
+    physx::PxScene* getScene() const;
+
+    physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
 
 private:
 
-    PxPhysics* m_pPhysXSDK;
-    PxScene* m_pScene;
+    physx::PxPhysics* m_pPhysXSDK;
+    physx::PxScene* m_pScene;
 
-    PxErrorCallback* m_pErrorCallback;
-    PxAllocatorCallback* m_pAllocator;
+    physx::PxErrorCallback* m_pErrorCallback;
+    physx::PxAllocatorCallback* m_pAllocator;
 
-    PxDefaultCpuDispatcher* m_pCpuDispatcher;
-    pxtask::CudaContextManager* m_pCudaContextManager;
+    physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
+    physx::pxtask::CudaContextManager* m_pCudaContextManager;
+
+    ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
 
     boost::thread m_PhysXThread;
 

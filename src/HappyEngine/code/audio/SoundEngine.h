@@ -22,8 +22,8 @@
 #define _HE_SOUND_ENGINE_H_
 #pragma once
 
-#include "AssetContainerP.h"
 #include <string>
+#include <map>
 #include "al.h"
 #include "alc.h"
 #include "ogg/ogg.h"

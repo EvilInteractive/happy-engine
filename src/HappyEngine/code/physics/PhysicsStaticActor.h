@@ -34,15 +34,18 @@ namespace px {
 class PhysicsStaticActor
 {
 public:
-	PhysicsStaticActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, const PhysicsMaterial::pointer& pMaterial);
+    PhysicsStaticActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material);
+    PhysicsStaticActor(const mat44& pose);
     virtual ~PhysicsStaticActor();
     
     vec3 getPosition() const;
     mat44 getPose() const;
 
+    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material) const;
+
 private:
 
-    PxRigidStatic* m_pActor;
+    physx::PxRigidStatic* m_pActor;
 
     //Disable default copy constructor and default assignment operator
     PhysicsStaticActor(const PhysicsStaticActor&);

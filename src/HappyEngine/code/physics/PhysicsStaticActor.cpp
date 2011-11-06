@@ -24,22 +24,78 @@
 #include "HeAssert.h"
 #include "PhysicsEngine.h"
 
+#include "PhysicsBoxShape.h"
+#include "PhysicsSphereShape.h"
+#include "PhysicsConvexShape.h"
+
 namespace he {
 namespace px {
 
-PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const shapes::IPhysicsShape::pointer& shape, const PhysicsMaterial::pointer& pMaterial)
+PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material)
 {
-    m_pActor = PHYSICS->getSDK()->createRigidStatic(PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
-                                                        PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), pose.getPhyicsMatrix().column1.getXYZ(), 
-                                                    pose.getPhyicsMatrix().column2.getXYZ()))));
+    m_pActor = PHYSICS->getSDK()->createRigidStatic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+        physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
+        pose.getPhyicsMatrix().column1.getXYZ(), 
+        pose.getPhyicsMatrix().column2.getXYZ()))));
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
-    PxShape* pShape(m_pActor->createShape(shape->getGeometry(), *(pMaterial->getInternalMaterial())));
-    ASSERT(pShape != nullptr, "Shape creation failed");
+    addShape(pShape, material);
 
     PHYSICS->getScene()->addActor(*m_pActor);
 }
+PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
+{  
+    m_pActor = PHYSICS->getSDK()->createRigidStatic(physx::pubfnd3::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+        physx::pubfnd3::PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
+        pose.getPhyicsMatrix().column1.getXYZ(), 
+        pose.getPhyicsMatrix().column2.getXYZ()))));
+    ASSERT(m_pActor != nullptr, "Actor creation failed");
 
+    PHYSICS->getScene()->addActor(*m_pActor);
+}
+void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material) const
+{
+    physx::PxShape* pPxShape(nullptr);
+    switch (pShape->getType())
+    {
+    case PhysicsShapeType_Box:
+        {
+            const PhysicsBoxShape* pBoxShape(dynamic_cast<const PhysicsBoxShape*>(pShape));
+            ASSERT(pBoxShape != nullptr, "IPhysicsShape type PhysicsShapeType_Box is not a PhysicsBoxShape");
+            pPxShape = m_pActor->createShape(
+                physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
+                *material.getInternalMaterial());
+            break;
+        }
+    case PhysicsShapeType_Sphere:
+        {
+            const PhysicsSphereShape* pSphereShape(dynamic_cast<const PhysicsSphereShape*>(pShape));
+            ASSERT(pSphereShape != nullptr, "IPhysicsShape type PhysicsShapeType_Sphere is not a PhysicsSphereShape");
+            pPxShape = m_pActor->createShape(
+                physx::PxSphereGeometry(pSphereShape->getRadius()), 
+                *material.getInternalMaterial());
+            break;
+        }
+    case PhysicsShapeType_Capsule:
+        ASSERT(false, "Not Implemented");
+        break;
+    case PhysicsShapeType_Convex:
+        {
+            const PhysicsConvexShape* pConvexShape(dynamic_cast<const PhysicsConvexShape*>(pShape));
+            ASSERT(pConvexShape != nullptr, "IPhysicsShape type PhysicsShapeType_Convex is not a PhysicsConvexShape");
+            pPxShape = m_pActor->createShape(
+                physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
+                physx::PxMeshScale(physx::pubfnd3::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
+                *material.getInternalMaterial());
+            break;
+        }
+
+    default: 
+        ASSERT(false, "Not Implemented");
+        break;
+    }
+    ASSERT(pPxShape != nullptr, "Shape creation failed");
+}
 
 PhysicsStaticActor::~PhysicsStaticActor()
 {
@@ -53,7 +109,7 @@ vec3 PhysicsStaticActor::getPosition() const
 }
 mat44 PhysicsStaticActor::getPose() const
 {
-    return mat44(PxMat44(PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
+    return mat44(physx::PxMat44(physx::PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
 }
 
 } } //end namespace

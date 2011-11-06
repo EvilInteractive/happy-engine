@@ -40,9 +40,6 @@
     <ClCompile Include="VertexPNT.cpp">
       <Filter>happytest\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="TestBullet.cpp">
-      <Filter>happytest</Filter>
-    </ClCompile>
     <ClCompile Include="MyServer.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
@@ -62,9 +59,6 @@
     </ClInclude>
     <ClInclude Include="VertexPNT.h">
       <Filter>happytest\vertex</Filter>
-    </ClInclude>
-    <ClInclude Include="TestBullet.h">
-      <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="MyServer.h">
       <Filter>happytest</Filter>

@@ -28,25 +28,23 @@
 
 namespace he {
 namespace px {
-namespace shapes {
 
 class PhysicsBoxShape : public IPhysicsShape
 {
 public:
     explicit PhysicsBoxShape(const vec3& dimension);
     virtual ~PhysicsBoxShape();
+    //Default copy constructor and assignment operator are OK
 
-    virtual const PxGeometry& getGeometry() const;
+    virtual PhysicsShapeType getType() const { return PhysicsShapeType_Box; }
+
+    const vec3 getDimension() const;
 
 private:
-    PxBoxGeometry m_Geometry;
     vec3 m_Dimension;
 
-    //Disable default copy constructor and default assignment operator
-    PhysicsBoxShape(const PhysicsBoxShape&);
-    PhysicsBoxShape& operator=(const PhysicsBoxShape&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

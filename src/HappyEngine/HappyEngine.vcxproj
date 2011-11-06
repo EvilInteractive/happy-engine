@@ -38,9 +38,10 @@
     <ClCompile Include="code\error\FileNotFoundException.cpp" />
     <ClCompile Include="code\game\Entity.cpp" />
     <ClCompile Include="code\game\ModelComponent.cpp" />
-    <ClCompile Include="code\game\PhysicsComponent.cpp" />
+    <ClCompile Include="code\game\DynamicPhysicsComponent.cpp" />
     <ClCompile Include="code\game\RiggedModelComponent.cpp" />
     <ClCompile Include="code\game\SerializerStream.cpp" />
+    <ClCompile Include="code\game\StaticPhysicsComponent.cpp" />
     <ClCompile Include="code\graphics\AutoExposure.cpp" />
     <ClCompile Include="code\graphics\Bloom.cpp" />
     <ClCompile Include="code\graphics\Bone.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="code\networking\Server.cpp" />
     <ClCompile Include="code\OpenGL.cpp" />
     <ClCompile Include="code\physics\PhysicsBoxShape.cpp" />
+    <ClCompile Include="code\physics\PhysicsConvexMesh.cpp" />
     <ClCompile Include="code\physics\PhysicsConvexShape.cpp" />
     <ClCompile Include="code\physics\PhysicsDynamicActor.cpp" />
     <ClCompile Include="code\physics\PhysicsEngine.cpp" />
@@ -116,7 +118,6 @@
     <ClInclude Include="code\audio\Sound3D.h" />
     <ClInclude Include="code\audio\SoundEngine.h" />
     <ClInclude Include="code\content\AssetContainer.h" />
-    <ClInclude Include="code\content\AssetContainerP.h" />
     <ClInclude Include="code\content\BinObjLineLoader.h" />
     <ClInclude Include="code\content\BinObjLoader.h" />
     <ClInclude Include="code\content\ContentManager.h" />
@@ -138,12 +139,13 @@
     <ClInclude Include="code\error\FileNotFoundException.h" />
     <ClInclude Include="code\game\Entity.h" />
     <ClInclude Include="code\game\IComponent.h" />
-    <ClInclude Include="code\game\IGame.h" />
+    <ClInclude Include="code\game\Game.h" />
     <ClInclude Include="code\game\ITickable.h" />
     <ClInclude Include="code\game\ModelComponent.h" />
-    <ClInclude Include="code\game\PhysicsComponent.h" />
+    <ClInclude Include="code\game\DynamicPhysicsComponent.h" />
     <ClInclude Include="code\game\RiggedModelComponent.h" />
     <ClInclude Include="code\game\SerializerStream.h" />
+    <ClInclude Include="code\game\StaticPhysicsComponent.h" />
     <ClInclude Include="code\graphics\AutoExposure.h" />
     <ClInclude Include="code\graphics\Bloom.h" />
     <ClInclude Include="code\graphics\Bone.h" />
@@ -213,6 +215,7 @@
     <ClInclude Include="code\OpenGL.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
+    <ClInclude Include="code\physics\PhysicsConvexMesh.h" />
     <ClInclude Include="code\physics\PhysicsConvexShape.h" />
     <ClInclude Include="code\physics\PhysicsDynamicActor.h" />
     <ClInclude Include="code\physics\PhysicsEngine.h" />

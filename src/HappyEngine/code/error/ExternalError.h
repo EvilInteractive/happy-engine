@@ -77,13 +77,13 @@ inline void checkFboStatus(const std::string& name)
     }
 }
 
-class HappyPhysicsErrorCallback : public PxErrorCallback
+class HappyPhysicsErrorCallback : public physx::PxErrorCallback
 {
 public:
     HappyPhysicsErrorCallback();
     ~HappyPhysicsErrorCallback();
 
-    virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line);
+    virtual void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line);
 };
 
 } } //end namespace

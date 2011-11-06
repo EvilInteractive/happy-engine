@@ -32,9 +32,20 @@
 
 struct aiNode;
 struct aiScene;
+struct aiMesh;
 
 namespace happycooker {
 
+struct BoneWeight
+{
+    he::uint boneID;
+    float weight;
+};
+struct Bone
+{
+    he::mat44 transformation;
+    std::string name;
+};
 struct VertexPos
 {
     he::vec3 position;
@@ -48,12 +59,24 @@ public:
     static HappyCooker* getInstance();
     static void dispose();
 
-    bool cookToConvex(const char* input, const char* output);
-    bool cookToBinObj(const char* input, const char* output);
-    bool cookLineToBinObj(const char* input, const char* output);
+    bool cook(const char* input, const char* output);
+
     void setInfoCallback(bool (__stdcall *infoCallback)(const char*));
 
 private:
+
+    bool cookBinObj(he::io::BinaryStream& stream);
+    bool cookConvex(he::io::BinaryStream& stream);
+    bool cookTriangleMesh(he::io::BinaryStream& stream);
+
+    struct CookData
+    {
+        aiMesh* pMesh;
+        he::mat44 mtxTransformation;
+    };
+    std::vector<CookData> m_ObjCookData;
+    std::vector<CookData> m_ConvexCookData;
+    std::vector<CookData> m_TriangleMeshCookData;
 
     static HappyCooker* s_pSingleton;
 	HappyCooker();
@@ -62,8 +85,8 @@ private:
     void addInfo(std::string info);
     bool (__stdcall *m_InfoCallback)(const char*);
 
-    bool binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, const aiScene* pScene, const he::mat44& p_Transformation);
-
+    void binobjNodeRunner(aiNode* pNode, const aiScene* pScene, const he::mat44& p_Transformation);
+    
     //Disable default copy constructor and default assignment operator
     HappyCooker(const HappyCooker&);
     HappyCooker& operator=(const HappyCooker&);

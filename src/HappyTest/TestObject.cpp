@@ -24,21 +24,30 @@
 #include "ControlsManager.h"
 #include "RiggedModelComponent.h"
 #include "PhysicsMaterial.h"
+#include "PhysicsConvexShape.h"
 
 namespace happytest {
 
 TestObject::TestObject(): 
     m_Rotation(0), m_Position(0, 0, 0), 
-    m_pActor(nullptr),
     m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 14)),
-    m_pMaterial(NEW he::px::PhysicsMaterial(0.8f, 0.5f, 0.1f)),
     m_WheelOrientation(0.0f), m_WheelMax(he::piOverFour), m_WheelTurnSpeed(2.0f/he::piOverFour), m_WheelSpeedRotation(0.0f)
 {
     using namespace he;
         
-    m_pActor = NEW px::PhysicsDynamicActor(mat44::createTranslation(m_Position),
-        CONTENT->loadPhysicsShape("car.bphys"), 5.0f, m_pMaterial);
-    m_pActor->setKeyframed(true);
+
+    setWorldMatrix(mat44::createTranslation(m_Position));
+
+    m_PhysicsComponent = NEW game::DynamicPhysicsComponent();
+    addComponent(m_PhysicsComponent);
+    px::PhysicsMaterial material(0.8f, 0.5f, 0.1f);
+    const std::vector<px::PhysicsConvexMesh::pointer>& pPMeshes(CONTENT->loadPhysicsConvex("car.bphys"));
+    std::for_each(pPMeshes.cbegin(), pPMeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
+    {
+        he::px::PhysicsConvexShape shape(pMesh);
+        m_PhysicsComponent->addShape(&shape, material, 300.0f);
+    });
+    m_PhysicsComponent->getDynamicActor()->setKeyframed(true);
 
     m_pRiggedModelComponent = NEW game::RiggedModelComponent();
     m_pRiggedModelComponent->setMaterial(CONTENT->loadMaterial("car.material"));
@@ -50,7 +59,6 @@ TestObject::TestObject():
 
 TestObject::~TestObject()
 {
-    delete m_pActor;
 }
 
 
@@ -97,12 +105,10 @@ void TestObject::tick(float dTime)
             m_Position += vec3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
             m_WheelSpeedRotation -= dTime * 5;
         }
-        m_pActor->keyframedSetPose(m_Position, vec3(0, 1, 0), m_Rotation);
+        m_PhysicsComponent->getDynamicActor()->keyframedSetPose(m_Position, vec3(0, 1, 0), m_Rotation);
 
         (*m_LeftWheelBone.m_RealTransform) = m_LeftWheelBone.m_FromOrigTransform * mat44::createRotation(vec3::up, m_WheelOrientation) * mat44::createRotation(vec3::forward, m_WheelSpeedRotation) * m_LeftWheelBone.m_ToOrigTransform;
         (*m_RightWheelBone.m_RealTransform) = m_RightWheelBone.m_FromOrigTransform * mat44::createRotation(vec3::up, m_WheelOrientation) * mat44::createRotation(vec3::forward, m_WheelSpeedRotation) * m_RightWheelBone.m_ToOrigTransform;
-
-        setWorldMatrix(m_pActor->getPose());
     }
 }
 

@@ -27,26 +27,23 @@
 
 namespace he {
 namespace px {
-namespace shapes {
 
 class PhysicsSphereShape : public IPhysicsShape
 {
 public:
 	explicit PhysicsSphereShape(float radius);
     virtual ~PhysicsSphereShape();
+    //Default copy constructor and assignment operator are OK
 
-    virtual const PxGeometry& getGeometry() const;
+    virtual PhysicsShapeType getType() const { return PhysicsShapeType_Sphere; }
+
+    float getRadius() const;
 
 private:
 
     float m_Radius;
-    PxSphereGeometry m_Geometry;
-
-    //Disable default copy constructor and default assignment operator
-    PhysicsSphereShape(const PhysicsSphereShape&);
-    PhysicsSphereShape& operator=(const PhysicsSphereShape&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

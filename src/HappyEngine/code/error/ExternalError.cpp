@@ -28,34 +28,33 @@ namespace err {
 HappyPhysicsErrorCallback::HappyPhysicsErrorCallback() {}
 HappyPhysicsErrorCallback::~HappyPhysicsErrorCallback(){}
 
-void HappyPhysicsErrorCallback::reportError(PxErrorCode::Enum code, const char* message, const char* file, int line)
+void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line)
 {
-    std::stringstream err;
-    err << "physicsEngine '";
+    std::cout << "physicsEngine '";
 
     switch (code)
     {
-        case PxErrorCode::eINVALID_PARAMETER:
-            err << "invalid parameter";
+        case physx::PxErrorCode::eINVALID_PARAMETER:
+            std::cout << "invalid parameter";
             break;
-        case PxErrorCode::eINVALID_OPERATION:
-            err << "invalid operation";
+        case physx::PxErrorCode::eINVALID_OPERATION:
+            std::cout << "invalid operation";
             break;
-        case PxErrorCode::eOUT_OF_MEMORY:
-            err << "out of memory";
+        case physx::PxErrorCode::eOUT_OF_MEMORY:
+            std::cout << "out of memory";
             break;
-        case PxErrorCode::eDEBUG_INFO:
-            err << "info";
+        case physx::PxErrorCode::eDEBUG_INFO:
+            std::cout << "info";
             break;
-        case PxErrorCode::eDEBUG_WARNING:
-            err << "warning";
+        case physx::PxErrorCode::eDEBUG_WARNING:
+            std::cout << "warning";
             break;
         default:
-            err << "unknown err";
+            std::cout << "unknown err";
             break;
     }
 
-    err << "': " << message << " [" << file << "(" << line << ")] \n";
+    std::cout << "': " << message << " [" << file << "(" << line << ")] \n";
 }
 
 } } //end namespace

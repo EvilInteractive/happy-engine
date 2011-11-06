@@ -32,6 +32,7 @@
 #include "ContentManager.h"
 #include "NetworkManager.h"
 #include "Happy2DRenderer.h"
+#include "Game.h"
 #include "Console.h"
 #include "SoundEngine.h"
 
@@ -142,10 +143,11 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 		m_pSoundEngine->initialize();
     }
 
-	m_pConsole = NEW tools::Console();
+    m_pConsole = NEW tools::Console();
+    m_pConsole->load();
 }
 
-void HappyEngine::start(game::IGame* pGame)
+void HappyEngine::start(game::Game* pGame)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -270,6 +272,11 @@ tools::Console* HappyEngine::getConsole() const
 sfx::SoundEngine* HappyEngine::getSoundEngine() const
 {
 	return m_pSoundEngine;
+}
+
+game::Game* HappyEngine::getGame() const
+{
+    return m_pGame;
 }
 
 } //end namespace

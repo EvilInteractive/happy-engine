@@ -25,6 +25,7 @@
 #include "HeAssert.h"
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 #include "Sound2D.h"
 #include "Sound3D.h"
 

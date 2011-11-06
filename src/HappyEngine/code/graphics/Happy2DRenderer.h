@@ -32,7 +32,6 @@
 #include "vec2.h"
 #include "HappyTypes.h"
 #include "AssetContainer.h"
-#include "AssetContainerP.h"
 #include "ModelMesh.h"
 #include "Rect.h"
 #include "Text.h"
@@ -143,7 +142,7 @@ private:
 
 	vec2 m_ViewPortSize;
 
-	ct::AssetContainerP<gfx::ModelMesh>* m_pModelBuffer;
+	ct::AssetContainer<gfx::ModelMesh*>* m_pModelBuffer;
 	ct::AssetContainer<gfx::Texture2D::pointer>* m_pTextureBuffer;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */

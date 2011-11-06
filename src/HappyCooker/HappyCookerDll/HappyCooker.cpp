@@ -61,79 +61,8 @@ HappyCooker::~HappyCooker()
     delete m_pPhysicsEngine;
 }
 
-bool HappyCooker::cookToConvex(const char* input, const char* output)
-{
-    using namespace he;
 
-    std::cout << "\nhappycooker cooking: " << input << " to " << output << "\n";
-
-    ct::models::ObjLoader objLoader;
-
-    gfx::VertexLayout layout;
-    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position,
-        sizeof(vec3), 0));
-
-    try { objLoader.load(input, layout, false); }
-    catch (err::FileNotFoundException e)
-    {
-        std::wcout << "err while trying to read obj: " << e.getMsg();
-        return false;
-    }
-    std::cout << "starting cooking... \n";
-    PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), PxCookingParams()));
-
-    if (cooking == nullptr)
-    {
-        std::cout << "cooking failed to start\n";
-        return false;
-    }
-    io::BinaryStream stream(output, io::BinaryStream::Write);
-
-    byte numMeshes(static_cast<byte>(min<uint>(objLoader.getNumMeshes(), 255)));
-    stream.storeByte(numMeshes);
-    bool succes(true);
-    for (uint i = 0; i < numMeshes; ++i)
-    {
-        std::cout << "   cooking " << objLoader.getMeshName(i) << " - " << objLoader.getNumVertices(i) << " vertices and " << objLoader.getNumIndices(i) << " indices";    
-
-        PxConvexMeshDesc desc;   
-        switch (objLoader.getIndexStride(i))
-        {
-        case gfx::IndexStride_Byte: ASSERT("byte indices are not supported"); break;
-        case gfx::IndexStride_UShort: desc.flags = PxConvexFlag::e16_BIT_INDICES; break;
-        case gfx::IndexStride_UInt: break;
-        default: ASSERT("unkown indexType"); break;
-        }
-
-        desc.points.count = objLoader.getNumVertices(i);
-        desc.points.data = objLoader.getVertices(i);
-        desc.points.stride = sizeof(VertexPos);
-        desc.triangles.count = objLoader.getNumIndices(i) / 3;
-        desc.triangles.data = objLoader.getIndices(i);
-        desc.triangles.stride = objLoader.getIndexStride(i) * 3; //stride of triangle = 3 indices
-
-        if (cooking->cookConvexMesh(desc, stream))
-        {
-            std::cout << "     DONE!\n";
-        }
-        else
-        {
-            std::cout << "     FAILED!\n";
-            succes = false;
-        }        
-    }
-    cooking->release();
-
-    std::cout << "cooking done! \n";
-    if (succes)
-        std::cout << "cooking successful! :)\n";
-    else
-        std::cout << "cooking failed! :(\n";
-
-    return succes;
-}
-
-bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, const aiScene* pScene, const he::mat44& p_Transformation)
+void HappyCooker::binobjNodeRunner(aiNode* pNode, const aiScene* pScene, const he::mat44& p_Transformation)
 {
     using namespace he;
     aiMatrix4x4 mtxLocalTransform = pNode->mTransformation;
@@ -147,11 +76,123 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
     {
         aiMesh* pMesh(pScene->mMeshes[pNode->mMeshes[iMesh]]);
         
+        pMesh->mName = pNode->mName;
+
+        CookData data;
+        data.pMesh = pMesh;
+        data.mtxTransformation = mtxTransformation;
+        if (std::string(pMesh->mName.data).find("pxcv_") == 0)
+        {
+            m_ConvexCookData.push_back(data);
+        }
+        else if (std::string(pMesh->mName.data).find("pxcc_") == 0)
+        {
+            m_TriangleMeshCookData.push_back(data);
+        }
+        else
+        {
+            m_ObjCookData.push_back(data);
+        } 
+    }
+
+    for (uint iChild = 0; iChild < pNode->mNumChildren; ++iChild)
+    {
+        binobjNodeRunner(pNode->mChildren[iChild], pScene, mtxTransformation);
+    }
+}
+bool HappyCooker::cook(const char* input, const char* output)
+{
+    m_ObjCookData.clear();
+    m_ConvexCookData.clear();
+    m_TriangleMeshCookData.clear();
+
+    using namespace he;
+
+    std::stringstream infoStream;
+    infoStream << "Cooking: " << input << " to " << output;
+    addInfo(infoStream.str());
+    addInfo("Importing...");
+
+    Assimp::Importer importer;
+
+    importer.SetPropertyInteger("AI_CONFIG_PP_RVC_FLAGS", aiComponent_COLORS | aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS);
+    importer.SetPropertyInteger("AI_CONFIG_PP_LBW_MAX_WEIGHTS", he::gfx::Bone::MAX_BONEWEIGHTS);
+    const aiScene* pScene( importer.ReadFile(input,
+        aiProcess_CalcTangentSpace |
+        aiProcess_Triangulate |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_RemoveComponent | 
+        aiProcess_LimitBoneWeights | 
+        aiProcess_ValidateDataStructure |
+        aiProcess_ImproveCacheLocality |
+        aiProcess_SortByPType |
+        aiProcess_FindInvalidData// |
+        //aiProcess_ConvertToLeftHanded
+        ));
+
+
+    if (pScene == nullptr)
+    {
+        std::stringstream infoStream;
+        infoStream << "Import Error: " << importer.GetErrorString();
+        addInfo(infoStream.str());
+        return false;
+    }
+
+    infoStream.str("");
+    infoStream.clear();
+    infoStream << "Import Info: " << importer.GetErrorString();
+    addInfo(infoStream.str());
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Start Cooking                          ///
+    //////////////////////////////////////////////////////////////////////////
+    addInfo("Preparing cooking...");
+    binobjNodeRunner(pScene->mRootNode, pScene, mat44::Identity);
+
+    addInfo("Starting cooking...");
+
+    io::BinaryStream stream(output, io::BinaryStream::Write);
+    cookBinObj(stream);
+
+    io::BinaryStream convexStream((std::string(output) + ".pxcv").c_str(), io::BinaryStream::Write);
+    cookConvex(convexStream);
+
+    return true;
+}
+
+void HappyCooker::addInfo( std::string info )
+{
+    std::cout << info << "\n";
+    if (m_InfoCallback != nullptr)
+        m_InfoCallback(info.c_str());
+}
+
+void HappyCooker::setInfoCallback( bool (__stdcall *infoCallback)(const char*) )
+{
+    m_InfoCallback = infoCallback;
+}
+
+bool HappyCooker::cookBinObj( he::io::BinaryStream& stream )
+{
+    using namespace he;
+
+    std::stringstream infoStream;
+    infoStream << "  BinObj cooking " << m_ObjCookData.size() << " meshes";
+    addInfo(infoStream.str());
+
+    stream.storeDword(m_ObjCookData.size());
+    std::for_each(m_ObjCookData.cbegin(), m_ObjCookData.cend(), [&](const CookData& data)
+    {
+        using namespace he;
+        aiMesh* pMesh(data.pMesh);
+        const mat44& mtxTransformation(data.mtxTransformation);
+
         //////////////////////////////////////////////////////////////////////////
         ///                              Mesh                                  ///
         //////////////////////////////////////////////////////////////////////////
         //store name
-        stream.storeString(pNode->mName.data);
+        stream.storeString(pMesh->mName.data);
 
 
         //////////////////////////////////////////////////////////////////////////
@@ -161,21 +202,11 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
         if (pMesh->mNumBones > he::gfx::Bone::MAX_BONES)
         {
             std::stringstream infoStream;
-            infoStream << "Failed cooking: more than " << he::gfx::Bone::MAX_BONES << " found (" << pMesh->mNumBones << ") in mesh " << pNode->mName.data;
+            infoStream << "Failed cooking bones: more than " << he::gfx::Bone::MAX_BONES << " found (" << pMesh->mNumBones << ") in mesh " << pMesh->mName.data;
             addInfo(infoStream.str());
-            return false;
+            pMesh->mNumBones = 0; //cook no bones
         }
 
-        struct BoneWeight
-        {
-            uint boneID;
-            float weight;
-        };
-        struct Bone
-        {
-            mat44 transformation;
-            std::string name;
-        };
         std::vector<Bone> boneList;
         std::vector<std::vector<BoneWeight>> bonePerVertexID;
         bonePerVertexID.resize(pMesh->mNumVertices);
@@ -185,9 +216,9 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
             bone.name = pMesh->mBones[iBone]->mName.data;
             const aiMatrix4x4& mtxLocalTransform(pMesh->mBones[iBone]->mOffsetMatrix);
             bone.transformation = mat44(mtxLocalTransform.a1, mtxLocalTransform.a2, mtxLocalTransform.a3, mtxLocalTransform.a4,
-                                        mtxLocalTransform.b1, mtxLocalTransform.b2, mtxLocalTransform.b3, mtxLocalTransform.b4,
-                                        mtxLocalTransform.c1, mtxLocalTransform.c2, mtxLocalTransform.c3, mtxLocalTransform.c4,
-                                        mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4);
+                mtxLocalTransform.b1, mtxLocalTransform.b2, mtxLocalTransform.b3, mtxLocalTransform.b4,
+                mtxLocalTransform.c1, mtxLocalTransform.c2, mtxLocalTransform.c3, mtxLocalTransform.c4,
+                mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4);
             boneList.push_back(bone);
             for (uint iWeight = 0; iWeight < pMesh->mBones[iBone]->mNumWeights; ++iWeight)
             {
@@ -199,17 +230,17 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
         }
 
         std::stringstream infoStream;
-        infoStream << "    cooking: " << pNode->mName.data << " - " << pMesh->mNumVertices << " vertices, " << pMesh->mNumFaces * 3 << " indices";
+        infoStream << "    cooking: " << pMesh->mName.data << " - " << pMesh->mNumVertices << " vertices, " << pMesh->mNumFaces * 3 << " indices";
         infoStream << ", " << pMesh->mNumBones << " bones";
         addInfo(infoStream.str());
-        std::cout << "mesh: " << pNode->mMeshes[iMesh] << "," << iMesh << "\n";
 
         //store #bones
         stream.storeByte(static_cast<byte>(boneList.size()));
+        io::BinaryStream& localStream(stream); // HACK: lambda scope loss
         std::for_each(boneList.cbegin(), boneList.cend(), [&](const Bone& bone)
         {
             //store bone name
-            stream.storeString(bone.name);
+            localStream.storeString(bone.name);
             //store bone transform
             using namespace he;
 
@@ -218,7 +249,7 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
             transformation(1, 3) *= 0.01f;
             transformation(2, 3) *= 0.01f;
             transformation(3, 3) = 1.0f;
-            stream.storeMatrix(transformation * mtxTransformation.inverse());
+            localStream.storeMatrix(transformation * mtxTransformation.inverse());
         });
 
         //////////////////////////////////////////////////////////////////////////
@@ -265,7 +296,7 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
         stream.storeByte(static_cast<byte>(stride));
         for (uint iFace = 0; iFace < pMesh->mNumFaces; ++iFace)
         {
-            ASSERT(pMesh->mFaces[iFace].mNumIndices == 3, "mesh is not triangulated");
+            //ASSERT(pMesh->mFaces[iFace].mNumIndices == 3, "mesh is not triangulated");
             //store indices
             for (uint iInd = 0; iInd < pMesh->mFaces[iFace].mNumIndices; ++iInd)
             {
@@ -274,111 +305,89 @@ bool HappyCooker::binobjNodeRunner(he::io::BinaryStream& stream, aiNode* pNode, 
                 case gfx::IndexStride_Byte:   stream.storeByte(static_cast<byte>(pMesh->mFaces[iFace].mIndices[iInd])); break;
                 case gfx::IndexStride_UShort: stream.storeWord(static_cast<ushort>(pMesh->mFaces[iFace].mIndices[iInd])); break;
                 case gfx::IndexStride_UInt:   stream.storeDword(static_cast<uint>(pMesh->mFaces[iFace].mIndices[iInd])); break;
-                default: ASSERT("Unkown stride type"); break;
+                //default: ASSERT("Unkown stride type"); break;
                 }
             }
         }
-    }
-
-    for (uint iChild = 0; iChild < pNode->mNumChildren; ++iChild)
-    {
-        if (binobjNodeRunner(stream, pNode->mChildren[iChild], pScene, mtxTransformation) == false)
-            return false;
-    }
+    });
     return true;
 }
-bool HappyCooker::cookToBinObj(const char* input, const char* output)
+
+bool HappyCooker::cookConvex( he::io::BinaryStream& stream )
 {
     using namespace he;
 
     std::stringstream infoStream;
-    infoStream << "Cooking: " << input << " to " << output;
+    infoStream << "  PXCV cooking " << m_ConvexCookData.size() << " meshes";
     addInfo(infoStream.str());
-    addInfo("Importing...");
 
-    Assimp::Importer importer;
+    byte numMeshes(static_cast<byte>(min<uint>(m_ConvexCookData.size(), 255)));
+    if (numMeshes < m_ConvexCookData.size())
+        addInfo("Warning to many convex meshes cooking 255");
 
-    importer.SetPropertyInteger("AI_CONFIG_PP_RVC_FLAGS", aiComponent_COLORS | aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS);
-    importer.SetPropertyInteger("AI_CONFIG_PP_LBW_MAX_WEIGHTS", he::gfx::Bone::MAX_BONEWEIGHTS);
-    const aiScene* pScene( importer.ReadFile(input,
-        aiProcess_CalcTangentSpace |
-        aiProcess_Triangulate |
-        aiProcess_JoinIdenticalVertices |
-        aiProcess_RemoveComponent | 
-        aiProcess_LimitBoneWeights | 
-        aiProcess_ValidateDataStructure |
-        aiProcess_ImproveCacheLocality |
-        aiProcess_SortByPType |
-        aiProcess_FindInvalidData// |
-        //aiProcess_ConvertToLeftHanded
-        ));
+    physx::PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), physx::PxCookingParams()));
 
-
-    if (pScene == nullptr)
+    stream.storeByte(numMeshes);
+    bool succes(true);
+    std::for_each(m_ConvexCookData.cbegin(), m_ConvexCookData.cend(), [&](const CookData& data)
     {
-        std::stringstream infoStream;
-        infoStream << "Import Error: " << importer.GetErrorString();
-        addInfo(infoStream.str());
-        return false;
-    }
+        using namespace he;
+        aiMesh* pMesh(data.pMesh);
+        const mat44& mtxTransformation(data.mtxTransformation);
+        
+        physx::PxConvexMeshDesc desc;   
+        desc.flags = physx::PxConvexFlag::e16_BIT_INDICES;
 
-    infoStream.str("");
-    infoStream.clear();
-    infoStream << "Import Info: " << importer.GetErrorString();
-    addInfo(infoStream.str());
+        //Optimize vertex and indices
+        std::vector<vec3> vertices;
+        std::vector<ushort> indices;
+        std::map<vec3, ushort> vertMap;
+        for (uint iFace(0); iFace < pMesh->mNumFaces; ++iFace)
+        {
+            ASSERT(pMesh->mFaces[iFace].mNumIndices == 3, "mesh not triangulated");
+            for (uint i(0); i < 3; ++i)
+            {
+                uint index(pMesh->mFaces[iFace].mIndices[i]);
+                vec3 vert(pMesh->mVertices[index].x, pMesh->mVertices[index].y, pMesh->mVertices[index].z);
+                std::map<vec3, ushort>::const_iterator it(vertMap.find(vert));
+                if (it == vertMap.cend())
+                {
+                    vertMap[vert] = static_cast<ushort>(vertices.size());
+                    indices.push_back(static_cast<ushort>(vertices.size()));
+                    vertices.push_back(mtxTransformation * vert);
+                }
+                else
+                {
+                    indices.push_back(vertMap[vert]);
+                }
+            }
+        }
 
-    //////////////////////////////////////////////////////////////////////////
-    ///                             Start Cooking                          ///
-    //////////////////////////////////////////////////////////////////////////
-    io::BinaryStream stream(output, io::BinaryStream::Write);
-    stream.storeDword(pScene->mNumMeshes);
+        infoStream.str("");
+        infoStream.clear();
+        infoStream << "   cooking " << pMesh->mName.data << " - " << vertices.size() << " vertices and " << indices.size() << " indices";   
+        addInfo(infoStream.str()); 
 
-    infoStream.str("");
-    infoStream.clear();
-    infoStream << "Cooking " << pScene->mNumMeshes << "meshes...";
-    addInfo(infoStream.str());
+        desc.points.count = vertices.size();
+        desc.points.data = &vertices[0];
+        desc.points.stride = sizeof(vec3);
+        desc.triangles.count = indices.size() / 3;
+        desc.triangles.data = &indices[0];
+        desc.triangles.stride = sizeof(ushort) * 3; //stride of triangle = 3 indices
 
-    return binobjNodeRunner(stream, pScene->mRootNode, pScene, mat44::Identity);
-}
+        if (cooking->cookConvexMesh(desc, stream))
+        {
+        }
+        else
+        {
+            addInfo("    FAILED"); 
+            succes = false;
+        }        
+    });
 
-bool HappyCooker::cookLineToBinObj(const char* input, const char* output)
-{
-    using namespace he;
+    cooking->release();
 
-    std::cout << "happycooker cooking: " << input << " to " << output << "\n";
-
-    ct::lines::ObjLineLoader objLoader;
-
-    try { objLoader.load(input); }
-    catch (err::FileNotFoundException e)
-    {
-        std::wcout << "err while trying to read obj: " << e.getMsg();
-        return false;
-    }
-
-    std::cout << "read " << objLoader.getPoints().size() << " vertices and " << objLoader.getIndices().size() << " indices\n";
-
-    std::cout << "starting cooking... \n";
-
-    io::BinaryStream stream(output, io::BinaryStream::Write);
-    stream.storeDword(objLoader.getPoints().size());
-    stream.storeBuffer(&objLoader.getPoints()[0], sizeof(vec3) * objLoader.getPoints().size());
-    stream.storeDword(objLoader.getIndices().size());
-    stream.storeBuffer(&objLoader.getIndices()[0], sizeof(ushort) * objLoader.getIndices().size());
-    std::cout << "cooking successful! :)\n";
-    return true;
-}
-
-void HappyCooker::addInfo( std::string info )
-{
-    std::cout << info << "\n";
-    if (m_InfoCallback != nullptr)
-        m_InfoCallback(info.c_str());
-}
-
-void HappyCooker::setInfoCallback( bool (__stdcall *infoCallback)(const char*) )
-{
-    m_InfoCallback = infoCallback;
+    return succes;
 }
 
 } //end namespace

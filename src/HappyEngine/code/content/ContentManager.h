@@ -59,7 +59,7 @@ public:
 
     gfx::Line::pointer loadLine(const std::string& path);
 
-    const std::vector<px::shapes::IPhysicsShape::pointer>& loadPhysicsShape(const std::string& path);
+    const std::vector<px::PhysicsConvexMesh::pointer>& loadPhysicsConvex(const std::string& path);
 
     gfx::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
 

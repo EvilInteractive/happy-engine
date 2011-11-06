@@ -30,9 +30,13 @@
     
 EXPORT bool __stdcall initHappyCooker();
 EXPORT void __stdcall disposeHappyCooker();
-EXPORT bool __stdcall cookToBinObj(const char* inputPath, const char* outputPath);
-EXPORT bool __stdcall cookLineToBinObj(const char* inputPath, const char* outputPath);
-EXPORT bool __stdcall cookToConvex(const char* inputPath, const char* outputPath);
+
+EXPORT void __stdcall setImportPath(const char* path);
+EXPORT void __stdcall setModelExportPath(const char* path);
+EXPORT void __stdcall setPhysicsExportPath(const char* path);
+
+EXPORT bool __stdcall cook(const char* input, const char* output);
+
 EXPORT void __stdcall setInfoCallback(bool (__stdcall *infoCallback)(const char*));
 
 
