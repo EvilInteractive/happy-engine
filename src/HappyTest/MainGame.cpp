@@ -48,11 +48,6 @@
 
 #include "Random.h"
 
-#pragma warning(disable:4100) //unreferenced formal parameter
-#include "assimp.hpp"
-#pragma warning(default:4100)
-#include "aiScene.h"
-#include "aiPostProcess.h"
 #include "BinaryStream.h"
 
 #include "ModelComponent.h"
