@@ -69,17 +69,31 @@ namespace HappyCookerGUIv2
                 }
             }
         }
-        private string _exportPath;
-        public string ExportPath
+        private string _modelExportPath;
+        public string ModelExportPath
         {
-            get { return _exportPath; }
+            get { return _modelExportPath; }
             set
             {
-                if (_exportPath != value)
+                if (_modelExportPath != value)
                 {
-                    _exportPath = value;
+                    _modelExportPath = value;
                     if (PropertyChanged != null)
-                        PropertyChanged(this, new PropertyChangedEventArgs("ExportPath"));
+                        PropertyChanged(this, new PropertyChangedEventArgs("ModelExportPath"));
+                }
+            }
+        }
+        private string _physicsExportPath;
+        public string PhysicsExportPath
+        {
+            get { return _physicsExportPath; }
+            set
+            {
+                if (_physicsExportPath != value)
+                {
+                    _physicsExportPath = value;
+                    if (PropertyChanged != null)
+                        PropertyChanged(this, new PropertyChangedEventArgs("PhysicsExportPath"));
                 }
             }
         }
@@ -87,8 +101,12 @@ namespace HappyCookerGUIv2
         private FolderBrowserDialog _OpenFolderImportDialog = new FolderBrowserDialog();
         private FolderBrowserDialog _OpenFolderExportDialog = new FolderBrowserDialog();
 
-        private HashSet<string> _ImportExtensions = new HashSet<string>() { ".dae" };
-        private string _exportExtension = ".binobj";
+        private HashSet<string> _importExtensions = new HashSet<string>() { ".dae" };
+        public HashSet<string> ImportExtensions { get { return _importExtensions; } }
+        private HashSet<string> _modelExportExtensions = new HashSet<string>() { ".binobj" };
+        public HashSet<string> ModelExportExtensions { get { return _modelExportExtensions; } }
+        private HashSet<string> _physicsExportExtensions = new HashSet<string>() { ".pxcv", ".pxcc" };
+        public HashSet<string> PhysicsExportExtensions { get { return _physicsExportExtensions; } }
 
         int _meshesToCook = 1;
         int _cookedMeshes = 0;
@@ -142,13 +160,11 @@ namespace HappyCookerGUIv2
 
             ImportPath = "";
             
-            _OpenFolderImportDialog.SelectedPath = ImportPath;
             _OpenFolderImportDialog.ShowNewFolderButton = true;
             _OpenFolderImportDialog.Description = "Set the import directory";
 
-            _OpenFolderImportDialog.SelectedPath = ExportPath;
-            _OpenFolderImportDialog.ShowNewFolderButton = true;
-            _OpenFolderImportDialog.Description = "Set the export directory";
+            _OpenFolderExportDialog.ShowNewFolderButton = true;
+            _OpenFolderExportDialog.Description = "Set the export directory";
 
             HappyCooker cooker = new HappyCooker(); //check for dll
             cooker.Dispose();
@@ -163,12 +179,21 @@ namespace HappyCookerGUIv2
             }
             Refresh();
         }
-        public void GetExportPath()
+        public void GetModelExportPath()
         {
-            _OpenFolderExportDialog.SelectedPath = ExportPath;
+            _OpenFolderExportDialog.SelectedPath = ModelExportPath;
             if (_OpenFolderExportDialog.ShowDialog() != DialogResult.Cancel)
             {
-                ExportPath = _OpenFolderExportDialog.SelectedPath;
+                ModelExportPath = _OpenFolderExportDialog.SelectedPath;
+            }
+            Refresh();
+        }
+        public void GetPhysicsExportPath()
+        {
+            _OpenFolderExportDialog.SelectedPath = PhysicsExportPath;
+            if (_OpenFolderExportDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                PhysicsExportPath = _OpenFolderExportDialog.SelectedPath;
             }
             Refresh();
         }
@@ -179,7 +204,7 @@ namespace HappyCookerGUIv2
             try
             {
                 DirectoryInfo dirInfo = new DirectoryInfo(ImportPath);
-                IEnumerable<FileInfo> files = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => _ImportExtensions.Contains(f.Extension));
+                IEnumerable<FileInfo> files = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => _importExtensions.Contains(f.Extension));
                 foreach (FileInfo file in files)
                 {
                     ModelItem item = new ModelItem(file.FullName.Substring(ImportPath.Length, file.FullName.Length - ImportPath.Length - file.Extension.Length), file.Extension, file.LastWriteTime);
@@ -192,15 +217,27 @@ namespace HappyCookerGUIv2
             ExportItems.Clear();
             try
             {
-                IEnumerable<string> files = Directory.EnumerateFiles(ExportPath, "*"+_exportExtension, SearchOption.AllDirectories);
-                foreach (string file in files)
+                DirectoryInfo dirInfo = new DirectoryInfo(ModelExportPath);
+                IEnumerable<FileInfo> files = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => _modelExportExtensions.Contains(f.Extension));
+                foreach (FileInfo info in files)
                 {
-                    FileInfo info = new FileInfo(file);
-                    ModelItem item = new ModelItem(info.FullName.Substring(ExportPath.Length, info.FullName.Length - ExportPath.Length - info.Extension.Length), info.Extension, File.GetLastWriteTime(file));
+                    ModelItem item = new ModelItem(info.FullName.Substring(ModelExportPath.Length, info.FullName.Length - ModelExportPath.Length - info.Extension.Length), info.Extension, info.LastWriteTime);
                     ExportItems.Add(item);
                 }
             }
             catch (Exception) { ExportItems.Add(new ModelItem("Error while trying to read files", "", new DateTime())); }
+            try
+            {
+                DirectoryInfo dirInfo = new DirectoryInfo(PhysicsExportPath);
+                IEnumerable<FileInfo> files = dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => _physicsExportExtensions.Contains(f.Extension));
+                foreach (FileInfo info in files)
+                {
+                    ModelItem item = new ModelItem(info.FullName.Substring(PhysicsExportPath.Length, info.FullName.Length - PhysicsExportPath.Length - info.Extension.Length), info.Extension, info.LastWriteTime);
+                    if (ExportItems.Contains(item) == false)
+                        ExportItems.Add(item);
+                }
+            }
+            catch (Exception) { ExportItems.Clear(); ExportItems.Add(new ModelItem("Error while trying to read files", "", new DateTime())); }
 
             UpdateItems.Clear();
             List<ModelItem> tobeRemovedItems = new List<ModelItem>();
@@ -234,6 +271,9 @@ namespace HappyCookerGUIv2
             HappyCooker cooker = new HappyCooker();
             OutputInfo.Clear();
             cooker.GetInfo += CookerCallback;
+            cooker.SetImportPath(ImportPath);
+            cooker.SetModelExportPath(ModelExportPath);
+            cooker.SetPhysicsExportPath(PhysicsExportPath);
 
             MeshesToCook = UpdateItems.Count;
             CookedMeshes = 0;
@@ -241,11 +281,11 @@ namespace HappyCookerGUIv2
             foreach (ModelItem item in UpdateItems)
             {
                 Info = string.Format("cooking '{0}' - ({1}/{2})", item.ShortPath, CookedMeshes + 1, MeshesToCook);
-                string input = ImportPath + item.ShortPath + item.Extension;
-                string output = ExportPath + item.ShortPath + _exportExtension;
+                string input = item.ShortPath + item.Extension;
+                string output = item.ShortPath;
                 //if (File.Exists(output) == false)
                 //    File.Create(output);
-                cooker.CookToBinObj(input, output);
+                cooker.Cook(input, output);
                 ++CookedMeshes;
                 Application.DoEvents();
             }
@@ -264,12 +304,17 @@ namespace HappyCookerGUIv2
         internal void Serialize(StreamWriter stream)
         {
             stream.WriteLine(_importPath);
-            stream.WriteLine(_exportPath);
+            stream.WriteLine(_modelExportPath);
+            stream.WriteLine(_physicsExportPath);
         }
         internal void Deserialize(StreamReader stream)
         {
-            ImportPath = stream.ReadLine();
-            ExportPath = stream.ReadLine();
+            if (stream != null)
+            {
+                ImportPath = stream.ReadLine();
+                ModelExportPath = stream.ReadLine();
+                PhysicsExportPath = stream.ReadLine();
+            }
             Refresh();
         }
     }

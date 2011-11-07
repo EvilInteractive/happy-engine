@@ -91,7 +91,7 @@ void HappyCooker::binobjNodeRunner(aiNode* pNode, const aiScene* pScene, const h
         }
         else
         {
-            m_ObjCookData.push_back(data);
+            m_ModelCookData.push_back(data);
         } 
     }
 
@@ -100,9 +100,9 @@ void HappyCooker::binobjNodeRunner(aiNode* pNode, const aiScene* pScene, const h
         binobjNodeRunner(pNode->mChildren[iChild], pScene, mtxTransformation);
     }
 }
-bool HappyCooker::cook(const char* input, const char* output)
+bool HappyCooker::cook(const std::string& input, const std::string& output)
 {
-    m_ObjCookData.clear();
+    m_ModelCookData.clear();
     m_ConvexCookData.clear();
     m_TriangleMeshCookData.clear();
 
@@ -117,7 +117,7 @@ bool HappyCooker::cook(const char* input, const char* output)
 
     importer.SetPropertyInteger("AI_CONFIG_PP_RVC_FLAGS", aiComponent_COLORS | aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS);
     importer.SetPropertyInteger("AI_CONFIG_PP_LBW_MAX_WEIGHTS", he::gfx::Bone::MAX_BONEWEIGHTS);
-    const aiScene* pScene( importer.ReadFile(input,
+    const aiScene* pScene( importer.ReadFile(m_ImportPath + input,
         aiProcess_CalcTangentSpace |
         aiProcess_Triangulate |
         aiProcess_JoinIdenticalVertices |
@@ -152,11 +152,21 @@ bool HappyCooker::cook(const char* input, const char* output)
 
     addInfo("Starting cooking...");
 
-    io::BinaryStream stream(output, io::BinaryStream::Write);
-    cookBinObj(stream);
-
-    io::BinaryStream convexStream((std::string(output) + ".pxcv").c_str(), io::BinaryStream::Write);
-    cookConvex(convexStream);
+    if (m_ModelCookData.size() > 0)
+    {
+        io::BinaryStream stream(m_ModelExportPath + output + ".binobj", io::BinaryStream::Write);
+        cookBinObj(stream);
+    }
+    if (m_ConvexCookData.size() > 0)
+    {
+        io::BinaryStream convexStream(m_PhysicsExportPath + output + ".pxcv", io::BinaryStream::Write);
+        cookConvex(convexStream);
+    }
+    if (m_TriangleMeshCookData.size() > 0)
+    {
+        io::BinaryStream concaveStream(m_PhysicsExportPath + output + ".pxcc", io::BinaryStream::Write);
+        cookTriangleMesh(concaveStream);
+    }
 
     return true;
 }
@@ -178,11 +188,11 @@ bool HappyCooker::cookBinObj( he::io::BinaryStream& stream )
     using namespace he;
 
     std::stringstream infoStream;
-    infoStream << "  BinObj cooking " << m_ObjCookData.size() << " meshes";
+    infoStream << "  BinObj cooking " << m_ModelCookData.size() << " meshes";
     addInfo(infoStream.str());
 
-    stream.storeDword(m_ObjCookData.size());
-    std::for_each(m_ObjCookData.cbegin(), m_ObjCookData.cend(), [&](const CookData& data)
+    stream.storeDword(m_ModelCookData.size());
+    std::for_each(m_ModelCookData.cbegin(), m_ModelCookData.cend(), [&](const CookData& data)
     {
         using namespace he;
         aiMesh* pMesh(data.pMesh);
@@ -313,6 +323,34 @@ bool HappyCooker::cookBinObj( he::io::BinaryStream& stream )
     return true;
 }
 
+
+void optimizeMeshForPhysX(aiMesh* pMesh, const he::mat44& mtxTransformation, std::vector<he::vec3>& vertices, std::vector<he::ushort>& indices)
+{
+    using namespace he;
+
+    std::map<vec3, ushort> vertMap;
+    for (uint iFace(0); iFace < pMesh->mNumFaces; ++iFace)
+    {
+        ASSERT(pMesh->mFaces[iFace].mNumIndices == 3, "mesh not triangulated");
+        for (uint i(0); i < 3; ++i)
+        {
+            uint index(pMesh->mFaces[iFace].mIndices[i]);
+            vec3 vert(pMesh->mVertices[index].x, pMesh->mVertices[index].y, pMesh->mVertices[index].z);
+            std::map<vec3, ushort>::const_iterator it(vertMap.find(vert));
+            if (it == vertMap.cend())
+            {
+                vertMap[vert] = static_cast<ushort>(vertices.size());
+                indices.push_back(static_cast<ushort>(vertices.size()));
+                vertices.push_back(mtxTransformation * mat44::createScale(0.01f) * vert);
+            }
+            else
+            {
+                indices.push_back(vertMap[vert]);
+            }
+        }
+    }
+}
+
 bool HappyCooker::cookConvex( he::io::BinaryStream& stream )
 {
     using namespace he;
@@ -341,27 +379,7 @@ bool HappyCooker::cookConvex( he::io::BinaryStream& stream )
         //Optimize vertex and indices
         std::vector<vec3> vertices;
         std::vector<ushort> indices;
-        std::map<vec3, ushort> vertMap;
-        for (uint iFace(0); iFace < pMesh->mNumFaces; ++iFace)
-        {
-            ASSERT(pMesh->mFaces[iFace].mNumIndices == 3, "mesh not triangulated");
-            for (uint i(0); i < 3; ++i)
-            {
-                uint index(pMesh->mFaces[iFace].mIndices[i]);
-                vec3 vert(pMesh->mVertices[index].x, pMesh->mVertices[index].y, pMesh->mVertices[index].z);
-                std::map<vec3, ushort>::const_iterator it(vertMap.find(vert));
-                if (it == vertMap.cend())
-                {
-                    vertMap[vert] = static_cast<ushort>(vertices.size());
-                    indices.push_back(static_cast<ushort>(vertices.size()));
-                    vertices.push_back(mtxTransformation * vert);
-                }
-                else
-                {
-                    indices.push_back(vertMap[vert]);
-                }
-            }
-        }
+        optimizeMeshForPhysX(pMesh, mtxTransformation, vertices, indices);
 
         infoStream.str("");
         infoStream.clear();
@@ -388,6 +406,77 @@ bool HappyCooker::cookConvex( he::io::BinaryStream& stream )
     cooking->release();
 
     return succes;
+}
+bool HappyCooker::cookTriangleMesh( he::io::BinaryStream& stream )
+{
+    using namespace he;
+
+    std::stringstream infoStream;
+    infoStream << "  PXCC cooking " << m_ConvexCookData.size() << " meshes";
+    addInfo(infoStream.str());
+
+    byte numMeshes(static_cast<byte>(min<uint>(m_ConvexCookData.size(), 255)));
+    if (numMeshes < m_ConvexCookData.size())
+        addInfo("Warning to many convex meshes cooking 255");
+
+    physx::PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), physx::PxCookingParams()));
+
+    stream.storeByte(numMeshes);
+    bool succes(true);
+    std::for_each(m_ConvexCookData.cbegin(), m_ConvexCookData.cend(), [&](const CookData& data)
+    {
+        using namespace he;
+        aiMesh* pMesh(data.pMesh);
+        const mat44& mtxTransformation(data.mtxTransformation);
+
+        physx::PxTriangleMeshDesc desc;   
+        desc.flags = physx::PxMeshFlag::e16_BIT_INDICES;
+
+        //Optimize vertex and indices
+        std::vector<vec3> vertices;
+        std::vector<ushort> indices;
+        optimizeMeshForPhysX(pMesh, mtxTransformation, vertices, indices);
+
+        infoStream.str("");
+        infoStream.clear();
+        infoStream << "   cooking " << pMesh->mName.data << " - " << vertices.size() << " vertices and " << indices.size() << " indices";   
+        addInfo(infoStream.str()); 
+
+        desc.points.count = vertices.size();
+        desc.points.data = &vertices[0];
+        desc.points.stride = sizeof(vec3);
+        desc.triangles.count = indices.size() / 3;
+        desc.triangles.data = &indices[0];
+        desc.triangles.stride = sizeof(ushort) * 3; //stride of triangle = 3 indices
+
+        if (cooking->cookTriangleMesh(desc, stream))
+        {
+        }
+        else
+        {
+            addInfo("    FAILED"); 
+            succes = false;
+        }        
+    });
+
+    cooking->release();
+
+    return succes;
+}
+
+void HappyCooker::setModelExportPath( const std::string& path )
+{
+    m_ModelExportPath = path;
+}
+
+void HappyCooker::setPhysicsExportPath( const std::string& path )
+{
+    m_PhysicsExportPath = path;
+}
+
+void HappyCooker::setImportPath( const std::string& path )
+{
+    m_ImportPath = path;
 }
 
 } //end namespace

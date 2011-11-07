@@ -59,7 +59,11 @@ public:
     static HappyCooker* getInstance();
     static void dispose();
 
-    bool cook(const char* input, const char* output);
+    bool cook(const std::string& inputFilename, const std::string& outputName);
+
+    void setImportPath(const std::string& path);
+    void setModelExportPath(const std::string& path);
+    void setPhysicsExportPath(const std::string& path);
 
     void setInfoCallback(bool (__stdcall *infoCallback)(const char*));
 
@@ -74,9 +78,13 @@ private:
         aiMesh* pMesh;
         he::mat44 mtxTransformation;
     };
-    std::vector<CookData> m_ObjCookData;
+    std::vector<CookData> m_ModelCookData;
     std::vector<CookData> m_ConvexCookData;
     std::vector<CookData> m_TriangleMeshCookData;
+
+    std::string m_ImportPath;
+    std::string m_ModelExportPath;
+    std::string m_PhysicsExportPath;
 
     static HappyCooker* s_pSingleton;
 	HappyCooker();

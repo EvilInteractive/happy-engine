@@ -50,15 +50,16 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>../../HappyEngine/code/physics;../../HappyEngine/code/template;../../HappyEngine/code/tools;../../HappyEngine/code/networking;../../HappyEngine/code/math;../../HappyEngine/code/io;../../HappyEngine/code/graphics;../../HappyEngine/code/game;../../HappyEngine/code/error;../../HappyEngine/code/content;../../HappyEngine/code/audio;../../HappyEngine/code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../HappyEngine/code/physics;../../HappyEngine/code/template;../../HappyEngine/code/tools;../../HappyEngine/code/networking;../../HappyEngine/code/math;../../HappyEngine/code/io;../../HappyEngine/code/graphics;../../HappyEngine/code/game;../../HappyEngine/code/error;../../HappyEngine/code/content;../../HappyEngine/code/audio;../../HappyEngine/code;$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../HappyEngine/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>HappyEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../HappyEngine/bin;$(PHYSX_DIR)\lib\win32\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>HappyEngine.lib;Foundation.lib;PhysX3Common.lib;PhysX3CharacterKinematic.lib;PhysX3Vehicle.lib;PhysX3Cooking_x86.lib;PhysX3_x86.lib;PhysX3Extensions.lib;LowLevel.lib;GeomUtils.lib;SceneQuery.lib;SimulationController.lib;PvdRuntime.lib;RepX3.lib;PxTask.lib;PhysX3Gpu_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetDir)$(TargetFileName)" "..\..\HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\bin\Debug\$(TargetFileName)"
@@ -72,11 +73,14 @@ copy "$(TargetDir)$(TargetFileName)" "..\..\HappyCooker\HappyCookerGUIv2\HappyCo
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>HAPPYCOOKER_DLL;_DEBUG;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../HappyEngine/code/physics;../../HappyEngine/code/template;../../HappyEngine/code/tools;../../HappyEngine/code/networking;../../HappyEngine/code/math;../../HappyEngine/code/io;../../HappyEngine/code/graphics;../../HappyEngine/code/game;../../HappyEngine/code/error;../../HappyEngine/code/content;../../HappyEngine/code/audio;../../HappyEngine/code;$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../../HappyEngine/bin;$(PHYSX_DIR)\lib\win32\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>HappyEngine.lib;Foundation.lib;PhysX3Common.lib;PhysX3CharacterKinematic.lib;PhysX3Vehicle.lib;PhysX3Cooking_x86.lib;PhysX3_x86.lib;PhysX3Extensions.lib;LowLevel.lib;GeomUtils.lib;SceneQuery.lib;SimulationController.lib;PvdRuntime.lib;RepX3.lib;PxTask.lib;PhysX3Gpu_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

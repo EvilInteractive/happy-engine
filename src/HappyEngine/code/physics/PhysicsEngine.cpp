@@ -36,7 +36,7 @@ namespace px {
 PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr), 
                             m_pCpuDispatcher(nullptr), m_pCudaContextManager(nullptr), 
                             m_pAllocator(NEW HappyPhysicsAllocator()), m_pErrorCallback(NEW err::HappyPhysicsErrorCallback()),
-                            m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>( [](physx::PxMaterial* pMat) { pMat->release(); } ))
+                            m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>())
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -47,10 +47,18 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
                                     physx::PxTolerancesScale(), memDebug);
     
     ASSERT(m_pPhysXSDK != nullptr, "init of physX failed");
-
-    
+   
     if (!PxInitExtensions(*m_pPhysXSDK))
         ASSERT("PxInitExtensions failed!");
+
+#if _DEBUG || DEBUG
+    std::cout << "connecting to PVD\n";
+    PVD::PvdConnection* pConnection(physx::PxExtensionVisualDebugger::connect(m_pPhysXSDK->getPvdConnectionManager(), "localhost", 5425, 100, true));
+    if (pConnection == nullptr)
+        std::cout << "    NOT CONNECTED!\n";
+    else
+        std::cout << "    CONNECTED!\n";
+#endif
 
     createScene();
 }

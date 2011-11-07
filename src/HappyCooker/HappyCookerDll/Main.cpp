@@ -40,3 +40,18 @@ void __stdcall setInfoCallback(bool (__stdcall *infoCallback)(const char*))
     happycooker::HappyCooker::getInstance()->setInfoCallback(infoCallback);
     return;
 }
+
+EXPORT void __stdcall setImportPath( const char* path )
+{
+    happycooker::HappyCooker::getInstance()->setImportPath(path);
+}
+
+EXPORT void __stdcall setModelExportPath( const char* path )
+{
+    happycooker::HappyCooker::getInstance()->setModelExportPath(path);
+}
+
+EXPORT void __stdcall setPhysicsExportPath( const char* path )
+{
+    happycooker::HappyCooker::getInstance()->setPhysicsExportPath(path);
+}

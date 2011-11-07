@@ -46,7 +46,7 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
 	}
 	else
 	{
-		if (path.rfind(".bphys") != std::string::npos)
+		if (path.rfind(".pxcv") != std::string::npos)
 		{
             io::BinaryStream stream(path, io::BinaryStream::Read);
             byte numConvex(stream.readByte());
@@ -62,7 +62,7 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
         }
         else
         {
-            ASSERT("no loader defined for this extension");
+            ASSERT(false, "no loader defined for this extension");
             return m_pAssetContainer->getAsset("");
         }
     }

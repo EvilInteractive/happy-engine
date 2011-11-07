@@ -16,17 +16,15 @@ namespace HappyCookerGUIv2
         private static extern void disposeHappyCooker();
 
         [DllImport("HappyCookerDll.dll", CharSet=CharSet.Auto, CallingConvention=CallingConvention.StdCall)]
-        private static extern bool cookToBinObj([MarshalAs(UnmanagedType.LPStr)]string inputPath, 
-                                                   [MarshalAs(UnmanagedType.LPStr)]string outputPath);
+        private static extern bool cook([MarshalAs(UnmanagedType.LPStr)]string inputFilename,
+                                        [MarshalAs(UnmanagedType.LPStr)]string outputName);
 
-        [DllImport("HappyCookerDll.dll", CharSet=CharSet.Auto, CallingConvention=CallingConvention.StdCall)]
-        private static extern bool cookLineToBinObj([MarshalAs(UnmanagedType.LPStr)]string inputPath, 
-                                                       [MarshalAs(UnmanagedType.LPStr)]string outputPath);
-
-        [DllImport("HappyCookerDll.dll", CharSet=CharSet.Auto, CallingConvention=CallingConvention.StdCall)]
-        private static extern bool cookToConvex([MarshalAs(UnmanagedType.LPStr)]string inputPath, 
-                                                   [MarshalAs(UnmanagedType.LPStr)]string outputPath);
-
+        [DllImport("HappyCookerDll.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern void setImportPath([MarshalAs(UnmanagedType.LPStr)]string path);
+        [DllImport("HappyCookerDll.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern void setModelExportPath([MarshalAs(UnmanagedType.LPStr)]string path);
+        [DllImport("HappyCookerDll.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern void setPhysicsExportPath([MarshalAs(UnmanagedType.LPStr)]string path);
 
         private delegate bool GetInfoDelegateDll([MarshalAs(UnmanagedType.LPStr)]string info);
         [DllImport("HappyCookerDll.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
@@ -62,11 +60,11 @@ namespace HappyCookerGUIv2
             disposeHappyCooker();
         }
 
-        public bool CookToConvex(string inputPath, string outputPath)
+        public bool Cook(string inputFileName, string outputName)
         {
             try
             {
-                bool success = cookToConvex(inputPath, outputPath);
+                bool success = cook(inputFileName, outputName);
                 return success;
             }
             catch (SEHException)
@@ -75,31 +73,40 @@ namespace HappyCookerGUIv2
             }
             return false;
         }
-        public bool CookToBinObj(string inputPath, string outputPath)
+
+        public void SetImportPath(string path)
         {
             try
             {
-                bool success = cookToBinObj(inputPath, outputPath);
-                return success;
+                setImportPath(path);
             }
             catch (SEHException)
             {
-                
+
             }
-            return false;
         }
-        public bool CookLineToBinObj(string inputPath, string outputPath)
+        public void SetModelExportPath(string path)
         {
             try
             {
-                bool success = cookLineToBinObj(inputPath, outputPath);
-                return success;
+                setModelExportPath(path);
             }
             catch (SEHException)
             {
-                
+
             }
-            return false;
         }
+        public void SetPhysicsExportPath(string path)
+        {
+            try
+            {
+                setPhysicsExportPath(path);
+            }
+            catch (SEHException)
+            {
+
+            }
+        }
+
     }
 }

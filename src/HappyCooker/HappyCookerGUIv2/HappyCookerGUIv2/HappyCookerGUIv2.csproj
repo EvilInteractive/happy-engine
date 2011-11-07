@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{913BE661-6C94-4BAB-BE7E-B33F526704B9}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HappyCookerGUIv2</RootNamespace>
     <AssemblyName>HappyCookerGUIv2</AssemblyName>

@@ -10,7 +10,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
-                            <RowDefinition Height="0.25*"/>
+                            <RowDefinition Height="0.3333*"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Background="#FFF0F0F0">
@@ -46,23 +46,9 @@
                             <ListBox Grid.Row ="1" Grid.Column="0" SelectionMode="Extended" Name="_modelImportListBox" ItemsSource="{Binding Path=ImportItems}" />
                             <ListBox Grid.Row ="1" Grid.Column="2" SelectionMode="Extended" Name="_modelUpdateListBox" ItemsSource="{Binding Path=UpdateItems}" />
                             <ListBox Grid.Row ="1" Grid.Column="4" SelectionMode="Extended" Name="_modelExportedListBox" ItemsSource="{Binding Path=ExportItems}"/>
-                            <Grid Grid.Row="2" Grid.Column="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox Grid.Row="0" Grid.Column="0" Margin="4,4" Name="_modelImportPathTB" Text="{Binding Path=ImportPath, Mode=TwoWay}"></TextBox>
-                                <Button Grid.Row="0" Grid.Column="1" Content=" ... " Margin="4,4" Name="_modelImportPathBtn" Click="_modelImportPathBtn_Click"></Button>
-                            </Grid>
+                            
                             <Button Grid.Row="2" Grid.Column="2" Margin="4,4" Content="Refresh" Name="_modelRefreshBtn" Click="_modelRefreshBtn_Click" />
-                            <Grid Grid.Row="2" Grid.Column="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox Grid.Row="0" Grid.Column="0" Margin="4,4" Name="_modelExportPathTB" Text="{Binding Path=ExportPath, Mode=TwoWay}"></TextBox>
-                                <Button Grid.Row="0" Grid.Column="1" Content=" ... " Margin="4,4" Name="_modelExportPathBtn" Click="_modelExportPathBtn_Click"></Button>
-                            </Grid>
+                            
                         </Grid>
                         <GridSplitter Grid.Row="1" ResizeDirection="Rows" Width ="auto" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                         <Grid Grid.Row="2">
@@ -78,7 +64,7 @@
                                     </LinearGradientBrush>
                                 </TextBlock.Background>
                             </TextBlock>
-                            <ListBox Grid.Row="1" MinHeight="48" Height="auto" Name="_modelOutput" ItemsSource="{Binding Path=OutputInfo}"/>                        
+                            <ListBox Grid.Row="1" MinHeight="48" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.PanningMode="VerticalOnly"  Height="auto" Name="_modelOutput" ItemsSource="{Binding Path=OutputInfo}" IsEnabled="True" />                        
                         </Grid>
                         <Grid Grid.Row="3" Height="23" DockPanel.Dock="Bottom">
                             <Grid.RowDefinitions>
@@ -92,6 +78,48 @@
                             <Label Grid.Row="0" Grid.Column="0" Content="Progress" FontSize="12" Padding="4,4"  VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" />
                             <Label Grid.Row="0" Grid.Column="1" Content="{Binding Path=Info}" Name="_modelInfoLabel"  FontSize="12" Padding="4,4"  VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" />
                             <ProgressBar Grid.Row="0" Grid.Column="2" Height="16" Foreground="#FF0052FF" VerticalAlignment="Center" Margin="4,4" Maximum="{Binding Path=MeshesToCook}" Value="{Binding Path=CookedMeshes}" Name="_modelProgressBar"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Settings">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="32" />
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Import Path:"  Foreground="White" TextAlignment="Left" VerticalAlignment="Center" Padding="8, 0, 0, 0"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Model Export Path:"  Foreground="White" TextAlignment="Left" VerticalAlignment="Center" Padding="8, 0, 0, 0"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Physics Export Path:"  Foreground="White" TextAlignment="Left" VerticalAlignment="Center" Padding="8, 0, 0, 0"/>
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Row="0" Grid.Column="0" Margin="4,4" Name="_modelImportPathTB" Text="{Binding Path=ImportPath, Mode=TwoWay}"></TextBox>
+                            <Button Grid.Row="0" Grid.Column="1" Content=" ... " Margin="4,4" Name="_modelImportPathBtn" Click="_modelImportPathBtn_Click"></Button>
+                        </Grid>
+                        <Grid Grid.Row="2" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Row="0" Grid.Column="0" Margin="4,4" Name="_modelExportPathTB" Text="{Binding Path=ModelExportPath, Mode=TwoWay}"></TextBox>
+                            <Button Grid.Row="0" Grid.Column="1" Content=" ... " Margin="4,4" Name="_modelExportPathBtn" Click="_modelExportPathBtn_Click"></Button>
+                        </Grid>
+                        <Grid Grid.Row="3" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Row="0" Grid.Column="0" Margin="4,4" Name="_physicsExportPathTB" Text="{Binding Path=PhysicsExportPath, Mode=TwoWay}"></TextBox>
+                            <Button Grid.Row="0" Grid.Column="1" Content=" ... " Margin="4,4" Name="_physicsExportPathBtn" Click="_physicsExportPathBtn_Click"></Button>
                         </Grid>
                     </Grid>
                 </TabItem>

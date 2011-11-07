@@ -39,6 +39,8 @@ namespace HappyCookerGUIv2
 
             _modelProgressBar.DataContext = _model;
             _modelInfoLabel.DataContext = _model;
+
+            _physicsExportPathTB.DataContext = _model;
             
             StreamReader stream = null;
             try
@@ -84,7 +86,12 @@ namespace HappyCookerGUIv2
 
         private void _modelExportPathBtn_Click(object sender, RoutedEventArgs e)
         {
-            _model.GetExportPath();
+            _model.GetModelExportPath();
+        }
+
+        private void _physicsExportPathBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _model.GetPhysicsExportPath();
         }
 
         private void _modelRefreshBtn_Click(object sender, RoutedEventArgs e)
@@ -101,7 +108,16 @@ namespace HappyCookerGUIv2
         {
             foreach (ModelItem item in _modelExportedListBox.SelectedItems)
             {
-                File.Delete(_model.ExportPath + item.ShortPath + item.Extension);
+                foreach (string ext in _model.ModelExportExtensions)
+                {
+                    try { File.Delete(_model.ModelExportPath + item.ShortPath + ext); }
+                    catch (Exception) { /* something happened but we don't care */ }
+                }
+                foreach (string ext in _model.PhysicsExportExtensions)
+                {
+                    try { File.Delete(_model.PhysicsExportPath + item.ShortPath + ext); }
+                    catch (Exception) { /* something happened but we don't care */ }
+                }
             }
 
             _model.Refresh();

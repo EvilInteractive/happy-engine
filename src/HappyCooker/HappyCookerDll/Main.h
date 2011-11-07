@@ -35,7 +35,7 @@ EXPORT void __stdcall setImportPath(const char* path);
 EXPORT void __stdcall setModelExportPath(const char* path);
 EXPORT void __stdcall setPhysicsExportPath(const char* path);
 
-EXPORT bool __stdcall cook(const char* input, const char* output);
+EXPORT bool __stdcall cook(const char* inputFilename, const char* outputName);
 
 EXPORT void __stdcall setInfoCallback(bool (__stdcall *infoCallback)(const char*));
 

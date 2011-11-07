@@ -41,7 +41,7 @@ TestObject::TestObject():
     m_PhysicsComponent = NEW game::DynamicPhysicsComponent();
     addComponent(m_PhysicsComponent);
     px::PhysicsMaterial material(0.8f, 0.5f, 0.1f);
-    const std::vector<px::PhysicsConvexMesh::pointer>& pPMeshes(CONTENT->loadPhysicsConvex("car.bphys"));
+    const std::vector<px::PhysicsConvexMesh::pointer>& pPMeshes(CONTENT->loadPhysicsConvex("car.pxcv"));
     std::for_each(pPMeshes.cbegin(), pPMeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape shape(pMesh);

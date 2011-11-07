@@ -64,7 +64,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             const PhysicsBoxShape* pBoxShape(dynamic_cast<const PhysicsBoxShape*>(pShape));
             ASSERT(pBoxShape != nullptr, "IPhysicsShape type PhysicsShapeType_Box is not a PhysicsBoxShape");
             pPxShape = m_pActor->createShape(
-                physx::PxBoxGeometry(pBoxShape->getDimension().x, pBoxShape->getDimension().y, pBoxShape->getDimension().z), 
+                physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
                 *material.getInternalMaterial());
             break;
         }
