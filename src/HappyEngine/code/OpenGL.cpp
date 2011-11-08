@@ -116,11 +116,11 @@ void GL::heBindFbo(uint fbo)
 }
 void GL::heBindVao(uint vao)
 {
-    if (m_BoundVao != vao)
-    {
+    /*if (m_BoundVao != vao)
+    {*/
         m_BoundVao = vao;
         glBindVertexArray(vao);
-    }
+    //}
 }
 void GL::heBindTexture2D(uint samplerPos, uint tex)
 {
