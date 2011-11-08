@@ -41,6 +41,7 @@
 
 #include "Entity.h"
 #include "TextBox.h"
+#include "Grid.h"
 
 namespace happytest {
 
@@ -94,6 +95,8 @@ private:
 	he::gui::TextBox* m_pTextBox;
 
 	he::sfx::Sound2D* m_pStillAllive;
+
+	he::tools::Grid* m_pTestGrid;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

@@ -18,45 +18,46 @@
 //Author:  Sebastiaan Sprengers
 //Created: 06/11/2011
 
-#ifndef _HE_SIMPLE_FORWARD_3D_RENDERER_H_
-#define _HE_SIMPLE_FORWARD_3D_RENDERER_H_
+#ifndef _HE_GRID_H_
+#define _HE_GRID_H_
 #pragma once
 
-#include "ModelMesh.h"
-#include "mat44.h"
+#include "vec3.h"
+#include "Entity.h"
+#include "HappyEngine.h"
 #include "Color.h"
-#include "SplineColorEffect.h"
-#include "Camera.h"
+#include "ModelMesh.h"
 
 namespace he {
-namespace gfx {
+namespace tools {
 
-class SimpleForward3DRenderer
+class Grid : public he::game::Entity
 {
 public:
 
-	/* CONSTRUCTOR - DESCTRUCTOR */
-	SimpleForward3DRenderer();
-	virtual ~SimpleForward3DRenderer();
+	/* CONSTRUCTOR - DESTRUCTOR */
+	Grid(const vec3& pos, float size, float tileSize = 1.0f);
+    virtual ~Grid();
 
 	/* GENERAL */
-	void init();
-	void begin(const Camera* pCamera);
-	void end();
+	void draw();
 
-	/* DRAW METHODS */
-	void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
+	/* SETTERS */
+	void setPosition(const vec3& pos);
+	void setColor(const Color& color);
 
 private:
 
 	/* DATAMEMBERS */
-	SplineColorEffect* m_pColorEffect;
+	vec3 m_Position;
 
-	mat44 m_ViewProjection;
+	Color m_Color;
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
-	SimpleForward3DRenderer(const SimpleForward3DRenderer&);
-	SimpleForward3DRenderer& operator=(const SimpleForward3DRenderer&);
+	gfx::ModelMesh::pointer m_pModelMesh;
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    Grid(const Grid&);
+    Grid& operator=(const Grid&);
 };
 
 } } //end namespace

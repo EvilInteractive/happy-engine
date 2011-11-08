@@ -1,12 +1,10 @@
 #version 150 core
 in vec3 inPosition;
-in vec4 inColor;
-out vec4 passColor;
 
-uniform mat4 matWVP;
+uniform mat4 matVP;
+uniform mat4 matW;
 
 void main()
 {
-	gl_Position = matWVP * vec4(inPosition, 1.0f);
-	passColor = inColor;
+	gl_Position = matVP * matW * vec4(inPosition, 1.0f);
 }

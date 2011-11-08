@@ -69,6 +69,7 @@
     <ClCompile Include="code\graphics\ShadowCaster.cpp" />
     <ClCompile Include="code\graphics\Simple2DEffect.cpp" />
     <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp" />
+    <ClCompile Include="code\graphics\SplineColorEffect.cpp" />
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp" />
     <ClCompile Include="code\graphics\SpotLight.cpp" />
     <ClCompile Include="code\graphics\Text.cpp" />
@@ -113,6 +114,7 @@
     <ClCompile Include="code\template\X.cpp" />
     <ClCompile Include="code\tools\Console.cpp" />
     <ClCompile Include="code\tools\FPSGraph.cpp" />
+    <ClCompile Include="code\tools\Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\audio\ISound.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="code\graphics\ShadowCaster.h" />
     <ClInclude Include="code\graphics\Simple2DEffect.h" />
     <ClInclude Include="code\graphics\Simple2DTextureEffect.h" />
+    <ClInclude Include="code\graphics\SplineColorEffect.h" />
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h" />
     <ClInclude Include="code\graphics\SpotLight.h" />
     <ClInclude Include="code\graphics\Text.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="code\tools\Console.h" />
     <ClInclude Include="code\tools\FloatTypeHandler.h" />
     <ClInclude Include="code\tools\FPSGraph.h" />
+    <ClInclude Include="code\tools\Grid.h" />
     <ClInclude Include="code\tools\IntTypeHandler.h" />
     <ClInclude Include="code\tools\ITypeHandler.h" />
     <ClInclude Include="code\tools\StringTypeHandler.h" />

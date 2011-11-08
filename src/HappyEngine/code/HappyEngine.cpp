@@ -35,6 +35,7 @@
 #include "Game.h"
 #include "Console.h"
 #include "SoundEngine.h"
+#include "SimpleForward3DRenderer.h"
 
 #include "boost/chrono.hpp"
 
@@ -47,7 +48,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
-							m_pConsole(nullptr), m_pSoundEngine(nullptr)
+							m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -82,9 +83,13 @@ void HappyEngine::cleanup()
     m_pPhysicsEngine = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
+	delete m_p3DRenderer;
+	m_p3DRenderer = nullptr;
 
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
+
+
     if (m_SubEngines & SubEngine_Graphics)
     {
         SDL_Quit();
@@ -97,6 +102,7 @@ void HappyEngine::init(int subengines)
 {
     if (s_pHappyEngine == nullptr)
         s_pHappyEngine = NEW HappyEngine();
+
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
@@ -107,6 +113,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     {
         SDL_Init(SDL_INIT_EVERYTHING);
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
+		m_p3DRenderer = NEW gfx::SimpleForward3DRenderer();
     }
 
     if (subengines & SubEngine_Content)
@@ -163,8 +170,14 @@ void HappyEngine::start(game::Game* pGame)
     pGame->init();
     
     //load stuff
-    if (m_SubEngines & SubEngine_Graphics) m_pGraphicsEngine->init();
+    if (m_SubEngines & SubEngine_Graphics)
+	{
+		m_pGraphicsEngine->init();
+		m_p3DRenderer->init();
+	}
+
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->initialize();
+
     m_pGame->load();
 
 	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
@@ -277,6 +290,11 @@ sfx::SoundEngine* HappyEngine::getSoundEngine() const
 game::Game* HappyEngine::getGame() const
 {
     return m_pGame;
+}
+
+gfx::SimpleForward3DRenderer* HappyEngine::get3DRenderer() const
+{
+	return m_p3DRenderer;
 }
 
 } //end namespace

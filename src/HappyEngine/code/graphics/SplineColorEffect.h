@@ -18,45 +18,48 @@
 //Author:  Sebastiaan Sprengers
 //Created: 06/11/2011
 
-#ifndef _HE_SIMPLE_FORWARD_3D_RENDERER_H_
-#define _HE_SIMPLE_FORWARD_3D_RENDERER_H_
+#ifndef _HE_SIMPLE_COLOR_EFFECT_H_
+#define _HE_SIMPLE_COLOR_EFFECT_H_
 #pragma once
 
-#include "ModelMesh.h"
 #include "mat44.h"
+#include "Shader.h"
+#include "HappyTypes.h"
 #include "Color.h"
-#include "SplineColorEffect.h"
-#include "Camera.h"
 
 namespace he {
 namespace gfx {
 
-class SimpleForward3DRenderer
+class SplineColorEffect
 {
 public:
 
-	/* CONSTRUCTOR - DESCTRUCTOR */
-	SimpleForward3DRenderer();
-	virtual ~SimpleForward3DRenderer();
+	/* CONSTRUCTOR - DESTRUCTOR */
+	SplineColorEffect();
+    virtual ~SplineColorEffect();
 
 	/* GENERAL */
-	void init();
-	void begin(const Camera* pCamera);
-	void end();
+	void load();
+	void begin() const;
+	void end() const;
 
-	/* DRAW METHODS */
-	void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
+	/* SETTERS */
+	void setViewProjection(const mat44& mat);
+	void setWorld(const mat44& mat);
+	void setColor(const Color& color);
 
 private:
 
 	/* DATAMEMBERS */
-	SplineColorEffect* m_pColorEffect;
+	Shader* m_pShader;
 
-	mat44 m_ViewProjection;
+	uint m_ShaderVPPos;
+	uint m_ShaderWPos;
+	uint m_ShaderColorPos;
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
-	SimpleForward3DRenderer(const SimpleForward3DRenderer&);
-	SimpleForward3DRenderer& operator=(const SimpleForward3DRenderer&);
+    /* DEFAULT COPY & ASSIGNMENT */
+    SplineColorEffect(const SplineColorEffect&);
+    SplineColorEffect& operator=(const SplineColorEffect&);
 };
 
 } } //end namespace

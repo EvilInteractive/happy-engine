@@ -1,8 +1,9 @@
 #version 150 core
-in vec4 passColor;
 out vec4 outColor;
+
+uniform vec4 color;
 
 void main()
 {
-	outColor = passColor;
+	outColor = color;
 }

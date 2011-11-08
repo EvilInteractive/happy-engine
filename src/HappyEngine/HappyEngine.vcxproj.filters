@@ -68,6 +68,9 @@
     <Filter Include="happyengine\physics\shapes">
       <UniqueIdentifier>{4eeb95cb-74a4-41d4-b757-4d6624ffc6a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\tools\console">
+      <UniqueIdentifier>{edcf7455-17f1-4366-8d5f-a3a188bf04d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -108,9 +111,6 @@
     </ClCompile>
     <ClCompile Include="code\game\Entity.cpp">
       <Filter>happyengine\game</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\Camera.cpp">
-      <Filter>happyengine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Color.cpp">
       <Filter>happyengine\graphics</Filter>
@@ -210,9 +210,6 @@
     </ClCompile>
     <ClCompile Include="code\template\X.cpp">
       <Filter>happyengine\template</Filter>
-    </ClCompile>
-    <ClCompile Include="code\tools\Console.cpp">
-      <Filter>happyengine\tools</Filter>
     </ClCompile>
     <ClCompile Include="code\tools\FPSGraph.cpp">
       <Filter>happyengine\tools</Filter>
@@ -363,6 +360,18 @@
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp">
       <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\tools\Console.cpp">
+      <Filter>happyengine\tools\console</Filter>
+    </ClCompile>
+    <ClCompile Include="code\tools\Grid.cpp">
+      <Filter>happyengine\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Camera.cpp">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\SplineColorEffect.cpp">
+      <Filter>happyengine\graphics\material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -531,37 +540,7 @@
     <ClInclude Include="code\template\X.h">
       <Filter>happyengine\template</Filter>
     </ClInclude>
-    <ClInclude Include="code\tools\BoolTypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\Console.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\FloatTypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
     <ClInclude Include="code\tools\FPSGraph.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\IntTypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\ITypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\UIntTypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\Vec2TypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\Vec3TypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\Vec4TypeHandler.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tools\StringTypeHandler.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Color.h">
@@ -737,6 +716,42 @@
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsConcaveShape.h">
       <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\Vec4TypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\IntTypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\ITypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\StringTypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\UIntTypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\Vec2TypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\Vec3TypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\FloatTypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\Console.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\BoolTypeHandler.h">
+      <Filter>happyengine\tools\console</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\Grid.h">
+      <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\SplineColorEffect.h">
+      <Filter>happyengine\graphics\material</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

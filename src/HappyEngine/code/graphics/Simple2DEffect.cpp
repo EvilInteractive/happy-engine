@@ -38,8 +38,6 @@ Simple2DEffect::~Simple2DEffect()
 
 void Simple2DEffect::load()
 {
-	using namespace he;
-	using namespace gfx;
 
     ShaderLayout layout;
 	layout.addElement(ShaderLayoutElement(0, "inPosition"));

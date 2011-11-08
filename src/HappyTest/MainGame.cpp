@@ -47,6 +47,7 @@
 #include "boost/timer.hpp"
 
 #include "Random.h"
+#include "SimpleForward3DRenderer.h"
 
 #include "BinaryStream.h"
 
@@ -63,7 +64,7 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 					   m_pCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
 					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
-					   m_pStillAllive(nullptr)
+					   m_pStillAllive(nullptr), m_pTestGrid(nullptr)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -94,6 +95,7 @@ MainGame::~MainGame()
     delete m_pSky;
 	delete m_pTextBox;
     delete m_pTestButton2;
+	delete m_pTestGrid;
 
     NETWORK->stop();
 }
@@ -213,6 +215,8 @@ void MainGame::load()
 	CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
 
 	m_pStillAllive = AUDIO->loadSound2D("../data/audio/still_alive.ogg", true);
+
+	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 20, 0.1f);
 }
 void MainGame::tick(float dTime)
 {
@@ -307,6 +311,12 @@ void MainGame::draw(float /*dTime*/)
 
     GRAPHICS->begin(m_pCamera);
     GRAPHICS->end();
+
+	HE3D->begin(m_pCamera);
+
+		m_pTestGrid->draw();
+
+	HE3D->end();
 
 	// 2D test stuff
 	HE2D->begin();
