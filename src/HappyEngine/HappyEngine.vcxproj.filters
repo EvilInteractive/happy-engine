@@ -358,6 +358,12 @@
     <ClCompile Include="code\game\StaticPhysicsComponent.cpp">
       <Filter>happyengine\game\components</Filter>
     </ClCompile>
+    <ClCompile Include="code\physics\PhysicsConcaveShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -725,6 +731,12 @@
     </ClInclude>
     <ClInclude Include="code\content\AssetContainer.h">
       <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsConcaveMesh.h">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsConcaveShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

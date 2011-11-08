@@ -40,7 +40,7 @@ enum PhysicsShapeType
     PhysicsShapeType_Capsule,
 
     //Only for static actors
-    PhysicsShapeType_TriangleMesh,
+    PhysicsShapeType_Concave,
     PhysicsShapeType_Plane,
     PhysicsShapeType_HeightField
 };

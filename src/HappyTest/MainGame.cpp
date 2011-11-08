@@ -51,6 +51,9 @@
 #include "BinaryStream.h"
 
 #include "ModelComponent.h"
+#include "StaticPhysicsComponent.h"
+#include "PhysicsConvexShape.h"
+#include "PhysicsConcaveShape.h"
 
 namespace happytest {
 
@@ -166,14 +169,31 @@ void MainGame::load()
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Scene", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
+    game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
+    m_pScene->addComponent(pScenePxComp);
+    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
+    px::PhysicsMaterial woodMaterial(0.5f, 0.4f, 0.2f);
+    std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
+    {
+        he::px::PhysicsConvexShape pShape(pMesh);
+        pScenePxComp->addShape(&pShape, woodMaterial);
+    });
+    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
+    px::PhysicsMaterial sandMaterial(0.5f, 0.4f, 0.2f);
+    std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
+    {
+        he::px::PhysicsConcaveShape pShape(pMesh);
+        pScenePxComp->addShape(&pShape, woodMaterial);
+    });
 
     m_pSky = NEW he::game::Entity();
     game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
     pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
     pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
-    pSkyModelComp->setLocalTransform(mat44::createScale(200));
+    pSkyModelComp->setLocalTransform(mat44::createScale(vec3(200, 100, 200)));
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
         
@@ -235,13 +255,13 @@ void MainGame::tick(float dTime)
         px::PhysicsMaterial material(0.8f, 0.5f, 0.1f);
         px::PhysicsBoxShape boxShape(vec3(2, 2, 2));
         pPhysicsComponent->addShape(&boxShape, material, 5);
+        pPhysicsComponent->getDynamicActor()->setVelocity(m_pCamera->getLook() * 20);
 
         game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());
         pBulletModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
         pBulletModelComp->setModel(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", pBulletModelComp->getMaterial().getCompatibleVertexLayout()));
         pBullet->addComponent(pBulletModelComp);
 
-        pPhysicsComponent->getDynamicActor()->addVelocity(m_pCamera->getLook() * 20);
 
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";

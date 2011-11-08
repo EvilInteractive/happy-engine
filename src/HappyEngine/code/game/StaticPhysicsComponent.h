@@ -42,7 +42,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
 
-    virtual void serialize(const SerializerStream& stream);
+    virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
          

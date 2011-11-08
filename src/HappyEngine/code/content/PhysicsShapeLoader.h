@@ -23,6 +23,7 @@
 #pragma once
 
 #include "PhysicsConvexMesh.h"
+#include "PhysicsConcaveMesh.h"
 #include "AssetContainer.h"
 
 #include <vector>
@@ -38,10 +39,11 @@ public:
     virtual ~PhysicsShapeLoader();
 
     const std::vector<px::PhysicsConvexMesh::pointer>& loadConvex(const std::string& path);
-    //const std::vector<px::shapes::IPhysicsShape::pointer>& load(const std::string& path);
+    const std::vector<px::PhysicsConcaveMesh::pointer>& loadConcave(const std::string& path);
 
 private:
-	AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>* m_pAssetContainer;
+	AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>* m_pConvexAssetContainer;
+	AssetContainer<std::vector<px::PhysicsConcaveMesh::pointer>>* m_pConcaveAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     PhysicsShapeLoader(const PhysicsShapeLoader&);

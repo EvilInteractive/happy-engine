@@ -27,6 +27,7 @@
 #include "PhysicsBoxShape.h"
 #include "PhysicsSphereShape.h"
 #include "PhysicsConvexShape.h"
+#include "PhysicsConcaveShape.h"
 
 namespace he {
 namespace px {
@@ -86,6 +87,16 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             pPxShape = m_pActor->createShape(
                 physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
                 physx::PxMeshScale(physx::pubfnd3::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
+                *material.getInternalMaterial());
+            break;
+        }
+    case PhysicsShapeType_Concave:
+        {
+            const PhysicsConcaveShape* pConcaveShape(dynamic_cast<const PhysicsConcaveShape*>(pShape));
+            ASSERT(pConcaveShape != nullptr, "IPhysicsShape type PhysicsShapeType_Concave is not a PhysicsConcaveShape");
+            pPxShape = m_pActor->createShape(
+                physx::PxTriangleMeshGeometry(pConcaveShape->getInternalMesh(), 
+                physx::PxMeshScale(physx::pubfnd3::PxVec3(pConcaveShape->getScale().x, pConcaveShape->getScale().y, pConcaveShape->getScale().z), physx::PxQuat::createIdentity())),
                 *material.getInternalMaterial());
             break;
         }

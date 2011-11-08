@@ -28,21 +28,24 @@
 namespace he {
 namespace ct {
 
-PhysicsShapeLoader::PhysicsShapeLoader(): m_pAssetContainer(NEW AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>())
+PhysicsShapeLoader::PhysicsShapeLoader(): 
+        m_pConvexAssetContainer(NEW AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>()),
+        m_pConcaveAssetContainer(NEW AssetContainer<std::vector<px::PhysicsConcaveMesh::pointer>>())
 {
 }
 
 
 PhysicsShapeLoader::~PhysicsShapeLoader()
 {
-    delete m_pAssetContainer;
+    delete m_pConvexAssetContainer;
+    delete m_pConcaveAssetContainer;
 }
 
 const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConvex(const std::string& path)
 {
-    if (m_pAssetContainer->isAssetPresent(path))
+    if (m_pConvexAssetContainer->isAssetPresent(path))
 	{
-		return m_pAssetContainer->getAsset(path);
+		return m_pConvexAssetContainer->getAsset(path);
 	}
 	else
 	{
@@ -57,13 +60,42 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
                 shapes.push_back(px::PhysicsConvexMesh::pointer(NEW px::PhysicsConvexMesh(stream)));
             }
 
-            m_pAssetContainer->addAsset(path, shapes);
-            return m_pAssetContainer->getAsset(path);
+            m_pConvexAssetContainer->addAsset(path, shapes);
+            return m_pConvexAssetContainer->getAsset(path);
         }
         else
         {
             ASSERT(false, "no loader defined for this extension");
-            return m_pAssetContainer->getAsset("");
+            return m_pConvexAssetContainer->getAsset("");
+        }
+    }
+}
+const std::vector<px::PhysicsConcaveMesh::pointer>& PhysicsShapeLoader::loadConcave(const std::string& path)
+{
+    if (m_pConcaveAssetContainer->isAssetPresent(path))
+	{
+		return m_pConcaveAssetContainer->getAsset(path);
+	}
+	else
+	{
+		if (path.rfind(".pxcc") != std::string::npos)
+		{
+            io::BinaryStream stream(path, io::BinaryStream::Read);
+            byte numConcave(stream.readByte());
+
+            std::vector<px::PhysicsConcaveMesh::pointer> shapes;
+            for (int i = 0; i < numConcave; ++i)
+            {
+                shapes.push_back(px::PhysicsConcaveMesh::pointer(NEW px::PhysicsConcaveMesh(stream)));
+            }
+
+            m_pConcaveAssetContainer->addAsset(path, shapes);
+            return m_pConcaveAssetContainer->getAsset(path);
+        }
+        else
+        {
+            ASSERT(false, "no loader defined for this extension");
+            return m_pConcaveAssetContainer->getAsset("");
         }
     }
 }

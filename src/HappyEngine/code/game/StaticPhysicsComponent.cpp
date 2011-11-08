@@ -48,7 +48,7 @@ void StaticPhysicsComponent::init( Entity* pParent )
     //    m_pDynamicActor->setKeyframed(true);
 }
 
-void StaticPhysicsComponent::serialize(const SerializerStream& /*stream*/)
+void StaticPhysicsComponent::serialize(SerializerStream& /*stream*/)
 {
 
 }
@@ -60,10 +60,8 @@ void StaticPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material )
 {
-    if (m_pStaticActor == nullptr)
-    {
-        m_pStaticActor->addShape(pShape, material);
-    }
+    ASSERT(m_pStaticActor != nullptr, "attach component first to entity");
+    m_pStaticActor->addShape(pShape, material);
 }
 
 px::PhysicsStaticActor* StaticPhysicsComponent::getStaticActor() const

@@ -24,7 +24,6 @@
 #pragma once
 
 #include "IPhysicsShape.h"
-#include "geometry/PxConvexMeshGeometry.h"
 #include "PhysicsConvexMesh.h"
 #include "vec3.h"
 

@@ -66,10 +66,10 @@ void HappyCooker::binobjNodeRunner(aiNode* pNode, const aiScene* pScene, const h
 {
     using namespace he;
     aiMatrix4x4 mtxLocalTransform = pNode->mTransformation;
-    mat44 mtxTransformation = mat44(mtxLocalTransform.a1, mtxLocalTransform.a2, mtxLocalTransform.a3, mtxLocalTransform.a4,
+    mat44 mtxTransformation = p_Transformation * mat44(mtxLocalTransform.a1, mtxLocalTransform.a2, mtxLocalTransform.a3, mtxLocalTransform.a4,
                                     mtxLocalTransform.b1, mtxLocalTransform.b2, mtxLocalTransform.b3, mtxLocalTransform.b4,
                                     mtxLocalTransform.c1, mtxLocalTransform.c2, mtxLocalTransform.c3, mtxLocalTransform.c4,
-                                    mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4) * p_Transformation;
+                                    mtxLocalTransform.d1, mtxLocalTransform.d2, mtxLocalTransform.d3, mtxLocalTransform.d4);
 
     ASSERT(pNode->mNumMeshes <= 1, "more than one mesh in a node... didn't know this could happen, what is this?");
     for (uint iMesh = 0; iMesh < pNode->mNumMeshes; ++iMesh)
@@ -270,7 +270,7 @@ bool HappyCooker::cookBinObj( he::io::BinaryStream& stream )
         for (uint iVert = 0; iVert < pMesh->mNumVertices; ++iVert)
         {
             //store position
-            stream.storeVector3((mtxTransformation * mat44::createScale(0.01f) * vec4(pMesh->mVertices[iVert].x, pMesh->mVertices[iVert].y, pMesh->mVertices[iVert].z, 1.0f)).xyz());
+            stream.storeVector3(( mat44::createScale(0.01f) * mtxTransformation *vec4(pMesh->mVertices[iVert].x, pMesh->mVertices[iVert].y, pMesh->mVertices[iVert].z, 1.0f)).xyz());
             //store texture coordinate  
             stream.storeVector2(vec2(pMesh->mTextureCoords[0][iVert].x, pMesh->mTextureCoords[0][iVert].y));
             //store normal
@@ -341,7 +341,7 @@ void optimizeMeshForPhysX(aiMesh* pMesh, const he::mat44& mtxTransformation, std
             {
                 vertMap[vert] = static_cast<ushort>(vertices.size());
                 indices.push_back(static_cast<ushort>(vertices.size()));
-                vertices.push_back(mtxTransformation * mat44::createScale(0.01f) * vert);
+                vertices.push_back( mat44::createScale(0.01f) * mtxTransformation *vert);
             }
             else
             {
@@ -412,18 +412,18 @@ bool HappyCooker::cookTriangleMesh( he::io::BinaryStream& stream )
     using namespace he;
 
     std::stringstream infoStream;
-    infoStream << "  PXCC cooking " << m_ConvexCookData.size() << " meshes";
+    infoStream << "  PXCC cooking " << m_TriangleMeshCookData.size() << " meshes";
     addInfo(infoStream.str());
 
-    byte numMeshes(static_cast<byte>(min<uint>(m_ConvexCookData.size(), 255)));
-    if (numMeshes < m_ConvexCookData.size())
+    byte numMeshes(static_cast<byte>(min<uint>(m_TriangleMeshCookData.size(), 255)));
+    if (numMeshes < m_TriangleMeshCookData.size())
         addInfo("Warning to many convex meshes cooking 255");
 
     physx::PxCooking* cooking(PxCreateCooking(PX_PHYSICS_VERSION, &m_pPhysicsEngine->getSDK()->getFoundation(), physx::PxCookingParams()));
 
     stream.storeByte(numMeshes);
     bool succes(true);
-    std::for_each(m_ConvexCookData.cbegin(), m_ConvexCookData.cend(), [&](const CookData& data)
+    std::for_each(m_TriangleMeshCookData.cbegin(), m_TriangleMeshCookData.cend(), [&](const CookData& data)
     {
         using namespace he;
         aiMesh* pMesh(data.pMesh);

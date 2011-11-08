@@ -100,6 +100,8 @@
     <ClCompile Include="code\networking\Server.cpp" />
     <ClCompile Include="code\OpenGL.cpp" />
     <ClCompile Include="code\physics\PhysicsBoxShape.cpp" />
+    <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp" />
+    <ClCompile Include="code\physics\PhysicsConcaveShape.cpp" />
     <ClCompile Include="code\physics\PhysicsConvexMesh.cpp" />
     <ClCompile Include="code\physics\PhysicsConvexShape.cpp" />
     <ClCompile Include="code\physics\PhysicsDynamicActor.cpp" />
@@ -215,6 +217,8 @@
     <ClInclude Include="code\OpenGL.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
+    <ClInclude Include="code\physics\PhysicsConcaveMesh.h" />
+    <ClInclude Include="code\physics\PhysicsConcaveShape.h" />
     <ClInclude Include="code\physics\PhysicsConvexMesh.h" />
     <ClInclude Include="code\physics\PhysicsConvexShape.h" />
     <ClInclude Include="code\physics\PhysicsDynamicActor.h" />
