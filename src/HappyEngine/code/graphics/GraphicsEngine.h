@@ -45,7 +45,7 @@ public:
 	GraphicsEngine();
     virtual ~GraphicsEngine();
 
-    void init();
+    void init(bool useQt);
 
     void setScreenPosition(int x, int y);
     void getScreenPosition(int& x, int& y) const;

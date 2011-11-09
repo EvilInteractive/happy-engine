@@ -23,7 +23,7 @@
 #pragma once
 
 #include "Keyboard.h"
-#include "Mouse.h"
+#include "IMouse.h"
 
 namespace he {
 namespace io {
@@ -31,18 +31,18 @@ namespace io {
 class ControlsManager
 {
 public:
-	ControlsManager();
+	ControlsManager(bool qt);
     virtual ~ControlsManager();
 
     void tick();
 
     const Keyboard* getKeyboard() const;
-    const Mouse* getMouse() const;
+    const IMouse* getMouse() const;
 
 private:
 
     Keyboard* m_pKeyboard;
-    Mouse* m_pMouse;
+    IMouse* m_pMouse;
 
     //Disable default copy constructor and default assignment operator
     ControlsManager(const ControlsManager&);

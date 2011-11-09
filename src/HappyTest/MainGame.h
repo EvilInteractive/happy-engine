@@ -54,7 +54,7 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void draw(float dTime);
+    virtual void draw();
 
 private:
 	happytest::FlyCamera* m_pCamera;

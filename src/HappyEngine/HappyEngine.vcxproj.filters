@@ -68,8 +68,14 @@
     <Filter Include="happyengine\physics\shapes">
       <UniqueIdentifier>{4eeb95cb-74a4-41d4-b757-4d6624ffc6a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\QT">
+      <UniqueIdentifier>{f5ff196e-8eb8-498a-86db-ef0bda1b2b43}</UniqueIdentifier>
+    </Filter>
     <Filter Include="happyengine\tools\console">
       <UniqueIdentifier>{edcf7455-17f1-4366-8d5f-a3a188bf04d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\io\mouse">
+      <UniqueIdentifier>{14d78ab2-177b-492c-9585-3a0a64f26502}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -143,9 +149,6 @@
       <Filter>happyengine\io</Filter>
     </ClCompile>
     <ClCompile Include="code\io\Keyboard.cpp">
-      <Filter>happyengine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="code\io\Mouse.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
     <ClCompile Include="code\math\AABB.cpp">
@@ -361,6 +364,15 @@
     <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp">
       <Filter>happyengine\physics\shapes</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\HappyQtWidget.cpp">
+      <Filter>happyengine\graphics\QT</Filter>
+    </ClCompile>
+    <ClCompile Include="code\io\Mouse.cpp">
+      <Filter>happyengine\io\mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="code\io\QtMouse.cpp">
+      <Filter>happyengine\io\mouse</Filter>
+    </ClCompile>
     <ClCompile Include="code\tools\Console.cpp">
       <Filter>happyengine\tools\console</Filter>
     </ClCompile>
@@ -454,9 +466,6 @@
       <Filter>happyengine\io</Filter>
     </ClInclude>
     <ClInclude Include="code\io\Keys.h">
-      <Filter>happyengine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="code\io\Mouse.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
     <ClInclude Include="code\math\AABB.h">
@@ -719,6 +728,18 @@
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsConcaveShape.h">
       <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\HappyQtWidget.h">
+      <Filter>happyengine\graphics\QT</Filter>
+    </ClInclude>
+    <ClInclude Include="code\io\Mouse.h">
+      <Filter>happyengine\io\mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="code\io\IMouse.h">
+      <Filter>happyengine\io\mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="code\io\QtMouse.h">
+      <Filter>happyengine\io\mouse</Filter>
     </ClInclude>
     <ClInclude Include="code\tools\Vec4TypeHandler.h">
       <Filter>happyengine\tools\console</Filter>

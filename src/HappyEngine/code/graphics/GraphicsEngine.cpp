@@ -49,16 +49,19 @@ GraphicsEngine::~GraphicsEngine()
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
 }
-void GraphicsEngine::init()
+void GraphicsEngine::init(bool useQt)
 {
     using namespace err;
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3));
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2));
+    if (useQt == false)
+    {
+        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3));
+        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2));
 
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
-    sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24));
+        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
+        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24));
 
-    initWindow();
+        initWindow();
+    }
     glewExperimental = true;
     glHandleError(glewInit());
 

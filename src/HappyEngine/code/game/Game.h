@@ -33,7 +33,7 @@ public:
 
     virtual void init() = 0;
     virtual void load() = 0;
-    virtual void draw(float dTime) = 0;
+    virtual void draw() = 0;
 
 
     virtual void tick(float dTime)

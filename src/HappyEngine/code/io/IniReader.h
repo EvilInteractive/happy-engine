@@ -22,6 +22,8 @@
 #define _HE_INI_READER_H_
 #pragma once
 
+#undef string
+#undef wstring
 #include <string>
 #include <map>
 

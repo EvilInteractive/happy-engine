@@ -22,22 +22,12 @@
 #define _HE_MOUSE_H_
 #pragma once
 
-#include "vec2.h"
-#include "HappyTypes.h"
-#include "SDL.h"
+#include "IMouse.h"
 
 namespace he {
 namespace io {
 
-enum MouseButton
-{
-    MouseButton_Left = SDL_BUTTON_LMASK, 
-    MouseButton_Right = SDL_BUTTON_RMASK, 
-    MouseButton_Middle = SDL_BUTTON_MMASK, 
-    MouseButton_ScrollUp = SDL_BUTTON_X1MASK, 
-    MouseButton_ScrollDown = SDL_BUTTON_X2MASK
-};
-class Mouse
+class Mouse : public IMouse
 {
 public:
 	Mouse();

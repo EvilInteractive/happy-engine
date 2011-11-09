@@ -296,7 +296,7 @@ void MainGame::tick(float dTime)
 
 	CONSOLE->tick();
 }
-void MainGame::draw(float /*dTime*/)
+void MainGame::draw()
 {
 	using namespace he;
 	using namespace gfx;

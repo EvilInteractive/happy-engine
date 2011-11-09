@@ -30,12 +30,22 @@
 #include "GL/glew.h"
 
 #include <vector>
+#include "boost/chrono.hpp"
 
 // forward declaration
+
+#ifdef HE_ENABLE_QT
+#pragma warning(disable:4127)
+#include <QTimer>
+#include <qobject.h>
+#pragma warning(default:4127)
+#endif
+
 namespace he {
 namespace gfx {
 	class GraphicsEngine;
 	class Happy2DRenderer;
+    class HappyQtWidget;
 	class SimpleForward3DRenderer;
 }
 namespace io {
@@ -84,15 +94,25 @@ enum SubEngine
     SubEngine_Content = 1 << 4,
 	SubEngine_2DRenderer = 1 << 5,
 	SubEngine_Audio = 1 << 6,
+	SubEngine_Qt = 1 << 7,
     SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6
 };
+#ifdef HE_ENABLE_QT
+class HappyEngine  : public /*qt::*/QObject
+{
+    Q_OBJECT
+#else
 class HappyEngine
 {
+#endif
 public:
     virtual ~HappyEngine();
 
     static void init(int subengines);
     void start(game::Game* pGame);
+#ifdef HE_ENABLE_QT
+    void start(gfx::HappyQtWidget* pWidget);
+#endif
     static void dispose();
 
     static HappyEngine* getPointer();
@@ -140,10 +160,20 @@ private:
 	std::vector<SDL_Event> m_SDLEvents;
 	boost::thread m_AudioThread;
 
+    boost::chrono::high_resolution_clock::time_point m_PrevTime;
+
     // Methods
     void initWindow();
+    
+#ifdef HE_ENABLE_QT
+    /*qt::*/QTimer m_qtLoopTimer;
+    gfx::HappyQtWidget* m_pQtWidget;
+private slots:
+#endif
+    void loop();
+private:
     void updateLoop(float dTime);
-    void drawLoop(float dTime);
+    void drawLoop();
     void cleanup();
 
     //Disable default copy constructor and default assignment operator

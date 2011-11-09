@@ -37,8 +37,12 @@
 #include "SoundEngine.h"
 #include "SimpleForward3DRenderer.h"
 
-#include "boost/chrono.hpp"
-
+#ifdef HE_ENABLE_QT
+#pragma warning(disable:4127)
+#include <QtGui/QApplication>
+#pragma warning(default:4127)
+#include "HappyQtWidget.h"
+#endif
 
 namespace he {
 
@@ -48,7 +52,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
-							m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr)
+							m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0)
 {
 }
 HappyEngine::~HappyEngine()
@@ -126,7 +130,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     
     if (subengines & SubEngine_Controls)
     {
-        m_pControlsManager = NEW io::ControlsManager();
+        m_pControlsManager = NEW io::ControlsManager((subengines & SubEngine_Qt) == SubEngine_Qt);
     }
 
     if (subengines & SubEngine_Physics)
@@ -172,7 +176,7 @@ void HappyEngine::start(game::Game* pGame)
     //load stuff
     if (m_SubEngines & SubEngine_Graphics)
 	{
-		m_pGraphicsEngine->init();
+		m_pGraphicsEngine->init(false);
 		m_p3DRenderer->init();
 	}
 
@@ -183,35 +187,64 @@ void HappyEngine::start(game::Game* pGame)
 	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 
     //boost::timer t;
-    boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
+    m_PrevTime = boost::chrono::high_resolution_clock::now();
 
     while (m_Quit == false)
     {
-        //float dTime(static_cast<float>(t.elapsed() * 1000));
-        //t.restart();
-        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
-        prevTime = boost::chrono::high_resolution_clock::now();
-        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
-        updateLoop(dTime);
-        if (m_SubEngines & SubEngine_Graphics)
-            drawLoop(dTime);
+        loop();
     }   
+}
+#ifdef HE_ENABLE_QT
+void HappyEngine::start(gfx::HappyQtWidget* pWidget)
+{
+    using namespace std;
+    cout << "       ******************************       \n";
+    cout << "  ****************   Qt   ****************  \n";
+    cout << "*************  HappyEngine :3  *************\n";
+    cout << "  ***************          ***************  \n";
+    cout << "       ******************************       \n";
+    m_SubEngines |= SubEngine_Qt;    
+
+    m_pGame = pWidget;
+    m_pGame->load();
+    m_pQtWidget = pWidget;
+    
+	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
+
+    m_qtLoopTimer.setInterval(0); //as fast as possible
+    connect(&m_qtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
+    m_qtLoopTimer.start();
+
+    QApplication::exec();
+}
+#endif
+void HappyEngine::loop()
+{
+    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
+    m_PrevTime = boost::chrono::high_resolution_clock::now();
+    float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+    updateLoop(dTime);
+    if (m_SubEngines & SubEngine_Graphics)
+        drawLoop();
 }
 void HappyEngine::updateLoop(float dTime)
 {
-    SDL_Event event;
-	m_SDLEvents.clear();
-    while (SDL_PollEvent(&event))
+    if ((m_SubEngines & SubEngine_Qt) != SubEngine_Qt)
     {
-        switch (event.type)
+        SDL_Event event;
+	    m_SDLEvents.clear();
+        while (SDL_PollEvent(&event))
         {
-            case SDL_QUIT: m_Quit = true; break;
-        }
+            switch (event.type)
+            {
+                case SDL_QUIT: m_Quit = true; break;
+            }
 
-		// needed for checking events in other places in program
-		m_SDLEvents.push_back(event);
-    }  
-    if (m_SubEngines & SubEngine_Controls) //need to be before the events are updated
+		    // needed for checking events in other places in program
+		    m_SDLEvents.push_back(event);
+        }
+    }
+    if (m_SubEngines & SubEngine_Controls)
         m_pControlsManager->tick();
     if (m_SubEngines & SubEngine_Content)
     {
@@ -223,11 +256,17 @@ void HappyEngine::updateLoop(float dTime)
 
     m_pGame->tick(dTime);
 }
-void HappyEngine::drawLoop(float dTime)
+void HappyEngine::drawLoop()
 {                
-    m_pGame->draw(dTime);
-        
-    m_pGraphicsEngine->present();
+    m_pGame->draw();
+ 
+#ifdef HE_ENABLE_QT
+    if (m_SubEngines & SubEngine_Qt)
+        m_pQtWidget->updateGL();
+    else 
+#endif
+    if (m_SubEngines & SubEngine_Graphics)
+        m_pGraphicsEngine->present();
 }
 
 HappyEngine* HappyEngine::getPointer()

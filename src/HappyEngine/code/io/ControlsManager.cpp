@@ -21,12 +21,20 @@
 
 #include "ControlsManager.h"
 #include "HappyNew.h"
+#include "Mouse.h"
+#include "QtMouse.h"
 
 namespace he {
 namespace io {
 
-ControlsManager::ControlsManager(): m_pKeyboard(NEW Keyboard()), m_pMouse(NEW Mouse())
+ControlsManager::ControlsManager(bool qt): m_pKeyboard(NEW Keyboard())
 {
+    if (qt == false)
+        m_pMouse = NEW Mouse();
+#if HE_ENABLE_QT
+    else
+        m_pMouse = NEW QtMouse();
+#endif
 }
 
 
@@ -46,7 +54,7 @@ const Keyboard* ControlsManager::getKeyboard() const
 {
     return m_pKeyboard;
 }
-const Mouse* ControlsManager::getMouse() const
+const IMouse* ControlsManager::getMouse() const
 {
     return m_pMouse;
 }

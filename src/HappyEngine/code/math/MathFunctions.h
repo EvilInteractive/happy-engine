@@ -28,6 +28,9 @@
 
 namespace he {
 
+#undef min
+#undef max
+
 //template
 template<typename T>
 inline T min(T a, T b)
