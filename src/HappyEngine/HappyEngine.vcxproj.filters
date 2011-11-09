@@ -373,6 +373,9 @@
     <ClCompile Include="code\graphics\SplineColorEffect.cpp">
       <Filter>happyengine\graphics\material</Filter>
     </ClCompile>
+    <ClCompile Include="code\audio\SoundFile.cpp">
+      <Filter>happyengine\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -752,6 +755,9 @@
     </ClInclude>
     <ClInclude Include="code\graphics\SplineColorEffect.h">
       <Filter>happyengine\graphics\material</Filter>
+    </ClInclude>
+    <ClInclude Include="code\audio\SoundFile.h">
+      <Filter>happyengine\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

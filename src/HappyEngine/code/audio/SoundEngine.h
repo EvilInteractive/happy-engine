@@ -26,11 +26,9 @@
 #include <map>
 #include "al.h"
 #include "alc.h"
-#include "ogg/ogg.h"
-#include "vorbis/vorbisfile.h"
-#include "vorbis/codec.h"
 #include "vec3.h"
 #include "ISound.h"
+#include "SoundFile.h"
 
 namespace he {
 namespace sfx {
@@ -42,7 +40,7 @@ class SoundEngine
 {
 public:
 
-	static const uint STREAM_BUFFER_SIZE = 4096 * 8;
+	static const uint STREAM_BUFFER_SIZE = 4096;
 	static const uint STREAM_BUFFERS = 2;
 
 	/* CONSTRUCTOR - DESTRUCTOR */
@@ -51,7 +49,7 @@ public:
 
 	/* GENERAL */
 	void initialize();
-	void tick();
+	void tick(float dTime);
 	void deleteAllSounds();
 
 	Sound2D* loadSound2D(const std::string& path, bool stream = false);
@@ -66,28 +64,28 @@ public:
 	/* GETTERS */
 	vec3 getListenerPos() const;
 
-	ALuint getSource(uint source);
-	ALuint* getBuffer(uint buffer);
+	ALuint getALSource(uint source) const;
+	ALuint* getALBuffer(uint buffer) const;
+	SoundFile& getSoundFile(uint soundFile);
 
 private:
 
 	void shutdown();
-
-	uint loadOggStream(const std::string& path);
-	bool streamOgg(OggVorbis_File& stream, ALuint buffer);
 	void emptyBuffers(uint source);
+
+	bool streamSound(SoundFile& stream, ALuint buffer);
+	
+	ALenum getALFormatFromChannels(uint channels) const;
 
 	/* DATAMEMBERS */
 	std::vector<ISound*> m_SoundBank;
 	std::vector<ALuint*> m_SoundBuffers;
 	std::vector<ALuint> m_SoundSources;
-	std::vector<OggVorbis_File> m_SoundStreams;
-	std::map<ISound*, uint> m_SoundStreamIndex;
+	std::vector<SoundFile> m_SoundFiles;
+	std::map<ISound*, float> m_SoundTime;
 
 	ALCcontext* m_pALContext;
 	ALCdevice* m_pALDevice;
-
-	uint m_BufferSize;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     SoundEngine(const SoundEngine&);

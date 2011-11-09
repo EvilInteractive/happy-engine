@@ -465,4 +465,9 @@ void Deferred3DRenderer::calculateExposure()
     m_pAutoExposure->calculate(m_pRenderTexture);
 }
 
+const Texture2D::pointer& Deferred3DRenderer::getDepthTexture() const
+{
+	return m_pTexture[3];
+}
+
 } } //end namespace

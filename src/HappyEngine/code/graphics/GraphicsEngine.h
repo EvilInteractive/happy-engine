@@ -77,6 +77,8 @@ public:
     LightManager* getLightManager() const;
     const DrawSettings& getSettings() const;
 
+	Deferred3DRenderer* getDeferredRenderer() const;
+
 private:
     void initWindow();
 

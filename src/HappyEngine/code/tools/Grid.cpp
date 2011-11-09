@@ -42,7 +42,7 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
 	uint steps(static_cast<uint>(size / tileSize));
 
 	uint index(0);
-	for (uint i(0); i < steps; ++i)
+	for (uint i(0); i <= steps; ++i)
 	{
 		vertices.push_back(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
 		vertices.push_back(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
@@ -60,6 +60,7 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
 	m_pModelMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(""));
 	m_pModelMesh->init();
 	m_pModelMesh->setVertices(&vertices[0], vertices.size(), layout);
+	m_pModelMesh->setIndices(&indices[0], indices.size(), gfx::IndexStride_UInt);
 }
 
 Grid::~Grid()

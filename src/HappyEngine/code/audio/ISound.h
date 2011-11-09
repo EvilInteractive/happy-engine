@@ -50,6 +50,9 @@ public:
 	virtual void stop() = 0;
 	virtual uint getSource() const = 0;
 	virtual uint getBuffer() const = 0;
+	virtual uint getSoundFile() const = 0;
+	virtual bool getLooping() const = 0;
+	virtual float getLength() const = 0;
 	virtual SOUND_STATE getState() const = 0;
 	virtual SOUND_TYPE getType() const = 0;
 

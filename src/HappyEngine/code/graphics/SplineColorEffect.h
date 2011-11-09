@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 06/11/2011
 
-#ifndef _HE_SIMPLE_COLOR_EFFECT_H_
-#define _HE_SIMPLE_COLOR_EFFECT_H_
+#ifndef _HE_SPLINE_COLOR_EFFECT_H_
+#define _HE_SPLINE_COLOR_EFFECT_H_
 #pragma once
 
 #include "mat44.h"

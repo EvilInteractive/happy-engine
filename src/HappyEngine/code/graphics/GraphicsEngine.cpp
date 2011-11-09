@@ -228,4 +228,9 @@ void GraphicsEngine::addToDrawList( const IDrawable* pDrawable )
     m_pDrawManager->addDrawable(pDrawable);
 }
 
+Deferred3DRenderer* GraphicsEngine::getDeferredRenderer() const
+{
+	return m_pDeferred3DRenderer;
+}
+
 } } //end namespace

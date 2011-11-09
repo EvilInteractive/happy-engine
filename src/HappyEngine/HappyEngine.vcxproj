@@ -18,6 +18,7 @@
     <ClCompile Include="code\audio\Sound2D.cpp" />
     <ClCompile Include="code\audio\Sound3D.cpp" />
     <ClCompile Include="code\audio\SoundEngine.cpp" />
+    <ClCompile Include="code\audio\SoundFile.cpp" />
     <ClCompile Include="code\content\BinObjLineLoader.cpp" />
     <ClCompile Include="code\content\BinObjLoader.cpp" />
     <ClCompile Include="code\content\ContentManager.cpp" />
@@ -121,6 +122,7 @@
     <ClInclude Include="code\audio\Sound2D.h" />
     <ClInclude Include="code\audio\Sound3D.h" />
     <ClInclude Include="code\audio\SoundEngine.h" />
+    <ClInclude Include="code\audio\SoundFile.h" />
     <ClInclude Include="code\content\AssetContainer.h" />
     <ClInclude Include="code\content\BinObjLineLoader.h" />
     <ClInclude Include="code\content\BinObjLoader.h" />
@@ -308,7 +310,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>

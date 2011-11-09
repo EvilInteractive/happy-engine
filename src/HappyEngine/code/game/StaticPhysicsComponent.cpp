@@ -37,6 +37,7 @@ StaticPhysicsComponent::StaticPhysicsComponent(): m_pStaticActor(nullptr)
 
 StaticPhysicsComponent::~StaticPhysicsComponent()
 {
+	delete m_pStaticActor;
 }
 
 void StaticPhysicsComponent::init( Entity* pParent )

@@ -47,6 +47,7 @@ public:
     void end();
 
     LightManager* getLightManager() const;
+	const Texture2D::pointer& getDepthTexture() const;
 
     static const VertexLayout& getVertexLayoutLightVolume();
 

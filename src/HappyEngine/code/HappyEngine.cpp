@@ -184,7 +184,7 @@ void HappyEngine::start(game::Game* pGame)
 
     //boost::timer t;
     boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
-    
+
     while (m_Quit == false)
     {
         //float dTime(static_cast<float>(t.elapsed() * 1000));
@@ -243,10 +243,15 @@ const std::vector<SDL_Event>& HappyEngine::getSDLEvents() const
 void HappyEngine::audioLoop()
 {
 	boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(1);
+	boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
 
 	while (m_Quit == false)
 	{
-		m_pSoundEngine->tick();
+		boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
+        prevTime = boost::chrono::high_resolution_clock::now();
+        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+
+		m_pSoundEngine->tick(dTime);
 
 		boost::this_thread::sleep(waitTime);
 	}

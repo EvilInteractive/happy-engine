@@ -34,8 +34,7 @@ namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 SoundEngine::SoundEngine() :	m_pALContext(nullptr),
-								m_pALDevice(nullptr),
-								m_BufferSize(4096 * 8)
+								m_pALDevice(nullptr)
 {
 }
 
@@ -55,16 +54,10 @@ void SoundEngine::shutdown()
 		if (pSound->getType() == SOUND_TYPE_STREAM)
 		{
 			alDeleteBuffers(STREAM_BUFFERS, m_SoundBuffers[pSound->getBuffer()]);
-
-			delete []m_SoundBuffers[pSound->getBuffer()];
-
-			ov_clear(&m_SoundStreams[m_SoundStreamIndex[pSound]]);
 		}
 		else
 		{
 			alDeleteBuffers(1, m_SoundBuffers[pSound->getBuffer()]);
-
-			delete m_SoundBuffers[pSound->getBuffer()];
 		}
 
 		alDeleteSources(1, &m_SoundSources[pSound->getSource()]);
@@ -78,56 +71,31 @@ void SoundEngine::shutdown()
 	alcCloseDevice(m_pALDevice);
 }
 
-uint SoundEngine::loadOggStream(const std::string& path)
+bool SoundEngine::streamSound(SoundFile& stream, ALuint buffer)
 {
-	OggVorbis_File oggStream;
+	short pData[STREAM_BUFFER_SIZE];
+	uint samples(0);
+	uint samplesRead(0);
 
-	if (ov_fopen(path.c_str(), &oggStream) < 0)
+	// read data, keep reading until read data == buffer_size
+	while (samplesRead < STREAM_BUFFER_SIZE)
 	{
-		ASSERT(false,"Could not open ogg stream.");
-	}
+		samples = stream.read(pData, STREAM_BUFFER_SIZE - samplesRead);
 
-	m_SoundStreams.push_back(oggStream);
-
-	return (m_SoundStreams.size() - 1);
-}
-
-bool SoundEngine::streamOgg(OggVorbis_File& stream, ALuint buffer)
-{
-	char data[STREAM_BUFFER_SIZE];
-	int size(0);
-	int section(0);
-	int result(0);
-
-	while (size < STREAM_BUFFER_SIZE)
-	{
-		result = ov_read(&stream, data + size, STREAM_BUFFER_SIZE - size, 0, 2, 1, &section);
-
-		if (result > 0)
-			size += result;
-		else if (result == 0)
+		if (samples > 0)
+			samplesRead += samples;
+		else if (samples == 0) // nothing to read anymore
 			break;
 	}
 
-	if (size == 0)
+	// if nothing to read, ie. file end
+	if (samplesRead == 0)
 		return false;
 
-	vorbis_info vorbisInfo(*ov_info(&stream, -1));
-	ALenum format;
+	SoundFileProperties props(stream.getProperties());
 
-	if(vorbisInfo.channels == 1)
-		format = AL_FORMAT_MONO16;
-	else
-		format = AL_FORMAT_STEREO16;
-
-	alGetError();
-
-	alBufferData(buffer, format, data, size, vorbisInfo.rate);
-
-	ALenum error = alGetError();
-
-	if (error == AL_INVALID_ENUM)
-		ASSERT(false, "Error filling buffer");
+	// fill buffer with new read data
+	alBufferData(buffer, getALFormatFromChannels(props.channelsCount), pData, samplesRead * sizeof(short), props.samplerate);
 
 	return true;
 }
@@ -146,6 +114,24 @@ void SoundEngine::emptyBuffers(uint source)
 
 		alSourceUnqueueBuffers(alSource, 1, &buffer);
 	}
+}
+
+ALenum SoundEngine::getALFormatFromChannels(uint channels) const
+{
+	/*switch (channels)
+	{
+		case 1: return AL_FORMAT_MONO16; break;
+		case 2: return AL_FORMAT_STEREO16; break;
+		case 4: return AL_FORMAT_QUAD16; break;
+		case 6: return AL_FORMAT_MONO16; break;
+		case 7: return AL_FORMAT_MONO16; break;
+		case 8: return AL_FORMAT_MONO16; break;
+	}*/
+
+	if(channels == 1)
+		return AL_FORMAT_MONO16;
+	else
+		return AL_FORMAT_STEREO16;
 }
 
 /* GENERAL */
@@ -174,10 +160,25 @@ void SoundEngine::initialize()
 	}
 }
 
-void SoundEngine::tick()
+void SoundEngine::tick(float dTime)
 {
 	std::for_each(m_SoundBank.begin(), m_SoundBank.end(), [&](ISound* pSound)
 	{
+		// check for looping
+		if (pSound->getState() == SOUND_STATE_PLAYING)
+		{
+			m_SoundTime[pSound] += dTime;
+		}
+		else if (	pSound->getState() == SOUND_STATE_STOPPED &&
+					pSound->getLooping() &&
+					m_SoundTime[pSound] >= pSound->getLength() )
+		{
+			pSound->play(true);
+
+			m_SoundTime[pSound] = 0.0f;
+		}
+
+		// stream sound
 		if (pSound->getType() == SOUND_TYPE_STREAM)
 		{
 			if (pSound->getState() == SOUND_STATE_PLAYING)
@@ -193,18 +194,20 @@ void SoundEngine::tick()
 
 					alSourceUnqueueBuffers(source, 1, &buffer);
 
-					streamOgg(m_SoundStreams[m_SoundStreamIndex[pSound]], buffer);
+					// if nothing to read
+					if (streamSound(m_SoundFiles[pSound->getSoundFile()], buffer) == false)
+					{
+						// check if sound is looping
+						if (pSound->getLooping())
+						{
+							// reset reading from soundfile
+							m_SoundFiles[pSound->getSoundFile()].seek(0);
+						}
+					}
 
 					alSourceQueueBuffers(source, 1, &buffer);
 				}
 			}
-		}
-
-		Sound2D* pS2D(dynamic_cast<Sound2D*>(pSound));
-
-		if (pS2D != nullptr)
-		{
-			alSource3f(m_SoundSources[pS2D->getSource()], AL_POSITION, getListenerPos().x, getListenerPos().y, getListenerPos().z);
 		}
 	});
 }
@@ -218,27 +221,85 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 {
 	Sound2D* pSound(nullptr);
 
-	if (path.find(".ogg"))
+	// new soundfile
+	m_SoundFiles.push_back(SoundFile(path));
+
+	SoundFile& soundFile = m_SoundFiles[m_SoundFiles.size() - 1];
+
+	// try to open
+	bool success(soundFile.open());
+
+	std::string err("Failed to open sound file: ");
+	err += path;
+
+	ASSERT(success == true, err);
+
+	if (stream == true)
 	{
-		if (stream == true)
-		{
-			uint stream = loadOggStream(path);
+		// create source, buffer for file
+		ALuint source(0), *buffers(NEW ALuint(STREAM_BUFFERS));
 
-			ALuint source(0), *buffers(NEW ALuint[STREAM_BUFFERS]);
+		alGenSources(1, &source);
+		alGenBuffers(STREAM_BUFFERS, buffers);
 
-			alGenSources(1, &source);
-			alGenBuffers(STREAM_BUFFERS, buffers);
+		m_SoundSources.push_back(source);
+		m_SoundBuffers.push_back(buffers);
 
-			m_SoundSources.push_back(source);
-			m_SoundBuffers.push_back(buffers);
+		// create sound
+		pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
 
-			pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, SOUND_TYPE_STREAM);
-
-			m_SoundStreamIndex[pSound] = stream;
-
-			m_SoundBank.push_back(pSound);
-		}
+		// put sound in soundbank
+		m_SoundBank.push_back(pSound);
 	}
+	else
+	{
+		// create source, buffer for file
+		ALuint source(0), buffer(0);
+
+		alGenSources(1, &source);
+		alGenBuffers(1, &buffer);
+
+		m_SoundSources.push_back(source);
+		m_SoundBuffers.push_back(&buffer);
+
+		// get soundfile properties
+		SoundFileProperties props(soundFile.getProperties());
+
+		// read data from soundfile
+		short* pData(NEW short[props.samplesCount]);
+		success = (soundFile.read(pData, props.samplesCount) == static_cast<short>(props.samplesCount));
+		
+		ASSERT(success == true, err);
+
+		// fill soundbuffer with data
+		alBufferData(
+			buffer,
+			getALFormatFromChannels(props.channelsCount),
+			pData,
+			props.samplesCount * sizeof(short),
+			props.samplerate );
+
+		// delete data
+		delete[] pData;
+
+		// bind buffer with source
+		alSourceQueueBuffers(source, 1, &buffer);
+
+		// all data already read, no need to keep open
+		soundFile.close();
+
+		// create sound
+		pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
+
+		// put sound in soundbank
+		m_SoundBank.push_back(pSound);
+	}
+
+	// for 2D sound, position is not relative to listener
+	alSourcei(m_SoundSources[pSound->getSource()], AL_SOURCE_RELATIVE, 0);
+
+	// create soundtime, needed for looping
+	m_SoundTime[pSound] = float(0.0f);
 
 	return pSound;
 }
@@ -257,11 +318,14 @@ void SoundEngine::playSound(ISound* pSound, bool forceRestart)
 	{
 		for (uint i(0); i < STREAM_BUFFERS; ++i)
 		{
-			if (!streamOgg(m_SoundStreams[m_SoundStreamIndex[pSound]], m_SoundBuffers[pSound->getBuffer()][i]))
+			if (!streamSound(m_SoundFiles[pSound->getSoundFile()], m_SoundBuffers[pSound->getBuffer()][i]))
 				return;
 		}
+
+		ALuint source(m_SoundSources[pSound->getSource()]);
+		ALuint* buffers(m_SoundBuffers[pSound->getBuffer()]);
 			
-		alSourceQueueBuffers(m_SoundSources[pSound->getSource()], STREAM_BUFFERS, m_SoundBuffers[pSound->getBuffer()]);
+		alSourceQueueBuffers(source, STREAM_BUFFERS, buffers);
 	}
 
 	alSourcePlay(m_SoundSources[pSound->getSource()]);
@@ -270,9 +334,15 @@ void SoundEngine::playSound(ISound* pSound, bool forceRestart)
 void SoundEngine::stopSound(ISound* pSound)
 {
 	alSourceStop(m_SoundSources[pSound->getSource()]);
-	emptyBuffers(pSound->getSource());
 
-	ov_time_seek(&m_SoundStreams[m_SoundStreamIndex[pSound]], 0.0);
+	// reset buffers for streaming files
+	if (pSound->getType() == SOUND_TYPE_STREAM)
+	{
+		emptyBuffers(pSound->getSource());
+		m_SoundFiles[pSound->getSoundFile()].seek(0);
+	}
+
+	m_SoundTime[pSound] = 0.0f;
 }
 
 /* SETTERS */
@@ -291,14 +361,19 @@ vec3 SoundEngine::getListenerPos() const
 	return pos;
 }
 
-ALuint SoundEngine::getSource(uint source)
+ALuint SoundEngine::getALSource(uint source) const
 {
 	return m_SoundSources[source];
 }
 
-ALuint* SoundEngine::getBuffer(uint buffer)
+ALuint* SoundEngine::getALBuffer(uint buffer) const
 {
 	return m_SoundBuffers[buffer];
+}
+
+SoundFile& SoundEngine::getSoundFile(uint soundFile)
+{
+	return m_SoundFiles[soundFile];
 }
 
 } } //end namespace

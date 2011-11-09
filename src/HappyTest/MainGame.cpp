@@ -214,9 +214,11 @@ void MainGame::load()
 	CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
 	CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
 
-	m_pStillAllive = AUDIO->loadSound2D("../data/audio/still_alive.ogg", true);
+	m_pStillAllive = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
+	m_pStillAllive->setLooping(true);
 
-	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 20, 0.1f);
+	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
+	m_pTestGrid->setColor(Color(0.8f,0.8f,0.8f,0.75f));
 }
 void MainGame::tick(float dTime)
 {

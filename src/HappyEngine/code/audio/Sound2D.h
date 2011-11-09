@@ -24,7 +24,6 @@
 
 #include "al.h"
 #include "HappyTypes.h"
-#include "vorbis/vorbisfile.h"
 #include "ISound.h"
 
 namespace he {
@@ -35,7 +34,7 @@ class Sound2D : public ISound
 public:
 
 	/* CONSTRUCTOR - DESTRUCTOR */
-	Sound2D(uint source, uint buffer, SOUND_TYPE type);
+	Sound2D(uint source, uint buffer, uint soundFile, SOUND_TYPE type);
 
     virtual ~Sound2D();
 
@@ -46,26 +45,33 @@ public:
 
 	/* SETTERS */
 	void setVolume(float volume); // 0.0f = sound turned off, 1.0f = normal volume
-	void setPanning(float leftPercentage = 0.5f); // relation between left & right, 0.5f = L50% R50%
-	void setLooping(int nrLoops = 0); // -1 = infinite looping, 0 = no looping
+	void setLooping(bool loop); // -1 = infinite looping, 0 = no looping
+	void setPitch(float pitch = 1.0f); // 1 = normal pitch
 
 	/* GETTERS */
 	uint getSource() const;
 	uint getBuffer() const;
+	uint getSoundFile() const;
 	SOUND_STATE getState() const;
 	SOUND_TYPE getType() const;
 
 	float getVolume() const;
+	bool getLooping() const;
+	float getPitch() const;
+
 	float getLength() const;
+	float getPlayingOffset() const;
 
 private:
 
 	/* DATAMEMBERS */
-	uint m_Source;
+	uint m_SoundFile;
 	uint m_Buffer;
-	uint m_Stream;
+	uint m_Source;
 
 	SOUND_TYPE m_Type;
+
+	bool m_bLooping;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Sound2D(const Sound2D&);

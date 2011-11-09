@@ -54,6 +54,9 @@ private:
 
 	mat44 m_ViewProjection;
 
+	uint m_RenderFboID;
+	Texture2D::pointer m_pRenderTexture;
+
 	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
 	SimpleForward3DRenderer(const SimpleForward3DRenderer&);
 	SimpleForward3DRenderer& operator=(const SimpleForward3DRenderer&);

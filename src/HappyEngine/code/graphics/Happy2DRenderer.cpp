@@ -92,7 +92,6 @@ void Happy2DRenderer::end()
 
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(true);
-    GL::heBindVao(0);
 
 	setStrokeSize();
 
@@ -753,7 +752,7 @@ void Happy2DRenderer::drawPolygon(const std::vector<he::vec2> &points, he::uint 
     model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
     model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
 	
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
+	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic);
 	m_pColorEffect->setColor(m_CurrentColor);
 
     GL::heBindVao(model.getVertexArraysID());

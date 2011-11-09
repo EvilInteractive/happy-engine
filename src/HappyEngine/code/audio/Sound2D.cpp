@@ -22,8 +22,6 @@
 
 #include "Sound2D.h"
 #include "HappyNew.h"
-#include "ogg/ogg.h"
-#include "vorbis/codec.h"
 #include "SoundEngine.h"
 #include "HappyEngine.h"
 
@@ -31,9 +29,11 @@ namespace he {
 namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Sound2D::Sound2D(uint source, uint buffer, SOUND_TYPE type) :	m_Source(source),
-																m_Buffer(buffer),
-																m_Type(type)
+Sound2D::Sound2D(uint source, uint buffer, uint soundFile, SOUND_TYPE type) :	m_Source(source),
+																				m_Buffer(buffer),
+																				m_SoundFile(soundFile),
+																				m_Type(type),
+																				m_bLooping(false)
 {
 }
 
@@ -53,17 +53,21 @@ void Sound2D::stop()
 }
 void Sound2D::pause()
 {
+	alSourcePause(AUDIO->getALSource(m_Source));
 }
 
 /* SETTERS */
-void Sound2D::setVolume(float /*volume*/)
+void Sound2D::setVolume(float volume)
 {
+	alSourcef(AUDIO->getALSource(m_Source), AL_GAIN, volume);
 }
-void Sound2D::setPanning(float /*leftPercentage*/)
+void Sound2D::setLooping(bool loop)
 {
+	m_bLooping = loop;
 }
-void setLooping(int /*nrLoops*/)
+void Sound2D::setPitch(float pitch)
 {
+	alSourcef(AUDIO->getALSource(m_Source), AL_PITCH, pitch);
 }
 
 /* GETTERS */
@@ -75,12 +79,16 @@ uint Sound2D::getBuffer() const
 {
 	return m_Buffer;
 }
+uint Sound2D::getSoundFile() const
+{
+	return m_SoundFile;
+}
 SOUND_STATE Sound2D::getState() const
 {
 	SOUND_STATE state(SOUND_STATE_STOPPED);
 	ALenum alState;
 
-	alGetSourcei(AUDIO->getSource(m_Source), AL_SOURCE_STATE, &alState);
+	alGetSourcei(AUDIO->getALSource(m_Source), AL_SOURCE_STATE, &alState);
 
 	if (alState == AL_PLAYING)
 		state = SOUND_STATE_PLAYING;
@@ -95,11 +103,35 @@ SOUND_TYPE Sound2D::getType() const
 }
 float Sound2D::getVolume() const
 {
-	return 0;
+	float volume;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_GAIN, &volume);
+
+	return volume;
+}
+bool Sound2D::getLooping() const
+{
+	return m_bLooping;
+}
+float Sound2D::getPitch() const
+{
+	float pitch;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_PITCH, &pitch);
+
+	return pitch;
 }
 float Sound2D::getLength() const
 {
-	return 0;
+	SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
+
+	return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount));
+}
+
+float Sound2D::getPlayingOffset() const
+{
+	float seconds;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_SEC_OFFSET, &seconds);
+
+	return seconds;
 }
 
 } } //end namespace
