@@ -16,59 +16,46 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 08/11/2011
+//Created: 26/08/2011
 
-#ifndef _HE_SOUNDFILE_H_
-#define _HE_SOUNDFILE_H_
+#ifndef _HE_BILLBOARD_EFFECT_H_
+#define _HE_BILLBOARD_EFFECT_H_
 #pragma once
 
-#include <string>
-#include "sndfile.h"
 #include "HappyTypes.h"
+#include "Shader.h"
+#include "mat44.h"
+#include "vec2.h"
+#include "vec3.h"
+#include "Texture2D.h"
 
 namespace he {
-namespace sfx {
+namespace gfx {
 
-struct SoundFileProperties
-{
-	std::string filePath;
-	uint samplesCount;
-	uint channelsCount;
-	uint samplerate;
-
-};
-
-class SoundFile
+class BillboardEffect
 {
 public:
+	BillboardEffect();
+    virtual ~BillboardEffect();
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	SoundFile(const std::string& filePath);
-    virtual ~SoundFile();
+	void load();
+	void begin() const;
+	void end() const;
 
-	/* GENERAL */
-	bool open();
-	void close();
-	void seek(uint timeOffset);
-	uint read(short* pData, uint nrSamples);
-
-	/* GETTERS */
-	SoundFileProperties getProperties() const;
-
-	/* DEFAULT COPY & ASSIGNMENT */
-	SoundFile(const SoundFile& second);
-	SoundFile& operator=(const SoundFile& second);
+	void setWorldViewProjection(const he::mat44& mat) const;
+	void setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const;
+	void setTCScale(const vec2& scale) const;
 
 private:
+	gfx::Shader* m_pShader;
 
-	/* DATAMEMBERS */
-	SNDFILE* m_pSoundFile;
+	uint m_ShaderWVPPos;
+	uint m_ShaderDiffTexPos;
+	uint m_ShaderTCScalePos;
 
-	std::string m_FilePath;
-
-	uint m_NrSamples;
-	uint m_Samplerate;
-	uint m_ChannelsCount;
+    //Disable default copy constructor and default assignment operator
+    BillboardEffect(const BillboardEffect&);
+    BillboardEffect& operator=(const BillboardEffect&);
 };
 
 } } //end namespace

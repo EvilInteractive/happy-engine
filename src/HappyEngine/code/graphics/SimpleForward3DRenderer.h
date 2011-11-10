@@ -27,6 +27,9 @@
 #include "Color.h"
 #include "SplineColorEffect.h"
 #include "Camera.h"
+#include "Texture2D.h"
+#include "vec3.h"
+#include "BillboardEffect.h"
 
 namespace he {
 namespace gfx {
@@ -46,8 +49,11 @@ public:
 
 	/* DRAW METHODS */
 	void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
+	void drawBillboard(const Texture2D::pointer& tex2D, const vec3& pos);
 
 private:
+
+	void createBillboardQuad();
 
 	/* DATAMEMBERS */
 	SplineColorEffect* m_pColorEffect;
@@ -56,6 +62,10 @@ private:
 
 	uint m_RenderFboID;
 	Texture2D::pointer m_pRenderTexture;
+
+	ModelMesh::pointer m_pBillboardQuad;
+	VertexLayout m_VertexLayoutBillboard;
+	BillboardEffect* m_pBillboardEffect;
 
 	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
 	SimpleForward3DRenderer(const SimpleForward3DRenderer&);

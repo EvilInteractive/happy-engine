@@ -146,5 +146,11 @@
     <None Include="data\shaders\deferred\post\blur.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
+    <None Include="data\shaders\billboardShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\billboardShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

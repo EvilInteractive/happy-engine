@@ -1,193 +1,211 @@
-////HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
-////
-////This file is part of HappyEngine.
-////
-////    HappyEngine is free software: you can redistribute it and/or modify
-////    it under the terms of the GNU Lesser General Public License as published by
-////    the Free Software Foundation, either version 3 of the License, or
-////    (at your option) any later version.
-////
-////    HappyEngine is distributed in the hope that it will be useful,
-////    but WITHOUT ANY WARRANTY; without even the implied warranty of
-////    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-////    GNU Lesser General Public License for more details.
-////
-////    You should have received a copy of the GNU Lesser General Public License
-////    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
-////
-////Author:  Sebastiaan Sprengers
-////Created: 03/10/2011
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
-//#include "StdAfx.h"
+//This file is part of HappyEngine.
 //
-//#include "Sound3D.h"
-//#include "HappyNew.h"
-//#include "ogg/ogg.h"
-//#include "vorbis/codec.h"
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
 //
-//namespace he {
-//namespace sfx {
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
 //
-///* CONSTRUCTOR - DESTRUCTOR */
-//Sound3D::Sound3D(	SoundEngine* pEngine,
-//							const OggVorbis_File& oggStream) :	m_pSoundEngine(pEngine),
-//																m_OggStream(oggStream),
-//																m_State(STATE_STOPPED)
-//{
-//	alGenBuffers(2, m_AlSourceBuffer);
-//	alGenSources(1, &m_AlSource);
-//}
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Sound3D::~Sound3D()
-//{
-//	stop();
-//
-//	emptyBuffers();
-//
-//	alDeleteSources(1, &m_AlSource);
-//	alDeleteBuffers(2, m_AlSourceBuffer);
-//
-//	ov_clear(&m_OggStream);
-//
-//	m_pSoundEngine = nullptr;
-//}
-//
-//bool Sound3D::stream(ALuint buffer)
-//{
-//	char data[BUFFER_SIZE];
-//	int size(0);
-//	int section(0);
-//	int result(0);
-//
-//	while (size < BUFFER_SIZE)
-//	{
-//		result = ov_read(&m_OggStream, data + size, BUFFER_SIZE - size, 0, 2, 1, &section);
-//
-//		if (result > 0)
-//			size += result;
-//		else if (result == 0)
-//			break;
-//	}
-//
-//	if (size == 0)
-//		return false;
-//
-//	vorbis_info vorbisInfo(*ov_info(&m_OggStream, -1));
-//	ALenum format;
-//
-//	if(vorbisInfo.channels == 1)
-//        format = AL_FORMAT_MONO16;
-//    else
-//        format = AL_FORMAT_STEREO16;
-//
-//	alGetError();
-//
-//	alBufferData(buffer, format, data, size, vorbisInfo.rate);
-//
-//	ALenum error = alGetError();
-//	
-//	if (error == AL_INVALID_ENUM)
-//		ASSERT(false, "Error filling buffer");
-//
-//	return true;
-//}
-//
-//void Sound3D::emptyBuffers()
-//{
-//	int queued;
-//
-//	alGetSourcei(m_AlSource, AL_BUFFERS_QUEUED, &queued);
-//    
-//    while(queued--)
-//    {
-//        ALuint buffer;
-//    
-//        alSourceUnqueueBuffers(m_AlSource, 1, &buffer);
-//    }
-//}
-//
-///* GENERAL */
-//void Sound3D::play()
-//{
-//	if (!stream(m_AlSourceBuffer[0]))
-//		return;
-//	if (!stream(m_AlSourceBuffer[1]))
-//		return;
-//
-//	alSourceQueueBuffers(m_AlSource, 2, m_AlSourceBuffer);
-//
-//	alSourcePlay(m_AlSource);
-//}
-//void Sound3D::stop()
-//{
-//	alSourceStop(m_AlSource);
-//}
-//void Sound3D::pause()
-//{
-//}
-//void Sound3D::tick()
-//{
-//	ALenum state;
-//	alGetSourcei(m_AlSource, AL_SOURCE_STATE, &state);
-//
-//	if (state == AL_PLAYING)
-//		m_State = STATE_PLAYING;
-//	else if (state == AL_STOPPED)
-//		m_State = STATE_STOPPED;
-//	else if (state == AL_PAUSED)
-//		m_State = STATE_PAUSED;
-//
-//	if (m_State != STATE_PLAYING)
-//		return;
-//
-//	int processed(0);
-//
-//	alGetSourcei(m_AlSource, AL_BUFFERS_PROCESSED, &processed);
-//
-//	while(processed--)
-//	{
-//		ALuint buffer;
-//
-//		alSourceUnqueueBuffers(m_AlSource, 1, &buffer);
-//
-//		stream(buffer);
-//
-//		alSourceQueueBuffers(m_AlSource, 1, &buffer);
-//	}
-//
-//	vec3 lPos(m_pSoundEngine->getListenerPos());
-//	alSource3f(m_AlSource, AL_POSITION, lPos.x, lPos.y, lPos.z);
-//}
-//
-///* SETTERS */
-//void Sound3D::setVolume(float /*volume*/)
-//{
-//}
-//void Sound3D::setMinVolume(float /*minVolume*/)
-//{
-//}
-//void Sound3D::setMaxVolume(float /*maxVolume*/)
-//{
-//}
-//void Sound3D::setPanning(float /*leftPercentage*/)
-//{
-//}
-//void setLooping(int /*nrLoops*/)
-//{
-//}
-//
-///* GETTERS */
-//Sound3D::STATE Sound3D::getState() const
-//{
-//	return m_State;
-//}
-//float Sound3D::getVolume() const
-//{
-//	return 0;
-//}
-//float Sound3D::getLength() const
-//{
-//	return 0;
-//}
-//
-//} } //end namespace
+//Author:  Sebastiaan Sprengers
+//Created: 03/10/2011
+
+#include "StdAfx.h"
+
+#include "Sound3D.h"
+#include "HappyNew.h"
+#include "SoundEngine.h"
+#include "HappyEngine.h"
+
+namespace he {
+namespace sfx {
+
+/* CONSTRUCTOR - DESTRUCTOR */
+Sound3D::Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type) :	m_Source(source),
+																				m_Buffer(buffer),
+																				m_SoundFile(soundFile),
+																				m_Type(type),
+																				m_bLooping(false)
+{
+}
+
+Sound3D::~Sound3D()
+{
+
+}
+
+/* GENERAL */
+void Sound3D::play(bool forceRestart)
+{
+	AUDIO->playSound(this, forceRestart);
+}
+void Sound3D::stop()
+{
+	AUDIO->stopSound(this);
+}
+void Sound3D::pause()
+{
+	alSourcePause(AUDIO->getALSource(m_Source));
+}
+
+/* SETTERS */
+void Sound3D::setVolume(float volume)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_GAIN, volume);
+}
+void Sound3D::setLooping(bool loop)
+{
+	m_bLooping = loop;
+}
+void Sound3D::setPitch(float pitch)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_PITCH, pitch);
+}
+void Sound3D::setPosition(const vec3& pos)
+{
+	alSource3f(AUDIO->getALSource(m_Source), AL_POSITION, pos.x, pos.y, pos.z);
+}
+void Sound3D::setVelocity(const vec3& vel)
+{
+	alSource3f(AUDIO->getALSource(m_Source), AL_VELOCITY, vel.x, vel.y, vel.z);
+}
+void Sound3D::setMinimumDistance(float distance)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_REFERENCE_DISTANCE, distance);
+}
+void Sound3D::setMaximumDistance(float distance)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_MAX_DISTANCE, distance);
+}
+void Sound3D::setRolloffFactor(float factor)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_ROLLOFF_FACTOR, factor);
+}
+void Sound3D::setMinimumVolume(float volume)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_MIN_GAIN, volume);
+}
+void Sound3D::setMaximumVolume(float volume)
+{
+	alSourcef(AUDIO->getALSource(m_Source), AL_MAX_GAIN, volume);
+}
+
+/* GETTERS */
+uint Sound3D::getSource() const
+{
+	return m_Source;
+}
+uint Sound3D::getBuffer() const
+{
+	return m_Buffer;
+}
+uint Sound3D::getSoundFile() const
+{
+	return m_SoundFile;
+}
+SOUND_STATE Sound3D::getState() const
+{
+	SOUND_STATE state(SOUND_STATE_STOPPED);
+	ALenum alState;
+
+	alGetSourcei(AUDIO->getALSource(m_Source), AL_SOURCE_STATE, &alState);
+
+	if (alState == AL_PLAYING)
+		state = SOUND_STATE_PLAYING;
+	else if (alState == AL_PAUSED)
+		state = SOUND_STATE_PAUSED;
+
+	return state;
+}
+SOUND_TYPE Sound3D::getType() const
+{
+	return m_Type;
+}
+float Sound3D::getVolume() const
+{
+	float volume;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_GAIN, &volume);
+
+	return volume;
+}
+bool Sound3D::getLooping() const
+{
+	return m_bLooping;
+}
+float Sound3D::getPitch() const
+{
+	float pitch;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_PITCH, &pitch);
+
+	return pitch;
+}
+float Sound3D::getLength() const
+{
+	SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
+
+	return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount / getPitch()));
+}
+
+float Sound3D::getPlayTime()
+{
+	return AUDIO->getPlayTime(this);
+}
+vec3 Sound3D::getPosition() const
+{
+	vec3 pos;
+	alGetSource3f(AUDIO->getALSource(m_Source), AL_POSITION, &pos.x, &pos.y, &pos.z);
+
+	return pos;
+}
+vec3 Sound3D::getVelocity() const
+{
+	vec3 vel;
+	alGetSource3f(AUDIO->getALSource(m_Source), AL_VELOCITY, &vel.x, &vel.y, &vel.z);
+
+	return vel;
+}
+float Sound3D::getMinimumDistance() const
+{
+	float min;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_REFERENCE_DISTANCE, &min);
+
+	return min;
+}
+float Sound3D::getMaximumDistance() const
+{
+	float max;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_MAX_DISTANCE, &max);
+
+	return max;
+}
+float Sound3D::getRolloffFactor() const
+{
+	float factor;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_ROLLOFF_FACTOR, &factor);
+
+	return factor;
+}
+float Sound3D::getMinimumVolume() const
+{
+	float vol;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_MIN_GAIN, &vol);
+
+	return vol;
+}
+float Sound3D::getMaximumVolume() const
+{
+	float vol;
+	alGetSourcef(AUDIO->getALSource(m_Source), AL_MAX_GAIN, &vol);
+
+	return vol;
+}
+
+} } //end namespace

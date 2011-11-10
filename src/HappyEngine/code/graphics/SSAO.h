@@ -16,59 +16,46 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 08/11/2011
+//Created: 09/11/2011
 
-#ifndef _HE_SOUNDFILE_H_
-#define _HE_SOUNDFILE_H_
+#ifndef _HE_SSAO_H_
+#define _HE_SSAO_H_
 #pragma once
 
-#include <string>
-#include "sndfile.h"
 #include "HappyTypes.h"
+#include "Texture2D.h"
 
 namespace he {
-namespace sfx {
+namespace gfx {
 
-struct SoundFileProperties
+struct SSAOSettings
 {
-	std::string filePath;
-	uint samplesCount;
-	uint channelsCount;
-	uint samplerate;
-
+	float radius;
+	float intensity;
+	float scale;
+	float bias;
+	byte minIterations;
+	byte maxIterations;
 };
 
-class SoundFile
+class SSAO
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	SoundFile(const std::string& filePath);
-    virtual ~SoundFile();
+	/* CONSTRUCTOR - DESCTRUCTOR */
+	SSAO(uint normalBuffer, uint positionBuffer);
+    virtual ~SSAO();
 
 	/* GENERAL */
-	bool open();
-	void close();
-	void seek(uint timeOffset);
-	uint read(short* pData, uint nrSamples);
 
-	/* GETTERS */
-	SoundFileProperties getProperties() const;
-
-	/* DEFAULT COPY & ASSIGNMENT */
-	SoundFile(const SoundFile& second);
-	SoundFile& operator=(const SoundFile& second);
+	/* SETTERS */
+	void setSettings(const SSAOSettings& settings);
 
 private:
 
-	/* DATAMEMBERS */
-	SNDFILE* m_pSoundFile;
-
-	std::string m_FilePath;
-
-	uint m_NrSamples;
-	uint m_Samplerate;
-	uint m_ChannelsCount;
+    /* DEFAULT COPY & ASSIGNMENT */
+    SSAO(const SSAO&);
+    SSAO& operator=(const SSAO&);
 };
 
 } } //end namespace

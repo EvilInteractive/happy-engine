@@ -1,85 +1,100 @@
-////HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
-////
-////This file is part of HappyEngine.
-////
-////    HappyEngine is free software: you can redistribute it and/or modify
-////    it under the terms of the GNU Lesser General Public License as published by
-////    the Free Software Foundation, either version 3 of the License, or
-////    (at your option) any later version.
-////
-////    HappyEngine is distributed in the hope that it will be useful,
-////    but WITHOUT ANY WARRANTY; without even the implied warranty of
-////    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-////    GNU Lesser General Public License for more details.
-////
-////    You should have received a copy of the GNU Lesser General Public License
-////    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
-////
-////Author:  Sebastiaan Sprengers
-////Created: 03/10/2011
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
-//#ifndef _HE_SOUND_H_
-//#define _HE_SOUND_H_
-//#pragma once
+//This file is part of HappyEngine.
 //
-//#include "al.h"
-//#include "HappyTypes.h"
-//#include "vorbis/vorbisfile.h"
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
 //
-//namespace he {
-//namespace sfx {
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
 //
-//class Sound3D
-//{
-//public:
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//	enum STATE
-//	{
-//		STATE_PLAYING,
-//		STATE_STOPPED,
-//		STATE_PAUSED
-//	};
-//
-//	/* CONSTRUCTOR - DESTRUCTOR */
-//	Sound3D(SoundEngine* pEngine, const OggVorbis_File& oggStream);
-//
-//    virtual ~Sound3D();
-//
-//	/* GENERAL */
-//	void play();
-//	void stop();
-//	void pause();
-//
-//	void tick();
-//
-//	/* SETTERS */
-//	void setVolume(float volume); // 0.0f = sound turned off, 1.0f = normal volume
-//	void setMinVolume(float minVolume);
-//	void setMaxVolume(float maxVolume);
-//	void setPanning(float leftPercentage = 0.5f); // relation between left & right, 0.5f = L50% R50%
-//	void setLooping(int nrLoops = 0); // -1 = infinite looping, 0 = no looping
-//
-//	/* GETTERS */
-//	Sound3D::STATE getState() const;
-//	float getVolume() const;
-//	float getLength() const;
-//
-//private:
-//
-//	bool stream(ALuint buffer);
-//	void emptyBuffers();
-//
-//	/* DATAMEMBERS */
-//	ALuint m_AlSource;
-//	ALuint m_AlSourceBuffer[2];
-//
-//	STATE m_State;
-//
-//    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
-//    Sound3D(const Sound3D&);
-//    Sound3D& operator=(const Sound3D&);
-//};
-//
-//} } //end namespace
-//
-//#endif
+//Author:  Sebastiaan Sprengers
+//Created: 03/10/2011
+
+#ifndef _HE_SOUND3D_H_
+#define _HE_SOUND3D_H_
+#pragma once
+
+#include "al.h"
+#include "HappyTypes.h"
+#include "ISound.h"
+#include "vec3.h"
+
+namespace he {
+namespace sfx {
+
+class Sound3D : public ISound
+{
+public:
+
+	/* CONSTRUCTOR - DESTRUCTOR */
+	Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type);
+
+	virtual ~Sound3D();
+
+	/* GENERAL */
+	void play(bool forceRestart = false);
+	void stop();
+	void pause();
+
+	/* SETTERS */
+	void setVolume(float volume); // 0.0f = sound turned off, 1.0f = normal volume
+	void setLooping(bool loop); // -1 = infinite looping, 0 = no looping
+	void setPitch(float pitch = 1.0f); // 1 = normal pitch
+
+	void setPosition(const vec3& pos);
+	void setVelocity(const vec3& vel);
+	void setMinimumDistance(float distance);
+	void setMaximumDistance(float distance);
+	void setRolloffFactor(float factor = 1.0f);
+	void setMinimumVolume(float volume = 0.0f);
+	void setMaximumVolume(float volume = 1.0f);
+
+	/* GETTERS */
+	uint getSource() const;
+	uint getBuffer() const;
+	uint getSoundFile() const;
+	SOUND_STATE getState() const;
+	SOUND_TYPE getType() const;
+
+	float getVolume() const;
+	bool getLooping() const;
+	float getPitch() const;
+
+	float getLength() const;
+	float getPlayTime();
+
+	vec3 getPosition() const;
+	vec3 getVelocity() const;
+	float getMinimumDistance() const;
+	float getMaximumDistance() const;
+	float getRolloffFactor() const;
+	float getMinimumVolume() const;
+	float getMaximumVolume() const;
+
+private:
+
+	/* DATAMEMBERS */
+	uint m_SoundFile;
+	uint m_Buffer;
+	uint m_Source;
+
+	SOUND_TYPE m_Type;
+
+	bool m_bLooping;
+
+	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
+	Sound3D(const Sound3D&);
+	Sound3D& operator=(const Sound3D&);
+};
+
+} } //end namespace
+
+#endif

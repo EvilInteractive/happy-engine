@@ -37,15 +37,13 @@ SoundFile::SoundFile(const std::string& filePath) :	m_FilePath(filePath),
 
 SoundFile::~SoundFile()
 {
-	if (m_pSoundFile)
-		sf_close(m_pSoundFile);
+	close();
 }
 
 /* GENERAL */
 bool SoundFile::open()
 {
-	if (m_pSoundFile)
-		sf_close(m_pSoundFile);
+	close();
 
 	SF_INFO fileInfo;
 	m_pSoundFile = sf_open(m_FilePath.c_str(), SFM_READ, &fileInfo);
@@ -63,7 +61,16 @@ bool SoundFile::open()
 void SoundFile::close()
 {
 	if (m_pSoundFile)
-		sf_close(m_pSoundFile);
+	{
+		int err(sf_close(m_pSoundFile));
+
+		std::string errMsg("Can't close file: ");
+		errMsg += getProperties().filePath;
+
+		ASSERT(err == 0, errMsg);
+
+		m_pSoundFile = nullptr;
+	}
 }
 
 void SoundFile::seek(uint timeOffset)
@@ -75,12 +82,15 @@ void SoundFile::seek(uint timeOffset)
 	sf_seek(m_pSoundFile, frameOffset, SEEK_SET);
 }
 
-short SoundFile::read(short* pData, uint nrSamples)
+uint SoundFile::read(short* pData, uint nrSamples)
 {
 	if (!m_pSoundFile)
-		return 0;
+		open();
 
-	return static_cast<short>(sf_read_short(m_pSoundFile, pData, static_cast<sf_count_t>(nrSamples)));
+	uint readSamples(0);
+	readSamples = static_cast<uint>(sf_read_short(m_pSoundFile, pData, static_cast<sf_count_t>(nrSamples)));
+
+	return readSamples;
 }
 
 /* GETTERS */

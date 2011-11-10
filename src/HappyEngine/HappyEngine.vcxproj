@@ -52,6 +52,7 @@
     <ClCompile Include="code\game\SerializerStream.cpp" />
     <ClCompile Include="code\game\StaticPhysicsComponent.cpp" />
     <ClCompile Include="code\graphics\AutoExposure.cpp" />
+    <ClCompile Include="code\graphics\BillboardEffect.cpp" />
     <ClCompile Include="code\graphics\Bloom.cpp" />
     <ClCompile Include="code\graphics\Bone.cpp" />
     <ClCompile Include="code\graphics\Button.cpp" />
@@ -82,6 +83,7 @@
     <ClCompile Include="code\graphics\SplineColorEffect.cpp" />
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp" />
     <ClCompile Include="code\graphics\SpotLight.cpp" />
+    <ClCompile Include="code\graphics\SSAO.cpp" />
     <ClCompile Include="code\graphics\Text.cpp" />
     <ClCompile Include="code\graphics\TextBox.cpp" />
     <ClCompile Include="code\graphics\Texture2D.cpp" />
@@ -163,6 +165,7 @@
     <ClInclude Include="code\game\SerializerStream.h" />
     <ClInclude Include="code\game\StaticPhysicsComponent.h" />
     <ClInclude Include="code\graphics\AutoExposure.h" />
+    <ClInclude Include="code\graphics\BillboardEffect.h" />
     <ClInclude Include="code\graphics\Bloom.h" />
     <ClInclude Include="code\graphics\Bone.h" />
     <ClInclude Include="code\graphics\Button.h" />
@@ -195,6 +198,7 @@
     <ClInclude Include="code\graphics\SplineColorEffect.h" />
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h" />
     <ClInclude Include="code\graphics\SpotLight.h" />
+    <ClInclude Include="code\graphics\SSAO.h" />
     <ClInclude Include="code\graphics\Text.h" />
     <ClInclude Include="code\graphics\TextBox.h" />
     <ClInclude Include="code\graphics\Texture2D.h" />

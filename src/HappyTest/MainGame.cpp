@@ -64,7 +64,7 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 					   m_pCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
 					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
-					   m_pStillAllive(nullptr), m_pTestGrid(nullptr)
+					   m_pTestSound2D(nullptr), m_pTestGrid(nullptr)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -95,6 +95,7 @@ MainGame::~MainGame()
     delete m_pSky;
 	delete m_pTextBox;
     delete m_pTestButton2;
+	delete m_pTestButton3;
 	delete m_pTestGrid;
 
     NETWORK->stop();
@@ -201,12 +202,14 @@ void MainGame::load()
         
 	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
-    m_pFont = CONTENT->loadFont("MODES.ttf", 32);
+    m_pFont = CONTENT->loadFont("MODES.ttf", 12);
 
 	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 600), vec2(60,20));
-	m_pTestButton->setText("Play me", 12);
+	m_pTestButton->setText("Play 2D", 12);
 	m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,630), vec2(60,20));
 	m_pTestButton2->setText("Stop", 12);
+	m_pTestButton3 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 570), vec2(60,20));
+	m_pTestButton3->setText("Play 3D", 12);
 
 	m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
@@ -214,8 +217,14 @@ void MainGame::load()
 	CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
 	CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
 
-	m_pStillAllive = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
-	m_pStillAllive->setLooping(true);
+	m_pTestSound2D = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
+	m_pTestSound2D->setLooping(true);
+	m_pTestSound2D->setPitch(0.6f);
+
+	m_pTestSound3D = AUDIO->loadSound3D("../data/audio/goodkat_dnb.wav", false);
+	m_pTestSound3D->setLooping(true);
+	m_pTestSound3D->setMaximumDistance(50.0f);
+	m_pTestSound3D->setMinimumDistance(10.0f);
 
 	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
 	m_pTestGrid->setColor(Color(0.8f,0.8f,0.8f,0.75f));
@@ -230,6 +239,12 @@ void MainGame::tick(float dTime)
         HAPPYENGINE->quit();
 
     m_pTestObject->tick(dTime);
+
+	//m_pTestSound2D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
+
+	AUDIO->setListenerPos(m_pCamera->getPosition());
+	AUDIO->setListenerOrientation(m_pCamera->getLook(), m_pCamera->getUp());
+
     m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
     if (m_pClient == nullptr && m_pServer == nullptr)
@@ -280,14 +295,20 @@ void MainGame::tick(float dTime)
 
 	m_pTestButton->tick();
 	m_pTestButton2->tick();
+	m_pTestButton3->tick();
 
 	if (m_pTestButton->isClicked())
 	{
-		m_pStillAllive->play(true);
+		m_pTestSound2D->play(true);
 	}
 	else if (m_pTestButton2->isClicked())
 	{
-		m_pStillAllive->stop();
+		m_pTestSound2D->stop();
+		m_pTestSound3D->stop();
+	}
+	else if (m_pTestButton3->isClicked())
+	{
+		m_pTestSound3D->play(true);
 	}
 
 	m_pTextBox->tick();
@@ -317,6 +338,7 @@ void MainGame::draw()
 	HE3D->begin(m_pCamera);
 
 		m_pTestGrid->draw();
+		HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
 
 	HE3D->end();
 
@@ -326,6 +348,7 @@ void MainGame::draw()
 		// GUI elements need to be drawn inside HE2D renderer
 		m_pTestButton->draw();
 		m_pTestButton2->draw();
+		m_pTestButton3->draw();
 		
 		/*m_pTextBox->draw();
 
@@ -337,6 +360,19 @@ void MainGame::draw()
 
 			HE2D->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
 		}*/
+
+		HE2D->setColor(1.0f,1.0f,1.0f);
+
+		std::stringstream stream;
+		stream << "2D: " << m_pTestSound2D->getPlayTime() << " / " << m_pTestSound2D->getLength();
+
+		HE2D->drawString(stream.str(), m_pFont, vec2(1050,600));
+
+		stream.str("");
+
+		stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
+
+		HE2D->drawString(stream.str(), m_pFont, vec2(1050,620));
 
 		m_pFPSGraph->draw();
 

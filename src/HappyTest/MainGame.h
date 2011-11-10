@@ -30,6 +30,7 @@
 #include "FlyCamera.h"
 #include "FPSGraph.h"
 #include "Sound2D.h"
+#include "Sound3D.h"
 
 #include <vector>
 
@@ -91,10 +92,12 @@ private:
 
 	he::gui::Button* m_pTestButton;
 	he::gui::Button* m_pTestButton2;
+	he::gui::Button* m_pTestButton3;
 
 	he::gui::TextBox* m_pTextBox;
 
-	he::sfx::Sound2D* m_pStillAllive;
+	he::sfx::Sound2D* m_pTestSound2D;
+	he::sfx::Sound3D* m_pTestSound3D;
 
 	he::tools::Grid* m_pTestGrid;
 

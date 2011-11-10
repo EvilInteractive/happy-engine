@@ -71,33 +71,57 @@ void SoundEngine::shutdown()
 	alcCloseDevice(m_pALDevice);
 }
 
-bool SoundEngine::streamSound(SoundFile& stream, ALuint buffer)
+bool SoundEngine::streamSound(SoundFile& stream, ALuint buffer, bool toMono)
 {
-	short pData[STREAM_BUFFER_SIZE];
-	uint samples(0);
+	// if need to be converted to mono, double buffer size because mono data = 1/2 stereo data
+	uint bufferSize(STREAM_BUFFER_SIZE);
+
+	SoundFileProperties props(stream.getProperties());
+
+	if (props.channelsCount == 2 && toMono)
+		bufferSize *= 2;
+
+	// data array
+	std::vector<short> data;
+	data.resize(bufferSize);
+
 	uint samplesRead(0);
 
-	// read data, keep reading until read data == buffer_size
-	while (samplesRead < STREAM_BUFFER_SIZE)
-	{
-		samples = stream.read(pData, STREAM_BUFFER_SIZE - samplesRead);
-
-		if (samples > 0)
-			samplesRead += samples;
-		else if (samples == 0) // nothing to read anymore
-			break;
-	}
+	// read data
+	samplesRead = stream.read(&data[0], bufferSize);
 
 	// if nothing to read, ie. file end
 	if (samplesRead == 0)
 		return false;
 
-	SoundFileProperties props(stream.getProperties());
+	// convert to mono if needed
+	if (props.channelsCount == 2 && toMono)
+	{
+		// only mono can be used in 3D space
+		std::vector<short> dataMono;
 
-	// fill buffer with new read data
-	alBufferData(buffer, getALFormatFromChannels(props.channelsCount), pData, samplesRead * sizeof(short), props.samplerate);
+		convertToMono(data, dataMono);
+
+		// fill buffer with new read data
+		alBufferData(buffer, getALFormatFromChannels(1), &dataMono[0], dataMono.size() * sizeof(short), props.samplerate);
+	}
+	else
+	{
+		// fill buffer with new read data
+		alBufferData(buffer, getALFormatFromChannels(props.channelsCount), &data[0], samplesRead * sizeof(short), props.samplerate);
+	}
 
 	return true;
+}
+
+void SoundEngine::convertToMono(const std::vector<short>& dataStereo, std::vector<short>& dataMono)
+{
+	dataMono.clear();
+
+	for (uint i(0); i < dataStereo.size() / 2; ++i)
+	{
+		dataMono.push_back(static_cast<short>((dataStereo[2 * i] + dataStereo[2 * i + 1]) * 0.5f));
+	}
 }
 
 void SoundEngine::emptyBuffers(uint source)
@@ -158,6 +182,8 @@ void SoundEngine::initialize()
 	{
 		ASSERT(false,"Init OpenAL device failed!");
 	}
+
+	alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 }
 
 void SoundEngine::tick(float dTime)
@@ -169,13 +195,17 @@ void SoundEngine::tick(float dTime)
 		{
 			m_SoundTime[pSound] += dTime;
 		}
-		else if (	pSound->getState() == SOUND_STATE_STOPPED &&
-					pSound->getLooping() &&
-					m_SoundTime[pSound] >= pSound->getLength() )
+
+		if ( pSound->getLooping() &&
+			 m_SoundTime[pSound] >= pSound->getLength() )
 		{
 			pSound->play(true);
 
 			m_SoundTime[pSound] = 0.0f;
+		}
+		else if (m_SoundTime[pSound] >= pSound->getLength())
+		{
+			stopSound(pSound);
 		}
 
 		// stream sound
@@ -194,8 +224,13 @@ void SoundEngine::tick(float dTime)
 
 					alSourceUnqueueBuffers(source, 1, &buffer);
 
+					// if 3D sound, convert to mono
+					bool toMono(false);
+					if (dynamic_cast<Sound3D*>(pSound))
+						toMono = true;
+
 					// if nothing to read
-					if (streamSound(m_SoundFiles[pSound->getSoundFile()], buffer) == false)
+					if (streamSound(m_SoundFiles[pSound->getSoundFile()], buffer, toMono) == false)
 					{
 						// check if sound is looping
 						if (pSound->getLooping())
@@ -234,6 +269,11 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 
 	ASSERT(success == true, err);
 
+	// get soundfile properties
+	SoundFileProperties props(soundFile.getProperties());
+
+	ASSERT(props.channelsCount <= 2, "More channels than supported");
+
 	if (stream == true)
 	{
 		// create source, buffer for file
@@ -262,12 +302,11 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 		m_SoundSources.push_back(source);
 		m_SoundBuffers.push_back(&buffer);
 
-		// get soundfile properties
-		SoundFileProperties props(soundFile.getProperties());
-
 		// read data from soundfile
-		short* pData(NEW short[props.samplesCount]);
-		success = (soundFile.read(pData, props.samplesCount) == static_cast<short>(props.samplesCount));
+		std::vector<short> data;
+		data.resize(props.samplesCount);
+
+		success = (soundFile.read(&data[0], props.samplesCount) == props.samplesCount);
 		
 		ASSERT(success == true, err);
 
@@ -275,18 +314,12 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 		alBufferData(
 			buffer,
 			getALFormatFromChannels(props.channelsCount),
-			pData,
+			&data[0],
 			props.samplesCount * sizeof(short),
 			props.samplerate );
 
-		// delete data
-		delete[] pData;
-
 		// bind buffer with source
 		alSourceQueueBuffers(source, 1, &buffer);
-
-		// all data already read, no need to keep open
-		soundFile.close();
 
 		// create sound
 		pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
@@ -295,8 +328,118 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 		m_SoundBank.push_back(pSound);
 	}
 
-	// for 2D sound, position is not relative to listener
-	alSourcei(m_SoundSources[pSound->getSource()], AL_SOURCE_RELATIVE, 0);
+	soundFile.close();
+
+	// for 2D sound, position is relative to listener
+	alSourcei(m_SoundSources[pSound->getSource()], AL_SOURCE_RELATIVE, AL_TRUE);
+
+	// create soundtime, needed for looping
+	m_SoundTime[pSound] = float(0.0f);
+
+	return pSound;
+}
+
+Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
+{
+	stream = false; // only static for now
+
+	Sound3D* pSound(nullptr);
+
+	// new soundfile
+	m_SoundFiles.push_back(SoundFile(path));
+
+	SoundFile& soundFile = m_SoundFiles[m_SoundFiles.size() - 1];
+
+	// try to open
+	bool success(soundFile.open());
+
+	std::string err("Failed to open sound file: ");
+	err += path;
+
+	ASSERT(success == true, err);
+
+	// get soundfile properties
+	SoundFileProperties props(soundFile.getProperties());
+
+	ASSERT(props.channelsCount <= 2, "More channels than supported");
+
+	if (stream == true)
+	{
+		// create source, buffer for file
+		ALuint source(0), *buffers(NEW ALuint(STREAM_BUFFERS));
+
+		alGenSources(1, &source);
+		alGenBuffers(STREAM_BUFFERS, buffers);
+
+		m_SoundSources.push_back(source);
+		m_SoundBuffers.push_back(buffers);
+
+		// create sound
+		pSound = NEW Sound3D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
+
+		// put sound in soundbank
+		m_SoundBank.push_back(pSound);
+	}
+	else
+	{
+		// create source, buffer for file
+		ALuint source(0), buffer(0);
+
+		alGenSources(1, &source);
+		alGenBuffers(1, &buffer);
+
+		m_SoundSources.push_back(source);
+		m_SoundBuffers.push_back(&buffer);
+
+		// read data from soundfile
+		std::vector<short> data;
+		data.resize(props.samplesCount);
+
+		success = (soundFile.read(&data[0], props.samplesCount) == props.samplesCount);
+
+		ASSERT(success == true, err);
+
+		if (props.channelsCount == 2)
+		{
+			// only mono can be used in 3D space
+			std::vector<short> dataMono;
+
+			convertToMono(data, dataMono);
+
+			// fill soundbuffer with data
+			alBufferData(
+				buffer,
+				getALFormatFromChannels(1),
+				&dataMono[0],
+				dataMono.size() * sizeof(short),
+				props.samplerate );
+		}
+		else
+		{
+			// fill soundbuffer with data
+			alBufferData(
+				buffer,
+				getALFormatFromChannels(1),
+				&data[0],
+				props.samplesCount * sizeof(short),
+				props.samplerate );
+		}
+
+
+		// bind buffer with source
+		alSourceQueueBuffers(source, 1, &buffer);
+
+		// create sound
+		pSound = NEW Sound3D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
+
+		// put sound in soundbank
+		m_SoundBank.push_back(pSound);
+	}
+
+	soundFile.close();
+
+	// for 3D sound, position is absolute to listener
+	alSourcei(m_SoundSources[pSound->getSource()], AL_SOURCE_RELATIVE, AL_FALSE);
 
 	// create soundtime, needed for looping
 	m_SoundTime[pSound] = float(0.0f);
@@ -316,6 +459,8 @@ void SoundEngine::playSound(ISound* pSound, bool forceRestart)
 
 	if (pSound->getType() == SOUND_TYPE_STREAM)
 	{
+		//m_SoundFiles[pSound->getSoundFile()].seek(0);
+
 		for (uint i(0); i < STREAM_BUFFERS; ++i)
 		{
 			if (!streamSound(m_SoundFiles[pSound->getSoundFile()], m_SoundBuffers[pSound->getBuffer()][i]))
@@ -350,15 +495,45 @@ void SoundEngine::setListenerPos(const vec3& pos)
 {
 	alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
 }
+void SoundEngine::setListenerVelocity(const vec3& vel)
+{
+	alListener3f(AL_VELOCITY, vel.x, vel.y, vel.z);
+}
+void SoundEngine::setListenerOrientation(const vec3& forward, const vec3& up)
+{
+	float ori[6] = { forward.x, forward.y, forward.z,
+					 up.x, up.y, up.z };
+
+	alListenerfv(AL_ORIENTATION, ori);
+}
 
 /* GETTERS */
 vec3 SoundEngine::getListenerPos() const
 {
-	vec3 pos(0, 0, 0);
-
+	vec3 pos;
 	alGetListener3f(AL_POSITION, &pos.x, &pos.y, &pos.z);
         
 	return pos;
+}
+vec3 SoundEngine::getListenerVelocity() const
+{
+	vec3 vel;
+	alGetListener3f(AL_VELOCITY, &vel.x, &vel.y, &vel.z);
+
+	return vel;
+}
+void SoundEngine::getListenerOrientation(vec3* forward, vec3* up) const
+{
+	float ori[6];
+	alGetListenerfv(AL_ORIENTATION, ori);
+
+	forward->x = ori[0];
+	forward->y = ori[1];
+	forward->z = ori[2];
+
+	up->x = ori[3];
+	up->y = ori[4];
+	up->z = ori[5];
 }
 
 ALuint SoundEngine::getALSource(uint source) const
@@ -374,6 +549,10 @@ ALuint* SoundEngine::getALBuffer(uint buffer) const
 SoundFile& SoundEngine::getSoundFile(uint soundFile)
 {
 	return m_SoundFiles[soundFile];
+}
+float SoundEngine::getPlayTime(ISound* pSound)
+{
+	return m_SoundTime[pSound];
 }
 
 } } //end namespace

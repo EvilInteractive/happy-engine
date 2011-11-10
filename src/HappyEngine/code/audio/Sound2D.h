@@ -60,7 +60,7 @@ public:
 	float getPitch() const;
 
 	float getLength() const;
-	float getPlayingOffset() const;
+	float getPlayTime();
 
 private:
 

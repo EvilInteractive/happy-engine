@@ -123,15 +123,12 @@ float Sound2D::getLength() const
 {
 	SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
 
-	return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount));
+	return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount / getPitch()));
 }
 
-float Sound2D::getPlayingOffset() const
+float Sound2D::getPlayTime()
 {
-	float seconds;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_SEC_OFFSET, &seconds);
-
-	return seconds;
+	return AUDIO->getPlayTime(this);
 }
 
 } } //end namespace

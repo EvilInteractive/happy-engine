@@ -77,6 +77,12 @@
     <Filter Include="happyengine\io\mouse">
       <UniqueIdentifier>{14d78ab2-177b-492c-9585-3a0a64f26502}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\rendering\forward">
+      <UniqueIdentifier>{39bf1484-b179-4164-9b0e-9d424c03e78f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\rendering\2d">
+      <UniqueIdentifier>{02443ead-bb6c-4ba4-9dcc-bae0f067ae85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -268,17 +274,11 @@
     <ClCompile Include="code\graphics\GraphicsEngine.cpp">
       <Filter>happyengine\graphics\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
-      <Filter>happyengine\graphics\rendering</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Simple2DEffect.cpp">
       <Filter>happyengine\graphics\material</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp">
       <Filter>happyengine\graphics\material</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
-      <Filter>happyengine\graphics\rendering</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\ShadowCaster.cpp">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
@@ -387,6 +387,18 @@
     </ClCompile>
     <ClCompile Include="code\audio\SoundFile.cpp">
       <Filter>happyengine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\SSAO.cpp">
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\BillboardEffect.cpp">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -603,17 +615,11 @@
     <ClInclude Include="code\graphics\GraphicsEngine.h">
       <Filter>happyengine\graphics\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Happy2DRenderer.h">
-      <Filter>happyengine\graphics\rendering</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Simple2DEffect.h">
       <Filter>happyengine\graphics\material</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Simple2DTextureEffect.h">
       <Filter>happyengine\graphics\material</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
-      <Filter>happyengine\graphics\rendering</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\ShadowCaster.h">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
@@ -779,6 +785,18 @@
     </ClInclude>
     <ClInclude Include="code\audio\SoundFile.h">
       <Filter>happyengine\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\SSAO.h">
+      <Filter>happyengine\graphics\rendering\deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Happy2DRenderer.h">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\BillboardEffect.h">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

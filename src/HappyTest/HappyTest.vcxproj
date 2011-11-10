@@ -113,6 +113,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\settings.ini" />
+    <None Include="data\shaders\billboardShader.frag" />
+    <None Include="data\shaders\billboardShader.vert" />
     <None Include="data\shaders\deferred\post\blur.frag" />
     <None Include="data\shaders\deferred\post\decode.frag" />
     <None Include="data\shaders\deferred\post\deferredPostAmbientIllShader.frag" />

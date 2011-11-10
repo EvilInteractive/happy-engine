@@ -283,16 +283,21 @@ void HappyEngine::audioLoop()
 {
 	boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(1);
 	boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
+	float dTime(0);
 
 	while (m_Quit == false)
 	{
 		boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
         prevTime = boost::chrono::high_resolution_clock::now();
-        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+        dTime += (elapsedTime.count() / static_cast<float>(boost::nano::den));
 
-		m_pSoundEngine->tick(dTime);
-
-		boost::this_thread::sleep(waitTime);
+		if (dTime >= (1 / 30.0f))
+		{
+			m_pSoundEngine->tick(dTime);
+			dTime = 0;
+		}
+		else
+			boost::this_thread::sleep(waitTime);
 	}
 }
 
