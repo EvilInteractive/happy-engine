@@ -84,7 +84,7 @@ void SimpleForward3DRenderer::init()
 	createBillboardQuad();
 
 	m_pColorEffect->load();
-	//m_pBillboardEffect->load();
+	m_pBillboardEffect->load();
 
 	int width = GRAPHICS->getViewport().width, 
 		height = GRAPHICS->getViewport().height;
