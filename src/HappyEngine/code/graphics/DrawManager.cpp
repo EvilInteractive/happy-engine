@@ -41,6 +41,7 @@ DrawManager::~DrawManager()
 
 void DrawManager::draw(const Camera* pCamera)
 {
+
     std::vector<DrawElement> culledDrawList;
     culledDrawList.reserve(m_DrawList.size());
     std::for_each(m_DrawList.cbegin(), m_DrawList.cend(), [&](const IDrawable* pDrawable)
@@ -65,11 +66,11 @@ void DrawManager::draw(const Camera* pCamera)
     {
         e.pDrawable->getMaterial().apply(e.pDrawable, pCamera);        
         GRAPHICS->draw(e.pDrawable->getModel());
+
     });
     
     renderShadow(pCamera);
 }
-
 bool DrawManager::viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere)
 {
     return viewClip(pCamera->getPosition(), pCamera->getLook(), pCamera->getFarClip(), boundingSphere);
@@ -108,6 +109,11 @@ void DrawManager::addDrawable( const IDrawable* pDrawable )
 {
     ASSERT(pDrawable != nullptr, "adding a nullptr drawable");
     m_DrawList.push_back(pDrawable);
+}
+
+const std::vector<const IDrawable*>& DrawManager::getDrawList() const
+{
+	return m_DrawList;
 }
 
 } } //end namespace

@@ -32,7 +32,7 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-SimpleForward3DRenderer::SimpleForward3DRenderer() :	m_pColorEffect(NEW SplineColorEffect()),
+SimpleForward3DRenderer::SimpleForward3DRenderer() :	m_pColorEffect(NEW SimpleColorEffect()),
 														m_RenderFboID(0),
 														m_pRenderTexture(NEW Texture2D()),
 														m_pBillboardEffect(NEW BillboardEffect()),

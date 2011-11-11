@@ -58,7 +58,7 @@ public:
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
    
-    void setModel(const gfx::ModelMesh::pointer& pModel);
+    void setModel(const gfx::ModelMesh::pointer& pModel, bool isPickable = true);
 
     void setMaterial(const gfx::Material& material);
 

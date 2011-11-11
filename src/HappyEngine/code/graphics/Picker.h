@@ -16,50 +16,46 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 06/11/2011
+//Created: 11/11/2011
 
-#ifndef _HE_SPLINE_COLOR_EFFECT_H_
-#define _HE_SPLINE_COLOR_EFFECT_H_
+#ifndef _HE_PICKER_H_
+#define _HE_PICKER_H_
 #pragma once
 
-#include "mat44.h"
-#include "Shader.h"
-#include "HappyTypes.h"
-#include "Color.h"
+#include "vec2.h"
+#include "PickEffect.h"
+#include "Texture2D.h"
+#include "IDrawable.h"
 
 namespace he {
 namespace gfx {
 
-class SplineColorEffect
+class Picker
 {
 public:
 
 	/* CONSTRUCTOR - DESTRUCTOR */
-	SplineColorEffect();
-    virtual ~SplineColorEffect();
+	Picker();
+    virtual ~Picker();
 
 	/* GENERAL */
-	void load();
-	void begin() const;
-	void end() const;
-
-	/* SETTERS */
-	void setViewProjection(const mat44& mat);
-	void setWorld(const mat44& mat);
-	void setColor(const Color& color);
+	void initialize();
+	// returns ID of mesh in drawlist which is picked, or UINT_MAX if none
+	uint pick(const vec2& screenPoint, const Camera* pCamera);
 
 private:
 
 	/* DATAMEMBERS */
-	Shader* m_pShader;
+	PickEffect* m_pPickEffect;
 
-	uint m_ShaderVPPos;
-	uint m_ShaderWPos;
-	uint m_ShaderColorPos;
+	uint m_RenderFboID;
+	Texture2D::pointer m_pIDTexture;
+
+	bool m_bInitialized;
 
     /* DEFAULT COPY & ASSIGNMENT */
-    SplineColorEffect(const SplineColorEffect&);
-    SplineColorEffect& operator=(const SplineColorEffect&);
+    Picker(const Picker&);
+    Picker& operator=(const Picker&);
 };
 
 } } //end namespace

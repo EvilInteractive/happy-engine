@@ -190,6 +190,11 @@ void Shader::setShaderVar(uint id, int value) const
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1i(id, value);
 }
+void Shader::setShaderVar(uint id, uint value) const
+{
+	ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+	glUniform1ui(id, value);
+}
 void Shader::setShaderVar(uint id, float value) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");

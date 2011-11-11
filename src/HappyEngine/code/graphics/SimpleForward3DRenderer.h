@@ -25,7 +25,7 @@
 #include "ModelMesh.h"
 #include "mat44.h"
 #include "Color.h"
-#include "SplineColorEffect.h"
+#include "SimpleColorEffect.h"
 #include "Camera.h"
 #include "Texture2D.h"
 #include "vec3.h"
@@ -56,7 +56,7 @@ private:
 	void createBillboardQuad();
 
 	/* DATAMEMBERS */
-	SplineColorEffect* m_pColorEffect;
+	SimpleColorEffect* m_pColorEffect;
 
 	mat44 m_ViewProjection;
 

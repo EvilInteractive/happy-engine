@@ -44,8 +44,12 @@ public:
     virtual bool isVisible() const { return m_IsVisible; }
     virtual void setVisible(bool visible) { m_IsVisible = visible; }
 
+	virtual bool isPickable() const { return m_IsPickable; }
+	virtual void setPickable(bool pickable) { m_IsPickable = pickable; }
+
 protected:
     bool m_IsVisible;
+	bool m_IsPickable;
 
 private:
     std::vector<mat44> m_NoBones;

@@ -37,7 +37,8 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_IsFullScreen(false),
                                   m_WindowTitle("HappyEngine"),
                                   m_VSyncEnabled(true),
-                                  m_pDrawManager(NEW DrawManager())
+                                  m_pDrawManager(NEW DrawManager()),
+								  m_pPicker(NEW Picker())
 {
 }
 
@@ -46,6 +47,7 @@ GraphicsEngine::~GraphicsEngine()
 {
     delete m_pDrawManager;
     delete m_pDeferred3DRenderer;
+	delete m_pPicker;
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
 }
@@ -77,7 +79,6 @@ void GraphicsEngine::init(bool useQt)
     GL::heSetWindingFrontFace(true);
     GL::heSetCullFace(false);
     glEnable(GL_CULL_FACE);
-
 
     io::IniReader reader;
     reader.open("gfxSettings.ini");
@@ -234,6 +235,19 @@ void GraphicsEngine::addToDrawList( const IDrawable* pDrawable )
 Deferred3DRenderer* GraphicsEngine::getDeferredRenderer() const
 {
 	return m_pDeferred3DRenderer;
+}
+
+const std::vector<const IDrawable*>& GraphicsEngine::getDrawList() const
+{
+	return m_pDrawManager->getDrawList();
+}
+void GraphicsEngine::initPicking()
+{
+	m_pPicker->initialize();
+}
+uint GraphicsEngine::pick(const vec2& screenPoint)
+{
+	return m_pPicker->pick(screenPoint, m_pCurrentCamera);
 }
 
 } } //end namespace

@@ -228,6 +228,8 @@ void MainGame::load()
 
 	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
 	m_pTestGrid->setColor(Color(0.8f,0.8f,0.8f,0.75f));
+
+	GRAPHICS->initPicking();
 }
 void MainGame::tick(float dTime)
 {
@@ -313,6 +315,18 @@ void MainGame::tick(float dTime)
 
 	m_pTextBox->tick();
 
+	if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
+	{
+		uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
+
+		if (id != UINT_MAX)
+		{
+			m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
+		}
+		else
+			m_PickPos = vec3(0,0,0);
+	}
+
 	m_pFPSGraph->tick(dTime, 0.5f);
 
 	CONSOLE->tick();
@@ -373,6 +387,12 @@ void MainGame::draw()
 		stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
 
 		HE2D->drawString(stream.str(), m_pFont, vec2(1050,620));
+
+		stream.str("");
+
+		stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
+
+		HE2D->drawString(stream.str(), m_pFont, vec2(1050,640));
 
 		m_pFPSGraph->draw();
 

@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 04/08/2011
+//Extended:Sebastiaan Sprengers
 
 #ifndef _HE_GRAPHICS_ENGINE_H_
 #define _HE_GRAPHICS_ENGINE_H_
@@ -34,7 +35,8 @@
 
 #include "DrawManager.h"
 #include "DrawSettings.h"
-
+#include "Camera.h"
+#include "Picker.h"
 
 namespace he {
 namespace gfx {
@@ -42,46 +44,55 @@ namespace gfx {
 class GraphicsEngine
 {
 public:
+
+	/* CONSTRUCTOR - DESTRUCTOR */
 	GraphicsEngine();
     virtual ~GraphicsEngine();
 
+	/* GENERAL */
     void init(bool useQt);
+	// only init when needed, because it requires extra FBO & shader
+	void initPicking();
 
+	void clearAll() const;
+	void clearColor() const;
+	void clearDepth() const;
+
+	void addToDrawList(const IDrawable* pDrawable);
+
+	void begin(const Camera* pCamera);
+	void end();
+	void draw(const ModelMesh::pointer& pModelMesh);
+	void present() const;
+
+	void toggleFullscreen(bool isFullscreen);
+
+	/* SETTERS */
+	void setWindowTitle(const std::string& caption);
     void setScreenPosition(int x, int y);
-    void getScreenPosition(int& x, int& y) const;
-    const RectI& getScreenRect() const;
     void setScreenDimension(uint width, uint height);
-    uint getScreenWidth() const;
-    uint getScreenHeight() const;
-
-    void toggleFullscreen(bool isFullscreen);
-    void setWindowTitle(const std::string& caption);
-
     void setViewport(const RectI& viewport);
+	void setVSync(bool enable);
+	void setBackgroundColor(const Color& color);
+    
+	/* GETTERS */
+	void getScreenPosition(int& x, int& y) const;
+	const RectI& getScreenRect() const;
+	uint getScreenWidth() const;
+	uint getScreenHeight() const;
     const RectI& getViewport() const;
-
-    void setVSync(bool enable);
-
-    void setBackgroundColor(const Color& color);
-    void clearAll() const;
-    void clearColor() const;
-    void clearDepth() const;
-
-    void addToDrawList(const IDrawable* pDrawable);
-
-    void begin(const Camera* pCamera);
-    void end();
-    void draw(const ModelMesh::pointer& pModelMesh);
-    void present() const;
-
     LightManager* getLightManager() const;
     const DrawSettings& getSettings() const;
-
 	Deferred3DRenderer* getDeferredRenderer() const;
+	const std::vector<const IDrawable*>& getDrawList() const;
+
+	uint pick(const vec2& screenPoint);
 
 private:
+
     void initWindow();
 
+	/* DATAMEMBERS */
     SDL_Window* m_pMainWindow;
     SDL_GLContext m_GLContext;
 
@@ -100,7 +111,9 @@ private:
 
     const Camera* m_pCurrentCamera;
 
-    //Disable default copy constructor and default assignment operator
+	Picker* m_pPicker;
+
+    /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);
     GraphicsEngine& operator=(const GraphicsEngine&);
 };

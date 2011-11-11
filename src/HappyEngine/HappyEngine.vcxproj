@@ -73,6 +73,8 @@
     <ClCompile Include="code\graphics\Material.cpp" />
     <ClCompile Include="code\graphics\Model.cpp" />
     <ClCompile Include="code\graphics\ModelMesh.cpp" />
+    <ClCompile Include="code\graphics\PickEffect.cpp" />
+    <ClCompile Include="code\graphics\Picker.cpp" />
     <ClCompile Include="code\graphics\PointLight.cpp" />
     <ClCompile Include="code\graphics\Scrollbar.cpp" />
     <ClCompile Include="code\graphics\Shader.cpp" />
@@ -80,7 +82,7 @@
     <ClCompile Include="code\graphics\ShadowCaster.cpp" />
     <ClCompile Include="code\graphics\Simple2DEffect.cpp" />
     <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp" />
-    <ClCompile Include="code\graphics\SplineColorEffect.cpp" />
+    <ClCompile Include="code\graphics\SimpleColorEffect.cpp" />
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp" />
     <ClCompile Include="code\graphics\SpotLight.cpp" />
     <ClCompile Include="code\graphics\SSAO.cpp" />
@@ -187,6 +189,8 @@
     <ClInclude Include="code\graphics\Material.h" />
     <ClInclude Include="code\graphics\Model.h" />
     <ClInclude Include="code\graphics\ModelMesh.h" />
+    <ClInclude Include="code\graphics\PickEffect.h" />
+    <ClInclude Include="code\graphics\Picker.h" />
     <ClInclude Include="code\graphics\PointLight.h" />
     <ClInclude Include="code\graphics\Scrollbar.h" />
     <ClInclude Include="code\graphics\Shader.h" />
@@ -195,7 +199,7 @@
     <ClInclude Include="code\graphics\ShadowCaster.h" />
     <ClInclude Include="code\graphics\Simple2DEffect.h" />
     <ClInclude Include="code\graphics\Simple2DTextureEffect.h" />
-    <ClInclude Include="code\graphics\SplineColorEffect.h" />
+    <ClInclude Include="code\graphics\SimpleColorEffect.h" />
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h" />
     <ClInclude Include="code\graphics\SpotLight.h" />
     <ClInclude Include="code\graphics\SSAO.h" />

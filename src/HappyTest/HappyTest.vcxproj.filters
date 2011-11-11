@@ -152,5 +152,11 @@
     <None Include="data\shaders\billboardShader.vert">
       <Filter>data\shaders</Filter>
     </None>
+    <None Include="data\shaders\pickingShader.frag">
+      <Filter>data\shaders</Filter>
+    </None>
+    <None Include="data\shaders\pickingShader.vert">
+      <Filter>data\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

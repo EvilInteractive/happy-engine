@@ -16,11 +16,11 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 06/11/2011
+//Created: 11/11/2011
 
 #include "StdAfx.h" 
 
-#include "SplineColorEffect.h"
+#include "PickEffect.h"
 #include "HappyNew.h"
 
 #include <vector>
@@ -29,18 +29,17 @@
 namespace he {
 namespace gfx {
 
-/* CONSTRUCTOR - DESTRUCTOR */
-SplineColorEffect::SplineColorEffect() :	m_pShader(nullptr)
+/* CONSTRUCTOR - DESCTRUCTOR */
+PickEffect::PickEffect() :	m_pShader(nullptr)
 {
 }
 
-SplineColorEffect::~SplineColorEffect()
+PickEffect::~PickEffect()
 {
-	delete m_pShader;
 }
 
 /* GENERAL */
-void SplineColorEffect::load()
+void PickEffect::load()
 {
 	ShaderLayout layout;
 	layout.addElement(ShaderLayoutElement(0, "inPosition"));
@@ -48,44 +47,40 @@ void SplineColorEffect::load()
 	m_pShader = NEW Shader();
 
 	std::vector<std::string> shaderOutputs;
-	shaderOutputs.push_back("outColor");
+	shaderOutputs.push_back("outId");
 
-	bool shaderInit(m_pShader->init("../data/shaders/simpleShader.vert", "../data/shaders/simpleShader.frag", layout, shaderOutputs));
+	bool shaderInit(m_pShader->init("../data/shaders/pickingShader.vert", "../data/shaders/pickingShader.frag", layout, shaderOutputs));
 	ASSERT(shaderInit == true);
 
 	m_ShaderVPPos = m_pShader->getShaderVarId("matVP");
 	m_ShaderWPos = m_pShader->getShaderVarId("matW");
-	m_ShaderColorPos = m_pShader->getShaderVarId("color");
+	m_ShaderIDPos = m_pShader->getShaderVarId("id");
 
 	m_pShader->bind();
-	m_pShader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
-	mat44 MatWVP;// = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
+	m_pShader->setShaderVar(m_ShaderIDPos, (uint)0);
+	mat44 MatWVP;
 	m_pShader->setShaderVar(m_ShaderVPPos, MatWVP);
 }
-
-void SplineColorEffect::begin() const
+void PickEffect::begin() const
 {
 	m_pShader->bind();
 }
-
-void SplineColorEffect::end() const
+void PickEffect::end() const
 {
 }
 
 /* SETTERS */
-void SplineColorEffect::setViewProjection(const mat44& mat)
+void PickEffect::setViewProjection(const mat44& mat)
 {
 	m_pShader->setShaderVar(m_ShaderVPPos, mat);
 }
-
-void SplineColorEffect::setWorld(const mat44& mat)
+void PickEffect::setWorld(const mat44& mat)
 {
 	m_pShader->setShaderVar(m_ShaderWPos, mat);
 }
-
-void SplineColorEffect::setColor(const Color& color)
+void PickEffect::setID(uint id)
 {
-	m_pShader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
+	m_pShader->setShaderVar(m_ShaderIDPos, (uint)id);
 }
 
 } } //end namespace

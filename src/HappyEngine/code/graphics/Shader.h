@@ -53,6 +53,7 @@ public:
     uint getShaderSamplerId(const std::string& name);
     
     void setShaderVar(uint id, int value) const;
+	void setShaderVar(uint id, uint value) const;
     void setShaderVar(uint id, float value) const;
     void setShaderVar(uint id, const vec2& vec) const;
     void setShaderVar(uint id, const vec3& vec) const;

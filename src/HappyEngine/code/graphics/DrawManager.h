@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 04/10/2011
+//Extended:Sebastiaan Sprengers
 
 #ifndef _HE_DRAW_MANAGER_H_
 #define _HE_DRAW_MANAGER_H_
@@ -34,6 +35,7 @@ class ShadowCaster;
 class DrawManager
 {
 public:
+
     struct DrawElement
     {
         const IDrawable* pDrawable;
@@ -43,34 +45,41 @@ public:
             return sorter < other.sorter;
         }
     };
+
     enum Type
     {
         Type_FrontToBack,
         Type_BackToFront
     };
 
+	/* CONSTRUCTOR - DESTRUCTOR */
 	DrawManager();
     virtual ~DrawManager();
 
+	/* GENERAL */
     void init(const DrawSettings& settings);
-
     void draw(const Camera* pCamera);
 
     void addDrawable(const IDrawable* pDrawabe);
 
+	/* GETTERS */
     static bool viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere);
     static bool viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere);
 
+	const std::vector<const IDrawable*>& getDrawList() const;
+
 private:
+
     void renderShadow(const Camera* pCamera);
 
+	/* DATAMEMBERS */
     Type m_Type;
 
     std::vector<const IDrawable*> m_DrawList;
 
     ShadowCaster* m_pShadowCaster;
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT */
     DrawManager(const DrawManager&);
     DrawManager& operator=(const DrawManager&);
 };

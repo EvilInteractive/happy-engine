@@ -101,6 +101,9 @@ private:
 
 	he::tools::Grid* m_pTestGrid;
 
+	he::vec3 m_PickPos;
+	//bool m_bDrawPicking;
+
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
     MainGame& operator=(const MainGame&);
