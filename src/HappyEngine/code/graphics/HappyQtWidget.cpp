@@ -57,12 +57,16 @@ void HappyQtWidget::initializeGL()
 }
 void HappyQtWidget::paintGL()
 {
-    makeCurrent();
-    draw();
+    /*makeCurrent();
+    draw();*/
 }
 void HappyQtWidget::resizeGL(int /*width*/, int /*height*/)
 {
 
+}
+void HappyQtWidget::present()
+{
+	swapBuffers();
 }
 void HappyQtWidget::mouseMoveEvent(QMouseEvent* event)
 {
@@ -75,6 +79,10 @@ void HappyQtWidget::mousePressEvent(QMouseEvent* event)
 void HappyQtWidget::mouseReleaseEvent(QMouseEvent* event)
 {
     m_pMouse->mouseReleaseEvent(event);
+}
+void HappyQtWidget::closeEvent (QCloseEvent* /*event*/)
+{
+	HAPPYENGINE->quit();
 }
 
 } } //end namespace

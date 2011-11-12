@@ -262,7 +262,7 @@ void HappyEngine::drawLoop()
  
 #ifdef HE_ENABLE_QT
     if (m_SubEngines & SubEngine_Qt)
-        m_pQtWidget->updateGL();
+        m_pQtWidget->present();
     else 
 #endif
     if (m_SubEngines & SubEngine_Graphics)

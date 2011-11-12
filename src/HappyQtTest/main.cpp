@@ -26,7 +26,6 @@ int main(int argc, char** argv)
     w.show();
      
     HAPPYENGINE->start(w.getGameWidget());
-    HAPPYENGINE->dispose();
 
     std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
 
