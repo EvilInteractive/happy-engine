@@ -15,38 +15,32 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author: Bastian Damman 
-//Created: 08/08/2011
+//Author:  Bastian Damman
+//Created: 10/11/2011
 
-#ifndef _HE_CONTROLS_MANAGER_H_
-#define _HE_CONTROLS_MANAGER_H_
+#ifndef _HE_IKEYBOARD_H_
+#define _HE_IKEYBOARD_H_
 #pragma once
 
-#include "IKeyboard.h"
-#include "IMouse.h"
+#include "Keys.h"
 
 namespace he {
 namespace io {
 
-class ControlsManager
+class IKeyboard
 {
 public:
-	ControlsManager(bool qt);
-    virtual ~ControlsManager();
+    virtual ~IKeyboard() {}
 
-    void tick();
+    virtual void tick() = 0;
 
-    const IKeyboard* getKeyboard() const;
-    const IMouse* getMouse() const;
+    virtual bool isKeyUp(Key key) const = 0;
+    virtual bool isKeyDown(Key key) const = 0;
 
-private:
-
-    IKeyboard* m_pKeyboard;
-    IMouse* m_pMouse;
-
-    //Disable default copy constructor and default assignment operator
-    ControlsManager(const ControlsManager&);
-    ControlsManager& operator=(const ControlsManager&);
+    virtual bool isKeyPressed(Key key) const = 0;           //true when state goes from up to down
+	virtual bool isKeyPressed(KeyScanCode code) const = 0;
+    virtual bool isKeyReleased(Key key) const = 0;          //true when state goes from down to up
+	virtual bool isKeyReleased(KeyScanCode code) const = 0;
 };
 
 } } //end namespace

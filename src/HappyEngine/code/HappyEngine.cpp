@@ -211,11 +211,12 @@ void HappyEngine::start(gfx::HappyQtWidget* pWidget)
     
 	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 
-    m_qtLoopTimer.setInterval(0); //as fast as possible
+    m_qtLoopTimer.setSingleShot(true); //as fast as possible
     connect(&m_qtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
-    m_qtLoopTimer.start();
+    m_qtLoopTimer.start(0);
 
     QApplication::exec();
+    m_Quit = true;
 }
 #endif
 void HappyEngine::loop()
@@ -226,6 +227,11 @@ void HappyEngine::loop()
     updateLoop(dTime);
     if (m_SubEngines & SubEngine_Graphics)
         drawLoop();
+
+#ifdef HE_ENABLE_QT
+    if ((m_SubEngines & SubEngine_Qt) && m_Quit == false)
+        m_qtLoopTimer.start(0);
+#endif
 }
 void HappyEngine::updateLoop(float dTime)
 {

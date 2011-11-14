@@ -17,21 +17,25 @@
 
 int main(int argc, char** argv)
 {
-    using namespace he;
-
-    HAPPYENGINE->init(SubEngine_All | SubEngine_Qt);  
-
-    /*qt::*/QApplication a(argc, argv);
-    HappyQtTest w;
-    w.show();
-     
-    HAPPYENGINE->start(w.getGameWidget());
-
-    std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
-
     #ifdef _DEBUG
-    _CrtDumpMemoryLeaks();
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     #endif
+    using namespace he;
+    {
+        HAPPYENGINE->init(SubEngine_All | SubEngine_Qt);  
+
+        /*qt::*/QApplication pApp(argc, argv);
+        pApp.setQuitOnLastWindowClosed(true);
+        HappyQtTest pWindow;
+        pWindow.setAttribute(Qt::WA_QuitOnClose);
+        pWindow.show();
+     
+        HAPPYENGINE->start(pWindow.getGameWidget());
+    }
+    std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
+    /*#ifdef _DEBUG
+    _CrtDumpMemoryLeaks();
+    #endif*/
 
     std::cout << "\npress enter to quit\n";
     std::cin.get();

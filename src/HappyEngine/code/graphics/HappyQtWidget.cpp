@@ -27,6 +27,7 @@
 #include "Happy2DRenderer.h"
 #include "SimpleForward3DRenderer.h"
 #include "QtMouse.h"
+#include "QtKeyboard.h"
 #include "ControlsManager.h"
 
 namespace he {
@@ -47,6 +48,10 @@ void HappyQtWidget::initializeGL()
 {
     m_pMouse = dynamic_cast<io::QtMouse*>(const_cast<io::IMouse*>(CONTROLS->getMouse()));
     ASSERT(m_pMouse != nullptr, "HappyQtWidget is used but not the qtMouse !");
+
+    m_pKeyboard = dynamic_cast<io::QtKeyboard*>(const_cast<io::IKeyboard*>(CONTROLS->getKeyboard()));
+    ASSERT(m_pKeyboard != nullptr, "HappyQtWidget is used but not the qtKeyboard !");
+
     init();
     if (GRAPHICS != nullptr)
         GRAPHICS->init(true);
@@ -71,18 +76,35 @@ void HappyQtWidget::present()
 void HappyQtWidget::mouseMoveEvent(QMouseEvent* event)
 {
     m_pMouse->mouseMoveEvent(event);
+    QWidget::mouseMoveEvent(event);
 }
 void HappyQtWidget::mousePressEvent(QMouseEvent* event)
 {
     m_pMouse->mousePressEvent(event);
+    QWidget::mousePressEvent(event);
+    setFocus();
 }
 void HappyQtWidget::mouseReleaseEvent(QMouseEvent* event)
 {
     m_pMouse->mouseReleaseEvent(event);
+    QWidget::mouseReleaseEvent(event);
+    setFocus();
 }
 void HappyQtWidget::closeEvent (QCloseEvent* /*event*/)
 {
 	HAPPYENGINE->quit();
+}
+
+
+void HappyQtWidget::keyPressEvent(QKeyEvent* event)
+{
+    m_pKeyboard->keyPressEvent(event);
+    QWidget::keyPressEvent(event);
+}
+void HappyQtWidget::keyReleaseEvent(QKeyEvent* event)
+{
+    m_pKeyboard->keyReleaseEvent(event);
+    QWidget::keyReleaseEvent(event);
 }
 
 } } //end namespace

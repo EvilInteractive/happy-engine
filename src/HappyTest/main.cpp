@@ -16,6 +16,10 @@ int main( int /*argc*/, char** /*args[]*/ )
     using namespace he;
     using namespace happytest;
     
+    #ifdef _DEBUG
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    #endif
+
     HAPPYENGINE->init(SubEngine_All);
     MainGame* pGame(NEW MainGame());
     HAPPYENGINE->start(pGame);
@@ -23,10 +27,6 @@ int main( int /*argc*/, char** /*args[]*/ )
     HAPPYENGINE->dispose();
 
     std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
-
-    #ifdef _DEBUG
-    _CrtDumpMemoryLeaks();
-    #endif
 
     std::cout << "\npress enter to quit\n";
     std::cin.get();

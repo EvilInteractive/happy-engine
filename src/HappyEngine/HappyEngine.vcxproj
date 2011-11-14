@@ -104,6 +104,7 @@
     <ClCompile Include="code\io\IniWriter.cpp" />
     <ClCompile Include="code\io\Keyboard.cpp" />
     <ClCompile Include="code\io\Mouse.cpp" />
+    <ClCompile Include="code\io\QtKeyboard.cpp" />
     <ClCompile Include="code\io\QtMouse.cpp" />
     <ClCompile Include="code\math\AABB.cpp" />
     <ClCompile Include="code\math\Circle.cpp" />
@@ -123,6 +124,7 @@
     <ClCompile Include="code\networking\Server.cpp" />
     <ClCompile Include="code\OpenGL.cpp" />
     <ClCompile Include="code\physics\PhysicsBoxShape.cpp" />
+    <ClCompile Include="code\physics\PhysicsCar.cpp" />
     <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp" />
     <ClCompile Include="code\physics\PhysicsConcaveShape.cpp" />
     <ClCompile Include="code\physics\PhysicsConvexMesh.cpp" />
@@ -227,12 +229,14 @@
     <ClInclude Include="code\io\BinaryStream.h" />
     <ClInclude Include="code\io\ControlsManager.h" />
     <ClInclude Include="code\io\FileReader.h" />
+    <ClInclude Include="code\io\IKeyboard.h" />
     <ClInclude Include="code\io\IMouse.h" />
     <ClInclude Include="code\io\IniReader.h" />
     <ClInclude Include="code\io\IniWriter.h" />
     <ClInclude Include="code\io\Keyboard.h" />
     <ClInclude Include="code\io\Keys.h" />
     <ClInclude Include="code\io\Mouse.h" />
+    <ClInclude Include="code\io\QtKeyboard.h" />
     <ClInclude Include="code\io\QtMouse.h" />
     <ClInclude Include="code\math\AABB.h" />
     <ClInclude Include="code\math\CatmullRomSpline.h" />
@@ -258,6 +262,7 @@
     <ClInclude Include="code\OpenGL.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
+    <ClInclude Include="code\physics\PhysicsCar.h" />
     <ClInclude Include="code\physics\PhysicsConcaveMesh.h" />
     <ClInclude Include="code\physics\PhysicsConcaveShape.h" />
     <ClInclude Include="code\physics\PhysicsConvexMesh.h" />

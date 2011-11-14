@@ -77,6 +77,9 @@
     <Filter Include="happyengine\io\mouse">
       <UniqueIdentifier>{14d78ab2-177b-492c-9585-3a0a64f26502}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\io\keyboard">
+      <UniqueIdentifier>{eeb44e11-3477-47bd-943f-fcc213af81e9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="happyengine\graphics\rendering\forward">
       <UniqueIdentifier>{39bf1484-b179-4164-9b0e-9d424c03e78f}</UniqueIdentifier>
     </Filter>
@@ -158,9 +161,6 @@
       <Filter>happyengine\io</Filter>
     </ClCompile>
     <ClCompile Include="code\io\IniWriter.cpp">
-      <Filter>happyengine\io</Filter>
-    </ClCompile>
-    <ClCompile Include="code\io\Keyboard.cpp">
       <Filter>happyengine\io</Filter>
     </ClCompile>
     <ClCompile Include="code\math\AABB.cpp">
@@ -385,6 +385,12 @@
     <ClCompile Include="code\audio\SoundFile.cpp">
       <Filter>happyengine\audio</Filter>
     </ClCompile>
+    <ClCompile Include="code\io\Keyboard.cpp">
+      <Filter>happyengine\io\keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="code\io\QtKeyboard.cpp">
+      <Filter>happyengine\io\keyboard</Filter>
+    </ClCompile>
     <ClCompile Include="code\graphics\SSAO.cpp">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
@@ -396,6 +402,9 @@
     </ClCompile>
     <ClCompile Include="code\graphics\BillboardEffect.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsCar.cpp">
+      <Filter>happyengine\physics</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\SimpleColorEffect.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
@@ -502,12 +511,6 @@
       <Filter>happyengine\io</Filter>
     </ClInclude>
     <ClInclude Include="code\io\IniWriter.h">
-      <Filter>happyengine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="code\io\Keyboard.h">
-      <Filter>happyengine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="code\io\Keys.h">
       <Filter>happyengine\io</Filter>
     </ClInclude>
     <ClInclude Include="code\math\AABB.h">
@@ -807,6 +810,18 @@
     <ClInclude Include="code\audio\SoundFile.h">
       <Filter>happyengine\audio</Filter>
     </ClInclude>
+    <ClInclude Include="code\io\Keyboard.h">
+      <Filter>happyengine\io\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="code\io\IKeyboard.h">
+      <Filter>happyengine\io\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="code\io\QtKeyboard.h">
+      <Filter>happyengine\io\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="code\io\Keys.h">
+      <Filter>happyengine\io\keyboard</Filter>
+    </ClInclude>
     <ClInclude Include="code\graphics\SSAO.h">
       <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
@@ -818,6 +833,9 @@
     </ClInclude>
     <ClInclude Include="code\graphics\BillboardEffect.h">
       <Filter>happyengine\graphics\rendering\forward</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsCar.h">
+      <Filter>happyengine\physics</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\SimpleColorEffect.h">
       <Filter>happyengine\graphics\rendering\forward</Filter>

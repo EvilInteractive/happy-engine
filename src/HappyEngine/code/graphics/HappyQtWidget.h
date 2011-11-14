@@ -30,10 +30,10 @@
 #pragma warning(default:4127)
 #include "Game.h"
 
-
 namespace he {
 namespace io {
     class QtMouse;
+    class QtKeyboard;
 }}
 
 namespace he {
@@ -57,8 +57,12 @@ private:
     virtual void mouseMoveEvent(QMouseEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
+
+    virtual void keyPressEvent(QKeyEvent* event);
+    virtual void keyReleaseEvent(QKeyEvent* event);
     
     io::QtMouse* m_pMouse;
+    io::QtKeyboard* m_pKeyboard;
 
     //Disable default copy constructor and default assignment operator
     HappyQtWidget(const HappyQtWidget&);

@@ -16,48 +16,64 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 08/08/2011
+//Created: 10/11/2011
 
-#ifndef _HE_KEYBOARD_H_
-#define _HE_KEYBOARD_H_
+#ifndef _HE_QTKEYBOARD_H_
+#define _HE_QTKEYBOARD_H_
 #pragma once
+
+
+#if HE_ENABLE_QT
 
 #include "HappyTypes.h"
 #include "Keys.h"
+#include <vector>
+#include <map>
 #include "IKeyboard.h"
+#include "SDL.h"
+//#include "IniWriter.h"
+
+class QKeyEvent;
 
 namespace he {
 namespace io {
 
-class Keyboard : public IKeyboard
+class QtKeyboard : public IKeyboard
 {
 public:
-	Keyboard();
-    virtual ~Keyboard();
+	QtKeyboard();
+    virtual ~QtKeyboard();
 
-    virtual void tick();
+    void tick();
 
-    virtual bool isKeyUp(Key key) const;
-    virtual bool isKeyDown(Key key) const;
+    bool isKeyUp(Key key) const;
+    bool isKeyDown(Key key) const;
 
-    virtual bool isKeyPressed(Key key) const;           //true when state goes from up to down
-	virtual bool isKeyPressed(KeyScanCode code) const;
-    virtual bool isKeyReleased(Key key) const;          //true when state goes from down to up
-	virtual bool isKeyReleased(KeyScanCode code) const;
+    bool isKeyPressed(Key key) const;  //true when state goes from up to down
+	bool isKeyPressed(KeyScanCode code) const;
+    bool isKeyReleased(Key key) const; //true when state goes from down to up
+	bool isKeyReleased(KeyScanCode code) const;
 
+    
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent (QKeyEvent* event);
 
 private:
-    byte* m_NewKeyState;
-    byte* m_CurrentKeyState;
-    byte* m_PrevKeyState;
+    std::vector<byte> m_NextKeyState;       //1 = pressed
+    std::vector<byte> m_CurrentKeyState;
+    std::vector<byte> m_PrevKeyState;
+    //IniWriter m_iniWriter;
 
-    int m_NumKeys;
-
+    std::map<uint, SDL_Scancode> m_KeyLookup;
+    
     //Disable default copy constructor and default assignment operator
-    Keyboard(const Keyboard&);
-    Keyboard& operator=(const Keyboard&);
+    QtKeyboard(const QtKeyboard&);
+    QtKeyboard& operator=(const QtKeyboard&);
+
 };
 
 } } //end namespace
+
+#endif
 
 #endif

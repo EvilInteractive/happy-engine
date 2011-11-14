@@ -49,6 +49,13 @@ class HappyPhysicsAllocator : public physx::PxAllocatorCallback
     }
 };
 
+enum PxFilter
+{
+    PxFilter_CarChassi = 1 << 0,
+    PxFilter_CarWheel = 1 << 1,
+
+};
+
 class PhysicsEngine
 {
 public:

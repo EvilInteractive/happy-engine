@@ -27,6 +27,8 @@
 namespace he {
 namespace io {
 
+#define MAX_KEYS 512
+
 enum Key
 {
     Key_Unkown = SDLK_UNKNOWN,
@@ -280,6 +282,11 @@ enum Key
     Key_KbdIllumUp = SDLK_KBDILLUMUP,
     Key_Eject = SDLK_EJECT,
     Key_Sleep = SDLK_SLEEP,
+};
+
+enum KeyScanCode
+{
+
 };
 
 } } //end namespace
