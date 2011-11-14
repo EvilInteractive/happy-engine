@@ -337,8 +337,8 @@ void Console::draw()
 		}
 
 		gui::Text text(m_pFont);
-		//text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-		//text.setVerticalAlignment(gui::Text::VAlignment_Top);
+		text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+		text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
 		uint k(0);
 		std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)

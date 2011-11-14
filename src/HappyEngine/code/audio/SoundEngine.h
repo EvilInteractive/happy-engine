@@ -69,7 +69,7 @@ public:
 	void getListenerOrientation(vec3* forward, vec3* up) const;
 
 	ALuint getALSource(uint source) const;
-	ALuint* getALBuffer(uint buffer) const;
+	const std::vector<ALuint>& getALBuffer(uint buffer) const;
 	SoundFile& getSoundFile(uint soundFile);
 
 	float getPlayTime(ISound* pSound);
@@ -86,7 +86,7 @@ private:
 
 	/* DATAMEMBERS */
 	std::vector<ISound*> m_SoundBank;
-	std::vector<ALuint*> m_SoundBuffers;
+	std::vector<std::vector<ALuint>> m_SoundBuffers;
 	std::vector<ALuint> m_SoundSources;
 	std::vector<SoundFile> m_SoundFiles;
 	std::map<ISound*, float> m_SoundTime;

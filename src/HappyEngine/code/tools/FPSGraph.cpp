@@ -122,6 +122,7 @@ void FPSGraph::drawFull()
 	GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)));
 
 	gui::Polygon2D poly;
+	gui::Polygon2D poly2;
 
 	uint i(0);
 		
@@ -158,11 +159,6 @@ void FPSGraph::drawFull()
 
 	poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
 
-	GUI->setColor(1.0f,0.0f,0.0f);
-	GUI->fillShape2D(poly);
-
-	poly.clear();
-
 	if (m_FpsHistory.size() > 50)
 	{
 		i = m_FpsHistory.size() - 51;
@@ -181,24 +177,36 @@ void FPSGraph::drawFull()
 		if (currentDTime > 80)
 			currentDTime = 80;
 
-		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+		poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
 
 		++k;
 	}
 
-	if (poly.getPolygon().getVertexCount() < 50)
+	if (poly2.getPolygon().getVertexCount() < 50)
 	{
-		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly.getPolygon().getVertexCount() * 2)), 45.0f));
+		poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly2.getPolygon().getVertexCount() * 2)), 45.0f));
 	}
 	else
 	{
-		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 45.0f));
+		poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 45.0f));
 	}
 
-	poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
+	poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
 
-	GUI->setColor(1.0f,1.0f,0.0f);
-	GUI->fillShape2D(poly);
+	if (m_CurrentFPS >= m_CurrentDTime)
+	{
+		GUI->setColor(1.0f,0.0f,0.0f);
+		GUI->fillShape2D(poly);
+		GUI->setColor(1.0f,1.0f,0.0f);
+		GUI->fillShape2D(poly2);
+	}
+	else
+	{
+		GUI->setColor(1.0f,1.0f,0.0f);
+		GUI->fillShape2D(poly2);
+		GUI->setColor(1.0f,0.0f,0.0f);
+		GUI->fillShape2D(poly);
+	}
 
 	uint avFPS(getAverageFPS());
 

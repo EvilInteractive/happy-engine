@@ -43,7 +43,9 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
                                         m_pModelContainer([](ModelMesh* pMesh) { delete pMesh; }),
 										m_pTextureContainer(),
 										m_pTextureQuad(NEW ModelMesh("")),
-										m_CurrentLayer("default")
+										m_CurrentLayer("default"),
+										m_RenderFboID(0),
+										m_pRenderTexture(NEW Texture2D())
 {
     
 }
@@ -196,18 +198,11 @@ void Happy2DRenderer::draw()
 	m_TextureBuffer.clear();
 	m_DepthMap.clear();
 
-	//// sort back to front
-	//std::sort(shapeDepthBuffer.begin(), shapeDepthBuffer.end(), [&] (std::pair<Shape&, float> p, std::pair<Shape&, float> p2) -> bool
-	//{
-	//	return (p.second > p2.second);
-	//});
-
-	//
-
-	//std::for_each(shapeDepthBuffer.begin(), shapeDepthBuffer.end(), [&](Shape s)
-	//{
-	//	
-	//});
+	GL::heBindFbo(0);
+	GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+	
+	m_pTextureEffect->setDepth(0.5f);
+	drawTexture(Texture(m_pRenderTexture, vec2(), vec2(), 1.0f, RectF(), ""));
 }
 
 float Happy2DRenderer::getDepth()
@@ -232,9 +227,15 @@ float Happy2DRenderer::getDepth()
 /* GENERAL */
 void Happy2DRenderer::begin()
 {
+	GL::heBindFbo(m_RenderFboID);
+	GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     GL::heBlendEnabled(true);
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heSetDepthWrite(false);
+	//glEnable(GL_ALPHA_TEST);
+    //GL::heBlendFunc(BlendFunc_One, BlendFunc_Zero);
+	GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heSetDepthWrite(true);
 
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
@@ -249,25 +250,11 @@ void Happy2DRenderer::end()
 	draw();
 
     GL::heBlendEnabled(false);
-    GL::heSetDepthWrite(true);
+   // GL::heSetDepthWrite(true);
 }
 
-void Happy2DRenderer::init()
+void Happy2DRenderer::createTextureQuad()
 {
-	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
-
-	m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
-	m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vec2, VertexElement::Usage_TextureCoordinate, 8, 8));
-    
-	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
-	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
-
-	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 100.0f);
-
-	// effects
-	m_pColorEffect->load();
-	m_pTextureEffect->load();
-
 	// model texturequad
 	m_pTextureQuad->init();
 
@@ -288,12 +275,51 @@ void Happy2DRenderer::init()
 		VertexPosTex2D(vec2(0.5f, -0.5f),
 		vec2(1, 1)));
 
-    std::vector<byte> indices;
-    indices.push_back(2); indices.push_back(1); indices.push_back(0);
+	std::vector<byte> indices;
+	indices.push_back(2); indices.push_back(1); indices.push_back(0);
 	indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
-    m_pTextureQuad->setVertices(&vertices[0], 4, m_VertexLayoutTexture);
-    m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+	m_pTextureQuad->setVertices(&vertices[0], 4, m_VertexLayoutTexture);
+	m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+}
+
+void Happy2DRenderer::init()
+{
+	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
+
+	m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
+	m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vec2, VertexElement::Usage_TextureCoordinate, 8, 8));
+    
+	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
+	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
+
+	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 100.0f);
+
+	// FBO
+	uint renderTexture;
+	glGenTextures(1, &renderTexture);
+
+	GL::heBindTexture2D(0, renderTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_ViewPortSize.x, m_ViewPortSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	m_pRenderTexture->init(renderTexture, m_ViewPortSize.x, m_ViewPortSize.y, GL_RGBA8);
+
+	uint depthTexture;
+	glGenTextures(1, &depthTexture);
+
+	GL::heBindTexture2D(0, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_ViewPortSize.x, m_ViewPortSize.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+
+	glGenFramebuffers(1, &m_RenderFboID);
+	GL::heBindFbo(m_RenderFboID);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+
+	// effects
+	m_pColorEffect->load();
+	m_pTextureEffect->load();
+
+	createTextureQuad();
 
 	createLayer("default", 50);
 	setLayer();

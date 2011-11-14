@@ -149,8 +149,12 @@ private:
 	void drawTexture(const Texture& tex);
 	float getDepth();
 	void draw();
+	void createTextureQuad();
 
 	/* DATAMEMBERS */
+	uint m_RenderFboID;
+	Texture2D::pointer m_pRenderTexture;
+
 	float m_StrokeSize;
 	bool m_bAntiAliasing;
 

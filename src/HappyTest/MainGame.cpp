@@ -227,7 +227,7 @@ void MainGame::load()
 	m_pTestSound3D->setMinimumDistance(10.0f);
 
 	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
-	m_pTestGrid->setColor(Color(0.8f,0.8f,0.8f,0.75f));
+	m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
 
 	GRAPHICS->initPicking();
 }
@@ -393,7 +393,6 @@ void MainGame::draw()
 	GUI->setColor(1.0f,0.0f,1.0f);
 
 	m_pFPSGraph->draw();
-
 	CONSOLE->draw();
 
 	/* DRAW 3D & 2D */
@@ -404,10 +403,8 @@ void MainGame::draw()
 
 	// TODO: implement into drawmanager/GRAPHICS
 	HE3D->begin(m_pCamera);
-
 	m_pTestGrid->draw();
 	HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-
 	HE3D->end();
 }
 

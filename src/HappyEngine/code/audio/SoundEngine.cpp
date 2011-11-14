@@ -53,11 +53,11 @@ void SoundEngine::shutdown()
 
 		if (pSound->getType() == SOUND_TYPE_STREAM)
 		{
-			alDeleteBuffers(STREAM_BUFFERS, m_SoundBuffers[pSound->getBuffer()]);
+			alDeleteBuffers(STREAM_BUFFERS, &m_SoundBuffers[pSound->getBuffer()][0]);
 		}
 		else
 		{
-			alDeleteBuffers(1, m_SoundBuffers[pSound->getBuffer()]);
+			alDeleteBuffers(1, &m_SoundBuffers[pSound->getBuffer()][0]);
 		}
 
 		alDeleteSources(1, &m_SoundSources[pSound->getSource()]);
@@ -277,10 +277,12 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 	if (stream == true)
 	{
 		// create source, buffer for file
-		ALuint source(0), *buffers(NEW ALuint(STREAM_BUFFERS));
+		ALuint source(0);//, *buffers(NEW ALuint(STREAM_BUFFERS));
+		std::vector<ALuint> buffers;
+		buffers.resize(STREAM_BUFFERS);
 
 		alGenSources(1, &source);
-		alGenBuffers(STREAM_BUFFERS, buffers);
+		alGenBuffers(STREAM_BUFFERS, &buffers[0]);
 
 		m_SoundSources.push_back(source);
 		m_SoundBuffers.push_back(buffers);
@@ -294,13 +296,15 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 	else
 	{
 		// create source, buffer for file
-		ALuint source(0), buffer(0);
+		ALuint source(0);
+		std::vector<ALuint> buffer;
+		buffer.resize(1);
 
 		alGenSources(1, &source);
-		alGenBuffers(1, &buffer);
+		alGenBuffers(1, &buffer[0]);
 
 		m_SoundSources.push_back(source);
-		m_SoundBuffers.push_back(&buffer);
+		m_SoundBuffers.push_back(buffer);
 
 		// read data from soundfile
 		std::vector<short> data;
@@ -312,14 +316,14 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 
 		// fill soundbuffer with data
 		alBufferData(
-			buffer,
+			buffer[0],
 			getALFormatFromChannels(props.channelsCount),
 			&data[0],
 			props.samplesCount * sizeof(short),
 			props.samplerate );
 
 		// bind buffer with source
-		alSourceQueueBuffers(source, 1, &buffer);
+		alSourceQueueBuffers(source, 1, &buffer[0]);
 
 		// create sound
 		pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
@@ -366,10 +370,12 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 	if (stream == true)
 	{
 		// create source, buffer for file
-		ALuint source(0), *buffers(NEW ALuint(STREAM_BUFFERS));
+		ALuint source(0);//, *buffers(NEW ALuint(STREAM_BUFFERS));
+		std::vector<ALuint> buffers;
+		buffers.resize(STREAM_BUFFERS);
 
 		alGenSources(1, &source);
-		alGenBuffers(STREAM_BUFFERS, buffers);
+		alGenBuffers(STREAM_BUFFERS, &buffers[0]);
 
 		m_SoundSources.push_back(source);
 		m_SoundBuffers.push_back(buffers);
@@ -383,13 +389,15 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 	else
 	{
 		// create source, buffer for file
-		ALuint source(0), buffer(0);
+		ALuint source(0);//, buffer(0);
+		std::vector<ALuint> buffer;
+		buffer.resize(1);
 
 		alGenSources(1, &source);
-		alGenBuffers(1, &buffer);
+		alGenBuffers(1, &buffer[0]);
 
 		m_SoundSources.push_back(source);
-		m_SoundBuffers.push_back(&buffer);
+		m_SoundBuffers.push_back(buffer);
 
 		// read data from soundfile
 		std::vector<short> data;
@@ -408,7 +416,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 
 			// fill soundbuffer with data
 			alBufferData(
-				buffer,
+				buffer[0],
 				getALFormatFromChannels(1),
 				&dataMono[0],
 				dataMono.size() * sizeof(short),
@@ -418,7 +426,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 		{
 			// fill soundbuffer with data
 			alBufferData(
-				buffer,
+				buffer[0],
 				getALFormatFromChannels(1),
 				&data[0],
 				props.samplesCount * sizeof(short),
@@ -427,7 +435,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 
 
 		// bind buffer with source
-		alSourceQueueBuffers(source, 1, &buffer);
+		alSourceQueueBuffers(source, 1, &buffer[0]);
 
 		// create sound
 		pSound = NEW Sound3D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
@@ -468,9 +476,9 @@ void SoundEngine::playSound(ISound* pSound, bool forceRestart)
 		}
 
 		ALuint source(m_SoundSources[pSound->getSource()]);
-		ALuint* buffers(m_SoundBuffers[pSound->getBuffer()]);
+		//ALuint* buffers(m_SoundBuffers[pSound->getBuffer()]);
 			
-		alSourceQueueBuffers(source, STREAM_BUFFERS, buffers);
+		alSourceQueueBuffers(source, STREAM_BUFFERS, &m_SoundBuffers[pSound->getBuffer()][0]);
 	}
 
 	alSourcePlay(m_SoundSources[pSound->getSource()]);
@@ -541,7 +549,7 @@ ALuint SoundEngine::getALSource(uint source) const
 	return m_SoundSources[source];
 }
 
-ALuint* SoundEngine::getALBuffer(uint buffer) const
+const std::vector<ALuint>& SoundEngine::getALBuffer(uint buffer) const
 {
 	return m_SoundBuffers[buffer];
 }

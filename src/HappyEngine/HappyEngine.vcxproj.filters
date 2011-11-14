@@ -86,11 +86,11 @@
     <Filter Include="happyengine\graphics\rendering\2d">
       <UniqueIdentifier>{02443ead-bb6c-4ba4-9dcc-bae0f067ae85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\rendering\picking">
-      <UniqueIdentifier>{7c69c16e-994c-4601-a223-0cc809fdbe73}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\graphics\model\2d">
       <UniqueIdentifier>{57adf67a-4713-451a-80c6-b59b352c7a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\picking">
+      <UniqueIdentifier>{7c69c16e-994c-4601-a223-0cc809fdbe73}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -410,10 +410,10 @@
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\PickEffect.cpp">
-      <Filter>happyengine\graphics\rendering\picking</Filter>
+      <Filter>happyengine\graphics\picking</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Picker.cpp">
-      <Filter>happyengine\graphics\rendering\picking</Filter>
+      <Filter>happyengine\graphics\picking</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\Ellipse2D.cpp">
       <Filter>happyengine\graphics\model\2d</Filter>
@@ -841,10 +841,10 @@
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\PickEffect.h">
-      <Filter>happyengine\graphics\rendering\picking</Filter>
+      <Filter>happyengine\graphics\picking</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Picker.h">
-      <Filter>happyengine\graphics\rendering\picking</Filter>
+      <Filter>happyengine\graphics\picking</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\Camera.h">
       <Filter>happyengine\graphics\rendering</Filter>
