@@ -52,18 +52,14 @@ Console::Console() :	m_Shortcut(io::Key_C),
 						m_pTextBox(nullptr),
 						m_MsgHistory(0),
 						m_CmdHistoryPos(0),
-						m_pScrollBar(nullptr)
+						m_pScrollBar(nullptr),
+						m_Help(nullptr)
 {
 	m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
 	m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.8f,0.2f);
 	m_MsgColors[CMSG_TYPE_ERROR] = Color(1.0f,0.3f,0.3f);
 	m_MsgColors[CMSG_TYPE_ENGINE] = Color(0.2f,1.0f,0.2f);
 	m_MsgColors[CMSG_TYPE_COMMAND] = Color(0.2f,0.6f,1.0f);
-
-	m_Help = gui::Text::pointer(NEW gui::Text());
-	m_Help->addLine("******** HELP ********");
-	m_Help->addLine("'listvars' (displays registered variables and their type)");
-	m_Help->addLine("******** HELP ********");
 
 	m_HelpCommand = "type 'help' to see available commands...";
 
@@ -96,6 +92,11 @@ void Console::load()
 {	
     m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
+	m_Help = new gui::Text(m_pFont);
+	m_Help->addLine("******** HELP ********");
+	m_Help->addLine("'listvars' (displays registered variables and their type)");
+	m_Help->addLine("******** HELP ********");
+
     m_pTextBox = NEW gui::TextBox(
         RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
         "Enter command...", 10, "Ubuntu-Medium.ttf");
@@ -127,6 +128,7 @@ Console::~Console()
 
 	delete m_pTextBox;
 	delete m_pScrollBar;
+	delete m_Help;
 }
 
 void Console::processCommand(const std::string& command)
@@ -190,7 +192,7 @@ void Console::processCommand(const std::string& command)
 
 void Console::displayHelp()
 {
-	addMessage(*(m_Help.get()), CMSG_TYPE_INFO);
+	addMessage(*m_Help, CMSG_TYPE_INFO);
 }
 
 void Console::displayVars()
@@ -288,22 +290,17 @@ void Console::draw()
 {
 	if (m_bOpen)
 	{
-		HE2D->setAntiAliasing(false);
-		HE2D->setStrokeSize();
+		GUI->setAntiAliasing(false);
 
-		HE2D->setColor(0.3f,0.3f,0.3f,0.9f);
-		HE2D->fillRectangleInstanced(	vec2(0,0),
-										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
+		GUI->setColor(0.3f,0.3f,0.3f,0.9f);
+		GUI->fillShape2D(gui::Rectangle2D(vec2(0,0),
+										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
 
-		HE2D->setStrokeSize();
-		HE2D->setColor(0.19f,0.19f,0.19f);
-		HE2D->drawRectangleInstanced(	vec2(0,0),
-										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200));
+		GUI->setColor(0.19f,0.19f,0.19f);
+		GUI->drawShape2D(gui::Rectangle2D(vec2(0,0),
+										vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
 
 		m_pTextBox->draw();
-
-		HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Left);
-		HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Bottom);
 
 		std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
 
@@ -339,11 +336,19 @@ void Console::draw()
 			}
 		}
 
+		gui::Text text(m_pFont);
+		//text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+		//text.setVerticalAlignment(gui::Text::VAlignment_Top);
+
 		uint k(0);
 		std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
 		{
-			HE2D->setColor(m_MsgColors[p.first]);
-			HE2D->drawString(p.second, m_pFont, RectF(5,5,
+			GUI->setColor(m_MsgColors[p.first]);
+
+			text.clear();
+			text.addLine(p.second);
+
+			GUI->drawText(	text, RectF(5,5,
 							static_cast<float>(GRAPHICS->getScreenWidth() - 10),
 							190.0f - (k * m_pFont->getFontLineSpacing())));
 

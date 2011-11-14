@@ -16,46 +16,26 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 26/08/2011
+//Created: 18/10/2011
 
-#ifndef _HE_SIMPLE_2D_EFFECT_H_
-#define _HE_SIMPLE_2D_EFFECT_H_
+#ifndef _HE_LINE2D_H_
+#define _HE_LINE2D_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "Shader.h"
-#include "mat44.h"
-#include "vec3.h"
-#include "Color.h"
+#include "Shape2D.h"
+#include "Polygon.h"
+#include "vec2.h"
 
 namespace he {
-namespace gfx {
+namespace gui {
 
-class Simple2DEffect
+class Line2D : public Shape2D
 {
 public:
-	Simple2DEffect();
-    virtual ~Simple2DEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
-
-	void setColor(const Color& color) const;
-	void setWorldMatrix(const he::mat44& mat) const;
-	void setDepth(float depth) const;
-
-private:
-
-	he::gfx::Shader* m_pShader;
-
-	he::uint m_ShaderWVPPos;
-	he::uint m_ShaderColorPos;
-	uint m_ShaderDepthPos;
-
-    //Disable default copy constructor and default assignment operator
-    Simple2DEffect(const Simple2DEffect&);
-    Simple2DEffect& operator=(const Simple2DEffect&);
+	/* CONSTRUCTOR - DESTRUCTOR */
+	Line2D(const vec2& point1, const vec2& point2);
+    virtual ~Line2D();
 };
 
 } } //end namespace

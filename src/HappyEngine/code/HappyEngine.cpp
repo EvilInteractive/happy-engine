@@ -180,7 +180,7 @@ void HappyEngine::start(game::Game* pGame)
 		m_p3DRenderer->init();
 	}
 
-    if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->initialize();
+    if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 
     m_pGame->load();
 

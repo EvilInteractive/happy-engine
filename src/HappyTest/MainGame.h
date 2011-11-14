@@ -44,6 +44,8 @@
 #include "TextBox.h"
 #include "Grid.h"
 
+#include "Polygon2D.h"
+
 namespace happytest {
 
 class MainGame : public he::game::Game
@@ -103,6 +105,8 @@ private:
 
 	he::vec3 m_PickPos;
 	//bool m_bDrawPicking;
+
+	he::gui::Polygon2D m_Poly;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

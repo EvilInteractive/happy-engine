@@ -25,6 +25,7 @@
 #include "HappyEngine.h"
 #include "MathFunctions.h"
 #include "GraphicsEngine.h"
+#include "ContentManager.h"
 
 #include <algorithm>
 #include <vector>
@@ -33,20 +34,16 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW he::gfx::Simple2DEffect()),
-										m_pTextureEffect(NEW he::gfx::Simple2DTextureEffect()),
+Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
+										m_pTextureEffect(NEW Simple2DTextureEffect()),
 										m_bAntiAliasing(false),
 										m_StrokeSize(0.0f),
 										m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
 										m_ViewPortSize(0.0f,0.0f),
-										m_FontHAlignment(Font::HAlignment_Left),
-										m_FontVAlignment(Font::VAlignment_Bottom),
-                                        m_pModelBuffer(NEW ct::AssetContainer<gfx::ModelMesh*>( [](gfx::ModelMesh* pMesh) { delete pMesh; } )),
-										m_pTextureBuffer(NEW ct::AssetContainer<gfx::Texture2D::pointer>()),
+                                        m_pModelContainer([](ModelMesh* pMesh) { delete pMesh; }),
+										m_pTextureContainer(),
 										m_pTextureQuad(NEW ModelMesh("")),
-										m_Translation(vec2(0.0f,0.0f)),
-										m_Scale(vec2(1.0f,1.0f)),
-										m_Rotation(0.0f)
+										m_CurrentLayer("default")
 {
     
 }
@@ -55,22 +52,181 @@ Happy2DRenderer::~Happy2DRenderer()
 {
 	delete m_pColorEffect;
 	delete m_pTextureEffect;
-	delete m_pModelBuffer;
-	delete m_pTextureBuffer;
-	delete m_pTextureQuad;
 }
 
-void Happy2DRenderer::clearInstancingBuffer()
+void Happy2DRenderer::drawMesh(gui::Shape2D& shape)
 {
-	m_pModelBuffer->removeAllAssets();
-	m_pTextureBuffer->removeAllAssets();
+	if (shape.getPolygon().getVertexCount() < 2)
+		return;
+
+	ModelMesh model("");
+
+	std::vector<VertexPos2D> vertices;
+	std::vector<uint> indices;
+
+	uint i(0);
+	std::for_each(shape.getPolygon().getVertices().cbegin(), shape.getPolygon().getVertices().cend(), [&](vec2 point)
+	{
+		vertices.push_back(VertexPos2D(point));
+		indices.push_back(i++);
+	});
+    
+    model.init();
+	model.setVertices(&vertices[0], vertices.size(), m_VertexLayoutColor);
+	model.setIndices(&indices[0], indices.size(), IndexStride_UInt);
+
+	GL::heBindVao(model.getVertexArraysID());
+	glDrawElements(GL_LINE_LOOP, model.getNumVertices(), model.getIndexType(), 0);
 }
 
-void Happy2DRenderer::updateTransformationMatrix()
+void Happy2DRenderer::fillMesh(gui::Shape2D& shape)
 {
-	m_matWorld = mat44::createTranslation(vec3(m_Translation.x, m_Translation.y, 0.0f)) *
-				 mat44::createRotation(vec3(0.0f,0.0f,1.0f), m_Rotation) *
-				 mat44::createScale(m_Scale.x, m_Scale.y, 1.0f);
+	if (shape.getPolygon().getVertexCount() < 3)
+		return;
+
+	if (shape.getPolygon().isTriangulated() == false)
+		return;
+
+	ModelMesh model("");
+
+	std::vector<VertexPos2D> vertices;
+	std::vector<uint> indices(shape.getPolygon().getIndices());
+
+	std::for_each(shape.getPolygon().getVertices().cbegin(), shape.getPolygon().getVertices().cend(), [&](vec2 point)
+	{
+		vertices.push_back(VertexPos2D(point));
+	});
+
+	model.init();
+	model.setVertices(&vertices[0], vertices.size(), m_VertexLayoutColor);
+	model.setIndices(&indices[0], indices.size(), IndexStride_UInt);
+
+	GL::heBindVao(model.getVertexArraysID());
+	glDrawElements(GL_TRIANGLES, model.getNumIndices(), model.getIndexType(), 0);
+}
+
+void Happy2DRenderer::drawTexture(const Texture& tex)
+{
+	vec2 tcOffset(0.0f,0.0f);
+	vec2 tcScale(1.0f,1.0f);
+	vec2 size;
+
+	if (tex.regionToDraw != RectF(vec2(0.0f,0.0f), vec2(0.0f,0.0f)))
+	{
+		tcScale.x = tex.regionToDraw.width / tex.tex2D->getWidth();
+		tcScale.y = tex.regionToDraw.height / tex.tex2D->getHeight();
+
+		tcOffset.x = tex.regionToDraw.x / tex.tex2D->getWidth();
+		tcOffset.y = 1 - (tex.regionToDraw.y / tex.tex2D->getHeight()) - tcScale.y;
+	}
+
+	if (tex.newDimensions != vec2(0.0f,0.0f))
+	{
+		size = vec2(abs(tex.newDimensions.x), abs(tex.newDimensions.y));
+
+		if (tex.newDimensions.x < 0) tcScale.x *= -1.0f;
+		if (tex.newDimensions.y < 0) tcScale.y *= -1.0f;
+	}
+	else
+	{
+		size = vec2(static_cast<float>(tex.tex2D->getWidth()), static_cast<float>(tex.tex2D->getHeight()));
+	}
+
+	mat44 world(mat44::createTranslation(vec3(tex.pos.x + size.x/2, tex.pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+
+	m_pTextureEffect->setWorldMatrix(m_matOrthoGraphic * world);
+
+	m_pTextureEffect->setDiffuseMap(tex.tex2D);
+	m_pTextureEffect->setAlpha(tex.alpha);
+	m_pTextureEffect->setTCOffset(tcOffset);
+	m_pTextureEffect->setTCScale(tcScale);
+
+	GL::heBindVao(m_pTextureQuad->getVertexArraysID());
+	glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
+}
+
+void Happy2DRenderer::draw()
+{
+	m_pColorEffect->begin();
+
+	std::for_each(m_ShapeBuffer.begin(), m_ShapeBuffer.end(), [&](std::pair<Shape, float> p)
+	{
+		if (p.first.shape2D.getPolygon().isTriangulated() == false)
+		{
+			p.first.shape2D.getPolygon().triangulate();
+		}
+
+		m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * p.first.shape2D.getWorldMatrix());
+		m_pColorEffect->setColor(p.first.color);
+		m_pColorEffect->setDepth(p.second);
+
+		if (p.first.fill)
+		{
+			fillMesh(p.first.shape2D);
+
+			if (p.first.antiAliasing)
+			{
+				glEnable(GL_LINE_SMOOTH);
+				drawMesh(p.first.shape2D);
+			}
+		}
+		else
+		{
+			if (p.first.antiAliasing)
+				glEnable(GL_LINE_SMOOTH);
+			else
+				glDisable(GL_LINE_SMOOTH);
+
+			drawMesh(p.first.shape2D);
+		}
+	});
+
+	glDisable(GL_LINE_SMOOTH);
+
+	m_pTextureEffect->begin();
+	
+	std::for_each(m_TextureBuffer.begin(), m_TextureBuffer.end(), [&](std::pair<Texture, float> p)
+	{
+		m_pTextureEffect->setDepth(p.second);
+
+		drawTexture(p.first);
+	});
+
+	m_ShapeBuffer.clear();
+	m_TextureBuffer.clear();
+	m_DepthMap.clear();
+
+	//// sort back to front
+	//std::sort(shapeDepthBuffer.begin(), shapeDepthBuffer.end(), [&] (std::pair<Shape&, float> p, std::pair<Shape&, float> p2) -> bool
+	//{
+	//	return (p.second > p2.second);
+	//});
+
+	//
+
+	//std::for_each(shapeDepthBuffer.begin(), shapeDepthBuffer.end(), [&](Shape s)
+	//{
+	//	
+	//});
+}
+
+float Happy2DRenderer::getDepth()
+{
+	float layerDepth(m_Layers[m_CurrentLayer]);
+	float depth(0.0f);
+
+	if (m_DepthMap.find(layerDepth) != m_DepthMap.end())
+	{
+		depth = layerDepth - m_DepthMap[layerDepth];
+		m_DepthMap[layerDepth] += 0.001f;
+	}
+	else
+	{
+		depth = layerDepth;
+		m_DepthMap[layerDepth] = 0.001f;
+	}
+
+	return depth;
 }
 
 /* GENERAL */
@@ -83,23 +239,20 @@ void Happy2DRenderer::begin()
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
 
-	m_pColorEffect->begin();
+	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 100.0f);
+
+	setLayer();
 }
 
 void Happy2DRenderer::end()
 {
-	m_pColorEffect->end();
+	draw();
 
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(true);
-
-	setStrokeSize();
-
-	resetTransformation();
-	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 10.0f);
 }
 
-void Happy2DRenderer::initialize()
+void Happy2DRenderer::init()
 {
 	m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
 
@@ -109,7 +262,7 @@ void Happy2DRenderer::initialize()
 	m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
 	m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());
 
-	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 10.0f);
+	m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 100.0f);
 
 	// effects
 	m_pColorEffect->load();
@@ -141,6 +294,36 @@ void Happy2DRenderer::initialize()
 
     m_pTextureQuad->setVertices(&vertices[0], 4, m_VertexLayoutTexture);
     m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+
+	createLayer("default", 50);
+	setLayer();
+}
+
+void Happy2DRenderer::clearBuffers()
+{
+	m_pModelContainer.removeAllAssets();
+	m_pTextureContainer.removeAllAssets();
+}
+
+void Happy2DRenderer::createLayer(const std::string& name, byte depth)
+{
+	#if _DEBUG
+	std::string error("Layer: ");
+	error += name;
+	error += " already exists!";
+
+	std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p)
+	{
+		ASSERT(p.first != name, error);
+
+		std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p2)
+		{
+			ASSERT(p.second != p2.second, "Layer depth already assigned!");
+		});
+	});
+	#endif
+
+	m_Layers[name] = depth;
 }
 
 /* SETTERS */
@@ -154,770 +337,85 @@ void Happy2DRenderer::setColor(float r, float g, float b, float a)
 
 void Happy2DRenderer::setColor(const Color& color)
 {
-	m_CurrentColor = color;
+	if (m_CurrentColor != color)
+		m_CurrentColor = color;
 }
 
 void Happy2DRenderer::setAntiAliasing(bool bAA)
 {
-	if (bAA)
+	/*if (bAA)
 	{
 		glEnable(GL_LINE_SMOOTH);
 	}
 	else
 	{
 		glDisable(GL_LINE_SMOOTH);
-	}
+	}*/
+
+	m_bAntiAliasing = bAA;
 }
 
-void Happy2DRenderer::setStrokeSize(const float strokeSize)
+void Happy2DRenderer::setLayer(const std::string& layer)
 {
-	glLineWidth(strokeSize);
-
-	m_StrokeSize = strokeSize;
+	if (m_CurrentLayer != layer)
+		m_CurrentLayer = layer;
 }
 
-void Happy2DRenderer::setFontHorizontalAlignment(Font::HAlignment horizontalAlignment)
-{
-	m_FontHAlignment = horizontalAlignment;
-}
-
-void Happy2DRenderer::setFontVerticalAlignment(Font::VAlignment verticalAlignment)
-{
-	m_FontVAlignment = verticalAlignment;
-}
-
-void Happy2DRenderer::setTransformation(const mat44& mat)
-{
-	m_matWorld = m_matOrthoGraphic * mat;
-}
-
-void Happy2DRenderer::setTranslation(const vec2& translation)
-{
-	m_Translation = translation;
-	updateTransformationMatrix();
-}
-
-void Happy2DRenderer::setRotation(const float degrees)
-{
-	m_Rotation = toRadians(degrees);
-	updateTransformationMatrix();
-}
-
-void Happy2DRenderer::setScale(const vec2& scale)
-{
-	m_Scale = scale;
-	updateTransformationMatrix();
-}
-
-void Happy2DRenderer::resetTransformation()
-{
-	m_Translation = vec2(0.0f,0.0f);
-	m_Rotation = 0.0f;
-	m_Scale = vec2(1.0f,1.0f);
-
-	updateTransformationMatrix();
-}
+//void Happy2DRenderer::setStrokeSize(const float strokeSize)
+//{
+//	glLineWidth(strokeSize);
+//
+//	m_StrokeSize = strokeSize;
+//}
 
 /* DRAW METHODS */
-void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const vec2& pos)
+void Happy2DRenderer::drawText(const gui::Text& txt, const vec2& pos)
 {
-	Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing));
+	Texture2D::pointer texFont(txt.getFont()->createTextureText(txt.getLine(0), m_CurrentColor, m_bAntiAliasing));
 
 	drawTexture2D(texFont, pos, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
-void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const vec2& pos)
-{
-	std::stringstream stream;
-	stream << "TEXT." << m_CurrentColor.r() << "." << m_CurrentColor.g()
-		<< "." << m_CurrentColor.b() << "." << m_CurrentColor.a() << "."
-		<< str << font->getPath();
-
-	if (m_pTextureBuffer->isAssetPresent(stream.str()))
-	{
-		Texture2D::pointer texFont = m_pTextureBuffer->getAsset(stream.str());
-		drawTexture2D(texFont, pos, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
-	}
-	else
-	{
-		Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing));
-
-		m_pTextureBuffer->addAsset(stream.str(), texFont);
-
-		drawTexture2D(texFont, pos, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
-	}
-}
-
-void Happy2DRenderer::drawString(const std::string& str, const Font::pointer& font, const RectF& rect)
+void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect)
 {
 	vec2 textSize;
-	Texture2D::pointer texFont(font->createTextureText(str, m_CurrentColor, m_bAntiAliasing, &textSize));
+	Texture2D::pointer texFont(txt.getFont()->createTextureText(txt.getLine(0), m_CurrentColor, m_bAntiAliasing, &textSize));
 
 	vec2 position;
 
-	switch (m_FontHAlignment)
+	switch (txt.getHorizontalAlignment())
     {
-		case Font::HAlignment_Left: position.x = rect.x; break;
-		case Font::HAlignment_Center: position.x = rect.x + rect.width/2 - textSize.x/2; break;
-        case Font::HAlignment_Right: position.x = rect.x + rect.width - textSize.x; break;
+		case gui::Text::HAlignment_Left: position.x = rect.x; break;
+		case gui::Text::HAlignment_Center: position.x = rect.x + rect.width/2 - textSize.x/2; break;
+        case gui::Text::HAlignment_Right: position.x = rect.x + rect.width - textSize.x; break;
         default: ASSERT("unkown font alignment");
     }
-	switch (m_FontVAlignment)
+	switch (txt.getVerticalAlignment())
     {
-        case Font::VAlignment_Top: position.y = rect.y; break;
-        case Font::VAlignment_Center: position.y = rect.y + rect.height/2 - textSize.y/2; break;
-        case Font::VAlignment_Bottom: position.y = rect.y + rect.height - textSize.y; break;
-        default: ASSERT("unkown font alignment");
-    }
-
-	drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
-}
-void Happy2DRenderer::drawStringInstanced(const std::string& str, const Font::pointer& font, const RectF& rect)
-{
-	std::stringstream stream;
-	stream << "TEXTR." << m_CurrentColor.r() << "." << m_CurrentColor.g()
-		<< "." << m_CurrentColor.b() << "." << m_CurrentColor.a() << "."
-		<< rect.x << "." << rect.y << "." << rect.width << "." << rect.height
-		<< "." << str << font->getPath();
-
-	Texture2D::pointer texFont;
-
-	//vec2 textSize;
-
-	if (m_pTextureBuffer->isAssetPresent(stream.str()))
-	{
-		texFont = m_pTextureBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		texFont = font->createTextureText(str, m_CurrentColor, m_bAntiAliasing);
-
-		m_pTextureBuffer->addAsset(stream.str(), texFont);
-	}
-
-	vec2 position;
-
-	switch (m_FontHAlignment)
-    {
-		case Font::HAlignment_Left: position.x = rect.x; break;
-		case Font::HAlignment_Center: position.x = rect.x + rect.width/2 - texFont->getWidth()/2; break;
-        case Font::HAlignment_Right: position.x = rect.x + rect.width - texFont->getWidth(); break;
-        default: ASSERT("unkown font alignment");
-    }
-	switch (m_FontVAlignment)
-    {
-        case Font::VAlignment_Top: position.y = rect.y; break;
-        case Font::VAlignment_Center: position.y = rect.y + rect.height/2 - texFont->getHeight()/2; break;
-        case Font::VAlignment_Bottom: position.y = rect.y + rect.height - texFont->getHeight(); break;
+        case gui::Text::VAlignment_Top: position.y = rect.y; break;
+        case gui::Text::VAlignment_Center: position.y = rect.y + rect.height/2 - textSize.y/2; break;
+        case gui::Text::VAlignment_Bottom: position.y = rect.y + rect.height - textSize.y; break;
         default: ASSERT("unkown font alignment");
     }
 
 	drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
 }
 
-void Happy2DRenderer::drawLine(const vec2& point1, const vec2& point2) const
+void Happy2DRenderer::drawShape2D(const gui::Shape2D& shape)
 {
-	ModelMesh model("");
-
-	std::vector<VertexPos2D> vertices;
-	std::vector<byte> indices;
-
-	byte i(0);
-
-	vertices.push_back(VertexPos2D(vec2(point1.x, point1.y)));
-	indices.push_back(i++);
-
-	vertices.push_back(VertexPos2D(vec2(point2.x, point2.y)));
-	indices.push_back(i++);
-
-	model.init();
-	model.setVertices(&vertices[0], 2, m_VertexLayoutColor);
-	model.setIndices(&indices[0], 2, IndexStride_Byte);
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_LINE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-}
-void Happy2DRenderer::drawLineInstanced(const vec2& point1, const vec2& point2) const
-{
-	ModelMesh* pModel;
-
-	std::stringstream stream;
-	stream << "L.X1." << point1.x << ".Y1." << point1.y << ".X2." << point2.x << ".Y2." << point2.y;
-
-	if (m_pModelBuffer->isAssetPresent(stream.str()))
-	{
-		pModel =  m_pModelBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		std::vector<VertexPos2D> vertices;
-		std::vector<byte> indices;
-
-		byte i(0);
-
-		vertices.push_back(VertexPos2D(vec2(point1.x, point1.y)));
-		indices.push_back(i++);
-
-		vertices.push_back(VertexPos2D(vec2(point2.x, point2.y)));
-		indices.push_back(i++);
-
-		pModel = NEW ModelMesh(stream.str());
-		pModel->init();
-		pModel->setVertices(&vertices[0], 2, m_VertexLayoutColor);
-		pModel->setIndices(&indices[0], 2, IndexStride_Byte);
-
-		m_pModelBuffer->addAsset(pModel->getName(), pModel);
-	}
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-    GL::heBindVao(pModel->getVertexArraysID());
-	glDrawElements(GL_LINE_STRIP, pModel->getNumIndices(), pModel->getIndexType(), 0);
+	m_ShapeBuffer.push_back(std::pair<Shape, float>
+		(Shape(shape, m_CurrentColor, false, m_bAntiAliasing, m_CurrentLayer), getDepth()));
 }
 
-void Happy2DRenderer::drawRectangle(const vec2& pos, const vec2& size)
+void Happy2DRenderer::fillShape2D(const gui::Shape2D& shape)
 {
-	ModelMesh model("");
-
-	std::vector<VertexPos2D> vertices;
-	vertices.push_back(VertexPos2D(vec2(size.x, 0)));
-	vertices.push_back(VertexPos2D(vec2(0, 0)));
-	vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-	vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
-	vertices.push_back(VertexPos2D(vec2(size.x, size.y)));
-	vertices.push_back(VertexPos2D(vec2(0, size.y)));
-	vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-	vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
-	
-	std::vector<byte> indices;
-	indices.push_back(0); indices.push_back(1);
-	indices.push_back(2); indices.push_back(3);
-	indices.push_back(4); indices.push_back(5);
-	indices.push_back(6); indices.push_back(7);
-
-	model.init();
-	model.setVertices(&vertices[0], 8, m_VertexLayoutColor);
-	model.setIndices(&indices[0], 8, IndexStride_Byte);
-
-	vec2 translation(pos.x, pos.y);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-    
-    GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_LINES, model.getNumIndices(), model.getIndexType(), 0);
-}
-void Happy2DRenderer::drawRectangleInstanced(const vec2& pos, const vec2& size)
-{
-	ModelMesh* pModel;
-
-	std::stringstream stream;
-	stream << "HR.W." << size.x << ".H." << size.y << ".S." << m_StrokeSize;
-
-	if (m_pModelBuffer->isAssetPresent(stream.str()))
-	{
-		pModel =  m_pModelBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		std::vector<VertexPos2D> vertices;
-		vertices.push_back(VertexPos2D(vec2(size.x, 0)));
-		vertices.push_back(VertexPos2D(vec2(0, 0)));
-		vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-		vertices.push_back(VertexPos2D(vec2(size.x - m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
-		vertices.push_back(VertexPos2D(vec2(size.x, size.y)));
-		vertices.push_back(VertexPos2D(vec2(0, size.y)));
-		vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, m_StrokeSize/2.0f)));
-		vertices.push_back(VertexPos2D(vec2(m_StrokeSize/2.0f, size.y - m_StrokeSize/2.0f)));
-	
-		std::vector<byte> indices;
-		indices.push_back(0); indices.push_back(1);
-		indices.push_back(2); indices.push_back(3);
-		indices.push_back(4); indices.push_back(5);
-		indices.push_back(6); indices.push_back(7);
-
-		pModel = NEW ModelMesh(stream.str());
-		pModel->init();
-		pModel->setVertices(&vertices[0], 8, m_VertexLayoutColor);
-		pModel->setIndices(&indices[0], 8, IndexStride_Byte);
-
-		m_pModelBuffer->addAsset(pModel->getName(), pModel);
-	}
-
-	vec2 translation(pos.x, pos.y);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-
-    GL::heBindVao(pModel->getVertexArraysID());
-	glDrawElements(GL_LINES, pModel->getNumIndices(), pModel->getIndexType(), 0);
-}
-
-void Happy2DRenderer::fillRectangle(const vec2& pos, const vec2& size)
-{
-	ModelMesh model("");
-
-	std::vector<VertexPos2D> vertices;
-	vertices.push_back(VertexPos2D(vec2(-size.x/2, size.y/2)));
-	vertices.push_back(VertexPos2D(vec2(size.x/2, size.y/2)));
-	vertices.push_back(VertexPos2D(vec2(-size.x/2, -size.y/2)));
-	vertices.push_back(VertexPos2D(vec2(size.x/2, -size.y/2)));
-
-	std::vector<byte> indices;
-	indices.push_back(2); indices.push_back(1); indices.push_back(0);
-	indices.push_back(1); indices.push_back(2); indices.push_back(3);
-
-	model.init();
-	model.setVertices(&vertices[0], 4, m_VertexLayoutColor);
-	model.setIndices(&indices[0], 6, IndexStride_Byte);
-
-	vec2 translation(pos.x + size.x/2, pos.y + size.y/2);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-
-    GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_TRIANGLES, model.getNumIndices(), model.getIndexType(), 0);
-}
-void Happy2DRenderer::fillRectangleInstanced(const vec2& pos, const vec2& size)
-{
-	ModelMesh* pModel;
-
-	std::stringstream stream;
-	stream << "FR.W." << size.x << ".H." << size.y;
-
-	if (m_pModelBuffer->isAssetPresent(stream.str()))
-	{
-		pModel =  m_pModelBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		std::vector<VertexPos2D> vertices;
-		vertices.push_back(VertexPos2D(vec2(-size.x/2, size.y/2)));
-		vertices.push_back(VertexPos2D(vec2(size.x/2, size.y/2)));
-		vertices.push_back(VertexPos2D(vec2(-size.x/2, -size.y/2)));
-		vertices.push_back(VertexPos2D(vec2(size.x/2, -size.y/2)));
-
-		std::vector<byte> indices;
-		indices.push_back(2); indices.push_back(1); indices.push_back(0);
-		indices.push_back(1); indices.push_back(2); indices.push_back(3);
-
-		pModel = NEW ModelMesh(stream.str());
-		pModel->init();
-		pModel->setVertices(&vertices[0], 4, m_VertexLayoutColor);
-		pModel->setIndices(&indices[0], 6, IndexStride_Byte);
-
-		m_pModelBuffer->addAsset(pModel->getName(), pModel);
-	}
-
-	vec2 translation(pos.x + size.x/2, pos.y + size.y/2);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-    
-    GL::heBindVao(pModel->getVertexArraysID());
-	glDrawElements(GL_TRIANGLES, pModel->getNumIndices(), pModel->getIndexType(), 0);
-}
-
-void Happy2DRenderer::drawEllipse(const vec2& pos, const vec2& size, uint steps)
-{
-	ModelMesh model("");
-
-	const float DEG2RAD = 3.14159f/180.0f;
-
-	std::vector<VertexPos2D> vertices;
-	std::vector<uint> indices;
-
-	uint stepSize(360 / steps);
-	uint index(0);
-
-	for (uint i = 0; i < 360; i += stepSize)
-	{
-		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
-		
-		indices.push_back(index++);
-	}
-
-	model.init();
-	model.setVertices(&vertices[0], steps, m_VertexLayoutColor);
-	model.setIndices(&indices[0], steps, IndexStride_UInt);
-
-	vec2 translation(pos.x, pos.y);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-
-    GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
-}
-void Happy2DRenderer::drawEllipseInstanced(const vec2& pos, const vec2& size, uint steps)
-{
-	ModelMesh* pModel;
-
-	std::stringstream stream;
-	stream << "HE.W." << size.x << ".H." << size.y;
-
-	if (m_pModelBuffer->isAssetPresent(stream.str()))
-	{
-		pModel =  m_pModelBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		const float DEG2RAD = 3.14159f/180.0f;
-
-		std::vector<VertexPos2D> vertices;
-		std::vector<uint> indices;
-
-		uint stepSize(360 / steps);
-		uint index(0);
-
-		for (uint i = 0; i < 360; i += stepSize)
-		{
-			float degInRad = i * DEG2RAD;
-			vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
-		
-			indices.push_back(index++);
-		}
-
-		pModel = NEW ModelMesh(stream.str());
-		pModel->init();
-		pModel->setVertices(&vertices[0], steps, m_VertexLayoutColor);
-		pModel->setIndices(&indices[0], steps, IndexStride_UInt);
-
-		m_pModelBuffer->addAsset(pModel->getName(), pModel);
-	}
-
-	vec2 translation(pos.x, pos.y);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-
-    GL::heBindVao(pModel->getVertexArraysID());
-	glDrawElements(GL_LINE_LOOP, pModel->getNumIndices(), pModel->getIndexType(), 0);
-}
-
-void Happy2DRenderer::fillEllipse(const vec2& pos, const vec2& size, uint steps)
-{
-	ModelMesh model("");
-
-	const float DEG2RAD = 3.14159f/180.0f;
-
-	std::vector<VertexPos2D> vertices;
-	std::vector<uint> indices;
-
-	uint stepSize(360 / steps);
-	uint index(0);
-
-	vertices.push_back(VertexPos2D(vec2(0, 0)));
-	indices.push_back(1);
-
-	for (int i = 0; i > -360; i -= stepSize)
-	{
-		float degInRad = i * DEG2RAD;
-		vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
-		
-		indices.push_back(steps - index);
-		++index;
-	}
-
-	model.init();
-	model.setVertices(&vertices[0], steps + 1, m_VertexLayoutColor);
-	model.setIndices(&indices[0], steps + 1, IndexStride_UInt);
-
-	vec2 translation(pos.x, pos.y);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-
-    GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_TRIANGLE_FAN, model.getNumIndices(), model.getIndexType(), 0);
-}
-void Happy2DRenderer::fillEllipseInstanced(const vec2& pos, const vec2& size, uint steps)
-{
-	ModelMesh* pModel;
-
-	std::stringstream stream;
-	stream << "FE.Width" << size.x << "Height" << size.y;
-
-	if (m_pModelBuffer->isAssetPresent(stream.str()))
-	{
-		pModel =  m_pModelBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		const float DEG2RAD = 3.14159f/180.0f;
-
-		std::vector<VertexPos2D> vertices;
-		std::vector<uint> indices;
-
-		uint stepSize(360 / steps);
-		uint index(0);
-
-		vertices.push_back(VertexPos2D(vec2(0, 0)));
-		indices.push_back(1);
-
-		for (int i = 0; i < 360; i -= stepSize)
-		{
-			float degInRad = i * DEG2RAD;
-			vertices.push_back(VertexPos2D(vec2(0 + cosf(degInRad) * size.x/2, 0 + sinf(degInRad) * size.y/2)));
-		
-			indices.push_back(steps - index);
-			++index;
-		}
-
-		pModel = NEW ModelMesh(stream.str());
-		pModel->init();
-		pModel->setVertices(&vertices[0], steps + 1, m_VertexLayoutColor);
-		pModel->setIndices(&indices[0], steps + 1, IndexStride_UInt);
-
-		m_pModelBuffer->addAsset(pModel->getName(), pModel);
-	}
-
-	vec2 translation(pos.x, pos.y);
-
-	m_Translation += translation;
-	updateTransformationMatrix();
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-	m_Translation -= translation;
-	updateTransformationMatrix();
-
-    GL::heBindVao(pModel->getVertexArraysID());
-	glDrawElements(GL_TRIANGLE_FAN, pModel->getNumIndices(), pModel->getIndexType(), 0);
-}
-
-void Happy2DRenderer::drawPolygon(const std::vector<he::vec2> &points, he::uint nrPoints, bool close) const
-{
-	std::vector<VertexPos2D> vertices;
-	std::vector<byte> indices;
-
-	byte i(0);
-
-	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
-	{
-		vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
-		indices.push_back(i++);
-	});
-
-    ModelMesh model("");
-    model.init();
-    model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
-    model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
-	
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-    GL::heBindVao(model.getVertexArraysID());
-
-	if (close == false)
-		glDrawElements(GL_LINE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-	else
-		glDrawElements(GL_LINE_LOOP, model.getNumIndices(), model.getIndexType(), 0);
-}
-void Happy2DRenderer::drawPolygonInstanced(const std::vector<he::vec2> &points, he::uint nrPoints, bool close) const
-{
-	ModelMesh* pModel;
-
-	std::stringstream stream;
-	stream << "P";
-
-	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 p)
-	{
-		stream << ".X." << p.x << ".Y." << p.y;
-	});
-
-	if (m_pModelBuffer->isAssetPresent(stream.str()))
-	{
-		pModel = m_pModelBuffer->getAsset(stream.str());
-	}
-	else
-	{
-		std::vector<VertexPos2D> vertices;
-		std::vector<byte> indices;
-
-		byte i(0);
-
-		std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
-		{
-			vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
-			indices.push_back(i++);
-		});
-
-		pModel = NEW ModelMesh(stream.str());
-		pModel->init();
-		pModel->setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
-		pModel->setIndices(&indices[0], nrPoints, IndexStride_Byte);
-
-
-		m_pModelBuffer->addAsset(pModel->getName(), pModel);
-	}
-
-	m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-    GL::heBindVao(pModel->getVertexArraysID());
-	if (close == false)
-		glDrawElements(GL_LINE_STRIP, pModel->getNumIndices(), pModel->getIndexType(), 0);
-	else
-		glDrawElements(GL_LINE_LOOP, pModel->getNumIndices(), pModel->getIndexType(), 0);
-}
-
-void Happy2DRenderer::fillPolygon(const std::vector<he::vec2>& /*points*/, he::uint /*nrPoints*/) const
-{
-	/*
-	std::vector<VertexPos2D> vertices;
-	std::vector<byte> indices;
-
-	byte i(0);
-
-	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
-	{
-		vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
-		indices.push_back(i++);
-	});
-
-	ModelMesh model("");
-    model.init();
-    model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
-    model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
-
-	m_pColorEffect->setWorldMatrix(m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-    GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_TRIANGLE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-	*/
-}
-void Happy2DRenderer::fillPolygonInstanced(const std::vector<he::vec2>& /*points*/, he::uint /*nrPoints*/) const
-{
-	/*
-	std::vector<VertexPos2D> vertices;
-	std::vector<byte> indices;
-
-	byte i(0);
-
-	std::for_each(points.cbegin(), points.cend(), [&](he::vec2 point)
-	{
-		vertices.push_back(VertexPos2D(vec2(point.x, point.y)));
-		indices.push_back(i++);
-	});
-
-	ModelMesh model("");
-    model.init();
-    model.setVertices(&vertices[0], nrPoints, m_VertexLayoutColor);
-    model.setIndices(&indices[0], nrPoints, IndexStride_Byte);
-
-	m_pColorEffect->setWorldMatrix(m_matWorld);
-	m_pColorEffect->setColor(m_CurrentColor);
-
-    GL::heBindVao(model.getVertexArraysID());
-	glDrawElements(GL_TRIANGLE_STRIP, model.getNumIndices(), model.getIndexType(), 0);
-	*/
+	m_ShapeBuffer.push_back(std::pair<Shape, float>
+		(Shape(shape, m_CurrentColor, true, m_bAntiAliasing, m_CurrentLayer), getDepth()));
 }
 
 void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
 {
-	vec2 tcOffset(0.0f,0.0f);
-	vec2 tcScale(1.0f,1.0f);
-	vec2 size;
-
-	if (regionToDraw != RectF(vec2(0.0f,0.0f), vec2(0.0f,0.0f)))
-	{
-		tcScale.x = regionToDraw.width / tex2D->getWidth();
-		tcScale.y = regionToDraw.height / tex2D->getHeight();
-
-		tcOffset.x = regionToDraw.x / tex2D->getWidth();
-		tcOffset.y = 1 - (regionToDraw.y / tex2D->getHeight()) - tcScale.y;
-	}
-
-	if (newDimensions != vec2(0.0f,0.0f))
-	{
-		size = vec2(abs(newDimensions.x), abs(newDimensions.y));
-
-		if (newDimensions.x < 0) tcScale.x *= -1.0f;
-		if (newDimensions.y < 0) tcScale.y *= -1.0f;
-	}
-	else
-	{
-		size = vec2(static_cast<float>(tex2D->getWidth()), static_cast<float>(tex2D->getHeight()));
-	}
-
-	mat44 world(	mat44::createScale(size.x, size.y, 1.0f) *
-						mat44::createTranslation(vec3(pos.x / size.x, pos.y / size.y, 0.0f)));
-
-	vec2 translation(pos.x + size.x/2, pos.y + size.y/2);
-
-	m_Translation += translation;
-	m_Scale *= size;
-	updateTransformationMatrix();
-
-	m_pColorEffect->end();
-	m_pTextureEffect->begin();
-
-	m_pTextureEffect->setWorldMatrix(m_matOrthoGraphic * m_matWorld);
-
-	m_Translation -= translation;
-	m_Scale /= size;
-	updateTransformationMatrix();
-
-	m_pTextureEffect->setDiffuseMap(tex2D);
-	m_pTextureEffect->setAlpha(alpha);
-	m_pTextureEffect->setTCOffset(tcOffset);
-	m_pTextureEffect->setTCScale(tcScale);
-
-    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
-	glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
-
-	m_pTextureEffect->end();
-	m_pColorEffect->begin();
+	m_TextureBuffer.push_back(std::pair<Texture, float>
+		(Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer), getDepth()));
 }
 
 } } //end namespace

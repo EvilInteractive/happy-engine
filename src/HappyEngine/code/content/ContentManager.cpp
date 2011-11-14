@@ -84,6 +84,16 @@ gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort siz
     return p;
 }
 
+const gfx::Font::pointer& ContentManager::getDefaultFont()
+{
+	if (m_pDefaultFont == nullptr)
+	{
+		m_pDefaultFont = loadFont("Ubuntu-Regular.ttf", 12);
+	}
+
+	return m_pDefaultFont;
+}
+
 gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
     return m_pShaderLoader->load(m_ContentRootDir + m_ShaderFolder + vsAsset, m_ContentRootDir + m_ShaderFolder + fsAsset, shaderLayout, outputs);

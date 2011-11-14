@@ -145,40 +145,41 @@ void TextBox::tick()
 
 void TextBox::draw()
 {
-	HE2D->setStrokeSize();
-
-	HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Left);
-	HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Center);
+	gui::Text text(m_pFont);
+	text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+	text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
 	RectF textRect(m_Rect.x + 4, m_Rect.y + 4, m_Rect.width - 8, m_Rect.height - 8);
 
 	if (m_bActive)
 	{
-		HE2D->setColor(m_Colors["background"]);
-		HE2D->fillRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
+		GUI->setColor(m_Colors["background"]);
+		GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
 			
-		HE2D->setColor(m_Colors["edge"]);
-		HE2D->drawRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
+		GUI->setColor(m_Colors["edge"]);
+		GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
 
 		if (m_bHasFocus)
 		{
-			HE2D->setColor(m_Colors["focus"]);
-			HE2D->drawRectangleInstanced(	vec2(m_Rect.x + 1 , m_Rect.y + 1),
-											vec2(m_Rect.width - 2, m_Rect.height - 2));
+			GUI->setColor(m_Colors["focus"]);
+			GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x + 1 , m_Rect.y + 1),
+											vec2(m_Rect.width - 2, m_Rect.height - 2)));
 		}
 
-		HE2D->setColor(m_Colors["text"]);
+		GUI->setColor(m_Colors["text"]);
 
 		if (m_String == "")
 		{
 			if (!m_bHasFocus)
 			{
-				HE2D->drawString(m_DefaultString, m_pFont, textRect);
+				text.addLine(m_DefaultString);
+				GUI->drawText(text, textRect);
 			}
 		}
 		else
 		{
-			HE2D->drawString(m_String, m_pFont, textRect);
+			text.addLine(m_String);
+			GUI->drawText(text, textRect);
 		}
 
 		if (m_bHasFocus)
@@ -197,30 +198,34 @@ void TextBox::draw()
 					cursorRect.x += cursorX;
 				}
 
-				HE2D->drawString(m_Cursor, m_pFont, cursorRect);
+				text.clear();
+				text.addLine(m_Cursor);
+				GUI->drawText(text, cursorRect);
 			}
 		}
 	}
 	else
 	{
-		HE2D->setColor(Color(0.3f,0.3f,0.3f));
-		HE2D->fillRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
+		GUI->setColor(Color(0.3f,0.3f,0.3f));
+		GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
 
-		HE2D->setColor(Color(0.1f,0.1f,0.1f));
-		HE2D->drawRectangleInstanced(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
+		GUI->setColor(Color(0.1f,0.1f,0.1f));
+		GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
 
-		HE2D->setColor(Color(0.5f,0.5f,0.5f));
+		GUI->setColor(Color(0.5f,0.5f,0.5f));
 		
 		if (m_String == "")
 		{
 			if (!m_bHasFocus)
 			{
-				HE2D->drawString(m_DefaultString, m_pFont, textRect);
+				text.addLine(m_DefaultString);
+				GUI->drawText(text, textRect);
 			}
 		}
 		else
 		{
-			HE2D->drawString(m_String, m_pFont, textRect);
+			text.addLine(m_String);
+			GUI->drawText(text, textRect);
 		}
 	}
 }

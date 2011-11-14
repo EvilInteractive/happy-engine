@@ -97,21 +97,20 @@ void Scrollbar::tick()
 
 void Scrollbar::draw()
 {
-	HE2D->setAntiAliasing(false);
-	HE2D->setStrokeSize();
+	GUI->setAntiAliasing(false);
 
-	HE2D->setColor(m_Colors["background"]);
-	HE2D->fillRectangleInstanced(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y));
-	HE2D->setColor(m_Colors["edge"]);
-	HE2D->drawRectangleInstanced(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y));
+	GUI->setColor(m_Colors["background"]);
+	GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)));
+	GUI->setColor(m_Colors["edge"]);
+	GUI->drawShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)));
 
-	HE2D->setColor(m_Colors["scrollbar"]);
-	HE2D->fillRectangleInstanced(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
-								vec2(m_Size.x - 2, m_ScrollbarHeight));
+	GUI->setColor(m_Colors["scrollbar"]);
+	GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
+									  vec2(m_Size.x - 2, m_ScrollbarHeight)));
 
-	HE2D->setColor(m_Colors["edge"]);
-	HE2D->drawRectangleInstanced(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
-								vec2(m_Size.x - 2, m_ScrollbarHeight));
+	GUI->setColor(m_Colors["edge"]);
+	GUI->drawShape2D(gui::Rectangle2D(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
+									  vec2(m_Size.x - 2, m_ScrollbarHeight)));
 }
 
 /* SETTERS */

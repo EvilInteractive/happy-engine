@@ -120,9 +120,9 @@ void SimpleForward3DRenderer::end()
 {
 	GL::heBindFbo(0);
 
-	HE2D->begin();
-	HE2D->drawTexture2D(m_pRenderTexture, vec2(0.0f,0.0f), vec2(-static_cast<float>(m_pRenderTexture->getWidth()), static_cast<float>(m_pRenderTexture->getHeight())));
-	HE2D->end();
+	GUI->begin();
+	GUI->drawTexture2D(m_pRenderTexture, vec2(0.0f,0.0f), vec2(-static_cast<float>(m_pRenderTexture->getWidth()), static_cast<float>(m_pRenderTexture->getHeight())));
+	GUI->end();
 }
 
 /* DRAW METHODS */

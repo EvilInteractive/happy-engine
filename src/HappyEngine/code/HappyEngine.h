@@ -77,7 +77,7 @@ namespace game {
 #define PHYSICS HAPPYENGINE->getPhysics()
 #define CONTENT HAPPYENGINE->getContentManager()
 #define NETWORK HAPPYENGINE->getNetworkManager()
-#define HE2D HAPPYENGINE->get2DRenderer()
+#define GUI HAPPYENGINE->get2DRenderer()
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()

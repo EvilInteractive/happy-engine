@@ -16,48 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 26/08/2011
+//Created: 14/10/2011
 
-#ifndef _HE_SIMPLE_2D_EFFECT_H_
-#define _HE_SIMPLE_2D_EFFECT_H_
+#ifndef _HE_TRIANGULATOR_H_
+#define _HE_TRINAGULATOR_H_
 #pragma once
 
+#include "vec2.h"
+#include <vector>
 #include "HappyTypes.h"
-#include "Shader.h"
-#include "mat44.h"
-#include "vec3.h"
-#include "Color.h"
 
 namespace he {
-namespace gfx {
 
-class Simple2DEffect
+class Triangulator
 {
 public:
-	Simple2DEffect();
-    virtual ~Simple2DEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
-
-	void setColor(const Color& color) const;
-	void setWorldMatrix(const he::mat44& mat) const;
-	void setDepth(float depth) const;
+	static bool triangulateShape(const std::vector<vec2>& vertices, std::vector<uint>& indices);
+	static float calculateArea(const std::vector<vec2>& vertices);
+	static bool hitTestTriangle(const vec2& p1, const vec2& p2, const vec2& p3, const vec2& hitPoint);
 
 private:
 
-	he::gfx::Shader* m_pShader;
+	static bool snip(const std::vector<vec2>& contour, int u, int v, int w, int n, int* V);
 
-	he::uint m_ShaderWVPPos;
-	he::uint m_ShaderColorPos;
-	uint m_ShaderDepthPos;
-
-    //Disable default copy constructor and default assignment operator
-    Simple2DEffect(const Simple2DEffect&);
-    Simple2DEffect& operator=(const Simple2DEffect&);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

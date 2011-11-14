@@ -31,16 +31,16 @@ namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Button::Button(TYPE type, const vec2& centerPos, const vec2& size) :	m_Type(type),
-																						m_Pos(centerPos),
-																						m_Size(size),
-																						m_State(STATE_NORMAL),
-																						m_ActivationType(ACTIVATION_MOUSE),
-																						m_pHitregion(nullptr),
-																						m_bClicked(false),
-																						m_Text("")
+Button::Button(TYPE type, const vec2& pos, const vec2& size) :	m_Type(type),
+																m_Pos(pos),
+																m_Size(size),
+																m_State(STATE_NORMAL),
+																m_ActivationType(ACTIVATION_MOUSE),
+																m_pHitregion(nullptr),
+																m_bClicked(false),
+																m_Text("")
 {
-	m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE, centerPos, size);
+	m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE, pos, size);
 }
 
 Button::~Button()
@@ -167,53 +167,50 @@ bool Button::isClicked() const
 /* EXTRA */
 void Button::drawColor()
 {
-	HE2D->resetTransformation();
-
 	switch (m_State)
 	{
 		case STATE_NORMAL:
 		{
-			HE2D->setColor(220.0f/255,220.0f/255,220.0f/255);
-			HE2D->fillRectangleInstanced(m_Pos - m_Size/2, m_Size);
+			GUI->setColor(220.0f/255,220.0f/255,220.0f/255);
 
 			break;
 		}
 
 		case STATE_HOVER:
 		{
-			HE2D->setColor(180.0f/255,200.0f/255,220.0f/255);
-			HE2D->fillRectangleInstanced(m_Pos - m_Size/2, m_Size);			
+			GUI->setColor(180.0f/255,200.0f/255,220.0f/255);		
 
 			break;
 		}
 
 		case STATE_DOWN:
 		{
-			HE2D->setColor(146.0f/255,162.0f/255,179.0f/255);
-			HE2D->fillRectangleInstanced(m_Pos - m_Size/2, m_Size);
+			GUI->setColor(146.0f/255,162.0f/255,179.0f/255);
 
 			break;
 		}
 
 		case STATE_DISABLED:
 		{
-			HE2D->setColor(150.0f/255,150.0f/255,150.0f/255);
-			HE2D->fillRectangleInstanced(m_Pos - m_Size/2, m_Size);
+			GUI->setColor(150.0f/255,150.0f/255,150.0f/255);
 
 			break;
 		}
 	}
 
-	HE2D->setStrokeSize();
-	HE2D->setColor(140.0f/255,140.0f/255,140.0f/255);
-	HE2D->drawRectangleInstanced(m_Pos - m_Size/2, m_Size);
+	GUI->fillShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size));
+
+	GUI->setColor(140.0f/255,140.0f/255,140.0f/255);
+	GUI->drawShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size));
 
 	if (m_pFont != nullptr)
 	{
-		HE2D->setColor(0.25f,0.25f,0.25f);
-		HE2D->setFontHorizontalAlignment(gfx::Font::HAlignment_Center);
-		HE2D->setFontVerticalAlignment(gfx::Font::VAlignment_Center);
-		HE2D->drawString(m_Text, m_pFont, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
+		gui::Text txt(m_Text, m_pFont);
+
+		GUI->setColor(0.25f,0.25f,0.25f);
+		txt.setHorizontalAlignment(gui::Text::HAlignment_Center);
+		txt.setVerticalAlignment(gui::Text::VAlignment_Center);
+		GUI->drawText(txt, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
 	}
 }
 

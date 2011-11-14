@@ -59,10 +59,17 @@ void Picker::initialize()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED, GL_UNSIGNED_INT, 0);
 	m_pIDTexture->init(renderTexture, width, height, GL_R32I);
 
+	uint depthTexture;
+	glGenTextures(1, &depthTexture);
+
+	GL::heBindTexture2D(0, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+
 	glGenFramebuffers(1, &m_RenderFboID);
 	GL::heBindFbo(m_RenderFboID);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
 	m_bInitialized = true;
 }
@@ -75,7 +82,7 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
 
 	GL::heBindFbo(m_RenderFboID);
 	GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_pPickEffect->begin();
 	m_pPickEffect->setViewProjection(pCamera->getViewProjection());
@@ -134,12 +141,21 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
 
 		GL::heBindVao(pDrawable->getModel()->getVertexArraysID());
 		glDrawElements(GL_TRIANGLES, pDrawable->getModel()->getNumIndices(), pDrawable->getModel()->getIndexType(), 0);
+
+		++i;
 	});
+
+	glGetError();
 
 	uint id(0);
 	glReadPixels(	static_cast<int>(screenPoint.x),
-					static_cast<int>(screenPoint.y),
-					1,1,GL_R32I, GL_UNSIGNED_INT, &id);
+					GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
+					1,1,GL_RED, GL_UNSIGNED_INT, &id);
+
+	GLenum error = glGetError();
+
+	if (error != 0)
+		return UINT_MAX;
 
 	if (id == 0)
 		return UINT_MAX;

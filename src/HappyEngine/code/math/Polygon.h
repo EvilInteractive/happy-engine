@@ -16,48 +16,55 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 26/08/2011
+//Created: 15/10/2011
 
-#ifndef _HE_SIMPLE_2D_EFFECT_H_
-#define _HE_SIMPLE_2D_EFFECT_H_
+#ifndef _HE_POLYGON_H_
+#define _HE_POLYGON_H_
 #pragma once
 
+#include "vec2.h"
 #include "HappyTypes.h"
-#include "Shader.h"
-#include "mat44.h"
-#include "vec3.h"
-#include "Color.h"
+#include <vector>
 
 namespace he {
-namespace gfx {
 
-class Simple2DEffect
+class Polygon
 {
 public:
-	Simple2DEffect();
-    virtual ~Simple2DEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
+	/* CONSTRUCTOR - DESTRUCTOR */
+	Polygon();
+    virtual ~Polygon();
 
-	void setColor(const Color& color) const;
-	void setWorldMatrix(const he::mat44& mat) const;
-	void setDepth(float depth) const;
+	/* GENERAL */
+	void addPoint(const vec2& p);
+	bool triangulate();
+	void clear();
+
+	/* GETTERS */
+	const std::vector<vec2>& getVertices() const;
+	const std::vector<uint>& getIndices() const;
+
+	bool isTriangulated() const;
+	bool hitTest(const vec2& hitPoint) const;
+
+	float getArea() const;
+
+	uint getVertexCount() const;
+	uint getIndexCount() const;
+	uint getTriangleCount() const;
+
+	/* DEFAULT COPY & ASSIGNMENT */
+    Polygon(const Polygon& p);
+    Polygon& operator=(const Polygon& p);
 
 private:
 
-	he::gfx::Shader* m_pShader;
-
-	he::uint m_ShaderWVPPos;
-	he::uint m_ShaderColorPos;
-	uint m_ShaderDepthPos;
-
-    //Disable default copy constructor and default assignment operator
-    Simple2DEffect(const Simple2DEffect&);
-    Simple2DEffect& operator=(const Simple2DEffect&);
+	/* DATAMEMBERS */
+	std::vector<vec2> m_Vertices;
+	std::vector<uint> m_Indices;
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

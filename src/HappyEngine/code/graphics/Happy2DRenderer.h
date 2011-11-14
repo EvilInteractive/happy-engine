@@ -35,6 +35,13 @@
 #include "ModelMesh.h"
 #include "Rect.h"
 #include "Text.h"
+#include "Polygon.h"
+#include "Shape2D.h"
+#include "Rectangle2D.h"
+#include "RoundedRectangle2D.h"
+#include "Ellipse2D.h"
+#include "Polygon2D.h"
+#include "Line2D.h"
 
 #include <map>
 
@@ -50,11 +57,14 @@ public:
     virtual ~Happy2DRenderer();
 
 	/* GENERAL */
-	void initialize();
+	void init();
 	void begin();
 	void end();
 
-	void clearInstancingBuffer();
+	void clearBuffers();
+
+	// * Create new GUI layer, max depth 99, min depth 0, 50 is default. *
+	void createLayer(const std::string& name, byte depth = 50);
 
     /* SETTERS */
 
@@ -63,51 +73,20 @@ public:
 	void setColor(const Color& color);
 	// * Turn on/off anti-aliasing. *
 	void setAntiAliasing(bool bAA);
+	// * Set current GUI layer, default = depth 50
+	void setLayer(const std::string& layer = "default");
 	// * Set the strokesize. *
-	void setStrokeSize(const float strokeSize = 1.0f);
-	// * Alignment options for text. *
-	void setFontHorizontalAlignment(Font::HAlignment horizontalAlignment);
-	void setFontVerticalAlignment(Font::VAlignment verticalAlignment);
-	// * Set the transformation matrix. *
-	void setTransformation(const mat44& mat);
-	// * Set the world translation. *
-	void setTranslation(const vec2& translation);
-	// * Set the world rotation. *
-	void setRotation(const float degrees);
-	// * Set the world scale. *
-	void setScale(const vec2& scale);
-	// * Reset world transformation. *
-	void resetTransformation();
+	//void setStrokeSize(const float strokeSize = 1.0f);	
 
     /* DRAW METHODS */
 
 	// * Draws the text as a 2D texture on the screen. *
-	void drawString(const std::string& str, const Font::pointer& font, const vec2& pos);
-	void drawStringInstanced(const std::string& str, const Font::pointer& font, const vec2& pos);
-	// * Draws the text as a 2D texture in a rectangle the screen. *
-	void drawString(const std::string& str, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
-	void drawStringInstanced(const std::string& str, const Font::pointer& font, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
-	// * Draws a line between 2 points with the current strokesize. *
-	void drawLine(const vec2& point1, const vec2& point2) const;
-	void drawLineInstanced(const vec2& point1, const vec2& point2) const;
-	// * Draws the outline of a rectangle with the current strokesize. *
-	void drawRectangle(const vec2& pos, const vec2& size);
-	void drawRectangleInstanced(const vec2& pos, const vec2& size);
-	// * Draws a filled rectangle. *
-	void fillRectangle(const vec2& pos, const vec2& size);
-	void fillRectangleInstanced(const vec2& pos, const vec2& size);
-	// * Draws the outline of an ellipse. *
-	void drawEllipse(const vec2& pos, const vec2& size, uint steps = 120);
-	void drawEllipseInstanced(const vec2& pos, const vec2& size, uint steps = 120);
-	// * Draws a filled ellipse. *
-	void fillEllipse(const vec2& pos, const vec2& size, uint steps = 120);
-	void fillEllipseInstanced(const vec2& pos, const vec2& size, uint steps = 120);
-	// * Draws a polygon - open or closed. *
-	void drawPolygon(const std::vector<he::vec2>& points, uint nrPoints, bool close = false) const;
-	void drawPolygonInstanced(const std::vector<he::vec2>& points, uint nrPoints, bool close = false) const;
-	// * Draws a filled polygon. *
-	void fillPolygon(const std::vector<he::vec2>& points, uint nrPoints) const;
-	void fillPolygonInstanced(const std::vector<he::vec2>& points, uint nrPoints) const;
+	void drawText(const gui::Text& txt, const vec2& pos);
+	void drawText(const gui::Text& txt, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
+	// * Draws a 2D shape. *
+	void drawShape2D(const gui::Shape2D& shape);
+	// * Draws a filled 2D shape. *
+	void fillShape2D(const gui::Shape2D& shape);
 	// * Draws a 2D texture with options for resizing, alpha, cliprect. *
 	void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
 						const vec2& newDimensions = vec2(0.0f,0.0f),
@@ -115,7 +94,61 @@ public:
 
 private:
 
-	void updateTransformationMatrix();
+	struct Shape
+	{
+	public:
+
+		Shape(	const gui::Shape2D& s,
+			const Color& c,
+			bool f, bool a,
+			const std::string& l)
+			: shape2D(s),
+			color(c),
+			fill(f),
+			antiAliasing(a),
+			layer(l)
+		{
+		}
+
+		gui::Shape2D shape2D;
+		Color color;
+		bool fill;
+		bool antiAliasing;
+		std::string layer;
+	};
+
+	struct Texture
+	{
+	public:
+
+		Texture(	const Texture2D::pointer& tex,
+			const vec2& pos,
+			const vec2& newDimensions,
+			const float alpha,
+			const RectF& regionToDraw,
+			const std::string& layer)
+			: tex2D(tex),
+			pos(pos),
+			newDimensions(newDimensions),
+			alpha(alpha),
+			regionToDraw(regionToDraw),
+			layer(layer)
+		{
+		}
+
+		Texture2D::pointer tex2D;
+		vec2 pos;
+		vec2 newDimensions;
+		float alpha;
+		RectF regionToDraw;
+		std::string layer;
+	};
+
+	void drawMesh(gui::Shape2D& shape);
+	void fillMesh(gui::Shape2D& shape);
+	void drawTexture(const Texture& tex);
+	float getDepth();
+	void draw();
 
 	/* DATAMEMBERS */
 	float m_StrokeSize;
@@ -123,27 +156,26 @@ private:
 
 	Color m_CurrentColor;
 
-	Font::HAlignment m_FontHAlignment;
-	Font::VAlignment m_FontVAlignment;
-
 	VertexLayout m_VertexLayoutColor;
 	VertexLayout m_VertexLayoutTexture;
 
 	Simple2DEffect* m_pColorEffect;
 	Simple2DTextureEffect* m_pTextureEffect;
 
-	mat44 m_matWorld;
-	mat44 m_matOrthoGraphic;
-	vec2 m_Translation;
-	vec2 m_Scale;
-	float m_Rotation;
-
-	ModelMesh* m_pTextureQuad;
-
 	vec2 m_ViewPortSize;
+	mat44 m_matOrthoGraphic;
 
-	ct::AssetContainer<gfx::ModelMesh*>* m_pModelBuffer;
-	ct::AssetContainer<gfx::Texture2D::pointer>* m_pTextureBuffer;
+	ModelMesh::pointer m_pTextureQuad;
+
+	ct::AssetContainer<gfx::ModelMesh*> m_pModelContainer;
+	ct::AssetContainer<gfx::Texture2D::pointer> m_pTextureContainer;
+
+	std::map<std::string, float> m_Layers;
+	std::string m_CurrentLayer;
+	
+	std::vector<std::pair<Shape, float> > m_ShapeBuffer;
+	std::vector<std::pair<Texture, float> > m_TextureBuffer;
+	std::map<float, float> m_DepthMap;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Happy2DRenderer(const Happy2DRenderer&);

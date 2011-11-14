@@ -343,29 +343,29 @@ void Deferred3DRenderer::end()
 
     if (m_ShowDebugTextures)
     {
-        HE2D->begin();
+        GUI->begin();
         GL::heBlendEnabled(false);
-        HE2D->drawTexture2D(m_pTexture[0], vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        HE2D->drawTexture2D(m_pTexture[1], vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        HE2D->drawTexture2D(m_pTexture[2], vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
-        HE2D->drawTexture2D(m_pTexture[3], vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pTexture[0], vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pTexture[1], vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pTexture[2], vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pTexture[3], vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
         if (m_Bloom)
         {
-            HE2D->drawTexture2D(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12*2+144), vec2(256, 144));
-            HE2D->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
-            HE2D->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
-            HE2D->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
+            GUI->drawTexture2D(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12*2+144), vec2(256, 144));
+            GUI->drawTexture2D(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12*2+144), vec2(256, 144));
+            GUI->drawTexture2D(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12*2+144), vec2(256, 144));
+            GUI->drawTexture2D(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12*2+144), vec2(256, 144));
         }
         if (getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
-            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
+            GUI->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
         if (getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
-            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
+            GUI->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
         if (getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
-            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
+            GUI->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
         if (getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
-            HE2D->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
+            GUI->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
         GL::heBlendEnabled(true);
-        HE2D->end();
+        GUI->end();
     }
 }
 void Deferred3DRenderer::postAmbIllLight()

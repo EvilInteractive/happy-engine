@@ -63,6 +63,7 @@ public:
     const std::vector<px::PhysicsConcaveMesh::pointer>& loadPhysicsConcave(const std::string& path);
 
     gfx::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
+	const gfx::Font::pointer& getDefaultFont();
 
     gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    
@@ -100,6 +101,8 @@ private:
     std::string m_ContentRootDir;   //include trailing /
     std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /
                 m_ShaderFolder, m_MaterialFolder;
+
+	gfx::Font::pointer m_pDefaultFont;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

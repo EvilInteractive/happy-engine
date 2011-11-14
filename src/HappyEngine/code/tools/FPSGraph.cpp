@@ -98,43 +98,30 @@ void FPSGraph::draw()
 
 void FPSGraph::drawTextOnly()
 {
-	HE2D->setAntiAliasing(false);
-	HE2D->resetTransformation();
-
-	HE2D->setColor(1.0f,1.0f,1.0f);
+	GUI->setAntiAliasing(false);
+	GUI->setColor(1.0f,1.0f,1.0f);
 
 	std::stringstream stream;
 	stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 5));
+	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 5));
 
 	stream.str("");
 	stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 18));
+	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 18));
 }
 
 void FPSGraph::drawFull()
 {
 	//using namespace gfx;
 
-	HE2D->setAntiAliasing(false);
-	HE2D->resetTransformation();
+	GUI->setAntiAliasing(false);
 
-	HE2D->setColor(1.0f,1.0f,1.0f,0.5f);
-	HE2D->fillRectangleInstanced(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 40));
-	HE2D->setColor(0.0f,0.0f,0.0f,0.5f);
-	HE2D->setStrokeSize();
-	HE2D->drawRectangleInstanced(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42));
+	GUI->setColor(0.8f,0.8f,0.8f);
+	GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 40)));
+	GUI->setColor(0.1f,0.1f,0.1f);
+	GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)));
 
-	uint avFPS(getAverageFPS());
-
-	if (avFPS > 80)
-		avFPS = 80;
-
-	HE2D->setColor(0.0f,0.0f,1.0f,0.4f);
-	HE2D->drawLine(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
-					vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2))));
-
-	std::vector<vec2> points;
+	gui::Polygon2D poly;
 
 	uint i(0);
 		
@@ -154,20 +141,27 @@ void FPSGraph::drawFull()
 		if (currentFPS > 80)
 			currentFPS = 80;
 
-		points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
+		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
 
 		++k;
 	}
 
-	HE2D->setColor(1.0f,0.0f,0.0f,0.8f);
-		
-	HE2D->resetTransformation();
-	HE2D->setStrokeSize();
 
-	if (points.size() > 0) 
-		HE2D->drawPolygon(points, points.size());
+	if (poly.getPolygon().getVertexCount() < 50)
+	{
+		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly.getPolygon().getVertexCount() * 2)), 45.0f));
+	}
+	else
+	{
+		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 45.0f));
+	}
 
-	points.clear();
+	poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
+
+	GUI->setColor(1.0f,0.0f,0.0f);
+	GUI->fillShape2D(poly);
+
+	poly.clear();
 
 	if (m_FpsHistory.size() > 50)
 	{
@@ -187,25 +181,42 @@ void FPSGraph::drawFull()
 		if (currentDTime > 80)
 			currentDTime = 80;
 
-		points.push_back(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
 
 		++k;
 	}
 
-	HE2D->setColor(1.0f,1.0f,0.0f,0.8f);
+	if (poly.getPolygon().getVertexCount() < 50)
+	{
+		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly.getPolygon().getVertexCount() * 2)), 45.0f));
+	}
+	else
+	{
+		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 45.0f));
+	}
 
-	if (points.size() > 0) 
-		HE2D->drawPolygon(points, points.size());
+	poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
 
-	HE2D->setColor(1.0f,1.0f,1.0f);
+	GUI->setColor(1.0f,1.0f,0.0f);
+	GUI->fillShape2D(poly);
 
+	uint avFPS(getAverageFPS());
+
+	if (avFPS > 80)
+		avFPS = 80;
+
+	GUI->setColor(0.0f,0.0f,1.0f);
+	GUI->drawShape2D(gui::Line2D(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
+					vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2)))));
+
+	GUI->setColor(1.0f,1.0f,1.0f);
 	std::stringstream stream;
 	stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 45));
+	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 45));
 
 	stream.str("");
 	stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-	HE2D->drawString(stream.str(), m_pFont, vec2(GRAPHICS->getViewport().width - 105.0f, 58));
+	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 58));
 }
 
 /* GETTERS */

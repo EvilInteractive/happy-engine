@@ -50,8 +50,8 @@ void HappyQtWidget::initializeGL()
     init();
     if (GRAPHICS != nullptr)
         GRAPHICS->init(true);
-    if (HE2D != nullptr)
-        HE2D->initialize();
+    if (GUI != nullptr)
+        GUI->init();
     if (HE3D != nullptr)       
 		HE3D->init();
 }

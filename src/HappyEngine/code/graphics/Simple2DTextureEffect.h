@@ -47,6 +47,7 @@ public:
 	void setAlpha(const float alpha) const;
 	void setTCOffset(const vec2& offset) const;
 	void setTCScale(const vec2& scale) const;
+	void setDepth(float depth) const;
 
 private:
 	gfx::Shader* m_pShader;
@@ -56,6 +57,7 @@ private:
 	uint m_ShaderAlphaPos;
 	uint m_ShaderTCOffsetPos;
 	uint m_ShaderTCScalePos;
+	uint m_ShaderDepthPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DTextureEffect(const Simple2DTextureEffect&);

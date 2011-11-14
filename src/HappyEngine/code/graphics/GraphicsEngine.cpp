@@ -27,6 +27,7 @@
 #include "HappyNew.h"
 
 #include "IniReader.h"
+#include "Happy2DRenderer.h"
 
 namespace he {
 namespace gfx {
@@ -208,6 +209,9 @@ void GraphicsEngine::begin(const Camera* pCamera)
 void GraphicsEngine::end()
 {
     m_pDeferred3DRenderer->end();
+
+	GUI->begin();
+	GUI->end();
 }
 void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
 {

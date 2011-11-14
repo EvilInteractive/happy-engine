@@ -36,6 +36,7 @@ PickEffect::PickEffect() :	m_pShader(nullptr)
 
 PickEffect::~PickEffect()
 {
+	delete m_pShader;
 }
 
 /* GENERAL */

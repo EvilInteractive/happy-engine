@@ -156,8 +156,8 @@ namespace gfx {
 //        int p1(GRAPHICS->getViewport().height - rect.y);
 //        rect.y = p2;
 //        rect.height = p1 - p2;
-//        HE2D->setColor(0, 1, 0);
-//        HE2D->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
+//        GUI->setColor(0, 1, 0);
+//        GUI->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
 //    }
 //    {
 //        RectI rect(getOldScissor(pCamera));
@@ -165,8 +165,8 @@ namespace gfx {
 //        int p1(GRAPHICS->getViewport().height - rect.y);
 //        rect.y = p2;
 //        rect.height = p1 - p2;
-//        HE2D->setColor(1, 0, 0);
-//        HE2D->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
+//        GUI->setColor(1, 0, 0);
+//        GUI->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
 //    }
 //}
 //#endif
@@ -248,7 +248,7 @@ namespace gfx {
 //    int p1(GRAPHICS->getViewport().height - rect.y);
 //    rect.y = p2;
 //    rect.height = p1 - p2;
-//    HE2D->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
+//    GUI->drawRectangle(vec2((float)rect.x, (float)rect.y), vec2((float)rect.width, (float)rect.height));
 //}
 //#endif
 //#pragma endregion

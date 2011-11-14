@@ -16,46 +16,64 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 26/08/2011
+//Created: 18/10/2011
 
-#ifndef _HE_SIMPLE_2D_EFFECT_H_
-#define _HE_SIMPLE_2D_EFFECT_H_
+#ifndef _HE_SHAPE_2D_H_
+#define _HE_SHAPE_2D_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "Shader.h"
+#include "Polygon.h"
 #include "mat44.h"
-#include "vec3.h"
-#include "Color.h"
+#include "happynew.h"
 
 namespace he {
-namespace gfx {
+namespace gui {
 
-class Simple2DEffect
+class Shape2D
 {
 public:
-	Simple2DEffect();
-    virtual ~Simple2DEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
+	/* CONSTRUCTOR - DESTRUCTOR */
+	Shape2D() : m_Polygon(Polygon())
+	{
+	}
 
-	void setColor(const Color& color) const;
-	void setWorldMatrix(const he::mat44& mat) const;
-	void setDepth(float depth) const;
+    virtual ~Shape2D()
+	{
+		
+	}
 
-private:
+	/* GETTERS */
+	virtual Polygon& getPolygon()
+	{
+		return m_Polygon;
+	}
 
-	he::gfx::Shader* m_pShader;
+	virtual const mat44& getWorldMatrix() const
+	{
+		return m_World;
+	}
 
-	he::uint m_ShaderWVPPos;
-	he::uint m_ShaderColorPos;
-	uint m_ShaderDepthPos;
+	/* DEFAULT COPY & ASSIGNMENT */
+    Shape2D(const Shape2D& s)
+	{
+		m_Polygon = s.m_Polygon;
+		m_World = s.m_World;
+	}
 
-    //Disable default copy constructor and default assignment operator
-    Simple2DEffect(const Simple2DEffect&);
-    Simple2DEffect& operator=(const Simple2DEffect&);
+    Shape2D& operator=(const Shape2D& s)
+	{
+		m_Polygon = s.m_Polygon;
+		m_World = s.m_World;
+
+		return *this;
+	}
+
+protected:
+	
+	/* DATAMEMBERS */
+	Polygon m_Polygon;
+	mat44 m_World;
 };
 
 } } //end namespace

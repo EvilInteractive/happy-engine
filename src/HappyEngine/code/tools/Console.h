@@ -130,7 +130,7 @@ private:
 	bool m_bOpen;
 
 	gui::TextBox* m_pTextBox;
-	gui::Text::pointer m_Help;
+	gui::Text* m_Help;
 	gui::Scrollbar* m_pScrollBar;
 
 	std::string m_HelpCommand;

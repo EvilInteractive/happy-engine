@@ -317,6 +317,8 @@ void MainGame::tick(float dTime)
 
 	if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
 	{
+		m_Poly.addPoint(CONTROLS->getMouse()->getPosition());
+
 		uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
 
 		if (id != UINT_MAX)
@@ -344,61 +346,69 @@ void MainGame::draw()
         GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
     }*/
 
-    GRAPHICS->clearAll();
+	// 2D test stuff
+	m_pTestButton->draw();
+	m_pTestButton2->draw();
+	m_pTestButton3->draw();
+		
+	/*m_pTextBox->draw();
 
-    GRAPHICS->begin(m_pCamera);
-    GRAPHICS->end();
+	if (m_bTest2)
+	{
+		GUI->setColor(1.0f,0.5f,0.0f);
+		GUI->setFontVerticalAlignment(Font::VAlignment_Center);
+		GUI->setFontHorizontalAlignment(Font::HAlignment_Center);
 
+		GUI->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
+	}*/
+
+	GUI->setColor(1.0f,1.0f,1.0f);
+
+	std::stringstream stream;
+	stream << "2D: " << m_pTestSound2D->getPlayTime() << " / " << m_pTestSound2D->getLength();
+
+	GUI->drawText(gui::Text(stream.str()), vec2(1050,570));
+
+	stream.str("");
+
+	stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
+
+	GUI->drawText(gui::Text(stream.str()), vec2(1050,590));
+
+	stream.str("");
+
+	stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
+
+	GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
+
+	if (m_Poly.getPolygon().getVertexCount() > 2)
+	{
+		GUI->setAntiAliasing(true);
+		GUI->setColor(1.0f,0.0f,1.0f);
+		GUI->fillShape2D(m_Poly);
+		/*GUI->setColor(1.0f,1.0f,1.0f);
+		GUI->drawShape2D(m_Poly);*/
+	}
+
+	GUI->setColor(1.0f,0.0f,1.0f);
+
+	m_pFPSGraph->draw();
+
+	CONSOLE->draw();
+
+	/* DRAW 3D & 2D */
+	GRAPHICS->clearAll();
+
+	GRAPHICS->begin(m_pCamera);
+	GRAPHICS->end();
+
+	// TODO: implement into drawmanager/GRAPHICS
 	HE3D->begin(m_pCamera);
 
-		m_pTestGrid->draw();
-		HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
+	m_pTestGrid->draw();
+	HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
 
 	HE3D->end();
-
-	// 2D test stuff
-	HE2D->begin();
-
-		// GUI elements need to be drawn inside HE2D renderer
-		m_pTestButton->draw();
-		m_pTestButton2->draw();
-		m_pTestButton3->draw();
-		
-		/*m_pTextBox->draw();
-
-		if (m_bTest2)
-		{
-			HE2D->setColor(1.0f,0.5f,0.0f);
-			HE2D->setFontVerticalAlignment(Font::VAlignment_Center);
-			HE2D->setFontHorizontalAlignment(Font::HAlignment_Center);
-
-			HE2D->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
-		}*/
-
-		HE2D->setColor(1.0f,1.0f,1.0f);
-
-		std::stringstream stream;
-		stream << "2D: " << m_pTestSound2D->getPlayTime() << " / " << m_pTestSound2D->getLength();
-
-		HE2D->drawString(stream.str(), m_pFont, vec2(1050,600));
-
-		stream.str("");
-
-		stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
-
-		HE2D->drawString(stream.str(), m_pFont, vec2(1050,620));
-
-		stream.str("");
-
-		stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
-
-		HE2D->drawString(stream.str(), m_pFont, vec2(1050,640));
-
-		m_pFPSGraph->draw();
-
-		CONSOLE->draw();
-
-	HE2D->end();
 }
 
 } //end namespace

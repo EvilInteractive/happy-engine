@@ -22,14 +22,44 @@
 #include "Text.h"
 #include "HappyNew.h"
 #include <algorithm>
+#include "HappyEngine.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Text::Text(uint maxWidth, uint maxHeight) :	m_MaxWidth(maxWidth),
-											m_MaxHeight(maxHeight)
+Text::Text(	gfx::Font::pointer font,
+			OverFlowType overflow) :	m_pFont(font),
+										m_OverFlowType(overflow),
+										m_HAlignment(HAlignment_Left),
+										m_VAlignment(VAlignment_Top)
 {
+}
+Text::Text(	const std::string& text,
+			gfx::Font::pointer font,
+			OverFlowType overflow) :	m_pFont(font),
+										m_OverFlowType(overflow),
+										m_HAlignment(HAlignment_Left),
+										m_VAlignment(VAlignment_Top)
+{
+	addLine(text);
+}
+
+Text::Text(OverFlowType overflow) :	m_OverFlowType(overflow),
+									m_HAlignment(HAlignment_Left),
+									m_VAlignment(VAlignment_Top)
+{
+	m_pFont = CONTENT->getDefaultFont();
+}
+
+Text::Text(	const std::string& text,
+			OverFlowType overflow) :	m_OverFlowType(overflow),
+										m_HAlignment(HAlignment_Left),
+										m_VAlignment(VAlignment_Top)
+{
+	addLine(text);
+	m_pFont = CONTENT->getDefaultFont();
 }
 
 Text::~Text()
@@ -42,6 +72,11 @@ void Text::addLine(const std::string& string)
 	m_Text.push_back(string);
 }
 
+void Text::clear()
+{
+	m_Text.clear();
+}
+
 /* SETTERS */
 void Text::setLine(const std::string& string, uint lineNumber)
 {
@@ -49,6 +84,16 @@ void Text::setLine(const std::string& string, uint lineNumber)
 	{
 		m_Text[lineNumber] = string;
 	}
+}
+
+void Text::setHorizontalAlignment(HAlignment alignment)
+{
+	m_HAlignment = alignment;
+}
+
+void Text::setVerticalAlignment(VAlignment alignment)
+{
+	m_VAlignment = alignment;
 }
 
 /* GETTERS */
@@ -67,14 +112,24 @@ bool Text::isEmpty() const
 	return m_Text.empty();
 }
 
-uint Text::getMaxWidth() const
+Text::OverFlowType Text::getOverFlowType() const
 {
-	return m_MaxWidth;
+	return m_OverFlowType;
 }
 
-uint Text::getMaxHeight() const
+Text::HAlignment Text::getHorizontalAlignment() const
 {
-	return m_MaxHeight;
+	return m_HAlignment;
+}
+
+Text::VAlignment Text::getVerticalAlignment() const
+{
+	return m_VAlignment;
+}
+
+const gfx::Font::pointer& Text::getFont() const
+{
+	return m_pFont;
 }
 
 } } //end namespace
