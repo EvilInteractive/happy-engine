@@ -338,18 +338,10 @@ void MainGame::draw()
     using namespace he;
     using namespace gfx;
 
-    /*if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
-    {
-        ++m_BackgroundIndex;
-        if (m_BackgroundIndex > 4)
-            m_BackgroundIndex = 0;
-        GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
-    }*/
-
     // 2D test stuff
-    m_pTestButton->draw();
+   /* m_pTestButton->draw();
     m_pTestButton2->draw();
-    m_pTestButton3->draw();
+    m_pTestButton3->draw();*/
         
     /*m_pTextBox->draw();
 
@@ -362,7 +354,7 @@ void MainGame::draw()
         GUI->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
     }*/
 
-    GUI->setColor(1.0f,1.0f,1.0f);
+    /*GUI->setColor(1.0f,1.0f,1.0f);
 
     std::stringstream stream;
     stream << "2D: " << m_pTestSound2D->getPlayTime() << " / " << m_pTestSound2D->getLength();
@@ -377,22 +369,22 @@ void MainGame::draw()
 
     stream.str("");
 
-    stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
+    stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;*/
 
-    GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
+    //GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
 
-    if (m_Poly.getPolygon().getVertexCount() > 2)
-    {
-        GUI->setAntiAliasing(true);
-        GUI->setColor(1.0f,0.0f,1.0f);
-        GUI->fillShape2D(m_Poly);
-        /*GUI->setColor(1.0f,1.0f,1.0f);
-        GUI->drawShape2D(m_Poly);*/
-    }
+    //if (m_Poly.getPolygon().getVertexCount() > 2)
+    //{
+    //    GUI->setAntiAliasing(true);
+    //    GUI->setColor(1.0f,0.0f,1.0f);
+    //    GUI->fillShape2D(m_Poly);
+    //    /*GUI->setColor(1.0f,1.0f,1.0f);
+    //    GUI->drawShape2D(m_Poly);*/
+    //}
 
-    GUI->setAntiAliasing(true);
-    GUI->setColor(1.0f,0.0f,1.0f);
-    GUI->fillShape2D(gui::RoundedRectangle2D(vec2(500,500), vec2(250,100), 50));
+    //GUI->setAntiAliasing(true);
+    //GUI->setColor(1.0f,0.0f,1.0f);
+    //GUI->fillShape2D(gui::RoundedRectangle2D(vec2(500,500), vec2(250,100), 50));
 
     m_pFPSGraph->draw();
     CONSOLE->draw();
