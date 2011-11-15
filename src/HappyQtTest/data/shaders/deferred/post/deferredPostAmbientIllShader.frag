@@ -28,13 +28,13 @@ out vec4 outColor;
 
 struct AmbientLight
 {
-    vec3 color;
+    vec4 color;
 };
 
 struct DirectionalLight
 {
-	vec3 color;
-	vec3 direction;
+    vec4 color;
+    vec3 direction;
 };
 
 uniform sampler2D colorIllMap;
@@ -60,71 +60,83 @@ int sampleRange = 4;
 
 float shadowCheck(in vec3 position, in sampler2DShadow sampler, in mat4 lightMatrix, in float bias)
 {
-	vec4 coord = lightMatrix * vec4(position, 1.0f);
-	coord.xyz /= coord.w;
-	if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1 ||
-		coord.z < 0)
-		return 0.0f;
+    vec4 coord = lightMatrix * vec4(position, 1.0f);
+    coord.xyz /= coord.w;
+    if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1 ||
+        coord.z < 0)
+        return 0.0f;
 
-	//NDC -> texturespace
-	coord.x = (coord.x + 1.0f) / 2.0f;
-	coord.y = (coord.y + 1.0f) / 2.0f;
-	coord.z = (coord.z + 1.0f) / 2.0f - bias;
-	
-	float shadow = 0;
-	for (int x = -(sampleRange/2); x <= sampleRange/2; ++x)
-		for (int y = -(sampleRange/2); y <= sampleRange/2; ++y)
-			shadow += textureOffset(sampler, coord.xyz, ivec2(x, y));
-	
-	shadow /= sampleRange * sampleRange;
+    //NDC -> texturespace
+    coord.x = (coord.x + 1.0f) / 2.0f;
+    coord.y = (coord.y + 1.0f) / 2.0f;
+    coord.z = (coord.z + 1.0f) / 2.0f - bias;
+    
+    float shadow = 0;
+    for (int x = -(sampleRange/2); x <= sampleRange/2; ++x)
+        for (int y = -(sampleRange/2); y <= sampleRange/2; ++y)
+            shadow += textureOffset(sampler, coord.xyz, ivec2(x, y));
+    
+    shadow /= sampleRange * sampleRange;
 
-	return shadow;
+    return shadow;
 }
 
 void main()
 {    
     vec2 ndc = texCoord * 2.0f - 1.0f;
-	    
-	vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
+        
+    vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
 
-	vec3 lightDir = dirLight.direction;
-	    
-	vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
+    vec3 lightDir = dirLight.direction;
+        
+    vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
     
-	float dotLightNormal = max(0.0f, dot(lightDir, normal));
-	
-	vec4 sg = texture(sgMap, texCoord);	
-	vec3 vCamDir = normalize(-position);
-	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
-	
-	vec4 color = texture(colorIllMap, texCoord);
+    float dotLightNormal = dot(lightDir, normal) * 0.5f + 0.5f;
+    //dotLightNormal *= dotLightNormal;
+    dotLightNormal = max(0.0f, dotLightNormal);
+    
+    vec4 sg = texture(sgMap, texCoord);	
+    vec3 vCamDir = normalize(-position);
+    float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
+    
+    vec4 color = texture(colorIllMap, texCoord);
 
-	vec3 dirColor = (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 5.0f) * dirLight.color;
-	
-	vec3 testColor = vec3(1, 1, 1);
+    vec3 dirColor = (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 5.0f) * dirLight.color.rgb;
+    
+    vec3 testColor = vec3(1, 1, 1);
 
-	if (position.z < 25)
-	{
-		//testColor = vec3(1, 0, 1);
-		dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0, -0.001f);
-	}
-	else if (position.z < 50)
-	{
-		//testColor = vec3(0, 1, 0);
-		dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1, -0.001f);
-	}
-	else if (position.z < 100)
-	{
-		//testColor = vec3(0, 0, 1);
-		dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2, -0.0001f);
-	}
-	else
-	{
-		//testColor = vec3(0, 1, 1);
-		dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3, -0.0001f);
-	}
+    if (position.z < 25)
+    {
+        //testColor = vec3(1, 0, 1);
+        dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0, -0.001f);
+    }
+    else if (position.z < 50)
+    {
+        //testColor = vec3(0, 1, 0);
+        dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1, -0.001f);
+    }
+    else if (position.z < 100)
+    {
+        //testColor = vec3(0, 0, 1);
+        dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2, -0.0001f);
+    }
+    else
+    {
+        //testColor = vec3(0, 1, 1);
+        dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3, -0.001f);
+    }
+    
+    //float steps = 1.0f / 16.0f;
+    //color.r = int(color.r / steps) * steps;
+    //color.g = int(color.g / steps) * steps;
+    //color.b = int(color.b / steps) * steps;
+//
+    //dirColor.r = int(dirColor.r / steps) * steps;
+    //dirColor.g = int(dirColor.g / steps) * steps;
+    //dirColor.b = int(dirColor.b / steps) * steps;
+    
 
-	outColor = vec4((color.rgb * ambLight.color + 
-					color.rgb * color.a * 10.0f + 
-					dirColor)*testColor, 0.0f);						
+    outColor = vec4((color.rgb * ambLight.color.a * ambLight.color.rgb + 
+                    color.rgb * color.a * 10.0f + 
+                    dirColor.rgb * dirLight.color.a)*testColor, 0.0f);						
 }

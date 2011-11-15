@@ -69,15 +69,15 @@ void TestObject::tick(float dTime)
         using namespace he;
         if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Left))
         {
-            m_WheelOrientation += m_WheelTurnSpeed * dTime;
-            if (m_WheelOrientation > m_WheelMax)
-                m_WheelOrientation = m_WheelMax;
-        }
-        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
-        {
             m_WheelOrientation -= m_WheelTurnSpeed * dTime;
             if (m_WheelOrientation < -m_WheelMax)
                 m_WheelOrientation = -m_WheelMax;
+        }
+        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Right))
+        {
+            m_WheelOrientation += m_WheelTurnSpeed * dTime;
+            if (m_WheelOrientation > m_WheelMax)
+                m_WheelOrientation = m_WheelMax;
         }
         else
         {
@@ -95,27 +95,31 @@ void TestObject::tick(float dTime)
         }
         if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Down))
         {
-            m_Rotation -= m_WheelOrientation * dTime * 2;
-            m_Position -= vec3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
+            m_Rotation += m_WheelOrientation * dTime * 2;
+            m_Position += vec3(sinf(m_Rotation), 0, cosf(m_Rotation)) * dTime * 10;
             m_WheelSpeedRotation -= -dTime * 5;
         }
         else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Up))
         {
-            m_Rotation += m_WheelOrientation * dTime * 2;
-            m_Position += vec3(cosf(m_Rotation), 0, -sinf(m_Rotation)) * dTime * 5;
-            m_WheelSpeedRotation -= dTime * 5;
+            m_Rotation -= m_WheelOrientation * dTime * 2;
+            m_Position -= vec3(sinf(m_Rotation), 0, cosf(m_Rotation)) * dTime * 10;
+            m_WheelSpeedRotation -= dTime * 10;
         }
         m_PhysicsComponent->getDynamicActor()->keyframedSetPose(m_Position, vec3(0, 1, 0), m_Rotation);
 
-        (*m_LeftWheelBone.m_RealTransform) = m_LeftWheelBone.m_FromOrigTransform * mat44::createRotation(vec3::up, m_WheelOrientation) * mat44::createRotation(vec3::forward, m_WheelSpeedRotation) * m_LeftWheelBone.m_ToOrigTransform;
-        (*m_RightWheelBone.m_RealTransform) = m_RightWheelBone.m_FromOrigTransform * mat44::createRotation(vec3::up, m_WheelOrientation) * mat44::createRotation(vec3::forward, m_WheelSpeedRotation) * m_RightWheelBone.m_ToOrigTransform;
+        (*m_WheelFLBone.m_RealTransform) = m_WheelFLBone.m_FromOrigTransform * mat44::createRotation(vec3::up, m_WheelOrientation) * mat44::createRotation(vec3::right, m_WheelSpeedRotation) * m_WheelFLBone.m_ToOrigTransform;
+        (*m_WheelFRBone.m_RealTransform) = m_WheelFRBone.m_FromOrigTransform * mat44::createRotation(vec3::up, m_WheelOrientation) * mat44::createRotation(vec3::right, m_WheelSpeedRotation) * m_WheelFRBone.m_ToOrigTransform;
+        (*m_WheelBLBone.m_RealTransform) = m_WheelBLBone.m_FromOrigTransform * mat44::createRotation(vec3::right, m_WheelSpeedRotation) * m_WheelBLBone.m_ToOrigTransform;
+        (*m_WheelBRBone.m_RealTransform) = m_WheelBRBone.m_FromOrigTransform * mat44::createRotation(vec3::right, m_WheelSpeedRotation) * m_WheelBRBone.m_ToOrigTransform;
     }
 }
 
 void TestObject::onModelLoaded()
 {
-    m_LeftWheelBone = m_pRiggedModelComponent->getBone("b_WheelLeft");
-    m_RightWheelBone = m_pRiggedModelComponent->getBone("b_WheelRight");
+    m_WheelFLBone = m_pRiggedModelComponent->getBone("b_WheelFL");
+    m_WheelFRBone = m_pRiggedModelComponent->getBone("b_WheelFR");
+    m_WheelBLBone = m_pRiggedModelComponent->getBone("b_WheelBL");
+    m_WheelBRBone = m_pRiggedModelComponent->getBone("b_WheelBR");
 }
 
 } //end namespace

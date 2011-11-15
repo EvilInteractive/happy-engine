@@ -2,8 +2,9 @@
 in vec2 inPosition;
 
 uniform mat4 matWVP;
+uniform float depth;
 
 void main()
 {
-	gl_Position = matWVP * vec4(inPosition, 0.1f, 1.0f);
+	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
 }

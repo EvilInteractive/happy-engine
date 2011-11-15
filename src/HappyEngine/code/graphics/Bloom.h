@@ -34,10 +34,11 @@ namespace gfx {
 class Bloom
 {
 public:
-	Bloom();
+    Bloom();
     virtual ~Bloom();
 
     void init();
+    void resize();
 
     const Texture2D::pointer& getBloom(byte level) const;
 

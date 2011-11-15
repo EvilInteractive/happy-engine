@@ -46,6 +46,8 @@ public:
     void begin(const Camera* pCamera);
     void end();
 
+    void resized();
+
     LightManager* getLightManager() const;
 	const Texture2D::pointer& getDepthTexture() const;
 

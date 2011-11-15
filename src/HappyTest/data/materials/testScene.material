@@ -3,6 +3,6 @@ shader = "deferred/pre/default.shader"
 
 [TEXTURE2D]
 diffuseMap = "testscene_diff.png"
-normalMap = 128, 128, 255, 255
+normalMap = "random_normals.jpg"
 specGlossIllMap = "testscene_sgi.png"
 

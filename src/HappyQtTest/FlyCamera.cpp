@@ -21,16 +21,17 @@
 #include "HappyEngine.h"
 #include "MathFunctions.h"
 #include "ControlsManager.h"
+#include "GraphicsEngine.h"
 
 namespace happytest {
 
 // CONSTRUCTOR - DESTRUCTOR
 FlyCamera::FlyCamera(int viewportWidth, int viewportHeight) :	Camera(viewportWidth, viewportHeight),
-																m_bMoveable(true),
-																m_Speed(4.0f),
-																m_FastForward(4.0f),
-																m_PreviousMousePos(0,0),
-																m_MouseSensitivity(100.0f)
+                                                                m_bMoveable(true),
+                                                                m_Speed(4.0f),
+                                                                m_FastForward(4.0f),
+                                                                m_PreviousMousePos(0,0),
+                                                                m_MouseSensitivity(100.0f)
 {
 }
 
@@ -41,81 +42,83 @@ FlyCamera::~FlyCamera()
 // GENERAL
 void FlyCamera::tick(const float dTime)
 {
-	using namespace he;
+    using namespace he;
 
-	if (!m_bIsActive) return;
+    if (!m_bIsActive) return;
 
-	if (m_bMoveable)
-	{
-		bool bRunning = false;
+    if (m_bMoveable)
+    {
+        bool bRunning = false;
 
-		// camera controls
-		vec3 dir(0.0f, 0.0f, 0.0f);
+        // camera controls
+        vec3 dir(0.0f, 0.0f, 0.0f);
 
-		if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
-			dir += m_vLookWorld;
-		if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Q))
-			dir -= m_vRightWorld;
+        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
+            dir += m_vLookWorld;
+        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Q))
+            dir -= m_vRightWorld;
 
-		if (CONTROLS->getKeyboard()->isKeyDown(io::Key_S))
-			dir -= m_vLookWorld;
-		if (CONTROLS->getKeyboard()->isKeyDown(io::Key_D))
-			dir += m_vRightWorld;
+        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_S))
+            dir -= m_vLookWorld;
+        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_D))
+            dir += m_vRightWorld;
 
-		// fast forward
-		if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
-			bRunning = true;
+        // fast forward
+        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
+            bRunning = true;
 
-		dir = normalize(dir);
+        dir = normalize(dir);
 
-		float finalSpeed = m_Speed;
-		if (bRunning) finalSpeed *= m_FastForward;
+        float finalSpeed = m_Speed;
+        if (bRunning) finalSpeed *= m_FastForward;
 
-		m_vPosWorld += dir * finalSpeed * dTime;
-	}
+        m_vPosWorld += dir * finalSpeed * dTime;
+    }
 
-	/*float angle = static_cast<float>((CONTROLS->getMouse()-> / 120) / 200.0f);
+    /*float angle = static_cast<float>((CONTROLS->getMouse()-> / 120) / 200.0f);
 
-	if (angle != 0)
-	{
-		m_Speed += angle*200;
+    if (angle != 0)
+    {
+        m_Speed += angle*200;
 
-		if (m_Speed < 2)
-			m_Speed = 2;
-	}*/
+        if (m_Speed < 2)
+            m_Speed = 2;
+    }*/
 
-	if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right))
-	{
-		vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
-		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
-		float pitch = mouseMovement.y / m_MouseSensitivity;
-		float yAngle = mouseMovement.x / m_MouseSensitivity;
+    if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right))
+    {
+        vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
+        m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+        float pitch = mouseMovement.y / m_MouseSensitivity;
+        float yAngle = mouseMovement.x / m_MouseSensitivity;
 
-		mat44 R(mat44::createRotation(m_vRightWorld, -pitch));
-		m_vLookWorld = normalize(R * m_vLookWorld);
+        mat44 R(mat44::createRotation(m_vRightWorld, -pitch));
+        m_vLookWorld = normalize(R * m_vLookWorld);
         m_vUpWorld = normalize(R * m_vUpWorld);
 
-		R = mat44::createRotation(vec3(0,1,0), -yAngle);
+        R = mat44::createRotation(vec3(0,1,0), -yAngle);
         m_vLookWorld = normalize(R * m_vLookWorld);
         m_vRightWorld = normalize(R * m_vRightWorld);
         m_vUpWorld = -normalize(cross(m_vLookWorld, m_vRightWorld));
-	}
-	else
-		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+    }
+    else
+        m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
 
-	buildProjectionMatrix();
-	buildViewMatrix();
+    m_AspectRatio = GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth();
+
+    buildProjectionMatrix();
+    buildViewMatrix();
 }
 
 // SETTERS
 void FlyCamera::moveable(bool bMoveable)
 {
-	m_bMoveable = bMoveable;
+    m_bMoveable = bMoveable;
 }
 
 void FlyCamera::setMouseSensitivty(float sens)
 {
-	m_MouseSensitivity = sens;
+    m_MouseSensitivity = sens;
 }
 
 } //end namespace

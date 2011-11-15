@@ -52,44 +52,6 @@ Bloom::~Bloom()
 
 void Bloom::init()
 {
-    for (int pass = 0; pass < 2; ++pass)
-    {
-        //////////////////////////////////////////////////////////////////////////
-        ///                             Textures                               ///
-        //////////////////////////////////////////////////////////////////////////
-        std::vector<uint> downSampleTextureId[2];
-        downSampleTextureId[pass].resize(m_DownSamples);
-        m_Texture[pass].resize(m_DownSamples);
-
-        glGenTextures(m_DownSamples, &downSampleTextureId[pass][0]);
-        for (int i = 0; i < m_DownSamples; ++i)
-        {
-            GL::heBindTexture2D(0, downSampleTextureId[pass][i]);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
-                GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
-                0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-            m_Texture[pass][i] = Texture2D::pointer(NEW Texture2D());
-            m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
-        }
-
-        //////////////////////////////////////////////////////////////////////////
-        ///                               Fbo's                                ///
-        //////////////////////////////////////////////////////////////////////////
-
-        //Downsample fbo's
-        m_FboId[pass].resize(m_DownSamples);
-        glGenFramebuffers(m_DownSamples, &m_FboId[pass][0]);
-
-        for (int i = 0; i < m_DownSamples; ++i)
-        {
-            GL::heBindFbo(m_FboId[pass][i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, downSampleTextureId[pass][i], 0);       
-        }
-    }
     //////////////////////////////////////////////////////////////////////////
     ///                             Shaders                                ///
     //////////////////////////////////////////////////////////////////////////
@@ -133,6 +95,55 @@ void Bloom::init()
     ///                             Quad                                   ///
     //////////////////////////////////////////////////////////////////////////
     m_pMesh = CONTENT->getFullscreenQuad();
+}
+
+void Bloom::resize()
+{
+    for (int pass = 0; pass < 2; ++pass)
+    {
+        std::for_each(m_FboId[pass].cbegin(), m_FboId[pass].cend(), [](const uint& id)
+        {
+            glDeleteFramebuffers(1, &id);
+        });
+    }
+    for (int pass = 0; pass < 2; ++pass)
+    {
+        //////////////////////////////////////////////////////////////////////////
+        ///                             Textures                               ///
+        //////////////////////////////////////////////////////////////////////////
+        std::vector<uint> downSampleTextureId[2];
+        downSampleTextureId[pass].resize(m_DownSamples);
+        m_Texture[pass].resize(m_DownSamples);
+
+        glGenTextures(m_DownSamples, &downSampleTextureId[pass][0]);
+        for (int i = 0; i < m_DownSamples; ++i)
+        {
+            GL::heBindTexture2D(0, downSampleTextureId[pass][i]);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
+                GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
+                0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            m_Texture[pass][i] = Texture2D::pointer(NEW Texture2D());
+            m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
+        }
+
+        //////////////////////////////////////////////////////////////////////////
+        ///                               Fbo's                                ///
+        //////////////////////////////////////////////////////////////////////////
+
+        //Downsample fbo's
+        m_FboId[pass].resize(m_DownSamples);
+        glGenFramebuffers(m_DownSamples, &m_FboId[pass][0]);
+
+        for (int i = 0; i < m_DownSamples; ++i)
+        {
+            GL::heBindFbo(m_FboId[pass][i]);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, downSampleTextureId[pass][i], 0);       
+        }
+    }
 }
 
 void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& lumMap )

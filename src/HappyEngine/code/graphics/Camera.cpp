@@ -48,7 +48,7 @@ Camera::~Camera()
 // GENERAL
 void Camera::resize(int viewportWidth, int viewportHeight)
 {
-	m_AspectRatio = static_cast<float>(viewportWidth/viewportHeight);
+	m_AspectRatio = static_cast<float>(viewportHeight/viewportWidth);
 }
 
 void Camera::lookAt(const vec3 &pos, const vec3 &target, const vec3 &up)
@@ -101,7 +101,7 @@ void Camera::buildProjectionMatrix()
 	if (m_FOV > pi / 5 * 4.0f) m_FOV = static_cast<float>(pi / 5 * 4.0f);
 	if (m_FOV < pi / 30.0f) m_FOV = static_cast<float>(pi / 30.0f);
 
-	m_matProjection = mat44::createPerspectiveLH(m_FOV, m_AspectRatio, 1, m_NearZ, m_FarZ);
+	m_matProjection = mat44::createPerspectiveLH(m_FOV, m_AspectRatio, m_NearZ, m_FarZ);
 
 	m_matViewProjection = m_matProjection * m_matView;
 }

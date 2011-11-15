@@ -43,6 +43,7 @@ public:
 
     //static constructors
     static mat44 createPerspectiveLH(float fov, float viewWidth, float viewHeight, float zNear, float zFar);
+    static mat44 createPerspectiveLH(float fov, float aspectRatio, float zNear, float zFar);
     static mat44 createPerspectiveRH(float fov, float viewWidth, float viewHeight, float zNear, float zFar);
     static mat44 createOrthoLH(float left, float right, float top, float bottom, float zNear, float zFar);
     static mat44 createOrthoRH(float left, float right, float top, float bottom, float zNear, float zFar);

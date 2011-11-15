@@ -48,7 +48,7 @@ void main()
 	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.5f), 2).rgb);
 	lum /= 9.0f;
 	
-	outColor = max(0, (lum * 0.01f + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * 0.99f));
+	outColor = max(0, (lum * 0.005f + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * 0.99f));
 }
 
 

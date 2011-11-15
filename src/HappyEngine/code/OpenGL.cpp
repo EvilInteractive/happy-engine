@@ -128,11 +128,11 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
     ASSERT(samplerPos < MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
     //if (m_BoundTex2D[samplerPos] != tex)
     //{
-        //if (m_ActiveTex != samplerPos)
-        //{
+        if (m_ActiveTex != samplerPos)
+        {
             glActiveTexture(GL_TEXTURE0 + samplerPos);
             m_ActiveTex = samplerPos;
-        //}
+        }
         m_BoundTex2D[samplerPos] = tex;
         glBindTexture(GL_TEXTURE_2D, tex);
    // }

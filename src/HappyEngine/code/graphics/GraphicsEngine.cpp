@@ -39,7 +39,8 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_WindowTitle("HappyEngine"),
                                   m_VSyncEnabled(true),
                                   m_pDrawManager(NEW DrawManager()),
-								  m_pPicker(NEW Picker())
+                                  m_pPicker(NEW Picker()),
+                                  m_pDeferred3DRenderer(nullptr)
 {
 }
 
@@ -48,7 +49,7 @@ GraphicsEngine::~GraphicsEngine()
 {
     delete m_pDrawManager;
     delete m_pDeferred3DRenderer;
-	delete m_pPicker;
+    delete m_pPicker;
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
 }
@@ -132,6 +133,8 @@ void GraphicsEngine::setScreenDimension(uint width, uint height)
     m_ScreenRect.height = height;
     if (m_pMainWindow != nullptr)
         SDL_SetWindowSize(m_pMainWindow, static_cast<int>(width), static_cast<int>(height));
+    if (m_pDeferred3DRenderer != nullptr)
+        m_pDeferred3DRenderer->resized();
 }
 uint GraphicsEngine::getScreenWidth() const
 {
@@ -210,8 +213,8 @@ void GraphicsEngine::end()
 {
     m_pDeferred3DRenderer->end();
 
-	GUI->begin();
-	GUI->end();
+    GUI->begin();
+    GUI->end();
 }
 void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
 {
@@ -238,20 +241,20 @@ void GraphicsEngine::addToDrawList( const IDrawable* pDrawable )
 
 Deferred3DRenderer* GraphicsEngine::getDeferredRenderer() const
 {
-	return m_pDeferred3DRenderer;
+    return m_pDeferred3DRenderer;
 }
 
 const std::vector<const IDrawable*>& GraphicsEngine::getDrawList() const
 {
-	return m_pDrawManager->getDrawList();
+    return m_pDrawManager->getDrawList();
 }
 void GraphicsEngine::initPicking()
 {
-	m_pPicker->initialize();
+    m_pPicker->initialize();
 }
 uint GraphicsEngine::pick(const vec2& screenPoint)
 {
-	return m_pPicker->pick(screenPoint, m_pCurrentCamera);
+    return m_pPicker->pick(screenPoint, m_pCurrentCamera);
 }
 
 } } //end namespace

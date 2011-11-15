@@ -34,18 +34,57 @@ uniform sampler2D blur3;
 #endif
 
 uniform sampler2D lumMap;
-//uniform float gamma;
+
+uniform sampler2D normalMap;
+uniform sampler2D depthMap;
+
+float edgeMult1 = 5.0f;
+float edgeMult2 = 10.0f;
 
 float vignette(vec2 pos, float inner, float outer)
 {
-  float r = length(pos);
-  r = 1.0 - smoothstep(inner, outer, r);
-  return r;
+    float r = length(pos);
+    r = 1.0 - smoothstep(inner, outer, r);
+    return r;
+}
+
+float getEdge(in sampler2D map, in vec2 texCoord)
+{
+    vec3 sumX = vec3(0, 0, 0);
+    vec3 sumY = vec3(0, 0, 0); 
+    
+    vec3 c00 = textureOffset(map, texCoord, ivec2(-1, -1)).rgb;
+    vec3 c01 = textureOffset(map, texCoord, ivec2(0, -1)).rgb;
+    vec3 c02 = textureOffset(map, texCoord, ivec2(1, -1)).rgb;
+
+    vec3 c10 = textureOffset(map, texCoord, ivec2(-1, 0)).rgb;
+    vec3 c12 = textureOffset(map, texCoord, ivec2(1, 0)).rgb;
+
+    vec3 c20 = textureOffset(map, texCoord, ivec2(-1, 1)).rgb;
+    vec3 c21 = textureOffset(map, texCoord, ivec2(0, 1)).rgb;
+    vec3 c22 = textureOffset(map, texCoord, ivec2(1, 1)).rgb;
+
+    sumX -= c00 * edgeMult1;
+    sumX -= c01 * edgeMult2;
+    sumX -= c02 * edgeMult1;
+    sumX += c20 * edgeMult1;
+    sumX += c21 * edgeMult2;
+    sumX += c22 * edgeMult1;
+
+    sumY -= c00 * edgeMult1;
+    sumY += c02 * edgeMult1;
+    sumY -= c10 * edgeMult2;
+    sumY += c12 * edgeMult2;
+    sumY -= c20 * edgeMult1;
+    sumY += c22 * edgeMult1;
+
+    vec3 endCol = sumX * sumX + sumY * sumY;
+    return 1-clamp((endCol.r + endCol.g + endCol.b) / 3.0f, 0.0f, 1.0f); //back-ify
 }
 
 void main()
 {
-	vec2 tex = vec2(1 - texCoord.x, texCoord.y);
+    vec2 tex = vec2(1 - texCoord.x, texCoord.y);
 
     vec3 color = textureLod(hdrMap, tex, 0.0f).rgb;
     
@@ -56,11 +95,20 @@ void main()
     color += texture(blur3, tex).rgb * 1.0f;  
 #endif
   
-	float ex = 1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f);
-	color *= ex / 4.0f;  //0 -> 20
+    float ex = 1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f);
+    color *= ex / 4.0f;  //0 -> 20
     
-	color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
-	//color = pow(color, vec3(gamma, gamma, gamma));
+    color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
+    //color = pow(color, vec3(gamma, gamma, gamma));
 
-	outColor = vec4(color, 1.0f);
+    color *= getEdge(normalMap, tex);
+    color *= getEdge(depthMap, tex);
+
+    float beginFog = 0.98f;
+    float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));
+
+
+    color = color * (1 - fog) + vec3(0.2f, 0.4f, 0.6f) * (fog);
+    
+    outColor = vec4(color, 1.0f);
 }

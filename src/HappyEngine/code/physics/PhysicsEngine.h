@@ -38,21 +38,21 @@ namespace px {
 
 class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
-    void* allocate(size_t size, const char*, const char*, int)
-    {
-        return _aligned_malloc(size, 16);
-    }
+	void* allocate(size_t size, const char*, const char*, int)
+	{
+		return _aligned_malloc(size, 16);
+	}
 
-    void deallocate(void* ptr)
-    {
-        _aligned_free(ptr);
-    }
+	void deallocate(void* ptr)
+	{
+		_aligned_free(ptr);
+	}
 };
 
 enum PxFilter
 {
-    PxFilter_CarChassi = 1 << 0,
-    PxFilter_CarWheel = 1 << 1,
+	PxFilter_CarChassi = 1 << 0,
+	PxFilter_CarWheel = 1 << 1,
 
 };
 
@@ -60,42 +60,42 @@ class PhysicsEngine
 {
 public:
 	PhysicsEngine();
-    virtual ~PhysicsEngine();
+	virtual ~PhysicsEngine();
 
-    void tick(float dTime);
+	void tick(float dTime);
 
-    void startSimulation();
-    void stopSimulation();
+	void startSimulation();
+	void stopSimulation();
 
-    physx::PxPhysics* getSDK() const;
-    physx::PxScene* getScene() const;
+	physx::PxPhysics* getSDK() const;
+	physx::PxScene* getScene() const;
 
-    physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
+	physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
 
 private:
 
-    physx::PxPhysics* m_pPhysXSDK;
-    physx::PxScene* m_pScene;
+	physx::PxPhysics* m_pPhysXSDK;
+	physx::PxScene* m_pScene;
 
-    physx::PxErrorCallback* m_pErrorCallback;
-    physx::PxAllocatorCallback* m_pAllocator;
+	physx::PxErrorCallback* m_pErrorCallback;
+	physx::PxAllocatorCallback* m_pAllocator;
 
-    physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
-    physx::pxtask::CudaContextManager* m_pCudaContextManager;
+	physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
+	physx::pxtask::CudaContextManager* m_pCudaContextManager;
 
-    ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
+	ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
 
-    boost::thread m_PhysXThread;
+	boost::thread m_PhysXThread;
 
-    void createScene();
+	void createScene();
 
-    float m_Timer;
+	float m_Timer;
 
-    bool m_Simulate;
+	bool m_Simulate;
 
-    //Disable default copy constructor and default assignment operator
-    PhysicsEngine(const PhysicsEngine&);
-    PhysicsEngine& operator=(const PhysicsEngine&);
+	//Disable default copy constructor and default assignment operator
+	PhysicsEngine(const PhysicsEngine&);
+	PhysicsEngine& operator=(const PhysicsEngine&);
 };
 
 } } //end namespace

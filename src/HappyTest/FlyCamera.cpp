@@ -21,6 +21,7 @@
 #include "HappyEngine.h"
 #include "MathFunctions.h"
 #include "ControlsManager.h"
+#include "GraphicsEngine.h"
 
 namespace happytest {
 
@@ -102,6 +103,8 @@ void FlyCamera::tick(const float dTime)
 	}
 	else
 		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+
+    m_AspectRatio = GRAPHICS->getScreenHeight() / GRAPHICS->getScreenWidth();
 
 	buildProjectionMatrix();
 	buildViewMatrix();

@@ -32,7 +32,7 @@ namespace happytest {
 class TestObject : public he::game::Entity
 {
 public:
-	TestObject();
+    TestObject();
     virtual ~TestObject();
 
     virtual void tick(float dTime);
@@ -47,7 +47,7 @@ private:
     he::game::DynamicPhysicsComponent* m_PhysicsComponent;
 
     he::game::RiggedModelComponent* m_pRiggedModelComponent;
-    he::game::RiggedModelComponent::BoneTransform m_LeftWheelBone, m_RightWheelBone;
+    he::game::RiggedModelComponent::BoneTransform m_WheelFLBone, m_WheelFRBone, m_WheelBLBone, m_WheelBRBone;
     void onModelLoaded();
 
     //Disable default copy constructor and default assignment operator

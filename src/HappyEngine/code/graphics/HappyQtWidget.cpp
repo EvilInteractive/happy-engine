@@ -58,20 +58,21 @@ void HappyQtWidget::initializeGL()
     if (GUI != nullptr)
         GUI->init();
     if (HE3D != nullptr)       
-		HE3D->init();
+        HE3D->init();
 }
 void HappyQtWidget::paintGL()
 {
     /*makeCurrent();
     draw();*/
 }
-void HappyQtWidget::resizeGL(int /*width*/, int /*height*/)
+void HappyQtWidget::resizeGL(int width, int height)
 {
-
+    GRAPHICS->setScreenDimension(width, height);
+    GRAPHICS->setViewport(RectI(0, 0, width, height));
 }
 void HappyQtWidget::present()
 {
-	swapBuffers();
+    swapBuffers();
 }
 void HappyQtWidget::mouseMoveEvent(QMouseEvent* event)
 {
@@ -92,7 +93,7 @@ void HappyQtWidget::mouseReleaseEvent(QMouseEvent* event)
 }
 void HappyQtWidget::closeEvent (QCloseEvent* /*event*/)
 {
-	HAPPYENGINE->quit();
+    HAPPYENGINE->quit();
 }
 
 

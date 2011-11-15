@@ -35,30 +35,28 @@ uniform sampler2D specGlossIllMap;
 
 vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
-	//NormalMap
-	//tangent = normalize(tangent);
-	//normal = normalize(normal);
-//
-	//tangent -= dot(tangent, normal) * normal;
-	//vec3 binormal = normalize(cross(tangent, normal));
-//
-	//mat3 assenstelsel = mat3(binormal, tangent, normal);
-//
-	//vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
-//
-	//return normalize(assenstelsel * xyz);
-	return normalize(normal);
+    //NormalMap
+    tangent = normalize(tangent);
+    normal = normalize(normal);
+
+    vec3 binormal = normalize(cross(tangent, normal));
+
+    mat3 assenstelsel = mat3(binormal, tangent, normal);
+
+    vec3 xyz = vec3(rgb.x * 2 - 1, (1-rgb.y) * 2 - 1, rgb.z * 2 - 1);
+
+    return normalize(assenstelsel * xyz);
 }
 
 void main()
 {
-	vec4 color = texture(diffuseMap, passTexCoord);
-	vec4 normal = texture(normalMap, passTexCoord);
-	vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
+    vec4 color = texture(diffuseMap, passTexCoord);
+    vec4 normal = texture(normalMap, passTexCoord);
+    vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
+    
+    outColor = vec4(color.rgb, specGlossIll.b);
 
-	outColor = vec4(color.rgb, specGlossIll.b);
+    outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal.rgb));
 
-	outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal.rgb));
-
-	outSGI = vec4(specGlossIll.rg, 0.0f, 0.0f);
+    outSGI = vec4(specGlossIll.rg, 0.0f, 0.0f);
 }

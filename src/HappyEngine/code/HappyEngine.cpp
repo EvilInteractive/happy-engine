@@ -49,9 +49,9 @@ namespace he {
 HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
-                            m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
-                            m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
+							m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
+							m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
+							m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
 							m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0)
 {
 }
@@ -61,223 +61,223 @@ HappyEngine::~HappyEngine()
 
 void HappyEngine::quit()
 {
-    m_Quit = true;
+	m_Quit = true;
 }
 void HappyEngine::dispose()
 {
-    HAPPYENGINE->cleanup();
-    delete s_pHappyEngine;
-    s_pHappyEngine = nullptr;
-    std::cout << "\n--Thank you for using HappyEngine--\n";
+	HAPPYENGINE->cleanup();
+	delete s_pHappyEngine;
+	s_pHappyEngine = nullptr;
+	std::cout << "\n--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::cleanup()
 {  
 	m_AudioThread.join(); // wait for audiothread to finish
 
-    //dispose/delete all sub engines here
-    delete m_pContentManager;
-    m_pContentManager = nullptr;
+	//dispose/delete all sub engines here
+	delete m_pContentManager;
+	m_pContentManager = nullptr;
 	delete m_p2DRenderer;
 	m_p2DRenderer = nullptr;
 	delete m_pSoundEngine;
 	m_pSoundEngine = nullptr;
-    delete m_pControlsManager;
-    m_pControlsManager = nullptr;
-    delete m_pPhysicsEngine;
-    m_pPhysicsEngine = nullptr;
-    delete m_pNetworkManager;
-    m_pNetworkManager = nullptr;
+	delete m_pControlsManager;
+	m_pControlsManager = nullptr;
+	delete m_pPhysicsEngine;
+	m_pPhysicsEngine = nullptr;
+	delete m_pNetworkManager;
+	m_pNetworkManager = nullptr;
 	delete m_p3DRenderer;
 	m_p3DRenderer = nullptr;
 
-    delete m_pGraphicsEngine;
-    m_pGraphicsEngine = nullptr;
+	delete m_pGraphicsEngine;
+	m_pGraphicsEngine = nullptr;
 
 
-    if (m_SubEngines & SubEngine_Graphics)
-    {
-        SDL_Quit();
-    }
+	if (m_SubEngines & SubEngine_Graphics)
+	{
+		SDL_Quit();
+	}
 
-    delete m_pConsole;
-    m_pConsole = nullptr;
+	delete m_pConsole;
+	m_pConsole = nullptr;
 }
 void HappyEngine::init(int subengines)
 {
-    if (s_pHappyEngine == nullptr)
-        s_pHappyEngine = NEW HappyEngine();
+	if (s_pHappyEngine == nullptr)
+		s_pHappyEngine = NEW HappyEngine();
 
-    HAPPYENGINE->initSubEngines(subengines);
+	HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 {
-    m_SubEngines |= subengines;
+	m_SubEngines |= subengines;
 
-    if (subengines & SubEngine_Graphics)
-    {
-        SDL_Init(SDL_INIT_EVERYTHING);
-        m_pGraphicsEngine = NEW gfx::GraphicsEngine();
+	if (subengines & SubEngine_Graphics)
+	{
+		SDL_Init(SDL_INIT_EVERYTHING);
+		m_pGraphicsEngine = NEW gfx::GraphicsEngine();
 		m_p3DRenderer = NEW gfx::SimpleForward3DRenderer();
-    }
+	}
 
-    if (subengines & SubEngine_Content)
-    {
-        ilInit();
-        iluInit();
-        iluSetLanguage(ILU_ENGLISH);
-        m_pContentManager = NEW ct::ContentManager();
-    }
-    
-    if (subengines & SubEngine_Controls)
-    {
-        m_pControlsManager = NEW io::ControlsManager((subengines & SubEngine_Qt) == SubEngine_Qt);
-    }
+	if (subengines & SubEngine_Content)
+	{
+		ilInit();
+		iluInit();
+		iluSetLanguage(ILU_ENGLISH);
+		m_pContentManager = NEW ct::ContentManager();
+	}
+	
+	if (subengines & SubEngine_Controls)
+	{
+		m_pControlsManager = NEW io::ControlsManager((subengines & SubEngine_Qt) == SubEngine_Qt);
+	}
 
-    if (subengines & SubEngine_Physics)
-    {
-        m_pPhysicsEngine = NEW px::PhysicsEngine();
-    }
+	if (subengines & SubEngine_Physics)
+	{
+		m_pPhysicsEngine = NEW px::PhysicsEngine();
+	}
 
-    if (subengines & SubEngine_Networking)
-    {
-        m_pNetworkManager = NEW net::NetworkManager();
-    }
+	if (subengines & SubEngine_Networking)
+	{
+		m_pNetworkManager = NEW net::NetworkManager();
+	}
 
 	if (subengines & SubEngine_2DRenderer)
-    {
+	{
 		m_p2DRenderer = NEW gfx::Happy2DRenderer();
-    }
+	}
 
 	if (subengines & SubEngine_Audio)
-    {
+	{
 		m_pSoundEngine = NEW sfx::SoundEngine();
 		m_pSoundEngine->initialize();
-    }
+	}
 
-    m_pConsole = NEW tools::Console();
-    m_pConsole->load();
+	m_pConsole = NEW tools::Console();
+	m_pConsole->load();
 }
 
 void HappyEngine::start(game::Game* pGame)
 {
-    using namespace std;
-    cout << "       ******************************       \n";
-    cout << "  ****************        ****************  \n";
-    cout << "*************  HappyEngine :D  *************\n";
-    cout << "  ***************          ***************  \n";
-    cout << "       ******************************       \n";
-    cout << "os: " << SDL_GetPlatform() << "\n\n";
+	using namespace std;
+	cout << "       ******************************       \n";
+	cout << "  ****************        ****************  \n";
+	cout << "*************  HappyEngine :D  *************\n";
+	cout << "  ***************          ***************  \n";
+	cout << "       ******************************       \n";
+	cout << "os: " << SDL_GetPlatform() << "\n\n";
 
-    m_pGame = pGame;
+	m_pGame = pGame;
 
-    //Init Game
-    pGame->init();
-    
-    //load stuff
-    if (m_SubEngines & SubEngine_Graphics)
+	//Init Game
+	pGame->init();
+	
+	//load stuff
+	if (m_SubEngines & SubEngine_Graphics)
 	{
 		m_pGraphicsEngine->init(false);
 		m_p3DRenderer->init();
 	}
 
-    if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
+	if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 
-    m_pGame->load();
+	m_pGame->load();
 
 	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 
-    //boost::timer t;
-    m_PrevTime = boost::chrono::high_resolution_clock::now();
+	//boost::timer t;
+	m_PrevTime = boost::chrono::high_resolution_clock::now();
 
-    while (m_Quit == false)
-    {
-        loop();
-    }   
+	while (m_Quit == false)
+	{
+		loop();
+	}   
 }
 #ifdef HE_ENABLE_QT
 void HappyEngine::start(gfx::HappyQtWidget* pWidget)
 {
-    using namespace std;
-    cout << "       ******************************       \n";
-    cout << "  ****************   Qt   ****************  \n";
-    cout << "*************  HappyEngine :3  *************\n";
-    cout << "  ***************          ***************  \n";
-    cout << "       ******************************       \n";
-    m_SubEngines |= SubEngine_Qt;    
+	using namespace std;
+	cout << "       ******************************       \n";
+	cout << "  ****************   Qt   ****************  \n";
+	cout << "*************  HappyEngine :3  *************\n";
+	cout << "  ***************          ***************  \n";
+	cout << "       ******************************       \n";
+	m_SubEngines |= SubEngine_Qt;    
 
-    m_pGame = pWidget;
-    m_pGame->load();
-    m_pQtWidget = pWidget;
-    
+	m_pGame = pWidget;
+	m_pGame->load();
+	m_pQtWidget = pWidget;
+	
 	m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 
-    m_qtLoopTimer.setSingleShot(true); //as fast as possible
-    connect(&m_qtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
-    m_qtLoopTimer.start(0);
+	m_qtLoopTimer.setSingleShot(true); //as fast as possible
+	connect(&m_qtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
+	m_qtLoopTimer.start(0);
 
-    QApplication::exec();
-    m_Quit = true;
+	QApplication::exec();
+	m_Quit = true;
 }
 #endif
 void HappyEngine::loop()
 {
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
-    m_PrevTime = boost::chrono::high_resolution_clock::now();
-    float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
-    updateLoop(dTime);
-    if (m_SubEngines & SubEngine_Graphics)
-        drawLoop();
+	boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
+	m_PrevTime = boost::chrono::high_resolution_clock::now();
+	float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+	updateLoop(dTime);
+	if (m_SubEngines & SubEngine_Graphics)
+		drawLoop();
 
 #ifdef HE_ENABLE_QT
-    if ((m_SubEngines & SubEngine_Qt) && m_Quit == false)
-        m_qtLoopTimer.start(0);
+	if ((m_SubEngines & SubEngine_Qt) && m_Quit == false)
+		m_qtLoopTimer.start(0);
 #endif
 }
 void HappyEngine::updateLoop(float dTime)
 {
-    if ((m_SubEngines & SubEngine_Qt) != SubEngine_Qt)
-    {
-        SDL_Event event;
-	    m_SDLEvents.clear();
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-                case SDL_QUIT: m_Quit = true; break;
-            }
+	if ((m_SubEngines & SubEngine_Qt) != SubEngine_Qt)
+	{
+		SDL_Event event;
+		m_SDLEvents.clear();
+		while (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+				case SDL_QUIT: m_Quit = true; break;
+			}
 
-		    // needed for checking events in other places in program
-		    m_SDLEvents.push_back(event);
-        }
-    }
-    if (m_SubEngines & SubEngine_Controls)
-        m_pControlsManager->tick();
-    if (m_SubEngines & SubEngine_Content)
-    {
-        m_pContentManager->tick(dTime);
-        m_pContentManager->glThreadInvoke();
-    }
-    if (m_SubEngines & SubEngine_Physics)
-        m_pPhysicsEngine->tick(dTime);
+			// needed for checking events in other places in program
+			m_SDLEvents.push_back(event);
+		}
+	}
+	if (m_SubEngines & SubEngine_Controls)
+		m_pControlsManager->tick();
+	if (m_SubEngines & SubEngine_Content)
+	{
+		m_pContentManager->tick(dTime);
+		m_pContentManager->glThreadInvoke();
+	}
+	if (m_SubEngines & SubEngine_Physics)
+		m_pPhysicsEngine->tick(dTime);
 
-    m_pGame->tick(dTime);
+	m_pGame->tick(dTime);
 }
 void HappyEngine::drawLoop()
 {                
-    m_pGame->draw();
+	m_pGame->draw();
  
 #ifdef HE_ENABLE_QT
-    if (m_SubEngines & SubEngine_Qt)
-        m_pQtWidget->present();
-    else 
+	if (m_SubEngines & SubEngine_Qt)
+		m_pQtWidget->present();
+	else 
 #endif
-    if (m_SubEngines & SubEngine_Graphics)
-        m_pGraphicsEngine->present();
+	if (m_SubEngines & SubEngine_Graphics)
+		m_pGraphicsEngine->present();
 }
 
 HappyEngine* HappyEngine::getPointer()
 {
-    return s_pHappyEngine;
+	return s_pHappyEngine;
 }
 
 const std::vector<SDL_Event>& HappyEngine::getSDLEvents() const
@@ -294,8 +294,8 @@ void HappyEngine::audioLoop()
 	while (m_Quit == false)
 	{
 		boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
-        prevTime = boost::chrono::high_resolution_clock::now();
-        dTime += (elapsedTime.count() / static_cast<float>(boost::nano::den));
+		prevTime = boost::chrono::high_resolution_clock::now();
+		dTime += (elapsedTime.count() / static_cast<float>(boost::nano::den));
 
 		if (dTime >= (1 / 30.0f))
 		{
@@ -310,23 +310,23 @@ void HappyEngine::audioLoop()
 //SubEngines
 gfx::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 {
-    return m_pGraphicsEngine;
+	return m_pGraphicsEngine;
 }
 const io::ControlsManager* HappyEngine::getControls() const
 {
-    return m_pControlsManager;
+	return m_pControlsManager;
 }
 px::PhysicsEngine* HappyEngine::getPhysics() const
 {
-    return m_pPhysicsEngine;
+	return m_pPhysicsEngine;
 }
 ct::ContentManager* HappyEngine::getContentManager() const
 {
-    return m_pContentManager;
+	return m_pContentManager;
 }
 net::NetworkManager* HappyEngine::getNetworkManager() const
 {
-    return m_pNetworkManager;
+	return m_pNetworkManager;
 }
 gfx::Happy2DRenderer* HappyEngine::get2DRenderer() const
 {
@@ -344,7 +344,7 @@ sfx::SoundEngine* HappyEngine::getSoundEngine() const
 
 game::Game* HappyEngine::getGame() const
 {
-    return m_pGame;
+	return m_pGame;
 }
 
 gfx::SimpleForward3DRenderer* HappyEngine::get3DRenderer() const

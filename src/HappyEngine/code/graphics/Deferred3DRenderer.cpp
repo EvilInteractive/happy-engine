@@ -65,70 +65,16 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     CONSOLE->registerValue(&m_ShowDebugTextures, "debugTex");
     //CONSOLE->registerValue(&m_Bloom, "bloom");
 
+
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
     //////////////////////////////////////////////////////////////////////////
-    int width = GRAPHICS->getViewport().width, 
-       height = GRAPHICS->getViewport().height;
-
-    //Collection Textures
-    glGenTextures(TEXTURES, m_TextureId);
-    for (int i = 0; i < TEXTURES; ++i)
-    {
-        GL::heBindTexture2D(0, m_TextureId[i]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_INTERNALFORMAT[i], 
-                     width, height,
-                     0, TEXTURE_FORMAT[i], GL_UNSIGNED_BYTE, 0);
-        m_pTexture[i] = Texture2D::pointer(NEW Texture2D());
-        m_pTexture[i]->init(m_TextureId[i], width, height, TEXTURE_FORMAT[i]);
-    }
-
-    //HDR Texture
-    glGenTextures(1, &m_RenderTextureId);
-    GL::heBindTexture2D(0, m_RenderTextureId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
-        width, height,
-        0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    m_pRenderTexture->init(m_RenderTextureId, width, height, GL_RGBA16F);
+    resized();
     
+
     if (m_Bloom)
         m_pBloom->init();
     m_pAutoExposure->init();
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                            LOAD FBO's                              ///
-    //////////////////////////////////////////////////////////////////////////
-
-    //FBO Collection
-    glGenFramebuffers(1, &m_CollectionFboId);
-    GL::heBindFbo(m_CollectionFboId);
-
-    for (int i = 0; i < TEXTURES; ++i)
-    {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, TEXTURE_ATTACHMENT[i], GL_TEXTURE_2D, m_TextureId[i], 0);
-    }
-    err::checkFboStatus("deferred collection");
-
-    //Fbo Render
-    glGenFramebuffers(1, &m_RenderFboId);
-    GL::heBindFbo(m_RenderFboId);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RenderTextureId, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_TextureId[3], 0);
-
-    err::checkFboStatus("deferred render");
-
-    GL::heBindFbo(0);
-    
-
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD SHADERS                              ///
     //////////////////////////////////////////////////////////////////////////
@@ -148,12 +94,12 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     
     for (int i = 0; i < LIGHTVOLUME_SHADERS; ++i)
     {
-        m_ShaderLVColMapPos[i] = m_pPostLightVolumeShader[i]->getShaderSamplerId("colorIllMap");
-        m_ShaderLVWVP[i] = m_pPostLightVolumeShader[i]->getShaderVarId("mtxWVP");
+        m_ShaderLVColMapPos[i]    = m_pPostLightVolumeShader[i]->getShaderSamplerId("colorIllMap");
+        m_ShaderLVWVP[i]          = m_pPostLightVolumeShader[i]->getShaderVarId("mtxWVP");
         m_ShaderLVNormalMapPos[i] = m_pPostLightVolumeShader[i]->getShaderSamplerId("normalMap");
-        m_ShaderLVSGMapPos[i] = m_pPostLightVolumeShader[i]->getShaderSamplerId("sgMap");
-        m_ShaderLVDepthMapPos[i] = m_pPostLightVolumeShader[i]->getShaderSamplerId("depthMap");
-        m_ShaderLVProjParams[i] = m_pPostLightVolumeShader[i]->getShaderVarId("projParams");
+        m_ShaderLVSGMapPos[i]     = m_pPostLightVolumeShader[i]->getShaderSamplerId("sgMap");
+        m_ShaderLVDepthMapPos[i]  = m_pPostLightVolumeShader[i]->getShaderSamplerId("depthMap");
+        m_ShaderLVProjParams[i]   = m_pPostLightVolumeShader[i]->getShaderVarId("projParams");
     }
     //----PL----------------------------------------------------------------------
     m_ShaderLVPLPos[0] = m_pPostLightVolumeShader[LightVolumeType_PointLight]->getShaderVarId("light.position");
@@ -173,16 +119,16 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     //----AL----------------------------------------------------------------------
     m_pAmbIllShader = NEW Shader();
     m_pAmbIllShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/deferredPostAmbientIllShader.frag", shaderLayout);
-	m_ShaderAmbIllPos[0] = m_pAmbIllShader->getShaderVarId("ambLight.color");
-	m_ShaderAmbIllPos[1] = m_pAmbIllShader->getShaderVarId("dirLight.color");
-	m_ShaderAmbIllPos[2] = m_pAmbIllShader->getShaderVarId("dirLight.direction");
-	m_ShaderAmbIllPos[3] = m_pAmbIllShader->getShaderVarId("projParams");
-    m_ShaderAmbIllPos[4] = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
-    m_ShaderAmbIllPos[5] = m_pAmbIllShader->getShaderSamplerId("sgMap");
-	m_ShaderAmbIllPos[6] = m_pAmbIllShader->getShaderSamplerId("normalMap");
-    m_ShaderAmbIllPos[7] = m_pAmbIllShader->getShaderSamplerId("depthMap");
-    m_ShaderAmbIllPos[8] = m_pAmbIllShader->getShaderVarId("mtxDirLight0");
-    m_ShaderAmbIllPos[9] = m_pAmbIllShader->getShaderVarId("mtxDirLight1");
+    m_ShaderAmbIllPos[0]  = m_pAmbIllShader->getShaderVarId("ambLight.color");
+    m_ShaderAmbIllPos[1]  = m_pAmbIllShader->getShaderVarId("dirLight.color");
+    m_ShaderAmbIllPos[2]  = m_pAmbIllShader->getShaderVarId("dirLight.direction");
+    m_ShaderAmbIllPos[3]  = m_pAmbIllShader->getShaderVarId("projParams");
+    m_ShaderAmbIllPos[4]  = m_pAmbIllShader->getShaderSamplerId("colorIllMap");
+    m_ShaderAmbIllPos[5]  = m_pAmbIllShader->getShaderSamplerId("sgMap");
+    m_ShaderAmbIllPos[6]  = m_pAmbIllShader->getShaderSamplerId("normalMap");
+    m_ShaderAmbIllPos[7]  = m_pAmbIllShader->getShaderSamplerId("depthMap");
+    m_ShaderAmbIllPos[8]  = m_pAmbIllShader->getShaderVarId("mtxDirLight0");
+    m_ShaderAmbIllPos[9]  = m_pAmbIllShader->getShaderVarId("mtxDirLight1");
     m_ShaderAmbIllPos[10] = m_pAmbIllShader->getShaderVarId("mtxDirLight2");
     m_ShaderAmbIllPos[11] = m_pAmbIllShader->getShaderVarId("mtxDirLight3");
     m_ShaderAmbIllPos[12] = m_pAmbIllShader->getShaderSamplerId("shadowMap0");
@@ -217,10 +163,9 @@ void Deferred3DRenderer::initToneMapShader(const std::string& folder, const Shad
         m_ToneMapShaderPos[3] = m_pToneMapShader->getShaderSamplerId("blur2");
         m_ToneMapShaderPos[4] = m_pToneMapShader->getShaderSamplerId("blur3");
     }
-    //m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderSamplerId("depth");
-    m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderSamplerId("lumMap");
-    //m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderVarId("exposure");
-    //m_ToneMapShaderPos[7] = m_pToneMapShader->getShaderVarId("gamma");
+    m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderSamplerId("lumMap");
+    m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderSamplerId("normalMap");
+    m_ToneMapShaderPos[7] = m_pToneMapShader->getShaderSamplerId("depthMap");
 }
 
 
@@ -239,6 +184,73 @@ Deferred3DRenderer::~Deferred3DRenderer()
     delete m_pLightManager;
     delete m_pBloom;
     delete m_pAutoExposure;
+}
+void Deferred3DRenderer::resized()
+{
+    glDeleteFramebuffers(1, &m_CollectionFboId);
+    glDeleteFramebuffers(1, &m_RenderFboId);
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                          LOAD RENDER TARGETS                       ///
+    //////////////////////////////////////////////////////////////////////////
+    int width  = GRAPHICS->getScreenWidth(), 
+        height = GRAPHICS->getScreenHeight();
+
+    //Collection Textures
+    glGenTextures(TEXTURES, m_TextureId);
+    for (int i = 0; i < TEXTURES; ++i)
+    {
+        GL::heBindTexture2D(0, m_TextureId[i]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_INTERNALFORMAT[i], 
+            width, height,
+            0, TEXTURE_FORMAT[i], GL_UNSIGNED_BYTE, 0);
+        m_pTexture[i] = Texture2D::pointer(NEW Texture2D());
+        m_pTexture[i]->init(m_TextureId[i], width, height, TEXTURE_FORMAT[i]);
+    }
+
+    //HDR Texture
+    glGenTextures(1, &m_RenderTextureId);
+    GL::heBindTexture2D(0, m_RenderTextureId);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
+        width, height,
+        0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    m_pRenderTexture->init(m_RenderTextureId, width, height, GL_RGBA16F);
+
+    if (m_Bloom)
+        m_pBloom->resize();
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                            LOAD FBO's                              ///
+    //////////////////////////////////////////////////////////////////////////
+
+    //FBO Collection
+    glGenFramebuffers(1, &m_CollectionFboId);
+    GL::heBindFbo(m_CollectionFboId);
+
+    for (int i = 0; i < TEXTURES; ++i)
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, TEXTURE_ATTACHMENT[i], GL_TEXTURE_2D, m_TextureId[i], 0);
+    }
+    err::checkFboStatus("deferred collection");
+
+    //Fbo Render
+    glGenFramebuffers(1, &m_RenderFboId);
+    GL::heBindFbo(m_RenderFboId);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RenderTextureId, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_TextureId[3], 0);
+
+    err::checkFboStatus("deferred render");
+
+    GL::heBindFbo(0);
 }
 
 const VertexLayout& Deferred3DRenderer::getVertexLayoutLightVolume() 
@@ -370,22 +382,22 @@ void Deferred3DRenderer::end()
 }
 void Deferred3DRenderer::postAmbIllLight()
 {
-	const AmbientLight::pointer& pAmbLight(m_pLightManager->getAmbientLight());
-	const DirectionalLight::pointer& pDirLight(m_pLightManager->getDirectionalLight());
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[0], pAmbLight->color * pAmbLight->multiplier);
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[1], pDirLight->getColor() * pDirLight->getMultiplier());
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[2], normalize((m_pCamera->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz()));
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[3], vec4(m_pCamera->getProjection()(0, 0),
-															 m_pCamera->getProjection()(1, 1),
-															 m_pCamera->getProjection()(2, 2),
-															 m_pCamera->getProjection()(2, 3)));
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[4], m_pTexture[0]);
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[5], m_pTexture[1]);
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[6], m_pTexture[2]);
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[7], m_pTexture[3]);
+    const AmbientLight::pointer& pAmbLight(m_pLightManager->getAmbientLight());
+    const DirectionalLight::pointer& pDirLight(m_pLightManager->getDirectionalLight());
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[0], vec4(pAmbLight->color, pAmbLight->multiplier));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[1], vec4(pDirLight->getColor(), pDirLight->getMultiplier()));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[2], normalize((m_pCamera->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz()));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[3], vec4(m_pCamera->getProjection()(0, 0),
+                                                             m_pCamera->getProjection()(1, 1),
+                                                             m_pCamera->getProjection()(2, 2),
+                                                             m_pCamera->getProjection()(2, 3)));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[4], m_pTexture[0]);
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[5], m_pTexture[1]);
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[6], m_pTexture[2]);
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[7], m_pTexture[3]);
 
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[8], m_pLightManager->getDirectionalLight()->getShadowMatrix(0));
-	m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[9], m_pLightManager->getDirectionalLight()->getShadowMatrix(1));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[8], m_pLightManager->getDirectionalLight()->getShadowMatrix(0));
+    m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[9], m_pLightManager->getDirectionalLight()->getShadowMatrix(1));
     m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[10], m_pLightManager->getDirectionalLight()->getShadowMatrix(2));
     m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[11], m_pLightManager->getDirectionalLight()->getShadowMatrix(3));
     m_pAmbIllShader->setShaderVar(m_ShaderAmbIllPos[12], m_pLightManager->getDirectionalLight()->getShadowMap(0));
@@ -449,9 +461,9 @@ void Deferred3DRenderer::postToneMap()
         m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[3], m_pBloom->getBloom(2));
         m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[4], m_pBloom->getBloom(3));
     }
-    //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_pTexture[3]);
-    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_pAutoExposure->getLuminanceMap());
-    //m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_Gamma);
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_pAutoExposure->getLuminanceMap());
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_pTexture[2]);
+    m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_pTexture[3]);
      GRAPHICS->draw(m_pQuad);
 }
 
@@ -467,7 +479,8 @@ void Deferred3DRenderer::calculateExposure()
 
 const Texture2D::pointer& Deferred3DRenderer::getDepthTexture() const
 {
-	return m_pTexture[3];
+    return m_pTexture[3];
 }
+
 
 } } //end namespace
