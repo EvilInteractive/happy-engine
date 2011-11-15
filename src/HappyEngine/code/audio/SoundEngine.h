@@ -40,59 +40,59 @@ class SoundEngine
 {
 public:
 
-	static const uint STREAM_BUFFER_SIZE = 4096;
-	static const uint STREAM_BUFFERS = 4;
+    static const uint STREAM_BUFFER_SIZE = 4096;
+    static const uint STREAM_BUFFERS = 4;
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	SoundEngine();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    SoundEngine();
     virtual ~SoundEngine();
 
-	/* GENERAL */
-	void initialize();
-	void tick(float dTime);
-	void deleteAllSounds();
+    /* GENERAL */
+    void initialize();
+    void tick(float dTime);
+    void deleteAllSounds();
 
-	Sound2D* loadSound2D(const std::string& path, bool stream = false);
-	Sound3D* loadSound3D(const std::string& path, bool stream = false);
+    Sound2D* loadSound2D(const std::string& path, bool stream = false);
+    Sound3D* loadSound3D(const std::string& path, bool stream = false);
 
-	void playSound(ISound* pSound, bool forceRestart = false);
-	void stopSound(ISound* pSound);
+    void playSound(ISound* pSound, bool forceRestart = false);
+    void stopSound(ISound* pSound);
 
-	/* SETTERS */
-	void setListenerPos(const vec3& pos);
-	void setListenerVelocity(const vec3& vel);
-	void setListenerOrientation(const vec3& forward, const vec3& up);
+    /* SETTERS */
+    void setListenerPos(const vec3& pos);
+    void setListenerVelocity(const vec3& vel);
+    void setListenerOrientation(const vec3& forward, const vec3& up);
 
-	/* GETTERS */
-	vec3 getListenerPos() const;
-	vec3 getListenerVelocity() const;
-	void getListenerOrientation(vec3* forward, vec3* up) const;
+    /* GETTERS */
+    vec3 getListenerPos() const;
+    vec3 getListenerVelocity() const;
+    void getListenerOrientation(vec3* forward, vec3* up) const;
 
-	ALuint getALSource(uint source) const;
-	const std::vector<ALuint>& getALBuffer(uint buffer) const;
-	SoundFile& getSoundFile(uint soundFile);
+    ALuint getALSource(uint source) const;
+    const std::vector<ALuint>& getALBuffer(uint buffer) const;
+    SoundFile& getSoundFile(uint soundFile);
 
-	float getPlayTime(ISound* pSound);
+    float getPlayTime(ISound* pSound);
 
 private:
 
-	void shutdown();
-	void emptyBuffers(uint source);
+    void shutdown();
+    void emptyBuffers(uint source);
 
-	bool streamSound(SoundFile& stream, ALuint buffer, bool toMono = false);
-	void convertToMono(const std::vector<short>& dataStereo, std::vector<short>& dataMono);
-	
-	ALenum getALFormatFromChannels(uint channels) const;
+    bool streamSound(SoundFile& stream, ALuint buffer, bool toMono = false);
+    void convertToMono(const std::vector<short>& dataStereo, std::vector<short>& dataMono);
+    
+    ALenum getALFormatFromChannels(uint channels) const;
 
-	/* DATAMEMBERS */
-	std::vector<ISound*> m_SoundBank;
-	std::vector<std::vector<ALuint>> m_SoundBuffers;
-	std::vector<ALuint> m_SoundSources;
-	std::vector<SoundFile> m_SoundFiles;
-	std::map<ISound*, float> m_SoundTime;
+    /* DATAMEMBERS */
+    std::vector<ISound*> m_SoundBank;
+    std::vector<std::vector<ALuint>> m_SoundBuffers;
+    std::vector<ALuint> m_SoundSources;
+    std::vector<SoundFile> m_SoundFiles;
+    std::map<ISound*, float> m_SoundTime;
 
-	ALCcontext* m_pALContext;
-	ALCdevice* m_pALDevice;
+    ALCcontext* m_pALContext;
+    ALCdevice* m_pALDevice;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     SoundEngine(const SoundEngine&);

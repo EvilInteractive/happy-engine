@@ -93,6 +93,10 @@ void SimpleForward3DRenderer::init()
 	glGenTextures(1, &renderTexture);
 
 	GL::heBindTexture2D(0, renderTexture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	m_pRenderTexture->init(renderTexture, width, height, GL_RGBA8);
 
@@ -120,9 +124,7 @@ void SimpleForward3DRenderer::end()
 {
 	GL::heBindFbo(0);
 
-	GUI->begin();
 	GUI->drawTexture2D(m_pRenderTexture, vec2(0.0f,0.0f), vec2(-static_cast<float>(m_pRenderTexture->getWidth()), static_cast<float>(m_pRenderTexture->getHeight())));
-	GUI->end();
 }
 
 /* DRAW METHODS */

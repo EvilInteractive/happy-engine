@@ -43,16 +43,16 @@ class HappyQtWidget :  public /*qt::*/QGLWidget, public game::Game
 {
     Q_OBJECT
 public:
-	HappyQtWidget(/*qt::*/QWidget *parent = 0);
+    HappyQtWidget(/*qt::*/QWidget *parent = 0);
     virtual ~HappyQtWidget();
 
-	void present();
+    void present();
     
 private:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
-	void closeEvent (QCloseEvent* event);
+    void closeEvent (QCloseEvent* event);
 
     virtual void mouseMoveEvent(QMouseEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);

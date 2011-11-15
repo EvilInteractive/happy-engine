@@ -60,11 +60,11 @@ namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
-					   m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
-					   m_pCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
-					   m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
+                       m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
+                       m_pCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
+                       m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
-					   m_pTestSound2D(nullptr), m_pTestGrid(nullptr)
+                       m_pTestSound2D(nullptr), m_pTestGrid(nullptr)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -86,17 +86,17 @@ MainGame::~MainGame()
     delete m_pServer;
     delete m_pClient;
 
-	delete m_pFPSGraph;
-	delete m_pCamera;
+    delete m_pFPSGraph;
+    delete m_pCamera;
 
-	delete m_pTestButton;
-	delete m_pAxis;
+    delete m_pTestButton;
+    delete m_pAxis;
     delete m_pScene;
     delete m_pSky;
-	delete m_pTextBox;
+    delete m_pTextBox;
     delete m_pTestButton2;
-	delete m_pTestButton3;
-	delete m_pTestGrid;
+    delete m_pTestButton3;
+    delete m_pTestGrid;
 
     NETWORK->stop();
 }
@@ -132,15 +132,15 @@ void MainGame::load()
 
     using namespace he;
 
-	m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
+    m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
 
     PHYSICS->startSimulation();
 
-	m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-	m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-	m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
-	m_pCamera->setActive(true);
-	//m_pCamera->controllable(false);
+    m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
+    m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    m_pCamera->setActive(true);
+    //m_pCamera->controllable(false);
 
     gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
     //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
@@ -159,7 +159,7 @@ void MainGame::load()
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
-	GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
    
     m_pTestObject = NEW TestObject();
 
@@ -200,52 +200,52 @@ void MainGame::load()
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
         
-	m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
+    m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
     m_pFont = CONTENT->loadFont("MODES.ttf", 12);
 
-	m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 600), vec2(60,20));
-	m_pTestButton->setText("Play 2D", 12);
-	m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,630), vec2(60,20));
-	m_pTestButton2->setText("Stop", 12);
-	m_pTestButton3 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 570), vec2(60,20));
-	m_pTestButton3->setText("Play 3D", 12);
+    m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 600), vec2(60,20));
+    m_pTestButton->setText("Play 2D", 12);
+    m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,630), vec2(60,20));
+    m_pTestButton2->setText("Stop", 12);
+    m_pTestButton3 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 570), vec2(60,20));
+    m_pTestButton3->setText("Play 3D", 12);
 
-	m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
+    m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
-	CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
-	CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
-	CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
+    CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
+    CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
+    CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
 
-	m_pTestSound2D = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
-	m_pTestSound2D->setLooping(true);
-	m_pTestSound2D->setPitch(0.6f);
+    m_pTestSound2D = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
+    m_pTestSound2D->setLooping(true);
+    m_pTestSound2D->setPitch(0.6f);
 
-	m_pTestSound3D = AUDIO->loadSound3D("../data/audio/goodkat_dnb.wav", false);
-	m_pTestSound3D->setLooping(true);
-	m_pTestSound3D->setMaximumDistance(50.0f);
-	m_pTestSound3D->setMinimumDistance(10.0f);
+    m_pTestSound3D = AUDIO->loadSound3D("../data/audio/goodkat_dnb.wav", false);
+    m_pTestSound3D->setLooping(true);
+    m_pTestSound3D->setMaximumDistance(50.0f);
+    m_pTestSound3D->setMinimumDistance(10.0f);
 
-	m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
-	m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
+    m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
+    m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
 
-	GRAPHICS->initPicking();
+    GRAPHICS->initPicking();
 }
 void MainGame::tick(float dTime)
 {
     using namespace he;
 
-	m_pCamera->tick(dTime);
+    m_pCamera->tick(dTime);
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
 
     m_pTestObject->tick(dTime);
 
-	//m_pTestSound2D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
+    //m_pTestSound2D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
 
-	AUDIO->setListenerPos(m_pCamera->getPosition());
-	AUDIO->setListenerOrientation(m_pCamera->getLook(), m_pCamera->getUp());
+    AUDIO->setListenerPos(m_pCamera->getPosition());
+    AUDIO->setListenerOrientation(m_pCamera->getLook(), m_pCamera->getUp());
 
     m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
@@ -295,48 +295,48 @@ void MainGame::tick(float dTime)
     //m_pSpotLight->setPosition(m_pCamera->getPosition());
     //m_pSpotLight->setDirection(-he::normalize(m_pCamera->getLook()));
 
-	m_pTestButton->tick();
-	m_pTestButton2->tick();
-	m_pTestButton3->tick();
+    m_pTestButton->tick();
+    m_pTestButton2->tick();
+    m_pTestButton3->tick();
 
-	if (m_pTestButton->isClicked())
-	{
-		m_pTestSound2D->play(true);
-	}
-	else if (m_pTestButton2->isClicked())
-	{
-		m_pTestSound2D->stop();
-		m_pTestSound3D->stop();
-	}
-	else if (m_pTestButton3->isClicked())
-	{
-		m_pTestSound3D->play(true);
-	}
+    if (m_pTestButton->isClicked())
+    {
+        m_pTestSound2D->play(true);
+    }
+    else if (m_pTestButton2->isClicked())
+    {
+        m_pTestSound2D->stop();
+        m_pTestSound3D->stop();
+    }
+    else if (m_pTestButton3->isClicked())
+    {
+        m_pTestSound3D->play(true);
+    }
 
-	m_pTextBox->tick();
+    m_pTextBox->tick();
 
-	if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
-	{
-		m_Poly.addPoint(CONTROLS->getMouse()->getPosition());
+    if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
+    {
+        m_Poly.addPoint(CONTROLS->getMouse()->getPosition());
 
-		uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
+        uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
 
-		if (id != UINT_MAX)
-		{
-			m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
-		}
-		else
-			m_PickPos = vec3(0,0,0);
-	}
+        if (id != UINT_MAX)
+        {
+            m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
+        }
+        else
+            m_PickPos = vec3(0,0,0);
+    }
 
-	m_pFPSGraph->tick(dTime, 0.5f);
+    m_pFPSGraph->tick(dTime, 0.5f);
 
-	CONSOLE->tick();
+    CONSOLE->tick();
 }
 void MainGame::draw()
 {
-	using namespace he;
-	using namespace gfx;
+    using namespace he;
+    using namespace gfx;
 
     /*if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
     {
@@ -346,66 +346,68 @@ void MainGame::draw()
         GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
     }*/
 
-	// 2D test stuff
-	m_pTestButton->draw();
-	m_pTestButton2->draw();
-	m_pTestButton3->draw();
-		
-	/*m_pTextBox->draw();
+    // 2D test stuff
+    m_pTestButton->draw();
+    m_pTestButton2->draw();
+    m_pTestButton3->draw();
+        
+    /*m_pTextBox->draw();
 
-	if (m_bTest2)
-	{
-		GUI->setColor(1.0f,0.5f,0.0f);
-		GUI->setFontVerticalAlignment(Font::VAlignment_Center);
-		GUI->setFontHorizontalAlignment(Font::HAlignment_Center);
+    if (m_bTest2)
+    {
+        GUI->setColor(1.0f,0.5f,0.0f);
+        GUI->setFontVerticalAlignment(Font::VAlignment_Center);
+        GUI->setFontHorizontalAlignment(Font::HAlignment_Center);
 
-		GUI->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
-	}*/
+        GUI->drawString(m_Test3, m_pFont, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()));
+    }*/
 
-	GUI->setColor(1.0f,1.0f,1.0f);
+    GUI->setColor(1.0f,1.0f,1.0f);
 
-	std::stringstream stream;
-	stream << "2D: " << m_pTestSound2D->getPlayTime() << " / " << m_pTestSound2D->getLength();
+    std::stringstream stream;
+    stream << "2D: " << m_pTestSound2D->getPlayTime() << " / " << m_pTestSound2D->getLength();
 
-	GUI->drawText(gui::Text(stream.str()), vec2(1050,570));
+    GUI->drawText(gui::Text(stream.str()), vec2(1050,570));
 
-	stream.str("");
+    stream.str("");
 
-	stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
+    stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
 
-	GUI->drawText(gui::Text(stream.str()), vec2(1050,590));
+    GUI->drawText(gui::Text(stream.str()), vec2(1050,590));
 
-	stream.str("");
+    stream.str("");
 
-	stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
+    stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
 
-	GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
+    GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
 
-	if (m_Poly.getPolygon().getVertexCount() > 2)
-	{
-		GUI->setAntiAliasing(true);
-		GUI->setColor(1.0f,0.0f,1.0f);
-		GUI->fillShape2D(m_Poly);
-		/*GUI->setColor(1.0f,1.0f,1.0f);
-		GUI->drawShape2D(m_Poly);*/
-	}
+    if (m_Poly.getPolygon().getVertexCount() > 2)
+    {
+        GUI->setAntiAliasing(true);
+        GUI->setColor(1.0f,0.0f,1.0f);
+        GUI->fillShape2D(m_Poly);
+        /*GUI->setColor(1.0f,1.0f,1.0f);
+        GUI->drawShape2D(m_Poly);*/
+    }
 
-	GUI->setColor(1.0f,0.0f,1.0f);
+    GUI->setAntiAliasing(true);
+    GUI->setColor(1.0f,0.0f,1.0f);
+    GUI->fillShape2D(gui::RoundedRectangle2D(vec2(500,500), vec2(250,100), 50));
 
-	m_pFPSGraph->draw();
-	CONSOLE->draw();
+    m_pFPSGraph->draw();
+    CONSOLE->draw();
 
-	/* DRAW 3D & 2D */
-	GRAPHICS->clearAll();
+    /* DRAW 3D & 2D */
+    GRAPHICS->clearAll();
 
-	GRAPHICS->begin(m_pCamera);
-	GRAPHICS->end();
+    GRAPHICS->begin(m_pCamera);
+    GRAPHICS->end();
 
-	// TODO: implement into drawmanager/GRAPHICS
-	HE3D->begin(m_pCamera);
-	m_pTestGrid->draw();
-	HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-	HE3D->end();
+    // TODO: implement into drawmanager/GRAPHICS
+    HE3D->begin(m_pCamera);
+    m_pTestGrid->draw();
+    HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
+    HE3D->end();
 }
 
 } //end namespace

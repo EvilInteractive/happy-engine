@@ -355,7 +355,6 @@ void Deferred3DRenderer::end()
 
     if (m_ShowDebugTextures)
     {
-        GUI->begin();
         GL::heBlendEnabled(false);
         GUI->drawTexture2D(m_pTexture[0], vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
         GUI->drawTexture2D(m_pTexture[1], vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
@@ -377,7 +376,6 @@ void Deferred3DRenderer::end()
         if (getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
             GUI->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
         GL::heBlendEnabled(true);
-        GUI->end();
     }
 }
 void Deferred3DRenderer::postAmbIllLight()

@@ -35,14 +35,14 @@ namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 FPSGraph::FPSGraph() :	m_GameTime(0.0f),
-						m_TBase(0.0f),
-						m_CurrentDTime(0.0f),
-						m_CurrentFPS(0),
-						m_Interval(0.5f),
+                        m_TBase(0.0f),
+                        m_CurrentDTime(0.0f),
+                        m_CurrentFPS(0),
+                        m_Interval(0.5f),
                         m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 10)),
-						m_FPSGraphState(2)
+                        m_FPSGraphState(2)
 {
-	CONSOLE->registerValue<int>(&m_FPSGraphState, "fps_graph");
+    CONSOLE->registerValue<int>(&m_FPSGraphState, "fps_graph");
 }
 
 
@@ -53,233 +53,237 @@ FPSGraph::~FPSGraph()
 /* GENERAL */
 void FPSGraph::tick(float dTime, float interval)
 {
-	m_GameTime += dTime;
-	m_Interval = interval;
+    m_GameTime += dTime;
+    m_Interval = interval;
 
-	if( (m_GameTime - m_TBase) >= m_Interval)
-	{
-		m_TBase += m_Interval;
+    if( (m_GameTime - m_TBase) >= m_Interval)
+    {
+        m_TBase += m_Interval;
 
-		uint fps((uint)(1 / dTime));
+        uint fps((uint)(1 / dTime));
 
-		m_CurrentFPS = fps;
-		m_CurrentDTime = dTime;
+        m_CurrentFPS = fps;
+        m_CurrentDTime = dTime;
 
-		if (fps > 99)
-			fps = 99;
+        if (fps > 99)
+            fps = 99;
 
-		m_FpsHistory.push_back(fps);
-	}
+        if (fps > 1)
+            m_FpsHistory.push_back(fps);
+    }
 }
 
 void FPSGraph::draw()
 {
-	if (m_GameTime > m_Interval)
-	{
-		switch (m_FPSGraphState)
-		{
-			case 0:
-			{
-				break;
-			}
-			case 1:
-			{
-				drawTextOnly();
-				break;
-			}
-			case 2:
-			{
-				drawFull();
-				break;
-			}
-		}
-	}
+    if (m_GameTime > m_Interval)
+    {
+        switch (m_FPSGraphState)
+        {
+            case 0:
+            {
+                break;
+            }
+            case 1:
+            {
+                drawTextOnly();
+                break;
+            }
+            case 2:
+            {
+                drawFull();
+                break;
+            }
+        }
+    }
 }
 
 void FPSGraph::drawTextOnly()
 {
-	GUI->setAntiAliasing(false);
-	GUI->setColor(1.0f,1.0f,1.0f);
+    GUI->setAntiAliasing(false);
+    GUI->setColor(1.0f,1.0f,1.0f);
 
-	std::stringstream stream;
-	stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 5));
+    std::stringstream stream;
+    stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 5));
 
-	stream.str("");
-	stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 18));
+    stream.str("");
+    stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 18));
 }
 
 void FPSGraph::drawFull()
 {
-	//using namespace gfx;
+    if (m_FpsHistory.size() == 0)
+        return;
 
-	GUI->setAntiAliasing(false);
+    GUI->setAntiAliasing(false);
 
-	GUI->setColor(0.8f,0.8f,0.8f);
-	GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 40)));
-	GUI->setColor(0.1f,0.1f,0.1f);
-	GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)));
+    GUI->setColor(0.8f,0.8f,0.8f);
+    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 41)));
+    GUI->setColor(0.1f,0.1f,0.1f);
+    GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)));
 
-	gui::Polygon2D poly;
-	gui::Polygon2D poly2;
+    gui::Polygon2D poly;
+    gui::Polygon2D poly2;
 
-	uint i(0);
-		
-	if (m_FpsHistory.size() > 50)
-	{
-		i = m_FpsHistory.size() - 51;
-	}
+    uint i(0);
+        
+    if (m_FpsHistory.size() > 50)
+    {
+        i = m_FpsHistory.size() - 51;
+    }
 
-	uint j(m_FpsHistory.size());
+    uint j(m_FpsHistory.size());
 
-	uint k(0);
+    uint k(0);
 
-	for (; i < j ; ++i)
-	{
-		uint currentFPS(m_FpsHistory[i]);
+    for (; i < j ; ++i)
+    {
+        uint currentFPS(m_FpsHistory[i]);
 
-		if (currentFPS > 80)
-			currentFPS = 80;
+        if (currentFPS > 80)
+            currentFPS = 80;
 
-		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
+        poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
 
-		++k;
-	}
+        ++k;
+    }
 
+    if (poly.getPolygon().getVertexCount() < 50)
+    {
+        poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly.getPolygon().getVertexCount() * 2)), 46.0f));
+    }
+    else
+    {
+        poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 46.0f));
+    }
 
-	if (poly.getPolygon().getVertexCount() < 50)
-	{
-		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly.getPolygon().getVertexCount() * 2)), 45.0f));
-	}
-	else
-	{
-		poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 45.0f));
-	}
+    poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 46.0f));
 
-	poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
+    if (m_FpsHistory.size() > 50)
+    {
+        i = m_FpsHistory.size() - 51;
+    }
+    else
+    {
+        i = 0;
+    }
 
-	if (m_FpsHistory.size() > 50)
-	{
-		i = m_FpsHistory.size() - 51;
-	}
-	else
-	{
-		i = 0;
-	}
+    k = 0;
 
-	k = 0;
+    for (; i < j ; ++i)
+    {
+        uint currentDTime(static_cast<uint>((1.0f / m_FpsHistory[i]) * 1000.0f));
 
-	for (; i < j ; ++i)
-	{
-		uint currentDTime(static_cast<uint>((1.0f / m_FpsHistory[i]) * 1000.0f));
+        if (currentDTime > 80)
+            currentDTime = 80;
 
-		if (currentDTime > 80)
-			currentDTime = 80;
+        poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
 
-		poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+        ++k;
+    }
 
-		++k;
-	}
+    if (poly2.getPolygon().getVertexCount() < 50)
+    {
+        poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly2.getPolygon().getVertexCount() * 2)), 46.0f));
+    }
+    else
+    {
+        poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 46.0f));
+    }
 
-	if (poly2.getPolygon().getVertexCount() < 50)
-	{
-		poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly2.getPolygon().getVertexCount() * 2)), 45.0f));
-	}
-	else
-	{
-		poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 45.0f));
-	}
+    poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 46.0f));
 
-	poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 45.0f));
+    if (m_CurrentFPS >= m_CurrentDTime)
+    {
+        GUI->setColor(1.0f,0.0f,0.0f);
+        GUI->fillShape2D(poly);
+        GUI->setColor(1.0f,1.0f,0.0f);
+        GUI->fillShape2D(poly2);
+    }
+    else
+    {
+        GUI->setColor(1.0f,1.0f,0.0f);
+        GUI->fillShape2D(poly2);
+        GUI->setColor(1.0f,0.0f,0.0f);
+        GUI->fillShape2D(poly);
+    }
 
-	if (m_CurrentFPS >= m_CurrentDTime)
-	{
-		GUI->setColor(1.0f,0.0f,0.0f);
-		GUI->fillShape2D(poly);
-		GUI->setColor(1.0f,1.0f,0.0f);
-		GUI->fillShape2D(poly2);
-	}
-	else
-	{
-		GUI->setColor(1.0f,1.0f,0.0f);
-		GUI->fillShape2D(poly2);
-		GUI->setColor(1.0f,0.0f,0.0f);
-		GUI->fillShape2D(poly);
-	}
+    uint avFPS(getAverageFPS());
 
-	uint avFPS(getAverageFPS());
+    if (avFPS > 80)
+        avFPS = 80;
 
-	if (avFPS > 80)
-		avFPS = 80;
+    GUI->setColor(0.0f,0.0f,1.0f);
+    GUI->drawShape2D(gui::Line2D(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
+                    vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2)))));
 
-	GUI->setColor(0.0f,0.0f,1.0f);
-	GUI->drawShape2D(gui::Line2D(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
-					vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2)))));
+    GUI->setColor(1.0f,1.0f,1.0f);
+    std::stringstream stream;
+    stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 45));
 
-	GUI->setColor(1.0f,1.0f,1.0f);
-	std::stringstream stream;
-	stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 45));
-
-	stream.str("");
-	stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-	GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 58));
+    stream.str("");
+    stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 58));
 }
 
 /* GETTERS */
 uint FPSGraph::getMaxFPS() const
 {
-	uint maxFPS(0);
-	std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint FPS)
-	{
-		if (FPS > maxFPS)
-			maxFPS = FPS;
-	});
+    uint maxFPS(0);
+    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint FPS)
+    {
+        if (FPS > maxFPS)
+            maxFPS = FPS;
+    });
 
-	return maxFPS;
+    return maxFPS;
 }
 
 uint FPSGraph::getMinFPS() const
 {
-	uint minFPS(9999);
-	std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint FPS)
-	{
-		if (FPS < minFPS)
-			minFPS = FPS;
-	});
+    uint minFPS(9999);
+    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint FPS)
+    {
+        if (FPS < minFPS)
+            minFPS = FPS;
+    });
 
-	return minFPS;
+    return minFPS;
 }
 
 uint FPSGraph::getAverageFPS() const
 {
-	uint i(0);
-		
-	if ((m_FpsHistory.size() * m_Interval) > 60)
-	{
-		i = static_cast<uint>(m_FpsHistory.size() - (60 / m_Interval));
-	}
+    if (m_FpsHistory.size() == 0)
+        return 0;
 
-	uint j(m_FpsHistory.size());
+    uint i(0);
+        
+    if ((m_FpsHistory.size() * m_Interval) > 60)
+    {
+        i = static_cast<uint>(m_FpsHistory.size() - (60 / m_Interval));
+    }
 
-	uint avFPS(0);
+    uint j(m_FpsHistory.size());
 
-	for (; i < j ; ++i)
-	{
-		avFPS += m_FpsHistory[i];
-	}
+    uint avFPS(0);
 
-	if ((m_FpsHistory.size() * m_Interval) > 60)
-	{
-		avFPS /= static_cast<uint>(60 / m_Interval);
-	}
-	else
-	{
-		avFPS /= m_FpsHistory.size();
-	}
+    for (; i < j ; ++i)
+    {
+        avFPS += m_FpsHistory[i];
+    }
 
-	return avFPS;
+    if ((m_FpsHistory.size() * m_Interval) > 60)
+    {
+        avFPS /= static_cast<uint>(60 / m_Interval);
+    }
+    else
+    {
+        avFPS /= m_FpsHistory.size();
+    }
+
+    return avFPS;
 }
 
 } } //end namespace

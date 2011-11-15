@@ -38,26 +38,26 @@ RoundedRectangle2D::RoundedRectangle2D(	const vec2& centerPos,
 	for (uint i(180); i <= 270; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		m_Polygon.addPoint(vec2(vec2(centerPos.x + cosf(degInRad) * radius/2,
-										centerPos.y + sinf(degInRad) * radius/2)));
+		m_Polygon.addPoint(vec2(centerPos.x + cosf(degInRad) * radius,
+										centerPos.y + sinf(degInRad) * radius));
 	}
 	for (uint i(270); i <= 360; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		m_Polygon.addPoint(vec2(vec2(centerPos.x + size.x + cosf(degInRad) * radius/2,
-										centerPos.y + sinf(degInRad) * radius/2)));
+		m_Polygon.addPoint(vec2(centerPos.x + size.x + cosf(degInRad) * radius,
+										centerPos.y + sinf(degInRad) * radius));
 	}
 	for (uint i(0); i <= 90; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		m_Polygon.addPoint(vec2(vec2(centerPos.x + size.x + cosf(degInRad) * radius/2,
-									centerPos.y + size.y + sinf(degInRad) * radius/2)));
+		m_Polygon.addPoint(vec2(centerPos.x + size.x + cosf(degInRad) * radius,
+									centerPos.y + size.y + sinf(degInRad) * radius));
 	}
 	for (uint i(90); i <= 180; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
-		m_Polygon.addPoint(vec2(vec2(centerPos.x + cosf(degInRad) * radius/2,
-										centerPos.y + size.y + sinf(degInRad) * radius/2)));
+		m_Polygon.addPoint(vec2(centerPos.x + cosf(degInRad) * radius,
+									centerPos.y + size.y + sinf(degInRad) * radius));
 	}
 }
 

@@ -286,18 +286,6 @@ void MainGame::draw()
 		GRAPHICS->setBackgroundColor(m_BackgroundColors[m_BackgroundIndex]);
 	}*/
 
-	GRAPHICS->clearAll();
-
-	GRAPHICS->begin(m_pCamera);
-	GRAPHICS->end();
-
-	HE3D->begin(m_pCamera);
-
-		m_pTestGrid->draw();
-
-	HE3D->end();
-
-	// GUI elements need to be drawn inside HE2D renderer
 	m_pTestButton->draw();
 	m_pTestButton2->draw();
 		
@@ -315,6 +303,17 @@ void MainGame::draw()
 	m_pFPSGraph->draw();
 
 	CONSOLE->draw();
+
+	GRAPHICS->clearAll();
+
+	GRAPHICS->begin(m_pCamera);
+	GRAPHICS->end();
+
+	/*HE3D->begin(m_pCamera);
+
+		m_pTestGrid->draw();
+
+	HE3D->end();*/
 }
 
 } //end namespace

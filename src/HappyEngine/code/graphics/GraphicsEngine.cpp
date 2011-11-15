@@ -95,7 +95,7 @@ void GraphicsEngine::init(bool useQt)
 void GraphicsEngine::initWindow()
 {
     m_pMainWindow = SDL_CreateWindow(m_WindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        m_ScreenRect.width, m_ScreenRect.height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+        m_ScreenRect.width, m_ScreenRect.height, /*SDL_WINDOW_SHOWN |*/ SDL_WINDOW_OPENGL | SDL_RESIZABLE);
     
     int x, y;
     SDL_GetWindowPosition(m_pMainWindow, &x, &y);
@@ -213,8 +213,7 @@ void GraphicsEngine::end()
 {
     m_pDeferred3DRenderer->end();
 
-    GUI->begin();
-    GUI->end();
+    GUI->draw();
 }
 void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
 {

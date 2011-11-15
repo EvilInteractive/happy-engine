@@ -51,7 +51,7 @@ namespace happytest {
 class MainGame : public he::game::Game
 {
 public:
-	MainGame();
+    MainGame();
     virtual ~MainGame();
 
     virtual void init();
@@ -60,7 +60,7 @@ public:
     virtual void draw();
 
 private:
-	happytest::FlyCamera* m_pCamera;
+    happytest::FlyCamera* m_pCamera;
 
     TestObject* m_pTestObject;
 
@@ -70,20 +70,20 @@ private:
     float m_DrawTimer;
     float m_UpdateTimer;
 
-	bool m_bTest;
-	bool m_bTest2;
-	std::string m_Test3;
+    bool m_bTest;
+    bool m_bTest2;
+    std::string m_Test3;
     
     std::vector<he::game::Entity*> m_Bullets;
 
     MyServer* m_pServer;
     MyClient* m_pClient;
 
-	he::tools::FPSGraph* m_pFPSGraph;
+    he::tools::FPSGraph* m_pFPSGraph;
 
-	he::gfx::Texture2D::pointer m_TestImage;
-	he::gfx::Texture2D::pointer m_SplashImage;
-	he::gfx::Font::pointer m_pFont;
+    he::gfx::Texture2D::pointer m_TestImage;
+    he::gfx::Texture2D::pointer m_SplashImage;
+    he::gfx::Font::pointer m_pFont;
 
     he::game::Entity* m_pAxis;
     he::game::Entity* m_pScene;
@@ -92,21 +92,21 @@ private:
     he::gfx::SpotLight::pointer m_pSpotLight;
     he::gfx::PointLight::pointer m_pCarLight;
 
-	he::gui::Button* m_pTestButton;
-	he::gui::Button* m_pTestButton2;
-	he::gui::Button* m_pTestButton3;
+    he::gui::Button* m_pTestButton;
+    he::gui::Button* m_pTestButton2;
+    he::gui::Button* m_pTestButton3;
 
-	he::gui::TextBox* m_pTextBox;
+    he::gui::TextBox* m_pTextBox;
 
-	he::sfx::Sound2D* m_pTestSound2D;
-	he::sfx::Sound3D* m_pTestSound3D;
+    he::sfx::Sound2D* m_pTestSound2D;
+    he::sfx::Sound3D* m_pTestSound3D;
 
-	he::tools::Grid* m_pTestGrid;
+    he::tools::Grid* m_pTestGrid;
 
-	he::vec3 m_PickPos;
-	//bool m_bDrawPicking;
+    he::vec3 m_PickPos;
+    //bool m_bDrawPicking;
 
-	he::gui::Polygon2D m_Poly;
+    he::gui::Polygon2D m_Poly;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

@@ -52,134 +52,133 @@ class Happy2DRenderer
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Happy2DRenderer();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Happy2DRenderer();
     virtual ~Happy2DRenderer();
 
-	/* GENERAL */
-	void init();
-	void begin();
-	void end();
+    /* GENERAL */
+    void init();
+    void draw();
 
-	void clearBuffers();
+    void clearBuffers();
 
-	// * Create new GUI layer, max depth 99, min depth 0, 50 is default. *
-	void createLayer(const std::string& name, byte depth = 50);
+    // * Create new GUI layer, max depth 99, min depth 0, 50 is default. *
+    void createLayer(const std::string& name, byte depth = 50);
 
     /* SETTERS */
 
-	// * Set the color of the 2D brush. *
-	void setColor(float r, float g, float b, float a = 1.0f);
-	void setColor(const Color& color);
-	// * Turn on/off anti-aliasing. *
-	void setAntiAliasing(bool bAA);
-	// * Set current GUI layer, default = depth 50
-	void setLayer(const std::string& layer = "default");
-	// * Set the strokesize. *
-	//void setStrokeSize(const float strokeSize = 1.0f);	
+    // * Set the color of the 2D brush. *
+    void setColor(float r, float g, float b, float a = 1.0f);
+    void setColor(const Color& color);
+    // * Turn on/off anti-aliasing. *
+    void setAntiAliasing(bool bAA);
+    // * Set current GUI layer, default = depth 50
+    void setLayer(const std::string& layer = "default");
+    // * Set the strokesize. *
+    //void setStrokeSize(const float strokeSize = 1.0f);	
 
     /* DRAW METHODS */
 
-	// * Draws the text as a 2D texture on the screen. *
-	void drawText(const gui::Text& txt, const vec2& pos);
-	void drawText(const gui::Text& txt, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
-	// * Draws a 2D shape. *
-	void drawShape2D(const gui::Shape2D& shape);
-	// * Draws a filled 2D shape. *
-	void fillShape2D(const gui::Shape2D& shape);
-	// * Draws a 2D texture with options for resizing, alpha, cliprect. *
-	void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
-						const vec2& newDimensions = vec2(0.0f,0.0f),
-						const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+    // * Draws the text as a 2D texture on the screen. *
+    void drawText(const gui::Text& txt, const vec2& pos);
+    void drawText(const gui::Text& txt, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
+    // * Draws a 2D shape. *
+    void drawShape2D(const gui::Shape2D& shape);
+    // * Draws a filled 2D shape. *
+    void fillShape2D(const gui::Shape2D& shape);
+    // * Draws a 2D texture with options for resizing, alpha, cliprect. *
+    void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
+                        const vec2& newDimensions = vec2(0.0f,0.0f),
+                        const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
 
 private:
 
-	struct Shape
-	{
-	public:
+    struct Shape
+    {
+    public:
 
-		Shape(	const gui::Shape2D& s,
-			const Color& c,
-			bool f, bool a,
-			const std::string& l)
-			: shape2D(s),
-			color(c),
-			fill(f),
-			antiAliasing(a),
-			layer(l)
-		{
-		}
+        Shape(	const gui::Shape2D& s,
+            const Color& c,
+            bool f, bool a,
+            const std::string& l)
+            : shape2D(s),
+            color(c),
+            fill(f),
+            antiAliasing(a),
+            layer(l)
+        {
+        }
 
-		gui::Shape2D shape2D;
-		Color color;
-		bool fill;
-		bool antiAliasing;
-		std::string layer;
-	};
+        gui::Shape2D shape2D;
+        Color color;
+        bool fill;
+        bool antiAliasing;
+        std::string layer;
+    };
 
-	struct Texture
-	{
-	public:
+    struct Texture
+    {
+    public:
 
-		Texture(	const Texture2D::pointer& tex,
-			const vec2& pos,
-			const vec2& newDimensions,
-			const float alpha,
-			const RectF& regionToDraw,
-			const std::string& layer)
-			: tex2D(tex),
-			pos(pos),
-			newDimensions(newDimensions),
-			alpha(alpha),
-			regionToDraw(regionToDraw),
-			layer(layer)
-		{
-		}
+        Texture(	const Texture2D::pointer& tex,
+            const vec2& pos,
+            const vec2& newDimensions,
+            const float alpha,
+            const RectF& regionToDraw,
+            const std::string& layer)
+            : tex2D(tex),
+            pos(pos),
+            newDimensions(newDimensions),
+            alpha(alpha),
+            regionToDraw(regionToDraw),
+            layer(layer)
+        {
+        }
 
-		Texture2D::pointer tex2D;
-		vec2 pos;
-		vec2 newDimensions;
-		float alpha;
-		RectF regionToDraw;
-		std::string layer;
-	};
+        Texture2D::pointer tex2D;
+        vec2 pos;
+        vec2 newDimensions;
+        float alpha;
+        RectF regionToDraw;
+        std::string layer;
+    };
 
-	void drawMesh(gui::Shape2D& shape);
-	void fillMesh(gui::Shape2D& shape);
-	void drawTexture(const Texture& tex);
-	float getDepth();
-	void draw();
-	void createTextureQuad();
+    void drawMesh(gui::Shape2D& shape);
+    void fillMesh(gui::Shape2D& shape);
+    void drawTexture(const Texture& tex);
+    float getDepth();
+    void createTextureQuad();
+    void resize();
 
-	/* DATAMEMBERS */
-	uint m_RenderFboID;
-	Texture2D::pointer m_pRenderTexture;
+    /* DATAMEMBERS */
+    uint m_RenderFboID;
+    Texture2D::pointer m_pRenderTexture;
 
-	float m_StrokeSize;
-	bool m_bAntiAliasing;
+    float m_StrokeSize;
+    bool m_bAntiAliasing;
 
-	Color m_CurrentColor;
+    Color m_CurrentColor;
 
-	VertexLayout m_VertexLayoutColor;
-	VertexLayout m_VertexLayoutTexture;
+    VertexLayout m_VertexLayoutColor;
+    VertexLayout m_VertexLayoutTexture;
 
-	Simple2DEffect* m_pColorEffect;
-	Simple2DTextureEffect* m_pTextureEffect;
+    Simple2DEffect* m_pColorEffect;
+    Simple2DTextureEffect* m_pTextureEffect;
 
-	vec2 m_ViewPortSize;
-	mat44 m_matOrthoGraphic;
+    vec2 m_ViewPortSize;
+    mat44 m_matOrthoGraphic;
 
-	ModelMesh::pointer m_pTextureQuad;
+    ModelMesh::pointer m_pTextureQuad;
 
-	ct::AssetContainer<gfx::ModelMesh*> m_pModelContainer;
-	ct::AssetContainer<gfx::Texture2D::pointer> m_pTextureContainer;
+    ct::AssetContainer<gfx::ModelMesh*> m_pModelContainer;
+    ct::AssetContainer<gfx::Texture2D::pointer> m_pTextureContainer;
 
-	std::map<std::string, float> m_Layers;
-	std::string m_CurrentLayer;
-	
-	std::vector<std::pair<Shape, float> > m_ShapeBuffer;
-	std::vector<std::pair<Texture, float> > m_TextureBuffer;
-	std::map<float, float> m_DepthMap;
+    std::map<std::string, float> m_Layers;
+    std::string m_CurrentLayer;
+    
+    std::vector<std::pair<Shape, float> > m_ShapeBuffer;
+    std::vector<std::pair<Texture, float> > m_TextureBuffer;
+    std::map<float, float> m_DepthMap;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Happy2DRenderer(const Happy2DRenderer&);
