@@ -153,9 +153,9 @@ void MainGame::load()
     m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 1, 30);
 
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
-    //GRAPHICS->getLightManager()->addDirectionalLight(vec3(0, -1, 0), Color((byte)150, 200, 255, 255), 0.5f);
+    //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 3.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
    
     m_pTestObject = NEW TestObject();
 
@@ -408,10 +408,10 @@ void MainGame::draw()
     GRAPHICS->end();
 
     // TODO: implement into drawmanager/GRAPHICS
-    HE3D->begin(m_pCurrentCamera);
+    /*HE3D->begin(m_pCurrentCamera);
     m_pTestGrid->draw();
     HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-    HE3D->end();
+    HE3D->end();*/
 }
 
 } //end namespace

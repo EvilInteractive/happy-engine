@@ -177,7 +177,7 @@ void HappyEngine::start(game::Game* pGame)
 	if (m_SubEngines & SubEngine_Graphics)
 	{
 		m_pGraphicsEngine->init(false);
-		m_p3DRenderer->init();
+		//m_p3DRenderer->init();
 	}
 
 	if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();

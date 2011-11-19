@@ -56,8 +56,6 @@ uniform sampler2DShadow shadowMap1;
 uniform sampler2DShadow shadowMap2;
 uniform sampler2DShadow shadowMap3;
 
-int sampleRange = 4;
-
 float shadowCheck(in vec3 position, in sampler2DShadow sampler, in mat4 lightMatrix, in float bias)
 {
     vec4 coord = lightMatrix * vec4(position, 1.0f);
@@ -72,11 +70,37 @@ float shadowCheck(in vec3 position, in sampler2DShadow sampler, in mat4 lightMat
     coord.z = (coord.z + 1.0f) / 2.0f - bias;
     
     float shadow = 0;
-    for (int x = -(sampleRange/2); x <= sampleRange/2; ++x)
-        for (int y = -(sampleRange/2); y <= sampleRange/2; ++y)
-            shadow += textureOffset(sampler, coord.xyz, ivec2(x, y));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-2, -2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, -2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 0, -2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 1, -2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 2, -2));
+	
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-2, -1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, -1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 0, -1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 1, -1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 2, -1));
+	
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-2, 0));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, 0));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 0, 0));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 1, 0));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 2, 0));
+	
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-2, 1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, 1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 0, 1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 1, 1));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 2, 1));
+	
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-2, 2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2(-1, 2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 0, 2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 1, 2));
+	shadow += textureOffset(sampler, coord.xyz, ivec2( 2, 2));
     
-    shadow /= sampleRange * sampleRange;
+    shadow /= 25;
 
     return shadow;
 }

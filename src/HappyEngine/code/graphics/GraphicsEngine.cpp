@@ -207,10 +207,11 @@ void GraphicsEngine::begin(const Camera* pCamera)
     GL::reset();
     m_pCurrentCamera = pCamera;
     m_pDeferred3DRenderer->begin(pCamera);
-    m_pDrawManager->draw(pCamera);
+    m_pDrawManager->draw(m_pCurrentCamera);
 }
 void GraphicsEngine::end()
 {
+
     m_pDeferred3DRenderer->end();
 
     GUI->draw();
