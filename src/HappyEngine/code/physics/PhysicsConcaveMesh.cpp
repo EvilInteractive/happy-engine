@@ -28,9 +28,10 @@
 namespace he {
 namespace px {
 
-PhysicsConcaveMesh::PhysicsConcaveMesh(const io::BinaryStream& stream): m_pInternalMesh(PHYSICS->getSDK()->createTriangleMesh(stream))
+PhysicsConcaveMesh::PhysicsConcaveMesh(const io::BinaryStream& stream)
 {
-    
+    m_Name = stream.readString();
+    m_pInternalMesh = PHYSICS->getSDK()->createTriangleMesh(stream);
 }
 
 
@@ -42,6 +43,11 @@ PhysicsConcaveMesh::~PhysicsConcaveMesh()
 physx::PxTriangleMesh* PhysicsConcaveMesh::getInternalMesh() const
 {
     return m_pInternalMesh;
+}
+
+const std::string& PhysicsConcaveMesh::getName() const
+{
+    return m_Name;
 }
 
 } } //end namespace

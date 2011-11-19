@@ -49,6 +49,9 @@
     <ClCompile Include="FlyCamera.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
+    <ClCompile Include="FollowCamera.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -67,6 +70,9 @@
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="FlyCamera.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowCamera.h">
       <Filter>happytest</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,7 +27,7 @@ namespace he {
 namespace gfx {
 
 Camera::Camera(int viewportWidth, int viewportHeight) :	m_FOV(piOverFour),
-														m_AspectRatio(static_cast<float>(viewportWidth/viewportHeight)),
+														m_AspectRatio(static_cast<float>(viewportHeight/viewportWidth)),
 														m_NearZ(0.1f),
 														m_FarZ(1000.0f),
 														m_bIsActive(false),

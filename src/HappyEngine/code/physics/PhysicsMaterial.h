@@ -31,18 +31,16 @@ namespace px {
 class PhysicsMaterial
 {
 public:
-	PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
+    PhysicsMaterial();
+    PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution);
+    PhysicsMaterial(physx::PxMaterial* pMaterial);
     virtual ~PhysicsMaterial();
+    //copy and assignement == OK
 
     physx::PxMaterial* getInternalMaterial() const;
 
 private:
-
     physx::PxMaterial* m_pInternalMaterial;
-
-    //Disable default copy constructor and default assignment operator
-    PhysicsMaterial(const PhysicsMaterial&);
-    PhysicsMaterial& operator=(const PhysicsMaterial&);
 };
 
 } } //end namespace

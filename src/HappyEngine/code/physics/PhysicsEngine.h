@@ -23,6 +23,8 @@
 #pragma once
 
 #include "PxPhysics.h"
+#include "vehicle/PxVehicle.h"
+#include "PhysicsMaterial.h"
 #include "extensions/PxExtensionsAPI.h"
 #include "PxCudaContextManager.h"
 #include "ExternalError.h"
@@ -33,69 +35,96 @@
 
 #include "AssetContainer.h"
 
+#include "PxPreprocessor.h"
+
 namespace he {
 namespace px {
 
 class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
-	void* allocate(size_t size, const char*, const char*, int)
-	{
-		return _aligned_malloc(size, 16);
-	}
+    void* allocate(size_t size, const char*, const char*, int)
+    {
+        return _aligned_malloc(size, 16);
+    }
 
-	void deallocate(void* ptr)
-	{
-		_aligned_free(ptr);
-	}
+    void deallocate(void* ptr)
+    {
+        _aligned_free(ptr);
+    }
 };
 
 enum PxFilter
-{
-	PxFilter_CarChassi = 1 << 0,
-	PxFilter_CarWheel = 1 << 1,
+{	
+    COLLISION_FLAG_GROUND			=	1 << 0,
+    COLLISION_FLAG_WHEEL			=	1 << 1,
+    COLLISION_FLAG_CHASSIS			=	1 << 2,
+    COLLISION_FLAG_OBSTACLE			=	1 << 3,
+    COLLISION_FLAG_DRIVABLE_OBSTACLE=	1 << 4,
 
+    COLLISION_FLAG_GROUND_AGAINST	=															COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+    COLLISION_FLAG_WHEEL_AGAINST	=									COLLISION_FLAG_WHEEL |	COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE,
+    COLLISION_FLAG_CHASSIS_AGAINST	=			COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL |	COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+    COLLISION_FLAG_OBSTACLE_AGAINST	=			COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL |	COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+    COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST=	COLLISION_FLAG_GROUND 						 |	COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+};
+
+enum PxDrivableMaterial
+{
+    PxMat_Grass,
+    PxMat_Sand,
+    PxMat_Concrete,
+    PxMat_Ice,
+    MAX_DRIVABLE_SURFACES=10
 };
 
 class PhysicsEngine
 {
 public:
-	PhysicsEngine();
-	virtual ~PhysicsEngine();
+    PhysicsEngine();
+    virtual ~PhysicsEngine();
 
-	void tick(float dTime);
+    void tick(float dTime);
 
-	void startSimulation();
-	void stopSimulation();
+    void startSimulation();
+    void stopSimulation();
 
-	physx::PxPhysics* getSDK() const;
-	physx::PxScene* getScene() const;
+    physx::PxPhysics* getSDK() const;
+    physx::PxScene* getScene() const;
 
-	physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
+    physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
+    const px::PhysicsMaterial& getDriveableMaterial(PxDrivableMaterial material);
 
 private:
 
-	physx::PxPhysics* m_pPhysXSDK;
-	physx::PxScene* m_pScene;
+    physx::PxPhysics* m_pPhysXSDK;
+    physx::PxScene* m_pScene;
 
-	physx::PxErrorCallback* m_pErrorCallback;
-	physx::PxAllocatorCallback* m_pAllocator;
+    physx::PxErrorCallback* m_pErrorCallback;
+    physx::PxAllocatorCallback* m_pAllocator;
 
-	physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
-	physx::pxtask::CudaContextManager* m_pCudaContextManager;
+    physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
+    physx::pxtask::CudaContextManager* m_pCudaContextManager;
 
-	ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
+    ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
 
-	boost::thread m_PhysXThread;
+    boost::thread m_PhysXThread;
 
-	void createScene();
+    void createScene();
 
-	float m_Timer;
+    void initMaterials();
+    //physx::PxVehicleDrivableSurfaceType	    PX_ALIGN(16, m_VehicleDrivableSurfaceTypes[MAX_DRIVABLE_SURFACES]);
+    physx::PxVehicleDrivableSurfaceType*	    m_VehicleDrivableSurfaceTypes;
+    physx::PxMaterial*						m_PxDrivableMaterials[MAX_DRIVABLE_SURFACES];
 
-	bool m_Simulate;
+    px::PhysicsMaterial						m_DrivableMaterials[MAX_DRIVABLE_SURFACES];
 
-	//Disable default copy constructor and default assignment operator
-	PhysicsEngine(const PhysicsEngine&);
-	PhysicsEngine& operator=(const PhysicsEngine&);
+    float m_Timer;
+
+    bool m_Simulate;
+
+    //Disable default copy constructor and default assignment operator
+    PhysicsEngine(const PhysicsEngine&);
+    PhysicsEngine& operator=(const PhysicsEngine&);
 };
 
 } } //end namespace

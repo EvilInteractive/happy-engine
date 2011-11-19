@@ -29,6 +29,9 @@
 #include "PhysicsConvexShape.h"
 #include "PhysicsConcaveShape.h"
 
+#include "vehicle/PxVehicle.h"
+#include "vehicle/PxVehicleUtils.h"
+
 namespace he {
 namespace px {
 
@@ -106,6 +109,15 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         break;
     }
     ASSERT(pPxShape != nullptr, "Shape creation failed");
+
+    physx::PxFilterData sFilter;
+    sFilter.word0 = COLLISION_FLAG_GROUND;
+    sFilter.word1 = COLLISION_FLAG_GROUND_AGAINST;
+    physx::PxFilterData qFilter;
+    physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
+
+    pPxShape->setQueryFilterData(qFilter);
+    pPxShape->setSimulationFilterData(sFilter);
 }
 
 PhysicsStaticActor::~PhysicsStaticActor()

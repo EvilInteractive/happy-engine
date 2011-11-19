@@ -393,6 +393,7 @@ bool HappyCooker::cookConvex( he::io::BinaryStream& stream )
         desc.triangles.data = &indices[0];
         desc.triangles.stride = sizeof(ushort) * 3; //stride of triangle = 3 indices
 
+        stream.storeString(data.pMesh->mName.data);
         if (cooking->cookConvexMesh(desc, stream))
         {
         }
@@ -449,6 +450,7 @@ bool HappyCooker::cookTriangleMesh( he::io::BinaryStream& stream )
         desc.triangles.data = &indices[0];
         desc.triangles.stride = sizeof(ushort) * 3; //stride of triangle = 3 indices
 
+        stream.storeString(data.pMesh->mName.data);
         if (cooking->cookTriangleMesh(desc, stream))
         {
         }

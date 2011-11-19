@@ -32,16 +32,18 @@ namespace px {
 class PhysicsConvexMesh
 {
 public:
-	PhysicsConvexMesh(const io::BinaryStream& stream);
+    PhysicsConvexMesh(const io::BinaryStream& stream);
     virtual ~PhysicsConvexMesh();
 
     physx::PxConvexMesh* getInternalMesh() const;
+    const std::string& getName() const;
 
     typedef boost::shared_ptr<PhysicsConvexMesh> pointer;
 
 private:
 
     physx::PxConvexMesh* m_pInternalMesh;
+    std::string m_Name;
 
     //Disable default copy constructor and default assignment operator
     PhysicsConvexMesh(const PhysicsConvexMesh&);

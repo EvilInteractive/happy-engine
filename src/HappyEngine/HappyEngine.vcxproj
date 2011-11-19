@@ -372,15 +372,18 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PX_PHYSX_CHARACTER_STATIC_LIB;PHYSX_PROFILE_SDK;PX_CHECKED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalIncludeDirectories>$(LIBSND_DIR)\include;$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -418,6 +421,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

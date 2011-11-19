@@ -53,6 +53,7 @@
 
 #include "ModelComponent.h"
 #include "StaticPhysicsComponent.h"
+#include "DynamicPhysicsComponent.h"
 #include "PhysicsConvexShape.h"
 #include "PhysicsConcaveShape.h"
 
@@ -61,7 +62,7 @@ namespace happytest {
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
                        m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
-                       m_pCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
+                       m_pCurrentCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
                        m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
                        m_pTestSound2D(nullptr), m_pTestGrid(nullptr)
@@ -87,7 +88,8 @@ MainGame::~MainGame()
     delete m_pClient;
 
     delete m_pFPSGraph;
-    delete m_pCamera;
+    delete m_pFollowCamera;
+    delete m_pFlyCamera;
 
     delete m_pTestButton;
     delete m_pAxis;
@@ -136,12 +138,6 @@ void MainGame::load()
 
     PHYSICS->startSimulation();
 
-    m_pCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-    m_pCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-    m_pCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
-    m_pCamera->setActive(true);
-    //m_pCamera->controllable(false);
-
     gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
     //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
@@ -178,18 +174,16 @@ void MainGame::load()
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
     m_pScene->addComponent(pScenePxComp);
     const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
-    px::PhysicsMaterial woodMaterial(0.5f, 0.4f, 0.2f);
     std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape pShape(pMesh);
-        pScenePxComp->addShape(&pShape, woodMaterial);
+        pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(he::px::PxMat_Grass));
     });
     const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
-    px::PhysicsMaterial sandMaterial(0.5f, 0.4f, 0.2f);
     std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
     {
         he::px::PhysicsConcaveShape pShape(pMesh);
-        pScenePxComp->addShape(&pShape, woodMaterial);
+        pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(he::px::PxMat_Concrete));
     });
 
     m_pSky = NEW he::game::Entity();
@@ -230,12 +224,31 @@ void MainGame::load()
     m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
 
     GRAPHICS->initPicking();
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                            CAMERA'S                                ///
+    //////////////////////////////////////////////////////////////////////////
+    m_pFlyCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    m_pFlyCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
+    m_pFlyCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    m_pFlyCamera->setActive(true);
+
+    m_pFollowCamera = NEW FollowCamera();
+    m_pFollowCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    m_pFollowCamera->setFollowObject(m_pTestObject);
+    m_pFollowCamera->setLocalLook(normalize(vec3(0, 0.58f, -1.0f)));
+    m_pFollowCamera->setDistance(15);
+
+    m_pCurrentCamera = m_pFollowCamera;
 }
 void MainGame::tick(float dTime)
 {
     using namespace he;
 
-    m_pCamera->tick(dTime);
+    if (m_pCurrentCamera == m_pFlyCamera)
+        m_pFlyCamera->tick(dTime);
+    else
+        m_pFollowCamera->tick(dTime);
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
@@ -244,8 +257,8 @@ void MainGame::tick(float dTime)
 
     //m_pTestSound2D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
 
-    AUDIO->setListenerPos(m_pCamera->getPosition());
-    AUDIO->setListenerOrientation(m_pCamera->getLook(), m_pCamera->getUp());
+    AUDIO->setListenerPos(m_pCurrentCamera->getPosition());
+    AUDIO->setListenerOrientation(m_pCurrentCamera->getLook(), m_pCurrentCamera->getUp());
 
     m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
@@ -271,14 +284,13 @@ void MainGame::tick(float dTime)
     {
         game::Entity* pBullet(NEW game::Entity());
         
-        pBullet->setWorldMatrix(mat44::createTranslation(m_pCamera->getPosition()));
+        pBullet->setWorldMatrix(mat44::createTranslation(m_pCurrentCamera->getPosition()));
 
         game::DynamicPhysicsComponent* pPhysicsComponent(NEW game::DynamicPhysicsComponent());
         pBullet->addComponent(pPhysicsComponent);
-        px::PhysicsMaterial material(0.8f, 0.5f, 0.1f);
         px::PhysicsBoxShape boxShape(vec3(2, 2, 2));
-        pPhysicsComponent->addShape(&boxShape, material, 5);
-        pPhysicsComponent->getDynamicActor()->setVelocity(m_pCamera->getLook() * 20);
+        pPhysicsComponent->addShape(&boxShape, PHYSICS->getDriveableMaterial(px::PxMat_Concrete), 5);
+        pPhysicsComponent->getDynamicActor()->setVelocity(m_pCurrentCamera->getLook() * 20);
 
         game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());
         pBulletModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
@@ -392,11 +404,11 @@ void MainGame::draw()
     /* DRAW 3D & 2D */
     GRAPHICS->clearAll();
 
-    GRAPHICS->begin(m_pCamera);
+    GRAPHICS->begin(m_pCurrentCamera);
     GRAPHICS->end();
 
     // TODO: implement into drawmanager/GRAPHICS
-    HE3D->begin(m_pCamera);
+    HE3D->begin(m_pCurrentCamera);
     m_pTestGrid->draw();
     HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
     HE3D->end();

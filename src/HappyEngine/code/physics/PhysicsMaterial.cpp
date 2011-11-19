@@ -33,6 +33,16 @@ PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, fl
     ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
 }
 
+PhysicsMaterial::PhysicsMaterial(): m_pInternalMaterial(nullptr)
+{
+
+}
+
+PhysicsMaterial::PhysicsMaterial( physx::PxMaterial* pMaterial ): m_pInternalMaterial(pMaterial)
+{
+
+}
+
 PhysicsMaterial::~PhysicsMaterial()
 {
 }

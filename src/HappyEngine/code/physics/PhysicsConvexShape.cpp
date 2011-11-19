@@ -31,6 +31,11 @@ PhysicsConvexShape::PhysicsConvexShape(const PhysicsConvexMesh::pointer& mesh, c
 { 
 }
 
+PhysicsConvexShape::PhysicsConvexShape(): m_pInternalMesh(nullptr), m_Scale()
+{
+
+}
+
 
 PhysicsConvexShape::~PhysicsConvexShape()
 {

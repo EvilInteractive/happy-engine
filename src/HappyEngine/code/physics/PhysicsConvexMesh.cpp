@@ -28,9 +28,10 @@
 namespace he {
 namespace px {
 
-PhysicsConvexMesh::PhysicsConvexMesh(const io::BinaryStream& stream): m_pInternalMesh(PHYSICS->getSDK()->createConvexMesh(stream))
+PhysicsConvexMesh::PhysicsConvexMesh(const io::BinaryStream& stream)
 {
-    
+    m_Name = stream.readString();
+    m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(stream);
 }
 
 
@@ -42,6 +43,11 @@ PhysicsConvexMesh::~PhysicsConvexMesh()
 physx::PxConvexMesh* PhysicsConvexMesh::getInternalMesh() const
 {
     return m_pInternalMesh;
+}
+
+const std::string& PhysicsConvexMesh::getName() const
+{
+    return m_Name;
 }
 
 } } //end namespace

@@ -28,6 +28,7 @@
 #include "Font.h"
 #include "FontLoader.h"
 #include "FlyCamera.h"
+#include "FollowCamera.h"
 #include "FPSGraph.h"
 #include "Sound2D.h"
 #include "Sound3D.h"
@@ -60,7 +61,9 @@ public:
     virtual void draw();
 
 private:
-    happytest::FlyCamera* m_pCamera;
+    happytest::FlyCamera* m_pFlyCamera;
+    happytest::FollowCamera* m_pFollowCamera;
+    he::gfx::Camera* m_pCurrentCamera;
 
     TestObject* m_pTestObject;
 

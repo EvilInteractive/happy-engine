@@ -29,6 +29,8 @@
 #include "PhysicsSphereShape.h"
 #include "PhysicsConvexShape.h"
 
+#include "vehicle/PxVehicleUtils.h"
+
 namespace he {
 namespace px {
 
@@ -43,6 +45,7 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose, const IPhysicsShape*
     addShape(pShape, material, mass);
 
     PHYSICS->getScene()->addActor(*m_pActor);
+
 }
 PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 {  
@@ -98,6 +101,16 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
 
     //physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
     physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
+
+    physx::PxFilterData sFilter;
+    sFilter.word0 = COLLISION_FLAG_OBSTACLE;
+    sFilter.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+
+    physx::PxFilterData qFilter;
+    physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
+
+    pPxShape->setQueryFilterData(qFilter);
+    pPxShape->setSimulationFilterData(sFilter);
 }
 
 

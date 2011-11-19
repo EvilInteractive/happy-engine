@@ -44,13 +44,13 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
 const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConvex(const std::string& path)
 {
     if (m_pConvexAssetContainer->isAssetPresent(path))
-	{
-		return m_pConvexAssetContainer->getAsset(path);
-	}
-	else
-	{
-		if (path.rfind(".pxcv") != std::string::npos)
-		{
+    {
+        return m_pConvexAssetContainer->getAsset(path);
+    }
+    else
+    {
+        if (path.rfind(".pxcv") != std::string::npos)
+        {
             io::BinaryStream stream(path, io::BinaryStream::Read);
             byte numConvex(stream.readByte());
 
@@ -73,13 +73,13 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
 const std::vector<px::PhysicsConcaveMesh::pointer>& PhysicsShapeLoader::loadConcave(const std::string& path)
 {
     if (m_pConcaveAssetContainer->isAssetPresent(path))
-	{
-		return m_pConcaveAssetContainer->getAsset(path);
-	}
-	else
-	{
-		if (path.rfind(".pxcc") != std::string::npos)
-		{
+    {
+        return m_pConcaveAssetContainer->getAsset(path);
+    }
+    else
+    {
+        if (path.rfind(".pxcc") != std::string::npos)
+        {
             io::BinaryStream stream(path, io::BinaryStream::Read);
             byte numConcave(stream.readByte());
 

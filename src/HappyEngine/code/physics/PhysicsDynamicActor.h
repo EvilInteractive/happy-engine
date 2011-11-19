@@ -36,7 +36,7 @@ namespace px {
 class PhysicsDynamicActor
 {
 public:
-	PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass);
+    PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass);
     PhysicsDynamicActor(const mat44& pose);
     virtual ~PhysicsDynamicActor();
 

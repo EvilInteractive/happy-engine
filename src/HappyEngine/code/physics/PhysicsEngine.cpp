@@ -36,7 +36,7 @@ namespace px {
 PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr), 
                             m_pCpuDispatcher(nullptr), m_pCudaContextManager(nullptr), 
                             m_pAllocator(NEW HappyPhysicsAllocator()), m_pErrorCallback(NEW err::HappyPhysicsErrorCallback()),
-                            m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>())
+                            m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>()), m_VehicleDrivableSurfaceTypes(nullptr)
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -51,16 +51,17 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
     if (!PxInitExtensions(*m_pPhysXSDK))
         ASSERT("PxInitExtensions failed!");
 
-#if _DEBUG || DEBUG
+//#if _DEBUG || DEBUG
     std::cout << "connecting to PVD\n";
     PVD::PvdConnection* pConnection(physx::PxExtensionVisualDebugger::connect(m_pPhysXSDK->getPvdConnectionManager(), "localhost", 5425, 100, true));
     if (pConnection == nullptr)
         std::cout << "    NOT CONNECTED!\n";
     else
         std::cout << "    CONNECTED!\n";
-#endif
+//#endif
 
     createScene();
+    initMaterials();
 }
 void PhysicsEngine::createScene()
 {
@@ -117,6 +118,7 @@ PhysicsEngine::~PhysicsEngine()
     delete m_pAllocator;
     delete m_pErrorCallback;
     delete m_pMaterials;
+    _aligned_free(m_VehicleDrivableSurfaceTypes);
 }
 
 void PhysicsEngine::startSimulation()
@@ -165,9 +167,49 @@ physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dy
     else
     {
         physx::PxMaterial* pMat(m_pPhysXSDK->createMaterial(staticFriction, dynamicFriction, restitution));
+        if(pMat == nullptr)
+        {
+            CONSOLE->addMessage("physx error: createMaterial failed", CMSG_TYPE_ERROR);
+        }
         m_pMaterials->addAsset(key.str(), pMat);
         return pMat;
     }
+}
+
+void PhysicsEngine::initMaterials()
+{
+    m_VehicleDrivableSurfaceTypes = (physx::PxVehicleDrivableSurfaceType*)_aligned_malloc(sizeof(physx::PxVehicleDrivableSurfaceType) * MAX_DRIVABLE_SURFACES, 16);
+
+    //drivable types
+    float staticFrictions[MAX_DRIVABLE_SURFACES]  = { 0.9f, 0.8f, 1.1f, 0.7f };
+    float dynamicFrictions[MAX_DRIVABLE_SURFACES] = { 0.95f, 0.85f, 1.2f, 0.75f };
+    float restitutions[MAX_DRIVABLE_SURFACES]     = { 0.1f, 0.05f, 0.1f, 0.05f };
+
+    for(uint i(0); i < MAX_DRIVABLE_SURFACES; ++i)
+    {
+        //Create a new material.
+        m_PxDrivableMaterials[i] = m_pPhysXSDK->createMaterial(staticFrictions[i], dynamicFrictions[i], restitutions[i]);
+        if(m_PxDrivableMaterials[i] == nullptr)
+        {
+            CONSOLE->addMessage("physx error: createMaterial failed", CMSG_TYPE_ERROR);
+        }
+
+        //Set up the drivable surface type that will be used for the new material.
+        m_VehicleDrivableSurfaceTypes[i].mType = i;
+
+        //Set the material user data to be the drivable surface data.
+        void* pUserData = &m_VehicleDrivableSurfaceTypes[i];
+        //ASSERT(((size_t)pUserData & 0x0F) == 0, "");
+        m_PxDrivableMaterials[i]->userData = pUserData;//float* alignedArray = (array + 15) & (~0x0F);;
+
+        m_DrivableMaterials[i] = px::PhysicsMaterial(m_PxDrivableMaterials[i]);
+    }
+
+}
+
+const px::PhysicsMaterial& PhysicsEngine::getDriveableMaterial( PxDrivableMaterial material )
+{
+    return m_DrivableMaterials[material];
 }
 
 } } //end namespace
