@@ -128,14 +128,13 @@ mat44 getProjection(const Camera* pCamera, const mat44& mtxShadowView, float nea
     frustumPoints.push_back(pCamera->getLook() * nearClip - pCamera->getUp() * hNear - pCamera->getRight() * wNear);
     frustumPoints.push_back(pCamera->getLook() * nearClip - pCamera->getUp() * hNear + pCamera->getRight() * wNear);
 
-    vec3 minP(mtxShadowView * pCamera->getPosition()), maxP(mtxShadowView * pCamera->getPosition());
+    vec3 minP(FLT_MAX, FLT_MAX, FLT_MAX), maxP(FLT_MIN, FLT_MIN, FLT_MIN);
     std::for_each(frustumPoints.cbegin(), frustumPoints.cend(), [&](const vec3& point)
     {
         vec3 p(mtxShadowView * (point + pCamera->getPosition()));
         minP = minPerComponent(minP, p);
         maxP = maxPerComponent(maxP, p);
     });
-
     return mat44::createOrthoLH(minP.x, maxP.x, maxP.y, minP.y, min<float>(minP.z, 10), maxP.z);
 }
 
@@ -163,7 +162,7 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     glDrawBuffers(0, 0);
 
     glViewport(0, 0, m_ShadowSize, m_ShadowSize);
-    GL::heSetCullFace(true);
+    GL::heSetCullFace(false);
 
     m_pShadowShader->bind();
 

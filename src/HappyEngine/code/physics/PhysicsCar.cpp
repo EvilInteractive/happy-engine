@@ -86,7 +86,7 @@ PhysicsCar::PhysicsCar(): m_SqWheelRaycastSceneQuery(nullptr)
 }
 PhysicsCar::~PhysicsCar()
 {  
-    delete m_pVehicle;
+    //delete m_pVehicle;
 }
 
 void setVehicleGeometricData (const vec3& chassisDims, const vec3* const wheelCentreOffsets, 
@@ -143,7 +143,8 @@ void setOptionalVehicleData(physx::PxVehicle4WSimpleSetup& simpleSetup)
     simpleSetup.mRearTyreType = 0;
 
     //Diff descriptor.
-    simpleSetup.mDiffType = physx::PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD;
+    simpleSetup.mDiffType = physx::PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_4WD;
+
 }
 
 void PhysicsCar::init(
@@ -170,7 +171,7 @@ void PhysicsCar::init(
     vec3 chassiDim(2.025f, 1.323f, 4.445f);
     setVehicleGeometricData(chassiDim, wheelOffset, wheelWidth, wheelR, simpleSetup);
 
-    float chassiMass(2000);
+    float chassiMass(1450);
     vec3 moi(computeChassisMOI(chassiDim, chassiMass));
     setVehicleMassData(chassiMass, moi, simpleSetup);
 

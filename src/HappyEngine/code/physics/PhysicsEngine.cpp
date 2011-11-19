@@ -110,6 +110,7 @@ void PhysicsEngine::createScene()
 
 PhysicsEngine::~PhysicsEngine()
 {
+    m_pScene->fetchResults(true);
     m_pScene->release();
     m_pCpuDispatcher->release();
     if (m_pCudaContextManager != nullptr)

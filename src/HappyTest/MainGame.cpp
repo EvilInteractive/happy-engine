@@ -78,6 +78,9 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 
 MainGame::~MainGame()
 {
+    delete m_pFollowCamera;
+    delete m_pFlyCamera;
+
     delete m_pTestObject;
     std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](he::game::Entity* pBullet)
     {
@@ -88,8 +91,6 @@ MainGame::~MainGame()
     delete m_pClient;
 
     delete m_pFPSGraph;
-    delete m_pFollowCamera;
-    delete m_pFlyCamera;
 
     delete m_pTestButton;
     delete m_pAxis;
@@ -155,7 +156,7 @@ void MainGame::load()
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 3.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
    
     m_pTestObject = NEW TestObject();
 
@@ -168,18 +169,18 @@ void MainGame::load()
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene2.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
     m_pScene->addComponent(pScenePxComp);
-    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
+    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene2.pxcv"));
     std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape pShape(pMesh);
         pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(he::px::PxMat_Grass));
     });
-    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
+    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene2.pxcc"));
     std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
     {
         he::px::PhysicsConcaveShape pShape(pMesh);
@@ -190,7 +191,7 @@ void MainGame::load()
     game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
     pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
     pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
-    pSkyModelComp->setLocalTransform(mat44::createScale(vec3(200, 100, 200)));
+    pSkyModelComp->setLocalTransform(mat44::createScale(vec3(500, 100, 500)));
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
         

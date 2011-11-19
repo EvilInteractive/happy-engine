@@ -132,22 +132,22 @@ void main()
     if (position.z < 25)
     {
         //testColor = vec3(1, 0, 1);
-        dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0, -0.001f);
+        dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0, 0.0025f);
     }
     else if (position.z < 50)
     {
         //testColor = vec3(0, 1, 0);
-        dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1, -0.001f);
+        dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1, 0.005f);
     }
     else if (position.z < 100)
     {
         //testColor = vec3(0, 0, 1);
-        dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2, -0.0001f);
+        dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2, 0.0025f);
     }
     else
     {
         //testColor = vec3(0, 1, 1);
-        dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3, -0.001f);
+        dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3, 0.0015f);
     }
     
     //float steps = 1.0f / 16.0f;

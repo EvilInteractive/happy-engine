@@ -77,19 +77,21 @@ void FollowCamera::smoothThread()
         {
             vec3 lookAt(m_pFollowObject->getWorldMatrix().getTranslation());
             vec3 position(m_pFollowObject->getWorldMatrix() * (m_LocalLook * m_Distance));
-            position.y = lookAt.y + m_LocalLook.y * m_Distance;
-            lookAt += normalize(vec3(lookAt.x - position.x, 0, lookAt.z - position.z)) * 5;
+            //position.y = lookAt.y + m_LocalLook.y * m_Distance;
+            //lookAt += normalize(vec3(lookAt.x - position.x, 0, lookAt.z - position.z)) * 5;
 
             vec3 dir(normalize(lookAt - position));
 
-            vec3 up(vec3::up);
-            if (dot(up, dir) > 0.99f)
-                up = vec3::forward;
-            vec3 right(normalize(cross(dir, up)));
-            m_Up = normalize(cross(dir, right));
+            vec3 up(m_pFollowObject->getWorldMatrix().getPhyicsMatrix().column1.getXYZ());
+            //vec3 up(vec3::up);
+            //if (dot(up, dir) > 0.99f)
+            //    up = vec3::forward;
+            ////vec3 right(normalize(cross(dir, up)));
+            //vec3 right(m_pFollowObject->getWorldMatrix().getPhyicsMatrix().column0.getXYZ());
+            //up = normalize(cross(dir, right));
 
             //LOOKAT
-            if (m_LookAtSmooth.size() >= MAX_SMOOTH)
+            if (m_LookAtSmooth.size() >= MAX_SMOOTH/5)
                 m_LookAtSmooth.pop_front();
             m_LookAtSmooth.push_back(lookAt);
             
