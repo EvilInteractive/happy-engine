@@ -140,6 +140,7 @@ mat44 getProjection(const Camera* pCamera, const mat44& mtxShadowView, float nea
 
 void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight )
 {
+    PROFILER_BEGIN("ShadowCaster::render");
     vec3 shadowLook(-normalize(pDirectionalLight->getDirection()));
     vec3 up(vec3::up);
     if (dot(up, shadowLook) > 0.99f)
@@ -214,6 +215,7 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     glViewport(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
     //glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
+    PROFILER_END("ShadowCaster::render");
 }
     
 

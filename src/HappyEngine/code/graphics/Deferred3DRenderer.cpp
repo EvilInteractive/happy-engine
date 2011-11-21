@@ -268,6 +268,7 @@ void Deferred3DRenderer::begin(const Camera* pCamera)
 }
 void Deferred3DRenderer::end()
 {    
+    PROFILER_BEGIN("Deferred3DRenderer::end");
     //#if _DEBUG
     //glDisable(GL_CULL_FACE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -377,6 +378,7 @@ void Deferred3DRenderer::end()
             GUI->drawTexture2D(getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
         GL::heBlendEnabled(true);
     }
+    PROFILER_END("Deferred3DRenderer::end");
 }
 void Deferred3DRenderer::postAmbIllLight()
 {

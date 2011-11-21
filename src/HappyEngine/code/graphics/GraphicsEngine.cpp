@@ -223,7 +223,9 @@ void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
 }
 void GraphicsEngine::present() const
 {    
+    PROFILER_BEGIN("GraphicsEngine::present");
     SDL_GL_SwapWindow(m_pMainWindow);
+    PROFILER_END("GraphicsEngine::present");
 }
 LightManager* GraphicsEngine::getLightManager() const
 {

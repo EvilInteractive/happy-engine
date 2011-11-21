@@ -43,28 +43,28 @@
 
 namespace he {
 namespace gfx {
-	class GraphicsEngine;
-	class Happy2DRenderer;
+    class GraphicsEngine;
+    class Happy2DRenderer;
     class HappyQtWidget;
-	class SimpleForward3DRenderer;
+    class SimpleForward3DRenderer;
 }
 namespace io {
-	class ControlsManager;
+    class ControlsManager;
 }
 namespace px {
-	class PhysicsEngine;
+    class PhysicsEngine;
 }
 namespace ct {
-	class ContentManager;
+    class ContentManager;
 }
 namespace net {
-	class NetworkManager;
+    class NetworkManager;
 }
 namespace tools {
-	class Console;
+    class Console;
 }
 namespace sfx {
-	class SoundEngine;
+    class SoundEngine;
 }
 namespace game {
     class Game;
@@ -92,9 +92,9 @@ enum SubEngine
     SubEngine_Networking = 1 << 2,
     SubEngine_Controls = 1 << 3,
     SubEngine_Content = 1 << 4,
-	SubEngine_2DRenderer = 1 << 5,
-	SubEngine_Audio = 1 << 6,
-	SubEngine_Qt = 1 << 7,
+    SubEngine_2DRenderer = 1 << 5,
+    SubEngine_Audio = 1 << 6,
+    SubEngine_Qt = 1 << 7,
     SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6
 };
 #ifdef HE_ENABLE_QT
@@ -119,9 +119,9 @@ public:
 
     void quit();
 
-	const std::vector<SDL_Event>& getSDLEvents() const;
+    const std::vector<SDL_Event>& getSDLEvents() const;
 
-	void audioLoop();
+    void audioLoop();
 
     //subengines
     gfx::GraphicsEngine* getGraphicsEngine() const;
@@ -129,11 +129,11 @@ public:
     px::PhysicsEngine* getPhysics() const;
     ct::ContentManager* getContentManager() const;
     net::NetworkManager* getNetworkManager() const;
-	gfx::Happy2DRenderer* get2DRenderer() const;
-	tools::Console* getConsole() const;
-	sfx::SoundEngine* getSoundEngine() const;
+    gfx::Happy2DRenderer* get2DRenderer() const;
+    tools::Console* getConsole() const;
+    sfx::SoundEngine* getSoundEngine() const;
     game::Game* getGame() const;
-	gfx::SimpleForward3DRenderer* get3DRenderer() const;
+    gfx::SimpleForward3DRenderer* get3DRenderer() const;
 
 private:
     // Singleton design pattern
@@ -148,17 +148,17 @@ private:
     px::PhysicsEngine* m_pPhysicsEngine;
     ct::ContentManager* m_pContentManager;
     net::NetworkManager* m_pNetworkManager;
-	gfx::Happy2DRenderer* m_p2DRenderer;
-	tools::Console* m_pConsole;
-	sfx::SoundEngine* m_pSoundEngine;
-	gfx::SimpleForward3DRenderer* m_p3DRenderer;
+    gfx::Happy2DRenderer* m_p2DRenderer;
+    tools::Console* m_pConsole;
+    sfx::SoundEngine* m_pSoundEngine;
+    gfx::SimpleForward3DRenderer* m_p3DRenderer;
 
     bool m_Quit;
 
     int m_SubEngines;
 
-	std::vector<SDL_Event> m_SDLEvents;
-	boost::thread m_AudioThread;
+    std::vector<SDL_Event> m_SDLEvents;
+    boost::thread m_AudioThread;
 
     boost::chrono::high_resolution_clock::time_point m_PrevTime;
 

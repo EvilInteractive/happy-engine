@@ -133,18 +133,20 @@ void PhysicsEngine::stopSimulation()
 }
 void PhysicsEngine::tick(float dTime)
 {
-    static const physx::PxReal s_fixedStep(1.0f / 60.0f);
+    //static const physx::PxReal s_fixedStep(1.0f / 60.0f);
 
     if (m_Simulate)
     {
-        m_Timer += dTime;
-        if (m_Timer >= s_fixedStep)
-        {
-            m_Timer -= s_fixedStep;
+        PROFILER_BEGIN("PhysicsEngine::tick");
+       // m_Timer += dTime;
+        //if (m_Timer >= s_fixedStep)
+        //{
+            //m_Timer -= s_fixedStep;
 
             m_pScene->fetchResults(true);
-            m_pScene->simulate(s_fixedStep);
-        }
+            m_pScene->simulate(dTime);
+            //}
+        PROFILER_END("PhysicsEngine::tick");
     }
 }
 

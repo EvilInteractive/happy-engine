@@ -90,6 +90,7 @@ void AutoExposure::init()
 
 void AutoExposure::calculate( const Texture2D::pointer& hdrMap )
 {
+    PROFILER_BEGIN("AutoExposure::calculate");
     m_FirstBuffer = !m_FirstBuffer;
 
     GL::heBlendEnabled(false);
@@ -99,6 +100,7 @@ void AutoExposure::calculate( const Texture2D::pointer& hdrMap )
     m_pLumShader->setShaderVar(m_HDRmapPos, hdrMap);
     m_pLumShader->setShaderVar(m_PrevLumMapPos, m_pLumTexture[m_FirstBuffer? 1 : 0]);
     GRAPHICS->draw(m_pQuad);
+    PROFILER_END("AutoExposure::calculate");
 }
 
 const Texture2D::pointer& AutoExposure::getLuminanceMap() const

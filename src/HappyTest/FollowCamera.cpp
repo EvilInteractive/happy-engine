@@ -27,7 +27,7 @@ namespace happytest {
 
 // CONSTRUCTOR - DESTRUCTOR
 #pragma warning(disable:4355) //this used in base member init list
-FollowCamera::FollowCamera() :	Camera(16, 9), m_RunSmoothThread(true), m_Up(0, 1, 0), m_SmoothThread(boost::bind(&FollowCamera::smoothThread, this))
+FollowCamera::FollowCamera() :	Camera(16, 9), m_RunSmoothThread(true), m_Up(0, 1, 0), m_SmoothThread(boost::bind(&FollowCamera::smoothThread, this)), m_pFollowObject(nullptr)
 {
 }
 #pragma warning(default:4355) //this used in base member init list

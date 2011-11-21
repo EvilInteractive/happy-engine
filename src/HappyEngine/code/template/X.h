@@ -27,7 +27,7 @@ namespace he {
 class X
 {
 public:
-	X();
+    X();
     virtual ~X();
 
 private:

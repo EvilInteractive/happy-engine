@@ -57,6 +57,8 @@
 #include "PhysicsConvexShape.h"
 #include "PhysicsConcaveShape.h"
 
+#include "Profiler.h"
+
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
@@ -169,18 +171,18 @@ void MainGame::load()
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene2.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
     m_pScene->addComponent(pScenePxComp);
-    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene2.pxcv"));
+    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
     std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape pShape(pMesh);
         pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(he::px::PxMat_Grass));
     });
-    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene2.pxcc"));
+    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
     std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
     {
         he::px::PhysicsConcaveShape pShape(pMesh);
@@ -240,11 +242,14 @@ void MainGame::load()
     m_pFollowCamera->setLocalLook(normalize(vec3(0, 0.58f, -1.0f)));
     m_pFollowCamera->setDistance(15);
 
-    m_pCurrentCamera = m_pFollowCamera;
+    //m_pCurrentCamera = m_pFollowCamera;
+    m_pCurrentCamera = m_pFlyCamera;
 }
 void MainGame::tick(float dTime)
 {
     using namespace he;
+
+    PROFILER_BEGIN("MainGame::tick");
 
     if (m_pCurrentCamera == m_pFlyCamera)
         m_pFlyCamera->tick(dTime);
@@ -345,12 +350,15 @@ void MainGame::tick(float dTime)
     m_pFPSGraph->tick(dTime, 0.5f);
 
     CONSOLE->tick();
+
+    PROFILER_END("MainGame::tick");
 }
 void MainGame::draw()
 {
     using namespace he;
     using namespace gfx;
 
+    PROFILER_BEGIN("MainGame::draw");
     // 2D test stuff
    /* m_pTestButton->draw();
     m_pTestButton2->draw();
@@ -413,6 +421,7 @@ void MainGame::draw()
     m_pTestGrid->draw();
     HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
     HE3D->end();*/
+    PROFILER_END("MainGame::draw");
 }
 
 } //end namespace

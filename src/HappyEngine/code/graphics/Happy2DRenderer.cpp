@@ -232,8 +232,8 @@ void Happy2DRenderer::resize()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_ViewPortSize.x, m_ViewPortSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    m_pRenderTexture->init(renderTexture, m_ViewPortSize.x, m_ViewPortSize.y, GL_RGBA8);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
 
     uint depthTexture;
     glGenTextures(1, &depthTexture);
@@ -243,7 +243,7 @@ void Happy2DRenderer::resize()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_ViewPortSize.x, m_ViewPortSize.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
 
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
@@ -257,7 +257,8 @@ void Happy2DRenderer::resize()
 /* GENERAL */
 void Happy2DRenderer::draw()
 {
-    vec2 viewPortSize(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    PROFILER_BEGIN("Happy2DRenderer::draw");
+    vec2 viewPortSize(static_cast<float>(GRAPHICS->getScreenWidth()), static_cast<float>(GRAPHICS->getScreenHeight()));
 
     if (m_ViewPortSize != viewPortSize)
     {
@@ -333,6 +334,7 @@ void Happy2DRenderer::draw()
     drawTexture(Texture(m_pRenderTexture, vec2(), vec2(), 1.0f, RectF(), ""));
 
     GL::heBlendEnabled(false);
+    PROFILER_END("Happy2DRenderer::draw");
 }
 
 void Happy2DRenderer::createTextureQuad()
@@ -386,8 +388,8 @@ void Happy2DRenderer::init()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_ViewPortSize.x, m_ViewPortSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    m_pRenderTexture->init(renderTexture, m_ViewPortSize.x, m_ViewPortSize.y, GL_RGBA8);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
 
     uint depthTexture;
     glGenTextures(1, &depthTexture);
@@ -397,7 +399,7 @@ void Happy2DRenderer::init()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_ViewPortSize.x, m_ViewPortSize.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
 
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
@@ -434,7 +436,7 @@ void Happy2DRenderer::createLayer(const std::string& name, byte depth)
 
         std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p2)
         {
-            ASSERT(p.second != p2.second, "Layer depth already assigned!");
+            ASSERT((p.second != p2.second) || (p.first == p2.first), "Layer depth already assigned!");
         });
     });
     #endif

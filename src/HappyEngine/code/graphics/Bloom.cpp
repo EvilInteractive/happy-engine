@@ -148,6 +148,7 @@ void Bloom::resize()
 
 void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& lumMap )
 {
+    PROFILER_BEGIN("Bloom::render");
     GL::heBindVao(m_pMesh->getVertexArraysID());
 
     //BrightPass
@@ -188,6 +189,7 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
 
     GL::heBindVao(0);
     GL::heBindFbo(0);
+    PROFILER_END("Bloom::render");
 }
 
 const Texture2D::pointer& Bloom::getBloom( byte level ) const

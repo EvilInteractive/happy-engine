@@ -442,6 +442,9 @@
     <ClCompile Include="code\math\Triangulator.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
+    <ClCompile Include="code\tools\Profiler.cpp">
+      <Filter>happyengine\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -878,6 +881,9 @@
     </ClInclude>
     <ClInclude Include="code\math\Triangulator.h">
       <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\Profiler.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

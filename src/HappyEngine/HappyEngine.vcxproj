@@ -139,6 +139,7 @@
     <ClCompile Include="code\tools\Console.cpp" />
     <ClCompile Include="code\tools\FPSGraph.cpp" />
     <ClCompile Include="code\tools\Grid.cpp" />
+    <ClCompile Include="code\tools\Profiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\audio\ISound.h" />
@@ -281,6 +282,7 @@
     <ClInclude Include="code\tools\Grid.h" />
     <ClInclude Include="code\tools\IntTypeHandler.h" />
     <ClInclude Include="code\tools\ITypeHandler.h" />
+    <ClInclude Include="code\tools\Profiler.h" />
     <ClInclude Include="code\tools\StringTypeHandler.h" />
     <ClInclude Include="code\tools\UIntTypeHandler.h" />
     <ClInclude Include="code\tools\Vec2TypeHandler.h" />
