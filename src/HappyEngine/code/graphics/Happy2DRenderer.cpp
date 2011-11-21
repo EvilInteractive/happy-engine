@@ -232,7 +232,7 @@ void Happy2DRenderer::resize()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
 
     uint depthTexture;
@@ -388,7 +388,7 @@ void Happy2DRenderer::init()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
 
     uint depthTexture;

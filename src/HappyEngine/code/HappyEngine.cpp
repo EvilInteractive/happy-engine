@@ -264,7 +264,8 @@ void HappyEngine::updateLoop(float dTime)
     m_pGame->tick(dTime);
 }
 void HappyEngine::drawLoop()
-{                
+{            
+
     m_pGame->draw();
 
     PROFILER->draw();

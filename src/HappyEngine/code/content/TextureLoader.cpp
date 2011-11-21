@@ -43,14 +43,14 @@ namespace he {
 namespace ct {
 
 TextureLoader::TextureLoader(): m_isLoadThreadRunning(false),
-								m_pAssetContainer(NEW AssetContainer<gfx::Texture2D::pointer>())
+                                m_pAssetContainer(NEW AssetContainer<gfx::Texture2D::pointer>())
 {
 }
 
 
 TextureLoader::~TextureLoader()
 {
-	delete m_pAssetContainer;
+    delete m_pAssetContainer;
 }
 
 
@@ -108,60 +108,60 @@ gfx::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-	if (m_pAssetContainer->isAssetPresent(stream.str()))
-	{
-		return m_pAssetContainer->getAsset(stream.str());
-	}
-	else
-	{
-		gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
+    if (m_pAssetContainer->isAssetPresent(stream.str()))
+    {
+        return m_pAssetContainer->getAsset(stream.str());
+    }
+    else
+    {
+        gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
 
-		TextureLoadData data;
-		data.path = "";
-		data.id = 0;
-		data.pData = 0;
-		data.width = 0;
-		data.height = 0;
-		data.format = 0;
+        TextureLoadData data;
+        data.path = "";
+        data.id = 0;
+        data.pData = 0;
+        data.width = 0;
+        data.height = 0;
+        data.format = 0;
         data.color = color;
-		data.tex = tex2D;
-
-        m_TextureLoadQueueMutex.lock();
-		m_TextureLoadQueue.push(data);
-        m_TextureLoadQueueMutex.unlock();
-
-		m_pAssetContainer->addAsset(stream.str(), tex2D);
-
-		return tex2D;
-	}
-}
-gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
-{
-	if (m_pAssetContainer->isAssetPresent(path))
-	{
-		return m_pAssetContainer->getAsset(path);
-	}
-	else
-	{
-		gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
-
-		TextureLoadData data;
-		data.path = path;
-		data.id = 0;
-		data.pData = 0;
-		data.width = 0;
-		data.height = 0;
-		data.format = 0;
-		data.tex = tex2D;
+        data.tex = tex2D;
 
         m_TextureLoadQueueMutex.lock();
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
-		m_pAssetContainer->addAsset(path, tex2D);
+        m_pAssetContainer->addAsset(stream.str(), tex2D);
 
-		return tex2D;
-	}
+        return tex2D;
+    }
+}
+gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
+{
+    if (m_pAssetContainer->isAssetPresent(path))
+    {
+        return m_pAssetContainer->getAsset(path);
+    }
+    else
+    {
+        gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
+
+        TextureLoadData data;
+        data.path = path;
+        data.id = 0;
+        data.pData = 0;
+        data.width = 0;
+        data.height = 0;
+        data.format = 0;
+        data.tex = tex2D;
+
+        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueue.push(data);
+        m_TextureLoadQueueMutex.unlock();
+
+        m_pAssetContainer->addAsset(path, tex2D);
+
+        return tex2D;
+    }
 }
 
 void TextureLoader::TextureLoadThread()
@@ -180,7 +180,7 @@ void TextureLoader::TextureLoadThread()
             ilBindImage(id);
             if (ilLoadImage(data.path.c_str()))
             {
-                if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+                if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
                 {
                     iluFlipImage();
                     data.id = id;
@@ -210,13 +210,13 @@ void TextureLoader::TextureLoadThread()
             data.id = 0;
             data.width = 8;
             data.height = 8;
-            data.format = GL_RGBA;
+            data.format = GL_BGRA;
             data.pData = NEW byte[8*8*4];
             for (uint i = 0; i < 64*4; i += 4)
             {
-                data.pData[i] = data.color.rByte();
+                data.pData[i] = data.color.bByte();
                 data.pData[i+1] = data.color.gByte();
-                data.pData[i+2] = data.color.bByte();
+                data.pData[i+2] = data.color.rByte();
                 data.pData[i+3] = data.color.aByte();
             }
             m_TextureInvokeQueueMutex.lock();

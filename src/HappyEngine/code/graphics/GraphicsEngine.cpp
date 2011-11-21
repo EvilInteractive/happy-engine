@@ -69,6 +69,29 @@ void GraphicsEngine::init(bool useQt)
     glewExperimental = true;
     glHandleError(glewInit());
 
+    std::cout << glGetString(GL_VENDOR) << "\n";
+    std::cout << glGetString(GL_RENDERER) << "\n";
+    std::cout << glGetString(GL_VERSION) << "\n";
+    std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
+
+    int major, minor;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    std::cout << "GL version " << major << "." << minor << "\n";
+
+    int doubleBuff;
+    glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
+    std::cout << "Double buffered: " << ((doubleBuff == GL_TRUE)?"TRUE\n":"FALSE\n");
+
+    int maxTexSize, maxRenderSize, maxRectSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
+    glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
+    std::cout << "Max texture size: " << maxTexSize << "\n";
+    std::cout << "Max render size: " << maxRenderSize << "\n";
+    std::cout << "Max rect tex size: " << maxRectSize << "\n";
+
+
     setVSync(m_VSyncEnabled);
     setViewport(m_Viewport);
 

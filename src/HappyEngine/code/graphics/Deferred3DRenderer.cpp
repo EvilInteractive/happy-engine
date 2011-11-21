@@ -43,7 +43,7 @@ namespace gfx {
 //      - spec, gloss,         GL_RGBA8
 //      - Normal.xy            GL_RG16F
 //      - Depth                GL_DEPTH24_STENCIL8
-const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_RGBA, GL_RGBA, GL_RG, GL_DEPTH_COMPONENT };
+const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_BGRA, GL_BGRA, GL_RG, GL_DEPTH_COMPONENT };
 const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA8, GL_RG16F, GL_DEPTH_COMPONENT32F };
 const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
 VertexLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = VertexLayout();
@@ -221,7 +221,7 @@ void Deferred3DRenderer::resized()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
         width, height,
-        0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     m_pRenderTexture->init(m_RenderTextureId, width, height, GL_RGBA16F);
 
     if (m_Bloom)

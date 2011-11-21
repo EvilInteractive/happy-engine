@@ -74,7 +74,7 @@ void ShadowCaster::init(const DrawSettings& settings)
     //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
     //    2048, 2048,  
-    //    0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    //    0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     //m_pTempTexture = Texture2D::pointer(NEW Texture2D());
     //m_pTempTexture->init(texId[1], 2048, 2048, GL_RGBA8);
 

@@ -125,7 +125,7 @@ void Bloom::resize()
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
                 GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
-                0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+                0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
             m_Texture[pass][i] = Texture2D::pointer(NEW Texture2D());
             m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
         }
