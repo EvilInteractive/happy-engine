@@ -39,101 +39,121 @@ Polygon::~Polygon()
 
 Polygon::Polygon(const Polygon& p)
 {
-	m_Vertices = p.m_Vertices;
-	m_Indices = p.m_Indices;
+    m_Vertices = p.m_Vertices;
+    m_Indices = p.m_Indices;
 }
 
 Polygon& Polygon::operator=(const Polygon& p)
 {
-	m_Vertices = p.m_Vertices;
-	m_Indices = p.m_Indices;
+    m_Vertices = p.m_Vertices;
+    m_Indices = p.m_Indices;
 
-	return *this;
+    return *this;
 }
 
 /* GENERAL */
 void Polygon::addPoint(const vec2& p)
 {
-	m_Vertices.push_back(p);
+    m_Vertices.push_back(p);
 
-	m_Indices.clear();
+    m_Indices.clear();
 }
 
 bool Polygon::triangulate()
 {
-	if (m_Vertices.size() < 3)
-		return false;
+    if (m_Vertices.size() < 3)
+        return false;
 
-	bool b(Triangulator::triangulateShape(m_Vertices, m_Indices));
+    bool b(Triangulator::triangulateShape(m_Vertices, m_Indices));
 
-	if (b == false)
-		m_Indices.clear();
+    if (b == false)
+        m_Indices.clear();
 
-	return b;
+    return b;
 }
 
 void Polygon::clear()
 {
-	m_Vertices.clear();
-	m_Indices.clear();
+    m_Vertices.clear();
+    m_Indices.clear();
 }
 
 /* GETTERS */
 const std::vector<vec2>& Polygon::getVertices() const
 {
-	return m_Vertices;
+    return m_Vertices;
 }
 
 const std::vector<uint>& Polygon::getIndices() const
 {
-	return m_Indices;
+    return m_Indices;
 }
 
 bool Polygon::isTriangulated() const
 {
-	return m_Indices.size() != 0;
+    return m_Indices.size() != 0;
 }
 
 bool Polygon::hitTest(const vec2& hitPoint) const
 {
-	if (m_Indices.size() != 0)
-	{
-		for (uint i(0); i < m_Indices.size(); i += 3)
-		{
-			if (Triangulator::hitTestTriangle(	m_Vertices[m_Indices[i]],
-												m_Vertices[m_Indices[i + 1]],
-												m_Vertices[m_Indices[i + 2]],
-												hitPoint))
-				return true;
-		}
+    if (m_Indices.size() != 0)
+    {
+        for (uint i(0); i < m_Indices.size(); i += 3)
+        {
+            if (Triangulator::hitTestTriangle(	m_Vertices[m_Indices[i]],
+                                                m_Vertices[m_Indices[i + 1]],
+                                                m_Vertices[m_Indices[i + 2]],
+                                                hitPoint))
+                return true;
+        }
 
-		return false;
-	}
-	else
-		return false;
+        return false;
+    }
+    else
+        return false;
 }
 
 float Polygon::getArea() const
 {
-	return Triangulator::calculateArea(m_Vertices);
+    return Triangulator::calculateArea(m_Vertices);
 }
 
 uint Polygon::getVertexCount() const
 {
-	return m_Vertices.size();
+    return m_Vertices.size();
 }
 
 uint Polygon::getIndexCount() const
 {
-	return m_Indices.size();
+    return m_Indices.size();
 }
 
 uint Polygon::getTriangleCount() const
 {
-	if (isTriangulated())
-		return m_Vertices.size() / 3;
-	else
-		return 0;
+    if (isTriangulated())
+        return m_Vertices.size() / 3;
+    else
+        return 0;
+}
+
+/* OPERATORS */
+bool Polygon::operator==(const Polygon& p) const
+{
+    if (p.getVertexCount() != getVertexCount())
+        return false;
+
+    for (uint i(0); i < getVertexCount(); ++i)
+    {
+        if (m_Vertices[i] != p.getVertices()[i])
+            return false;
+    }
+    
+    return true;
+}
+
+bool Polygon::operator!=(const Polygon& p) const
+{
+    return (!(*this == p));
 }
 
 } //end namespace

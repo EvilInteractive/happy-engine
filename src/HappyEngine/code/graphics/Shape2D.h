@@ -25,6 +25,7 @@
 #include "Polygon.h"
 #include "mat44.h"
 #include "happynew.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gui {
@@ -33,47 +34,61 @@ class Shape2D
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Shape2D() : m_Polygon(Polygon())
-	{
-	}
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Shape2D() : m_Polygon(Polygon())
+    {
+    }
 
     virtual ~Shape2D()
-	{
-		
-	}
+    {
+        
+    }
 
-	/* GETTERS */
-	virtual Polygon& getPolygon()
-	{
-		return m_Polygon;
-	}
+    /* GETTERS */
+    virtual Polygon& getPolygon()
+    {
+        return m_Polygon;
+    }
 
-	virtual const mat44& getWorldMatrix() const
-	{
-		return m_World;
-	}
+    virtual const mat44& getWorldMatrix() const
+    {
+        return m_World;
+    }
 
-	/* DEFAULT COPY & ASSIGNMENT */
+    virtual const gfx::ModelMesh::pointer& getMesh() const
+    {
+        return m_pMesh;
+    }
+
+    /* SETTERS */
+    virtual void setMesh(const gfx::ModelMesh::pointer& pMesh)
+    {
+        m_pMesh = pMesh;
+    }
+
+    /* DEFAULT COPY & ASSIGNMENT */
     Shape2D(const Shape2D& s)
-	{
-		m_Polygon = s.m_Polygon;
-		m_World = s.m_World;
-	}
+    {
+        m_Polygon = s.m_Polygon;
+        m_World = s.m_World;
+        m_pMesh = s.m_pMesh;
+    }
 
     Shape2D& operator=(const Shape2D& s)
-	{
-		m_Polygon = s.m_Polygon;
-		m_World = s.m_World;
+    {
+        m_Polygon = s.m_Polygon;
+        m_World = s.m_World;
+        m_pMesh = s.m_pMesh;
 
-		return *this;
-	}
+        return *this;
+    }
 
 protected:
-	
-	/* DATAMEMBERS */
-	Polygon m_Polygon;
-	mat44 m_World;
+    
+    /* DATAMEMBERS */
+    Polygon m_Polygon;
+    mat44 m_World;
+    gfx::ModelMesh::pointer m_pMesh;
 };
 
 } } //end namespace

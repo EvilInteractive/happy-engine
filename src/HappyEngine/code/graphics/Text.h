@@ -34,69 +34,69 @@ class Text
 {
 public:
 
-	enum HAlignment
-	{
-		HAlignment_Left, 
-		HAlignment_Center, 
-		HAlignment_Right
-	};
-	enum VAlignment
-	{
-		VAlignment_Top, 
-		VAlignment_Center, 
-		VAlignment_Bottom
-	};
+    enum HAlignment
+    {
+        HAlignment_Left, 
+        HAlignment_Center, 
+        HAlignment_Right
+    };
+    enum VAlignment
+    {
+        VAlignment_Top, 
+        VAlignment_Center, 
+        VAlignment_Bottom
+    };
 
-	enum OverFlowType
-	{
-		OverFlowType_Clip,
-		OverFlowType_Wrap
-	};
+    enum OverFlowType
+    {
+        OverFlowType_Clip,
+        OverFlowType_Wrap
+    };
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Text(	gfx::Font::pointer font,
-			OverFlowType overflow = OverFlowType_Clip);
-	Text(	const std::string& text,
-			gfx::Font::pointer font,
-			OverFlowType overflow = OverFlowType_Clip);
-	Text(	OverFlowType overflow = OverFlowType_Clip);
-	Text(	const std::string& text,
-			OverFlowType overflow = OverFlowType_Clip);
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Text(	gfx::Font::pointer font,
+            OverFlowType overflow = OverFlowType_Clip);
+    Text(	const std::string& text,
+            gfx::Font::pointer font,
+            OverFlowType overflow = OverFlowType_Clip);
+    Text(	OverFlowType overflow = OverFlowType_Clip);
+    Text(	const std::string& text,
+            OverFlowType overflow = OverFlowType_Clip);
     virtual ~Text();
 
-	/* GENERAL */
-	void addLine(const std::string& string);
-	void clear();
+    /* GENERAL */
+    void addLine(const std::string& string);
+    void clear();
 
-	/* SETTERS */
-	void setLine(const std::string& string, uint lineNumber);
-	void setHorizontalAlignment(HAlignment alignment);
-	void setVerticalAlignment(VAlignment alignment);
+    /* SETTERS */
+    void setLine(const std::string& string, uint lineNumber);
+    void setHorizontalAlignment(HAlignment alignment);
+    void setVerticalAlignment(VAlignment alignment);
 
-	/* GETTERS */
-	const std::string& getLine(uint lineNumber) const;
-	const std::vector<std::string>& getText() const;
+    /* GETTERS */
+    const std::string& getLine(uint lineNumber) const;
+    const std::vector<std::string>& getText() const;
 
-	bool isEmpty() const;
+    bool isEmpty() const;
 
-	OverFlowType getOverFlowType() const;
+    OverFlowType getOverFlowType() const;
 
-	HAlignment getHorizontalAlignment() const;
-	VAlignment getVerticalAlignment() const;
+    HAlignment getHorizontalAlignment() const;
+    VAlignment getVerticalAlignment() const;
 
-	const gfx::Font::pointer& getFont() const;
+    const gfx::Font::pointer& getFont() const;
 
 private:
 
-	/* DATAMEMBERS */
-	std::vector<std::string> m_Text;
+    /* DATAMEMBERS */
+    std::vector<std::string> m_Text;
 
-	OverFlowType m_OverFlowType;
+    OverFlowType m_OverFlowType;
 
-	HAlignment m_HAlignment;
-	VAlignment m_VAlignment;
+    HAlignment m_HAlignment;
+    VAlignment m_VAlignment;
 
-	gfx::Font::pointer m_pFont;
+    gfx::Font::pointer m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Text(const Text&);

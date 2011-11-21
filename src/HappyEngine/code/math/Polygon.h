@@ -32,37 +32,41 @@ class Polygon
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Polygon();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Polygon();
     virtual ~Polygon();
 
-	/* GENERAL */
-	void addPoint(const vec2& p);
-	bool triangulate();
-	void clear();
+    /* GENERAL */
+    void addPoint(const vec2& p);
+    bool triangulate();
+    void clear();
 
-	/* GETTERS */
-	const std::vector<vec2>& getVertices() const;
-	const std::vector<uint>& getIndices() const;
+    /* GETTERS */
+    const std::vector<vec2>& getVertices() const;
+    const std::vector<uint>& getIndices() const;
 
-	bool isTriangulated() const;
-	bool hitTest(const vec2& hitPoint) const;
+    bool isTriangulated() const;
+    bool hitTest(const vec2& hitPoint) const;
 
-	float getArea() const;
+    float getArea() const;
 
-	uint getVertexCount() const;
-	uint getIndexCount() const;
-	uint getTriangleCount() const;
+    uint getVertexCount() const;
+    uint getIndexCount() const;
+    uint getTriangleCount() const;
 
-	/* DEFAULT COPY & ASSIGNMENT */
+    /* OPERATORS */
+    bool operator==(const Polygon& p) const;
+    bool operator!=(const Polygon& p) const;
+
+    /* DEFAULT COPY & ASSIGNMENT */
     Polygon(const Polygon& p);
     Polygon& operator=(const Polygon& p);
 
 private:
 
-	/* DATAMEMBERS */
-	std::vector<vec2> m_Vertices;
-	std::vector<uint> m_Indices;
+    /* DATAMEMBERS */
+    std::vector<vec2> m_Vertices;
+    std::vector<uint> m_Indices;
 };
 
 } //end namespace

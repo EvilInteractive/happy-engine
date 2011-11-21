@@ -83,9 +83,9 @@ public:
     void drawText(const gui::Text& txt, const vec2& pos);
     void drawText(const gui::Text& txt, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
     // * Draws a 2D shape. *
-    void drawShape2D(const gui::Shape2D& shape);
+    void drawShape2D(const gui::Shape2D& shape, bool buffered = false);
     // * Draws a filled 2D shape. *
-    void fillShape2D(const gui::Shape2D& shape);
+    void fillShape2D(const gui::Shape2D& shape, bool buffered = false);
     // * Draws a 2D texture with options for resizing, alpha, cliprect. *
     void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
                         const vec2& newDimensions = vec2(0.0f,0.0f),
@@ -143,8 +143,8 @@ private:
         std::string layer;
     };
 
-    void drawMesh(gui::Shape2D& shape);
-    void fillMesh(gui::Shape2D& shape);
+    void drawMesh(gui::Shape2D& shape, bool buffered = false);
+    void fillMesh(gui::Shape2D& shape, bool buffered = false);
     void drawTexture(const Texture& tex);
     float getDepth();
     void createTextureQuad();
@@ -170,8 +170,8 @@ private:
 
     ModelMesh::pointer m_pTextureQuad;
 
-    ct::AssetContainer<gfx::ModelMesh*> m_pModelContainer;
-    ct::AssetContainer<gfx::Texture2D::pointer> m_pTextureContainer;
+    ct::AssetContainer<ModelMesh::pointer>* m_pModelBuffer;
+    //ct::AssetContainer<gfx::Texture2D::pointer>* m_pTextureContainer;
 
     std::map<std::string, float> m_Layers;
     std::string m_CurrentLayer;
