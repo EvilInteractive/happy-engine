@@ -109,7 +109,6 @@ TestObject::TestObject():
 
 TestObject::~TestObject()
 {
-    //delete m_pCar;
 }
 
 

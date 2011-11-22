@@ -85,6 +85,8 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
 
 MainGame::~MainGame()
 {
+    PHYSICS->stopSimulation();
+
     delete m_pFollowCamera;
     delete m_pFlyCamera;
 

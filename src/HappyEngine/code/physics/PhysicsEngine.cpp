@@ -112,46 +112,61 @@ void PhysicsEngine::createScene()
 
 PhysicsEngine::~PhysicsEngine()
 {
+    if (m_Simulate)
+        stopSimulation();
+
     m_pScene->fetchResults(true);
     m_pScene->release();
+    delete m_pMaterials;
+    delete m_pCarManager;
+
     m_pCpuDispatcher->release();
     if (m_pCudaContextManager != nullptr)
         m_pCudaContextManager->release();
     m_pPhysXSDK->release();
     delete m_pAllocator;
     delete m_pErrorCallback;
-    delete m_pMaterials;
-    delete m_pCarManager;
 }
 
 void PhysicsEngine::startSimulation()
 {
     m_Timer = 0.0f;
     m_Simulate = true;
+    m_PhysXThread = boost::thread(boost::bind(&PhysicsEngine::physXThread, this));
 }
 void PhysicsEngine::stopSimulation()
 {
     m_Simulate = false;
+    m_PhysXThread.join();
 }
-void PhysicsEngine::tick(float dTime)
+void PhysicsEngine::tick(float /*dTime*/)
 {
-    //static const physx::PxReal s_fixedStep(1.0f / 60.0f);
 
-    if (m_Simulate)
+}
+void PhysicsEngine::physXThread()
+{
+    const physx::PxReal fixedStep(1.0f / 120.0f);
+    boost::chrono::high_resolution_clock::time_point m_PrevTime(boost::chrono::high_resolution_clock::now());
+    while (m_Simulate)
     {
-        PROFILER_BEGIN("PhysicsEngine::tick");
+        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
+        m_PrevTime = boost::chrono::high_resolution_clock::now();
+        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+        //PROFILER_BEGIN("PhysicsEngine::tick");
         //m_Timer += dTime;
         //if (m_Timer >= s_fixedStep)
         //{
         //    m_Timer -= s_fixedStep;
 
             m_pScene->fetchResults(true);
-            m_pScene->simulate(dTime);
-            m_pCarManager->tick(dTime);
+            m_pScene->simulate(fixedStep);
+            m_pCarManager->tick(fixedStep);
             //}
-        PROFILER_END("PhysicsEngine::tick");
+        //PROFILER_END("PhysicsEngine::tick");
+        boost::this_thread::sleep(boost::posix_time::milliseconds(static_cast<int64_t>((fixedStep - (dTime - fixedStep))*boost::milli::den)));
     }
 }
+
 
 physx::PxPhysics* PhysicsEngine::getSDK() const
 {

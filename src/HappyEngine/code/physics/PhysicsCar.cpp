@@ -80,7 +80,7 @@ PhysicsCar::PhysicsCar(): m_pVehicle(NEW physx::PxVehicle4W())
 }
 PhysicsCar::~PhysicsCar()
 {  
-    delete m_pVehicle;
+    //delete m_pVehicle;
 }
 
 void setVehicleGeometricData (const vec3& chassisDims, const vec3* const wheelCentreOffsets, 

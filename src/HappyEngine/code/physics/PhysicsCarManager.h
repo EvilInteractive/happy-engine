@@ -28,6 +28,8 @@
 #include "PhysicsMaterial.h"
 #include "HappyTypes.h"
 
+#include "boost/thread/mutex.hpp"
+
 namespace he {
 namespace px {
 
@@ -59,7 +61,6 @@ private:
     std::vector<px::PhysicsMaterial>		m_DrivableMaterials;
 
     byte m_DrivableSurfaces, m_TyreTypes;
-
 };
 
 class PhysicsCarManager
@@ -87,6 +88,8 @@ private:
     physx::PxBatchQuery* m_SqWheelRaycastSceneQuery;
 
     const DriveableSurfaceTyreFrictionTable* m_pSurfaceTyreFrictionTable;
+
+    boost::mutex m_Mutex;
 
     //Disable default copy constructor and default assignment operator
     PhysicsCarManager(const PhysicsCarManager&);

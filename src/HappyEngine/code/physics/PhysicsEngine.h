@@ -104,6 +104,7 @@ private:
     ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
 
     boost::thread m_PhysXThread;
+    void physXThread();
 
     void createScene();
     
