@@ -51,18 +51,14 @@ private:
     
     Shader::pointer m_pDownSampleBrightPassShader;
     uint m_DownSampleBrightPassMap;
-    uint m_DownSampleBrightPassInvScale;
     uint m_DownSampleBrightPassLumMap;
-    //uint m_DownSampleBrightPassExposure;
 
     Shader::pointer m_pDownSampleShader;
     uint m_DownSampleMap;
-    uint m_DownSampleInvScale;
 
     Shader::pointer m_pBlurShaderPass[2];
     uint m_BlurMapPos[2];
     uint m_BlurTexelSize[2];
-    uint m_BlurInvScale[2];
         
     byte m_DownSamples;
 

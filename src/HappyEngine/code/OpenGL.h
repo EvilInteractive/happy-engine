@@ -102,6 +102,7 @@ public:
     //Blending
     static void heBlendEnabled(bool enabled);
     static void heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor);
+    static void heBlendEquation(BlendEquation eq);
     static void heBlendColor(const Color& color);
 
     //Scissor

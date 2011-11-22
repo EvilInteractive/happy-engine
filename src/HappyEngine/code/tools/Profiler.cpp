@@ -79,9 +79,9 @@ void Profiler::draw() const
         {
             avgTime += data.getDuration() * 1000;
         });
-        char buff[12];
-        std::sprintf(buff, ": %07.2f ms", avgTime / profilePair.second.size());
-        text.addLine("-- " + profilePair.first + buff);        
+        char buff[14];
+        std::sprintf(buff, ": %07.2f ms\0", avgTime / profilePair.second.size());
+        text.addLine("-- " + profilePair.first + std::string(buff));        
     });
     text.addLine("------------------------------------------");
 

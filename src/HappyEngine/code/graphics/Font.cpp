@@ -33,7 +33,7 @@ namespace he {
 namespace gfx {
 
 Font::Font(TTF_Font* pFont):	m_pFont(pFont),
-								m_Path("")
+                                m_Path("")
 {
 
 }
@@ -56,56 +56,56 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf)
 {
     ASSERT(pSurf != nullptr, "pSurf == nullPtr !");
 
-	uint width(ceilToPowerOfTwo(pSurf->w)), 
+    uint width(ceilToPowerOfTwo(pSurf->w)), 
         height(ceilToPowerOfTwo(pSurf->h));
 
-	SDL_Surface* pP2Surf(nullptr);
+    SDL_Surface* pP2Surf(nullptr);
 
-	pP2Surf = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    pP2Surf = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 
     SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_NONE);
-	SDL_BlitSurface(pSurf, 0, pP2Surf, 0);
+    SDL_BlitSurface(pSurf, 0, pP2Surf, 0);
     SDL_FreeSurface(pSurf);
 
     return pP2Surf;
 }
 Texture2D::pointer Font::createTextureText(const std::string& text, const Color& color,
-											bool bAntiAliased, vec2* sizeText)
+                                            bool bAntiAliased, vec2* sizeText)
 {
     SDL_Color col;
     col.r = color.rByte();
     col.g = color.gByte();
     col.b = color.bByte();
 
-	if (sizeText != nullptr)
-	{
-		int h(0);
-		int w(0);
+    if (sizeText != nullptr)
+    {
+        int h(0);
+        int w(0);
 
-		TTF_SizeText(m_pFont, text.c_str(), &w, &h);
+        TTF_SizeText(m_pFont, text.c_str(), &w, &h);
 
-		sizeText->x = static_cast<float>(w);
-		sizeText->y = static_cast<float>(h);
-	}
+        sizeText->x = static_cast<float>(w);
+        sizeText->y = static_cast<float>(h);
+    }
 
-	SDL_Surface* pSurf(nullptr);
+    SDL_Surface* pSurf(nullptr);
 
-	pSurf = convertNonP2ToP2Surface(TTF_RenderText_Blended(m_pFont, text.c_str(), col));
+    pSurf = convertNonP2ToP2Surface(TTF_RenderText_Blended(m_pFont, text.c_str(), col));
 
     GLuint texID;
     glGenTextures(1, &texID);
     GL::heBindTexture2D(0, texID);
 
-	if (bAntiAliased)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
-	else
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
+    if (bAntiAliased)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
+    else
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pSurf->w, pSurf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, pSurf->pixels);
     
@@ -117,17 +117,17 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
 }
 
 Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& color,
-										   bool bAntiAliased)
+                                           bool bAntiAliased)
 {
-	SDL_Color col;
+    SDL_Color col;
     col.r = color.rByte();
     col.g = color.gByte();
     col.b = color.bByte();
 
-	uint width(0);
+    uint width(0);
     uint height(0);
 
-	std::for_each(text.getText().cbegin(), text.getText().cend(), [&](std::string str)
+    std::for_each(text.getText().cbegin(), text.getText().cend(), [&](std::string str)
     {
             if (getStringWidth(str) > width)
                     width = getStringWidth(str);
@@ -135,46 +135,46 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
 
     height = (text.getText().size() * getFontPixelHeight()) + ((text.getText().size() - 1) * getFontLineSpacing());
 
-	SDL_Surface* pSurf(SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
+    SDL_Surface* pSurf(SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000));
 
-	SDL_Surface* pSTemp(nullptr);
+    SDL_Surface* pSTemp(nullptr);
 
-	SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_ADD);
+    SDL_SetSurfaceBlendMode(pSurf, SDL_BLENDMODE_ADD);
 
-	uint i(0);
-	std::for_each(text.getText().cbegin(), text.getText().cend(), [&] (std::string str)
-	{
-		pSTemp = TTF_RenderText_Blended(m_pFont, str.c_str(), col);
+    uint i(0);
+    std::for_each(text.getText().cbegin(), text.getText().cend(), [&] (std::string str)
+    {
+        pSTemp = TTF_RenderText_Blended(m_pFont, str.c_str(), col);
 
-		SDL_Rect r;
-		r.x = 0;
-		r.y = i * getFontLineSpacing();
-		r.w = 0;
-		r.h = 0;
+        SDL_Rect r;
+        r.x = 0;
+        r.y = i * getFontLineSpacing();
+        r.w = 0;
+        r.h = 0;
 
-		SDL_BlitSurface(pSTemp, 0, pSurf, &r);
+        SDL_BlitSurface(pSTemp, 0, pSurf, &r);
 
-		SDL_FreeSurface(pSTemp);
+        SDL_FreeSurface(pSTemp);
 
-		++i;
-	});
+        ++i;
+    });
 
-	pSurf = convertNonP2ToP2Surface(pSurf);
+    pSurf = convertNonP2ToP2Surface(pSurf);
 
     GLuint texID;
     glGenTextures(1, &texID);
     GL::heBindTexture2D(0, texID);
 
-	if (bAntiAliased)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
-	else
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
+    if (bAntiAliased)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
+    else
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pSurf->w, pSurf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, pSurf->pixels);
     
@@ -187,32 +187,32 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
 
 void Font::setPath(const std::string& path)
 {
-	m_Path = path;
+    m_Path = path;
 }
 
 const std::string& Font::getPath() const
 {
-	return m_Path;
+    return m_Path;
 }
 
 uint Font::getFontPixelHeight() const
 {
-	return TTF_FontHeight(m_pFont);
+    return TTF_FontHeight(m_pFont);
 }
 
 uint Font::getFontLineSpacing() const
 {
-	return TTF_FontLineSkip(m_pFont);
+    return TTF_FontLineSkip(m_pFont);
 }
 
 uint Font::getStringWidth(const std::string& string) const
 {
-	int w(0);
-	int h(0);
+    int w(0);
+    int h(0);
 
-	TTF_SizeText(m_pFont, string.c_str(), &w, &h);
+    TTF_SizeText(m_pFont, string.c_str(), &w, &h);
 
-	return static_cast<uint>(w);
+    return static_cast<uint>(w);
 }
 
 } } //end namespace

@@ -68,14 +68,7 @@ enum PxFilter
     COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST=	COLLISION_FLAG_GROUND 						 |	COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
 };
 
-enum PxDrivableMaterial
-{
-    PxMat_Grass,
-    PxMat_Sand,
-    PxMat_Concrete,
-    PxMat_Ice,
-    MAX_DRIVABLE_SURFACES=10
-};
+class PhysicsCarManager;
 
 class PhysicsEngine
 {
@@ -90,9 +83,10 @@ public:
 
     physx::PxPhysics* getSDK() const;
     physx::PxScene* getScene() const;
+    PhysicsCarManager* getCarManager() const;
 
     physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
-    const px::PhysicsMaterial& getDriveableMaterial(PxDrivableMaterial material);
+    const px::PhysicsMaterial& getDriveableMaterial( byte id );
 
 private:
 
@@ -105,19 +99,14 @@ private:
     physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
     physx::pxtask::CudaContextManager* m_pCudaContextManager;
 
+    PhysicsCarManager* m_pCarManager;
+
     ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
 
     boost::thread m_PhysXThread;
 
     void createScene();
-
-    void initMaterials();
-    //physx::PxVehicleDrivableSurfaceType	    PX_ALIGN(16, m_VehicleDrivableSurfaceTypes[MAX_DRIVABLE_SURFACES]);
-    physx::PxVehicleDrivableSurfaceType*	    m_VehicleDrivableSurfaceTypes;
-    physx::PxMaterial*						m_PxDrivableMaterials[MAX_DRIVABLE_SURFACES];
-
-    px::PhysicsMaterial						m_DrivableMaterials[MAX_DRIVABLE_SURFACES];
-
+    
     float m_Timer;
 
     bool m_Simulate;

@@ -115,6 +115,7 @@
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MyClient.h" />
     <ClInclude Include="MyServer.h" />
+    <ClInclude Include="PhysicsData.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="VertexPNT.h" />
   </ItemGroup>
@@ -132,9 +133,12 @@
     <None Include="data\shaders\deferred\post\downSample.frag" />
     <None Include="data\shaders\deferred\post\HDRtoLDR.frag" />
     <None Include="data\shaders\deferred\post\lum.frag" />
+    <None Include="data\shaders\deferred\post\shadowBlur.frag" />
     <None Include="data\shaders\deferred\pre\default.shader" />
+    <None Include="data\shaders\deferred\pre\defaultSkinned.shader" />
     <None Include="data\shaders\deferred\pre\deferredPreShader.frag" />
     <None Include="data\shaders\deferred\pre\deferredPreShader.vert" />
+    <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert" />
     <None Include="data\shaders\deferred\pre\deferredPreShadowShader.frag" />
     <None Include="data\shaders\deferred\pre\deferredPreShadowShader.vert" />
     <None Include="data\shaders\deferred\pre\encode.frag" />

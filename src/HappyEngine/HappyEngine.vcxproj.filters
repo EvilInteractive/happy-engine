@@ -442,6 +442,9 @@
     <ClCompile Include="code\math\Triangulator.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
+    <ClCompile Include="code\physics\PhysicsCarManager.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
     <ClCompile Include="code\tools\Profiler.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
@@ -881,6 +884,9 @@
     </ClInclude>
     <ClInclude Include="code\math\Triangulator.h">
       <Filter>happyengine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsCarManager.h">
+      <Filter>happyengine\physics</Filter>
     </ClInclude>
     <ClInclude Include="code\tools\Profiler.h">
       <Filter>happyengine\tools</Filter>

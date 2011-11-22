@@ -65,14 +65,11 @@ void Bloom::init()
     m_pDownSampleBrightPassShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
                                         folder +  "deferred/post/downSample.frag", layout, defineBrightPass);
     m_DownSampleBrightPassMap = m_pDownSampleBrightPassShader->getShaderSamplerId("map");
-    m_DownSampleBrightPassInvScale = m_pDownSampleBrightPassShader->getShaderVarId("invScale");
     m_DownSampleBrightPassLumMap = m_pDownSampleBrightPassShader->getShaderSamplerId("lumMap");
-    //m_DownSampleBrightPassExposure = m_pDownSampleBrightPassShader->getShaderVarId("exposure");
 
     m_pDownSampleShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
                               folder + "deferred/post/downSample.frag", layout);
     m_DownSampleMap = m_pDownSampleShader->getShaderSamplerId("map");
-    m_DownSampleInvScale = m_pDownSampleShader->getShaderVarId("invScale");
 
     for (int pass = 0; pass < 2; ++pass)
     {
@@ -87,8 +84,6 @@ void Bloom::init()
         m_pBlurShaderPass[pass]->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
                                       folder + "deferred/post/blur.frag", layout, definePass);
         m_BlurMapPos[pass] = m_pBlurShaderPass[pass]->getShaderSamplerId("map");
-        //m_BlurTexelSize[pass] = m_pBlurShaderPass[pass]->getShaderVarId("texelSize");
-        m_BlurInvScale[pass] = m_pBlurShaderPass[pass]->getShaderVarId("invScale");
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -155,8 +150,8 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
     GL::heBindFbo(m_FboId[0][0]);
     m_pDownSampleBrightPassShader->bind();
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassMap, pTexture);
-    m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassInvScale, 2.0f);
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
+    GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
     glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
 
     //DownSample further
@@ -165,7 +160,7 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
     {
         GL::heBindFbo(m_FboId[0][fboId]);
         m_pDownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
-        m_pDownSampleShader->setShaderVar(m_DownSampleInvScale, (fboId + 1) * 2.0f);
+        GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
 
         glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
     }
@@ -178,17 +173,11 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
         {
             GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
-            float invScale(((fboId + 1) * 2.0f));
-            //m_pBlurShaderPass[pass]->setShaderVar(m_BlurTexelSize[pass], 
-            //    vec2(1.0f / (GRAPHICS->getScreenWidth() / invScale), 
-            //         1.0f / (GRAPHICS->getScreenHeight() / invScale)));
-            m_pBlurShaderPass[pass]->setShaderVar(m_BlurInvScale[pass], invScale);
+            GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[pass == 0?1:0][fboId]->getWidth(), (int)m_Texture[pass == 0?1:0][fboId]->getHeight()));
             glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
         }
     }
-
-    GL::heBindVao(0);
-    GL::heBindFbo(0);
+    GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     PROFILER_END("Bloom::render");
 }
 

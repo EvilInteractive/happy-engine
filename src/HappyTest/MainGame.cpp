@@ -57,7 +57,11 @@
 #include "PhysicsConvexShape.h"
 #include "PhysicsConcaveShape.h"
 
+#include "PhysicsCarManager.h"
+
 #include "Profiler.h"
+
+#include "PhysicsData.h"
 
 namespace happytest {
 
@@ -67,7 +71,8 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_pCurrentCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
                        m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
-                       m_pTestSound2D(nullptr), m_pTestGrid(nullptr)
+                       m_pTestSound2D(nullptr), m_pTestGrid(nullptr),
+                       m_pFrictionTable(nullptr)
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -102,6 +107,8 @@ MainGame::~MainGame()
     delete m_pTestButton2;
     delete m_pTestButton3;
     delete m_pTestGrid;
+
+    delete m_pFrictionTable;
 
     NETWORK->stop();
 }
@@ -139,6 +146,24 @@ void MainGame::load()
 
     m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
 
+    //////////////////////////////////////////////////////////////////////////
+    /// PHYSICS
+    //////////////////////////////////////////////////////////////////////////
+    m_pFrictionTable = NEW he::px::DriveableSurfaceTyreFrictionTable(MAX_DRIVEABLE_MATERIALS, MAX_TYRE_TYPES);
+
+    m_pFrictionTable->setMaterial(DM_Grass,     px::PhysicsMaterial(0.90f, 0.85f, 0.05f));
+    m_pFrictionTable->setMaterial(DM_Sand,      px::PhysicsMaterial(0.75f, 0.70f, 0.01f));
+    m_pFrictionTable->setMaterial(DM_Wood,      px::PhysicsMaterial(0.95f, 0.90f, 0.09f));
+    m_pFrictionTable->setMaterial(DM_Ice,       px::PhysicsMaterial(0.65f, 0.60f, 0.09f));
+    m_pFrictionTable->setMaterial(DM_Tarmac,    px::PhysicsMaterial(1.40f, 1.30f, 0.01f));
+    m_pFrictionTable->setMaterial(DM_Concrete,  px::PhysicsMaterial(1.50f, 1.40f, 0.01f));
+    m_pFrictionTable->setMaterial(DM_Tyre,      px::PhysicsMaterial(1.30f, 1.20f, 0.10f));
+    m_pFrictionTable->setMaterial(DM_Metal,     px::PhysicsMaterial(0.85f, 0.80f, 0.08f));
+
+    m_pFrictionTable->setTyreType(TT_Slicks, 1.0f);
+    m_pFrictionTable->setTyreType(TT_Wets, 1.2f);
+
+    PHYSICS->getCarManager()->init(m_pFrictionTable);
     PHYSICS->startSimulation();
 
     gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
@@ -158,7 +183,7 @@ void MainGame::load()
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 0.5f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
    
     m_pTestObject = NEW TestObject();
 
@@ -171,22 +196,22 @@ void MainGame::load()
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene2.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
     m_pScene->addComponent(pScenePxComp);
-    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
+    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene2.pxcv"));
     std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape pShape(pMesh);
-        pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(he::px::PxMat_Grass));
+        pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(DM_Concrete));
     });
-    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
+    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene2.pxcc"));
     std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
     {
         he::px::PhysicsConcaveShape pShape(pMesh);
-        pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(he::px::PxMat_Concrete));
+        pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(DM_Tarmac));
     });
 
     m_pSky = NEW he::game::Entity();
@@ -237,13 +262,13 @@ void MainGame::load()
     m_pFlyCamera->setActive(true);
 
     m_pFollowCamera = NEW FollowCamera();
-    m_pFollowCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    m_pFollowCamera->setLens(16.0f/9.0f,piOverFour,10.0f, 200.0f);
     m_pFollowCamera->setFollowObject(m_pTestObject);
     m_pFollowCamera->setLocalLook(normalize(vec3(0, 0.58f, -1.0f)));
     m_pFollowCamera->setDistance(15);
 
-    //m_pCurrentCamera = m_pFollowCamera;
-    m_pCurrentCamera = m_pFlyCamera;
+    m_pCurrentCamera = m_pFollowCamera;
+    //m_pCurrentCamera = m_pFlyCamera;
 }
 void MainGame::tick(float dTime)
 {
@@ -295,7 +320,7 @@ void MainGame::tick(float dTime)
         game::DynamicPhysicsComponent* pPhysicsComponent(NEW game::DynamicPhysicsComponent());
         pBullet->addComponent(pPhysicsComponent);
         px::PhysicsBoxShape boxShape(vec3(2, 2, 2));
-        pPhysicsComponent->addShape(&boxShape, PHYSICS->getDriveableMaterial(px::PxMat_Concrete), 5);
+        pPhysicsComponent->addShape(&boxShape, PHYSICS->getDriveableMaterial(DM_Metal), 5);
         pPhysicsComponent->getDynamicActor()->setVelocity(m_pCurrentCamera->getLook() * 20);
 
         game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());

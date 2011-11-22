@@ -30,6 +30,9 @@
 #pragma warning(default:4505)
 #include "RiggedModelComponent.h"
 
+#include "Text.h"
+#include "Font.h"
+
 namespace happytest {
 
 class TestObject : public he::game::Entity, public he::game::ITickable

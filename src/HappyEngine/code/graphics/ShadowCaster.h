@@ -46,11 +46,16 @@ private:
 
     uint m_FboId;
 
-    const static int COUNT = DirectionalLight::CASCADES;
-    Texture2D::pointer m_pShadowTexture[COUNT];
+    const static int COUNT = DirectionalLight::CASCADES + 1;
+    Texture2D::pointer m_pShadowTexture[COUNT]; //first = blur temp
+    uint m_DepthRenderbuff;
 
     Shader::pointer m_pShadowShader;
     uint m_shaderWVPpos;
+
+    Shader::pointer m_pShadowBlurShaderPass[2];
+    uint m_BlurShaderTexPosPass[2];
+    ModelMesh::pointer m_pQuad;
 
     ushort m_ShadowSize;
 

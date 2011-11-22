@@ -51,34 +51,59 @@ uniform mat4 mtxDirLight0;
 uniform mat4 mtxDirLight1;
 uniform mat4 mtxDirLight2;
 uniform mat4 mtxDirLight3;
-uniform sampler2DShadow shadowMap0;
-uniform sampler2DShadow shadowMap1;
-uniform sampler2DShadow shadowMap2;
-uniform sampler2DShadow shadowMap3;
+uniform sampler2D shadowMap0;
+uniform sampler2D shadowMap1;
+uniform sampler2D shadowMap2;
+uniform sampler2D shadowMap3;
 
-int sampleRange = 4;
+vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
+{
+    vec2 color = vec2(0, 0);
+    color += textureOffset(sampler, texCoord.xy, ivec2(-1, -1)).rg;
+    color += textureOffset(sampler, texCoord.xy, ivec2( 0, -1)).rg;
+    color += textureOffset(sampler, texCoord.xy, ivec2( 1, -1)).rg;
 
-float shadowCheck(in vec3 position, in sampler2DShadow sampler, in mat4 lightMatrix, in float bias)
+    color += textureOffset(sampler, texCoord.xy, ivec2(-1,  0)).rg;
+    color += textureOffset(sampler, texCoord.xy, ivec2( 0,  0)).rg;
+    color += textureOffset(sampler, texCoord.xy, ivec2( 1,  0)).rg;
+
+    color += textureOffset(sampler, texCoord.xy, ivec2(-1,  1)).rg;
+    color += textureOffset(sampler, texCoord.xy, ivec2( 0,  1)).rg;
+    color += textureOffset(sampler, texCoord.xy, ivec2( 1,  1)).rg;
+
+    return color / 9.0f;
+}
+
+float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
 {
     vec4 coord = lightMatrix * vec4(position, 1.0f);
     coord.xyz /= coord.w;
-    if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1 ||
-        coord.z < 0)
-        return 0.0f;
+    if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1)
+        return 1.0f;
 
     //NDC -> texturespace
-    coord.x = (coord.x + 1.0f) / 2.0f;
-    coord.y = (coord.y + 1.0f) / 2.0f;
-    coord.z = (coord.z + 1.0f) / 2.0f - bias;
+    coord.x = coord.x * 0.5f + 0.5f;
+    coord.y = coord.y * 0.5f + 0.5f;
+    //coord.z = coord.y * 0.5f + 0.5f;
     
-    float shadow = 0;
-    for (int x = -(sampleRange/2); x <= sampleRange/2; ++x)
-        for (int y = -(sampleRange/2); y <= sampleRange/2; ++y)
-            shadow += textureOffset(sampler, coord.xyz, ivec2(x, y));
-    
-    shadow /= sampleRange * sampleRange;
+    //float bias = 0.001f;
 
-    return shadow;
+    vec2 map = PCF9(sampler, coord.xy);
+    //vec2 map = texture(sampler, coord.xy).rg;
+
+
+    float fAvgZ = map.x;
+    float fAvgZ2 = map.y;
+
+    if (coord.z <= fAvgZ) return 1.0f;
+
+    float variance = fAvgZ2 - (fAvgZ * fAvgZ);
+    variance = min(max(variance, 0.0f) + 0.00002f, 1.0f);
+
+    float mean = fAvgZ;
+    float d = coord.z - mean;
+    
+    return pow(variance / (variance + d*d), 5);
 }
 
 void main()
@@ -108,22 +133,22 @@ void main()
     if (position.z < 25)
     {
         //testColor = vec3(1, 0, 1);
-        dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0, -0.001f);
+        dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0);
     }
     else if (position.z < 50)
     {
         //testColor = vec3(0, 1, 0);
-        dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1, -0.001f);
+        dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1);
     }
     else if (position.z < 100)
     {
         //testColor = vec3(0, 0, 1);
-        dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2, -0.0001f);
+        dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2);
     }
     else
     {
         //testColor = vec3(0, 1, 1);
-        dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3, -0.001f);
+        dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3);
     }
     
     //float steps = 1.0f / 16.0f;

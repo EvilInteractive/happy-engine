@@ -45,6 +45,8 @@
 #include "TextBox.h"
 #include "Grid.h"
 
+#include "PhysicsCarManager.h"
+
 #include "Polygon2D.h"
 
 namespace happytest {
@@ -110,6 +112,8 @@ private:
     //bool m_bDrawPicking;
 
     he::gui::Polygon2D m_Poly;
+
+    he::px::DriveableSurfaceTyreFrictionTable* m_pFrictionTable;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

@@ -27,18 +27,12 @@
 
 #include "PhysicsConvexShape.h"
 #include "ControlsManager.h"
+#include "PhysicsCarManager.h"
 
 
 namespace he {
 namespace px {
 
-float PhysicsCar::s_TyreFrictionMultipliers[MAX_DRIVABLE_SURFACES][PhysicsCar::MAX_TYRE_TYPES] =
-{
-    { 1.0f,  1.1f }, //Grass
-    { 1.0f,  1.1f }, //Sand
-    { 1.05f,  1.15f }, //Concrete
-    { 1.0f,  1.1f }  //Ice
-};
 physx::PxVehicleKeySmoothingData PhysicsCar::s_KeySmoothingData =
 {
     3.0f,   //rise rate PX_VEHICLE_ANALOG_INPUT_ACCEL
@@ -81,12 +75,12 @@ physx::PxFixedSizeLookupTable<8> PhysicsCar::s_SteerVsForwardSpeedTable(s_SteerV
 
 
 
-PhysicsCar::PhysicsCar(): m_SqWheelRaycastSceneQuery(nullptr)
+PhysicsCar::PhysicsCar(): m_pVehicle(NEW physx::PxVehicle4W())
 {  
 }
 PhysicsCar::~PhysicsCar()
 {  
-    //delete m_pVehicle;
+    delete m_pVehicle;
 }
 
 void setVehicleGeometricData (const vec3& chassisDims, const vec3* const wheelCentreOffsets, 
@@ -130,7 +124,7 @@ vec3 computeChassisMOI(const vec3& chassisDims, const float chassisMass)
     vec3 chassisMOI(chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z,
                     chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z,
                     chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y);
-    chassisMOI *= chassisMass * 0.0833f;
+    chassisMOI *= chassisMass * 0.08f;
     //Well, the AABB moi gives rather sluggish behaviour so lets let the car turn a bit quicker.
     chassisMOI.y *= 0.8f;//
     return chassisMOI;
@@ -143,37 +137,26 @@ void setOptionalVehicleData(physx::PxVehicle4WSimpleSetup& simpleSetup)
     simpleSetup.mRearTyreType = 0;
 
     //Diff descriptor.
-    simpleSetup.mDiffType = physx::PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_4WD;
-
+    simpleSetup.mDiffType = physx::PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD;
 }
 
-void PhysicsCar::init(
-          const std::vector<PhysicsConvexShape>& wheelConvexMeshes, 
-          const std::vector<PhysicsConvexShape>& chassisConvexMeshes,
-          const PhysicsMaterial& material)
+void PhysicsCar::init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chassiMaterial,
+                      const std::vector<TyreDesc>& tyreDescs, const PhysicsMaterial& tyreMaterial)
 {
     physx::PxVehicle4WSimpleSetup simpleSetup;
     vec3 wheelOffset[4];
-    wheelOffset[0] = vec3(0.691f, -0.314f*2.5f, 1.348f);
-    wheelOffset[1] = vec3(-0.691f, -0.314f*2.5f, 1.348f);
-    wheelOffset[2] = vec3(0.691f, -0.314f*2.5f, -1.203f);
-    wheelOffset[3] = vec3(-0.691f, -0.314f*2.5f, -1.203f);
     float wheelWidth[4];
-    wheelWidth[0] = 0.281f;
-    wheelWidth[1] = 0.281f;
-    wheelWidth[2] = 0.281f;
-    wheelWidth[3] = 0.281f;
     float wheelR[4];
-    wheelR[0] = 0.335f;
-    wheelR[1] = 0.335f;
-    wheelR[2] = 0.335f;
-    wheelR[3] = 0.335f;
-    vec3 chassiDim(2.025f, 1.323f, 4.445f);
-    setVehicleGeometricData(chassiDim, wheelOffset, wheelWidth, wheelR, simpleSetup);
+    for (int i(0); i < 4; ++i)
+    {
+        wheelOffset[i] = tyreDescs[i].m_Offset;
+        wheelWidth[i] = tyreDescs[i].m_Width;
+        wheelR[i] = tyreDescs[i].m_Radius;
+    }
+    setVehicleGeometricData(chassisDesc.m_Aabb, wheelOffset, wheelWidth, wheelR, simpleSetup);
 
-    float chassiMass(1450);
-    vec3 moi(computeChassisMOI(chassiDim, chassiMass));
-    setVehicleMassData(chassiMass, moi, simpleSetup);
+    vec3 moi(computeChassisMOI(chassisDesc.m_Aabb, chassisDesc.m_Mass));
+    setVehicleMassData(chassisDesc.m_Mass, moi, simpleSetup);
 
     setOptionalVehicleData(simpleSetup);
 
@@ -186,22 +169,22 @@ void PhysicsCar::init(
     m_pActor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform::createIdentity());
 
     //We need to add wheel collision shapes, a material for the wheels, and a simulation filter for the wheels.
-    ASSERT(wheelConvexMeshes.size() == 4, "car needs 4 wheels!");
-    physx::PxConvexMeshGeometry frontLeftWheelGeom(wheelConvexMeshes[0].getInternalMesh());
-    physx::PxConvexMeshGeometry frontRightWheelGeom(wheelConvexMeshes[1].getInternalMesh());
-    physx::PxConvexMeshGeometry rearLeftWheelGeom(wheelConvexMeshes[2].getInternalMesh());
-    physx::PxConvexMeshGeometry rearRightWheelGeom(wheelConvexMeshes[3].getInternalMesh());
-    physx::PxMaterial& wheelMaterial(*material.getInternalMaterial());
+    ASSERT(tyreDescs.size() == 4, "car needs 4 wheels!");
+    physx::PxConvexMeshGeometry frontLeftWheelGeom(tyreDescs[Tyre_FrontLeft].m_Shape.getInternalMesh());
+    physx::PxConvexMeshGeometry frontRightWheelGeom(tyreDescs[Tyre_FrontRight].m_Shape.getInternalMesh());
+    physx::PxConvexMeshGeometry rearLeftWheelGeom(tyreDescs[Tyre_RearLeft].m_Shape.getInternalMesh());
+    physx::PxConvexMeshGeometry rearRightWheelGeom(tyreDescs[Tyre_RearRight].m_Shape.getInternalMesh());
+    physx::PxMaterial& wheelMaterial(*tyreMaterial.getInternalMaterial());
     physx::PxFilterData wheelCollFilterData;
     wheelCollFilterData.word0 = COLLISION_FLAG_WHEEL;
     wheelCollFilterData.word1 = COLLISION_FLAG_WHEEL_AGAINST;
 
     //We need to add chassis collision shapes, their local poses, a material for the chassis, and a simulation filter for the chassis.
     std::vector<const physx::PxGeometry*> chassispGeoms;
-    chassispGeoms.reserve(chassisConvexMeshes.size());
+    chassispGeoms.reserve(chassisDesc.m_ChassiShapes.size());
     std::vector<physx::PxTransform> chassisLocalPoses;
     chassisLocalPoses.reserve(chassispGeoms.size());
-    std::for_each(chassisConvexMeshes.cbegin(), chassisConvexMeshes.cend(), [&](const px::PhysicsConvexShape& pShape)
+    std::for_each(chassisDesc.m_ChassiShapes.cbegin(), chassisDesc.m_ChassiShapes.cend(), [&](const px::PhysicsConvexShape& pShape)
     {
         chassispGeoms.push_back(NEW physx::PxConvexMeshGeometry(pShape.getInternalMesh()));
         //We need to specify the local poses of the chassis composite shapes.
@@ -209,7 +192,7 @@ void PhysicsCar::init(
     });
 
 
-    physx::PxMaterial& chassisMaterial(*material.getInternalMaterial());
+    physx::PxMaterial& chassisMaterial(*chassiMaterial.getInternalMaterial());
     physx::PxFilterData chassisCollFilterData;
     chassisCollFilterData.word0 = COLLISION_FLAG_CHASSIS;
     chassisCollFilterData.word1 = COLLISION_FLAG_CHASSIS_AGAINST;
@@ -221,7 +204,6 @@ void PhysicsCar::init(
     physx::PxSetupVehicleShapeQueryFilterData(vehIndex++, &vehQryFilterData);
 
     //Create a car.
-    m_pVehicle = NEW physx::PxVehicle4W();
     physx::PxVehicle4WSetup(
             vehSimulationData,
             vehQryFilterData, m_pActor,
@@ -229,18 +211,13 @@ void PhysicsCar::init(
             &chassispGeoms[0], &chassisLocalPoses[0], chassispGeoms.size(), &chassisMaterial, chassisCollFilterData,
             PHYSICS->getSDK(),
             m_pVehicle);
+
     physx::PxVehicle4WSetUseAutoGears(true, *m_pVehicle);
 
     //Don't forget to add the actor to the scene.
     PHYSICS->getScene()->addActor(*m_pActor);
-
-    m_pActor->setGlobalPose(physx::PxTransform(physx::PxVec3(-10, 25, 0)));
-
-    physx::PxVehicle4WSetToRestState(*m_pVehicle);
-    physx::PxVehicle4WForceGearChange(physx::PxVehicleGearsData::eFIRST, *m_pVehicle);
-
-
     
+    reset();
 
     std::for_each(chassispGeoms.cbegin(), chassispGeoms.cend(), [&](const physx::PxGeometry* pShape)
     {
@@ -249,60 +226,157 @@ void PhysicsCar::init(
 
     m_TyreShape[Tyre_FrontLeft] = physx::PxVehicle4WGetFrontLeftWheelShape(*m_pVehicle);
     m_TyreShape[Tyre_FrontRight] = physx::PxVehicle4WGetFrontRightWheelShape(*m_pVehicle);
-    m_TyreShape[Tyre_BackLeft] = physx::PxVehicle4WGetRearLeftWheelShape(*m_pVehicle);
-    m_TyreShape[Tyre_BackRight] = physx::PxVehicle4WGetRearRightWheelShape(*m_pVehicle);
-
-    physx::PxVehicle4WGetChassisShapes(*m_pVehicle, &m_pChassiShape, 1);
+    m_TyreShape[Tyre_RearLeft] = physx::PxVehicle4WGetRearLeftWheelShape(*m_pVehicle);
+    m_TyreShape[Tyre_RearRight] = physx::PxVehicle4WGetRearRightWheelShape(*m_pVehicle);
 }
+
+
 
 void PhysicsCar::tick( float dTime )
 {
-    if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_R))
-    {
-        m_pActor->setGlobalPose(physx::PxTransform(m_pActor->getGlobalPose().p + physx::PxVec3(0, 2, 0)));
-
-        physx::PxVehicle4WSetToRestState(*m_pVehicle);
-        physx::PxVehicle4WForceGearChange(physx::PxVehicleGearsData::eFIRST, *m_pVehicle);
-    }
-    //Controls
-    physx::PxVehicleRawInputData rawInputData;
-    rawInputData.setDigitalAccel(CONTROLS->getKeyboard()->isKeyDown(io::Key_Up));
-    rawInputData.setDigitalBrake(CONTROLS->getKeyboard()->isKeyDown(io::Key_Down));
-    rawInputData.setDigitalHandbrake(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lctrl));
-    rawInputData.setDigitalSteerLeft(CONTROLS->getKeyboard()->isKeyDown(io::Key_Right));
-    rawInputData.setDigitalSteerRight(CONTROLS->getKeyboard()->isKeyDown(io::Key_Left));
-    rawInputData.setGearUp(CONTROLS->getKeyboard()->isKeyPressed(io::Key_PageUp));
-    rawInputData.setGearDown(CONTROLS->getKeyboard()->isKeyPressed(io::Key_PageDown));
-
-    physx::PxVehicle4WSmoothDigitalRawInputsAndSetAnalogInputs(s_KeySmoothingData, s_SteerVsForwardSpeedTable, rawInputData, dTime, *m_pVehicle);
-    //RayCast
-
-    //Create a scene query if we haven't already done so.
-    if(m_SqWheelRaycastSceneQuery == nullptr)
-    {
-        m_SqWheelRaycastSceneQuery = physx::PxVehicle4WSetUpSceneQuery(PHYSICS->getScene(), m_SqData);
-    }
-
-    //Raycasts.
-    physx::PxVehicle4WSuspensionRaycasts(m_SqWheelRaycastSceneQuery, 1, m_SqData.mSqResults, &m_pVehicle);
-
-
+    physx::PxVehicle4WSmoothDigitalRawInputsAndSetAnalogInputs(s_KeySmoothingData, s_SteerVsForwardSpeedTable, m_InputData, dTime, *m_pVehicle);
+    
     physx::PxVehicleDrivableSurfaceToTyreFrictionPairs surfaceTyrePairs;
-    surfaceTyrePairs.mPairs= &s_TyreFrictionMultipliers[0][0];
-    surfaceTyrePairs.mNumSurfaceTypes= MAX_DRIVABLE_SURFACES;
-    surfaceTyrePairs.mNumTyreTypes= MAX_TYRE_TYPES;
-    PxVehicle4WUpdate(dTime, physx::PxVec3(0.0f, -9.81f, 0.0f), surfaceTyrePairs, 1, &m_pVehicle);
+    surfaceTyrePairs.mPairs= PHYSICS->getCarManager()->getFrictionTable()->getFrictionPairs();
+    surfaceTyrePairs.mNumSurfaceTypes= PHYSICS->getCarManager()->getFrictionTable()->getNumSurfaces();
+    surfaceTyrePairs.mNumTyreTypes= PHYSICS->getCarManager()->getFrictionTable()->getNumTyreTypes();
+    PxVehicle4WUpdate(dTime, PHYSICS->getScene()->getGravity(), surfaceTyrePairs, 1, &m_pVehicle);
 }
+
+void PhysicsCar::reset()
+{
+    physx::PxVehicle4WSetToRestState(*m_pVehicle);
+    physx::PxVehicle4WForceGearChange(physx::PxVehicleGearsData::eNEUTRAL, *m_pVehicle);
+}
+
+//////////////////////////////////////////////////////////////////////////
+/// SETTERS                                                            ///
+//////////////////////////////////////////////////////////////////////////
+void PhysicsCar::shiftGear( Gear gear )
+{
+    physx::PxVehicle4WForceGearChange(gear, *m_pVehicle);
+}
+
+void PhysicsCar::setAutoTransmission( bool automatic )
+{
+    physx::PxVehicle4WSetUseAutoGears(automatic, *m_pVehicle);
+}
+
+void PhysicsCar::inputAccel(bool accel)
+{
+    m_InputData.setDigitalAccel(accel);
+}
+void PhysicsCar::inputAccel( float val )
+{
+    m_InputData.setAnalogAccel(val);
+}
+
+void PhysicsCar::inputBrake(bool brake)
+{
+    m_InputData.setDigitalBrake(brake);
+}
+void PhysicsCar::inputBrake( float val )
+{
+    m_InputData.setAnalogBrake(val);
+}
+
+void PhysicsCar::inputTurnLeft(bool turn)
+{
+    m_InputData.setDigitalSteerRight(turn);
+}
+void PhysicsCar::inputTurnRight(bool turn)
+{
+    m_InputData.setDigitalSteerLeft(turn);
+}
+void PhysicsCar::inputTurn( float val )
+{
+    m_InputData.setAnalogSteer(val);
+}
+
+void PhysicsCar::inputGearUp(bool up)
+{
+    m_InputData.setGearUp(up);
+}
+void PhysicsCar::inputGearDown(bool down)
+{
+    m_InputData.setGearDown(down);
+}
+void PhysicsCar::inputHandBrake(bool brake)
+{
+    m_InputData.setDigitalHandbrake(brake);
+}
+
+void PhysicsCar::setPose( const mat44& pose )
+{
+    m_pActor->setGlobalPose(physx::PxTransform(pose.getPhyicsMatrix()));
+}
+void PhysicsCar::setAngularVelocity( const vec3& vel )
+{
+    m_pActor->setAngularVelocity(physx::PxVec3(vel.x, vel.y, vel.z));
+}
+void PhysicsCar::addForce( const vec3& force )
+{
+    m_pActor->addForce(physx::PxVec3(force.x, force.y, force.z));
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+///  GETTERS                                                           ///
+//////////////////////////////////////////////////////////////////////////
 
 he::mat44 PhysicsCar::getChassiPose() const
 {
     return mat44(physx::PxMat44(physx::PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
+}
+he::mat44 PhysicsCar::getPose() const
+{
+    return mat44(physx::PxMat44(physx::PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
+}
+he::vec3 PhysicsCar::getPosition() const
+{
+    return vec3(m_pActor->getGlobalPose().p);
 }
 
 he::mat44 PhysicsCar::getTyrePose( Tyre tyre ) const
 {
     return mat44(physx::PxMat44(physx::PxMat33(m_TyreShape[tyre]->getLocalPose().q), m_TyreShape[tyre]->getLocalPose().p));
 }
+
+float PhysicsCar::getSpeed() const
+{
+    return m_pActor->getLinearVelocity().magnitude();
+}
+
+PhysicsCar::Gear PhysicsCar::getGear() const
+{
+    return static_cast<Gear>(physx::PxVehicle4WGetCurrentGear(*m_pVehicle));
+}
+
+bool PhysicsCar::isInAir() const
+{
+    return physx::PxVehicle4WIsInAir(*m_pVehicle);
+}
+
+bool PhysicsCar::isDrifting() const
+{
+    for (uint tyre(0); tyre < MAX_TYRES; ++tyre)
+    {
+        if (physx::PxVehicle4WGetTyreLongSlip(*m_pVehicle, tyre) > 0.9f)
+            return true;
+    }
+    return false;
+}
+float PhysicsCar::getTyreLatSlip( Tyre tyre )
+{
+    return physx::PxVehicle4WGetTyreLatSlip(*m_pVehicle, tyre);
+}
+float PhysicsCar::getTyreLongSlip( Tyre tyre )
+{
+    return physx::PxVehicle4WGetTyreLongSlip(*m_pVehicle, tyre);
+}
+
+
+
 
 
 

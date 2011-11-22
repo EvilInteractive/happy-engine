@@ -159,6 +159,15 @@ void GL::heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor)
         glBlendFunc(srcFactor, destFactor);
     }
 }
+void GL::heBlendEquation( BlendEquation eq )
+{
+    if (m_BlendEquation != eq)
+    {
+        m_BlendEquation = eq;
+        glBlendEquation(eq);
+    }
+}
+
 void GL::heBlendColor(const Color& color)
 {
     if (color != m_BlendColor)

@@ -36,62 +36,118 @@
 namespace he {
 namespace px {
 
+class PhysicsCarManager;
 
+struct TyreDesc
+{
+    vec3 m_Offset;
+    float m_Radius;
+    float m_Width;
+    float m_Mass;
+    PhysicsConvexShape m_Shape;
+
+    TyreDesc(const vec3& offset, float radius, float width, float mass, const PhysicsConvexShape& shape):
+        m_Offset(offset), m_Radius(radius), m_Width(width), m_Mass(mass), m_Shape(shape)
+    {}
+    TyreDesc():
+        m_Offset(), m_Radius(0), m_Width(0), m_Mass(0), m_Shape()
+    {}
+};
+struct ChassiDesc
+{
+    vec3 m_Aabb;
+    float m_Mass;
+    std::vector<PhysicsConvexShape> m_ChassiShapes;
+};
 class PhysicsCar
 {
+friend PhysicsCarManager;
+
 public:
     enum Tyre
     {
         Tyre_FrontLeft = 0,
         Tyre_FrontRight,
-        Tyre_BackLeft,
-        Tyre_BackRight,
+        Tyre_RearLeft,
+        Tyre_RearRight,
         MAX_TYRES
     };
-    enum TyreType
+    enum Gear
     {
-        TyreType_Slicks,
-        TyreType_Wets,
-        TyreType_MAX
+        Gear_R = 0,
+        Gear_N,
+        Gear_1,
+        Gear_2,
+        Gear_3,
+        Gear_4,
+        Gear_5,
+        Gear_6,
     };
 
-    PhysicsCar();
-    virtual ~PhysicsCar();
 
-    void init(const std::vector<PhysicsConvexShape>& wheelConvexMeshes, 
-              const std::vector<PhysicsConvexShape>& chassisConvexMeshes,
-              const PhysicsMaterial& material);
+    void init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chassiMaterial,
+              const std::vector<TyreDesc>& tyreDescs, const PhysicsMaterial& tyreMaterial);
+
+
+    void tick(float dTime);
+
+    void reset();
+
+    //////////////////////////////////////////////////////////////////////////
+    /// SETTERS
+    //////////////////////////////////////////////////////////////////////////
+    void shiftGear(Gear gear);
+    void setAutoTransmission(bool automatic);
+
+    void inputAccel(bool accel);
+    void inputBrake(bool brake);
+    void inputTurnLeft(bool turn);
+    void inputTurnRight(bool turn);
+    void inputGearUp(bool up);
+    void inputGearDown(bool down);
+    void inputHandBrake(bool brake);
+
+    void inputAccel(float val);
+    void inputBrake(float val);
+    void inputTurn(float val);
+
+    void setPose(const mat44& pose);
+    void setAngularVelocity(const vec3& vel);
+    void addForce(const vec3& force);
+
+    //////////////////////////////////////////////////////////////////////////
+    /// GETTERS
+    ////////////////////////////////////////////////////////////////////////// 
+    mat44 getTyrePose(Tyre tyre) const;
+    mat44 getChassiPose() const;
 
     vec3 getPosition() const;
     mat44 getPose() const;
 
-    void tick(float dTime);
+    float getSpeed() const;
+    Gear getGear() const;
+    bool isInAir() const;
 
-    mat44 getTyrePose(Tyre tyre) const;
-    mat44 getChassiPose() const;
+    bool isDrifting() const;
+    float getTyreLatSlip(Tyre tyre);
+    float getTyreLongSlip(Tyre tyre);
 
 private:
+    PhysicsCar();
+    virtual ~PhysicsCar();
 
     physx::PxRigidDynamic* m_pActor;
     physx::PxVehicle4W* m_pVehicle;
+ 
+    physx::PxShape* m_TyreShape[MAX_TYRES];
 
-    static const int MAX_TYRE_TYPES = TyreType_MAX;
-    
-
-    static const int MAX_VEHICLES = 1;
-    physx::PxVehicle4WSceneQueryData<MAX_VEHICLES> m_SqData;
-    physx::PxBatchQuery* m_SqWheelRaycastSceneQuery;
+    physx::PxVehicleRawInputData m_InputData;
 
     //STATIC
-    static float PX_ALIGN(16, s_TyreFrictionMultipliers[MAX_DRIVABLE_SURFACES][MAX_TYRE_TYPES]);
     static physx::PxVehicleKeySmoothingData s_KeySmoothingData;
     static physx::PxVehiclePadSmoothingData s_PadSmoothingData;
     static float s_SteerVsForwardSpeedData[2*8];
     static physx::PxFixedSizeLookupTable<8> s_SteerVsForwardSpeedTable;
-
-    physx::PxShape* m_TyreShape[MAX_TYRES];
-    physx::PxShape* m_pChassiShape; //random chassi shape to get pose
-
 
 
     //Disable default copy constructor and default assignment operator

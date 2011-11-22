@@ -16,39 +16,37 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 14/10/2011
+//Created: 20/11/2011
 
 #version 150 core
 
 noperspective in vec2 texCoord;
 
-out float outColor;
+out vec2 outColor;
 
-uniform sampler2D hdrMap;
-uniform sampler2D prevLumMap;
-
-float getLum(in vec3 col)
-{
-	return (col.r + col.g + col.b) / 3.0f;
-}
+uniform sampler2D map;
 
 void main()
 {
-	float lum = 0;
-	lum += getLum(textureLod(hdrMap, vec2(0.1f, 0.5f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.9f, 0.5f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.1f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.9f), 2).rgb);
-
-	lum += getLum(textureLod(hdrMap, vec2(0.3f, 0.3f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.3f, 0.7f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.7f, 0.3f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.7f, 0.7f), 2).rgb);
-
-	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.5f), 2).rgb);
-	lum /= 9.0f;
-	
-	outColor = max(0, (lum * 0.01f + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * 0.99f));
+    vec2 color = vec2(0, 0);
+    
+#if PASS1
+    color += textureOffset(map, texCoord, ivec2(-2, 0)).rg;
+    color += textureOffset(map, texCoord, ivec2(-1, 0)).rg;
+    color += textureOffset(map, texCoord, ivec2( 0, 0)).rg;
+    color += textureOffset(map, texCoord, ivec2( 1, 0)).rg;
+    color += textureOffset(map, texCoord, ivec2( 2, 0)).rg;
+#endif
+#if PASS2
+    color += textureOffset(map, texCoord, ivec2(0, -2)).rg;
+    color += textureOffset(map, texCoord, ivec2(0, -1)).rg;
+    color += textureOffset(map, texCoord, ivec2(0,  0)).rg;
+    color += textureOffset(map, texCoord, ivec2(0,  1)).rg;
+    color += textureOffset(map, texCoord, ivec2(0,  2)).rg;
+#endif
+        
+        
+    color /= 5.0f;
+    
+    outColor = color;
 }
-
-

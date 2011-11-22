@@ -75,6 +75,9 @@
     <ClInclude Include="FollowCamera.h">
       <Filter>happytest</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsData.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\simpleShader.frag">
@@ -164,5 +167,10 @@
     <None Include="data\shaders\pickingShader.vert">
       <Filter>data\shaders</Filter>
     </None>
+    <None Include="data\shaders\deferred\post\shadowBlur.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\defaultSkinned.shader" />
+    <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert" />
   </ItemGroup>
 </Project>

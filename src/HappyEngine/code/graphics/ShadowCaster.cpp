@@ -37,6 +37,7 @@ ShadowCaster::ShadowCaster(): m_pShadowShader(NEW Shader())
 
 ShadowCaster::~ShadowCaster()
 {
+    glDeleteRenderbuffers(1, &m_DepthRenderbuff);
     glDeleteFramebuffers(1, &m_FboId);
 }
 
@@ -57,38 +58,27 @@ void ShadowCaster::init(const DrawSettings& settings)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 
             m_ShadowSize, m_ShadowSize, 
-            0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+            0, GL_RG, GL_FLOAT, 0);
         m_pShadowTexture[i] = Texture2D::pointer(NEW Texture2D());
-        m_pShadowTexture[i]->init(texId[i], m_ShadowSize, m_ShadowSize, GL_DEPTH_COMPONENT32F);
+        m_pShadowTexture[i]->init(texId[i], m_ShadowSize, m_ShadowSize, GL_RG16F);
     }
-
-    //GL::heBindTexture2D(texId[1]);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
-    //    2048, 2048,  
-    //    0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    //m_pTempTexture = Texture2D::pointer(NEW Texture2D());
-    //m_pTempTexture->init(texId[1], 2048, 2048, GL_RGBA8);
-
-    //GL::heBindTexture2D(0);
-
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
     //////////////////////////////////////////////////////////////////////////
+    glGenRenderbuffers(1, &m_DepthRenderbuff);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderbuff);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ShadowSize, m_ShadowSize);
+
     glGenFramebuffers(1, &m_FboId);
     GL::heBindFbo(m_FboId);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texId[0], 0);
-    err::checkFboStatus("deferred collection");
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId[0], 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderbuff);
+    err::checkFboStatus("shadow");
 
     GL::heBindFbo(0);
 
@@ -105,6 +95,25 @@ void ShadowCaster::init(const DrawSettings& settings)
                           folder + "deferred/pre/deferredPreShadowShader.frag", 
                           shaderLayout, outputs);
     m_shaderWVPpos = m_pShadowShader->getShaderVarId("matWVP");
+
+    ShaderLayout layout;
+    layout.addElement(ShaderLayoutElement(0, "inPosition"));
+    for (int pass(0); pass < 2; ++pass)
+    {
+        m_pShadowBlurShaderPass[pass] = Shader::pointer(NEW Shader());
+
+        std::set<std::string> definePass;
+        if (pass == 0)
+            definePass.insert("PASS1");
+        else
+            definePass.insert("PASS2");
+
+        m_pShadowBlurShaderPass[pass]->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
+            folder + "deferred/post/shadowBlur.frag", layout, definePass);
+        m_BlurShaderTexPosPass[pass] = m_pShadowBlurShaderPass[pass]->getShaderSamplerId("map");
+    }
+
+    m_pQuad = CONTENT->getFullscreenQuad();
 }
 
 
@@ -149,7 +158,7 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     up = normalize(cross(shadowLook, right));
 
     mat44 mtxShadowView(mat44::createLookAtLH(pCamera->getPosition() - shadowLook, pCamera->getPosition(), up));
-    mat44 mtxShadowProjection[COUNT];
+    mat44 mtxShadowProjection[COUNT-1];
     mtxShadowProjection[0] = getProjection(pCamera, mtxShadowView, pCamera->getNearClip(), 25);
     mtxShadowProjection[1] = getProjection(pCamera, mtxShadowView, 25, 50);
     mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 50, 100);
@@ -158,21 +167,21 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
 
     //Begin drawing
     GL::heBindFbo(m_FboId);
-    //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-    glDrawBuffers(0, 0);
+    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, buffers);
 
-    glViewport(0, 0, m_ShadowSize, m_ShadowSize);
-    GL::heSetCullFace(false);
+    GRAPHICS->setViewport(he::RectI(0, 0, m_ShadowSize, m_ShadowSize));
 
     m_pShadowShader->bind();
 
-    for (int i = 0; i < COUNT; ++i)
+    GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    
+    for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
     {
-        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
-        glClear(GL_DEPTH_BUFFER_BIT);
-        mat44 mtxShadowViewProjection(mtxShadowProjection[i] * mtxShadowView);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
 
         //////////////////////////////////////////////////////////////////////////
         ///                         `Build DrawList                            ///
@@ -207,14 +216,41 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
             GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
             glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
         });
-        pDirectionalLight->setShadowMap(i, m_pShadowTexture[i]);
-        pDirectionalLight->setShadowMatrix(i, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
+
+        pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
 
-    GL::heSetCullFace(false);
-    glViewport(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-    //glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    //////////////////////////////////////////////////////////////////////////
+    //                                 Blur                                 //
+    //////////////////////////////////////////////////////////////////////////
+    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(false);
+    m_pShadowBlurShaderPass[0]->bind();
+    GL::heBindVao(m_pQuad->getVertexShadowArraysID());
+    for (int i(1); i < COUNT; ++i)
+    {      
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i - 1]->getID(), 0); 
+        m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_pShadowTexture[i]);
+        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+    }
+    m_pShadowBlurShaderPass[1]->bind();
+    for (int i(COUNT - 1); i >= 1; --i)
+    {         
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0); 
+        m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_pShadowTexture[i - 1]);
+        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+    }
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0); 
+    for (int i(0); i < COUNT - 1; ++i)
+    {
+        GL::heBindTexture2D(5, m_pShadowTexture[i+1]->getID());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        pDirectionalLight->setShadowMap(i, m_pShadowTexture[i+1]);
+    }
 
+    GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
     PROFILER_END("ShadowCaster::render");
 }
     

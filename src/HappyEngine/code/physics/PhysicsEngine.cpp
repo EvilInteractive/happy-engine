@@ -28,6 +28,7 @@
 #include "HappyNew.h"
 #include "PxCudaContextManager.h"
 #include "PxProfileZoneManager.h"
+#include "PhysicsCarManager.h"
 
 
 namespace he {
@@ -36,7 +37,8 @@ namespace px {
 PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr), 
                             m_pCpuDispatcher(nullptr), m_pCudaContextManager(nullptr), 
                             m_pAllocator(NEW HappyPhysicsAllocator()), m_pErrorCallback(NEW err::HappyPhysicsErrorCallback()),
-                            m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>()), m_VehicleDrivableSurfaceTypes(nullptr)
+                            m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>()),
+                            m_pCarManager(NEW PhysicsCarManager())
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -61,7 +63,7 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
 //#endif
 
     createScene();
-    initMaterials();
+
 }
 void PhysicsEngine::createScene()
 {
@@ -119,7 +121,7 @@ PhysicsEngine::~PhysicsEngine()
     delete m_pAllocator;
     delete m_pErrorCallback;
     delete m_pMaterials;
-    _aligned_free(m_VehicleDrivableSurfaceTypes);
+    delete m_pCarManager;
 }
 
 void PhysicsEngine::startSimulation()
@@ -138,13 +140,14 @@ void PhysicsEngine::tick(float dTime)
     if (m_Simulate)
     {
         PROFILER_BEGIN("PhysicsEngine::tick");
-       // m_Timer += dTime;
+        //m_Timer += dTime;
         //if (m_Timer >= s_fixedStep)
         //{
-            //m_Timer -= s_fixedStep;
+        //    m_Timer -= s_fixedStep;
 
             m_pScene->fetchResults(true);
             m_pScene->simulate(dTime);
+            m_pCarManager->tick(dTime);
             //}
         PROFILER_END("PhysicsEngine::tick");
     }
@@ -179,40 +182,15 @@ physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dy
     }
 }
 
-void PhysicsEngine::initMaterials()
+PhysicsCarManager* PhysicsEngine::getCarManager() const
 {
-    m_VehicleDrivableSurfaceTypes = (physx::PxVehicleDrivableSurfaceType*)_aligned_malloc(sizeof(physx::PxVehicleDrivableSurfaceType) * MAX_DRIVABLE_SURFACES, 16);
-
-    //drivable types
-    float staticFrictions[MAX_DRIVABLE_SURFACES]  = { 0.9f, 0.8f, 1.1f, 0.7f };
-    float dynamicFrictions[MAX_DRIVABLE_SURFACES] = { 0.95f, 0.85f, 1.2f, 0.75f };
-    float restitutions[MAX_DRIVABLE_SURFACES]     = { 0.1f, 0.05f, 0.1f, 0.05f };
-
-    for(uint i(0); i < MAX_DRIVABLE_SURFACES; ++i)
-    {
-        //Create a new material.
-        m_PxDrivableMaterials[i] = m_pPhysXSDK->createMaterial(staticFrictions[i], dynamicFrictions[i], restitutions[i]);
-        if(m_PxDrivableMaterials[i] == nullptr)
-        {
-            CONSOLE->addMessage("physx error: createMaterial failed", CMSG_TYPE_ERROR);
-        }
-
-        //Set up the drivable surface type that will be used for the new material.
-        m_VehicleDrivableSurfaceTypes[i].mType = i;
-
-        //Set the material user data to be the drivable surface data.
-        void* pUserData = &m_VehicleDrivableSurfaceTypes[i];
-        //ASSERT(((size_t)pUserData & 0x0F) == 0, "");
-        m_PxDrivableMaterials[i]->userData = pUserData;//float* alignedArray = (array + 15) & (~0x0F);;
-
-        m_DrivableMaterials[i] = px::PhysicsMaterial(m_PxDrivableMaterials[i]);
-    }
-
+    return m_pCarManager;
 }
 
-const px::PhysicsMaterial& PhysicsEngine::getDriveableMaterial( PxDrivableMaterial material )
+const px::PhysicsMaterial& PhysicsEngine::getDriveableMaterial( byte id )
 {
-    return m_DrivableMaterials[material];
+    return m_pCarManager->getFrictionTable()->getMaterial(id);
 }
+
 
 } } //end namespace
