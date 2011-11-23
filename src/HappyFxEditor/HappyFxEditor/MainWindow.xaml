@@ -1,0 +1,130 @@
+﻿<Window x:Class="HappyFxEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="479" Width="848">
+
+    <!--   
+            Styles   
+    -->
+    <Window.Resources>
+        <!--Border Style-->
+        <Style x:Key="mainBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#FF293955" />
+            <Setter Property="BorderThickness" Value="3" />
+        </Style>
+        <!--Grid Sizer Style-->
+        <Style x:Key="gridSizerStyle" TargetType="GridSplitter">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Width" Value="3" />
+            <Setter Property="Height" Value="3" />
+            <Setter Property="Background" Value="#657795"/>
+        </Style>
+        <Style x:Key="gridSizerHStyle" TargetType="GridSplitter" BasedOn="{StaticResource gridSizerStyle}">
+            <Setter Property="Width" Value="auto"/>
+        </Style>
+        <Style x:Key="gridSizerVStyle" TargetType="GridSplitter" BasedOn="{StaticResource gridSizerStyle}">
+            <Setter Property="Height" Value="auto"/>
+        </Style>
+    </Window.Resources>
+
+    <!--   
+            Layout   
+    -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.25*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource gridSizerVStyle}" HorizontalAlignment="Stretch" />
+        
+        <!--Menubar-->
+        <Menu Grid.Row="0" Grid.ColumnSpan="3"  Grid.Column="0" Height="20" FontSize="12">
+            <MenuItem Header="Menu">
+                <MenuItem Header="New Effect" />
+                <MenuItem Header="Load Effect" />
+                <MenuItem Header="Save Effect" />
+                <MenuItem Header="Save Effect as.." />
+                <Separator/>
+                <MenuItem Header="Exit" Click="OnExit" />
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" />
+            </MenuItem>
+        </Menu>
+        
+        <!--StatusBar-->
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Height="16" FontSize="12">          
+        </StatusBar>
+        
+        <!--Browser Column-->
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.33*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Row="1" Grid.Column="0" Style="{StaticResource gridSizerHStyle}" HorizontalAlignment="Stretch" />
+            
+            <!--Effect Browser-->
+            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
+                <TreeView/>
+            </Border>
+            <!--Content Brower-->
+            <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
+                <TreeView/>
+            </Border>
+        </Grid>
+        
+        <!--Editor Column-->
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.33*"/> <!--Timeline -->
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>     <!--Timeline component editor -->
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="0.33*"/> <!--Component properties-->
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Style="{StaticResource gridSizerHStyle}" HorizontalAlignment="Stretch" />
+            <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" Style="{StaticResource gridSizerHStyle}" HorizontalAlignment="Stretch" />
+            <GridSplitter Grid.RowSpan="3" Grid.Row="0" Grid.Column="1" Style="{StaticResource gridSizerVStyle}" HorizontalAlignment="Stretch" />
+
+                
+            <!--Timeline Components-->
+            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
+                <StackPanel x:Name="_TimeLineComponentsSP"></StackPanel>
+            </Border>
+                
+            <!-- Timeline Editor -->
+            <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource mainBorderStyle}">
+            </Border>
+                
+            <!-- Timeline Component Components -->
+            <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
+            </Border>
+                
+            <!-- Timeline Component Editor -->
+            <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource mainBorderStyle}">
+            </Border>
+
+            <!-- Component Properties -->
+            <Border Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
+            </Border>
+            
+        </Grid>
+    </Grid>
+</Window>
