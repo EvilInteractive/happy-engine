@@ -40,7 +40,7 @@ namespace ct {
 class ModelLoader
 {
 public:
-	ModelLoader();
+    ModelLoader();
     virtual ~ModelLoader();
     
     void tick(float dTime); //checks for new load operations, if true start thread
@@ -78,7 +78,7 @@ private:
     void ModelLoadThread();
     bool m_isModelThreadRunning;
 
-	AssetContainer<gfx::Model::pointer>* m_pAssetContainer;
+    AssetContainer<gfx::Model::pointer>* m_pAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     ModelLoader(const ModelLoader&);

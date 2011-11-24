@@ -92,6 +92,9 @@
     <Filter Include="happyengine\graphics\picking">
       <UniqueIdentifier>{7c69c16e-994c-4601-a223-0cc809fdbe73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\fx">
+      <UniqueIdentifier>{0fd9a8e5-5653-4ac1-94d9-24e267087dde}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -447,6 +450,12 @@
     </ClCompile>
     <ClCompile Include="code\tools\Profiler.cpp">
       <Filter>happyengine\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="code\tools\HappyFxEditorBinding.cpp">
+      <Filter>happyengine\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="code\networking\TcpServer.cpp">
+      <Filter>happyengine\networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -890,6 +899,12 @@
     </ClInclude>
     <ClInclude Include="code\tools\Profiler.h">
       <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tools\HappyFxEditorBinding.h">
+      <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="code\networking\TcpServer.h">
+      <Filter>happyengine\networking</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

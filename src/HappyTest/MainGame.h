@@ -35,9 +35,6 @@
 
 #include <vector>
 
-#include "MyServer.h"
-#include "MyClient.h"
-
 #include "Light.h"
 #include "Button.h"
 
@@ -48,6 +45,8 @@
 #include "PhysicsCarManager.h"
 
 #include "Polygon2D.h"
+
+#include "HappyFxEditorBinding.h"
 
 namespace happytest {
 
@@ -81,8 +80,6 @@ private:
     
     std::vector<he::game::Entity*> m_Bullets;
 
-    MyServer* m_pServer;
-    MyClient* m_pClient;
 
     he::tools::FPSGraph* m_pFPSGraph;
 
@@ -107,6 +104,8 @@ private:
     he::sfx::Sound3D* m_pTestSound3D;
 
     he::tools::Grid* m_pTestGrid;
+
+    he::tools::HappyFxEditorBinding* m_pFxEditorBinding;
 
     he::vec3 m_PickPos;
     //bool m_bDrawPicking;

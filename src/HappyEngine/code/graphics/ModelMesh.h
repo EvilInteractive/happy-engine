@@ -52,7 +52,7 @@ class ModelMesh
 public:
     typedef boost::shared_ptr<ModelMesh> pointer;
 
-	explicit ModelMesh(const std::string& name);
+    explicit ModelMesh(const std::string& name);
     virtual ~ModelMesh();
 
     void init();

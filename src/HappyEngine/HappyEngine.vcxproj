@@ -122,6 +122,7 @@
     <ClCompile Include="code\networking\Message.cpp" />
     <ClCompile Include="code\networking\NetworkManager.cpp" />
     <ClCompile Include="code\networking\Server.cpp" />
+    <ClCompile Include="code\networking\TcpServer.cpp" />
     <ClCompile Include="code\OpenGL.cpp" />
     <ClCompile Include="code\physics\PhysicsBoxShape.cpp" />
     <ClCompile Include="code\physics\PhysicsCar.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="code\tools\Console.cpp" />
     <ClCompile Include="code\tools\FPSGraph.cpp" />
     <ClCompile Include="code\tools\Grid.cpp" />
+    <ClCompile Include="code\tools\HappyFxEditorBinding.cpp" />
     <ClCompile Include="code\tools\Profiler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +263,7 @@
     <ClInclude Include="code\networking\Message.h" />
     <ClInclude Include="code\networking\NetworkManager.h" />
     <ClInclude Include="code\networking\Server.h" />
+    <ClInclude Include="code\networking\TcpServer.h" />
     <ClInclude Include="code\OpenGL.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
@@ -282,6 +285,7 @@
     <ClInclude Include="code\tools\FloatTypeHandler.h" />
     <ClInclude Include="code\tools\FPSGraph.h" />
     <ClInclude Include="code\tools\Grid.h" />
+    <ClInclude Include="code\tools\HappyFxEditorBinding.h" />
     <ClInclude Include="code\tools\IntTypeHandler.h" />
     <ClInclude Include="code\tools\ITypeHandler.h" />
     <ClInclude Include="code\tools\Profiler.h" />

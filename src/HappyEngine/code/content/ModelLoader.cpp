@@ -34,13 +34,13 @@ namespace he {
 namespace ct {
 
 ModelLoader::ModelLoader(): m_isModelThreadRunning(false),
-							m_pAssetContainer(NEW AssetContainer<gfx::Model::pointer>())
+                            m_pAssetContainer(NEW AssetContainer<gfx::Model::pointer>())
 {
 }
 
 ModelLoader::~ModelLoader()
 {
-	delete m_pAssetContainer;
+    delete m_pAssetContainer;
 }
 
 void ModelLoader::tick(float /*dTime*/)
@@ -100,41 +100,41 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 
 gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout)
 {
-	if (m_pAssetContainer->isAssetPresent(path))
-	{
-		return m_pAssetContainer->getAsset(path);
-	}
-	else
-	{
-		ModelLoadData* data(NEW ModelLoadData());
-		data->path = path;
-		data->vertexLayout = vertexLayout;
-		data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
+    if (m_pAssetContainer->isAssetPresent(path))
+    {
+        return m_pAssetContainer->getAsset(path);
+    }
+    else
+    {
+        ModelLoadData* data(NEW ModelLoadData());
+        data->path = path;
+        data->vertexLayout = vertexLayout;
+        data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
 
-		if (data->path.rfind(".obj") != std::string::npos)
-		{
-			data->loader = NEW models::ObjLoader();
-		}
-		else if (data->path.rfind(".binobj") != std::string::npos)
-		{
-			data->loader = NEW models::BinObjLoader();
-		}
-		else
-		{
+        if (data->path.rfind(".obj") != std::string::npos)
+        {
+            data->loader = NEW models::ObjLoader();
+        }
+        else if (data->path.rfind(".binobj") != std::string::npos)
+        {
+            data->loader = NEW models::BinObjLoader();
+        }
+        else
+        {
             gfx::Model::pointer m(data->pModel);
             m->setComplete();
             delete data;
-			return m;
-		}
+            return m;
+        }
 
         m_ModelLoadQueueMutex.lock();
-		m_ModelLoadQueue.push(data);
+        m_ModelLoadQueue.push(data);
         m_ModelLoadQueueMutex.unlock();
 
-		m_pAssetContainer->addAsset(path, data->pModel);
+        m_pAssetContainer->addAsset(path, data->pModel);
 
-		return data->pModel;
-	}
+        return data->pModel;
+    }
 }
 gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::VertexLayout& vertexLayout )
 {

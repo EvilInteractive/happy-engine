@@ -67,12 +67,12 @@ namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
-                       m_pServer(nullptr), m_pClient(nullptr), m_pFPSGraph(NEW he::tools::FPSGraph()),
+                       m_pFPSGraph(NEW he::tools::FPSGraph()),
                        m_pCurrentCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
                        m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
                        m_pTestSound2D(nullptr), m_pTestGrid(nullptr),
-                       m_pFrictionTable(nullptr)
+                       m_pFrictionTable(nullptr), m_pFxEditorBinding(NEW he::tools::HappyFxEditorBinding())
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -96,8 +96,6 @@ MainGame::~MainGame()
         delete pBullet;
     });
 
-    delete m_pServer;
-    delete m_pClient;
 
     delete m_pFPSGraph;
 
@@ -111,6 +109,8 @@ MainGame::~MainGame()
     delete m_pTestGrid;
 
     delete m_pFrictionTable;
+
+    delete m_pFxEditorBinding;
 
     NETWORK->stop();
 }
@@ -271,6 +271,9 @@ void MainGame::load()
 
     m_pCurrentCamera = m_pFollowCamera;
     //m_pCurrentCamera = m_pFlyCamera;
+
+    //m_pFxEditorBinding->init();
+
 }
 void MainGame::tick(float dTime)
 {
@@ -295,24 +298,6 @@ void MainGame::tick(float dTime)
 
     m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
-    if (m_pClient == nullptr && m_pServer == nullptr)
-    {
-        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_F11))
-        {
-            std::cout << "Starting server\n";
-            m_pServer = NEW MyServer();
-            m_pServer->start(30000, 16);
-            NETWORK->start();
-        }
-        else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_F12))
-        {
-            std::cout << "Starting client\n";
-            m_pClient = NEW MyClient();
-            m_pClient->asyncConnect("78.21.63.179", 30000);
-            NETWORK->start();
-        }
-    }
-
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
     {
         game::Entity* pBullet(NEW game::Entity());

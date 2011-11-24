@@ -60,7 +60,8 @@
         </Menu>
         
         <!--StatusBar-->
-        <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Height="16" FontSize="12">          
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Height="20" FontSize="12">
+            <TextBlock x:Name="_statusConnectionState"  Text="{Binding Path=ConnectionInfo }" FontSize="10" TextAlignment="Right" />
         </StatusBar>
         
         <!--Browser Column-->
@@ -106,7 +107,9 @@
                 
             <!--Timeline Components-->
             <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
-                <StackPanel x:Name="_TimeLineComponentsSP"></StackPanel>
+                <StackPanel x:Name="_TimeLineComponentsSP">
+                    <Button Content="Button" Height="23" Name="button1" Width="75" Click="button1_Click" />
+                </StackPanel>
             </Border>
                 
             <!-- Timeline Editor -->
