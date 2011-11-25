@@ -110,8 +110,6 @@ private:
     he::vec3 m_PickPos;
     //bool m_bDrawPicking;
 
-    he::gui::Polygon2D m_Poly;
-
     he::px::DriveableSurfaceTyreFrictionTable* m_pFrictionTable;
 
     //Disable default copy constructor and default assignment operator

@@ -88,7 +88,7 @@ const gfx::Font::pointer& ContentManager::getDefaultFont()
 {
 	if (m_pDefaultFont == nullptr)
 	{
-		m_pDefaultFont = loadFont("Ubuntu-Regular.ttf", 12);
+		m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", 12);
 	}
 
 	return m_pDefaultFont;

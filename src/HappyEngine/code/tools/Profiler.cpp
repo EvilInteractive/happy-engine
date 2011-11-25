@@ -85,6 +85,7 @@ void Profiler::draw() const
     });
     text.addLine("------------------------------------------");
 
+    GUI->setColor(1.0f,1.0f,1.0f);
     GUI->drawText(text, vec2(12, 128));
 
     GUI->setLayer();     

@@ -37,77 +37,77 @@ class Button
 {
 public:
 
-	enum TYPE
-	{
-		TYPE_NORMAL = 0,
-		TYPE_SPRITE = 1,
-		TYPE_SPRITESHEET = 2
-	};
+    enum TYPE
+    {
+        TYPE_NORMAL = 0,
+        TYPE_SPRITE = 1,
+        TYPE_SPRITESHEET = 2
+    };
 
-	enum STATE
-	{
-		STATE_NORMAL = 0,
-		STATE_HOVER = 1,
-		STATE_DOWN = 2,
-		STATE_DISABLED = 3
-	};
+    enum STATE
+    {
+        STATE_NORMAL = 0,
+        STATE_HOVER = 1,
+        STATE_DOWN = 2,
+        STATE_DISABLED = 3
+    };
 
-	enum ACTIVATION
-	{
-		ACTIVATION_MOUSE = 0,
-		ACTIVATION_MANUAL = 1
-	};
+    enum ACTIVATION
+    {
+        ACTIVATION_MOUSE = 0,
+        ACTIVATION_MANUAL = 1
+    };
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Button(TYPE type, const vec2& centerPos, const vec2& size);
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Button(TYPE type, const vec2& centerPos, const vec2& size);
     virtual ~Button();
 
-	/* GENERAL */
-	void tick();
-	void draw();
+    /* GENERAL */
+    void tick();
+    void draw();
 
-	/* SETTERS */
-	void setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet);
-	void setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
-						const gfx::Texture2D::pointer& pHoverSprite,
-						const gfx::Texture2D::pointer& pDownSprite,
-						const gfx::Texture2D::pointer& pDisabledSprite);
-	void setState(STATE state);
-	void setActivationMode(ACTIVATION activationMode);
-	void setPosition(const vec2& centerPos);
-	void setText(const std::string& text, ushort fontSize = 12);
+    /* SETTERS */
+    void setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet);
+    void setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
+                        const gfx::Texture2D::pointer& pHoverSprite,
+                        const gfx::Texture2D::pointer& pDownSprite,
+                        const gfx::Texture2D::pointer& pDisabledSprite);
+    void setState(STATE state);
+    void setActivationMode(ACTIVATION activationMode);
+    void setPosition(const vec2& centerPos);
+    void setText(const std::string& text, ushort fontSize = 12);
 
-	/* GETTERS */
-	bool isNormal() const;
-	bool isHover() const;
-	bool isDown() const;
-	bool isDisabled() const;
-	bool isClicked() const;
+    /* GETTERS */
+    bool isNormal() const;
+    bool isHover() const;
+    bool isDown() const;
+    bool isDisabled() const;
+    bool isClicked() const;
 
 private:
 
-	/* EXTRA */
-	void drawColor();
-	void drawSprites();
-	void drawSpriteSheet();
+    /* EXTRA */
+    void drawColor();
+    void drawSprites();
+    void drawSpriteSheet();
 
-	/* DATAMEMBERS */
-	vec2 m_Pos;
-	vec2 m_Size;
+    /* DATAMEMBERS */
+    vec2 m_Pos;
+    vec2 m_Size;
 
-	bool m_bClicked;
+    bool m_bClicked;
 
-	TYPE m_Type;
-	STATE m_State;
-	ACTIVATION m_ActivationType;
+    TYPE m_Type;
+    STATE m_State;
+    ACTIVATION m_ActivationType;
 
-	std::vector<gfx::Texture2D::pointer> m_Sprites;
-	gfx::Texture2D::pointer m_pSpriteSheet;
+    std::vector<gfx::Texture2D::pointer> m_Sprites;
+    gfx::Texture2D::pointer m_pSpriteSheet;
 
-	Hitregion* m_pHitregion;
+    Hitregion* m_pHitregion;
 
-	std::string m_Text;
-	gfx::Font::pointer m_pFont;
+    std::string m_Text;
+    gfx::Font::pointer m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Button(const Button&);

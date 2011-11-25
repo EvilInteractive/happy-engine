@@ -160,9 +160,9 @@ void TestObject::tick(float dTime)
     ///     GUI                                                            ///
     //////////////////////////////////////////////////////////////////////////    
     GUI->setColor(33 / 255.0f, 30 / 255.0f, 32 / 255.0f);
-    GUI->fillShape2D(gui::Rectangle2D(vec2(-1, GRAPHICS->getScreenHeight() - 64.0f), vec2(384, 64)));
-    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getScreenWidth() - 128.0f - 16, GRAPHICS->getScreenHeight() - 64.0f), vec2(128+16, 64)));
-    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getScreenWidth()/2 - 64.0f - 16, GRAPHICS->getScreenHeight() - 64.0f), vec2(128, 64)));
+    GUI->fillShape2D(gui::Rectangle2D(vec2(-1, GRAPHICS->getScreenHeight() - 64.0f), vec2(384, 64)), true);
+    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getScreenWidth() - 128.0f - 16, GRAPHICS->getScreenHeight() - 64.0f), vec2(128+16, 64)), true);
+    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getScreenWidth()/2 - 64.0f - 16, GRAPHICS->getScreenHeight() - 64.0f), vec2(128, 64)), true);
 
     GUI->setColor(1, 1, 1);
 

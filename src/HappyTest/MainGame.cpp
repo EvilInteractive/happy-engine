@@ -273,6 +273,7 @@ void MainGame::load()
     //m_pCurrentCamera = m_pFlyCamera;
 
     //m_pFxEditorBinding->init();
+   // GUI->setBlending(true);
 
 }
 void MainGame::tick(float dTime)
@@ -347,8 +348,6 @@ void MainGame::tick(float dTime)
 
     if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
     {
-        m_Poly.addPoint(CONTROLS->getMouse()->getPosition());
-
         uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
 
         if (id != UINT_MAX)
@@ -372,7 +371,7 @@ void MainGame::draw()
 
     PROFILER_BEGIN("MainGame::draw");
     // 2D test stuff
-   /* m_pTestButton->draw();
+    /*m_pTestButton->draw();
     m_pTestButton2->draw();
     m_pTestButton3->draw();*/
         
@@ -398,9 +397,9 @@ void MainGame::draw()
 
     stream << "3D: " << m_pTestSound3D->getPlayTime() << " / " << m_pTestSound3D->getLength();
 
-    GUI->drawText(gui::Text(stream.str()), vec2(1050,590));
+    GUI->drawText(gui::Text(stream.str()), vec2(1050,590));*/
 
-    stream.str("");
+    /*stream.str("");
 
     stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;*/
 

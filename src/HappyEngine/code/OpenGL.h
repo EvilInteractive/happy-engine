@@ -105,6 +105,9 @@ public:
     static void heBlendEquation(BlendEquation eq);
     static void heBlendColor(const Color& color);
 
+    //Testing
+    static void heAlphaTestEnabled(bool enabled);
+
     //Scissor
     static void heScissorEnabled(bool enabled);
     static void heScissorRect(const RectI& rect);
@@ -128,12 +131,14 @@ private:
     static uint m_BoundTex2D[MAX_SAMPLERS];
     static uint m_ActiveTex;
 
-
     //Blending
     static bool m_BlendEnabled;
     static BlendFunc m_BlendSrc, m_BlendDest;
     static BlendEquation m_BlendEquation;
     static Color m_BlendColor;
+
+    //Testing
+    static bool m_AlphaTestEnabled;
 
     //Scissor
     static bool m_ScissorEnabled;

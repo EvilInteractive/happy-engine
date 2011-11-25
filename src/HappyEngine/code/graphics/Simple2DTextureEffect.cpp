@@ -57,6 +57,7 @@ void Simple2DTextureEffect::load()
 	m_ShaderTCOffsetPos = m_pShader->getShaderVarId("texCoordOffset");
 	m_ShaderTCScalePos = m_pShader->getShaderVarId("texCoordScale");
 	m_ShaderDepthPos = m_pShader->getShaderVarId("depth");
+    m_ShaderBlendPos = m_pShader->getShaderVarId("blending");
 
 	m_pShader->bind();
 	mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
@@ -100,6 +101,11 @@ void Simple2DTextureEffect::setTCScale(const vec2& scale) const
 void Simple2DTextureEffect::setDepth(float depth) const
 {
 	m_pShader->setShaderVar(m_ShaderDepthPos, depth);
+}
+
+void Simple2DTextureEffect::setBlending(bool blending) const
+{
+    m_pShader->setShaderVar(m_ShaderBlendPos, blending);
 }
 
 } } //end namespace

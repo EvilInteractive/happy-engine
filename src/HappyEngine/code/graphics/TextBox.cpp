@@ -154,16 +154,16 @@ void TextBox::draw()
 	if (m_bActive)
 	{
 		GUI->setColor(m_Colors["background"]);
-		GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
+		GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
 			
 		GUI->setColor(m_Colors["edge"]);
-		GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
+		GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
 
 		if (m_bHasFocus)
 		{
 			GUI->setColor(m_Colors["focus"]);
 			GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x + 1 , m_Rect.y + 1),
-											vec2(m_Rect.width - 2, m_Rect.height - 2)));
+											vec2(m_Rect.width - 2, m_Rect.height - 2)), true);
 		}
 
 		GUI->setColor(m_Colors["text"]);
@@ -207,10 +207,10 @@ void TextBox::draw()
 	else
 	{
 		GUI->setColor(Color(0.3f,0.3f,0.3f));
-		GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
+		GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
 
 		GUI->setColor(Color(0.1f,0.1f,0.1f));
-		GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)));
+		GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
 
 		GUI->setColor(Color(0.5f,0.5f,0.5f));
 		

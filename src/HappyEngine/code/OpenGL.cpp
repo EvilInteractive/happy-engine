@@ -45,6 +45,9 @@ BlendFunc GL::m_BlendSrc = BlendFunc_One, GL::m_BlendDest = BlendFunc_Zero;
 BlendEquation GL::m_BlendEquation = BlendEquation_Add;
 Color GL::m_BlendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
 
+//Testing
+bool GL::m_AlphaTestEnabled = false;
+
 //Scissor
 bool GL::m_ScissorEnabled = false;
 RectI GL::m_ScissorRect = RectI(0, 0, 0, 0);
@@ -174,6 +177,20 @@ void GL::heBlendColor(const Color& color)
     {
         m_BlendColor = color;
         glBlendColor(color.r(), color.g(), color.b(), color.a());
+    }
+}
+
+//Testing
+void GL::heAlphaTestEnabled(bool enabled)
+{
+    if (enabled != m_AlphaTestEnabled)
+    {
+        m_AlphaTestEnabled = enabled;
+
+        if (enabled)
+            glEnable(GL_ALPHA_TEST);
+        else
+            glDisable(GL_ALPHA_TEST);
     }
 }
 

@@ -39,7 +39,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(0.5f),
-                        m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 10)),
+                        m_pFont(CONTENT->loadFont("Ubuntu-Bold.ttf", 10)),
                         m_FPSGraphState(2)
 {
     CONSOLE->registerValue<int>(&m_FPSGraphState, "fps_graph");
@@ -119,9 +119,9 @@ void FPSGraph::drawFull()
     GUI->setAntiAliasing(false);
 
     GUI->setColor(0.8f,0.8f,0.8f);
-    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 41)));
+    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 41)), true);
     GUI->setColor(0.1f,0.1f,0.1f);
-    GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)));
+    GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)), true);
 
     gui::Polygon2D poly;
     gui::Polygon2D poly2;
@@ -194,7 +194,7 @@ void FPSGraph::drawFull()
 
     poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 46.0f));
 
-    if (m_CurrentFPS >= m_CurrentDTime)
+    if (m_CurrentFPS >= static_cast<uint>(m_CurrentDTime * 1000.0f))
     {
         GUI->setColor(1.0f,0.0f,0.0f);
         GUI->fillShape2D(poly);
@@ -221,11 +221,11 @@ void FPSGraph::drawFull()
     GUI->setColor(1.0f,1.0f,1.0f);
     std::stringstream stream;
     stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 45));
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 48));
 
     stream.str("");
     stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 58));
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 61));
 }
 
 /* GETTERS */

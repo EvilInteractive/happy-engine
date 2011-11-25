@@ -72,16 +72,16 @@ public:
     void setColor(const Color& color);
     // * Turn on/off anti-aliasing. *
     void setAntiAliasing(bool bAA);
+    // * Switch between blending & testing. *
+    void setBlending(bool bB);
     // * Set current GUI layer, default = depth 50
-    void setLayer(const std::string& layer = "default");
-    // * Set the strokesize. *
-    //void setStrokeSize(const float strokeSize = 1.0f);	
+    void setLayer(const std::string& layer = "default");	
 
     /* DRAW METHODS */
 
     // * Draws the text as a 2D texture on the screen. *
-    void drawText(const gui::Text& txt, const vec2& pos);
-    void drawText(const gui::Text& txt, const RectF& rect = RectF(0.0f,0.0f,0.0f,0.0f));
+    void drawText(const gui::Text& txt, const vec2& pos, bool buffered = false);
+    void drawText(const gui::Text& txt, const RectF& rect, bool buffered = false);
     // * Draws a 2D shape. *
     void drawShape2D(const gui::Shape2D& shape, bool buffered = false);
     // * Draws a filled 2D shape. *
@@ -100,12 +100,14 @@ private:
         Shape(	const gui::Shape2D& s,
             const Color& c,
             bool f, bool a,
-            const std::string& l)
+            const std::string& l,
+            bool buffered)
             : shape2D(s),
             color(c),
             fill(f),
             antiAliasing(a),
-            layer(l)
+            layer(l),
+            buffered(buffered)
         {
         }
 
@@ -114,6 +116,7 @@ private:
         bool fill;
         bool antiAliasing;
         std::string layer;
+        bool buffered;
     };
 
     struct Texture
@@ -125,13 +128,15 @@ private:
             const vec2& newDimensions,
             const float alpha,
             const RectF& regionToDraw,
-            const std::string& layer)
+            const std::string& layer,
+            bool buffered)
             : tex2D(tex),
             pos(pos),
             newDimensions(newDimensions),
             alpha(alpha),
             regionToDraw(regionToDraw),
-            layer(layer)
+            layer(layer),
+            buffered(buffered)
         {
         }
 
@@ -141,6 +146,7 @@ private:
         float alpha;
         RectF regionToDraw;
         std::string layer;
+        bool buffered;
     };
 
     void drawMesh(gui::Shape2D& shape, bool buffered = false);
@@ -154,8 +160,8 @@ private:
     uint m_RenderFboID;
     Texture2D::pointer m_pRenderTexture;
 
-    float m_StrokeSize;
     bool m_bAntiAliasing;
+    bool m_bBlending;
 
     Color m_CurrentColor;
 
@@ -170,8 +176,8 @@ private:
 
     ModelMesh::pointer m_pTextureQuad;
 
-    ct::AssetContainer<ModelMesh::pointer>* m_pModelBuffer;
-    //ct::AssetContainer<gfx::Texture2D::pointer>* m_pTextureContainer;
+    ct::AssetContainer<ModelMesh::pointer, int>* m_pModelBuffer;
+    ct::AssetContainer<std::pair<gfx::Texture2D::pointer, vec2> >* m_pTextureBuffer;
 
     std::map<std::string, float> m_Layers;
     std::string m_CurrentLayer;

@@ -64,7 +64,7 @@ bool Polygon::triangulate()
     if (m_Vertices.size() < 3)
         return false;
 
-    bool b(Triangulator::triangulateShape(m_Vertices, m_Indices));
+    bool b(Triangulator::triangulatePolygon(m_Vertices, m_Indices));
 
     if (b == false)
         m_Indices.clear();

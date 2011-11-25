@@ -100,9 +100,9 @@ void Scrollbar::draw()
 	GUI->setAntiAliasing(false);
 
 	GUI->setColor(m_Colors["background"]);
-	GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)));
+	GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)), true);
 	GUI->setColor(m_Colors["edge"]);
-	GUI->drawShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)));
+	GUI->drawShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)), true);
 
 	GUI->setColor(m_Colors["scrollbar"]);
 	GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),

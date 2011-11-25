@@ -33,7 +33,7 @@
 namespace he {
 namespace ct {
     
-template<typename T>
+template<typename T, typename U = std::string>
 class AssetContainer
 {
 public:
@@ -41,45 +41,45 @@ public:
     AssetContainer(const std::function<void (const T&)>& destroyAction): f_DestroyAction(destroyAction) { }
     virtual ~AssetContainer(void) { removeAllAssets(); }
 
-	bool isAssetPresent(const std::string &key) const
+    bool isAssetPresent(const U &key) const
     {
-	    return m_Map.find(key) != m_Map.end();
+        return m_Map.find(key) != m_Map.end();
     }
-    void addAsset(const std::string &key, const T& asset)
+    void addAsset(const U &key, const T& asset)
     {        
-		CONSOLE->addMessage("adding asset: " + key, CMSG_TYPE_ENGINE);
+        //CONSOLE->addMessage("adding asset: " + key, CMSG_TYPE_ENGINE);
 
-	    m_Map[key] = asset;
+        m_Map[key] = asset;
     }
-	void removeAsset(const std::string &key)
+    void removeAsset(const U &key)
     {
-	    CONSOLE->addMessage("releasing asset: " + key, CMSG_TYPE_ENGINE);
+        //CONSOLE->addMessage("releasing asset: " + key, CMSG_TYPE_ENGINE);
 
         if (f_DestroyAction != nullptr)
             f_DestroyAction(m_Map[key]);
 
-	    m_Map.erase(key);
+        m_Map.erase(key);
     }
-	void removeAllAssets()
+    void removeAllAssets()
     {
-	    std::for_each(m_Map.cbegin(), m_Map.cend(), [&](const std::pair<std::string, T>& obj)
-	    {
-	        CONSOLE->addMessage("releasing asset: " + obj.first, CMSG_TYPE_ENGINE);
+        std::for_each(m_Map.cbegin(), m_Map.cend(), [&](const std::pair<U, T>& obj)
+        {
+            //CONSOLE->addMessage("releasing asset: " + obj.first, CMSG_TYPE_ENGINE);
             
             if (f_DestroyAction != nullptr)
                 f_DestroyAction(obj.second);
-	    });
+        });
 
-	    m_Map.clear();
+        m_Map.clear();
     }
     
-    const T& getAsset(const std::string& key)
+    const T& getAsset(const U& key)
     {
         return m_Map[key];
     }
 
 private:
-    std::map<std::string, T> m_Map;
+    std::map<U, T> m_Map;
     std::function<void (const T&)> f_DestroyAction;	
 
     //Disable default copy constructor and assignment operator

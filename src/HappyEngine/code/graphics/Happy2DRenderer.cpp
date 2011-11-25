@@ -37,11 +37,11 @@ namespace gfx {
 Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
                                         m_pTextureEffect(NEW Simple2DTextureEffect()),
                                         m_bAntiAliasing(false),
-                                        m_StrokeSize(0.0f),
+                                        m_bBlending(false),
                                         m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
                                         m_ViewPortSize(0.0f,0.0f),
-                                        m_pModelBuffer(NEW ct::AssetContainer<ModelMesh::pointer>()),
-                                        //m_pTextureContainer(),
+                                        m_pModelBuffer(NEW ct::AssetContainer<ModelMesh::pointer, int>()),
+                                        m_pTextureBuffer(NEW ct::AssetContainer<std::pair<gfx::Texture2D::pointer, vec2> >()),
                                         m_pTextureQuad(NEW ModelMesh("")),
                                         m_CurrentLayer("default"),
                                         m_RenderFboID(0),
@@ -55,6 +55,7 @@ Happy2DRenderer::~Happy2DRenderer()
     delete m_pColorEffect;
     delete m_pTextureEffect;
     delete m_pModelBuffer;
+    delete m_pTextureBuffer;
 }
 
 void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
@@ -64,22 +65,20 @@ void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
 
     ModelMesh::pointer p;
 
-    std::stringstream stream;
-    stream << "S2D";
+    int id(0);
     
-    /*for (uint i(0); i < 3; ++i)
-    {*/
-        /*if ((i + 1) > shape.getPolygon().getVertices().size())
-            break;*/
-
-        //stream << "." << shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 3) + i)].x;
-        stream << "." << shape.getPolygon().getVertices()[0].x;
-        stream << "." << shape.getPolygon().getVertices()[0].y;
-    //}
-
-    if (m_pModelBuffer->isAssetPresent(stream.str()) && buffered)
+    for (uint i(0); i < 2; ++i)
     {
-        p = m_pModelBuffer->getAsset(stream.str());
+        if ((i + 1) > shape.getPolygon().getVertices().size())
+            break;
+
+        id += static_cast<int>(shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 1) + i)].x);
+        id += static_cast<int>(shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 1) + i)].y);
+    }
+
+    if (m_pModelBuffer->isAssetPresent(id) && buffered)
+    {
+        p = m_pModelBuffer->getAsset(id);
     }
     else
     {
@@ -99,7 +98,7 @@ void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
         p->setIndices(&indices[0], indices.size(), IndexStride_UInt);
 
         if (buffered)
-            m_pModelBuffer->addAsset(stream.str(), p);
+            m_pModelBuffer->addAsset(id, p);
     }
 
     GL::heBindVao(p->getVertexArraysID());
@@ -113,22 +112,31 @@ void Happy2DRenderer::fillMesh(gui::Shape2D& shape, bool buffered)
 
     ModelMesh::pointer p;
 
-    std::stringstream stream;
-    stream << "S2D";
+    int id(0);
     
-    /*for (uint i(0); i < 3; ++i)
-    {*/
-        /*if ((i + 1) > shape.getPolygon().getVertices().size())
-            break;*/
-
-        //stream << "." << shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 3) + i)].x;
-        stream << "." << shape.getPolygon().getVertices()[0].x;
-        stream << "." << shape.getPolygon().getVertices()[0].y;
-    //}
-
-    if (m_pModelBuffer->isAssetPresent(stream.str()) && buffered)
+    if (shape.getPolygon().getVertexCount() == 3)
     {
-        p = m_pModelBuffer->getAsset(stream.str());
+        for (uint i(0); i < 3; ++i)
+        {
+            id += static_cast<int>(shape.getPolygon().getVertices()[i].x);
+            id += static_cast<int>(shape.getPolygon().getVertices()[i].y);
+        }
+    }
+    else
+    {
+        for (uint i(0); i < 3; ++i)
+        {
+            if ((i + 1) > shape.getPolygon().getVertices().size())
+                break;
+
+            id += static_cast<int>(shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 2) + i)].x);
+            id += static_cast<int>(shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 2) + i)].y);
+        }
+    }
+
+    if (m_pModelBuffer->isAssetPresent(id) && buffered)
+    {
+        p = m_pModelBuffer->getAsset(id);
     }
     else
     {
@@ -151,7 +159,7 @@ void Happy2DRenderer::fillMesh(gui::Shape2D& shape, bool buffered)
         p->setIndices(&indices[0], indices.size(), IndexStride_UInt);
 
         if (buffered)
-            m_pModelBuffer->addAsset(stream.str(), p);
+            m_pModelBuffer->addAsset(id, p);
     }
 
     GL::heBindVao(p->getVertexArraysID());
@@ -194,7 +202,6 @@ void Happy2DRenderer::drawTexture(const Texture& tex)
     m_pTextureEffect->setTCOffset(tcOffset);
     m_pTextureEffect->setTCScale(tcScale);
 
-    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
 }
 
@@ -268,14 +275,26 @@ void Happy2DRenderer::draw()
 
     setLayer();
 
+    //glScissor(0,200,400,520);
+    //glEnable(GL_SCISSOR_TEST);
+
     GL::heBindFbo(m_RenderFboID);
     GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    GL::heBlendEnabled(true);
-    //glEnable(GL_ALPHA_TEST);
-    //GL::heBlendFunc(BlendFunc_One, BlendFunc_Zero);
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    if (m_bBlending == false)
+    {
+        GL::heBlendEnabled(false);
+        glAlphaFunc(GL_GREATER,0.5f);
+        GL::heAlphaTestEnabled(true);  
+    }
+    else
+    {
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendEnabled(true);
+        GL::heAlphaTestEnabled(false);
+    }
+    
     GL::heSetDepthWrite(true);
 
     /* DRAW */
@@ -283,6 +302,7 @@ void Happy2DRenderer::draw()
     // shapes
     m_pColorEffect->begin();
 
+    PROFILER_BEGIN("Happy2DRenderer::drawshapes");
     std::for_each(m_ShapeBuffer.begin(), m_ShapeBuffer.end(), [&](std::pair<Shape, float> p)
     {
         m_pColorEffect->setWorldMatrix(m_matOrthoGraphic * p.first.shape2D.getWorldMatrix());
@@ -291,12 +311,12 @@ void Happy2DRenderer::draw()
 
         if (p.first.fill)
         {
-            fillMesh(p.first.shape2D);
+            fillMesh(p.first.shape2D, p.first.buffered);
 
             if (p.first.antiAliasing)
             {
                 glEnable(GL_LINE_SMOOTH);
-                drawMesh(p.first.shape2D);
+                drawMesh(p.first.shape2D, p.first.buffered);
             }
         }
         else
@@ -306,32 +326,51 @@ void Happy2DRenderer::draw()
             else
                 glDisable(GL_LINE_SMOOTH);
 
-            drawMesh(p.first.shape2D);
+            drawMesh(p.first.shape2D, p.first.buffered);
         }
     });
+    PROFILER_END("Happy2DRenderer::drawshapes");
 
     glDisable(GL_LINE_SMOOTH);
 
     // textures
     m_pTextureEffect->begin();
+    m_pTextureEffect->setBlending(m_bBlending);
 
+    PROFILER_BEGIN("Happy2DRenderer::drawtextures");
+    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     std::for_each(m_TextureBuffer.begin(), m_TextureBuffer.end(), [&](std::pair<Texture, float> p)
     {
         m_pTextureEffect->setDepth(p.second);
 
         drawTexture(p.first);
     });
+    PROFILER_END("Happy2DRenderer::drawtextures");
 
     m_ShapeBuffer.clear();
     m_TextureBuffer.clear();
     m_DepthMap.clear();
 
+    //glDisable(GL_SCISSOR_TEST);
+
     // fullscreen quad
     GL::heBindFbo(0);
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    
+    if (m_bBlending == false)
+    {
+        GL::heBlendEnabled(false);
+        glAlphaFunc(GL_GREATER,0.5f);
+        GL::heAlphaTestEnabled(true);
+    }
+    else
+    {
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendEnabled(true);
+        GL::heAlphaTestEnabled(false);
+    }
 
     m_pTextureEffect->setDepth(0.5f);
-    drawTexture(Texture(m_pRenderTexture, vec2(), vec2(), 1.0f, RectF(), ""));
+    drawTexture(Texture(m_pRenderTexture, vec2(), vec2(), 1.0f, RectF(), "", false));
 
     GL::heBlendEnabled(false);
     PROFILER_END("Happy2DRenderer::draw");
@@ -419,8 +458,8 @@ void Happy2DRenderer::init()
 
 void Happy2DRenderer::clearBuffers()
 {
-    //m_pModelContainer.removeAllAssets();
-    //m_pTextureContainer.removeAllAssets();
+    m_pModelBuffer->removeAllAssets();
+    m_pTextureBuffer->removeAllAssets();
 }
 
 void Happy2DRenderer::createLayer(const std::string& name, byte depth)
@@ -461,16 +500,12 @@ void Happy2DRenderer::setColor(const Color& color)
 
 void Happy2DRenderer::setAntiAliasing(bool bAA)
 {
-    /*if (bAA)
-    {
-        glEnable(GL_LINE_SMOOTH);
-    }
-    else
-    {
-        glDisable(GL_LINE_SMOOTH);
-    }*/
-
     m_bAntiAliasing = bAA;
+}
+
+void Happy2DRenderer::setBlending(bool bB)
+{
+    m_bBlending = bB;
 }
 
 void Happy2DRenderer::setLayer(const std::string& layer)
@@ -479,27 +514,35 @@ void Happy2DRenderer::setLayer(const std::string& layer)
         m_CurrentLayer = layer;
 }
 
-//void Happy2DRenderer::setStrokeSize(const float strokeSize)
-//{
-//	glLineWidth(strokeSize);
-//
-//	m_StrokeSize = strokeSize;
-//}
-
 /* DRAW METHODS */
-void Happy2DRenderer::drawText(const gui::Text& txt, const vec2& pos)
+void Happy2DRenderer::drawText(const gui::Text& txt, const vec2& pos, bool buffered)
 {
     for (uint i(0); i < txt.getText().size(); ++i)
     {
         vec2 position(pos);
         position.y += (txt.getFont()->getFontPixelHeight() + txt.getFont()->getFontLineSpacing()) * i;
 
-        Texture2D::pointer texFont(txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing));
+        Texture2D::pointer texFont;
+
+        std::stringstream stream;
+        stream << txt.getLine(i) << "." << m_CurrentColor.r() << "." << m_CurrentColor.g() << "." << m_CurrentColor.b() << "." << m_CurrentColor.a();
+
+        if (m_pTextureBuffer->isAssetPresent(stream.str()) && buffered)
+        {
+            texFont = m_pTextureBuffer->getAsset(stream.str()).first;
+        }
+        else
+        {
+            texFont = Texture2D::pointer(txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing));
+
+            if (buffered)
+                m_pTextureBuffer->addAsset(stream.str(), std::pair<gfx::Texture2D::pointer, vec2>(texFont, vec2()));
+        }
 
         drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
     }
 }
-void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect)
+void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buffered)
 {
     uint width(0), height(0);
     height = (txt.getFont()->getFontPixelHeight() * txt.getText().size()) + (txt.getFont()->getFontLineSpacing() * (txt.getText().size() - 1));
@@ -514,15 +557,31 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect)
     for (uint i(0); i < txt.getText().size(); ++i)
     {
         vec2 textSize;
-        Texture2D::pointer texFont(txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing, &textSize));
+        Texture2D::pointer texFont;
+
+        std::stringstream stream;
+        stream << txt.getLine(i) << "." << m_CurrentColor.r() << "." << m_CurrentColor.g() << "." << m_CurrentColor.b() << "." << m_CurrentColor.a();
+
+        if (m_pTextureBuffer->isAssetPresent(stream.str()) && buffered)
+        {
+            texFont = m_pTextureBuffer->getAsset(stream.str()).first;
+            textSize = m_pTextureBuffer->getAsset(stream.str()).second;
+        }
+        else
+        {
+            texFont = Texture2D::pointer(txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing, &textSize));
+
+            if (buffered)
+                m_pTextureBuffer->addAsset(stream.str(), std::pair<gfx::Texture2D::pointer, vec2>(texFont, textSize));
+        }
 
         vec2 position;
 
         switch (txt.getHorizontalAlignment())
         {
         case gui::Text::HAlignment_Left: position.x = rect.x; break;
-        case gui::Text::HAlignment_Center: position.x = rect.x + rect.width/2 - textSize.y/2; break;
-        case gui::Text::HAlignment_Right: position.x = rect.x + rect.width - textSize.y; break;
+        case gui::Text::HAlignment_Center: position.x = rect.x + rect.width/2 - textSize.x/2; break;
+        case gui::Text::HAlignment_Right: position.x = rect.x + rect.width - textSize.x; break;
         default: ASSERT("unkown font alignment");
         }
         switch (txt.getVerticalAlignment())
@@ -542,19 +601,19 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect)
 void Happy2DRenderer::drawShape2D(const gui::Shape2D& shape, bool buffered)
 {
     m_ShapeBuffer.push_back(std::pair<Shape, float>
-        (Shape(shape, m_CurrentColor, false, m_bAntiAliasing, m_CurrentLayer), getDepth()));
+        (Shape(shape, m_CurrentColor, false, m_bAntiAliasing, m_CurrentLayer, buffered), getDepth()));
 }
 
 void Happy2DRenderer::fillShape2D(const gui::Shape2D& shape, bool buffered)
 {
     m_ShapeBuffer.push_back(std::pair<Shape, float>
-        (Shape(shape, m_CurrentColor, true, m_bAntiAliasing, m_CurrentLayer), getDepth()));
+        (Shape(shape, m_CurrentColor, true, m_bAntiAliasing, m_CurrentLayer, buffered), getDepth()));
 }
 
 void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
 {
     m_TextureBuffer.push_back(std::pair<Texture, float>
-        (Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer), getDepth()));
+        (Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer, true), getDepth()));
 }
 
 } } //end namespace

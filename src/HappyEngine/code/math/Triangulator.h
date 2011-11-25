@@ -32,14 +32,17 @@ class Triangulator
 {
 public:
 
-	static bool triangulateShape(const std::vector<vec2>& vertices, std::vector<uint>& indices);
+	static bool triangulatePolygon(const std::vector<vec2>& vertices, std::vector<uint>& indices);
 	static float calculateArea(const std::vector<vec2>& vertices);
 	static bool hitTestTriangle(const vec2& p1, const vec2& p2, const vec2& p3, const vec2& hitPoint);
+    static bool isConvex(const std::vector<vec2>& vertices);
 
 private:
 
 	static bool snip(const std::vector<vec2>& contour, int u, int v, int w, int n, int* V);
-
+    static void triangulateConvex(const std::vector<vec2>& vertices, std::vector<uint>& indices);
+    static bool triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint>& indices);
+    static int sign(float x) { return x < 0 ? -1 : 1; }
 };
 
 } //end namespace

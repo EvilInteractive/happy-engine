@@ -32,186 +32,186 @@ namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Button::Button(TYPE type, const vec2& pos, const vec2& size) :	m_Type(type),
-																m_Pos(pos),
-																m_Size(size),
-																m_State(STATE_NORMAL),
-																m_ActivationType(ACTIVATION_MOUSE),
-																m_pHitregion(nullptr),
-																m_bClicked(false),
-																m_Text("")
+                                                                m_Pos(pos),
+                                                                m_Size(size),
+                                                                m_State(STATE_NORMAL),
+                                                                m_ActivationType(ACTIVATION_MOUSE),
+                                                                m_pHitregion(nullptr),
+                                                                m_bClicked(false),
+                                                                m_Text("")
 {
-	m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE, pos, size);
+    m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE, pos, size);
 }
 
 Button::~Button()
 {
-	delete m_pHitregion;
+    delete m_pHitregion;
 }
 
 /* GENERAL */
 void Button::tick()
 {
-	if (m_State != STATE_DISABLED)
-	{
-		m_bClicked = false;
+    if (m_State != STATE_DISABLED)
+    {
+        m_bClicked = false;
 
-		if (m_ActivationType == ACTIVATION_MOUSE)
-		{
-			if (m_pHitregion->hitTest(CONTROLS->getMouse()->getPosition()))
-			{
-				if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
-					m_State = STATE_DOWN;
-				else
-					m_State = STATE_HOVER;
+        if (m_ActivationType == ACTIVATION_MOUSE)
+        {
+            if (m_pHitregion->hitTest(CONTROLS->getMouse()->getPosition()))
+            {
+                if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
+                    m_State = STATE_DOWN;
+                else
+                    m_State = STATE_HOVER;
 
-				if (CONTROLS->getMouse()->isButtonReleased(io::MouseButton_Left))
-					m_bClicked = true;
-			}
-			else
-			{
-				m_State = STATE_NORMAL;
-			}
-		}
-	}
+                if (CONTROLS->getMouse()->isButtonReleased(io::MouseButton_Left))
+                    m_bClicked = true;
+            }
+            else
+            {
+                m_State = STATE_NORMAL;
+            }
+        }
+    }
 }
 
 void Button::draw()
 {
-	switch (m_Type)
-	{
-		case TYPE_NORMAL:
-		{
-			drawColor();
+    switch (m_Type)
+    {
+        case TYPE_NORMAL:
+        {
+            drawColor();
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 }
 
 /* SETTERS */
 void Button::setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet)
 {
-	m_pSpriteSheet = pSpriteSheet;
+    m_pSpriteSheet = pSpriteSheet;
 }
 
 void Button::setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
-							const gfx::Texture2D::pointer& pHoverSprite,
-							const gfx::Texture2D::pointer& pDownSprite,
-							const gfx::Texture2D::pointer& pDisabledSprite)
+                            const gfx::Texture2D::pointer& pHoverSprite,
+                            const gfx::Texture2D::pointer& pDownSprite,
+                            const gfx::Texture2D::pointer& pDisabledSprite)
 {
-	m_Sprites.push_back(pNormalSprite);
-	m_Sprites.push_back(pHoverSprite);
-	m_Sprites.push_back(pDownSprite);
-	m_Sprites.push_back(pDisabledSprite);
+    m_Sprites.push_back(pNormalSprite);
+    m_Sprites.push_back(pHoverSprite);
+    m_Sprites.push_back(pDownSprite);
+    m_Sprites.push_back(pDisabledSprite);
 }
 
 void Button::setState(STATE state)
 {
-	m_State = state;
+    m_State = state;
 }
 
 void Button::setActivationMode(ACTIVATION activationMode)
 {
-	m_ActivationType = activationMode;
+    m_ActivationType = activationMode;
 }
 
 void Button::setPosition(const vec2& centerPos)
 {
-	m_Pos = centerPos;
+    m_Pos = centerPos;
 }
 
 void Button::setText(const std::string& text, ushort fontSize)
 {
-	m_Text = text;
-	m_pFont = CONTENT->loadFont("Ubuntu-Regular.ttf", fontSize);
+    m_Text = text;
+    m_pFont = CONTENT->getDefaultFont();
 }
 
 /* GETTERS */
 bool Button::isNormal() const
 {
-	if (m_State == STATE_NORMAL) 
-		return true;
+    if (m_State == STATE_NORMAL) 
+        return true;
 
-	return false;
+    return false;
 }
 
 bool Button::isHover() const
 {
-	if (m_State == STATE_HOVER) 
-		return true;
+    if (m_State == STATE_HOVER) 
+        return true;
 
-	return false;
+    return false;
 }
 
 bool Button::isDown() const
 {
-	if (m_State == STATE_DOWN) 
-		return true;
+    if (m_State == STATE_DOWN) 
+        return true;
 
-	return false;
+    return false;
 }
 
 bool Button::isDisabled() const
 {
-	if (m_State == STATE_DISABLED) 
-		return true;
+    if (m_State == STATE_DISABLED) 
+        return true;
 
-	return false;
+    return false;
 }
 
 bool Button::isClicked() const
 {
-	return m_bClicked;
+    return m_bClicked;
 }
 
 /* EXTRA */
 void Button::drawColor()
 {
-	switch (m_State)
-	{
-		case STATE_NORMAL:
-		{
-			GUI->setColor(220.0f/255,220.0f/255,220.0f/255);
+    switch (m_State)
+    {
+        case STATE_NORMAL:
+        {
+            GUI->setColor(220.0f/255,220.0f/255,220.0f/255);
 
-			break;
-		}
+            break;
+        }
 
-		case STATE_HOVER:
-		{
-			GUI->setColor(180.0f/255,200.0f/255,220.0f/255);		
+        case STATE_HOVER:
+        {
+            GUI->setColor(180.0f/255,200.0f/255,220.0f/255);		
 
-			break;
-		}
+            break;
+        }
 
-		case STATE_DOWN:
-		{
-			GUI->setColor(146.0f/255,162.0f/255,179.0f/255);
+        case STATE_DOWN:
+        {
+            GUI->setColor(146.0f/255,162.0f/255,179.0f/255);
 
-			break;
-		}
+            break;
+        }
 
-		case STATE_DISABLED:
-		{
-			GUI->setColor(150.0f/255,150.0f/255,150.0f/255);
+        case STATE_DISABLED:
+        {
+            GUI->setColor(150.0f/255,150.0f/255,150.0f/255);
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	GUI->fillShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size));
+    GUI->fillShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
 
-	GUI->setColor(140.0f/255,140.0f/255,140.0f/255);
-	GUI->drawShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size));
+    GUI->setColor(140.0f/255,140.0f/255,140.0f/255);
+    GUI->drawShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
 
-	if (m_pFont != nullptr)
-	{
-		gui::Text txt(m_Text, m_pFont);
+    if (m_pFont != nullptr)
+    {
+        gui::Text txt(m_Text, m_pFont);
 
-		GUI->setColor(0.25f,0.25f,0.25f);
-		txt.setHorizontalAlignment(gui::Text::HAlignment_Center);
-		txt.setVerticalAlignment(gui::Text::VAlignment_Center);
-		GUI->drawText(txt, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
-	}
+        GUI->setColor(0.25f,0.25f,0.25f);
+        txt.setHorizontalAlignment(gui::Text::HAlignment_Center);
+        txt.setVerticalAlignment(gui::Text::VAlignment_Center);
+        GUI->drawText(txt, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
+    }
 }
 
 void Button::drawSprites()

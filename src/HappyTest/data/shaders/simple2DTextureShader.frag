@@ -8,17 +8,28 @@ uniform sampler2D diffuseMap;
 uniform float inAlpha;
 uniform vec2 texCoordOffset;
 uniform vec2 texCoordScale;
+uniform bool blending;
 
 void main()
 {
-	vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale) + texCoordOffset);
+    vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale));// + texCoordOffset);
 
-	float alpha = color.a - (1.0f - inAlpha);
+    float alpha = color.a - (1.0f - inAlpha);
 
-	if (alpha < 0.0f)
-	{
-		alpha = 0.0f;
-	}
+    if (blending)
+    {
+        if (alpha < 0.05f)
+        {
+            discard;
+        }
+    }
+    else
+    {
+        if (alpha < 0.5f)
+        {
+            discard;
+        }
+    }
 
-	outColor =  vec4(color.rgb, alpha);
+    outColor =  vec4(color.rgb, alpha);
 }
