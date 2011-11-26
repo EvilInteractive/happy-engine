@@ -59,7 +59,7 @@ enum ViewDistanceQuality
 class DrawSettings
 {
 public:
-	DrawSettings();
+    DrawSettings();
     virtual ~DrawSettings();
 
     void setViewDistanceQuality(ViewDistanceQuality quality);
@@ -72,6 +72,9 @@ public:
     void setBloomEnabled(bool enabled);
     bool getBloomEnabled() const;
 
+    void setSSAOEnabled(bool enabled);
+    bool getSSAOEnabled() const;
+
 private:
 
     //ViewDistanceQuality
@@ -83,6 +86,9 @@ private:
 
     //Bloom
     bool m_BloomEnabled;
+
+    //SSAO
+    bool m_bSSAOEnabled;
 
     //Disable default copy constructor and default assignment operator
     DrawSettings(const DrawSettings&);

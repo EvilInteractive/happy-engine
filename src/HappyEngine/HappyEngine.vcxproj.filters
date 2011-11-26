@@ -394,9 +394,6 @@
     <ClCompile Include="code\io\QtKeyboard.cpp">
       <Filter>happyengine\io\keyboard</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\SSAO.cpp">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
@@ -836,9 +833,6 @@
     </ClInclude>
     <ClInclude Include="code\io\Keys.h">
       <Filter>happyengine\io\keyboard</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\SSAO.h">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
       <Filter>happyengine\graphics\rendering\forward</Filter>

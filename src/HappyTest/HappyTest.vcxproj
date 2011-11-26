@@ -152,6 +152,8 @@
     <None Include="data\shaders\simpleShader.vert" />
     <None Include="data\shaders\simpleTextureShader.frag" />
     <None Include="data\shaders\simpleTextureShader.vert" />
+    <None Include="data\shaders\ssaoShader.frag" />
+    <None Include="data\shaders\ssaoShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

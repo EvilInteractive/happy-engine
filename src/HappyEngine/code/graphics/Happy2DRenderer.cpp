@@ -76,6 +76,8 @@ void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
         id += static_cast<int>(shape.getPolygon().getVertices()[(((shape.getPolygon().getVertices().size() / 2) - 1) + i)].y);
     }
 
+    id *= 10;
+
     if (m_pModelBuffer->isAssetPresent(id) && buffered)
     {
         p = m_pModelBuffer->getAsset(id);
@@ -285,14 +287,11 @@ void Happy2DRenderer::draw()
     if (m_bBlending == false)
     {
         GL::heBlendEnabled(false);
-        glAlphaFunc(GL_GREATER,0.5f);
-        GL::heAlphaTestEnabled(true);  
     }
     else
     {
         GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEnabled(true);
-        GL::heAlphaTestEnabled(false);
     }
     
     GL::heSetDepthWrite(true);
@@ -301,6 +300,7 @@ void Happy2DRenderer::draw()
 
     // shapes
     m_pColorEffect->begin();
+    m_pColorEffect->setBlending(m_bBlending);
 
     PROFILER_BEGIN("Happy2DRenderer::drawshapes");
     std::for_each(m_ShapeBuffer.begin(), m_ShapeBuffer.end(), [&](std::pair<Shape, float> p)
@@ -313,25 +313,25 @@ void Happy2DRenderer::draw()
         {
             fillMesh(p.first.shape2D, p.first.buffered);
 
-            if (p.first.antiAliasing)
+            if (p.first.antiAliasing && m_bBlending)
             {
-                glEnable(GL_LINE_SMOOTH);
+                GL::heLineSmoothEnabled(true);
                 drawMesh(p.first.shape2D, p.first.buffered);
             }
         }
         else
         {
-            if (p.first.antiAliasing)
-                glEnable(GL_LINE_SMOOTH);
+            if (p.first.antiAliasing && m_bBlending)
+                GL::heLineSmoothEnabled(true);
             else
-                glDisable(GL_LINE_SMOOTH);
+                GL::heLineSmoothEnabled(false);
 
             drawMesh(p.first.shape2D, p.first.buffered);
         }
     });
     PROFILER_END("Happy2DRenderer::drawshapes");
 
-    glDisable(GL_LINE_SMOOTH);
+    GL::heLineSmoothEnabled(false);
 
     // textures
     m_pTextureEffect->begin();
@@ -360,13 +360,11 @@ void Happy2DRenderer::draw()
     {
         GL::heBlendEnabled(false);
         glAlphaFunc(GL_GREATER,0.5f);
-        GL::heAlphaTestEnabled(true);
     }
     else
     {
         GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEnabled(true);
-        GL::heAlphaTestEnabled(false);
     }
 
     m_pTextureEffect->setDepth(0.5f);

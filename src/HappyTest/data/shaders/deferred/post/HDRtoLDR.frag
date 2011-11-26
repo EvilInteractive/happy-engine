@@ -13,12 +13,14 @@
 //    GNU Lesser General Public License for more details.
 //
 //    You should have received a copy of the GNU Lesser General Public License
-//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//    along with HappyEngine.  If not, see <http://www.gnu.org/8licenses/>.
 //
 //Author:  Bastian Damman
 //Created: 14/10/2011
 
 #version 150 core
+
+#include "decode.frag"
 
 noperspective in vec2 texCoord;
 
@@ -32,6 +34,26 @@ uniform sampler2D blur1;
 uniform sampler2D blur2;
 uniform sampler2D blur3;
 #endif
+
+///////// SSAO //////////
+#if SSAO
+uniform sampler2D randomNormals;
+
+uniform float radius;
+uniform float intensity;
+uniform float scale;
+uniform float bias;
+
+uniform uint passes;
+uniform uint minIterations;
+uniform uint maxIterations;
+
+uniform vec4 projParams;
+uniform vec2 viewPortSize;
+
+uniform float farZ;
+#endif
+/////////////////////////
 
 uniform sampler2D lumMap;
 
@@ -82,6 +104,84 @@ float getEdge(in sampler2D map, in vec2 texCoord)
     return 1-clamp((endCol.r + endCol.g + endCol.b) / 3.0f, 0.0f, 1.0f); //back-ify
 }
 
+/////////////////////////////* SSAO *///////////////////////////////
+#if SSAO
+vec2 getRandom(in vec2 tc)
+{
+    return normalize(texture2D(randomNormals, viewPortSize * tc / 64.0f).xy * 2.0f - 1.0f);
+}
+
+vec3 getPos(in vec2 tc)
+{
+    vec2 ndc = tc * 2.0f - 1.0f;
+    return getPosition(texture(depthMap, tc).x, ndc, projParams);
+}
+
+vec3 getNorm(in vec2 tc)
+{
+    return decodeNormal(texture(normalMap, tc).xy);
+}
+
+float calculateAO(in vec2 tc1, in vec2 tc, in vec3 p, in vec3 cnorm)
+{
+    vec3 diff = getPos(tc1 + tc) - p;
+    const vec3 v = normalize(diff);
+    const float d = length(diff) * scale;
+    return max(0.0, dot(cnorm, v) - bias) * (1.0f / (1.0f + d)) * intensity;
+}
+
+float renderAO()
+{
+    vec2 tc = texCoord;
+    tc.x = 1.0f - tc.x;
+
+    const vec2 vec[16] = { vec2(1,0), vec2(-1,0),
+                           vec2(0,1), vec2(0,-1),
+                           vec2(0.66,0.66), vec2(-0.66,0.66),
+                           vec2(0.66,-0.66), vec2(-0.66,-0.66),
+                           vec2(0.33,0.66), vec2(-0.33,0.66),
+                           vec2(0.33,-0.66), vec2(-0.33,-0.66),
+                           vec2(0.66,0.33), vec2(-0.66,0.33),
+                           vec2(0.66,-0.33), vec2(-0.66,-0.33) };
+
+    vec3 p = getPos(tc);
+    vec3 n = getNorm(tc);
+    vec2 rand = getRandom(tc);
+
+    float ao = 0.0f;
+    float rad = radius / p.z;
+
+    //uint maxIt = maxIterations;
+//
+    //if (maxIt > 16)
+        //maxIt = 16;
+//
+    //float weight = p.z / farZ;
+
+    //float iterations = mix(maxIt, minIterations, weight); // LOD
+
+    for (uint i = 0; i <= passes; ++i)
+    {
+        for (uint j = 0; j < maxIterations; ++j)
+        {
+            vec2 coord1 = reflect(vec[j], rand).xy * (rad / (i * 2));
+            vec2 coord2 = vec2( coord1.x * 0.707f - coord1.y * 0.707f,
+                                coord1.x * 0.707f + coord1.y * 0.707f );
+  
+            ao += calculateAO(tc, coord1 * 0.25f, p, n);
+            ao += calculateAO(tc, coord2 * 0.5f, p, n);
+            ao += calculateAO(tc, coord1 * 0.75f, p, n);
+            ao += calculateAO(tc, coord2, p, n);
+        }
+    }
+
+    ao /= maxIterations * 4.0f * passes;
+
+    return ao;
+}
+#endif
+///////////////////////////////////////////////////////////////////
+
 void main()
 {
     vec2 tex = vec2(1 - texCoord.x, texCoord.y);
@@ -101,14 +201,19 @@ void main()
     color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
     //color = pow(color, vec3(gamma, gamma, gamma));
 
-    color *= getEdge(normalMap, tex);
-    color *= getEdge(depthMap, tex);
+    //color *= getEdge(normalMap, tex);
+    //color *= getEdge(depthMap, tex);
 
     float beginFog = 0.98f;
     float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));
 
-
     color = color * (1 - fog) + vec3(0.2f, 0.4f, 0.6f) * (fog);
+
+    #if SSAO
+    color = color * (1.0f - renderAO());
+    #endif
     
     outColor = vec4(color, 1.0f);
+    //float ao = (1.0f - renderAO());
+    //outColor = vec4(ao,ao,ao,1.0f);
 }

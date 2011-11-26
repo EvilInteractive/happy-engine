@@ -12,13 +12,13 @@ uniform bool blending;
 
 void main()
 {
-    vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale));// + texCoordOffset);
+    vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale) + texCoordOffset);
 
     float alpha = color.a - (1.0f - inAlpha);
 
     if (blending)
     {
-        if (alpha < 0.05f)
+        if (alpha < 0.01f)
         {
             discard;
         }

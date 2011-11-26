@@ -34,24 +34,26 @@ namespace gfx {
 class Simple2DEffect
 {
 public:
-	Simple2DEffect();
+    Simple2DEffect();
     virtual ~Simple2DEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
+    void load();
+    void begin() const;
+    void end() const;
 
-	void setColor(const Color& color) const;
-	void setWorldMatrix(const he::mat44& mat) const;
-	void setDepth(float depth) const;
+    void setColor(const Color& color) const;
+    void setWorldMatrix(const he::mat44& mat) const;
+    void setDepth(float depth) const;
+    void setBlending(bool blend) const;
 
 private:
 
-	he::gfx::Shader* m_pShader;
+    Shader* m_pShader;
 
-	he::uint m_ShaderWVPPos;
-	he::uint m_ShaderColorPos;
-	uint m_ShaderDepthPos;
+    uint m_ShaderWVPPos;
+    uint m_ShaderColorPos;
+    uint m_ShaderDepthPos;
+    uint m_ShaderBlendPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

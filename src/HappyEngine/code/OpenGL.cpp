@@ -45,12 +45,12 @@ BlendFunc GL::m_BlendSrc = BlendFunc_One, GL::m_BlendDest = BlendFunc_Zero;
 BlendEquation GL::m_BlendEquation = BlendEquation_Add;
 Color GL::m_BlendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
 
-//Testing
-bool GL::m_AlphaTestEnabled = false;
-
 //Scissor
 bool GL::m_ScissorEnabled = false;
 RectI GL::m_ScissorRect = RectI(0, 0, 0, 0);
+
+//Line Smoothing
+bool GL::m_LineSmoothEnabled = false;
 
 //Clear
 void GL::heClearColor(const Color& color)
@@ -180,20 +180,6 @@ void GL::heBlendColor(const Color& color)
     }
 }
 
-//Testing
-void GL::heAlphaTestEnabled(bool enabled)
-{
-    if (enabled != m_AlphaTestEnabled)
-    {
-        m_AlphaTestEnabled = enabled;
-
-        if (enabled)
-            glEnable(GL_ALPHA_TEST);
-        else
-            glDisable(GL_ALPHA_TEST);
-    }
-}
-
 //Scissor
 void GL::heScissorEnabled(bool enabled)
 {
@@ -212,6 +198,20 @@ void GL::heScissorRect(const RectI& rect)
     {
         m_ScissorRect = rect;
         glScissor(rect.x, rect.y, rect.width, rect.height);
+    }
+}
+
+//line smoothing
+void GL::heLineSmoothEnabled(bool enabled)
+{
+    if (m_LineSmoothEnabled != enabled)
+    {
+        m_LineSmoothEnabled = enabled;
+
+        if (enabled)
+            glEnable(GL_LINE_SMOOTH);
+        else
+            glDisable(GL_LINE_SMOOTH);
     }
 }
 

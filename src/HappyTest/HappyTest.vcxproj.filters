@@ -172,5 +172,11 @@
     </None>
     <None Include="data\shaders\deferred\pre\defaultSkinned.shader" />
     <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert" />
+    <None Include="data\shaders\ssaoShader.frag">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
+    <None Include="data\shaders\ssaoShader.vert">
+      <Filter>data\shaders\deferred\post</Filter>
+    </None>
   </ItemGroup>
 </Project>

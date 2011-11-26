@@ -110,6 +110,7 @@ void GraphicsEngine::init(bool useQt)
 
     DrawSettings settings;
     settings.setBloomEnabled(reader.readBool(L"GFX", L"bloom", false));
+    settings.setSSAOEnabled(reader.readBool(L"GFX", L"ssao", false));
     settings.setShadowQuality((ShadowQuality)reader.readInt(L"GFX", L"shadowQuality", 1));
 
     m_pDeferred3DRenderer = NEW Deferred3DRenderer(settings);

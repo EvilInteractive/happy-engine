@@ -40,6 +40,18 @@ namespace gfx {
 class Deferred3DRenderer
 {
 public:
+
+    struct SSAOSettings
+    {
+        float radius;
+        float intensity;
+        float scale;
+        float bias;
+        uint minIterations;
+        uint maxIterations;
+        uint passes;
+    };
+
 	Deferred3DRenderer(const DrawSettings& settings);
     virtual ~Deferred3DRenderer();
 
@@ -52,6 +64,9 @@ public:
 	const Texture2D::pointer& getDepthTexture() const;
 
     static const VertexLayout& getVertexLayoutLightVolume();
+
+    void enableSSAO(bool enable);
+    void setSSAOSettings(const SSAOSettings& settings);
 
 private:
     static VertexLayout s_VertexLayoutFullscreenQuad;
@@ -119,6 +134,11 @@ private:
 
     bool m_ShowDebugTextures;
     bool m_Bloom;
+
+    bool m_bSSAO;
+    uint m_ShaderSSAOPos[11];
+    Texture2D::pointer m_pRandomNormals;
+    SSAOSettings m_SSAOSettings;
     
     //Disable default copy constructor and default assignment operator
     Deferred3DRenderer(const Deferred3DRenderer&);

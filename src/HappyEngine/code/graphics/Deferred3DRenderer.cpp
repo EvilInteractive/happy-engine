@@ -58,7 +58,8 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
             m_Bloom(settings.getBloomEnabled()),
             m_Exposure(0.5f),
             m_Gamma(1.0f),
-            m_ShowDebugTextures(false)
+            m_ShowDebugTextures(false),
+            m_bSSAO(settings.getSSAOEnabled())
 {
     //CONSOLE->registerValue(&m_Exposure, "exposure");
     //CONSOLE->registerValue(&m_Gamma, "gamma");
@@ -152,6 +153,9 @@ void Deferred3DRenderer::initToneMapShader(const std::string& folder, const Shad
     if (m_Bloom)
         toneMapDefines.insert("BLOOM");
 
+    if (m_bSSAO)
+        toneMapDefines.insert("SSAO");
+
     delete m_pToneMapShader;
     m_pToneMapShader = NEW Shader();
     m_pToneMapShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/HDRtoLDR.frag", layout, toneMapDefines);
@@ -166,6 +170,32 @@ void Deferred3DRenderer::initToneMapShader(const std::string& folder, const Shad
     m_ToneMapShaderPos[5] = m_pToneMapShader->getShaderSamplerId("lumMap");
     m_ToneMapShaderPos[6] = m_pToneMapShader->getShaderSamplerId("normalMap");
     m_ToneMapShaderPos[7] = m_pToneMapShader->getShaderSamplerId("depthMap");
+
+    // SSAO
+
+    if (m_bSSAO)
+    {
+        m_pRandomNormals = CONTENT->asyncLoadTexture("random_normals.png");
+        m_ShaderSSAOPos[0] = m_pToneMapShader->getShaderSamplerId("randomNormals");
+        m_ShaderSSAOPos[1] = m_pToneMapShader->getShaderVarId("radius");
+        m_ShaderSSAOPos[2] = m_pToneMapShader->getShaderVarId("intensity");
+        m_ShaderSSAOPos[3] = m_pToneMapShader->getShaderVarId("scale");
+        m_ShaderSSAOPos[4] = m_pToneMapShader->getShaderVarId("bias");
+        m_ShaderSSAOPos[5] = m_pToneMapShader->getShaderVarId("passes");
+        m_ShaderSSAOPos[6] = m_pToneMapShader->getShaderVarId("minIterations");
+        m_ShaderSSAOPos[7] = m_pToneMapShader->getShaderVarId("maxIterations");
+        m_ShaderSSAOPos[8] = m_pToneMapShader->getShaderVarId("projParams");
+        m_ShaderSSAOPos[9] = m_pToneMapShader->getShaderVarId("viewPortSize");
+        m_ShaderSSAOPos[10] = m_pToneMapShader->getShaderVarId("farZ");
+    }
+
+    m_SSAOSettings.radius = 0.1f;
+    m_SSAOSettings.intensity = 2.0f;
+    m_SSAOSettings.scale = 1.0f;
+    m_SSAOSettings.bias = 0.03f;
+    m_SSAOSettings.minIterations = 4;
+    m_SSAOSettings.maxIterations = 8;
+    m_SSAOSettings.passes = 1;
 }
 
 
@@ -464,7 +494,26 @@ void Deferred3DRenderer::postToneMap()
     m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[5], m_pAutoExposure->getLuminanceMap());
     m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[6], m_pTexture[2]);
     m_pToneMapShader->setShaderVar(m_ToneMapShaderPos[7], m_pTexture[3]);
-     GRAPHICS->draw(m_pQuad);
+
+    if (m_bSSAO)
+    {
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[0], m_pRandomNormals);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[1], m_SSAOSettings.radius);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[2], m_SSAOSettings.intensity);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[3], m_SSAOSettings.scale);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[4], m_SSAOSettings.bias);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[5], m_SSAOSettings.passes);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[6], m_SSAOSettings.minIterations);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[7], m_SSAOSettings.maxIterations);
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[8], vec4(m_pCamera->getProjection()(0, 0),
+                                                                m_pCamera->getProjection()(1, 1),
+                                                                m_pCamera->getProjection()(2, 2),
+                                                                m_pCamera->getProjection()(2, 3)));
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[9], vec2((float)GRAPHICS->getScreenRect().width, (float)GRAPHICS->getScreenRect().height));
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[10], m_pCamera->getFarClip());
+    }
+
+    GRAPHICS->draw(m_pQuad);
 }
 
 LightManager* Deferred3DRenderer::getLightManager() const
@@ -482,5 +531,14 @@ const Texture2D::pointer& Deferred3DRenderer::getDepthTexture() const
     return m_pTexture[3];
 }
 
+void Deferred3DRenderer::enableSSAO(bool enable)
+{
+    m_bSSAO = enable;
+}
+
+void Deferred3DRenderer::setSSAOSettings(const SSAOSettings& settings)
+{
+    m_SSAOSettings = settings;
+}
 
 } } //end namespace

@@ -105,12 +105,12 @@ public:
     static void heBlendEquation(BlendEquation eq);
     static void heBlendColor(const Color& color);
 
-    //Testing
-    static void heAlphaTestEnabled(bool enabled);
-
     //Scissor
     static void heScissorEnabled(bool enabled);
     static void heScissorRect(const RectI& rect);
+
+    //line smoothing
+    static void heLineSmoothEnabled(bool enabled);
 
 
 private:
@@ -137,12 +137,12 @@ private:
     static BlendEquation m_BlendEquation;
     static Color m_BlendColor;
 
-    //Testing
-    static bool m_AlphaTestEnabled;
-
     //Scissor
     static bool m_ScissorEnabled;
     static RectI m_ScissorRect;
+
+    //Line smoothing
+    static bool m_LineSmoothEnabled;
 
 };
 

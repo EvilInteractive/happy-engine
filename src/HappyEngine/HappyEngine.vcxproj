@@ -90,7 +90,6 @@
     <ClCompile Include="code\graphics\SimpleColorEffect.cpp" />
     <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp" />
     <ClCompile Include="code\graphics\SpotLight.cpp" />
-    <ClCompile Include="code\graphics\SSAO.cpp" />
     <ClCompile Include="code\graphics\Text.cpp" />
     <ClCompile Include="code\graphics\TextBox.cpp" />
     <ClCompile Include="code\graphics\Texture2D.cpp" />
@@ -221,7 +220,6 @@
     <ClInclude Include="code\graphics\SimpleColorEffect.h" />
     <ClInclude Include="code\graphics\SimpleForward3DRenderer.h" />
     <ClInclude Include="code\graphics\SpotLight.h" />
-    <ClInclude Include="code\graphics\SSAO.h" />
     <ClInclude Include="code\graphics\Text.h" />
     <ClInclude Include="code\graphics\TextBox.h" />
     <ClInclude Include="code\graphics\Texture2D.h" />

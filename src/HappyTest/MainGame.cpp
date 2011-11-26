@@ -63,6 +63,8 @@
 
 #include "PhysicsData.h"
 
+#include "Deferred3DRenderer.h"
+
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
@@ -272,8 +274,21 @@ void MainGame::load()
     m_pCurrentCamera = m_pFollowCamera;
     //m_pCurrentCamera = m_pFlyCamera;
 
+    // SSAO
+    he::gfx::Deferred3DRenderer::SSAOSettings settings;
+
+    settings.radius = 0.15f;
+    settings.intensity = 20.0f;
+    settings.scale = 4.0f;
+    settings.bias = 0.04f;
+    settings.passes = 2;
+    settings.minIterations = 2;
+    settings.maxIterations = 4;
+
+    GRAPHICS->getDeferredRenderer()->setSSAOSettings(settings);
+
     //m_pFxEditorBinding->init();
-   // GUI->setBlending(true);
+    //GUI->setBlending(true);
 
 }
 void MainGame::tick(float dTime)

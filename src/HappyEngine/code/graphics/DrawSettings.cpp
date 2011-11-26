@@ -90,4 +90,14 @@ byte DrawSettings::getShadowMapMultiplier() const
     return m_ShadowMapSizeMuliplier;
 }
 
+void DrawSettings::setSSAOEnabled(bool enabled)
+{
+    m_bSSAOEnabled = enabled;
+}
+
+bool DrawSettings::getSSAOEnabled() const
+{
+    return m_bSSAOEnabled;
+}
+
 } } //end namespace
