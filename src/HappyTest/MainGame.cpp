@@ -278,7 +278,7 @@ void MainGame::load()
     he::gfx::Deferred3DRenderer::SSAOSettings settings;
 
     settings.radius = 0.15f;
-    settings.intensity = 20.0f;
+    settings.intensity = 2.0f;
     settings.scale = 4.0f;
     settings.bias = 0.04f;
     settings.passes = 2;

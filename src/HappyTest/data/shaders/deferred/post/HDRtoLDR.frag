@@ -209,9 +209,9 @@ void main()
 
     color = color * (1 - fog) + vec3(0.2f, 0.4f, 0.6f) * (fog);
 
-    #if SSAO
+#if SSAO
     color = color * (1.0f - renderAO());
-    #endif
+#endif
     
     outColor = vec4(color, 1.0f);
     //float ao = (1.0f - renderAO());
