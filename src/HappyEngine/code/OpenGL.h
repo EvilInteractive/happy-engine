@@ -81,6 +81,7 @@ class GL
 public:
     //Reset
     static void reset();
+    static void init();
 
     //Clear
     static void heClearColor(const Color& color);
@@ -98,6 +99,7 @@ public:
     static void heBindFbo(uint fbo);
     static void heBindVao(uint vao);
     static void heBindTexture2D(uint texPos, uint tex);
+    static void heBindUniformBuffer(uint uboId, uint bufferId);
 
     //Blending
     static void heBlendEnabled(bool enabled);
@@ -127,6 +129,8 @@ private:
 
     //Binding
     static uint m_BoundFbo, m_BoundVao;
+    const static int MAX_UBO = 50;
+    static uint m_BoundUbo[MAX_UBO];
     const static int MAX_SAMPLERS = 31;
     static uint m_BoundTex2D[MAX_SAMPLERS];
     static uint m_ActiveTex;

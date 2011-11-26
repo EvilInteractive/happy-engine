@@ -54,24 +54,24 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
         {
             std::cout << "Error loading font: " << TTF_GetError() << "\n";
 
-			ASSERT(false, "Error loading font!");
+            ASSERT(false, "Error loading font!");
 
             return false;
         }
         else
         {
-			if (bold && italic)
-			{
-				TTF_SetFontStyle(pFont, TTF_STYLE_BOLD | TTF_STYLE_ITALIC);
-			}
-			else if (bold && !italic)
-			{
-				TTF_SetFontStyle(pFont, TTF_STYLE_BOLD);
-			}
-			else if (!bold && italic)
-			{
-				TTF_SetFontStyle(pFont, TTF_STYLE_ITALIC);
-			}
+            if (bold && italic)
+            {
+                TTF_SetFontStyle(pFont, TTF_STYLE_BOLD | TTF_STYLE_ITALIC);
+            }
+            else if (bold && !italic)
+            {
+                TTF_SetFontStyle(pFont, TTF_STYLE_BOLD);
+            }
+            else if (!bold && italic)
+            {
+                TTF_SetFontStyle(pFont, TTF_STYLE_ITALIC);
+            }
 
             pOutFont = gfx::Font::pointer(NEW gfx::Font(pFont));
             m_pAssetContainer->addAsset(stream.str(), pOutFont);

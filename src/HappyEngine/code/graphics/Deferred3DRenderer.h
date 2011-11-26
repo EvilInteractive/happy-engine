@@ -28,19 +28,83 @@
 #include "Model.h"
 #include "ModelMesh.h"
 #include "Texture2D.h"
-#include "LightManager.h"
-#include "Camera.h"
-#include "Bloom.h"
-#include "AutoExposure.h"
-#include "DrawSettings.h"
 
 namespace he {
 namespace gfx {
 
+class LightManager;
+class Camera;
+class Bloom;
+class AutoExposure;
+class DrawSettings;
+
 class Deferred3DRenderer
 {
-public:
+private:
+    struct PostPointLightData
+    {
+        //Buffer
+        UniformBuffer::pointer pLightBuffer;
 
+        //LightBuffer
+        ShaderVariable<vec3> position;
+        ShaderVariable<float> multiplier;
+        ShaderVariable<vec3> color;
+        ShaderVariable<float> beginAttenuation;
+        ShaderVariable<float> endAttenuation;
+
+        //No Buffer
+        uint colorIllMap, normalMap, sgMap, depthMap;
+        uint wvp;
+    };
+    struct PostSpotLightData
+    {
+        //Buffer
+        UniformBuffer::pointer pLightBuffer;
+
+        //LightBuffer
+        ShaderVariable<vec3> position;
+        ShaderVariable<float> multiplier;
+        ShaderVariable<vec3> direction;
+        ShaderVariable<float> beginAttenuation;
+        ShaderVariable<vec3> color;
+        ShaderVariable<float> endAttenuation;
+        ShaderVariable<float> cosCutOff;
+
+        //No Buffer
+        uint colorIllMap, normalMap, sgMap, depthMap;
+        uint wvp;
+    };
+    struct PostAmbIllLightData
+    {
+        //Buffer
+        UniformBuffer::pointer pLightBuffer;
+        UniformBuffer::pointer pPerFrameBuffer;
+
+        //LightBuffer
+        ShaderVariable<vec4> ambColor;
+        ShaderVariable<vec4> dirColor;
+        ShaderVariable<vec3> dirDirection;
+
+        //PerFrameBuffer
+        ShaderVariable<mat44> mtxDirLight0;
+        ShaderVariable<mat44> mtxDirLight1;
+        ShaderVariable<mat44> mtxDirLight2;
+        ShaderVariable<mat44> mtxDirLight3;
+
+        //No Buffer
+        uint shadowMap0, shadowMap1, shadowMap2, shadowMap3;
+        uint colorIllMap, normalMap, sgMap, depthMap;
+    };
+    struct PostSharedData
+    {
+        UniformBuffer::pointer pSharedBuffer;
+        // SharedBuffer
+        ShaderVariable<vec4> projParams;
+    };
+
+public:
+    Deferred3DRenderer(const DrawSettings& settings);
     struct SSAOSettings
     {
         float radius;
@@ -51,8 +115,6 @@ public:
         uint maxIterations;
         uint passes;
     };
-
-	Deferred3DRenderer(const DrawSettings& settings);
     virtual ~Deferred3DRenderer();
 
     void begin(const Camera* pCamera);
@@ -61,7 +123,7 @@ public:
     void resized();
 
     LightManager* getLightManager() const;
-	const Texture2D::pointer& getDepthTexture() const;
+    const Texture2D::pointer& getDepthTexture() const;
 
     static const VertexLayout& getVertexLayoutLightVolume();
 
@@ -101,25 +163,18 @@ private:
     //SHARED FBO
     uint m_DepthBufferId;
 
-    enum LightVolumeType
-    {
-        LightVolumeType_PointLight = 0,
-        LightVolumeType_SpotLight = 1
-    };
 
-    static const int LIGHTVOLUME_SHADERS = 2;
-    Shader* m_pPostLightVolumeShader[LIGHTVOLUME_SHADERS];
-    uint m_ShaderLVColMapPos[LIGHTVOLUME_SHADERS], 
-         m_ShaderLVNormalMapPos[LIGHTVOLUME_SHADERS], 
-         m_ShaderLVSGMapPos[LIGHTVOLUME_SHADERS],
-         m_ShaderLVDepthMapPos[LIGHTVOLUME_SHADERS];
-    uint m_ShaderLVPLPos[5]; //5 values
-    uint m_ShaderLVSLPos[7]; //7 values
-    uint m_ShaderLVProjParams[LIGHTVOLUME_SHADERS],
-         m_ShaderLVWVP[LIGHTVOLUME_SHADERS];
+    //SHADERS
+    PostSharedData m_SharedShaderData;
+
+    Shader* m_pPointLightShader;
+    PostPointLightData m_PointLightData;
+
+    Shader* m_pSpotLightShader;
+    PostSpotLightData m_SpotLightData;
     
     Shader* m_pAmbIllShader;
-    uint m_ShaderAmbIllPos[17]; //17 values
+    PostAmbIllLightData m_AmbIllLightData;
 
     Shader* m_pToneMapShader;
     uint m_ToneMapShaderPos[8]; //8 values

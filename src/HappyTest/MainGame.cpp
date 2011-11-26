@@ -58,6 +58,7 @@
 #include "PhysicsConcaveShape.h"
 
 #include "PhysicsCarManager.h"
+#include "LightManager.h"
 
 #include "Profiler.h"
 

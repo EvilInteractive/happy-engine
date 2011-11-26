@@ -44,9 +44,9 @@ uniform float intensity;
 uniform float scale;
 uniform float bias;
 
-uniform uint passes;
-uniform uint minIterations;
-uniform uint maxIterations;
+uniform int passes;
+uniform int minIterations;
+uniform int maxIterations;
 
 uniform vec4 projParams;
 uniform vec2 viewPortSize;
@@ -101,7 +101,7 @@ float getEdge(in sampler2D map, in vec2 texCoord)
     sumY += c22 * edgeMult1;
 
     vec3 endCol = sumX * sumX + sumY * sumY;
-    return 1-clamp((endCol.r + endCol.g + endCol.b) / 3.0f, 0.0f, 1.0f); //back-ify
+    return 1-clamp((endCol.r + endCol.g + endCol.b) / 3.0f, 0.0f, 1.0f); //black-ify
 }
 
 /////////////////////////////* SSAO *///////////////////////////////
@@ -125,8 +125,8 @@ vec3 getNorm(in vec2 tc)
 float calculateAO(in vec2 tc1, in vec2 tc, in vec3 p, in vec3 cnorm)
 {
     vec3 diff = getPos(tc1 + tc) - p;
-    const vec3 v = normalize(diff);
-    const float d = length(diff) * scale;
+    vec3 v = normalize(diff);
+    float d = length(diff) * scale;
     return max(0.0, dot(cnorm, v) - bias) * (1.0f / (1.0f + d)) * intensity;
 }
 
@@ -135,14 +135,14 @@ float renderAO()
     vec2 tc = texCoord;
     tc.x = 1.0f - tc.x;
 
-    const vec2 vec[16] = { vec2(1,0), vec2(-1,0),
+    const vec2 vec[16] = vec2[16](vec2(1,0), vec2(-1,0),
                            vec2(0,1), vec2(0,-1),
                            vec2(0.66,0.66), vec2(-0.66,0.66),
                            vec2(0.66,-0.66), vec2(-0.66,-0.66),
                            vec2(0.33,0.66), vec2(-0.33,0.66),
                            vec2(0.33,-0.66), vec2(-0.33,-0.66),
                            vec2(0.66,0.33), vec2(-0.66,0.33),
-                           vec2(0.66,-0.33), vec2(-0.66,-0.33) };
+                           vec2(0.66,-0.33), vec2(-0.66,-0.33));
 
     vec3 p = getPos(tc);
     vec3 n = getNorm(tc);
@@ -160,9 +160,9 @@ float renderAO()
 
     //float iterations = mix(maxIt, minIterations, weight); // LOD
 
-    for (uint i = 0; i <= passes; ++i)
+    for (int i = 0; i <= 1; ++i)
     {
-        for (uint j = 0; j < maxIterations; ++j)
+        for (int j = 0; j < 8; ++j)
         {
             vec2 coord1 = reflect(vec[j], rand).xy * (rad / (i * 2));
             vec2 coord2 = vec2( coord1.x * 0.707f - coord1.y * 0.707f,
@@ -175,7 +175,7 @@ float renderAO()
         }
     }
 
-    ao /= maxIterations * 4.0f * passes;
+    ao /= 8 * 4.0f * 1;
 
     return ao;
 }
@@ -202,7 +202,7 @@ void main()
     //color = pow(color, vec3(gamma, gamma, gamma));
 
     //color *= getEdge(normalMap, tex);
-    //color *= getEdge(depthMap, tex);
+    color *= getEdge(depthMap, tex);
 
     float beginFog = 0.98f;
     float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));

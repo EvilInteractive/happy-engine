@@ -32,15 +32,129 @@
 #include "Texture2D.h"
 #include "HappyTypes.h"
 
+#include "OpenGL.h"
+
 #include "boost/shared_ptr.hpp"
 
 namespace he {
 namespace gfx {
 
+class UniformBuffer;
+class Shader;
+
+class ShaderVariableBase
+{
+friend Shader;
+friend UniformBuffer;
+
+protected:
+    bool m_Update;
+    int m_Size;
+
+private:
+    virtual void* data() = 0;
+    virtual const void* data() const = 0;
+
+    int m_Offset;
+};
+
+template<typename T> 
+class ShaderVariable : public ShaderVariableBase
+{
+public:
+    ShaderVariable() { m_Size = sizeof(T); }
+
+    void set(const T& data)
+    {
+        if (m_Data != data)
+        {
+            m_Data = data;
+            m_Update = true;
+        }
+    }
+    const T& get() const
+    {
+        return m_Data;
+    }
+    
+    ShaderVariable& operator=(const T& data)
+    {
+        set(data);
+        return *this;
+    }
+    
+    virtual void* data()
+    {
+        return &m_Data;
+    }
+    virtual const void* data() const
+    {
+        return &m_Data;
+    }
+
+private:
+    T m_Data;
+
+    ShaderVariable(const ShaderVariable&);
+    ShaderVariable& operator=(const ShaderVariable&);
+};
+
+class UniformBuffer
+{
+friend Shader;
+public:
+    typedef boost::shared_ptr<UniformBuffer> pointer;
+    ~UniformBuffer()
+    {
+        glDeleteBuffers(1, &m_GlBuffer);
+    }
+
+    void getShaderVar(const std::string& name, ShaderVariableBase& outVar) const
+    {
+        uint index;
+        const char* c_name(name.c_str());
+        glGetUniformIndices(m_ProgramId, 1, &c_name, &index);
+
+        glGetActiveUniformsiv(m_ProgramId, 1, &index, GL_UNIFORM_OFFSET, &outVar.m_Offset);
+    }
+    void setShaderVar(ShaderVariableBase& var)
+    {
+        if (var.m_Update == true)
+        {
+            GL::heBindUniformBuffer(m_BufferId, m_GlBuffer);
+            glBufferSubData(GL_UNIFORM_BUFFER, var.m_Offset, var.m_Size, var.data());
+            var.m_Update = false;
+        }
+    }
+
+private:
+    UniformBuffer(uint programId, uint bufferPos): m_ProgramId(programId), m_BufferId(s_UniformBufferCount++)
+    {
+        int blockSize;
+        glGetActiveUniformBlockiv(programId, bufferPos, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+
+        void* m_Buffer = malloc(blockSize);
+        memset(m_Buffer, 0, blockSize);
+
+        glGenBuffers(1, &m_GlBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, m_Buffer, GL_DYNAMIC_DRAW);
+
+        free(m_Buffer);
+    }
+
+    static uint s_UniformBufferCount;
+
+    uint m_GlBuffer;
+
+    uint m_ProgramId;
+    uint m_BufferId;
+};
+
 class Shader
 {
 public:
-	Shader();
+    Shader();
     virtual ~Shader();
 
     bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout);
@@ -50,10 +164,15 @@ public:
     void bind();
 
     uint getShaderVarId(const std::string& name) const;
+    uint getBufferId(const std::string& name) const;
+    uint getBufferVarId(uint bufferId, const std::string& name) const;
     uint getShaderSamplerId(const std::string& name);
+
+    UniformBuffer::pointer setBuffer(uint id); //create new buffer
+    void setBuffer(uint id, const UniformBuffer::pointer& pBuffer); //used to share buffer
     
     void setShaderVar(uint id, int value) const;
-	void setShaderVar(uint id, uint value) const;
+    void setShaderVar(uint id, uint value) const;
     void setShaderVar(uint id, float value) const;
     void setShaderVar(uint id, const vec2& vec) const;
     void setShaderVar(uint id, const vec3& vec) const;
@@ -70,6 +189,7 @@ private:
     uint m_FsId;
 
     std::map<std::string, uint> m_SamplerLocationMap;
+    std::map<uint, UniformBuffer::pointer> m_UniformBufferMap;
 
     std::string m_FragShaderName;
 

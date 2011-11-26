@@ -31,10 +31,10 @@ private:
     physx::pubfnd3::PxMat44 m_Matrix;
 
 public:
-	mat44();
-	explicit mat44(physx::pubfnd3::PxMat44 mat);
-	mat44(const vec4& col0, const vec4& col1, const vec4& col2, const vec4& col3);
-	mat44( float _00, float _01, float _02, float _03,
+    mat44();
+    explicit mat44(physx::pubfnd3::PxMat44 mat);
+    mat44(const vec4& col0, const vec4& col1, const vec4& col2, const vec4& col3);
+    mat44( float _00, float _01, float _02, float _03,
             float _10, float _11, float _12, float _13,
             float _20, float _21, float _22, float _23,
             float _30, float _31, float _32, float _33 );
@@ -63,6 +63,8 @@ public:
     vec4 operator*(const vec4& vec) const;
     float operator()(int row, int column) const;
     float& operator()(int row, int column);
+    bool operator==(const mat44& other) const;
+    bool operator!=(const mat44& other) const;
 
     //getters
     const float* toFloatArray() const;
@@ -71,7 +73,7 @@ public:
     mat44 inverse() const;
     float getDeterminant() const;
     
-	//Static
+    //Static
     static const mat44 Identity;
 };
 

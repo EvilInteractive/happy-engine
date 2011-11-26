@@ -37,24 +37,32 @@ struct DirectionalLight
     vec3 direction;
 };
 
-uniform sampler2D colorIllMap;
-uniform sampler2D normalMap;
-uniform sampler2D sgMap;
-uniform sampler2D depthMap;
+layout(shared) uniform SharedBuffer
+{
+    vec4 projParams;
+};
+layout(packed) uniform PerFrameBuffer
+{
+    mat4 mtxDirLight0;
+    mat4 mtxDirLight1;
+    mat4 mtxDirLight2;
+    mat4 mtxDirLight3;
+};
+layout(packed) uniform LightBuffer
+{
+    AmbientLight ambLight;
+    DirectionalLight dirLight;
+};
 
-uniform vec4 projParams;
-
-uniform AmbientLight ambLight;
-uniform DirectionalLight dirLight;
-
-uniform mat4 mtxDirLight0;
-uniform mat4 mtxDirLight1;
-uniform mat4 mtxDirLight2;
-uniform mat4 mtxDirLight3;
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform sampler2D shadowMap3;
+
+uniform sampler2D colorIllMap;
+uniform sampler2D normalMap;
+uniform sampler2D sgMap;
+uniform sampler2D depthMap;
 
 vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
 {
@@ -88,22 +96,23 @@ float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
     
     //float bias = 0.001f;
 
-    vec2 map = PCF9(sampler, coord.xy);
-    //vec2 map = texture(sampler, coord.xy).rg;
+    //vec2 map = PCF9(sampler, coord.xy);
+    vec2 map = texture(sampler, coord.xy).rg;
 
 
     float fAvgZ = map.x;
     float fAvgZ2 = map.y;
 
     if (coord.z <= fAvgZ) return 1.0f;
+    if (coord.z >= 1.0f) return 0.0f;
 
     float variance = fAvgZ2 - (fAvgZ * fAvgZ);
-    variance = min(max(variance, 0.0f) + 0.00002f, 1.0f);
+    variance = min(max(variance, 0.0f) + 0.00003f, 1.0f);
 
     float mean = fAvgZ;
     float d = coord.z - mean;
     
-    return pow(variance / (variance + d*d), 5);
+    return pow(variance / (variance + d*d), 25);
 }
 
 void main()

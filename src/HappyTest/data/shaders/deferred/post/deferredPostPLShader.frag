@@ -28,51 +28,59 @@ out vec4 outColor;
 
 struct PointLight
 {
-	vec3 position;
+    vec3 position;
     float multiplier;
     vec3 color;
     float beginAttenuation;
     float endAttenuation;
 };
 
+layout(shared) uniform SharedBuffer
+{
+    vec4 projParams;
+};
+layout(packed) uniform LightBuffer
+{
+    PointLight light;
+};
+
+
 uniform sampler2D colorIllMap;
 uniform sampler2D normalMap;
 uniform sampler2D sgMap;
 uniform sampler2D depthMap;
 
-uniform vec4 projParams;
-uniform PointLight light;
 
 void main()
 {
     vec2 ndc = passPos.xy / passPos.z;
     vec2 texCoord = ndc * 0.5f + 0.5f;
     
-	vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
+    vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
 
-	vec3 lightDir = light.position - position;
-	float lightDist = length(lightDir);
+    vec3 lightDir = light.position - position;
+    float lightDist = length(lightDir);
 
-	if (lightDist > light.endAttenuation) //pixel is too far from light
-		discard;
+    if (lightDist > light.endAttenuation) //pixel is too far from light
+        discard;
 
-	lightDir /= lightDist;
+    lightDir /= lightDist;
     
-	vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
+    vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
     
-	float dotLightNormal = dot(lightDir, normal);
+    float dotLightNormal = dot(lightDir, normal);
 
-	if (dotLightNormal <= 0.0f) //pixel is in selfshadow
-		discard;
-	
-	vec4 sg = texture(sgMap, texCoord);	
-	vec3 vCamDir = normalize(-position);
-	float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
+    if (dotLightNormal <= 0.0f) //pixel is in selfshadow
+        discard;
+    
+    vec4 sg = texture(sgMap, texCoord);	
+    vec3 vCamDir = normalize(-position);
+    float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
 
-	float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
+    float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
 
-	vec4 color = texture(colorIllMap, texCoord);
-	outColor = vec4(
-		  (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 20) *
-		  light.color * light.multiplier * attenuationValue, 0.0f);
+    vec4 color = texture(colorIllMap, texCoord);
+    outColor = vec4(
+          (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 20) *
+          light.color * light.multiplier * attenuationValue, 0.0f);
 }

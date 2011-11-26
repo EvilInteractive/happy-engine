@@ -33,6 +33,7 @@ namespace he {
 namespace gfx {
 
 uint Shader::s_CurrentBoundShader = 0;
+uint UniformBuffer::s_UniformBufferCount = 0;
 
 Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {
@@ -160,6 +161,14 @@ void Shader::bind()
     }
 }
 
+uint Shader::getBufferId( const std::string& name ) const
+{
+    uint loc(glGetUniformBlockIndex(m_Id, name.c_str()));
+    if (loc == -1)
+        std::cout << "uniform buffer: '" << name << "' not found!\n" << "in shader: "<< m_FragShaderName << "\n";
+    return loc;
+}
+
 uint Shader::getShaderVarId(const std::string& name) const
 {
     uint loc(glGetUniformLocation(m_Id, name.c_str()));
@@ -192,8 +201,8 @@ void Shader::setShaderVar(uint id, int value) const
 }
 void Shader::setShaderVar(uint id, uint value) const
 {
-	ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-	glUniform1ui(id, value);
+    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    glUniform1ui(id, value);
 }
 void Shader::setShaderVar(uint id, float value) const
 {
@@ -230,6 +239,19 @@ void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
 {
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, tex2D->getID());
+}
+
+void Shader::setBuffer( uint id, const UniformBuffer::pointer& pBuffer )
+{
+    glUniformBlockBinding(m_Id, id, pBuffer->m_BufferId);
+}
+
+UniformBuffer::pointer Shader::setBuffer( uint id )
+{
+    UniformBuffer::pointer buffer(NEW UniformBuffer(m_Id, id));
+    glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
+    m_UniformBufferMap[buffer->m_BufferId] = buffer;
+    return buffer;
 }
 
 } } //end namespace

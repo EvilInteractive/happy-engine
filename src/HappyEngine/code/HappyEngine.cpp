@@ -107,7 +107,7 @@ void HappyEngine::init(int subengines)
 {
     if (s_pHappyEngine == nullptr)
         s_pHappyEngine = NEW HappyEngine();
-
+    GL::init();
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)

@@ -454,6 +454,9 @@
     <ClCompile Include="code\networking\TcpServer.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\FxParticleSystem.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -899,6 +902,9 @@
     </ClInclude>
     <ClInclude Include="code\networking\TcpServer.h">
       <Filter>happyengine\networking</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxParticleSystem.h">
+      <Filter>happyengine\graphics\fx</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

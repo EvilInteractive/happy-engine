@@ -30,6 +30,7 @@
 #include <queue>
 
 #include "boost/asio.hpp"
+#include "boost/function.hpp"
 #include "Message.h"
 
 namespace he {

@@ -39,6 +39,7 @@ bool GL::m_CullCWFrontFace = false;
 //Binding
 uint GL::m_BoundFbo = 0, GL::m_BoundVao = 0, GL::m_ActiveTex = 0;
 uint GL::m_BoundTex2D[MAX_SAMPLERS] = {UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX } ;
+uint GL::m_BoundUbo[MAX_UBO];
 //Blending
 bool GL::m_BlendEnabled = false;
 BlendFunc GL::m_BlendSrc = BlendFunc_One, GL::m_BlendDest = BlendFunc_Zero;
@@ -140,6 +141,15 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
         glBindTexture(GL_TEXTURE_2D, tex);
    // }
 }
+void GL::heBindUniformBuffer( uint uboId, uint bufferId )
+{
+    if (m_BoundUbo[uboId] != bufferId)
+    {
+        glBindBufferBase(GL_UNIFORM_BUFFER, uboId, bufferId);
+        m_BoundUbo[uboId] = bufferId;
+    }
+}
+
 
 //Blending
 void GL::heBlendEnabled(bool enabled)
@@ -200,7 +210,6 @@ void GL::heScissorRect(const RectI& rect)
         glScissor(rect.x, rect.y, rect.width, rect.height);
     }
 }
-
 //line smoothing
 void GL::heLineSmoothEnabled(bool enabled)
 {
@@ -215,15 +224,31 @@ void GL::heLineSmoothEnabled(bool enabled)
     }
 }
 
+void GL::init()
+{
+    for (int i(0); i < MAX_UBO; ++i)
+    {
+        m_BoundUbo[i] = UINT_MAX;
+    }
+}
 void GL::reset()
 {
-    m_BoundFbo = UINT_MAX, m_BoundVao = UINT_MAX;
+    m_BoundFbo = UINT_MAX;
+    m_BoundVao = UINT_MAX;
+
+    for (int i(0); i < MAX_UBO; ++i)
+    {
+        m_BoundUbo[i] = UINT_MAX;
+    }
+
     m_BoundTex2D[0] = UINT_MAX;
     m_BoundTex2D[1] = UINT_MAX;
     m_BoundTex2D[2] = UINT_MAX;
     m_BoundTex2D[3] = UINT_MAX;
     m_BoundTex2D[4] = UINT_MAX;
     m_BoundTex2D[5] = UINT_MAX;
+
+
     m_ActiveTex = UINT_MAX;;
 }
 

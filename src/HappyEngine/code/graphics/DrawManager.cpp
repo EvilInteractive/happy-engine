@@ -25,6 +25,7 @@
 #include "HeAssert.h"
 #include "GraphicsEngine.h"
 #include "ShadowCaster.h"
+#include "LightManager.h"
 
 namespace he {
 namespace gfx {

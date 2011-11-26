@@ -280,6 +280,18 @@ float& mat44::operator()( int row, int column )
     return m_Matrix(row, column);
 }
 
+bool mat44::operator==(const mat44& other) const
+{
+    return  m_Matrix.column0 == other.m_Matrix.column0 && 
+            m_Matrix.column1 == other.m_Matrix.column1 &&
+            m_Matrix.column2 == other.m_Matrix.column2 &&
+            m_Matrix.column3 == other.m_Matrix.column3;
+}
+bool mat44::operator!=(const mat44& other) const
+{
+    return !operator==(other);
+}
+
 //Static
 const mat44 mat44::Identity = mat44(1, 0, 0, 0,
                                        0, 1, 0, 0,

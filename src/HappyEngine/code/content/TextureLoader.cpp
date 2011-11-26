@@ -90,7 +90,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         if (data.path != "")

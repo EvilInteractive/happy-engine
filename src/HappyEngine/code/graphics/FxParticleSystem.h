@@ -15,17 +15,29 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author: Bastian Damman
+//Author:  Bastian Damman
+//Created: 26/11/2011
 
-#version 150 core
+#ifndef _HE_FX_PARTICLE_SYSTEM_H_
+#define _HE_FX_PARTICLE_SYSTEM_H_
+#pragma once
 
-in vec4 passPos;
+namespace he {
+namespace gfx {
 
-out vec2 outShadow;
-
-void main()
+class FxParticleSystem
 {
-    float val = passPos.z / passPos.w;
-    outShadow.x = val;
-    outShadow.y = (val * val);
-}
+public:
+    FxParticleSystem();
+    virtual ~FxParticleSystem();
+
+private:
+
+    //Disable default copy constructor and default assignment operator
+    FxParticleSystem(const FxParticleSystem&);
+    FxParticleSystem& operator=(const FxParticleSystem&);
+};
+
+} } //end namespace
+
+#endif

@@ -64,6 +64,7 @@
     <ClCompile Include="code\graphics\DrawSettings.cpp" />
     <ClCompile Include="code\graphics\Ellipse2D.cpp" />
     <ClCompile Include="code\graphics\Font.cpp" />
+    <ClCompile Include="code\graphics\FxParticleSystem.cpp" />
     <ClCompile Include="code\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp" />
     <ClCompile Include="code\graphics\HappyQtWidget.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="code\graphics\DrawSettings.h" />
     <ClInclude Include="code\graphics\Ellipse2D.h" />
     <ClInclude Include="code\graphics\Font.h" />
+    <ClInclude Include="code\graphics\FxParticleSystem.h" />
     <ClInclude Include="code\graphics\GraphicsEngine.h" />
     <ClInclude Include="code\graphics\Happy2DRenderer.h" />
     <ClInclude Include="code\graphics\HappyQtWidget.h" />
