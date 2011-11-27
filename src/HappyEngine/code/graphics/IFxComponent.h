@@ -16,43 +16,31 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 01/09/2011
+//Created: 27/11/2011
 
-#ifndef _HE_RANDOM_H_
-#define _HE_RANDOM_H_
+#ifndef _HE_IFX_COMPONENT_H_
+#define _HE_IFX_COMPONENT_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "boost/random.hpp"
-#include <time.h>
-
 namespace he {
+namespace gfx {
 
-class Random
+class IFxComponent
 {
 public:
-    explicit Random(uint seed = time(nullptr));
-    virtual ~Random();
+    virtual ~IFxComponent() {};
+    
+    virtual void setStartTime(float startTime) = 0;
+    virtual void setEndTime(float endTime) = 0;
+    virtual float getStartTime() const = 0;
+    virtual float getEndTime() const = 0;
 
-    int nextInt(int min, int max);
-    float nextFloat(float min, float max);
-    double nextDouble(double min, double max);
+    virtual void start() = 0;
 
-    uint getSeed() const;
-    void setSeed(uint seed);
+    virtual void tick(float currentTime, float dTime) = 0;
 
-private:
-
-    uint m_Seed;
-
-    boost::mt19937 m_RandomEngine;
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<double>> m_Generator;
-
-    //Disable default copy constructor and assignment operator
-    Random(const Random&);
-    Random& operator=(const Random&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

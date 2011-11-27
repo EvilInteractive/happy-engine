@@ -18,24 +18,19 @@
 //Author:  Bastian Damman
 //Created: 27/11/2011
 
-#ifndef _HE_FX_COMPONENT_H_
-#define _HE_FX_COMPONENT_H_
+#ifndef _HE_IFX_VARIABLE_H_
+#define _HE_IFX_VARIABLE_H_
 #pragma once
 
 namespace he {
 namespace gfx {
 
-class FxComponent
+class IFxVariable
 {
 public:
-    FxComponent();
-    virtual ~FxComponent();
+    virtual ~IFxVariable() {}
 
-private:
-
-    //Disable default copy constructor and default assignment operator
-    FxComponent(const FxComponent&);
-    FxComponent& operator=(const FxComponent&);
+    virtual float getValue(float pos) = 0; //pos [0, 1]
 };
 
 } } //end namespace

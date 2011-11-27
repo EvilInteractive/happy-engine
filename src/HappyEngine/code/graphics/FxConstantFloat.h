@@ -18,45 +18,38 @@
 //Author:  Bastian Damman
 //Created: 27/11/2011
 
-#ifndef _HE_FX_CAMERA_EFFECT_H_
-#define _HE_FX_CAMERA_EFFECT_H_
+#ifndef _HE_FX_CONSTANT_FLOAT_H_
+#define _HE_FX_CONSTANT_FLOAT_H_
 #pragma once
 
-#include "IFxComponent.h"
+#include "IFxVariable.h"
 
 namespace he {
 namespace gfx {
 
-class IFxVariable;
-
-class FxCameraEffect : public IFxComponent
+class FxConstantFloat : public IFxVariable
 {
 public:
-    FxCameraEffect();
-    virtual ~FxCameraEffect();
-
+    FxConstantFloat();
+    virtual ~FxConstantFloat();
+    
     //////////////////////////////////////////////////////////////////////////
-    ///                             IFxComponent                           ///
+    ///                             IFxVariable                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void setStartTime(float startTime);
-    virtual void setEndTime(float endTime);
-    virtual float getStartTime();
-    virtual float getEndTime();
-
-    virtual void start();
-
-    virtual void tick(float currentTime, float dTime);
+    virtual float getValue(float pos);
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Properties                             ///
     //////////////////////////////////////////////////////////////////////////
-    void setIntensity(const IFxVariable& var); 
+    void setValue(float value);
 
 private:
 
+    float m_Value;
+
     //Disable default copy constructor and default assignment operator
-    FxCameraEffect(const FxCameraEffect&);
-    FxCameraEffect& operator=(const FxCameraEffect&);
+    FxConstantFloat(const FxConstantFloat&);
+    FxConstantFloat& operator=(const FxConstantFloat&);
 };
 
 } } //end namespace

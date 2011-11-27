@@ -16,46 +16,22 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 01/09/2011
+//Created: 27/11/2011
 #include "StdAfx.h" 
 
-#include "Random.h"
+#include "FxCurveFloat.h"
 #include "HappyNew.h"
 
 namespace he {
+namespace gfx {
 
-Random::Random(uint seed): 
-    m_RandomEngine(seed),
-    m_Generator(m_RandomEngine, boost::uniform_real<double>(0.0, 1.0)),
-    m_Seed(seed)
+FxCurveFloat::FxCurveFloat()
 {
 }
 
-Random::~Random()
+
+FxCurveFloat::~FxCurveFloat()
 {
 }
 
-int Random::nextInt(int min, int max)
-{
-    return static_cast<int>(min + m_Generator() * (max - min));
-}
-float Random::nextFloat(float min, float max)
-{
-    return static_cast<float>(min + m_Generator() * (max - min));
-}
-double Random::nextDouble(double begin, double max)
-{
-    return begin + m_Generator() * (max - begin);
-}
-
-uint Random::getSeed() const
-{
-    return m_Seed;
-}
-void Random::setSeed(uint seed)
-{
-    m_Seed = seed;
-    m_RandomEngine.seed(seed);
-}
-
-} //end namespace
+} } //end namespace

@@ -19,19 +19,39 @@
 //Created: 27/11/2011
 #include "StdAfx.h" 
 
-#include "FxComponent.h"
+#include "FxRandomFloat.h"
 #include "HappyNew.h"
 
 namespace he {
 namespace gfx {
 
-FxComponent::FxComponent()
+FxRandomFloat::FxRandomFloat(): m_Min(0), m_Max(1), m_Random()
 {
 }
 
 
-FxComponent::~FxComponent()
+FxRandomFloat::~FxRandomFloat()
 {
+}
+
+float FxRandomFloat::getValue( float pos )
+{
+    return m_Random.nextFloat(m_Min, m_Max);
+}
+
+void FxRandomFloat::setMin( float min )
+{
+    m_Min = min;
+}
+
+void FxRandomFloat::setMax( float max )
+{
+    m_Max = max;
+}
+
+void FxRandomFloat::setSeed( uint seed )
+{
+    m_Random.setSeed(seed);
 }
 
 } } //end namespace

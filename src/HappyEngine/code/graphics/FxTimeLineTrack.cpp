@@ -22,6 +22,10 @@
 #include "FxTimeLineTrack.h"
 #include "HappyNew.h"
 
+#include "IFxComponent.h"
+
+#include <algorithm>
+
 namespace he {
 namespace gfx {
 
@@ -32,6 +36,36 @@ FxTimeLineTrack::FxTimeLineTrack()
 
 FxTimeLineTrack::~FxTimeLineTrack()
 {
+}
+
+void FxTimeLineTrack::tick( float currentTime, float dTime )
+{
+    if (m_Components[m_PlayQueue.front()]->getEndTime() > currentTime)
+        m_PlayQueue.pop();
+    if (m_Components[m_PlayQueue.front()]->getStartTime() >= currentTime)
+    {
+        m_Components[m_PlayQueue.front()]->tick(currentTime, dTime);
+    }
+}
+
+bool timeSort(const IFxComponent* pComponent1, const IFxComponent* pComponent2)
+{
+    return pComponent1->getStartTime() < pComponent2->getStartTime();
+}
+void FxTimeLineTrack::start()
+{
+    std::vector<IFxComponent*> tempComponents;
+    he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxComponent* pComp)
+    {
+        tempComponents.push_back(pComp);
+    });
+    std::sort(tempComponents.begin(), tempComponents.end(), timeSort);
+
+    m_PlayQueue = std::queue<uint>();
+    for (uint i(0); i < tempComponents.size(); ++i)
+    {
+        m_PlayQueue.push(m_Components.getId(tempComponents[i]));
+    }
 }
 
 } } //end namespace

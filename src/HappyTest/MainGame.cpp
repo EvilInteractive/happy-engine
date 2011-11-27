@@ -199,18 +199,18 @@ void MainGame::load()
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene2.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
     m_pScene->addComponent(pScenePxComp);
-    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene2.pxcv"));
+    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
     std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape pShape(pMesh);
         pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(DM_Concrete));
     });
-    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene2.pxcc"));
+    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
     std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
     {
         he::px::PhysicsConcaveShape pShape(pMesh);

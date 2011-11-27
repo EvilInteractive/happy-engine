@@ -18,45 +18,42 @@
 //Author:  Bastian Damman
 //Created: 27/11/2011
 
-#ifndef _HE_FX_CAMERA_EFFECT_H_
-#define _HE_FX_CAMERA_EFFECT_H_
+#ifndef _HE_FX_RANDOM_FLOAT_H_
+#define _HE_FX_RANDOM_FLOAT_H_
 #pragma once
 
-#include "IFxComponent.h"
+#include "IFxVariable.h"
+#include "Random.h"
 
 namespace he {
 namespace gfx {
 
-class IFxVariable;
-
-class FxCameraEffect : public IFxComponent
+class FxRandomFloat : public IFxVariable
 {
 public:
-    FxCameraEffect();
-    virtual ~FxCameraEffect();
+    FxRandomFloat();
+    virtual ~FxRandomFloat();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                             IFxComponent                           ///
+    ///                             IFxVariable                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void setStartTime(float startTime);
-    virtual void setEndTime(float endTime);
-    virtual float getStartTime();
-    virtual float getEndTime();
-
-    virtual void start();
-
-    virtual void tick(float currentTime, float dTime);
+    virtual float getValue(float pos);
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Properties                             ///
     //////////////////////////////////////////////////////////////////////////
-    void setIntensity(const IFxVariable& var); 
+    void setMin(float min);
+    void setMax(float max);
+    void setSeed(uint seed);
 
 private:
 
+    float m_Min, m_Max;
+    Random m_Random;
+
     //Disable default copy constructor and default assignment operator
-    FxCameraEffect(const FxCameraEffect&);
-    FxCameraEffect& operator=(const FxCameraEffect&);
+    FxRandomFloat(const FxRandomFloat&);
+    FxRandomFloat& operator=(const FxRandomFloat&);
 };
 
 } } //end namespace

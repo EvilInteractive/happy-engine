@@ -16,43 +16,28 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 01/09/2011
+//Created: 27/11/2011
 
-#ifndef _HE_RANDOM_H_
-#define _HE_RANDOM_H_
+#ifndef _HE_FX_CURVE_FLOAT_H_
+#define _HE_FX_CURVE_FLOAT_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "boost/random.hpp"
-#include <time.h>
-
 namespace he {
+namespace gfx {
 
-class Random
+class FxCurveFloat
 {
 public:
-    explicit Random(uint seed = time(nullptr));
-    virtual ~Random();
-
-    int nextInt(int min, int max);
-    float nextFloat(float min, float max);
-    double nextDouble(double min, double max);
-
-    uint getSeed() const;
-    void setSeed(uint seed);
+    FxCurveFloat();
+    virtual ~FxCurveFloat();
 
 private:
 
-    uint m_Seed;
-
-    boost::mt19937 m_RandomEngine;
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<double>> m_Generator;
-
-    //Disable default copy constructor and assignment operator
-    Random(const Random&);
-    Random& operator=(const Random&);
+    //Disable default copy constructor and default assignment operator
+    FxCurveFloat(const FxCurveFloat&);
+    FxCurveFloat& operator=(const FxCurveFloat&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

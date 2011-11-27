@@ -22,16 +22,40 @@
 #define _HE_FX_TIME_LINE_TRACK_H_
 #pragma once
 
+#include <queue>
+#include <vector>
+#include "HappyTypes.h"
+#include "SlotPContainer.h"
+
 namespace he {
 namespace gfx {
+
+class IFxComponent;
 
 class FxTimeLineTrack
 {
 public:
     FxTimeLineTrack();
     virtual ~FxTimeLineTrack();
+    
+    void start();
+    
+    uint addComponent(IFxComponent* pComponent);
+    void removeComponent(uint id);
+    template<typename T> T* getComponent(uint id) const
+    {
+        ASSERT(id < m_Components.size(), "id not in a valid range");
+        T* pComp(dynamic_cast<T*>(m_Components[id]));
+        ASSERT(pComp != nullptr, "pComp is not a T*");
+        return pComp;
+    }
+
+    void tick(float currentTime, float dTime);
 
 private:
+
+    std::queue<uint> m_PlayQueue;
+    SlotPContainer<IFxComponent*> m_Components;
 
     //Disable default copy constructor and default assignment operator
     FxTimeLineTrack(const FxTimeLineTrack&);

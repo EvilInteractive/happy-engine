@@ -95,6 +95,9 @@
     <Filter Include="happyengine\graphics\fx">
       <UniqueIdentifier>{0fd9a8e5-5653-4ac1-94d9-24e267087dde}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\fx\values">
+      <UniqueIdentifier>{3e8e208e-d7ae-4166-9a60-17201943cc22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -460,9 +463,6 @@
     <ClCompile Include="code\graphics\FxManager.cpp">
       <Filter>happyengine\graphics\fx</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\FxComponent.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\FxCameraEffect.cpp">
       <Filter>happyengine\graphics\fx</Filter>
     </ClCompile>
@@ -474,6 +474,15 @@
     </ClCompile>
     <ClCompile Include="code\graphics\FxTimeLine.cpp">
       <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxCurveFloat.cpp">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxConstantFloat.cpp">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxRandomFloat.cpp">
+      <Filter>happyengine\graphics\fx\values</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -927,9 +936,6 @@
     <ClInclude Include="code\graphics\FxManager.h">
       <Filter>happyengine\graphics\fx</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\FxComponent.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\FxCameraEffect.h">
       <Filter>happyengine\graphics\fx</Filter>
     </ClInclude>
@@ -944,6 +950,24 @@
     </ClInclude>
     <ClInclude Include="code\graphics\FxTimeLine.h">
       <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\IFxComponent.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxCurveFloat.h">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxConstantFloat.h">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxRandomFloat.h">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\IFxVariable.h">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClInclude>
+    <ClInclude Include="code\SlotPContainer.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
