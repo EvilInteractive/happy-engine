@@ -150,6 +150,8 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
     m_AmbIllLightData.sgMap  = m_pAmbIllShader->getShaderSamplerId("sgMap");
     m_AmbIllLightData.normalMap  = m_pAmbIllShader->getShaderSamplerId("normalMap");
     m_AmbIllLightData.depthMap  = m_pAmbIllShader->getShaderSamplerId("depthMap");
+    m_AmbIllLightData.colorRamp  = m_pAmbIllShader->getShaderSamplerId("colorRamp");
+    m_pColorRampTex = CONTENT->asyncLoadTexture("shadingRamp.png");
 
     m_AmbIllLightData.shadowMap0 = m_pAmbIllShader->getShaderSamplerId("shadowMap0");
     m_AmbIllLightData.shadowMap1 = m_pAmbIllShader->getShaderSamplerId("shadowMap1");
@@ -434,6 +436,7 @@ void Deferred3DRenderer::postAmbIllLight()
     m_pAmbIllShader->setShaderVar(m_AmbIllLightData.sgMap,       m_pTexture[1]);
     m_pAmbIllShader->setShaderVar(m_AmbIllLightData.normalMap,   m_pTexture[2]);
     m_pAmbIllShader->setShaderVar(m_AmbIllLightData.depthMap,    m_pTexture[3]);
+    m_pAmbIllShader->setShaderVar(m_AmbIllLightData.colorRamp, m_pColorRampTex);
 
     m_AmbIllLightData.mtxDirLight0 = m_pLightManager->getDirectionalLight()->getShadowMatrix(0);
     m_AmbIllLightData.mtxDirLight1 = m_pLightManager->getDirectionalLight()->getShadowMatrix(1);

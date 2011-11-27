@@ -128,6 +128,8 @@ public:
     Gear getGear() const;
     bool isInAir() const;
 
+    float getEngineRPM() const;
+
     bool isDrifting() const;
     float getTyreLatSlip(Tyre tyre);
     float getTyreLongSlip(Tyre tyre);

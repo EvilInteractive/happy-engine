@@ -14,31 +14,52 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 27/11/2011
 
-#ifndef _HE_STDAFX_H_
-#define _HE_STDAFX_H_
+#ifndef _HE_FX_TIMELINE_H_
+#define _HE_FX_TIMELINE_H_
 #pragma once
 
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently, but
-// are changed infrequently
-//
-
-#include <tchar.h>
-#include <string>
-#include <vector>
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
-
-#include "HappyNew.h"
-#include "MathConstants.h"
-#include "MathFunctions.h"
-
-#include "Profiler.h"
-
 #include "event.h"
+#include <vector>
 
-// TODO: reference additional headers your program requires here
+#include "HappyTypes.h"
+
+namespace he {
+namespace gfx {
+
+class FxTimeLineTrack;
+
+class FxTimeLine
+{
+public:
+    FxTimeLine();
+    virtual ~FxTimeLine();
+
+    void start();
+
+    uint addTrack();
+    void removeTrack(uint id);
+
+    void tick(float dTime);
+    
+    event<void> EndEvent;
+    event<void> StartEvent;
+
+private:
+
+    std::vector<FxTimeLineTrack*> m_Tracks;
+
+    float m_CurrentTime;
+    float m_EndTime;
+
+    //Disable default copy constructor and default assignment operator
+    FxTimeLine(const FxTimeLine&);
+    FxTimeLine& operator=(const FxTimeLine&);
+};
+
+} } //end namespace
 
 #endif

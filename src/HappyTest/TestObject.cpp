@@ -29,8 +29,10 @@
 #include "Happy2DRenderer.h"
 #include "GraphicsEngine.h"
 #include "PhysicsEngine.h"
+#include "SoundEngine.h"
 
 #include "MathConstants.h"
+#include "MathFunctions.h"
 
 #include "PhysicsCarManager.h"
 #include "PhysicsMaterial.h"
@@ -103,6 +105,14 @@ TestObject::TestObject():
     addComponent(m_pRiggedModelComponent);
     m_pRiggedModelComponent->getModel()->callbackIfLoaded(boost::bind(&TestObject::onModelLoaded, this));
 
+
+
+    m_pCarEngineSfx = AUDIO->loadSound2D("../data/audio/carIdle.wav", true);
+    m_pCarEngineSfx->setLooping(true);
+    m_pCarEngineSfx->play();
+
+    //m_pCar->setAutoTransmission(false);
+
     GAME->addToTickList(this);
 }
 
@@ -156,6 +166,8 @@ void TestObject::tick(float dTime)
         m_pCar->addForce((m_pCar->getPose() * force).xyz());
     }
 
+    m_pCarEngineSfx->setPitch(he::clamp<float>(m_pCar->getEngineRPM() / 200+0.1f, 0, 4));
+
     //////////////////////////////////////////////////////////////////////////
     ///     GUI                                                            ///
     //////////////////////////////////////////////////////////////////////////    
@@ -180,6 +192,11 @@ void TestObject::tick(float dTime)
         std::sprintf(gearText, "Gear: N");
     else
         std::sprintf(gearText, "Gear: R");
+
+    char engineText[20];
+    std::sprintf(engineText, "Engine: %07.2f", m_pCar->getEngineRPM());
+    GUI->drawText(gui::Text(engineText, m_pFont), vec2(GRAPHICS->getScreenWidth() / 2 - 64.0f + 4, GRAPHICS->getScreenHeight() - 72.0f));
+
     GUI->drawText(gui::Text(gearText, m_pFont), vec2(GRAPHICS->getScreenWidth() - 128.0f - 16 + 12, GRAPHICS->getScreenHeight() - 52.0f));
 
     if (m_pCar->isDrifting())

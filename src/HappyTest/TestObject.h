@@ -32,6 +32,7 @@
 
 #include "Text.h"
 #include "Font.h"
+#include "audio/Sound2D.h"
 
 namespace happytest {
 
@@ -45,6 +46,7 @@ public:
 
 private:   
     he::gfx::Font::pointer m_pFont;
+    he::sfx::Sound2D* m_pCarEngineSfx;
 
     float m_WheelOrientation, m_WheelMax, m_WheelTurnSpeed, m_WheelSpeedRotation;
     float m_Rotation;

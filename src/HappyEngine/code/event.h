@@ -14,31 +14,49 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 27/11/2011
 
-#ifndef _HE_STDAFX_H_
-#define _HE_STDAFX_H_
+#ifndef _HE_EVENT_H_
+#define _HE_EVENT_H_
 #pragma once
 
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently, but
-// are changed infrequently
-//
-
-#include <tchar.h>
-#include <string>
+#include "boost/function.hpp"
 #include <vector>
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
 
-#include "HappyNew.h"
-#include "MathConstants.h"
-#include "MathFunctions.h"
+namespace he {
 
-#include "Profiler.h"
+template<typename returnType>
+class event
+{
+private: 
+    typedef boost::function<returnType()> function;
 
-#include "event.h"
+public:
+    event();
+    ~event();
 
-// TODO: reference additional headers your program requires here
+    void operator+=(const function& func)
+    {
+        m_FuncList.push_back(func);
+    }
+    returnType operator()()
+    {
+        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [](const function& func)
+        {
+            func();
+        });
+    }
+
+private:
+    std::vector<function> m_FuncList;
+
+    //Disable default copy constructor and default assignment operator
+    event(const event&);
+    event& operator=(const event&);
+};
+
+} //end namespace
 
 #endif

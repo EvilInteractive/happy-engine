@@ -94,7 +94,7 @@ private:
 
         //No Buffer
         uint shadowMap0, shadowMap1, shadowMap2, shadowMap3;
-        uint colorIllMap, normalMap, sgMap, depthMap;
+        uint colorIllMap, normalMap, sgMap, depthMap, colorRamp;
     };
     struct PostSharedData
     {
@@ -162,6 +162,7 @@ private:
 
     //SHARED FBO
     uint m_DepthBufferId;
+    Texture2D::pointer m_pColorRampTex;
 
 
     //SHADERS

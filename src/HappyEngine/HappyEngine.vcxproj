@@ -64,7 +64,13 @@
     <ClCompile Include="code\graphics\DrawSettings.cpp" />
     <ClCompile Include="code\graphics\Ellipse2D.cpp" />
     <ClCompile Include="code\graphics\Font.cpp" />
+    <ClCompile Include="code\graphics\FxCameraEffect.cpp" />
+    <ClCompile Include="code\graphics\FxComponent.cpp" />
+    <ClCompile Include="code\graphics\FxManager.cpp" />
+    <ClCompile Include="code\graphics\FxParticle.cpp" />
     <ClCompile Include="code\graphics\FxParticleSystem.cpp" />
+    <ClCompile Include="code\graphics\FxTimeLine.cpp" />
+    <ClCompile Include="code\graphics\FxTimeLineTrack.cpp" />
     <ClCompile Include="code\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp" />
     <ClCompile Include="code\graphics\HappyQtWidget.cpp" />
@@ -170,6 +176,7 @@
     <ClInclude Include="code\error\Exception.h" />
     <ClInclude Include="code\error\ExternalError.h" />
     <ClInclude Include="code\error\FileNotFoundException.h" />
+    <ClInclude Include="code\event.h" />
     <ClInclude Include="code\game\Entity.h" />
     <ClInclude Include="code\game\IComponent.h" />
     <ClInclude Include="code\game\Game.h" />
@@ -192,7 +199,13 @@
     <ClInclude Include="code\graphics\DrawSettings.h" />
     <ClInclude Include="code\graphics\Ellipse2D.h" />
     <ClInclude Include="code\graphics\Font.h" />
+    <ClInclude Include="code\graphics\FxCameraEffect.h" />
+    <ClInclude Include="code\graphics\FxComponent.h" />
+    <ClInclude Include="code\graphics\FxManager.h" />
+    <ClInclude Include="code\graphics\FxParticle.h" />
     <ClInclude Include="code\graphics\FxParticleSystem.h" />
+    <ClInclude Include="code\graphics\FxTimeLine.h" />
+    <ClInclude Include="code\graphics\FxTimeLineTrack.h" />
     <ClInclude Include="code\graphics\GraphicsEngine.h" />
     <ClInclude Include="code\graphics\Happy2DRenderer.h" />
     <ClInclude Include="code\graphics\HappyQtWidget.h" />

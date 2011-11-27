@@ -14,31 +14,30 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 27/11/2011
 
-#ifndef _HE_STDAFX_H_
-#define _HE_STDAFX_H_
+#ifndef _HE_FX_COMPONENT_H_
+#define _HE_FX_COMPONENT_H_
 #pragma once
 
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently, but
-// are changed infrequently
-//
+namespace he {
+namespace gfx {
 
-#include <tchar.h>
-#include <string>
-#include <vector>
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
+class FxComponent
+{
+public:
+    FxComponent();
+    virtual ~FxComponent();
 
-#include "HappyNew.h"
-#include "MathConstants.h"
-#include "MathFunctions.h"
+private:
 
-#include "Profiler.h"
+    //Disable default copy constructor and default assignment operator
+    FxComponent(const FxComponent&);
+    FxComponent& operator=(const FxComponent&);
+};
 
-#include "event.h"
-
-// TODO: reference additional headers your program requires here
+} } //end namespace
 
 #endif

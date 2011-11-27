@@ -40,12 +40,12 @@ namespace ct {
 class ContentManager
 {
 public:
-	ContentManager();
+    ContentManager();
     virtual ~ContentManager();
 
-	//gfx::Texture2D::pointer loadTexture2D(const std::string& path);
-	// gfx::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
-	// asyncLoadTexture2D(const std::string& path, gfx::Texture2D::pointer*);
+    //gfx::Texture2D::pointer loadTexture2D(const std::string& path);
+    // gfx::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
+    // asyncLoadTexture2D(const std::string& path, gfx::Texture2D::pointer*);
 
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
@@ -54,7 +54,7 @@ public:
     gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::VertexLayout& vertexLayout);
     gfx::ModelMesh::pointer getFullscreenQuad() const;
 
-	gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
+    gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
     gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
 
     gfx::Line::pointer loadLine(const std::string& path);
@@ -63,7 +63,7 @@ public:
     const std::vector<px::PhysicsConcaveMesh::pointer>& loadPhysicsConcave(const std::string& path);
 
     gfx::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
-	const gfx::Font::pointer& getDefaultFont();
+    const gfx::Font::pointer& getDefaultFont();
 
     gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    
@@ -102,7 +102,7 @@ private:
     std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /
                 m_ShaderFolder, m_MaterialFolder;
 
-	gfx::Font::pointer m_pDefaultFont;
+    gfx::Font::pointer m_pDefaultFont;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

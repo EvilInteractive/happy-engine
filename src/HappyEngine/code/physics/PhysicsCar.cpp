@@ -138,6 +138,8 @@ void setOptionalVehicleData(physx::PxVehicle4WSimpleSetup& simpleSetup)
 
     //Diff descriptor.
     simpleSetup.mDiffType = physx::PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD;
+
+    simpleSetup.mEngineMaxOmega = 800;
 }
 
 void PhysicsCar::init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chassiMaterial,
@@ -373,6 +375,11 @@ float PhysicsCar::getTyreLatSlip( Tyre tyre )
 float PhysicsCar::getTyreLongSlip( Tyre tyre )
 {
     return physx::PxVehicle4WGetTyreLongSlip(*m_pVehicle, tyre);
+}
+
+float PhysicsCar::getEngineRPM() const
+{
+    return physx::PxVehicle4WGetEngineRotationSpeed(*m_pVehicle);
 }
 
 

@@ -457,6 +457,24 @@
     <ClCompile Include="code\graphics\FxParticleSystem.cpp">
       <Filter>happyengine\graphics\fx</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\FxManager.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxComponent.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxCameraEffect.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxParticle.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxTimeLineTrack.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\FxTimeLine.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -904,6 +922,27 @@
       <Filter>happyengine\networking</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\FxParticleSystem.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxManager.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxComponent.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxCameraEffect.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxParticle.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\event.h">
+      <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxTimeLineTrack.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxTimeLine.h">
       <Filter>happyengine\graphics\fx</Filter>
     </ClInclude>
   </ItemGroup>

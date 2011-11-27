@@ -190,8 +190,6 @@ void MainGame::load()
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
     GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 0.5f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
    
-    m_pTestObject = NEW TestObject();
-
     m_pAxis = NEW he::game::Entity();
     game::ModelComponent* pAxisModelComp(NEW game::ModelComponent());
     pAxisModelComp->setMaterial(CONTENT->loadMaterial("axis.material"));
@@ -252,6 +250,8 @@ void MainGame::load()
     m_pTestSound3D->setLooping(true);
     m_pTestSound3D->setMaximumDistance(50.0f);
     m_pTestSound3D->setMinimumDistance(10.0f);
+
+    m_pTestObject = NEW TestObject();
 
     m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
     m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
