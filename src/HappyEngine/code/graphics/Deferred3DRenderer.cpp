@@ -486,7 +486,8 @@ void Deferred3DRenderer::postPointLights()
 
                 m_pPointLightShader->setShaderVar(m_PointLightData.wvp, m_pCamera->getViewProjection() * pLight->getWorldMatrix());
 
-                GRAPHICS->draw(pLight->getLightVolume());
+                if (pLight->getLightVolume()->isLoaded())
+                    GRAPHICS->draw(pLight->getLightVolume());
                 //draw(m_pModel);
             }
         //}
@@ -521,7 +522,8 @@ void Deferred3DRenderer::postSpotLights()
 
         m_pSpotLightShader->setShaderVar(m_SpotLightData.wvp, m_pCamera->getViewProjection() * pLight->getWorldMatrix());
 
-        GRAPHICS->draw(pLight->getLightVolume());
+        if (pLight->getLightVolume()->isLoaded())
+            GRAPHICS->draw(pLight->getLightVolume());
     });
 }
 

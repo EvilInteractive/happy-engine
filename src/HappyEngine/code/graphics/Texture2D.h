@@ -36,7 +36,7 @@ namespace gfx {
 class Texture2D
 {
 public:
-	Texture2D();
+    Texture2D();
     virtual ~Texture2D();
 
     void init(uint tex, uint width, uint height, uint format);

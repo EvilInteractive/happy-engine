@@ -158,6 +158,7 @@ private:
 
     /* DATAMEMBERS */
     uint m_RenderFboID;
+    uint m_DepthRenderTarget;
     Texture2D::pointer m_pRenderTexture;
 
     bool m_bAntiAliasing;

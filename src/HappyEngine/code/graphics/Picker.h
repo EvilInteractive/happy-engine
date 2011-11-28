@@ -34,24 +34,25 @@ class Picker
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Picker();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Picker();
     virtual ~Picker();
 
-	/* GENERAL */
-	void initialize();
-	// returns ID of mesh in drawlist which is picked, or UINT_MAX if none
-	uint pick(const vec2& screenPoint, const Camera* pCamera);
+    /* GENERAL */
+    void initialize();
+    // returns ID of mesh in drawlist which is picked, or UINT_MAX if none
+    uint pick(const vec2& screenPoint, const Camera* pCamera);
 
 private:
 
-	/* DATAMEMBERS */
-	PickEffect* m_pPickEffect;
+    /* DATAMEMBERS */
+    PickEffect* m_pPickEffect;
 
-	uint m_RenderFboID;
-	Texture2D::pointer m_pIDTexture;
+    uint m_RenderFboID;
+    uint m_DepthRenderBuffer;
+    Texture2D::pointer m_pIDTexture;
 
-	bool m_bInitialized;
+    bool m_bInitialized;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Picker(const Picker&);
