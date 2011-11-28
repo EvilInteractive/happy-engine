@@ -56,7 +56,7 @@ void Picker::initialize()
 	glGenTextures(1, &renderTexture);
 
 	GL::heBindTexture2D(0, renderTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED, GL_UNSIGNED_INT, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
 	m_pIDTexture->init(renderTexture, width, height, GL_R32I);
 
 	uint depthTexture;
@@ -145,17 +145,17 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
 		++i;
 	});
 
-	glGetError();
+	//glGetError();
 
 	uint id(0);
 	glReadPixels(	static_cast<int>(screenPoint.x),
 					GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
-					1,1,GL_RED, GL_UNSIGNED_INT, &id);
+					1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
 
-	GLenum error = glGetError();
+	//GLenum error = glGetError();
 
-	if (error != 0)
-		return UINT_MAX;
+	/*if (error != 0)
+		return UINT_MAX;*/
 
 	if (id == 0)
 		return UINT_MAX;
