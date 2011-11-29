@@ -34,4 +34,19 @@ FxParticleSystem::~FxParticleSystem()
 {
 }
 
+void FxParticleSystem::start()
+{
+
+}
+
+void FxParticleSystem::stop()
+{
+
+}
+
+void FxParticleSystem::tick( float /*currentTime*/, float /*dTime*/ )
+{
+
+}
+
 } } //end namespace

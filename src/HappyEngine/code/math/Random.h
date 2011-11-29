@@ -34,9 +34,9 @@ public:
     explicit Random(uint seed = time(nullptr));
     virtual ~Random();
 
-    int nextInt(int min, int max);
-    float nextFloat(float min, float max);
-    double nextDouble(double min, double max);
+    int nextInt(int min, int max) const;
+    float nextFloat(float min, float max) const;
+    double nextDouble(double min, double max) const;
 
     uint getSeed() const;
     void setSeed(uint seed);

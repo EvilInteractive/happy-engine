@@ -23,6 +23,8 @@
 #include "HappyNew.h"
 
 #include "IFxComponent.h"
+#include "FxParticleSystem.h"
+#include "FxCameraEffect.h"
 
 #include <algorithm>
 
@@ -36,15 +38,28 @@ FxTimeLineTrack::FxTimeLineTrack()
 
 FxTimeLineTrack::~FxTimeLineTrack()
 {
+    he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxComponent* pComp)
+    {
+        delete pComp;
+    });
 }
 
 void FxTimeLineTrack::tick( float currentTime, float dTime )
 {
-    if (m_Components[m_PlayQueue.front()]->getEndTime() > currentTime)
-        m_PlayQueue.pop();
-    if (m_Components[m_PlayQueue.front()]->getStartTime() >= currentTime)
+    if (m_PlayQueue.size() > 0)
     {
-        m_Components[m_PlayQueue.front()]->tick(currentTime, dTime);
+        if (m_Components[m_PlayQueue.front()]->getEndTime() < currentTime)
+        {
+            m_Components[m_PlayQueue.front()]->stop();
+            m_PlayQueue.pop();
+        }
+        if (m_PlayQueue.size() > 0)
+        {
+            if (m_Components[m_PlayQueue.front()]->getStartTime() <= currentTime)
+            {
+                m_Components[m_PlayQueue.front()]->tick(currentTime, dTime);
+            }
+        }
     }
 }
 
@@ -66,6 +81,30 @@ void FxTimeLineTrack::start()
     {
         m_PlayQueue.push(m_Components.getId(tempComponents[i]));
     }
+}
+
+uint FxTimeLineTrack::addComponent( FxType type )
+{
+    uint id;
+    switch (type)
+    {
+        case FxType_ParticleSystem: id = m_Components.insert(NEW FxParticleSystem()); break;
+        case FxType_CameraEffect:   id = m_Components.insert(NEW FxCameraEffect()); break;
+        default: ASSERT(false, "Unkown fx type"); id = UINT_MAX; break;
+    }
+    
+    return id;
+}
+
+void FxTimeLineTrack::removeComponent( uint id )
+{
+    delete m_Components.remove(id);
+}
+
+void FxTimeLineTrack::stop()
+{
+    if (m_PlayQueue.size() > 0)
+        m_Components[m_PlayQueue.front()]->stop();
 }
 
 } } //end namespace

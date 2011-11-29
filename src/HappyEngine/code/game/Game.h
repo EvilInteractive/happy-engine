@@ -24,11 +24,17 @@
 #include <algorithm>
 
 namespace he {
+
+namespace gfx {
+    class Camera;
+}
+
 namespace game {
 
 class Game
 {
 public:
+    Game(): m_pActiveCamera(nullptr) {}
     virtual ~Game() {}
 
     virtual void init() = 0;
@@ -48,7 +54,11 @@ public:
         m_TickList.push_back(pObj);
     }
 
+    virtual void setActiveCamera(gfx::Camera* pCamera) { m_pActiveCamera = pCamera; }
+    virtual gfx::Camera* getActiveCamera() { return m_pActiveCamera; }
+
 private:
+    gfx::Camera* m_pActiveCamera;
     std::vector<ITickable*> m_TickList;
 };
 

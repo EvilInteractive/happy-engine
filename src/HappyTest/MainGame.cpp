@@ -187,8 +187,8 @@ void MainGame::load()
 
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.5f, 0.8f, 1.0f, 1.0f), 1.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 0.5f, -1.0f)), Color(1.0f, 1.0f, 1.0f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 10.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 5.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
    
     m_pAxis = NEW he::game::Entity();
     game::ModelComponent* pAxisModelComp(NEW game::ModelComponent());
@@ -264,7 +264,6 @@ void MainGame::load()
     m_pFlyCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
     m_pFlyCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
     m_pFlyCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
-    m_pFlyCamera->setActive(true);
 
     m_pFollowCamera = NEW FollowCamera();
     m_pFollowCamera->setLens(16.0f/9.0f,piOverFour,10.0f, 200.0f);
@@ -273,7 +272,9 @@ void MainGame::load()
     m_pFollowCamera->setDistance(15);
 
     m_pCurrentCamera = m_pFollowCamera;
+    GAME->setActiveCamera(m_pFollowCamera);
     //m_pCurrentCamera = m_pFlyCamera;
+    //GAME->setActiveCamera(m_pFlyCamera);
 
     // SSAO
     he::gfx::Deferred3DRenderer::SSAOSettings settings;

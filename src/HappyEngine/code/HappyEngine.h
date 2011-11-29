@@ -47,6 +47,7 @@ namespace gfx {
     class Happy2DRenderer;
     class HappyQtWidget;
     class SimpleForward3DRenderer;
+    class FxManager;
 }
 namespace io {
     class ControlsManager;
@@ -82,6 +83,7 @@ namespace game {
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
 #define HE3D HAPPYENGINE->get3DRenderer()
+#define FX HAPPYENGINE->getFxManager()
 
 namespace he {
 enum SubEngine
@@ -134,6 +136,7 @@ public:
     sfx::SoundEngine* getSoundEngine() const;
     game::Game* getGame() const;
     gfx::SimpleForward3DRenderer* get3DRenderer() const;
+    gfx::FxManager* getFxManager() const;
 
 private:
     // Singleton design pattern
@@ -152,6 +155,7 @@ private:
     tools::Console* m_pConsole;
     sfx::SoundEngine* m_pSoundEngine;
     gfx::SimpleForward3DRenderer* m_p3DRenderer;
+    gfx::FxManager* m_pFxManager;
 
     bool m_Quit;
 

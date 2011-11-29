@@ -28,16 +28,17 @@
 namespace he {
 namespace gfx {
 
-class FxRandomFloat : public IFxVariable
+class FxRandomFloat : public IFxVariable<float>
 {
 public:
     FxRandomFloat();
     virtual ~FxRandomFloat();
 
+    typedef boost::shared_ptr<FxRandomFloat> pointer;
     //////////////////////////////////////////////////////////////////////////
     ///                             IFxVariable                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual float getValue(float pos);
+    virtual float getValue(float normTime) const;
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Properties                             ///
@@ -54,6 +55,34 @@ private:
     //Disable default copy constructor and default assignment operator
     FxRandomFloat(const FxRandomFloat&);
     FxRandomFloat& operator=(const FxRandomFloat&);
+};
+class FxRandomVec3 : public IFxVariable<vec3>
+{
+public:
+    FxRandomVec3();
+    virtual ~FxRandomVec3();
+
+    typedef boost::shared_ptr<FxRandomVec3> pointer;
+    //////////////////////////////////////////////////////////////////////////
+    ///                             IFxVariable                            ///
+    //////////////////////////////////////////////////////////////////////////
+    virtual vec3 getValue(float normTime) const;
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Properties                             ///
+    //////////////////////////////////////////////////////////////////////////
+    void setMin(vec3 min);
+    void setMax(vec3 max);
+    void setSeed(uint seed);
+
+private:
+
+    vec3 m_Min, m_Max;
+    Random m_Random;
+
+    //Disable default copy constructor and default assignment operator
+    FxRandomVec3(const FxRandomVec3&);
+    FxRandomVec3& operator=(const FxRandomVec3&);
 };
 
 } } //end namespace

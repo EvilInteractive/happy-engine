@@ -27,29 +27,37 @@
 namespace he {
 namespace gfx {
 
-class FxConstantFloat : public IFxVariable
+template<typename T>
+class FxConstant : public IFxVariable<T>
 {
 public:
-    FxConstantFloat();
-    virtual ~FxConstantFloat();
-    
+    FxConstant() {}
+    virtual ~FxConstant() {}
+
+    typedef boost::shared_ptr<FxConstant> pointer;
     //////////////////////////////////////////////////////////////////////////
     ///                             IFxVariable                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual float getValue(float pos);
+    virtual T getValue(float normTime) const
+    {
+        return m_Value;
+    }
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Properties                             ///
     //////////////////////////////////////////////////////////////////////////
-    void setValue(float value);
+    void setValue(const T& value)
+    {
+        m_Value = value;
+    }
 
 private:
 
-    float m_Value;
+    T m_Value;
 
     //Disable default copy constructor and default assignment operator
-    FxConstantFloat(const FxConstantFloat&);
-    FxConstantFloat& operator=(const FxConstantFloat&);
+    FxConstant(const FxConstant&);
+    FxConstant& operator=(const FxConstant&);
 };
 
 } } //end namespace

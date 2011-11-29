@@ -31,6 +31,7 @@ namespace he {
 namespace gfx {
 
 class IFxComponent;
+enum FxType;
 
 class FxTimeLineTrack
 {
@@ -39,12 +40,12 @@ public:
     virtual ~FxTimeLineTrack();
     
     void start();
+    void stop();
     
-    uint addComponent(IFxComponent* pComponent);
+    uint addComponent(FxType type);
     void removeComponent(uint id);
     template<typename T> T* getComponent(uint id) const
     {
-        ASSERT(id < m_Components.size(), "id not in a valid range");
         T* pComp(dynamic_cast<T*>(m_Components[id]));
         ASSERT(pComp != nullptr, "pComp is not a T*");
         return pComp;

@@ -34,7 +34,7 @@ class SlotPContainer
 {
 public:
     SlotPContainer() {}
-    virtual ~SlotPContainer() {}
+    ~SlotPContainer() {}
     //default copy OK
 
     uint insert(const T& obj)
@@ -59,7 +59,7 @@ public:
         ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
-    const T& remove(uint id)
+    T remove(uint id)
     {
         ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         ASSERT(m_MemPool[id] != nullptr, "no object @id");
@@ -88,6 +88,12 @@ public:
         ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
+    const T& operator[](uint id) const
+    {
+        ASSERT(id < m_MemPool.size(), "id is not in a valid range");
+        ASSERT(m_MemPool[id] != nullptr, "no object @id");
+        return m_MemPool[id];
+    }
 
     template<typename T>
     class const_iterator
@@ -99,14 +105,14 @@ public:
 
     public:
         const_iterator(const _iterator& iterator, const _iterator& end): 
-          m_It(iterator), m_EndIt(iterator) { }
+          m_It(iterator), m_EndIt(end) { }
 
         const_iterator& operator++()
         {
             do 
             {
                 ++m_It;
-            } while ((*m_It) == nullptr && m_It != m_EndIt);
+            } while (m_It != m_EndIt && (*m_It) == nullptr);
             
             return *this;
         }

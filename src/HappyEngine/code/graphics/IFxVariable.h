@@ -22,15 +22,20 @@
 #define _HE_IFX_VARIABLE_H_
 #pragma once
 
+#include "boost/shared_ptr.hpp"
+
 namespace he {
 namespace gfx {
 
+template<typename T>
 class IFxVariable
 {
 public:
     virtual ~IFxVariable() {}
 
-    virtual float getValue(float pos) = 0; //pos [0, 1]
+    virtual T getValue(float /*normTime*/) const = 0; //normTime [0, 1]
+
+    typedef boost::shared_ptr<IFxVariable<T>> pointer;
 };
 
 } } //end namespace

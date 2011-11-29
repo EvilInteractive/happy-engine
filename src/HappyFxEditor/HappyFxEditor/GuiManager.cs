@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace HappyFxEditor
 {
-    class GuiManager : INotifyPropertyChanged
+    public class GuiManager : INotifyPropertyChanged
     {
         private string _effectPath, _texturePath, _modelPath, _audioPath;
         public string EffectPath 

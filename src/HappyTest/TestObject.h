@@ -53,6 +53,7 @@ private:
     he::vec3 m_Position;
     
     he::px::PhysicsCar* m_pCar;
+    he::uint m_CameraShakeTL;
 
     he::game::RiggedModelComponent* m_pRiggedModelComponent;
     he::game::RiggedModelComponent::BoneTransform m_WheelFLBone, m_WheelFRBone, m_WheelBLBone, m_WheelBRBone;

@@ -478,10 +478,7 @@
     <ClCompile Include="code\graphics\FxCurveFloat.cpp">
       <Filter>happyengine\graphics\fx\values</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\FxConstantFloat.cpp">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxRandomFloat.cpp">
+    <ClCompile Include="code\graphics\FxRandom.cpp">
       <Filter>happyengine\graphics\fx\values</Filter>
     </ClCompile>
   </ItemGroup>
@@ -957,17 +954,17 @@
     <ClInclude Include="code\graphics\FxCurveFloat.h">
       <Filter>happyengine\graphics\fx\values</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\FxConstantFloat.h">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxRandomFloat.h">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\IFxVariable.h">
       <Filter>happyengine\graphics\fx\values</Filter>
     </ClInclude>
     <ClInclude Include="code\SlotPContainer.h">
       <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxConstant.h">
+      <Filter>happyengine\graphics\fx\values</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\FxRandom.h">
+      <Filter>happyengine\graphics\fx\values</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

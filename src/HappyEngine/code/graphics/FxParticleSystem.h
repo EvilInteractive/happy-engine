@@ -22,14 +22,26 @@
 #define _HE_FX_PARTICLE_SYSTEM_H_
 #pragma once
 
+#include "IFxComponent.h"
+
 namespace he {
 namespace gfx {
 
-class FxParticleSystem
+class FxParticleSystem : public IFxComponent
 {
 public:
     FxParticleSystem();
     virtual ~FxParticleSystem();
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             IFxComponent                           ///
+    //////////////////////////////////////////////////////////////////////////
+    virtual FxType getType() const { return FxType_ParticleSystem; };
+    
+    virtual void start();
+    virtual void stop();
+
+    virtual void tick(float currentTime, float dTime);
 
 private:
 

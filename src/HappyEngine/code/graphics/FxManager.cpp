@@ -31,63 +31,44 @@ namespace gfx {
 
 FxManager::FxManager()
 {
-    memset(m_TimelineMemPool, 0, sizeof(FxTimeLine*) * MAX_TIMELINES);
-    for (int i(0); i < MAX_TIMELINES; ++i)
-    {
-        m_FreeSlots.push(i);
-    }
 }
 
 
 FxManager::~FxManager()
 {
-    for (int i(0); i < MAX_TIMELINES; ++i)
+    he::for_each(m_TimeLines.cbegin(), m_TimeLines.cend(), [&](FxTimeLine* pTimeLine)
     {
-        delete m_TimelineMemPool[i];
-    }
+        delete pTimeLine;
+    });
 }
 
 void FxManager::tick( float dTime )
 {
-    std::set<uint> activeTimelines = m_ActiveTimelines; //set could change make copy
+    std::set<uint> activeTimelines = m_ActiveTimelines; //set could change, because of end of time line -> make copy
     std::for_each(activeTimelines.cbegin(), activeTimelines.cend(), [&](uint id)
     {
-        m_TimelineMemPool[id]->tick(dTime);
+        m_TimeLines[id]->tick(dTime);
     });
 }
 
 uint FxManager::createTimeline()
 {
-    ASSERT(m_FreeSlots.size() > 0, "Fx needs bigger mempool or something went wrong");
-    uint id(m_FreeSlots.front());
-    m_FreeSlots.pop();
+    uint id(m_TimeLines.insert(NEW FxTimeLine()));
 
-    m_TimelineMemPool[id] = NEW FxTimeLine();
-    m_TimelineMemPool[id]->StartEvent += boost::bind(&FxManager::timelineStarted, this, id);
-    m_TimelineMemPool[id]->EndEvent += boost::bind(&FxManager::timelineStopped, this, id);
+    m_TimeLines[id]->StartEvent += boost::bind(&FxManager::timelineStarted, this, id);
+    m_TimeLines[id]->EndEvent += boost::bind(&FxManager::timelineStopped, this, id);
 
     return id;
 }
 
 void FxManager::removeTimeline( uint id )
 {
-    ASSERT(id >= 0 && id < MAX_TIMELINES, "id is not in a valid range");
-    ASSERT(m_TimelineMemPool[id] != nullptr, "No effect exists @id");
-
-    delete m_TimelineMemPool[id];
-    m_TimelineMemPool[id] = nullptr;
-
-    m_FreeSlots.push(id);
+    delete m_TimeLines.remove(id);
 }
 
 FxTimeLine* FxManager::getTimeline( uint id ) const
 {
-    ASSERT(id >= 0 && id < MAX_TIMELINES, "id is not in a valid range");
-    ASSERT(m_TimelineMemPool[id] != nullptr, "No effect exists @id");
-    return m_TimelineMemPool[id];
-
-    boost::function<void(int)> test;
-    test(0);
+    return m_TimeLines[id];
 }
 
 void FxManager::timelineStarted( uint id )

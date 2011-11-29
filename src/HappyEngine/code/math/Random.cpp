@@ -35,17 +35,17 @@ Random::~Random()
 {
 }
 
-int Random::nextInt(int min, int max)
+int Random::nextInt(int min, int max) const
 {
-    return static_cast<int>(min + m_Generator() * (max - min));
+    return static_cast<int>(min + const_cast<Random*>(this)->m_Generator() * (max - min));
 }
-float Random::nextFloat(float min, float max)
+float Random::nextFloat(float min, float max) const
 {
-    return static_cast<float>(min + m_Generator() * (max - min));
+    return static_cast<float>(min + const_cast<Random*>(this)->m_Generator() * (max - min));
 }
-double Random::nextDouble(double begin, double max)
+double Random::nextDouble(double begin, double max) const
 {
-    return begin + m_Generator() * (max - begin);
+    return begin + const_cast<Random*>(this)->m_Generator() * (max - begin);
 }
 
 uint Random::getSeed() const

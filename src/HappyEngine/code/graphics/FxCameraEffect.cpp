@@ -22,10 +22,18 @@
 #include "FxCameraEffect.h"
 #include "HappyNew.h"
 
+#include "FxConstant.h"
+
+#include "HappyEngine.h"
+#include "Game.h"
+#include "Random.h"
+
+#include "Camera.h"
+
 namespace he {
 namespace gfx {
 
-FxCameraEffect::FxCameraEffect()
+FxCameraEffect::FxCameraEffect(): m_ShakeEnabled(false), m_pShakeIntensity(NEW FxConstant<vec3>()), m_Random()
 {
 }
 
@@ -33,5 +41,39 @@ FxCameraEffect::FxCameraEffect()
 FxCameraEffect::~FxCameraEffect()
 {
 }
+
+void FxCameraEffect::start()
+{
+
+}
+void FxCameraEffect::stop()
+{
+    //reset shake
+    if (GAME->getActiveCamera() != nullptr) 
+        GAME->getActiveCamera()->setFxPositionOffset(vec3::zero);
+}
+
+void FxCameraEffect::tick( float currentTime, float dTime )
+{
+    if (m_ShakeEnabled && GAME->getActiveCamera() != nullptr)
+    {
+        //random direction
+        //mult by intensity
+        vec3 shake(normalize(vec3(m_Random.nextFloat(0, 1), m_Random.nextFloat(0, 1), m_Random.nextFloat(0, 1))));
+        shake *= m_pShakeIntensity->getValue(currentTime);
+        GAME->getActiveCamera()->setFxPositionOffset(shake);
+    }
+}
+
+void FxCameraEffect::setShakeIntensity( const IFxVariable<vec3>::pointer& pVar )
+{
+    m_pShakeIntensity = pVar;
+}
+
+void FxCameraEffect::toggleShake( bool enable )
+{
+    m_ShakeEnabled = enable;
+}
+
 
 } } //end namespace

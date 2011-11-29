@@ -34,30 +34,33 @@ public:
     const static vec3 one;
     const static vec3 zero;
 
-	vec3();
+    vec3();
     explicit vec3(const physx::pubfnd3::PxVec3& vec);
-	vec3(float x, float y, float z);
+    vec3(float x, float y, float z);
     ~vec3();
 
     vec3(const vec3& other);
     vec3& operator=(const vec3& other);
 
     //>---------Operators--------------------->
-	vec3 operator-() const;
+    vec3 operator-() const;
 
-	vec3 operator*(float a) const;
-	vec3 operator/(float a) const;
+    vec3 operator*(float a) const;
+    vec3 operator/(float a) const;
 
-	vec3 operator+(const vec3& v) const;
-	vec3 operator-(const vec3& v) const;
+    vec3 operator+(const vec3& v) const;
+    vec3 operator-(const vec3& v) const;
 
-	vec3& operator+=(const vec3& v);
-	vec3& operator-=(const vec3& v);
-	vec3& operator*=(float a);
-	vec3& operator/=(float a);
+    vec3& operator+=(const vec3& v);
+    vec3& operator-=(const vec3& v);
+    vec3& operator*=(float a);
+    vec3& operator/=(float a);
 
-	bool operator==(const vec3& v) const;
-	bool operator!=(const vec3& v) const;
+    vec3& operator*=(const vec3& v); //component wise mult
+    vec3& operator/=(const vec3& v);
+
+    bool operator==(const vec3& v) const;
+    bool operator!=(const vec3& v) const;
 
     bool operator<(const vec3& v) const; //FOR std::MAP doesn't make any sense else
     //<----------------------------------------<

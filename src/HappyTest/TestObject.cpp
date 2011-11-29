@@ -30,6 +30,7 @@
 #include "GraphicsEngine.h"
 #include "PhysicsEngine.h"
 #include "SoundEngine.h"
+#include "FxManager.h"
 
 #include "MathConstants.h"
 #include "MathFunctions.h"
@@ -39,6 +40,11 @@
 #include "PhysicsConvexShape.h"
 
 #include "PhysicsData.h"
+
+#include "FxTimeLine.h"
+#include "FxCameraEffect.h"
+#include "FxRandom.h"
+#include "FxTimeLineTrack.h"
 
 namespace happytest {
 
@@ -114,6 +120,21 @@ TestObject::TestObject():
     //m_pCar->setAutoTransmission(false);
 
     GAME->addToTickList(this);
+
+
+    m_CameraShakeTL = FX->createTimeline();
+    gfx::FxTimeLine* pTL(FX->getTimeline(m_CameraShakeTL));
+    pTL->setEndTime(0.25f);
+    gfx::FxTimeLineTrack* pTrack(pTL->getTrack(pTL->addTrack()));
+    gfx::FxCameraEffect* pEffect(pTrack->getComponent<gfx::FxCameraEffect>(pTrack->addComponent(gfx::FxType_CameraEffect)));
+    pEffect->setStartTime(0.0f);
+    pEffect->setEndTime(0.25f);
+    
+    gfx::FxRandomVec3::pointer shakeIntens(NEW gfx::FxRandomVec3());
+    shakeIntens->setMin(vec3(0, 0, 0));
+    shakeIntens->setMax(vec3(0.25f, 0.25f, 10.0f));
+    pEffect->setShakeIntensity(shakeIntens);
+    pEffect->toggleShake(true);
 }
 
 
@@ -159,9 +180,10 @@ void TestObject::tick(float dTime)
 
     if (m_pCar->isInAir() && CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
         m_pCar->setAngularVelocity(vec3(0, 0, 0));
-
     if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
     {
+        if (FX->getTimeline(m_CameraShakeTL)->isRunning() == false)
+            FX->getTimeline(m_CameraShakeTL)->start();
         vec4 force(0, 0, 15000, 0);
         m_pCar->addForce((m_pCar->getPose() * force).xyz());
     }

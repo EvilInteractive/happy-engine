@@ -107,6 +107,20 @@ vec3& vec3::operator/=(float a)
     z /= a;
     return *this;
 }
+vec3& vec3::operator*=(const vec3& v)
+{
+    x *= v.x;
+    y *= v.y;
+    z *= v.z;
+    return *this;
+}
+vec3& vec3::operator/=(const vec3& v)
+{
+    x /= v.x;
+    y /= v.y;
+    z /= v.z;
+    return *this;
+}
 
 bool vec3::operator==(const vec3& v) const
 {

@@ -65,12 +65,11 @@
     <ClCompile Include="code\graphics\Ellipse2D.cpp" />
     <ClCompile Include="code\graphics\Font.cpp" />
     <ClCompile Include="code\graphics\FxCameraEffect.cpp" />
-    <ClCompile Include="code\graphics\FxConstantFloat.cpp" />
     <ClCompile Include="code\graphics\FxCurveFloat.cpp" />
     <ClCompile Include="code\graphics\FxManager.cpp" />
     <ClCompile Include="code\graphics\FxParticle.cpp" />
     <ClCompile Include="code\graphics\FxParticleSystem.cpp" />
-    <ClCompile Include="code\graphics\FxRandomFloat.cpp" />
+    <ClCompile Include="code\graphics\FxRandom.cpp" />
     <ClCompile Include="code\graphics\FxTimeLine.cpp" />
     <ClCompile Include="code\graphics\FxTimeLineTrack.cpp" />
     <ClCompile Include="code\graphics\GraphicsEngine.cpp" />
@@ -202,9 +201,9 @@
     <ClInclude Include="code\graphics\Ellipse2D.h" />
     <ClInclude Include="code\graphics\Font.h" />
     <ClInclude Include="code\graphics\FxCameraEffect.h" />
-    <ClInclude Include="code\graphics\FxConstantFloat.h" />
+    <ClInclude Include="code\graphics\FxConstant.h" />
     <ClInclude Include="code\graphics\FxCurveFloat.h" />
-    <ClInclude Include="code\graphics\FxRandomFloat.h" />
+    <ClInclude Include="code\graphics\FxRandom.h" />
     <ClInclude Include="code\graphics\IFxVariable.h" />
     <ClInclude Include="code\graphics\IFxComponent.h" />
     <ClInclude Include="code\graphics\FxManager.h" />

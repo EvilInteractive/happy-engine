@@ -23,7 +23,7 @@
 #pragma once
 
 #include "event.h"
-#include <vector>
+#include "SlotPContainer.h"
 
 #include "HappyTypes.h"
 
@@ -39,8 +39,15 @@ public:
     virtual ~FxTimeLine();
 
     void start();
+    void stop();
+
+    bool isRunning() const;
+
+    void setEndTime(float endTime);
+    void setTime(float time);
 
     uint addTrack();
+    FxTimeLineTrack* getTrack(uint id) const;
     void removeTrack(uint id);
 
     void tick(float dTime);
@@ -50,10 +57,11 @@ public:
 
 private:
 
-    std::vector<FxTimeLineTrack*> m_Tracks;
+    SlotPContainer<FxTimeLineTrack*> m_Tracks;
 
     float m_CurrentTime;
     float m_EndTime;
+    bool m_IsRunning;
 
     //Disable default copy constructor and default assignment operator
     FxTimeLine(const FxTimeLine&);

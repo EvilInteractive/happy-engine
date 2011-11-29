@@ -34,6 +34,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
@@ -42,7 +43,7 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource gridSizerVStyle}" HorizontalAlignment="Stretch" />
+        <GridSplitter Grid.Row="2" Grid.Column="1" Style="{StaticResource gridSizerVStyle}" HorizontalAlignment="Stretch" />
         
         <!--Menubar-->
         <Menu Grid.Row="0" Grid.ColumnSpan="3"  Grid.Column="0" Height="20" FontSize="12">
@@ -58,14 +59,21 @@
                 <MenuItem Header="About" />
             </MenuItem>
         </Menu>
+        <ToolBarTray Grid.Row="1" Grid.ColumnSpan="3"  Grid.Column="0" Width="auto"  Height="24" Orientation="Horizontal">
+            <ToolBar Band="1" BandIndex="0"  FontSize="10">
+                <Button Click="PlayButton_Click" ToolTip="Play Effect">Play</Button>
+                <Button Click="StopButton_Click" ToolTip="Stop Effect">Stop</Button>
+                <Button Click="PauzeButton_Click" ToolTip="Pauze Effect">Pauze</Button>
+            </ToolBar>
+        </ToolBarTray>
         
         <!--StatusBar-->
-        <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Height="20" FontSize="12">
+        <StatusBar Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" Height="20" FontSize="12">
             <TextBlock x:Name="_statusConnectionState"  Text="{Binding Path=ConnectionInfo }" FontSize="10" TextAlignment="Right" />
         </StatusBar>
         
         <!--Browser Column-->
-        <Grid Grid.Row="1" Grid.Column="0">
+        <Grid Grid.Row="2" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.33*"/>
                 <RowDefinition Height="auto"/>
@@ -87,7 +95,7 @@
         </Grid>
         
         <!--Editor Column-->
-        <Grid Grid.Row="1" Grid.Column="2">
+        <Grid Grid.Row="2" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.33*"/> <!--Timeline -->
                 <RowDefinition Height="auto"/>
@@ -107,9 +115,7 @@
                 
             <!--Timeline Components-->
             <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
-                <StackPanel x:Name="_TimeLineComponentsSP">
-                    <Button Content="Button" Height="23" Name="button1" Width="75" Click="button1_Click" />
-                </StackPanel>
+                <StackPanel x:Name="_TimeLineComponentsSP"></StackPanel>
             </Border>
                 
             <!-- Timeline Editor -->

@@ -34,8 +34,8 @@ private:
     typedef boost::function<returnType()> function;
 
 public:
-    event();
-    ~event();
+    event() {}
+    ~event() {}
 
     void operator+=(const function& func)
     {

@@ -36,6 +36,7 @@
 #include "Console.h"
 #include "SoundEngine.h"
 #include "SimpleForward3DRenderer.h"
+#include "FxManager.h"
 
 #ifdef HE_ENABLE_QT
 #pragma warning(disable:4127)
@@ -90,6 +91,8 @@ void HappyEngine::cleanup()
     m_pNetworkManager = nullptr;
     delete m_p3DRenderer;
     m_p3DRenderer = nullptr;
+    delete m_pFxManager;
+
 
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
@@ -157,6 +160,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     m_pConsole = NEW tools::Console();
     m_pConsole->load();
+
+    m_pFxManager = NEW gfx::FxManager();
 }
 
 void HappyEngine::start(game::Game* pGame)
@@ -261,6 +266,8 @@ void HappyEngine::updateLoop(float dTime)
     if (m_SubEngines & SubEngine_Physics)
         m_pPhysicsEngine->tick(dTime);
 
+    m_pFxManager->tick(dTime);
+
     m_pGame->tick(dTime);
 }
 void HappyEngine::drawLoop()
@@ -354,6 +361,11 @@ game::Game* HappyEngine::getGame() const
 gfx::SimpleForward3DRenderer* HappyEngine::get3DRenderer() const
 {
     return m_p3DRenderer;
+}
+
+gfx::FxManager* HappyEngine::getFxManager() const
+{
+    return m_pFxManager;
 }
 
 } //end namespace

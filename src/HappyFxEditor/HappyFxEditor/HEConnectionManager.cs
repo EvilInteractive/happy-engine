@@ -8,22 +8,25 @@ using System.Windows;
 
 namespace HappyFxEditor
 {
-    class HEConnectionManager : INotifyPropertyChanged
+    public enum FxOutHeader
     {
-        enum FxOutHeader
-        {
-            GetEffectPath = 0,
-            GetTexturePath,
-            GetModelPath,
-            GetAudioPath,
-        };
-        enum FxInHeader
-        {
-            SetEffectPath = 0,
-            SetTexturePath,
-            SetModelPath,
-            SetAudioPath,
-        };
+        GetEffectPath = 0,
+        GetTexturePath,
+        GetModelPath,
+        GetAudioPath,
+        Play,
+        Stop,
+        Pauze
+    };
+    public enum FxInHeader
+    {
+        SetEffectPath = 0,
+        SetTexturePath,
+        SetModelPath,
+        SetAudioPath,
+    };
+    public class HEConnectionManager : INotifyPropertyChanged
+    {
 
         private TcpClient _client;
         private NetworkStream _stream;
@@ -51,6 +54,7 @@ namespace HappyFxEditor
         public HEConnectionManager(GuiManager guiManaer)
         {
             _client = new TcpClient();
+            _guiManager = guiManaer;
         }
 
         public void Connect()
@@ -64,10 +68,10 @@ namespace HappyFxEditor
                     if (Connected)
                     {
                         _stream = _client.GetStream();
-                        _stream.BeginRead(_buffer, 0, MAX_BUFFER_SIZE, handleReceive, _stream);
+                        _stream.BeginRead(_buffer, 0, MAX_BUFFER_SIZE, HandleReceive, _stream);
                     }
                 }
-                catch (Exception e)
+                catch (Exception /*e*/)
                 { }
             }
         }
@@ -78,39 +82,47 @@ namespace HappyFxEditor
             _client.Close();
         }
 
-        private void handleReceive(IAsyncResult ar)
+        private void HandleReceive(IAsyncResult ar)
         {       
             try
             {
                 int numBytesRead = _stream.EndRead(ar);
     
                 //Parse buffer
-                int headerSize = 4;
-                FxInHeader header = (FxInHeader)BitConverter.ToUInt32(_buffer, 0);
+                Packet p = new Packet(_buffer);
+                FxInHeader header = p.ReadHeader();
                 switch (header)
                 {
                     case FxInHeader.SetEffectPath:
-                        _guiManager.EffectPath = BitConverter.ToString(_buffer, headerSize, numBytesRead - headerSize);
+                        _guiManager.EffectPath = p.ReadString();
                         break;
                     case FxInHeader.SetTexturePath:
-                        _guiManager.TexturePath = BitConverter.ToString(_buffer, headerSize, numBytesRead - headerSize);
+                        _guiManager.TexturePath = p.ReadString();
                         break;
                     case FxInHeader.SetModelPath:
-                        _guiManager.ModelPath = BitConverter.ToString(_buffer, headerSize, numBytesRead - headerSize);
+                        _guiManager.ModelPath = p.ReadString();
                         break;
                     case FxInHeader.SetAudioPath:
-                        _guiManager.AudioPath = BitConverter.ToString(_buffer, headerSize, numBytesRead - headerSize);
+                        _guiManager.AudioPath = p.ReadString();
                         break;
                     default:
                         MessageBox.Show("Unknown message received: header: " + header.ToString());
                         break;
                 }
     
-                _stream.BeginRead(_buffer, 0, MAX_BUFFER_SIZE, handleReceive, _stream);
+                _stream.BeginRead(_buffer, 0, MAX_BUFFER_SIZE, HandleReceive, _stream);
             }
             catch (System.Exception)
             {
                 
+            }
+        }
+
+        public void SendPacket(Packet packet)
+        {
+            if (Connected)
+            {
+                _stream.Write(packet.GetBuffer(), 0, packet.GetSize());
             }
         }
 

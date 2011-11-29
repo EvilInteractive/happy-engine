@@ -23,12 +23,13 @@
 #pragma once
 
 #include "IFxComponent.h"
+#include "IFxVariable.h"
+
+#include "Random.h"
 
 namespace he {
 namespace gfx {
-
-class IFxVariable;
-
+   
 class FxCameraEffect : public IFxComponent
 {
 public:
@@ -38,21 +39,23 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                             IFxComponent                           ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void setStartTime(float startTime);
-    virtual void setEndTime(float endTime);
-    virtual float getStartTime();
-    virtual float getEndTime();
+    virtual FxType getType() const { return FxType_CameraEffect; };
 
     virtual void start();
+    virtual void stop();
 
     virtual void tick(float currentTime, float dTime);
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Properties                             ///
     //////////////////////////////////////////////////////////////////////////
-    void setIntensity(const IFxVariable& var); 
+    void toggleShake(bool enable); 
+    void setShakeIntensity(const IFxVariable<vec3>::pointer& pVar); 
 
 private:
+    Random m_Random;
+    bool m_ShakeEnabled;
+    IFxVariable<vec3>::pointer m_pShakeIntensity;
 
     //Disable default copy constructor and default assignment operator
     FxCameraEffect(const FxCameraEffect&);

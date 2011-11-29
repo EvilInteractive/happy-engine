@@ -40,10 +40,37 @@ namespace HappyFxEditor
         {
             Close();
         }
-
-        private void button1_Click(object sender, RoutedEventArgs e)
+        
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            _heConnenctionManager.Connect();
+            if (_heConnenctionManager.Connected == false)
+                _heConnenctionManager.Connect();
+            if (_heConnenctionManager.Connected)
+            {
+                Packet p = new Packet(4, FxOutHeader.Play);
+                _heConnenctionManager.SendPacket(p);
+            }
+        }
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_heConnenctionManager.Connected == false)
+                _heConnenctionManager.Connect();
+            if (_heConnenctionManager.Connected)
+            {
+                Packet p = new Packet(4, FxOutHeader.Stop);
+                _heConnenctionManager.SendPacket(p);
+            }
+        }
+
+        private void PauzeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_heConnenctionManager.Connected == false)
+                _heConnenctionManager.Connect();
+            if (_heConnenctionManager.Connected)
+            {
+                Packet p = new Packet(4, FxOutHeader.Pauze);
+                _heConnenctionManager.SendPacket(p);
+            }
         }
     }
 }

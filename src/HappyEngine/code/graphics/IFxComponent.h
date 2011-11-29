@@ -25,20 +25,31 @@
 namespace he {
 namespace gfx {
 
+enum FxType
+{
+    FxType_ParticleSystem = 0,
+    FxType_CameraEffect
+};
 class IFxComponent
 {
 public:
+
     virtual ~IFxComponent() {};
     
-    virtual void setStartTime(float startTime) = 0;
-    virtual void setEndTime(float endTime) = 0;
-    virtual float getStartTime() const = 0;
-    virtual float getEndTime() const = 0;
+    virtual FxType getType() const = 0;
+
+    virtual void setStartTime(float startTime) { m_StartTime = startTime; }
+    virtual void setEndTime(float endTime) { m_EndTime = endTime; } 
+    virtual float getStartTime() const { return m_StartTime; }
+    virtual float getEndTime() const { return m_EndTime; }
 
     virtual void start() = 0;
+    virtual void stop() = 0;
 
     virtual void tick(float currentTime, float dTime) = 0;
 
+private:
+    float m_StartTime, m_EndTime;
 };
 
 } } //end namespace

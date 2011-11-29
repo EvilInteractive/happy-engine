@@ -24,8 +24,11 @@
 
 #include "HappyTypes.h"
 
+#include "SlotPContainer.h"
+#include "HappyTypes.h"
+
 #include <set>
-#include <queue>
+
 
 namespace he {
 namespace gfx {
@@ -50,10 +53,7 @@ private:
     void timelineStarted(uint id);
     void timelineStopped(uint id);
 
-    const static int MAX_TIMELINES = 100;
-    FxTimeLine* m_TimelineMemPool[MAX_TIMELINES];
-
-    std::queue<uint> m_FreeSlots;
+    SlotPContainer<FxTimeLine*> m_TimeLines;
     std::set<uint> m_ActiveTimelines;
 
     //Disable default copy constructor and default assignment operator

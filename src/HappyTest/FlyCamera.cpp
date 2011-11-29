@@ -43,9 +43,7 @@ FlyCamera::~FlyCamera()
 void FlyCamera::tick(const float dTime)
 {
     using namespace he;
-
-    if (!m_bIsActive) return;
-
+    
     if (m_bMoveable)
     {
         bool bRunning = false;
