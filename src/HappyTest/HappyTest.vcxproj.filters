@@ -170,7 +170,6 @@
     <None Include="data\shaders\deferred\post\shadowBlur.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\defaultSkinned.shader" />
     <None Include="data\shaders\ssaoShader.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
@@ -178,6 +177,9 @@
       <Filter>data\shaders\deferred\post</Filter>
     </None>
     <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\defaultSkinned.shader">
       <Filter>data\shaders\deferred\pre</Filter>
     </None>
   </ItemGroup>

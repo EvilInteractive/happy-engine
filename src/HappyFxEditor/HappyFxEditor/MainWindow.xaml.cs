@@ -21,6 +21,7 @@ namespace HappyFxEditor
     {
         private HEConnectionManager _heConnenctionManager;
         private GuiManager _guiManager;
+        private TimeLine _timeLine;
 
         public MainWindow()
         {
@@ -29,6 +30,16 @@ namespace HappyFxEditor
             _heConnenctionManager = new HEConnectionManager(_guiManager);
             _statusConnectionState.DataContext = _heConnenctionManager;
             Closed += new EventHandler(OnClose);
+
+            _timeLine = new TimeLine(_timeLineVisualizer);
+            _timelineEditor.DataContext = _timeLine;
+
+            Loaded += OnLoad;
+        }
+
+        void OnLoad(object sender, EventArgs e)
+        {
+            _timeLine.UpdateVisual();
         }
 
         void OnClose(object sender, EventArgs e)

@@ -113,7 +113,7 @@ TestObject::TestObject():
 
 
 
-    m_pCarEngineSfx = AUDIO->loadSound2D("../data/audio/carIdle.wav", true);
+    m_pCarEngineSfx = AUDIO->loadSound2D("../data/audio/carIdle.wav", false);
     m_pCarEngineSfx->setLooping(true);
     m_pCarEngineSfx->play();
 
@@ -188,7 +188,7 @@ void TestObject::tick(float dTime)
         m_pCar->addForce((m_pCar->getPose() * force).xyz());
     }
 
-    m_pCarEngineSfx->setPitch(he::clamp<float>(m_pCar->getEngineRPM() / 200+0.1f, 0, 4));
+    m_pCarEngineSfx->setPitch(he::clamp<float>(m_pCar->getEngineRPM() / 150 + 1.0f, 1, 6));
 
     //////////////////////////////////////////////////////////////////////////
     ///     GUI                                                            ///

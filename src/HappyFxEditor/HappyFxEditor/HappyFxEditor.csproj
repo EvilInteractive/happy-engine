@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Fx\TimeLine.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -64,6 +65,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FileBrowser.cs" />
+    <Compile Include="Fx\TimeLineComponent.cs" />
+    <Compile Include="Fx\TimeLineTrack.cs" />
     <Compile Include="GuiManager.cs" />
     <Compile Include="HEConnectionManager.cs" />
     <Compile Include="MainWindow.xaml.cs">

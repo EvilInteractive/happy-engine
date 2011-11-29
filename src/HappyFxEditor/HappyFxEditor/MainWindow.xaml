@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="479" Width="848">
 
+    <Window.Resources>
     <!--   
             Styles   
     -->
-    <Window.Resources>
         <!--Border Style-->
         <Style x:Key="mainBorderStyle" TargetType="Border">
             <Setter Property="BorderBrush" Value="#FF293955" />
@@ -26,6 +26,46 @@
         <Style x:Key="gridSizerVStyle" TargetType="GridSplitter" BasedOn="{StaticResource gridSizerStyle}">
             <Setter Property="Height" Value="auto"/>
         </Style>
+        
+        <!-- Component Style -->
+        <Style x:Key="componentRectStyle" TargetType="Rectangle">
+            <Setter Property="RadiusX" Value="4"/>
+            <Setter Property="RadiusY" Value="4"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="Stroke" Value="Black" />
+        </Style>
+        <Style x:Key="componentTextStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+    <!--   
+            Templates   
+    -->
+        <DataTemplate x:Key="TrackItemTemplate">
+            <Canvas>
+                <Rectangle Margin="0" Height="16" Width="{Binding Path=Width}" Fill="{Binding Path=Color}" Style="{StaticResource componentRectStyle}"/>
+                <Label Content="{Binding Path=Name}" Style="{StaticResource componentTextStyle}"/> 
+            </Canvas>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="TrackTemplate">
+            <Canvas Width="auto" Height="16">
+                <ItemsControl ItemsSource="{Binding Path=Components}" ItemTemplate="{StaticResource TrackItemTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style>
+                            <Setter Property="Canvas.Left" Value="{Binding Path=X}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </Canvas>
+        </DataTemplate>
+        
     </Window.Resources>
 
     <!--   
@@ -115,11 +155,37 @@
                 
             <!--Timeline Components-->
             <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource mainBorderStyle}">
-                <StackPanel x:Name="_TimeLineComponentsSP"></StackPanel>
+                <StackPanel x:Name="_TimeLineComponentsSP" Orientation="Vertical"></StackPanel>
             </Border>
                 
             <!-- Timeline Editor -->
             <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource mainBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Canvas x:Name="_timeLineVisualizer"  Grid.Row="0" Background="Black" Height="32">
+                        <ItemsControl ItemsSource="{Binding Path=TimeLineShapes}" ItemTemplate="{StaticResource TrackTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Canvas>
+                    <ScrollViewer Grid.Row="1">
+                        <StackPanel x:Name="_timelineEditor">
+                            <ItemsControl ItemsSource="{Binding Path=Tracks}" ItemTemplate="{StaticResource TrackTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
             </Border>
                 
             <!-- Timeline Component Components -->
