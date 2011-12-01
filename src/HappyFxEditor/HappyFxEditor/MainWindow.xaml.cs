@@ -83,5 +83,40 @@ namespace HappyFxEditor
                 _heConnenctionManager.SendPacket(p);
             }
         }
+
+        private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void TrackRightClicked(object sender, MouseButtonEventArgs e)
+        {
+            FrameworkElement el = sender as FrameworkElement;
+            TimeLineTrack track = el.DataContext as TimeLineTrack;
+            if (track != null)
+                track.RightClick(sender, e);
+        }
+        private void Component_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            FrameworkElement el = sender as FrameworkElement;
+            TimeLineComponent comp = el.DataContext as TimeLineComponent;
+            if (comp != null)
+                comp.LeftPressed(sender, e);
+        }
+        private void Component_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            FrameworkElement el = sender as FrameworkElement;
+            TimeLineComponent comp = el.DataContext as TimeLineComponent;
+            if (comp != null)
+                comp.LeftReleased(sender, e);
+        }
+
+        private void Component_MouseMove(object sender, MouseEventArgs e)
+        {
+            FrameworkElement el = sender as FrameworkElement;
+            TimeLineComponent comp = el.DataContext as TimeLineComponent;
+            if (comp != null)
+                comp.MouseMove(sender, e);
+        }
     }
 }
