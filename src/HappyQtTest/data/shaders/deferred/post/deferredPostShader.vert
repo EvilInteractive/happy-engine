@@ -29,5 +29,5 @@ uniform mat4 mtxWVP;
 void main()
 {
     gl_Position = mtxWVP * vec4(inPosition, 1.0f);
-	passPos = gl_Position.xyw;
+    passPos = gl_Position.xyw;
 }

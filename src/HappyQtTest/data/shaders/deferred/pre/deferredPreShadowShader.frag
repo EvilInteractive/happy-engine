@@ -26,6 +26,6 @@ out vec2 outShadow;
 void main()
 {
     float val = passPos.z / passPos.w;
-    outShadow.x = val;// * 0.5f + 0.5f;
-    outShadow.y = (val * val);// * 0.5f + 0.5f;
+    outShadow.x = val;
+    outShadow.y = (val * val);
 }

@@ -58,7 +58,7 @@ void FPSGraph::tick(float dTime, float interval)
 
     if( (m_GameTime - m_TBase) >= m_Interval)
     {
-        m_TBase += m_Interval;
+        m_TBase = m_GameTime;
 
         uint fps((uint)(1 / dTime));
 

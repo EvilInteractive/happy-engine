@@ -175,7 +175,7 @@ float renderAO()
         }
     }
 
-    ao /= 8 * 4.0f * 1;
+    ao /= 4 * 4.0f * 2;
 
     return ao;
 }

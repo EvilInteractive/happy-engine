@@ -37,24 +37,33 @@ struct DirectionalLight
     vec3 direction;
 };
 
-uniform sampler2D colorIllMap;
-uniform sampler2D normalMap;
-uniform sampler2D sgMap;
-uniform sampler2D depthMap;
+layout(shared) uniform SharedBuffer
+{
+    vec4 projParams;
+};
+layout(packed) uniform PerFrameBuffer
+{
+    mat4 mtxDirLight0;
+    mat4 mtxDirLight1;
+    mat4 mtxDirLight2;
+    mat4 mtxDirLight3;
+};
+layout(packed) uniform LightBuffer
+{
+    AmbientLight ambLight;
+    DirectionalLight dirLight;
+};
 
-uniform vec4 projParams;
-
-uniform AmbientLight ambLight;
-uniform DirectionalLight dirLight;
-
-uniform mat4 mtxDirLight0;
-uniform mat4 mtxDirLight1;
-uniform mat4 mtxDirLight2;
-uniform mat4 mtxDirLight3;
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform sampler2D shadowMap3;
+
+uniform sampler2D colorIllMap;
+uniform sampler2D normalMap;
+uniform sampler2D sgMap;
+uniform sampler2D depthMap;
+uniform sampler2D colorRamp;
 
 vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
 {
@@ -88,22 +97,23 @@ float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
     
     //float bias = 0.001f;
 
-    vec2 map = PCF9(sampler, coord.xy);
-    //vec2 map = texture(sampler, coord.xy).rg;
+    //vec2 map = PCF9(sampler, coord.xy);
+    vec2 map = texture(sampler, coord.xy).rg;
 
 
     float fAvgZ = map.x;
     float fAvgZ2 = map.y;
 
     if (coord.z <= fAvgZ) return 1.0f;
+    if (coord.z >= 1.0f) return 0.0f;
 
     float variance = fAvgZ2 - (fAvgZ * fAvgZ);
-    variance = min(max(variance, 0.0f) + 0.00002f, 1.0f);
+    variance = min(max(variance, 0.0f) + 0.00005f, 1.0f);
 
     float mean = fAvgZ;
     float d = coord.z - mean;
     
-    return pow(variance / (variance + d*d), 5);
+    return pow(variance / (variance + d*d), 25);
 }
 
 void main()
@@ -116,52 +126,59 @@ void main()
         
     vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
     
-    float dotLightNormal = dot(lightDir, normal) * 0.5f + 0.5f;
-    //dotLightNormal *= dotLightNormal;
-    dotLightNormal = max(0.0f, dotLightNormal);
-    
-    vec4 sg = texture(sgMap, texCoord);	
-    vec3 vCamDir = normalize(-position);
-    float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
-    
-    vec4 color = texture(colorIllMap, texCoord);
+    //Lambert
+    float dotLightNormal = max(min(dot(lightDir, normal), 1.0f), 0.0f);
 
-    vec3 dirColor = (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 5.0f) * dirLight.color.rgb;
+    //Ramp
+    vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
+
+    //HalfLambert
+    float halfLambert = dotLightNormal * 0.5f + 0.5f;
+    halfLambert *= halfLambert;
+
+    //Light
+    vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f, 0.3f, 0.3f)) * dirLight.color.rgb * dirLight.color.a;
+    vec3 ambientLight = ambLight.color.rgb * ambLight.color.a;
     
+    //Shadow
     vec3 testColor = vec3(1, 1, 1);
+    float shadow = 1;
+    if (position.z < 30)
+    {
+        //testColor += vec3(1, 0, 0);
+        shadow *= shadowCheck(position, shadowMap0, mtxDirLight0);
+    }
+    if (position.z > 20 && position.z < 80)
+    {
+        //testColor += vec3(0, 1, 0);
+        shadow *= shadowCheck(position, shadowMap1, mtxDirLight1);
+    }
+    if (position.z > 70 && position.z < 155)
+    {
+        //testColor += vec3(0, 0, 1);
+        shadow *= shadowCheck(position, shadowMap2, mtxDirLight2);
+    }
+    if (position.z > 145)
+    {
+        //testColor += vec3(0, 0, 0);
+        shadow *= shadowCheck(position, shadowMap3, mtxDirLight3);
+    }
 
-    if (position.z < 25)
+    //Specular
+    vec3 spec = vec3(0.0f, 0.0f, 0.0f);
+    if (shadow > 0.001f)
     {
-        //testColor = vec3(1, 0, 1);
-        dirColor *= shadowCheck(position, shadowMap0, mtxDirLight0);
+        vec4 sg = texture(sgMap, texCoord);	
+        vec3 vCamDir = normalize(-position);
+        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
     }
-    else if (position.z < 50)
-    {
-        //testColor = vec3(0, 1, 0);
-        dirColor *= shadowCheck(position, shadowMap1, mtxDirLight1);
-    }
-    else if (position.z < 100)
-    {
-        //testColor = vec3(0, 0, 1);
-        dirColor *= shadowCheck(position, shadowMap2, mtxDirLight2);
-    }
-    else
-    {
-        //testColor = vec3(0, 1, 1);
-        dirColor *= shadowCheck(position, shadowMap3, mtxDirLight3);
-    }
-    
-    //float steps = 1.0f / 16.0f;
-    //color.r = int(color.r / steps) * steps;
-    //color.g = int(color.g / steps) * steps;
-    //color.b = int(color.b / steps) * steps;
-//
-    //dirColor.r = int(dirColor.r / steps) * steps;
-    //dirColor.g = int(dirColor.g / steps) * steps;
-    //dirColor.b = int(dirColor.b / steps) * steps;
-    
+    spec = vec3(0, 0 ,0);
 
-    outColor = vec4((color.rgb * ambLight.color.a * ambLight.color.rgb + 
-                    color.rgb * color.a * 10.0f + 
-                    dirColor.rgb * dirLight.color.a)*testColor, 0.0f);						
+    //Albedo
+    vec4 color = texture(colorIllMap, texCoord);
+     
+    //Out         
+    outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
+                        , 0.0f);					
+    //outColor = vec4(color, 1.0f);
 }

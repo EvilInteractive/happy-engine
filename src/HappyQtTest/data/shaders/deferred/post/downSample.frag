@@ -34,14 +34,14 @@ void main()
     vec3 color = texture(map, texCoord).rgb;
     
 #if BRIGHTPASS
-	float ex = (1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f)) / 4.0f;
-	color *= ex;
+    float ex = (1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f)) / 4.0f;
+    color *= ex;
     color -= vec3(1.0f, 1.0f, 1.0f);
     color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
-	color /= ex;
+    color /= ex;
 #endif
 
-	outColor = vec4(color, 1.0f);
+    outColor = vec4(color, 1.0f);
 }
 
 

@@ -143,24 +143,24 @@ void main()
     //Shadow
     vec3 testColor = vec3(1, 1, 1);
     float shadow = 1;
-    if (position.z < 25)
+    if (position.z < 30)
     {
-        //testColor = vec3(1, 0, 1);
+        //testColor += vec3(1, 0, 0);
         shadow *= shadowCheck(position, shadowMap0, mtxDirLight0);
     }
-    else if (position.z < 50)
+    if (position.z > 20 && position.z < 80)
     {
-        //testColor = vec3(0, 1, 0);
+        //testColor += vec3(0, 1, 0);
         shadow *= shadowCheck(position, shadowMap1, mtxDirLight1);
     }
-    else if (position.z < 100)
+    if (position.z > 70 && position.z < 155)
     {
-        //testColor = vec3(0, 0, 1);
+        //testColor += vec3(0, 0, 1);
         shadow *= shadowCheck(position, shadowMap2, mtxDirLight2);
     }
-    else
+    if (position.z > 145)
     {
-        //testColor = vec3(0, 1, 1);
+        //testColor += vec3(0, 0, 0);
         shadow *= shadowCheck(position, shadowMap3, mtxDirLight3);
     }
 
@@ -172,6 +172,7 @@ void main()
         vec3 vCamDir = normalize(-position);
         spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
     }
+    spec = vec3(0.0f, 0.0f, 0.0f);
 
     //Albedo
     vec4 color = texture(colorIllMap, texCoord);

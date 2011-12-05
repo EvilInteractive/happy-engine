@@ -122,8 +122,11 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
 
 PhysicsStaticActor::~PhysicsStaticActor()
 {
-    PHYSICS->getScene()->removeActor(*m_pActor);
-    m_pActor->release();
+    if (PHYSICS != nullptr)
+    {
+        PHYSICS->getScene()->removeActor(*m_pActor);
+        m_pActor->release();
+    }
 }
 
 vec3 PhysicsStaticActor::getPosition() const

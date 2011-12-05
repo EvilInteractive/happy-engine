@@ -159,10 +159,10 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
 
     mat44 mtxShadowView(mat44::createLookAtLH(pCamera->getPosition() - shadowLook, pCamera->getPosition(), up));
     mat44 mtxShadowProjection[COUNT-1];
-    mtxShadowProjection[0] = getProjection(pCamera, mtxShadowView, pCamera->getNearClip(), 25);
-    mtxShadowProjection[1] = getProjection(pCamera, mtxShadowView, 25, 50);
-    mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 50, 100);
-    mtxShadowProjection[3] = getProjection(pCamera, mtxShadowView, 100, pCamera->getFarClip());
+    mtxShadowProjection[0] = getProjection(pCamera, mtxShadowView, pCamera->getNearClip(), 30);//25
+    mtxShadowProjection[1] = getProjection(pCamera, mtxShadowView, 20, 80);//75
+    mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 70, 155);//150
+    mtxShadowProjection[3] = getProjection(pCamera, mtxShadowView, 145, pCamera->getFarClip());
     
 
     //Begin drawing

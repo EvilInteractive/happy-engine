@@ -28,8 +28,10 @@
 #include "Font.h"
 #include "FontLoader.h"
 #include "FlyCamera.h"
+#include "FollowCamera.h"
 #include "FPSGraph.h"
 #include "Sound2D.h"
+#include "Sound3D.h"
 
 #include <vector>
 
@@ -40,14 +42,20 @@
 #include "TextBox.h"
 #include "Grid.h"
 
+#include "PhysicsCarManager.h"
+
+#include "Polygon2D.h"
+
+#include "HappyFxEditorBinding.h"
+
 #include "HappyQtWidget.h"
 
 namespace happytest {
-    
+
 class MainGame : public he::gfx::HappyQtWidget
 {
 public:
-	MainGame(/*qt::*/QWidget *parent = 0);
+    MainGame(/*qt::*/QWidget *parent = 0);
     virtual ~MainGame();
 
     virtual void init();
@@ -56,7 +64,9 @@ public:
     virtual void draw();
 
 private:
-	happytest::FlyCamera* m_pCamera;
+    happytest::FlyCamera* m_pFlyCamera;
+    happytest::FollowCamera* m_pFollowCamera;
+    he::gfx::Camera* m_pCurrentCamera;
 
     TestObject* m_pTestObject;
 
@@ -66,17 +76,18 @@ private:
     float m_DrawTimer;
     float m_UpdateTimer;
 
-	bool m_bTest;
-	bool m_bTest2;
-	std::string m_Test3;
+    bool m_bTest;
+    bool m_bTest2;
+    std::string m_Test3;
     
     std::vector<he::game::Entity*> m_Bullets;
-    
-	he::tools::FPSGraph* m_pFPSGraph;
 
-	he::gfx::Texture2D::pointer m_TestImage;
-	he::gfx::Texture2D::pointer m_SplashImage;
-	he::gfx::Font::pointer m_pFont;
+
+    he::tools::FPSGraph* m_pFPSGraph;
+
+    he::gfx::Texture2D::pointer m_TestImage;
+    he::gfx::Texture2D::pointer m_SplashImage;
+    he::gfx::Font::pointer m_pFont;
 
     he::game::Entity* m_pAxis;
     he::game::Entity* m_pScene;
@@ -85,14 +96,23 @@ private:
     he::gfx::SpotLight::pointer m_pSpotLight;
     he::gfx::PointLight::pointer m_pCarLight;
 
-	he::gui::Button* m_pTestButton;
-	he::gui::Button* m_pTestButton2;
+    he::gui::Button* m_pTestButton;
+    he::gui::Button* m_pTestButton2;
+    he::gui::Button* m_pTestButton3;
 
-	he::gui::TextBox* m_pTextBox;
+    he::gui::TextBox* m_pTextBox;
 
-	he::sfx::Sound2D* m_pStillAllive;
+    he::sfx::Sound2D* m_pTestSound2D;
+    he::sfx::Sound3D* m_pTestSound3D;
 
-	he::tools::Grid* m_pTestGrid;
+    he::tools::Grid* m_pTestGrid;
+
+    he::tools::HappyFxEditorBinding* m_pFxEditorBinding;
+
+    he::vec3 m_PickPos;
+    //bool m_bDrawPicking;
+
+    he::px::DriveableSurfaceTyreFrictionTable* m_pFrictionTable;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

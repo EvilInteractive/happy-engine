@@ -279,8 +279,8 @@ void MainGame::load()
     // SSAO
     he::gfx::Deferred3DRenderer::SSAOSettings settings;
 
-    settings.radius = 0.15f;
-    settings.intensity = 2.0f;
+    settings.radius = 0.25f;
+    settings.intensity = 4.0f;
     settings.scale = 4.0f;
     settings.bias = 0.04f;
     settings.passes = 2;
@@ -369,10 +369,11 @@ void MainGame::tick(float dTime)
 
         if (id != UINT_MAX)
         {
-            m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
+            /*m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
         }
-        else
-            m_PickPos = vec3(0,0,0);
+        else*/
+            m_PickPos = vec3((float)id, (float)id, (float)id);
+        }
     }
 
     m_pFPSGraph->tick(dTime, 0.5f);
@@ -416,11 +417,12 @@ void MainGame::draw()
 
     GUI->drawText(gui::Text(stream.str()), vec2(1050,590));*/
 
-    /*stream.str("");
+    
+    //stream.str("");
+    std::stringstream stream;
+    stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
 
-    stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;*/
-
-    //GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
+    GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
 
     //if (m_Poly.getPolygon().getVertexCount() > 2)
     //{

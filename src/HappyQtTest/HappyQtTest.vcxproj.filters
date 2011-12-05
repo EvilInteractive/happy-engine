@@ -73,6 +73,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_HappyQtWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="FollowCamera.cpp">
+      <Filter>Game Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="HappyQtTest.ui">
@@ -105,6 +108,12 @@
       <Filter>Game Files</Filter>
     </ClInclude>
     <ClInclude Include="MainGame.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowCamera.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsData.h">
       <Filter>Game Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -58,5 +58,5 @@ void main()
 
     outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal.rgb));
 
-    outSGI = vec4(specGlossIll.rg, 0.0f, 0.0f);
+    outSGI = vec4(specGlossIll.rg, 0.0f, 1.0f);
 }

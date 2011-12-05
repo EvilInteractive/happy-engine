@@ -24,12 +24,19 @@
 #include "Font.h"
 #include "Entity.h"
 
+#include "ITickable.h"
+#pragma warning(disable:4505)
+#include "PhysicsCar.h"
+#pragma warning(default:4505)
 #include "RiggedModelComponent.h"
-#include "DynamicPhysicsComponent.h"
+
+#include "Text.h"
+#include "Font.h"
+#include "audio/Sound2D.h"
 
 namespace happytest {
 
-class TestObject : public he::game::Entity
+class TestObject : public he::game::Entity, public he::game::ITickable
 {
 public:
     TestObject();
@@ -39,12 +46,14 @@ public:
 
 private:   
     he::gfx::Font::pointer m_pFont;
+    he::sfx::Sound2D* m_pCarEngineSfx;
 
     float m_WheelOrientation, m_WheelMax, m_WheelTurnSpeed, m_WheelSpeedRotation;
     float m_Rotation;
     he::vec3 m_Position;
     
-    he::game::DynamicPhysicsComponent* m_PhysicsComponent;
+    he::px::PhysicsCar* m_pCar;
+    he::uint m_CameraShakeTL;
 
     he::game::RiggedModelComponent* m_pRiggedModelComponent;
     he::game::RiggedModelComponent::BoneTransform m_WheelFLBone, m_WheelFRBone, m_WheelBLBone, m_WheelBRBone;

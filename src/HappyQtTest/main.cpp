@@ -31,7 +31,6 @@ int main(int argc, char** argv)
         pWindow.show();
      
         HAPPYENGINE->start(pWindow.getGameWidget());
-		HAPPYENGINE->dispose();
     }
     HAPPYENGINE->dispose();
     std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
