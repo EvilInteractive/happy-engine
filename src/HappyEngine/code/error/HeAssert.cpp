@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 13/06/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "HeAssert.h"
 #include <iostream>
@@ -33,7 +33,11 @@ void happyAssert(bool isOk, const std::string& message, const char* file, int li
         std::cout << "**ASSERTION FAILURE!**\n";
         std::cout << "*err in file " << file << "(" << line << ")\n";
         std::cout << "*" << message << "\n";
+        #ifdef WINDOWS
         __debugbreak();
+        #else
+        __builtin_trap();
+        #endif
     }
 }
 void happyAssert(bool isOk, const char* file, int line)
@@ -42,7 +46,11 @@ void happyAssert(bool isOk, const char* file, int line)
     {
         std::cout << "**ASSERTION FAILURE!**\n";
         std::cout << "*err in file " << file << "(" << line << ")\n";
+        #ifdef WINDOWS
         __debugbreak();
+        #else
+        __builtin_trap();
+        #endif
     }
 }
 void happyAssert(int isOk, const char* file, int line)
@@ -58,7 +66,11 @@ void happyAssert(const std::string& message, const char* file, int line)
     std::cout << "**ASSERTION FAILURE!**\n";
     std::cout << "*err in file " << file << "(" << line << ")\n";
     std::cout << "*" << message << "\n";
-     __debugbreak();
+    #ifdef WINDOWS
+    __debugbreak();
+    #else
+    __builtin_trap();
+    #endif
 }
 } } } //end namespace
 #pragma warning(default:4127)

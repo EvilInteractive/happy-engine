@@ -29,7 +29,9 @@
 #include <vector>
 #include <queue>
 
+#undef assert
 #include "boost/asio.hpp"
+#define assert ASSERT
 #include "boost/function.hpp"
 #include "Message.h"
 
@@ -44,7 +46,7 @@ public:
 
     void start(ushort port);
 
-    static const int MAX_BUFFER_SIZE = 1024; 
+    static const int MAX_BUFFER_SIZE = 1024;
 
     bool isConnected() const;
 

@@ -23,6 +23,7 @@
 #include "boost/shared_ptr.hpp"
 
 #pragma warning (disable : 4244)
+#undef assert
 #include "boost/thread.hpp"
 #pragma warning (default : 4244)
 
@@ -168,7 +169,7 @@ private:
 
     // Methods
     void initWindow();
-    
+
 #ifdef HE_ENABLE_QT
     /*qt::*/QTimer m_qtLoopTimer;
     gfx::HappyQtWidget* m_pQtWidget;

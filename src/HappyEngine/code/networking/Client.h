@@ -27,7 +27,9 @@
 #define assert ASSERT
 
 #include "boost/shared_ptr.hpp"
+#undef assert
 #include "boost/asio.hpp"
+#define assert ASSERT
 #include "HappyTypes.h"
 #include "Message.h"
 #include "Server.h"
@@ -45,8 +47,8 @@ public:
     void disconnect();
 
     typedef boost::shared_ptr<Client> pointer;
-    
-    /** 
+
+    /**
     \brief Sends a message to the server
 
     \param[in] msg The message to be send, buffer will be copied: no need to keep it alive

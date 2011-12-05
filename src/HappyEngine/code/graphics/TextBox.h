@@ -29,7 +29,7 @@
 #include "Color.h"
 #include <map>
 #include "Font.h"
-#include "boost\timer.hpp"
+#include "boost/timer.hpp"
 #include <vector>
 #include "Keyboard.h"
 
@@ -39,7 +39,7 @@ namespace gui {
 class TextBox
 {
 public:
-	
+
 	/* CONSTRUCTOR - DESTRUCTOR */
 	TextBox(	RectF posSize,
 				const std::string& defaultString = std::string(""),

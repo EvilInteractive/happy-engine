@@ -48,16 +48,7 @@ inline T clamp(T p_value, T p_min, T p_max)
     return max(p_min, min(p_max, p_value));
 }
 
-//interpolation passes through every point, returns value between p1 and p2, t[0, 1]
-//T must support -T, T*T, T*float, T+T
-template<typename T>
-inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
-{
-    return ((p1 * 2) +
-        (-p0 + p2) * t + 
-        (p0 * 2 - p1 * 5 + p2 * 4 - p3) * sqr(t) +
-        (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
-}
+
 
 //template
 //linear interpolation, t[0, 1]
@@ -196,6 +187,17 @@ inline vec4 normalize(const vec4& vector)
         return vector / length(vector);
     else
         return vector;
+}
+
+//interpolation passes through every point, returns value between p1 and p2, t[0, 1]
+//T must support -T, T*T, T*float, T+T
+template<typename T>
+inline T catmullrom(const T& p0, const T& p1, const T& p2, const T& p3, float t)
+{
+    return ((p1 * 2) +
+        (-p0 + p2) * t +
+        (p0 * 2 - p1 * 5 + p2 * 4 - p3) * sqr(t) +
+        (-p0 + p1 * 3 - p2 * 3 + p3) * pow(t, 3.0f)) * 0.5f;
 }
 
 

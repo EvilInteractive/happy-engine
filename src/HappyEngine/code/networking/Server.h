@@ -29,7 +29,9 @@
 #include <vector>
 #include <queue>
 
+#undef assert
 #include "boost/asio.hpp"
+#define assert ASSERT
 #include "Message.h"
 
 namespace he {
@@ -51,7 +53,7 @@ public:
     void start(ushort port, byte maxConnections);
     void stop();
 
-    static const int MAX_MESSAGE_SIZE = 1024; 
+    static const int MAX_MESSAGE_SIZE = 1024;
 
     struct Header
     {
@@ -62,7 +64,7 @@ public:
 protected:
     virtual void handleClientMessage(const void* msg, uint msg_size, byte fromUser) = 0;
     virtual void handleUserDisconnecting(byte userId);
-    
+
     void userSendMessageToAll(const void* pMsg, uint sizeInBytes, byte from);
     void userSendMessageToAllBut(const void* pMsg, uint sizeInBytes, byte from, byte userId);
     void userSendMessageToUser(const void* pMsg, uint sizeInBytes, byte from, byte userId);
@@ -113,7 +115,7 @@ private:
     boost::asio::ip::udp::socket* m_pUdpSocket;
     boost::asio::ip::udp::endpoint m_LastPacketSender;
     void* m_pBuffer;
-    
+
     uint m_ReceivedBytes;
     uint m_SendBytes;
 

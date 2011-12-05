@@ -61,7 +61,7 @@ struct ChassiDesc
 };
 class PhysicsCar
 {
-friend PhysicsCarManager;
+friend class PhysicsCarManager;
 
 public:
     enum Tyre
@@ -117,7 +117,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     /// GETTERS
-    ////////////////////////////////////////////////////////////////////////// 
+    //////////////////////////////////////////////////////////////////////////
     mat44 getTyrePose(Tyre tyre) const;
     mat44 getChassiPose() const;
 
@@ -140,7 +140,7 @@ private:
 
     physx::PxRigidDynamic* m_pActor;
     physx::PxVehicle4W* m_pVehicle;
- 
+
     physx::PxShape* m_TyreShape[MAX_TYRES];
 
     physx::PxVehicleRawInputData m_InputData;

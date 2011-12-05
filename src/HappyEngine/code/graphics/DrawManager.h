@@ -40,7 +40,7 @@ public:
     {
         const IDrawable* pDrawable;
         float sorter;
-        bool operator<(const DrawElement& other)
+        bool operator<(const DrawElement& other) const
         {
             return sorter < other.sorter;
         }

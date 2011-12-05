@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 //Created: 04/08/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "ObjLoader.h"
 
@@ -58,8 +58,8 @@ void ObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLayou
     m_Vertices = malloc(vertLayout.getVertexSize() * m_NumVertices);
     std::cout << "malloc " << vertLayout.getVertexSize() * m_NumVertices << " bytes\n";
     ASSERT(m_Vertices != nullptr, "not enough memory!");
-    
-    std::cout << "filling...\n";    
+
+    std::cout << "filling...\n";
     fill(m_Vertices, vertLayout);
 }
 
@@ -75,9 +75,9 @@ void ObjLoader::read(const std::string& path)
 
     io::FileReader reader;
     vector<string> objData;
-    try 
-    { 
-        reader.open(path, io::FileReader::OpenType_ASCII); 
+    try
+    {
+        reader.open(path, io::FileReader::OpenType_ASCII);
         objData = reader.readToEndSplit();
     }
     catch (err::FileNotFoundException&)
@@ -85,25 +85,25 @@ void ObjLoader::read(const std::string& path)
         reader.close();
         throw;
     }
-    
+
     for_each(objData.cbegin(), objData.cend(), [&](const string& line)
     {
         if (line[0] == 'v' && line[1] == ' ')
         {
             vec3 v;
-            sscanf_s(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
+            sscanf(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
             m_PositionData.push_back(v);
         }
         else if (line[0] == 'v' && line[1] == 't')
         {
             vec2 t;
-            sscanf_s(line.c_str(), "vt %f %f", &t.x, &t.y);
+            sscanf(line.c_str(), "vt %f %f", &t.x, &t.y);
             m_TextureData.push_back(t);
         }
         else if (line[0] == 'v' && line[1] == 'n')
         {
             vec3 n;
-            sscanf_s(line.c_str(), "vn %f %f %f", &n.x, &n.y, &n.z);
+            sscanf(line.c_str(), "vn %f %f %f", &n.x, &n.y, &n.z);
             m_NormalData.push_back(n);
         }
         else if (line[0] == 'g')
@@ -131,7 +131,7 @@ void ObjLoader::read(const std::string& path)
                 data.push_back(temp);
             }
 
-            sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &data[0][0], &data[0][1], &data[0][2],
+            sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &data[0][0], &data[0][1], &data[0][2],
                                                                    &data[1][0], &data[1][1], &data[1][2],
                                                                    &data[2][0], &data[2][1], &data[2][2]);
             m_FaceData.push_back(data);
@@ -243,21 +243,21 @@ void ObjLoader::create(bool allowByteIndices)
     //{
     //    byte bTemp(0);
     //    bTemp = m_IndicesByte[i + 1];
-    //    m_IndicesByte[i + 1] = m_IndicesByte[i + 2]; 
+    //    m_IndicesByte[i + 1] = m_IndicesByte[i + 2];
     //    m_IndicesByte[i + 2] = bTemp;
     //}
     //for (uint i = 0; i < m_IndicesUShort.size(); i += 3)
     //{
     //    ushort usTemp(0);
     //    usTemp = m_IndicesUShort[i + 1];
-    //    m_IndicesUShort[i + 1] = m_IndicesUShort[i + 2]; 
+    //    m_IndicesUShort[i + 1] = m_IndicesUShort[i + 2];
     //    m_IndicesUShort[i + 2] = usTemp;
     //}
     //for (uint i = 0; i < m_IndicesUInt.size(); i += 3)
     //{
     //    uint uiTemp(0);
     //    uiTemp = m_IndicesUInt[i + 1];
-    //    m_IndicesUInt[i + 1] = m_IndicesUInt[i + 2]; 
+    //    m_IndicesUInt[i + 1] = m_IndicesUInt[i + 2];
     //    m_IndicesUInt[i + 2] = uiTemp;
     //}
 }
@@ -301,7 +301,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) con
             return;
         }
     }
-    
+
     char* pCharData = static_cast<char*>(pVertexData);
     uint count = 0;
     uint bytecount(0);
@@ -333,9 +333,9 @@ void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) con
         {
             std::cout << "    calculating tan's of " << m_GroupData[i] << " start: " << m_VertexMeshRange[i].begin << " num: " << m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin <<
                 "vdSize: " << m_VertexData.size() << ", vmrSize" << m_VertexMeshRange.size() << "\n";
-            std::vector<vec3> tangents(calculateTangents(&m_VertexData[m_VertexMeshRange[i].begin], 
+            std::vector<vec3> tangents(calculateTangents(&m_VertexData[m_VertexMeshRange[i].begin],
                                                                    m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin,
-                                                                   0, 12, 20, sizeof(InternalVertex), 
+                                                                   0, 12, 20, sizeof(InternalVertex),
                                                                    getIndices(i), getNumIndices(i), getIndexStride(i)));
             std::cout << "    FILL";
             count = 0;
@@ -359,7 +359,7 @@ const void* ObjLoader::getVertices(uint mesh) const
     char* pCharData = static_cast<char*>(m_Vertices);
     return &pCharData[m_VertexMeshRange[mesh].begin * m_VertexLayout.getVertexSize()];
 }
-const void* ObjLoader::getIndices(uint mesh) const 
+const void* ObjLoader::getIndices(uint mesh) const
 {
     switch (m_IndexStride[mesh])
     {

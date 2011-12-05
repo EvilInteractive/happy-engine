@@ -23,7 +23,7 @@
 #pragma once
 
 #include "IFxVariable.h"
-#include "Random.h"
+//#include "Random.h"
 
 namespace he {
 namespace gfx {
@@ -50,7 +50,7 @@ public:
 private:
 
     float m_Min, m_Max;
-    Random m_Random;
+    //Random m_Random;
 
     //Disable default copy constructor and default assignment operator
     FxRandomFloat(const FxRandomFloat&);

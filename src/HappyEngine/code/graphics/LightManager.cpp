@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 17/08/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "LightManager.h"
 #include "HappyNew.h"
@@ -34,18 +34,18 @@ LightManager::~LightManager()
 {
 }
 
-const AmbientLight::pointer& LightManager::setAmbientLight(const Color&         color, 
-                                                    float                multiplier) 
+const AmbientLight::pointer& LightManager::setAmbientLight(const Color&         color,
+                                                    float                multiplier)
 {
     m_pAmbientLight->color = color.rgb();
     m_pAmbientLight->multiplier = multiplier;
 
     return m_pAmbientLight;
 }
-PointLight::pointer LightManager::addPointLight(const vec3&  pos, 
-                                                const Color&          color, 
-                                                float                 multiplier, 
-                                                float                 beginAttenuation, 
+PointLight::pointer LightManager::addPointLight(const vec3&  pos,
+                                                const Color&          color,
+                                                float                 multiplier,
+                                                float                 beginAttenuation,
                                                 float                 endAttentuation)
 {
     PointLight::pointer pLight(NEW PointLight());
@@ -58,12 +58,12 @@ PointLight::pointer LightManager::addPointLight(const vec3&  pos,
 
     return pLight;
 }
-SpotLight::pointer LightManager::addSpotLight(const vec3&    pos, 
-                                              const vec3&    direction, 
-                                              const Color&            color, 
+SpotLight::pointer LightManager::addSpotLight(const vec3&    pos,
+                                              const vec3&    direction,
+                                              const Color&            color,
                                               float                   multiplier,
-                                              float                   fov, 
-                                              float                   beginAttenuation, 
+                                              float                   fov,
+                                              float                   beginAttenuation,
                                               float                   endAttentuation)
 {
     SpotLight::pointer pLight(NEW SpotLight());
@@ -78,8 +78,8 @@ SpotLight::pointer LightManager::addSpotLight(const vec3&    pos,
 
     return pLight;
 }
-DirectionalLight::pointer LightManager::setDirectionalLight(const vec3&  direction, 
-															const Color& color, 
+DirectionalLight::pointer LightManager::setDirectionalLight(const vec3&  direction,
+															const Color& color,
 															float multiplier)
 {
 	m_pDirectionalLight->setDirection(direction);
@@ -114,11 +114,11 @@ void LightManager::removeAllLights()
 }
 void LightManager::remove(const PointLight::pointer& pLight)
 {
-    m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), pLight), m_PointLightVector.cend());
+    m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), pLight), m_PointLightVector.end());
 }
 void LightManager::remove(const SpotLight::pointer& pLight)
 {
-    m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), pLight), m_SpotLightVector.cend());
+    m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), pLight), m_SpotLightVector.end());
 }
 
 

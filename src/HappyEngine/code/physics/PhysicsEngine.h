@@ -36,7 +36,10 @@
 #include "AssetContainer.h"
 
 #include "PxPreprocessor.h"
-#include <malloc.h>
+
+#ifdef GCC
+#include <stdlib.h>
+#endif
 
 namespace he {
 namespace px {
@@ -45,18 +48,27 @@ class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
     void* allocate(size_t size, const char*, const char*, int)
     {
-        
+        #ifdef GCC
+        void* p;
+        posix_memalign(&p, 16, size);
+        return p;
+        #else
         return _aligned_malloc(size, 16);
+        #endif
     }
 
     void deallocate(void* ptr)
     {
+        #ifdef GCC
+        free(ptr);
+        #else
         _aligned_free(ptr);
+        #endif
     }
 };
 
 enum PxFilter
-{	
+{
     COLLISION_FLAG_GROUND			=	1 << 0,
     COLLISION_FLAG_WHEEL			=	1 << 1,
     COLLISION_FLAG_CHASSIS			=	1 << 2,

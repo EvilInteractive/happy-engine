@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 10/08/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "IniReader.h"
 #include "HeAssert.h"
@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include "limits.h"
 
 namespace he {
 namespace io {
@@ -97,7 +98,7 @@ void IniReader::open(const std::string& path)
     m_IsOpen = false;
     std::wifstream file;
     file.open(path, ios::in);
-    
+
     if (file.is_open())
     {
         map<wstring, wstring> subData;
@@ -124,7 +125,7 @@ void IniReader::open(const std::string& path)
                 }
             }
         }
-    
+
         if (sub != L"")
             m_Data.insert(make_pair(sub, subData));
         file.close();
@@ -166,7 +167,7 @@ int IniReader::readInt(const std::wstring& root, const std::wstring& node, int d
     {
         std::string raw(wraw.cbegin(), wraw.cend());
         int ret = INT_MAX;
-        if (sscanf_s(raw.c_str(), "%d", &ret) == EOF || ret == INT_MAX)
+        if (sscanf(raw.c_str(), "%d", &ret) == EOF || ret == INT_MAX)
             return defaultReturn;
         else
             return ret;
@@ -183,7 +184,7 @@ float IniReader::readFloat(const std::wstring& root, const std::wstring& node, f
     {
         std::string raw(wraw.cbegin(), wraw.cend());
         float ret = FLT_MAX;
-        if (sscanf_s(raw.c_str(), "%f", &ret) == EOF || ret == FLT_MAX)
+        if (sscanf(raw.c_str(), "%f", &ret) == EOF || ret == FLT_MAX)
             return defaultReturn;
         else
             return ret;
@@ -201,7 +202,7 @@ vec2 IniReader::readVector2(const std::wstring& root, const std::wstring& node, 
     {
         std::string raw(wraw.cbegin(), wraw.cend());
         vec2 ret(FLT_MAX, FLT_MAX);
-        if (sscanf_s(raw.c_str(), "%f,%f", &ret.x, &ret.y) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX)
+        if (sscanf(raw.c_str(), "%f,%f", &ret.x, &ret.y) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX)
             return defaultReturn;
         else
             return ret;
@@ -218,7 +219,7 @@ vec3 IniReader::readVector3(const std::wstring& root, const std::wstring& node, 
     {
         std::string raw(wraw.cbegin(), wraw.cend());
         vec3 ret(FLT_MAX, FLT_MAX, FLT_MAX);
-        if (sscanf_s(raw.c_str(), "%f,%f,%f", &ret.x, &ret.y, &ret.z) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || ret.z == FLT_MAX)
+        if (sscanf(raw.c_str(), "%f,%f,%f", &ret.x, &ret.y, &ret.z) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || ret.z == FLT_MAX)
             return defaultReturn;
         else
             return ret;
@@ -235,7 +236,7 @@ vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, 
     {
         std::string raw(wraw.cbegin(), wraw.cend());
         vec4 ret(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
-        if (sscanf_s(raw.c_str(), "%f,%f,%f,%f", &ret.x, &ret.y, &ret.z, &ret.w) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || 
+        if (sscanf(raw.c_str(), "%f,%f,%f,%f", &ret.x, &ret.y, &ret.z, &ret.w) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX ||
                                                                                            ret.z == FLT_MAX || ret.w == FLT_MAX)
             return defaultReturn;
         else
@@ -248,7 +249,7 @@ vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, 
 }
 
 std::string IniReader::readString(const std::wstring& root, const std::wstring& node, const std::string& defaultReturn) const
-{ 
+{
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
@@ -291,7 +292,7 @@ bool IniReader::readRaw(const std::wstring& root, const std::wstring& node, std:
 
     IniReadData::const_iterator itRoot = m_Data.find(root);
     if (itRoot != m_Data.cend())
-    {     
+    {
         std::map<std::wstring, std::wstring>::const_iterator itNode = itRoot->second.find(node);
         if (itNode != itRoot->second.cend())
         {

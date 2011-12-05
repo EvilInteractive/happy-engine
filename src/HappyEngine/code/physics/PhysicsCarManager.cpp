@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 20/11/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "PhysicsCarManager.h"
 #include "HappyNew.h"
@@ -84,12 +84,26 @@ void PhysicsCarManager::tick( float dTime )
     m_Mutex.unlock();
 }
 
-DriveableSurfaceTyreFrictionTable::DriveableSurfaceTyreFrictionTable( byte drivableSurfaces, byte tyreTypes ): 
+DriveableSurfaceTyreFrictionTable::DriveableSurfaceTyreFrictionTable( byte drivableSurfaces, byte tyreTypes ):
         m_DrivableSurfaces(drivableSurfaces), m_TyreTypes(tyreTypes)
 {
     ASSERT((drivableSurfaces * tyreTypes) % 4 == 0, "Error drivableSurfaces * tyreTypes must be multiple of 4");
+
+    #ifdef GCC
+    void* p;
+    posix_memalign(&p, 16, drivableSurfaces * tyreTypes * sizeof(float));
+    m_TyreFrictionPair = (float*)p;
+    #else
     m_TyreFrictionPair = (float*)_aligned_malloc(drivableSurfaces * tyreTypes * sizeof(float), 16);
+    #endif
+
+    #ifdef GCC
+    void* p2;
+    posix_memalign(&p2, 16, sizeof(physx::PxVehicleDrivableSurfaceType) * m_DrivableSurfaces);
+    m_VehicleDrivableSurfaceTypes = (physx::PxVehicleDrivableSurfaceType*)p2;
+    #else
     m_VehicleDrivableSurfaceTypes = (physx::PxVehicleDrivableSurfaceType*)_aligned_malloc(sizeof(physx::PxVehicleDrivableSurfaceType) * m_DrivableSurfaces, 16);
+    #endif
 
     m_DrivableMaterials.resize(drivableSurfaces);
     m_PxDrivableMaterials.resize(drivableSurfaces);
@@ -97,8 +111,13 @@ DriveableSurfaceTyreFrictionTable::DriveableSurfaceTyreFrictionTable( byte driva
 
 DriveableSurfaceTyreFrictionTable::~DriveableSurfaceTyreFrictionTable()
 {
-    _aligned_free(m_TyreFrictionPair);
-    _aligned_free(m_VehicleDrivableSurfaceTypes);
+    #ifdef GCC
+    free(m_TyreFrictionPair);
+    free(m_VehicleDrivableSurfaceTypes);
+    #else
+    __aligned_free(m_TyreFrictionPair);
+    __aligned_free(m_VehicleDrivableSurfaceTypes);
+    #endif
 }
 
 void DriveableSurfaceTyreFrictionTable::setMaterial(byte id, const PhysicsMaterial& material)

@@ -17,7 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 08/10/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "Console.h"
 #include "HappyNew.h"
@@ -91,7 +91,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
     GUI->createLayer("console", 0);
 }
 void Console::load()
-{	
+{
     m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
     m_Help = new gui::Text(m_pFont);
@@ -138,7 +138,7 @@ void Console::processCommand(const std::string& command)
     std::string s(command);
 
     // remove spaces
-    s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    //s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
 
     // console commands
     if (s == "help")
@@ -183,7 +183,7 @@ void Console::processCommand(const std::string& command)
         }
         else
         {
-            addMessage("the keyword '" + keyWord + "' was not found!", CMSG_TYPE_ERROR); 
+            addMessage("the keyword '" + keyWord + "' was not found!", CMSG_TYPE_ERROR);
         }
     }
     else
@@ -322,7 +322,7 @@ void Console::draw()
         }
 
         uint i(startPos);
-        
+
         std::vector<std::pair<CMSG_TYPE, std::string> > msg;
 
         if (msgHistory.size() > m_MaxMessagesInWindow)

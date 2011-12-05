@@ -26,6 +26,7 @@
 #include <vector>
 #include "HappyTypes.h"
 #include "SlotPContainer.h"
+#include "IFxComponent.h"
 
 namespace he {
 namespace gfx {
@@ -38,10 +39,10 @@ class FxTimeLineTrack
 public:
     FxTimeLineTrack();
     virtual ~FxTimeLineTrack();
-    
+
     void start();
     void stop();
-    
+
     uint addComponent(FxType type);
     void removeComponent(uint id);
     template<typename T> T* getComponent(uint id) const

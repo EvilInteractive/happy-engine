@@ -22,7 +22,7 @@
 #define _HE_CONSOLE_H_
 #pragma once
 
-#include "boost\any.hpp"
+#include "boost/any.hpp"
 #include <map>
 #include <vector>
 #include <utility>
@@ -93,7 +93,7 @@ public:
 
 	void addTypeHandler(ITypeHandler* typeHandler);
 	void flushMessageHistory();
-	
+
 
 	/* SETTERS */
 	void setKeyboardShortcut(io::Key key);

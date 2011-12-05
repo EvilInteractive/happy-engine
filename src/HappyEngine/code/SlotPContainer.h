@@ -95,25 +95,25 @@ public:
         return m_MemPool[id];
     }
 
-    template<typename T>
+    template<typename R>
     class const_iterator
     {
-    public: typedef typename std::vector<T>::const_iterator _iterator;
+    public: typedef typename std::vector<R>::const_iterator _iterator;
     private:
         _iterator m_It;
         _iterator m_EndIt;
 
     public:
-        const_iterator(const _iterator& iterator, const _iterator& end): 
+        const_iterator(const _iterator& iterator, const _iterator& end):
           m_It(iterator), m_EndIt(end) { }
 
         const_iterator& operator++()
         {
-            do 
+            do
             {
                 ++m_It;
             } while (m_It != m_EndIt && (*m_It) == nullptr);
-            
+
             return *this;
         }
         const_iterator operator++(int)
@@ -130,11 +130,11 @@ public:
         {
             return (m_It != it.m_It);
         }
-        const T& operator*()
+        const R& operator*()
         {
             return m_It.operator*();
         }
-        const T*& operator->()
+        const R*& operator->()
         {
             return m_It.operator->();
         }

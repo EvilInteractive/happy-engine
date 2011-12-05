@@ -24,7 +24,7 @@
 // are changed infrequently
 //
 
-#include <tchar.h>
+//#include <tchar.h>
 #include <string>
 #include <vector>
 #include "vec2.h"
@@ -40,5 +40,6 @@
 #include "event.h"
 
 // TODO: reference additional headers your program requires here
+
 
 #endif

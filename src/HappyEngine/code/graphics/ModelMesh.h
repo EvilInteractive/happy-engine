@@ -80,7 +80,7 @@ public:
 
 private:
     void setLoaded();
-    std::vector<boost::function<void()>> m_LoadedCallback;
+    std::vector<boost::function<void()> > m_LoadedCallback;
     boost::mutex m_LoadMutex;
 
     uint m_VaoID[1];

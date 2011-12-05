@@ -24,9 +24,8 @@
 
 #include "HeAssert.h"
 #undef assert
-#define assert ASSERT
-
 #include "boost/asio.hpp"
+#define assert ASSERT
 #include "boost/thread.hpp"
 
 namespace he {
@@ -37,7 +36,7 @@ class NetworkManager
 public:
 	NetworkManager();
     virtual ~NetworkManager();
-    
+
     void start();
     void stop();
 

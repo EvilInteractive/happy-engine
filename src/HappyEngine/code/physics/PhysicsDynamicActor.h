@@ -50,7 +50,7 @@ public:
     void addForce(const vec3& force);
 
     void setKeyframed(bool keyframed);
-    void PhysicsDynamicActor::keyframedSetPose(const vec3& move, const vec3& axis, float angle);
+    void keyframedSetPose(const vec3& move, const vec3& axis, float angle);
 
 private:
 

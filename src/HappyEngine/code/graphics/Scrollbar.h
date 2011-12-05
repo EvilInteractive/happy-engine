@@ -22,7 +22,7 @@
 #define _HE_SCROLLBAR_H_
 #pragma once
 
-#include "Vec2.h"
+#include "vec2.h"
 #include <map>
 #include "Hitregion.h"
 #include "Color.h"

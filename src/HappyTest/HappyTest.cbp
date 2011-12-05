@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="HappyTest" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/HappyTest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="gcc/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+					<Add directory="../HappyEngine/code/" />
+					<Add directory="../HappyEngine/code/audio" />
+					<Add directory="../HappyEngine/code/content" />
+					<Add directory="../HappyEngine/code/error" />
+					<Add directory="../HappyEngine/code/game" />
+					<Add directory="../HappyEngine/code/graphics" />
+					<Add directory="../HappyEngine/code/io" />
+					<Add directory="../HappyEngine/code/math" />
+					<Add directory="../HappyEngine/code/networking" />
+					<Add directory="../HappyEngine/code/physics" />
+					<Add directory="../HappyEngine/code/tools" />
+					<Add directory="$(#physx_dir)/PxTask/include" />
+					<Add directory="$(#physx_dir)/PxFoundation" />
+					<Add directory="$(#physx_dir)/PxFoundation/internal/include" />
+					<Add directory="$(#physx_dir)/PhysXProfileSDK/sdk/include" />
+					<Add directory="$(#physx_dir)/PhysXVisualDebuggerSDK/PVDCommLayer/Public" />
+					<Add directory="$(#physx_dir)/PhysXAPI" />
+					<Add directory="$(#physx_dir)/RepX/include" />
+					<Add directory="$(#physx_dir)/PhysXAPI/characterkinematic" />
+					<Add directory="$(#boost_dir)" />
+					<Add directory="$(#al_dir)/include/AL" />
+					<Add directory="$(#sdl_dir)/include" />
+				</Compiler>
+				<Linker>
+					<Add library="$(#boost_dir)/bin.v2/libs/chrono/build/gcc-4.6.1/release/link-static/threading-multi/libboost_chrono.a" />
+					<Add library="$(#boost_dir)/bin.v2/libs/thread/build/gcc-4.6.1/release/link-static/threading-multi/libboost_thread.a" />
+					<Add library="$(#boost_dir)/bin.v2/libs/date_time/build/gcc-4.6.1/release/link-static/threading-multi/libboost_date_time.a" />
+					<Add library="$(#boost_dir)/bin.v2/libs/regex/build/gcc-4.6.1/release/link-static/threading-multi/libboost_regex.a" />
+					<Add library="$(#boost_dir)/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi/libboost_system.a" />
+					<Add library="SDL" />
+					<Add directory="$(#boost_dir)/bin.v2/libs/chrono/build/gcc-4.6.1/release/link-static/threading-multi" />
+					<Add directory="$(#boost_dir)/bin.v2/libs/thread/build/gcc-4.6.1/release/link-static/threading-multi" />
+					<Add directory="$(#boost_dir)/bin.v2/libs/date_time/build/gcc-4.6.1/release/link-static/threading-multi" />
+					<Add directory="$(#boost_dir)/bin.v2/libs/regex/build/gcc-4.6.1/release/link-static/threading-multi" />
+					<Add directory="$(#boost_dir)/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi" />
+					<Add directory="$(#sdl_dir)/build" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/HappyTest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="gcc/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++0x" />
+			<Add option="-Wall" />
+			<Add option="-DGCC" />
+			<Add option="-DGLEW_STATIC" />
+			<Add directory="../HappyEngine/code/" />
+			<Add directory="../HappyEngine/code/audio" />
+			<Add directory="../HappyEngine/code/content" />
+			<Add directory="../HappyEngine/code/error" />
+			<Add directory="../HappyEngine/code/game" />
+			<Add directory="../HappyEngine/code/graphics" />
+			<Add directory="../HappyEngine/code/io" />
+			<Add directory="../HappyEngine/code/math" />
+			<Add directory="../HappyEngine/code/networking" />
+			<Add directory="../HappyEngine/code/physics" />
+			<Add directory="../HappyEngine/code/tools" />
+			<Add directory="$(#physx_dir)/PxTask/include" />
+			<Add directory="$(#physx_dir)/PxFoundation" />
+			<Add directory="$(#physx_dir)/PxFoundation/internal/include" />
+			<Add directory="$(#physx_dir)/PhysXProfileSDK/sdk/include" />
+			<Add directory="$(#physx_dir)/PhysXVisualDebuggerSDK/PVDCommLayer/Public" />
+			<Add directory="$(#physx_dir)/PhysXAPI" />
+			<Add directory="$(#physx_dir)/RepX/include" />
+			<Add directory="$(#physx_dir)/PhysXAPI/characterkinematic" />
+			<Add directory="$(#boost_dir)" />
+			<Add directory="$(#al_dir)/include/AL" />
+			<Add directory="$(#sdl_dir)/include" />
+		</Compiler>
+		<Linker>
+			<Add library="../HappyEngine/bin/HappyEngine.a" />
+			<Add directory="../HappyEngine/bin/" />
+		</Linker>
+		<Unit filename="FlyCamera.cpp" />
+		<Unit filename="FlyCamera.h" />
+		<Unit filename="FollowCamera.cpp" />
+		<Unit filename="FollowCamera.h" />
+		<Unit filename="MainGame.cpp" />
+		<Unit filename="MainGame.h" />
+		<Unit filename="MyClient.cpp" />
+		<Unit filename="MyClient.h" />
+		<Unit filename="MyServer.cpp" />
+		<Unit filename="MyServer.h" />
+		<Unit filename="PhysicsData.h" />
+		<Unit filename="TestObject.cpp" />
+		<Unit filename="TestObject.h" />
+		<Unit filename="VertexPNT.cpp" />
+		<Unit filename="VertexPNT.h" />
+		<Unit filename="X.cpp" />
+		<Unit filename="X.h" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

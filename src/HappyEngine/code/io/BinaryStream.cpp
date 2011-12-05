@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "BinaryStream.h"
 #include "FileNotFoundException.h"
@@ -29,7 +29,16 @@ namespace io {
 BinaryStream::BinaryStream(const std::string& path, OpenType openType):
     m_pFile(nullptr), m_FileName(path)
 {
-    errno_t err(fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb"));
+    int err(0);
+    #ifdef WINDOWS
+    err = fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb");
+    #else
+    m_pFile = fopen(path.c_str(), (openType == Read)? "rb" : "wb");
+    if (m_pFile = nullptr)
+        err = 1;
+    else
+        err = 0;
+    #endif
     if (err != 0)
     {
         std::cout << "Bin open failed: errno: " << err << "\n";

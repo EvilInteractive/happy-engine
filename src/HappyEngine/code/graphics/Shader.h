@@ -44,8 +44,8 @@ class Shader;
 
 class ShaderVariableBase
 {
-friend Shader;
-friend UniformBuffer;
+friend class Shader;
+friend class UniformBuffer;
 
 protected:
     bool m_Update;
@@ -58,7 +58,7 @@ private:
     int m_Offset;
 };
 
-template<typename T> 
+template<typename T>
 class ShaderVariable : public ShaderVariableBase
 {
 public:
@@ -76,13 +76,13 @@ public:
     {
         return m_Data;
     }
-    
+
     ShaderVariable& operator=(const T& data)
     {
         set(data);
         return *this;
     }
-    
+
     virtual void* data()
     {
         return &m_Data;
@@ -101,7 +101,7 @@ private:
 
 class UniformBuffer
 {
-friend Shader;
+friend class Shader;
 public:
     typedef boost::shared_ptr<UniformBuffer> pointer;
     ~UniformBuffer()
@@ -170,7 +170,7 @@ public:
 
     UniformBuffer::pointer setBuffer(uint id); //create new buffer
     void setBuffer(uint id, const UniformBuffer::pointer& pBuffer); //used to share buffer
-    
+
     void setShaderVar(uint id, int value) const;
     void setShaderVar(uint id, uint value) const;
     void setShaderVar(uint id, float value) const;

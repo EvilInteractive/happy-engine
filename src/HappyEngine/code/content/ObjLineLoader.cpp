@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 //Created: 01/09/2011
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "ObjLineLoader.h"
 
@@ -44,7 +44,7 @@ ObjLineLoader::~ObjLineLoader()
 }
 void ObjLineLoader::load(const std::string& path)
 {
-    read(path);        
+    read(path);
 }
 
 void ObjLineLoader::read(const std::string& path)
@@ -57,9 +57,9 @@ void ObjLineLoader::read(const std::string& path)
 
     io::FileReader reader;
     vector<string> objData;
-    try 
-    { 
-        reader.open(path, io::FileReader::OpenType_ASCII); 
+    try
+    {
+        reader.open(path, io::FileReader::OpenType_ASCII);
         objData = reader.readToEndSplit();
     }
     catch (err::FileNotFoundException&)
@@ -67,13 +67,13 @@ void ObjLineLoader::read(const std::string& path)
         reader.close();
         throw;
     }
-    
+
     for_each(objData.cbegin(), objData.cend(), [&](const string& line)
     {
         if (line[0] == 'v' && line[1] == ' ')
         {
             vec3 v;
-            sscanf_s(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
+            sscanf(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
             m_PointData.push_back(v);
         }
         else if (line[0] == 'l')
@@ -95,7 +95,7 @@ void ObjLineLoader::read(const std::string& path)
                     stream << c;
                 }
             });
-            
+
             ushort i;
             stream >> i;
             indices.push_back(i);

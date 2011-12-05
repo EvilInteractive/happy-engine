@@ -18,11 +18,11 @@
 //Author:  Sebastiaan Sprengers
 //Created: 12/10/2011
 
-#include "StdAfx.h" 
+#include "StdAfx.h"
 
 #include "Scrollbar.h"
 #include "HappyNew.h"
-#include "Happyengine.h"
+#include "HappyEngine.h"
 #include "ControlsManager.h"
 #include "Happy2DRenderer.h"
 

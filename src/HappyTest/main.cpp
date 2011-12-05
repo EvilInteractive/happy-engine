@@ -15,8 +15,8 @@ int main( int /*argc*/, char** /*args[]*/ )
 {
     using namespace he;
     using namespace happytest;
-    
-    #ifdef _DEBUG
+
+    #if _DEBUG && !GCC
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     #endif
 

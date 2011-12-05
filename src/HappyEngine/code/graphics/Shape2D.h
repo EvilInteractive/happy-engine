@@ -24,7 +24,7 @@
 
 #include "Polygon.h"
 #include "mat44.h"
-#include "happynew.h"
+#include "HappyNew.h"
 #include "ModelMesh.h"
 
 namespace he {
@@ -41,7 +41,7 @@ public:
 
     virtual ~Shape2D()
     {
-        
+
     }
 
     /* GETTERS */
@@ -84,7 +84,7 @@ public:
     }
 
 protected:
-    
+
     /* DATAMEMBERS */
     Polygon m_Polygon;
     mat44 m_World;

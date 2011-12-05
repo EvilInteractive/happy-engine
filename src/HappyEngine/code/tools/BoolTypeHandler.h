@@ -43,7 +43,7 @@ public:
 
 		std::string s(values);
 
-		s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+		//s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
 		std::transform(s.begin(), s.end(), s.begin(),tolower);
 
 		if (s == "true")
