@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 20/11/2011
-#include "StdAfx.h"
+#include "HappyPCH.h"
 
 #include "PhysicsCarManager.h"
 #include "HappyNew.h"

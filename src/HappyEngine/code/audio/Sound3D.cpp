@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 03/10/2011
 
-#include "StdAfx.h"
+#include "HappyPCH.h"
 
 #include "Sound3D.h"
 #include "HappyNew.h"

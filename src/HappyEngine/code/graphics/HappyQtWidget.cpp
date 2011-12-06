@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 08/11/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #ifdef HE_ENABLE_QT
 #include "HappyQtWidget.h"

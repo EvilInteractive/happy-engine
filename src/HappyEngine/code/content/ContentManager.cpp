@@ -1,4 +1,4 @@
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 #include "ContentManager.h"
 #include "HappyNew.h"
 #include "Vertex.h"

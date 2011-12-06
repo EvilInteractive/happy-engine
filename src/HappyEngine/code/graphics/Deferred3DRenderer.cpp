@@ -18,7 +18,7 @@
 //Author:  Bastian Damman
 //Created: 13/08/2011
 //Added multiple lights: 18/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Deferred3DRenderer.h"
 #include "Happy2DRenderer.h"

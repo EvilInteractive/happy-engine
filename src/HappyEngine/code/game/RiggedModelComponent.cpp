@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 29/10/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "RiggedModelComponent.h"
 #include "HappyNew.h"

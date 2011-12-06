@@ -24,7 +24,7 @@
 // are changed infrequently
 //
 
-//#include <tchar.h>
+#include <cstdlib>
 #include <string>
 #include <vector>
 #include "vec2.h"

@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 10/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "vec4.h"
 #include "vec3.h"

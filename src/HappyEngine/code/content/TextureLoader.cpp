@@ -19,7 +19,7 @@
 //Created: 11/08/2011
 //Extended:	Sebastiaan Sprengers
 //Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "TextureLoader.h"
 

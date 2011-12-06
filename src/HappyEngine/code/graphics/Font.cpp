@@ -18,7 +18,7 @@
 //Author:  Bastian Damman
 //Created: 12/08/2011
 //Extended:Sebastiaan Sprengers
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Font.h"
 #include "SDL.h"

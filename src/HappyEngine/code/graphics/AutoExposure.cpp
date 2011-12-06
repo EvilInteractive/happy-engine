@@ -18,7 +18,7 @@
 //Author:  Bastian Damman
 //Created: 26/10/2011
 
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "AutoExposure.h"
 #include "HappyNew.h"

@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 14/09/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "PhysicsShapeLoader.h"
 #include "HappyNew.h"

@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 13/09/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Line.h"
 #include "HappyNew.h"

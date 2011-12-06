@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 12/10/2011
 
-#include "StdAfx.h"
+#include "HappyPCH.h"
 
 #include "Scrollbar.h"
 #include "HappyNew.h"

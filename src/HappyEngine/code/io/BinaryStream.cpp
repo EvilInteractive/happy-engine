@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 20/08/2011
-#include "StdAfx.h"
+#include "HappyPCH.h"
 
 #include "BinaryStream.h"
 #include "FileNotFoundException.h"

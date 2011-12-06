@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 12/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "FontLoader.h"
 #include "SDL_ttf.h"

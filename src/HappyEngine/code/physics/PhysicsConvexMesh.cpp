@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 06/11/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "PhysicsConvexMesh.h"
 #include "HappyNew.h"

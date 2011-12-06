@@ -18,7 +18,7 @@
 //Author:  Bastian Damman
 //Created: 13/07/2011
 //Changed: 15/09/2011 -Model class became ModelMesh
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Model.h"
 

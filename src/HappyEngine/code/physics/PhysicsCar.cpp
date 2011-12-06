@@ -18,7 +18,7 @@
 //Author:  Bastian Damman
 //Created: 22/08/2011
 //Updated: 14/09/2011 -added addForce/velocity and kinematic methods
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "PhysicsCar.h"
 #include "HappyEngine.h"

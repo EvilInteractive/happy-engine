@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 05/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Color.h"
 #include "MathFunctions.h"

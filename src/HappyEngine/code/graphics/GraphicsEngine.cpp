@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 04/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "GraphicsEngine.h"
 

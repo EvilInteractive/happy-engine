@@ -214,9 +214,6 @@
     <ClCompile Include="code\HappyEngine.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
-    <ClCompile Include="code\StdAfx.cpp">
-      <Filter>happyengine</Filter>
-    </ClCompile>
     <ClCompile Include="code\physics\PhysicsDynamicActor.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
@@ -481,6 +478,9 @@
     <ClCompile Include="code\graphics\FxRandom.cpp">
       <Filter>happyengine\graphics\fx\values</Filter>
     </ClCompile>
+    <ClCompile Include="code\HappyPCH.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -616,9 +616,6 @@
       <Filter>happyengine</Filter>
     </ClInclude>
     <ClInclude Include="code\HappyTypes.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
-    <ClInclude Include="code\StdAfx.h">
       <Filter>happyengine</Filter>
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsDynamicActor.h">
@@ -965,6 +962,9 @@
     </ClInclude>
     <ClInclude Include="code\graphics\FxRandom.h">
       <Filter>happyengine\graphics\fx\values</Filter>
+    </ClInclude>
+    <ClInclude Include="code\HappyPCH.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

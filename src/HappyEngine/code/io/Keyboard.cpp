@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 08/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Keyboard.h"
 #include "SDL.h"

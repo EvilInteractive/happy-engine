@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 08/11/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "PhysicsConcaveShape.h"
 #include "HappyEngine.h"

@@ -17,7 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 30/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "FPSGraph.h"
 #include "HappyEngine.h"

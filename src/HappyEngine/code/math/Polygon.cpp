@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 15/10/2011
 
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Polygon.h"
 #include "HappyNew.h"

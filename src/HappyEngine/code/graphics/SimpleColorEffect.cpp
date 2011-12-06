@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 06/11/2011
 
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "SimpleColorEffect.h"
 #include "HappyNew.h"

@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/11/2011
 
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "PickEffect.h"
 #include "HappyNew.h"

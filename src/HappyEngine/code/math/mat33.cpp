@@ -17,7 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 10/09/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "mat33.h"
 #include "HappyNew.h"

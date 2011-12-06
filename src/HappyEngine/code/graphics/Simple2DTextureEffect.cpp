@@ -17,7 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 26/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Simple2DTextureEffect.h"
 #include "HappyNew.h"

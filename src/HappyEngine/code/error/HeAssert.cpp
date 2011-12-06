@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 13/06/2011
-#include "StdAfx.h"
+#include "HappyPCH.h"
 
 #include "HeAssert.h"
 #include <iostream>

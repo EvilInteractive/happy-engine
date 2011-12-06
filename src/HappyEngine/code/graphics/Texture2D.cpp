@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 11/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Texture2D.h"
 #include "GL/glew.h"

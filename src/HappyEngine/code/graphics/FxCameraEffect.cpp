@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 27/11/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "FxCameraEffect.h"
 #include "HappyNew.h"

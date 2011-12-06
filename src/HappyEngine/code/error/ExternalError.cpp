@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 19/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "ExternalError.h"
 #include <sstream>

@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 26/11/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "FxParticleSystem.h"
 #include "HappyNew.h"

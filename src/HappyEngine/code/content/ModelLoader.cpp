@@ -20,7 +20,7 @@
 //Extended:	Sebastiaan Sprengers
 //Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
 
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "ModelLoader.h"
 #include "HappyNew.h"

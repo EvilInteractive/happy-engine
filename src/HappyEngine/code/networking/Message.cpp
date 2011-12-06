@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 25/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Message.h"
 #include "HappyNew.h"

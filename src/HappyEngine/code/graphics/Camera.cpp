@@ -17,7 +17,7 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 31/08/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "Camera.h"
 #include "HappyNew.h"

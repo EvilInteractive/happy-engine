@@ -17,7 +17,7 @@
 //
 //Author:  
 //Created: //
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "X.h"
 #include "HappyNew.h"

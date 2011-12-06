@@ -17,7 +17,7 @@
 //
 //Author: Bastian Damman
 //Created: 01/10/2011
-#include "StdAfx.h" 
+#include "HappyPCH.h" 
 
 #include "ShaderLayout.h"
 #include "HappyNew.h"
