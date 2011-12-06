@@ -137,13 +137,14 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
 
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
 
+    GL::heBindFbo(m_RenderFboID);
     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
 
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    GL::heBindFbo(m_RenderFboID);
-    GL::heClearColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_pPickEffect->begin();
@@ -153,8 +154,11 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
     std::for_each(pickList.cbegin(), pickList.cend(), [&](const IDrawable* pDrawable)
     {
         m_pPickEffect->setWorld(pDrawable->getWorldMatrix());
-       // m_pPickEffect->setID(vec3(i/((float)pickList.size()), i/((float)pickList.size()), i/((float)pickList.size())));
-        m_pPickEffect->setID(vec3(1, 1, 1));
+
+        byte packedID[4];
+        memcpy(packedID, &i, 4);
+
+        m_pPickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
 
         GL::heBindVao(pDrawable->getModel()->getVertexShadowArraysID());
         glDrawElements(GL_TRIANGLES, pDrawable->getModel()->getNumIndices(), pDrawable->getModel()->getIndexType(), 0);
@@ -164,15 +168,13 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
 
     //glGetError();
 
+    byte packedID[4];
+    glReadPixels(	GRAPHICS->getScreenWidth() - static_cast<int>(screenPoint.x),
+                    GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
+                    1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
+
     uint id(0);
-    //glReadPixels(	static_cast<int>(screenPoint.x),
-    //                GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
-    //                1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
-
-    //GLenum error = glGetError();
-
-    /*if (error != 0)
-        return UINT_MAX;*/
+    memcpy(&id, packedID, 4);
 
     if (id == 0)
         return UINT_MAX;

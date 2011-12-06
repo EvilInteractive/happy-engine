@@ -47,10 +47,10 @@ void PickEffect::load()
 
 	m_pShader = NEW Shader();
 
-	std::vector<std::string> shaderOutputs;
-	shaderOutputs.push_back("outId");
+	//std::vector<std::string> shaderOutputs;
+	////shaderOutputs.push_back("outId");
 
-	bool shaderInit(m_pShader->init("../data/shaders/pickingShader.vert", "../data/shaders/pickingShader.frag", layout, shaderOutputs));
+	bool shaderInit(m_pShader->init("../data/shaders/pickingShader.vert", "../data/shaders/pickingShader.frag", layout));
 	ASSERT(shaderInit == true);
 
 	m_ShaderVPPos = m_pShader->getShaderVarId("matVP");
@@ -58,7 +58,7 @@ void PickEffect::load()
 	m_ShaderIDPos = m_pShader->getShaderVarId("id");
 
 	m_pShader->bind();
-	m_pShader->setShaderVar(m_ShaderIDPos, vec3(0, 0, 0));
+	m_pShader->setShaderVar(m_ShaderIDPos, vec4(0, 0, 0, 0));
 	mat44 matVP;
 	m_pShader->setShaderVar(m_ShaderVPPos, matVP);
 }
@@ -79,7 +79,7 @@ void PickEffect::setWorld(const mat44& mat)
 {
 	m_pShader->setShaderVar(m_ShaderWPos, mat);
 }
-void PickEffect::setID(vec3 id)
+void PickEffect::setID(const vec4& id)
 {
 	m_pShader->setShaderVar(m_ShaderIDPos, id);
 }

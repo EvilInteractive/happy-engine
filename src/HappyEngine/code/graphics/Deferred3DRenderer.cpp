@@ -307,6 +307,8 @@ void Deferred3DRenderer::begin(const Camera* pCamera)
 {
     m_pCamera = pCamera;
     GL::heBindFbo(m_CollectionFboId);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
     const static GLenum buffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, buffers);
     GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
@@ -338,7 +340,8 @@ void Deferred3DRenderer::end()
     GL::heBindFbo(m_RenderFboId);
     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
+
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));    
     glClear(GL_COLOR_BUFFER_BIT);
     //////////////////////////////////////////////////////////////////////////
     ///                             Pass 1                                 ///
@@ -381,6 +384,8 @@ void Deferred3DRenderer::end()
     ///                             Pass 2                                 ///
     //////////////////////////////////////////////////////////////////////////
     GL::heBindFbo(0);
+    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(false);
     const static GLenum buffers2[1] = { GL_BACK_LEFT };
     glDrawBuffers(1, buffers2);
     glClear(GL_COLOR_BUFFER_BIT);

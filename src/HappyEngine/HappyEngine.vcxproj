@@ -83,7 +83,9 @@
     <ClCompile Include="code\graphics\Material.cpp" />
     <ClCompile Include="code\graphics\Model.cpp" />
     <ClCompile Include="code\graphics\ModelMesh.cpp" />
-    <ClCompile Include="code\graphics\PickEffect.cpp" />
+    <ClCompile Include="code\graphics\PickEffect.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="code\graphics\Picker.cpp" />
     <ClCompile Include="code\graphics\PointLight.cpp" />
     <ClCompile Include="code\graphics\Polygon2D.cpp" />
@@ -402,7 +404,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PX_PHYSX_CHARACTER_STATIC_LIB;PHYSX_PROFILE_SDK;PX_CHECKED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -442,7 +444,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

@@ -114,7 +114,7 @@ void DrawManager::addDrawable( const IDrawable* pDrawable )
 
 const std::vector<const IDrawable*>& DrawManager::getDrawList() const
 {
-	return m_DrawList;
+    return m_DrawList;
 }
 
 } } //end namespace

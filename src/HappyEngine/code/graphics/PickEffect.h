@@ -45,7 +45,7 @@ public:
     /* SETTERS */
     void setViewProjection(const mat44& mat);
     void setWorld(const mat44& mat);
-    void setID(vec3 id);
+    void setID(const vec4& id);
 
 private:
 

@@ -280,7 +280,11 @@ void Happy2DRenderer::draw()
     //glEnable(GL_SCISSOR_TEST);
 
     GL::heBindFbo(m_RenderFboID);
+    //const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    //glDrawBuffers(1, buffers);
     GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (m_bBlending == false)
@@ -354,6 +358,11 @@ void Happy2DRenderer::draw()
 
     // fullscreen quad
     GL::heBindFbo(0);
+    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(false);
+    /*const static GLenum buffers2[1] = { GL_BACK_LEFT };
+    glDrawBuffers(1, buffers2);*/
+    //GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     
     if (m_bBlending == false)
     {
