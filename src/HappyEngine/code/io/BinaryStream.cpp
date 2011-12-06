@@ -30,11 +30,11 @@ BinaryStream::BinaryStream(const std::string& path, OpenType openType):
     m_pFile(nullptr), m_FileName(path)
 {
     int err(0);
-    #ifdef WINDOWS
+    #ifndef GCC
     err = fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb");
     #else
     m_pFile = fopen(path.c_str(), (openType == Read)? "rb" : "wb");
-    if (m_pFile = nullptr)
+    if (m_pFile == nullptr)
         err = 1;
     else
         err = 0;

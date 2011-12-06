@@ -25,6 +25,7 @@
 #include "HeAssert.h"
 #undef assert
 #include "boost/asio.hpp"
+#undef assert
 #define assert ASSERT
 #include "boost/thread.hpp"
 

@@ -18,9 +18,9 @@
 //Author:  Bastian Damman
 //Created: 27/11/2011
 #include "StdAfx.h" 
-
 #include "FxRandom.h"
 #include "HappyNew.h"
+
 
 namespace he {
 namespace gfx {

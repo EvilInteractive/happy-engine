@@ -62,7 +62,7 @@ inline T lerp(const T& p0, const T& p1, float t)
 // Float
 inline float abs(float a)
 {
-	return ::fabs(a);
+    return ::fabs(a);
 }
 inline float sqr(float a)
 {
@@ -84,7 +84,7 @@ inline float length(float a)
 // vec2
 inline vec2 abs(const vec2& vector)
 {
-	return vec2(::abs(vector.x), ::abs(vector.y));
+    return vec2(::abs(vector.x), ::abs(vector.y));
 }
 inline float lengthSqr(const vec2& vector)
 {
@@ -96,10 +96,10 @@ inline float length(const vec2& vector)
 }
 inline vec2 normalize(const vec2& vector)
 {
-	if (vector != vec2(0, 0))
-		return vector / length(vector);
-	else
-		return vector;
+    if (vector != vec2(0, 0))
+        return vector / length(vector);
+    else
+        return vector;
 }
 inline float dot(const vec2& vector1, const vec2& vector2)
 {
@@ -117,7 +117,7 @@ inline const vec2& max(const vec2& a, const vec2& b)
 // vec3
 inline vec3 abs(const vec3& vector)
 {
-	return vec3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
+    return vec3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
 }
 inline float lengthSqr(const vec3& vector)
 {
@@ -129,10 +129,10 @@ inline float length(const vec3& vector)
 }
 inline vec3 normalize(const vec3& vector)
 {
-	if (vector != vec3(0,0,0))
-		return vector / length(vector);
-	else
-		return vector;
+    if (vector != vec3(0,0,0))
+        return vector / length(vector);
+    else
+        return vector;
 }
 inline float dot(const vec3& vector1, const vec3& vector2)
 {

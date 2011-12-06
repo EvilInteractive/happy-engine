@@ -31,6 +31,7 @@
 
 #undef assert
 #include "boost/asio.hpp"
+#undef assert
 #define assert ASSERT
 #include "Message.h"
 
@@ -47,7 +48,7 @@ enum ServerMessage
 class Server
 {
 public:
-	Server();
+    Server();
     virtual ~Server();
 
     void start(ushort port, byte maxConnections);

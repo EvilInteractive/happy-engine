@@ -115,8 +115,8 @@ DriveableSurfaceTyreFrictionTable::~DriveableSurfaceTyreFrictionTable()
     free(m_TyreFrictionPair);
     free(m_VehicleDrivableSurfaceTypes);
     #else
-    __aligned_free(m_TyreFrictionPair);
-    __aligned_free(m_VehicleDrivableSurfaceTypes);
+    _aligned_free(m_TyreFrictionPair);
+    _aligned_free(m_VehicleDrivableSurfaceTypes);
     #endif
 }
 

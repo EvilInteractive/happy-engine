@@ -31,6 +31,7 @@
 
 #undef assert
 #include "boost/asio.hpp"
+#undef assert
 #define assert ASSERT
 #include "boost/function.hpp"
 #include "Message.h"

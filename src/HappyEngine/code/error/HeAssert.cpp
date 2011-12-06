@@ -33,7 +33,7 @@ void happyAssert(bool isOk, const std::string& message, const char* file, int li
         std::cout << "**ASSERTION FAILURE!**\n";
         std::cout << "*err in file " << file << "(" << line << ")\n";
         std::cout << "*" << message << "\n";
-        #ifdef WINDOWS
+        #ifndef GCC
         __debugbreak();
         #else
         __builtin_trap();
@@ -46,7 +46,7 @@ void happyAssert(bool isOk, const char* file, int line)
     {
         std::cout << "**ASSERTION FAILURE!**\n";
         std::cout << "*err in file " << file << "(" << line << ")\n";
-        #ifdef WINDOWS
+        #ifndef GCC
         __debugbreak();
         #else
         __builtin_trap();
@@ -66,7 +66,7 @@ void happyAssert(const std::string& message, const char* file, int line)
     std::cout << "**ASSERTION FAILURE!**\n";
     std::cout << "*err in file " << file << "(" << line << ")\n";
     std::cout << "*" << message << "\n";
-    #ifdef WINDOWS
+    #ifndef GCC
     __debugbreak();
     #else
     __builtin_trap();

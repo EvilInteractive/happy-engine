@@ -29,6 +29,7 @@
 #include "boost/shared_ptr.hpp"
 #undef assert
 #include "boost/asio.hpp"
+#undef assert
 #define assert ASSERT
 #include "HappyTypes.h"
 #include "Message.h"
@@ -40,7 +41,7 @@ namespace net {
 class Client
 {
 public:
-	Client();
+    Client();
     virtual ~Client();
 
     void asyncConnect(const std::string& ip, ushort port);
