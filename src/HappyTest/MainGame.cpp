@@ -65,13 +65,14 @@
 #include "PhysicsData.h"
 
 #include "Deferred3DRenderer.h"
+#include "CameraManager.h"
 
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_DrawTimer(0), m_UpdateTimer(0),       
                        m_pFPSGraph(NEW he::tools::FPSGraph()),
-                       m_pCurrentCamera(nullptr), m_pTestButton(nullptr), m_pAxis(nullptr),
+                       m_pTestButton(nullptr), m_pAxis(nullptr),
                        m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
                        m_pTestSound2D(nullptr), m_pTestGrid(nullptr),
@@ -90,8 +91,7 @@ MainGame::~MainGame()
 {
     PHYSICS->stopSimulation();
 
-    delete m_pFollowCamera;
-    delete m_pFlyCamera;
+    CAMERAMANAGER->deleteAllCameras();
 
     delete m_pTestObject;
     std::for_each(m_Bullets.cbegin(), m_Bullets.cend(), [&](he::game::Entity* pBullet)
@@ -261,20 +261,19 @@ void MainGame::load()
     //////////////////////////////////////////////////////////////////////////
     ///                            CAMERA'S                                ///
     //////////////////////////////////////////////////////////////////////////
-    m_pFlyCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-    m_pFlyCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-    m_pFlyCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    FlyCamera* pFlyCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    pFlyCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
+    pFlyCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    CAMERAMANAGER->addCamera("fly", pFlyCamera);
 
-    m_pFollowCamera = NEW FollowCamera();
-    m_pFollowCamera->setLens(16.0f/9.0f,piOverFour,10.0f, 200.0f);
-    m_pFollowCamera->setFollowObject(m_pTestObject);
-    m_pFollowCamera->setLocalLook(normalize(vec3(0, 0.58f, -1.0f)));
-    m_pFollowCamera->setDistance(15);
+    FollowCamera* pFollowCamera = NEW FollowCamera();
+    pFollowCamera->setLens(16.0f/9.0f,piOverFour,10.0f, 200.0f);
+    pFollowCamera->setFollowObject(m_pTestObject);
+    pFollowCamera->setLocalLook(normalize(vec3(0, 0.58f, -1.0f)));
+    pFollowCamera->setDistance(15);
+    CAMERAMANAGER->addCamera("car", pFollowCamera);
 
-    m_pCurrentCamera = m_pFollowCamera;
-    GAME->setActiveCamera(m_pFollowCamera);
-    //m_pCurrentCamera = m_pFlyCamera;
-    //GAME->setActiveCamera(m_pFlyCamera);
+    CAMERAMANAGER->setActiveCamera("car");
 
     // SSAO
     he::gfx::Deferred3DRenderer::SSAOSettings settings;
@@ -299,10 +298,6 @@ void MainGame::tick(float dTime)
 
     PROFILER_BEGIN("MainGame::tick");
 
-    if (m_pCurrentCamera == m_pFlyCamera)
-        m_pFlyCamera->tick(dTime);
-    else
-        m_pFollowCamera->tick(dTime);
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
@@ -311,8 +306,8 @@ void MainGame::tick(float dTime)
 
     //m_pTestSound2D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
 
-    AUDIO->setListenerPos(m_pCurrentCamera->getPosition());
-    AUDIO->setListenerOrientation(m_pCurrentCamera->getLook(), m_pCurrentCamera->getUp());
+    AUDIO->setListenerPos(CAMERAMANAGER->getActiveCamera()->getPosition());
+    AUDIO->setListenerOrientation(CAMERAMANAGER->getActiveCamera()->getLook(), CAMERAMANAGER->getActiveCamera()->getUp());
 
     m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
@@ -320,13 +315,13 @@ void MainGame::tick(float dTime)
     {
         game::Entity* pBullet(NEW game::Entity());
         
-        pBullet->setWorldMatrix(mat44::createTranslation(m_pCurrentCamera->getPosition()));
+        pBullet->setWorldMatrix(mat44::createTranslation(CAMERAMANAGER->getActiveCamera()->getPosition()));
 
         game::DynamicPhysicsComponent* pPhysicsComponent(NEW game::DynamicPhysicsComponent());
         pBullet->addComponent(pPhysicsComponent);
         px::PhysicsBoxShape boxShape(vec3(2, 2, 2));
-        pPhysicsComponent->addShape(&boxShape, PHYSICS->getDriveableMaterial(DM_Metal), 5);
-        pPhysicsComponent->getDynamicActor()->setVelocity(m_pCurrentCamera->getLook() * 20);
+        pPhysicsComponent->addShape(&boxShape, PHYSICS->getDriveableMaterial(DM_Metal), 80);
+        pPhysicsComponent->getDynamicActor()->setVelocity(CAMERAMANAGER->getActiveCamera()->getLook() * 20);
 
         game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());
         pBulletModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
@@ -362,18 +357,18 @@ void MainGame::tick(float dTime)
     }
 
     m_pTextBox->tick();
-
     if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
     {
         uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
 
-        if (id != UINT_MAX)
+        /*if (id != UINT_MAX)
         {
-            /*m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
+            m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
         }
-        else*/
+        else
+        {*/
             m_PickPos = vec3((float)id, (float)id, (float)id);
-        }
+        /*}*/
     }
 
     m_pFPSGraph->tick(dTime, 0.5f);
@@ -382,12 +377,13 @@ void MainGame::tick(float dTime)
 
     PROFILER_END("MainGame::tick");
 }
-void MainGame::draw()
+void MainGame::drawGui()
 {
     using namespace he;
     using namespace gfx;
 
-    PROFILER_BEGIN("MainGame::draw");
+    PROFILER_BEGIN("MainGame::drawGui");
+
     // 2D test stuff
     /*m_pTestButton->draw();
     m_pTestButton2->draw();
@@ -443,17 +439,17 @@ void MainGame::draw()
     CONSOLE->draw();
 
     /* DRAW 3D & 2D */
-    GRAPHICS->clearAll();
 
-    GRAPHICS->begin(m_pCurrentCamera);
-    GRAPHICS->end();
-
+    //GL::reset();
+ //   GRAPHICS->pick(vec2(0, 0));
+    //GRAPHICS->clearAll();
+    
     // TODO: implement into drawmanager/GRAPHICS
     /*HE3D->begin(m_pCurrentCamera);
     m_pTestGrid->draw();
     HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
     HE3D->end();*/
-    PROFILER_END("MainGame::draw");
+    PROFILER_END("MainGame::drawGui");
 }
 
 } //end namespace

@@ -70,6 +70,7 @@ namespace sfx {
 }
 namespace game {
     class Game;
+    class CameraManager;
 }
 }
 
@@ -83,6 +84,7 @@ namespace game {
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
+#define CAMERAMANAGER HAPPYENGINE->getCameraManager()
 #define HE3D HAPPYENGINE->get3DRenderer()
 #define FX HAPPYENGINE->getFxManager()
 
@@ -136,6 +138,7 @@ public:
     tools::Console* getConsole() const;
     sfx::SoundEngine* getSoundEngine() const;
     game::Game* getGame() const;
+    game::CameraManager* getCameraManager() const;
     gfx::SimpleForward3DRenderer* get3DRenderer() const;
     gfx::FxManager* getFxManager() const;
 
@@ -146,17 +149,19 @@ private:
     void initSubEngines(int subengines);
 
     game::Game* m_pGame;
+    game::CameraManager* m_pCameraManager;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
+    gfx::Happy2DRenderer* m_p2DRenderer;
+    gfx::SimpleForward3DRenderer* m_p3DRenderer;
+    gfx::FxManager* m_pFxManager;
+
     io::ControlsManager* m_pControlsManager;
     px::PhysicsEngine* m_pPhysicsEngine;
     ct::ContentManager* m_pContentManager;
     net::NetworkManager* m_pNetworkManager;
-    gfx::Happy2DRenderer* m_p2DRenderer;
     tools::Console* m_pConsole;
     sfx::SoundEngine* m_pSoundEngine;
-    gfx::SimpleForward3DRenderer* m_p3DRenderer;
-    gfx::FxManager* m_pFxManager;
 
     bool m_Quit;
 

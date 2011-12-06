@@ -34,12 +34,12 @@ namespace game {
 class Game
 {
 public:
-    Game(): m_pActiveCamera(nullptr) {}
+    Game() {}
     virtual ~Game() {}
 
     virtual void init() = 0;
     virtual void load() = 0;
-    virtual void draw() = 0;
+    virtual void drawGui() = 0;
 
 
     virtual void tick(float dTime)
@@ -53,12 +53,8 @@ public:
     {
         m_TickList.push_back(pObj);
     }
-
-    virtual void setActiveCamera(gfx::Camera* pCamera) { m_pActiveCamera = pCamera; }
-    virtual gfx::Camera* getActiveCamera() { return m_pActiveCamera; }
-
+    
 private:
-    gfx::Camera* m_pActiveCamera;
     std::vector<ITickable*> m_TickList;
 };
 

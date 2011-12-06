@@ -60,7 +60,7 @@ public:
 
     void addToDrawList(const IDrawable* pDrawable);
 
-    void begin(const Camera* pCamera);
+    void begin();
     void end();
     void draw(const ModelMesh::pointer& pModelMesh);
     void present() const;
@@ -108,9 +108,7 @@ private:
 
     DrawManager* m_pDrawManager;
     DrawSettings m_Settings;
-
-    const Camera* m_pCurrentCamera;
-
+    
     Picker* m_pPicker;
 
     /* DEFAULT COPY & ASSIGNMENT */

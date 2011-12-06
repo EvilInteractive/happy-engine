@@ -28,6 +28,7 @@
 
 #include "IniReader.h"
 #include "Happy2DRenderer.h"
+#include "CameraManager.h"
 
 namespace he {
 namespace gfx {
@@ -226,12 +227,11 @@ void GraphicsEngine::clearDepth() const
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void GraphicsEngine::begin(const Camera* pCamera)
+void GraphicsEngine::begin()
 {
     GL::reset();
-    m_pCurrentCamera = pCamera;
-    m_pDeferred3DRenderer->begin(pCamera);
-    m_pDrawManager->draw(m_pCurrentCamera);
+    m_pDeferred3DRenderer->begin();
+    m_pDrawManager->draw();
 }
 void GraphicsEngine::end()
 {
@@ -278,7 +278,7 @@ void GraphicsEngine::initPicking()
 }
 uint GraphicsEngine::pick(const vec2& screenPoint)
 {
-    return m_pPicker->pick(screenPoint, m_pCurrentCamera);
+    return m_pPicker->pick(screenPoint);
 }
 
 } } //end namespace

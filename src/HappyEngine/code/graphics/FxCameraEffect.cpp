@@ -25,7 +25,7 @@
 #include "FxConstant.h"
 
 #include "HappyEngine.h"
-#include "Game.h"
+#include "CameraManager.h"
 #include "Random.h"
 
 #include "Camera.h"
@@ -49,19 +49,19 @@ void FxCameraEffect::start()
 void FxCameraEffect::stop()
 {
     //reset shake
-    if (GAME->getActiveCamera() != nullptr) 
-        GAME->getActiveCamera()->setFxPositionOffset(vec3::zero);
+    if (CAMERAMANAGER->getActiveCamera() != nullptr) 
+        CAMERAMANAGER->getActiveCamera()->setFxPositionOffset(vec3::zero);
 }
 
 void FxCameraEffect::tick( float currentTime, float dTime )
 {
-    if (m_ShakeEnabled && GAME->getActiveCamera() != nullptr)
+    if (m_ShakeEnabled && CAMERAMANAGER->getActiveCamera() != nullptr)
     {
         //random direction
         //mult by intensity
         vec3 shake(normalize(vec3(m_Random.nextFloat(0, 1), m_Random.nextFloat(0, 1), m_Random.nextFloat(0, 1))));
         shake *= m_pShakeIntensity->getValue(currentTime);
-        GAME->getActiveCamera()->setFxPositionOffset(shake);
+        CAMERAMANAGER->getActiveCamera()->setFxPositionOffset(shake);
     }
 }
 

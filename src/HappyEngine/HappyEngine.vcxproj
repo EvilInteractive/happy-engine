@@ -45,6 +45,7 @@
     <ClCompile Include="code\error\Exception.cpp" />
     <ClCompile Include="code\error\ExternalError.cpp" />
     <ClCompile Include="code\error\FileNotFoundException.cpp" />
+    <ClCompile Include="code\game\CameraManager.cpp" />
     <ClCompile Include="code\game\Entity.cpp" />
     <ClCompile Include="code\game\ModelComponent.cpp" />
     <ClCompile Include="code\game\DynamicPhysicsComponent.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="code\error\ExternalError.h" />
     <ClInclude Include="code\error\FileNotFoundException.h" />
     <ClInclude Include="code\event.h" />
+    <ClInclude Include="code\game\CameraManager.h" />
     <ClInclude Include="code\game\Entity.h" />
     <ClInclude Include="code\game\IComponent.h" />
     <ClInclude Include="code\game\Game.h" />

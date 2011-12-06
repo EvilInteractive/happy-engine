@@ -3,9 +3,9 @@
 out vec4 outId;
 
 //uniform uint id;
-uniform vec3 id;
+uniform vec4 id;
 
 void main()
 {
-	outId = vec4(1, 1, 1, 1.0f);
+	outId = id;
 }

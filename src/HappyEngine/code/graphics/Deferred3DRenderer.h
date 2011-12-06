@@ -33,7 +33,6 @@ namespace he {
 namespace gfx {
 
 class LightManager;
-class Camera;
 class Bloom;
 class AutoExposure;
 class DrawSettings;
@@ -117,7 +116,7 @@ public:
     };
     virtual ~Deferred3DRenderer();
 
-    void begin(const Camera* pCamera);
+    void begin();
     void end();
 
     void resized();
@@ -184,7 +183,6 @@ private:
 
     ModelMesh::pointer m_pQuad;
     LightManager* m_pLightManager;   
-    const Camera* m_pCamera;
     Bloom* m_pBloom;
     AutoExposure* m_pAutoExposure;
 

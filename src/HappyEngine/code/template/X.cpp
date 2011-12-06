@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "X.h"
-#include "HappyNew.h"
 
 namespace he {
 

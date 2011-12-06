@@ -52,27 +52,27 @@ public:
         Type_BackToFront
     };
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	DrawManager();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    DrawManager();
     virtual ~DrawManager();
 
-	/* GENERAL */
+    /* GENERAL */
     void init(const DrawSettings& settings);
-    void draw(const Camera* pCamera);
+    void draw();
 
     void addDrawable(const IDrawable* pDrawabe);
 
-	/* GETTERS */
+    /* GETTERS */
     static bool viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere);
     static bool viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere);
 
-	const std::vector<const IDrawable*>& getDrawList() const;
+    const std::vector<const IDrawable*>& getDrawList() const;
 
 private:
 
-    void renderShadow(const Camera* pCamera);
+    void renderShadow();
 
-	/* DATAMEMBERS */
+    /* DATAMEMBERS */
     Type m_Type;
 
     std::vector<const IDrawable*> m_DrawList;

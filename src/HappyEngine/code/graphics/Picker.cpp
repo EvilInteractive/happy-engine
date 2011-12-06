@@ -28,6 +28,7 @@
 #include "OpenGL.h"
 #include "HappyEngine.h"
 #include "DrawManager.h"
+#include "CameraManager.h"
 
 #include "ExternalError.h"
 
@@ -83,7 +84,7 @@ void Picker::initialize()
 
     m_bInitialized = true;
 }
-uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
+uint Picker::pick(const vec2& screenPoint)
 {
     ASSERT(m_bInitialized, "Initialize picker before using!");
 
@@ -102,11 +103,11 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
             shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
                 pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
 
-            if (DrawManager::viewClip(pCamera, bS) == false)
+            if (DrawManager::viewClip(CAMERAMANAGER->getActiveCamera(), bS) == false)
             {
                 DrawManager::DrawElement e;
                 e.pDrawable = pDrawable;
-                e.sorter = lengthSqr(pCamera->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
+                e.sorter = lengthSqr(CAMERAMANAGER->getActiveCamera()->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
                 culledDrawList.push_back(e);
 
                 ID1.push_back(i);
@@ -148,7 +149,7 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_pPickEffect->begin();
-    m_pPickEffect->setViewProjection(pCamera->getViewProjection());
+    m_pPickEffect->setViewProjection(CAMERAMANAGER->getActiveCamera()->getViewProjection());
 
     i = 1;
     std::for_each(pickList.cbegin(), pickList.cend(), [&](const IDrawable* pDrawable)

@@ -33,6 +33,7 @@
 #include "NetworkManager.h"
 #include "Happy2DRenderer.h"
 #include "Game.h"
+#include "CameraManager.h"
 #include "Console.h"
 #include "SoundEngine.h"
 #include "SimpleForward3DRenderer.h"
@@ -53,7 +54,8 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
-                            m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0)
+                            m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
+                            m_pCameraManager(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -92,6 +94,9 @@ void HappyEngine::cleanup()
     delete m_p3DRenderer;
     m_p3DRenderer = nullptr;
     delete m_pFxManager;
+    m_pFxManager = nullptr;
+    delete m_pCameraManager;
+    m_pCameraManager = nullptr;
 
 
     delete m_pGraphicsEngine;
@@ -122,6 +127,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         SDL_Init(SDL_INIT_EVERYTHING);
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
         m_p3DRenderer = NEW gfx::SimpleForward3DRenderer();
+        m_pCameraManager = NEW game::CameraManager();
     }
 
     if (subengines & SubEngine_Content)
@@ -184,6 +190,7 @@ void HappyEngine::start(game::Game* pGame)
     {
         m_pGraphicsEngine->init(false);
         //m_p3DRenderer->init();
+        m_pCameraManager->init();
     }
 
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
@@ -212,6 +219,7 @@ void HappyEngine::start(gfx::HappyQtWidget* pWidget)
     m_SubEngines |= SubEngine_Qt;    
 
     m_pGame = pWidget;
+    m_pCameraManager->init();
     m_pGame->load();
     m_pQtWidget = pWidget;
     
@@ -272,8 +280,9 @@ void HappyEngine::updateLoop(float dTime)
 }
 void HappyEngine::drawLoop()
 {            
-
-    m_pGame->draw();
+    GRAPHICS->begin();
+    GRAPHICS->end();
+    m_pGame->drawGui();
 
     PROFILER->draw();
  
@@ -366,6 +375,11 @@ gfx::SimpleForward3DRenderer* HappyEngine::get3DRenderer() const
 gfx::FxManager* HappyEngine::getFxManager() const
 {
     return m_pFxManager;
+}
+
+game::CameraManager* HappyEngine::getCameraManager() const
+{
+    return m_pCameraManager;
 }
 
 } //end namespace

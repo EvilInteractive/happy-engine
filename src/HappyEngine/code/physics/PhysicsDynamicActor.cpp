@@ -57,7 +57,7 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 
     PHYSICS->getScene()->addActor(*m_pActor);
 }
-void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float /*mass*/ ) const
+void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass ) const
 {
     physx::PxShape* pPxShape(nullptr);
     switch (pShape->getType())
@@ -99,8 +99,8 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     }
     ASSERT(pPxShape != nullptr, "Shape creation failed");
 
-    //physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
-    physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
+    physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
+    //physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
 
     physx::PxFilterData sFilter;
     sFilter.word0 = COLLISION_FLAG_OBSTACLE;

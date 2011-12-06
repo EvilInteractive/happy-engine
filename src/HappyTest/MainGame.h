@@ -59,13 +59,9 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void draw();
+    virtual void drawGui();
 
 private:
-    happytest::FlyCamera* m_pFlyCamera;
-    happytest::FollowCamera* m_pFollowCamera;
-    he::gfx::Camera* m_pCurrentCamera;
-
     TestObject* m_pTestObject;
 
     he::Color m_BackgroundColors[5];

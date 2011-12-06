@@ -15,44 +15,51 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
+//Author:  Bastian Damman
+//Created: 06/12/2011
 
-#ifndef _FLY_CAMERA_H_
-#define _FLY_CAMERA_H_
+#ifndef _HE_CAMERA_MANAGER_H_
+#define _HE_CAMERA_MANAGER_H_
 #pragma once
 
-#include "Camera.h"
-#include "vec2.h"
+#include <map>
+#include "ITickable.h"
 
-namespace happytest {
+namespace he {
+namespace gfx{
+class Camera;
+}
 
-class FlyCamera : public he::gfx::Camera
+namespace game{
+
+class CameraManager : public ITickable
 {
 public:
-    // CONSTRUCTOR - DESTRUCTOR
-    FlyCamera(int viewportWidth, int viewportHeight);
-    virtual ~FlyCamera();
+    CameraManager();
+    virtual ~CameraManager(); //deleteAllCameras is not auto called, user can decide when to delete using deleteCamera or deleteAllCamera
 
-    // GENERAL
-    virtual void tick(float dTime);
+    void init(); // Internal called
 
-    // SETTERS
-    void moveable(bool bMoveable);
-    void setMouseSensitivty(float sens = 100.0f);
+    void addCamera(const std::string& id, gfx::Camera* pCamera);
+    void deleteCamera(const std::string& id);
+    void deleteAllCameras();
+    void setActiveCamera(const std::string& id);
+
+    gfx::Camera* getActiveCamera() const;
+
+    virtual void tick(float dTime); // Internal called
 
 private:
-    bool m_bMoveable;
 
-    float m_Speed;
-    float m_FastForward;
-    float m_MouseSensitivity;
+    gfx::Camera* m_pActiveCamera;
+    std::map<std::string, gfx::Camera*> m_Cameras;
 
-    he::vec2 m_PreviousMousePos;
 
     //Disable default copy constructor and default assignment operator
-    FlyCamera(const FlyCamera&);
-    FlyCamera& operator=(const FlyCamera&);
+    CameraManager(const CameraManager&);
+    CameraManager& operator=(const CameraManager&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

@@ -37,7 +37,7 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
 
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
-	delete m_pDynamicActor;
+    delete m_pDynamicActor;
 }
 
 void DynamicPhysicsComponent::init( Entity* pParent )

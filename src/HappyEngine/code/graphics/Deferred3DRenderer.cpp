@@ -34,6 +34,7 @@
 #include "ExternalError.h"
 
 #include "LightManager.h"
+#include "CameraManager.h"
 #include "Camera.h"
 #include "Bloom.h"
 #include "AutoExposure.h"
@@ -303,9 +304,8 @@ const VertexLayout& Deferred3DRenderer::getVertexLayoutLightVolume()
 {
     return s_VertexLayoutFullscreenQuad; 
 }
-void Deferred3DRenderer::begin(const Camera* pCamera)
+void Deferred3DRenderer::begin()
 {
-    m_pCamera = pCamera;
     GL::heBindFbo(m_CollectionFboId);
     GL::heSetDepthWrite(true);
     GL::heSetDepthRead(true);
@@ -323,13 +323,13 @@ void Deferred3DRenderer::end()
     //glLineWidth(4.0f);
     //std::for_each(m_pLightManager->getPointLights().cbegin(), m_pLightManager->getPointLights().cend(), [&](const PointLight::pointer& pLight)
     //{
-    //    pLight->getMaterial().begin(pLight.get(), m_pCamera);
+    //    pLight->getMaterial().begin(pLight.get(), CAMERAMANAGER->getActiveCamera());
     //    GRAPHICS->draw(pLight->getModel());
     //    pLight->getMaterial().end();
     //});
     //std::for_each(m_pLightManager->getSpotLights().cbegin(), m_pLightManager->getSpotLights().cend(), [&](const SpotLight::pointer& pLight)
     //{
-    //    pLight->getMaterial().begin(pLight.get(), m_pCamera);
+    //    pLight->getMaterial().begin(pLight.get(), CAMERAMANAGER->getActiveCamera());
     //    GRAPHICS->draw(pLight->getModel());
     //    pLight->getMaterial().end();      
     //});
@@ -354,10 +354,10 @@ void Deferred3DRenderer::end()
     GL::heSetCullFace(true);
     {
         m_SharedShaderData.projParams = vec4(
-            m_pCamera->getProjection()(0, 0),
-            m_pCamera->getProjection()(1, 1),
-            m_pCamera->getProjection()(2, 2),
-            m_pCamera->getProjection()(2, 3));
+            CAMERAMANAGER->getActiveCamera()->getProjection()(0, 0),
+            CAMERAMANAGER->getActiveCamera()->getProjection()(1, 1),
+            CAMERAMANAGER->getActiveCamera()->getProjection()(2, 2),
+            CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3));
         m_SharedShaderData.pSharedBuffer->setShaderVar(m_SharedShaderData.projParams);
 
         m_pPointLightShader->bind();
@@ -431,7 +431,7 @@ void Deferred3DRenderer::postAmbIllLight()
 
     m_AmbIllLightData.ambColor = vec4(pAmbLight->color, pAmbLight->multiplier);
     m_AmbIllLightData.dirColor = vec4(pDirLight->getColor(), pDirLight->getMultiplier());
-    m_AmbIllLightData.dirDirection = normalize((m_pCamera->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz());
+    m_AmbIllLightData.dirDirection = normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz());
 
     m_AmbIllLightData.pLightBuffer->setShaderVar(m_AmbIllLightData.ambColor);
     m_AmbIllLightData.pLightBuffer->setShaderVar(m_AmbIllLightData.dirColor);
@@ -470,14 +470,14 @@ void Deferred3DRenderer::postPointLights()
     const std::vector<PointLight::pointer>& lights(m_pLightManager->getPointLights());
     std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
     {
-        /*if (lengthSqr(pLight->getPosition() - m_pCamera->getPosition()) + pLight->getEndAttenuation() * pLight->getEndAttenuation() 
+        /*if (lengthSqr(pLight->getPosition() - CAMERAMANAGER->getActiveCamera()->getPosition()) + pLight->getEndAttenuation() * pLight->getEndAttenuation() 
             < m_Settings.getFogEnd() * m_Settings.getFogEnd())
         {*/
-            if ( !(dot(normalize(pLight->getPosition() - m_pCamera->getPosition()), m_pCamera->getLook()) < 0 && 
-                   length(pLight->getPosition() - m_pCamera->getPosition()) > pLight->getEndAttenuation())) 
+            if ( !(dot(normalize(pLight->getPosition() - CAMERAMANAGER->getActiveCamera()->getPosition()), CAMERAMANAGER->getActiveCamera()->getLook()) < 0 && 
+                   length(pLight->getPosition() - CAMERAMANAGER->getActiveCamera()->getPosition()) > pLight->getEndAttenuation())) 
             {
                 //RectI scissor(pLight->getScissor(pCamera));
-                m_PointLightData.position = m_pCamera->getView() * pLight->getPosition();
+                m_PointLightData.position = CAMERAMANAGER->getActiveCamera()->getView() * pLight->getPosition();
                 m_PointLightData.multiplier = pLight->getMultiplier();
                 m_PointLightData.color = pLight->getColor();
                 m_PointLightData.beginAttenuation = pLight->getBeginAttenuation();
@@ -489,7 +489,7 @@ void Deferred3DRenderer::postPointLights()
                 m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.beginAttenuation);
                 m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.endAttenuation);
 
-                m_pPointLightShader->setShaderVar(m_PointLightData.wvp, m_pCamera->getViewProjection() * pLight->getWorldMatrix());
+                m_pPointLightShader->setShaderVar(m_PointLightData.wvp, CAMERAMANAGER->getActiveCamera()->getViewProjection() * pLight->getWorldMatrix());
 
                 if (pLight->getLightVolume()->isLoaded())
                     GRAPHICS->draw(pLight->getLightVolume());
@@ -509,9 +509,9 @@ void Deferred3DRenderer::postSpotLights()
     std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
     {
         //RectI scissor(pLight->getScissor(pCamera));
-        m_SpotLightData.position = m_pCamera->getView() * pLight->getPosition();
+        m_SpotLightData.position = CAMERAMANAGER->getActiveCamera()->getView() * pLight->getPosition();
         m_SpotLightData.multiplier = pLight->getMultiplier();
-        m_SpotLightData.direction = normalize((m_pCamera->getView() * vec4(pLight->getDirection(), 0)).xyz());
+        m_SpotLightData.direction = normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(pLight->getDirection(), 0)).xyz());
         m_SpotLightData.beginAttenuation = pLight->getBeginAttenuation();
         m_SpotLightData.color = pLight->getColor();
         m_SpotLightData.endAttenuation = pLight->getEndAttenuation();
@@ -525,7 +525,7 @@ void Deferred3DRenderer::postSpotLights()
         m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.endAttenuation);
         m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.cosCutOff);
 
-        m_pSpotLightShader->setShaderVar(m_SpotLightData.wvp, m_pCamera->getViewProjection() * pLight->getWorldMatrix());
+        m_pSpotLightShader->setShaderVar(m_SpotLightData.wvp, CAMERAMANAGER->getActiveCamera()->getViewProjection() * pLight->getWorldMatrix());
 
         if (pLight->getLightVolume()->isLoaded())
             GRAPHICS->draw(pLight->getLightVolume());
@@ -556,12 +556,12 @@ void Deferred3DRenderer::postToneMap()
         //m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[5], (int)m_SSAOSettings.passes);
         //m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[6], m_SSAOSettings.minIterations);
         //m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[7], (int)m_SSAOSettings.maxIterations);
-        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[8], vec4(m_pCamera->getProjection()(0, 0),
-                                                                m_pCamera->getProjection()(1, 1),
-                                                                m_pCamera->getProjection()(2, 2),
-                                                                m_pCamera->getProjection()(2, 3)));
+        m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[8], vec4(CAMERAMANAGER->getActiveCamera()->getProjection()(0, 0),
+                                                                CAMERAMANAGER->getActiveCamera()->getProjection()(1, 1),
+                                                                CAMERAMANAGER->getActiveCamera()->getProjection()(2, 2),
+                                                                CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3)));
         m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[9], vec2((float)GRAPHICS->getScreenRect().width, (float)GRAPHICS->getScreenRect().height));
-        //m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[10], m_pCamera->getFarClip());
+        //m_pToneMapShader->setShaderVar(m_ShaderSSAOPos[10], CAMERAMANAGER->getActiveCamera()->getFarClip());
     }
 
     GRAPHICS->draw(m_pQuad);

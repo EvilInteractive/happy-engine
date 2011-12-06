@@ -38,6 +38,7 @@ public:
     virtual ~Camera();
 
     // GENERAL
+    virtual void tick(float /*dTime*/) {}
     virtual void resize(int viewportWidth, int viewportHeight);
     virtual void lookAt(const vec3& pos, const vec3& target, const vec3& up);
 

@@ -40,7 +40,7 @@ FlyCamera::~FlyCamera()
 }
 
 // GENERAL
-void FlyCamera::tick(const float dTime)
+void FlyCamera::tick(float dTime)
 {
     using namespace he;
     

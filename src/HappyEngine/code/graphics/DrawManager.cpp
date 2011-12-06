@@ -26,6 +26,7 @@
 #include "GraphicsEngine.h"
 #include "ShadowCaster.h"
 #include "LightManager.h"
+#include "CameraManager.h"
 
 namespace he {
 namespace gfx {
@@ -40,7 +41,7 @@ DrawManager::~DrawManager()
     delete m_pShadowCaster;
 }
 
-void DrawManager::draw(const Camera* pCamera)
+void DrawManager::draw()
 {
 
     std::vector<DrawElement> culledDrawList;
@@ -52,11 +53,11 @@ void DrawManager::draw(const Camera* pCamera)
             shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
                               pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
 
-            if (viewClip(pCamera, bS) == false)
+            if (viewClip(CAMERAMANAGER->getActiveCamera(), bS) == false)
             {
                 DrawElement e;
                 e.pDrawable = pDrawable;
-                e.sorter = lengthSqr(pCamera->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
+                e.sorter = lengthSqr(CAMERAMANAGER->getActiveCamera()->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
                 culledDrawList.push_back(e);
             }
         }
@@ -65,16 +66,18 @@ void DrawManager::draw(const Camera* pCamera)
     std::sort(culledDrawList.begin(), culledDrawList.end());
     std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawElement& e)
     {
-        e.pDrawable->getMaterial().apply(e.pDrawable, pCamera);        
+        e.pDrawable->getMaterial().apply(e.pDrawable, CAMERAMANAGER->getActiveCamera());        
         GRAPHICS->draw(e.pDrawable->getModel());
 
     });
     
-    renderShadow(pCamera);
+    renderShadow();
 }
 bool DrawManager::viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere)
 {
-    return viewClip(pCamera->getPosition(), pCamera->getLook(), pCamera->getFarClip(), boundingSphere);
+    return viewClip(CAMERAMANAGER->getActiveCamera()->getPosition(), 
+                    CAMERAMANAGER->getActiveCamera()->getLook(), 
+                    CAMERAMANAGER->getActiveCamera()->getFarClip(), boundingSphere);
 }
 bool DrawManager::viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere)
 {
@@ -101,9 +104,9 @@ void DrawManager::init(const DrawSettings& settings)
     m_pShadowCaster->init(settings);
 }
 
-void DrawManager::renderShadow(const Camera* pCamera)
+void DrawManager::renderShadow()
 {
-    m_pShadowCaster->render(m_DrawList, pCamera, GRAPHICS->getLightManager()->getDirectionalLight());
+    m_pShadowCaster->render(m_DrawList, CAMERAMANAGER->getActiveCamera(), GRAPHICS->getLightManager()->getDirectionalLight());
 }
 
 void DrawManager::addDrawable( const IDrawable* pDrawable )

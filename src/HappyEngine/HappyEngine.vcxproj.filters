@@ -481,6 +481,9 @@
     <ClCompile Include="code\HappyPCH.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
+    <ClCompile Include="code\game\CameraManager.cpp">
+      <Filter>happyengine\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -965,6 +968,9 @@
     </ClInclude>
     <ClInclude Include="code\HappyPCH.h">
       <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\CameraManager.h">
+      <Filter>happyengine\game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
