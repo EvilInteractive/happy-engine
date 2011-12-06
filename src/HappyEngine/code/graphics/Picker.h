@@ -43,6 +43,8 @@ public:
     // returns ID of mesh in drawlist which is picked, or UINT_MAX if none
     uint pick(const vec2& screenPoint, const Camera* pCamera);
 
+    void drawDebug() const;
+
 private:
 
     /* DATAMEMBERS */

@@ -24,6 +24,7 @@
 #include "HappyNew.h"
 
 #include "GraphicsEngine.h"
+#include "Happy2DRenderer.h"
 #include "OpenGL.h"
 #include "HappyEngine.h"
 #include "DrawManager.h"
@@ -54,8 +55,8 @@ void Picker::initialize()
 {
     m_pPickEffect->load();
 
-    int width = GRAPHICS->getViewport().width, 
-        height = GRAPHICS->getViewport().height;
+    int width = GRAPHICS->getScreenWidth(), 
+        height = GRAPHICS->getScreenHeight();
 
     uint renderTexture;
     glGenTextures(1, &renderTexture);
@@ -65,7 +66,8 @@ void Picker::initialize()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     m_pIDTexture->init(renderTexture, width, height, GL_R32I);
 
     glGenRenderbuffers(1, &m_DepthRenderBuffer);
@@ -84,16 +86,6 @@ void Picker::initialize()
 uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
 {
     ASSERT(m_bInitialized, "Initialize picker before using!");
-
-    GL::heBlendEnabled(false);
-    GL::heSetDepthWrite(true);
-
-    GL::heBindFbo(m_RenderFboID);
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    m_pPickEffect->begin();
-    m_pPickEffect->setViewProjection(pCamera->getViewProjection());
 
     const std::vector<const IDrawable*>& drawList = GRAPHICS->getDrawList();
     std::vector<uint> ID1;
@@ -141,13 +133,30 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
         ++i;
     });
 
+
+
+    GL::heBlendEnabled(false);
+    GL::heSetDepthWrite(true);
+
+    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, buffers);
+
+    GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    GL::heBindFbo(m_RenderFboID);
+    GL::heClearColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_pPickEffect->begin();
+    m_pPickEffect->setViewProjection(pCamera->getViewProjection());
+
     i = 1;
     std::for_each(pickList.cbegin(), pickList.cend(), [&](const IDrawable* pDrawable)
     {
         m_pPickEffect->setWorld(pDrawable->getWorldMatrix());
-        m_pPickEffect->setID(i);
+       // m_pPickEffect->setID(vec3(i/((float)pickList.size()), i/((float)pickList.size()), i/((float)pickList.size())));
+        m_pPickEffect->setID(vec3(1, 1, 1));
 
-        GL::heBindVao(pDrawable->getModel()->getVertexArraysID());
+        GL::heBindVao(pDrawable->getModel()->getVertexShadowArraysID());
         glDrawElements(GL_TRIANGLES, pDrawable->getModel()->getNumIndices(), pDrawable->getModel()->getIndexType(), 0);
 
         ++i;
@@ -156,9 +165,9 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
     //glGetError();
 
     uint id(0);
-    glReadPixels(	static_cast<int>(screenPoint.x),
-                    GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
-                    1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
+    //glReadPixels(	static_cast<int>(screenPoint.x),
+    //                GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
+    //                1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &id);
 
     //GLenum error = glGetError();
 
@@ -169,6 +178,11 @@ uint Picker::pick(const vec2& screenPoint, const Camera* pCamera)
         return UINT_MAX;
     else
         return ID2[(id - 1)];
+}
+
+void Picker::drawDebug() const
+{
+    GUI->drawTexture2D(m_pIDTexture, vec2(12, 12), vec2(640, 320));
 }
 
 } } //end namespace

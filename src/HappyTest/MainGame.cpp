@@ -424,6 +424,8 @@ void MainGame::draw()
 
     GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
 
+    
+
     //if (m_Poly.getPolygon().getVertexCount() > 2)
     //{
     //    GUI->setAntiAliasing(true);

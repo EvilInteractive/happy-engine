@@ -237,7 +237,8 @@ void GraphicsEngine::end()
 {
 
     m_pDeferred3DRenderer->end();
-
+    m_pPicker->drawDebug();
+    GUI->drawText(he::gui::Text("Hallo Sebastiaan!"), he::RectF(12, 12, 256, 64), true);
     GUI->draw();
 }
 void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)

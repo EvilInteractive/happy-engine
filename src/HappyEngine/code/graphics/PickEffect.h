@@ -33,28 +33,28 @@ class PickEffect
 {
 public:
 
-	/* CONSTRUCTOR - DESCTRUCTOR */
-	PickEffect();
+    /* CONSTRUCTOR - DESCTRUCTOR */
+    PickEffect();
     virtual ~PickEffect();
 
-	/* GENERAL */
-	void load();
-	void begin() const;
-	void end() const;
+    /* GENERAL */
+    void load();
+    void begin() const;
+    void end() const;
 
-	/* SETTERS */
-	void setViewProjection(const mat44& mat);
-	void setWorld(const mat44& mat);
-	void setID(uint id);
+    /* SETTERS */
+    void setViewProjection(const mat44& mat);
+    void setWorld(const mat44& mat);
+    void setID(vec3 id);
 
 private:
 
-	/* DATAMEMBERS */
-	Shader* m_pShader;
+    /* DATAMEMBERS */
+    Shader* m_pShader;
 
-	uint m_ShaderVPPos;
-	uint m_ShaderWPos;
-	uint m_ShaderIDPos;
+    uint m_ShaderVPPos;
+    uint m_ShaderWPos;
+    uint m_ShaderIDPos;
 
     /* DEFAULT COPY & ASSIGNMENT */
     PickEffect(const PickEffect&);

@@ -58,9 +58,9 @@ void PickEffect::load()
 	m_ShaderIDPos = m_pShader->getShaderVarId("id");
 
 	m_pShader->bind();
-	m_pShader->setShaderVar(m_ShaderIDPos, (uint)0);
-	mat44 MatWVP;
-	m_pShader->setShaderVar(m_ShaderVPPos, MatWVP);
+	m_pShader->setShaderVar(m_ShaderIDPos, vec3(0, 0, 0));
+	mat44 matVP;
+	m_pShader->setShaderVar(m_ShaderVPPos, matVP);
 }
 void PickEffect::begin() const
 {
@@ -79,9 +79,9 @@ void PickEffect::setWorld(const mat44& mat)
 {
 	m_pShader->setShaderVar(m_ShaderWPos, mat);
 }
-void PickEffect::setID(uint id)
+void PickEffect::setID(vec3 id)
 {
-	m_pShader->setShaderVar(m_ShaderIDPos, (uint)id);
+	m_pShader->setShaderVar(m_ShaderIDPos, id);
 }
 
 } } //end namespace
