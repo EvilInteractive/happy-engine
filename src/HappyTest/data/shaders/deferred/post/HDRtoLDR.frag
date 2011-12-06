@@ -44,14 +44,14 @@ uniform float intensity;
 uniform float scale;
 uniform float bias;
 
-uniform int passes;
-uniform int minIterations;
-uniform int maxIterations;
+//uniform int passes;
+//uniform int minIterations;
+//uniform int maxIterations;
 
 uniform vec4 projParams;
 uniform vec2 viewPortSize;
 
-uniform float farZ;
+//uniform float farZ;
 #endif
 /////////////////////////
 
@@ -108,7 +108,7 @@ float getEdge(in sampler2D map, in vec2 texCoord)
 #if SSAO
 vec2 getRandom(in vec2 tc)
 {
-    return normalize(texture2D(randomNormals, viewPortSize * tc / 64.0f).xy * 2.0f - 1.0f);
+    return normalize(texture(randomNormals, viewPortSize * tc / 64.0f).xy * 2.0f - 1.0f);
 }
 
 vec3 getPos(in vec2 tc)
@@ -160,7 +160,7 @@ float renderAO()
 
     //float iterations = mix(maxIt, minIterations, weight); // LOD
 
-    for (int i = 0; i <= 2; ++i)
+    for (int i = 1; i <= 2; ++i)
     {
         for (int j = 0; j < 4; ++j)
         {
@@ -174,6 +174,8 @@ float renderAO()
             ao += calculateAO(tc, coord2, p, n);
         }
     }
+
+
 
     ao /= 4 * 4.0f * 2;
 
@@ -214,6 +216,4 @@ void main()
 #endif
     
     outColor = vec4(color, 1.0f);
-    //float ao = (1.0f - renderAO());
-    //outColor = vec4(ao,ao,ao,1.0f);
 }

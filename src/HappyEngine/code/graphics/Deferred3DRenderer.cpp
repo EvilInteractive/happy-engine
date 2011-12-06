@@ -201,12 +201,12 @@ void Deferred3DRenderer::initToneMapShader(const std::string& folder, const Shad
         m_ShaderSSAOPos[2] = m_pToneMapShader->getShaderVarId("intensity");
         m_ShaderSSAOPos[3] = m_pToneMapShader->getShaderVarId("scale");
         m_ShaderSSAOPos[4] = m_pToneMapShader->getShaderVarId("bias");
-        m_ShaderSSAOPos[5] = m_pToneMapShader->getShaderVarId("passes");
-        m_ShaderSSAOPos[6] = m_pToneMapShader->getShaderVarId("minIterations");
-        m_ShaderSSAOPos[7] = m_pToneMapShader->getShaderVarId("maxIterations");
+        //m_ShaderSSAOPos[5] = m_pToneMapShader->getShaderVarId("passes");
+        //m_ShaderSSAOPos[6] = m_pToneMapShader->getShaderVarId("minIterations");
+        //m_ShaderSSAOPos[7] = m_pToneMapShader->getShaderVarId("maxIterations");
         m_ShaderSSAOPos[8] = m_pToneMapShader->getShaderVarId("projParams");
         m_ShaderSSAOPos[9] = m_pToneMapShader->getShaderVarId("viewPortSize");
-        m_ShaderSSAOPos[10] = m_pToneMapShader->getShaderVarId("farZ");
+        //m_ShaderSSAOPos[10] = m_pToneMapShader->getShaderVarId("farZ");
     }
 
     m_SSAOSettings.radius = 0.1f;
