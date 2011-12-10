@@ -27,19 +27,23 @@
 #include "vec2.h"
 #include "HappyTypes.h"
 #include "Color.h"
-#include "Deferred3DRenderer.h"
-#include "IDrawable.h"
 
-#include "SDL.h"
 #include <string>
 
-#include "DrawManager.h"
 #include "DrawSettings.h"
-#include "Camera.h"
-#include "Picker.h"
+#include "ModelMesh.h"
+
+struct SDL_Window;
 
 namespace he {
 namespace gfx {
+
+class DrawManager;
+class InstancingManager;
+class Picker;
+class IDrawable;
+class Deferred3DRenderer;
+class LightManager;
 
 class GraphicsEngine
 {
@@ -59,6 +63,7 @@ public:
     void clearDepth() const;
 
     void addToDrawList(const IDrawable* pDrawable);
+    InstancingManager* getInstancingManager() const;
 
     void begin();
     void end();
@@ -94,7 +99,7 @@ private:
 
     /* DATAMEMBERS */
     SDL_Window* m_pMainWindow;
-    SDL_GLContext m_GLContext;
+    void* m_GLContext;
 
     RectI m_Viewport;
     RectI m_ScreenRect;
@@ -105,6 +110,7 @@ private:
 
     Color m_ClearColor;
     Deferred3DRenderer* m_pDeferred3DRenderer;
+    InstancingManager* m_pInstancingManager;
 
     DrawManager* m_pDrawManager;
     DrawSettings m_Settings;

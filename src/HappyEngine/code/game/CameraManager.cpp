@@ -27,7 +27,7 @@
 namespace he {
 namespace game {
 
-CameraManager::CameraManager()
+CameraManager::CameraManager(): m_pActiveCamera(nullptr)
 {
 }
 

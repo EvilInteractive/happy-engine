@@ -115,7 +115,7 @@ TestObject::TestObject():
 
     m_pCarEngineSfx = AUDIO->loadSound2D("../data/audio/carIdle.wav", false);
     m_pCarEngineSfx->setLooping(true);
-    m_pCarEngineSfx->play();
+    //m_pCarEngineSfx->play();
 
     //m_pCar->setAutoTransmission(false);
 

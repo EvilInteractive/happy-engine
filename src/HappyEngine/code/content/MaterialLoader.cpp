@@ -94,6 +94,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 gfx::ShaderLayout shaderLayout;
                 uint count(0);
                 uint offset(0);
+                std::string usedForInstancing("");
                 const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"in"));
                 std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                 {
@@ -128,19 +129,28 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec4, gfx::VertexElement::Usage_BoneWeights, sizeof(vec4), offset));
                         offset += sizeof(vec4);
                     }
+                    else if (p.second == L"WORLD")
+                    {
+                        usedForInstancing = std::string(p.first.cbegin(), p.first.cend());
+                    }
                     else
                     {
                         std::wcout << "**Material Error**: unkown attribute " << p.second << "\n";
-                    }
-                    shaderLayout.addElement(gfx::ShaderLayoutElement(count++, std::string(p.first.cbegin(), p.first.cend())));
+                    } 
+                    if (p.second != L"WORLD")
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(count++, std::string(p.first.cbegin(), p.first.cend())));
                 }); 
+
+                //Instancing matrices must be last in layout
+                if (usedForInstancing != "")
+                    shaderLayout.addElement(gfx::ShaderLayoutElement(count++, usedForInstancing));
 
                 // [Shader]
                 gfx::Shader::pointer pShader(CONTENT->loadShader(shaderReader.readString(L"Shader", L"vsPath", ""),
                                                                       shaderReader.readString(L"Shader", L"fsPath", ""),
                                                                       shaderLayout,
                                                                       shaderOutputs));
-                material.setShader(pShader, vertexLayout);
+                material.setShader(pShader, vertexLayout, usedForInstancing != "");
 
                 // [uniform]
                 if (shaderReader.containsRoot(L"uniform"))

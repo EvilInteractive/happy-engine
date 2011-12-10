@@ -182,5 +182,11 @@
     <None Include="data\shaders\deferred\pre\defaultSkinned.shader">
       <Filter>data\shaders\deferred\pre</Filter>
     </None>
+    <None Include="data\shaders\deferred\pre\deferredPreShaderInstanced.vert">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\deferred\pre\deferredPreShadowShaderInstanced.vert">
+      <Filter>data\shaders\deferred\pre</Filter>
+    </None>
   </ItemGroup>
 </Project>

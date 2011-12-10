@@ -18,45 +18,24 @@
 //Author:  Bastian Damman
 //Created: 30/09/2011
 
-#ifndef _HE_MATERIAL_H_
-#define _HE_MATERIAL_H_
+#ifndef _HE_IPICKABLE_H_
+#define _HE_IPICKABLE_H_
 #pragma once
-
-#include "Shader.h"
-#include "HappyTypes.h"
-#include "boost/shared_ptr.hpp"
-#include "ShaderVar.h"
-#include "Camera.h"
-#include "Color.h"
-#include "VertexLayout.h"
 
 namespace he {
 namespace gfx {
 
-class IDrawable;
-
-class Material
+class IPickable
 {
 public:
-    Material();
-    virtual ~Material();
-    // default copy constructor and default assignment operator are OK
+    virtual ~IPickable() {} 
 
-    void addVar(const ShaderVar::pointer& var);
-    void setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing);
+    virtual bool isPickable() const { return m_IsPickable; }
+    virtual void setPickable(bool pickable) { m_IsPickable = pickable; }
 
-    const VertexLayout& getCompatibleVertexLayout() const;
-
-    void apply(const IDrawable* pObj, const Camera* pCamera) const;
-
-private:
-    bool m_IsTranslucent, m_UsedForInstancing;
-
-    Shader::pointer m_pShader;
-    std::vector<ShaderVar::pointer> m_ShaderVar;
-
-    VertexLayout m_CompatibleVL;
-};
+protected:
+    bool m_IsPickable;
+};  
 
 } } //end namespace
 

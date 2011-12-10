@@ -44,21 +44,28 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose, const IPhysicsShape*
 
     addShape(pShape, material, mass);
 
+    PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_pActor);
+    PHYSICS->unlock();
 
 }
 PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 {  
+    PHYSICS->lock();
     m_pActor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
                                   physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column1.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column2.getXYZ()))));
+    PHYSICS->unlock();
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
+    PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_pActor);
+    PHYSICS->unlock();
 }
 void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass ) const
 {
+    PHYSICS->lock();
     physx::PxShape* pPxShape(nullptr);
     switch (pShape->getType())
     {
@@ -111,6 +118,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
 
     pPxShape->setQueryFilterData(qFilter);
     pPxShape->setSimulationFilterData(sFilter);
+    PHYSICS->unlock();
 }
 
 
@@ -118,7 +126,9 @@ PhysicsDynamicActor::~PhysicsDynamicActor()
 {
     if (PHYSICS != nullptr)
     {
+        PHYSICS->lock();
         PHYSICS->getScene()->removeActor(*m_pActor);
+        PHYSICS->unlock();
         m_pActor->release();
     }
 }

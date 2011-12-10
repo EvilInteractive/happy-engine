@@ -1,5 +1,5 @@
 [Shader]
-shader = "deferred/pre/default.shader"
+shader = "deferred/pre/defaultInstanced.shader"
 
 [TEXTURE2D]
 diffuseMap = "testTex.png"

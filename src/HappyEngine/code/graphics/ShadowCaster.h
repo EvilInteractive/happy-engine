@@ -35,7 +35,7 @@ namespace gfx {
 class ShadowCaster
 {
 public:
-	ShadowCaster();
+    ShadowCaster();
     virtual ~ShadowCaster();
 
     void init(const DrawSettings& settings);
@@ -52,6 +52,9 @@ private:
 
     Shader::pointer m_pShadowShader;
     uint m_shaderWVPpos;
+
+    Shader::pointer m_pShadowShaderInstanced;
+    uint m_shaderInstancedVPpos;
 
     Shader::pointer m_pShadowBlurShaderPass[2];
     uint m_BlurShaderTexPosPass[2];

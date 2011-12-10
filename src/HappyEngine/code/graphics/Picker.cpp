@@ -21,6 +21,7 @@
 #include "HappyPCH.h" 
 
 #include "Picker.h"
+#include "IPickable.h"
 #include "HappyNew.h"
 
 #include "GraphicsEngine.h"
@@ -125,7 +126,8 @@ uint Picker::pick(const vec2& screenPoint)
     std::sort(culledDrawList.begin(), culledDrawList.end());
     std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawManager::DrawElement& e)
     {
-        if (e.pDrawable->isPickable())
+        const gfx::IPickable* pPick(dynamic_cast<const gfx::IPickable*>(e.pDrawable));
+        if (pPick != nullptr && pPick->isPickable())
         {
             pickList.push_back(e.pDrawable);
             ID2.push_back(ID1[i]);

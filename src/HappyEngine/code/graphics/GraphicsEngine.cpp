@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "GraphicsEngine.h"
+#include "SDL.h"
 
 #include "OpenGL.h"
 #include "ExternalError.h"
@@ -29,6 +30,11 @@
 #include "IniReader.h"
 #include "Happy2DRenderer.h"
 #include "CameraManager.h"
+
+#include "DrawManager.h"
+#include "Picker.h"
+#include "Deferred3DRenderer.h"
+#include "InstancingManager.h"
 
 namespace he {
 namespace gfx {
@@ -41,7 +47,8 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_VSyncEnabled(true),
                                   m_pDrawManager(NEW DrawManager()),
                                   m_pPicker(NEW Picker()),
-                                  m_pDeferred3DRenderer(nullptr)
+                                  m_pDeferred3DRenderer(nullptr),
+                                  m_pInstancingManager(NEW InstancingManager())
 {
 }
 
@@ -51,6 +58,7 @@ GraphicsEngine::~GraphicsEngine()
     delete m_pDrawManager;
     delete m_pDeferred3DRenderer;
     delete m_pPicker;
+    delete m_pInstancingManager;
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
 }
@@ -279,6 +287,11 @@ void GraphicsEngine::initPicking()
 uint GraphicsEngine::pick(const vec2& screenPoint)
 {
     return m_pPicker->pick(screenPoint);
+}
+
+InstancingManager* GraphicsEngine::getInstancingManager() const
+{
+    return m_pInstancingManager;
 }
 
 } } //end namespace

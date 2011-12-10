@@ -152,17 +152,11 @@ void PhysicsEngine::physXThread()
         boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
         m_PrevTime = boost::chrono::high_resolution_clock::now();
         float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
-        //PROFILER_BEGIN("PhysicsEngine::tick");
-        //m_Timer += dTime;
-        //if (m_Timer >= s_fixedStep)
-        //{
-        //    m_Timer -= s_fixedStep;
-
+        m_PhysXMutex.lock(); //only locked when creating shapes etc..
             m_pScene->fetchResults(true);
             m_pScene->simulate(fixedStep);
             m_pCarManager->tick(fixedStep);
-            //}
-        //PROFILER_END("PhysicsEngine::tick");
+        m_PhysXMutex.unlock();
         boost::this_thread::sleep(boost::posix_time::milliseconds(static_cast<int64_t>((fixedStep - (dTime - fixedStep))*boost::milli::den)));
     }
 }
@@ -205,6 +199,16 @@ PhysicsCarManager* PhysicsEngine::getCarManager() const
 const px::PhysicsMaterial& PhysicsEngine::getDriveableMaterial( byte id )
 {
     return m_pCarManager->getFrictionTable()->getMaterial(id);
+}
+
+void PhysicsEngine::lock()
+{
+    m_PhysXMutex.lock();
+}
+
+void PhysicsEngine::unlock()
+{
+    m_PhysXMutex.unlock();
 }
 
 

@@ -24,13 +24,15 @@
 #include "OpenGL.h"
 #include "ExternalError.h"
 #include "GraphicsEngine.h"
+#include "InstancingManager.h"
 #include "ContentManager.h"
 #include "Happy2DRenderer.h"
 
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster(): m_pShadowShader(NEW Shader())
+ShadowCaster::ShadowCaster(): m_pShadowShader(NEW Shader()), m_pShadowShaderInstanced(NEW Shader()
+    )
 {
 }
 
@@ -95,6 +97,11 @@ void ShadowCaster::init(const DrawSettings& settings)
                           folder + "deferred/pre/deferredPreShadowShader.frag", 
                           shaderLayout, outputs);
     m_shaderWVPpos = m_pShadowShader->getShaderVarId("matWVP");
+
+    m_pShadowShaderInstanced->init(folder + "deferred/pre/deferredPreShadowShaderInstanced.vert", 
+                                   folder + "deferred/pre/deferredPreShadowShader.frag", 
+                                   shaderLayout, outputs);
+    m_shaderInstancedVPpos = m_pShadowShaderInstanced->getShaderVarId("matVP");
 
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
@@ -173,12 +180,12 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
 
     GRAPHICS->setViewport(he::RectI(0, 0, m_ShadowSize, m_ShadowSize));
 
-    m_pShadowShader->bind();
 
     GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     
     for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
-    {
+    {   
+        m_pShadowShader->bind();
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
@@ -216,6 +223,10 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
             GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
             glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
         });
+
+        m_pShadowShaderInstanced->bind();
+        m_pShadowShaderInstanced->setShaderVar(m_shaderInstancedVPpos, mtxShadowViewProjection);
+        GRAPHICS->getInstancingManager()->drawShadow();
 
         pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }

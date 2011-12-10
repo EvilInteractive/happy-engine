@@ -145,6 +145,7 @@ void setOptionalVehicleData(physx::PxVehicle4WSimpleSetup& simpleSetup)
 void PhysicsCar::init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chassiMaterial,
                       const std::vector<TyreDesc>& tyreDescs, const PhysicsMaterial& tyreMaterial)
 {
+    PHYSICS->lock();
     physx::PxVehicle4WSimpleSetup simpleSetup;
     vec3 wheelOffset[4];
     float wheelWidth[4];
@@ -230,6 +231,8 @@ void PhysicsCar::init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chas
     m_TyreShape[Tyre_FrontRight] = physx::PxVehicle4WGetFrontRightWheelShape(*m_pVehicle);
     m_TyreShape[Tyre_RearLeft] = physx::PxVehicle4WGetRearLeftWheelShape(*m_pVehicle);
     m_TyreShape[Tyre_RearRight] = physx::PxVehicle4WGetRearRightWheelShape(*m_pVehicle);
+
+    PHYSICS->unlock();
 }
 
 

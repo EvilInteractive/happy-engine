@@ -73,7 +73,7 @@ class VertexLayout
 public:
     typedef std::vector<VertexElement> layout;
 
-	VertexLayout();
+    VertexLayout();
     virtual ~VertexLayout();
     //default copy constructor and assignment operator are fine
 

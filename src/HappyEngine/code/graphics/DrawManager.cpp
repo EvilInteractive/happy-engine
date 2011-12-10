@@ -27,6 +27,7 @@
 #include "ShadowCaster.h"
 #include "LightManager.h"
 #include "CameraManager.h"
+#include "InstancingManager.h"
 
 namespace he {
 namespace gfx {
@@ -70,6 +71,7 @@ void DrawManager::draw()
         GRAPHICS->draw(e.pDrawable->getModel());
 
     });
+    GRAPHICS->getInstancingManager()->draw();
     
     renderShadow();
 }

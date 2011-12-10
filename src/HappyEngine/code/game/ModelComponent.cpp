@@ -91,7 +91,7 @@ const mat44& ModelComponent::getLocalTransform() const
 void ModelComponent::setModel( const gfx::ModelMesh::pointer& pModel, bool isPickable )
 {
     m_pModel = pModel;
-	setPickable(isPickable);
+    setPickable(isPickable);
 }
 
 void ModelComponent::setMaterial( const gfx::Material& material )

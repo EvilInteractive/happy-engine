@@ -52,6 +52,7 @@
 #include "BinaryStream.h"
 
 #include "ModelComponent.h"
+#include "InstancedModelComponent.h"
 #include "StaticPhysicsComponent.h"
 #include "DynamicPhysicsComponent.h"
 #include "PhysicsConvexShape.h"
@@ -59,6 +60,8 @@
 
 #include "PhysicsCarManager.h"
 #include "LightManager.h"
+#include "InstancingManager.h"
+#include "InstancingController.h"
 
 #include "Profiler.h"
 
@@ -175,21 +178,26 @@ void MainGame::load()
     //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
     Random r;
-    for (int i = 0; i < 5; ++i)
+    for (int i = 0; i < 100; ++i)
     {
         vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
         color = normalize(color);
-        GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(0, -100), r.nextFloat(3, 7), r.nextFloat(0, 100)), 
-                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 10), 1, r.nextFloat(10, 30));
+        GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(-50, 50), r.nextFloat(3, 20), r.nextFloat(-50, 50)), 
+                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(50, 100), 1, r.nextFloat(20, 50));
     }
 
     m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 1, 30);
 
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 10.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 3.0f);
     GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 5.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
    
+    //Bullet
+    gfx::Material matBullet(CONTENT->loadMaterial("bullet.material"));
+    gfx::ModelMesh::pointer meshBullet(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", matBullet.getCompatibleVertexLayout()));
+    GRAPHICS->getInstancingManager()->createController("bullet", true, meshBullet, matBullet);
+
     m_pAxis = NEW he::game::Entity();
     game::ModelComponent* pAxisModelComp(NEW game::ModelComponent());
     pAxisModelComp->setMaterial(CONTENT->loadMaterial("axis.material"));
@@ -311,7 +319,7 @@ void MainGame::tick(float dTime)
 
     m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
     
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
+    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space))
     {
         game::Entity* pBullet(NEW game::Entity());
         
@@ -323,9 +331,8 @@ void MainGame::tick(float dTime)
         pPhysicsComponent->addShape(&boxShape, PHYSICS->getDriveableMaterial(DM_Metal), 80);
         pPhysicsComponent->getDynamicActor()->setVelocity(CAMERAMANAGER->getActiveCamera()->getLook() * 20);
 
-        game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());
-        pBulletModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
-        pBulletModelComp->setModel(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", pBulletModelComp->getMaterial().getCompatibleVertexLayout()));
+        game::InstancedModelComponent* pBulletModelComp(NEW game::InstancedModelComponent());
+        pBulletModelComp->setController("bullet");
         pBullet->addComponent(pBulletModelComp);
 
 

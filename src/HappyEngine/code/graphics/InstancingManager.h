@@ -16,46 +16,40 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 30/09/2011
+//Created: 07/12/2011
 
-#ifndef _HE_MATERIAL_H_
-#define _HE_MATERIAL_H_
+#ifndef _HE_INSTANCING_MANAGER_H_
+#define _HE_INSTANCING_MANAGER_H_
 #pragma once
 
-#include "Shader.h"
-#include "HappyTypes.h"
-#include "boost/shared_ptr.hpp"
-#include "ShaderVar.h"
-#include "Camera.h"
-#include "Color.h"
-#include "VertexLayout.h"
+#include <map>
+#include "ModelMesh.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
 
-class IDrawable;
+class InstancingController;
 
-class Material
+class InstancingManager
 {
 public:
-    Material();
-    virtual ~Material();
-    // default copy constructor and default assignment operator are OK
+    InstancingManager();
+    virtual ~InstancingManager();
 
-    void addVar(const ShaderVar::pointer& var);
-    void setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing);
+    void createController(const std::string& id, bool dynamic, const ModelMesh::pointer& pMesh, const Material& material);
+    InstancingController* getController(const std::string& id);
 
-    const VertexLayout& getCompatibleVertexLayout() const;
-
-    void apply(const IDrawable* pObj, const Camera* pCamera) const;
+    void draw();
+    void drawShadow();
 
 private:
-    bool m_IsTranslucent, m_UsedForInstancing;
 
-    Shader::pointer m_pShader;
-    std::vector<ShaderVar::pointer> m_ShaderVar;
+    std::map<std::string, InstancingController*> m_Controllers;
 
-    VertexLayout m_CompatibleVL;
+    //Disable default copy constructor and default assignment operator
+    InstancingManager(const InstancingManager&);
+    InstancingManager& operator=(const InstancingManager&);
 };
 
 } } //end namespace

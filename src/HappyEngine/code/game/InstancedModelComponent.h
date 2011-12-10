@@ -16,24 +16,24 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 29/10/2011
+//Created: 09/12/2011
 
-#ifndef _HE_MODEL_COMPONENT_H_
-#define _HE_MODEL_COMPONENT_H_
+#ifndef _HE_INSTANCED_MODEL_COMPONENT_H_
+#define _HE_INSTANCED_MODEL_COMPONENT_H_
 #pragma once
 
 #include "IComponent.h"
-#include "IDrawable.h"
+#include "I3DObject.h"
 #include "IPickable.h"
 
 namespace he {
 namespace game {
     
-class ModelComponent : public IComponent, public gfx::IDrawable, public gfx::IPickable
+class InstancedModelComponent : public IComponent, public gfx::I3DObject, public gfx::IPickable
 {
 public:
-    ModelComponent();
-    virtual ~ModelComponent();
+    InstancedModelComponent();
+    virtual ~InstancedModelComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         IComponent                                 ///
@@ -46,37 +46,29 @@ public:
     
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IDrawable                                  ///
-    //////////////////////////////////////////////////////////////////////////
-    virtual const gfx::Material& getMaterial() const;
-    virtual const gfx::ModelMesh::pointer& getModel() const;   
+    ///                         I3DObject                                  ///
+    ////////////////////////////////////////////////////////////////////////// 
     virtual mat44 getWorldMatrix() const;
-
-    virtual bool getCastsShadow() const;
-    virtual void setCastsShadow(bool casts);
     //////////////////////////////////////////////////////////////////////////
     
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
-   
-    void setModel(const gfx::ModelMesh::pointer& pModel, bool isPickable = true);
 
-    void setMaterial(const gfx::Material& material);
+    void setController(const std::string& key);
+    const std::string& getController() const;
 
 private:
-    gfx::ModelMesh::pointer m_pModel;
-    gfx::Material m_Material;
+    std::string m_ControllerKey;
+    uint m_InstanceId;
 
     mat44 m_mtxLocalTransform;
-
-    bool m_CastShadow;
 
     Entity* m_pParent;
     
 
     //Disable default copy constructor and default assignment operator
-    ModelComponent(const ModelComponent&);
-    ModelComponent& operator=(const ModelComponent&);
+    InstancedModelComponent(const InstancedModelComponent&);
+    InstancedModelComponent& operator=(const InstancedModelComponent&);
 };
 
 } } //end namespace

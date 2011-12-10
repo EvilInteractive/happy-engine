@@ -138,9 +138,11 @@
     <None Include="data\shaders\deferred\pre\defaultSkinned.shader" />
     <None Include="data\shaders\deferred\pre\deferredPreShader.frag" />
     <None Include="data\shaders\deferred\pre\deferredPreShader.vert" />
+    <None Include="data\shaders\deferred\pre\deferredPreShaderInstanced.vert" />
     <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert" />
     <None Include="data\shaders\deferred\pre\deferredPreShadowShader.frag" />
     <None Include="data\shaders\deferred\pre\deferredPreShadowShader.vert" />
+    <None Include="data\shaders\deferred\pre\deferredPreShadowShaderInstanced.vert" />
     <None Include="data\shaders\deferred\pre\encode.frag" />
     <None Include="data\shaders\pickingShader.frag" />
     <None Include="data\shaders\pickingShader.vert" />

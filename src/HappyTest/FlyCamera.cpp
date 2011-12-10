@@ -28,8 +28,8 @@ namespace happytest {
 // CONSTRUCTOR - DESTRUCTOR
 FlyCamera::FlyCamera(int viewportWidth, int viewportHeight) :	Camera(viewportWidth, viewportHeight),
                                                                 m_bMoveable(true),
-                                                                m_Speed(4.0f),
-                                                                m_FastForward(4.0f),
+                                                                m_Speed(10.0f),
+                                                                m_FastForward(20.0f),
                                                                 m_PreviousMousePos(0,0),
                                                                 m_MouseSensitivity(100.0f)
 {

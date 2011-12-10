@@ -26,6 +26,7 @@
 #include "HappyNew.h"
 #include "HappyEngine.h"
 #include "GraphicsEngine.h"
+#include "Deferred3DRenderer.h"
 #include "Happy2DRenderer.h"
 
 namespace he {

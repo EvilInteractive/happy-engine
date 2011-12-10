@@ -59,6 +59,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
 
     ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
+    m_VertexLayout = vertexLayout;
 
     uint posOffset = 0;
     std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&posOffset](const VertexElement& e)
@@ -219,7 +220,7 @@ void ModelMesh::callbackIfLoaded( const boost::function<void()>& callback )
     }
     else
     {
-        m_LoadedCallback.push_back(callback);
+        Loaded += callback;
         m_LoadMutex.unlock();
     }
 }
@@ -228,13 +229,28 @@ void ModelMesh::setLoaded()
 {
     m_isLoaded = true;
     m_LoadMutex.lock();
-    std::for_each(m_LoadedCallback.cbegin(), m_LoadedCallback.cend(), [](const boost::function<void()>& callback)
-    {
-        callback();
-    });
+    Loaded();
     m_LoadMutex.unlock();
-    m_LoadedCallback.clear();
-    m_LoadedCallback.resize(0);
+}
+
+uint ModelMesh::getVBOID() const
+{
+    return m_VertexVboID[0];
+}
+
+uint ModelMesh::getVBOShadowID() const
+{
+    return m_VertexVboShadowID[0];
+}
+
+uint ModelMesh::getVBOIndexID() const
+{
+    return m_IndexVboID[0];
+}
+
+const VertexLayout& ModelMesh::getVertexLayout() const
+{
+    return m_VertexLayout;
 }
 
 

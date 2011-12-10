@@ -37,6 +37,8 @@
 #include "boost/function.hpp"
 #include "boost/thread/mutex.hpp"
 
+#include "event.h"
+
 namespace he {
 namespace gfx {
 
@@ -64,11 +66,15 @@ public:
 
     uint getVertexArraysID() const;
     uint getVertexShadowArraysID() const;
+    uint getVBOID() const;
+    uint getVBOShadowID() const;
+    uint getVBOIndexID() const;
 
     uint getNumVertices() const;
     uint getNumIndices() const;
 
     uint getIndexType() const;
+    const VertexLayout& getVertexLayout() const;
 
     const std::string& getName() const;
 
@@ -78,9 +84,10 @@ public:
 
     void callbackIfLoaded(const boost::function<void()>& callback);
 
+
 private:
+    event<void> Loaded;
     void setLoaded();
-    std::vector<boost::function<void()> > m_LoadedCallback;
     boost::mutex m_LoadMutex;
 
     uint m_VaoID[1];
@@ -92,6 +99,8 @@ private:
     uint m_NumVertices;
     uint m_NumIndices;
 
+
+    VertexLayout m_VertexLayout;
     uint m_IndexType;
 
     std::string m_Name;

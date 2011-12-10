@@ -47,6 +47,7 @@
     <ClCompile Include="code\error\FileNotFoundException.cpp" />
     <ClCompile Include="code\game\CameraManager.cpp" />
     <ClCompile Include="code\game\Entity.cpp" />
+    <ClCompile Include="code\game\InstancedModelComponent.cpp" />
     <ClCompile Include="code\game\ModelComponent.cpp" />
     <ClCompile Include="code\game\DynamicPhysicsComponent.cpp" />
     <ClCompile Include="code\game\RiggedModelComponent.cpp" />
@@ -77,6 +78,8 @@
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp" />
     <ClCompile Include="code\graphics\HappyQtWidget.cpp" />
     <ClCompile Include="code\graphics\Hitregion.cpp" />
+    <ClCompile Include="code\graphics\InstancingController.cpp" />
+    <ClCompile Include="code\graphics\InstancingManager.cpp" />
     <ClCompile Include="code\graphics\Light.cpp" />
     <ClCompile Include="code\graphics\LightManager.cpp" />
     <ClCompile Include="code\graphics\Line.cpp" />
@@ -189,6 +192,7 @@
     <ClInclude Include="code\game\Entity.h" />
     <ClInclude Include="code\game\IComponent.h" />
     <ClInclude Include="code\game\Game.h" />
+    <ClInclude Include="code\game\InstancedModelComponent.h" />
     <ClInclude Include="code\game\ITickable.h" />
     <ClInclude Include="code\game\ModelComponent.h" />
     <ClInclude Include="code\game\DynamicPhysicsComponent.h" />
@@ -212,6 +216,7 @@
     <ClInclude Include="code\graphics\FxConstant.h" />
     <ClInclude Include="code\graphics\FxCurveFloat.h" />
     <ClInclude Include="code\graphics\FxRandom.h" />
+    <ClInclude Include="code\graphics\I3DObject.h" />
     <ClInclude Include="code\graphics\IFxVariable.h" />
     <ClInclude Include="code\graphics\IFxComponent.h" />
     <ClInclude Include="code\graphics\FxManager.h" />
@@ -224,6 +229,9 @@
     <ClInclude Include="code\graphics\HappyQtWidget.h" />
     <ClInclude Include="code\graphics\Hitregion.h" />
     <ClInclude Include="code\graphics\IDrawable.h" />
+    <ClInclude Include="code\graphics\InstancingController.h" />
+    <ClInclude Include="code\graphics\InstancingManager.h" />
+    <ClInclude Include="code\graphics\IPickable.h" />
     <ClInclude Include="code\graphics\Light.h" />
     <ClInclude Include="code\graphics\LightManager.h" />
     <ClInclude Include="code\graphics\Line.h" />
@@ -445,7 +453,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

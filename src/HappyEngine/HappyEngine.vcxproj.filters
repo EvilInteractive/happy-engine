@@ -98,6 +98,9 @@
     <Filter Include="happyengine\graphics\fx\values">
       <UniqueIdentifier>{3e8e208e-d7ae-4166-9a60-17201943cc22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\rendering\instancing">
+      <UniqueIdentifier>{fd11c0a3-3308-4ec7-a8eb-0a6c980b73b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -483,6 +486,15 @@
     </ClCompile>
     <ClCompile Include="code\game\CameraManager.cpp">
       <Filter>happyengine\game</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\InstancingController.cpp">
+      <Filter>happyengine\graphics\rendering\instancing</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\InstancingManager.cpp">
+      <Filter>happyengine\graphics\rendering\instancing</Filter>
+    </ClCompile>
+    <ClCompile Include="code\game\InstancedModelComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -971,6 +983,21 @@
     </ClInclude>
     <ClInclude Include="code\game\CameraManager.h">
       <Filter>happyengine\game</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\InstancingController.h">
+      <Filter>happyengine\graphics\rendering\instancing</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\InstancingManager.h">
+      <Filter>happyengine\graphics\rendering\instancing</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\I3DObject.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\IPickable.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\InstancedModelComponent.h">
+      <Filter>happyengine\game\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

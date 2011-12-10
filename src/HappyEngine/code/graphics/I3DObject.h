@@ -18,45 +18,21 @@
 //Author:  Bastian Damman
 //Created: 30/09/2011
 
-#ifndef _HE_MATERIAL_H_
-#define _HE_MATERIAL_H_
+#ifndef _HE_I3D_OBJECT_H_
+#define _HE_I3D_OBJECT_H_
 #pragma once
 
-#include "Shader.h"
-#include "HappyTypes.h"
-#include "boost/shared_ptr.hpp"
-#include "ShaderVar.h"
-#include "Camera.h"
-#include "Color.h"
-#include "VertexLayout.h"
-
 namespace he {
+class mat44;
 namespace gfx {
 
-class IDrawable;
-
-class Material
+class I3DObject
 {
 public:
-    Material();
-    virtual ~Material();
-    // default copy constructor and default assignment operator are OK
-
-    void addVar(const ShaderVar::pointer& var);
-    void setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing);
-
-    const VertexLayout& getCompatibleVertexLayout() const;
-
-    void apply(const IDrawable* pObj, const Camera* pCamera) const;
-
-private:
-    bool m_IsTranslucent, m_UsedForInstancing;
-
-    Shader::pointer m_pShader;
-    std::vector<ShaderVar::pointer> m_ShaderVar;
-
-    VertexLayout m_CompatibleVL;
-};
+    virtual ~I3DObject() {}
+    
+    virtual mat44 getWorldMatrix() const = 0;
+};  
 
 } } //end namespace
 

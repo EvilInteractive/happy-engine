@@ -24,11 +24,12 @@
 
 #include "ModelMesh.h"
 #include "Material.h"
+#include "I3DObject.h"
 
 namespace he {
 namespace gfx {
 
-class IDrawable
+class IDrawable : public I3DObject
 {
 public:
     virtual ~IDrawable() {}
@@ -44,12 +45,8 @@ public:
     virtual bool isVisible() const { return m_IsVisible; }
     virtual void setVisible(bool visible) { m_IsVisible = visible; }
 
-	virtual bool isPickable() const { return m_IsPickable; }
-	virtual void setPickable(bool pickable) { m_IsPickable = pickable; }
-
 protected:
     bool m_IsVisible;
-	bool m_IsPickable;
 
 private:
     std::vector<mat44> m_NoBones;

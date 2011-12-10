@@ -26,7 +26,7 @@
 namespace he {
 namespace gfx {
 
-Material::Material()
+Material::Material(): m_UsedForInstancing(false), m_IsTranslucent(false)
 {
 }
 
@@ -37,10 +37,12 @@ Material::~Material()
 
 void Material::addVar(const ShaderVar::pointer& var)
 {
+    ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_ViewProjection || var->getType() == ShaderVarType_User), "ShaderVarType not supported for instancing");
     m_ShaderVar.push_back(var);
 }
-void Material::setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL)
+void Material::setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing)
 {
+    m_UsedForInstancing = usedForInstancing;
     m_pShader = pShader;
     m_CompatibleVL = compatibleVL;
 }

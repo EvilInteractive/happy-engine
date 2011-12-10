@@ -150,8 +150,13 @@ public:
         return const_iterator<T>(m_MemPool.cend(), m_MemPool.cend());
     }
 
-private:
+    uint size()
+    {
+        return m_MemPool.size() - m_FreeSlots.size();
+    }
 
+private:
+    
     std::vector<T> m_MemPool;
     std::queue<uint> m_FreeSlots;
 
