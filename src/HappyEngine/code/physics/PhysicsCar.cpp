@@ -387,6 +387,11 @@ float PhysicsCar::getEngineRPM() const
     return physx::PxVehicle4WGetEngineRotationSpeed(*m_pVehicle);
 }
 
+float PhysicsCar::getSteer() const
+{
+    return physx::PxVehicle4WGetAppliedSteer(*m_pVehicle);
+}
+
 
 
 

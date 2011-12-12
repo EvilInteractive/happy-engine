@@ -129,6 +129,7 @@ public:
     bool isInAir() const;
 
     float getEngineRPM() const;
+    float getSteer() const;
 
     bool isDrifting() const;
     float getTyreLatSlip(Tyre tyre);

@@ -177,21 +177,21 @@ void MainGame::load()
     gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
     //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
-    Random r;
+    /*Random r;
     for (int i = 0; i < 100; ++i)
     {
         vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
         color = normalize(color);
         GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(-50, 50), r.nextFloat(3, 20), r.nextFloat(-50, 50)), 
                                     Color(color.x, color.y, color.z, 1.0f), r.nextFloat(50, 100), 1, r.nextFloat(20, 50));
-    }
+    }*/
 
     m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 1, 30);
 
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 3.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 5.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
    
     //Bullet
     gfx::Material matBullet(CONTENT->loadMaterial("bullet.material"));

@@ -50,8 +50,8 @@ layout(packed) uniform PerFrameBuffer
 };
 layout(packed) uniform LightBuffer
 {
-    AmbientLight ambLight;
     DirectionalLight dirLight;
+    AmbientLight ambLight;
 };
 
 uniform sampler2D shadowMap0;
@@ -122,7 +122,7 @@ void main()
         
     vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
 
-    vec3 lightDir = dirLight.direction;
+    vec3 lightDir = normalize(dirLight.direction);
         
     vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
     
@@ -130,7 +130,7 @@ void main()
     float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
 
     //Ramp
-    vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.5f)).rgb;
+    vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
 
     //HalfLambert
     float halfLambert = dotLightNormal * 0.5f + 0.5f;
@@ -172,7 +172,6 @@ void main()
         vec3 vCamDir = normalize(-position);
         spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
     }
-    spec = vec3(0.0f, 0.0f, 0.0f);
 
     //Albedo
     vec4 color = texture(colorIllMap, texCoord);
