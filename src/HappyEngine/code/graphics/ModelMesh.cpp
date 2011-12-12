@@ -61,13 +61,22 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     m_NumVertices = num;
     m_VertexLayout = vertexLayout;
 
-    uint posOffset = 0;
-    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&posOffset](const VertexElement& e)
+    uint posOffset = UINT_MAX;
+    uint boneIdOffset = UINT_MAX;
+    uint boneWeightOffset = UINT_MAX;
+    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const VertexElement& e)
     {
         if (e.getUsage() == gfx::VertexElement::Usage_Position)
         {
             posOffset = e.getByteOffset();
-            return;
+        }
+        else if (e.getUsage() == gfx::VertexElement::Usage_BoneIDs)
+        {
+            boneIdOffset = e.getByteOffset();
+        }
+        else if (e.getUsage() == gfx::VertexElement::Usage_BoneWeights)
+        {
+            boneWeightOffset = e.getByteOffset();
         }
     });
     m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
@@ -111,20 +120,48 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     //////////////////////////////////////////////////////////////////////////
     ///                             Shadow                                 ///
     //////////////////////////////////////////////////////////////////////////
-    std::vector<vec3> shadowVertices(num);
-    const char* charPointCloud = static_cast<const char*>(pVertices);
-    for(uint i = 0; i < num; ++i)
+    if (boneIdOffset == UINT_MAX)
     {
-        const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getVertexSize() * i + posOffset));
-        shadowVertices[i] = p;
-    }
+        std::vector<vec3> shadowVertices(num);
+        const char* charPointCloud = static_cast<const char*>(pVertices);
+        for(uint i = 0; i < num; ++i)
+        {
+            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getVertexSize() * i + posOffset));
+            shadowVertices[i] = p;
+        }
 
-    GL::heBindVao(m_VaoShadowID[0]);
-    glGenBuffers(1, m_VertexVboShadowID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboShadowID[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * num, &shadowVertices[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), BUFFER_OFFSET(0)); 
-    glEnableVertexAttribArray(0);
+        GL::heBindVao(m_VaoShadowID[0]);
+        glGenBuffers(1, m_VertexVboShadowID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboShadowID[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * num, &shadowVertices[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), BUFFER_OFFSET(0)); 
+        glEnableVertexAttribArray(0);
+    }
+    else
+    {
+        std::vector<ShadowSkinnedVertex> shadowVertices(num);
+        const char* charPointCloud = static_cast<const char*>(pVertices);
+        for(uint i = 0; i < num; ++i)
+        {
+            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getVertexSize() * i + posOffset));
+            shadowVertices[i].pos = p;
+            const vec4& bId(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getVertexSize() * i + boneIdOffset));
+            shadowVertices[i].boneId = bId;
+            const vec4& bW(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getVertexSize() * i + boneWeightOffset));
+            shadowVertices[i].boneWeight = bW;
+        }
+
+        GL::heBindVao(m_VaoShadowID[0]);
+        glGenBuffers(1, m_VertexVboShadowID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboShadowID[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ShadowSkinnedVertex) * num, &shadowVertices[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ShadowSkinnedVertex), BUFFER_OFFSET(0)); 
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ShadowSkinnedVertex), BUFFER_OFFSET(12)); 
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(ShadowSkinnedVertex), BUFFER_OFFSET(28)); 
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+    }
 
 
     //unbind

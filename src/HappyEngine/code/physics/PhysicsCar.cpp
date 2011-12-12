@@ -233,6 +233,8 @@ void PhysicsCar::init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chas
     m_TyreShape[Tyre_RearRight] = physx::PxVehicle4WGetRearRightWheelShape(*m_pVehicle);
 
     PHYSICS->unlock();
+
+    PHYSICS->getCarManager()->startCarSimulation(this);
 }
 
 

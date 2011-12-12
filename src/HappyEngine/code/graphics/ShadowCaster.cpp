@@ -31,8 +31,9 @@
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster(): m_pShadowShader(NEW Shader()), m_pShadowShaderInstanced(NEW Shader()
-    )
+ShadowCaster::ShadowCaster(): m_pShadowShader(NEW Shader()),
+                              m_pShadowShaderSkinned(NEW Shader()),
+                              m_pShadowShaderInstanced(NEW Shader())
 {
 }
 
@@ -97,6 +98,17 @@ void ShadowCaster::init(const DrawSettings& settings)
                           folder + "deferred/pre/deferredPreShadowShader.frag", 
                           shaderLayout, outputs);
     m_shaderWVPpos = m_pShadowShader->getShaderVarId("matWVP");
+
+    ShaderLayout shaderSkinnedLayout;
+    shaderSkinnedLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+    shaderSkinnedLayout.addElement(ShaderLayoutElement(1, "inBoneId"));
+    shaderSkinnedLayout.addElement(ShaderLayoutElement(2, "inBoneWeight"));
+
+    m_pShadowShaderSkinned->init(folder + "deferred/pre/deferredPreShadowShaderSkinned.vert", 
+                                 folder + "deferred/pre/deferredPreShadowShader.frag", 
+                                 shaderSkinnedLayout, outputs);
+    m_shaderSkinnedWVPpos = m_pShadowShaderSkinned->getShaderVarId("matWVP");
+    m_shaderSkinnedBonespos = m_pShadowShaderSkinned->getShaderVarId("matBones");
 
     m_pShadowShaderInstanced->init(folder + "deferred/pre/deferredPreShadowShaderInstanced.vert", 
                                    folder + "deferred/pre/deferredPreShadowShader.frag", 
@@ -185,7 +197,6 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     
     for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
     {   
-        m_pShadowShader->bind();
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
@@ -194,6 +205,7 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
         ///                         `Build DrawList                            ///
         //////////////////////////////////////////////////////////////////////////
         std::vector<DrawManager::DrawElement> culledDrawList;
+        std::vector<DrawManager::DrawElement> culledSkinnedDrawList;
         culledDrawList.reserve(drawables.size());
         std::for_each(drawables.cbegin(), drawables.cend(), [&](const IDrawable* pDrawable)
         {
@@ -207,19 +219,34 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
                     DrawManager::DrawElement e;
                     e.pDrawable = pDrawable;
                     e.sorter = lengthSqr(pCamera->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
-                    culledDrawList.push_back(e);
+                    if (e.pDrawable->getBoneTransforms().size() > 0)
+                        culledSkinnedDrawList.push_back(e);
+                    else
+                        culledDrawList.push_back(e);
                 }
             }
         });
 
         std::sort(culledDrawList.begin(), culledDrawList.end());
+        std::sort(culledSkinnedDrawList.begin(), culledSkinnedDrawList.end());
 
         //////////////////////////////////////////////////////////////////////////
         ///                                 Draw                               ///
         //////////////////////////////////////////////////////////////////////////
+        m_pShadowShader->bind();
         std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawManager::DrawElement& e)
         {
             m_pShadowShader->setShaderVar(m_shaderWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
+            GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
+            glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
+        });
+
+        if (culledSkinnedDrawList.size() > 0)
+            m_pShadowShaderSkinned->bind();
+        std::for_each(culledSkinnedDrawList.cbegin(), culledSkinnedDrawList.cend(), [&](const DrawManager::DrawElement& e)
+        {
+            m_pShadowShaderSkinned->setShaderVar(m_shaderSkinnedWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
+            m_pShadowShaderSkinned->setShaderVar(m_shaderSkinnedBonespos, e.pDrawable->getBoneTransforms());
             GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
             glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
         });

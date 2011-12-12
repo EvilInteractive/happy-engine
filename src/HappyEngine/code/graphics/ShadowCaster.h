@@ -53,6 +53,10 @@ private:
     Shader::pointer m_pShadowShader;
     uint m_shaderWVPpos;
 
+    Shader::pointer m_pShadowShaderSkinned;
+    uint m_shaderSkinnedWVPpos;
+    uint m_shaderSkinnedBonespos;
+
     Shader::pointer m_pShadowShaderInstanced;
     uint m_shaderInstancedVPpos;
 

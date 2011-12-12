@@ -86,6 +86,14 @@ public:
 
 
 private:
+    struct ShadowSkinnedVertex
+    {
+        vec3 pos;
+        vec4 boneId;
+        vec4 boneWeight;
+    };
+
+
     event<void> Loaded;
     void setLoaded();
     boost::mutex m_LoadMutex;

@@ -77,9 +77,9 @@ void DrawManager::draw()
 }
 bool DrawManager::viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere)
 {
-    return viewClip(CAMERAMANAGER->getActiveCamera()->getPosition(), 
-                    CAMERAMANAGER->getActiveCamera()->getLook(), 
-                    CAMERAMANAGER->getActiveCamera()->getFarClip(), boundingSphere);
+    return viewClip(pCamera->getPosition(), 
+                    pCamera->getLook(), 
+                    pCamera->getFarClip(), boundingSphere);
 }
 bool DrawManager::viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere)
 {

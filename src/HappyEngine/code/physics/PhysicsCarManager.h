@@ -76,6 +76,8 @@ public:
     PhysicsCar* createCar();
     void removeCar(PhysicsCar* pCar);
 
+    void startCarSimulation(PhysicsCar* pCar); // internal use
+
     void tick(float dTime);
 
 private:

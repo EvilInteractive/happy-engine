@@ -33,7 +33,7 @@ namespace game {
 class Entity
 {
 public:
-	Entity();
+    Entity();
     virtual ~Entity();
     
     void addComponent(IComponent* pComponent); //will clean up pComponent

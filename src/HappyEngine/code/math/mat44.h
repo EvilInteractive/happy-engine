@@ -58,7 +58,8 @@ public:
     //operators
     mat44 operator*(const mat44& mat) const;
     mat44 operator*(float scale) const;
-    void operator*=(float scale);
+    mat44& operator*=(float scale);
+    mat44& operator*=(const mat44& mat);
     vec3 operator*(const vec3& vec) const;
     vec4 operator*(const vec4& vec) const;
     float operator()(int row, int column) const;

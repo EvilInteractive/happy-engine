@@ -52,14 +52,18 @@ const DriveableSurfaceTyreFrictionTable* PhysicsCarManager::getFrictionTable() c
 
 PhysicsCar* PhysicsCarManager::createCar()
 {
-    m_Mutex.lock();
     PhysicsCar* pCar(NEW PhysicsCar());
-    m_CarList.push_back(pCar);
-    m_InternalCarList.push_back(pCar->m_pVehicle);
-    m_Mutex.unlock();
 
     return pCar;
 }
+void PhysicsCarManager::startCarSimulation( PhysicsCar* pCar )
+{
+    m_Mutex.lock();
+    m_CarList.push_back(pCar);
+    m_InternalCarList.push_back(pCar->m_pVehicle);
+    m_Mutex.unlock();
+}
+
 void PhysicsCarManager::removeCar( PhysicsCar* pCar )
 {
     m_Mutex.lock();

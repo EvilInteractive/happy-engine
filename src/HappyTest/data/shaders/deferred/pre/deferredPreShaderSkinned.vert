@@ -45,21 +45,21 @@ void main()
     position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
     position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
     position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
-	gl_Position = matWVP * vec4(position.xyz, 1.0f);
-	
+    gl_Position = matWVP * vec4(position.xyz, 1.0f);
+    
     passTexCoord = inTexCoord;
     
     vec4 normal = matBones[boneId.x] * vec4(inNormal, 0.0f) * inBoneWeight.x;
     normal += matBones[boneId.y] * vec4(inNormal, 0.0f) * inBoneWeight.y;
     normal += matBones[boneId.z] * vec4(inNormal, 0.0f) * inBoneWeight.z;
     normal += matBones[boneId.w] * vec4(inNormal, 0.0f) * inBoneWeight.w; 
-	passNormal = (matWorld * normal).xyz;
+    passNormal = (matWorld * normal).xyz;
     
     vec4 tangent = matBones[boneId.x] * vec4(inTangent, 0.0f) * inBoneWeight.x;
     tangent += matBones[boneId.y] * vec4(inTangent, 0.0f) * inBoneWeight.y;
     tangent += matBones[boneId.z] * vec4(inTangent, 0.0f) * inBoneWeight.z;
     tangent += matBones[boneId.w] * vec4(inTangent, 0.0f) * inBoneWeight.w; 
-	passTangent = (matWorld * tangent).xyz;
+    passTangent = (matWorld * tangent).xyz;
 }
 
 

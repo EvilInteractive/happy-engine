@@ -164,9 +164,16 @@ mat44 mat44::operator*(float scale) const
 {
     return mat44(m_Matrix * scale);
 }
-void mat44::operator*=( float scale )
+mat44& mat44::operator*=( float scale )
 {
     m_Matrix *= scale;
+    return *this;
+}
+
+mat44& mat44::operator*=( const mat44& mat )
+{
+    m_Matrix = m_Matrix * mat.m_Matrix;
+    return *this;
 }
 
 vec3 mat44::operator*(const vec3& vec) const
