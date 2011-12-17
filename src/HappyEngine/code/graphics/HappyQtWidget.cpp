@@ -37,6 +37,7 @@ HappyQtWidget::HappyQtWidget(/*qt::*/QWidget *parent): /*qt::*/QGLWidget(/*qt::*
 {
     format().setProfile(/*qt::*/QGLFormat::CoreProfile);
     format().setVersion(3, 2);
+    format().setSwapInterval(0);
 }
 
 

@@ -246,10 +246,6 @@ void MainGame::load()
 
     m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
-    CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
-    CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
-    CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
-
     m_pTestSound2D = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
     m_pTestSound2D->setLooping(true);
     m_pTestSound2D->setPitch(0.6f);
@@ -262,7 +258,7 @@ void MainGame::load()
     m_pTestObject = NEW TestObject();
 
     m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
-    m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
+    m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f), Color(1.0f,1.0f,1.0f));
 
     GRAPHICS->initPicking();
 
@@ -299,7 +295,15 @@ void MainGame::load()
     //m_pFxEditorBinding->init();
     //GUI->setBlending(true);
 
+    CONSOLE->registerCmd(boost::bind(&MainGame::crazyStuff, this), "c_crazy");
+
 }
+
+void MainGame::crazyStuff()
+{
+    CONSOLE->addMessage("->this shit works, helloooo", he::CMSG_TYPE_ENGINE);
+}
+
 void MainGame::tick(float dTime)
 {
     using namespace he;
@@ -380,8 +384,6 @@ void MainGame::tick(float dTime)
 
     m_pFPSGraph->tick(dTime, 0.5f);
 
-    CONSOLE->tick();
-
     PROFILER_END("MainGame::tick");
 }
 void MainGame::drawGui()
@@ -443,7 +445,6 @@ void MainGame::drawGui()
     //GUI->fillShape2D(gui::RoundedRectangle2D(vec2(500,500), vec2(250,100), 50));
 
     m_pFPSGraph->draw();
-    CONSOLE->draw();
 
     /* DRAW 3D & 2D */
 
@@ -452,10 +453,10 @@ void MainGame::drawGui()
     //GRAPHICS->clearAll();
     
     // TODO: implement into drawmanager/GRAPHICS
-    /*HE3D->begin(m_pCurrentCamera);
+    HE3D->begin(CAMERAMANAGER->getActiveCamera());
     m_pTestGrid->draw();
-    HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-    HE3D->end();*/
+    //HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
+    HE3D->end();
     PROFILER_END("MainGame::drawGui");
 }
 

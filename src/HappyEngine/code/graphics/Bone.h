@@ -23,6 +23,7 @@
 #pragma once
 
 #include "HappyTypes.h"
+#include "mat44.h"
 
 namespace he {
 namespace gfx {

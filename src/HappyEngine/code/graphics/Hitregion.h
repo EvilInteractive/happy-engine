@@ -32,43 +32,43 @@ class Hitregion
 {
 public:
 
-	enum TYPE
-	{
-		TYPE_RECTANGLE = 0,
-		TYPE_ELLIPSE = 1,
-		TYPE_CONVEX = 2
-	};
+    enum TYPE
+    {
+        TYPE_RECTANGLE = 0,
+        TYPE_ELLIPSE = 1,
+        TYPE_CONVEX = 2
+    };
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size);
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size);
     virtual ~Hitregion();
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Hitregion(const Hitregion& second);
     Hitregion& operator=(const Hitregion& second);
 
-	/* GETTERS */
-	bool hitTest(const Hitregion* pHitrect) const;
-	bool hitTest(const vec2& point) const;
+    /* GETTERS */
+    bool hitTest(const Hitregion* pHitrect) const;
+    bool hitTest(const vec2& point) const;
 
-	vec2 getSize() const;
-	vec2 getPosition() const;
-	Hitregion::TYPE getType() const;
+    vec2 getSize() const;
+    vec2 getPosition() const;
+    Hitregion::TYPE getType() const;
 
-	/* SETTERS */
-	void setPosition(const vec2& pos);
-	void setSize(const vec2& size);
-	void move(const vec2& translation);
-	void setTransformationMatrix(const mat33& mat);
+    /* SETTERS */
+    void setPosition(const vec2& pos);
+    void setSize(const vec2& size);
+    void move(const vec2& translation);
+    void setTransformationMatrix(const mat33& mat);
 
 private:
 
-	/* DATAMEMBERS */
-	TYPE m_Type;
+    /* DATAMEMBERS */
+    TYPE m_Type;
 
-	mat33 m_matWorld;
-	vec2 m_Size;
-	vec2 m_Pos;
+    mat33 m_matWorld;
+    vec2 m_Size;
+    vec2 m_Pos;
 };
 
 } } //end namespace

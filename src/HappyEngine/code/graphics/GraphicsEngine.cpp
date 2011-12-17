@@ -234,17 +234,13 @@ void GraphicsEngine::clearDepth() const
 {
     glClear(GL_DEPTH_BUFFER_BIT);
 }
-
-void GraphicsEngine::begin()
+void GraphicsEngine::drawScene()
 {
     GL::reset();
+    clearAll();
     m_pDeferred3DRenderer->begin();
     m_pDrawManager->draw();
-}
-void GraphicsEngine::end()
-{
     m_pDeferred3DRenderer->end();
-    GUI->draw();
 }
 void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
 {

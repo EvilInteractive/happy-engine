@@ -63,7 +63,7 @@ public:
     const std::vector<px::PhysicsConcaveMesh::pointer>& loadPhysicsConcave(const std::string& path);
 
     gfx::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
-    const gfx::Font::pointer& getDefaultFont();
+    const gfx::Font::pointer& getDefaultFont(ushort size = 12);
 
     gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    

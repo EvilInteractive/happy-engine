@@ -65,12 +65,13 @@ public:
     void addToDrawList(const IDrawable* pDrawable);
     InstancingManager* getInstancingManager() const;
 
-    void begin();
-    void end();
+    void drawScene();
     void draw(const ModelMesh::pointer& pModelMesh);
     void present() const;
 
     void toggleFullscreen(bool isFullscreen);
+
+    uint pick(const vec2& screenPoint);
 
     /* SETTERS */
     void setWindowTitle(const std::string& caption);
@@ -90,8 +91,6 @@ public:
     const DrawSettings& getSettings() const;
     Deferred3DRenderer* getDeferredRenderer() const;
     const std::vector<const IDrawable*>& getDrawList() const;
-
-    uint pick(const vec2& screenPoint);
 
 private:
 

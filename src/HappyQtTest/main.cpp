@@ -13,6 +13,7 @@
 #include "HappyQtTest.h"
 #pragma warning(disable:4127)
 #include <QtGui/QApplication>
+#include <QPlastiqueStyle>
 #pragma warning(default:4127)
 
 int main(int argc, char** argv)
@@ -23,6 +24,7 @@ int main(int argc, char** argv)
     using namespace he;
     {
         HAPPYENGINE->init(SubEngine_All | SubEngine_Qt);  
+		QApplication::setStyle(new QPlastiqueStyle);
 
         /*qt::*/QApplication pApp(argc, argv);
         pApp.setQuitOnLastWindowClosed(true);

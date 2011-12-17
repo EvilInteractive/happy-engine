@@ -31,36 +31,58 @@ namespace he {
 namespace tools {
 
 Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
-															m_Color(Color(1.0f,1.0f,1.0f,1.0f))
+                                                            m_Color(Color(0.8f,0.8f,0.8f,1.0f)),
+                                                            m_Color2(Color(1.0f,1.0f,1.0f,1.0f))
 {
-	gfx::VertexLayout layout;
-	layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position, 12, 0));
+    gfx::VertexLayout layout;
+    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position, 12, 0));
 
-	std::vector<gfx::VertexPos> vertices;
-	std::vector<uint> indices;
+    std::vector<gfx::VertexPos> vertices;
+    std::vector<uint> indices;
 
-	uint steps(static_cast<uint>(size / tileSize));
+    uint steps(static_cast<uint>(size / tileSize));
 
-	uint index(0);
-	for (uint i(0); i <= steps; ++i)
-	{
-		vertices.push_back(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
-		vertices.push_back(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
+    uint index(0);
+    for (uint i(0); i <= steps; ++i)
+    {
+        vertices.push_back(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
+        vertices.push_back(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
 
-		indices.push_back(index++);
-		indices.push_back(index++);
+        indices.push_back(index++);
+        indices.push_back(index++);
 
-		vertices.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z - (size / 2))));
-		vertices.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z + (size / 2))));
+        vertices.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z - (size / 2))));
+        vertices.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z + (size / 2))));
 
-		indices.push_back(index++);
-		indices.push_back(index++);
-	}
+        indices.push_back(index++);
+        indices.push_back(index++);
+    }
 
-	m_pModelMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(""));
-	m_pModelMesh->init();
-	m_pModelMesh->setVertices(&vertices[0], vertices.size(), layout);
-	m_pModelMesh->setIndices(&indices[0], indices.size(), gfx::IndexStride_UInt);
+    m_pModelMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(""));
+    m_pModelMesh->init();
+    m_pModelMesh->setVertices(&vertices[0], vertices.size(), layout);
+    m_pModelMesh->setIndices(&indices[0], indices.size(), gfx::IndexStride_UInt);
+
+    std::vector<gfx::VertexPos> vertices2;
+    std::vector<uint> indices2;
+
+    index = 0;
+    vertices2.push_back(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
+    vertices2.push_back(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
+
+    indices2.push_back(index++);
+    indices2.push_back(index++);
+
+    vertices2.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z - (size / 2))));
+    vertices2.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z + (size / 2))));
+
+    indices2.push_back(index++);
+    indices2.push_back(index++);
+
+    m_pModelMesh2 = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(""));
+    m_pModelMesh2->init();
+    m_pModelMesh2->setVertices(&vertices2[0], vertices2.size(), layout);
+    m_pModelMesh2->setIndices(&indices2[0], indices2.size(), gfx::IndexStride_UInt);
 }
 
 Grid::~Grid()
@@ -70,20 +92,22 @@ Grid::~Grid()
 /* GENERAL */
 void Grid::draw()
 {
-	mat44 world(mat44::createTranslation(m_Position));
+    mat44 world(mat44::createTranslation(m_Position));
 
-	HE3D->drawSpline(m_pModelMesh, world, m_Color);
+    HE3D->drawSpline(m_pModelMesh, world, m_Color);
+    HE3D->drawSpline(m_pModelMesh2, world, m_Color2);
 }
 
 /* SETTERS */
 void Grid::setPosition(const vec3& pos)
 {
-	m_Position = pos;
+    m_Position = pos;
 }
 
-void Grid::setColor(const Color& color)
+void Grid::setColor(const Color& color, const Color& color2)
 {
-	m_Color = color;
+    m_Color = color;
+    m_Color2 = color2;
 }
 
 } } //end namespace

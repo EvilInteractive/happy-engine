@@ -34,10 +34,11 @@ namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
 SimpleForward3DRenderer::SimpleForward3DRenderer() :	m_pColorEffect(NEW SimpleColorEffect()),
-                                                        m_RenderFboID(0),
+                                                        m_RenderFboID(UINT_MAX),
                                                         m_pRenderTexture(NEW Texture2D()),
                                                         m_pBillboardEffect(NEW BillboardEffect()),
-                                                        m_pBillboardQuad(NEW ModelMesh(""))
+                                                        m_pBillboardQuad(NEW ModelMesh("")),
+                                                        m_ScreenDimensions(0,0)
 {
 }
 
@@ -82,34 +83,25 @@ void SimpleForward3DRenderer::createBillboardQuad()
 /* GENERAL */
 void SimpleForward3DRenderer::init()
 {
+    GUI->createLayer("forward", 99);
+
     createBillboardQuad();
 
     m_pColorEffect->load();
     m_pBillboardEffect->load();
 
-    int width = GRAPHICS->getViewport().width, 
-        height = GRAPHICS->getViewport().height;
-
-    uint renderTexture;
-    glGenTextures(1, &renderTexture);
-
-    GL::heBindTexture2D(0, renderTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pRenderTexture->init(renderTexture, width, height, GL_RGBA8);
-
-    glGenFramebuffers(1, &m_RenderFboID);
-    GL::heBindFbo(m_RenderFboID);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GRAPHICS->getDeferredRenderer()->getDepthTexture()->getID(), 0);
+    resize();    
 }
 
 void SimpleForward3DRenderer::begin(const Camera* pCamera)
 {
+    vec2 screenDim(static_cast<float>(GRAPHICS->getScreenWidth()), static_cast<float>(GRAPHICS->getScreenHeight()));
+    if (m_ScreenDimensions != screenDim)
+    {
+        m_ScreenDimensions = screenDim;
+        resize();
+    }
+
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heSetDepthWrite(true);	
@@ -125,11 +117,46 @@ void SimpleForward3DRenderer::end()
 {
     GL::heBindFbo(0);
     GL::heBlendEnabled(false);
-
+    GUI->setLayer("forward");
     GUI->drawTexture2D(m_pRenderTexture, vec2(0.0f,0.0f), vec2(-static_cast<float>(m_pRenderTexture->getWidth()), static_cast<float>(m_pRenderTexture->getHeight())));
+    GUI->setLayer();
+}
+
+void SimpleForward3DRenderer::resize()
+{
+    uint renderTexture;
+    glGenTextures(1, &renderTexture);
+
+    GL::heBindTexture2D(0, renderTexture);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ScreenDimensions.x), static_cast<GLsizei>(m_ScreenDimensions.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
+    m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ScreenDimensions.x), static_cast<uint>(m_ScreenDimensions.y), GL_RGBA8);
+
+    if (m_RenderFboID != UINT_MAX)
+        glDeleteFramebuffers(1, &m_RenderFboID);
+
+    glGenFramebuffers(1, &m_RenderFboID);
+    GL::heBindFbo(m_RenderFboID);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GRAPHICS->getDeferredRenderer()->getDepthTexture()->getID(), 0);
 }
 
 /* DRAW METHODS */
+void SimpleForward3DRenderer::drawColored(const ModelMesh::pointer& model, const mat44& world, const Color& color) const
+{
+    m_pColorEffect->begin();
+    m_pColorEffect->setViewProjection(m_ViewProjection);
+    m_pColorEffect->setWorld(world);
+    m_pColorEffect->setColor(color);
+
+    GL::heBindVao(model->getVertexArraysID());
+    glDrawElements(GL_LINES, model->getNumIndices(), model->getIndexType(), 0);
+}
+
 void SimpleForward3DRenderer::drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const
 {
     m_pColorEffect->begin();

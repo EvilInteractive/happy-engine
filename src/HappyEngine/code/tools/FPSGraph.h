@@ -35,37 +35,43 @@ class FPSGraph
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	FPSGraph();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    FPSGraph();
     virtual ~FPSGraph();
 
-	/* GENERAL */
-	void tick(float dTime, float interval = 0.5f);
-	void draw();
+    /* GENERAL */
+    void tick(float dTime, float interval = 0.5f);
+    void draw();
 
-	/* GETTERS */
-	uint getMaxFPS() const;
-	uint getMinFPS() const;
-	uint getAverageFPS() const;
+    /* GETTERS */
+    uint getMaxFPS() const;
+    uint getMinFPS() const;
+    uint getAverageFPS() const;
+
+    /* SETTERS */
+    void setType(int type);
+    void setPos(vec2 pos);
 
 private:
 
-	void drawTextOnly();
-	void drawFull();
+    void drawTextOnly();
+    void drawFull();
 
-	/* DATAMEMBERS */
-	std::vector<uint> m_FpsHistory;
+    /* DATAMEMBERS */
+    std::vector<uint> m_FpsHistory;
 
-	float m_GameTime;
-	float m_TBase;
-	float m_CurrentDTime;
-	float m_Interval;
+    float m_GameTime;
+    float m_TBase;
+    float m_CurrentDTime;
+    float m_Interval;
 
-	uint m_CurrentFPS;
-	
-	gfx::Font::pointer m_pFont;
+    uint m_CurrentFPS;
+    
+    gfx::Font::pointer m_pFont;
 
-	int m_FPSGraphState;
+    int m_FPSGraphState;
+
+    vec2 m_Pos;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

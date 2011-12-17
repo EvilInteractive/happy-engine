@@ -33,7 +33,7 @@ public:
     virtual ~FlyCamera();
 
 	// GENERAL
-	void tick(const float dTime);
+	void tick(float dTime);
 
 	// SETTERS
 	void moveable(bool bMoveable);

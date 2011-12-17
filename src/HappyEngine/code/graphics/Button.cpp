@@ -65,7 +65,11 @@ void Button::tick()
                     m_State = STATE_HOVER;
 
                 if (CONTROLS->getMouse()->isButtonReleased(io::MouseButton_Left))
+                {
                     m_bClicked = true;
+
+                    clicked();
+                }
             }
             else
             {
@@ -82,6 +86,13 @@ void Button::draw()
         case TYPE_NORMAL:
         {
             drawColor();
+
+            break;
+        }
+
+        case TYPE_SPRITE:
+        {
+            drawSprites();
 
             break;
         }
@@ -123,7 +134,12 @@ void Button::setPosition(const vec2& centerPos)
 void Button::setText(const std::string& text, ushort fontSize)
 {
     m_Text = text;
-    m_pFont = CONTENT->getDefaultFont();
+    m_pFont = CONTENT->getDefaultFont(fontSize);
+}
+
+void Button::addOnClickListener(boost::function<void()> callback)
+{
+    m_OnClickEvent += callback;
 }
 
 /* GETTERS */
@@ -220,6 +236,12 @@ void Button::drawSprites()
 
 void Button::drawSpriteSheet()
 {
+}
+
+/* CALLBACK HANDLERS */
+void Button::clicked()
+{
+    m_OnClickEvent();
 }
 
 } } //end namespace

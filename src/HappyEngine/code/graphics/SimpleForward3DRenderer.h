@@ -38,38 +38,42 @@ class SimpleForward3DRenderer
 {
 public:
 
-	/* CONSTRUCTOR - DESCTRUCTOR */
-	SimpleForward3DRenderer();
-	virtual ~SimpleForward3DRenderer();
+    /* CONSTRUCTOR - DESCTRUCTOR */
+    SimpleForward3DRenderer();
+    virtual ~SimpleForward3DRenderer();
 
-	/* GENERAL */
-	void init();
-	void begin(const Camera* pCamera);
-	void end();
+    /* GENERAL */
+    void init();
+    void begin(const Camera* pCamera);
+    void end();
+    void resize();
 
-	/* DRAW METHODS */
-	void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
-	void drawBillboard(const Texture2D::pointer& tex2D, const vec3& pos);
+    /* DRAW METHODS */
+    void drawColored(const ModelMesh::pointer& model, const mat44& world, const Color& color) const;
+    void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
+    void drawBillboard(const Texture2D::pointer& tex2D, const vec3& pos);
 
 private:
 
-	void createBillboardQuad();
+    void createBillboardQuad();
 
-	/* DATAMEMBERS */
-	SimpleColorEffect* m_pColorEffect;
+    /* DATAMEMBERS */
+    SimpleColorEffect* m_pColorEffect;
 
-	mat44 m_ViewProjection;
+    mat44 m_ViewProjection;
 
-	uint m_RenderFboID;
-	Texture2D::pointer m_pRenderTexture;
+    uint m_RenderFboID;
+    Texture2D::pointer m_pRenderTexture;
 
-	ModelMesh::pointer m_pBillboardQuad;
-	VertexLayout m_VertexLayoutBillboard;
-	BillboardEffect* m_pBillboardEffect;
+    ModelMesh::pointer m_pBillboardQuad;
+    VertexLayout m_VertexLayoutBillboard;
+    BillboardEffect* m_pBillboardEffect;
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
-	SimpleForward3DRenderer(const SimpleForward3DRenderer&);
-	SimpleForward3DRenderer& operator=(const SimpleForward3DRenderer&);
+    vec2 m_ScreenDimensions;
+
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    SimpleForward3DRenderer(const SimpleForward3DRenderer&);
+    SimpleForward3DRenderer& operator=(const SimpleForward3DRenderer&);
 };
 
 } } //end namespace

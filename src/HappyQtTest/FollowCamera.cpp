@@ -39,7 +39,7 @@ FollowCamera::~FollowCamera()
 }
 
 // GENERAL
-void FollowCamera::tick(const float /*dTime*/)
+void FollowCamera::tick(float /*dTime*/)
 {
     using namespace he;
 

@@ -36,7 +36,7 @@ public:
 	/* CONSTRUCTOR - DESTRUCTOR */
 	RoundedRectangle2D(	const vec2& centerPos,
 						const vec2& size,
-						uint radius,
+						float radius,
 						uint interpolSteps = 30);
     virtual ~RoundedRectangle2D();
 };

@@ -164,6 +164,7 @@ private:
     sfx::SoundEngine* m_pSoundEngine;
 
     bool m_Quit;
+    bool m_bShowProfiler;
 
     int m_SubEngines;
 

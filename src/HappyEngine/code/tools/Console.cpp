@@ -63,12 +63,6 @@ Console::Console() :	m_Shortcut(io::Key_C),
 
     m_HelpCommand = "type 'help' to see available commands...";
 
-    m_ParseTypes[typeid(float).name()] = 'f';
-    m_ParseTypes[typeid(std::string).name()] = 's';
-    m_ParseTypes[typeid(int).name()] = 'd';
-    m_ParseTypes[typeid(uint).name()] = 'u';
-    m_ParseTypes[typeid(char).name()] = 'c';
-
     addTypeHandler(NEW BoolTypeHandler());
     addTypeHandler(NEW FloatTypeHandler());
     addTypeHandler(NEW IntTypeHandler());
@@ -86,7 +80,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
     m_ShowMessageTypes[CMSG_TYPE_ERROR] = true;
     m_ShowMessageTypes[CMSG_TYPE_ENGINE] = true;
 
-    registerValue<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
+    registerVar<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
 
     GUI->createLayer("console", 0);
 }
@@ -97,6 +91,7 @@ void Console::load()
     m_Help = new gui::Text(m_pFont);
     m_Help->addLine("******** HELP ********");
     m_Help->addLine("'listvars' (displays registered variables and their type)");
+    m_Help->addLine("'listcmds' (displays registered commands)");
     m_Help->addLine("******** HELP ********");
 
     m_pTextBox = NEW gui::TextBox(
@@ -138,7 +133,7 @@ void Console::processCommand(const std::string& command)
     std::string s(command);
 
     // remove spaces
-    //s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
 
     // console commands
     if (s == "help")
@@ -152,6 +147,12 @@ void Console::processCommand(const std::string& command)
         addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
 
         displayVars();
+    }
+    else if (s == "listcmds")
+    {
+        addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
+
+        displayCmds();
     }
     else if (s.find('=') != -1)
     {
@@ -186,9 +187,16 @@ void Console::processCommand(const std::string& command)
             addMessage("the keyword '" + keyWord + "' was not found!", CMSG_TYPE_ERROR);
         }
     }
+    else if (m_FunctionContainer.find(s) != m_FunctionContainer.end()) // check if it's a command
+    {
+        addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
+
+        // execute command
+        m_FunctionContainer[s]();
+    }
     else
     {
-        addMessage("the command '" + s + "' was not found!", CMSG_TYPE_ERROR);
+        addMessage("the command/variable '" + s + "' was not found!", CMSG_TYPE_ERROR);
     }
 }
 
@@ -205,7 +213,7 @@ void Console::displayVars()
 
     if (m_ValueContainer.empty())
     {
-        txt.addLine("!no registered values!");
+        txt.addLine("!no registered variables!");
     }
     else
     {
@@ -219,6 +227,29 @@ void Console::displayVars()
     }
 
     txt.addLine("******** VARS ********");
+
+    addMessage(txt, CMSG_TYPE_INFO);
+}
+
+void Console::displayCmds()
+{
+    gui::Text txt;
+
+    txt.addLine("******** CMDS ********");
+
+    if (m_FunctionContainer.empty())
+    {
+        txt.addLine("!no registered commands!");
+    }
+    else
+    {
+        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<std::string, boost::function<void()> > p)
+        {
+            txt.addLine("'" + p.first + "'");
+        });
+    }
+
+    txt.addLine("******** CMDS ********");
 
     addMessage(txt, CMSG_TYPE_INFO);
 }
@@ -390,6 +421,21 @@ void Console::addMessage(const std::string& msg, CMSG_TYPE type)
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
     {
         m_MsgHistory.erase(m_MsgHistory.begin());
+    }
+}
+
+void Console::registerCmd(boost::function<void()> command, const std::string& cmdKey)
+{
+    if (m_FunctionContainer.find(cmdKey) != m_FunctionContainer.end())
+    {
+        std::stringstream str;
+        str << "Command: '" << cmdKey << "' already registered!";
+
+        ASSERT(false, str.str());
+    }
+    else
+    {
+        m_FunctionContainer[cmdKey] = command;
     }
 }
 

@@ -62,6 +62,9 @@ public:
     virtual void drawGui();
 
 private:
+
+    void crazyStuff();
+
     TestObject* m_pTestObject;
 
     he::Color m_BackgroundColors[5];

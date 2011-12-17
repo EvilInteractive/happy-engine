@@ -28,32 +28,32 @@ namespace gui {
 
 RoundedRectangle2D::RoundedRectangle2D(	const vec2& centerPos,
 										const vec2& size,
-										uint radius,
+										float radius,
 										uint interpolSteps) :	Shape2D()
 {
 	const float DEG2RAD = 3.14159f/180.0f;
 
-	uint stepSize(360 / interpolSteps);
+	float stepSize(90.0f / interpolSteps);
 
-	for (uint i(180); i <= 270; i += stepSize)
+	for (float i(180.0f); i <= 270.0f; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
 		m_Polygon.addPoint(vec2(centerPos.x + cosf(degInRad) * radius,
 										centerPos.y + sinf(degInRad) * radius));
 	}
-	for (uint i(270); i <= 360; i += stepSize)
+	for (float i(270.0f); i <= 360.0f; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
 		m_Polygon.addPoint(vec2(centerPos.x + size.x + cosf(degInRad) * radius,
 										centerPos.y + sinf(degInRad) * radius));
 	}
-	for (uint i(0); i <= 90; i += stepSize)
+	for (float i(0.0f); i <= 90.0f; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
 		m_Polygon.addPoint(vec2(centerPos.x + size.x + cosf(degInRad) * radius,
 									centerPos.y + size.y + sinf(degInRad) * radius));
 	}
-	for (uint i(90); i <= 180; i += stepSize)
+	for (float i(90.0f); i <= 180.0f; i += stepSize)
 	{
 		float degInRad = i * DEG2RAD;
 		m_Polygon.addPoint(vec2(centerPos.x + cosf(degInRad) * radius,

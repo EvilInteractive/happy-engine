@@ -65,6 +65,7 @@
 #include "PhysicsData.h"
 
 #include "Deferred3DRenderer.h"
+#include "CameraManager.h"
 
 namespace happytest {
 
@@ -252,7 +253,7 @@ void MainGame::load()
     m_pTestObject = NEW TestObject();
 
     m_pTestGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
-    m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f));
+    m_pTestGrid->setColor(Color(0.6f,0.6f,0.6f), Color(1.0f,1.0f,1.0f));
 
     GRAPHICS->initPicking();
 
@@ -269,10 +270,11 @@ void MainGame::load()
     m_pFollowCamera->setLocalLook(normalize(vec3(0, 0.58f, -1.0f)));
     m_pFollowCamera->setDistance(15);
 
-    m_pCurrentCamera = m_pFollowCamera;
-    GAME->setActiveCamera(m_pFollowCamera);
-    //m_pCurrentCamera = m_pFlyCamera;
-    //GAME->setActiveCamera(m_pFlyCamera);
+    //m_pCurrentCamera = m_pFollowCamera;
+    //GAME->setActiveCamera(m_pFollowCamera);
+    m_pCurrentCamera = m_pFlyCamera;
+    CAMERAMANAGER->addCamera("lol",m_pFlyCamera);
+    CAMERAMANAGER->setActiveCamera("lol");
 
     // SSAO
     he::gfx::Deferred3DRenderer::SSAOSettings settings;
@@ -297,10 +299,10 @@ void MainGame::tick(float dTime)
 
     PROFILER_BEGIN("MainGame::tick");
 
-    if (m_pCurrentCamera == m_pFlyCamera)
+    /*if (m_pCurrentCamera == m_pFlyCamera)
         m_pFlyCamera->tick(dTime);
     else
-        m_pFollowCamera->tick(dTime);
+        m_pFollowCamera->tick(dTime);*/
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
@@ -379,7 +381,7 @@ void MainGame::tick(float dTime)
 
     PROFILER_END("MainGame::tick");
 }
-void MainGame::draw()
+void MainGame::drawGui()
 {
     using namespace he;
     using namespace gfx;
@@ -436,17 +438,17 @@ void MainGame::draw()
     m_pFPSGraph->draw();
     CONSOLE->draw();
 
-    /* DRAW 3D & 2D */
-    GRAPHICS->clearAll();
+    ///* DRAW 3D & 2D */
+    //GRAPHICS->clearAll();
 
-    GRAPHICS->begin(m_pCurrentCamera);
-    GRAPHICS->end();
+    //GRAPHICS->begin(m_pCurrentCamera);
+    //GRAPHICS->end();
 
     // TODO: implement into drawmanager/GRAPHICS
-    /*HE3D->begin(m_pCurrentCamera);
+    HE3D->begin(CAMERAMANAGER->getActiveCamera());
     m_pTestGrid->draw();
-    HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-    HE3D->end();*/
+    //HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
+    HE3D->end();
     PROFILER_END("MainGame::draw");
 }
 

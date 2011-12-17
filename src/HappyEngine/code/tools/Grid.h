@@ -35,25 +35,27 @@ class Grid : public he::game::Entity
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Grid(const vec3& pos, float size, float tileSize = 1.0f);
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Grid(const vec3& pos, float size, float tileSize = 1.0f);
     virtual ~Grid();
 
-	/* GENERAL */
-	void draw();
+    /* GENERAL */
+    void draw();
 
-	/* SETTERS */
-	void setPosition(const vec3& pos);
-	void setColor(const Color& color);
+    /* SETTERS */
+    void setPosition(const vec3& pos);
+    void setColor(const Color& color, const Color& color2);
 
 private:
 
-	/* DATAMEMBERS */
-	vec3 m_Position;
+    /* DATAMEMBERS */
+    vec3 m_Position;
 
-	Color m_Color;
+    Color m_Color;
+    Color m_Color2;
 
-	gfx::ModelMesh::pointer m_pModelMesh;
+    gfx::ModelMesh::pointer m_pModelMesh;
+    gfx::ModelMesh::pointer m_pModelMesh2;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Grid(const Grid&);

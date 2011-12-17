@@ -84,11 +84,11 @@ gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort siz
     return p;
 }
 
-const gfx::Font::pointer& ContentManager::getDefaultFont()
+const gfx::Font::pointer& ContentManager::getDefaultFont(ushort size)
 {
 	if (m_pDefaultFont == nullptr)
 	{
-		m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", 12);
+		m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
 	}
 
 	return m_pDefaultFont;

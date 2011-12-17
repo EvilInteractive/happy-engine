@@ -42,7 +42,9 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_pFont(CONTENT->loadFont("Ubuntu-Bold.ttf", 10)),
                         m_FPSGraphState(2)
 {
-    CONSOLE->registerValue<int>(&m_FPSGraphState, "fps_graph");
+    CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
+
+    setPos(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f));
 }
 
 
@@ -104,11 +106,11 @@ void FPSGraph::drawTextOnly()
 
     std::stringstream stream;
     stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 5));
+    GUI->drawText(gui::Text(stream.str(), m_pFont), m_Pos);
 
     stream.str("");
     stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 18));
+    GUI->drawText(gui::Text(stream.str(), m_pFont), m_Pos + vec2(0.0f, 13.0f));
 }
 
 void FPSGraph::drawFull()
@@ -119,9 +121,9 @@ void FPSGraph::drawFull()
     GUI->setAntiAliasing(false);
 
     GUI->setColor(0.8f,0.8f,0.8f);
-    GUI->fillShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f), vec2(100, 41)), true);
+    GUI->fillShape2D(gui::Rectangle2D(m_Pos, vec2(100, 41)), true);
     GUI->setColor(0.1f,0.1f,0.1f);
-    GUI->drawShape2D(gui::Rectangle2D(vec2(GRAPHICS->getViewport().width - 106.0f, 4.0f), vec2(102, 42)), true);
+    GUI->drawShape2D(gui::Rectangle2D(m_Pos + vec2(1.0f, -1.0f), vec2(102, 42)), true);
 
     gui::Polygon2D poly;
     gui::Polygon2D poly2;
@@ -144,21 +146,21 @@ void FPSGraph::drawFull()
         if (currentFPS > 80)
             currentFPS = 80;
 
-        poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentFPS / 2))));
+        poly.addPoint(vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 41.0f - (currentFPS / 2)));
 
         ++k;
     }
 
     if (poly.getPolygon().getVertexCount() < 50)
     {
-        poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly.getPolygon().getVertexCount() * 2)), 46.0f));
+        poly.addPoint(vec2(m_Pos.x + 100.0f - (poly.getPolygon().getVertexCount() * 2), m_Pos.y + 41.0f));
     }
     else
     {
-        poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 46.0f));
+        poly.addPoint(vec2(m_Pos.x, m_Pos.y + 41.0f));
     }
 
-    poly.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 46.0f));
+    poly.addPoint(vec2(m_Pos.x + 100.0f, m_Pos.y + 41.0f));
 
     if (m_FpsHistory.size() > 50)
     {
@@ -178,21 +180,21 @@ void FPSGraph::drawFull()
         if (currentDTime > 80)
             currentDTime = 80;
 
-        poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (k * 2)), static_cast<float>(46 - (currentDTime / 2))));
+        poly2.addPoint(vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 41.0f - (currentDTime / 2)));
 
         ++k;
     }
 
     if (poly2.getPolygon().getVertexCount() < 50)
     {
-        poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5 - (poly2.getPolygon().getVertexCount() * 2)), 46.0f));
+        poly2.addPoint(vec2(m_Pos.x + 100.0f - (poly2.getPolygon().getVertexCount() * 2), m_Pos.y + 41.0f));
     }
     else
     {
-        poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105), 46.0f));
+        poly2.addPoint(vec2(m_Pos.x, m_Pos.y + 41.0f));
     }
 
-    poly2.addPoint(vec2(static_cast<float>(GRAPHICS->getViewport().width - 5), 46.0f));
+    poly2.addPoint(vec2(m_Pos.x + 100.0f, m_Pos.y + 41.0f));
 
     if (m_CurrentFPS >= static_cast<uint>(m_CurrentDTime * 1000.0f))
     {
@@ -215,17 +217,17 @@ void FPSGraph::drawFull()
         avFPS = 80;
 
     GUI->setColor(0.0f,0.0f,1.0f);
-    GUI->drawShape2D(gui::Line2D(vec2(static_cast<float>(GRAPHICS->getViewport().width - 105.0f), static_cast<float>(45 - (avFPS / 2))),
-                    vec2(static_cast<float>(GRAPHICS->getViewport().width - 5.0f), static_cast<float>(45 - (avFPS / 2)))));
+    GUI->drawShape2D(gui::Line2D(vec2(m_Pos.x, m_Pos.y + 40.0f - (avFPS / 2)),
+                    vec2(m_Pos.x + 100.0f, m_Pos.y + 40.0f - (avFPS / 2))));
 
     GUI->setColor(1.0f,1.0f,1.0f);
     std::stringstream stream;
     stream << "FPS: " << m_CurrentFPS << " (" << getAverageFPS() << ")";
-    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 48));
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(m_Pos.x, m_Pos.y + 43.0f));
 
     stream.str("");
     stream << "DTime: " << (m_CurrentDTime * 1000.0f) << " ms";
-    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(GRAPHICS->getViewport().width - 105.0f, 61));
+    GUI->drawText(gui::Text(stream.str(), m_pFont), vec2(m_Pos.x, m_Pos.y + 56.0f));
 }
 
 /* GETTERS */
@@ -284,6 +286,17 @@ uint FPSGraph::getAverageFPS() const
     }
 
     return avFPS;
+}
+
+/* SETTERS */
+void FPSGraph::setType(int type)
+{
+    m_FPSGraphState = type;
+}
+
+void FPSGraph::setPos(vec2 pos)
+{
+    m_Pos = pos;
 }
 
 } } //end namespace

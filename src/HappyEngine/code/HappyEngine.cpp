@@ -55,7 +55,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
-                            m_pCameraManager(nullptr)
+                            m_pCameraManager(nullptr), m_bShowProfiler(false)
 {
 }
 HappyEngine::~HappyEngine()
@@ -182,6 +182,8 @@ void HappyEngine::start(game::Game* pGame)
 
     m_pGame = pGame;
 
+    CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
+
     //Init Game
     pGame->init();
     
@@ -189,7 +191,7 @@ void HappyEngine::start(game::Game* pGame)
     if (m_SubEngines & SubEngine_Graphics)
     {
         m_pGraphicsEngine->init(false);
-        //m_p3DRenderer->init();
+        m_p3DRenderer->init();
         m_pCameraManager->init();
     }
 
@@ -277,14 +279,26 @@ void HappyEngine::updateLoop(float dTime)
     m_pFxManager->tick(dTime);
 
     m_pGame->tick(dTime);
+
+    CONSOLE->tick();
 }
 void HappyEngine::drawLoop()
-{            
-    GRAPHICS->begin();
-    GRAPHICS->end();
+{
+    // display 3D scene
+    GRAPHICS->drawScene();
+
+    // draw 2D stuff
     m_pGame->drawGui();
 
-    PROFILER->draw();
+    // draw profiler if needed
+    if (m_bShowProfiler)
+        PROFILER->draw();
+
+    // draw console
+    CONSOLE->draw();
+
+    // display 2D
+    GUI->draw();    
  
 #ifdef HE_ENABLE_QT
     if (m_SubEngines & SubEngine_Qt)

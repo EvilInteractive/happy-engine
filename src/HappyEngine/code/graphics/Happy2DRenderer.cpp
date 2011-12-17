@@ -244,7 +244,6 @@ void Happy2DRenderer::resize()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
 
-
     if (m_DepthRenderTarget != UINT_MAX)
         glDeleteRenderbuffers(1, &m_DepthRenderTarget);
     glGenRenderbuffers(1, &m_DepthRenderTarget);
@@ -253,6 +252,7 @@ void Happy2DRenderer::resize()
 
     if (m_RenderFboID != UINT_MAX)
         glDeleteFramebuffers(1, &m_RenderFboID);
+
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
 
@@ -337,6 +337,8 @@ void Happy2DRenderer::draw()
     GL::heLineSmoothEnabled(false);
 
     // textures
+    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     m_pTextureEffect->begin();
     m_pTextureEffect->setBlending(m_bBlending);
 
@@ -371,8 +373,10 @@ void Happy2DRenderer::draw()
     }
     else
     {
-        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEnabled(true);
+        //glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     }
 
     m_pTextureEffect->setDepth(0.5f);

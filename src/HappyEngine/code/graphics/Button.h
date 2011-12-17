@@ -29,6 +29,7 @@
 #include "Hitregion.h"
 #include <string>
 #include "Font.h"
+#include "event.h"
 
 namespace he {
 namespace gui {
@@ -63,33 +64,38 @@ public:
     virtual ~Button();
 
     /* GENERAL */
-    void tick();
-    void draw();
+    virtual void tick();
+    virtual void draw();
 
     /* SETTERS */
-    void setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet);
-    void setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
-                        const gfx::Texture2D::pointer& pHoverSprite,
-                        const gfx::Texture2D::pointer& pDownSprite,
-                        const gfx::Texture2D::pointer& pDisabledSprite);
-    void setState(STATE state);
-    void setActivationMode(ACTIVATION activationMode);
-    void setPosition(const vec2& centerPos);
-    void setText(const std::string& text, ushort fontSize = 12);
+    virtual void setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet);
+    virtual void setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
+                                const gfx::Texture2D::pointer& pHoverSprite,
+                                const gfx::Texture2D::pointer& pDownSprite,
+                                const gfx::Texture2D::pointer& pDisabledSprite);
+    virtual void setState(STATE state);
+    virtual void setActivationMode(ACTIVATION activationMode);
+    virtual void setPosition(const vec2& centerPos);
+    virtual void setText(const std::string& text, ushort fontSize = 12);
+
+    virtual void addOnClickListener(boost::function<void()> callback);
 
     /* GETTERS */
-    bool isNormal() const;
-    bool isHover() const;
-    bool isDown() const;
-    bool isDisabled() const;
-    bool isClicked() const;
+    virtual bool isNormal() const;
+    virtual bool isHover() const;
+    virtual bool isDown() const;
+    virtual bool isDisabled() const;
+    virtual bool isClicked() const;
 
-private:
+protected:
 
     /* EXTRA */
-    void drawColor();
-    void drawSprites();
-    void drawSpriteSheet();
+    virtual void drawColor();
+    virtual void drawSprites();
+    virtual void drawSpriteSheet();
+
+    /* CALLBACK HANDLERS */
+    virtual void clicked();
 
     /* DATAMEMBERS */
     vec2 m_Pos;
@@ -108,6 +114,10 @@ private:
 
     std::string m_Text;
     gfx::Font::pointer m_pFont;
+
+    event<void> m_OnClickEvent;
+
+private:
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Button(const Button&);

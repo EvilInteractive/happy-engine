@@ -35,30 +35,30 @@ namespace gfx {
 class Simple2DTextureEffect
 {
 public:
-	Simple2DTextureEffect();
+    Simple2DTextureEffect();
     virtual ~Simple2DTextureEffect();
 
-	void load();
-	void begin() const;
-	void end() const;
+    void load();
+    void begin() const;
+    void end() const;
 
-	void setWorldMatrix(const he::mat44& mat) const;
-	void setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const;
-	void setAlpha(const float alpha) const;
-	void setTCOffset(const vec2& offset) const;
-	void setTCScale(const vec2& scale) const;
-	void setDepth(float depth) const;
+    void setWorldMatrix(const he::mat44& mat) const;
+    void setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const;
+    void setAlpha(const float alpha) const;
+    void setTCOffset(const vec2& offset) const;
+    void setTCScale(const vec2& scale) const;
+    void setDepth(float depth) const;
     void setBlending(bool blending) const;
 
 private:
-	gfx::Shader* m_pShader;
+    gfx::Shader* m_pShader;
 
-	uint m_ShaderWVPPos;
-	uint m_ShaderDiffTexPos;
-	uint m_ShaderAlphaPos;
-	uint m_ShaderTCOffsetPos;
-	uint m_ShaderTCScalePos;
-	uint m_ShaderDepthPos;
+    uint m_ShaderWVPPos;
+    uint m_ShaderDiffTexPos;
+    uint m_ShaderAlphaPos;
+    uint m_ShaderTCOffsetPos;
+    uint m_ShaderTCScalePos;
+    uint m_ShaderDepthPos;
     uint m_ShaderBlendPos;
 
     //Disable default copy constructor and default assignment operator

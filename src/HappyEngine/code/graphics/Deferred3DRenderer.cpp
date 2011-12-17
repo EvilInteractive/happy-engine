@@ -71,10 +71,10 @@ Deferred3DRenderer::Deferred3DRenderer(const DrawSettings& settings):
             m_pSpotLightShader(NEW Shader()),
             m_pAmbIllShader(NEW Shader())
 {
-    //CONSOLE->registerValue(&m_Exposure, "exposure");
-    //CONSOLE->registerValue(&m_Gamma, "gamma");
-    CONSOLE->registerValue(&m_ShowDebugTextures, "debugTex");
-    //CONSOLE->registerValue(&m_Bloom, "bloom");
+    //CONSOLE->registerVar(&m_Exposure, "exposure");
+    //CONSOLE->registerVar(&m_Gamma, "gamma");
+    CONSOLE->registerVar(&m_ShowDebugTextures, "debugTex");
+    //CONSOLE->registerVar(&m_Bloom, "bloom");
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -196,7 +196,7 @@ void Deferred3DRenderer::initToneMapShader(const std::string& folder, const Shad
 
     if (m_bSSAO)
     {
-        m_pRandomNormals = CONTENT->asyncLoadTexture("random_normals.png");
+        m_pRandomNormals = CONTENT->asyncLoadTexture("engine/random_normals.png");
         m_ShaderSSAOPos[0] = m_pToneMapShader->getShaderSamplerId("randomNormals");
         m_ShaderSSAOPos[1] = m_pToneMapShader->getShaderVarId("radius");
         m_ShaderSSAOPos[2] = m_pToneMapShader->getShaderVarId("intensity");
