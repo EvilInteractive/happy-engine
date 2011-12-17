@@ -101,6 +101,9 @@
     <Filter Include="happyengine\graphics\rendering\instancing">
       <UniqueIdentifier>{fd11c0a3-3308-4ec7-a8eb-0a6c980b73b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\physics\joints">
+      <UniqueIdentifier>{ef5d7f97-1776-479e-8e22-b7cf44b5b22e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -495,6 +498,15 @@
     </ClCompile>
     <ClCompile Include="code\game\InstancedModelComponent.cpp">
       <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsFixedJoint.cpp">
+      <Filter>happyengine\physics\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsSphericalJoint.cpp">
+      <Filter>happyengine\physics\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsRevoluteJoint.cpp">
+      <Filter>happyengine\physics\joints</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -998,6 +1010,21 @@
     </ClInclude>
     <ClInclude Include="code\game\InstancedModelComponent.h">
       <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\IPhysicsActor.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\IPhysicsJoint.h">
+      <Filter>happyengine\physics\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsFixedJoint.h">
+      <Filter>happyengine\physics\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsSphericalJoint.h">
+      <Filter>happyengine\physics\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsRevoluteJoint.h">
+      <Filter>happyengine\physics\joints</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

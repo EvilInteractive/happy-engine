@@ -29,19 +29,21 @@
 #include "IPhysicsShape.h"
 #include "PhysicsMaterial.h"
 #include <vector>
+#include "IPhysicsActor.h"
 
 namespace he {
 namespace px {
 
-class PhysicsDynamicActor
+class PhysicsDynamicActor : public IPhysicsActor
 {
 public:
     PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass);
     PhysicsDynamicActor(const mat44& pose);
     virtual ~PhysicsDynamicActor();
 
-    vec3 getPosition() const;
-    mat44 getPose() const;
+    virtual vec3 getPosition() const;
+    virtual mat44 getPose() const;
+    virtual physx::PxRigidActor* getInternalActor() const;
 
     void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass) const;
 

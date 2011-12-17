@@ -16,42 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/08/2011
+//Created: 14/12/2011
 
-#ifndef _HE_PHYSICS_STATIC_ACTOR_H_
-#define _HE_PHYSICS_STATIC_ACTOR_H_
+#ifndef _HE_PHYSICS_FIXED_JOINT_H_
+#define _HE_PHYSICS_FIXED_JOINT_H_
 #pragma once
 
-#include "PxRigidStatic.h"
-#include "vec3.h"
-#include "mat44.h"
-#include "IPhysicsShape.h"
-#include "PhysicsMaterial.h"
-#include "IPhysicsActor.h"
+#include "IPhysicsJoint.h"
+
+namespace physx {
+    class PxFixedJoint;
+}
 
 namespace he {
 namespace px {
 
-class PhysicsStaticActor : public IPhysicsActor
+class IPhysicsActor;
+
+class PhysicsFixedJoint : public IPhysicsJoint
 {
 public:
-    PhysicsStaticActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material);
-    PhysicsStaticActor(const mat44& pose);
-    virtual ~PhysicsStaticActor();
-    
-    virtual vec3 getPosition() const;
-    virtual mat44 getPose() const;
-    virtual physx::PxRigidActor* getInternalActor() const;
+    PhysicsFixedJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
+                      const IPhysicsActor* pActor1, const vec3& localAttach1);
+    virtual ~PhysicsFixedJoint();
 
-    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material) const;
+    void setBreakForce( float force, float torque );
 
 private:
 
-    physx::PxRigidStatic* m_pActor;
+    physx::PxFixedJoint* m_pJoint;
 
     //Disable default copy constructor and default assignment operator
-    PhysicsStaticActor(const PhysicsStaticActor&);
-    PhysicsStaticActor& operator=(const PhysicsStaticActor&);
+    PhysicsFixedJoint(const PhysicsFixedJoint&);
+    PhysicsFixedJoint& operator=(const PhysicsFixedJoint&);
 };
 
 } } //end namespace

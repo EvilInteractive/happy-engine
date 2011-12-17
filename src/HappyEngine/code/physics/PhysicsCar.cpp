@@ -392,6 +392,11 @@ float PhysicsCar::getSteer() const
     return physx::PxVehicle4WGetAppliedSteer(*m_pVehicle);
 }
 
+physx::PxRigidActor* PhysicsCar::getInternalActor() const
+{
+    return m_pActor;
+}
+
 
 
 

@@ -138,4 +138,9 @@ mat44 PhysicsStaticActor::getPose() const
     return mat44(physx::PxMat44(physx::PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
 }
 
+physx::PxRigidActor* PhysicsStaticActor::getInternalActor() const
+{
+    return m_pActor;
+}
+
 } } //end namespace

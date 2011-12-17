@@ -32,6 +32,7 @@
 #include "vehicle/PxVehicleUtils.h"
 #include "PhysicsConvexShape.h"
 #include "PhysicsEngine.h"
+#include "IPhysicsActor.h"
 
 namespace he {
 namespace px {
@@ -59,7 +60,7 @@ struct ChassiDesc
     float m_Mass;
     std::vector<PhysicsConvexShape> m_ChassiShapes;
 };
-class PhysicsCar
+class PhysicsCar : public IPhysicsActor
 {
 friend class PhysicsCarManager;
 
@@ -123,6 +124,7 @@ public:
 
     vec3 getPosition() const;
     mat44 getPose() const;
+    virtual physx::PxRigidActor* getInternalActor() const;
 
     float getSpeed() const;
     Gear getGear() const;

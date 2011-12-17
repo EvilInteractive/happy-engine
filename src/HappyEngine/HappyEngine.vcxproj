@@ -146,8 +146,11 @@
     <ClCompile Include="code\physics\PhysicsConvexShape.cpp" />
     <ClCompile Include="code\physics\PhysicsDynamicActor.cpp" />
     <ClCompile Include="code\physics\PhysicsEngine.cpp" />
+    <ClCompile Include="code\physics\PhysicsFixedJoint.cpp" />
     <ClCompile Include="code\physics\PhysicsMaterial.cpp" />
+    <ClCompile Include="code\physics\PhysicsRevoluteJoint.cpp" />
     <ClCompile Include="code\physics\PhysicsSphereShape.cpp" />
+    <ClCompile Include="code\physics\PhysicsSphericalJoint.cpp" />
     <ClCompile Include="code\physics\PhysicsStaticActor.cpp" />
     <ClCompile Include="code\HappyPCH.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">HappyPCH.h</PrecompiledHeaderFile>
@@ -299,6 +302,8 @@
     <ClInclude Include="code\networking\Server.h" />
     <ClInclude Include="code\networking\TcpServer.h" />
     <ClInclude Include="code\OpenGL.h" />
+    <ClInclude Include="code\physics\IPhysicsActor.h" />
+    <ClInclude Include="code\physics\IPhysicsJoint.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
     <ClInclude Include="code\physics\PhysicsCar.h" />
@@ -309,8 +314,11 @@
     <ClInclude Include="code\physics\PhysicsConvexShape.h" />
     <ClInclude Include="code\physics\PhysicsDynamicActor.h" />
     <ClInclude Include="code\physics\PhysicsEngine.h" />
+    <ClInclude Include="code\physics\PhysicsFixedJoint.h" />
     <ClInclude Include="code\physics\PhysicsMaterial.h" />
+    <ClInclude Include="code\physics\PhysicsRevoluteJoint.h" />
     <ClInclude Include="code\physics\PhysicsSphereShape.h" />
+    <ClInclude Include="code\physics\PhysicsSphericalJoint.h" />
     <ClInclude Include="code\physics\PhysicsStaticActor.h" />
     <ClInclude Include="code\SlotPContainer.h" />
     <ClInclude Include="code\HappyPCH.h" />
