@@ -283,6 +283,13 @@ namespace HappyCookerGUIv2
                 Info = string.Format("cooking '{0}' - ({1}/{2})", item.ShortPath, CookedMeshes + 1, MeshesToCook);
                 string input = item.ShortPath + item.Extension;
                 string output = item.ShortPath;
+
+                string exportModelDir = (ModelExportPath + output).Substring(0, (ModelExportPath + output).LastIndexOf("\\"));
+                if (Directory.Exists(exportModelDir) == false)
+                    Directory.CreateDirectory(exportModelDir);
+                string exportPhysicsDir = (PhysicsExportPath + output).Substring(0, (PhysicsExportPath + output).LastIndexOf("\\"));
+                if (Directory.Exists(exportPhysicsDir) == false)
+                    Directory.CreateDirectory(exportPhysicsDir);
                 //if (File.Exists(output) == false)
                 //    File.Create(output);
                 cooker.Cook(input, output);
