@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="libHappyEngine" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/libHappyEngine" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="gcc/Debug/" />
 				<Option type="2" />
@@ -19,7 +19,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="libHappyEngine" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/libHappyEngine" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="gcc/Release/" />
 				<Option type="2" />
@@ -70,18 +70,20 @@
 			<Add directory="$(#al_dir)/include/AL" />
 			<Add directory="$(#sdl_dir)/include" />
 		</Compiler>
+		<Linker>
+			<Add library="SDL" />
+			<Add library="SDLmain" />
+		</Linker>
 		<Unit filename="code/HappyEngine.cpp" />
 		<Unit filename="code/HappyEngine.h" />
 		<Unit filename="code/HappyNew.h" />
+		<Unit filename="code/HappyPCH.cpp" />
+		<Unit filename="code/HappyPCH.h" />
 		<Unit filename="code/HappyTypes.h" />
 		<Unit filename="code/OpenGL.cpp" />
 		<Unit filename="code/OpenGL.h" />
 		<Unit filename="code/SlotPContainer.h" />
-		<Unit filename="code/StdAfx.cpp" />
-		<Unit filename="code/StdAfx.h" />
 		<Unit filename="code/audio/ISound.h" />
-		<Unit filename="code/audio/Sound.cpp" />
-		<Unit filename="code/audio/Sound.h" />
 		<Unit filename="code/audio/Sound2D.cpp" />
 		<Unit filename="code/audio/Sound2D.h" />
 		<Unit filename="code/audio/Sound3D.cpp" />
@@ -90,8 +92,6 @@
 		<Unit filename="code/audio/SoundEngine.h" />
 		<Unit filename="code/audio/SoundFile.cpp" />
 		<Unit filename="code/audio/SoundFile.h" />
-		<Unit filename="code/audio/SoundManager.cpp" />
-		<Unit filename="code/audio/SoundManager.h" />
 		<Unit filename="code/content/AssetContainer.h" />
 		<Unit filename="code/content/BinObjLineLoader.cpp" />
 		<Unit filename="code/content/BinObjLineLoader.h" />
@@ -131,6 +131,8 @@
 		<Unit filename="code/error/HeAssert.cpp" />
 		<Unit filename="code/error/HeAssert.h" />
 		<Unit filename="code/event.h" />
+		<Unit filename="code/game/CameraManager.cpp" />
+		<Unit filename="code/game/CameraManager.h" />
 		<Unit filename="code/game/DynamicPhysicsComponent.cpp" />
 		<Unit filename="code/game/DynamicPhysicsComponent.h" />
 		<Unit filename="code/game/Entity.cpp" />
@@ -138,6 +140,8 @@
 		<Unit filename="code/game/Game.h" />
 		<Unit filename="code/game/IComponent.h" />
 		<Unit filename="code/game/ITickable.h" />
+		<Unit filename="code/game/InstancedModelComponent.cpp" />
+		<Unit filename="code/game/InstancedModelComponent.h" />
 		<Unit filename="code/game/ModelComponent.cpp" />
 		<Unit filename="code/game/ModelComponent.h" />
 		<Unit filename="code/game/RiggedModelComponent.cpp" />
@@ -185,8 +189,6 @@
 		<Unit filename="code/graphics/FxParticleSystem.h" />
 		<Unit filename="code/graphics/FxRandom.cpp" />
 		<Unit filename="code/graphics/FxRandom.h" />
-		<Unit filename="code/graphics/FxRandomFloat.cpp" />
-		<Unit filename="code/graphics/FxRandomFloat.h" />
 		<Unit filename="code/graphics/FxTimeLine.cpp" />
 		<Unit filename="code/graphics/FxTimeLine.h" />
 		<Unit filename="code/graphics/FxTimeLineTrack.cpp" />
@@ -199,9 +201,15 @@
 		<Unit filename="code/graphics/HappyQtWidget.h" />
 		<Unit filename="code/graphics/Hitregion.cpp" />
 		<Unit filename="code/graphics/Hitregion.h" />
+		<Unit filename="code/graphics/I3DObject.h" />
 		<Unit filename="code/graphics/IDrawable.h" />
 		<Unit filename="code/graphics/IFxComponent.h" />
 		<Unit filename="code/graphics/IFxVariable.h" />
+		<Unit filename="code/graphics/IPickable.h" />
+		<Unit filename="code/graphics/InstancingController.cpp" />
+		<Unit filename="code/graphics/InstancingController.h" />
+		<Unit filename="code/graphics/InstancingManager.cpp" />
+		<Unit filename="code/graphics/InstancingManager.h" />
 		<Unit filename="code/graphics/Light.cpp" />
 		<Unit filename="code/graphics/Light.h" />
 		<Unit filename="code/graphics/LightManager.cpp" />
@@ -318,6 +326,8 @@
 		<Unit filename="code/networking/Server.h" />
 		<Unit filename="code/networking/TcpServer.cpp" />
 		<Unit filename="code/networking/TcpServer.h" />
+		<Unit filename="code/physics/IPhysicsActor.h" />
+		<Unit filename="code/physics/IPhysicsJoint.h" />
 		<Unit filename="code/physics/IPhysicsShape.h" />
 		<Unit filename="code/physics/PhysicsBoxShape.cpp" />
 		<Unit filename="code/physics/PhysicsBoxShape.h" />
@@ -337,10 +347,16 @@
 		<Unit filename="code/physics/PhysicsDynamicActor.h" />
 		<Unit filename="code/physics/PhysicsEngine.cpp" />
 		<Unit filename="code/physics/PhysicsEngine.h" />
+		<Unit filename="code/physics/PhysicsFixedJoint.cpp" />
+		<Unit filename="code/physics/PhysicsFixedJoint.h" />
 		<Unit filename="code/physics/PhysicsMaterial.cpp" />
 		<Unit filename="code/physics/PhysicsMaterial.h" />
+		<Unit filename="code/physics/PhysicsRevoluteJoint.cpp" />
+		<Unit filename="code/physics/PhysicsRevoluteJoint.h" />
 		<Unit filename="code/physics/PhysicsSphereShape.cpp" />
 		<Unit filename="code/physics/PhysicsSphereShape.h" />
+		<Unit filename="code/physics/PhysicsSphericalJoint.cpp" />
+		<Unit filename="code/physics/PhysicsSphericalJoint.h" />
 		<Unit filename="code/physics/PhysicsStaticActor.cpp" />
 		<Unit filename="code/physics/PhysicsStaticActor.h" />
 		<Unit filename="code/template/X.cpp" />

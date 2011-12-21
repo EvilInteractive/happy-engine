@@ -19,7 +19,7 @@
 	"Profiler.h"
 	"event.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec2.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec2.h
 	"PxVec2.h"
 
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PxFoundation/PxVec2.h
@@ -65,13 +65,13 @@
 	"ps3/PxPS3Assert.h"
 	<assert.h>
 
-1323091634 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec3.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec3.h
 	"PxVec3.h"
 
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PxFoundation/PxVec3.h
 	"PxMath.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec4.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec4.h
 	"PxVec4.h"
 
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PxFoundation/PxVec4.h
@@ -79,16 +79,16 @@
 	"PxVec3.h"
 	"PxAssert.h"
 
-1322485310 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyNew.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyNew.h
 	<crtdbg.h>
 	"HeAssert.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/HeAssert.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/HeAssert.h
 	<string>
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/MathConstants.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/MathConstants.h
 
-1322488192 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/MathFunctions.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/MathFunctions.h
 	"vec3.h"
 	"vec2.h"
 	"vec4.h"
@@ -112,7 +112,7 @@
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PxFoundation/PxTransform.h
 	"PxQuat.h"
 
-1322491432 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat44.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat44.h
 	"PxMat44.h"
 	"vec3.h"
 	"vec4.h"
@@ -1381,7 +1381,7 @@
 
 1236012322 /home/sebastiaan/Libs/boost_1_47_0/boost/smart_ptr/detail/operator_bool.hpp
 
-1322491442 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/AssetContainer.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/AssetContainer.h
 	<map>
 	<string>
 	<iostream>
@@ -1389,7 +1389,7 @@
 	"HappyEngine.h"
 	"Console.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyEngine.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyEngine.h
 	"boost/shared_ptr.hpp"
 	"boost/thread.hpp"
 	"SDL.h"
@@ -5945,8 +5945,9 @@
 	<boost/chrono/chrono.hpp>
 	<boost/typeof/typeof.hpp>
 
-1322487686 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Console.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Console.h
 	"boost/any.hpp"
+	"boost/function.hpp"
 	<map>
 	<vector>
 	<utility>
@@ -5970,27 +5971,27 @@
 	<boost/static_assert.hpp>
 	<cstring>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/Keyboard.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/Keyboard.h
 	"HappyTypes.h"
 	"Keys.h"
 	"IKeyboard.h"
 
-1322488441 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyTypes.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyTypes.h
 	<stdint.h>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/Keys.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/Keys.h
 	"SDL_keycode.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IKeyboard.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IKeyboard.h
 	"Keys.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Color.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Color.h
 	"Color.h"
 	"HappyTypes.h"
 	"vec3.h"
 	"vec4.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Font.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Font.h
 	"HappyTypes.h"
 	"SDL_ttf.h"
 	"Texture2D.h"
@@ -6185,12 +6186,12 @@
 	"begin_code.h"
 	"close_code.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Texture2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Texture2D.h
 	"HeAssert.h"
 	"boost/shared_ptr.hpp"
 	"HappyTypes.h"
 
-1322487947 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/TextBox.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/TextBox.h
 	<string>
 	"Rect.h"
 	"Font.h"
@@ -6202,15 +6203,15 @@
 	<vector>
 	"Keyboard.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Rect.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Rect.h
 	"HappyTypes.h"
 	"vec2.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Hitregion.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Hitregion.h
 	"vec2.h"
 	"mat33.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat33.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat33.h
 	"PxMat33.h"
 	"vec2.h"
 
@@ -6219,18 +6220,18 @@
 	<ctime>
 	<boost/limits.hpp>
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Text.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Text.h
 	"Font.h"
 	<string>
 	<vector>
 	"boost/shared_ptr.hpp"
 
-1322487954 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/ITypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/ITypeHandler.h
 	"boost/any.hpp"
 	<typeinfo>
 	<vector>
 
-1322487970 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Scrollbar.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Scrollbar.h
 	"vec2.h"
 	<map>
 	"Hitregion.h"
@@ -6238,19 +6239,19 @@
 
 1290984675 /home/sebastiaan/Libs/openal-soft-1.13/include/AL/alc.h
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/Exception.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/Exception.h
 	<string>
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsSphereShape.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsSphereShape.cpp
+	"HappyPCH.h"
 	"PhysicsSphereShape.h"
 	"geometry/PxSphereGeometry.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsSphereShape.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsSphereShape.h
 	"IPhysicsShape.h"
 	"geometry/PxSphereGeometry.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/IPhysicsShape.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/IPhysicsShape.h
 	"HeAssert.h"
 	"PxShape.h"
 	"boost/shared_ptr.hpp"
@@ -6303,20 +6304,20 @@
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PhysXAPI/geometry/PxSphereGeometry.h
 	"geometry/PxGeometry.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/AABB.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/AABB.cpp
+	"HappyPCH.h"
 	"AABB.h"
 	"HappyNew.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/AABB.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/AABB.h
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DTextureEffect.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DTextureEffect.cpp
+	"HappyPCH.h"
 	"Simple2DTextureEffect.h"
 	"HappyNew.h"
 	"HeAssert.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DTextureEffect.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DTextureEffect.h
 	"HappyTypes.h"
 	"Shader.h"
 	"mat44.h"
@@ -6324,7 +6325,7 @@
 	"vec3.h"
 	"Texture2D.h"
 
-1322491545 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shader.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shader.h
 	<string>
 	<map>
 	<vector>
@@ -6339,12 +6340,12 @@
 	"OpenGL.h"
 	"boost/shared_ptr.hpp"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderLayout.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderLayout.h
 	<vector>
 	"HappyTypes.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Model.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Model.cpp
+	"HappyPCH.h"
 	"Model.h"
 	"GL/glew.h"
 	<algorithm>
@@ -6352,7 +6353,7 @@
 	"Color.h"
 	"ExternalError.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Model.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Model.h
 	"HeAssert.h"
 	<vector>
 	"VertexLayout.h"
@@ -6362,12 +6363,12 @@
 	"VertexLayout.h"
 	"Sphere.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/VertexLayout.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/VertexLayout.h
 	<string>
 	<vector>
 	"HappyTypes.h"
 
-1323095773 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ModelMesh.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ModelMesh.h
 	"HeAssert.h"
 	<vector>
 	<string>
@@ -6378,16 +6379,18 @@
 	"Bone.h"
 	"boost/function.hpp"
 	"boost/thread/mutex.hpp"
+	"event.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Sphere.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Sphere.h
 	"vec3.h"
 	<vector>
 	"HappyTypes.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bone.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bone.h
 	"HappyTypes.h"
+	"mat44.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/ExternalError.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/ExternalError.h
 	"GL/glew.h"
 	"SDL.h"
 	<iostream>
@@ -6819,58 +6822,59 @@
 	"common/PxCoreUtilityTypes.h"
 	"geometry/PxSimpleTriangleMesh.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Message.cpp
-	"StdAfx.h"
+1324419914 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Message.cpp
+	"HappyPCH.h"
 	"Message.h"
 	"HappyNew.h"
 	"HeAssert.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Message.h
+1324419914 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Message.h
 	"boost/shared_ptr.hpp"
 	"HappyTypes.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/ExternalError.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/ExternalError.cpp
+	"HappyPCH.h"
 	"ExternalError.h"
 	<sstream>
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/GraphicsEngine.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/GraphicsEngine.cpp
+	"HappyPCH.h"
 	"GraphicsEngine.h"
+	"SDL.h"
 	"OpenGL.h"
 	"ExternalError.h"
 	"HappyNew.h"
 	"IniReader.h"
 	"Happy2DRenderer.h"
+	"CameraManager.h"
+	"DrawManager.h"
+	"Picker.h"
+	"Deferred3DRenderer.h"
+	"InstancingManager.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/GraphicsEngine.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/GraphicsEngine.h
 	"Rect.h"
 	"vec2.h"
 	"HappyTypes.h"
 	"Color.h"
-	"Deferred3DRenderer.h"
-	"IDrawable.h"
-	"SDL.h"
 	<string>
-	"DrawManager.h"
 	"DrawSettings.h"
-	"Camera.h"
-	"Picker.h"
+	"ModelMesh.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Deferred3DRenderer.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Deferred3DRenderer.h
 	"HappyTypes.h"
 	"Shader.h"
 	"Model.h"
 	"ModelMesh.h"
 	"Texture2D.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/LightManager.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/LightManager.h
 	<vector>
 	"Light.h"
 	"vec3.h"
 	"Color.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Light.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Light.h
 	"vec3.h"
 	"boost/shared_ptr.hpp"
 	"Rect.h"
@@ -6880,12 +6884,12 @@
 	"PointLight.h"
 	"DirectionalLight.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Camera.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Camera.h
 	"vec3.h"
 	"mat44.h"
 	"MathConstants.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SpotLight.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SpotLight.h
 	"vec3.h"
 	"mat44.h"
 	"Color.h"
@@ -6893,11 +6897,12 @@
 	"boost/shared_ptr.hpp"
 	"IDrawable.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IDrawable.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IDrawable.h
 	"ModelMesh.h"
 	"Material.h"
+	"I3DObject.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Material.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Material.h
 	"Shader.h"
 	"HappyTypes.h"
 	"boost/shared_ptr.hpp"
@@ -6906,12 +6911,12 @@
 	"Color.h"
 	"VertexLayout.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderVar.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderVar.h
 	"Shader.h"
 	"boost/shared_ptr.hpp"
 	"HappyTypes.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PointLight.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PointLight.h
 	"vec3.h"
 	"mat44.h"
 	"Color.h"
@@ -6919,7 +6924,7 @@
 	"boost/shared_ptr.hpp"
 	"IDrawable.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DirectionalLight.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DirectionalLight.h
 	"vec3.h"
 	"mat44.h"
 	"Color.h"
@@ -6928,50 +6933,50 @@
 	"boost/shared_ptr.hpp"
 	"IDrawable.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bloom.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bloom.h
 	<vector>
 	"HappyTypes.h"
 	"Texture2D.h"
 	"Shader.h"
 	"ModelMesh.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/AutoExposure.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/AutoExposure.h
 	"Shader.h"
 	"Texture2D.h"
 	"ModelMesh.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawSettings.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawSettings.h
 	"HappyTypes.h"
 
-1322494133 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawManager.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawManager.h
 	"IDrawable.h"
 	"Camera.h"
 	"DrawSettings.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Picker.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Picker.h
 	"vec2.h"
 	"PickEffect.h"
 	"Texture2D.h"
 	"IDrawable.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PickEffect.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PickEffect.h
 	"mat44.h"
 	"Shader.h"
 	"HappyTypes.h"
 
-1322491442 /home/sebastiaan/happy-engine/src/HappyEngine/code//OpenGL.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//OpenGL.h
 	"GL/glew.h"
 	"Color.h"
 	"Rect.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniReader.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniReader.h
 	<string>
 	<map>
 	"vec2.h"
 	"vec3.h"
 	"vec4.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Happy2DRenderer.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Happy2DRenderer.h
 	"Vertex.h"
 	"Color.h"
 	"Texture2D.h"
@@ -6994,57 +6999,57 @@
 	"Line2D.h"
 	<map>
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Vertex.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Vertex.h
 	"vec4.h"
 	"vec3.h"
 	"vec2.h"
 	"VertexLayout.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DEffect.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DEffect.h
 	"HappyTypes.h"
 	"Shader.h"
 	"mat44.h"
 	"vec3.h"
 	"Color.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Polygon.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Polygon.h
 	"vec2.h"
 	"HappyTypes.h"
 	<vector>
 
-1322488468 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shape2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shape2D.h
 	"Polygon.h"
 	"mat44.h"
 	"HappyNew.h"
 	"ModelMesh.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Rectangle2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Rectangle2D.h
 	"Shape2D.h"
 	"Polygon.h"
 	"vec2.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/RoundedRectangle2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/RoundedRectangle2D.h
 	"Shape2D.h"
 	"Polygon.h"
 	"vec2.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Ellipse2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Ellipse2D.h
 	"Shape2D.h"
 	"Polygon.h"
 	"vec2.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Polygon2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Polygon2D.h
 	"Shape2D.h"
 	"Polygon.h"
 	"vec2.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line2D.h
 	"Shape2D.h"
 	"Polygon.h"
 	"vec2.h"
 
-1322491432 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCar.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCar.cpp
+	"HappyPCH.h"
 	"PhysicsCar.h"
 	"HappyEngine.h"
 	"HeAssert.h"
@@ -7053,7 +7058,7 @@
 	"ControlsManager.h"
 	"PhysicsCarManager.h"
 
-1322494495 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCar.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCar.h
 	"PxRigidDynamic.h"
 	"vec3.h"
 	"mat44.h"
@@ -7064,8 +7069,9 @@
 	"vehicle/PxVehicleUtils.h"
 	"PhysicsConvexShape.h"
 	"PhysicsEngine.h"
+	"IPhysicsActor.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsMaterial.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsMaterial.h
 	"PxMaterial.h"
 	"boost/shared_ptr.hpp"
 
@@ -7096,17 +7102,17 @@
 	"PxScene.h"
 	"PxSweepCache.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexShape.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexShape.h
 	"IPhysicsShape.h"
 	"PhysicsConvexMesh.h"
 	"vec3.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexMesh.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexMesh.h
 	"boost/shared_ptr.hpp"
 	"geometry/PxConvexMesh.h"
 	"BinaryStream.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/BinaryStream.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/BinaryStream.h
 	"common/PxStream.h"
 	"HappyTypes.h"
 	<string>
@@ -7116,7 +7122,7 @@
 	"vec4.h"
 	"mat44.h"
 
-1322491432 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsEngine.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsEngine.h
 	"PxPhysics.h"
 	"vehicle/PxVehicle.h"
 	"PhysicsMaterial.h"
@@ -7126,6 +7132,7 @@
 	"boost/thread.hpp"
 	"AssetContainer.h"
 	"PxPreprocessor.h"
+	"boost/thread/mutex.hpp"
 	<stdlib.h>
 
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PhysXAPI/extensions/PxExtensionsAPI.h
@@ -7249,22 +7256,22 @@
 1317724408 /home/sebastiaan/Libs/PhysX 3.1/SDKs/PxTask/include/PxCudaMemoryManager.h
 	"PxSimpleTypes.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/ControlsManager.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/ControlsManager.h
 	"IKeyboard.h"
 	"IMouse.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IMouse.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IMouse.h
 	"vec2.h"
 	"HappyTypes.h"
 	"SDL.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderLayout.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderLayout.cpp
+	"HappyPCH.h"
 	"ShaderLayout.h"
 	"HappyNew.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLineLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLineLoader.cpp
+	"HappyPCH.h"
 	"BinObjLineLoader.h"
 	<algorithm>
 	<iostream>
@@ -7273,7 +7280,7 @@
 	"FileNotFoundException.h"
 	"HeAssert.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLineLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLineLoader.h
 	<string>
 	<vector>
 	<map>
@@ -7285,7 +7292,7 @@
 	"HappyTypes.h"
 	"IModelLoader.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/IModelLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/IModelLoader.h
 	<string>
 	<vector>
 	"VertexLayout.h"
@@ -7293,16 +7300,16 @@
 	"Model.h"
 	"Bone.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/FileNotFoundException.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/error/FileNotFoundException.h
 	"Exception.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/NetworkManager.cpp
-	"StdAfx.h"
+1324419914 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/NetworkManager.cpp
+	"HappyPCH.h"
 	"NetworkManager.h"
 	"HappyNew.h"
 	<iostream>
 
-1323091084 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/NetworkManager.h
+1324419914 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/NetworkManager.h
 	"HeAssert.h"
 	"boost/asio.hpp"
 	"boost/thread.hpp"
@@ -10762,32 +10769,32 @@
 	"Profiler.h"
 	"event.h"
 
-1322485310 /home/sebastiaan/happy-engine/src/HappyEngine/code/HappyNew.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/HappyNew.h
 	<crtdbg.h>
 	"HeAssert.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/Keyboard.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/Keyboard.cpp
+	"HappyPCH.h"
 	"Keyboard.h"
 	"SDL.h"
 	"HappyNew.h"
 	"boost/thread.hpp"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/PhysicsShapeLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/PhysicsShapeLoader.cpp
+	"HappyPCH.h"
 	"PhysicsShapeLoader.h"
 	"HappyNew.h"
 	"BinaryStream.h"
 	"PhysicsConvexShape.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/PhysicsShapeLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/PhysicsShapeLoader.h
 	"PhysicsConvexMesh.h"
 	"PhysicsConcaveMesh.h"
 	"AssetContainer.h"
 	<vector>
 	<string>
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveMesh.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveMesh.h
 	"boost/shared_ptr.hpp"
 	"geometry/PxTriangleMesh.h"
 	"BinaryStream.h"
@@ -10797,8 +10804,8 @@
 	"begin_code.h"
 	"close_code.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PickEffect.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PickEffect.cpp
+	"HappyPCH.h"
 	"PickEffect.h"
 	"HappyNew.h"
 	<vector>
@@ -10813,14 +10820,14 @@
 	"HappyTypes.h"
 	"Texture2D.h"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexShape.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexShape.cpp
+	"HappyPCH.h"
 	"PhysicsConvexShape.h"
 	"HappyEngine.h"
 	"PhysicsEngine.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/MaterialLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/MaterialLoader.cpp
+	"HappyPCH.h"
 	"MaterialLoader.h"
 	"HappyNew.h"
 	"IniReader.h"
@@ -10831,11 +10838,11 @@
 	"ContentManager.h"
 	"Bone.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/MaterialLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/MaterialLoader.h
 	"AssetContainer.h"
 	"Material.h"
 
-1322491442 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ContentManager.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ContentManager.h
 	<string>
 	"VertexLayout.h"
 	"Model.h"
@@ -10850,13 +10857,13 @@
 	"ShaderLoader.h"
 	"MaterialLoader.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line.h
 	"vec3.h"
 	"HappyTypes.h"
 	"boost/shared_ptr.hpp"
 	<vector>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/TextureLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/TextureLoader.h
 	<string>
 	<queue>
 	"Texture2D.h"
@@ -10865,7 +10872,7 @@
 	"AssetContainer.h"
 	"Color.h"
 
-1322491442 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoader.h
 	"Model.h"
 	"VertexLayout.h"
 	"IModelLoader.h"
@@ -10874,48 +10881,48 @@
 	<queue>
 	"boost/thread.hpp"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/LineLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/LineLoader.h
 	"AssetContainer.h"
 	"vec3.h"
 	<string>
 	<vector>
 	"Line.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/FontLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/FontLoader.h
 	"Font.h"
 	"AssetContainer.h"
 	<string>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderLoader.h
 	"AssetContainer.h"
 	"Shader.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/Mouse.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/Mouse.cpp
+	"HappyPCH.h"
 	"Mouse.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/Mouse.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/Mouse.h
 	"IMouse.h"
 
-1322491432 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Triangulator.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Triangulator.cpp
+	"HappyPCH.h"
 	"Triangulator.h"
 	"HappyNew.h"
 	"HappyTypes.h"
 	<algorithm>
 
-1322491432 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Triangulator.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Triangulator.h
 	"vec2.h"
 	<vector>
 	"HappyTypes.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec4.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec4.cpp
+	"HappyPCH.h"
 	"vec4.h"
 	"vec3.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/TextBox.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/TextBox.cpp
+	"HappyPCH.h"
 	"TextBox.h"
 	"HappyNew.h"
 	"SDL.h"
@@ -10925,8 +10932,8 @@
 	"Happy2DRenderer.h"
 	"ControlsManager.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Button.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Button.cpp
+	"HappyPCH.h"
 	"Button.h"
 	"HappyNew.h"
 	<algorithm>
@@ -10935,7 +10942,7 @@
 	"ControlsManager.h"
 	"Happy2DRenderer.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Button.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Button.h
 	"vec2.h"
 	"HappyEngine.h"
 	"Texture2D.h"
@@ -10943,9 +10950,10 @@
 	"Hitregion.h"
 	<string>
 	"Font.h"
+	"event.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SpotLight.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SpotLight.cpp
+	"HappyPCH.h"
 	"SpotLight.h"
 	"HappyNew.h"
 	"MathFunctions.h"
@@ -10954,19 +10962,19 @@
 	"Entity.h"
 	"ContentManager.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/Entity.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/Entity.h
 	"mat44.h"
 	"IComponent.h"
 	<vector>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/IComponent.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/IComponent.h
 	"SerializerStream.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/SerializerStream.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/SerializerStream.h
 	"BinaryStream.h"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsDynamicActor.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsDynamicActor.cpp
+	"HappyPCH.h"
 	"PhysicsDynamicActor.h"
 	"HappyEngine.h"
 	"HeAssert.h"
@@ -10976,27 +10984,28 @@
 	"PhysicsConvexShape.h"
 	"vehicle/PxVehicleUtils.h"
 
-1322490347 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsDynamicActor.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsDynamicActor.h
 	"PxRigidDynamic.h"
 	"vec3.h"
 	"mat44.h"
 	"IPhysicsShape.h"
 	"PhysicsMaterial.h"
 	<vector>
+	"IPhysicsActor.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsBoxShape.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsBoxShape.h
 	"IPhysicsShape.h"
 	"geometry/PxBoxGeometry.h"
 	"vec3.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniWriter.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniWriter.cpp
+	"HappyPCH.h"
 	"IniWriter.h"
 	<sstream>
 	<fstream>
 	<algorithm>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniWriter.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniWriter.h
 	<map>
 	<string>
 	<vector>
@@ -11004,13 +11013,13 @@
 	"vec3.h"
 	"vec4.h"
 
-1323091634 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec3.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec3.cpp
+	"HappyPCH.h"
 	"vec3.h"
 	"MathFunctions.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/DynamicPhysicsComponent.cpp
-	"StdAfx.h"
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/DynamicPhysicsComponent.cpp
+	"HappyPCH.h"
 	"DynamicPhysicsComponent.h"
 	"HappyNew.h"
 	"HappyEngine.h"
@@ -11018,26 +11027,26 @@
 	"HappyEngine.h"
 	"Game.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/DynamicPhysicsComponent.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/DynamicPhysicsComponent.h
 	"IComponent.h"
 	"mat44.h"
 	"ITickable.h"
 	"IPhysicsShape.h"
 	"PhysicsDynamicActor.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/ITickable.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/ITickable.h
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/Game.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/Game.h
 	"ITickable.h"
 	<vector>
 	<algorithm>
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec2.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec2.cpp
+	"HappyPCH.h"
 	"vec2.h"
 
-1322490841 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniReader.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/IniReader.cpp
+	"HappyPCH.h"
 	"IniReader.h"
 	"HeAssert.h"
 	"FileNotFoundException.h"
@@ -11046,8 +11055,8 @@
 	<algorithm>
 	"limits.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Font.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Font.cpp
+	"HappyPCH.h"
 	"Font.h"
 	"SDL.h"
 	"OpenGL.h"
@@ -11056,8 +11065,8 @@
 	"Text.h"
 	<algorithm>
 
-1322491432 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Polygon.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Polygon.cpp
+	"HappyPCH.h"
 	"Polygon.h"
 	"HappyNew.h"
 	"Triangulator.h"
@@ -11072,7 +11081,7 @@
 	<iostream>
 	<QKeyEvent>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/QtKeyboard.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/QtKeyboard.h
 	"HappyTypes.h"
 	"Keys.h"
 	<vector>
@@ -11080,14 +11089,14 @@
 	"IKeyboard.h"
 	"SDL.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/Entity.cpp
-	"StdAfx.h"
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/Entity.cpp
+	"HappyPCH.h"
 	"Entity.h"
 	"HappyNew.h"
 	<algorithm>
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/RiggedModelComponent.cpp
-	"StdAfx.h"
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/RiggedModelComponent.cpp
+	"HappyPCH.h"
 	"RiggedModelComponent.h"
 	"HappyNew.h"
 	"Entity.h"
@@ -11095,22 +11104,22 @@
 	"GraphicsEngine.h"
 	"Console.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/RiggedModelComponent.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/RiggedModelComponent.h
 	"IComponent.h"
 	"IDrawable.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Rectangle2D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Rectangle2D.cpp
+	"HappyPCH.h"
 	"Rectangle2D.h"
 	"HappyNew.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/BillboardEffect.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/BillboardEffect.cpp
+	"HappyPCH.h"
 	"BillboardEffect.h"
 	"HappyNew.h"
 	"HeAssert.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/BillboardEffect.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/BillboardEffect.h
 	"HappyTypes.h"
 	"Shader.h"
 	"mat44.h"
@@ -11118,19 +11127,19 @@
 	"vec3.h"
 	"Texture2D.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsBoxShape.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsBoxShape.cpp
+	"HappyPCH.h"
 	"PhysicsBoxShape.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/LineLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/LineLoader.cpp
+	"HappyPCH.h"
 	"LineLoader.h"
 	"HappyNew.h"
 	"ObjLineLoader.h"
 	"BinObjLineLoader.h"
 	"FileNotFoundException.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLineLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLineLoader.h
 	<string>
 	<vector>
 	"vec3.h"
@@ -11143,52 +11152,52 @@
 	"HappyNew.h"
 	"MathFunctions.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/QtMouse.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/QtMouse.cpp
+	"HappyPCH.h"
 	"QtMouse.h"
 	<QMouseEvent>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/QtMouse.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/QtMouse.h
 	"IMouse.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Profiler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Profiler.h
 	<map>
 	<deque>
 	"boost/chrono.hpp"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code//event.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//event.h
 	"boost/function.hpp"
 	<vector>
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/event.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/event.h
 	"boost/function.hpp"
 	<vector>
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/FileNotFoundException.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/FileNotFoundException.cpp
+	"HappyPCH.h"
 	"FileNotFoundException.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Sphere.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Sphere.cpp
+	"HappyPCH.h"
 	"Sphere.h"
 	"HappyNew.h"
 	"MathFunctions.h"
 	<algorithm>
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveMesh.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveMesh.cpp
+	"HappyPCH.h"
 	"PhysicsConcaveMesh.h"
 	"HappyNew.h"
 	"HappyEngine.h"
 	"PhysicsEngine.h"
 
-1322491432 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat44.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat44.cpp
+	"HappyPCH.h"
 	"mat44.h"
 	"MathFunctions.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shader.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shader.cpp
+	"HappyPCH.h"
 	"Shader.h"
 	"HeAssert.h"
 	"FileReader.h"
@@ -11198,21 +11207,21 @@
 	<algorithm>
 	"OpenGL.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/FileReader.h
+1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/FileReader.h
 	<string>
 	<fstream>
 	<vector>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderPreProcessor.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderPreProcessor.h
 	<set>
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawSettings.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawSettings.cpp
+	"HappyPCH.h"
 	"DrawSettings.h"
 	"HappyNew.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/AutoExposure.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/AutoExposure.cpp
+	"HappyPCH.h"
 	"AutoExposure.h"
 	"HappyNew.h"
 	"ContentManager.h"
@@ -11220,13 +11229,13 @@
 	"ExternalError.h"
 	"GraphicsEngine.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line.cpp
+	"HappyPCH.h"
 	"Line.h"
 	"HappyNew.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bloom.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bloom.cpp
+	"HappyPCH.h"
 	"Bloom.h"
 	"HappyNew.h"
 	"HappyEngine.h"
@@ -11236,19 +11245,19 @@
 	"OpenGL.h"
 	"ExternalError.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Circle.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Circle.cpp
+	"HappyPCH.h"
 	"Circle.h"
 	"HappyNew.h"
 	"MathFunctions.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Circle.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Circle.h
 	"vec2.h"
 	<vector>
 	<utility>
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/StaticPhysicsComponent.cpp
-	"StdAfx.h"
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/StaticPhysicsComponent.cpp
+	"HappyPCH.h"
 	"StaticPhysicsComponent.h"
 	"HappyNew.h"
 	"HappyEngine.h"
@@ -11256,42 +11265,43 @@
 	"HappyEngine.h"
 	"Game.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/StaticPhysicsComponent.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/StaticPhysicsComponent.h
 	"IComponent.h"
 	"mat44.h"
 	"ITickable.h"
 	"IPhysicsShape.h"
 	"PhysicsStaticActor.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsStaticActor.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsStaticActor.h
 	"PxRigidStatic.h"
 	"vec3.h"
 	"mat44.h"
 	"IPhysicsShape.h"
 	"PhysicsMaterial.h"
+	"IPhysicsActor.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/Exception.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/Exception.cpp
+	"HappyPCH.h"
 	"Exception.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line2D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line2D.cpp
+	"HappyPCH.h"
 	"Line2D.h"
 	"HappyNew.h"
 
-1322491799 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/BinaryStream.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/BinaryStream.cpp
+	"HappyPCH.h"
 	"BinaryStream.h"
 	"FileNotFoundException.h"
 	"HeAssert.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat33.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/mat33.cpp
+	"HappyPCH.h"
 	"mat33.h"
 	"HappyNew.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DirectionalLight.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DirectionalLight.cpp
+	"HappyPCH.h"
 	"DirectionalLight.h"
 	"HappyNew.h"
 	"MathFunctions.h"
@@ -11300,28 +11310,28 @@
 	"Entity.h"
 	"ContentManager.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Text.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Text.cpp
+	"HappyPCH.h"
 	"Text.h"
 	"HappyNew.h"
 	<algorithm>
 	"HappyEngine.h"
 	"ContentManager.h"
 
-1322492084 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/HeAssert.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/error/HeAssert.cpp
+	"HappyPCH.h"
 	"HeAssert.h"
 	<iostream>
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsMaterial.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsMaterial.cpp
+	"HappyPCH.h"
 	"PhysicsMaterial.h"
 	"HappyEngine.h"
 	"HeAssert.h"
 	"PhysicsEngine.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Grid.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Grid.cpp
+	"HappyPCH.h"
 	"Grid.h"
 	"HappyNew.h"
 	"Vertex.h"
@@ -11329,14 +11339,14 @@
 	"VertexLayout.h"
 	"SimpleForward3DRenderer.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Grid.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Grid.h
 	"vec3.h"
 	"Entity.h"
 	"HappyEngine.h"
 	"Color.h"
 	"ModelMesh.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleForward3DRenderer.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleForward3DRenderer.h
 	"ModelMesh.h"
 	"mat44.h"
 	"Color.h"
@@ -11346,58 +11356,63 @@
 	"vec3.h"
 	"BillboardEffect.h"
 
-1321289750 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleColorEffect.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleColorEffect.h
 	"mat44.h"
 	"Shader.h"
 	"HappyTypes.h"
 	"Color.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/SerializerStream.cpp
-	"StdAfx.h"
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/SerializerStream.cpp
+	"HappyPCH.h"
 	"SerializerStream.h"
 	"HappyNew.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Picker.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Picker.cpp
+	"HappyPCH.h"
 	"Picker.h"
+	"IPickable.h"
 	"HappyNew.h"
 	"GraphicsEngine.h"
+	"Happy2DRenderer.h"
 	"OpenGL.h"
 	"HappyEngine.h"
 	"DrawManager.h"
+	"CameraManager.h"
 	"ExternalError.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleForward3DRenderer.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleForward3DRenderer.cpp
+	"HappyPCH.h"
 	"SimpleForward3DRenderer.h"
 	"OpenGL.h"
 	"HeAssert.h"
 	"HappyNew.h"
 	"HappyEngine.h"
 	"GraphicsEngine.h"
+	"Deferred3DRenderer.h"
 	"Happy2DRenderer.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/ModelComponent.cpp
-	"StdAfx.h"
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/ModelComponent.cpp
+	"HappyPCH.h"
 	"ModelComponent.h"
 	"HappyNew.h"
 	"Entity.h"
 	"HappyEngine.h"
 	"GraphicsEngine.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/ModelComponent.h
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/ModelComponent.h
 	"IComponent.h"
 	"IDrawable.h"
+	"IPickable.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Client.cpp
-	"StdAfx.h"
+1324419914 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Client.cpp
+	"HappyPCH.h"
 	"Client.h"
 	"HappyNew.h"
 	"HappyEngine.h"
 	"NetworkManager.h"
 	<iostream>
 
-1323091084 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Client.h
+1324419914 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Client.h
 	"HeAssert.h"
 	"boost/shared_ptr.hpp"
 	"boost/asio.hpp"
@@ -11405,7 +11420,7 @@
 	"Message.h"
 	"Server.h"
 
-1323091084 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Server.h
+1324419914 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Server.h
 	"HappyNew.h"
 	"HappyTypes.h"
 	<string>
@@ -11414,15 +11429,14 @@
 	"boost/asio.hpp"
 	"Message.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/template/X.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/template/X.cpp
+	"HappyPCH.h"
 	"X.h"
-	"HappyNew.h"
 
-1322491442 /home/sebastiaan/happy-engine/src/HappyEngine/code/template/X.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/template/X.h
 
-1322494174 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLineLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLineLoader.cpp
+	"HappyPCH.h"
 	"ObjLineLoader.h"
 	<algorithm>
 	<iostream>
@@ -11431,14 +11445,14 @@
 	"FileNotFoundException.h"
 	"HeAssert.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Material.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Material.cpp
+	"HappyPCH.h"
 	"Material.h"
 	"HappyNew.h"
 	"IDrawable.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Deferred3DRenderer.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Deferred3DRenderer.cpp
+	"HappyPCH.h"
 	"Deferred3DRenderer.h"
 	"Happy2DRenderer.h"
 	"HappyEngine.h"
@@ -11452,14 +11466,15 @@
 	"ContentManager.h"
 	"ExternalError.h"
 	"LightManager.h"
+	"CameraManager.h"
 	"Camera.h"
 	"Bloom.h"
 	"AutoExposure.h"
 	"DrawSettings.h"
 	<vector>
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/ControlsManager.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/ControlsManager.cpp
+	"HappyPCH.h"
 	"ControlsManager.h"
 	"HappyNew.h"
 	"Mouse.h"
@@ -11467,8 +11482,8 @@
 	"Keyboard.h"
 	"QtKeyboard.h"
 
-1322491442 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/FontLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/FontLoader.cpp
+	"HappyPCH.h"
 	"FontLoader.h"
 	"SDL_ttf.h"
 	<iostream>
@@ -11476,40 +11491,40 @@
 	"HappyNew.h"
 	"HeAssert.h"
 
-1322491442 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/OpenGL.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/OpenGL.cpp
+	"HappyPCH.h"
 	"OpenGL.h"
 	"HappyNew.h"
 
-1322491442 /home/sebastiaan/happy-engine/src/HappyEngine/code/OpenGL.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/OpenGL.h
 	"GL/glew.h"
 	"Color.h"
 	"Rect.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/FileReader.cpp
-	"StdAfx.h"
+1324419926 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/io/FileReader.cpp
+	"HappyPCH.h"
 	"FileReader.h"
 	"FileNotFoundException.h"
 	<sstream>
 	"HeAssert.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound3D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound3D.cpp
+	"HappyPCH.h"
 	"Sound3D.h"
 	"HappyNew.h"
 	"SoundEngine.h"
 	"HappyEngine.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound3D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound3D.h
 	"al.h"
 	"HappyTypes.h"
 	"ISound.h"
 	"vec3.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/ISound.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/ISound.h
 	"HappyTypes.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundEngine.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundEngine.h
 	<string>
 	<map>
 	"al.h"
@@ -11518,13 +11533,13 @@
 	"ISound.h"
 	"SoundFile.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundFile.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundFile.h
 	<string>
 	"sndfile.h"
 	"HappyTypes.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Happy2DRenderer.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Happy2DRenderer.cpp
+	"HappyPCH.h"
 	"Happy2DRenderer.h"
 	"HappyNew.h"
 	"OpenGL.h"
@@ -11535,37 +11550,38 @@
 	<algorithm>
 	<vector>
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoaderFunctions.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoaderFunctions.cpp
+	"HappyPCH.h"
 	"ModelLoaderFunctions.h"
 	"HappyNew.h"
 	"vec2.h"
 	"MathFunctions.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoaderFunctions.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoaderFunctions.h
 	"IModelLoader.h"
 	"VertexLayout.h"
 	"vec3.h"
 	<vector>
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleColorEffect.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SimpleColorEffect.cpp
+	"HappyPCH.h"
 	"SimpleColorEffect.h"
 	"HappyNew.h"
 	<vector>
 	<string>
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShadowCaster.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShadowCaster.cpp
+	"HappyPCH.h"
 	"ShadowCaster.h"
 	"HappyNew.h"
 	"OpenGL.h"
 	"ExternalError.h"
 	"GraphicsEngine.h"
+	"InstancingManager.h"
 	"ContentManager.h"
 	"Happy2DRenderer.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShadowCaster.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShadowCaster.h
 	"Camera.h"
 	"Light.h"
 	"Texture2D.h"
@@ -11573,8 +11589,8 @@
 	"DrawManager.h"
 	"DrawSettings.h"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundEngine.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundEngine.cpp
+	"HappyPCH.h"
 	"SoundEngine.h"
 	"HappyNew.h"
 	"HeAssert.h"
@@ -11584,18 +11600,18 @@
 	"Sound2D.h"
 	"Sound3D.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound2D.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound2D.h
 	"al.h"
 	"HappyTypes.h"
 	"ISound.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bone.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Bone.cpp
+	"HappyPCH.h"
 	"Bone.h"
 	"HappyNew.h"
 
-1322494478 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Console.cpp
-	"StdAfx.h"
+1324420064 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Console.cpp
+	"HappyPCH.h"
 	"Console.h"
 	"HappyNew.h"
 	"Exception.h"
@@ -11617,48 +11633,48 @@
 	"Vec4TypeHandler.h"
 	"StringTypeHandler.h"
 
-1322494467 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/BoolTypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/BoolTypeHandler.h
 	"ITypeHandler.h"
 	<string>
 	<algorithm>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/FloatTypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/FloatTypeHandler.h
 	"ITypeHandler.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/IntTypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/IntTypeHandler.h
 	"ITypeHandler.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/UIntTypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/UIntTypeHandler.h
 	"ITypeHandler.h"
 	"HappyTypes.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Vec2TypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Vec2TypeHandler.h
 	"ITypeHandler.h"
 	"vec2.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Vec3TypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Vec3TypeHandler.h
 	"ITypeHandler.h"
 	"vec3.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Vec4TypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Vec4TypeHandler.h
 	"ITypeHandler.h"
 	"vec4.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/StringTypeHandler.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/StringTypeHandler.h
 	"ITypeHandler.h"
 	<string>
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Ellipse2D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Ellipse2D.cpp
+	"HappyPCH.h"
 	"Ellipse2D.h"
 	"HappyNew.h"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/RoundedRectangle2D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/RoundedRectangle2D.cpp
+	"HappyPCH.h"
 	"RoundedRectangle2D.h"
 	"HappyNew.h"
 
-1322491432 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCarManager.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCarManager.h
 	<vector>
 	"vehicle/PxVehicle.h"
 	"vehicle/PxVehicleUtils.h"
@@ -11666,12 +11682,12 @@
 	"HappyTypes.h"
 	"boost/thread/mutex.hpp"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticleSystem.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticleSystem.cpp
+	"HappyPCH.h"
 	"FxParticleSystem.h"
 	"HappyNew.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticleSystem.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticleSystem.h
 	"IFxComponent.h"
 
 1323091899 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxRandomFloat.cpp
@@ -11683,10 +11699,10 @@
 	"IFxVariable.h"
 	"Random.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IFxVariable.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IFxVariable.h
 	"boost/shared_ptr.hpp"
 
-1323091659 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Random.h
+1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Random.h
 	"HappyTypes.h"
 	"boost/random.hpp"
 	<time.h>
@@ -14626,25 +14642,25 @@
 	<boost/random/detail/operators.hpp>
 	<boost/random/uniform_01.hpp>
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticle.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticle.cpp
+	"HappyPCH.h"
 	"FxParticle.h"
 	"HappyNew.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticle.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxParticle.h
 
-1322495336 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCarManager.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsCarManager.cpp
+	"HappyPCH.h"
 	"PhysicsCarManager.h"
 	"HappyNew.h"
 	"PhysicsCar.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Rect.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Rect.cpp
+	"HappyPCH.h"
 	"Rect.h"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/HappyQtWidget.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/HappyQtWidget.cpp
+	"HappyPCH.h"
 	"HappyQtWidget.h"
 	"HappyNew.h"
 	"HappyEngine.h"
@@ -14655,13 +14671,13 @@
 	"QtKeyboard.h"
 	"ControlsManager.h"
 
-1321891540 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/HappyQtWidget.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/HappyQtWidget.h
 	"OpenGL.h"
 	<QGLWidget>
 	"Game.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ModelMesh.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ModelMesh.cpp
+	"HappyPCH.h"
 	"ModelMesh.h"
 	"OpenGL.h"
 	<algorithm>
@@ -14669,13 +14685,13 @@
 	"Color.h"
 	"ExternalError.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Color.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Color.cpp
+	"HappyPCH.h"
 	"Color.h"
 	"MathFunctions.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/HappyEngine.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/HappyEngine.cpp
+	"HappyPCH.h"
 	"HappyEngine.h"
 	"HappyNew.h"
 	<iostream>
@@ -14690,6 +14706,7 @@
 	"NetworkManager.h"
 	"Happy2DRenderer.h"
 	"Game.h"
+	"CameraManager.h"
 	"Console.h"
 	"SoundEngine.h"
 	"SimpleForward3DRenderer.h"
@@ -14697,7 +14714,7 @@
 	<QtGui/QApplication>
 	"HappyQtWidget.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/HappyEngine.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/HappyEngine.h
 	"boost/shared_ptr.hpp"
 	"boost/thread.hpp"
 	"SDL.h"
@@ -14707,8 +14724,8 @@
 	<QTimer>
 	<qobject.h>
 
-1323090021 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLoader.cpp
+	"HappyPCH.h"
 	"ObjLoader.h"
 	<algorithm>
 	<iostream>
@@ -14718,7 +14735,7 @@
 	"HeAssert.h"
 	"ModelLoaderFunctions.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ObjLoader.h
 	<string>
 	<vector>
 	<map>
@@ -14730,8 +14747,8 @@
 	"HappyTypes.h"
 	"IModelLoader.h"
 
-1322491432 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/TcpServer.cpp
-	"StdAfx.h"
+1324419914 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/TcpServer.cpp
+	"HappyPCH.h"
 	"TcpServer.h"
 	"HappyNew.h"
 	"HeAssert.h"
@@ -14740,7 +14757,7 @@
 	"NetworkManager.h"
 	<iostream>
 
-1323091084 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/TcpServer.h
+1324419914 /home/sebastiaan/happy-engine/src/HappyEngine/code/networking/TcpServer.h
 	"HappyNew.h"
 	"HappyTypes.h"
 	<string>
@@ -14750,8 +14767,8 @@
 	"boost/function.hpp"
 	"Message.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Server.cpp
-	"StdAfx.h"
+1324419914 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/networking/Server.cpp
+	"HappyPCH.h"
 	"Server.h"
 	"HappyNew.h"
 	"HeAssert.h"
@@ -14760,8 +14777,8 @@
 	"NetworkManager.h"
 	<iostream>
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsStaticActor.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsStaticActor.cpp
+	"HappyPCH.h"
 	"PhysicsStaticActor.h"
 	"HappyEngine.h"
 	"HeAssert.h"
@@ -14773,36 +14790,36 @@
 	"vehicle/PxVehicle.h"
 	"vehicle/PxVehicleUtils.h"
 
-1321289748 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveShape.h
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveShape.h
 	"IPhysicsShape.h"
 	"PhysicsConcaveMesh.h"
 	"vec3.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundFile.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/SoundFile.cpp
+	"HappyPCH.h"
 	"SoundFile.h"
 	"HappyNew.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxManager.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxManager.cpp
+	"HappyPCH.h"
 	"FxManager.h"
 	"HappyNew.h"
 	"FxTimeLine.h"
 	"boost/bind.hpp"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxManager.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxManager.h
 	"HappyTypes.h"
 	"SlotPContainer.h"
 	"HappyTypes.h"
 	<set>
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLine.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLine.h
 	"event.h"
 	"SlotPContainer.h"
 	"HappyTypes.h"
 
-1322491432 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsEngine.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsEngine.cpp
+	"HappyPCH.h"
 	"PhysicsEngine.h"
 	"HeAssert.h"
 	"SDL.h"
@@ -14838,37 +14855,37 @@
 	"PxProfileBase.h"
 	"PxProfileEventId.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound2D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound2D.cpp
+	"HappyPCH.h"
 	"Sound2D.h"
 	"HappyNew.h"
 	"SoundEngine.h"
 	"HappyEngine.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCameraEffect.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCameraEffect.cpp
+	"HappyPCH.h"
 	"FxCameraEffect.h"
 	"HappyNew.h"
 	"FxConstant.h"
 	"HappyEngine.h"
-	"Game.h"
+	"CameraManager.h"
 	"Random.h"
 	"Camera.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCameraEffect.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCameraEffect.h
 	"IFxComponent.h"
 	"IFxVariable.h"
 	"Random.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IFxComponent.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IFxComponent.h
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Hitregion.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Hitregion.cpp
+	"HappyPCH.h"
 	"Hitregion.h"
 	"HappyNew.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawManager.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawManager.cpp
+	"HappyPCH.h"
 	"DrawManager.h"
 	"HappyNew.h"
 	"HappyEngine.h"
@@ -14876,6 +14893,8 @@
 	"GraphicsEngine.h"
 	"ShadowCaster.h"
 	"LightManager.h"
+	"CameraManager.h"
+	"InstancingManager.h"
 
 1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxConstantFloat.cpp
 	"StdAfx.h"
@@ -14885,8 +14904,8 @@
 1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxConstantFloat.h
 	"IFxVariable.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/FPSGraph.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/FPSGraph.cpp
+	"HappyPCH.h"
 	"FPSGraph.h"
 	"HappyEngine.h"
 	"vec2.h"
@@ -14897,63 +14916,63 @@
 	<algorithm>
 	<string>
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/FPSGraph.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/FPSGraph.h
 	<vector>
 	"HappyTypes.h"
 	"Font.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLine.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLine.cpp
+	"HappyPCH.h"
 	"FxTimeLine.h"
 	"HappyNew.h"
 	"FxTimeLineTrack.h"
 	"boost/bind.hpp"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Profiler.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/Profiler.cpp
+	"HappyPCH.h"
 	"Profiler.h"
 	"HappyNew.h"
 	"Happy2DRenderer.h"
 	"Text.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderPreProcessor.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderPreProcessor.cpp
+	"HappyPCH.h"
 	"ShaderPreProcessor.h"
 	"HappyNew.h"
 	"HappyTypes.h"
 	"FileReader.h"
 	<sstream>
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/VertexLayout.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/VertexLayout.cpp
+	"HappyPCH.h"
 	"VertexLayout.h"
 	"HeAssert.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DEffect.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Simple2DEffect.cpp
+	"HappyPCH.h"
 	"Simple2DEffect.h"
 	"HappyNew.h"
 	"HeAssert.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/HappyFxEditorBinding.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/tools/HappyFxEditorBinding.cpp
+	"HappyPCH.h"
 	"HappyFxEditorBinding.h"
 	"HappyNew.h"
 	"boost/bind.hpp"
 	"HappyEngine.h"
 	"NetworkManager.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/HappyFxEditorBinding.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/tools/HappyFxEditorBinding.h
 	"TcpServer.h"
 
-1322491442 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ContentManager.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ContentManager.cpp
+	"HappyPCH.h"
 	"ContentManager.h"
 	"HappyNew.h"
 	"Vertex.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PointLight.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PointLight.cpp
+	"HappyPCH.h"
 	"PointLight.h"
 	"HappyNew.h"
 	"MathFunctions.h"
@@ -14967,13 +14986,13 @@
 	"Polygon2D.h"
 	"HappyNew.h"
 
-1323091351 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/LightManager.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/LightManager.cpp
+	"HappyPCH.h"
 	"LightManager.h"
 	"HappyNew.h"
 
-1322491442 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/TextureLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/TextureLoader.cpp
+	"HappyPCH.h"
 	"TextureLoader.h"
 	"IL/il.h"
 	"IL/ilu.h"
@@ -14985,32 +15004,32 @@
 	"Console.h"
 	"HappyNew.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderLoader.cpp
+	"HappyPCH.h"
 	"ShaderLoader.h"
 	"HappyNew.h"
 	"IniReader.h"
 	"HappyEngine.h"
 	"VertexLayout.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code//SlotPContainer.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//SlotPContainer.h
 	<vector>
 	<queue>
 	"HappyTypes.h"
 	"HeAssert.h"
 
-1323091636 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxConstant.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxConstant.h
 	"IFxVariable.h"
 
-1323092425 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLineTrack.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLineTrack.h
 	<queue>
 	<vector>
 	"HappyTypes.h"
 	"SlotPContainer.h"
 	"IFxComponent.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLineTrack.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxTimeLineTrack.cpp
+	"HappyPCH.h"
 	"FxTimeLineTrack.h"
 	"HappyNew.h"
 	"IFxComponent.h"
@@ -15018,23 +15037,23 @@
 	"FxCameraEffect.h"
 	<algorithm>
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Light.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Light.cpp
+	"HappyPCH.h"
 	"Light.h"
 	"HappyNew.h"
 	"HappyEngine.h"
 	"HeAssert.h"
 	"Circle.h"
 
-1321891540 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexMesh.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConvexMesh.cpp
+	"HappyPCH.h"
 	"PhysicsConvexMesh.h"
 	"HappyNew.h"
 	"HappyEngine.h"
 	"PhysicsEngine.h"
 
-1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLoader.cpp
+	"HappyPCH.h"
 	"BinObjLoader.h"
 	<algorithm>
 	<iostream>
@@ -15043,7 +15062,7 @@
 	"FileNotFoundException.h"
 	"HeAssert.h"
 
-1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLoader.h
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/BinObjLoader.h
 	<string>
 	<vector>
 	<map>
@@ -15056,14 +15075,14 @@
 	"IModelLoader.h"
 	"Bone.h"
 
-1321289748 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveShape.cpp
-	"StdAfx.h"
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsConcaveShape.cpp
+	"HappyPCH.h"
 	"PhysicsConcaveShape.h"
 	"HappyEngine.h"
 	"PhysicsEngine.h"
 
-1321289750 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Vertex.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Vertex.cpp
+	"HappyPCH.h"
 	"Vertex.h"
 
 1321289751 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/audio/Sound.cpp
@@ -15071,31 +15090,31 @@
 	"Sound.h"
 	"HappyNew.h"
 
-1323091665 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Random.cpp
-	"StdAfx.h"
+1324419917 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/math/Random.cpp
+	"HappyPCH.h"
 	"Random.h"
 	"HappyNew.h"
 
-1323091645 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxRandom.cpp
-	"StdAfx.h"
-	"FxRandomFloat.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxRandom.cpp
+	"HappyPCH.h"
+	"FxRandom.h"
 	"HappyNew.h"
 
-1323091636 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Texture2D.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Texture2D.cpp
+	"HappyPCH.h"
 	"Texture2D.h"
 	"GL/glew.h"
 	"SDL_ttf.h"
 
-1322491441 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCurveFloat.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCurveFloat.cpp
+	"HappyPCH.h"
 	"FxCurveFloat.h"
 	"HappyNew.h"
 
-1322491441 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCurveFloat.h
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxCurveFloat.h
 
-1322491442 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoader.cpp
-	"StdAfx.h"
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/content/ModelLoader.cpp
+	"HappyPCH.h"
 	"ModelLoader.h"
 	"HappyNew.h"
 	"BinObjLoader.h"
@@ -15104,11 +15123,1126 @@
 	"HappyEngine.h"
 	"Console.h"
 
-1323092661 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Scrollbar.cpp
-	"StdAfx.h"
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Scrollbar.cpp
+	"HappyPCH.h"
 	"Scrollbar.h"
 	"HappyNew.h"
 	"HappyEngine.h"
 	"ControlsManager.h"
 	"Happy2DRenderer.h"
+
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code//HappyPCH.h
+	<cstdlib>
+	<string>
+	<vector>
+	"vec2.h"
+	"vec3.h"
+	"vec4.h"
+	"HappyNew.h"
+	"MathConstants.h"
+	"MathFunctions.h"
+	"Profiler.h"
+	"event.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxVec2.h
+	"PxMath.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxMath.h
+	<math.h>
+	<float.h>
+	"PxIntrinsics.h"
+	"PxAssert.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxIntrinsics.h
+	"PxPreprocessor.h"
+	"windows/PxWindowsIntrinsics.h"
+	"xbox360/PxXbox360Intrinsics.h"
+	"linux/PxLinuxIntrinsics.h"
+	"ps3/PxPS3Intrinsics.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxPreprocessor.h
+	<stddef.h>
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/linux/PxLinuxIntrinsics.h
+	"Px.h"
+	<math.h>
+	<float.h>
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/Px.h
+	"PxVersionNumber.h"
+	"PxSimpleTypes.h"
+	<string.h>
+	<stdlib.h>
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxVersionNumber.h
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxSimpleTypes.h
+	"PxPreprocessor.h"
+	"Px.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxAssert.h
+	"Px.h"
+	<crtdbg.h>
+	<stdio.h>
+	"ps3/PxPS3Assert.h"
+	<assert.h>
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxVec3.h
+	"PxMath.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxVec4.h
+	"PxMath.h"
+	"PxVec3.h"
+	"PxAssert.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxMat44.h
+	"PxQuat.h"
+	"PxVec4.h"
+	"PxMat33.h"
+	"PxTransform.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxQuat.h
+	"PxVec3.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxMat33.h
+	"PxVec3.h"
+	"PxQuat.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxTransform.h
+	"PxQuat.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_hints.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"SDL_compat.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1324417297 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_config.h
+	"SDL_platform.h"
+	<stdarg.h>
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/begin_code.h
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/close_code.h
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1309059154 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<intrin.h>
+	<libkern/OSAtomic.h>
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<mmintrin.h>
+	<mm3dnow.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1322067744 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1309059154 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1322067744 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_pixels.h
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_scancode.h
+	"SDL_stdinc.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1309059154 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1309059154 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1320446242 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1302293223 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_compat.h
+	"SDL_video.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1301738089 /home/sebastiaan/Libs/SDL-1.3.0/include/SDL_ttf.h
+	"SDL.h"
+	"begin_code.h"
+	"close_code.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxPhysicsAPI.h
+	"PxErrorCallback.h"
+	"PxAllocatorCallback.h"
+	"PxFoundation.h"
+	"PxVec3.h"
+	"PxMat33.h"
+	"PxQuat.h"
+	"PxTransform.h"
+	"PxBounds3.h"
+	"PxVec4.h"
+	"PxMat44.h"
+	"PxPhysics.h"
+	"PxScene.h"
+	"PxSceneDesc.h"
+	"PxActor.h"
+	"PxActorDesc.h"
+	"PxRigidStatic.h"
+	"PxRigidDynamic.h"
+	"PxMaterial.h"
+	"PxShape.h"
+	"PxContactStreamIterator.h"
+	"PxSimulationEventCallback.h"
+	"PxContactModifyCallback.h"
+	"PxObserver.h"
+	"PxBatchQuery.h"
+	"PxSweepCache.h"
+	"PxConstraint.h"
+	"PxArticulation.h"
+	"PxArticulationLink.h"
+	"PxArticulationJoint.h"
+	"geometry/PxBoxGeometry.h"
+	"geometry/PxSphereGeometry.h"
+	"geometry/PxCapsuleGeometry.h"
+	"geometry/PxPlaneGeometry.h"
+	"geometry/PxConvexMeshGeometry.h"
+	"geometry/PxTriangleMeshGeometry.h"
+	"geometry/PxHeightFieldGeometry.h"
+	"particles/PxParticleSystem.h"
+	"particles/PxParticleSystemDesc.h"
+	"particles/PxParticleFluid.h"
+	"particles/PxParticleFluidDesc.h"
+	"deformable/PxDeformable.h"
+	"deformable/PxDeformableDesc.h"
+	"deformable/PxAttachment.h"
+	"cloth/PxCloth.h"
+	"PxAggregate.h"
+	"PxSimulationStatistics.h"
+	"geometry/PxTriangleMesh.h"
+	"geometry/PxConvexMesh.h"
+	"geometry/PxHeightField.h"
+	"geometry/PxHeightFieldDesc.h"
+	"geometry/PxHeightFieldSample.h"
+	"pvd/PxVisualDebugger.h"
+	"cooking/PxCooking.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxErrorCallback.h
+	"PxErrors.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxErrors.h
+	"Px.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxAllocatorCallback.h
+	"Px.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxFoundation.h
+	"PxErrors.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxBounds3.h
+	"PxTransform.h"
+	"PxMat33.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxPhysics.h
+	"PxPhysX.h"
+	"common/PxStream.h"
+	"common/PxSerialFramework.h"
+	"PxTransform.h"
+	"cloth/PxClothTypes.h"
+	"cloth/PxClothFabricTypes.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxPhysX.h
+	"common/PxPhysXCommon.h"
+	"geometry/PxPhysXGeomUtils.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxPhysXCommon.h
+	"Px.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxPhysXGeomUtils.h
+	"common/PxPhysXCommon.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxStream.h
+	"common/PxPhysXCommon.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxSerialFramework.h
+	"common/PxPhysXCommon.h"
+	"common/PxFields.h"
+	"common/PxFieldDescriptor.h"
+	"PxFlags.h"
+	"common/PxStream.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxFields.h
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxFieldDescriptor.h
+	"common/PxPhysXCommon.h"
+	"common/PxFields.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxFlags.h
+	"Px.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cloth/PxClothTypes.h
+	"PxPhysX.h"
+	"PxFlags.h"
+	"PxVec3.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cloth/PxClothFabricTypes.h
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxScene.h
+	"PxVisualizationParameter.h"
+	"PxSceneDesc.h"
+	"PxSimulationStatistics.h"
+	"PxSceneQueryReport.h"
+	"PxSceneQueryFiltering.h"
+	"particles/PxParticleSystem.h"
+	"particles/PxParticleFluid.h"
+	"deformable/PxDeformable.h"
+	"geometry/PxDeformableMesh.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxVisualizationParameter.h
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxSceneDesc.h
+	"PxPhysX.h"
+	"PxFlags.h"
+	"PxBounds3.h"
+	"PxPhysics.h"
+	"PxFiltering.h"
+	"common/PxTolerancesScale.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxFiltering.h
+	"PxPhysX.h"
+	"PxFlags.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxTolerancesScale.h
+	"common/PxPhysXCommon.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxSimulationStatistics.h
+	"PxPhysX.h"
+	"geometry/PxGeometry.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxGeometry.h
+	"common/PxPhysXCommon.h"
+	"PxFlags.h"
+	"PxMath.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxSceneQueryReport.h
+	"PxPhysX.h"
+	"PxVec3.h"
+	"PxFlags.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxSceneQueryFiltering.h
+	"PxPhysX.h"
+	"PxFiltering.h"
+	"PxFlags.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleSystem.h
+	"particles/PxParticleSystemDesc.h"
+	"particles/PxParticleBase.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleSystemDesc.h
+	"particles/PxParticleBaseDesc.h"
+	"particles/PxParticleReadData.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleBaseDesc.h
+	"PxActorDesc.h"
+	"PxSceneDesc.h"
+	"PxFiltering.h"
+	"particles/PxParticleReadData.h"
+	"PxFlags.h"
+	"particles/PxParticleBaseFlag.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxActorDesc.h
+	"PxPhysX.h"
+	"PxFlags.h"
+	"PxClient.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxClient.h
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleReadData.h
+	"PxStrideIterator.h"
+	"PxLockedData.h"
+	"PxFlags.h"
+	"PxParticleFlag.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxStrideIterator.h
+	"PxAssert.h"
+	"PxAssert.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxLockedData.h
+	"PxPhysX.h"
+	"PxFlags.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleFlag.h
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleBaseFlag.h
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleBase.h
+	"PxPhysX.h"
+	"PxBounds3.h"
+	"particles/PxParticleBaseDesc.h"
+	"PxActor.h"
+	"PxPhysics.h"
+	"particles/PxParticleCreationData.h"
+	"particles/PxParticleReadData.h"
+	"PxForceMode.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxActor.h
+	"PxPhysX.h"
+	"PxBounds3.h"
+	"PxActorDesc.h"
+	"PxPhysics.h"
+	"PxObserver.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxObserver.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleCreationData.h
+	"PxPhysX.h"
+	"PxVec3.h"
+	"PxStrideIterator.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxForceMode.h
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleFluid.h
+	"particles/PxParticleFluidDesc.h"
+	"particles/PxParticleBase.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleFluidDesc.h
+	"particles/PxParticleBaseDesc.h"
+	"particles/PxParticleFluidReadData.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/particles/PxParticleFluidReadData.h
+	"particles/PxParticleReadData.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/deformable/PxDeformable.h
+	"PxPhysX.h"
+	"deformable/PxDeformableDesc.h"
+	"PxActor.h"
+	"PxForceMode.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/deformable/PxDeformableDesc.h
+	"PxPhysX.h"
+	"PxBounds3.h"
+	"PxActorDesc.h"
+	"PxFiltering.h"
+	"deformable/PxDeformableReadData.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/deformable/PxDeformableReadData.h
+	"PxLockedData.h"
+	"PxStrideIterator.h"
+	"PxVec3.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxDeformableMesh.h
+	"geometry/PxDeformableMeshDesc.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxDeformableMeshDesc.h
+	"PxVec3.h"
+	"common/PxPhysXCommon.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxRigidStatic.h
+	"PxPhysX.h"
+	"PxRigidActor.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxRigidActor.h
+	"PxActor.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxRigidDynamic.h
+	"PxRigidBody.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxRigidBody.h
+	"PxRigidActor.h"
+	"PxForceMode.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxMaterial.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxShape.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+	"geometry/PxGeometry.h"
+	"PxSceneQueryReport.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxContactStreamIterator.h
+	"PxPhysX.h"
+	"PxAssert.h"
+	"PxFlags.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxSimulationEventCallback.h
+	"PxVec3.h"
+	"PxPhysX.h"
+	"PxFiltering.h"
+	"PxContactStreamIterator.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxContactModifyCallback.h
+	"PxPhysX.h"
+	"PxShape.h"
+	"PxContact.h"
+	"PxTransform.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxContact.h
+	"PxVec3.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxBatchQuery.h
+	"PxPhysX.h"
+	"PxShape.h"
+	"PxBatchQueryDesc.h"
+	"PxSceneQueryReport.h"
+	"PxSceneQueryFiltering.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxBatchQueryDesc.h
+	"PxPhysX.h"
+	"PxClient.h"
+	"PxFiltering.h"
+	"PxSceneQueryFiltering.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxSweepCache.h
+	"PxPhysX.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxConstraint.h
+	"PxPhysX.h"
+	"PxConstraintDesc.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxConstraintDesc.h
+	"PxPhysX.h"
+	"PxFlags.h"
+	"PxMath.h"
+	"PxVec3.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxArticulation.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxArticulationLink.h
+	"PxPhysX.h"
+	"PxArticulationJoint.h"
+	"PxRigidBody.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxArticulationJoint.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxBoxGeometry.h
+	"geometry/PxGeometry.h"
+	"PxVec3.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxSphereGeometry.h
+	"geometry/PxGeometry.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxCapsuleGeometry.h
+	"geometry/PxGeometry.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxPlaneGeometry.h
+	"geometry/PxGeometry.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxConvexMeshGeometry.h
+	"geometry/PxGeometry.h"
+	"geometry/PxMeshScale.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxMeshScale.h
+	"common/PxPhysXCommon.h"
+	"PxMat33.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxTriangleMeshGeometry.h
+	"geometry/PxGeometry.h"
+	"geometry/PxMeshScale.h"
+	"common/PxCoreUtilityTypes.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/common/PxCoreUtilityTypes.h
+	"PxAssert.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxHeightFieldGeometry.h
+	"geometry/PxTriangleMeshGeometry.h"
+	"common/PxCoreUtilityTypes.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/deformable/PxAttachment.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cloth/PxCloth.h
+	"PxPhysX.h"
+	"PxActor.h"
+	"cloth/PxClothFabricTypes.h"
+	"cloth/PxClothTypes.h"
+	"cloth/PxClothCollisionData.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cloth/PxClothCollisionData.h
+	"PxPhysX.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/PxAggregate.h
+	"PxPhysX.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxTriangleMesh.h
+	"PxVec3.h"
+	"PxBounds3.h"
+	"geometry/PxPhysXGeomUtils.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxConvexMesh.h
+	"Px.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxHeightField.h
+	"geometry/PxPhysXGeomUtils.h"
+	"geometry/PxHeightFieldFlag.h"
+	"common/PxSerialFramework.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxHeightFieldFlag.h
+	"PxFlags.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxHeightFieldDesc.h
+	"common/PxPhysXCommon.h"
+	"geometry/PxHeightFieldFlag.h"
+	"common/PxCoreUtilityTypes.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxHeightFieldSample.h
+	"common/PxPhysXCommon.h"
+	"PxBitAndData.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxFoundation/PxBitAndData.h
+	"Px.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/pvd/PxVisualDebugger.h
+	"PxSimpleTypes.h"
+	"PxVec3.h"
+	"PxTransform.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cooking/PxCooking.h
+	"common/PxPhysXCommon.h"
+	"cooking/Pxc.h"
+	"cooking/PxConvexMeshDesc.h"
+	"cooking/PxTriangleMeshDesc.h"
+	"cooking/PxClothMeshDesc.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cooking/Pxc.h
+	"Px.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cooking/PxConvexMeshDesc.h
+	"PxVec3.h"
+	"PxFlags.h"
+	"common/PxCoreUtilityTypes.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cooking/PxTriangleMeshDesc.h
+	"PxPhysX.h"
+	"geometry/PxSimpleTriangleMesh.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/geometry/PxSimpleTriangleMesh.h
+	"PxVec3.h"
+	"geometry/PxPhysXGeomUtils.h"
+	"PxFlags.h"
+	"common/PxCoreUtilityTypes.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/cooking/PxClothMeshDesc.h
+	"common/PxPhysXCommon.h"
+	"PxVec3.h"
+	"PxFlags.h"
+	"common/PxCoreUtilityTypes.h"
+	"geometry/PxSimpleTriangleMesh.h"
+
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/CameraManager.h
+	<map>
+	"ITickable.h"
+
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/I3DObject.h
+
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingManager.h
+	<map>
+	"ModelMesh.h"
+	"Material.h"
+
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/IPhysicsActor.h
+
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingManager.cpp
+	"HappyPCH.h"
+	"InstancingManager.h"
+	"InstancingController.h"
+
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingController.h
+	"SlotPContainer.h"
+	"ModelMesh.h"
+	"Material.h"
+
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsFixedJoint.cpp
+	"HappyPCH.h"
+	"PhysicsFixedJoint.h"
+	"PhysicsEngine.h"
+	"IPhysicsActor.h"
+
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsFixedJoint.h
+	"IPhysicsJoint.h"
+
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/IPhysicsJoint.h
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/vehicle/PxVehicle.h
+	"common/PxPhysXCommon.h"
+	"common/PxCoreUtilityTypes.h"
+	"PxVehicleSuspLimitConstraintShader.h"
+	"PxVec3.h"
+	"PxTransform.h"
+	"PxFiltering.h"
+	"PxBatchQuery.h"
+	"PxSceneQueryReport.h"
+	"PxBatchQueryDesc.h"
+	"PxConstraintDesc.h"
+	"extensions/PxConstraintExt.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/vehicle/PxVehicleSuspLimitConstraintShader.h
+	"extensions/PxConstraintExt.h"
+	"PxConstraintDesc.h"
+	"PxTransform.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxConstraintExt.h
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxExtensionsAPI.h
+	"PxErrorCallback.h"
+	"extensions/PxDefaultAllocator.h"
+	"extensions/PxConstraintExt.h"
+	"extensions/PxDistanceJoint.h"
+	"extensions/PxFixedJoint.h"
+	"extensions/PxPrismaticJoint.h"
+	"extensions/PxRevoluteJoint.h"
+	"extensions/PxSphericalJoint.h"
+	"extensions/PxD6Joint.h"
+	"extensions/PxDefaultSimulationFilterShader.h"
+	"extensions/PxDefaultErrorCallback.h"
+	"extensions/PxRigidBodyExt.h"
+	"extensions/PxShapeExt.h"
+	"extensions/PxDeformableExt.h"
+	"extensions/PxParticleExt.h"
+	"extensions/PxTriangleMeshExt.h"
+	"extensions/PxDefaultCpuDispatcher.h"
+	"extensions/PxSmoothNormals.h"
+	"extensions/PxSimpleFactory.h"
+	"extensions/PxVisualDebuggerExt.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxDefaultAllocator.h
+	"PxAllocatorCallback.h"
+	"common/PxPhysXCommon.h"
+	"PxAssert.h"
+	<stdlib.h>
+	<malloc.h>
+	<malloc.h>
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxDistanceJoint.h
+	"extensions/PxJoint.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxJoint.h
+	"PxTransform.h"
+	"PxRigidActor.h"
+	"PxConstraintDesc.h"
+	"common/PxSerialFramework.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxFixedJoint.h
+	"extensions/PxJoint.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxPrismaticJoint.h
+	"extensions/PxJoint.h"
+	"extensions/PxJointLimit.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxJointLimit.h
+	"PxMath.h"
+	"PxPhysX.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxRevoluteJoint.h
+	"extensions/PxJoint.h"
+	"extensions/PxJointLimit.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxSphericalJoint.h
+	"extensions/PxJoint.h"
+	"extensions/PxJointLimit.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxD6Joint.h
+	"extensions/PxJoint.h"
+	"extensions/PxJointLimit.h"
+	"PxFlags.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxDefaultSimulationFilterShader.h
+	"PxPhysX.h"
+	"PxFiltering.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxDefaultErrorCallback.h
+	"PxErrorCallback.h"
+	"PxPhysX.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxRigidBodyExt.h
+	"PxPhysX.h"
+	"PxRigidBody.h"
+	"PxSceneQueryReport.h"
+	"PxFiltering.h"
+	"PxSceneQueryFiltering.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxShapeExt.h
+	"PxPhysX.h"
+	"PxShape.h"
+	"PxRigidActor.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxDeformableExt.h
+	"PxPhysX.h"
+	"geometry/PxDeformableMeshDesc.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxParticleExt.h
+	"PxPhysX.h"
+	"PxStrideIterator.h"
+	"PxBounds3.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxTriangleMeshExt.h
+	"PxPhysX.h"
+	"common/PxPhysXCommon.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxDefaultCpuDispatcher.h
+	"common/PxPhysXCommon.h"
+	"PxCpuDispatcher.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxTask/include/PxCpuDispatcher.h
+	"Px.h"
+
+1322135102 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxSmoothNormals.h
+	"common/PxPhysXCommon.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxSimpleFactory.h
+	"common/PxPhysXCommon.h"
+	"PxTransform.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/extensions/PxVisualDebuggerExt.h
+	"Px.h"
+	"PxPhysX.h"
+	"PxFlags.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxTask/include/PxCudaContextManager.h
+	"PxCudaMemoryManager.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PxTask/include/PxCudaMemoryManager.h
+	"PxSimpleTypes.h"
+
+1322135104 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXAPI/vehicle/PxVehicleUtils.h
+	"common/PxPhysXCommon.h"
+	"vehicle/PxVehicle.h"
+	"PxPreprocessor.h"
+	"PxScene.h"
+	"PxSweepCache.h"
+
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IPickable.h
+
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/InstancedModelComponent.cpp
+	"HappyPCH.h"
+	"InstancedModelComponent.h"
+	"HappyNew.h"
+	"Entity.h"
+	"HappyEngine.h"
+	"GraphicsEngine.h"
+	"InstancingManager.h"
+	"InstancingController.h"
+
+1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/InstancedModelComponent.h
+	"IComponent.h"
+	"I3DObject.h"
+	"IPickable.h"
+
+1324419929 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/HappyPCH.cpp
+	"HappyPCH.h"
+
+1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/HappyPCH.h
+	<cstdlib>
+	<string>
+	<vector>
+	"vec2.h"
+	"vec3.h"
+	"vec4.h"
+	"HappyNew.h"
+	"MathConstants.h"
+	"MathFunctions.h"
+	"Profiler.h"
+	"event.h"
+
+1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/FxRandom.h
+	"IFxVariable.h"
+	"Random.h"
+
+1324419928 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/game/CameraManager.cpp
+	"HappyPCH.h"
+	"CameraManager.h"
+	"Camera.h"
+	"HappyEngine.h"
+	"Game.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXProfileSDK/sdk/include/PxProfileZoneManager.h
+	"PxProfileEventSender.h"
+	"PxProfileEventNames.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXProfileSDK/sdk/include/PxProfileEventSender.h
+	"PxProfileBase.h"
+	"PxProfileContextProvider.h"
+	"PxProfileEventId.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXProfileSDK/sdk/include/PxProfileBase.h
+	"PxSimpleTypes.h"
+	"PxAssert.h"
+	"PxMath.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXProfileSDK/sdk/include/PxProfileContextProvider.h
+	"PxProfileBase.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXProfileSDK/sdk/include/PxProfileEventId.h
+	"PxProfileBase.h"
+
+1322135108 /home/sebastiaan/Libs/PhysX-3.1.1/SDKs/PhysXProfileSDK/sdk/include/PxProfileEventNames.h
+	"PxProfileBase.h"
+	"PxProfileEventId.h"
+
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsSphericalJoint.cpp
+	"HappyPCH.h"
+	"PhysicsSphericalJoint.h"
+	"PhysicsEngine.h"
+	"IPhysicsActor.h"
+
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsSphericalJoint.h
+	"IPhysicsJoint.h"
+
+1324419913 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsRevoluteJoint.cpp
+	"HappyPCH.h"
+	"PhysicsRevoluteJoint.h"
+	"PhysicsEngine.h"
+	"IPhysicsActor.h"
+
+1324419913 /home/sebastiaan/happy-engine/src/HappyEngine/code/physics/PhysicsRevoluteJoint.h
+	"IPhysicsJoint.h"
+
+1324419925 source:/home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingController.cpp
+	"HappyPCH.h"
+	"InstancingController.h"
+	"HappyEngine.h"
+	"CameraManager.h"
+	"OpenGL.h"
+	"I3DObject.h"
 

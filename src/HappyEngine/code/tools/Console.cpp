@@ -133,7 +133,9 @@ void Console::processCommand(const std::string& command)
     std::string s(command);
 
     // remove spaces
+    #if !GCC
     s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    #endif
 
     // console commands
     if (s == "help")

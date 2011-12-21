@@ -8,49 +8,14 @@
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/HappyTest" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
 				<Option object_output="gcc/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
-					<Add directory="../HappyEngine/code/" />
-					<Add directory="../HappyEngine/code/audio" />
-					<Add directory="../HappyEngine/code/content" />
-					<Add directory="../HappyEngine/code/error" />
-					<Add directory="../HappyEngine/code/game" />
-					<Add directory="../HappyEngine/code/graphics" />
-					<Add directory="../HappyEngine/code/io" />
-					<Add directory="../HappyEngine/code/math" />
-					<Add directory="../HappyEngine/code/networking" />
-					<Add directory="../HappyEngine/code/physics" />
-					<Add directory="../HappyEngine/code/tools" />
-					<Add directory="$(#physx_dir)/PxTask/include" />
-					<Add directory="$(#physx_dir)/PxFoundation" />
-					<Add directory="$(#physx_dir)/PxFoundation/internal/include" />
-					<Add directory="$(#physx_dir)/PhysXProfileSDK/sdk/include" />
-					<Add directory="$(#physx_dir)/PhysXVisualDebuggerSDK/PVDCommLayer/Public" />
-					<Add directory="$(#physx_dir)/PhysXAPI" />
-					<Add directory="$(#physx_dir)/RepX/include" />
-					<Add directory="$(#physx_dir)/PhysXAPI/characterkinematic" />
-					<Add directory="$(#boost_dir)" />
-					<Add directory="$(#al_dir)/include/AL" />
-					<Add directory="$(#sdl_dir)/include" />
 				</Compiler>
-				<Linker>
-					<Add library="$(#boost_dir)/bin.v2/libs/chrono/build/gcc-4.6.1/release/link-static/threading-multi/libboost_chrono.a" />
-					<Add library="$(#boost_dir)/bin.v2/libs/thread/build/gcc-4.6.1/release/link-static/threading-multi/libboost_thread.a" />
-					<Add library="$(#boost_dir)/bin.v2/libs/date_time/build/gcc-4.6.1/release/link-static/threading-multi/libboost_date_time.a" />
-					<Add library="$(#boost_dir)/bin.v2/libs/regex/build/gcc-4.6.1/release/link-static/threading-multi/libboost_regex.a" />
-					<Add library="$(#boost_dir)/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi/libboost_system.a" />
-					<Add library="SDL" />
-					<Add directory="$(#boost_dir)/bin.v2/libs/chrono/build/gcc-4.6.1/release/link-static/threading-multi" />
-					<Add directory="$(#boost_dir)/bin.v2/libs/thread/build/gcc-4.6.1/release/link-static/threading-multi" />
-					<Add directory="$(#boost_dir)/bin.v2/libs/date_time/build/gcc-4.6.1/release/link-static/threading-multi" />
-					<Add directory="$(#boost_dir)/bin.v2/libs/regex/build/gcc-4.6.1/release/link-static/threading-multi" />
-					<Add directory="$(#boost_dir)/bin.v2/libs/system/build/gcc-4.6.1/release/link-static/threading-multi" />
-					<Add directory="$(#sdl_dir)/build" />
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/HappyTest" prefix_auto="1" extension_auto="1" />
@@ -82,6 +47,7 @@
 			<Add directory="../HappyEngine/code/networking" />
 			<Add directory="../HappyEngine/code/physics" />
 			<Add directory="../HappyEngine/code/tools" />
+			<Add directory="$(#sdl_dir)/include" />
 			<Add directory="$(#physx_dir)/PxTask/include" />
 			<Add directory="$(#physx_dir)/PxFoundation" />
 			<Add directory="$(#physx_dir)/PxFoundation/internal/include" />
@@ -92,11 +58,59 @@
 			<Add directory="$(#physx_dir)/PhysXAPI/characterkinematic" />
 			<Add directory="$(#boost_dir)" />
 			<Add directory="$(#al_dir)/include/AL" />
-			<Add directory="$(#sdl_dir)/include" />
 		</Compiler>
 		<Linker>
-			<Add library="../HappyEngine/bin/HappyEngine.a" />
-			<Add directory="../HappyEngine/bin/" />
+			<Add library="HappyEngine" />
+			<Add library="boost_system" />
+			<Add library="boost_date_time" />
+			<Add library="boost_thread" />
+			<Add library="boost_regex" />
+			<Add library="boost_chrono" />
+			<Add library="SDL" />
+			<Add library="GLEW" />
+			<Add library="GL" />
+			<Add library="PhysX3Cooking" />
+			<Add library="PhysX3" />
+			<Add library="SimulationController" />
+			<Add library="LowLevel" />
+			<Add library="PhysXProfileSDK" />
+			<Add library="PhysX3Extensions" />
+			<Add library="Foundation" />
+			<Add library="SceneQuery" />
+			<Add library="GeomUtils" />
+			<Add library="PhysX3Common" />
+			<Add library="PhysX3CharacterKinematic" />
+			<Add library="PvdRuntime" />
+			<Add library="RepX3" />
+			<Add library="PxTask" />
+			<Add library="PhysX3Vehicle" />
+			<Add library="IL" />
+			<Add library="openal" />
+			<Add library="ILU" />
+			<Add library="SDL_ttf" />
+			<Add library="LowLevelCloth" />
+			<Add library="RepXUpgrader3" />
+			<Add library="PhysX3Cooking" />
+			<Add library="PhysX3" />
+			<Add library="SimulationController" />
+			<Add library="LowLevel" />
+			<Add library="PhysXProfileSDK" />
+			<Add library="PhysX3Extensions" />
+			<Add library="Foundation" />
+			<Add library="SceneQuery" />
+			<Add library="GeomUtils" />
+			<Add library="PhysX3Common" />
+			<Add library="PhysX3CharacterKinematic" />
+			<Add library="PvdRuntime" />
+			<Add library="RepX3" />
+			<Add library="PxTask" />
+			<Add library="PhysX3Vehicle" />
+			<Add library="LowLevelCloth" />
+			<Add library="RepXUpgrader3" />
+			<Add directory="../HappyEngine/bin" />
+			<Add directory="$(#boost_dir)/stage/lib" />
+			<Add directory="$(#sdl_dir)/build/.libs" />
+			<Add directory="$(#physx_dir.lib)/" />
 		</Linker>
 		<Unit filename="FlyCamera.cpp" />
 		<Unit filename="FlyCamera.h" />
