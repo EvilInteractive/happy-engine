@@ -79,14 +79,14 @@ SpotLight::pointer LightManager::addSpotLight(const vec3&    pos,
     return pLight;
 }
 DirectionalLight::pointer LightManager::setDirectionalLight(const vec3&  direction,
-															const Color& color,
-															float multiplier)
+                                                            const Color& color,
+                                                            float multiplier)
 {
-	m_pDirectionalLight->setDirection(direction);
-	m_pDirectionalLight->setColor(color);
-	m_pDirectionalLight->setMultiplier(multiplier);
+    m_pDirectionalLight->setDirection(direction);
+    m_pDirectionalLight->setColor(color);
+    m_pDirectionalLight->setMultiplier(multiplier);
 
-	return m_pDirectionalLight;
+    return m_pDirectionalLight;
 }
 
 const AmbientLight::pointer& LightManager::getAmbientLight() const
@@ -103,7 +103,7 @@ const std::vector<SpotLight::pointer>& LightManager::getSpotLights() const
 }
 const DirectionalLight::pointer& LightManager::getDirectionalLight() const
 {
-	return m_pDirectionalLight;
+    return m_pDirectionalLight;
 }
 
 void LightManager::removeAllLights()
@@ -120,6 +120,5 @@ void LightManager::remove(const SpotLight::pointer& pLight)
 {
     m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), pLight), m_SpotLightVector.end());
 }
-
 
 } } //end namespace

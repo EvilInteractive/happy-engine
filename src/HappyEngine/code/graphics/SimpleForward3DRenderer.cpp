@@ -142,7 +142,7 @@ void SimpleForward3DRenderer::resize()
     GL::heBindFbo(m_RenderFboID);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GRAPHICS->getDeferredRenderer()->getDepthTexture()->getID(), 0);
+   // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GRAPHICS->getDeferredRenderer()->getDepthTexture()->getID(), 0);
 }
 
 /* DRAW METHODS */

@@ -86,12 +86,12 @@ gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort siz
 
 const gfx::Font::pointer& ContentManager::getDefaultFont(ushort size)
 {
-	if (m_pDefaultFont == nullptr)
-	{
-		m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
-	}
+    if (m_pDefaultFont == nullptr)
+    {
+        m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
+    }
 
-	return m_pDefaultFont;
+    return m_pDefaultFont;
 }
 
 gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
@@ -194,6 +194,12 @@ gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const
     pQuad->setIndices(&indices[0], 6, IndexStride_Byte);
 
     return pQuad;
+}
+
+void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
+{
+    m_pMaterialLoader->setRenderSettings(settings);
+    m_pShaderLoader->setRenderSettings(settings);
 }
 
 } } //end namespace

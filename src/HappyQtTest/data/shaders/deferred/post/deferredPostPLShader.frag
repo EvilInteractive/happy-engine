@@ -21,7 +21,7 @@
 
 #version 150 core
 
-#include "decode.frag"
+#include "packing/decode.frag"
 
 in vec3 passPos;
 out vec4 outColor;
@@ -47,7 +47,9 @@ layout(packed) uniform LightBuffer
 
 uniform sampler2D colorIllMap;
 uniform sampler2D normalMap;
+#if SPECULAR
 uniform sampler2D sgMap;
+#endif
 uniform sampler2D depthMap;
 
 
@@ -73,9 +75,12 @@ void main()
     if (dotLightNormal <= 0.0f) //pixel is in selfshadow
         discard;
     
+    float spec = 0.0f;
+#if SPECULAR
     vec4 sg = texture(sgMap, texCoord);	
     vec3 vCamDir = normalize(-position);
-    float spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
+    spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
+#endif
 
     float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
 

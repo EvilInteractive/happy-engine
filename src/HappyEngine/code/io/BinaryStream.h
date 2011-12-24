@@ -43,14 +43,14 @@ public:
     {
         Read, Write
     };
-	BinaryStream(const std::string& path, OpenType openType);
+    BinaryStream(const std::string& path, OpenType openType);
     virtual ~BinaryStream();
 
     virtual		byte			readByte()								const;
-	virtual		ushort			readWord()								const;
-	virtual		uint			readDword()								const;
-	virtual		float			readFloat()								const;
-	virtual		double			readDouble()							const;
+    virtual		ushort			readWord()								const;
+    virtual		uint			readDword()								const;
+    virtual		float			readFloat()								const;
+    virtual		double			readDouble()							const;
 
     virtual     vec2            readVector2()                           const;
     virtual     vec3            readVector3()                           const;
@@ -60,13 +60,13 @@ public:
     virtual     std::string     readString()                            const;
     virtual     std::wstring    readWString()                           const;
 
-	virtual		void			readBuffer(void* buffer, physx::PxU32 size)	const;
+    virtual		void			readBuffer(void* buffer, physx::PxU32 size)	const;
 
-	virtual		physx::PxStream&		storeByte(byte b);
-	virtual		physx::PxStream&		storeWord(ushort w);
-	virtual		physx::PxStream&		storeDword(uint d);
-	virtual		physx::PxStream&		storeFloat(float f);
-	virtual		physx::PxStream&		storeDouble(double d);
+    virtual		physx::PxStream&		storeByte(byte b);
+    virtual		physx::PxStream&		storeWord(ushort w);
+    virtual		physx::PxStream&		storeDword(uint d);
+    virtual		physx::PxStream&		storeFloat(float f);
+    virtual		physx::PxStream&		storeDouble(double d);
 
     virtual     physx::PxStream&        storeVector2(const vec2& v);
     virtual     physx::PxStream&        storeVector3(const vec3& v);
@@ -76,7 +76,7 @@ public:
     virtual     physx::PxStream&        storeString(const std::string& s);
     virtual     physx::PxStream&        storeWString(const std::wstring& s);
 
-	virtual		physx::PxStream&		storeBuffer(const void* buffer, physx::PxU32 size);
+    virtual		physx::PxStream&		storeBuffer(const void* buffer, physx::PxU32 size);
 
 private:
     FILE* m_pFile;

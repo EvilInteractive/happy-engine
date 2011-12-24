@@ -24,6 +24,7 @@
 
 #include "AssetContainer.h"
 #include "Shader.h"
+#include "RenderSettings.h"
 
 namespace he {
 namespace ct {
@@ -31,13 +32,17 @@ namespace ct {
 class ShaderLoader
 {
 public:
-	ShaderLoader();
+    ShaderLoader();
     virtual ~ShaderLoader();
     
     gfx::Shader::pointer load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
 
+    void setRenderSettings(const gfx::RenderSettings& settings);
+
 private:
     AssetContainer<gfx::Shader::pointer>* m_pAssetContainer;
+
+    gfx::RenderSettings m_RenderSettings;
 
     //Disable default copy constructor and default assignment operator
     ShaderLoader(const ShaderLoader&);

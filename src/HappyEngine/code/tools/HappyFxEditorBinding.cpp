@@ -48,7 +48,7 @@ void HappyFxEditorBinding::init()
     start();
 }
 
-void HappyFxEditorBinding::receiveData( int bytesReceived )
+void HappyFxEditorBinding::receiveData( int /*bytesReceived*/ )
 {
 
 }

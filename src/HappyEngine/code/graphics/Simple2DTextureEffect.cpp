@@ -23,6 +23,8 @@
 #include "HappyNew.h"
 #include "HeAssert.h"
 
+#include "ContentManager.h"
+
 namespace he {
 namespace gfx {
 
@@ -48,7 +50,9 @@ void Simple2DTextureEffect::load()
     m_pShader = NEW Shader();
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
-    bool compiled = m_pShader->init("../data/shaders/simple2DTextureShader.vert", "../data/shaders/simple2DTextureShader.frag", layout, shaderOutputs);
+    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    bool compiled = m_pShader->initFromFile(folder + "2D/simple2DTextureShader.vert", 
+                                            folder + "2D/simple2DTextureShader.frag", layout, shaderOutputs);
     ASSERT(compiled, "");
 
     m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");

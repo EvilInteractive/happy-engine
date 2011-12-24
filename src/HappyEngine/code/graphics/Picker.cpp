@@ -30,6 +30,8 @@
 #include "HappyEngine.h"
 #include "DrawManager.h"
 #include "CameraManager.h"
+#include "ICamera.h"
+#include "Camera.h"
 
 #include "ExternalError.h"
 
@@ -89,54 +91,45 @@ uint Picker::pick(const vec2& screenPoint)
 {
     ASSERT(m_bInitialized, "Initialize picker before using!");
 
-    const std::vector<const IDrawable*>& drawList = GRAPHICS->getDrawList();
     std::vector<uint> ID1;
 
     // cull drawlist
-    std::vector<DrawManager::DrawElement> culledDrawList;
-    culledDrawList.reserve(drawList.size());
+    std::vector<IDrawable*> culledDrawList;
 
     uint i(0);
-    std::for_each(drawList.cbegin(), drawList.cend(), [&](const IDrawable* pDrawable)
+    GRAPHICS->getDrawManager()->getDrawList().for_each(DrawListContainer::F_Loc_BeforePost   | 
+                                                      DrawListContainer::F_Loc_AfterPost    |
+                                                      DrawListContainer::F_Main_Opac        |
+                                                      DrawListContainer::F_Sub_Single       ,//|
+                                                      //DrawListContainer::F_Sub_Skinned,                                                     
+                                                      [&](IDrawable* pDrawable)
     {
-        if (pDrawable->isVisible() && pDrawable->getModel()->isLoaded())
+        if (pDrawable->isInCamera(CAMERAMANAGER->getActiveCamera()))
         {
-            shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
-                pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
-
-            if (DrawManager::viewClip(CAMERAMANAGER->getActiveCamera(), bS) == false)
-            {
-                DrawManager::DrawElement e;
-                e.pDrawable = pDrawable;
-                e.sorter = lengthSqr(CAMERAMANAGER->getActiveCamera()->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
-                culledDrawList.push_back(e);
-
-                ID1.push_back(i);
-            }
+            culledDrawList.push_back(pDrawable);
+            ID1.push_back(i);
         }
 
         ++i;
     });
 
     // create list with items to be picked
-    std::vector<const IDrawable*> pickList;
+    std::vector<IDrawable*> pickList;
     std::vector<uint> ID2;
 
     i = 0;
     std::sort(culledDrawList.begin(), culledDrawList.end());
-    std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawManager::DrawElement& e)
+    std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
     {
-        const gfx::IPickable* pPick(dynamic_cast<const gfx::IPickable*>(e.pDrawable));
+        const gfx::IPickable* pPick(dynamic_cast<gfx::IPickable*>(pDrawable));
         if (pPick != nullptr && pPick->isPickable())
         {
-            pickList.push_back(e.pDrawable);
+            pickList.push_back(pDrawable);
             ID2.push_back(ID1[i]);
         }
 
         ++i;
     });
-
-
 
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(true);
@@ -149,22 +142,16 @@ uint Picker::pick(const vec2& screenPoint)
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    m_pPickEffect->begin();
-    m_pPickEffect->setViewProjection(CAMERAMANAGER->getActiveCamera()->getViewProjection());
-
+    
     i = 1;
-    std::for_each(pickList.cbegin(), pickList.cend(), [&](const IDrawable* pDrawable)
+    std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
     {
-        m_pPickEffect->setWorld(pDrawable->getWorldMatrix());
-
         byte packedID[4];
         memcpy(packedID, &i, 4);
 
         m_pPickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
-
-        GL::heBindVao(pDrawable->getModel()->getVertexShadowArraysID());
-        glDrawElements(GL_TRIANGLES, pDrawable->getModel()->getNumIndices(), pDrawable->getModel()->getIndexType(), 0);
+        pDrawable->applyMaterial(m_pPickEffect->getMaterial(), CAMERAMANAGER->getActiveCamera());
+        pDrawable->drawShadow();
 
         ++i;
     });

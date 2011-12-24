@@ -34,6 +34,8 @@
 #include "ShaderLoader.h"
 #include "MaterialLoader.h"
 
+#include "RenderSettings.h"
+
 namespace he {
 namespace ct {
 
@@ -87,6 +89,8 @@ public:
     const std::string& getFontFolder() const;
     const std::string& getShaderFolder() const;
     const std::string& getMaterialFolder() const;
+
+    void setRenderSettings(const gfx::RenderSettings& settings);
 
 private:
 

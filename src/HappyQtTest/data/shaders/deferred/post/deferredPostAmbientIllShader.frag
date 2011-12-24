@@ -20,7 +20,7 @@
 
 #version 150 core
 
-#include "decode.frag"
+#include "packing/decode.frag"
 
 noperspective in vec2 texCoord;
 
@@ -37,10 +37,18 @@ struct DirectionalLight
     vec3 direction;
 };
 
+
 layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
+layout(packed) uniform LightBuffer
+{
+    DirectionalLight dirLight;
+    AmbientLight ambLight;
+};
+
+#if SHADOWS
 layout(packed) uniform PerFrameBuffer
 {
     mat4 mtxDirLight0;
@@ -48,20 +56,18 @@ layout(packed) uniform PerFrameBuffer
     mat4 mtxDirLight2;
     mat4 mtxDirLight3;
 };
-layout(packed) uniform LightBuffer
-{
-    AmbientLight ambLight;
-    DirectionalLight dirLight;
-};
 
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform sampler2D shadowMap3;
+#endif
 
 uniform sampler2D colorIllMap;
 uniform sampler2D normalMap;
+#if SPECULAR
 uniform sampler2D sgMap;
+#endif
 uniform sampler2D depthMap;
 uniform sampler2D colorRamp;
 
@@ -108,12 +114,12 @@ float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
     if (coord.z >= 1.0f) return 0.0f;
 
     float variance = fAvgZ2 - (fAvgZ * fAvgZ);
-    variance = min(max(variance, 0.0f) + 0.00005f, 1.0f);
+    variance = min(max(variance, 0.0f) + 0.001f, 1.0f);
 
     float mean = fAvgZ;
     float d = coord.z - mean;
     
-    return pow(variance / (variance + d*d), 25);
+    return pow(variance / (variance + d*d), 50);
 }
 
 void main()
@@ -122,12 +128,12 @@ void main()
         
     vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
 
-    vec3 lightDir = dirLight.direction;
+    vec3 lightDir = normalize(dirLight.direction);
         
     vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
     
     //Lambert
-    float dotLightNormal = max(min(dot(lightDir, normal), 1.0f), 0.0f);
+    float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
 
     //Ramp
     vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
@@ -138,47 +144,36 @@ void main()
 
     //Light
     vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f, 0.3f, 0.3f)) * dirLight.color.rgb * dirLight.color.a;
-    vec3 ambientLight = ambLight.color.rgb * ambLight.color.a;
+    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb;
     
     //Shadow
-    vec3 testColor = vec3(1, 1, 1);
     float shadow = 1;
+#if SHADOWS
     if (position.z < 30)
-    {
-        //testColor += vec3(1, 0, 0);
         shadow *= shadowCheck(position, shadowMap0, mtxDirLight0);
-    }
     if (position.z > 20 && position.z < 80)
-    {
-        //testColor += vec3(0, 1, 0);
         shadow *= shadowCheck(position, shadowMap1, mtxDirLight1);
-    }
     if (position.z > 70 && position.z < 155)
-    {
-        //testColor += vec3(0, 0, 1);
         shadow *= shadowCheck(position, shadowMap2, mtxDirLight2);
-    }
     if (position.z > 145)
-    {
-        //testColor += vec3(0, 0, 0);
         shadow *= shadowCheck(position, shadowMap3, mtxDirLight3);
-    }
+#endif
 
     //Specular
     vec3 spec = vec3(0.0f, 0.0f, 0.0f);
+#if SPECULAR
     if (shadow > 0.001f)
     {
         vec4 sg = texture(sgMap, texCoord);	
         vec3 vCamDir = normalize(-position);
         spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
     }
-    spec = vec3(0, 0 ,0);
+#endif
 
     //Albedo
     vec4 color = texture(colorIllMap, texCoord);
      
     //Out         
     outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
-                        , 0.0f);					
-    //outColor = vec4(color, 1.0f);
+                        , 0.0f);		
 }

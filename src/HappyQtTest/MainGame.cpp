@@ -173,32 +173,32 @@ void MainGame::load()
     gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
     //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
 
-    Random r;
-    for (int i = 0; i < 5; ++i)
-    {
-        vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
-        color = normalize(color);
-        GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(0, -100), r.nextFloat(3, 7), r.nextFloat(0, 100)), 
-                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 10), 1, r.nextFloat(10, 30));
-    }
+    //Random r;
+    //for (int i = 0; i < 5; ++i)
+    //{
+    //    vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
+    //    color = normalize(color);
+    //    GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(0, -100), r.nextFloat(3, 7), r.nextFloat(0, 100)), 
+    //                                Color(color.x, color.y, color.z, 1.0f), r.nextFloat(5, 10), 1, r.nextFloat(10, 30));
+    //}
 
     m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 1, 30);
 
        //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
     //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 10.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 5.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, -5.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
    
     m_pAxis = NEW he::game::Entity();
     game::ModelComponent* pAxisModelComp(NEW game::ModelComponent());
     pAxisModelComp->setMaterial(CONTENT->loadMaterial("axis.material"));
-    pAxisModelComp->setModel(CONTENT->asyncLoadModelMesh("axis.binobj", "M_Axis", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    pAxisModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("axis.binobj", "M_Axis", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
     m_pAxis->addComponent(pAxisModelComp);
 
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
@@ -219,7 +219,7 @@ void MainGame::load()
     m_pSky = NEW he::game::Entity();
     game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
     pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
-    pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSkyModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
     pSkyModelComp->setLocalTransform(mat44::createScale(vec3(500, 100, 500)));
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
@@ -237,8 +237,8 @@ void MainGame::load()
 
     m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
-    CONSOLE->registerValue<bool>(&m_bTest2, "draw_test");
-    CONSOLE->registerValue<std::string>(&m_Test3, "test_string");
+    CONSOLE->registerVar<bool>(&m_bTest2, "draw_test");
+    CONSOLE->registerVar<std::string>(&m_Test3, "test_string");
     CONSOLE->addMessage("warning test", CMSG_TYPE_WARNING);
 
     m_pTestSound2D = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
@@ -275,19 +275,6 @@ void MainGame::load()
     m_pCurrentCamera = m_pFlyCamera;
     CAMERAMANAGER->addCamera("lol",m_pFlyCamera);
     CAMERAMANAGER->setActiveCamera("lol");
-
-    // SSAO
-    he::gfx::Deferred3DRenderer::SSAOSettings settings;
-
-    settings.radius = 0.25f;
-    settings.intensity = 4.0f;
-    settings.scale = 4.0f;
-    settings.bias = 0.04f;
-    settings.passes = 2;
-    settings.minIterations = 2;
-    settings.maxIterations = 4;
-
-    GRAPHICS->getDeferredRenderer()->setSSAOSettings(settings);
 
     //m_pFxEditorBinding->init();
     //GUI->setBlending(true);
@@ -330,7 +317,7 @@ void MainGame::tick(float dTime)
 
         game::ModelComponent* pBulletModelComp(NEW game::ModelComponent());
         pBulletModelComp->setMaterial(CONTENT->loadMaterial("bullet.material"));
-        pBulletModelComp->setModel(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", pBulletModelComp->getMaterial().getCompatibleVertexLayout()));
+        pBulletModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", pBulletModelComp->getMaterial().getCompatibleVertexLayout()));
         pBullet->addComponent(pBulletModelComp);
 
 
@@ -367,17 +354,15 @@ void MainGame::tick(float dTime)
     {
         he::uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
 
-        if (id != UINT_MAX)
+        /*if (id != UINT_MAX)
         {
             m_PickPos = GRAPHICS->getDrawList()[id]->getWorldMatrix().getTranslation();
         }
-        else
-            m_PickPos = vec3(0,0,0);
+        else*/
+            m_PickPos = vec3(id,id,id);
     }
 
     m_pFPSGraph->tick(dTime, 0.5f);
-
-    CONSOLE->tick();
 
     PROFILER_END("MainGame::tick");
 }
@@ -436,7 +421,6 @@ void MainGame::drawGui()
     //GUI->fillShape2D(gui::RoundedRectangle2D(vec2(500,500), vec2(250,100), 50));
 
     m_pFPSGraph->draw();
-    CONSOLE->draw();
 
     ///* DRAW 3D & 2D */
     //GRAPHICS->clearAll();

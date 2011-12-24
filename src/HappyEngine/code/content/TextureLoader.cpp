@@ -54,14 +54,14 @@ TextureLoader::~TextureLoader()
 }
 
 
-inline void handleILError()
+inline void handleILError(const std::string& file)
 {
     ILenum err = ilGetError();
     while (err != IL_NO_ERROR)
     {
         const char* errorstr(iluErrorString(err));
-        std::cout << errorstr;
-        CONSOLE->addMessage(errorstr, CMSG_TYPE_ERROR);
+        std::cout << errorstr << ": " << file << "\n";
+        CONSOLE->addMessage(std::string(errorstr) + ": " + file, CMSG_TYPE_ERROR);
         err = ilGetError();
     }
 }
@@ -199,12 +199,12 @@ void TextureLoader::TextureLoadThread()
                 }
                 else
                 {
-                    handleILError();
+                    handleILError(data.path);
                 }
             }
             else
             {
-                handleILError();
+                handleILError(data.path);
             }
         }
         else

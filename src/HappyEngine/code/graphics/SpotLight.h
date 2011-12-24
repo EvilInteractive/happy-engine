@@ -30,12 +30,12 @@
 
 #include "boost/shared_ptr.hpp"
 
-#include "IDrawable.h"
+#include "DefaultSingleDrawable.h"
 
 namespace he {
 namespace gfx {
 
-class SpotLight : public IDrawable
+class SpotLight : public DefaultSingleDrawable
 {
 private:
     vec3 m_Position;
@@ -80,7 +80,7 @@ public:
     virtual bool getCastsShadow() const { return false; }
     
     virtual const Material& getMaterial() const;
-    virtual const ModelMesh::pointer& getModel() const;
+    virtual const ModelMesh::pointer& getModelMesh() const;
     
     typedef boost::shared_ptr<SpotLight> pointer;
 };

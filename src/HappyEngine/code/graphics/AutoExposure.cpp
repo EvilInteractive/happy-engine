@@ -32,14 +32,16 @@ namespace he {
 
 AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true)
 {
-    m_pLumTexture[0] = Texture2D::pointer(NEW Texture2D());
-    m_pLumTexture[1] = Texture2D::pointer(NEW Texture2D());
+    m_pLumTexture[0] = NEW Texture2D();
+    m_pLumTexture[1] = NEW Texture2D();
 }
 
 
 AutoExposure::~AutoExposure()
 {
     glDeleteFramebuffers(1, &m_FboID);
+    delete m_pLumTexture[0];
+    delete m_pLumTexture[1];
 }
 
 void AutoExposure::init()
@@ -78,7 +80,8 @@ void AutoExposure::init()
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
-    m_pLumShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", folder + "deferred/post/lum.frag", shaderLayout);
+    m_pLumShader->initFromFile(folder + "shared/postShaderQuad.vert", 
+                               folder + "post/autoLum.frag", shaderLayout);
     m_HDRmapPos = m_pLumShader->getShaderSamplerId("hdrMap");
     m_PrevLumMapPos = m_pLumShader->getShaderSamplerId("prevLumMap");
 
@@ -88,7 +91,7 @@ void AutoExposure::init()
     m_pQuad = CONTENT->getFullscreenQuad();
 }
 
-void AutoExposure::calculate( const Texture2D::pointer& hdrMap )
+void AutoExposure::calculate( const Texture2D* pHdrMap )
 {
     PROFILER_BEGIN("AutoExposure::calculate");
     m_FirstBuffer = !m_FirstBuffer;
@@ -97,13 +100,14 @@ void AutoExposure::calculate( const Texture2D::pointer& hdrMap )
     GL::heBindFbo(m_FboID);
     m_pLumShader->bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pLumTexture[m_FirstBuffer? 0 : 1]->getID(), 0);
-    m_pLumShader->setShaderVar(m_HDRmapPos, hdrMap);
+    m_pLumShader->setShaderVar(m_HDRmapPos, pHdrMap);
     m_pLumShader->setShaderVar(m_PrevLumMapPos, m_pLumTexture[m_FirstBuffer? 1 : 0]);
-    GRAPHICS->draw(m_pQuad);
+    GL::heBindVao(m_pQuad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
     PROFILER_END("AutoExposure::calculate");
 }
 
-const Texture2D::pointer& AutoExposure::getLuminanceMap() const
+const Texture2D* AutoExposure::getLuminanceMap() const
 {
     return m_pLumTexture[m_FirstBuffer? 0 : 1];
 }

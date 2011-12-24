@@ -23,8 +23,10 @@
 #pragma once
 
 #include "mat44.h"
-#include "Shader.h"
 #include "HappyTypes.h"
+#include "Material.h"
+
+#include "ShaderVar.h"
 
 namespace he {
 namespace gfx {
@@ -39,8 +41,8 @@ public:
 
     /* GENERAL */
     void load();
-    void begin() const;
-    void end() const;
+
+    const Material& getMaterial() const;
 
     /* SETTERS */
     void setViewProjection(const mat44& mat);
@@ -50,11 +52,9 @@ public:
 private:
 
     /* DATAMEMBERS */
-    Shader* m_pShader;
+    Material m_PickMaterial;
 
-    uint m_ShaderVPPos;
-    uint m_ShaderWPos;
-    uint m_ShaderIDPos;
+    ShaderUserVar<vec4>::pointer m_IdVar;
 
     /* DEFAULT COPY & ASSIGNMENT */
     PickEffect(const PickEffect&);

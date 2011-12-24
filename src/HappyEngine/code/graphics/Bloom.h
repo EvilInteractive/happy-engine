@@ -37,12 +37,12 @@ public:
     Bloom();
     virtual ~Bloom();
 
-    void init();
+    void init(bool hdr);
     void resize();
 
     const Texture2D::pointer& getBloom(byte level) const;
 
-    void render( const Texture2D::pointer& pTexture, const Texture2D::pointer& exposure );
+    void render( const Texture2D* pTexture, const Texture2D* pLumMap = nullptr );
 
 private:
     
@@ -61,6 +61,8 @@ private:
     uint m_BlurTexelSize[2];
         
     byte m_DownSamples;
+
+    bool m_Hdr;
 
     ModelMesh::pointer m_pMesh;
 

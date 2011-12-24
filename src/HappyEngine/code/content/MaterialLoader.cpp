@@ -62,10 +62,25 @@ gfx::Material MaterialLoader::load(const std::string& path)
             gfx::VertexLayout vertexLayout;
             // [Shader]
             {
+                bool isTranslucent = true;
                 io::IniReader shaderReader;
-                try { shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + reader.readString(L"Shader", L"shader", "")); }
+                try 
+                { 
+                    std::string file;
+                    file = reader.readString(L"Forward", L"shader", "");
+                    if (m_RenderSettings.enableDeferred)
+                    {
+                        std::string temp = reader.readString(L"Deferred", L"shader", file);
+                        if (temp != file)
+                        {
+                            file = temp;
+                            isTranslucent = false;
+                        }
+                    }
+                    shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + file); 
+                }
                 catch (err::FileNotFoundException& e)
-                { std::wcout << e.getMsg() << "\n"; }
+                { std::wcout << e.getMsg() << L": in " + std::wstring(path.cbegin(), path.cend()) + L"\n"; }
 
                 std::vector<std::string> shaderOutputs;
 
@@ -84,6 +99,19 @@ gfx::Material MaterialLoader::load(const std::string& path)
                                 shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
                             else if (p.second == L"GBUFFER_NORMAL")
                                 shaderOutputs[2] = std::string(p.first.cbegin(), p.first.cend());
+                            else
+                                ASSERT(false, "unknow semantic");
+                        });
+                    }
+                    else if (outNodes.size() == 2)
+                    {
+                        shaderOutputs.resize(2);
+                        std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
+                        {
+                            if (p.second == L"GBUFFER_COLOR")
+                                shaderOutputs[0] = std::string(p.first.cbegin(), p.first.cend());
+                            else if (p.second == L"GBUFFER_NORMAL")
+                                shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
                             else
                                 ASSERT(false, "unknow semantic");
                         });
@@ -147,9 +175,11 @@ gfx::Material MaterialLoader::load(const std::string& path)
 
                 // [Shader]
                 gfx::Shader::pointer pShader(CONTENT->loadShader(shaderReader.readString(L"Shader", L"vsPath", ""),
-                                                                      shaderReader.readString(L"Shader", L"fsPath", ""),
-                                                                      shaderLayout,
-                                                                      shaderOutputs));
+                                                                 shaderReader.readString(L"Shader", L"fsPath", ""),
+                                                                 shaderLayout,
+                                                                 shaderOutputs));
+
+                material.setIsTranslucent(isTranslucent);
                 material.setShader(pShader, vertexLayout, usedForInstancing != "");
 
                 // [uniform]
@@ -158,6 +188,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                     const std::map<std::wstring, std::wstring>& uniformNodes(shaderReader.getNodes(L"uniform"));
                     std::for_each(uniformNodes.cbegin(), uniformNodes.cend(), [&](const std::pair<std::wstring, std::wstring> node)
                     {
+                        // Camera
                         if (node.second == L"WORLDVIEWPROJECTION")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
@@ -183,11 +214,83 @@ gfx::Material MaterialLoader::load(const std::string& path)
                             material.addVar(gfx::ShaderVar::pointer(
                                 NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_WorldPosition)));
                         }
+
+                        // Light
+                        else if (node.second == L"AMBIENT_COLOR")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_AmbientColor)));
+                        }
+                        else if (node.second == L"DIRECTIONAL_COLOR")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_DirectionalColor)));
+                        }
+                        else if (node.second == L"DIRECTIONAL_DIRECTION")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_DirectionalDirection)));
+                        }
+
+                        // Shadow
+                        else if (node.second == L"SHADOW_CASCADE_MATRIX0")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix0)));
+                        }
+                        else if (node.second == L"SHADOW_CASCADE_MATRIX1")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix1)));
+                        }
+                        else if (node.second == L"SHADOW_CASCADE_MATRIX2")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix2)));
+                        }
+                        else if (node.second == L"SHADOW_CASCADE_MATRIX3")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix3)));
+                        }
+
+                        else if (node.second == L"SHADOW_CASCADE0")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade0)));
+                        }
+                        else if (node.second == L"SHADOW_CASCADE1")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade1)));
+                        }
+                        else if (node.second == L"SHADOW_CASCADE2")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade2)));
+                        }
+                        else if (node.second == L"SHADOW_CASCADE3")
+                        {
+                            if (m_RenderSettings.enableShadows)
+                                material.addVar(gfx::ShaderVar::pointer(
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade3)));
+                        }
+
+                        // Skinning
                         else if (node.second == L"BONETRANSFORMS")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
                                 NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_BoneTransforms)));
                         }
+
+                        // Texture
                         else if (node.second == L"TEXTURE2D")
                         {
                             gfx::Texture2D::pointer tex; 
@@ -213,6 +316,11 @@ gfx::Material MaterialLoader::load(const std::string& path)
         m_pAssetContainer->addAsset(path, material);
         return material;
     }
+}
+
+void MaterialLoader::setRenderSettings( const gfx::RenderSettings& settings )
+{
+    m_RenderSettings = settings;
 }
 
 } } //end namespace

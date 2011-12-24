@@ -38,7 +38,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                             IFxVariable                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual T getValue(float normTime) const
+    virtual T getValue(float /*normTime*/) const
     {
         return m_Value;
     }

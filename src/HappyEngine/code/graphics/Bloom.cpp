@@ -50,8 +50,9 @@ Bloom::~Bloom()
     }
 }
 
-void Bloom::init()
+void Bloom::init(bool hdr)
 {
+    m_Hdr = hdr;
     //////////////////////////////////////////////////////////////////////////
     ///                             Shaders                                ///
     //////////////////////////////////////////////////////////////////////////
@@ -62,13 +63,17 @@ void Bloom::init()
 
     std::set<std::string> defineBrightPass;
     defineBrightPass.insert("BRIGHTPASS");
-    m_pDownSampleBrightPassShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
-                                        folder +  "deferred/post/downSample.frag", layout, defineBrightPass);
+    if (hdr)
+        defineBrightPass.insert("HDR");
+    m_pDownSampleBrightPassShader->initFromFile(folder + "shared/postShaderQuad.vert", 
+                                                folder + "post/bloom.frag", layout, defineBrightPass);
     m_DownSampleBrightPassMap = m_pDownSampleBrightPassShader->getShaderSamplerId("map");
-    m_DownSampleBrightPassLumMap = m_pDownSampleBrightPassShader->getShaderSamplerId("lumMap");
 
-    m_pDownSampleShader->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
-                              folder + "deferred/post/downSample.frag", layout);
+    if (hdr)
+        m_DownSampleBrightPassLumMap = m_pDownSampleBrightPassShader->getShaderSamplerId("lumMap");
+
+    m_pDownSampleShader->initFromFile(folder + "shared/postShaderQuad.vert", 
+                                      folder + "post/bloom.frag", layout);
     m_DownSampleMap = m_pDownSampleShader->getShaderSamplerId("map");
 
     for (int pass = 0; pass < 2; ++pass)
@@ -81,8 +86,8 @@ void Bloom::init()
         else
             definePass.insert("PASS2");
 
-        m_pBlurShaderPass[pass]->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
-                                      folder + "deferred/post/blur.frag", layout, definePass);
+        m_pBlurShaderPass[pass]->initFromFile(folder + "shared/postShaderQuad.vert", 
+                                              folder + "post/gaussblur.frag", layout, definePass);
         m_BlurMapPos[pass] = m_pBlurShaderPass[pass]->getShaderSamplerId("map");
     }
 
@@ -90,6 +95,8 @@ void Bloom::init()
     ///                             Quad                                   ///
     //////////////////////////////////////////////////////////////////////////
     m_pMesh = CONTENT->getFullscreenQuad();
+
+    resize();
 }
 
 void Bloom::resize()
@@ -141,8 +148,10 @@ void Bloom::resize()
     }
 }
 
-void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& lumMap )
+void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
 {
+    ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
+
     PROFILER_BEGIN("Bloom::render");
     GL::heBindVao(m_pMesh->getVertexArraysID());
 
@@ -150,7 +159,8 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
     GL::heBindFbo(m_FboId[0][0]);
     m_pDownSampleBrightPassShader->bind();
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassMap, pTexture);
-    m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, lumMap);
+    if (m_Hdr)
+        m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, pLumMap);
     GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
     glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
 

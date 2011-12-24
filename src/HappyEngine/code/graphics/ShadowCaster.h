@@ -22,15 +22,16 @@
 #define _HE_SHADOW_CASTER_H_
 #pragma once
 
-#include "Camera.h"
 #include "Light.h"
 #include "Texture2D.h"
-#include "Shader.h"
-#include "DrawManager.h"
-#include "DrawSettings.h"
+#include "RenderSettings.h"
+#include "DrawListContainer.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
+
+class Shader;
 
 class ShadowCaster
 {
@@ -38,9 +39,10 @@ public:
     ShadowCaster();
     virtual ~ShadowCaster();
 
-    void init(const DrawSettings& settings);
+    void init(const RenderSettings& settings);
+    void setSettings(const RenderSettings& settings);
     
-    void render(const std::vector<const IDrawable*>& elements, const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight);
+    void render(const DrawListContainer& elements, const DirectionalLight::pointer& pDirectionalLight);
 
 private:
 
@@ -49,19 +51,14 @@ private:
     const static int COUNT = DirectionalLight::CASCADES + 1;
     Texture2D::pointer m_pShadowTexture[COUNT]; //first = blur temp
     uint m_DepthRenderbuff;
-
-    Shader::pointer m_pShadowShader;
-    uint m_shaderWVPpos;
-
-    Shader::pointer m_pShadowShaderSkinned;
-    uint m_shaderSkinnedWVPpos;
-    uint m_shaderSkinnedBonespos;
-
-    Shader::pointer m_pShadowShaderInstanced;
-    uint m_shaderInstancedVPpos;
+    
+    Material m_MatSingle;
+    Material m_MatSkinned;
+    Material m_MatInstanced;
 
     Shader::pointer m_pShadowBlurShaderPass[2];
     uint m_BlurShaderTexPosPass[2];
+
     ModelMesh::pointer m_pQuad;
 
     ushort m_ShadowSize;

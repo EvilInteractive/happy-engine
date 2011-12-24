@@ -23,13 +23,13 @@
 #pragma once
 
 #include "IComponent.h"
-#include "IDrawable.h"
+#include "DefaultSingleDrawable.h"
 #include "IPickable.h"
 
 namespace he {
 namespace game {
     
-class ModelComponent : public IComponent, public gfx::IDrawable, public gfx::IPickable
+class ModelComponent : public gfx::DefaultSingleDrawable, public IComponent, public gfx::IPickable
 {
 public:
     ModelComponent();
@@ -49,17 +49,14 @@ public:
     ///                         IDrawable                                  ///
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material& getMaterial() const;
-    virtual const gfx::ModelMesh::pointer& getModel() const;   
+    virtual const gfx::ModelMesh::pointer& getModelMesh() const;   
     virtual mat44 getWorldMatrix() const;
-
-    virtual bool getCastsShadow() const;
-    virtual void setCastsShadow(bool casts);
     //////////////////////////////////////////////////////////////////////////
     
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
    
-    void setModel(const gfx::ModelMesh::pointer& pModel, bool isPickable = true);
+    void setModelMesh(const gfx::ModelMesh::pointer& pModel, bool isPickable = true);
 
     void setMaterial(const gfx::Material& material);
 
@@ -68,9 +65,7 @@ private:
     gfx::Material m_Material;
 
     mat44 m_mtxLocalTransform;
-
-    bool m_CastShadow;
-
+    
     Entity* m_pParent;
     
 

@@ -34,7 +34,7 @@ namespace gfx {
 class LightManager
 {
 public:
-	LightManager();
+    LightManager();
     virtual ~LightManager();
 
     const AmbientLight::pointer& setAmbientLight(const Color&         color, 
@@ -58,8 +58,8 @@ public:
                                                   const Color&          color, 
                                                   float                 multiplier);
 
-	const AmbientLight::pointer& getAmbientLight() const;
-	const DirectionalLight::pointer& getDirectionalLight() const;
+    const AmbientLight::pointer& getAmbientLight() const;
+    const DirectionalLight::pointer& getDirectionalLight() const;
     const std::vector<PointLight::pointer>& getPointLights() const;
     const std::vector<SpotLight::pointer>& getSpotLights() const;
 
@@ -67,10 +67,12 @@ public:
     void remove(const PointLight::pointer& pLight);
     void remove(const SpotLight::pointer& pLight);
 
+    static const VertexLayout& getVertexLayoutLightVolume();
+
 private:
 
     AmbientLight::pointer m_pAmbientLight;
-	DirectionalLight::pointer m_pDirectionalLight;
+    DirectionalLight::pointer m_pDirectionalLight;
 
     std::vector<PointLight::pointer> m_PointLightVector;
     std::vector<SpotLight::pointer> m_SpotLightVector;

@@ -1,8 +1,0 @@
-[Shader]
-shader = "deferred/pre/default.shader"
-
-[TEXTURE2D]
-diffuseMap = "gravel_diffuse.png"
-normalMap = "gravel_normal.png"
-specGlossIllMap = "gravel_sgi.png"
-

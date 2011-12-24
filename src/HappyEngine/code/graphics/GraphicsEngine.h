@@ -30,7 +30,7 @@
 
 #include <string>
 
-#include "DrawSettings.h"
+#include "RenderSettings.h"
 #include "ModelMesh.h"
 
 struct SDL_Window;
@@ -55,18 +55,18 @@ public:
 
     /* GENERAL */
     void init(bool useQt);
-    // only init when needed, because it requires extra FBO & shader
+
+    // only init picking when needed, because it requires extra FBO & shader
     void initPicking();
 
     void clearAll() const;
     void clearColor() const;
     void clearDepth() const;
 
-    void addToDrawList(const IDrawable* pDrawable);
+    void addToDrawList(IDrawable* pDrawable);
     InstancingManager* getInstancingManager() const;
 
     void drawScene();
-    void draw(const ModelMesh::pointer& pModelMesh);
     void present() const;
 
     void toggleFullscreen(bool isFullscreen);
@@ -88,9 +88,8 @@ public:
     uint getScreenHeight() const;
     const RectI& getViewport() const;
     LightManager* getLightManager() const;
-    const DrawSettings& getSettings() const;
-    Deferred3DRenderer* getDeferredRenderer() const;
-    const std::vector<const IDrawable*>& getDrawList() const;
+    const RenderSettings& getSettings() const;
+    const DrawManager* getDrawManager() const;
 
 private:
 
@@ -108,11 +107,12 @@ private:
     std::string m_WindowTitle;
 
     Color m_ClearColor;
-    Deferred3DRenderer* m_pDeferred3DRenderer;
     InstancingManager* m_pInstancingManager;
 
     DrawManager* m_pDrawManager;
-    DrawSettings m_Settings;
+    LightManager* m_pLightManager;
+
+    RenderSettings m_Settings;
     
     Picker* m_pPicker;
 

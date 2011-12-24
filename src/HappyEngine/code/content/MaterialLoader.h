@@ -24,6 +24,7 @@
 
 #include "AssetContainer.h"
 #include "Material.h"
+#include "RenderSettings.h"
 
 namespace he {
 namespace ct {
@@ -31,13 +32,17 @@ namespace ct {
 class MaterialLoader
 {
 public:
-	MaterialLoader();
+    MaterialLoader();
     virtual ~MaterialLoader();
     
     gfx::Material load(const std::string& path);
 
+    void setRenderSettings(const gfx::RenderSettings& settings);
+
 private:
     AssetContainer<gfx::Material>* m_pAssetContainer;
+
+    gfx::RenderSettings m_RenderSettings;
 
     //Disable default copy constructor and default assignment operator
     MaterialLoader(const MaterialLoader&);

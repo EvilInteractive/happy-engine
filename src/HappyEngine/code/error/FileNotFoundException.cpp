@@ -25,7 +25,7 @@ FileNotFoundException::FileNotFoundException() : Exception(L"File not found")
 {
 }
 FileNotFoundException::FileNotFoundException(const std::string& file) : 
-    Exception(L"Could not open file: " + std::wstring(file.cbegin(), file.cend()))
+    Exception(L"Could not open file: \"" + std::wstring(file.cbegin(), file.cend()) + L"\"")
 {
 }
 

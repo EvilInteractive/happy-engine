@@ -40,9 +40,6 @@ public:
     void createController(const std::string& id, bool dynamic, const ModelMesh::pointer& pMesh, const Material& material);
     InstancingController* getController(const std::string& id);
 
-    void draw();
-    void drawShadow();
-
 private:
 
     std::map<std::string, InstancingController*> m_Controllers;

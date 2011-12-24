@@ -89,46 +89,70 @@ bool validateProgram(GLuint programID)
 
     return succes;
 }
-bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout)
+bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout)
 {
-    return init(vsPath, fsPath, shaderLayout, std::set<std::string>(), std::vector<std::string>());
+    return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), std::vector<std::string>());
 }
-bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
-    return init(vsPath, fsPath, shaderLayout, std::set<std::string>(), outputs);
+    return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), outputs);
 }
-bool Shader::init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
+bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
 {
     ASSERT(m_Id != -1, "no need to init twice");
-    bool succes = true;
     
-    m_FragShaderName = fsPath;
-
     // Read VS and FS files --------------------------->
     io::FileReader reader;
+
     std::string strVS;
     std::string strFS;
     try 
     {
-        strVS = ct::details::ShaderPreProcessor::process(vsPath, defines);       
-        strFS = ct::details::ShaderPreProcessor::process(fsPath, defines);
+        reader.open(vsPath, io::FileReader::OpenType_ASCII);
+        strVS = reader.readToEnd();
+        reader.close();
+
+        reader.open(fsPath, io::FileReader::OpenType_ASCII);
+        strFS = reader.readToEnd();
+        reader.close();
     }
     catch (const err::FileNotFoundException& e)
     { std::wcout << e.getMsg(); return false; }
     // <-----------------------------------------------
 
+    return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
+}
+
+bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName)
+{
+    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), std::vector<std::string>());
+}
+bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName , const std::vector<std::string>& outputs)
+{
+    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), outputs);
+}
+bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
+{
+    bool succes = true;
+
+    m_VertShaderName = debugVertName;
+    m_FragShaderName = debugFragName;
+
+    std::string vsPost = ct::details::ShaderPreProcessor::process(vs, defines);       
+    std::string fsPost = ct::details::ShaderPreProcessor::process(fs, defines);
+
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
     m_FsId = glCreateShader(GL_FRAGMENT_SHADER);
 
-    const char* vsBuff(strVS.c_str());
+    const char* vsBuff(vsPost.c_str());
     glShaderSource(m_VsId, 1, &vsBuff, 0);
     glCompileShader(m_VsId);
-    succes = succes && validateShader(m_VsId, vsPath);
+    succes = succes && validateShader(m_VsId, m_VertShaderName);
 
-    const char* fsBuff(strFS.c_str());
+    const char* fsBuff(fsPost.c_str());
     glShaderSource(m_FsId, 1, &fsBuff, 0);
     glCompileShader(m_FsId);
-    succes = succes && validateShader(m_FsId, fsPath);
+    succes = succes && validateShader(m_FsId, m_FragShaderName);
 
     m_Id = glCreateProgram();
     glAttachShader(m_Id, m_VsId);
@@ -146,7 +170,7 @@ bool Shader::init(const std::string& vsPath, const std::string& fsPath, const Sh
     }
 
     glLinkProgram(m_Id);
-    
+
     succes = succes && validateProgram(m_Id);
 
     return succes;
@@ -240,6 +264,12 @@ void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
     ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, tex2D->getID());
 }
+void Shader::setShaderVar( uint id, const gfx::Texture2D* pTex2D ) const
+{
+    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    GL::heBindTexture2D(id, pTex2D->getID());
+}
+
 
 void Shader::setBuffer( uint id, const UniformBuffer::pointer& pBuffer )
 {

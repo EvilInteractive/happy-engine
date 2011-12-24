@@ -49,20 +49,4 @@ InstancingController* InstancingManager::getController( const std::string& id )
     return m_Controllers[id];
 }
 
-void InstancingManager::draw()
-{
-    std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<std::string, InstancingController*>& pair)
-    {
-        pair.second->draw();
-    });
-}
-
-void InstancingManager::drawShadow()
-{
-    std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<std::string, InstancingController*>& pair)
-    {
-        pair.second->drawShadow();
-    });
-}
-
 } } //end namespace

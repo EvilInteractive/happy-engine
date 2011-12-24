@@ -48,10 +48,23 @@ gfx::Shader::pointer ShaderLoader::load(const std::string& vsPath, const std::st
     else
     {
         gfx::Shader::pointer pShader(NEW gfx::Shader());
-        pShader->init(vsPath, fsPath, shaderLayout, outputs);
+        std::set<std::string> defines;
+        if (m_RenderSettings.enableShadows)
+            defines.insert("SHADOWS");
+        if (m_RenderSettings.enableSpecular)
+            defines.insert("SPECULAR");
+        if (m_RenderSettings.enableNormalMap)
+            defines.insert("NORMALMAP");
+
+        pShader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
         m_pAssetContainer->addAsset(key, pShader);
         return pShader;
     }
+}
+
+void ShaderLoader::setRenderSettings( const gfx::RenderSettings& settings )
+{
+    m_RenderSettings = settings;
 }
 
 } } //end namespace

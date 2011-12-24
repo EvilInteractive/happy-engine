@@ -14,6 +14,8 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Author: Bastian Damman
 
 #ifndef _HE_SHADER_H_
 #define _HE_SHADER_H_
@@ -157,9 +159,13 @@ public:
     Shader();
     virtual ~Shader();
 
-    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout);
-    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
-    bool init(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
+    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout);
+    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
+    
+    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName);
+    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::vector<std::string>& outputs);
+    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
 
     void bind();
 
@@ -180,6 +186,7 @@ public:
     void setShaderVar(uint id, const mat44& matrix) const;
     void setShaderVar(uint id, const std::vector<mat44>& matrixArray) const;
     void setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const;
+    void setShaderVar(uint id, const gfx::Texture2D* pTex2D) const;
 
     typedef boost::shared_ptr<Shader> pointer;
 
@@ -192,6 +199,7 @@ private:
     std::map<uint, UniformBuffer::pointer> m_UniformBufferMap;
 
     std::string m_FragShaderName;
+    std::string m_VertShaderName;
 
     static uint s_CurrentBoundShader;
 

@@ -26,6 +26,24 @@
     <Filter Include="data\shaders\deferred\post">
       <UniqueIdentifier>{98a8853b-0370-4b27-a0fc-c96a7b95c383}</UniqueIdentifier>
     </Filter>
+    <Filter Include="data\shaders\forward">
+      <UniqueIdentifier>{bd62a7ed-aec4-45ee-9985-91d1e709a6ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\packing">
+      <UniqueIdentifier>{21e06c36-1562-4ffb-807d-eed88b9e8c37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\shadow">
+      <UniqueIdentifier>{066a6950-d462-4e36-88cf-99a0e65a19de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\post">
+      <UniqueIdentifier>{5155ace7-61f0-40d1-8620-31ded735893c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\2D">
+      <UniqueIdentifier>{582fa050-1412-4828-a2f4-ad048633e5de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\shaders\shared">
+      <UniqueIdentifier>{d45e8334-0adb-4ced-9505-bf088419a70a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -80,53 +98,44 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\simpleShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\simpleShader.vert">
-      <Filter>data\shaders</Filter>
-    </None>
     <None Include="data\settings.ini">
       <Filter>data</Filter>
     </None>
-    <None Include="data\shaders\simpleTextureShader.frag">
-      <Filter>data\shaders</Filter>
+    <None Include="data\shaders\2D\billboardShader.vert">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\simpleTextureShader.vert">
-      <Filter>data\shaders</Filter>
+    <None Include="data\shaders\2D\pickingShader.frag">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\simple2DShader.frag">
-      <Filter>data\shaders</Filter>
+    <None Include="data\shaders\2D\pickingShader.vert">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\simple2DShader.vert">
-      <Filter>data\shaders</Filter>
+    <None Include="data\shaders\2D\simple2DShader.frag">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\simple2DTextureShader.frag">
-      <Filter>data\shaders</Filter>
+    <None Include="data\shaders\2D\simple2DShader.vert">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\simple2DTextureShader.vert">
-      <Filter>data\shaders</Filter>
+    <None Include="data\shaders\2D\simple2DTextureShader.frag">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\default.shader">
-      <Filter>data\shaders\deferred\pre</Filter>
+    <None Include="data\shaders\2D\simple2DTextureShader.vert">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\deferredPreShader.frag">
-      <Filter>data\shaders\deferred\pre</Filter>
+    <None Include="data\shaders\2D\simpleShader.frag">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\deferredPreShader.vert">
-      <Filter>data\shaders\deferred\pre</Filter>
+    <None Include="data\shaders\2D\simpleShader.vert">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\deferredPreShadowShader.frag">
-      <Filter>data\shaders\deferred\pre</Filter>
+    <None Include="data\shaders\2D\simpleTextureShader.frag">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\deferredPreShadowShader.vert">
-      <Filter>data\shaders\deferred\pre</Filter>
+    <None Include="data\shaders\2D\simpleTextureShader.vert">
+      <Filter>data\shaders\2D</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\encode.frag">
-      <Filter>data\shaders\deferred\pre</Filter>
-    </None>
-    <None Include="data\shaders\deferred\post\decode.frag">
-      <Filter>data\shaders\deferred\post</Filter>
+    <None Include="data\shaders\2D\billboardShader.frag">
+      <Filter>data\shaders\2D</Filter>
     </None>
     <None Include="data\shaders\deferred\post\deferredPostAmbientIllShader.frag">
       <Filter>data\shaders\deferred\post</Filter>
@@ -137,56 +146,68 @@
     <None Include="data\shaders\deferred\post\deferredPostShader.vert">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
-    <None Include="data\shaders\deferred\post\deferredPostShaderQuad.vert">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
     <None Include="data\shaders\deferred\post\deferredPostSLShader.frag">
       <Filter>data\shaders\deferred\post</Filter>
     </None>
-    <None Include="data\shaders\deferred\post\HDRtoLDR.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\deferred\post\downSample.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\deferred\post\lum.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\deferred\post\blur.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\billboardShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\billboardShader.vert">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\pickingShader.frag">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\pickingShader.vert">
-      <Filter>data\shaders</Filter>
-    </None>
-    <None Include="data\shaders\deferred\post\shadowBlur.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\ssaoShader.frag">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\ssaoShader.vert">
-      <Filter>data\shaders\deferred\post</Filter>
-    </None>
-    <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert">
+    <None Include="data\shaders\deferred\pre\deferredPreShader.frag">
       <Filter>data\shaders\deferred\pre</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\defaultSkinned.shader">
+    <None Include="data\shaders\deferred\pre\deferredPreShader.vert">
       <Filter>data\shaders\deferred\pre</Filter>
     </None>
     <None Include="data\shaders\deferred\pre\deferredPreShaderInstanced.vert">
       <Filter>data\shaders\deferred\pre</Filter>
     </None>
-    <None Include="data\shaders\deferred\pre\deferredPreShadowShaderInstanced.vert">
+    <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert">
       <Filter>data\shaders\deferred\pre</Filter>
+    </None>
+    <None Include="data\shaders\forward\forwardShader.vert">
+      <Filter>data\shaders\forward</Filter>
+    </None>
+    <None Include="data\shaders\forward\forwardShaderInstanced.vert">
+      <Filter>data\shaders\forward</Filter>
+    </None>
+    <None Include="data\shaders\forward\forwardShaderSkinned.vert">
+      <Filter>data\shaders\forward</Filter>
+    </None>
+    <None Include="data\shaders\forward\forwardShader.frag">
+      <Filter>data\shaders\forward</Filter>
+    </None>
+    <None Include="data\shaders\packing\decode.frag">
+      <Filter>data\shaders\packing</Filter>
+    </None>
+    <None Include="data\shaders\packing\encode.frag">
+      <Filter>data\shaders\packing</Filter>
+    </None>
+    <None Include="data\shaders\post\bloom.frag">
+      <Filter>data\shaders\post</Filter>
+    </None>
+    <None Include="data\shaders\post\gaussblur.frag">
+      <Filter>data\shaders\post</Filter>
+    </None>
+    <None Include="data\shaders\post\postEffects.frag">
+      <Filter>data\shaders\post</Filter>
+    </None>
+    <None Include="data\shaders\post\autoLum.frag">
+      <Filter>data\shaders\post</Filter>
+    </None>
+    <None Include="data\shaders\shadow\preShadowShaderInstanced.vert">
+      <Filter>data\shaders\shadow</Filter>
+    </None>
+    <None Include="data\shaders\shadow\preShadowShaderSkinned.vert">
+      <Filter>data\shaders\shadow</Filter>
+    </None>
+    <None Include="data\shaders\shadow\shadowBlur.frag">
+      <Filter>data\shaders\shadow</Filter>
+    </None>
+    <None Include="data\shaders\shadow\preShadowShader.frag">
+      <Filter>data\shaders\shadow</Filter>
+    </None>
+    <None Include="data\shaders\shadow\preShadowShader.vert">
+      <Filter>data\shaders\shadow</Filter>
+    </None>
+    <None Include="data\shaders\shared\postShaderQuad.vert">
+      <Filter>data\shaders\shared</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -35,12 +35,14 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
 {
     calculateWorld();
     m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
-    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", Deferred3DRenderer::getVertexLayoutLightVolume());
+    VertexLayout vertexLayout;
+    vertexLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
+    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
     m_pModel = m_pLightVolume;
 }
 void PointLight::calculateWorld()
 {
-    m_mtxWorld =  mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation);
+    m_mtxWorld = mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation);
 }
 
 
@@ -105,7 +107,7 @@ const Material& PointLight::getMaterial() const
 {
     return m_Material;
 }
-const ModelMesh::pointer& PointLight::getModel() const
+const ModelMesh::pointer& PointLight::getModelMesh() const
 {
     return m_pModel;
 }

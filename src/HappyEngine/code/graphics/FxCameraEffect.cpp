@@ -53,7 +53,7 @@ void FxCameraEffect::stop()
         CAMERAMANAGER->getActiveCamera()->setFxPositionOffset(vec3::zero);
 }
 
-void FxCameraEffect::tick( float currentTime, float dTime )
+void FxCameraEffect::tick( float currentTime, float /*dTime*/ )
 {
     if (m_ShakeEnabled && CAMERAMANAGER->getActiveCamera() != nullptr)
     {

@@ -31,10 +31,14 @@
 #include "Happy2DRenderer.h"
 #include "CameraManager.h"
 
-#include "DrawManager.h"
 #include "Picker.h"
-#include "Deferred3DRenderer.h"
 #include "InstancingManager.h"
+
+#include "DrawManager.h"
+#include "LightManager.h"
+
+#include "ContentManager.h"
+#include "FileNotFoundException.h"
 
 namespace he {
 namespace gfx {
@@ -47,8 +51,8 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_VSyncEnabled(true),
                                   m_pDrawManager(NEW DrawManager()),
                                   m_pPicker(NEW Picker()),
-                                  m_pDeferred3DRenderer(nullptr),
-                                  m_pInstancingManager(NEW InstancingManager())
+                                  m_pInstancingManager(NEW InstancingManager()),
+                                  m_pLightManager(NEW LightManager())
 {
 }
 
@@ -56,9 +60,9 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
 GraphicsEngine::~GraphicsEngine()
 {
     delete m_pDrawManager;
-    delete m_pDeferred3DRenderer;
     delete m_pPicker;
     delete m_pInstancingManager;
+    delete m_pLightManager;
     SDL_GL_DeleteContext(m_GLContext);
     SDL_DestroyWindow(m_pMainWindow);
 }
@@ -115,15 +119,66 @@ void GraphicsEngine::init(bool useQt)
     glEnable(GL_CULL_FACE);
 
     io::IniReader reader;
-    reader.open("gfxSettings.ini");
+    try { reader.open("settings.ini"); }
+    catch (const err::FileNotFoundException& /*e*/)
+    { std::cout << "settings.ini not found!, using defaults"; }
 
-    DrawSettings settings;
-    settings.setBloomEnabled(reader.readBool(L"GFX", L"bloom", false));
-    settings.setSSAOEnabled(reader.readBool(L"GFX", L"ssao", false));
-    settings.setShadowQuality((ShadowQuality)reader.readInt(L"GFX", L"shadowQuality", 1));
+    if (reader.isOpen())
+    {
+        m_Settings.enableBloom = reader.readBool(L"GFX", L"bloom", false);
+        m_Settings.enableSSAO = reader.readBool(L"GFX", L"ssao", false);
+        m_Settings.shadowMult = static_cast<byte>(clamp(reader.readInt(L"GFX", L"shadowQuality", 2), 0, 3));
+        if (m_Settings.shadowMult == 0)
+            m_Settings.enableShadows = false;
+        else
+            m_Settings.enableShadows = true;
 
-    m_pDeferred3DRenderer = NEW Deferred3DRenderer(settings);
-    m_pDrawManager->init(settings);
+        m_Settings.enableDeferred = reader.readBool(L"GFX", L"deferred", true);
+        m_Settings.enableHDR = reader.readBool(L"GFX", L"hdr", true);
+
+        m_Settings.enableLighting = reader.readBool(L"GFX", L"lighting", true);
+        m_Settings.enableSpecular = reader.readBool(L"GFX", L"specular", true);
+        m_Settings.enableNormalMap = reader.readBool(L"GFX", L"normalMap", true);
+
+        m_Settings.enableNormalEdgeDetect = reader.readBool(L"GFX", L"normalEdge", false);
+        m_Settings.enableDepthEdgeDetect = reader.readBool(L"GFX", L"depthEdge", true);
+        m_Settings.enableVignette = reader.readBool(L"GFX", L"vignette", true);
+        m_Settings.enableFog = reader.readBool(L"GFX", L"fog", true);
+    }
+    else
+    {
+        m_Settings.enableBloom = false;
+        m_Settings.enableSSAO = false;
+        m_Settings.shadowMult = 1;
+        if (m_Settings.shadowMult == 0)
+            m_Settings.enableShadows = false;
+        else
+            m_Settings.enableShadows = true;
+
+        m_Settings.enableDeferred = true;
+        m_Settings.enableHDR = true;
+
+        m_Settings.enableLighting = true;
+        m_Settings.enableSpecular = true;
+        m_Settings.enableNormalMap = true;
+
+        m_Settings.enableNormalEdgeDetect = false;
+        m_Settings.enableDepthEdgeDetect = true;
+        m_Settings.enableVignette = true;
+        m_Settings.enableFog = true;
+    }
+
+    m_Settings.ssaoSettings.radius = 0.2f;
+    m_Settings.ssaoSettings.intensity = 4.0f;
+    m_Settings.ssaoSettings.scale = 2.0f;
+    m_Settings.ssaoSettings.bias = 0.05f;
+    m_Settings.ssaoSettings.minIterations = 4;
+    m_Settings.ssaoSettings.maxIterations = 8;
+    m_Settings.ssaoSettings.passes = 1;
+
+    CONTENT->setRenderSettings(m_Settings);
+
+    m_pDrawManager->init(m_Settings);
 }
 void GraphicsEngine::initWindow()
 {
@@ -166,8 +221,8 @@ void GraphicsEngine::setScreenDimension(uint width, uint height)
     m_ScreenRect.height = height;
     if (m_pMainWindow != nullptr)
         SDL_SetWindowSize(m_pMainWindow, static_cast<int>(width), static_cast<int>(height));
-    if (m_pDeferred3DRenderer != nullptr)
-        m_pDeferred3DRenderer->resized();
+    if (m_pDrawManager != nullptr)
+        m_pDrawManager->onScreenResized();
 }
 uint GraphicsEngine::getScreenWidth() const
 {
@@ -224,6 +279,7 @@ void GraphicsEngine::setBackgroundColor(const Color& color)
 }
 void GraphicsEngine::clearAll() const
 {
+    GL::heBindFbo(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void GraphicsEngine::clearColor() const
@@ -238,14 +294,7 @@ void GraphicsEngine::drawScene()
 {
     GL::reset();
     clearAll();
-    m_pDeferred3DRenderer->begin();
     m_pDrawManager->draw();
-    m_pDeferred3DRenderer->end();
-}
-void GraphicsEngine::draw(const ModelMesh::pointer& pModelMesh)
-{
-    GL::heBindVao(pModelMesh->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, pModelMesh->getNumIndices(), pModelMesh->getIndexType(), 0);
 }
 void GraphicsEngine::present() const
 {    
@@ -255,27 +304,18 @@ void GraphicsEngine::present() const
 }
 LightManager* GraphicsEngine::getLightManager() const
 {
-    return m_pDeferred3DRenderer->getLightManager();
+    return m_pLightManager;
 }
-const DrawSettings& GraphicsEngine::getSettings() const
+const RenderSettings& GraphicsEngine::getSettings() const
 {
     return m_Settings;
 }
 
-void GraphicsEngine::addToDrawList( const IDrawable* pDrawable )
+void GraphicsEngine::addToDrawList( IDrawable* pDrawable )
 {
     m_pDrawManager->addDrawable(pDrawable);
 }
 
-Deferred3DRenderer* GraphicsEngine::getDeferredRenderer() const
-{
-    return m_pDeferred3DRenderer;
-}
-
-const std::vector<const IDrawable*>& GraphicsEngine::getDrawList() const
-{
-    return m_pDrawManager->getDrawList();
-}
 void GraphicsEngine::initPicking()
 {
     m_pPicker->initialize();
@@ -288,6 +328,11 @@ uint GraphicsEngine::pick(const vec2& screenPoint)
 InstancingManager* GraphicsEngine::getInstancingManager() const
 {
     return m_pInstancingManager;
+}
+
+const DrawManager* GraphicsEngine::getDrawManager() const
+{
+    return m_pDrawManager;
 }
 
 } } //end namespace

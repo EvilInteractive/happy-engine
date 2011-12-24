@@ -22,6 +22,7 @@
 #include "InstancingController.h"
 #include "HappyEngine.h"
 #include "CameraManager.h"
+#include "GraphicsEngine.h"
 #include "OpenGL.h"
 #include "I3DObject.h"
 
@@ -144,12 +145,16 @@ void InstancingController::init()
 
 
     GL::heBindVao(0);
+
+    GRAPHICS->addToDrawList(this);
 }
 
-void InstancingController::draw()
+void InstancingController::updateBuffer()
 {
-    uint count(m_Instances.size());
-    if (m_Dynamic || m_NeedsUpdate)
+    // only need to update once a frame
+    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevUpdateTime);
+
+    if ((m_Dynamic || m_NeedsUpdate) && elapsedTime.count() / static_cast<float>(boost::nano::den) * 1000 > 12.0f)
     {
         std::vector<mat44> matrixBuffer;
         matrixBuffer.reserve(m_Instances.size());
@@ -158,6 +163,7 @@ void InstancingController::draw()
         {
             matrixBuffer.push_back(pObj->getWorldMatrix());
         });
+        m_InstancesInBuffer = matrixBuffer.size();
 
         glBindBuffer(GL_ARRAY_BUFFER, m_MatrixBuffer);
 
@@ -171,20 +177,26 @@ void InstancingController::draw()
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, matrixBuffer.size()*sizeof(mat44), matrixBuffer.size() > 0 ? &matrixBuffer[0] : 0);
 
-        count = matrixBuffer.size();
         m_NeedsUpdate = false;
+        m_PrevUpdateTime = boost::chrono::high_resolution_clock::now();
     }
+}
 
-    m_Material.apply(nullptr, CAMERAMANAGER->getActiveCamera());
+void InstancingController::draw()
+{
+    updateBuffer();
+
     GL::heBindVao(m_Vao);
-    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), count);
+    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_InstancesInBuffer);
 }
 void InstancingController::drawShadow()
 {
-    //we use old buffer from regular draw
+    updateBuffer();
+
     GL::heBindVao(m_ShadowVao);
-    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_Instances.size());
+    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_InstancesInBuffer);
 }
+
 
 
 uint InstancingController::addInstance(const I3DObject* pObj)
@@ -192,11 +204,53 @@ uint InstancingController::addInstance(const I3DObject* pObj)
     m_NeedsUpdate = true;
     return m_Instances.insert(pObj);
 }
-
 void InstancingController::removeInstance( uint id )
 {
     ASSERT(m_Dynamic == true, "use dynamic buffer if you want to remove instances");
     m_Instances.remove(id);
+}
+
+const Material& InstancingController::getMaterial() const
+{
+    return m_Material;
+}
+const ModelMesh::pointer& InstancingController::getModelMesh() const
+{
+    return m_pModelMesh;
+}
+
+void InstancingController::applyMaterial(const ICamera* pCamera) const
+{
+    m_Material.apply(this, pCamera);
+}
+void InstancingController::applyMaterial( const Material& customMaterial, const ICamera* pCamera ) const
+{
+    customMaterial.apply(this, pCamera);
+}
+
+bool InstancingController::getCastsShadow() const
+{
+    return m_CastShadows;
+}
+
+void InstancingController::setCastsShadow( bool castShadow )
+{
+    m_CastShadows = castShadow;
+}
+
+bool InstancingController::isVisible() const
+{
+    return m_IsVisible;
+}
+
+void InstancingController::setVisible( bool visible )
+{
+    m_IsVisible = visible;
+}
+
+uint InstancingController::getCount() const
+{
+    return m_InstancesInBuffer;
 }
 
 } } //end namespace

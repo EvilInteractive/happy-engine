@@ -91,6 +91,7 @@ void Camera::setLens(float aspectRatio, float fov, float nearZ, float farZ)
     buildProjectionMatrix();
 }
 
+
 void Camera::buildViewMatrix()
 {
     vec3 pos(getPosition());

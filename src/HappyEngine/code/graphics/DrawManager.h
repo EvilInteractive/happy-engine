@@ -24,60 +24,65 @@
 #pragma once
 
 #include "IDrawable.h"
-#include "Camera.h"
-#include "DrawSettings.h"
+#include "DrawListContainer.h"
+#include "RenderSettings.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
 
 class ShadowCaster;
+class IRenderer;
+class PostProcesser;
+class ICamera;
 
 class DrawManager
 {
 public:
-
-    struct DrawElement
-    {
-        const IDrawable* pDrawable;
-        float sorter;
-        bool operator<(const DrawElement& other) const
-        {
-            return sorter < other.sorter;
-        }
-    };
-
-    enum Type
-    {
-        Type_FrontToBack,
-        Type_BackToFront
-    };
-
     /* CONSTRUCTOR - DESTRUCTOR */
     DrawManager();
     virtual ~DrawManager();
 
     /* GENERAL */
-    void init(const DrawSettings& settings);
+    void init(const RenderSettings& settings);
     void draw();
 
-    void addDrawable(const IDrawable* pDrawabe);
+    void addDrawable(IDrawable* pDrawable);
+    void removeDrawable(const IDrawable* pDrawable);
 
-    /* GETTERS */
-    static bool viewClip(const Camera* pCamera, const shapes::Sphere& boundingSphere);
+    static bool viewClip(const ICamera* pCamera, const shapes::Sphere& boundingSphere);
     static bool viewClip(const vec3& camPos, const vec3& camLook, float camFar, const shapes::Sphere& boundingSphere);
 
-    const std::vector<const IDrawable*>& getDrawList() const;
+    void onScreenResized();
+
+    /* GETTERS */
+    const DrawListContainer& getDrawList() const;
 
 private:
-
+    void initSharedTextures();
     void renderShadow();
 
     /* DATAMEMBERS */
-    Type m_Type;
-
-    std::vector<const IDrawable*> m_DrawList;
+    DrawListContainer m_DrawList;
 
     ShadowCaster* m_pShadowCaster;
+
+    IRenderer* m_pMainRenderer;
+    uint m_MainRenderFlags;
+
+    IRenderer* m_pFallbackRenderer;
+    uint m_FallbackRenderFlags;
+
+    PostProcesser* m_pPostProcesser;
+
+    IRenderer* m_pAfterPostRenderer;
+    uint m_AfterPostRenderFlags;
+
+    Texture2D* m_pColorRenderMap;
+    Texture2D* m_pNormalRenderMap;
+    Texture2D* m_pDepthRenderMap;
+
+    RenderSettings m_RenderSettings;
 
     /* DEFAULT COPY & ASSIGNMENT */
     DrawManager(const DrawManager&);

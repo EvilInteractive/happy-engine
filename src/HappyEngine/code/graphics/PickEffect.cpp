@@ -23,6 +23,10 @@
 #include "PickEffect.h"
 #include "HappyNew.h"
 
+#include "Shader.h"
+
+#include "ContentManager.h"
+
 #include <vector>
 #include <string>
 
@@ -30,58 +34,51 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-PickEffect::PickEffect() :	m_pShader(nullptr)
+PickEffect::PickEffect()
 {
 }
 
 PickEffect::~PickEffect()
 {
-	delete m_pShader;
 }
 
 /* GENERAL */
 void PickEffect::load()
 {
-	ShaderLayout layout;
-	layout.addElement(ShaderLayoutElement(0, "inPosition"));
+    ShaderLayout layout;
+    layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-	m_pShader = NEW Shader();
+    VertexLayout vertexLayout;
+    vertexLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
 
-	//std::vector<std::string> shaderOutputs;
-	////shaderOutputs.push_back("outId");
+    Shader::pointer pShader(NEW Shader());
 
-	bool shaderInit(m_pShader->init("../data/shaders/pickingShader.vert", "../data/shaders/pickingShader.frag", layout));
-	ASSERT(shaderInit == true);
+    //std::vector<std::string> shaderOutputs;
+    ////shaderOutputs.push_back("outId");
 
-	m_ShaderVPPos = m_pShader->getShaderVarId("matVP");
-	m_ShaderWPos = m_pShader->getShaderVarId("matW");
-	m_ShaderIDPos = m_pShader->getShaderVarId("id");
+    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    bool shaderInit(pShader->initFromFile(folder + "2D/pickingShader.vert", 
+                                          folder + "2D/pickingShader.frag", layout));
+    ASSERT(shaderInit == true);
 
-	m_pShader->bind();
-	m_pShader->setShaderVar(m_ShaderIDPos, vec4(0, 0, 0, 0));
-	mat44 matVP;
-	m_pShader->setShaderVar(m_ShaderVPPos, matVP);
-}
-void PickEffect::begin() const
-{
-	m_pShader->bind();
-}
-void PickEffect::end() const
-{
+    m_PickMaterial.setShader(pShader, vertexLayout, false);
+
+    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matVP"), ShaderVarType_ViewProjection)));
+    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matW"), ShaderVarType_World)));
+
+    m_IdVar = ShaderUserVar<vec4>::pointer(NEW ShaderUserVar<vec4>(pShader->getShaderVarId("id"), vec4(0, 0, 0, 0)));
+    m_PickMaterial.addVar(m_IdVar);
 }
 
 /* SETTERS */
-void PickEffect::setViewProjection(const mat44& mat)
-{
-	m_pShader->setShaderVar(m_ShaderVPPos, mat);
-}
-void PickEffect::setWorld(const mat44& mat)
-{
-	m_pShader->setShaderVar(m_ShaderWPos, mat);
-}
 void PickEffect::setID(const vec4& id)
 {
-	m_pShader->setShaderVar(m_ShaderIDPos, id);
+    dynamic_cast<ShaderUserVar<vec4>*>(m_IdVar.get())->setData(id); // TODO change this ugly line
+}
+
+const Material& PickEffect::getMaterial() const
+{
+    return m_PickMaterial;
 }
 
 } } //end namespace

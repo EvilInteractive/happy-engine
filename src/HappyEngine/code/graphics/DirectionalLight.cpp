@@ -63,12 +63,12 @@ const vec3& DirectionalLight::getColor() const
 
 void DirectionalLight::setDirection( const vec3& direction )
 {
-	m_Direction = direction;
+    m_Direction = direction;
 }
 
 const vec3& DirectionalLight::getDirection() const
 {
-	return m_Direction;
+    return m_Direction;
 }
 
 void DirectionalLight::setShadowMap( int index, const Texture2D::pointer& map )

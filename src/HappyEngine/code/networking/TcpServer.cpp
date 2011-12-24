@@ -90,7 +90,7 @@ void TcpServer::handleAccepted( const boost::system::error_code& error )
     }
 }
 
-void TcpServer::handleWrite( const boost::system::error_code& error, size_t bytesWritten )
+void TcpServer::handleWrite( const boost::system::error_code& error, size_t /*bytesWritten*/ )
 {
     if (error)
     {

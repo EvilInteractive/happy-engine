@@ -19,7 +19,7 @@
 
 #version 150 core
 
-#include "encode.frag"
+#include "packing/encode.frag"
 
 in vec2 passTexCoord;
 in vec3 passNormal;

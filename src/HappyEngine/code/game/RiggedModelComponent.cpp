@@ -47,12 +47,12 @@ void RiggedModelComponent::init( Entity* pParent )
 
 void RiggedModelComponent::serialize(SerializerStream& stream)
 {
-    stream << m_mtxLocalTransform << m_CastShadow;
+    stream << m_mtxLocalTransform;
 }
 
 void RiggedModelComponent::deserialize(const SerializerStream& stream)
 {
-    stream >> m_mtxLocalTransform >> m_CastShadow;
+    stream >> m_mtxLocalTransform;
 }
 
 const gfx::Material& RiggedModelComponent::getMaterial() const
@@ -60,7 +60,7 @@ const gfx::Material& RiggedModelComponent::getMaterial() const
     return m_Material;
 }
 
-const gfx::ModelMesh::pointer& RiggedModelComponent::getModel() const
+const gfx::ModelMesh::pointer& RiggedModelComponent::getModelMesh() const
 {
     return m_pModel;
 }
@@ -68,16 +68,6 @@ const gfx::ModelMesh::pointer& RiggedModelComponent::getModel() const
 mat44 RiggedModelComponent::getWorldMatrix() const
 {
     return m_pParent->getWorldMatrix() * m_mtxLocalTransform;
-}
-
-bool RiggedModelComponent::getCastsShadow() const
-{
-    return m_CastShadow;
-}
-
-void RiggedModelComponent::setCastsShadow( bool casts )
-{
-    m_CastShadow = casts;
 }
 
 void RiggedModelComponent::setLocalTransform( const mat44& mtxWorld )
@@ -90,7 +80,7 @@ const mat44& RiggedModelComponent::getLocalTransform() const
     return m_mtxLocalTransform;
 }
 
-void RiggedModelComponent::setModel( const gfx::ModelMesh::pointer& pModel )
+void RiggedModelComponent::setModelMesh( const gfx::ModelMesh::pointer& pModel )
 {
     m_pModel = pModel;
     m_BoneTransform.clear();

@@ -104,6 +104,15 @@
     <Filter Include="happyengine\physics\joints">
       <UniqueIdentifier>{ef5d7f97-1776-479e-8e22-b7cf44b5b22e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\graphics\rendering\post">
+      <UniqueIdentifier>{e916f496-5fbe-4e6d-9379-1a26f2a7fb87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\rendering\manager">
+      <UniqueIdentifier>{9d2a6ac4-a641-4108-a689-452f4e640388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\rendering\shadow">
+      <UniqueIdentifier>{86370e63-708d-4f2b-b468-9f985d59e357}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -262,20 +271,11 @@
     <ClCompile Include="code\graphics\Material.cpp">
       <Filter>happyengine\graphics\material</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\Bloom.cpp">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\DirectionalLight.cpp">
       <Filter>happyengine\graphics\light</Filter>
     </ClCompile>
     <ClCompile Include="code\OpenGL.cpp">
       <Filter>happyengine</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\DrawManager.cpp">
-      <Filter>happyengine\graphics\rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\DrawSettings.cpp">
-      <Filter>happyengine\graphics\rendering</Filter>
     </ClCompile>
     <ClCompile Include="code\audio\SoundEngine.cpp">
       <Filter>happyengine\audio</Filter>
@@ -288,12 +288,6 @@
     </ClCompile>
     <ClCompile Include="code\graphics\GraphicsEngine.cpp">
       <Filter>happyengine\graphics\rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\ShadowCaster.cpp">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\AutoExposure.cpp">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClCompile>
     <ClCompile Include="code\game\ModelComponent.cpp">
       <Filter>happyengine\game\components</Filter>
@@ -508,6 +502,33 @@
     <ClCompile Include="code\physics\PhysicsRevoluteJoint.cpp">
       <Filter>happyengine\physics\joints</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\AutoExposure.cpp">
+      <Filter>happyengine\graphics\rendering\post</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Bloom.cpp">
+      <Filter>happyengine\graphics\rendering\post</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\ShadowCaster.cpp">
+      <Filter>happyengine\graphics\rendering\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DrawListContainer.cpp">
+      <Filter>happyengine\graphics\rendering\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DrawManager.cpp">
+      <Filter>happyengine\graphics\rendering\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\PostProcesser.cpp">
+      <Filter>happyengine\graphics\rendering\post</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Forward3DRenderer.cpp">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DefaultSingleDrawable.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\DefaultSkinnedDrawable.cpp">
+      <Filter>happyengine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -693,26 +714,14 @@
     <ClInclude Include="code\graphics\Material.h">
       <Filter>happyengine\graphics\material</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Bloom.h">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\DirectionalLight.h">
       <Filter>happyengine\graphics\light</Filter>
     </ClInclude>
     <ClInclude Include="code\OpenGL.h">
       <Filter>happyengine</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\DrawManager.h">
-      <Filter>happyengine\graphics\rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\DrawSettings.h">
-      <Filter>happyengine\graphics\rendering</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\GraphicsEngine.h">
       <Filter>happyengine\graphics\rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\ShadowCaster.h">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
     <ClInclude Include="code\audio\SoundEngine.h">
       <Filter>happyengine\audio</Filter>
@@ -725,9 +734,6 @@
     </ClInclude>
     <ClInclude Include="code\audio\ISound.h">
       <Filter>happyengine\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\AutoExposure.h">
-      <Filter>happyengine\graphics\rendering\deferred</Filter>
     </ClInclude>
     <ClInclude Include="code\game\IComponent.h">
       <Filter>happyengine\game\components</Filter>
@@ -1025,6 +1031,42 @@
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsRevoluteJoint.h">
       <Filter>happyengine\physics\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\IRenderer.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ICamera.h">
+      <Filter>happyengine\graphics\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Bloom.h">
+      <Filter>happyengine\graphics\rendering\post</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\AutoExposure.h">
+      <Filter>happyengine\graphics\rendering\post</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ShadowCaster.h">
+      <Filter>happyengine\graphics\rendering\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\RenderSettings.h">
+      <Filter>happyengine\graphics\rendering\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DrawListContainer.h">
+      <Filter>happyengine\graphics\rendering\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DrawManager.h">
+      <Filter>happyengine\graphics\rendering\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\PostProcesser.h">
+      <Filter>happyengine\graphics\rendering\post</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Forward3DRenderer.h">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DefaultSingleDrawable.h">
+      <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\DefaultSkinnedDrawable.h">
+      <Filter>happyengine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

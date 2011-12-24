@@ -25,13 +25,16 @@
 #include "SlotPContainer.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "boost/chrono.hpp"
+
+#include "IDrawable.h"
 
 namespace he {
 namespace gfx {
 
 class I3DObject;
 
-class InstancingController
+class InstancingController : public IInstancedDrawable
 {
 public:
     InstancingController(bool dynamic, const ModelMesh::pointer& mesh, const Material& material);
@@ -39,13 +42,31 @@ public:
 
     uint addInstance(const I3DObject* pObj); //return id
     void removeInstance(uint id);
+    
+    virtual const Material& getMaterial() const;
+    virtual void applyMaterial(const ICamera* pCamera) const;
+    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const;
 
-    void draw();
-    void drawShadow();
+    virtual const ModelMesh::pointer& getModelMesh() const;
+
+    virtual bool getCastsShadow() const;
+    virtual void setCastsShadow(bool castShadow);
+
+    virtual bool isVisible() const;
+    virtual void setVisible(bool visible);
+
+    virtual float getDrawPriority(const he::gfx::ICamera *) const { return 0.0f; }
+
+    virtual bool isInCamera(const ICamera* /*pCamera*/) const { return true; }; 
+
+    virtual uint getCount() const;
+
+    virtual void draw();
+    virtual void drawShadow();
 
 private:
     void init();
-
+    void updateBuffer();
 
     bool m_Dynamic, m_NeedsUpdate;
 
@@ -58,7 +79,13 @@ private:
     ModelMesh::pointer m_pModelMesh;
     Material m_Material;
 
+    bool m_CastShadows;
+    bool m_IsVisible;
+
+    uint m_InstancesInBuffer;
     SlotPContainer<const I3DObject*> m_Instances;
+
+    boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
 
     //Disable default copy constructor and default assignment operator
     InstancingController(const InstancingController&);

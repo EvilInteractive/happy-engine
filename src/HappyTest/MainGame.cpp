@@ -70,6 +70,8 @@
 #include "Deferred3DRenderer.h"
 #include "CameraManager.h"
 
+#include "SlotPContainer.h"
+
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
@@ -149,7 +151,6 @@ void MainGame::load()
     //happycooker::HappyCooker* cooker(happycooker::HappyCooker::getInstance());
     //cooker->cookToBinObj("D:/File Server/Programming/happy-engine/art/models/export/car.dae", "D:/File Server/Programming/happy-engine/src/HappyTest/data/models/car.binobj");
 
-
     using namespace he;
 
     m_SplashImage = CONTENT->asyncLoadTexture("happy_splash.png");
@@ -201,13 +202,13 @@ void MainGame::load()
     m_pAxis = NEW he::game::Entity();
     game::ModelComponent* pAxisModelComp(NEW game::ModelComponent());
     pAxisModelComp->setMaterial(CONTENT->loadMaterial("axis.material"));
-    pAxisModelComp->setModel(CONTENT->asyncLoadModelMesh("axis.binobj", "M_Axis", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
+    pAxisModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("axis.binobj", "M_Axis", pAxisModelComp->getMaterial().getCompatibleVertexLayout()));
     m_pAxis->addComponent(pAxisModelComp);
 
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
     pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModel(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
@@ -228,7 +229,7 @@ void MainGame::load()
     m_pSky = NEW he::game::Entity();
     game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
     pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
-    pSkyModelComp->setModel(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSkyModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
     pSkyModelComp->setLocalTransform(mat44::createScale(vec3(500, 100, 500)));
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
@@ -277,10 +278,10 @@ void MainGame::load()
     pFollowCamera->setDistance(15);
     CAMERAMANAGER->addCamera("car", pFollowCamera);
 
-    CAMERAMANAGER->setActiveCamera("car");
+    CAMERAMANAGER->setActiveCamera("fly");
 
     // SSAO
-    he::gfx::Deferred3DRenderer::SSAOSettings settings;
+    /*he::gfx::Deferred3DRenderer::SSAOSettings settings;
 
     settings.radius = 0.25f;
     settings.intensity = 4.0f;
@@ -290,7 +291,7 @@ void MainGame::load()
     settings.minIterations = 2;
     settings.maxIterations = 4;
 
-    GRAPHICS->getDeferredRenderer()->setSSAOSettings(settings);
+    GRAPHICS->getDeferredRenderer()->setSSAOSettings(settings);*/
 
     //m_pFxEditorBinding->init();
     //GUI->setBlending(true);

@@ -27,13 +27,14 @@
 #include "InstancingManager.h"
 #include "ContentManager.h"
 #include "Happy2DRenderer.h"
+#include "CameraManager.h"
+#include "Camera.h"
+#include "LightManager.h"
 
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster(): m_pShadowShader(NEW Shader()),
-                              m_pShadowShaderSkinned(NEW Shader()),
-                              m_pShadowShaderInstanced(NEW Shader())
+ShadowCaster::ShadowCaster()
 {
 }
 
@@ -44,9 +45,9 @@ ShadowCaster::~ShadowCaster()
     glDeleteFramebuffers(1, &m_FboId);
 }
 
-void ShadowCaster::init(const DrawSettings& settings)
+void ShadowCaster::init(const RenderSettings& settings)
 {
-    m_ShadowSize = 512 * settings.getShadowMapMultiplier();
+    m_ShadowSize = 512 * settings.shadowMult;
     ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
     //////////////////////////////////////////////////////////////////////////
     ///                             Textures                               ///
@@ -61,9 +62,6 @@ void ShadowCaster::init(const DrawSettings& settings)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 
             m_ShadowSize, m_ShadowSize, 
             0, GL_RG, GL_FLOAT, 0);
@@ -89,34 +87,45 @@ void ShadowCaster::init(const DrawSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                             Shaders                                ///
     //////////////////////////////////////////////////////////////////////////
-    ShaderLayout shaderLayout;
-    shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+    Shader::pointer pShadowShaderSingle(NEW Shader());
+    Shader::pointer pShadowShaderSkinned(NEW Shader());
+    Shader::pointer pShadowShaderInstanced(NEW Shader());
+
+    // Single
+    ShaderLayout shaderSingleLayout;
+    shaderSingleLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+
+    VertexLayout vertexSingleLayout;
+    vertexSingleLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
 
     std::vector<std::string> outputs;
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
-    m_pShadowShader->init(folder + "deferred/pre/deferredPreShadowShader.vert", 
-                          folder + "deferred/pre/deferredPreShadowShader.frag", 
-                          shaderLayout, outputs);
-    m_shaderWVPpos = m_pShadowShader->getShaderVarId("matWVP");
-
+    pShadowShaderSingle->initFromFile(folder + "shadow/preShadowShader.vert", 
+                                      folder + "shadow/preShadowShader.frag", 
+                                      shaderSingleLayout, outputs);
+    
+    // Skinned
     ShaderLayout shaderSkinnedLayout;
     shaderSkinnedLayout.addElement(ShaderLayoutElement(0, "inPosition"));
     shaderSkinnedLayout.addElement(ShaderLayoutElement(1, "inBoneId"));
     shaderSkinnedLayout.addElement(ShaderLayoutElement(2, "inBoneWeight"));
 
-    m_pShadowShaderSkinned->init(folder + "deferred/pre/deferredPreShadowShaderSkinned.vert", 
-                                 folder + "deferred/pre/deferredPreShadowShader.frag", 
-                                 shaderSkinnedLayout, outputs);
-    m_shaderSkinnedWVPpos = m_pShadowShaderSkinned->getShaderVarId("matWVP");
-    m_shaderSkinnedBonespos = m_pShadowShaderSkinned->getShaderVarId("matBones");
+    VertexLayout vertexSkinnedLayout;
+    vertexSingleLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position,    12, 0));
+    vertexSingleLayout.addElement(VertexElement(1, VertexElement::Type_Vec4, VertexElement::Usage_BoneIDs,     16, 12));
+    vertexSingleLayout.addElement(VertexElement(2, VertexElement::Type_Vec4, VertexElement::Usage_BoneWeights, 16, 12+16));
 
-    m_pShadowShaderInstanced->init(folder + "deferred/pre/deferredPreShadowShaderInstanced.vert", 
-                                   folder + "deferred/pre/deferredPreShadowShader.frag", 
-                                   shaderLayout, outputs);
-    m_shaderInstancedVPpos = m_pShadowShaderInstanced->getShaderVarId("matVP");
+    pShadowShaderSkinned->initFromFile(folder + "shadow/preShadowShaderSkinned.vert", 
+                                       folder + "shadow/preShadowShader.frag", 
+                                       shaderSkinnedLayout, outputs);
 
-    ShaderLayout layout;
-    layout.addElement(ShaderLayoutElement(0, "inPosition"));
+    // Instanced
+    pShadowShaderInstanced->initFromFile(folder + "shadow/preShadowShaderInstanced.vert", 
+                                         folder + "shadow/preShadowShader.frag", 
+                                         shaderSingleLayout, outputs);
+
+    ShaderLayout blurLayout;
+    blurLayout.addElement(ShaderLayoutElement(0, "inPosition"));
     for (int pass(0); pass < 2; ++pass)
     {
         m_pShadowBlurShaderPass[pass] = Shader::pointer(NEW Shader());
@@ -127,46 +136,99 @@ void ShadowCaster::init(const DrawSettings& settings)
         else
             definePass.insert("PASS2");
 
-        m_pShadowBlurShaderPass[pass]->init(folder + "deferred/post/deferredPostShaderQuad.vert", 
-            folder + "deferred/post/shadowBlur.frag", layout, definePass);
+        m_pShadowBlurShaderPass[pass]->initFromFile(folder + "shared/postShaderQuad.vert", 
+                                                    folder + "shadow/shadowBlur.frag", blurLayout, definePass);
         m_BlurShaderTexPosPass[pass] = m_pShadowBlurShaderPass[pass]->getShaderSamplerId("map");
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Materials                              ///
+    //////////////////////////////////////////////////////////////////////////
+    m_MatSingle.setShader(pShadowShaderSingle, vertexSingleLayout, false);
+    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), ShaderVarType_WorldViewProjection)));
+    
+    m_MatSkinned.setShader(pShadowShaderSkinned, vertexSkinnedLayout, false);
+    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), ShaderVarType_WorldViewProjection)));
+    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), ShaderVarType_BoneTransforms)));
+    
+    m_MatInstanced.setShader(pShadowShaderInstanced, vertexSingleLayout, true);
+    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), ShaderVarType_ViewProjection)));
+
     m_pQuad = CONTENT->getFullscreenQuad();
+}
+void ShadowCaster::setSettings( const RenderSettings& settings )
+{
+    if (m_ShadowSize != settings.shadowMult * 512)
+    {
+        m_ShadowSize = 512 * settings.shadowMult;
+        //////////////////////////////////////////////////////////////////////////
+        ///                             Clean                                  ///
+        //////////////////////////////////////////////////////////////////////////
+        if (m_DepthRenderbuff != UINT_MAX)
+            glDeleteRenderbuffers(1, &m_DepthRenderbuff);
+        if (m_FboId != UINT_MAX)
+            glDeleteFramebuffers(1, &m_FboId);
+
+        init(settings);
+    }
 }
 
 
-mat44 getProjection(const Camera* pCamera, const mat44& mtxShadowView, float nearClip, float farClip)
+
+
+mat44 getProjection(const mat44& mtxShadowView, float nearClip, float farClip)
 {
-    float wFar = farClip * tan(pCamera->getFov()),          //half width
-          hFar = wFar / pCamera->getAspectRatio();          //half height
-    float wNear = nearClip * tan(pCamera->getFov()),        //half width
-          hNear = wNear / pCamera->getAspectRatio();        //half height
+    const Camera& camera(*CAMERAMANAGER->getActiveCamera());
+
+    float wFar = farClip * tan(camera.getFov()),          //half width
+          hFar = wFar / camera.getAspectRatio();          //half height
+    float wNear = nearClip * tan(camera.getFov()),        //half width
+          hNear = wNear / camera.getAspectRatio();        //half height
 
     std::vector<vec3> frustumPoints;
     frustumPoints.reserve(8);
     //Far plane
-    frustumPoints.push_back(pCamera->getLook() * farClip + pCamera->getUp() * hFar - pCamera->getRight() * wFar);
-    frustumPoints.push_back(pCamera->getLook() * farClip + pCamera->getUp() * hFar + pCamera->getRight() * wFar);
-    frustumPoints.push_back(pCamera->getLook() * farClip - pCamera->getUp() * hFar - pCamera->getRight() * wFar);
-    frustumPoints.push_back(pCamera->getLook() * farClip - pCamera->getUp() * hFar + pCamera->getRight() * wFar);
+    frustumPoints.push_back(camera.getLook() * farClip + camera.getUp() * hFar - camera.getRight() * wFar);
+    frustumPoints.push_back(camera.getLook() * farClip + camera.getUp() * hFar + camera.getRight() * wFar);
+    frustumPoints.push_back(camera.getLook() * farClip - camera.getUp() * hFar - camera.getRight() * wFar);
+    frustumPoints.push_back(camera.getLook() * farClip - camera.getUp() * hFar + camera.getRight() * wFar);
     //Near plane
-    frustumPoints.push_back(pCamera->getLook() * nearClip + pCamera->getUp() * hNear - pCamera->getRight() * wNear);
-    frustumPoints.push_back(pCamera->getLook() * nearClip + pCamera->getUp() * hNear + pCamera->getRight() * wNear);
-    frustumPoints.push_back(pCamera->getLook() * nearClip - pCamera->getUp() * hNear - pCamera->getRight() * wNear);
-    frustumPoints.push_back(pCamera->getLook() * nearClip - pCamera->getUp() * hNear + pCamera->getRight() * wNear);
+    frustumPoints.push_back(camera.getLook() * nearClip + camera.getUp() * hNear - camera.getRight() * wNear);
+    frustumPoints.push_back(camera.getLook() * nearClip + camera.getUp() * hNear + camera.getRight() * wNear);
+    frustumPoints.push_back(camera.getLook() * nearClip - camera.getUp() * hNear - camera.getRight() * wNear);
+    frustumPoints.push_back(camera.getLook() * nearClip - camera.getUp() * hNear + camera.getRight() * wNear);
 
     vec3 minP(FLT_MAX, FLT_MAX, FLT_MAX), maxP(FLT_MIN, FLT_MIN, FLT_MIN);
     std::for_each(frustumPoints.cbegin(), frustumPoints.cend(), [&](const vec3& point)
     {
-        vec3 p(mtxShadowView * (point + pCamera->getPosition()));
+        vec3 p(mtxShadowView * (point + camera.getPosition()));
         minP = minPerComponent(minP, p);
         maxP = maxPerComponent(maxP, p);
     });
     return mat44::createOrthoLH(minP.x, maxP.x, maxP.y, minP.y, min<float>(minP.z, 10), maxP.z);
 }
+struct ShadowCam : public ICamera
+{
+    mat44 viewProjection;
+    mat44 view;
+    mat44 projection;
 
-void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const Camera* pCamera, const DirectionalLight::pointer& pDirectionalLight )
+    float nearClip;
+    float farClip;
+
+    vec3 position;
+    vec3 look;
+
+    virtual const mat44& getView() const { return view; }
+    virtual const mat44& getProjection() const { return projection; }
+    virtual const mat44& getViewProjection() const { return viewProjection; };
+
+    virtual float getNearClip() const { return nearClip; };
+    virtual float getFarClip() const { return farClip; };
+    virtual vec3 getPosition() const { return position; };
+    virtual const vec3& getLook() const { return look; };
+};
+void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalLight::pointer& pDirectionalLight )
 {
     PROFILER_BEGIN("ShadowCaster::render");
     vec3 shadowLook(-normalize(pDirectionalLight->getDirection()));
@@ -176,12 +238,14 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     vec3 right(normalize(cross(shadowLook, up)));
     up = normalize(cross(shadowLook, right));
 
-    mat44 mtxShadowView(mat44::createLookAtLH(pCamera->getPosition() - shadowLook, pCamera->getPosition(), up));
+    const Camera& camera(*CAMERAMANAGER->getActiveCamera());
+
+    mat44 mtxShadowView(mat44::createLookAtLH(camera.getPosition() - shadowLook, camera.getPosition(), up));
     mat44 mtxShadowProjection[COUNT-1];
-    mtxShadowProjection[0] = getProjection(pCamera, mtxShadowView, pCamera->getNearClip(), 30);//25
-    mtxShadowProjection[1] = getProjection(pCamera, mtxShadowView, 20, 80);//75
-    mtxShadowProjection[2] = getProjection(pCamera, mtxShadowView, 70, 155);//150
-    mtxShadowProjection[3] = getProjection(pCamera, mtxShadowView, 145, pCamera->getFarClip());
+    mtxShadowProjection[0] = getProjection(mtxShadowView, camera.getNearClip(), 30);//25
+    mtxShadowProjection[1] = getProjection(mtxShadowView, 20, 80);//75
+    mtxShadowProjection[2] = getProjection(mtxShadowView, 70, 155);//150
+    mtxShadowProjection[3] = getProjection(mtxShadowView, 145, camera.getFarClip());
     
 
     //Begin drawing
@@ -193,69 +257,79 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     GRAPHICS->setViewport(he::RectI(0, 0, m_ShadowSize, m_ShadowSize));
 
 
-    GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-    
+    GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));   
+    GL::heSetCullFace(false);
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
+
     for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
     {   
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-        mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
 
+        ShadowCam shadowCam;
+        shadowCam.projection = mtxShadowProjection[i - 1];
+        shadowCam.view = mtxShadowView;
+        shadowCam.viewProjection = shadowCam.projection * shadowCam.view;
+        shadowCam.look = shadowLook;
+        shadowCam.position = camera.getPosition() - shadowLook * 500;       // HACK: hard coded values  TODO !!
+        shadowCam.farClip = 1000;
+        
         //////////////////////////////////////////////////////////////////////////
-        ///                         `Build DrawList                            ///
+        ///                          Build DrawLists                           ///
         //////////////////////////////////////////////////////////////////////////
-        std::vector<DrawManager::DrawElement> culledDrawList;
-        std::vector<DrawManager::DrawElement> culledSkinnedDrawList;
-        culledDrawList.reserve(drawables.size());
-        std::for_each(drawables.cbegin(), drawables.cend(), [&](const IDrawable* pDrawable)
+        std::vector<IDrawable*> culledDrawList;
+        std::vector<IDrawable*> culledSkinnedDrawList;
+
+        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Single | DrawListContainer::F_Sub_Skinned, [&](IDrawable* pDrawable)
         {
-            if (pDrawable->isVisible() && pDrawable->getCastsShadow() && pDrawable->getModel()->isLoaded())
+            if (pDrawable->isVisible() && pDrawable->getCastsShadow() && pDrawable->getModelMesh()->isLoaded())
             {
-                shapes::Sphere bS(pDrawable->getModel()->getBoundingSphere().getPosition() + pDrawable->getWorldMatrix().getTranslation(), 
-                    pDrawable->getModel()->getBoundingSphere().getRadius() * pDrawable->getWorldMatrix()(0, 0)); // HACK: only uniform scales
-
-                if (DrawManager::viewClip(pCamera, bS) == false)
+                if (pDrawable->isInCamera(&shadowCam))
                 {
-                    DrawManager::DrawElement e;
-                    e.pDrawable = pDrawable;
-                    e.sorter = lengthSqr(pCamera->getPosition() - e.pDrawable->getWorldMatrix().getTranslation());
-                    if (e.pDrawable->getBoneTransforms().size() > 0)
-                        culledSkinnedDrawList.push_back(e);
+                    if (pDrawable->isSkinned())
+                        culledSkinnedDrawList.push_back(pDrawable);
                     else
-                        culledDrawList.push_back(e);
+                        culledDrawList.push_back(pDrawable);
                 }
             }
         });
 
-        std::sort(culledDrawList.begin(), culledDrawList.end());
-        std::sort(culledSkinnedDrawList.begin(), culledSkinnedDrawList.end());
+        mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
+
+        // Sort
+        std::sort(culledDrawList.begin(), culledDrawList.end(), [](const IDrawable* d1, const IDrawable* d2)
+        {
+            return d1->getDrawPriority(CAMERAMANAGER->getActiveCamera()) > d2->getDrawPriority(CAMERAMANAGER->getActiveCamera());
+        });
+        std::sort(culledSkinnedDrawList.begin(), culledSkinnedDrawList.end(),  [](const IDrawable* d1, const IDrawable* d2)
+        {
+            return d1->getDrawPriority(CAMERAMANAGER->getActiveCamera()) > d2->getDrawPriority(CAMERAMANAGER->getActiveCamera());
+        });
 
         //////////////////////////////////////////////////////////////////////////
         ///                                 Draw                               ///
         //////////////////////////////////////////////////////////////////////////
-        m_pShadowShader->bind();
-        std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](const DrawManager::DrawElement& e)
+        std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
         {
-            m_pShadowShader->setShaderVar(m_shaderWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
-            GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
-            glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
+            pDrawable->applyMaterial(m_MatSingle, &shadowCam);
+            pDrawable->drawShadow();
         });
 
-        if (culledSkinnedDrawList.size() > 0)
-            m_pShadowShaderSkinned->bind();
-        std::for_each(culledSkinnedDrawList.cbegin(), culledSkinnedDrawList.cend(), [&](const DrawManager::DrawElement& e)
+        std::for_each(culledSkinnedDrawList.cbegin(), culledSkinnedDrawList.cend(), [&](IDrawable* pDrawable)
         {
-            m_pShadowShaderSkinned->setShaderVar(m_shaderSkinnedWVPpos, mtxShadowViewProjection * e.pDrawable->getWorldMatrix());
-            m_pShadowShaderSkinned->setShaderVar(m_shaderSkinnedBonespos, e.pDrawable->getBoneTransforms());
-            GL::heBindVao(e.pDrawable->getModel()->getVertexShadowArraysID());
-            glDrawElements(GL_TRIANGLES, e.pDrawable->getModel()->getNumIndices(), e.pDrawable->getModel()->getIndexType(), 0);
+            pDrawable->applyMaterial(m_MatSkinned, &shadowCam);
+            pDrawable->drawShadow();
         });
 
-        m_pShadowShaderInstanced->bind();
-        m_pShadowShaderInstanced->setShaderVar(m_shaderInstancedVPpos, mtxShadowViewProjection);
-        GRAPHICS->getInstancingManager()->drawShadow();
+        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
+        {
+            pDrawable->applyMaterial(m_MatInstanced, &shadowCam);
+            pDrawable->drawShadow();
+        });
 
-        pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * pCamera->getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
+        pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -281,16 +355,25 @@ void ShadowCaster::render(const std::vector<const IDrawable*>& drawables,  const
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0); 
     for (int i(0); i < COUNT - 1; ++i)
     {
-        GL::heBindTexture2D(5, m_pShadowTexture[i+1]->getID());
+        GL::heBindTexture2D(0, m_pShadowTexture[i+1]->getID());
         glGenerateMipmap(GL_TEXTURE_2D);
         pDirectionalLight->setShadowMap(i, m_pShadowTexture[i+1]);
     }
 
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    GL::heSetDepthWrite(true);
-    GL::heSetDepthRead(true);
+
+
+    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
+    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
+    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
+    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
+    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
+    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
+    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
+    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
+
     PROFILER_END("ShadowCaster::render");
 }
-    
+
 
 } } //end namespace

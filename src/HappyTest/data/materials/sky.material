@@ -1,5 +1,8 @@
-[Shader]
-shader = "deferred/pre/default.shader"
+[Deferred]
+shader = "defaultDeferred.shader"
+
+[Forward]
+shader = "defaultForward.shader"
 
 [TEXTURE2D]
 diffuseMap = "sky.png"

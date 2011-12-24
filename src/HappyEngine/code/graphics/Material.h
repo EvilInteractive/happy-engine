@@ -26,14 +26,15 @@
 #include "HappyTypes.h"
 #include "boost/shared_ptr.hpp"
 #include "ShaderVar.h"
-#include "Camera.h"
-#include "Color.h"
 #include "VertexLayout.h"
 
 namespace he {
 namespace gfx {
 
-class IDrawable;
+class IInstancedDrawable;
+class ISingleDrawable;
+class ISkinnedDrawable;
+class ICamera;
 
 class Material
 {
@@ -47,10 +48,20 @@ public:
 
     const VertexLayout& getCompatibleVertexLayout() const;
 
-    void apply(const IDrawable* pObj, const Camera* pCamera) const;
+    void apply(const IInstancedDrawable* pObj,  const ICamera* pCamera) const;
+    void apply(const ISingleDrawable*    pObj,  const ICamera* pCamera) const;
+    void apply(const ISkinnedDrawable*   pObj,  const ICamera* pCamera) const;
+
+    void setIsTranslucent(bool isTranslucent);
+    void setNoPost(bool noPost);
+
+    bool isTranslucent() const;
+    bool noPost() const;
+    bool isUsedForInstancing() const;
 
 private:
-    bool m_IsTranslucent, m_UsedForInstancing;
+
+    bool m_IsTranslucent, m_UsedForInstancing, m_NoPost;
 
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;

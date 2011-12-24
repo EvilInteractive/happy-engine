@@ -26,23 +26,49 @@
 #include "FileReader.h"
 #include <sstream>
 
+#include "ContentManager.h"
+#include "FileNotFoundException.h"
+
 namespace he {
 namespace ct {
 namespace details {
 
-std::string ShaderPreProcessor::process(const std::string& filepath, const std::set<std::string>& defines)
+std::string trimEnd(const std::string& str)
 {
-    io::FileReader reader;
-    reader.open(filepath, io::FileReader::OpenType_ASCII);
-
+    int i(str.size() - 1);
+    for (; i >= 0; --i)
+    {
+        if (str[i] != ' ')
+        {
+            break;
+        }
+    }
+    return str.substr(0, i + 1);
+}
+std::string ShaderPreProcessor::process(const std::string& code, const std::set<std::string>& defines)
+{
     std::stringstream stream;
+
+    std::stringstream linesStream;
+    std::vector<std::string> lines;
+    std::for_each(code.cbegin(), code.cend(), [&](const char& c)
+    {
+        if (c == '\n')
+        {
+            lines.push_back(linesStream.str());
+            linesStream.clear();
+            linesStream.str("");
+        }
+        else
+        {
+            linesStream << c;
+        }
+    });
 
     uint ifblocks = 0;
     uint discardBlock = 0;
-    while(reader.eof() == false)
-    {
-        std::string line(reader.readLine());
-        
+    std::for_each(lines.cbegin(), lines.cend(), [&](const std::string& line)
+    {        
         if (line.find("#endif") != std::string::npos)
         {
             --ifblocks;
@@ -52,28 +78,42 @@ std::string ShaderPreProcessor::process(const std::string& filepath, const std::
         else if (line.find("#if ") != std::string::npos)
         {
             ++ifblocks;
-            if (discardBlock == 0 && defines.find(line.substr(4)) == defines.cend())
+            if (discardBlock == 0 && defines.find(trimEnd(line.substr(line.find("#if ") + 4))) == defines.cend())
             {
                 discardBlock = ifblocks;
             }
         }
         else
         {
-            if (discardBlock != 0)
-                continue;
-            if (line.find("#include ") != std::string::npos)
+            if (discardBlock == 0)
             {
-                std::string fName(line.substr(10, line.length() - 11));
-                std::string fPath(filepath.substr(0, filepath.rfind("/") + 1));
-                stream << ShaderPreProcessor::process(fPath + fName, defines);
+                if (line.find("#include ") != std::string::npos)
+                {
+                    std::string includeRelativePath(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+                    ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
+                    std::string fName(line.substr(10, line.length() - 11));
+
+                    io::FileReader reader;
+
+                    try 
+                    {
+                        std::string str;
+                        reader.open(includeRelativePath + fName, io::FileReader::OpenType_ASCII);
+                        str = reader.readToEnd();
+                        reader.close();
+
+                        stream << process(str, defines);
+                    }
+                    catch (const err::FileNotFoundException& e)
+                    { std::wcout << e.getMsg(); }
+
+                    reader.close();
+                }
+                else
+                    stream << line << "\n";
             }
-            else
-                stream << line << "\n";
         }
-    }
-
-    reader.close();
-
+    });
     return stream.str();
 }
 

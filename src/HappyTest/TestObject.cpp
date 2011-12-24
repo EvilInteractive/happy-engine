@@ -107,9 +107,9 @@ TestObject::TestObject():
 
     m_pRiggedModelComponent = NEW game::RiggedModelComponent();
     m_pRiggedModelComponent->setMaterial(CONTENT->loadMaterial("car.material"));
-    m_pRiggedModelComponent->setModel(CONTENT->asyncLoadModelMesh("car.binobj", "M_Car", m_pRiggedModelComponent->getMaterial().getCompatibleVertexLayout()));
+    m_pRiggedModelComponent->setModelMesh(CONTENT->asyncLoadModelMesh("car.binobj", "M_Car", m_pRiggedModelComponent->getMaterial().getCompatibleVertexLayout()));
     addComponent(m_pRiggedModelComponent);
-    m_pRiggedModelComponent->getModel()->callbackIfLoaded(boost::bind(&TestObject::onModelLoaded, this));
+    m_pRiggedModelComponent->getModelMesh()->callbackIfLoaded(boost::bind(&TestObject::onModelLoaded, this));
 
 
 

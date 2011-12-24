@@ -26,10 +26,12 @@
 #include "mat44.h"
 #include "MathConstants.h"
 
+#include "ICamera.h"
+
 namespace he {
 namespace gfx {
 
-class Camera
+class Camera : public ICamera
 {
 public:
 

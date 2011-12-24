@@ -1,5 +1,8 @@
-[Shader]
-shader = "deferred/pre/defaultSkinned.shader"
+[Deferred]
+shader = "defaultDeferredSkinned.shader"
+
+[Forward]
+shader = "defaultForwardSkinned.shader"
 
 [TEXTURE2D]
 diffuseMap = "v8_vantage_color.png"

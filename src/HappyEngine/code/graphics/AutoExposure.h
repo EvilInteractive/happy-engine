@@ -32,14 +32,14 @@ namespace gfx {
 class AutoExposure
 {
 public:
-	AutoExposure();
+    AutoExposure();
     virtual ~AutoExposure();
 
     void init();
 
-    void calculate(const Texture2D::pointer& hdrMap);
+    void calculate(const Texture2D* pHdrMap);
 
-    const Texture2D::pointer& getLuminanceMap() const;
+    const Texture2D* getLuminanceMap() const;
 
 private:
 
@@ -47,7 +47,7 @@ private:
     uint m_HDRmapPos;
     uint m_PrevLumMapPos;
 
-    Texture2D::pointer m_pLumTexture[2]; //double buffered
+    Texture2D* m_pLumTexture[2]; //double buffered
     bool m_FirstBuffer;
 
     uint m_FboID;

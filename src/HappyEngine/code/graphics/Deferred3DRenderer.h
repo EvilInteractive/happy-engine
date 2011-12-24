@@ -28,6 +28,8 @@
 #include "Model.h"
 #include "ModelMesh.h"
 #include "Texture2D.h"
+#include "IRenderer.h"
+#include "DrawListContainer.h"
 
 namespace he {
 namespace gfx {
@@ -37,7 +39,7 @@ class Bloom;
 class AutoExposure;
 class DrawSettings;
 
-class Deferred3DRenderer
+class Deferred3DRenderer : public IRenderer
 {
 private:
     struct PostPointLightData
@@ -74,7 +76,7 @@ private:
         uint colorIllMap, normalMap, sgMap, depthMap;
         uint wvp;
     };
-    struct PostAmbIllLightData
+    struct PostAmbDirIllLightData
     {
         //Buffer
         UniformBuffer::pointer pLightBuffer;
@@ -103,96 +105,75 @@ private:
     };
 
 public:
-    Deferred3DRenderer(const DrawSettings& settings);
-    struct SSAOSettings
-    {
-        float radius;
-        float intensity;
-        float scale;
-        float bias;
-        uint minIterations;
-        uint maxIterations;
-        uint passes;
-    };
+    Deferred3DRenderer();
     virtual ~Deferred3DRenderer();
 
-    void begin();
-    void end();
+    virtual void init(const RenderSettings& settings, 
+        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget);
 
-    void resized();
+    virtual void setRenderSettings(const RenderSettings& settings);
+    virtual void onScreenResized();
 
-    LightManager* getLightManager() const;
-    const Texture2D::pointer& getDepthTexture() const;
+    virtual void draw(const DrawListContainer& drawList, uint renderFlags);
 
-    static const VertexLayout& getVertexLayoutLightVolume();
+    virtual void clear(bool color, bool normal, bool depth);
 
-    void enableSSAO(bool enable);
-    void setSSAOSettings(const SSAOSettings& settings);
+    virtual bool getSupportsTranslucency() const { return false; }
 
 private:
     static VertexLayout s_VertexLayoutFullscreenQuad;
 
-    void postAmbIllLight();
+    void compileShaders();
+
+    void postAmbDirIllLight();
     void postPointLights();
     void postSpotLights();
-    void postToneMap();
-    void calculateExposure();
 
-    void initToneMapShader(const std::string& folder, const ShaderLayout& layout);
+    void drawDebugTextures() const;
 
-    //FBO 1
+    //////////////////////////////////////////////////////////////////////////
+    ///                              FBO                                   ///
+    //////////////////////////////////////////////////////////////////////////
+    // Collection FBO
     uint m_CollectionFboId;
-    // Textures:
-    //      - Color.rgb, ill       GL_RGBA8
-    //      - spec, gloss,         GL_RGBA8
-    //      - Normal.xy            GL_R16G16
-    //      - Depth                GL_DEPTH24_STENCIL8
-    static const int TEXTURES = 4;
-    static const int TEXTURE_FORMAT[TEXTURES];
-    static const int TEXTURE_INTERNALFORMAT[TEXTURES];
-    static const int TEXTURE_ATTACHMENT[TEXTURES];
-    uint m_TextureId[TEXTURES];
-    Texture2D::pointer m_pTexture[TEXTURES];
+    Texture2D::pointer m_pColorIllTexture;
+    Texture2D::pointer m_pSGTexture;       // Mixed pointer, shared pointer because of shared textures
+    const Texture2D* m_pNormalTexture;
+    const Texture2D* m_pDepthTexture;
 
-    //FBO 2
+    // Render FBO
     uint m_RenderFboId;
-    uint m_RenderTextureId;
-    Texture2D::pointer m_pRenderTexture;
-
-    //SHARED FBO
-    uint m_DepthBufferId;
+    const Texture2D* m_pOutTexture;
+    
+    //////////////////////////////////////////////////////////////////////////
+    ///                              SHADERS                               ///
+    //////////////////////////////////////////////////////////////////////////
     Texture2D::pointer m_pColorRampTex;
-
-
-    //SHADERS
     PostSharedData m_SharedShaderData;
 
+    //Point light
     Shader* m_pPointLightShader;
     PostPointLightData m_PointLightData;
 
+    //Spot light
     Shader* m_pSpotLightShader;
     PostSpotLightData m_SpotLightData;
-    
-    Shader* m_pAmbIllShader;
-    PostAmbIllLightData m_AmbIllLightData;
 
-    Shader* m_pToneMapShader;
-    uint m_ToneMapShaderPos[8]; //8 values
-    float m_Exposure;
-    float m_Gamma;
+    //Amb&Dir&Ill light
+    Shader* m_pAmbDirIllShader;
+    PostAmbDirIllLightData m_AmbDirIllLightData;
 
+    //////////////////////////////////////////////////////////////////////////
+    ///                              Data                                  ///
+    ////////////////////////////////////////////////////////////////////////// 
     ModelMesh::pointer m_pQuad;
-    LightManager* m_pLightManager;   
-    Bloom* m_pBloom;
-    AutoExposure* m_pAutoExposure;
 
+    //////////////////////////////////////////////////////////////////////////
+    ///                              Settings                              ///
+    ////////////////////////////////////////////////////////////////////////// 
+    RenderSettings m_RenderSettings;
     bool m_ShowDebugTextures;
-    bool m_Bloom;
 
-    bool m_bSSAO;
-    uint m_ShaderSSAOPos[11];
-    Texture2D::pointer m_pRandomNormals;
-    SSAOSettings m_SSAOSettings;
     
     //Disable default copy constructor and default assignment operator
     Deferred3DRenderer(const Deferred3DRenderer&);
