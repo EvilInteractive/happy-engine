@@ -31,14 +31,12 @@ out vec3 passNormal;
 out vec3 passTangent;
 
 uniform mat4 matWVP;
-uniform mat4 matWorld;
+uniform mat4 matWV;
 
 uniform mat4[32] matBones;
 
 void main()
-{
-    mat4 world = matWorld;
-    
+{    
     ivec4 boneId = ivec4(inBoneId);
     
     vec4 position = matBones[boneId.x] * vec4(inPosition, 1.0f) * inBoneWeight.x;
@@ -53,13 +51,13 @@ void main()
     normal += matBones[boneId.y] * vec4(inNormal, 0.0f) * inBoneWeight.y;
     normal += matBones[boneId.z] * vec4(inNormal, 0.0f) * inBoneWeight.z;
     normal += matBones[boneId.w] * vec4(inNormal, 0.0f) * inBoneWeight.w; 
-    passNormal = (matWorld * normal).xyz;
+    passNormal = (matWV * normal).xyz;
     
     vec4 tangent = matBones[boneId.x] * vec4(inTangent, 0.0f) * inBoneWeight.x;
     tangent += matBones[boneId.y] * vec4(inTangent, 0.0f) * inBoneWeight.y;
     tangent += matBones[boneId.z] * vec4(inTangent, 0.0f) * inBoneWeight.z;
     tangent += matBones[boneId.w] * vec4(inTangent, 0.0f) * inBoneWeight.w; 
-    passTangent = (matWorld * tangent).xyz;
+    passTangent = (matWV * tangent).xyz;
 }
 
 

@@ -13,7 +13,7 @@ inBoneWeight = BONEWEIGHTS
 [uniform]
 matWVP = WORLDVIEWPROJECTION
 matBones = BONETRANSFORMS
-matWorld = WORLDVIEW
+matWV = WORLDVIEW
 diffuseMap = TEXTURE2D
 normalMap = TEXTURE2D
 specGlossIllMap = TEXTURE2D

@@ -30,11 +30,12 @@ out vec3 passNormal;
 out vec3 passTangent;
 
 uniform mat4 matVP;
+uniform mat4 matV;
 
 void main()
 {
 	gl_Position = matVP * inWorld * vec4(inPosition, 1.0f);
 	passTexCoord = inTexCoord;
-	passNormal = (inWorld * vec4(inNormal, 0.0f)).xyz;
-	passTangent = (inWorld * vec4(inTangent, 0.0f)).xyz;
+	passNormal = (matV * inWorld * vec4(inNormal, 0.0f)).xyz;
+	passTangent = (matV * inWorld * vec4(inTangent, 0.0f)).xyz;
 }

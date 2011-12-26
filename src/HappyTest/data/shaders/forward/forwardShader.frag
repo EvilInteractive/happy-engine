@@ -148,12 +148,12 @@ void main()
 
     //Specular
     vec3 spec = vec3(0.0f, 0.0f, 0.0f);
+    vec4 sgi = texture(specGlossIllMap, passTexCoord);
 #if SPECULAR
     if (shadow > 0.001f && halfLambert > 0.001f)
-    {
-        vec4 sg = texture(specGlossIllMap, passTexCoord);	
+    {	
         vec3 vCamDir = normalize(-position);
-        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
+        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.g * 100.0f) * sgi.r) * 5.0f * dirLight.color.rgb;
     }
 #endif
 
@@ -162,6 +162,6 @@ void main()
      
     //Out         
     outNormal = encodeNormal(normal);
-    outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
+    outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(sgi.b, sgi.b, sgi.b) * 10) * color.rgb
                         , 1.0f);
 }
