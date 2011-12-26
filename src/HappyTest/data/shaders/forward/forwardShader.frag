@@ -27,7 +27,7 @@ out vec2 outNormal;
 in vec2 passTexCoord;
 in vec3 passNormal;
 in vec3 passTangent;
-in vec4 passPosition;
+in vec3 passPosition;
 
 
 uniform sampler2D diffuseMap;
@@ -110,7 +110,7 @@ void main()
 {
     vec2 ndc = passTexCoord * 2.0f - 1.0f;
         
-    vec3 position = passPosition.xyz;
+    vec3 position = passPosition;
 
     vec3 lightDir = normalize(dirLight.direction);
           
@@ -153,7 +153,7 @@ void main()
     if (shadow > 0.001f && halfLambert > 0.001f)
     {	
         vec3 vCamDir = normalize(-position);
-        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.g * 100.0f) * sgi.r) * 5.0f * dirLight.color.rgb;
+        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sgi.g * 100.0f) * sgi.r) * 10.0f * dirLight.color.rgb;
     }
 #endif
 

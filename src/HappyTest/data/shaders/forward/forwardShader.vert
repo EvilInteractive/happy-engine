@@ -27,15 +27,15 @@ in vec3 inTangent;
 out vec2 passTexCoord;
 out vec3 passNormal;
 out vec3 passTangent;
-out vec4 passPosition;
+out vec3 passPosition;
 
 uniform mat4 matWVP;
 uniform mat4 matWV;
 
 void main()
 {
-    passPosition = matWVP * vec4(inPosition, 1.0f);
-    gl_Position = passPosition;
+    gl_Position = matWVP * vec4(inPosition, 1.0f);
+    passPosition = (matWV * vec4(inPosition, 1.0f)).xyz;
     passTexCoord = inTexCoord;
     passNormal = (matWV * vec4(inNormal, 0.0f)).xyz;
     passTangent = (matWV * vec4(inTangent, 0.0f)).xyz;

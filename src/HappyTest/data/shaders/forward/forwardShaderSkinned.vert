@@ -29,6 +29,7 @@ in vec4 inBoneWeight;
 out vec2 passTexCoord;
 out vec3 passNormal;
 out vec3 passTangent;
+out vec3 passPosition;
 
 uniform mat4 matWVP;
 uniform mat4 matWV;
@@ -44,6 +45,8 @@ void main()
     position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
     position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
     gl_Position = matWVP * vec4(position.xyz, 1.0f);
+    
+    passPosition = (matWV * vec4(position.xyz, 1.0f)).xyz;
     
     passTexCoord = inTexCoord;
     

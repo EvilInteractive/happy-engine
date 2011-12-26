@@ -30,12 +30,14 @@
 #include "CameraManager.h"
 #include "Camera.h"
 #include "LightManager.h"
+#include "Console.h"
 
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster()
+ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0)
 {
+    CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
 }
 
 
@@ -281,7 +283,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
         std::vector<IDrawable*> culledDrawList;
         std::vector<IDrawable*> culledSkinnedDrawList;
 
-        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Single | DrawListContainer::F_Sub_Skinned, [&](IDrawable* pDrawable)
+        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Tranlucent | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Single | DrawListContainer::F_Sub_Skinned, [&](IDrawable* pDrawable)
         {
             if (pDrawable->isVisible() && pDrawable->getCastsShadow() && pDrawable->getModelMesh()->isLoaded())
             {
@@ -322,7 +324,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
             pDrawable->drawShadow();
         });
 
-        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
+        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Tranlucent | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
         {
             pDrawable->applyMaterial(m_MatInstanced, &shadowCam);
             pDrawable->drawShadow();
@@ -361,16 +363,17 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
 
-
-    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
-    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
-    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
-    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
-    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
-    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
-    //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
-    //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
-
+    if (m_ShowShadowDebug)
+    {
+        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
+            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
+        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
+            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
+        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
+            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
+        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
+            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
+    }
 }
 
 

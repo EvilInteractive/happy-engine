@@ -63,6 +63,8 @@ private:
 
     ushort m_ShadowSize;
 
+    bool m_ShowShadowDebug;
+
     //Disable default copy constructor and default assignment operator
     ShadowCaster(const ShadowCaster&);
     ShadowCaster& operator=(const ShadowCaster&);
