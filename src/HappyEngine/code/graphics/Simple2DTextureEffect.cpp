@@ -87,6 +87,11 @@ void Simple2DTextureEffect::setDiffuseMap(const he::gfx::Texture2D::pointer& dif
     m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
 }
 
+void Simple2DTextureEffect::setDiffuseMap( const he::gfx::Texture2D* diffuseMap ) const
+{
+    m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+}
+
 void Simple2DTextureEffect::setAlpha(const float alpha) const
 {
     m_pShader->setShaderVar(m_ShaderAlphaPos, alpha);

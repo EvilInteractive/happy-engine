@@ -237,12 +237,16 @@ void HappyEngine::start(gfx::HappyQtWidget* pWidget)
 #endif
 void HappyEngine::loop()
 {
+    PROFILER_BEGIN("Main Loop");
     boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
     m_PrevTime = boost::chrono::high_resolution_clock::now();
     float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
     updateLoop(dTime);
     if (m_SubEngines & SubEngine_Graphics)
+    {
         drawLoop();
+    }
+    PROFILER_END();
 
 #ifdef HE_ENABLE_QT
     if ((m_SubEngines & SubEngine_Qt) && m_Quit == false)
@@ -251,6 +255,7 @@ void HappyEngine::loop()
 }
 void HappyEngine::updateLoop(float dTime)
 {
+    PROFILER_BEGIN("Update Loop");
     if ((m_SubEngines & SubEngine_Qt) != SubEngine_Qt)
     {
         SDL_Event event;
@@ -281,9 +286,11 @@ void HappyEngine::updateLoop(float dTime)
     m_pGame->tick(dTime);
 
     CONSOLE->tick();
+    PROFILER_END();
 }
 void HappyEngine::drawLoop()
 {
+    PROFILER_BEGIN("Draw Loop");
     // display 3D scene
     GRAPHICS->drawScene();
 
@@ -307,6 +314,7 @@ void HappyEngine::drawLoop()
 #endif
     if (m_SubEngines & SubEngine_Graphics)
         m_pGraphicsEngine->present();
+    PROFILER_END();
 }
 
 HappyEngine* HappyEngine::getPointer()

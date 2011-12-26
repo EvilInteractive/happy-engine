@@ -40,7 +40,7 @@ public:
 
     /* GENERAL */
     virtual void init(const RenderSettings& settings, 
-        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget);
+        const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget);
 
     virtual void setRenderSettings(const RenderSettings& settings);
     virtual void onScreenResized();
@@ -58,10 +58,10 @@ private:
     uint m_FboId;
     uint m_DrawBuffers[2];
 
-    const Texture2D* m_pOutColorTexture;
+    Texture2D::pointer m_pOutColorTexture;
     bool m_OwnsColorBuffer;
-    const Texture2D* m_pOutNormalTexture;
-    const Texture2D* m_pOutDepthTexture;
+    Texture2D::pointer m_pOutNormalTexture;
+    Texture2D::pointer m_pOutDepthTexture;
 
     ModelMesh::pointer m_pQuad;
 

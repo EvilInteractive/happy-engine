@@ -32,16 +32,14 @@ namespace he {
 
 AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true)
 {
-    m_pLumTexture[0] = NEW Texture2D();
-    m_pLumTexture[1] = NEW Texture2D();
+    m_pLumTexture[0] = Texture2D::pointer(NEW Texture2D());
+    m_pLumTexture[1] = Texture2D::pointer(NEW Texture2D());
 }
 
 
 AutoExposure::~AutoExposure()
 {
     glDeleteFramebuffers(1, &m_FboID);
-    delete m_pLumTexture[0];
-    delete m_pLumTexture[1];
 }
 
 void AutoExposure::init()
@@ -91,9 +89,8 @@ void AutoExposure::init()
     m_pQuad = CONTENT->getFullscreenQuad();
 }
 
-void AutoExposure::calculate( const Texture2D* pHdrMap )
+void AutoExposure::calculate( const Texture2D::pointer& pHdrMap )
 {
-    PROFILER_BEGIN("AutoExposure::calculate");
     m_FirstBuffer = !m_FirstBuffer;
 
     GL::heBlendEnabled(false);
@@ -104,10 +101,9 @@ void AutoExposure::calculate( const Texture2D* pHdrMap )
     m_pLumShader->setShaderVar(m_PrevLumMapPos, m_pLumTexture[m_FirstBuffer? 1 : 0]);
     GL::heBindVao(m_pQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-    PROFILER_END("AutoExposure::calculate");
 }
 
-const Texture2D* AutoExposure::getLuminanceMap() const
+const Texture2D::pointer& AutoExposure::getLuminanceMap() const
 {
     return m_pLumTexture[m_FirstBuffer? 0 : 1];
 }

@@ -44,6 +44,7 @@ public:
 
     void setWorldMatrix(const he::mat44& mat) const;
     void setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const;
+    void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
     void setAlpha(const float alpha) const;
     void setTCOffset(const vec2& offset) const;
     void setTCScale(const vec2& scale) const;

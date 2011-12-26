@@ -384,7 +384,7 @@ void MainGame::tick(float dTime)
 
     m_pFPSGraph->tick(dTime, 0.5f);
 
-    PROFILER_END("MainGame::tick");
+    PROFILER_END();
 }
 void MainGame::drawGui()
 {
@@ -457,7 +457,7 @@ void MainGame::drawGui()
     m_pTestGrid->draw();
     //HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
     HE3D->end();
-    PROFILER_END("MainGame::drawGui");
+    PROFILER_END();
 }
 
 } //end namespace

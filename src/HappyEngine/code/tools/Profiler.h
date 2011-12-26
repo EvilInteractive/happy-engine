@@ -25,6 +25,8 @@
 #include <map>
 #include <deque>
 #include "boost/chrono.hpp"
+#include "Text.h"
+#include "Font.h"
 
 namespace he {
 namespace tools {
@@ -48,7 +50,7 @@ public:
     static void dispose();
 
     void begin(const std::string& name);
-    void end(const std::string& name);
+    void end();
 
     void draw() const;
     
@@ -58,8 +60,27 @@ private:
 
     static Profiler* s_Profiler;
 
+    struct ProfileTreeNode
+    {
+        ProfileTreeNode* m_Parent;
+        std::deque<ProfileData> m_Data;
+        std::string m_Name;
+        std::map<std::string, ProfileTreeNode> m_Nodes;
+
+        bool operator<(const ProfileTreeNode& node) const
+        {
+            return m_Name < node.m_Name;
+        }
+    };
+
     static const int MAX_DATA = 50;
-    std::map<std::string, std::deque<ProfileData>> m_Data;
+    std::map<std::string, ProfileTreeNode> m_Data;
+
+    void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth) const;
+
+    ProfileTreeNode* m_CurrentNode;
+
+    gfx::Font::pointer m_pFont;
 
     //Disable default copy constructor and default assignment operator
     Profiler(const Profiler&);
@@ -67,8 +88,8 @@ private:
 };
 #define PROFILER he::tools::Profiler::getInstance()
 
-#define PROFILER_BEGIN(name) PROFILER->begin(name);
-#define PROFILER_END(name) PROFILER->end(name);
+#define PROFILER_BEGIN(name) PROFILER->begin(name)
+#define PROFILER_END PROFILER->end
 
 } } //end namespace
 

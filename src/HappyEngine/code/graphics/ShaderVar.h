@@ -33,6 +33,7 @@ enum ShaderVarType
 {
     ShaderVarType_WorldViewProjection,
     ShaderVarType_ViewProjection,
+    ShaderVarType_View,
     ShaderVarType_World,
     ShaderVarType_WorldView,
     ShaderVarType_WorldPosition,

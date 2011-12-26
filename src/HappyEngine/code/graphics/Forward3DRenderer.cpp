@@ -67,7 +67,7 @@ const char* fragQuadShader =
 
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-Forward3DRenderer::Forward3DRenderer(): m_pOutColorTexture(nullptr), m_pOutNormalTexture(nullptr), m_pOutDepthTexture(nullptr),
+Forward3DRenderer::Forward3DRenderer():
     m_FboId(UINT_MAX), m_pQuadShader(nullptr)
 {
 }
@@ -76,25 +76,16 @@ Forward3DRenderer::~Forward3DRenderer()
 {
     if (m_FboId != 0 || m_FboId != UINT_MAX)
         glDeleteFramebuffers(1, &m_FboId);
-    if (m_OwnsColorBuffer)
-        delete m_pOutColorTexture;
     delete m_pQuadShader;
 }
 
 void Forward3DRenderer::init( const RenderSettings& settings, 
-    const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget )
+    const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget )
 {
     m_pQuad = CONTENT->getFullscreenQuad();
 
     m_pOutColorTexture = pOutTarget;
-    if (m_pOutColorTexture == nullptr)
-    {
-        m_OwnsColorBuffer = true;
-    }
-    else
-    {
-        m_OwnsColorBuffer = false;
-    }
+    m_OwnsColorBuffer = m_pOutColorTexture == nullptr;
 
     m_pOutNormalTexture = pOutNormalTarget;
     m_pOutDepthTexture = pOutDepthTarget;
@@ -117,11 +108,11 @@ void Forward3DRenderer::initFbo()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
         //const cast to keep code clean
         if (m_pOutColorTexture == nullptr)
-            m_pOutColorTexture = NEW Texture2D();
-        const_cast<Texture2D*>(m_pOutColorTexture)->init(colorId, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), GL_RGBA8);
+            m_pOutColorTexture = Texture2D::pointer(NEW Texture2D());
+        m_pOutColorTexture->init(colorId, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), GL_RGBA8);
     }
 
-    if (m_FboId != 0 || m_FboId != UINT_MAX)
+    if ((m_FboId == 0 || m_FboId == UINT_MAX) == false)
         glDeleteFramebuffers(1, &m_FboId);
 
     m_DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
@@ -174,7 +165,7 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
     {
         const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
         glDrawBuffers(1, m_DrawBuffers);
-        GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+        GL::heClearColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
         glClear(GL_COLOR_BUFFER_BIT);
     }
     glDrawBuffers(m_pOutNormalTexture == nullptr? 1 : 2, m_DrawBuffers);
@@ -209,15 +200,15 @@ void Forward3DRenderer::clear( bool color, bool normal, bool depth )
 {
     GL::heBindFbo(m_FboId);
 
-    int numBuffers = 0;
+    int numBuffers(0);
     GLenum buffers[2];
     if (color)
         buffers[numBuffers++] = GL_COLOR_ATTACHMENT0;
     if (normal)
         buffers[numBuffers++] = GL_COLOR_ATTACHMENT1;
 
-    glDrawBuffers(numBuffers, m_DrawBuffers);
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+    glDrawBuffers(numBuffers, buffers);
+    GL::heClearColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
 
     GLbitfield flags(0);
     if (color || normal)

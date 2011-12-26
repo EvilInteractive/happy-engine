@@ -22,16 +22,18 @@
 #include "Profiler.h"
 #include "HappyNew.h"
 #include "Happy2DRenderer.h"
-#include "Text.h"
+
+#include "ContentManager.h"
 
 namespace he {
 namespace tools {
 
 Profiler* Profiler::s_Profiler = nullptr;
 
-Profiler::Profiler()
+Profiler::Profiler(): m_CurrentNode(nullptr)
 {
     GUI->createLayer("profiler", 1);
+    m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11, false, false);
 }
 
 
@@ -54,41 +56,73 @@ void Profiler::dispose()
 
 void Profiler::begin( const std::string& name )
 {
-    if (m_Data.find(name) == m_Data.cend())
-        m_Data[name] = std::deque<ProfileData>();
-    if (m_Data[name].size() == MAX_DATA)
-        m_Data[name].pop_front();
-    m_Data[name].push_back(ProfileData());
-    m_Data[name].back().startTime = boost::chrono::high_resolution_clock::now();
+    std::map<std::string, ProfileTreeNode>& currentBranch(m_CurrentNode != nullptr ? m_CurrentNode->m_Nodes : m_Data);
+    
+    if (currentBranch.find(name) == currentBranch.cend())
+    {
+        ProfileTreeNode node;
+        node.m_Name = name;
+        node.m_Parent = m_CurrentNode;
+        currentBranch[name] = node;
+    }
+    m_CurrentNode = &currentBranch[name];
+
+    if (m_CurrentNode->m_Data.size() == MAX_DATA)
+        m_CurrentNode->m_Data.pop_front();
+    m_CurrentNode->m_Data.push_back(ProfileData());
+    m_CurrentNode->m_Data.back().startTime = boost::chrono::high_resolution_clock::now();
 }
 
-void Profiler::end( const std::string& name )
+void Profiler::end()
 {
-    m_Data[name].back().endTime = boost::chrono::high_resolution_clock::now();
+    ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
+    m_CurrentNode->m_Data.back().endTime = boost::chrono::high_resolution_clock::now();
+    m_CurrentNode = m_CurrentNode->m_Parent;
 }
+void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth) const
+{
+    double avgTime(0.0);
+    std::for_each(node.m_Data.cbegin(), node.m_Data.cend()-1, [&](const ProfileData& data)
+    {
+        avgTime += data.getDuration() * 1000;
+    });
+    char buff[16];
+    std::sprintf(buff, ": %07.2f ms\0", avgTime / node.m_Data.size());
 
+    std::stringstream stream;
+    for (int i(0); i < treeDepth; ++i)
+    {
+        /*if (i == treeDepth - 1)
+            stream << "|";*/
+        stream << "|----";
+    }
+    stream << "+ " + node.m_Name << buff;
+    text.addLine(stream.str());
+
+    std::for_each(node.m_Nodes.cbegin(), node.m_Nodes.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
+    {       
+        drawProfileNode(treeNodePair.second, text, treeDepth + 1);
+    });
+}
 void Profiler::draw() const
 {
+    PROFILER_BEGIN("Profiler::draw");
     GUI->setLayer("profiler");
-    gui::Text text;
+    gui::Text text(m_pFont);
     text.addLine("----PROFILER------------------------------");
-    std::for_each(m_Data.cbegin(), m_Data.cend(), [&](const std::pair<std::string, std::deque<ProfileData>>& profilePair)
-    {
-        double avgTime(0.0);
-        std::for_each(profilePair.second.cbegin(), profilePair.second.cend(), [&avgTime](const ProfileData& data)
-        {
-            avgTime += data.getDuration() * 1000;
-        });
-        char buff[14];
-        std::sprintf(buff, ": %07.2f ms\0", avgTime / profilePair.second.size());
-        text.addLine("-- " + profilePair.first + std::string(buff));        
+    std::for_each(m_Data.cbegin(), m_Data.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
+    {     
+        drawProfileNode(treeNodePair.second, text, 1);  
     });
     text.addLine("------------------------------------------");
 
-    GUI->setColor(1.0f,1.0f,1.0f);
-    GUI->drawText(text, vec2(12, 128));
+    GUI->setColor(0.0f, 0.0f, 0.0f, 0.75f);
+    GUI->fillShape2D(gui::Rectangle2D(vec2(0, 0), vec2(386, 720)), true);
+    GUI->setColor(1.0f, 1.0f, 1.0f);
+    GUI->drawText(text, vec2(4, 4));
 
-    GUI->setLayer();     
+    GUI->setLayer();  
+    PROFILER_END();
 }
 
 } } //end namespace

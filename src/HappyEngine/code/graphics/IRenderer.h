@@ -37,7 +37,7 @@ public:
     virtual ~IRenderer() {}
 
     virtual void init(const RenderSettings& settings, 
-        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget) = 0;
+        const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget) = 0;
     
     virtual void setRenderSettings(const RenderSettings& settings) = 0;
     virtual void onScreenResized() = 0;

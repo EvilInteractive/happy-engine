@@ -109,7 +109,7 @@ public:
     virtual ~Deferred3DRenderer();
 
     virtual void init(const RenderSettings& settings, 
-        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget);
+        const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget);
 
     virtual void setRenderSettings(const RenderSettings& settings);
     virtual void onScreenResized();
@@ -137,13 +137,13 @@ private:
     // Collection FBO
     uint m_CollectionFboId;
     Texture2D::pointer m_pColorIllTexture;
-    Texture2D::pointer m_pSGTexture;       // Mixed pointer, shared pointer because of shared textures
-    const Texture2D* m_pNormalTexture;
-    const Texture2D* m_pDepthTexture;
+    Texture2D::pointer m_pSGTexture;
+    Texture2D::pointer m_pNormalTexture;
+    Texture2D::pointer m_pDepthTexture;
 
     // Render FBO
     uint m_RenderFboId;
-    const Texture2D* m_pOutTexture;
+    Texture2D::pointer m_pOutTexture;
     
     //////////////////////////////////////////////////////////////////////////
     ///                              SHADERS                               ///

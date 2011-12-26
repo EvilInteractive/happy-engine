@@ -33,6 +33,7 @@
 #include "Deferred3DRenderer.h"
 #include "Forward3DRenderer.h"
 #include "PostProcesser.h"
+#include "Happy2DRenderer.h"
 
 namespace he {
 namespace gfx {
@@ -40,7 +41,8 @@ namespace gfx {
 DrawManager::DrawManager(): m_pShadowCaster(nullptr), m_pMainRenderer(nullptr), 
                             m_pFallbackRenderer(nullptr), m_pAfterPostRenderer(nullptr),
                             m_pPostProcesser(nullptr),
-                            m_pColorRenderMap(NEW Texture2D()), m_pNormalRenderMap(NEW Texture2D()), m_pDepthRenderMap(NEW Texture2D())
+                            m_pColorRenderMap(NEW Texture2D()), m_pNormalRenderMap(NEW Texture2D()), m_pDepthRenderMap(NEW Texture2D()),
+                            m_RenderDebugTextures(false)
 {
 }
 
@@ -52,10 +54,6 @@ DrawManager::~DrawManager()
     delete m_pAfterPostRenderer;
     delete m_pPostProcesser;
     delete m_pShadowCaster;
-
-    delete m_pColorRenderMap;
-    delete m_pNormalRenderMap;
-    delete m_pDepthRenderMap;
 }
 
 bool DrawManager::viewClip(const ICamera* pCamera, const shapes::Sphere& boundingSphere)
@@ -88,6 +86,7 @@ void DrawManager::init(const RenderSettings& settings)
 {
     m_RenderSettings = settings;
     initSharedTextures();
+    Texture2D::pointer nullTexture;
     if (settings.enableDeferred)
     {
         m_pMainRenderer = NEW Deferred3DRenderer();
@@ -108,7 +107,7 @@ void DrawManager::init(const RenderSettings& settings)
     else
     {
         m_pMainRenderer = NEW Forward3DRenderer();
-        m_pMainRenderer->init(settings, nullptr, m_pNormalRenderMap, m_pDepthRenderMap);
+        m_pMainRenderer->init(settings, m_pColorRenderMap, m_pNormalRenderMap, m_pDepthRenderMap);
         m_MainRenderFlags = DrawListContainer::F_Main_Tranlucent | 
                             DrawListContainer::F_Main_Opac       |
                             DrawListContainer::F_Loc_BeforePost  |
@@ -117,14 +116,14 @@ void DrawManager::init(const RenderSettings& settings)
                             DrawListContainer::F_Sub_Instanced;
     }
 
-    m_pAfterPostRenderer = NEW Forward3DRenderer();
-    m_pAfterPostRenderer->init(settings, nullptr, m_pNormalRenderMap, m_pDepthRenderMap);
+    /*m_pAfterPostRenderer = NEW Forward3DRenderer();
+    m_pAfterPostRenderer->init(settings, nullTexture, m_pNormalRenderMap, m_pDepthRenderMap);
     m_AfterPostRenderFlags = DrawListContainer::F_Main_Tranlucent | 
                              DrawListContainer::F_Main_Opac       |
                              DrawListContainer::F_Loc_AfterPost   |
                              DrawListContainer::F_Sub_Single      |
                              DrawListContainer::F_Sub_Skinned     |
-                             DrawListContainer::F_Sub_Instanced;
+                             DrawListContainer::F_Sub_Instanced;*/
 
     if (settings.enableShadows)
     {
@@ -134,35 +133,45 @@ void DrawManager::init(const RenderSettings& settings)
 
     m_pPostProcesser = NEW PostProcesser();
     m_pPostProcesser->init(settings);
+
+    CONSOLE->registerVar(&m_RenderDebugTextures, "b_debugtex");
 }
 
 void DrawManager::draw()
 {
     PROFILER_BEGIN("DrawManager::draw");
 
+    PROFILER_BEGIN("ShadowCaster::render");
     renderShadow();
+    PROFILER_END();
 
-    PROFILER_BEGIN("DrawManager::draw - main renderer");
+    PROFILER_BEGIN("main renderer");
     m_pMainRenderer->clear(true, true, true);
     m_pMainRenderer->draw(m_DrawList, m_MainRenderFlags);
     if (m_pMainRenderer->getSupportsTranslucency() == false)
     {
-        PROFILER_BEGIN("DrawManager::draw - fallback renderer");
+        PROFILER_BEGIN("fallback renderer");
         m_pFallbackRenderer->draw(m_DrawList, m_FallbackRenderFlags);   
-        PROFILER_END("DrawManager::draw - fallback renderer");
+        PROFILER_END();
     }
-    PROFILER_END("DrawManager::draw - main renderer");
+    PROFILER_END();
 
-    PROFILER_BEGIN("DrawManager::draw - post processer");
+    PROFILER_BEGIN("post processer");
     m_pPostProcesser->draw(m_pColorRenderMap, m_pNormalRenderMap, m_pDepthRenderMap);
-    PROFILER_END("DrawManager::draw - post processer");
+    PROFILER_END();
 
     /*PROFILER_BEGIN("DrawManager::draw - after post renderer");
     m_pAfterPostRenderer->draw(m_DrawList, m_AfterPostRenderFlags);
     PROFILER_END("DrawManager::draw - after post renderer");*/
 
+    if (m_RenderDebugTextures)
+    {
+        GUI->drawTexture2D(m_pColorRenderMap,  vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pNormalRenderMap, vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pDepthRenderMap,  vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+    }
 
-    PROFILER_END("DrawManager::draw");
+    PROFILER_END();
 }
 
 void DrawManager::renderShadow()
@@ -211,8 +220,8 @@ void DrawManager::initSharedTextures()
     uint renderTextureId;
     glGenTextures(1, &renderTextureId);
     GL::heBindTexture2D(0, renderTextureId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, m_RenderSettings.enableHDR?GL_RGBA16F:GL_RGBA8, 

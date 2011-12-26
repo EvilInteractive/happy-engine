@@ -78,9 +78,11 @@ private:
     IRenderer* m_pAfterPostRenderer;
     uint m_AfterPostRenderFlags;
 
-    Texture2D* m_pColorRenderMap;
-    Texture2D* m_pNormalRenderMap;
-    Texture2D* m_pDepthRenderMap;
+    Texture2D::pointer m_pColorRenderMap;
+    Texture2D::pointer m_pNormalRenderMap;
+    Texture2D::pointer m_pDepthRenderMap;
+
+    bool m_RenderDebugTextures;
 
     RenderSettings m_RenderSettings;
 

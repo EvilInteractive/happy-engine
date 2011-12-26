@@ -42,7 +42,7 @@ public:
 
     const Texture2D::pointer& getBloom(byte level) const;
 
-    void render( const Texture2D* pTexture, const Texture2D* pLumMap = nullptr );
+    void render( const Texture2D::pointer& pTexture, const Texture2D::pointer& pLumMap = Texture2D::pointer() );
 
 private:
     

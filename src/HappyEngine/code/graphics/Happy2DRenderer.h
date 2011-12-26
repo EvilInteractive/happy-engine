@@ -90,6 +90,9 @@ public:
     void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
                         const vec2& newDimensions = vec2(0.0f,0.0f),
                         const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+    /*void drawTexture2D(	const Texture2D* tex2D, const vec2& pos,
+                        const vec2& newDimensions = vec2(0.0f,0.0f),
+                        const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));*/
 
 private:
 
@@ -123,8 +126,8 @@ private:
     {
     public:
 
-        Texture(	const Texture2D::pointer& tex,
-            const vec2& pos,
+        Texture(	const Texture2D::pointer& tex, //Bastian edit: removed shared_ptr. This is bad and should be put back
+            const vec2& pos,                       //              I changed it for debug sake
             const vec2& newDimensions,
             const float alpha,
             const RectF& regionToDraw,

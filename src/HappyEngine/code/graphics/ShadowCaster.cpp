@@ -230,7 +230,6 @@ struct ShadowCam : public ICamera
 };
 void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalLight::pointer& pDirectionalLight )
 {
-    PROFILER_BEGIN("ShadowCaster::render");
     vec3 shadowLook(-normalize(pDirectionalLight->getDirection()));
     vec3 up(vec3::up);
     if (dot(up, shadowLook) > 0.99f)
@@ -372,7 +371,6 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
     //if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
     //    GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
 
-    PROFILER_END("ShadowCaster::render");
 }
 
 

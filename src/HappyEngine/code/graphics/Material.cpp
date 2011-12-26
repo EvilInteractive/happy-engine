@@ -44,7 +44,7 @@ Material::~Material()
 
 void Material::addVar(const ShaderVar::pointer& var)
 {
-    ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
+    ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
     m_ShaderVar.push_back(var);
 }
 void Material::setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing)
@@ -79,7 +79,10 @@ void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera )
                     break;
                 case ShaderVarType_WorldView: 
                     m_pShader->setShaderVar(pVar->getId(), pCamera->getView() * pDrawable->getWorldMatrix()); 
-                    break;               
+                    break;   
+                case ShaderVarType_View: 
+                    m_pShader->setShaderVar(pVar->getId(), pCamera->getView()); 
+                    break;             
                 case ShaderVarType_WorldPosition: 
                     m_pShader->setShaderVar(pVar->getId(), pDrawable->getWorldMatrix().getTranslation()); 
                     break;
@@ -91,7 +94,7 @@ void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera )
                     m_pShader->setShaderVar(pVar->getId(), vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getColor(), GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier())); 
                     break;
                 case ShaderVarType_DirectionalDirection: 
-                    m_pShader->setShaderVar(pVar->getId(), GRAPHICS->getLightManager()->getDirectionalLight()->getDirection()); 
+                    m_pShader->setShaderVar(pVar->getId(), (pCamera->getView() * vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
                     break;
 
                 case ShaderVarType_ShadowCascadeMatrix0: 
@@ -143,6 +146,9 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
                 case ShaderVarType_ViewProjection: 
                     m_pShader->setShaderVar(pVar->getId(), pCamera->getViewProjection()); 
                     break;
+                case ShaderVarType_View: 
+                    m_pShader->setShaderVar(pVar->getId(), pCamera->getView()); 
+                    break;  
 
                 case ShaderVarType_AmbientColor: 
                     m_pShader->setShaderVar(pVar->getId(), vec4(GRAPHICS->getLightManager()->getAmbientLight()->color, GRAPHICS->getLightManager()->getAmbientLight()->multiplier)); 
@@ -151,7 +157,7 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
                     m_pShader->setShaderVar(pVar->getId(), vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getColor(), GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier())); 
                     break;
                 case ShaderVarType_DirectionalDirection: 
-                    m_pShader->setShaderVar(pVar->getId(), GRAPHICS->getLightManager()->getDirectionalLight()->getDirection()); 
+                    m_pShader->setShaderVar(pVar->getId(), (pCamera->getView() * vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
                     break;
 
                 case ShaderVarType_ShadowCascadeMatrix0: 
@@ -205,6 +211,9 @@ void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera 
                 case ShaderVarType_ViewProjection: 
                     m_pShader->setShaderVar(pVar->getId(), pCamera->getViewProjection()); 
                     break;
+                case ShaderVarType_View: 
+                    m_pShader->setShaderVar(pVar->getId(), pCamera->getView()); 
+                    break;  
                 case ShaderVarType_World: 
                     m_pShader->setShaderVar(pVar->getId(), pCamera->getView() * pDrawable->getWorldMatrix()); 
                     break;
@@ -225,7 +234,7 @@ void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera 
                     m_pShader->setShaderVar(pVar->getId(), vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getColor(), GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier())); 
                     break;
                 case ShaderVarType_DirectionalDirection: 
-                    m_pShader->setShaderVar(pVar->getId(), GRAPHICS->getLightManager()->getDirectionalLight()->getDirection()); 
+                    m_pShader->setShaderVar(pVar->getId(), (pCamera->getView() * vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
                     break;
 
                 case ShaderVarType_ShadowCascadeMatrix0: 

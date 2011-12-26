@@ -59,7 +59,7 @@ Deferred3DRenderer::Deferred3DRenderer():
 {
 }
 void Deferred3DRenderer::init( const RenderSettings& settings, 
-            const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget )
+            const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget )
 {
     m_RenderSettings = settings;
     CONSOLE->registerVar(&m_ShowDebugTextures, "debugTex");
@@ -299,7 +299,6 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
     //////////////////////////////////////////////////////////////////////////
     ///                             BEGIN                                  ///
     //////////////////////////////////////////////////////////////////////////
-    PROFILER_BEGIN("Deferred3DRenderer::draw");
     GL::heBindFbo(m_CollectionFboId);
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
@@ -363,7 +362,6 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
 
 
     drawDebugTextures();
-    PROFILER_END("Deferred3DRenderer::draw");
 }
 void Deferred3DRenderer::drawDebugTextures() const
 {

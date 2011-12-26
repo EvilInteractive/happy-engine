@@ -44,7 +44,7 @@ public:
 
     void onScreenResized();
 
-    void draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap);
+    void draw(const Texture2D::pointer& pColorMap, const Texture2D::pointer& pNormalMap, const Texture2D::pointer& pDepthMap);
 
 private:
 

@@ -37,9 +37,9 @@ public:
 
     void init();
 
-    void calculate(const Texture2D* pHdrMap);
+    void calculate(const Texture2D::pointer& pHdrMap);
 
-    const Texture2D* getLuminanceMap() const;
+    const Texture2D::pointer& getLuminanceMap() const;
 
 private:
 
@@ -47,7 +47,7 @@ private:
     uint m_HDRmapPos;
     uint m_PrevLumMapPos;
 
-    Texture2D* m_pLumTexture[2]; //double buffered
+    Texture2D::pointer m_pLumTexture[2]; //double buffered
     bool m_FirstBuffer;
 
     uint m_FboID;

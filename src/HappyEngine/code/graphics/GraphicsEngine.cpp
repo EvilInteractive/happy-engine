@@ -300,7 +300,7 @@ void GraphicsEngine::present() const
 {    
     PROFILER_BEGIN("GraphicsEngine::present");
     SDL_GL_SwapWindow(m_pMainWindow);
-    PROFILER_END("GraphicsEngine::present");
+    PROFILER_END();
 }
 LightManager* GraphicsEngine::getLightManager() const
 {

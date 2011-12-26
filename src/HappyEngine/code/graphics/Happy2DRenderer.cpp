@@ -332,7 +332,7 @@ void Happy2DRenderer::draw()
             drawMesh(p.first.shape2D, p.first.buffered);
         }
     });
-    PROFILER_END("Happy2DRenderer::drawshapes");
+    PROFILER_END();
 
     GL::heLineSmoothEnabled(false);
 
@@ -350,7 +350,7 @@ void Happy2DRenderer::draw()
 
         drawTexture(p.first);
     });
-    PROFILER_END("Happy2DRenderer::drawtextures");
+    PROFILER_END();
 
     m_ShapeBuffer.clear();
     m_TextureBuffer.clear();
@@ -383,7 +383,7 @@ void Happy2DRenderer::draw()
     drawTexture(Texture(m_pRenderTexture, vec2(), vec2(), 1.0f, RectF(), "", false));
 
     GL::heBlendEnabled(false);
-    PROFILER_END("Happy2DRenderer::draw");
+    PROFILER_END();
 }
 
 void Happy2DRenderer::createTextureQuad()
@@ -597,5 +597,11 @@ void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const vec2&
     m_TextureBuffer.push_back(std::pair<Texture, float>
         (Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer, true), getDepth()));
 }
+//void Happy2DRenderer::drawTexture2D( const Texture2D* tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
+//{
+//    m_TextureBuffer.push_back(std::pair<Texture, float>
+//        (Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer, true), getDepth()));  
+//}
+
 
 } } //end namespace

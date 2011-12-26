@@ -148,11 +148,10 @@ void Bloom::resize()
     }
 }
 
-void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
+void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& pLumMap )
 {
     ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
 
-    PROFILER_BEGIN("Bloom::render");
     GL::heBindVao(m_pMesh->getVertexArraysID());
 
     //BrightPass
@@ -188,7 +187,6 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
         }
     }
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    PROFILER_END("Bloom::render");
 }
 
 const Texture2D::pointer& Bloom::getBloom( byte level ) const

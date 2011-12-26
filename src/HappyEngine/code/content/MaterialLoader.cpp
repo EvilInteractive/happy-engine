@@ -204,6 +204,11 @@ gfx::Material MaterialLoader::load(const std::string& path)
                             material.addVar(gfx::ShaderVar::pointer(
                                 NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ViewProjection)));
                         }
+                        else if (node.second == L"VIEW")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_View)));
+                        }
                         else if (node.second == L"WORLD")
                         {
                             material.addVar(gfx::ShaderVar::pointer(

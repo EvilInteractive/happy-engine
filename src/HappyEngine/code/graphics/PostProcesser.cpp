@@ -130,19 +130,25 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     }
 }
 
-void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap)
-{
-    PROFILER_BEGIN("PostProcesser::draw");
-    
+void PostProcesser::draw(const Texture2D::pointer& pColorMap, const Texture2D::pointer& pNormalMap, const Texture2D::pointer& pDepthMap)
+{    
     if (m_Settings.enableHDR)
+    {
+        PROFILER_BEGIN("Auto Exposure");
         m_pAutoExposure->calculate(pColorMap);
+        PROFILER_END();
+    }
     
     GL::heBlendEnabled(false);
     if (m_Settings.enableBloom)
+    {
+        PROFILER_BEGIN("Bloom");
         if (m_Settings.enableHDR)
             m_pBloom->render(pColorMap, m_pAutoExposure->getLuminanceMap());
         else
             m_pBloom->render(pColorMap);
+        PROFILER_END();
+    }
 
     GL::heBindFbo(0);
     GL::heSetDepthWrite(false);
@@ -188,8 +194,6 @@ void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap
 
     GL::heBindVao(m_pQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-
-    PROFILER_END("PostProcesser::draw");
 }
 
 void PostProcesser::onScreenResized()
