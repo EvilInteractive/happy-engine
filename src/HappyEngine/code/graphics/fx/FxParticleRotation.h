@@ -16,26 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/11/2011
+//Created: 27/12/2011
 
-#ifndef _HE_FX_PARTICLE_H_
-#define _HE_FX_PARTICLE_H_
+#ifndef _HE_FX_PARTICLE_ROTATION_H_
+#define _HE_FX_PARTICLE_ROTATION_H_
 #pragma once
+
+#include "IFxParticleModifyComponent.h"
+#include "IFxParticleInitComponent.h"
+
+#include "IFxVariable.h"
 
 namespace he {
 namespace gfx {
 
-class FxParticle
+class FxParticleRotation : public IFxParticleModifyComponent, public IFxParticleInitComponent
 {
 public:
-    FxParticle();
-    virtual ~FxParticle();
+    FxParticleRotation();
+    virtual ~FxParticleRotation();
+
+    virtual void init(FxParticle* pParticle);
+    virtual void transform(FxParticle* pParticle, float currentTime, float dTime);
+
+    void setValue(const IFxVariable<float>::pointer& value);
+    const IFxVariable<float>::pointer& getValue() const;
 
 private:
 
+    IFxVariable<float>::pointer m_Rotation;
+
     //Disable default copy constructor and default assignment operator
-    FxParticle(const FxParticle&);
-    FxParticle& operator=(const FxParticle&);
+    FxParticleRotation(const FxParticleRotation&);
+    FxParticleRotation& operator=(const FxParticleRotation&);
 };
 
 } } //end namespace

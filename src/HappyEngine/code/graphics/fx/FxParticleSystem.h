@@ -1,0 +1,74 @@
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//
+//This file is part of HappyEngine.
+//
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Bastian Damman
+//Created: 26/11/2011
+
+#ifndef _HE_FX_PARTICLE_SYSTEM_H_
+#define _HE_FX_PARTICLE_SYSTEM_H_
+#pragma once
+
+#include "IFxComponent.h"
+#include "SlotPContainer.h"
+
+#include "Texture2D.h"
+#include "IFxVariable.h"
+
+namespace he {
+namespace gfx {
+
+class FxParticleContainer;
+class IFxParticleInitComponent;
+class IFxParticleModifyComponent;
+
+class FxParticleSystem : public IFxComponent
+{
+public:
+    FxParticleSystem();
+    virtual ~FxParticleSystem();
+
+    //////////////////////////////////////////////////////////////////////////
+    ///                             IFxComponent                           ///
+    //////////////////////////////////////////////////////////////////////////
+    virtual FxType getType() const { return FxType_ParticleSystem; };
+    
+    virtual void start();
+    virtual void stop();
+
+    virtual void tick(float currentTime, float dTime);
+
+private:
+
+    Texture2D::pointer m_pTexture;
+    vec2 m_UvTiles;
+
+    IFxVariable<float>::pointer m_SpawnRate;
+    float m_TimeSinceLastSpawn;
+
+    std::vector<IFxParticleInitComponent*> m_ParticleInitComponents;
+    std::vector<IFxParticleModifyComponent*> m_ParticleModifyComponents;
+
+    FxParticleContainer* m_pFxParticleContainer;
+
+    //Disable default copy constructor and default assignment operator
+    FxParticleSystem(const FxParticleSystem&);
+    FxParticleSystem& operator=(const FxParticleSystem&);
+};
+
+} } //end namespace
+
+#endif

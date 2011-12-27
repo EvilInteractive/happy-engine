@@ -30,7 +30,6 @@
 #include "GraphicsEngine.h"
 #include "PhysicsEngine.h"
 #include "SoundEngine.h"
-#include "FxManager.h"
 
 #include "MathConstants.h"
 #include "MathFunctions.h"
@@ -41,10 +40,11 @@
 
 #include "PhysicsData.h"
 
-#include "FxTimeLine.h"
-#include "FxCameraEffect.h"
-#include "FxRandom.h"
-#include "FxTimeLineTrack.h"
+#include "fx/FxManager.h"
+#include "fx/FxTimeLine.h"
+#include "fx/FxCameraEffect.h"
+#include "fx/FxRandom.h"
+#include "fx/FxTimeLineTrack.h"
 
 namespace happytest {
 

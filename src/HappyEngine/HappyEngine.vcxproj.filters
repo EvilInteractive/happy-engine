@@ -95,9 +95,6 @@
     <Filter Include="happyengine\graphics\fx">
       <UniqueIdentifier>{0fd9a8e5-5653-4ac1-94d9-24e267087dde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\fx\values">
-      <UniqueIdentifier>{3e8e208e-d7ae-4166-9a60-17201943cc22}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\graphics\rendering\instancing">
       <UniqueIdentifier>{fd11c0a3-3308-4ec7-a8eb-0a6c980b73b3}</UniqueIdentifier>
     </Filter>
@@ -112,6 +109,18 @@
     </Filter>
     <Filter Include="happyengine\graphics\rendering\shadow">
       <UniqueIdentifier>{86370e63-708d-4f2b-b468-9f985d59e357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\fx\var">
+      <UniqueIdentifier>{3e8e208e-d7ae-4166-9a60-17201943cc22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\fx\components">
+      <UniqueIdentifier>{469e912e-112f-4dbe-af49-2dd7b12cdc4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\fx\components\particles">
+      <UniqueIdentifier>{4b68c49d-a081-42e4-a0b8-0083688ae945}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="happyengine\graphics\fx\components\particles\components">
+      <UniqueIdentifier>{3a31b99f-382c-4d52-9130-003dfe051953}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -454,30 +463,6 @@
     <ClCompile Include="code\networking\TcpServer.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\FxParticleSystem.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxManager.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxCameraEffect.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxParticle.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxTimeLineTrack.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxTimeLine.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxCurveFloat.cpp">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\FxRandom.cpp">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClCompile>
     <ClCompile Include="code\HappyPCH.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
@@ -528,6 +513,45 @@
     </ClCompile>
     <ClCompile Include="code\graphics\DefaultSkinnedDrawable.cpp">
       <Filter>happyengine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxManager.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxTimeLine.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxTimeLineTrack.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxCurveFloat.cpp">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleContainer.cpp">
+      <Filter>happyengine\graphics\fx\components\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleSystem.cpp">
+      <Filter>happyengine\graphics\fx\components\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxRandom.cpp">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxCameraEffect.cpp">
+      <Filter>happyengine\graphics\fx\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleColor.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleForce.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleRotation.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleScale.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleSpeed.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -957,44 +981,11 @@
     <ClInclude Include="code\networking\TcpServer.h">
       <Filter>happyengine\networking</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\FxParticleSystem.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxManager.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxCameraEffect.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxParticle.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
     <ClInclude Include="code\event.h">
       <Filter>happyengine</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\FxTimeLineTrack.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxTimeLine.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\IFxComponent.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxCurveFloat.h">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\IFxVariable.h">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClInclude>
     <ClInclude Include="code\SlotPContainer.h">
       <Filter>happyengine</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxConstant.h">
-      <Filter>happyengine\graphics\fx\values</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\FxRandom.h">
-      <Filter>happyengine\graphics\fx\values</Filter>
     </ClInclude>
     <ClInclude Include="code\HappyPCH.h">
       <Filter>happyengine</Filter>
@@ -1067,6 +1058,63 @@
     </ClInclude>
     <ClInclude Include="code\graphics\DefaultSkinnedDrawable.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxManager.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxTimeLine.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxTimeLineTrack.h">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxConstant.h">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxCurveFloat.h">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticle.h">
+      <Filter>happyengine\graphics\fx\components\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleContainer.h">
+      <Filter>happyengine\graphics\fx\components\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleSystem.h">
+      <Filter>happyengine\graphics\fx\components\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxRandom.h">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxCameraEffect.h">
+      <Filter>happyengine\graphics\fx\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\IFxVariable.h">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\IFxComponent.h">
+      <Filter>happyengine\graphics\fx\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\IFxParticleModifyComponent.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\IFxParticleInitComponent.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleSpeed.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleColor.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleForce.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleRotation.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleScale.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

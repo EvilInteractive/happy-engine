@@ -16,22 +16,31 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/11/2011
+//Created: 27/12/2011
 #include "HappyPCH.h" 
 
+#include "FxParticleColor.h"
 #include "FxParticle.h"
-#include "HappyNew.h"
 
 namespace he {
 namespace gfx {
 
-FxParticle::FxParticle()
+FxParticleColor::FxParticleColor()
 {
 }
 
 
-FxParticle::~FxParticle()
+FxParticleColor::~FxParticleColor()
 {
+}
+
+void FxParticleColor::init( FxParticle* pParticle )
+{
+    pParticle->m_BlendColor = m_Color->getValue(0);
+}
+void FxParticleColor::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
+{
+    pParticle->m_BlendColor = m_Color->getValue(currentTime);
 }
 
 } } //end namespace

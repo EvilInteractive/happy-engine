@@ -16,38 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 26/11/2011
+//Created: 27/12/2011
 
-#ifndef _HE_FX_PARTICLE_SYSTEM_H_
-#define _HE_FX_PARTICLE_SYSTEM_H_
+#ifndef _HE_FX_PARTICLE_FORCE_H_
+#define _HE_FX_PARTICLE_FORCE_H_
 #pragma once
 
-#include "IFxComponent.h"
+#include "IFxParticleModifyComponent.h"
+#include "IFxVariable.h"
 
 namespace he {
 namespace gfx {
 
-class FxParticleSystem : public IFxComponent
+class FxParticleForce : public IFxParticleModifyComponent
 {
 public:
-    FxParticleSystem();
-    virtual ~FxParticleSystem();
+    FxParticleForce();
+    virtual ~FxParticleForce();
 
-    //////////////////////////////////////////////////////////////////////////
-    ///                             IFxComponent                           ///
-    //////////////////////////////////////////////////////////////////////////
-    virtual FxType getType() const { return FxType_ParticleSystem; };
-    
-    virtual void start();
-    virtual void stop();
+    virtual void transform(FxParticle* pParticle, float currentTime, float dTime);
 
-    virtual void tick(float currentTime, float dTime);
+    void setValue(const IFxVariable<vec3>::pointer& value);
+    const IFxVariable<vec3>::pointer& getValue() const;
 
 private:
 
+    IFxVariable<vec3>::pointer m_Force;
+
     //Disable default copy constructor and default assignment operator
-    FxParticleSystem(const FxParticleSystem&);
-    FxParticleSystem& operator=(const FxParticleSystem&);
+    FxParticleForce(const FxParticleForce&);
+    FxParticleForce& operator=(const FxParticleForce&);
 };
 
 } } //end namespace

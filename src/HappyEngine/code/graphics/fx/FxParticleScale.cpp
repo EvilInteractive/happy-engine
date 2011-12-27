@@ -16,37 +16,41 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 26/11/2011
+//Created: 27/12/2011
 #include "HappyPCH.h" 
 
-#include "FxParticleSystem.h"
-#include "HappyNew.h"
+#include "FxParticleScale.h"
+#include "FxParticle.h"
 
 namespace he {
 namespace gfx {
 
-FxParticleSystem::FxParticleSystem()
+FxParticleScale::FxParticleScale()
 {
 }
 
 
-FxParticleSystem::~FxParticleSystem()
+FxParticleScale::~FxParticleScale()
 {
 }
 
-void FxParticleSystem::start()
+void FxParticleScale::init( FxParticle* pParticle )
 {
-
+    pParticle->m_Scale = m_Scale->getValue(0);
+}
+void FxParticleScale::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
+{
+    pParticle->m_Scale = m_Scale->getValue(currentTime);
 }
 
-void FxParticleSystem::stop()
+void FxParticleScale::setValue( const IFxVariable<vec3>::pointer& value )
 {
-
+    m_Scale = value;
 }
 
-void FxParticleSystem::tick( float /*currentTime*/, float /*dTime*/ )
+const IFxVariable<vec3>::pointer& FxParticleScale::getValue() const
 {
-
+    return m_Scale;
 }
 
 } } //end namespace

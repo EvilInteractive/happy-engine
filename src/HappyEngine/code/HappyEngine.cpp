@@ -37,7 +37,7 @@
 #include "Console.h"
 #include "SoundEngine.h"
 #include "SimpleForward3DRenderer.h"
-#include "FxManager.h"
+#include "fx/FxManager.h"
 
 #ifdef HE_ENABLE_QT
 #pragma warning(disable:4127)
