@@ -62,21 +62,20 @@ gfx::Material MaterialLoader::load(const std::string& path)
             gfx::VertexLayout vertexLayout;
             // [Shader]
             {
-                bool isTranslucent = true;
+                std::string file;
+                file = reader.readString(L"Forward", L"shader", "");
+                if (m_RenderSettings.enableDeferred)
+                {
+                    std::string temp = reader.readString(L"Deferred", L"shader", file);
+                    if (temp != file)
+                    {
+                        file = temp;
+                    }
+                }
+
                 io::IniReader shaderReader;
                 try 
                 { 
-                    std::string file;
-                    file = reader.readString(L"Forward", L"shader", "");
-                    if (m_RenderSettings.enableDeferred)
-                    {
-                        std::string temp = reader.readString(L"Deferred", L"shader", file);
-                        if (temp != file)
-                        {
-                            file = temp;
-                            isTranslucent = false;
-                        }
-                    }
                     shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + file); 
                 }
                 catch (err::FileNotFoundException& e)
@@ -123,6 +122,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 uint count(0);
                 uint offset(0);
                 std::string usedForInstancing("");
+                bool isTranslucent(false);
                 const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"in"));
                 std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                 {
@@ -179,8 +179,15 @@ gfx::Material MaterialLoader::load(const std::string& path)
                                                                  shaderLayout,
                                                                  shaderOutputs));
 
+                // [info]
+                if (shaderReader.containsRoot(L"info"))
+                {
+                    isTranslucent = shaderReader.readBool(L"info", L"translucent", false);
+                }
+
                 material.setIsTranslucent(isTranslucent);
                 material.setShader(pShader, vertexLayout, usedForInstancing != "");
+
 
                 // [uniform]
                 if (shaderReader.containsRoot(L"uniform"))

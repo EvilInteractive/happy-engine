@@ -69,10 +69,11 @@ void HappyEngine::quit()
 }
 void HappyEngine::dispose()
 {
+    HE_INFO("");
+    HE_INFO("--Thank you for using HappyEngine--");
     HAPPYENGINE->cleanup();
     delete s_pHappyEngine;
     s_pHappyEngine = nullptr;
-    std::cout << "\n--Thank you for using HappyEngine--\n";
 }
 void HappyEngine::cleanup()
 {  
@@ -122,6 +123,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 {
     m_SubEngines |= subengines;
 
+    m_pConsole = NEW tools::Console();
+
     if (subengines & SubEngine_Graphics)
     {
         SDL_Init(SDL_INIT_EVERYTHING);
@@ -164,7 +167,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         m_pSoundEngine->initialize();
     }
 
-    m_pConsole = NEW tools::Console();
     m_pConsole->load();
 
     m_pFxManager = NEW gfx::FxManager();

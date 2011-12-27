@@ -15,14 +15,9 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _HE_STDAFX_H_
-#define _HE_STDAFX_H_
+#ifndef _HE_HAPPYPCH_H_
+#define _HE_HAPPYPCH_H_
 #pragma once
-
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently, but
-// are changed infrequently
-//
 
 #include <cstdlib>
 #include <string>
@@ -39,7 +34,17 @@
 
 #include "event.h"
 
-// TODO: reference additional headers your program requires here
+#include "HappyEngine.h"
+#include "Console.h"
+
+#define HE_INFO(str) {std::cout << "Info: " << str << "\n"; \
+                      CONSOLE->addMessage(str);}
+#define HE_ERROR(str) {std::cout << "Error: " << str << "\n"; \
+                       CONSOLE->addMessage(str, CMSG_TYPE_ERROR);} 
+#define HE_WARNING(str) {std::cout << "Warning: " << str << "\n"; \
+                         CONSOLE->addMessage(str, CMSG_TYPE_WARNING); }
+
+std::string itoa(int i);
 
 
 #endif

@@ -60,8 +60,7 @@ inline void handleILError(const std::string& file)
     while (err != IL_NO_ERROR)
     {
         const char* errorstr(iluErrorString(err));
-        std::cout << errorstr << ": " << file << "\n";
-        CONSOLE->addMessage(std::string(errorstr) + ": " + file, CMSG_TYPE_ERROR);
+        HE_ERROR(std::string(errorstr) + ": " + file);
         err = ilGetError();
     }
 }
@@ -102,7 +101,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 
         data.tex->init(texID, data.width, data.height, data.format);
 
-        std::cout << "**TL INFO** texture create completed: " << data.path << "\n";
+        HE_INFO("Texture create completed: " + data.path);
     }
 }
 
@@ -168,7 +167,7 @@ gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
 
 void TextureLoader::TextureLoadThread()
 {
-    std::cout << "**TL INFO** load thread started.\n";
+    HE_INFO("Texture Load thread started");
     while (m_TextureLoadQueue.empty() == false)
     {
         m_TextureLoadQueueMutex.lock();
@@ -195,7 +194,7 @@ void TextureLoader::TextureLoadThread()
                     m_TextureInvokeQueue.push(data);
                     m_TextureInvokeQueueMutex.unlock();
 
-                    std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
+                    HE_INFO("Texture load completed: " + data.path);
                 }
                 else
                 {
@@ -224,11 +223,11 @@ void TextureLoader::TextureLoadThread()
             m_TextureInvokeQueueMutex.lock();
             m_TextureInvokeQueue.push(data);
             m_TextureInvokeQueueMutex.unlock();
-            std::cout << "**TL INFO** obj load completed: " << data.path << "\n";
+            HE_INFO("Texture color load completed: " + data.path);
         }
     }
     m_isLoadThreadRunning = false;
-    std::cout << "**TL INFO** load thread stopped.\n";
+    HE_INFO("Texture load thread stopped");
 }
 
 } } //end namespace

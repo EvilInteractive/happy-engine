@@ -172,7 +172,10 @@ void InstancingController::updateBuffer()
             while(m_MatrixBufferCapacity < matrixBuffer.size())
                 m_MatrixBufferCapacity *= 2;
             glBufferData(GL_ARRAY_BUFFER, m_MatrixBufferCapacity * sizeof(mat44), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
-            std::cout << "Increasing instancing controller's capacity to " << m_MatrixBufferCapacity << "\n";
+
+            char sCapa[6];
+            sprintf(sCapa, "%d", m_MatrixBufferCapacity);
+            HE_INFO("Increasing instancing controller's capacity to " + std::string(sCapa));
         }
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, matrixBuffer.size()*sizeof(mat44), matrixBuffer.size() > 0 ? &matrixBuffer[0] : 0);

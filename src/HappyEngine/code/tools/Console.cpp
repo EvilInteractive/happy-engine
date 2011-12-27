@@ -81,11 +81,10 @@ Console::Console() :	m_Shortcut(io::Key_C),
     m_ShowMessageTypes[CMSG_TYPE_ENGINE] = true;
 
     registerVar<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
-
-    GUI->createLayer("console", 0);
 }
 void Console::load()
 {
+    GUI->createLayer("console", 0);
     m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
     m_Help = new gui::Text(m_pFont);

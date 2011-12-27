@@ -2,6 +2,9 @@
 vsPath = "forward/forwardShaderInstanced.vert"
 fsPath = "forward/forwardShader.frag"
 
+[info]
+translucent = false
+
 [in]
 inPosition = POSITION
 inTexCoord = TEXCOORD

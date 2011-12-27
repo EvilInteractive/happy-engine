@@ -22,5 +22,9 @@
 
 #include "HappyPCH.h"
 
-// TODO: reference any additional headers you need in STDAFX.H
-// and not in this file
+std::string itoa(int i)
+{
+    char temp[11];
+    sprintf(temp, "%d", i);
+    return std::string(temp);
+}

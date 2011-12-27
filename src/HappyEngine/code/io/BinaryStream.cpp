@@ -41,7 +41,9 @@ BinaryStream::BinaryStream(const std::string& path, OpenType openType):
     #endif
     if (err != 0)
     {
-        std::cout << "Bin open failed: errno: " << err << "\n";
+        char sErrNo[5];
+        sprintf(sErrNo, "%d", err);
+        HE_ERROR("Bin open failed('"+ path +"'): errno: " + std::string(sErrNo));
         throw err::FileNotFoundException(path);
     }
 }

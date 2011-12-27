@@ -44,18 +44,18 @@ void NetworkManager::start()
 }
 void NetworkManager::asioThread()
 {
-    std::cout << "Asio Started\n";
+    HE_INFO("Asio Started");
     try 
     {
         m_IoService.run();
     }
     catch (std::exception& e)
     {
-        std::cout << "Unhandled exception (AsioThread): \n";
-        std::cout << "  " << e.what() << "\n";
+        HE_INFO("Unhandled exception (AsioThread):");
+        HE_INFO("  " + std::string(e.what()));
     }
     m_AsioIsAlive = false;
-    std::cout << "Asio Ended\n";
+    HE_INFO("Asio Ended");
 }
 
 void NetworkManager::stop()

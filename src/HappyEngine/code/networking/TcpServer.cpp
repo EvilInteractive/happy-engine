@@ -53,7 +53,7 @@ void TcpServer::start(ushort port)
         NETWORK->getIoService(), 
         boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
 
-    std::cout << "P2P tpc accepting @" << port << "\n";
+    HE_INFO("TcpServer: P2P tpc accepting @" + itoa(port));
     startAccepting();
 
 }
@@ -74,7 +74,7 @@ void TcpServer::handleAccepted( const boost::system::error_code& error )
 {
     if (!error)
     {
-        std::cout << "TcpServer info: connection established! \n";
+        HE_INFO("TcpServer: connection established!");
         m_IsConnectionOpen = true;
         if (m_ConnectedCallback.empty() == false)
             m_ConnectedCallback();
@@ -85,7 +85,7 @@ void TcpServer::handleAccepted( const boost::system::error_code& error )
     {
         delete m_pSocket;
         m_pSocket = nullptr;
-        std::cout << "TcpServer error: error accepting - msg: " << error.message() << "\n";
+        HE_ERROR("TcpServer: error accepting - msg: " + error.message());
         startAccepting();
     }
 }
@@ -94,7 +94,7 @@ void TcpServer::handleWrite( const boost::system::error_code& error, size_t /*by
 {
     if (error)
     {
-        std::cout << "TcpServer error: error sending data - msg: " << error.message() << "\n";
+        HE_ERROR("TcpServer: error sending data - msg: " + error.message());
     }
 }
 
@@ -107,7 +107,7 @@ void TcpServer::handleReceive( const boost::system::error_code& error, size_t by
     }
     else
     {
-        std::cout << "TcpServer error: error receiving data - msg: " << error.message() << "\n";
+        HE_ERROR("TcpServer: error receiving data - msg: " + error.message());
     }
 }
 

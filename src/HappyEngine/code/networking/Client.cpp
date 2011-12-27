@@ -74,15 +74,17 @@ void Client::asyncConnect(const std::string& ip, ushort port)
     m_pUdpSocket->async_connect(m_ServerEndpoint, 
         boost::bind(&Client::handleConnect, this, boost::asio::placeholders::error));
 
-    std::cout << "Connecting... \n";
+    HE_INFO("Connecting...");
 }
 
 void Client::handleConnect(const boost::system::error_code& err)
 {
     if (!err)
     {
-        std::cout << "successful connected to " << m_ServerEndpoint.address().to_string() << ":" << 
-            m_ServerEndpoint.port() << "\n";
+        char sPort[10];
+        sprintf(sPort, "%d", m_ServerEndpoint.port());
+        HE_INFO("Successful connected to " + m_ServerEndpoint.address().to_string() + ":" + 
+            std::string(sPort));
         
         asycRead();
 
@@ -94,8 +96,10 @@ void Client::handleConnect(const boost::system::error_code& err)
     }
     else
     {
-        std::cout << "failed to connect to " << m_ServerEndpoint.address().to_string() << ":" << 
-            m_ServerEndpoint.port() << "\n";
+        char sPort[10];
+        sprintf(sPort, "%d", m_ServerEndpoint.port());
+        HE_INFO("Failed to connect to " + m_ServerEndpoint.address().to_string() + ":" + 
+            std::string(sPort));
         disconnect();
     }
 }
@@ -117,7 +121,9 @@ void Client::handleReceive(const boost::system::error_code& err, size_t bytesRec
     }
     else if (err != boost::asio::error::eof)
     {
-        std::cout << "Error receiving message from server (" << err << ")\n";
+        char sErrNo[10];
+        sprintf(sErrNo, "%d", err);
+        HE_ERROR("Errro receiving message from server (" + std::string(sErrNo) + ")");
     }
     else
     {
@@ -131,7 +137,9 @@ void Client::handleWrite(details::Message::pointer /*msg*/, const boost::system:
     }
     else if (error != boost::asio::error::eof)
     {
-        std::cout << "Error sending message to server (" << error << ")\n";
+        char sErrNo[10];
+        sprintf(sErrNo, "%d", error);
+        HE_ERROR("Error sending message to server (" + std::string(sErrNo) + ")");
     }
     else
     {
@@ -168,17 +176,19 @@ void Client::handleInternalMessage(void* msg, size_t /*msg_size*/, Server::Heade
             if ((*static_cast<byte*>(msg)) == 0)
             {
                 m_UserId = pHeader->user;
-                std::cout << "logged in successfull got slot: " << (int)m_UserId << "\n";
+                char sUserId[10];
+                sprintf(sUserId, "%d", (int)m_UserId);
+                HE_INFO("Client: Logged in successfull got slot: " + std::string(sUserId));
                 handleLoggedIn();
             }
             else
             {
-                std::cout << "faild to log in (to many users)\n";
+                HE_ERROR("Client: failed to log in (to many users)");
                 disconnect();
             }
             break;
         case ServerMessage_Disconnect: 
-            std::cout << "server kicked you!\n";
+            HE_INFO("Server kicked you!");
             disconnect();
             break;
         default: ASSERT("unkown message type"); break;

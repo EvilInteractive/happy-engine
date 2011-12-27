@@ -50,40 +50,55 @@ Shader::~Shader()
 }
 bool validateShader(GLuint shaderID, const std::string& file)
 {
-    const uint BUFFER_SIZE = 512;
-    char buffer[BUFFER_SIZE];
-    GLsizei length = 0;
-
-    glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
-
-    if (length > 0)
+    GLint compiled;
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
+    if (compiled == GL_FALSE)
     {
-        std::cout << "Shader " << shaderID << " (" << file << ") compile err: \n" <<
-            buffer << "\n";
+        const uint BUFFER_SIZE = 512;
+        char buffer[BUFFER_SIZE];
+        GLsizei length = 0;
+
+        glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
+
+        char sId[5];
+        sprintf(sId, "%d", shaderID);
+        HE_ERROR("Shader " + std::string(sId) + " (" + file + ") compile err: ");
+        HE_ERROR(std::string(buffer));
     }
-    return true;
+    return compiled == GL_TRUE;
 }
 bool validateProgram(GLuint programID)
 {
     bool succes = true;
 
-    const uint BUFFER_SIZE = 512;
-    char buffer[BUFFER_SIZE];
-    GLsizei length = 0;
+    GLint linkStatus;
+    glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
 
-    glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
-    if (length > 0)
+    if (linkStatus == GL_FALSE)
     {
-        std::cout << "Program " << programID << "link err: \n" <<
-            buffer << "\n";
+        const uint BUFFER_SIZE = 512;
+        char buffer[BUFFER_SIZE];
+        GLsizei length = 0;
+    
+        glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
+        if (length > 0)
+        {
+            char sId[5];
+            sprintf(sId, "%d", programID);
+            HE_ERROR("Program " + std::string(sId) + "link err:");
+            HE_ERROR(std::string(buffer));
+        }
+        succes = false;
     }
 
     glValidateProgram(programID);
-    GLint status;
-    glGetProgramiv(programID, GL_VALIDATE_STATUS, &status);
-    if (status == GL_FALSE)
+    GLint validateStatus;
+    glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
+    if (validateStatus == GL_FALSE)
     {
-        std::cout << "Error validating shader " << programID << "\n";
+        char sId[5];
+        sprintf(sId, "%d", programID);
+        HE_ERROR("Error validating shader " + std::string(sId));
         succes = false;
     }
 
@@ -189,7 +204,10 @@ uint Shader::getBufferId( const std::string& name ) const
 {
     uint loc(glGetUniformBlockIndex(m_Id, name.c_str()));
     if (loc == -1)
-        std::cout << "uniform buffer: '" << name << "' not found!\n" << "in shader: "<< m_FragShaderName << "\n";
+    {
+        HE_ERROR("Uniform buffer: '" + name + "' not found!");
+        HE_ERROR("In shader: " + m_FragShaderName);
+    }
     return loc;
 }
 
@@ -197,7 +215,10 @@ uint Shader::getShaderVarId(const std::string& name) const
 {
     uint loc(glGetUniformLocation(m_Id, name.c_str()));
     if (loc == -1)
-        std::cout << "shader var: '" << name << "' not found!\n" << "in shader: "<< m_FragShaderName << "\n";
+    {
+        HE_ERROR("Shader var: '" + name + "' not found!");
+        HE_ERROR("In shader: " + m_FragShaderName);
+    }
     return loc;
 }
 uint Shader::getShaderSamplerId(const std::string& name)

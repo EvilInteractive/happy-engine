@@ -52,7 +52,7 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
         TTF_Font* pFont(TTF_OpenFont(path.c_str(), size));
         if (pFont == nullptr)
         {
-            std::cout << "Error loading font: " << TTF_GetError() << "\n";
+            HE_ERROR("Font error: " + std::string(TTF_GetError()));
 
             ASSERT(false, "Error loading font!");
 

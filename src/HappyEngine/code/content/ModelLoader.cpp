@@ -89,7 +89,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
             pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
             pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
 
-            std::cout << "**ML INFO** model create completed: " << data->path << "\n";
+            HE_INFO("Model create completed: " + data->path);
         }
         data->pModel->setComplete();
         m_WaitListMutex.unlock();
@@ -206,7 +206,7 @@ gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path
 
 void ModelLoader::ModelLoadThread()
 {
-    std::cout << "**ML INFO** load thread started.\n";
+    HE_INFO("Model Load thread started");
     while (m_ModelLoadQueue.empty() == false)
     {
         m_ModelLoadQueueMutex.lock();
@@ -219,15 +219,14 @@ void ModelLoader::ModelLoadThread()
             try 
             { 
                 data->loader->load(data->path, data->vertexLayout); 
-                std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
+                HE_INFO("Model load completed: " + data->path);
                 m_ModelInvokeQueueMutex.lock();
                 m_ModelInvokeQueue.push(data);
                 m_ModelInvokeQueueMutex.unlock();
             }
             catch (err::FileNotFoundException& e)
             {
-                CONSOLE->addMessage(std::string(e.getMsg().cbegin(), e.getMsg().cend()), CMSG_TYPE_ERROR);
-                std::wcout << e.getMsg() << "\n";
+                HE_ERROR(std::string(e.getMsg().cbegin(), e.getMsg().cend()));
             }            
         }
         else
@@ -236,7 +235,7 @@ void ModelLoader::ModelLoadThread()
             delete data;
         }
     }
-    std::cout << "**ML INFO** load thread stopped.\n";
+    HE_INFO("Model load thread stopped");
     m_isModelThreadRunning = false;
 }
 

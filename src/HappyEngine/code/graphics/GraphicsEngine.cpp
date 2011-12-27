@@ -82,27 +82,31 @@ void GraphicsEngine::init(bool useQt)
     glewExperimental = true;
     glHandleError(glewInit());
 
-    std::cout << glGetString(GL_VENDOR) << "\n";
-    std::cout << glGetString(GL_RENDERER) << "\n";
-    std::cout << glGetString(GL_VERSION) << "\n";
-    std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
+    HE_INFO(std::string((char*)glGetString(GL_VENDOR)));
+    HE_INFO(std::string((char*)glGetString(GL_RENDERER)));
+    HE_INFO(std::string((char*)glGetString(GL_VERSION)));
+    HE_INFO(std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     int major, minor;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    std::cout << "GL version " << major << "." << minor << "\n";
+    char sMajor[5];                     char sMinor[5];
+    sprintf(sMajor, "%d", major);       sprintf(sMinor, "%d", minor);   
+    HE_INFO("GL version " + std::string(sMajor) + "." + std::string(sMinor));
 
     int doubleBuff;
     glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
-    std::cout << "Double buffered: " << ((doubleBuff == GL_TRUE)?"TRUE\n":"FALSE\n");
+    HE_INFO(std::string("Doubly buffered: ") + ((doubleBuff == GL_TRUE)?"TRUE":"FALSE"));
 
     int maxTexSize, maxRenderSize, maxRectSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
     glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
-    std::cout << "Max texture size: " << maxTexSize << "\n";
-    std::cout << "Max render size: " << maxRenderSize << "\n";
-    std::cout << "Max rect tex size: " << maxRectSize << "\n";
+    char sMaxTexSize[10];                     char sMaxRenderSize[10];                       char sMaxRectSize[10];
+    sprintf(sMaxTexSize, "%d", maxTexSize);   sprintf(sMaxRenderSize, "%d", maxRenderSize);  sprintf(sMaxRectSize, "%d", maxRectSize);
+    HE_INFO("Max texture size: " + std::string(sMaxTexSize));
+    HE_INFO("Max render size: " + std::string(sMaxRenderSize));
+    HE_INFO("Max rect tex size: " + std::string(sMaxRectSize));
 
 
     setVSync(m_VSyncEnabled);
@@ -121,7 +125,7 @@ void GraphicsEngine::init(bool useQt)
     io::IniReader reader;
     try { reader.open("settings.ini"); }
     catch (const err::FileNotFoundException& /*e*/)
-    { std::cout << "settings.ini not found!, using defaults"; }
+    { HE_ERROR("settings.ini not found!, using defaults"); }
 
     if (reader.isOpen())
     {

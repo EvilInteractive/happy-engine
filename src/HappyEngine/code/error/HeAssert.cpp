@@ -30,9 +30,11 @@ void happyAssert(bool isOk, const std::string& message, const char* file, int li
 {
     if (!isOk)
     {
-        std::cout << "**ASSERTION FAILURE!**\n";
-        std::cout << "*err in file " << file << "(" << line << ")\n";
-        std::cout << "*" << message << "\n";
+        char sline[5];
+        sprintf(sline, "%d", line);
+        HE_ERROR("**ASSERTION FAILURE!**");
+        HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
+        HE_ERROR("*" + message);
         #ifndef GCC
         __debugbreak();
         #else
@@ -44,8 +46,10 @@ void happyAssert(bool isOk, const char* file, int line)
 {
     if (!isOk)
     {
-        std::cout << "**ASSERTION FAILURE!**\n";
-        std::cout << "*err in file " << file << "(" << line << ")\n";
+        char sline[5];
+        sprintf(sline, "%d", line);
+        HE_ERROR("**ASSERTION FAILURE!**");
+        HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
         #ifndef GCC
         __debugbreak();
         #else
@@ -63,9 +67,11 @@ void happyAssert(void* isOk, const char* file, int line)
 }
 void happyAssert(const std::string& message, const char* file, int line)
 {
-    std::cout << "**ASSERTION FAILURE!**\n";
-    std::cout << "*err in file " << file << "(" << line << ")\n";
-    std::cout << "*" << message << "\n";
+    char sline[5];
+    sprintf(sline, "%d", line);
+    HE_ERROR("**ASSERTION FAILURE!**");
+    HE_ERROR("*err in file " + std::string(file) + "(" + std::string(sline) + ")");
+    HE_ERROR("*" + message);
     #ifndef GCC
     __debugbreak();
     #else

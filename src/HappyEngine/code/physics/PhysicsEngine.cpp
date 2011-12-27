@@ -54,12 +54,12 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
         ASSERT("PxInitExtensions failed!");
 
 //#if _DEBUG || DEBUG
-    std::cout << "connecting to PVD\n";
+    HE_INFO("connecting to PVD")
     PVD::PvdConnection* pConnection(physx::PxExtensionVisualDebugger::connect(m_pPhysXSDK->getPvdConnectionManager(), "localhost", 5425, 100, true));
     if (pConnection == nullptr)
-        std::cout << "    NOT CONNECTED!\n";
+        HE_INFO("    NOT CONNECTED!")
     else
-        std::cout << "    CONNECTED!\n";
+        HE_INFO("    CONNECTED!")
 //#endif
 
     createScene();
@@ -74,7 +74,7 @@ void PhysicsEngine::createScene()
 
     if(!sceneDesc.cpuDispatcher)
     {
-        std::cout << "PhysX using Cpu - " << SDL_GetCPUCount() << " cores\n";
+        HE_INFO("PhysX using Cpu - " + itoa(SDL_GetCPUCount()) + " cores");
         m_pCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(SDL_GetCPUCount());
 
         ASSERT(m_pCpuDispatcher != nullptr, "PxDefaultCpuDispatcherCreate failed!");
@@ -91,8 +91,8 @@ void PhysicsEngine::createScene()
     m_pCudaContextManager = physx::pxtask::createCudaContextManager(cudaDesc, &m_pPhysXSDK->getProfileZoneManager());
     if(!sceneDesc.gpuDispatcher && m_pCudaContextManager != nullptr)
     {
-        std::cout << "PhysX using Gpu - " << m_pCudaContextManager->getDeviceName() << ", " << 
-            m_pCudaContextManager->getMultiprocessorCount() << " cores @" << m_pCudaContextManager->getClockRate() << "\n";
+        HE_INFO("PhysX using Gpu - " + std::string(m_pCudaContextManager->getDeviceName()) + ", " + 
+            itoa(m_pCudaContextManager->getMultiprocessorCount()) + " cores @" + itoa((int)m_pCudaContextManager->getClockRate()));
         sceneDesc.gpuDispatcher = m_pCudaContextManager->getGpuDispatcher();
     }
     #endif

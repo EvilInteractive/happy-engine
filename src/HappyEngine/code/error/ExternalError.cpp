@@ -30,31 +30,82 @@ HappyPhysicsErrorCallback::~HappyPhysicsErrorCallback(){}
 
 void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line)
 {
-    std::cout << "physicsEngine '";
+    std::stringstream stream;
+    stream << "PhysicsEngine '";
 
     switch (code)
     {
         case physx::PxErrorCode::eINVALID_PARAMETER:
-            std::cout << "invalid parameter";
+            stream << "invalid parameter";
             break;
         case physx::PxErrorCode::eINVALID_OPERATION:
-            std::cout << "invalid operation";
+            stream << "invalid operation";
             break;
         case physx::PxErrorCode::eOUT_OF_MEMORY:
-            std::cout << "out of memory";
+            stream << "out of memory";
             break;
         case physx::PxErrorCode::eDEBUG_INFO:
-            std::cout << "info";
+            stream << "info";
             break;
         case physx::PxErrorCode::eDEBUG_WARNING:
-            std::cout << "warning";
+            stream << "warning";
             break;
         default:
-            std::cout << "unknown err";
+            stream << "unknown err";
             break;
     }
 
-    std::cout << "': " << message << " [" << file << "(" << line << ")] \n";
+    stream << "': " << message << " [" << file << "(" << line << ")] \n";
+
+    HE_WARNING(stream.str());
+}
+
+void checkFboStatus( const std::string& name )
+{
+    GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (err != GL_FRAMEBUFFER_COMPLETE)
+    {
+        HE_ERROR("Woops something went wrong with the " + name + " framebuffer");
+        switch (err)
+        {
+        case GL_FRAMEBUFFER_UNDEFINED:                      HE_ERROR("GL_FRAMEBUFFER_UNDEFINED");                      break;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:          HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");          break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:  HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");  break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:         HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");         break;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:         HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");         break;
+        case GL_FRAMEBUFFER_UNSUPPORTED:                    HE_ERROR("GL_FRAMEBUFFER_UNSUPPORTED");                    break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:         HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");         break;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:       HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");       break;
+        default:                                            HE_ERROR("GL_UNKOWN_ERROR");                               break;
+        }
+    }
+}
+
+void sdlHandleError( int err )
+{
+    if (err != 0)
+    {
+        HE_ERROR("SDL: " + std::string(SDL_GetError()));
+    }
+}
+
+void glHandleError( GLenum err )
+{
+    if (err != GL_NO_ERROR)
+    {
+        HE_ERROR("GL: " + std::string((char*)glewGetErrorString(err)));
+    }
+}
+
+void glCheckForErrors( bool postErrors /*= true*/ )
+{
+    GLenum err = glGetError();
+    while (err != GL_NO_ERROR)
+    {
+        if (postErrors)
+            glHandleError(err);
+        err = glGetError();
+    }
 }
 
 } } //end namespace
