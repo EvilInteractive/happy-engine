@@ -44,7 +44,7 @@ ObjLoader::~ObjLoader()
 {
     free(m_Vertices);
 }
-void ObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices)
+void ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
     std::cout << "reading...\n";
     m_VertexLayout = vertLayout;
@@ -55,8 +55,8 @@ void ObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLayou
     create(allowByteIndices);
 
     free(m_Vertices);
-    m_Vertices = malloc(vertLayout.getVertexSize() * m_NumVertices);
-    std::cout << "malloc " << vertLayout.getVertexSize() * m_NumVertices << " bytes\n";
+    m_Vertices = malloc(vertLayout.getSize() * m_NumVertices);
+    std::cout << "malloc " << vertLayout.getSize() * m_NumVertices << " bytes\n";
     ASSERT(m_Vertices != nullptr, "not enough memory!");
 
     std::cout << "filling...\n";
@@ -273,31 +273,31 @@ void ObjLoader::addIndex(uint index, uint group)
         default: ASSERT("unkown type"); break;
     }
 }
-void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) const
+void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) const
 {
     int pOff = -1;
     int tOff = -1;
     int nOff = -1;
     int tanOff = -1;
 
-    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::VertexElement& element)
+    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::BufferElement& element)
     {
-        if (element.getUsage() == gfx::VertexElement::Usage_Position)
+        if (element.getUsage() == gfx::BufferElement::Usage_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_TextureCoordinate)
+        else if (element.getUsage() == gfx::BufferElement::Usage_TextureCoordinate)
             tOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_Normal)
+        else if (element.getUsage() == gfx::BufferElement::Usage_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_Tangent)
+        else if (element.getUsage() == gfx::BufferElement::Usage_Tangent)
             tanOff = element.getByteOffset();
     });
 
     //optimazation for struct == internal struct
-    if (sizeof(InternalVertex) == vertLayout.getVertexSize())
+    if (sizeof(InternalVertex) == vertLayout.getSize())
     {
         if (pOff == 0 && tOff == 12 && nOff == 20)
         {
-            memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getVertexSize());
+            memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getSize());
             return;
         }
     }
@@ -309,17 +309,17 @@ void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) con
     {
         if (pOff != -1)
         {
-            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + pOff]) = vert.pos;
+            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getSize() + pOff]) = vert.pos;
             bytecount += 12;
         }
         if (tOff != -1)
         {
-            *reinterpret_cast<vec2*>(&pCharData[count * vertLayout.getVertexSize() + tOff]) = vert.tex;
+            *reinterpret_cast<vec2*>(&pCharData[count * vertLayout.getSize() + tOff]) = vert.tex;
             bytecount += 8;
         }
         if (nOff != -1)
         {
-            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getVertexSize() + nOff]) = vert.norm;
+            *reinterpret_cast<vec3*>(&pCharData[count * vertLayout.getSize() + nOff]) = vert.norm;
             bytecount += 12;
         }
         ++count;
@@ -341,7 +341,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) con
             count = 0;
             std::for_each(tangents.cbegin(), tangents.cend(), [&](const vec3& tan)
             {
-                *reinterpret_cast<vec3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * vertLayout.getVertexSize() + tanOff]) = tan;
+                *reinterpret_cast<vec3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * vertLayout.getSize() + tanOff]) = tan;
                 bytecount += 12;
             });
             std::cout << "    DONE\n";
@@ -357,7 +357,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::VertexLayout& vertLayout) con
 const void* ObjLoader::getVertices(uint mesh) const
 {
     char* pCharData = static_cast<char*>(m_Vertices);
-    return &pCharData[m_VertexMeshRange[mesh].begin * m_VertexLayout.getVertexSize()];
+    return &pCharData[m_VertexMeshRange[mesh].begin * m_VertexLayout.getSize()];
 }
 const void* ObjLoader::getIndices(uint mesh) const
 {

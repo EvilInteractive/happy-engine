@@ -16,63 +16,63 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 #include "HappyPCH.h" 
 
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "HeAssert.h"
 
 namespace he {
 namespace gfx {
 
 #pragma region VertexElement
-VertexElement::VertexElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset):
+BufferElement::BufferElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset):
         m_ElementIndex(elementIndex), m_Type(type), m_Usage(usage),
         m_Size(size), m_ByteOffset(byteOffset)
 {
     ASSERT(m_Size != 0, "element size == 0");
 }
-uint VertexElement::getElementIndex() const
+uint BufferElement::getElementIndex() const
 {
     return m_ElementIndex;
 }
-uint VertexElement::getSize() const
+uint BufferElement::getSize() const
 {
     return m_Size;
 }
-uint VertexElement::getByteOffset() const
+uint BufferElement::getByteOffset() const
 {
     return m_ByteOffset;
 }
-VertexElement::Type VertexElement::getType() const
+BufferElement::Type BufferElement::getType() const
 {
     return m_Type;
 }
-VertexElement::Usage VertexElement::getUsage() const
+BufferElement::Usage BufferElement::getUsage() const
 {
     return m_Usage;
 }
 #pragma endregion
 
 #pragma region VertexLayout
-VertexLayout::VertexLayout(): m_VertexSize(0)
+BufferLayout::BufferLayout(): m_Size(0)
 {
 }
-VertexLayout::~VertexLayout()
+BufferLayout::~BufferLayout()
 {
 }
 
-void VertexLayout::addElement(const VertexElement& element)
+void BufferLayout::addElement(const BufferElement& element)
 {
     m_Layout.push_back(element);
-    m_VertexSize += element.getSize();
+    m_Size += element.getSize();
 }
 
-const VertexLayout::layout& VertexLayout::getElements() const
+const BufferLayout::layout& BufferLayout::getElements() const
 {
     return m_Layout;
 }
-uint VertexLayout::getVertexSize() const
+uint BufferLayout::getSize() const
 {
-    ASSERT(m_VertexSize != 0, "Vertex size == 0!");
-    return m_VertexSize;
+    ASSERT(m_Size != 0, "Vertex size == 0!");
+    return m_Size;
 }
 #pragma endregion
 

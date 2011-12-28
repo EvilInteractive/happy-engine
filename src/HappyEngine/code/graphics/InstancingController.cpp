@@ -58,28 +58,28 @@ void InstancingController::init()
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
         glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOID());
-        VertexLayout::layout elements(m_pModelMesh->getVertexLayout().getElements());
-        std::for_each(elements.cbegin(), elements.cend(), [&](const VertexElement& e)
+        BufferLayout::layout elements(m_pModelMesh->getVertexLayout().getElements());
+        std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
         {
             GLint components = 1;
             GLenum type = 0;
             switch (e.getType())
             {
-                case VertexElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
-                case VertexElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
-                case VertexElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
-                case VertexElement::Type_Float: type = GL_FLOAT; break;
+                case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
+                case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
+                case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
+                case BufferElement::Type_Float: type = GL_FLOAT; break;
 
-                case VertexElement::Type_Int: type = GL_INT; break;
-                case VertexElement::Type_IVec4: type = GL_INT; components = 4; break;
-                case VertexElement::Type_UInt: type = GL_UNSIGNED_INT; break;
+                case BufferElement::Type_Int: type = GL_INT; break;
+                case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
+                case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
 
                 #pragma warning(disable:4127)
                 default: ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
                 #pragma warning(default:4127)
             }
             glVertexAttribPointer(e.getElementIndex(), components, type, 
-                GL_FALSE, m_pModelMesh->getVertexLayout().getVertexSize(), 
+                GL_FALSE, m_pModelMesh->getVertexLayout().getSize(), 
                 BUFFER_OFFSET(e.getByteOffset())); 
             glEnableVertexAttribArray(e.getElementIndex());
         });
@@ -173,9 +173,7 @@ void InstancingController::updateBuffer()
                 m_MatrixBufferCapacity *= 2;
             glBufferData(GL_ARRAY_BUFFER, m_MatrixBufferCapacity * sizeof(mat44), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
-            char sCapa[6];
-            sprintf(sCapa, "%d", m_MatrixBufferCapacity);
-            HE_INFO("Increasing instancing controller's capacity to " + std::string(sCapa));
+            HE_INFO("Increasing instancing controller's capacity to " + itoa(m_MatrixBufferCapacity));
         }
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, matrixBuffer.size()*sizeof(mat44), matrixBuffer.size() > 0 ? &matrixBuffer[0] : 0);

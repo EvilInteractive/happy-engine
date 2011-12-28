@@ -97,8 +97,8 @@ void ShadowCaster::init(const RenderSettings& settings)
     ShaderLayout shaderSingleLayout;
     shaderSingleLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    VertexLayout vertexSingleLayout;
-    vertexSingleLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
+    BufferLayout vertexSingleLayout;
+    vertexSingleLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     std::vector<std::string> outputs;
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
@@ -112,10 +112,10 @@ void ShadowCaster::init(const RenderSettings& settings)
     shaderSkinnedLayout.addElement(ShaderLayoutElement(1, "inBoneId"));
     shaderSkinnedLayout.addElement(ShaderLayoutElement(2, "inBoneWeight"));
 
-    VertexLayout vertexSkinnedLayout;
-    vertexSingleLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position,    12, 0));
-    vertexSingleLayout.addElement(VertexElement(1, VertexElement::Type_Vec4, VertexElement::Usage_BoneIDs,     16, 12));
-    vertexSingleLayout.addElement(VertexElement(2, VertexElement::Type_Vec4, VertexElement::Usage_BoneWeights, 16, 12+16));
+    BufferLayout vertexSkinnedLayout;
+    vertexSingleLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position,    12, 0));
+    vertexSingleLayout.addElement(BufferElement(1, BufferElement::Type_Vec4, BufferElement::Usage_BoneIDs,     16, 12));
+    vertexSingleLayout.addElement(BufferElement(2, BufferElement::Type_Vec4, BufferElement::Usage_BoneWeights, 16, 12+16));
 
     pShadowShaderSkinned->initFromFile(folder + "shadow/preShadowShaderSkinned.vert", 
                                        folder + "shadow/preShadowShader.frag", 

@@ -35,8 +35,8 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
 {
     calculateWorld();
     m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
-    VertexLayout vertexLayout;
-    vertexLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
+    BufferLayout vertexLayout;
+    vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
     m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
     m_pModel = m_pLightVolume;
 }

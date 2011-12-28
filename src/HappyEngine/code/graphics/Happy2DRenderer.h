@@ -169,8 +169,8 @@ private:
 
     Color m_CurrentColor;
 
-    VertexLayout m_VertexLayoutColor;
-    VertexLayout m_VertexLayoutTexture;
+    BufferLayout m_VertexLayoutColor;
+    BufferLayout m_VertexLayoutTexture;
 
     Simple2DEffect* m_pColorEffect;
     Simple2DTextureEffect* m_pTextureEffect;

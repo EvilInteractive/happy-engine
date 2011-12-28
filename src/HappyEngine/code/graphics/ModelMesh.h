@@ -28,7 +28,7 @@
 
 #include <vector>
 #include <string>
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
 #include "Sphere.h"
@@ -58,7 +58,7 @@ public:
     virtual ~ModelMesh();
 
     void init();
-    void setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout);
+    void setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout);
     void setIndices(const void* pIndices, uint num, IndexStride type);
 
     void setBones(const std::vector<Bone>& boneList);
@@ -74,7 +74,7 @@ public:
     uint getNumIndices() const;
 
     uint getIndexType() const;
-    const VertexLayout& getVertexLayout() const;
+    const BufferLayout& getVertexLayout() const;
 
     const std::string& getName() const;
 
@@ -108,7 +108,7 @@ private:
     uint m_NumIndices;
 
 
-    VertexLayout m_VertexLayout;
+    BufferLayout m_VertexLayout;
     uint m_IndexType;
 
     std::string m_Name;

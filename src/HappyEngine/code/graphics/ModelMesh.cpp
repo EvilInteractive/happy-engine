@@ -53,7 +53,7 @@ void ModelMesh::init()
 }
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
-void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout& vertexLayout)
+void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout)
 {
     //err::glCheckForErrors(false);
 
@@ -64,52 +64,52 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
     uint posOffset = UINT_MAX;
     uint boneIdOffset = UINT_MAX;
     uint boneWeightOffset = UINT_MAX;
-    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const VertexElement& e)
+    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const BufferElement& e)
     {
-        if (e.getUsage() == gfx::VertexElement::Usage_Position)
+        if (e.getUsage() == gfx::BufferElement::Usage_Position)
         {
             posOffset = e.getByteOffset();
         }
-        else if (e.getUsage() == gfx::VertexElement::Usage_BoneIDs)
+        else if (e.getUsage() == gfx::BufferElement::Usage_BoneIDs)
         {
             boneIdOffset = e.getByteOffset();
         }
-        else if (e.getUsage() == gfx::VertexElement::Usage_BoneWeights)
+        else if (e.getUsage() == gfx::BufferElement::Usage_BoneWeights)
         {
             boneWeightOffset = e.getByteOffset();
         }
     });
-    m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getVertexSize(), posOffset);
+    m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getSize(), posOffset);
 
     GL::heBindVao(m_VaoID[0]);
     //err::glCheckForErrors();
 
-    VertexLayout::layout elements(vertexLayout.getElements());
+    BufferLayout::layout elements(vertexLayout.getElements());
 
     glGenBuffers(1, m_VertexVboID);
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertexLayout.getVertexSize() * num, pVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexLayout.getSize() * num, pVertices, GL_STATIC_DRAW);
 
-    std::for_each(elements.cbegin(), elements.cend(), [&](const VertexElement& e)
+    std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
     {
         GLint components = 1;
         GLenum type = 0;
         switch (e.getType())
         {
-            case VertexElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
-            case VertexElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
-            case VertexElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
-            case VertexElement::Type_Float: type = GL_FLOAT; break;
+            case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
+            case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
+            case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
+            case BufferElement::Type_Float: type = GL_FLOAT; break;
 
-            case VertexElement::Type_Int: type = GL_INT; break;
-            case VertexElement::Type_IVec4: type = GL_INT; components = 4; break;
-            case VertexElement::Type_UInt: type = GL_UNSIGNED_INT; break;
+            case BufferElement::Type_Int: type = GL_INT; break;
+            case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
+            case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
             
             #pragma warning(disable:4127)
             default: ASSERT(false, "unknown type"); break;
             #pragma warning(default:4127)
         }
-        glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getVertexSize(), 
+        glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 
         glEnableVertexAttribArray(e.getElementIndex());
         //err::glCheckForErrors();
@@ -126,7 +126,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
         const char* charPointCloud = static_cast<const char*>(pVertices);
         for(uint i = 0; i < num; ++i)
         {
-            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getVertexSize() * i + posOffset));
+            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getSize() * i + posOffset));
             shadowVertices[i] = p;
         }
 
@@ -143,11 +143,11 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const VertexLayout&
         const char* charPointCloud = static_cast<const char*>(pVertices);
         for(uint i = 0; i < num; ++i)
         {
-            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getVertexSize() * i + posOffset));
+            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getSize() * i + posOffset));
             shadowVertices[i].pos = p;
-            const vec4& bId(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getVertexSize() * i + boneIdOffset));
+            const vec4& bId(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getSize() * i + boneIdOffset));
             shadowVertices[i].boneId = bId;
-            const vec4& bW(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getVertexSize() * i + boneWeightOffset));
+            const vec4& bW(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getSize() * i + boneWeightOffset));
             shadowVertices[i].boneWeight = bW;
         }
 
@@ -285,7 +285,7 @@ uint ModelMesh::getVBOIndexID() const
     return m_IndexVboID[0];
 }
 
-const VertexLayout& ModelMesh::getVertexLayout() const
+const BufferLayout& ModelMesh::getVertexLayout() const
 {
     return m_VertexLayout;
 }

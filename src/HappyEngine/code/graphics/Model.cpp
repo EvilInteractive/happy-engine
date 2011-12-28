@@ -31,7 +31,7 @@
 namespace he {
 namespace gfx {
     
-Model::Model(const VertexLayout& vertexLayout): m_Complete(false), m_VertexLayout(vertexLayout)
+Model::Model(const BufferLayout& vertexLayout): m_Complete(false), m_VertexLayout(vertexLayout)
 {
 }
 
@@ -98,7 +98,7 @@ void Model::setComplete()
     m_Complete = true;
 }
 
-const VertexLayout& Model::getVertexLayout() const
+const BufferLayout& Model::getVertexLayout() const
 {
     return m_VertexLayout;
 }

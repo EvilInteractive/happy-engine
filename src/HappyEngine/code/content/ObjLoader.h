@@ -26,7 +26,7 @@
 #include <vector>
 #include <map>
 
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "vec3.h"
 #include "vec2.h"
@@ -54,7 +54,7 @@ public:
 	ObjLoader();
     virtual ~ObjLoader();
 
-    virtual void load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices = true);
+    virtual void load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
     virtual uint getNumMeshes() const;
     virtual const std::string& getMeshName(uint mesh) const;
@@ -80,7 +80,7 @@ private:
     void flushCreateGroup(uint group);
     void create(bool allowByteIndices);
     void addIndex(uint index, uint group);
-    void fill(void* pdata, const gfx::VertexLayout& vertLayout) const;
+    void fill(void* pdata, const gfx::BufferLayout& vertLayout) const;
 
     std::vector<vec3> m_PositionData;
     std::vector<vec2> m_TextureData;
@@ -99,7 +99,7 @@ private:
     std::vector<uint> m_IndicesUInt;
 
     void* m_Vertices;
-    gfx::VertexLayout m_VertexLayout;
+    gfx::BufferLayout m_VertexLayout;
 
     uint m_NumVertices;
     std::vector<uint> m_NumIndices;

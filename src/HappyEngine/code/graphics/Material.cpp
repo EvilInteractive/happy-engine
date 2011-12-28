@@ -47,7 +47,7 @@ void Material::addVar(const ShaderVar::pointer& var)
     ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
     m_ShaderVar.push_back(var);
 }
-void Material::setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing)
+void Material::setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVL, bool usedForInstancing)
 {
     m_UsedForInstancing = usedForInstancing;
     m_pShader = pShader;
@@ -270,7 +270,7 @@ void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera 
 }
 
 
-const VertexLayout& Material::getCompatibleVertexLayout() const
+const BufferLayout& Material::getCompatibleVertexLayout() const
 {
     return m_CompatibleVL;
 }

@@ -28,11 +28,11 @@
 #define assert ASSERT
 
 #include <vector>
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
 #include "ModelMesh.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 
 #include "Sphere.h"
 
@@ -44,7 +44,7 @@ class Model
 public:
     typedef boost::shared_ptr<Model> pointer;
 
-	Model(const VertexLayout& vertexLayout);
+	Model(const BufferLayout& vertexLayout);
     virtual ~Model();
     
     void addMesh(const ModelMesh::pointer& pMesh);
@@ -59,11 +59,11 @@ public:
     bool isComplete() const; //used as mutex
     void setComplete();
 
-    const VertexLayout& getVertexLayout() const;
+    const BufferLayout& getVertexLayout() const;
 
 private:
 
-    VertexLayout m_VertexLayout;
+    BufferLayout m_VertexLayout;
     //std::vector<std::vector<ModelMesh::pointer>> m_MeshesPerLod;
     std::vector<ModelMesh::pointer> m_Meshes;
     bool m_Complete;

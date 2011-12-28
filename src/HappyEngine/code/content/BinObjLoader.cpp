@@ -50,7 +50,7 @@ BinObjLoader::~BinObjLoader()
         free(pInd);
     });
 }
-void BinObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices)
+void BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
     read(path, allowByteIndices);
     
@@ -62,7 +62,7 @@ void BinObjLoader::load(const std::string& path, const gfx::VertexLayout& vertLa
 
     for (uint i = 0; i < m_VertexData.size(); ++i)
     {
-        void* pVert(malloc(vertLayout.getVertexSize() * m_VertexData[i].size()));
+        void* pVert(malloc(vertLayout.getSize() * m_VertexData[i].size()));
         ASSERT(pVert != nullptr, "not enough memory!");
         m_Vertices.push_back(pVert);
     }
@@ -128,7 +128,7 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
     }
 }
 
-void BinObjLoader::fill(const gfx::VertexLayout& vertLayout) const
+void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
 {
     int pOff = -1;
     int tOff = -1;
@@ -137,30 +137,30 @@ void BinObjLoader::fill(const gfx::VertexLayout& vertLayout) const
     int boneOff = -1;
     int weightOff = -1;
 
-    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::VertexElement& element)
+    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::BufferElement& element)
     {
-        if (element.getUsage() == gfx::VertexElement::Usage_Position)
+        if (element.getUsage() == gfx::BufferElement::Usage_Position)
             pOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_TextureCoordinate)
+        else if (element.getUsage() == gfx::BufferElement::Usage_TextureCoordinate)
             tOff = element.getByteOffset(); 
-        else if (element.getUsage() == gfx::VertexElement::Usage_Normal)
+        else if (element.getUsage() == gfx::BufferElement::Usage_Normal)
             nOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_Tangent)
+        else if (element.getUsage() == gfx::BufferElement::Usage_Tangent)
             tanOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_BoneIDs)
+        else if (element.getUsage() == gfx::BufferElement::Usage_BoneIDs)
             boneOff = element.getByteOffset();
-        else if (element.getUsage() == gfx::VertexElement::Usage_BoneWeights)
+        else if (element.getUsage() == gfx::BufferElement::Usage_BoneWeights)
             weightOff = element.getByteOffset();
     });
     
     for (uint i = 0; i < m_VertexData.size(); ++i)
     {
         //optimazation for struct == internal struct
-        if (sizeof(InternalVertex) == vertLayout.getVertexSize())
+        if (sizeof(InternalVertex) == vertLayout.getSize())
         {
             if (pOff == 0 && tOff == 12 && nOff == 20 && tanOff == 32 && boneOff == 44 && weightOff == 44 + gfx::Bone::MAX_BONES * 1)
             {
-                memcpy(m_Vertices[i], &m_VertexData[i][0], m_VertexData[i].size() * vertLayout.getVertexSize());
+                memcpy(m_Vertices[i], &m_VertexData[i][0], m_VertexData[i].size() * vertLayout.getSize());
                 break;
             }
         } 
@@ -171,29 +171,29 @@ void BinObjLoader::fill(const gfx::VertexLayout& vertLayout) const
         {
             if (pOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + pOff], &vert.pos, sizeof(vec3));
+                memcpy(&pCharData[count * vertLayout.getSize() + pOff], &vert.pos, sizeof(vec3));
             }
             if (tOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + tOff], &vert.tex, sizeof(vec2));
+                memcpy(&pCharData[count * vertLayout.getSize() + tOff], &vert.tex, sizeof(vec2));
             }
             if (nOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + nOff], &vert.norm, sizeof(vec3));
+                memcpy(&pCharData[count * vertLayout.getSize() + nOff], &vert.norm, sizeof(vec3));
             }
             if (tanOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + tanOff], &vert.tan, sizeof(vec3));
+                memcpy(&pCharData[count * vertLayout.getSize() + tanOff], &vert.tan, sizeof(vec3));
             }
             if (boneOff != -1)
             {
                 ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "Unsupported max boneWeight value only 4 is supported");
                 vec4 boneIDs(vert.boneID[0], vert.boneID[1], vert.boneID[2], vert.boneID[3]);
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + boneOff], &boneIDs, sizeof(vec4));
+                memcpy(&pCharData[count * vertLayout.getSize() + boneOff], &boneIDs, sizeof(vec4));
             }
             if (weightOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getVertexSize() + weightOff], vert.boneWeight, sizeof(float) * gfx::Bone::MAX_BONEWEIGHTS);
+                memcpy(&pCharData[count * vertLayout.getSize() + weightOff], vert.boneWeight, sizeof(float) * gfx::Bone::MAX_BONEWEIGHTS);
             }
             ++count;
         });

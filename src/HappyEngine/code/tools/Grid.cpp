@@ -24,7 +24,7 @@
 #include "HappyNew.h"
 #include "Vertex.h"
 #include <vector>
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "SimpleForward3DRenderer.h"
 
 namespace he {
@@ -34,8 +34,8 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
                                                             m_Color(Color(0.8f,0.8f,0.8f,1.0f)),
                                                             m_Color2(Color(1.0f,1.0f,1.0f,1.0f))
 {
-    gfx::VertexLayout layout;
-    layout.addElement(gfx::VertexElement(0, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position, 12, 0));
+    gfx::BufferLayout layout;
+    layout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, 12, 0));
 
     std::vector<gfx::VertexPos> vertices;
     std::vector<uint> indices;

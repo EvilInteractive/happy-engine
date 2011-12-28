@@ -23,7 +23,7 @@
 #pragma once
 
 #include "IModelLoader.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "vec3.h"
 #include <vector>
 

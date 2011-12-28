@@ -26,7 +26,7 @@
 #include <vector>
 #include <map>
 
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "vec3.h"
 #include "vec2.h"
@@ -74,7 +74,7 @@ public:
 	BinObjLoader();
     virtual ~BinObjLoader();
 
-    virtual void load(const std::string& path, const gfx::VertexLayout& vertLayout, bool allowByteIndices = true);
+    virtual void load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
     virtual uint getNumMeshes() const;
     virtual const std::string& getMeshName(uint mesh) const;
@@ -91,7 +91,7 @@ public:
 
 private:
     void read(const std::string& path, bool allowByteIndices);
-    void fill(const gfx::VertexLayout& vertLayout) const;
+    void fill(const gfx::BufferLayout& vertLayout) const;
 
     std::vector<std::vector<InternalVertex>> m_VertexData;
     std::vector<std::vector<gfx::Bone>> m_BoneData;

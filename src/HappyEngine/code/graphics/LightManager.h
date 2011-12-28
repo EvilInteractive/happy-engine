@@ -67,7 +67,7 @@ public:
     void remove(const PointLight::pointer& pLight);
     void remove(const SpotLight::pointer& pLight);
 
-    static const VertexLayout& getVertexLayoutLightVolume();
+    static const BufferLayout& getVertexLayoutLightVolume();
 
 private:
 

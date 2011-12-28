@@ -27,7 +27,7 @@
 namespace he {
 namespace gfx {
 
-class VertexElement
+class BufferElement
 {
 public:
     enum Type
@@ -48,10 +48,11 @@ public:
         Usage_Tangent,
         Usage_BoneIDs,
         Usage_BoneWeights,
+        Usage_Instancing,
         Usage_Other
     };
-    VertexElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset);
-    virtual ~VertexElement() {}
+    BufferElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset);
+    virtual ~BufferElement() {}
     //default copy constructor and assignment operator are fine
 
     uint getElementIndex() const;
@@ -68,24 +69,24 @@ private:
     uint m_ByteOffset;
 };
 
-class VertexLayout
+class BufferLayout
 {
 public:
-    typedef std::vector<VertexElement> layout;
+    typedef std::vector<BufferElement> layout;
 
-    VertexLayout();
-    virtual ~VertexLayout();
+    BufferLayout();
+    virtual ~BufferLayout();
     //default copy constructor and assignment operator are fine
 
-    void addElement(const VertexElement& element);
+    void addElement(const BufferElement& element);
 
     const layout& getElements() const;
-    uint getVertexSize() const;
+    uint getSize() const;
 
 
 private:
     layout m_Layout;
-    uint m_VertexSize;
+    uint m_Size;
 };
 
 } } //end namespace

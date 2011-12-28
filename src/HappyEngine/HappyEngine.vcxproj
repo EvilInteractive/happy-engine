@@ -66,6 +66,7 @@
     <ClCompile Include="code\graphics\DirectionalLight.cpp" />
     <ClCompile Include="code\graphics\DrawListContainer.cpp" />
     <ClCompile Include="code\graphics\DrawManager.cpp" />
+    <ClCompile Include="code\graphics\DynamicBuffer.cpp" />
     <ClCompile Include="code\graphics\Ellipse2D.cpp" />
     <ClCompile Include="code\graphics\Font.cpp" />
     <ClCompile Include="code\graphics\Forward3DRenderer.cpp" />
@@ -117,7 +118,7 @@
     <ClCompile Include="code\graphics\TextBox.cpp" />
     <ClCompile Include="code\graphics\Texture2D.cpp" />
     <ClCompile Include="code\graphics\Vertex.cpp" />
-    <ClCompile Include="code\graphics\VertexLayout.cpp" />
+    <ClCompile Include="code\graphics\BufferLayout.cpp" />
     <ClCompile Include="code\HappyEngine.cpp" />
     <ClCompile Include="code\io\BinaryStream.cpp" />
     <ClCompile Include="code\io\ControlsManager.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="code\graphics\DirectionalLight.h" />
     <ClInclude Include="code\graphics\DrawListContainer.h" />
     <ClInclude Include="code\graphics\DrawManager.h" />
+    <ClInclude Include="code\graphics\DynamicBuffer.h" />
     <ClInclude Include="code\graphics\Ellipse2D.h" />
     <ClInclude Include="code\graphics\Font.h" />
     <ClInclude Include="code\graphics\Forward3DRenderer.h" />
@@ -287,7 +289,7 @@
     <ClInclude Include="code\graphics\TextBox.h" />
     <ClInclude Include="code\graphics\Texture2D.h" />
     <ClInclude Include="code\graphics\Vertex.h" />
-    <ClInclude Include="code\graphics\VertexLayout.h" />
+    <ClInclude Include="code\graphics\BufferLayout.h" />
     <ClInclude Include="code\HappyEngine.h" />
     <ClInclude Include="code\HappyNew.h" />
     <ClInclude Include="code\HappyTypes.h" />

@@ -23,7 +23,7 @@
 #include "HappyNew.h"
 #include "IniReader.h"
 #include "HappyEngine.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "Texture2D.h"
 #include "FileNotFoundException.h"
 #include "ContentManager.h"
@@ -59,7 +59,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
         gfx::Material material;
         if (reader.isOpen())
         {     
-            gfx::VertexLayout vertexLayout;
+            gfx::BufferLayout vertexLayout;
             // [Shader]
             {
                 std::string file;
@@ -128,33 +128,33 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 {
                     if (p.second == L"POSITION")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Position, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"TEXCOORD")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec2, gfx::VertexElement::Usage_TextureCoordinate, sizeof(vec2), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_TextureCoordinate, sizeof(vec2), offset));
                         offset += sizeof(vec2);
                     }
                     else if (p.second == L"NORMAL")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Normal, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Normal, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"TANGENT")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec3, gfx::VertexElement::Usage_Tangent, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Tangent, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"BONEIDS")
                     {
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec4, gfx::VertexElement::Usage_BoneIDs, sizeof(vec4), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneIDs, sizeof(vec4), offset));
                         offset += sizeof(vec4);
                     }
                     else if (p.second == L"BONEWEIGHTS")
                     {
                         ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
-                        vertexLayout.addElement(gfx::VertexElement(count, gfx::VertexElement::Type_Vec4, gfx::VertexElement::Usage_BoneWeights, sizeof(vec4), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneWeights, sizeof(vec4), offset));
                         offset += sizeof(vec4);
                     }
                     else if (p.second == L"WORLD")

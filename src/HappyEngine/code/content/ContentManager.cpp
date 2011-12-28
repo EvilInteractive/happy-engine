@@ -44,11 +44,11 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
     m_pTextureLoader->glThreadInvoke();
 }
 
-gfx::Model::pointer ContentManager::asyncLoadModel(const std::string& asset, const gfx::VertexLayout& vertexLayout)
+gfx::Model::pointer ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
     return m_pModelLoader->asyncLoadModel(m_ContentRootDir + m_ModelFolder + asset, vertexLayout);
 }
-gfx::ModelMesh::pointer ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::VertexLayout& vertexLayout )
+gfx::ModelMesh::pointer ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
 {
     return m_pModelLoader->asyncLoadModelMesh(m_ContentRootDir + m_ModelFolder + asset, meshName, vertexLayout);
 }
@@ -174,8 +174,8 @@ const std::string& ContentManager::getMaterialFolder() const
 gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const
 {
     using namespace gfx;
-    VertexLayout layout;
-    layout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
+    BufferLayout layout;
+    layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     gfx::ModelMesh::pointer pQuad(NEW gfx::ModelMesh("fullscreenQuad"));
 

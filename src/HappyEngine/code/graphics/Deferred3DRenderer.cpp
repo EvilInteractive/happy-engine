@@ -25,7 +25,7 @@
 #include "Happy2DRenderer.h"
 #include "HappyEngine.h"
 #include "OpenGL.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "Vertex.h"
 #include "HeAssert.h"
 #include "Light.h"
@@ -46,7 +46,7 @@ namespace gfx {
 //const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_BGRA, GL_BGRA, GL_RG, GL_DEPTH_COMPONENT };
 //const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA8, GL_RG16F, GL_DEPTH_COMPONENT32F };
 //const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
-VertexLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = VertexLayout();
+BufferLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = BufferLayout();
 
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_pQuad(NEW ModelMesh("deferred3DRenderer_QUAD")), 
@@ -111,7 +111,7 @@ void Deferred3DRenderer::compileShaders()
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    s_VertexLayoutFullscreenQuad.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
+    s_VertexLayoutFullscreenQuad.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///

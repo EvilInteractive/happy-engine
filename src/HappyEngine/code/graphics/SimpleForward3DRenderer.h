@@ -66,7 +66,7 @@ private:
     Texture2D::pointer m_pRenderTexture;
 
     ModelMesh::pointer m_pBillboardQuad;
-    VertexLayout m_VertexLayoutBillboard;
+    BufferLayout m_VertexLayoutBillboard;
     BillboardEffect* m_pBillboardEffect;
 
     vec2 m_ScreenDimensions;

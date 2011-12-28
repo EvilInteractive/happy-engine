@@ -98,7 +98,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
     }
 }
 
-gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout)
+gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
 {
     if (m_pAssetContainer->isAssetPresent(path))
     {
@@ -136,7 +136,7 @@ gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const g
         return data->pModel;
     }
 }
-gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::VertexLayout& vertexLayout )
+gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
 {
     if (m_pAssetContainer->isAssetPresent(path))
     {

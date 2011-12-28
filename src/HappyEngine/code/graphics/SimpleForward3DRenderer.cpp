@@ -50,8 +50,8 @@ SimpleForward3DRenderer::~SimpleForward3DRenderer()
 
 void SimpleForward3DRenderer::createBillboardQuad()
 {
-    m_VertexLayoutBillboard.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
-    m_VertexLayoutBillboard.addElement(VertexElement(1, VertexElement::Type_Vec2, VertexElement::Usage_TextureCoordinate, 8, 12));
+    m_VertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    m_VertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
 
     m_pBillboardQuad->init();
 

@@ -418,10 +418,10 @@ void Happy2DRenderer::createTextureQuad()
 
 void Happy2DRenderer::init()
 {
-    m_VertexLayoutColor.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
+    m_VertexLayoutColor.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
 
-    m_VertexLayoutTexture.addElement(VertexElement(0, VertexElement::Type_Vec2, VertexElement::Usage_Position, 8, 0));
-    m_VertexLayoutTexture.addElement(VertexElement(1, VertexElement::Type_Vec2, VertexElement::Usage_TextureCoordinate, 8, 8));
+    m_VertexLayoutTexture.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
+    m_VertexLayoutTexture.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
     
     m_ViewPortSize.x = static_cast<float>(GRAPHICS->getScreenWidth());
     m_ViewPortSize.y = static_cast<float>(GRAPHICS->getScreenHeight());

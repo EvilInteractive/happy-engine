@@ -48,8 +48,8 @@ void PickEffect::load()
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    VertexLayout vertexLayout;
-    vertexLayout.addElement(VertexElement(0, VertexElement::Type_Vec3, VertexElement::Usage_Position, 12, 0));
+    BufferLayout vertexLayout;
+    vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     Shader::pointer pShader(NEW Shader());
 

@@ -20,7 +20,7 @@
 #pragma once
 
 #include <string>
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "Model.h"
 #include "Texture2D.h"
 #include "vec3.h"
@@ -52,8 +52,8 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
-    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::VertexLayout& vertexLayout);
+    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh::pointer getFullscreenQuad() const;
 
     gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);

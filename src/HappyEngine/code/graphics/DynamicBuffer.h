@@ -15,44 +15,33 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 28/12/2011
 
-#ifndef _HE_IMODEL_LOADER_H_
-#define _HE_IMODEL_LOADER_H_
+#ifndef _HE_DYNAMIC_BUFFER_H_
+#define _HE_DYNAMIC_BUFFER_H_
 #pragma once
 
-#include <string>
-#include <vector>
 #include "BufferLayout.h"
-#include "HappyTypes.h"
-#include "Model.h"
-#include "Bone.h"
 
 namespace he {
-namespace ct {
-namespace models {
+namespace gfx {
 
-class IModelLoader
+class DynamicBuffer
 {
 public:
-    virtual ~IModelLoader() {}
-  
-    virtual void load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
+    DynamicBuffer(const BufferLayout& bufferLayout);
+    virtual ~DynamicBuffer();
 
-    virtual uint getNumMeshes() const = 0;
-    virtual const std::string& getMeshName(uint mesh) const = 0;
 
-    virtual const void* getVertices(uint mesh) const = 0;
-    virtual uint getNumVertices(uint mesh) const = 0;
 
-    virtual const std::vector<gfx::Bone>& getBones(uint mesh) const = 0;
+private:
 
-    virtual const void* getIndices(uint mesh) const = 0;
-    virtual gfx::IndexStride getIndexStride(uint mesh) const = 0;
-    virtual uint getNumIndices(uint mesh) const = 0;
+    //Disable default copy constructor and default assignment operator
+    DynamicBuffer(const DynamicBuffer&);
+    DynamicBuffer& operator=(const DynamicBuffer&);
 };
 
-} } } //end namespace
+} } //end namespace
 
 #endif

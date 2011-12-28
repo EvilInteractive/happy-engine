@@ -121,7 +121,7 @@ public:
     virtual bool getSupportsTranslucency() const { return false; }
 
 private:
-    static VertexLayout s_VertexLayoutFullscreenQuad;
+    static BufferLayout s_VertexLayoutFullscreenQuad;
 
     void compileShaders();
 

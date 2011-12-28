@@ -26,7 +26,7 @@
 #include <vector>
 #include <map>
 
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "vec3.h"
 #include "vec2.h"

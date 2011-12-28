@@ -23,7 +23,7 @@
 #include "HappyNew.h"
 #include "IniReader.h"
 #include "HappyEngine.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 
 namespace he {
 namespace ct {

@@ -26,7 +26,7 @@
 #include "HappyTypes.h"
 #include "boost/shared_ptr.hpp"
 #include "ShaderVar.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 
 namespace he {
 namespace gfx {
@@ -44,9 +44,9 @@ public:
     // default copy constructor and default assignment operator are OK
 
     void addVar(const ShaderVar::pointer& var);
-    void setShader(const Shader::pointer& pShader, const VertexLayout& compatibleVL, bool usedForInstancing);
+    void setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVL, bool usedForInstancing);
 
-    const VertexLayout& getCompatibleVertexLayout() const;
+    const BufferLayout& getCompatibleVertexLayout() const;
 
     void apply(const IInstancedDrawable* pObj,  const ICamera* pCamera) const;
     void apply(const ISingleDrawable*    pObj,  const ICamera* pCamera) const;
@@ -66,7 +66,7 @@ private:
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;
 
-    VertexLayout m_CompatibleVL;
+    BufferLayout m_CompatibleVL;
 };
 
 } } //end namespace

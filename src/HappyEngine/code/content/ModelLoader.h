@@ -25,7 +25,7 @@
 #pragma once
 
 #include "Model.h"
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "IModelLoader.h"
 #include "AssetContainer.h"
 
@@ -46,15 +46,15 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::VertexLayout& vertexLayout);
-    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::VertexLayout& vertexLayout);
+    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
 
 private:
     struct ModelLoadData
     {
     public:
         std::string path;
-        gfx::VertexLayout vertexLayout;
+        gfx::BufferLayout vertexLayout;
         gfx::Model::pointer pModel;
         models::IModelLoader* loader;
 
