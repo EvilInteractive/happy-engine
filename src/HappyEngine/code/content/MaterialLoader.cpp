@@ -364,9 +364,42 @@ gfx::Material MaterialLoader::load(const std::string& path)
                                     tex));
                             material.addVar(var);
                         }
+
+                        // User
+                        else if (node.second == L"FLOAT")
+                        {
+                            std::string id(std::string(node.first.cbegin(), node.first.cend()));
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderUserVar<float>(pShader->getShaderVarId(id), 0)));
+                        }
+                        else if (node.second == L"VEC2")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderUserVar<vec2>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), vec2(0, 0))));
+                        }
+                        else if (node.second == L"VEC3")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderUserVar<vec3>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), vec3(0, 0, 0))));
+                        }
+                        else if (node.second == L"VEC4")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderUserVar<vec4>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), vec4(0, 0, 0, 0))));
+                        }
+                        else if (node.second == L"INT")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderUserVar<int>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), 0)));
+                        }
+                        else if (node.second == L"UINT")
+                        {
+                            material.addVar(gfx::ShaderVar::pointer(
+                                NEW gfx::ShaderUserVar<uint>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), 0)));
+                        }
                         else
                         {
-                            std::wcout << "**Material Error**: unkown semantic " << node.second << "\n";
+                            HE_ERROR("Material: unkown semantic " + std::string(node.second.cbegin(), node.second.cend()));
                         }
                     });
                 }

@@ -30,7 +30,7 @@ struct FxParticle;
 class IFxParticleInitComponent
 {
 public:
-    virtual ~IFxParticleInitComponent();
+    virtual ~IFxParticleInitComponent() {}
 
     virtual void init(FxParticle* pParticle) = 0;
 };

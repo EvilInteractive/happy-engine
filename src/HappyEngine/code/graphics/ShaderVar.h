@@ -97,6 +97,8 @@ public:
     {
         pShader->setShaderVar(m_Id, m_Data);
     }
+
+    typedef boost::shared_ptr<ShaderUserVar<T>> pointer;
 private:
     T m_Data;
 };

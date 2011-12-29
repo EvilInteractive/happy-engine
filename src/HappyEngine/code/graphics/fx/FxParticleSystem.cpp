@@ -27,22 +27,76 @@
 #include "IFxParticleInitComponent.h"
 #include "FxParticle.h"
 
+#include "GraphicsEngine.h"
+#include "ContentManager.h"
+#include "InstancingManager.h"
+#include "InstancingController.h"
+#include "DynamicBuffer.h"
+
+#include "FxConstant.h"
+
+#include "FxParticleColor.h"
+#include "FxParticleForce.h"
+#include "FxParticleRotation.h"
+#include "FxParticleScale.h"
+#include "FxParticleSpeed.h"
+#include "CameraManager.h"
+#include "ICamera.h"
+#include "Camera.h"
+
 namespace he {
 namespace gfx {
 
-FxParticleSystem::FxParticleSystem(): m_UvTiles(1, 1)
+FxParticleSystem::FxParticleSystem(): m_Emit(false), m_UvTiles(NEW FxConstant<vec2>(vec2(1, 1))),
+                                      m_SpawnRate(NEW FxConstant<float>(20)),
+                                      m_pFxParticleContainer(NEW FxParticleContainer(100)),
+                                      m_TimeSinceLastSpawn(0)
+
 {
 }
 
 
 FxParticleSystem::~FxParticleSystem()
 {
+    delete m_pFxParticleContainer;
 }
 
 void FxParticleSystem::start()
 {
+    m_pTexture->callbackIfLoaded([&]()
+    {
+        std::stringstream stream;
+        stream << "part_" << m_pTexture->getID() << "_" << m_UvTiles->getValue(0).x << "," << m_UvTiles->getValue(0).y;
+        Material material(CONTENT->loadMaterial("particles/particles.material"));
+        m_ShaderUvTiles = boost::dynamic_pointer_cast<ShaderUserVar<vec2>>(material.getVar("uvTiles"));
+        m_ShaderUvTiles->setData(m_UvTiles->getValue(0));
+        if (GRAPHICS->getInstancingManager()->getController(stream.str()) == nullptr)
+        {
+            GRAPHICS->getInstancingManager()->createController(stream.str(), true, CONTENT->getParticleQuad(), material);
+            m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
 
+            m_pInstancingController->setManual(boost::bind(&FxParticleSystem::instancingUpdater, this, _1));
+            m_pInstancingController->setCastsShadow(false);
+        }
+        else
+        {
+            m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
+        }
+        m_Emit = true;
+    });
 }
+void FxParticleSystem::instancingUpdater( details::InstancingBuffer& buffer )
+{
+    DynamicBuffer dbuffer(m_pInstancingController->getMaterial().getCompatibleInstancingLayout());
+    m_pFxParticleContainer->for_each([&](FxParticle* pParticle)
+    {
+        dbuffer.setBuffer(buffer.addItem());
+        dbuffer.setValue(0, pParticle->m_BlendColor);
+        dbuffer.setValue(1, pParticle->m_UvTile);
+        dbuffer.setValue(2, pParticle->getWorld(CAMERAMANAGER->getActiveCamera()));
+    });
+}
+
 
 void FxParticleSystem::stop()
 {
@@ -52,43 +106,99 @@ void FxParticleSystem::stop()
 void FxParticleSystem::tick( float currentTime, float dTime )
 {
     //////////////////////////////////////////////////////////////////////////
-    // Emmit
-    m_TimeSinceLastSpawn += dTime;
-    float spawnRate(1.0f/m_SpawnRate->getValue(currentTime));
-    while (m_TimeSinceLastSpawn > spawnRate)
+    // Emit
+    if (m_Emit)
     {
-        m_TimeSinceLastSpawn -= spawnRate;
-        if (m_pFxParticleContainer->tryAddParticle())
+        m_TimeSinceLastSpawn += dTime;
+        float spawnRate(1.0f/m_SpawnRate->getValue(currentTime));
+        while (m_TimeSinceLastSpawn > spawnRate)
         {
-            std::for_each(m_ParticleInitComponents.cbegin(), m_ParticleInitComponents.cend(), [&](IFxParticleInitComponent* pComponent)
+            m_TimeSinceLastSpawn -= spawnRate;
+            if (m_pFxParticleContainer->tryAddParticle())
             {
-                pComponent->init(m_pFxParticleContainer->back());
-            });
+                m_pFxParticleContainer->back()->setToDefault();
+                he::for_each(m_ParticleInitComponents.cbegin(), m_ParticleInitComponents.cend(), [&](IFxParticleInitComponent* pComponent)
+                {
+                    pComponent->init(m_pFxParticleContainer->back());
+                });
+                m_pFxParticleContainer->back()->m_Id = m_pInstancingController->addInstance();
+            }
         }
     }
 
     //////////////////////////////////////////////////////////////////////////
     // Update
-    const std::vector<IFxParticleModifyComponent*>& components(m_ParticleModifyComponents);
+    auto& components(m_ParticleModifyComponents);
     m_pFxParticleContainer->for_each([&](FxParticle* pParticle)
     {
         pParticle->m_Life -= dTime;
         if (pParticle->m_Life <= 0.0f)
         {
+            m_pInstancingController->removeInstance(pParticle->m_Id);
             m_pFxParticleContainer->removeParticle(pParticle);
         }
         else
         {
             float& currentTime_(currentTime);
             float& dTime_(dTime);
-            std::for_each(components.cbegin(), components.cend(), [&pParticle, &currentTime_, &dTime_](IFxParticleModifyComponent* pComponent)
+            he::for_each(components.cbegin(), components.cend(), [&pParticle, &currentTime_, &dTime_](IFxParticleModifyComponent* pComponent)
             {
                 pComponent->transform(pParticle, currentTime_, dTime_);
             });
+            pParticle->m_Position += pParticle->m_Velocity * dTime;
         }
     });
     m_pFxParticleContainer->flushRemove();
     //////////////////////////////////////////////////////////////////////////
+}
+
+void FxParticleSystem::setTexture( const Texture2D::pointer& tex2D )
+{
+    m_pTexture = tex2D;
+}
+void FxParticleSystem::setTiles( const IFxVariable<vec2>::pointer& tiles )
+{
+    m_UvTiles = tiles;
+}
+void FxParticleSystem::setSpawnRate( const IFxVariable<float>::pointer& rate )
+{
+    m_SpawnRate = rate;
+}
+
+uint FxParticleSystem::addInitComponent( ParticleInitComponentType type )
+{
+    switch (type)
+    {
+        case PICT_Color:
+            return m_ParticleInitComponents.insert(NEW FxParticleColor());
+        case PICT_Rotation:
+            return m_ParticleInitComponents.insert(NEW FxParticleRotation());
+        case PICT_Scale:
+            return m_ParticleInitComponents.insert(NEW FxParticleScale());
+        case PICT_Speed:
+            return m_ParticleInitComponents.insert(NEW FxParticleSpeed());
+        default:
+            ASSERT(false, "Unkown PICT type"); return 0;
+    }
+}
+
+uint FxParticleSystem::addModifyComponent( ParticleModifyComponentType type )
+{
+    switch (type)
+    {
+        case PMCT_Color:
+            return m_ParticleModifyComponents.insert(NEW FxParticleColor());
+        case PMCT_Force:
+            return m_ParticleModifyComponents.insert(NEW FxParticleForce());
+        case PMCT_Rotation:
+            return m_ParticleModifyComponents.insert(NEW FxParticleRotation());
+        case PMCT_Scale:
+            return m_ParticleModifyComponents.insert(NEW FxParticleScale());
+        case PMCT_Speed:
+            return m_ParticleModifyComponents.insert(NEW FxParticleSpeed());
+        default:
+            ASSERT(false, "Unkown PMCT type"); return 0;
+    }
 }
 
 } } //end namespace

@@ -46,7 +46,6 @@
 #include "fx/FxCameraEffect.h"
 #include "fx/FxRandom.h"
 #include "fx/FxTimeLineTrack.h"
-
 namespace happytest {
 
 TestObject::TestObject(): 

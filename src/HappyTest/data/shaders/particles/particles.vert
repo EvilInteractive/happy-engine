@@ -15,26 +15,29 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 27/12/2011
+//Author: Bastian Damman
 
-#ifndef _HE_FX_PARTICLE_MODIFY_COMPONENT_H_
-#define _HE_FX_PARTICLE_MODIFY_COMPONENT_H_
-#pragma once
+#version 150 core
 
-namespace he {
-namespace gfx {
+//Per vertex
+in vec3 inPosition;
 
-struct FxParticle;
+//Per Instance
+in mat4 inWorld;
+in vec4 inBlendColor;
+in vec2 inUvTile;
 
-class IFxParticleModifyComponent
-{
-public:
-    virtual ~IFxParticleModifyComponent() {}
+// OUT
+out vec2 passTexCoord;
+out vec4 passBlendColor;
+out vec2 passUvTile;
 
-    virtual void transform(FxParticle* pParticle, float currentTime, float dTime) = 0;
-};
+uniform mat4 matVP;
 
-} } //end namespace
+void main()
+{  
+	gl_Position = matVP * inWorld * vec4(inPosition, 1.0f);
+	passTexCoord = inPosition.xy * 0.5 + 0.5;
+    passBlendColor = inBlendColor;
+}
 
-#endif

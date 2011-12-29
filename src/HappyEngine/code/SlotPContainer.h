@@ -62,11 +62,10 @@ public:
     T remove(uint id)
     {
         ASSERT(id < m_MemPool.size(), "id is not in a valid range");
-        ASSERT(m_MemPool[id] != nullptr, "no object @id");
 
         m_FreeSlots.push(id);
 
-        T pObj(m_MemPool[id]);
+        T& pObj(m_MemPool[id]);
         m_MemPool[id] = nullptr;
 
         return pObj;

@@ -29,6 +29,11 @@
 #include "boost/shared_ptr.hpp"
 #include "HappyTypes.h"
 
+#include "boost/function.hpp"
+#include "boost/thread/mutex.hpp"
+
+#include "event.h"
+
 namespace he {
 namespace gfx {
     
@@ -49,9 +54,14 @@ public:
     uint getWidth() const;
     uint getHeight() const;
 
+    void callbackIfLoaded(const boost::function<void()> callback);
+
     static uint getTextureCount();
 
 private:
+    boost::mutex m_CallbackMutex;
+    event<void> Loaded;
+
     uint m_Width, m_Height;
     uint m_Format;
 

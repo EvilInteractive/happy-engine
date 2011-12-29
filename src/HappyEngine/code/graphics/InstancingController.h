@@ -31,6 +31,8 @@
 #include "BufferLayout.h"
 #include "InstancingBuffer.h"
 
+#include "boost/function.hpp"
+
 namespace he {
 namespace gfx {
 
@@ -43,6 +45,7 @@ public:
     virtual ~InstancingController();
 
     uint addInstance(const IInstancible* pObj); //return id
+    uint addInstance(); //return id // only for manual mode
     void removeInstance(uint id);
     
     virtual const Material& getMaterial() const;
@@ -65,6 +68,8 @@ public:
 
     virtual void draw();
     virtual void drawShadow();
+
+    void setManual(const boost::function<void(details::InstancingBuffer&)>& func);
 
 private:
     void init();
@@ -89,6 +94,8 @@ private:
     SlotPContainer<const IInstancible*> m_Instances;
 
     boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
+
+    boost::function<void(details::InstancingBuffer&)> m_ManualFillCpuBuffer;
 
     //Disable default copy constructor and default assignment operator
     InstancingController(const InstancingController&);

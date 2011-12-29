@@ -185,14 +185,20 @@ void InstancingController::updateBuffer()
         }
 
         m_CpuBuffer.reset();
-        DynamicBuffer b(m_InstancingLayout);
-        he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&](const IInstancible* pObj)
+        if (m_ManualFillCpuBuffer.empty())
         {
-            //check for culling here
-            b.setBuffer(m_CpuBuffer.addItem());
-            pObj->fillInstancingBuffer(b);
-        });
-
+            DynamicBuffer b(m_InstancingLayout);
+            he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&](const IInstancible* pObj)
+            {
+                //check for culling here
+                b.setBuffer(m_CpuBuffer.addItem());
+                pObj->fillInstancingBuffer(b);
+            });
+        }
+        else
+        {
+            m_ManualFillCpuBuffer(m_CpuBuffer);
+        }
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
         m_NeedsUpdate = false;
@@ -223,6 +229,14 @@ uint InstancingController::addInstance(const IInstancible* pObj)
     m_NeedsUpdate = true;
     return m_Instances.insert(pObj);
 }
+uint InstancingController::addInstance()
+{
+    ASSERT(m_ManualFillCpuBuffer.empty() == false, "Only valid in manual mode");
+    m_NeedsUpdate = true;
+    return m_Instances.insert(nullptr); // HACK: is a bit hacky
+}
+
+
 void InstancingController::removeInstance( uint id )
 {
     ASSERT(m_Dynamic == true, "use dynamic buffer if you want to remove instances");
@@ -270,6 +284,11 @@ void InstancingController::setVisible( bool visible )
 uint InstancingController::getCount() const
 {
     return m_CpuBuffer.getCount();
+}
+
+void InstancingController::setManual( const boost::function<void(details::InstancingBuffer&)>& func )
+{
+    m_ManualFillCpuBuffer = func;
 }
 
 } } //end namespace

@@ -80,6 +80,7 @@ void FxTimeLineTrack::start()
     for (uint i(0); i < tempComponents.size(); ++i)
     {
         m_PlayQueue.push(m_Components.getId(tempComponents[i]));
+        tempComponents[i]->start();
     }
 }
 

@@ -44,6 +44,7 @@ public:
     // default copy constructor and default assignment operator are OK
 
     void addVar(const ShaderVar::pointer& var);
+    const ShaderVar::pointer& getVar(const std::string& var);
     void setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout);
 
     const BufferLayout& getCompatibleVertexLayout() const;

@@ -57,6 +57,7 @@ public:
 	gfx::Model::pointer loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh::pointer loadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh::pointer getFullscreenQuad() const;
+    const gfx::ModelMesh::pointer& getParticleQuad() const;
 
     gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
     gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
@@ -113,6 +114,8 @@ private:
                 m_ShaderFolder, m_MaterialFolder;
 
     gfx::Font::pointer m_pDefaultFont;
+
+    gfx::ModelMesh::pointer m_ParticleQuad;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

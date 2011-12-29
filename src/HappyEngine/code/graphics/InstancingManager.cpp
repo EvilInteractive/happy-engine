@@ -46,7 +46,8 @@ void InstancingManager::createController( const std::string& id, bool dynamic, c
 
 InstancingController* InstancingManager::getController( const std::string& id )
 {
-    return m_Controllers[id];
+    auto it(m_Controllers.find(id));
+    return (it != m_Controllers.cend())? it->second : nullptr;
 }
 
 } } //end namespace

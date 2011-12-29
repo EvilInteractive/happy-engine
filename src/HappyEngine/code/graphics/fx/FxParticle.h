@@ -28,6 +28,15 @@
 namespace he {
 namespace gfx {
 
+class ICamera;
+
+enum FxAxis
+{
+    FxAxis_X = 1 << 0,
+    FxAxis_Y = 1 << 1,
+    FxAxis_Z = 1 << 2
+};
+
 //16byte aligned
 struct FxParticle
 {
@@ -36,9 +45,30 @@ struct FxParticle
     vec3    m_Scale;       //+ 12  = 28
     float   m_Rotation;    //+  4  = 32
     vec3    m_Velocity;    //+ 12  = 44
-    ushort  m_UvTileX;     //+  2  = 46
-    ushort  m_UvTileY;     //+  2  = 48
-    vec4    m_BlendColor;  //+ 16  = 64
+    vec2    m_UvTile;      //+ 12  = 56
+    byte    m_LockedAxis;  //+  1  = 57
+    vec4    m_BlendColor;  //+ 16  = 73
+    uint    m_Id;          //+  4  = 77
+    short   padding;       //+  2  = 79
+    byte    padding2;      //+  1  = 80
+
+    void setToDefault()
+    {
+        m_Position = vec3::zero;
+        m_Life = 1.0f;
+        m_Scale = vec3::one;
+        m_Rotation = 0.0f;
+        m_Velocity = vec3::zero;
+        m_UvTile = vec2(0, 0);
+        m_LockedAxis = 0;
+        m_BlendColor = vec4(1, 1, 1, 1);
+        m_Id = 0;
+    }
+
+    mat44 getWorld(ICamera* pCam)
+    {
+        return mat44::createScale(m_Scale) * mat44::createTranslation(m_Position) * mat44::createBillboard(pCam);
+    }
 };
 
 } } //end namespace

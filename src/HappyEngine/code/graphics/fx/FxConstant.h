@@ -32,6 +32,7 @@ class FxConstant : public IFxVariable<T>
 {
 public:
     FxConstant() {}
+    FxConstant(const T& value): m_Value(value) {}
     virtual ~FxConstant() {}
 
     typedef boost::shared_ptr<FxConstant> pointer;

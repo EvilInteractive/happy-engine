@@ -12,7 +12,7 @@ inNormal = NORMAL
 inTangent = TANGENT
 
 [inPerInstance]
-inWorld = 0
+inWorld = MAT44
 
 [uniform]
 matV = VIEW

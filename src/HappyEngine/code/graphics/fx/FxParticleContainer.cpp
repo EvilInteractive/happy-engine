@@ -36,7 +36,7 @@ FxParticleContainer::FxParticleContainer(uint maxParticles): m_MaxCount(maxParti
 
 FxParticleContainer::~FxParticleContainer()
 {
-    free(m_MemPool);
+    _aligned_free(m_MemPool);
 }
 
 bool FxParticleContainer::tryAddParticle()

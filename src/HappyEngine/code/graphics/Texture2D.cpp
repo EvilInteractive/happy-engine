@@ -41,7 +41,10 @@ void Texture2D::init(uint tex, uint width, uint height, uint format)
     m_Width = width;
     m_Height = height;
     m_Format = format;
+    m_CallbackMutex.lock();
     m_isInitialized = true;
+    Loaded();
+    m_CallbackMutex.unlock();
 }
 
 bool Texture2D::isInitialized() const
@@ -73,6 +76,21 @@ uint Texture2D::getWidth() const
 uint Texture2D::getHeight() const
 {
     return m_Height;
+}
+
+void Texture2D::callbackIfLoaded( const boost::function<void()> callback )
+{
+    m_CallbackMutex.lock();
+    if (m_isInitialized)
+    {
+        m_CallbackMutex.unlock();
+        callback();
+    }
+    else
+    {
+        Loaded += callback;
+        m_CallbackMutex.unlock();
+    }
 }
 
 } } //end namespace

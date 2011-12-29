@@ -331,8 +331,11 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
         drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Tranlucent | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
         {
-            pDrawable->applyMaterial(m_MatInstanced, &shadowCam);
-            pDrawable->drawShadow();
+            if (pDrawable->getCastsShadow() && pDrawable->isVisible() && pDrawable->isInCamera(&shadowCam))
+            {
+                pDrawable->applyMaterial(m_MatInstanced, &shadowCam);
+                pDrawable->drawShadow();
+            }
         });
 
         pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace

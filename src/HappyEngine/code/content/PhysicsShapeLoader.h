@@ -35,15 +35,15 @@ namespace ct {
 class PhysicsShapeLoader
 {
 public:
-	PhysicsShapeLoader();
+    PhysicsShapeLoader();
     virtual ~PhysicsShapeLoader();
 
     const std::vector<px::PhysicsConvexMesh::pointer>& loadConvex(const std::string& path);
     const std::vector<px::PhysicsConcaveMesh::pointer>& loadConcave(const std::string& path);
 
 private:
-	AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>* m_pConvexAssetContainer;
-	AssetContainer<std::vector<px::PhysicsConcaveMesh::pointer>>* m_pConcaveAssetContainer;
+    AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>* m_pConvexAssetContainer;
+    AssetContainer<std::vector<px::PhysicsConcaveMesh::pointer>>* m_pConcaveAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     PhysicsShapeLoader(const PhysicsShapeLoader&);

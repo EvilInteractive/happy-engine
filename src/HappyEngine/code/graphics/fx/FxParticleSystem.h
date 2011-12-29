@@ -28,12 +28,36 @@
 #include "Texture2D.h"
 #include "IFxVariable.h"
 
+#include "ShaderVar.h"
+
 namespace he {
 namespace gfx {
 
 class FxParticleContainer;
 class IFxParticleInitComponent;
 class IFxParticleModifyComponent;
+
+class InstancingController;
+
+namespace details {
+class InstancingBuffer;
+}
+
+enum ParticleInitComponentType
+{
+    PICT_Color,
+    PICT_Rotation,
+    PICT_Scale,
+    PICT_Speed
+};
+enum ParticleModifyComponentType
+{
+    PMCT_Color,
+    PMCT_Force,
+    PMCT_Rotation,
+    PMCT_Scale,
+    PMCT_Speed
+};
 
 class FxParticleSystem : public IFxComponent
 {
@@ -49,20 +73,46 @@ public:
     virtual void start();
     virtual void stop();
 
+    void setTexture(const Texture2D::pointer& tex2D);
+    void setTiles(const IFxVariable<vec2>::pointer& tiles);
+    void setSpawnRate(const IFxVariable<float>::pointer& rate);
+
+    uint addInitComponent(ParticleInitComponentType type);  
+    template <typename T>
+    T* getInitComponent(uint id)
+    {
+        return dynamic_cast<T*>(m_ParticleInitComponents.get(id));
+    }
+
+    uint addModifyComponent(ParticleModifyComponentType type);
+    template <typename T>
+    T* getModifyComponent(uint id)
+    {
+        return dynamic_cast<T*>(m_ParticleModifyComponents.get(id));
+    }
+
     virtual void tick(float currentTime, float dTime);
 
 private:
 
+    void instancingUpdater(details::InstancingBuffer& buffer);
+
+    bool m_Emit;
+
     Texture2D::pointer m_pTexture;
-    vec2 m_UvTiles;
+
+    IFxVariable<vec2>::pointer m_UvTiles;
+    ShaderUserVar<vec2>::pointer m_ShaderUvTiles;
 
     IFxVariable<float>::pointer m_SpawnRate;
     float m_TimeSinceLastSpawn;
 
-    std::vector<IFxParticleInitComponent*> m_ParticleInitComponents;
-    std::vector<IFxParticleModifyComponent*> m_ParticleModifyComponents;
+    SlotPContainer<IFxParticleInitComponent*> m_ParticleInitComponents;
+    SlotPContainer<IFxParticleModifyComponent*> m_ParticleModifyComponents;
 
     FxParticleContainer* m_pFxParticleContainer;
+
+    InstancingController* m_pInstancingController;
 
     //Disable default copy constructor and default assignment operator
     FxParticleSystem(const FxParticleSystem&);

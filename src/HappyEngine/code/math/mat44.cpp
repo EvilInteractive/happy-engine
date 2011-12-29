@@ -19,6 +19,8 @@
 #include "mat44.h"
 #include "MathFunctions.h"
 
+#include "ICamera.h"
+
 namespace he {
 
 mat44::mat44(): m_Matrix(physx::pubfnd3::PxVec4(1.0f, 1.0f, 1.0f, 1.0f))
@@ -35,9 +37,9 @@ mat44::mat44(const vec4& col0, const vec4& col1, const vec4& col2, const vec4& c
 {
 }
 mat44::mat44( float _00, float _01, float _02, float _03,
-                float _10, float _11, float _12, float _13,
-                float _20, float _21, float _22, float _23,
-                float _30, float _31, float _32, float _33 ) : 
+              float _10, float _11, float _12, float _13,
+              float _20, float _21, float _22, float _23,
+              float _30, float _31, float _32, float _33 ) : 
 m_Matrix(physx::pubfnd3::PxVec4(_00, _10, _20, _30),
          physx::pubfnd3::PxVec4(_01, _11, _21, _31),
          physx::pubfnd3::PxVec4(_02, _12, _22, _32),
@@ -155,6 +157,15 @@ mat44 mat44::createScale(float scale)
                   0.0f,   0.0f, scale,  0.0f,
                   0.0f,   0.0f,  0.0f,  1.0f);
 }
+mat44 mat44::createBillboard( const gfx::ICamera* pCam )
+{
+    const mat44& v(pCam->getView());
+    return mat44(v(0, 0),  v(1, 0),  v(2, 0),  0.0f,
+                 v(0, 1),  v(1, 1),  v(2, 1),  0.0f,
+                 v(0, 2),  v(1, 2),  v(2, 2),  0.0f,
+                    0.0f,     0.0f,     0.0f,  1.0f);
+}
+
 
 mat44 mat44::operator*(const mat44& mat) const
 {

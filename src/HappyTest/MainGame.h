@@ -48,6 +48,7 @@
 
 #include "HappyFxEditorBinding.h"
 
+
 namespace happytest {
 
 class MainGame : public he::game::Game

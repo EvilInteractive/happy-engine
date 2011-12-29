@@ -1,0 +1,6 @@
+[Forward]
+shader = "particles/defaultParticles.shader"
+
+[TEXTURE2D]
+diffuseMap = "particles/part1.png"
+

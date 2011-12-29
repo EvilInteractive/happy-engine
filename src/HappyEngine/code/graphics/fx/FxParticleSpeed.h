@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 27/12/2011
 
-#ifndef _HE_FX_PARTICLE_FORCE_H_
-#define _HE_FX_PARTICLE_FORCE_H_
+#ifndef _HE_FX_PARTICLE_SPEED_H_
+#define _HE_FX_PARTICLE_SPEED_H_
 #pragma once
 
 #include "IFxParticleModifyComponent.h"

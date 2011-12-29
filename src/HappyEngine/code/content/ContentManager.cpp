@@ -17,7 +17,8 @@ ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureL
     m_PhysicsFolder("physics/"), 
     m_FontFolder("fonts/"),
     m_ShaderFolder("shaders/"), 
-    m_MaterialFolder("materials/")
+    m_MaterialFolder("materials/"),
+    m_ParticleQuad(NEW gfx::ModelMesh("ParticleQuad"))
 {
 }
 
@@ -223,6 +224,33 @@ bool ContentManager::isLoading() const
         return true;
     else
         return false;
+}
+const gfx::ModelMesh::pointer& ContentManager::getParticleQuad() const
+{
+    if (m_ParticleQuad->isLoaded() == false)
+    {    
+        //////////////////////////////////////////////////////////////////////////
+        ///  Particle Quad
+        using namespace gfx;
+        BufferLayout layout;
+        layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+
+        std::vector<VertexPos> vertices;
+        vertices.push_back(VertexPos(vec3(-1, 1, 0.0f)));
+        vertices.push_back(VertexPos(vec3(1, 1, 0.0f)));
+        vertices.push_back(VertexPos(vec3(-1, -1, 0.0f)));
+        vertices.push_back(VertexPos(vec3(1, -1, 0.0f)));
+
+        std::vector<byte> indices;
+        indices.push_back(0); indices.push_back(1); indices.push_back(2);
+        indices.push_back(1); indices.push_back(3); indices.push_back(2);
+
+        m_ParticleQuad->init();
+        m_ParticleQuad->setVertices(&vertices[0], 4, layout);
+        m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        //////////////////////////////////////////////////////////////////////////
+    }
+    return m_ParticleQuad;
 }
 
 } } //end namespace

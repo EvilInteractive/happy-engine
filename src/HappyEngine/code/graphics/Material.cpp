@@ -47,6 +47,7 @@ void Material::addVar(const ShaderVar::pointer& var)
     ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
     m_ShaderVar.push_back(var);
 }
+
 void Material::setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout)
 {
     m_UsedForInstancing = compatibleInstancingLayout.getSize() > 0;
@@ -55,6 +56,21 @@ void Material::setShader(const Shader::pointer& pShader, const BufferLayout& com
     m_CompatibleVL = compatibleVertexLayout;
     m_CompatibleIL = compatibleInstancingLayout;
 }
+const ShaderVar::pointer& Material::getVar( const std::string& var )
+{
+    uint id(m_pShader->getShaderVarId(var));
+    std::vector<ShaderVar::pointer>::const_iterator it(m_ShaderVar.cbegin());
+    for (; it != m_ShaderVar.cend(); ++it)
+    {
+        if ((*it)->getId() == id)
+        {          
+            return *it;
+        }
+    }
+    HE_ERROR("Unable to find var: " + var);
+    return *it;
+}
+
 
 void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera ) const
 {

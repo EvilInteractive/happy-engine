@@ -25,6 +25,10 @@
 
 namespace he {
 
+namespace gfx {
+class ICamera;
+}
+
 class mat44
 {
 private:
@@ -54,6 +58,7 @@ public:
     static mat44 createScale(const vec3& scale);
     static mat44 createScale(float xScale, float yScale, float zScale);
     static mat44 createScale(float scale);
+    static mat44 createBillboard(const gfx::ICamera* pCam);
 
     //operators
     mat44 operator*(const mat44& mat) const;

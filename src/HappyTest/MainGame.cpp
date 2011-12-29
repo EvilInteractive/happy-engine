@@ -72,6 +72,15 @@
 
 #include "SlotPContainer.h"
 
+#include "fx/FxManager.h"
+#include "fx/FxTimeLine.h"
+#include "fx/FxTimeLineTrack.h"
+#include "fx/FxParticleSystem.h"
+#include "fx/FxRandom.h"
+#include "fx/FxConstant.h"
+
+#include "fx/FxParticleSpeed.h"
+
 namespace happytest {
 
 MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
@@ -301,6 +310,28 @@ void MainGame::load()
 
     CONSOLE->registerCmd(boost::bind(&MainGame::crazyStuff, this), "c_crazy");
 
+    //////////////////////////////////////////////////////////////////////////
+    ///   Fx
+    uint effectTestTL = FX->createTimeline();
+    gfx::FxTimeLine* pTL(FX->getTimeline(effectTestTL));
+    pTL->setEndTime(60.0f);
+    gfx::FxTimeLineTrack* pTrack(pTL->getTrack(pTL->addTrack()));
+    gfx::FxParticleSystem* pEffect(pTrack->getComponent<gfx::FxParticleSystem>(pTrack->addComponent(gfx::FxType_ParticleSystem)));
+    pEffect->setStartTime(0.0f);
+    pEffect->setEndTime(60.0f);
+
+    pEffect->setTexture(CONTENT->asyncLoadTexture("particles/part1.png"));
+
+    pEffect->setSpawnRate(gfx::IFxVariable<float>::pointer(NEW gfx::FxConstant<float>(100)));
+
+    gfx::FxParticleSpeed* pPartSpeed(pEffect->getInitComponent<gfx::FxParticleSpeed>(pEffect->addInitComponent(gfx::PICT_Speed)));
+    gfx::FxRandomVec3::pointer pRandSpeed(NEW gfx::FxRandomVec3());
+    pRandSpeed->setMin(vec3(-20, -20, -20));
+    pRandSpeed->setMax(vec3(20, 20, 20));
+    pPartSpeed->setValue(pRandSpeed);
+    
+
+    pTL->start();
 }
 
 void MainGame::crazyStuff()
