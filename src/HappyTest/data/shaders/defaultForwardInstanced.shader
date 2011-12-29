@@ -5,12 +5,14 @@ fsPath = "forward/forwardShader.frag"
 [info]
 translucent = false
 
-[in]
+[inPerVertex]
 inPosition = POSITION
 inTexCoord = TEXCOORD
 inNormal = NORMAL
 inTangent = TANGENT
-inWorld = WORLD
+
+[inPerInstance]
+inWorld = 0
 
 [uniform]
 matV = VIEW

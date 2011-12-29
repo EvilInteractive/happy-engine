@@ -16,40 +16,48 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 07/12/2011
+//Created: 28/12/2011
 
-#ifndef _HE_INSTANCING_MANAGER_H_
-#define _HE_INSTANCING_MANAGER_H_
+#ifndef _HE_InstancingBuffer_H_
+#define _HE_InstancingBuffer_H_
 #pragma once
-
-#include <map>
-#include "ModelMesh.h"
-#include "Material.h"
-#include "BufferLayout.h"
 
 namespace he {
 namespace gfx {
+namespace details {
 
-class InstancingController;
-
-class InstancingManager
+class InstancingBuffer
 {
 public:
-    InstancingManager();
-    virtual ~InstancingManager();
+    InstancingBuffer(uint itemSize, uint maxItems);
+    virtual ~InstancingBuffer();
 
-    void createController(const std::string& id, bool dynamic, const ModelMesh::pointer& pMesh, const Material& material);
-    InstancingController* getController(const std::string& id);
+    void resize(uint newSize);
+
+    char* addItem();
+    void reset();
+
+    char* getBuffer() const;
+
+    uint getSize() const;
+    uint getSizeCapacity() const;
+    uint getCountCapacity() const;
+    uint getCount() const;
 
 private:
 
-    std::map<std::string, InstancingController*> m_Controllers;
+    char* m_Buffer;
+    char* m_End;
+
+    uint m_Size;
+    uint m_ItemSize;
+    uint m_Count;
 
     //Disable default copy constructor and default assignment operator
-    InstancingManager(const InstancingManager&);
-    InstancingManager& operator=(const InstancingManager&);
+    InstancingBuffer(const InstancingBuffer&);
+    InstancingBuffer& operator=(const InstancingBuffer&);
 };
 
-} } //end namespace
+} } } //end namespace
 
 #endif

@@ -21,6 +21,7 @@
 
 #include "Game.h"
 #include "RiggedModelComponent.h"
+#include "ModelComponent.h"
 
 #include "HappyEngine.h"
 
@@ -111,7 +112,12 @@ TestObject::TestObject():
     addComponent(m_pRiggedModelComponent);
     m_pRiggedModelComponent->getModelMesh()->callbackIfLoaded(boost::bind(&TestObject::onModelLoaded, this));
 
-
+    game::ModelComponent* pCharModelComp(NEW game::ModelComponent());
+    pCharModelComp->setMaterial(CONTENT->loadMaterial("char/char1.material"));
+    pCharModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("char/char1.binobj", "langen", pCharModelComp->getMaterial().getCompatibleVertexLayout()));
+    pCharModelComp->setLocalTransform(mat44::createScale(vec3(1, 1, 1)) * mat44::createTranslation(vec3(0.0f, 0.25f, 1.0f)));
+    pCharModelComp->setCastsShadow(true);
+    addComponent(pCharModelComp);
 
     m_pCarEngineSfx = AUDIO->loadSound3D("../data/audio/carIdle.wav", false);
     m_pCarEngineSfx->setLooping(true);

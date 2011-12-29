@@ -117,61 +117,108 @@ gfx::Material MaterialLoader::load(const std::string& path)
                     }
                 }
 
-                // [in]
+                // [inPerVertex]
                 gfx::ShaderLayout shaderLayout;
                 uint count(0);
                 uint offset(0);
-                std::string usedForInstancing("");
                 bool isTranslucent(false);
-                const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"in"));
+                const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"inPerVertex"));
                 std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                 {
                     if (p.second == L"POSITION")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"TEXCOORD")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_TextureCoordinate, sizeof(vec2), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_TextureCoordinate, sizeof(vec2), offset));
                         offset += sizeof(vec2);
                     }
                     else if (p.second == L"NORMAL")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Normal, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Normal, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"TANGENT")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Tangent, sizeof(vec3), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Tangent, sizeof(vec3), offset));
                         offset += sizeof(vec3);
                     }
                     else if (p.second == L"BONEIDS")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneIDs, sizeof(vec4), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneIDs, sizeof(vec4), offset));
                         offset += sizeof(vec4);
                     }
                     else if (p.second == L"BONEWEIGHTS")
                     {
                         ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
-                        vertexLayout.addElement(gfx::BufferElement(count, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneWeights, sizeof(vec4), offset));
+                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneWeights, sizeof(vec4), offset));
                         offset += sizeof(vec4);
-                    }
-                    else if (p.second == L"WORLD")
-                    {
-                        usedForInstancing = std::string(p.first.cbegin(), p.first.cend());
                     }
                     else
                     {
-                        std::wcout << "**Material Error**: unkown attribute " << p.second << "\n";
+                        HE_ERROR("Material: unkown attribute " + std::string(p.second.cbegin(), p.second.cend()));
                     } 
-                    if (p.second != L"WORLD")
-                        shaderLayout.addElement(gfx::ShaderLayoutElement(count++, std::string(p.first.cbegin(), p.first.cend())));
+                    shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));
                 }); 
 
-                //Instancing matrices must be last in layout
-                if (usedForInstancing != "")
-                    shaderLayout.addElement(gfx::ShaderLayoutElement(count++, usedForInstancing));
+                gfx::BufferLayout instancingLayout;
+                offset = 0;
+                count = 0;
+                if (shaderReader.containsRoot(L"inPerInstance"))
+                {
+                    const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"inPerInstance"));
+                    std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
+                    {
+                        if (p.second == L"MAT44")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
+                            offset += sizeof(vec4);
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
+                            offset += sizeof(vec4);
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
+                            offset += sizeof(vec4);
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
+                            offset += sizeof(vec4);
+                        }
+                        else if (p.second == L"FLOAT")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Float, gfx::BufferElement::Usage_Instancing, sizeof(float), offset));
+                            offset += sizeof(float);
+                        }
+                        else if (p.second == L"VEC2")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_Instancing, sizeof(vec2), offset));
+                            offset += sizeof(vec2);
+                        }
+                        else if (p.second == L"VEC3")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Instancing, sizeof(vec3), offset));
+                            offset += sizeof(vec3);
+                        }
+                        else if (p.second == L"VEC4")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
+                            offset += sizeof(vec4);
+                        }
+                        else if (p.second == L"INT")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Int, gfx::BufferElement::Usage_Instancing, sizeof(int), offset));
+                            offset += sizeof(int);
+                        }
+                        else if (p.second == L"UINT")
+                        {
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_UInt, gfx::BufferElement::Usage_Instancing, sizeof(uint), offset));
+                            offset += sizeof(uint);
+                        }
+                        else
+                        {
+                            HE_ERROR("Material: instancing unkown type " + std::string(p.second.cbegin(), p.second.cend()));
+                        }
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));  
+                    });
+                }
 
                 // [Shader]
                 gfx::Shader::pointer pShader(CONTENT->loadShader(shaderReader.readString(L"Shader", L"vsPath", ""),
@@ -186,7 +233,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 }
 
                 material.setIsTranslucent(isTranslucent);
-                material.setShader(pShader, vertexLayout, usedForInstancing != "");
+                material.setShader(pShader, vertexLayout, instancingLayout);
 
 
                 // [uniform]

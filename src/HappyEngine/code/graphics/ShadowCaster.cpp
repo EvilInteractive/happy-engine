@@ -97,7 +97,7 @@ void ShadowCaster::init(const RenderSettings& settings)
     ShaderLayout shaderSingleLayout;
     shaderSingleLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    BufferLayout vertexSingleLayout;
+    BufferLayout vertexSingleLayout, noInstancingLayout;
     vertexSingleLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     std::vector<std::string> outputs;
@@ -113,9 +113,9 @@ void ShadowCaster::init(const RenderSettings& settings)
     shaderSkinnedLayout.addElement(ShaderLayoutElement(2, "inBoneWeight"));
 
     BufferLayout vertexSkinnedLayout;
-    vertexSingleLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position,    12, 0));
-    vertexSingleLayout.addElement(BufferElement(1, BufferElement::Type_Vec4, BufferElement::Usage_BoneIDs,     16, 12));
-    vertexSingleLayout.addElement(BufferElement(2, BufferElement::Type_Vec4, BufferElement::Usage_BoneWeights, 16, 12+16));
+    vertexSkinnedLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position,    12, 0));
+    vertexSkinnedLayout.addElement(BufferElement(1, BufferElement::Type_Vec4, BufferElement::Usage_BoneIDs,     16, 12));
+    vertexSkinnedLayout.addElement(BufferElement(2, BufferElement::Type_Vec4, BufferElement::Usage_BoneWeights, 16, 12+16));
 
     pShadowShaderSkinned->initFromFile(folder + "shadow/preShadowShaderSkinned.vert", 
                                        folder + "shadow/preShadowShader.frag", 
@@ -142,18 +142,23 @@ void ShadowCaster::init(const RenderSettings& settings)
                                                     folder + "shadow/shadowBlur.frag", blurLayout, definePass);
         m_BlurShaderTexPosPass[pass] = m_pShadowBlurShaderPass[pass]->getShaderSamplerId("map");
     }
+    BufferLayout instancingLayout;
+    instancingLayout.addElement(BufferElement(0, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), sizeof(vec4) * 0));
+    instancingLayout.addElement(BufferElement(1, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), sizeof(vec4) * 1));
+    instancingLayout.addElement(BufferElement(2, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), sizeof(vec4) * 2));
+    instancingLayout.addElement(BufferElement(3, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), sizeof(vec4) * 3));
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Materials                              ///
     //////////////////////////////////////////////////////////////////////////
-    m_MatSingle.setShader(pShadowShaderSingle, vertexSingleLayout, false);
+    m_MatSingle.setShader(pShadowShaderSingle, vertexSingleLayout, noInstancingLayout);
     m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), ShaderVarType_WorldViewProjection)));
     
-    m_MatSkinned.setShader(pShadowShaderSkinned, vertexSkinnedLayout, false);
+    m_MatSkinned.setShader(pShadowShaderSkinned, vertexSkinnedLayout, noInstancingLayout);
     m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), ShaderVarType_WorldViewProjection)));
     m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), ShaderVarType_BoneTransforms)));
     
-    m_MatInstanced.setShader(pShadowShaderInstanced, vertexSingleLayout, true);
+    m_MatInstanced.setShader(pShadowShaderInstanced, vertexSingleLayout, instancingLayout);
     m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), ShaderVarType_ViewProjection)));
 
     m_pQuad = CONTENT->getFullscreenQuad();

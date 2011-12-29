@@ -33,9 +33,23 @@ public:
     DynamicBuffer(const BufferLayout& bufferLayout);
     virtual ~DynamicBuffer();
 
+    void setValue(uint element, float value);
+    void setValue(uint element, int value);
+    void setValue(uint element, uint value);
 
+    void setValue(uint element, const vec2& value);
+    void setValue(uint element, const vec3& value);
+    void setValue(uint element, const vec4& value);
+
+    void setValue(uint element, const mat44& value);
+
+    const void* getBuffer() const;
+    void setBuffer(char* pBuffer);
 
 private:
+
+    char* m_Buffer;
+    BufferLayout m_Layout;
 
     //Disable default copy constructor and default assignment operator
     DynamicBuffer(const DynamicBuffer&);

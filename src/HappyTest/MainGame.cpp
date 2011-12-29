@@ -233,7 +233,7 @@ void MainGame::load()
     pSkyModelComp->setLocalTransform(mat44::createScale(vec3(500, 100, 500)));
     pSkyModelComp->setCastsShadow(false);
     m_pSky->addComponent(pSkyModelComp);
-        
+            
     m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
     m_pFont = CONTENT->loadFont("MODES.ttf", 12);
@@ -268,7 +268,7 @@ void MainGame::load()
     //////////////////////////////////////////////////////////////////////////
     FlyCamera* pFlyCamera = NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
     pFlyCamera->lookAt(vec3(-5, 5, -4), vec3(0, 0, 0), vec3(0, 1, 0));
-    pFlyCamera->setLens(16.0f/9.0f,piOverFour,10.0f,400.0f);
+    pFlyCamera->setLens(16.0f/9.0f,piOverFour,1.0f,400.0f);
     CAMERAMANAGER->addCamera("fly", pFlyCamera);
 
     FollowCamera* pFollowCamera = NEW FollowCamera();
@@ -279,6 +279,9 @@ void MainGame::load()
     CAMERAMANAGER->addCamera("car", pFollowCamera);
 
     CAMERAMANAGER->setActiveCamera("fly");
+
+    CONSOLE->registerCmd([](){ CAMERAMANAGER->setActiveCamera("fly"); }, "fly");
+    CONSOLE->registerCmd([](){ CAMERAMANAGER->setActiveCamera("car"); }, "car");
 
     // SSAO
     /*he::gfx::Deferred3DRenderer::SSAOSettings settings;
@@ -453,10 +456,10 @@ void MainGame::drawGui()
     //GRAPHICS->clearAll();
     
     // TODO: implement into drawmanager/GRAPHICS
-    HE3D->begin(CAMERAMANAGER->getActiveCamera());
-    m_pTestGrid->draw();
-    //HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-    HE3D->end();
+    //HE3D->begin(CAMERAMANAGER->getActiveCamera());
+    //m_pTestGrid->draw();
+    ////HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
+    //HE3D->end();
     PROFILER_END();
 }
 

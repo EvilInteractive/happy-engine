@@ -25,11 +25,12 @@
 #include "IComponent.h"
 #include "I3DObject.h"
 #include "IPickable.h"
+#include "IInstancible.h"
 
 namespace he {
 namespace game {
     
-class InstancedModelComponent : public IComponent, public gfx::I3DObject, public gfx::IPickable
+class InstancedModelComponent : public IComponent, public gfx::IInstancible, public gfx::I3DObject, public gfx::IPickable
 {
 public:
     InstancedModelComponent();
@@ -44,6 +45,11 @@ public:
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
     
+    //////////////////////////////////////////////////////////////////////////
+    ///                        IInstancible                                ///
+    ////////////////////////////////////////////////////////////////////////// 
+    virtual void fillInstancingBuffer(gfx::DynamicBuffer& buffer) const;
+    //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
     ///                         I3DObject                                  ///

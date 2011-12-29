@@ -26,6 +26,7 @@
 #include "GraphicsEngine.h"
 #include "InstancingManager.h"
 #include "InstancingController.h"
+#include "DynamicBuffer.h"
 
 namespace he {
 namespace game {
@@ -89,6 +90,11 @@ void InstancedModelComponent::setController( const std::string& key )
 const std::string& InstancedModelComponent::getController() const
 {
     return m_ControllerKey;
+}
+
+void InstancedModelComponent::fillInstancingBuffer( gfx::DynamicBuffer& buffer ) const
+{
+    buffer.setValue(0, getWorldMatrix());
 }
 
 

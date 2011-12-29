@@ -16,39 +16,23 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 07/12/2011
+//Created: 28/12/2011
 
-#ifndef _HE_INSTANCING_MANAGER_H_
-#define _HE_INSTANCING_MANAGER_H_
+#ifndef _HE_IINSTANCIBLE_H_
+#define _HE_IINSTANCIBLE_H_
 #pragma once
-
-#include <map>
-#include "ModelMesh.h"
-#include "Material.h"
-#include "BufferLayout.h"
 
 namespace he {
 namespace gfx {
 
-class InstancingController;
-
-class InstancingManager
+class DynamicBuffer;
+class IInstancible
 {
 public:
-    InstancingManager();
-    virtual ~InstancingManager();
-
-    void createController(const std::string& id, bool dynamic, const ModelMesh::pointer& pMesh, const Material& material);
-    InstancingController* getController(const std::string& id);
-
-private:
-
-    std::map<std::string, InstancingController*> m_Controllers;
-
-    //Disable default copy constructor and default assignment operator
-    InstancingManager(const InstancingManager&);
-    InstancingManager& operator=(const InstancingManager&);
-};
+    virtual ~IInstancible() {}
+    
+    virtual void fillInstancingBuffer(DynamicBuffer& buffer) const = 0;
+};  
 
 } } //end namespace
 

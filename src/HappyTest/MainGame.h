@@ -89,6 +89,7 @@ private:
     he::game::Entity* m_pAxis;
     he::game::Entity* m_pScene;
     he::game::Entity* m_pSky;
+    he::game::Entity* m_pChar;
 
     he::gfx::SpotLight::pointer m_pSpotLight;
     he::gfx::PointLight::pointer m_pCarLight;

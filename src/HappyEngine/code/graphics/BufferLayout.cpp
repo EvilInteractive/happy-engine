@@ -71,7 +71,6 @@ const BufferLayout::layout& BufferLayout::getElements() const
 }
 uint BufferLayout::getSize() const
 {
-    ASSERT(m_Size != 0, "Vertex size == 0!");
     return m_Size;
 }
 #pragma endregion

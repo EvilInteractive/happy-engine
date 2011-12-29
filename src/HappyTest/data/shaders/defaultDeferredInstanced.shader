@@ -5,12 +5,14 @@ fsPath = "deferred/pre/deferredPreShader.frag"
 [info]
 translucent = false
 
-[in]
+[inPerVertex]
 inPosition = POSITION
 inTexCoord = TEXCOORD
 inNormal = NORMAL
 inTangent = TANGENT
-inWorld = WORLD
+
+[inPerInstance]
+inWorld = MAT44
 
 [uniform]
 matVP = VIEWPROJECTION

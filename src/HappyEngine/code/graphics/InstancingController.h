@@ -28,11 +28,13 @@
 #include "boost/chrono.hpp"
 
 #include "IDrawable.h"
+#include "BufferLayout.h"
+#include "InstancingBuffer.h"
 
 namespace he {
 namespace gfx {
 
-class I3DObject;
+class IInstancible;
 
 class InstancingController : public IInstancedDrawable
 {
@@ -40,7 +42,7 @@ public:
     InstancingController(bool dynamic, const ModelMesh::pointer& mesh, const Material& material);
     virtual ~InstancingController();
 
-    uint addInstance(const I3DObject* pObj); //return id
+    uint addInstance(const IInstancible* pObj); //return id
     void removeInstance(uint id);
     
     virtual const Material& getMaterial() const;
@@ -70,20 +72,21 @@ private:
 
     bool m_Dynamic, m_NeedsUpdate;
 
-    uint m_MatrixBuffer;
-    uint m_MatrixBufferCapacity;
+    details::InstancingBuffer m_CpuBuffer;
+    uint  m_GpuBuffer;
+    uint  m_BufferCapacity;
 
     uint m_Vao;
     uint m_ShadowVao;
 
+    BufferLayout m_InstancingLayout;
     ModelMesh::pointer m_pModelMesh;
     Material m_Material;
 
     bool m_CastShadows;
     bool m_IsVisible;
 
-    uint m_InstancesInBuffer;
-    SlotPContainer<const I3DObject*> m_Instances;
+    SlotPContainer<const IInstancible*> m_Instances;
 
     boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
 

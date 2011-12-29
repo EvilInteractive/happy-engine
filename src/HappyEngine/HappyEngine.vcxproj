@@ -87,6 +87,7 @@
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp" />
     <ClCompile Include="code\graphics\HappyQtWidget.cpp" />
     <ClCompile Include="code\graphics\Hitregion.cpp" />
+    <ClCompile Include="code\graphics\InstancingBuffer.cpp" />
     <ClCompile Include="code\graphics\InstancingController.cpp" />
     <ClCompile Include="code\graphics\InstancingManager.cpp" />
     <ClCompile Include="code\graphics\Light.cpp" />
@@ -255,6 +256,8 @@
     <ClInclude Include="code\graphics\HappyQtWidget.h" />
     <ClInclude Include="code\graphics\Hitregion.h" />
     <ClInclude Include="code\graphics\IDrawable.h" />
+    <ClInclude Include="code\graphics\IInstancible.h" />
+    <ClInclude Include="code\graphics\InstancingBuffer.h" />
     <ClInclude Include="code\graphics\InstancingController.h" />
     <ClInclude Include="code\graphics\InstancingManager.h" />
     <ClInclude Include="code\graphics\IPickable.h" />

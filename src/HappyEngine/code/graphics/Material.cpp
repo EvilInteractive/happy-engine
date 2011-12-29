@@ -47,11 +47,13 @@ void Material::addVar(const ShaderVar::pointer& var)
     ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
     m_ShaderVar.push_back(var);
 }
-void Material::setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVL, bool usedForInstancing)
+void Material::setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout)
 {
-    m_UsedForInstancing = usedForInstancing;
+    m_UsedForInstancing = compatibleInstancingLayout.getSize() > 0;
     m_pShader = pShader;
-    m_CompatibleVL = compatibleVL;
+    ASSERT(compatibleVertexLayout.getSize() > 0, "VertexLayout size == 0!");
+    m_CompatibleVL = compatibleVertexLayout;
+    m_CompatibleIL = compatibleInstancingLayout;
 }
 
 void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera ) const
@@ -274,6 +276,11 @@ const BufferLayout& Material::getCompatibleVertexLayout() const
 {
     return m_CompatibleVL;
 }
+const BufferLayout& Material::getCompatibleInstancingLayout() const
+{
+    return m_CompatibleIL;
+}
+
 
 bool Material::isTranslucent() const
 {

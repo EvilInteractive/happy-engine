@@ -44,9 +44,10 @@ public:
     // default copy constructor and default assignment operator are OK
 
     void addVar(const ShaderVar::pointer& var);
-    void setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVL, bool usedForInstancing);
+    void setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout);
 
     const BufferLayout& getCompatibleVertexLayout() const;
+    const BufferLayout& getCompatibleInstancingLayout() const;
 
     void apply(const IInstancedDrawable* pObj,  const ICamera* pCamera) const;
     void apply(const ISingleDrawable*    pObj,  const ICamera* pCamera) const;
@@ -67,6 +68,7 @@ private:
     std::vector<ShaderVar::pointer> m_ShaderVar;
 
     BufferLayout m_CompatibleVL;
+    BufferLayout m_CompatibleIL;
 };
 
 } } //end namespace

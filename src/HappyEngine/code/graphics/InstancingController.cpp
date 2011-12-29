@@ -25,6 +25,8 @@
 #include "GraphicsEngine.h"
 #include "OpenGL.h"
 #include "I3DObject.h"
+#include "DynamicBuffer.h"
+#include "IInstancible.h"
 
 namespace he {
 namespace gfx {
@@ -32,7 +34,8 @@ namespace gfx {
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 InstancingController::InstancingController(bool dynamic, const ModelMesh::pointer& mesh, const Material& material):
-    m_Dynamic(dynamic), m_pModelMesh(mesh), m_Material(material), m_NeedsUpdate(false), m_MatrixBufferCapacity(32)
+    m_Dynamic(dynamic), m_pModelMesh(mesh), m_Material(material), m_NeedsUpdate(false), m_BufferCapacity(32),
+    m_InstancingLayout(material.getCompatibleInstancingLayout()), m_CpuBuffer(material.getCompatibleInstancingLayout().getSize(), 32)
 {
     m_pModelMesh->callbackIfLoaded(boost::bind(&InstancingController::init, this));
 }
@@ -41,13 +44,12 @@ InstancingController::InstancingController(bool dynamic, const ModelMesh::pointe
 InstancingController::~InstancingController()
 {
     glDeleteVertexArrays(1, &m_Vao);
-    glDeleteBuffers(1, &m_MatrixBuffer);
+    glDeleteBuffers(1, &m_GpuBuffer);
 }
 
 
 void InstancingController::init()
 {
-
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
@@ -58,8 +60,8 @@ void InstancingController::init()
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
         glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOID());
-        BufferLayout::layout elements(m_pModelMesh->getVertexLayout().getElements());
-        std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
+        BufferLayout::layout vertexElements(m_pModelMesh->getVertexLayout().getElements());
+        std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const BufferElement& e)
         {
             GLint components = 1;
             GLenum type = 0;
@@ -92,21 +94,34 @@ void InstancingController::init()
         //////////////////////////////////////////////////////////////////////////
         ///  Instance Buffer
         //////////////////////////////////////////////////////////////////////////
-        glGenBuffers(1, &m_MatrixBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_MatrixBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_MatrixBufferCapacity * sizeof(mat44), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
-        glEnableVertexAttribArray(elements.size() + 0);
-        glEnableVertexAttribArray(elements.size() + 1);
-        glEnableVertexAttribArray(elements.size() + 2);
-        glEnableVertexAttribArray(elements.size() + 3);
-        glVertexAttribPointer(elements.size() + 0, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 0)); 
-        glVertexAttribPointer(elements.size() + 1, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 1)); 
-        glVertexAttribPointer(elements.size() + 2, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 2)); 
-        glVertexAttribPointer(elements.size() + 3, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 3)); 
-        glVertexAttribDivisor(elements.size() + 0, 1);
-        glVertexAttribDivisor(elements.size() + 1, 1);
-        glVertexAttribDivisor(elements.size() + 2, 1);
-        glVertexAttribDivisor(elements.size() + 3, 1);
+        glGenBuffers(1, &m_GpuBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, m_GpuBuffer);
+        glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
+
+        std::for_each(m_InstancingLayout.getElements().cbegin(), m_InstancingLayout.getElements().cend(), [&](const BufferElement& element)
+        {
+            GLint components(1);
+            GLenum type(0);
+            switch (element.getType())
+            {
+                case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
+                case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
+                case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
+                case BufferElement::Type_Float: type = GL_FLOAT; break;
+
+                case BufferElement::Type_Int: type = GL_INT; break;
+                case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
+                case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
+
+                #pragma warning(disable:4127)
+                default: ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
+                #pragma warning(default:4127)
+            }
+            glEnableVertexAttribArray(vertexElements.size() + element.getElementIndex());
+            glVertexAttribPointer(vertexElements.size() + element.getElementIndex(), components, type, 
+                                  GL_FALSE, m_InstancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
+            glVertexAttribDivisor(vertexElements.size() + element.getElementIndex(), 1);
+        });
 
     //////////////////////////////////////////////////////////////////////////
     ///  Shadow Draw
@@ -129,7 +144,7 @@ void InstancingController::init()
         //////////////////////////////////////////////////////////////////////////
         ///  Instance Buffer
         //////////////////////////////////////////////////////////////////////////
-        glBindBuffer(GL_ARRAY_BUFFER, m_MatrixBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, m_GpuBuffer);
         glEnableVertexAttribArray(1 + 0);
         glEnableVertexAttribArray(1 + 1);
         glEnableVertexAttribArray(1 + 2);
@@ -154,32 +169,35 @@ void InstancingController::updateBuffer()
     // only need to update once a frame
     boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevUpdateTime);
 
-    if ((m_Dynamic || m_NeedsUpdate) && elapsedTime.count() / static_cast<float>(boost::nano::den) * 1000 > 12.0f)
+    if ((m_Dynamic || m_NeedsUpdate) && elapsedTime.count() / static_cast<float>(boost::nano::den) * 1000 > 12.0f) //12ms ~62.5fps
     {
-        std::vector<mat44> matrixBuffer;
-        matrixBuffer.reserve(m_Instances.size());
+        PROFILER_BEGIN("InstancingController::updateBuffer");
 
-        he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&matrixBuffer](const I3DObject* pObj)
+        glBindBuffer(GL_ARRAY_BUFFER, m_GpuBuffer);
+        if (m_BufferCapacity < m_Instances.size()) // GL buffer to small -> enlarge
         {
-            matrixBuffer.push_back(pObj->getWorldMatrix());
-        });
-        m_InstancesInBuffer = matrixBuffer.size();
+            while(m_BufferCapacity < m_Instances.size())
+                m_BufferCapacity *= 2;
+            m_CpuBuffer.resize(m_BufferCapacity * m_InstancingLayout.getSize());
+            glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_MatrixBuffer);
-
-        if (m_MatrixBufferCapacity < matrixBuffer.size())
-        {
-            while(m_MatrixBufferCapacity < matrixBuffer.size())
-                m_MatrixBufferCapacity *= 2;
-            glBufferData(GL_ARRAY_BUFFER, m_MatrixBufferCapacity * sizeof(mat44), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
-
-            HE_INFO("Increasing instancing controller's capacity to " + itoa(m_MatrixBufferCapacity));
+            HE_INFO("Increasing instancing controller's capacity to " + itoa(m_BufferCapacity));
         }
 
-        glBufferSubData(GL_ARRAY_BUFFER, 0, matrixBuffer.size()*sizeof(mat44), matrixBuffer.size() > 0 ? &matrixBuffer[0] : 0);
+        m_CpuBuffer.reset();
+        DynamicBuffer b(m_InstancingLayout);
+        he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&](const IInstancible* pObj)
+        {
+            //check for culling here
+            b.setBuffer(m_CpuBuffer.addItem());
+            pObj->fillInstancingBuffer(b);
+        });
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
         m_NeedsUpdate = false;
         m_PrevUpdateTime = boost::chrono::high_resolution_clock::now();
+        PROFILER_END();
     }
 }
 
@@ -188,19 +206,19 @@ void InstancingController::draw()
     updateBuffer();
 
     GL::heBindVao(m_Vao);
-    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_InstancesInBuffer);
+    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 void InstancingController::drawShadow()
 {
     updateBuffer();
 
     GL::heBindVao(m_ShadowVao);
-    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_InstancesInBuffer);
+    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 
 
 
-uint InstancingController::addInstance(const I3DObject* pObj)
+uint InstancingController::addInstance(const IInstancible* pObj)
 {
     m_NeedsUpdate = true;
     return m_Instances.insert(pObj);
@@ -251,7 +269,7 @@ void InstancingController::setVisible( bool visible )
 
 uint InstancingController::getCount() const
 {
-    return m_InstancesInBuffer;
+    return m_CpuBuffer.getCount();
 }
 
 } } //end namespace

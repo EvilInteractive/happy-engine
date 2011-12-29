@@ -48,7 +48,7 @@ void PickEffect::load()
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    BufferLayout vertexLayout;
+    BufferLayout vertexLayout, instancingLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     Shader::pointer pShader(NEW Shader());
@@ -61,7 +61,7 @@ void PickEffect::load()
                                           folder + "2D/pickingShader.frag", layout));
     ASSERT(shaderInit == true);
 
-    m_PickMaterial.setShader(pShader, vertexLayout, false);
+    m_PickMaterial.setShader(pShader, vertexLayout, instancingLayout);
 
     m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matVP"), ShaderVarType_ViewProjection)));
     m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matW"), ShaderVarType_World)));

@@ -5,7 +5,7 @@ fsPath = "forward/forwardShader.frag"
 [info]
 translucent = false
 
-[in]
+[inPerVertex]
 inPosition = POSITION
 inTexCoord = TEXCOORD
 inNormal = NORMAL
