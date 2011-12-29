@@ -75,7 +75,9 @@ public:
     // * Switch between blending & testing. *
     void setBlending(bool bB);
     // * Set current GUI layer, default = depth 50
-    void setLayer(const std::string& layer = "default");	
+    void setLayer(const std::string& layer = "default");
+	// * Set depth directly, without layer. *
+    void setDepth(byte depth);
 
     /* DRAW METHODS */
 
@@ -185,6 +187,7 @@ private:
 
     std::map<std::string, float> m_Layers;
     std::string m_CurrentLayer;
+	int m_CurrentDepth;
     
     std::vector<std::pair<Shape, float> > m_ShapeBuffer;
     std::vector<std::pair<Texture, float> > m_TextureBuffer;

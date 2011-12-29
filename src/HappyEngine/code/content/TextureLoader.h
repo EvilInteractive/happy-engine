@@ -40,15 +40,23 @@ namespace ct {
 class TextureLoader
 {
 public:
+
+	/* CONSTRUCTOR - DESTRUCTOR */
 	TextureLoader();
     virtual ~TextureLoader();
     
+	/* GENERAL */
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
     gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
     gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
 
+	gfx::Texture2D::pointer loadTexture(const std::string& path);
+    gfx::Texture2D::pointer makeTexture(const Color& color);
+
+	/* GETTERS */
+    bool isLoading() const;
 
 private:
 
@@ -67,7 +75,7 @@ private:
     bool m_isLoadThreadRunning;
     void TextureLoadThread();
 
-    
+    /* DATAMEMBERS */
     std::queue<TextureLoadData> m_TextureLoadQueue;
     boost::mutex m_TextureLoadQueueMutex;
 
@@ -78,7 +86,7 @@ private:
 
 	AssetContainer<gfx::Texture2D::pointer>* m_pAssetContainer;
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT */
     TextureLoader(const TextureLoader&);
     TextureLoader& operator=(const TextureLoader&);
 };

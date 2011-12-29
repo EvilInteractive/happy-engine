@@ -54,10 +54,14 @@ public:
 
     gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+	gfx::Model::pointer loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh::pointer loadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh::pointer getFullscreenQuad() const;
 
     gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
     gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
+	gfx::Texture2D::pointer loadTexture(const std::string& path);
+    gfx::Texture2D::pointer makeTexture(const Color& color);
 
     gfx::Line::pointer loadLine(const std::string& path);
 
@@ -91,6 +95,8 @@ public:
     const std::string& getMaterialFolder() const;
 
     void setRenderSettings(const gfx::RenderSettings& settings);
+
+	bool isLoading() const;
 
 private:
 

@@ -173,6 +173,7 @@
     <ClCompile Include="code\tools\FPSGraph.cpp" />
     <ClCompile Include="code\tools\Grid.cpp" />
     <ClCompile Include="code\tools\HappyFxEditorBinding.cpp" />
+    <ClCompile Include="code\tools\LoadingScreen.cpp" />
     <ClCompile Include="code\tools\Profiler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -360,6 +361,7 @@
     <ClInclude Include="code\tools\HappyFxEditorBinding.h" />
     <ClInclude Include="code\tools\IntTypeHandler.h" />
     <ClInclude Include="code\tools\ITypeHandler.h" />
+    <ClInclude Include="code\tools\LoadingScreen.h" />
     <ClInclude Include="code\tools\Profiler.h" />
     <ClInclude Include="code\tools\StringTypeHandler.h" />
     <ClInclude Include="code\tools\UIntTypeHandler.h" />

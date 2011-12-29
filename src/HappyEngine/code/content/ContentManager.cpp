@@ -52,7 +52,14 @@ gfx::ModelMesh::pointer ContentManager::asyncLoadModelMesh( const std::string& a
 {
     return m_pModelLoader->asyncLoadModelMesh(m_ContentRootDir + m_ModelFolder + asset, meshName, vertexLayout);
 }
-
+gfx::Model::pointer ContentManager::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+{
+    return m_pModelLoader->loadModel(m_ContentRootDir + m_ModelFolder + path, vertexLayout);
+}
+gfx::ModelMesh::pointer ContentManager::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
+{
+    return m_pModelLoader->loadModelMesh(m_ContentRootDir + m_ModelFolder +path, meshName, vertexLayout);
+}
 
 gfx::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string& asset)
 {
@@ -61,6 +68,14 @@ gfx::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string& asse
 gfx::Texture2D::pointer ContentManager::asyncMakeTexture(const Color& color)
 {
     return m_pTextureLoader->asyncMakeTexture(color);
+}
+gfx::Texture2D::pointer ContentManager::loadTexture(const std::string& path)
+{
+    return m_pTextureLoader->loadTexture(m_ContentRootDir + m_TextureFolder + path);
+}
+gfx::Texture2D::pointer ContentManager::makeTexture(const Color& color)
+{
+    return m_pTextureLoader->makeTexture(color);
 }
 
 gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
@@ -200,6 +215,14 @@ void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
 {
     m_pMaterialLoader->setRenderSettings(settings);
     m_pShaderLoader->setRenderSettings(settings);
+}
+
+bool ContentManager::isLoading() const
+{
+    if (m_pModelLoader->isLoading() || m_pTextureLoader->isLoading())
+        return true;
+    else
+        return false;
 }
 
 } } //end namespace

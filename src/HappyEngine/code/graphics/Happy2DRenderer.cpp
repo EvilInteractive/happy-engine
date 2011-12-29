@@ -37,7 +37,7 @@ namespace gfx {
 Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
                                         m_pTextureEffect(NEW Simple2DTextureEffect()),
                                         m_bAntiAliasing(false),
-                                        m_bBlending(false),
+                                        m_bBlending(true),
                                         m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
                                         m_ViewPortSize(0.0f,0.0f),
                                         m_pModelBuffer(NEW ct::AssetContainer<ModelMesh::pointer, int>()),
@@ -46,7 +46,8 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
                                         m_CurrentLayer("default"),
                                         m_RenderFboID(UINT_MAX),
                                         m_DepthRenderTarget(UINT_MAX),
-                                        m_pRenderTexture(NEW Texture2D())
+                                        m_pRenderTexture(NEW Texture2D()),
+										m_CurrentDepth(-1)
 {
     
 }
@@ -215,6 +216,9 @@ float Happy2DRenderer::getDepth()
 {
     float layerDepth(m_Layers[m_CurrentLayer]);
     float depth(0.0f);
+
+	if (m_CurrentDepth > 0)
+        layerDepth = static_cast<float>(m_CurrentDepth);
 
     if (m_DepthMap.find(layerDepth) != m_DepthMap.end())
     {
@@ -494,6 +498,13 @@ void Happy2DRenderer::setLayer(const std::string& layer)
 {
     if (m_CurrentLayer != layer)
         m_CurrentLayer = layer;
+
+	m_CurrentDepth = -1;
+}
+
+void Happy2DRenderer::setDepth(byte depth)
+{
+    m_CurrentDepth = static_cast<int>(depth);
 }
 
 /* DRAW METHODS */

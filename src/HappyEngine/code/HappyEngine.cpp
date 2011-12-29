@@ -55,7 +55,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
-                            m_pCameraManager(nullptr), m_bShowProfiler(false)
+                            m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true)
 {
 }
 HappyEngine::~HappyEngine()
@@ -103,6 +103,7 @@ void HappyEngine::cleanup()
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
 
+	delete m_pLoadingScreen;
 
     if (m_SubEngines & SubEngine_Graphics)
     {
@@ -199,6 +200,8 @@ void HappyEngine::start(game::Game* pGame)
 
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 
+	m_pLoadingScreen = NEW tools::LoadingScreen();
+
     m_pGame->load();
 
     m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
@@ -288,6 +291,10 @@ void HappyEngine::updateLoop(float dTime)
     m_pGame->tick(dTime);
 
     CONSOLE->tick();
+
+	if (CONTENT->isLoading() == false && m_bGameLoading == true)
+        m_bGameLoading = false;
+
     PROFILER_END();
 }
 void HappyEngine::drawLoop()
@@ -296,8 +303,11 @@ void HappyEngine::drawLoop()
     // display 3D scene
     GRAPHICS->drawScene();
 
-    // draw 2D stuff
-    m_pGame->drawGui();
+	// draw 2D stuff
+	if (m_bGameLoading)
+        drawLoadingScreen();
+	else
+		m_pGame->drawGui();
 
     // draw profiler if needed
     if (m_bShowProfiler)
@@ -306,8 +316,8 @@ void HappyEngine::drawLoop()
     // draw console
     CONSOLE->draw();
 
-    // display 2D
-    GUI->draw();    
+	// display 2D
+	GUI->draw();    
  
 #ifdef HE_ENABLE_QT
     if (m_SubEngines & SubEngine_Qt)
@@ -349,6 +359,15 @@ void HappyEngine::audioLoop()
         else
             boost::this_thread::sleep(waitTime);
     }
+}
+
+void HappyEngine::drawLoadingScreen()
+{
+    m_pLoadingScreen->tick();
+
+    GUI->setDepth(1);
+
+    m_pLoadingScreen->draw();
 }
 
 //SubEngines

@@ -40,14 +40,23 @@ namespace ct {
 class ModelLoader
 {
 public:
+
+	/* CONSTRUCTOR - DESTRUCTOR */
     ModelLoader();
     virtual ~ModelLoader();
     
+	/* GENERAL */
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
     gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+
+	gfx::Model::pointer loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh::pointer loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+
+    /* GETTERS */
+    bool isLoading() const;
 
 private:
     struct ModelLoadData

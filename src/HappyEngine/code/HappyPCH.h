@@ -38,7 +38,7 @@
 #include "Console.h"
 
 #define HE_INFO(str) {std::cout << "Info: " << str << "\n"; \
-                      CONSOLE->addMessage(str);}
+                      CONSOLE->addMessage(str, CMSG_TYPE_ENGINE);}
 #define HE_ERROR(str) {std::cout << "Error: " << str << "\n"; \
                        CONSOLE->addMessage(str, CMSG_TYPE_ERROR);} 
 #define HE_WARNING(str) {std::cout << "Warning: " << str << "\n"; \

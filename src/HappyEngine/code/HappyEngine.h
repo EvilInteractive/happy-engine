@@ -33,6 +33,8 @@
 #include <vector>
 #include "boost/chrono.hpp"
 
+#include "LoadingScreen.h"
+
 // forward declaration
 
 #ifdef HE_ENABLE_QT
@@ -148,6 +150,10 @@ private:
     static HappyEngine* s_pHappyEngine;
     void initSubEngines(int subengines);
 
+	void drawLoadingScreen();
+
+    tools::LoadingScreen* m_pLoadingScreen;
+
     game::Game* m_pGame;
     game::CameraManager* m_pCameraManager;
 
@@ -165,6 +171,7 @@ private:
 
     bool m_Quit;
     bool m_bShowProfiler;
+	bool m_bGameLoading;
 
     int m_SubEngines;
 
