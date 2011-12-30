@@ -4,3 +4,10 @@ shader = "particles/defaultParticles.shader"
 [TEXTURE2D]
 diffuseMap = "particles/part1.png"
 
+
+[info]
+blending = true
+blendFunc = ADD
+srcBlend = SRC_ALPHA
+destBlend = INV_SRC_ALPHA
+post = false

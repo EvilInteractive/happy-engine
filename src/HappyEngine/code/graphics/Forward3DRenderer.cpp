@@ -37,17 +37,17 @@ namespace he {
 namespace gfx {
 
 const char* vertQuadShader = 
-"#version 150 core                              \n"
-"                                               \n"
-"in vec3 inPosition;                            \n"
-"                                               \n"
-"noperspective out vec2 texCoord;               \n"
-"                                               \n"
-"void main()                                    \n"
-"{                                              \n"
-"    gl_Position = vec4(inPosition, 1.0f);      \n"
-"    texCoord = inPosition.xy * 0.5 + 0.5f;     \n"
-"}                                              \n";
+"#version 150 core                                              \n"
+"                                                               \n"
+"in vec3 inPosition;                                            \n"
+"                                                               \n"
+"noperspective out vec2 texCoord;                               \n"
+"                                                               \n"
+"void main()                                                    \n"
+"{                                                              \n"
+"    gl_Position = vec4(inPosition, 1.0f);                      \n"
+"    texCoord = vec2(-inPosition.x, inPosition.y) * 0.5 + 0.5f; \n"
+"}                                                              \n";
 
 const char* fragQuadShader = 
 "#version 150 core                              \n"
@@ -60,9 +60,9 @@ const char* fragQuadShader =
 "void main()                                    \n"
 "{                                              \n"
 "    vec4 color = texture(colorTex, texCoord);  \n"
-"    if (color.a < 0.2f)                        \n"
+"    if (color.a < 0.01f)                       \n"
 "        discard;                               \n"
-"    outColor = vec4(color.rgb, 1.0f);          \n"
+"    outColor = color;                          \n"
 "}                                              \n";
 
 
@@ -165,12 +165,22 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
     {
         const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
         glDrawBuffers(1, m_DrawBuffers);
-        GL::heClearColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
+        GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
         glClear(GL_COLOR_BUFFER_BIT);
     }
     glDrawBuffers(m_pOutNormalTexture == nullptr? 1 : 2, m_DrawBuffers);
 
-    drawList.for_each(renderFlags, [](IDrawable* pDrawable)
+    drawList.for_each(renderFlags &~DrawListContainer::F_Main_Blended, [](IDrawable* pDrawable)
+    {
+        if (pDrawable->isInCamera(CAMERAMANAGER->getActiveCamera()))
+        {
+            pDrawable->applyMaterial(CAMERAMANAGER->getActiveCamera());
+            pDrawable->draw();
+        }
+    });
+
+    GL::heBlendEnabled(true);
+    drawList.for_each(renderFlags &~DrawListContainer::F_Main_Opac, [](IDrawable* pDrawable)
     {
         if (pDrawable->isInCamera(CAMERAMANAGER->getActiveCamera()))
         {
@@ -185,6 +195,9 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
         GL::heBindFbo(0);
         GL::heSetDepthRead(false);
         GL::heSetDepthWrite(false);
+        GL::heBlendEnabled(true);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
         const static GLenum buffers[1] = { GL_BACK_LEFT };
         glDrawBuffers(1, buffers);
 
@@ -208,7 +221,7 @@ void Forward3DRenderer::clear( bool color, bool normal, bool depth )
         buffers[numBuffers++] = GL_COLOR_ATTACHMENT1;
 
     glDrawBuffers(numBuffers, buffers);
-    GL::heClearColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
 
     GLbitfield flags(0);
     if (color || normal)

@@ -288,7 +288,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
         std::vector<IDrawable*> culledDrawList;
         std::vector<IDrawable*> culledSkinnedDrawList;
 
-        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Tranlucent | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Single | DrawListContainer::F_Sub_Skinned, [&](IDrawable* pDrawable)
+        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Blended | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Single | DrawListContainer::F_Sub_Skinned, [&](IDrawable* pDrawable)
         {
             if (pDrawable->isVisible() && pDrawable->getCastsShadow() && pDrawable->getModelMesh()->isLoaded())
             {
@@ -329,7 +329,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
             pDrawable->drawShadow();
         });
 
-        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Tranlucent | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
+        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Blended | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
         {
             if (pDrawable->getCastsShadow() && pDrawable->isVisible() && pDrawable->isInCamera(&shadowCam))
             {

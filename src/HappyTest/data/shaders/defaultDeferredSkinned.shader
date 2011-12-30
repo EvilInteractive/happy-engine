@@ -2,9 +2,6 @@
 vsPath = "deferred/pre/deferredPreShaderSkinned.vert"
 fsPath = "deferred/pre/deferredPreShader.frag"
 
-[info]
-translucent = false
-
 [inPerVertex]
 inPosition = POSITION
 inTexCoord = TEXCOORD

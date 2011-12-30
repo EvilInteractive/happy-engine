@@ -20,7 +20,6 @@
 #version 150 core
 
 out vec4 outColor;
-out vec2 outNormal;
 
 in vec2 passTexCoord;
 in vec4 passBlendColor;
@@ -32,10 +31,9 @@ uniform vec2 uvTiles;
 void main()
 {
     vec4 diff = texture(diffuseMap, (passTexCoord / uvTiles) * (1 + passUvTile) );
-    if (diff.a < 0.2f)
+    if (diff.a < 0.01f)
         discard;
     outColor = diff * passBlendColor;
-    outNormal = vec2(1, 0);
 }
 
 

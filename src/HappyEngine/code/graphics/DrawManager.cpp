@@ -98,7 +98,7 @@ void DrawManager::init(const RenderSettings& settings)
                             DrawListContainer::F_Sub_Instanced;
         m_pFallbackRenderer = NEW Forward3DRenderer();
         m_pFallbackRenderer->init(settings, m_pColorRenderMap, m_pNormalRenderMap, m_pDepthRenderMap);
-        m_FallbackRenderFlags = DrawListContainer::F_Main_Tranlucent | 
+        m_FallbackRenderFlags = DrawListContainer::F_Main_Blended | 
                                 DrawListContainer::F_Loc_BeforePost  |
                                 DrawListContainer::F_Sub_Single      |
                                 DrawListContainer::F_Sub_Skinned     |
@@ -108,7 +108,7 @@ void DrawManager::init(const RenderSettings& settings)
     {
         m_pMainRenderer = NEW Forward3DRenderer();
         m_pMainRenderer->init(settings, m_pColorRenderMap, m_pNormalRenderMap, m_pDepthRenderMap);
-        m_MainRenderFlags = DrawListContainer::F_Main_Tranlucent | 
+        m_MainRenderFlags = DrawListContainer::F_Main_Blended | 
                             DrawListContainer::F_Main_Opac       |
                             DrawListContainer::F_Loc_BeforePost  |
                             DrawListContainer::F_Sub_Single      |
@@ -116,14 +116,14 @@ void DrawManager::init(const RenderSettings& settings)
                             DrawListContainer::F_Sub_Instanced;
     }
 
-    /*m_pAfterPostRenderer = NEW Forward3DRenderer();
-    m_pAfterPostRenderer->init(settings, nullTexture, m_pNormalRenderMap, m_pDepthRenderMap);
-    m_AfterPostRenderFlags = DrawListContainer::F_Main_Tranlucent | 
+    m_pAfterPostRenderer = NEW Forward3DRenderer();
+    m_pAfterPostRenderer->init(settings, nullTexture, nullTexture, m_pDepthRenderMap);
+    m_AfterPostRenderFlags = DrawListContainer::F_Main_Blended    | 
                              DrawListContainer::F_Main_Opac       |
                              DrawListContainer::F_Loc_AfterPost   |
                              DrawListContainer::F_Sub_Single      |
                              DrawListContainer::F_Sub_Skinned     |
-                             DrawListContainer::F_Sub_Instanced;*/
+                             DrawListContainer::F_Sub_Instanced;
 
     if (settings.enableShadows)
     {
@@ -160,9 +160,9 @@ void DrawManager::draw()
     m_pPostProcesser->draw(m_pColorRenderMap, m_pNormalRenderMap, m_pDepthRenderMap);
     PROFILER_END();
 
-    /*PROFILER_BEGIN("DrawManager::draw - after post renderer");
+    PROFILER_BEGIN("DrawManager::draw - after post renderer");
     m_pAfterPostRenderer->draw(m_DrawList, m_AfterPostRenderFlags);
-    PROFILER_END("DrawManager::draw - after post renderer");*/
+    PROFILER_END();
 
     if (m_RenderDebugTextures)
     {

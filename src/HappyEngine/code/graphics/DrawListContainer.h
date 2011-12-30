@@ -41,7 +41,7 @@ public:
     enum Filter
     {
         F_Main_Opac = 1 << 0,
-        F_Main_Tranlucent = 1 << 1,
+        F_Main_Blended = 1 << 1,
         F_Loc_AfterPost = 1 << 2,
         F_Loc_BeforePost = 1 << 3,
         F_Sub_Single = 1 << 4,
@@ -62,7 +62,7 @@ private:
     static const int MAX_I0 = 2;
 
     static const int OPAC_INDEX = 0;
-    static const int TRANSLUCENT_INDEX = 1;
+    static const int BLENDING_INDEX = 1;
     static const int MAX_I1 = 2;
 
     static const int SINGLE_INDEX = 0;

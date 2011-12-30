@@ -2,9 +2,6 @@
 vsPath = "particles/particles.vert"
 fsPath = "particles/particles.frag"
 
-[info]
-translucent = true
-
 [inPerVertex]
 inPosition = POSITION
 
@@ -20,4 +17,3 @@ uvTiles = VEC2
 
 [out]
 outColor = GBUFFER_COLOR
-outColor = GBUFFER_NORMAL

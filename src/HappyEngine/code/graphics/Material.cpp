@@ -33,7 +33,7 @@
 namespace he {
 namespace gfx {
 
-Material::Material(): m_UsedForInstancing(false), m_IsTranslucent(false), m_NoPost(false)
+Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false)
 {
 }
 
@@ -75,6 +75,13 @@ const ShaderVar::pointer& Material::getVar( const std::string& var )
 void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera ) const
 {
     ASSERT(m_pShader != nullptr, "set shader first!");
+
+    if (m_IsBlended)
+    {
+        GL::heBlendEquation(m_BlendEquation);
+        GL::heBlendFunc(m_SourceBlend, m_DestBlend);
+    }
+
     m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
     {
@@ -150,6 +157,13 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
 {
     ASSERT(m_pShader != nullptr, "set shader first!");
     ASSERT(m_UsedForInstancing, "shader not capable for instancing!");
+
+    if (m_IsBlended)
+    {
+        GL::heBlendEquation(m_BlendEquation);
+        GL::heBlendFunc(m_SourceBlend, m_DestBlend);
+    }
+
     m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
     {
@@ -212,6 +226,13 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
 void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera ) const
 {
     ASSERT(m_pShader != nullptr, "set shader first!");
+
+    if (m_IsBlended)
+    {
+        GL::heBlendEquation(m_BlendEquation);
+        GL::heBlendFunc(m_SourceBlend, m_DestBlend);
+    }
+
     m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
     {
@@ -298,21 +319,38 @@ const BufferLayout& Material::getCompatibleInstancingLayout() const
 }
 
 
-bool Material::isTranslucent() const
+
+void Material::setIsBlended( bool isBlended, BlendEquation equation/* = BlendEquation_Add*/, 
+                                             BlendFunc sourceBlend/*  = BlendFunc_One*/,
+                                             BlendFunc destBlend/*    = BlendFunc_Zero*/ )
 {
-    return m_IsTranslucent;
+    m_IsBlended = isBlended;
+    m_BlendEquation = equation;
+    m_SourceBlend = sourceBlend;
+    m_DestBlend = destBlend;
+}
+
+bool Material::isBlended() const
+{
+    return m_IsBlended;
+}
+BlendEquation Material::getBlendEquation() const
+{
+    return m_BlendEquation;
+}
+BlendFunc Material::getSourceBlend() const
+{
+    return m_SourceBlend;
+}
+BlendFunc Material::getDestBlend() const
+{
+    return m_DestBlend;
 }
 
 bool Material::isUsedForInstancing() const
 {
     return m_UsedForInstancing;
 }
-
-void Material::setIsTranslucent( bool isTranslucent )
-{
-    m_IsTranslucent = isTranslucent;
-}
-
 void Material::setNoPost( bool noPost )
 {
     m_NoPost = noPost;
@@ -322,5 +360,8 @@ bool Material::noPost() const
 {
     return m_NoPost;
 }
+
+
+
 
 } } //end namespace

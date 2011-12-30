@@ -38,7 +38,7 @@ DrawListContainer::~DrawListContainer()
 void gfx::DrawListContainer::insert( IDrawable* pDrawable )
 {
     uint i0(pDrawable->getMaterial().noPost()?AFTERPOST_INDEX:BEFOREPOST_INDEX);
-    uint i1(pDrawable->getMaterial().isTranslucent()?TRANSLUCENT_INDEX:OPAC_INDEX);
+    uint i1(pDrawable->getMaterial().isBlended()?BLENDING_INDEX:OPAC_INDEX);
     uint i2(pDrawable->isInstanced()?INSTANCE_INDEX:(pDrawable->isSkinned()?SKINNED_INDEX:SINGLE_INDEX));
     m_DrawList[i0][i1][i2].push_back(pDrawable);
 }
@@ -58,7 +58,7 @@ void removeFromVector( DrawListContainer::Container& vec, const IDrawable* pDraw
 void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
 {
     uint i0(pDrawable->getMaterial().noPost()?AFTERPOST_INDEX:BEFOREPOST_INDEX);
-    uint i1(pDrawable->getMaterial().isTranslucent()?TRANSLUCENT_INDEX:OPAC_INDEX);
+    uint i1(pDrawable->getMaterial().isBlended()?BLENDING_INDEX:OPAC_INDEX);
     uint i2(pDrawable->isInstanced()?INSTANCE_INDEX:(pDrawable->isSkinned()?SKINNED_INDEX:SINGLE_INDEX));
     removeFromVector(m_DrawList[i0][i1][i2], pDrawable);
 }
@@ -66,8 +66,6 @@ void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
 void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(IDrawable*)>& f ) const
 {
     #pragma region ASSERTS
-    ASSERT(filter & F_Main_Opac      || filter & F_Main_Tranlucent,                             
-        "flag at least one Main filter: F_Main_Opac or F_Main_Tranlucent");
     ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost,                               
         "flag at least one Location filter: F_Loc_BeforePost or F_Loc_AfterPost");
     ASSERT(filter & F_Sub_Single     || filter & F_Sub_Skinned     || filter & F_Sub_Instanced, 
@@ -82,8 +80,8 @@ void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(I
 
         for (int i1(0); i1 < MAX_I1; ++i1)
         {
-            if ((filter & F_Main_Opac        && OPAC_INDEX         == i1 || 
-                 filter & F_Main_Tranlucent  && TRANSLUCENT_INDEX  == i1) == false)
+            if ((filter & F_Main_Opac        && OPAC_INDEX      == i1 || 
+                 filter & F_Main_Blended     && BLENDING_INDEX  == i1) == false)
                 continue;
 
             for (int i2(0); i2 < MAX_I2; ++i2)

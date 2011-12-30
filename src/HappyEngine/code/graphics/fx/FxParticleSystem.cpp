@@ -49,7 +49,7 @@ namespace gfx {
 
 FxParticleSystem::FxParticleSystem(): m_Emit(false), m_UvTiles(NEW FxConstant<vec2>(vec2(1, 1))),
                                       m_SpawnRate(NEW FxConstant<float>(20)),
-                                      m_pFxParticleContainer(NEW FxParticleContainer(100)),
+                                      m_pFxParticleContainer(NEW FxParticleContainer(512)),
                                       m_TimeSinceLastSpawn(0)
 
 {
@@ -88,12 +88,13 @@ void FxParticleSystem::start()
 void FxParticleSystem::instancingUpdater( details::InstancingBuffer& buffer )
 {
     DynamicBuffer dbuffer(m_pInstancingController->getMaterial().getCompatibleInstancingLayout());
-    m_pFxParticleContainer->for_each([&](FxParticle* pParticle)
+    ICamera* pCam(CAMERAMANAGER->getActiveCamera());
+    m_pFxParticleContainer->for_each([&dbuffer,&buffer,&pCam](FxParticle* pParticle)
     {
         dbuffer.setBuffer(buffer.addItem());
         dbuffer.setValue(0, pParticle->m_BlendColor);
         dbuffer.setValue(1, pParticle->m_UvTile);
-        dbuffer.setValue(2, pParticle->getWorld(CAMERAMANAGER->getActiveCamera()));
+        dbuffer.setValue(2, pParticle->getWorld(pCam));
     });
 }
 
@@ -149,6 +150,15 @@ void FxParticleSystem::tick( float currentTime, float dTime )
         }
     });
     m_pFxParticleContainer->flushRemove();
+    vec3 camPos(CAMERAMANAGER->getActiveCamera()->getPosition());
+    m_pFxParticleContainer->sort([&camPos](const FxParticle& a, const FxParticle& b)
+    {
+        #if DEBUG | _DEBUG
+        return (uint)(lengthSqr(camPos - b.m_Position) * 100) < (uint)(lengthSqr(camPos - a.m_Position) * 100);
+        #else
+        return lengthSqr(camPos - b.m_Position) < lengthSqr(camPos - a.m_Position);
+        #endif
+    });
     //////////////////////////////////////////////////////////////////////////
 }
 

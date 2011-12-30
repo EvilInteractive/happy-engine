@@ -55,7 +55,7 @@ struct FxParticle
     void setToDefault()
     {
         m_Position = vec3::zero;
-        m_Life = 1.0f;
+        m_Life = 3.0f;
         m_Scale = vec3::one;
         m_Rotation = 0.0f;
         m_Velocity = vec3::zero;

@@ -42,6 +42,87 @@ MaterialLoader::~MaterialLoader()
     delete m_pAssetContainer;
 }
 
+BlendEquation blendEquationFromString(const std::string& str)
+{
+    if (str == "ADD")
+    {
+        return BlendEquation_Add;
+    }
+    else if (str == "SUBTRACT")
+    {
+        return BlendEquation_Subtract;
+    }
+    else if (str == "REVERSE_SUBTRACT" || str == "INVERSE_SUBTRACT")
+    {
+        return BlendEquation_ReverseSubtract;
+    }
+    else if (str == "MIN")
+    {
+        return BlendEquation_Min;
+    }
+    else if (str == "MAX")
+    {
+        return BlendEquation_Max;
+    }
+    else 
+    {
+        HE_ERROR("unknown blendEquationFromString: " + str);
+        return BlendEquation_Add;
+    }
+}
+BlendFunc blendFuncFromString(const std::string& str)
+{
+    if (str == "ZERO")
+    {
+        return BlendFunc_Zero;
+    }
+    else if (str == "ONE")
+    {
+        return BlendFunc_One;
+    }
+    else if (str == "SRC_COLOR")
+    {
+        return BlendFunc_SrcColor;
+    }
+    else if (str == "INV_SRC_COLOR" || str == "ONE_MIN_SRC_COLOR")
+    {
+        return BlendFunc_OneMinusSrcColor;
+    }
+    else if (str == "DEST_COLOR")
+    {
+        return BlendFunc_DestColor;
+    }
+    else if (str == "INV_DEST_COLOR" || str == "ONE_MIN_DEST_COLOR")
+    {
+        return BlendFunc_OneMinusDestColor;
+    }
+    else if (str == "SRC_ALPHA")
+    {
+        return BlendFunc_SrcAlpha;
+    }
+    else if (str == "INV_SRC_ALPHA" || str == "ONE_MIN_SRC_ALPHA" )
+    {
+        return BlendFunc_OneMinusSrcAlpha;
+    }
+    else if (str == "DEST_ALPHA")
+    {
+        return BlendFunc_DestAlpha;
+    }
+    else if (str == "INV_DEST_ALPHA" || str == "ONE_MIN_DEST_ALPHA" )
+    {
+        return BlendFunc_OneMinusDestAlpha;
+    }
+    else if (str == "SRC_ALPHA_SAT")
+    {
+        return BlendFunc_SrcAlphaSaturate;
+    }
+    else 
+    {
+        HE_ERROR("unknown blendFuncFromString: " + str);
+        return BlendFunc_One;
+    }
+}
+
 gfx::Material MaterialLoader::load(const std::string& path)
 {
     if (m_pAssetContainer->isAssetPresent(path))
@@ -121,7 +202,6 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 gfx::ShaderLayout shaderLayout;
                 uint count(0);
                 uint offset(0);
-                bool isTranslucent(false);
                 const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"inPerVertex"));
                 std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                 {
@@ -227,12 +307,24 @@ gfx::Material MaterialLoader::load(const std::string& path)
                                                                  shaderOutputs));
 
                 // [info]
-                if (shaderReader.containsRoot(L"info"))
+                bool isBlended(false);
+                BlendEquation blendEq(BlendEquation_Add);
+                BlendFunc srcBlend(BlendFunc_One), destBlend(BlendFunc_Zero);
+                bool post(true);
+                if (reader.containsRoot(L"info"))
                 {
-                    isTranslucent = shaderReader.readBool(L"info", L"translucent", false);
+                    isBlended = reader.readBool(L"info", L"blending", false);
+                    if (isBlended)
+                    {
+                        blendEq = blendEquationFromString(reader.readString(L"info", L"blendFunc", "ADD"));
+                        srcBlend = blendFuncFromString(reader.readString(L"info", L"srcBlend", "ONE"));
+                        destBlend = blendFuncFromString(reader.readString(L"info", L"destBlend", "ZERO"));
+                    }
+                    post = reader.readBool(L"info", L"post", true);
                 }
 
-                material.setIsTranslucent(isTranslucent);
+                material.setIsBlended(isBlended, blendEq, srcBlend, destBlend);
+                material.setNoPost(!post);
                 material.setShader(pShader, vertexLayout, instancingLayout);
 
 

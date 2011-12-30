@@ -42,6 +42,8 @@ public:
 
     FxParticle* back() const;
 
+    void sort(boost::function<bool(const FxParticle& a, const FxParticle& b)> pred);
+
     void for_each(const boost::function<void(FxParticle*)>& func);
 
 private:

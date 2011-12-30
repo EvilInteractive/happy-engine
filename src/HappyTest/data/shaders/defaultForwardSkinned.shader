@@ -2,9 +2,6 @@
 vsPath = "forward/forwardShaderSkinned.vert"
 fsPath = "forward/forwardShader.frag"
 
-[info]
-translucent = false
-
 [inPerVertex]
 inPosition = POSITION
 inTexCoord = TEXCOORD

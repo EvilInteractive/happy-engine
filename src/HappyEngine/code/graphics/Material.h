@@ -54,16 +54,23 @@ public:
     void apply(const ISingleDrawable*    pObj,  const ICamera* pCamera) const;
     void apply(const ISkinnedDrawable*   pObj,  const ICamera* pCamera) const;
 
-    void setIsTranslucent(bool isTranslucent);
+    void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add, 
+                                      BlendFunc sourceBlend  = BlendFunc_One,
+                                      BlendFunc destBlend    = BlendFunc_Zero);
     void setNoPost(bool noPost);
 
-    bool isTranslucent() const;
+    bool isBlended() const;
+    BlendEquation getBlendEquation() const;
+    BlendFunc getSourceBlend() const;
+    BlendFunc getDestBlend() const;
     bool noPost() const;
     bool isUsedForInstancing() const;
 
 private:
 
-    bool m_IsTranslucent, m_UsedForInstancing, m_NoPost;
+    BlendEquation m_BlendEquation;
+    BlendFunc m_SourceBlend, m_DestBlend;
+    bool m_IsBlended, m_UsedForInstancing, m_NoPost;
 
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;

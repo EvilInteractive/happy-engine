@@ -9,3 +9,7 @@ diffuseMap = "char/char1_diff.png"
 normalMap = 0.5, 0.5, 1.0, 1.0
 specGlossIllMap = 0.1, 0.1, 0, 0
 
+[info]
+blending = false
+post = true
+shadow = true

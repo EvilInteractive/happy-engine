@@ -92,4 +92,9 @@ FxParticle* FxParticleContainer::back() const
     return m_End - 1;
 }
 
+void FxParticleContainer::sort( boost::function<bool(const FxParticle& a, const FxParticle& b)> pred )
+{
+    std::sort(m_MemPool, m_End, pred);
+}
+
 } } //end namespace
