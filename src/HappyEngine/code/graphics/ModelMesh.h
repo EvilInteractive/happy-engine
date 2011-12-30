@@ -84,6 +84,7 @@ public:
 
     void callbackIfLoaded(const boost::function<void()>& callback);
 
+    static uint getAllocatedModelMeshCount();
 
 private:
     struct ShadowSkinnedVertex
@@ -119,6 +120,8 @@ private:
     shapes::Sphere m_BoundingSphere;
 
     std::vector<Bone> m_BoneList;
+
+    static uint s_AllocatedModelCount;
 
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);

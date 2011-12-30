@@ -80,10 +80,16 @@ void HappyEngine::cleanup()
     m_AudioThread.join(); // wait for audiothread to finish
 
     //dispose/delete all sub engines here
-    delete m_pContentManager;
-    m_pContentManager = nullptr;
+    delete m_p3DRenderer;
+    m_p3DRenderer = nullptr;
     delete m_p2DRenderer;
     m_p2DRenderer = nullptr;
+    delete m_pGraphicsEngine;
+    m_pGraphicsEngine = nullptr;
+    delete m_pFxManager;
+    m_pFxManager = nullptr;
+    delete m_pContentManager;
+    m_pContentManager = nullptr;
     delete m_pSoundEngine;
     m_pSoundEngine = nullptr;
     delete m_pControlsManager;
@@ -92,23 +98,16 @@ void HappyEngine::cleanup()
     m_pPhysicsEngine = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
-    delete m_p3DRenderer;
-    m_p3DRenderer = nullptr;
-    delete m_pFxManager;
-    m_pFxManager = nullptr;
     delete m_pCameraManager;
     m_pCameraManager = nullptr;
 
-
-    delete m_pGraphicsEngine;
-    m_pGraphicsEngine = nullptr;
-
-	delete m_pLoadingScreen;
+    delete m_pLoadingScreen;
 
     if (m_SubEngines & SubEngine_Graphics)
     {
         SDL_Quit();
     }
+
 
     delete m_pConsole;
     m_pConsole = nullptr;
@@ -200,7 +199,7 @@ void HappyEngine::start(game::Game* pGame)
 
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 
-	m_pLoadingScreen = NEW tools::LoadingScreen();
+    m_pLoadingScreen = NEW tools::LoadingScreen();
 
     m_pGame->load();
 
@@ -292,7 +291,7 @@ void HappyEngine::updateLoop(float dTime)
 
     CONSOLE->tick();
 
-	if (CONTENT->isLoading() == false && m_bGameLoading == true)
+    if (CONTENT->isLoading() == false && m_bGameLoading == true)
         m_bGameLoading = false;
 
     PROFILER_END();
@@ -303,11 +302,11 @@ void HappyEngine::drawLoop()
     // display 3D scene
     GRAPHICS->drawScene();
 
-	// draw 2D stuff
-	if (m_bGameLoading)
+    // draw 2D stuff
+    if (m_bGameLoading)
         drawLoadingScreen();
-	else
-		m_pGame->drawGui();
+    else
+        m_pGame->drawGui();
 
     // draw profiler if needed
     if (m_bShowProfiler)
@@ -316,8 +315,8 @@ void HappyEngine::drawLoop()
     // draw console
     CONSOLE->draw();
 
-	// display 2D
-	GUI->draw();    
+    // display 2D
+    GUI->draw();    
  
 #ifdef HE_ENABLE_QT
     if (m_SubEngines & SubEngine_Qt)

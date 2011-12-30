@@ -72,13 +72,13 @@ TestObject::TestObject():
         using namespace he;
         px::PhysicsConvexShape shape(pMesh);
         if (pMesh->getName() == "pxcv_WheelFL")
-            memcpy(&wheelShapes[px::PhysicsCar::Tyre_FrontLeft], &shape, sizeof(px::PhysicsConvexShape));
+            wheelShapes[px::PhysicsCar::Tyre_FrontLeft] = shape;
         else if (pMesh->getName() == "pxcv_WheelFR")
-            memcpy(&wheelShapes[px::PhysicsCar::Tyre_FrontRight], &shape, sizeof(px::PhysicsConvexShape));
+            wheelShapes[px::PhysicsCar::Tyre_FrontRight] = shape;
         else if (pMesh->getName() == "pxcv_WheelBL")
-            memcpy(&wheelShapes[px::PhysicsCar::Tyre_RearLeft], &shape, sizeof(px::PhysicsConvexShape));
+            wheelShapes[px::PhysicsCar::Tyre_RearLeft] = shape;
         else if (pMesh->getName() == "pxcv_WheelBR")
-            memcpy(&wheelShapes[px::PhysicsCar::Tyre_RearRight], &shape, sizeof(px::PhysicsConvexShape));
+            wheelShapes[px::PhysicsCar::Tyre_RearRight] = shape;
         else
             chassi.m_ChassiShapes.push_back(shape);
     });

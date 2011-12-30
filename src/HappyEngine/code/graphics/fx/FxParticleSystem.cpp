@@ -58,6 +58,14 @@ FxParticleSystem::FxParticleSystem(): m_Emit(false), m_UvTiles(NEW FxConstant<ve
 
 FxParticleSystem::~FxParticleSystem()
 {
+    he::for_each(m_ParticleInitComponents.cbegin(), m_ParticleInitComponents.cend(), [](IFxParticleInitComponent* pComp)
+    {
+        delete pComp;
+    });
+    he::for_each(m_ParticleModifyComponents.cbegin(), m_ParticleModifyComponents.cend(), [](IFxParticleModifyComponent* pComp)
+    {
+        delete pComp;
+    });
     delete m_pFxParticleContainer;
 }
 

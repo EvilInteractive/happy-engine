@@ -118,12 +118,12 @@ PhysicsEngine::~PhysicsEngine()
     m_pScene->fetchResults(true);
     m_pScene->release();
     delete m_pMaterials;
-    delete m_pCarManager;
 
     m_pCpuDispatcher->release();
     if (m_pCudaContextManager != nullptr)
         m_pCudaContextManager->release();
     m_pPhysXSDK->release();
+    delete m_pCarManager;
     delete m_pAllocator;
     delete m_pErrorCallback;
 }

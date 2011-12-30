@@ -86,33 +86,32 @@ void RiggedModelComponent::setModelMesh( const gfx::ModelMesh::pointer& pModel )
     m_BoneTransform.clear();
     m_Bones.clear();
 
-    pModel->callbackIfLoaded(boost::bind(&RiggedModelComponent::modelLoadedCallback, this, pModel));
+    pModel->callbackIfLoaded(boost::bind(&RiggedModelComponent::modelLoadedCallback, this));
 }
-void RiggedModelComponent::modelLoadedCallback( const gfx::ModelMesh::pointer& pMesh )
+void RiggedModelComponent::modelLoadedCallback()
 {
-    if (pMesh == m_pModel) //Mesh could've changed
+    m_BoneTransform.reserve(m_pModel->getBones().size());
+    std::for_each(m_pModel->getBones().cbegin(), m_pModel->getBones().cend(), [&](const gfx::Bone& bone)
     {
-        m_BoneTransform.reserve(pMesh->getBones().size());
-        std::for_each(pMesh->getBones().cbegin(), pMesh->getBones().cend(), [&](const gfx::Bone& bone)
-        {
-            //m_BoneTransform.push_back(bone.m_BaseTransform);
-            m_BoneTransform.push_back(mat44::Identity);
+        //m_BoneTransform.push_back(bone.m_BaseTransform);
+        m_BoneTransform.push_back(mat44::Identity);
 
-            BoneTransform transform;
-            transform.m_ToOrigTransform = bone.m_BaseTransform;
-            transform.m_FromOrigTransform = bone.m_BaseTransform.inverse();
-            transform.m_RealTransform = &m_BoneTransform.back();
+        BoneTransform transform;
+        transform.m_ToOrigTransform = bone.m_BaseTransform;
+        transform.m_FromOrigTransform = bone.m_BaseTransform.inverse();
+        transform.m_RealTransform = &m_BoneTransform.back();
 
-            m_Bones[bone.m_Name] = transform;
-        });
+        m_Bones[bone.m_Name] = transform;
+    });
 
-        if (m_BoneTransform.size() > 0)
-        {
-            setVisible(true);
-            onModelLoaded();
-        }
-        else
-            CONSOLE->addMessage("SkinnedMesh error: no bones found in " + pMesh->getName(), CMSG_TYPE_ERROR);
+    if (m_BoneTransform.size() > 0)
+    {
+        setVisible(true);
+        onModelLoaded();
+    }
+    else
+    {
+        HE_ERROR("SkinnedMesh error: no bones found in " + m_pModel->getName());
     }
 }
 
@@ -132,10 +131,13 @@ RiggedModelComponent::BoneTransform RiggedModelComponent::getBone( const std::st
     std::map<std::string, BoneTransform>::const_iterator it(m_Bones.find(name));
     if (it == m_Bones.cend())
     {
-        CONSOLE->addMessage("RiggedModelComponent error: No bone exists with name: " + name, CMSG_TYPE_ERROR);
+        HE_ERROR("RiggedModelComponent error: No bone exists with name: " + name);
         return BoneTransform();
     }
-    return m_Bones.at(name);
+    else
+    {
+        return it->second;
+    }
 }
 
 

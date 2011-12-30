@@ -60,7 +60,7 @@ void PhysicsCarManager::startCarSimulation( PhysicsCar* pCar )
 {
     m_Mutex.lock();
     m_CarList.push_back(pCar);
-    m_InternalCarList.push_back(pCar->m_pVehicle);
+    m_InternalCarList.push_back(&pCar->m_Vehicle);
     m_Mutex.unlock();
 }
 
@@ -68,7 +68,7 @@ void PhysicsCarManager::removeCar( PhysicsCar* pCar )
 {
     m_Mutex.lock();
     m_CarList.erase(std::remove(m_CarList.begin(), m_CarList.end(), pCar), m_CarList.end());
-    m_InternalCarList.erase(std::remove(m_InternalCarList.begin(), m_InternalCarList.end(), pCar->m_pVehicle), m_InternalCarList.end());
+    m_InternalCarList.erase(std::remove(m_InternalCarList.begin(), m_InternalCarList.end(), &pCar->m_Vehicle), m_InternalCarList.end());
     delete pCar;
     m_Mutex.unlock();
 }
@@ -85,6 +85,16 @@ void PhysicsCarManager::tick( float dTime )
     {
         pCar->tick(dTime);
     });
+
+    if (m_InternalCarList.size() > 0)
+    {
+        physx::PxVehicleDrivableSurfaceToTyreFrictionPairs surfaceTyrePairs;
+        surfaceTyrePairs.mPairs= PHYSICS->getCarManager()->getFrictionTable()->getFrictionPairs();
+        surfaceTyrePairs.mNumSurfaceTypes= PHYSICS->getCarManager()->getFrictionTable()->getNumSurfaces();
+        surfaceTyrePairs.mNumTyreTypes= PHYSICS->getCarManager()->getFrictionTable()->getNumTyreTypes();
+        PxVehicle4WUpdate(dTime, PHYSICS->getScene()->getGravity(), surfaceTyrePairs, 1, &m_InternalCarList[0]);
+    }
+
     m_Mutex.unlock();
 }
 

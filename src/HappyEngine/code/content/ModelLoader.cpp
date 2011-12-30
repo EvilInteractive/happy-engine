@@ -30,12 +30,23 @@
 #include "HappyEngine.h"
 #include "Console.h"
 
+#include <vector>
+
 namespace he {
 namespace ct {
 
-ModelLoader::ModelLoader(): m_isModelThreadRunning(false),
-                            m_pAssetContainer(NEW AssetContainer<gfx::Model::pointer>())
+ModelLoader::ModelLoader(): m_isModelThreadRunning(false), m_pAssetContainer(nullptr)                
 {
+    m_pAssetContainer = NEW AssetContainer<gfx::Model::pointer>([](const gfx::Model::pointer& model)
+    {
+        std::for_each(model->cbegin(), model->cend(), [](const gfx::ModelMesh::pointer& mesh)
+        {
+            if (mesh.use_count() > 1)
+            {
+                HE_ERROR("Possible mesh leak: " + mesh->getName());
+            }
+        });
+    });
 }
 
 ModelLoader::~ModelLoader()

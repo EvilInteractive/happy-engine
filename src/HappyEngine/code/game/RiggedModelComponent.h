@@ -73,7 +73,7 @@ protected:
     virtual void onModelLoaded() {}
 
 private:
-    void modelLoadedCallback(const gfx::ModelMesh::pointer& pMesh);
+    void modelLoadedCallback();
 
     gfx::ModelMesh::pointer m_pModel;
     gfx::Material m_Material;

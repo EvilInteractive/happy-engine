@@ -6,6 +6,7 @@
 #include "HappyEngine.h"
 #include "MainGame.h"
 #include "Texture2D.h"
+#include "ModelMesh.h"
 
 #include "HappyNew.h"
 
@@ -26,7 +27,8 @@ int main( int /*argc*/, char** /*args[]*/ )
     delete pGame;
     HAPPYENGINE->dispose();
 
-    std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount() << "\n";
+    std::cout << "\nallocated textures: " << gfx::Texture2D::getTextureCount();
+    std::cout << "\nallocated modelMeshes: " << gfx::ModelMesh::getAllocatedModelMeshCount() << "\n";
 
     std::cout << "\npress enter to quit\n";
     std::cin.get();

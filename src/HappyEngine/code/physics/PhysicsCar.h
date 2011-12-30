@@ -142,7 +142,7 @@ private:
     virtual ~PhysicsCar();
 
     physx::PxRigidDynamic* m_pActor;
-    physx::PxVehicle4W* m_pVehicle;
+    physx::PxVehicle4W m_Vehicle;
 
     physx::PxShape* m_TyreShape[MAX_TYRES];
 

@@ -32,8 +32,11 @@ namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
+uint ModelMesh::s_AllocatedModelCount = 0;
+
 ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0), m_isLoaded(false), m_isVisible(true), m_Name(name)
 {
+    ++s_AllocatedModelCount;
 }
 
 
@@ -44,6 +47,7 @@ ModelMesh::~ModelMesh()
     glDeleteBuffers(1, m_VertexVboID);
     glDeleteBuffers(1, m_VertexVboShadowID);
     glDeleteBuffers(1, m_IndexVboID);
+    --s_AllocatedModelCount;
 }
 
 void ModelMesh::init()
@@ -288,6 +292,11 @@ uint ModelMesh::getVBOIndexID() const
 const BufferLayout& ModelMesh::getVertexLayout() const
 {
     return m_VertexLayout;
+}
+
+uint ModelMesh::getAllocatedModelMeshCount()
+{
+    return s_AllocatedModelCount;
 }
 
 
