@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman   
+//Author:  Bastian Damman
 //Created: 17/12/2011
 
 #ifndef _HE_DRAWLIST_CONTAINER_H_
@@ -53,7 +53,7 @@ public:
     void insert(IDrawable* pDrawable);
     void remove(const IDrawable* pDrawable);
 
-    typedef std::vector<IDrawable*> Container; 
+    typedef std::vector<IDrawable*> Container;
 
 private:
 

@@ -5327,10 +5327,11 @@
 	"Camera.h"
 	"vec2.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Camera.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Camera.h
 	"vec3.h"
 	"mat44.h"
 	"MathConstants.h"
+	"ICamera.h"
 
 1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/vec3.h
 	"PxVec3.h"
@@ -9116,13 +9117,13 @@
 	"HappyTypes.h"
 	"SDL.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/GraphicsEngine.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/GraphicsEngine.h
 	"Rect.h"
 	"vec2.h"
 	"HappyTypes.h"
 	"Color.h"
 	<string>
-	"DrawSettings.h"
+	"RenderSettings.h"
 	"ModelMesh.h"
 
 1324419917 /home/sebastiaan/happy-engine/src/HappyEngine/code/math/Rect.h
@@ -9135,14 +9136,16 @@
 	"vec3.h"
 	"vec4.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Deferred3DRenderer.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Deferred3DRenderer.h
 	"HappyTypes.h"
 	"Shader.h"
 	"Model.h"
 	"ModelMesh.h"
 	"Texture2D.h"
+	"IRenderer.h"
+	"DrawListContainer.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shader.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Shader.h
 	<string>
 	<map>
 	<vector>
@@ -9208,21 +9211,19 @@
 	"HappyTypes.h"
 	"mat44.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IDrawable.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IDrawable.h
 	"ModelMesh.h"
 	"Material.h"
 	"I3DObject.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Material.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Material.h
 	"Shader.h"
 	"HappyTypes.h"
 	"boost/shared_ptr.hpp"
 	"ShaderVar.h"
-	"Camera.h"
-	"Color.h"
 	"VertexLayout.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderVar.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ShaderVar.h
 	"Shader.h"
 	"boost/shared_ptr.hpp"
 	"HappyTypes.h"
@@ -9271,7 +9272,7 @@
 1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/SerializerStream.h
 	"BinaryStream.h"
 
-1324419926 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/BinaryStream.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/io/BinaryStream.h
 	"common/PxStream.h"
 	"HappyTypes.h"
 	<string>
@@ -9313,7 +9314,7 @@
 	"vec3.h"
 	"vec2.h"
 
-1324416832 source:/home/sebastiaan/happy-engine/src/HappyTest/MainGame.cpp
+1324903974 source:/home/sebastiaan/happy-engine/src/HappyTest/MainGame.cpp
 	"MainGame.h"
 	<vector>
 	<set>
@@ -9356,6 +9357,7 @@
 	"PhysicsData.h"
 	"Deferred3DRenderer.h"
 	"CameraManager.h"
+	"SlotPContainer.h"
 
 1324416832 /home/sebastiaan/happy-engine/src/HappyTest/MainGame.h
 	"Game.h"
@@ -10163,9 +10165,9 @@
 	"HappyEngine.h"
 	"Console.h"
 
-1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/RiggedModelComponent.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/RiggedModelComponent.h
 	"IComponent.h"
-	"IDrawable.h"
+	"DefaultSkinnedDrawable.h"
 
 1321289751 /home/sebastiaan/happy-engine/src/HappyEngine/code//audio/Sound2D.h
 	"al.h"
@@ -10218,21 +10220,21 @@
 	"PointLight.h"
 	"DirectionalLight.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SpotLight.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/SpotLight.h
 	"vec3.h"
 	"mat44.h"
 	"Color.h"
 	"ModelMesh.h"
 	"boost/shared_ptr.hpp"
-	"IDrawable.h"
+	"DefaultSingleDrawable.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PointLight.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/PointLight.h
 	"vec3.h"
 	"mat44.h"
 	"Color.h"
 	"ModelMesh.h"
 	"boost/shared_ptr.hpp"
-	"IDrawable.h"
+	"DefaultSingleDrawable.h"
 
 1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DirectionalLight.h
 	"vec3.h"
@@ -10302,7 +10304,7 @@
 	"boost/asio.hpp"
 	"boost/thread.hpp"
 
-1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ContentManager.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ContentManager.h
 	<string>
 	"VertexLayout.h"
 	"Model.h"
@@ -10316,6 +10318,7 @@
 	"FontLoader.h"
 	"ShaderLoader.h"
 	"MaterialLoader.h"
+	"RenderSettings.h"
 
 1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Line.h
 	"vec3.h"
@@ -10368,13 +10371,15 @@
 	<vector>
 	"Line.h"
 
-1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderLoader.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/ShaderLoader.h
 	"AssetContainer.h"
 	"Shader.h"
+	"RenderSettings.h"
 
-1324419929 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/MaterialLoader.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/content/MaterialLoader.h
 	"AssetContainer.h"
 	"Material.h"
+	"RenderSettings.h"
 
 1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/Happy2DRenderer.h
 	"Vertex.h"
@@ -13436,9 +13441,9 @@
 	"vec3.h"
 	"Texture2D.h"
 
-1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/ModelComponent.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/ModelComponent.h
 	"IComponent.h"
-	"IDrawable.h"
+	"DefaultSingleDrawable.h"
 	"IPickable.h"
 
 1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/StaticPhysicsComponent.h
@@ -13477,7 +13482,7 @@
 	"PhysicsConcaveMesh.h"
 	"vec3.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/LightManager.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/LightManager.h
 	<vector>
 	"Light.h"
 	"vec3.h"
@@ -13490,7 +13495,7 @@
 
 1324416832 /home/sebastiaan/happy-engine/src/HappyTest/PhysicsData.h
 
-1324416832 source:/home/sebastiaan/happy-engine/src/HappyTest/TestObject.cpp
+1324903974 source:/home/sebastiaan/happy-engine/src/HappyTest/TestObject.cpp
 	"HappyNew.h"
 	"TestObject.h"
 	"Game.h"
@@ -14557,17 +14562,40 @@
 	"I3DObject.h"
 	"IPickable.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingManager.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingManager.h
 	<map>
 	"ModelMesh.h"
 	"Material.h"
 
-1324419925 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingController.h
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/InstancingController.h
 	"SlotPContainer.h"
 	"ModelMesh.h"
 	"Material.h"
+	"boost/chrono.hpp"
+	"IDrawable.h"
 
 1324419928 /home/sebastiaan/happy-engine/src/HappyEngine/code/game/CameraManager.h
 	<map>
 	"ITickable.h"
+
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/ICamera.h
+
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/RenderSettings.h
+	"HappyTypes.h"
+
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/IRenderer.h
+	"DrawListContainer.h"
+	"RenderSettings.h"
+	"Texture2D.h"
+
+1324905768 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DrawListContainer.h
+	"boost/function.hpp"
+	<vector>
+	"HappyTypes.h"
+
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DefaultSkinnedDrawable.h
+	"IDrawable.h"
+
+1324903975 /home/sebastiaan/happy-engine/src/HappyEngine/code/graphics/DefaultSingleDrawable.h
+	"IDrawable.h"
 
