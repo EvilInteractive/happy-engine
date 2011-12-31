@@ -16,22 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/11/2011
+//Created: 27/12/2011
 #include "HappyPCH.h" 
 
-#include "FxCurveFloat.h"
-#include "HappyNew.h"
+#include "FxParticleLocation.h"
+#include "FxParticle.h"
 
 namespace he {
 namespace gfx {
 
-FxCurveFloat::FxCurveFloat()
+FxParticleLocation::FxParticleLocation()
 {
 }
 
 
-FxCurveFloat::~FxCurveFloat()
+FxParticleLocation::~FxParticleLocation()
 {
+}
+
+void FxParticleLocation::init( FxParticle* pParticle, const mat44& parentWorld )
+{
+    pParticle->m_Position = parentWorld * m_Translation->getValue(0);
+}
+
+void FxParticleLocation::setValue( const IFxVariable<vec3>::pointer& value )
+{
+    m_Translation = value;
+}
+const IFxVariable<vec3>::pointer& FxParticleLocation::getValue() const
+{
+    return m_Translation;
 }
 
 } } //end namespace

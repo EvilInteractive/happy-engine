@@ -153,7 +153,7 @@ void Server::handleServerMessage(void* /*raw_msg*/, size_t /*msg_size*/, Header*
         case ServerMessage_Connect: userConnecting(); break;
         case ServerMessage_Disconnect: userDisconnecting(pHeader->user); break;
         char sHeaderType[5];
-        sprintf(sHeaderType, "%d", pHeader->type);
+        sprintf(sHeaderType, "%d", (int)pHeader->type);
         default: HE_ERROR("Server: unkown server message received: " + std::string(sHeaderType));
     }
 }

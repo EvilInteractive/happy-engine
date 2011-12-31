@@ -34,7 +34,7 @@ FxParticleSpeed::~FxParticleSpeed()
 {
 }
 
-void FxParticleSpeed::init( FxParticle* pParticle )
+void FxParticleSpeed::init( FxParticle* pParticle, const mat44& /*parentWorld*/ )
 {
     pParticle->m_Velocity = m_Speed->getValue(0);
 }

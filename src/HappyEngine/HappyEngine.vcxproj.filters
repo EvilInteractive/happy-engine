@@ -520,9 +520,6 @@
     <ClCompile Include="code\graphics\fx\FxTimeLineTrack.cpp">
       <Filter>happyengine\graphics\fx</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\fx\FxCurveFloat.cpp">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\fx\FxParticleContainer.cpp">
       <Filter>happyengine\graphics\fx\components\particles</Filter>
     </ClCompile>
@@ -561,6 +558,12 @@
     </ClCompile>
     <ClCompile Include="code\tools\LoadingScreen.cpp">
       <Filter>happyengine\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="code\game\FxComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleLocation.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1077,9 +1080,6 @@
     <ClInclude Include="code\graphics\fx\FxConstant.h">
       <Filter>happyengine\graphics\fx\var</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\fx\FxCurveFloat.h">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\fx\FxParticle.h">
       <Filter>happyengine\graphics\fx\components\particles</Filter>
     </ClInclude>
@@ -1097,9 +1097,6 @@
     </ClInclude>
     <ClInclude Include="code\graphics\fx\IFxVariable.h">
       <Filter>happyengine\graphics\fx\var</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\fx\IFxComponent.h">
-      <Filter>happyengine\graphics\fx\components</Filter>
     </ClInclude>
     <ClInclude Include="code\graphics\fx\IFxParticleModifyComponent.h">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
@@ -1136,6 +1133,18 @@
     </ClInclude>
     <ClInclude Include="code\tools\LoadingScreen.h">
       <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\FxComponent.h">
+      <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\IFxTimeLineTrackComponent.h">
+      <Filter>happyengine\graphics\fx\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleLocation.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxCurve.h">
+      <Filter>happyengine\graphics\fx\var</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

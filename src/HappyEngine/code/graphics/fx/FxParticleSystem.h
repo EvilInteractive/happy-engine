@@ -22,7 +22,7 @@
 #define _HE_FX_PARTICLE_SYSTEM_H_
 #pragma once
 
-#include "IFxComponent.h"
+#include "IFxTimeLineTrackComponent.h"
 #include "SlotPContainer.h"
 
 #include "Texture2D.h"
@@ -48,7 +48,8 @@ enum ParticleInitComponentType
     PICT_Color,
     PICT_Rotation,
     PICT_Scale,
-    PICT_Speed
+    PICT_Speed,
+    PICT_Location
 };
 enum ParticleModifyComponentType
 {
@@ -58,11 +59,11 @@ enum ParticleModifyComponentType
     PMCT_Scale,
     PMCT_Speed
 };
-
-class FxParticleSystem : public IFxComponent
+class FxTimeLineTrack;
+class FxParticleSystem : public IFxTimeLineTrackComponent
 {
 public:
-    FxParticleSystem();
+    FxParticleSystem(const FxTimeLineTrack* pParent);
     virtual ~FxParticleSystem();
 
     //////////////////////////////////////////////////////////////////////////
@@ -73,6 +74,7 @@ public:
     virtual void start();
     virtual void stop();
 
+    void setMaxParticles(uint max);
     void setTexture(const Texture2D::pointer& tex2D);
     void setTiles(const IFxVariable<vec2>::pointer& tiles);
     void setSpawnRate(const IFxVariable<float>::pointer& rate);
@@ -91,9 +93,11 @@ public:
         return dynamic_cast<T*>(m_ParticleModifyComponents.get(id));
     }
 
-    virtual void tick(float currentTime, float dTime);
+    virtual void tick(float normTime, float dTime);
 
 private:
+
+    const FxTimeLineTrack* m_pParent;
 
     void instancingUpdater(details::InstancingBuffer& buffer);
 

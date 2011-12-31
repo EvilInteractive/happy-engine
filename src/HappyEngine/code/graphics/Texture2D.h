@@ -54,7 +54,7 @@ public:
     uint getWidth() const;
     uint getHeight() const;
 
-    void callbackIfLoaded(const boost::function<void()> callback);
+    void callbackIfLoaded(const boost::function<void()>& callback);
 
     static uint getTextureCount();
 

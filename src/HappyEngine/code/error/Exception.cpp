@@ -24,7 +24,7 @@ namespace err {
 Exception::Exception() : m_Msg(L"")
 {
 }
-Exception::Exception(const std::wstring msg) : m_Msg(msg)
+Exception::Exception(const std::wstring& msg) : m_Msg(msg)
 {
 }
 

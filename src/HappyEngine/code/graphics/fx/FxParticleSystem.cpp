@@ -40,17 +40,23 @@
 #include "FxParticleRotation.h"
 #include "FxParticleScale.h"
 #include "FxParticleSpeed.h"
+#include "FxParticleLocation.h"
 #include "CameraManager.h"
 #include "ICamera.h"
 #include "Camera.h"
 
+#include "FxTimeLine.h"
+#include "FxTimeLineTrack.h"
+#include "I3DObject.h"
+
 namespace he {
 namespace gfx {
 
-FxParticleSystem::FxParticleSystem(): m_Emit(false), m_UvTiles(NEW FxConstant<vec2>(vec2(1, 1))),
+FxParticleSystem::FxParticleSystem(const FxTimeLineTrack* pParent): 
+                                      m_Emit(false), m_UvTiles(NEW FxConstant<vec2>(vec2(1, 1))),
                                       m_SpawnRate(NEW FxConstant<float>(20)),
                                       m_pFxParticleContainer(NEW FxParticleContainer(512)),
-                                      m_TimeSinceLastSpawn(0)
+                                      m_TimeSinceLastSpawn(0), m_pParent(pParent)
 
 {
 }
@@ -112,25 +118,30 @@ void FxParticleSystem::stop()
 
 }
 
-void FxParticleSystem::tick( float currentTime, float dTime )
+void FxParticleSystem::tick( float normTime, float dTime )
 {
     //////////////////////////////////////////////////////////////////////////
     // Emit
     if (m_Emit)
     {
         m_TimeSinceLastSpawn += dTime;
-        float spawnRate(1.0f/m_SpawnRate->getValue(currentTime));
+        float spawnRate(1.0f/m_SpawnRate->getValue(normTime));
         while (m_TimeSinceLastSpawn > spawnRate)
         {
             m_TimeSinceLastSpawn -= spawnRate;
             if (m_pFxParticleContainer->tryAddParticle())
             {
                 m_pFxParticleContainer->back()->setToDefault();
+
+                mat44 parentWorld;
+                if (m_pParent->getParent()->getParent() != nullptr)
+                    parentWorld = m_pParent->getParent()->getParent()->getWorldMatrix();
+
                 he::for_each(m_ParticleInitComponents.cbegin(), m_ParticleInitComponents.cend(), [&](IFxParticleInitComponent* pComponent)
                 {
-                    pComponent->init(m_pFxParticleContainer->back());
+                    pComponent->init(m_pFxParticleContainer->back(), parentWorld);
                 });
-                m_pFxParticleContainer->back()->m_Id = m_pInstancingController->addInstance();
+                m_pFxParticleContainer->back()->m_Id = static_cast<uint16>(m_pInstancingController->addInstance());
             }
         }
     }
@@ -140,19 +151,19 @@ void FxParticleSystem::tick( float currentTime, float dTime )
     auto& components(m_ParticleModifyComponents);
     m_pFxParticleContainer->for_each([&](FxParticle* pParticle)
     {
-        pParticle->m_Life -= dTime;
-        if (pParticle->m_Life <= 0.0f)
+        pParticle->m_LifeTime += dTime;
+        if (pParticle->m_LifeTime >= pParticle->m_MaxLifeTime)
         {
             m_pInstancingController->removeInstance(pParticle->m_Id);
             m_pFxParticleContainer->removeParticle(pParticle);
         }
         else
         {
-            float& currentTime_(currentTime);
+            float particleTime(pParticle->m_LifeTime / pParticle->m_MaxLifeTime);
             float& dTime_(dTime);
-            he::for_each(components.cbegin(), components.cend(), [&pParticle, &currentTime_, &dTime_](IFxParticleModifyComponent* pComponent)
+            he::for_each(components.cbegin(), components.cend(), [&pParticle, &particleTime, &dTime_](IFxParticleModifyComponent* pComponent)
             {
-                pComponent->transform(pParticle, currentTime_, dTime_);
+                pComponent->transform(pParticle, particleTime, dTime_);
             });
             pParticle->m_Position += pParticle->m_Velocity * dTime;
         }
@@ -161,8 +172,10 @@ void FxParticleSystem::tick( float currentTime, float dTime )
     vec3 camPos(CAMERAMANAGER->getActiveCamera()->getPosition());
     m_pFxParticleContainer->sort([&camPos](const FxParticle& a, const FxParticle& b)
     {
+        // Strange lines ahead:
+        // std asserts because of float imprecision, this is however no problem in release
         #if DEBUG | _DEBUG
-        return (uint)(lengthSqr(camPos - b.m_Position) * 100) < (uint)(lengthSqr(camPos - a.m_Position) * 100);
+        return static_cast<uint>(lengthSqr(camPos - b.m_Position) * 100) < static_cast<uint>(lengthSqr(camPos - a.m_Position) * 100);
         #else
         return lengthSqr(camPos - b.m_Position) < lengthSqr(camPos - a.m_Position);
         #endif
@@ -182,6 +195,10 @@ void FxParticleSystem::setSpawnRate( const IFxVariable<float>::pointer& rate )
 {
     m_SpawnRate = rate;
 }
+void FxParticleSystem::setMaxParticles( uint max )
+{
+    m_pFxParticleContainer->resize(max);
+}
 
 uint FxParticleSystem::addInitComponent( ParticleInitComponentType type )
 {
@@ -195,6 +212,8 @@ uint FxParticleSystem::addInitComponent( ParticleInitComponentType type )
             return m_ParticleInitComponents.insert(NEW FxParticleScale());
         case PICT_Speed:
             return m_ParticleInitComponents.insert(NEW FxParticleSpeed());
+        case PICT_Location:
+            return m_ParticleInitComponents.insert(NEW FxParticleLocation());
         default:
             ASSERT(false, "Unkown PICT type"); return 0;
     }

@@ -31,6 +31,7 @@ namespace he {
 namespace gfx {
 
 class FxTimeLineTrack;
+class I3DObject;
 
 class FxTimeLine
 {
@@ -51,6 +52,9 @@ public:
     void removeTrack(uint id);
 
     void tick(float dTime);
+
+    void setParent(const I3DObject* pParent);
+    const I3DObject* getParent() const;
     
     event<void> EndEvent;
     event<void> StartEvent;
@@ -62,6 +66,8 @@ private:
     float m_CurrentTime;
     float m_EndTime;
     bool m_IsRunning;
+
+    const I3DObject* m_pParent;
 
     //Disable default copy constructor and default assignment operator
     FxTimeLine(const FxTimeLine&);

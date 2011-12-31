@@ -30,6 +30,7 @@ namespace gfx {
 FxParticleContainer::FxParticleContainer(uint maxParticles): m_MaxCount(maxParticles), m_Count(0)
 {
     m_MemPool = static_cast<FxParticle*>(_aligned_malloc(maxParticles * sizeof(FxParticle), 16));
+    ASSERT(m_MemPool != nullptr, "particle container: out of memory");
     memset(m_MemPool, 0, maxParticles * sizeof(FxParticle));
     m_End = m_MemPool;
 }
@@ -38,6 +39,16 @@ FxParticleContainer::~FxParticleContainer()
 {
     _aligned_free(m_MemPool);
 }
+void FxParticleContainer::resize(uint maxParticles)
+{
+    m_MemPool = static_cast<FxParticle*>(_aligned_realloc(m_MemPool, maxParticles * sizeof(FxParticle), 16));
+    ASSERT(m_MemPool != nullptr, "particle container: out of memory");
+    if (maxParticles < m_Count)
+        m_Count = maxParticles;
+    m_End = m_MemPool + m_Count;
+    m_MaxCount = maxParticles;
+}
+
 
 bool FxParticleContainer::tryAddParticle()
 {

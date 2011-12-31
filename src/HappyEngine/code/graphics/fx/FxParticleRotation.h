@@ -36,7 +36,7 @@ public:
     FxParticleRotation();
     virtual ~FxParticleRotation();
 
-    virtual void init(FxParticle* pParticle);
+    virtual void init(FxParticle* pParticle, const mat44& parentWorld);
     virtual void transform(FxParticle* pParticle, float currentTime, float dTime);
 
     void setValue(const IFxVariable<float>::pointer& value);

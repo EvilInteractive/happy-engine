@@ -16,26 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/11/2011
+//Created: 27/12/2011
 
-#ifndef _HE_FX_CURVE_FLOAT_H_
-#define _HE_FX_CURVE_FLOAT_H_
+#ifndef _HE_FX_PARTICLE_LOCATION_H_
+#define _HE_FX_PARTICLE_LOCATION_H_
 #pragma once
+
+#include "IFxParticleInitComponent.h"
+#include "IFxVariable.h"
+#include "vec3.h"
 
 namespace he {
 namespace gfx {
 
-class FxCurveFloat
+class FxParticleLocation : public IFxParticleInitComponent
 {
 public:
-    FxCurveFloat();
-    virtual ~FxCurveFloat();
+    FxParticleLocation();
+    virtual ~FxParticleLocation();
+
+    virtual void init(FxParticle* pParticle, const mat44& parentWorld);
+
+    void setValue(const IFxVariable<vec3>::pointer& value);
+    const IFxVariable<vec3>::pointer& getValue() const;
 
 private:
+    IFxVariable<vec3>::pointer m_Translation;
 
     //Disable default copy constructor and default assignment operator
-    FxCurveFloat(const FxCurveFloat&);
-    FxCurveFloat& operator=(const FxCurveFloat&);
+    FxParticleLocation(const FxParticleLocation&);
+    FxParticleLocation& operator=(const FxParticleLocation&);
 };
 
 } } //end namespace

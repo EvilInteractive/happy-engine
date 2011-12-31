@@ -33,7 +33,7 @@ class IFxVariable
 public:
     virtual ~IFxVariable() {}
 
-    virtual T getValue(float /*normTime*/) const = 0; //normTime [0, 1]
+    virtual T getValue(float normTime) const = 0; //normTime [0, 1]
 
     typedef boost::shared_ptr<IFxVariable<T>> pointer;
 };

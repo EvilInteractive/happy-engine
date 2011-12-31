@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-FxTimeLine::FxTimeLine(): m_IsRunning(false)
+FxTimeLine::FxTimeLine(): m_IsRunning(false), m_pParent(nullptr)
 {
 }
 
@@ -81,7 +81,7 @@ void FxTimeLine::tick( float dTime )
 
 uint FxTimeLine::addTrack()
 {
-    FxTimeLineTrack* pTrack(NEW FxTimeLineTrack());
+    FxTimeLineTrack* pTrack(NEW FxTimeLineTrack(this));
     StartEvent += boost::bind(&FxTimeLineTrack::start, pTrack);
     EndEvent += boost::bind(&FxTimeLineTrack::stop, pTrack);
     return m_Tracks.insert(pTrack);
@@ -100,6 +100,15 @@ void FxTimeLine::removeTrack( uint id )
 bool FxTimeLine::isRunning() const
 {
     return m_IsRunning;
+}
+
+void FxTimeLine::setParent( const I3DObject* pParent )
+{
+    m_pParent = pParent;
+}
+const I3DObject* FxTimeLine::getParent() const
+{
+    return m_pParent;
 }
 
 

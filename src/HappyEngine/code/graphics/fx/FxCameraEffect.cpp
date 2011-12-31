@@ -53,14 +53,14 @@ void FxCameraEffect::stop()
         CAMERAMANAGER->getActiveCamera()->setFxPositionOffset(vec3::zero);
 }
 
-void FxCameraEffect::tick( float currentTime, float /*dTime*/ )
+void FxCameraEffect::tick( float normTime, float /*dTime*/ )
 {
     if (m_ShakeEnabled && CAMERAMANAGER->getActiveCamera() != nullptr)
     {
         //random direction
         //mult by intensity
         vec3 shake(normalize(vec3(m_Random.nextFloat(0, 1), m_Random.nextFloat(0, 1), m_Random.nextFloat(0, 1))));
-        shake *= m_pShakeIntensity->getValue(currentTime);
+        shake *= m_pShakeIntensity->getValue(normTime);
         CAMERAMANAGER->getActiveCamera()->setFxPositionOffset(shake);
     }
 }

@@ -28,7 +28,7 @@ class Exception
 {
 public:
     Exception();
-    Exception(const std::wstring msg);
+    Exception(const std::wstring& msg);
     //default copy constructor and assignment operator are fine
 
     virtual ~Exception();

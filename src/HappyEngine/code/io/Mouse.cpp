@@ -48,15 +48,15 @@ bool Mouse::isButtonDown(byte button) const
 }
 bool Mouse::isButtonUp(byte button) const
 {
-    return (!m_ButtonState & button) == button;
+    return (~m_ButtonState & button) == button;
 }
 bool Mouse::isButtonReleased(byte button) const
 {
-    return ((!m_ButtonState & button) == button) && ((m_PrevButtonState & button) == button);
+    return ((~m_ButtonState & button) == button) && ((m_PrevButtonState & button) == button);
 }
 bool Mouse::isButtonPressed(byte button) const
 {
-    return ((m_ButtonState & button) == button) && ((!m_PrevButtonState & button) == button);
+    return ((m_ButtonState & button) == button) && ((~m_PrevButtonState & button) == button);
 }
 
 vec2 Mouse::getPosition() const

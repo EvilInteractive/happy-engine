@@ -78,7 +78,7 @@ uint Texture2D::getHeight() const
     return m_Height;
 }
 
-void Texture2D::callbackIfLoaded( const boost::function<void()> callback )
+void Texture2D::callbackIfLoaded( const boost::function<void()>& callback )
 {
     m_CallbackMutex.lock();
     if (m_isInitialized)

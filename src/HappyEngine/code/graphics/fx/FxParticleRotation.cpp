@@ -34,7 +34,7 @@ FxParticleRotation::~FxParticleRotation()
 {
 }
 
-void FxParticleRotation::init( FxParticle* pParticle )
+void FxParticleRotation::init( FxParticle* pParticle, const mat44& /*parentWorld*/ )
 {
     pParticle->m_Rotation = m_Rotation->getValue(0);
 }

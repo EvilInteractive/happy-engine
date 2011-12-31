@@ -40,6 +40,8 @@ public:
     void flushRemove();
     uint getNumParticles() const;
 
+    void resize(uint maxParticles);
+
     FxParticle* back() const;
 
     void sort(boost::function<bool(const FxParticle& a, const FxParticle& b)> pred);

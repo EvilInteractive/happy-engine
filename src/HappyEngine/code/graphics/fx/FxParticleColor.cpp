@@ -34,13 +34,22 @@ FxParticleColor::~FxParticleColor()
 {
 }
 
-void FxParticleColor::init( FxParticle* pParticle )
+void FxParticleColor::init( FxParticle* pParticle, const mat44& /*parentWorld*/ )
 {
     pParticle->m_BlendColor = m_Color->getValue(0);
 }
 void FxParticleColor::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
 {
     pParticle->m_BlendColor = m_Color->getValue(currentTime);
+}
+
+void FxParticleColor::setValue( const IFxVariable<vec4>::pointer& value )
+{
+    m_Color = value;
+}
+const IFxVariable<vec4>::pointer& FxParticleColor::getValue() const
+{
+    return m_Color;
 }
 
 } } //end namespace

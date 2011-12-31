@@ -84,7 +84,7 @@ bool validateProgram(GLuint programID)
         if (length > 0)
         {
             char sId[5];
-            sprintf(sId, "%d", programID);
+            sprintf(sId, "%d", (int)programID);
             HE_ERROR("Program " + std::string(sId) + "link err:");
             HE_ERROR(std::string(buffer));
         }
@@ -97,7 +97,7 @@ bool validateProgram(GLuint programID)
     if (validateStatus == GL_FALSE)
     {
         char sId[5];
-        sprintf(sId, "%d", programID);
+        sprintf(sId, "%d", (int)programID);
         HE_ERROR("Error validating shader " + std::string(sId));
         succes = false;
     }

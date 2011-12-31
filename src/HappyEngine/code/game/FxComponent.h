@@ -16,50 +16,59 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/11/2011
+//Created: 30/12/2011
 
-#ifndef _HE_FX_CAMERA_EFFECT_H_
-#define _HE_FX_CAMERA_EFFECT_H_
+#ifndef _HE_FX_COMPONENT_H_
+#define _HE_FX_COMPONENT_H_
 #pragma once
 
-#include "IFxTimeLineTrackComponent.h"
-#include "IFxVariable.h"
-
-#include "Random.h"
+#include "IComponent.h"
+#include "I3DObject.h"
 
 namespace he {
-namespace gfx {
-   
-class FxCameraEffect : public IFxTimeLineTrackComponent
+namespace game {
+    
+class FxComponent : public IComponent, public gfx::I3DObject
 {
 public:
-    FxCameraEffect();
-    virtual ~FxCameraEffect();
+    FxComponent();
+    virtual ~FxComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                             IFxComponent                           ///
+    ///                         IComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
-    virtual FxType getType() const { return FxType_CameraEffect; };
+    virtual void init(Entity* pParent);
 
-    virtual void start();
-    virtual void stop();
-
-    virtual void tick(float normTime, float dTime);
-
+    virtual void serialize(SerializerStream& stream);
+    virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
-    ///                             Properties                             ///
+    
     //////////////////////////////////////////////////////////////////////////
-    void toggleShake(bool enable); 
-    void setShakeIntensity(const IFxVariable<vec3>::pointer& pVar); 
+    ///                         I3DComponent                               ///
+    //////////////////////////////////////////////////////////////////////////
+    virtual mat44 getWorldMatrix() const;
+    //////////////////////////////////////////////////////////////////////////
+
+    void setLocalTransform(const mat44& mtxWorld);
+    const mat44& getLocalTransform() const;
+
+    void setTimeline(uint id);
+    uint getTimeline() const;
+
+    void start();
+    void stop();
+    void isPlaying() const;
 
 private:
-    Random m_Random;
-    bool m_ShakeEnabled;
-    IFxVariable<vec3>::pointer m_pShakeIntensity;
+    mat44 m_mtxLocalTransform;
+    
+    Entity* m_pParent;
+    
+    uint m_TimelineId;
 
     //Disable default copy constructor and default assignment operator
-    FxCameraEffect(const FxCameraEffect&);
-    FxCameraEffect& operator=(const FxCameraEffect&);
+    FxComponent(const FxComponent&);
+    FxComponent& operator=(const FxComponent&);
 };
 
 } } //end namespace

@@ -26,22 +26,25 @@
 #include <vector>
 #include "HappyTypes.h"
 #include "SlotPContainer.h"
-#include "IFxComponent.h"
+#include "IFxTimeLineTrackComponent.h"
 
 namespace he {
 namespace gfx {
 
-class IFxComponent;
+class IFxTimeLineTrackComponent;
+class FxTimeLine;
 enum FxType;
 
 class FxTimeLineTrack
 {
 public:
-    FxTimeLineTrack();
+    FxTimeLineTrack(const FxTimeLine* pParent);
     virtual ~FxTimeLineTrack();
 
     void start();
     void stop();
+
+    const FxTimeLine* getParent() const;
 
     uint addComponent(FxType type);
     void removeComponent(uint id);
@@ -56,8 +59,10 @@ public:
 
 private:
 
+    const FxTimeLine* m_pParent;
+
     std::queue<uint> m_PlayQueue;
-    SlotPContainer<IFxComponent*> m_Components;
+    SlotPContainer<IFxTimeLineTrackComponent*> m_Components;
 
     //Disable default copy constructor and default assignment operator
     FxTimeLineTrack(const FxTimeLineTrack&);

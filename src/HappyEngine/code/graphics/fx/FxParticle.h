@@ -30,44 +30,48 @@ namespace gfx {
 
 class ICamera;
 
-enum FxAxis
+enum FxFlags
 {
-    FxAxis_X = 1 << 0,
-    FxAxis_Y = 1 << 1,
-    FxAxis_Z = 1 << 2
+    FxFlag_LockX = 1 << 0,
+    FxFlag_LockY = 1 << 1,
+    FxFlag_LockZ = 1 << 2
 };
 
 //16byte aligned
 struct FxParticle
 {
     vec3    m_Position;    //+ 12  = 12
-    float   m_Life;        //+  4  = 16
+    float   m_LifeTime;    //+  4  = 16
+
     vec3    m_Scale;       //+ 12  = 28
     float   m_Rotation;    //+  4  = 32
+
     vec3    m_Velocity;    //+ 12  = 44
-    vec2    m_UvTile;      //+ 12  = 56
-    byte    m_LockedAxis;  //+  1  = 57
-    vec4    m_BlendColor;  //+ 16  = 73
-    uint    m_Id;          //+  4  = 77
-    short   padding;       //+  2  = 79
-    byte    padding2;      //+  1  = 80
+    float   m_MaxLifeTime; //+  4  = 48
+
+    vec4    m_BlendColor;  //+ 16  = 64
+
+    vec2    m_UvTile;      //+ 12  = 76
+    uint16  m_Id;          //+  2  = 78
+    uint16  m_Flags;       //+  2  = 80
 
     void setToDefault()
     {
         m_Position = vec3::zero;
-        m_Life = 3.0f;
+        m_LifeTime = 0.0f;
+        m_MaxLifeTime = 3.0f;
         m_Scale = vec3::one;
         m_Rotation = 0.0f;
         m_Velocity = vec3::zero;
         m_UvTile = vec2(0, 0);
-        m_LockedAxis = 0;
+        m_Flags = 0;
         m_BlendColor = vec4(1, 1, 1, 1);
         m_Id = 0;
     }
 
     mat44 getWorld(ICamera* pCam)
     {
-        return mat44::createScale(m_Scale) * mat44::createTranslation(m_Position) * mat44::createBillboard(pCam);
+        return mat44::createTranslation(m_Position) * mat44::createBillboard(pCam) * mat44::createRotation(vec3(0, 0, 1), m_Rotation) * mat44::createScale(m_Scale);
     }
 };
 

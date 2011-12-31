@@ -121,9 +121,7 @@ void Client::handleReceive(const boost::system::error_code& err, size_t bytesRec
     }
     else if (err != boost::asio::error::eof)
     {
-        char sErrNo[10];
-        sprintf(sErrNo, "%d", err);
-        HE_ERROR("Errro receiving message from server (" + std::string(sErrNo) + ")");
+        HE_ERROR("Errro receiving message from server (" + err.message() + ")");
     }
     else
     {
@@ -137,9 +135,7 @@ void Client::handleWrite(details::Message::pointer /*msg*/, const boost::system:
     }
     else if (error != boost::asio::error::eof)
     {
-        char sErrNo[10];
-        sprintf(sErrNo, "%d", error);
-        HE_ERROR("Error sending message to server (" + std::string(sErrNo) + ")");
+        HE_ERROR("Error sending message to server (" + error.message() + ")");
     }
     else
     {

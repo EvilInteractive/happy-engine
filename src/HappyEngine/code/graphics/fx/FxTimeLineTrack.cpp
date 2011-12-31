@@ -22,7 +22,7 @@
 #include "FxTimeLineTrack.h"
 #include "HappyNew.h"
 
-#include "IFxComponent.h"
+#include "IFxTimeLineTrackComponent.h"
 #include "FxParticleSystem.h"
 #include "FxCameraEffect.h"
 
@@ -31,14 +31,14 @@
 namespace he {
 namespace gfx {
 
-FxTimeLineTrack::FxTimeLineTrack()
+FxTimeLineTrack::FxTimeLineTrack(const FxTimeLine* pParent): m_pParent(pParent)
 {
 }
 
 
 FxTimeLineTrack::~FxTimeLineTrack()
 {
-    he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxComponent* pComp)
+    he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxTimeLineTrackComponent* pComp)
     {
         delete pComp;
     });
@@ -57,20 +57,22 @@ void FxTimeLineTrack::tick( float currentTime, float dTime )
         {
             if (m_Components[m_PlayQueue.front()]->getStartTime() <= currentTime)
             {
-                m_Components[m_PlayQueue.front()]->tick(currentTime, dTime);
+                float normTime( (currentTime - m_Components[m_PlayQueue.front()]->getStartTime()) /
+                                (m_Components[m_PlayQueue.front()]->getEndTime() / m_Components[m_PlayQueue.front()]->getStartTime()));
+                m_Components[m_PlayQueue.front()]->tick(normTime, dTime);
             }
         }
     }
 }
 
-bool timeSort(const IFxComponent* pComponent1, const IFxComponent* pComponent2)
+bool timeSort(const IFxTimeLineTrackComponent* pComponent1, const IFxTimeLineTrackComponent* pComponent2)
 {
     return pComponent1->getStartTime() < pComponent2->getStartTime();
 }
 void FxTimeLineTrack::start()
 {
-    std::vector<IFxComponent*> tempComponents;
-    he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxComponent* pComp)
+    std::vector<IFxTimeLineTrackComponent*> tempComponents;
+    he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxTimeLineTrackComponent* pComp)
     {
         tempComponents.push_back(pComp);
     });
@@ -89,7 +91,7 @@ uint FxTimeLineTrack::addComponent( FxType type )
     uint id;
     switch (type)
     {
-        case FxType_ParticleSystem: id = m_Components.insert(NEW FxParticleSystem()); break;
+        case FxType_ParticleSystem: id = m_Components.insert(NEW FxParticleSystem(this)); break;
         case FxType_CameraEffect:   id = m_Components.insert(NEW FxCameraEffect()); break;
         default: ASSERT(false, "Unkown fx type"); id = UINT_MAX; break;
     }
@@ -106,6 +108,11 @@ void FxTimeLineTrack::stop()
 {
     if (m_PlayQueue.size() > 0)
         m_Components[m_PlayQueue.front()]->stop();
+}
+
+const FxTimeLine* FxTimeLineTrack::getParent() const
+{
+    return m_pParent;
 }
 
 } } //end namespace

@@ -26,11 +26,12 @@
 #include "mat44.h"
 #include "IComponent.h"
 #include <vector>
+#include "I3DObject.h"
 
 namespace he {
 namespace game {
 
-class Entity
+class Entity : public gfx::I3DObject
 {
 public:
     Entity();

@@ -23,6 +23,7 @@
 #pragma once
 
 namespace he {
+class mat44;
 namespace gfx {
 
 struct FxParticle;
@@ -32,7 +33,7 @@ class IFxParticleInitComponent
 public:
     virtual ~IFxParticleInitComponent() {}
 
-    virtual void init(FxParticle* pParticle) = 0;
+    virtual void init(FxParticle* pParticle, const mat44& parentWorld) = 0;
 };
 
 } } //end namespace

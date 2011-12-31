@@ -34,7 +34,7 @@ FxParticleScale::~FxParticleScale()
 {
 }
 
-void FxParticleScale::init( FxParticle* pParticle )
+void FxParticleScale::init( FxParticle* pParticle, const mat44& /*parentWorld*/ )
 {
     pParticle->m_Scale = m_Scale->getValue(0);
 }

@@ -30,11 +30,11 @@ enum FxType
     FxType_ParticleSystem = 0,
     FxType_CameraEffect
 };
-class IFxComponent
+class IFxTimeLineTrackComponent
 {
 public:
 
-    virtual ~IFxComponent() {};
+    virtual ~IFxTimeLineTrackComponent() {};
     
     virtual FxType getType() const = 0;
 
@@ -46,7 +46,7 @@ public:
     virtual void start() = 0;
     virtual void stop() = 0;
 
-    virtual void tick(float currentTime, float dTime) = 0;
+    virtual void tick(float normTime, float dTime) = 0; //norm time [0, 1]
 
 private:
     float m_StartTime, m_EndTime;

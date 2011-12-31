@@ -44,7 +44,6 @@ public:
     uint createTimeline();
     void removeTimeline(uint id);
     FxTimeLine* getTimeline(uint id) const;
-    void startTimeline(uint id) const;
 
     void tick(float dTime);
 
