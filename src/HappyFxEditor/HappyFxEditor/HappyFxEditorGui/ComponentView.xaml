@@ -1,0 +1,28 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="HappyFxEditorApp.ComponentView"
+    d:DesignWidth="386" d:DesignHeight="48"
+    x:Name="_control">
+
+    <Canvas Width="{Binding Path=Width}" Height="{Binding Path=Height}" Margin="0,0,0,0" VerticalAlignment="Center">
+        <Rectangle Width="{Binding Path=Width}" Height="{Binding Path=Height}"
+                   Stroke="Black" 
+                   RadiusX="4" RadiusY="4" 
+                   Fill="{Binding Path=BackgroundColor}"
+                   StrokeThickness="2"/>
+        <Rectangle Width="{Binding Path=ForegroundWidth}" Height="{Binding Path=ForegroundHeight}" 
+                   Stroke="Black" Fill="{Binding Path=ForegroundColor}"
+                   Canvas.Left="3" Canvas.Top="3" 
+                   StrokeThickness="2"/>
+        <TextBlock Width="{Binding Path=ForegroundWidth}" Height="{Binding Path=ForegroundHeight}" TextWrapping="Wrap" 
+                   Canvas.Left="3" Canvas.Top="3" 
+                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                   FontFamily="Segoe UI" TextAlignment="Center" 
+                   FontSize="{Binding Path=FontSize}" Text="{Binding Path=Text}"/>
+    </Canvas>
+    
+</UserControl>

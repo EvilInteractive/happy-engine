@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="HappyFxEditorApp.EffectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:my="clr-namespace:HappyFxEditorApp"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="698">
+    <Grid>
+        <Grid Grid.Row="0" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".7*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height=".3*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Timeline & components -->
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=".3*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height=".7*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width=".7*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- TimeLineTrackComponents -->
+                <my:ToolBoxView Grid.Row="0" Grid.Column="0" DataContext="{Binding TimeLine}" />
+
+                <!-- TimeLine -->
+                <my:TimeLineView Grid.Row="0" Grid.Column="2"/>
+
+                <GridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" 
+                              Style="{StaticResource gridSplitterVStyle}" HorizontalAlignment="Stretch"/>
+                <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource gridSplitterHStyle}" HorizontalAlignment="Stretch" />
+
+                <!-- TimeLineTrackComponent Components -->
+                <!--<my:ComponentsView Grid.Row="2" Grid.Column="0"/>-->
+
+                <!-- Visual Editor -->
+                <my:VisualEditorView Grid.Row="2" Grid.Column="2"/>
+                
+            </Grid>
+
+            <GridSplitter Grid.Row="1" Grid.Column="0" Style="{StaticResource gridSplitterHStyle}" HorizontalAlignment="Stretch" />
+
+            <!-- ComponentProperties -->
+            <my:ComponentPropertiesView Grid.Row="2" Grid.Column="0"/>
+
+        </Grid>
+    </Grid>
+</UserControl>
