@@ -963,9 +963,6 @@
     <ClInclude Include="code\graphics\RoundedRectangle2D.h">
       <Filter>happyengine\graphics\model\2d</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\Shape2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Simple2DTextureEffect.h">
       <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClInclude>
@@ -1134,6 +1131,9 @@
     <ClInclude Include="code\tools\LoadingScreen.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
+    <ClInclude Include="code\graphics\Shape2D.h">
+      <Filter>happyengine\graphics\model\2d</Filter>
+	   </ClInclude>
     <ClInclude Include="code\game\FxComponent.h">
       <Filter>happyengine\game\components</Filter>
     </ClInclude>

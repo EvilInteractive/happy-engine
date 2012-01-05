@@ -55,7 +55,7 @@ void Simple2DEffect::load()
     m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
     m_ShaderColorPos = m_pShader->getShaderVarId("color");
     m_ShaderDepthPos = m_pShader->getShaderVarId("depth");
-    m_ShaderBlendPos = m_pShader->getShaderVarId("blending");
+    //m_ShaderBlendPos = m_pShader->getShaderVarId("blending");
 
     m_pShader->bind();
     mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));

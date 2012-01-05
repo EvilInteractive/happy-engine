@@ -284,7 +284,7 @@ void MainGame::tick(float dTime)
 {
     using namespace he;
 
-    PROFILER_BEGIN("MainGame::tick");
+   // PROFILER_BEGIN("MainGame::tick");
 
     /*if (m_pCurrentCamera == m_pFlyCamera)
         m_pFlyCamera->tick(dTime);
@@ -364,14 +364,14 @@ void MainGame::tick(float dTime)
 
     m_pFPSGraph->tick(dTime, 0.5f);
 
-    PROFILER_END("MainGame::tick");
+//    PROFILER_END("MainGame::tick");
 }
 void MainGame::drawGui()
 {
     using namespace he;
     using namespace gfx;
 
-    PROFILER_BEGIN("MainGame::draw");
+  //  PROFILER_BEGIN("MainGame::draw");
     // 2D test stuff
     /*m_pTestButton->draw();
     m_pTestButton2->draw();
@@ -433,7 +433,7 @@ void MainGame::drawGui()
     m_pTestGrid->draw();
     //HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
     HE3D->end();
-    PROFILER_END("MainGame::draw");
+   // PROFILER_END("MainGame::draw");
 }
 
 } //end namespace

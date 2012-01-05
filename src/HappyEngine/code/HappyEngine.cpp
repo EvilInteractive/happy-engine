@@ -228,6 +228,8 @@ void HappyEngine::start(gfx::HappyQtWidget* pWidget)
     m_pCameraManager->init();
     m_pGame->load();
     m_pQtWidget = pWidget;
+
+	m_pLoadingScreen = NEW tools::LoadingScreen();
     
     m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 

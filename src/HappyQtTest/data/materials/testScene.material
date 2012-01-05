@@ -9,3 +9,7 @@ diffuseMap = "testscene_diff.png"
 normalMap = "engine/random_normals.png"
 specGlossIllMap = "testscene_sgi.png"
 
+[info]
+blending = false
+post = true
+shadow = true
