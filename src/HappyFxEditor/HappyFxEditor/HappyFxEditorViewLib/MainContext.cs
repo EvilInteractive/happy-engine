@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using DaeMvvmFramework;
+using HappyFxEditorContextLib.Effect;
 
 namespace HappyFxEditorContextLib
 {

@@ -1,8 +1,7 @@
 ﻿<Window x:Class="HappyFxEditorApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:my="clr-namespace:HappyFxEditorApp"
-        Title="MainWindow" Height="350" Width="525">
+        xmlns:my="clr-namespace:HappyFxEditorApp" xmlns:Effect="clr-namespace:HappyFxEditorApp.Effect" Title="MainWindow" Height="350" Width="525">
     
     <Window.InputBindings>
         <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewCommand}" />
@@ -18,7 +17,7 @@
     
     <Window.Resources>
         <DataTemplate x:Key="EditorPageTemplate">
-            <my:EffectView/>
+            <Effect:EffectView/>
         </DataTemplate>
         <DataTemplate x:Key="EditorTabTemplate">
             <Grid>
@@ -53,6 +52,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*"/>
@@ -110,11 +110,14 @@
         <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource gridSplitterVStyle}" HorizontalAlignment="Stretch" />
         
         <!-- Editor -->
-
         <TabControl Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding Path=OpenEffects}"                                     
                     ItemTemplate="{StaticResource EditorTabTemplate}"                                   
                     ContentTemplate="{StaticResource EditorPageTemplate}" 
                     Background="#FF293955" SelectedItem="{Binding Path=CurrentEffect}"></TabControl>
+        
+        <!-- StatusBar -->
+        <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
+                   Height="24"/>
     </Grid>
 </Window>

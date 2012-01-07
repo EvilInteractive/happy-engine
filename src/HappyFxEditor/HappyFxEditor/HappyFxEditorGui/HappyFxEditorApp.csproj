@@ -79,42 +79,81 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="TimeLine\TimeLineTrackView.xaml.cs">
+    <Compile Include="Effect\ComponentEditor\ComponentBehaviourView.xaml.cs">
+      <DependentUpon>ComponentBehaviourView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\ComponentEditorView.xaml.cs">
+      <DependentUpon>ComponentEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\ComponentToolBox.xaml.cs">
+      <DependentUpon>ComponentToolBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\PropertyGroupView.xaml.cs">
+      <DependentUpon>PropertyGroupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\PropertyItemView.xaml.cs">
+      <DependentUpon>PropertyItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\ConstantVarView.xaml.cs">
+      <DependentUpon>ConstantVarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\TimeLine\TimeLineTrackView.xaml.cs">
       <DependentUpon>TimeLineTrackView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ToolBoxView.xaml.cs">
-      <DependentUpon>ToolBoxView.xaml</DependentUpon>
+    <Compile Include="Effect\TimeLine\TimeLineToolBoxView.xaml.cs">
+      <DependentUpon>TimeLineToolBoxView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ComponentPropertiesView.xaml.cs">
+    <Compile Include="Effect\ComponentEditor\ComponentPropertiesView.xaml.cs">
       <DependentUpon>ComponentPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ComponentView.xaml.cs">
+    <Compile Include="Effect\TimeLine\ComponentView.xaml.cs">
       <DependentUpon>ComponentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TimeLineView.xaml.cs">
+    <Compile Include="Effect\TimeLine\TimeLineView.xaml.cs">
       <DependentUpon>TimeLineView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TimeLine\TimeControl.xaml.cs">
+    <Compile Include="Effect\TimeLine\TimeControl.xaml.cs">
       <DependentUpon>TimeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TimeLine\TimeLineControls.xaml.cs">
+    <Compile Include="Effect\TimeLine\TimeLineControls.xaml.cs">
       <DependentUpon>TimeLineControls.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TimeLine\TimeLineTrackContainer.xaml.cs">
+    <Compile Include="Effect\TimeLine\TimeLineTrackContainer.xaml.cs">
       <DependentUpon>TimeLineTrackContainer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VisualEditorView.xaml.cs">
-      <DependentUpon>VisualEditorView.xaml</DependentUpon>
-    </Compile>
-    <Page Include="TimeLine\TimeLineTrackView.xaml">
+    <Page Include="Effect\ComponentEditor\ComponentBehaviourView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ToolBoxView.xaml">
+    <Page Include="Effect\ComponentEditor\ComponentEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EffectView.xaml">
+    <Page Include="Effect\ComponentEditor\ComponentToolBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\PropertyGroupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\PropertyItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\Variable\ConstantVarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\TimeLine\TimeLineTrackView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\TimeLine\TimeLineToolBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\EffectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -126,43 +165,46 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EffectView.xaml.cs">
+    <Compile Include="Effect\EffectView.xaml.cs">
       <DependentUpon>EffectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ComponentPropertiesView.xaml">
+    <Page Include="Effect\ComponentEditor\ComponentPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ComponentView.xaml">
+    <Page Include="Effect\TimeLine\ComponentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="TimeLineView.xaml">
+    <Page Include="Effect\TimeLine\TimeLineView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="TimeLine\TimeControl.xaml">
+    <Page Include="Effect\TimeLine\TimeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TimeLine\TimeLineControls.xaml">
+    <Page Include="Effect\TimeLine\TimeLineControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TimeLine\TimeLineTrackContainer.xaml">
+    <Page Include="Effect\TimeLine\TimeLineTrackContainer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VisualEditorView.xaml">
+    <Page Include="NumericUpDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NumericUpDown.xaml.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -213,17 +255,16 @@
       <Project>{09530FF7-D425-4172-B97C-795516A33470}</Project>
       <Name>DaeMvvmFramework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HappyFxEditorBaseLib\HappyFxEditorBaseLib.csproj">
+      <Project>{E0D2E087-65C9-4198-BE73-60D4A07F2831}</Project>
+      <Name>HappyFxEditorBaseLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HappyFxEditorViewLib\HappyFxEditorContextLib.csproj">
       <Project>{26CCE4AC-2F37-430E-96CD-FFDE5ADAAC80}</Project>
       <Name>HappyFxEditorContextLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Fonts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)bin\$(TargetFileName)"</PostBuildEvent>
