@@ -1,4 +1,4 @@
-//HappyTest Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyTest Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyTest.
 //
@@ -322,12 +322,12 @@ void MainGame::load()
     uint effectTestTL = FX->createTimeline();
     gfx::FxTimeLine* pTL(FX->getTimeline(effectTestTL));
     pTL->setParent(m_pTestObject);
-    pTL->setEndTime(20.0f);
+    pTL->setEndTime(80.0f);
     gfx::FxTimeLineTrack* pTrack(pTL->getTrack(pTL->addTrack()));
     gfx::FxParticleSystem* pEffect(pTrack->getComponent<gfx::FxParticleSystem>(pTrack->addComponent(gfx::FxType_ParticleSystem)));
     pEffect->setMaxParticles(500);
     pEffect->setStartTime(0.0f);
-    pEffect->setEndTime(10.0f);
+    pEffect->setEndTime(60.0f);
     pEffect->setMaterial(CONTENT->loadMaterial("particles/particles.material"));
 
     pEffect->setSpawnRate(gfx::IFxVariable<float>::pointer(NEW gfx::FxConstant<float>(100)));

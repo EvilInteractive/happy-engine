@@ -63,10 +63,10 @@ void PickEffect::load()
 
     m_PickMaterial.setShader(pShader, vertexLayout, instancingLayout);
 
-    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matVP"), ShaderVarType_ViewProjection)));
-    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matW"), ShaderVarType_World)));
+    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection)));
+    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matW"), "matW", ShaderVarType_World)));
 
-    m_IdVar = ShaderUserVar<vec4>::pointer(NEW ShaderUserVar<vec4>(pShader->getShaderVarId("id"), vec4(0, 0, 0, 0)));
+    m_IdVar = ShaderUserVar<vec4>::pointer(NEW ShaderUserVar<vec4>(pShader->getShaderVarId("id"), "id", vec4(0, 0, 0, 0)));
     m_PickMaterial.addVar(m_IdVar);
 }
 

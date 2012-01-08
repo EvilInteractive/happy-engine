@@ -58,11 +58,10 @@ void Material::setShader(const Shader::pointer& pShader, const BufferLayout& com
 }
 const ShaderVar::pointer& Material::getVar( const std::string& var )
 {
-    uint id(m_pShader->getShaderVarId(var));
     std::vector<ShaderVar::pointer>::const_iterator it(m_ShaderVar.cbegin());
     for (; it != m_ShaderVar.cend(); ++it)
     {
-        if ((*it)->getId() == id)
+        if ((*it)->getName() == var)
         {          
             return *it;
         }

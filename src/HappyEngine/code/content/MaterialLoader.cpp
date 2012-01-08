@@ -334,53 +334,54 @@ gfx::Material MaterialLoader::load(const std::string& path)
                     const std::map<std::wstring, std::wstring>& uniformNodes(shaderReader.getNodes(L"uniform"));
                     std::for_each(uniformNodes.cbegin(), uniformNodes.cend(), [&](const std::pair<std::wstring, std::wstring> node)
                     {
+                        std::string name = std::string(node.first.cbegin(), node.first.cend());
                         // Camera
                         if (node.second == L"WORLDVIEWPROJECTION")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_WorldViewProjection)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_WorldViewProjection)));
                         }
                         else if (node.second == L"WORLDVIEW")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_WorldView)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_WorldView)));
                         }
                         else if (node.second == L"VIEWPROJECTION")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ViewProjection)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ViewProjection)));
                         }
                         else if (node.second == L"VIEW")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_View)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_View)));
                         }
                         else if (node.second == L"WORLD")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_World)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_World)));
                         }
                         else if (node.second == L"WORLDPOSITION")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_WorldPosition)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_WorldPosition)));
                         }
 
                         // Light
                         else if (node.second == L"AMBIENT_COLOR")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_AmbientColor)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_AmbientColor)));
                         }
                         else if (node.second == L"DIRECTIONAL_COLOR")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_DirectionalColor)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalColor)));
                         }
                         else if (node.second == L"DIRECTIONAL_DIRECTION")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_DirectionalDirection)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalDirection)));
                         }
 
                         // Shadow
@@ -388,57 +389,57 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix0)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix0)));
                         }
                         else if (node.second == L"SHADOW_CASCADE_MATRIX1")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix1)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix1)));
                         }
                         else if (node.second == L"SHADOW_CASCADE_MATRIX2")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix2)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix2)));
                         }
                         else if (node.second == L"SHADOW_CASCADE_MATRIX3")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascadeMatrix3)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix3)));
                         }
 
                         else if (node.second == L"SHADOW_CASCADE0")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade0)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade0)));
                         }
                         else if (node.second == L"SHADOW_CASCADE1")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade1)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade1)));
                         }
                         else if (node.second == L"SHADOW_CASCADE2")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade2)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade2)));
                         }
                         else if (node.second == L"SHADOW_CASCADE3")
                         {
                             if (m_RenderSettings.enableShadows)
                                 material.addVar(gfx::ShaderVar::pointer(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_ShadowCascade3)));
+                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade3)));
                         }
 
                         // Skinning
                         else if (node.second == L"BONETRANSFORMS")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), gfx::ShaderVarType_BoneTransforms)));
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_BoneTransforms)));
                         }
 
                         // Texture
@@ -452,42 +453,40 @@ gfx::Material MaterialLoader::load(const std::string& path)
                                 tex = CONTENT->asyncMakeTexture(Color(testColorMap));
                             gfx::ShaderVar::pointer var(
                                 NEW gfx::ShaderUserVar<gfx::Texture2D::pointer>(
-                                    pShader->getShaderSamplerId(std::string(node.first.cbegin(), node.first.cend())), 
-                                    tex));
+                                    pShader->getShaderSamplerId(name), name, tex));
                             material.addVar(var);
                         }
 
                         // User
                         else if (node.second == L"FLOAT")
                         {
-                            std::string id(std::string(node.first.cbegin(), node.first.cend()));
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<float>(pShader->getShaderVarId(id), 0)));
+                                NEW gfx::ShaderUserVar<float>(pShader->getShaderVarId(name), name, 0)));
                         }
                         else if (node.second == L"VEC2")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<vec2>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), vec2(0, 0))));
+                                NEW gfx::ShaderUserVar<vec2>(pShader->getShaderVarId(name), name, vec2(0, 0))));
                         }
                         else if (node.second == L"VEC3")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<vec3>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), vec3(0, 0, 0))));
+                                NEW gfx::ShaderUserVar<vec3>(pShader->getShaderVarId(name), name, vec3(0, 0, 0))));
                         }
                         else if (node.second == L"VEC4")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<vec4>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), vec4(0, 0, 0, 0))));
+                                NEW gfx::ShaderUserVar<vec4>(pShader->getShaderVarId(name), name, vec4(0, 0, 0, 0))));
                         }
                         else if (node.second == L"INT")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<int>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), 0)));
+                                NEW gfx::ShaderUserVar<int>(pShader->getShaderVarId(name), name, 0)));
                         }
                         else if (node.second == L"UINT")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<uint>(pShader->getShaderVarId(std::string(node.first.cbegin(), node.first.cend())), 0)));
+                                NEW gfx::ShaderUserVar<uint>(pShader->getShaderVarId(name), name, 0)));
                         }
                         else
                         {

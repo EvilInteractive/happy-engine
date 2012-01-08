@@ -58,23 +58,25 @@ enum ShaderVarType
 class ShaderVar
 {
 public:
-    ShaderVar(uint id, ShaderVarType type): m_Id(id), m_Type(type) {}
+    ShaderVar(uint id, const std::string& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
 
     virtual void assignData(const Shader::pointer& pShader) = 0;
 
     virtual ShaderVarType getType() { return m_Type; }
     uint getId() const { return m_Id; }
+    const std::string& getName() const { return m_Name; }
 
     typedef boost::shared_ptr<ShaderVar> pointer;
 
 protected:
     uint m_Id;
+    std::string m_Name;
     ShaderVarType m_Type;
 };
 class ShaderGlobalVar : public ShaderVar
 {
 public:
-    ShaderGlobalVar(uint id, ShaderVarType type): ShaderVar(id, type)
+    ShaderGlobalVar(uint id, const std::string& name, ShaderVarType type): ShaderVar(id ,name, type)
     {
     }
 
@@ -86,7 +88,7 @@ template<typename T>
 class ShaderUserVar : public ShaderVar
 {
 public:
-    ShaderUserVar(uint id, const T& data): ShaderVar(id, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint id, const std::string& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
     }
 

@@ -152,14 +152,14 @@ void ShadowCaster::init(const RenderSettings& settings)
     ///                             Materials                              ///
     //////////////////////////////////////////////////////////////////////////
     m_MatSingle.setShader(pShadowShaderSingle, vertexSingleLayout, noInstancingLayout);
-    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), ShaderVarType_WorldViewProjection)));
+    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection)));
     
     m_MatSkinned.setShader(pShadowShaderSkinned, vertexSkinnedLayout, noInstancingLayout);
-    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), ShaderVarType_WorldViewProjection)));
-    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), ShaderVarType_BoneTransforms)));
+    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection)));
+    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), "matBones", ShaderVarType_BoneTransforms)));
     
     m_MatInstanced.setShader(pShadowShaderInstanced, vertexSingleLayout, instancingLayout);
-    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), ShaderVarType_ViewProjection)));
+    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection)));
 
     m_pQuad = CONTENT->getFullscreenQuad();
 }
