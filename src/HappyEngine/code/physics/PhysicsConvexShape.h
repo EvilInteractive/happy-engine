@@ -1,5 +1,5 @@
 
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
