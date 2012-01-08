@@ -33,13 +33,13 @@ namespace net {
 
 TcpServer::TcpServer(): m_pAcceptor(nullptr), m_IsConnectionOpen(false), m_pSocket(nullptr)
 {
-    m_pBuffer = malloc(MAX_BUFFER_SIZE);
+    m_pBuffer = he_malloc(MAX_BUFFER_SIZE);
 }
 
 
 TcpServer::~TcpServer()
 {
-    free(m_pBuffer);
+    he_free(m_pBuffer);
     if (m_pAcceptor != nullptr)
     {
         delete m_pAcceptor;

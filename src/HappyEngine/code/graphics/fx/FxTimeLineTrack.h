@@ -62,6 +62,8 @@ private:
     const FxTimeLine* m_pParent;
 
     std::queue<uint> m_PlayQueue;
+    std::vector<IFxTimeLineTrackComponent*> m_EaseOutComponents;
+    std::vector<IFxTimeLineTrackComponent*> m_EaseOutDoneComponents;
     SlotPContainer<IFxTimeLineTrackComponent*> m_Components;
 
     //Disable default copy constructor and default assignment operator

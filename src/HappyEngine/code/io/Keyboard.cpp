@@ -47,8 +47,7 @@ Keyboard::~Keyboard()
 void Keyboard::tick()
 {   
     std::swap(m_PrevKeyState, m_CurrentKeyState); 
-    bool succes(memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(byte)) != 0);
-    ASSERT(succes);
+    he_memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(byte));
 }
 
 bool Keyboard::isKeyUp(Key key) const
@@ -67,7 +66,7 @@ bool Keyboard::isKeyPressed(Key key) const
 bool Keyboard::isKeyPressed(KeyScanCode code) const
 {
     ASSERT(false, "not implemented");
-	return m_CurrentKeyState[code] != 0 && m_PrevKeyState[code] == 0;
+    return m_CurrentKeyState[code] != 0 && m_PrevKeyState[code] == 0;
 }
 bool Keyboard::isKeyReleased(Key key) const
 {
@@ -76,7 +75,7 @@ bool Keyboard::isKeyReleased(Key key) const
 bool Keyboard::isKeyReleased(KeyScanCode code) const
 {
     ASSERT(false, "not implemented");
-	return m_CurrentKeyState[code] == 0 && m_PrevKeyState[code] != 0;
+    return m_CurrentKeyState[code] == 0 && m_PrevKeyState[code] != 0;
 }
 
 } } //end namespace

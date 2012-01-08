@@ -48,6 +48,9 @@ public:
 
     virtual void tick(float normTime, float dTime) = 0; //norm time [0, 1]
 
+    event<void> EaseOutStart;
+    event<void> EaseOutEnd;
+
 private:
     float m_StartTime, m_EndTime;
 };

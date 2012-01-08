@@ -42,7 +42,7 @@ ObjLoader::ObjLoader(): m_NumIndices(0), m_NumVertices(0), m_Vertices(nullptr)
 
 ObjLoader::~ObjLoader()
 {
-    free(m_Vertices);
+    he_free(m_Vertices);
 }
 void ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
@@ -54,8 +54,8 @@ void ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayou
     std::cout << "creating...\n";
     create(allowByteIndices);
 
-    free(m_Vertices);
-    m_Vertices = malloc(vertLayout.getSize() * m_NumVertices);
+    he_free(m_Vertices);
+    m_Vertices = he_malloc(vertLayout.getSize() * m_NumVertices);
     std::cout << "malloc " << vertLayout.getSize() * m_NumVertices << " bytes\n";
     ASSERT(m_Vertices != nullptr, "not enough memory!");
 
@@ -297,7 +297,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) con
     {
         if (pOff == 0 && tOff == 12 && nOff == 20)
         {
-            memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getSize());
+            he_memcpy(pVertexData, &m_VertexData[0], m_NumVertices * vertLayout.getSize());
             return;
         }
     }

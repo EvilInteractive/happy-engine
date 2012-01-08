@@ -29,37 +29,21 @@ namespace gfx {
 
 FxParticleContainer::FxParticleContainer(uint maxParticles): m_MaxCount(maxParticles), m_Count(0)
 {
-    #ifdef GCC
-    void* p;
-    posix_memalign(&p, 16, maxParticles * sizeof(FxParticle));
-    m_MemPool = (FxParticle*)p;
-    #else
-    m_MemPool = static_cast<FxParticle*>(_aligned_malloc(maxParticles * sizeof(FxParticle), 16));
-    #endif
+    m_MemPool = static_cast<FxParticle*>(he_aligned_malloc(maxParticles * sizeof(FxParticle), 16));
 
     ASSERT(m_MemPool != nullptr, "particle container: out of memory");
-    memset(m_MemPool, 0, maxParticles * sizeof(FxParticle));
+    he_memset(m_MemPool, 0, maxParticles * sizeof(FxParticle));
     m_End = m_MemPool;
 }
 
 FxParticleContainer::~FxParticleContainer()
 {
-    #ifdef GCC
-    free(m_MemPool);
-    #else
-    _aligned_free(m_MemPool);
-    #endif
+    he_aligned_free(m_MemPool);
 }
 void FxParticleContainer::resize(uint maxParticles)
 {
-    #ifdef GCC
-    void* p;
-    posix_memalign(&p, 16, maxParticles * sizeof(FxParticle));
-    m_MemPool = (FxParticle*)p;
-    #else
-    m_MemPool = static_cast<FxParticle*>(_aligned_malloc(maxParticles * sizeof(FxParticle), 16));
-    #endif
-
+    m_MemPool = static_cast<FxParticle*>(he_aligned_realloc(m_MemPool, m_Count * sizeof(FxParticle), 
+                                                            maxParticles * sizeof(FxParticle), 16));
     ASSERT(m_MemPool != nullptr, "particle container: out of memory");
     if (maxParticles < m_Count)
         m_Count = maxParticles;
@@ -72,7 +56,7 @@ bool FxParticleContainer::tryAddParticle()
 {
     if (m_Count < m_MaxCount)
     {
-        memset(m_End, 0, sizeof(FxParticle));
+        he_memset(m_End, 0, sizeof(FxParticle));
         m_End += 1;
         ++m_Count;
         return true;
@@ -95,7 +79,7 @@ void FxParticleContainer::flushRemove()
 
         std::for_each(m_RemoveVec.cbegin(), m_RemoveVec.cend(), [&](FxParticle* p)
         {
-            memmove(p, --m_End, sizeof(FxParticle));
+            he_memmove(p, --m_End, sizeof(FxParticle));
         });
         m_Count -= m_RemoveVec.size();
         m_RemoveVec.clear();

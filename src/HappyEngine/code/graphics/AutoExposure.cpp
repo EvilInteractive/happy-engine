@@ -26,23 +26,27 @@
 #include "OpenGL.h"
 #include "ExternalError.h"
 #include "GraphicsEngine.h"
+#include "Game.h"
 
 namespace he {
     namespace gfx {
 
-AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true)
+AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true), m_DTime(0), m_ExposureSpeed(1.0f)
 {
     m_pLumTexture[0] = Texture2D::pointer(NEW Texture2D());
     m_pLumTexture[1] = Texture2D::pointer(NEW Texture2D());
-}
 
+    GAME->addToTickList(this);
+}
 
 AutoExposure::~AutoExposure()
 {
     glDeleteFramebuffers(1, &m_FboID);
+    if (GAME != nullptr)
+        GAME->removeFromTickList(this);
 }
 
-void AutoExposure::init()
+void AutoExposure::init(const RenderSettings& settings)
 {
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
@@ -82,6 +86,9 @@ void AutoExposure::init()
                                folder + "post/autoLum.frag", shaderLayout);
     m_HDRmapPos = m_pLumShader->getShaderSamplerId("hdrMap");
     m_PrevLumMapPos = m_pLumShader->getShaderSamplerId("prevLumMap");
+    m_DTimePos = m_pLumShader->getShaderVarId("dTime");
+
+    m_ExposureSpeed = settings.exposureSpeed;
 
     //////////////////////////////////////////////////////////////////////////
     ///                         LOAD RENDER QUAD                           ///
@@ -89,7 +96,7 @@ void AutoExposure::init()
     m_pQuad = CONTENT->getFullscreenQuad();
 }
 
-void AutoExposure::calculate( const Texture2D::pointer& pHdrMap )
+void AutoExposure::calculate( const Texture2D::pointer& pHdrMap)
 {
     m_FirstBuffer = !m_FirstBuffer;
 
@@ -99,6 +106,7 @@ void AutoExposure::calculate( const Texture2D::pointer& pHdrMap )
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pLumTexture[m_FirstBuffer? 0 : 1]->getID(), 0);
     m_pLumShader->setShaderVar(m_HDRmapPos, pHdrMap);
     m_pLumShader->setShaderVar(m_PrevLumMapPos, m_pLumTexture[m_FirstBuffer? 1 : 0]);
+    m_pLumShader->setShaderVar(m_DTimePos, m_DTime);
     GL::heBindVao(m_pQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
 }
@@ -106,6 +114,11 @@ void AutoExposure::calculate( const Texture2D::pointer& pHdrMap )
 const Texture2D::pointer& AutoExposure::getLuminanceMap() const
 {
     return m_pLumTexture[m_FirstBuffer? 0 : 1];
+}
+
+void AutoExposure::tick( float dTime )
+{
+    m_DTime = dTime;
 }
 
 } } //end namespace

@@ -27,6 +27,8 @@ out float outColor;
 uniform sampler2D hdrMap;
 uniform sampler2D prevLumMap;
 
+uniform float dTime;
+
 float getLum(in vec3 col)
 {
 	return (col.r + col.g + col.b) / 3.0f;
@@ -48,7 +50,7 @@ void main()
 	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.5f), 2).rgb);
 	lum /= 9.0f;
 	
-	outColor = max(0, (lum * 0.01f + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * 0.99f));
+	outColor = max(0.01f, (lum * dTime + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * (1-dTime)));
 }
 
 

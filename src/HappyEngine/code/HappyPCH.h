@@ -26,6 +26,7 @@
 #include "vec3.h"
 #include "vec4.h"
 
+#include "HappyMemory.h"
 #include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
@@ -45,6 +46,5 @@
                          CONSOLE->addMessage(str, CMSG_TYPE_WARNING); }
 
 std::string itoa(int i);
-
 
 #endif

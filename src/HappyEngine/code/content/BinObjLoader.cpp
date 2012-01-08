@@ -43,11 +43,11 @@ BinObjLoader::~BinObjLoader()
 {
     std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
     {
-        free(pVert);
+        he_free(pVert);
     });
     std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
     {
-        free(pInd);
+        he_free(pInd);
     });
 }
 void BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
@@ -56,13 +56,13 @@ void BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLa
     
     std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
     {
-        free(pVert);
+        he_free(pVert);
     });
     m_Vertices.clear();
 
     for (uint i = 0; i < m_VertexData.size(); ++i)
     {
-        void* pVert(malloc(vertLayout.getSize() * m_VertexData[i].size()));
+        void* pVert(he_malloc(vertLayout.getSize() * m_VertexData[i].size()));
         ASSERT(pVert != nullptr, "not enough memory!");
         m_Vertices.push_back(pVert);
     }
@@ -75,7 +75,7 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
     //Clean
     std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
     {
-        free(pInd);
+        he_free(pInd);
     });
     m_Indices.clear();
     m_VertexData.clear();
@@ -121,7 +121,7 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
         else
             m_IndexStride.push_back(stride);
         
-        void* pInd = malloc(stride * m_NumIndices.back());
+        void* pInd = he_malloc(stride * m_NumIndices.back());
         ASSERT(pInd != nullptr, "not enough memory!");
         stream.readBuffer(pInd, stride * m_NumIndices.back());
         m_Indices.push_back(pInd);
@@ -160,7 +160,7 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
         {
             if (pOff == 0 && tOff == 12 && nOff == 20 && tanOff == 32 && boneOff == 44 && weightOff == 44 + gfx::Bone::MAX_BONES * 1)
             {
-                memcpy(m_Vertices[i], &m_VertexData[i][0], m_VertexData[i].size() * vertLayout.getSize());
+                he_memcpy(m_Vertices[i], &m_VertexData[i][0], m_VertexData[i].size() * vertLayout.getSize());
                 break;
             }
         } 
@@ -171,29 +171,29 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
         {
             if (pOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getSize() + pOff], &vert.pos, sizeof(vec3));
+                he_memcpy(&pCharData[count * vertLayout.getSize() + pOff], &vert.pos, sizeof(vec3));
             }
             if (tOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getSize() + tOff], &vert.tex, sizeof(vec2));
+                he_memcpy(&pCharData[count * vertLayout.getSize() + tOff], &vert.tex, sizeof(vec2));
             }
             if (nOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getSize() + nOff], &vert.norm, sizeof(vec3));
+                he_memcpy(&pCharData[count * vertLayout.getSize() + nOff], &vert.norm, sizeof(vec3));
             }
             if (tanOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getSize() + tanOff], &vert.tan, sizeof(vec3));
+                he_memcpy(&pCharData[count * vertLayout.getSize() + tanOff], &vert.tan, sizeof(vec3));
             }
             if (boneOff != -1)
             {
                 ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "Unsupported max boneWeight value only 4 is supported");
                 vec4 boneIDs(vert.boneID[0], vert.boneID[1], vert.boneID[2], vert.boneID[3]);
-                memcpy(&pCharData[count * vertLayout.getSize() + boneOff], &boneIDs, sizeof(vec4));
+                he_memcpy(&pCharData[count * vertLayout.getSize() + boneOff], &boneIDs, sizeof(vec4));
             }
             if (weightOff != -1)
             {
-                memcpy(&pCharData[count * vertLayout.getSize() + weightOff], vert.boneWeight, sizeof(float) * gfx::Bone::MAX_BONEWEIGHTS);
+                he_memcpy(&pCharData[count * vertLayout.getSize() + weightOff], vert.boneWeight, sizeof(float) * gfx::Bone::MAX_BONEWEIGHTS);
             }
             ++count;
         });

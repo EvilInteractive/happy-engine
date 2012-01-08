@@ -10,4 +10,4 @@ blending = true
 blendFunc = ADD
 srcBlend = SRC_ALPHA
 destBlend = INV_SRC_ALPHA
-post = false
+post = true

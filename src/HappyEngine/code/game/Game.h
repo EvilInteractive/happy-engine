@@ -53,6 +53,10 @@ public:
     {
         m_TickList.push_back(pObj);
     }
+    virtual void removeFromTickList(ITickable* pObj)
+    {
+        m_TickList.erase(std::remove(m_TickList.begin(), m_TickList.end(), pObj), m_TickList.end());
+    }
     
 private:
     std::vector<ITickable*> m_TickList;

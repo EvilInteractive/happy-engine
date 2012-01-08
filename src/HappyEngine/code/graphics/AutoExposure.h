@@ -25,19 +25,22 @@
 #include "Shader.h"
 #include "Texture2D.h"
 #include "ModelMesh.h"
+#include "ITickable.h"
+#include "RenderSettings.h"
 
 namespace he {
 namespace gfx {
 
-class AutoExposure
+class AutoExposure : public game::ITickable
 {
 public:
     AutoExposure();
     virtual ~AutoExposure();
 
-    void init();
+    void init(const RenderSettings& settings);
 
-    void calculate(const Texture2D::pointer& pHdrMap);
+    void calculate(const Texture2D::pointer& pHdrMap );
+    virtual void tick(float dTime);
 
     const Texture2D::pointer& getLuminanceMap() const;
 
@@ -46,6 +49,10 @@ private:
     Shader::pointer m_pLumShader;
     uint m_HDRmapPos;
     uint m_PrevLumMapPos;
+    uint m_DTimePos;
+    
+    float m_DTime;
+    float m_ExposureSpeed;
 
     Texture2D::pointer m_pLumTexture[2]; //double buffered
     bool m_FirstBuffer;

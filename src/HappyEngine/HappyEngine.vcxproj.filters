@@ -511,9 +511,6 @@
     <ClCompile Include="code\graphics\DefaultSkinnedDrawable.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\fx\FxManager.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\fx\FxTimeLine.cpp">
       <Filter>happyengine\graphics\fx</Filter>
     </ClCompile>
@@ -563,6 +560,12 @@
       <Filter>happyengine\game\components</Filter>
     </ClCompile>
     <ClCompile Include="code\graphics\fx\FxParticleLocation.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxManager.cpp">
+      <Filter>happyengine\graphics\fx\var</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleRotationRate.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1133,7 +1136,7 @@
     </ClInclude>
     <ClInclude Include="code\graphics\Shape2D.h">
       <Filter>happyengine\graphics\model\2d</Filter>
-	   </ClInclude>
+    </ClInclude>
     <ClInclude Include="code\game\FxComponent.h">
       <Filter>happyengine\game\components</Filter>
     </ClInclude>
@@ -1145,6 +1148,12 @@
     </ClInclude>
     <ClInclude Include="code\graphics\fx\FxCurve.h">
       <Filter>happyengine\graphics\fx\var</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleRotationRate.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\HappyMemory.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

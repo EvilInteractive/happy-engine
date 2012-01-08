@@ -38,10 +38,10 @@ Message::pointer Message::createServerMsg(const void* msg, uint sizeInBytes, con
     ASSERT(!(sizeInBytes > 0 && msg == nullptr), "msg == nullptr");
 
     Message::pointer pMsg(NEW Message());
-    pMsg->m_pMsg = malloc(sizeInBytes + headerSize);
-    memcpy(pMsg->m_pMsg, header, headerSize);
+    pMsg->m_pMsg = he_malloc(sizeInBytes + headerSize);
+    he_memcpy(pMsg->m_pMsg, header, headerSize);
     if (sizeInBytes > 0)
-        memcpy(&static_cast<byte*>(pMsg->m_pMsg)[headerSize], msg, sizeInBytes);
+        he_memcpy(&static_cast<byte*>(pMsg->m_pMsg)[headerSize], msg, sizeInBytes);
 
     pMsg->m_SizeInBytes = sizeInBytes + headerSize;
 
@@ -53,8 +53,8 @@ Message::pointer Message::createServerMsg(const void* msg, uint sizeInBytes)
     ASSERT(sizeInBytes != 0, "msg size == 0");
 
     Message::pointer pMsg(NEW Message());
-    pMsg->m_pMsg = malloc(sizeInBytes);
-    memcpy(pMsg->m_pMsg, msg, sizeInBytes);
+    pMsg->m_pMsg = he_malloc(sizeInBytes);
+    he_memcpy(pMsg->m_pMsg, msg, sizeInBytes);
 
     pMsg->m_SizeInBytes = sizeInBytes;
 
@@ -63,7 +63,7 @@ Message::pointer Message::createServerMsg(const void* msg, uint sizeInBytes)
 
 Message::~Message()
 {
-    free(m_pMsg);
+    he_free(m_pMsg);
 }
 
 void* Message::getMsg() const

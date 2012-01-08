@@ -38,6 +38,8 @@
 
 #include "boost/shared_ptr.hpp"
 
+#include "HappyMemory.h"
+
 namespace he {
 namespace gfx {
 
@@ -135,14 +137,14 @@ private:
         int blockSize;
         glGetActiveUniformBlockiv(programId, bufferPos, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
 
-        void* m_Buffer = malloc(blockSize);
-        memset(m_Buffer, 0, blockSize);
+        void* m_Buffer = he_malloc(blockSize);
+        he_memset(m_Buffer, 0, blockSize);
 
         glGenBuffers(1, &m_GlBuffer);
         glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
         glBufferData(GL_UNIFORM_BUFFER, blockSize, m_Buffer, GL_DYNAMIC_DRAW);
 
-        free(m_Buffer);
+        he_free(m_Buffer);
     }
 
     static uint s_UniformBufferCount;

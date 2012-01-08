@@ -78,6 +78,7 @@
     <ClCompile Include="code\graphics\fx\FxParticleForce.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleLocation.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleRotation.cpp" />
+    <ClCompile Include="code\graphics\fx\FxParticleRotationRate.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleScale.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleSpeed.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleSystem.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="code\graphics\fx\FxParticleForce.h" />
     <ClInclude Include="code\graphics\fx\FxParticleLocation.h" />
     <ClInclude Include="code\graphics\fx\FxParticleRotation.h" />
+    <ClInclude Include="code\graphics\fx\FxParticleRotationRate.h" />
     <ClInclude Include="code\graphics\fx\FxParticleScale.h" />
     <ClInclude Include="code\graphics\fx\FxParticleSpeed.h" />
     <ClInclude Include="code\graphics\fx\FxParticleSystem.h" />
@@ -298,6 +300,7 @@
     <ClInclude Include="code\graphics\Vertex.h" />
     <ClInclude Include="code\graphics\BufferLayout.h" />
     <ClInclude Include="code\HappyEngine.h" />
+    <ClInclude Include="code\HappyMemory.h" />
     <ClInclude Include="code\HappyNew.h" />
     <ClInclude Include="code\HappyTypes.h" />
     <ClInclude Include="code\io\BinaryStream.h" />

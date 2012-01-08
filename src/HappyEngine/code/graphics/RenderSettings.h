@@ -60,6 +60,8 @@ public:
     SSAOSettings ssaoSettings;
 
     byte shadowMult;
+
+    float exposureSpeed;
 };
 
 } } //end namespace

@@ -63,6 +63,18 @@ void FxTimeLineTrack::tick( float currentTime, float dTime )
             }
         }
     }
+    std::for_each(m_EaseOutComponents.cbegin(), m_EaseOutComponents.cend(), [&dTime](IFxTimeLineTrackComponent* pComp)
+    {
+        pComp->tick(1.0f, dTime);
+    });
+    if (m_EaseOutDoneComponents.size() > 0)
+    {
+        std::for_each(m_EaseOutDoneComponents.cbegin(), m_EaseOutDoneComponents.cend(), [&](IFxTimeLineTrackComponent* pComp)
+        {
+            m_EaseOutComponents.erase(std::remove(m_EaseOutComponents.begin(), m_EaseOutComponents.end(), pComp), m_EaseOutComponents.end());
+        });
+        m_EaseOutDoneComponents.clear();
+    }
 }
 
 bool timeSort(const IFxTimeLineTrackComponent* pComponent1, const IFxTimeLineTrackComponent* pComponent2)
@@ -96,6 +108,14 @@ uint FxTimeLineTrack::addComponent( FxType type )
         default: ASSERT(false, "Unkown fx type"); id = UINT_MAX; break;
     }
     
+    //////////////////////////////////////////////////////////////////////////
+    ///     Ease out
+    IFxTimeLineTrackComponent* pComp(m_Components.get(id));
+    std::vector<IFxTimeLineTrackComponent*>& easeOutComp(m_EaseOutComponents);
+    m_Components.get(id)->EaseOutStart += [pComp, &easeOutComp](){ easeOutComp.push_back(pComp); };
+    std::vector<IFxTimeLineTrackComponent*>& easeOutDoneComp(m_EaseOutDoneComponents);
+    m_Components.get(id)->EaseOutEnd += [pComp, &easeOutDoneComp](){ easeOutDoneComp.push_back(pComp); };
+
     return id;
 }
 

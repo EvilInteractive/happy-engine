@@ -33,13 +33,13 @@ namespace net {
 
 Server::Server(): m_pUdpSocket(nullptr), m_ReceivedBytes(0), m_SendBytes(0)
 {
-    m_pBuffer = malloc(MAX_MESSAGE_SIZE + sizeof(Header));
+    m_pBuffer = he_malloc(MAX_MESSAGE_SIZE + sizeof(Header));
 }
 
 
 Server::~Server()
 {
-    free(m_pBuffer);
+    he_free(m_pBuffer);
     if (m_pUdpSocket != nullptr)
     {
         stop();

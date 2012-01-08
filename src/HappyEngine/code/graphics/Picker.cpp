@@ -147,7 +147,7 @@ uint Picker::pick(const vec2& screenPoint)
     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
     {
         byte packedID[4];
-        memcpy(packedID, &i, 4);
+        he_memcpy(packedID, &i, 4);
 
         m_pPickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
         pDrawable->applyMaterial(m_pPickEffect->getMaterial(), CAMERAMANAGER->getActiveCamera());
@@ -164,7 +164,7 @@ uint Picker::pick(const vec2& screenPoint)
                     1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
 
     uint id(0);
-    memcpy(&id, packedID, 4);
+    he_memcpy(&id, packedID, 4);
 
     if (id == 0)
         return UINT_MAX;

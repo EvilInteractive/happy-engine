@@ -29,6 +29,7 @@
 #include "IFxVariable.h"
 
 #include "ShaderVar.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
@@ -56,6 +57,7 @@ enum ParticleModifyComponentType
     PMCT_Color,
     PMCT_Force,
     PMCT_Rotation,
+    PMCT_RotationRate,
     PMCT_Scale,
     PMCT_Speed
 };
@@ -75,7 +77,7 @@ public:
     virtual void stop();
 
     void setMaxParticles(uint max);
-    void setTexture(const Texture2D::pointer& tex2D);
+    void setMaterial(const Material& mat);
     void setTiles(const IFxVariable<vec2>::pointer& tiles);
     void setSpawnRate(const IFxVariable<float>::pointer& rate);
 
@@ -101,9 +103,9 @@ private:
 
     void instancingUpdater(details::InstancingBuffer& buffer);
 
-    bool m_Emit;
-
-    Texture2D::pointer m_pTexture;
+    bool m_Emit, m_Stopped;
+    
+    Material m_Material;
 
     IFxVariable<vec2>::pointer m_UvTiles;
     ShaderUserVar<vec2>::pointer m_ShaderUvTiles;

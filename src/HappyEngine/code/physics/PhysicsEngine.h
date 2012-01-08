@@ -39,9 +39,7 @@
 
 #include "boost/thread/mutex.hpp"
 
-#ifdef GCC
-#include <stdlib.h>
-#endif
+#include "HappyMemory.h"
 
 namespace he {
 namespace px {
@@ -50,22 +48,12 @@ class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
     void* allocate(size_t size, const char*, const char*, int)
     {
-        #ifdef GCC
-        void* p;
-        posix_memalign(&p, 16, size);
-        return p;
-        #else
-        return _aligned_malloc(size, 16);
-        #endif
+        return he_aligned_malloc(size, 16);
     }
 
     void deallocate(void* ptr)
     {
-        #ifdef GCC
-        free(ptr);
-        #else
-        _aligned_free(ptr);
-        #endif
+        he_aligned_free(ptr);
     }
 };
 

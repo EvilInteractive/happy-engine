@@ -31,7 +31,7 @@ namespace net {
 
 Client::Client(): m_pUdpSocket(nullptr), m_UserId(0), m_Connected(false)
 {
-    m_pBuffer = malloc(Server::MAX_MESSAGE_SIZE);
+    m_pBuffer = he_malloc(Server::MAX_MESSAGE_SIZE);
 }
 
 
@@ -39,7 +39,7 @@ Client::~Client()
 {
     if (m_pUdpSocket != nullptr)
         disconnect();
-    free(m_pBuffer);
+    he_free(m_pBuffer);
 }
 void Client::disconnect()
 {

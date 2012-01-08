@@ -148,6 +148,8 @@ void GraphicsEngine::init(bool useQt)
         m_Settings.enableDepthEdgeDetect = reader.readBool(L"GFX", L"depthEdge", true);
         m_Settings.enableVignette = reader.readBool(L"GFX", L"vignette", true);
         m_Settings.enableFog = reader.readBool(L"GFX", L"fog", true);
+
+        m_Settings.exposureSpeed = reader.readFloat(L"GFX", L"exposureSpeed", 1.0f);
     }
     else
     {
@@ -170,6 +172,8 @@ void GraphicsEngine::init(bool useQt)
         m_Settings.enableDepthEdgeDetect = true;
         m_Settings.enableVignette = true;
         m_Settings.enableFog = true;
+
+        m_Settings.exposureSpeed = 1.0f;
     }
 
     m_Settings.ssaoSettings.radius = 0.2f;

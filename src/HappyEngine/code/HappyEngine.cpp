@@ -80,6 +80,7 @@ void HappyEngine::cleanup()
     m_AudioThread.join(); // wait for audiothread to finish
 
     //dispose/delete all sub engines here
+    m_pGame = nullptr;
     delete m_p3DRenderer;
     m_p3DRenderer = nullptr;
     delete m_p2DRenderer;
@@ -229,7 +230,7 @@ void HappyEngine::start(gfx::HappyQtWidget* pWidget)
     m_pGame->load();
     m_pQtWidget = pWidget;
 
-	m_pLoadingScreen = NEW tools::LoadingScreen();
+    m_pLoadingScreen = NEW tools::LoadingScreen();
     
     m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
 

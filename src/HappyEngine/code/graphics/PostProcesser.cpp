@@ -126,7 +126,7 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     {
         delete m_pAutoExposure;
         m_pAutoExposure = NEW AutoExposure();
-        m_pAutoExposure->init();
+        m_pAutoExposure->init(settings);
     }
 }
 

@@ -85,6 +85,7 @@
 #include "fx/FxParticleScale.h"
 #include "fx/FxParticleColor.h"
 #include "fx/FxParticleRotation.h"
+#include "fx/FxParticleRotationRate.h"
 #include "fx/FxParticleLocation.h"
 
 namespace happytest {
@@ -321,14 +322,13 @@ void MainGame::load()
     uint effectTestTL = FX->createTimeline();
     gfx::FxTimeLine* pTL(FX->getTimeline(effectTestTL));
     pTL->setParent(m_pTestObject);
-    pTL->setEndTime(60.0f);
+    pTL->setEndTime(20.0f);
     gfx::FxTimeLineTrack* pTrack(pTL->getTrack(pTL->addTrack()));
     gfx::FxParticleSystem* pEffect(pTrack->getComponent<gfx::FxParticleSystem>(pTrack->addComponent(gfx::FxType_ParticleSystem)));
-    pEffect->setMaxParticles(100);
+    pEffect->setMaxParticles(500);
     pEffect->setStartTime(0.0f);
-    pEffect->setEndTime(60.0f);
-
-    pEffect->setTexture(CONTENT->asyncLoadTexture("particles/part1.png"));
+    pEffect->setEndTime(10.0f);
+    pEffect->setMaterial(CONTENT->loadMaterial("particles/particles.material"));
 
     pEffect->setSpawnRate(gfx::IFxVariable<float>::pointer(NEW gfx::FxConstant<float>(100)));
 
@@ -343,6 +343,10 @@ void MainGame::load()
     pRot->setMin(0);
     pRot->setMax(twoPi);
     pPartRot->setValue(pRot);
+
+    gfx::FxParticleRotationRate* pPartRotRate(pEffect->getModifyComponent<gfx::FxParticleRotationRate>(pEffect->addModifyComponent(gfx::PMCT_RotationRate)));
+    gfx::FxConstant<float>::pointer pRotRate(NEW gfx::FxConstant<float>(piOverTwo));
+    pPartRotRate->setValue(pRotRate);
 
     gfx::FxParticleLocation* pPartGrav(pEffect->getInitComponent<gfx::FxParticleLocation>(pEffect->addInitComponent(gfx::PICT_Location)));
     gfx::FxConstant<vec3>::pointer pLoc(NEW gfx::FxConstant<vec3>(vec3(0, 0, 0)));
@@ -363,10 +367,10 @@ void MainGame::load()
     gfx::FxParticleColor* pPartColor(pEffect->getModifyComponent<gfx::FxParticleColor>(pEffect->addModifyComponent(gfx::PMCT_Color)));
     gfx::FxCurve<vec4>::pointer pColor(NEW gfx::FxCurve<vec4>());
     pColor->addPoint(0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f));
-    pColor->addPoint(0.2f, vec4(1.0f, 0.0f, 0.0f, 1.0f));
-    pColor->addPoint(0.4f, vec4(0.0f, 1.0f, 0.0f, 1.0f));
-    pColor->addPoint(0.6f, vec4(0.0f, 0.0f, 1.0f, 1.0f));
-    pColor->addPoint(0.8f, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    pColor->addPoint(0.2f, vec4(10.0f, 5.0f, 1.0f, 1.0f));
+    pColor->addPoint(0.4f, vec4(0.1f, 1.0f, 0.1f, 1.0f));
+    pColor->addPoint(0.6f, vec4(1.0f, 1.0f, 10.0f, 1.0f));
+    pColor->addPoint(0.8f, vec4(0.1f, 1.0f, 0.1f, 1.0f));
     pColor->addPoint(1.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f));
     pPartColor->setValue(pColor);
 
