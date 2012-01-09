@@ -92,6 +92,7 @@ vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
 float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
 {
     vec4 coord = lightMatrix * vec4(position, 1.0f);
+
     coord.xyz /= coord.w;
     if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1)
         return 1.0f;

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
-#include "HappyPCH.h" 
+#include "HappyPCH.h"
 
 #include "Shader.h"
 
@@ -79,7 +79,7 @@ bool validateProgram(GLuint programID)
         const uint BUFFER_SIZE = 512;
         char buffer[BUFFER_SIZE];
         GLsizei length = 0;
-    
+
         glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
         if (length > 0)
         {
@@ -115,13 +115,13 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
 bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
 {
     ASSERT(m_Id != -1, "no need to init twice");
-    
+
     // Read VS and FS files --------------------------->
     io::FileReader reader;
 
     std::string strVS;
     std::string strFS;
-    try 
+    try
     {
         reader.open(vsPath, io::FileReader::OpenType_ASCII);
         strVS = reader.readToEnd();
@@ -153,7 +153,7 @@ bool Shader::initFromMem( const std::string& vs, const std::string& fs, const Sh
     m_VertShaderName = debugVertName;
     m_FragShaderName = debugFragName;
 
-    std::string vsPost = ct::details::ShaderPreProcessor::process(vs, defines);       
+    std::string vsPost = ct::details::ShaderPreProcessor::process(vs, defines);
     std::string fsPost = ct::details::ShaderPreProcessor::process(fs, defines);
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);

@@ -51,7 +51,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual T getValue(float normTime) const
     {
-        std::vector<CurvePoint>::const_iterator it(m_Points.cbegin());
+        typename std::vector<CurvePoint>::const_iterator it(m_Points.cbegin());
         for (; it != m_Points.cend(); ++it)
         {
             if (it->m_NormTime > normTime)

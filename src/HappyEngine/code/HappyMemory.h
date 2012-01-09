@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -89,7 +89,7 @@
         #define he_aligned_free(mem) free(mem)
     #else
         #define he_aligned_free(mem) _aligned_free(mem)
-    #endif   
+    #endif
 #endif
 
 
@@ -113,9 +113,9 @@
 //////////////////////////////////////////////////////////////////////////
 #if DEBUG || _DEBUG
     #ifdef GCC
-        #define he_realloc(mem, newsize) _realloc_dbg(mem, newsize, __FILE__, __LINE__)
+        #define he_realloc(mem, newsize) realloc(mem, newsize)
     #else
-        #define he_realloc(mem, newsize) realloc(mem, newsize)    
+        #define he_realloc(mem, newsize) _realloc_dbg(mem, newsize, __FILE__, __LINE__)
     #endif
 #else
     #define he_realloc(mem, newsize) realloc(mem, newsize)
@@ -134,7 +134,7 @@
                     return temp; \
                 })(memory, oldsize, newsize, alignment)
     #else
-        #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc_dbg(mem, newsize, alignment, __FILE__, __LINE__)    
+        #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc_dbg(mem, newsize, alignment, __FILE__, __LINE__)
     #endif
 #else
     #ifdef GCC
@@ -146,6 +146,6 @@
                         return temp; \
                     })(memory, oldsize, newsize, alignment)
     #else
-        #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc(mem, newsize, alignment)    
+        #define he_aligned_realloc(mem, oldsize, newsize, alignment) _aligned_realloc(mem, newsize, alignment)
     #endif
 #endif

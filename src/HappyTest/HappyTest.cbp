@@ -94,7 +94,6 @@
 			<Add library="PhysX3" />
 			<Add library="SimulationController" />
 			<Add library="LowLevel" />
-			<Add library="PhysXProfileSDK" />
 			<Add library="PhysX3Extensions" />
 			<Add library="Foundation" />
 			<Add library="SceneQuery" />
@@ -105,8 +104,6 @@
 			<Add library="RepX3" />
 			<Add library="PxTask" />
 			<Add library="PhysX3Vehicle" />
-			<Add library="LowLevelCloth" />
-			<Add library="RepXUpgrader3" />
 			<Add directory="../HappyEngine/bin" />
 			<Add directory="$(#boost_dir)/stage/lib" />
 			<Add directory="$(#sdl_dir)/build/.libs" />
