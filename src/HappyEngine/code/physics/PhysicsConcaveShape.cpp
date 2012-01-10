@@ -31,6 +31,12 @@ PhysicsConcaveShape::PhysicsConcaveShape(const PhysicsConcaveMesh::pointer& mesh
 { 
 }
 
+PhysicsConcaveShape::PhysicsConcaveShape(): 
+        m_pInternalMesh(nullptr), m_Scale(vec3::one)
+{
+
+}
+
 
 PhysicsConcaveShape::~PhysicsConcaveShape()
 {

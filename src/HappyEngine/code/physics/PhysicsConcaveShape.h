@@ -33,8 +33,10 @@ namespace px {
 class PhysicsConcaveShape : public IPhysicsShape
 {
 public:
+    PhysicsConcaveShape();
     explicit PhysicsConcaveShape(const PhysicsConcaveMesh::pointer& mesh, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
     virtual ~PhysicsConcaveShape();
+    //copy OK
 
     virtual PhysicsShapeType getType() const { return PhysicsShapeType_Concave; }
 
@@ -45,10 +47,6 @@ private:
 
     physx::PxTriangleMesh* m_pInternalMesh;
     vec3 m_Scale;
-
-    //Disable default copy constructor and default assignment operator
-    PhysicsConcaveShape(const PhysicsConcaveShape&);
-    PhysicsConcaveShape& operator=(const PhysicsConcaveShape&);
 };
 
 } } //end namespace

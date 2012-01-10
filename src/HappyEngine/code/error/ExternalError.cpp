@@ -49,6 +49,7 @@ void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const
             break;
         case physx::PxErrorCode::eDEBUG_WARNING:
             stream << "warning";
+            return;
             break;
         default:
             stream << "unknown err";
