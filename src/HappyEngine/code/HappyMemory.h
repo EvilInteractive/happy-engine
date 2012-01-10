@@ -115,7 +115,7 @@
     #ifdef GCC
         #define he_realloc(mem, newsize) realloc(mem, newsize)
     #else
-        #define he_realloc(mem, newsize) _realloc_dbg(mem, newsize, __FILE__, __LINE__)
+        #define he_realloc(mem, newsize) _realloc_dbg(mem, newsize, _NORMAL_BLOCK, __FILE__, __LINE__)
     #endif
 #else
     #define he_realloc(mem, newsize) realloc(mem, newsize)

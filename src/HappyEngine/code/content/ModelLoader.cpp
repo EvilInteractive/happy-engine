@@ -169,7 +169,7 @@ gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path
             }
             if (pMesh == nullptr)
             {
-                gfx::ModelMesh::pointer pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName));
+                pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName));
                 
                 pModel->addMesh(pMesh);
             }

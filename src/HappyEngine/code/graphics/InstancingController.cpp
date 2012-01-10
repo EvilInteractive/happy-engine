@@ -239,8 +239,8 @@ uint InstancingController::addInstance()
 
 void InstancingController::removeInstance( uint id )
 {
-    ASSERT(m_Dynamic == true, "use dynamic buffer if you want to remove instances");
     m_Instances.remove(id);
+    m_NeedsUpdate = true;
 }
 
 const Material& InstancingController::getMaterial() const
