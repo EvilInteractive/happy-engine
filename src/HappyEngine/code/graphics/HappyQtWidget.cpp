@@ -25,7 +25,7 @@
 #include "HappyEngine.h"
 #include "GraphicsEngine.h"
 #include "Happy2DRenderer.h"
-#include "SimpleForward3DRenderer.h"
+#include "ExtraForward3DRenderer.h"
 #include "QtMouse.h"
 #include "QtKeyboard.h"
 #include "ControlsManager.h"
@@ -58,8 +58,8 @@ void HappyQtWidget::initializeGL()
         GRAPHICS->init(true);
     if (GUI != nullptr)
         GUI->init();
-    if (HE3D != nullptr)       
-        HE3D->init();
+    if (HE3DX != nullptr)       
+        HE3DX->init();
 }
 void HappyQtWidget::paintGL()
 {

@@ -61,6 +61,8 @@ private:
 
     ModelMesh::pointer m_pQuad;
 
+    bool m_bOnce;
+
     //Disable default copy constructor and default assignment operator
     AutoExposure(const AutoExposure&);
     AutoExposure& operator=(const AutoExposure&);

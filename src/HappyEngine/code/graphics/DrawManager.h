@@ -58,6 +58,8 @@ public:
     /* GETTERS */
     const DrawListContainer& getDrawList() const;
 
+    uint getDepthID() const;
+
 private:
     void initSharedTextures();
     void renderShadow();

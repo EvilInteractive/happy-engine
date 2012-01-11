@@ -49,7 +49,7 @@ namespace gfx {
     class GraphicsEngine;
     class Happy2DRenderer;
     class HappyQtWidget;
-    class SimpleForward3DRenderer;
+    class ExtraForward3DRenderer;
     class FxManager;
 }
 namespace io {
@@ -87,7 +87,7 @@ namespace game {
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
 #define CAMERAMANAGER HAPPYENGINE->getCameraManager()
-#define HE3D HAPPYENGINE->get3DRenderer()
+#define HE3DX HAPPYENGINE->get3DRenderer()
 #define FX HAPPYENGINE->getFxManager()
 
 namespace he {
@@ -141,7 +141,7 @@ public:
     sfx::SoundEngine* getSoundEngine() const;
     game::Game* getGame() const;
     game::CameraManager* getCameraManager() const;
-    gfx::SimpleForward3DRenderer* get3DRenderer() const;
+    gfx::ExtraForward3DRenderer* get3DRenderer() const;
     gfx::FxManager* getFxManager() const;
 
 private:
@@ -159,7 +159,7 @@ private:
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
     gfx::Happy2DRenderer* m_p2DRenderer;
-    gfx::SimpleForward3DRenderer* m_p3DRenderer;
+    gfx::ExtraForward3DRenderer* m_p3DRenderer;
     gfx::FxManager* m_pFxManager;
 
     io::ControlsManager* m_pControlsManager;

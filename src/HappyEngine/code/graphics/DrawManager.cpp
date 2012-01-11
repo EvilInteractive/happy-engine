@@ -252,4 +252,9 @@ void DrawManager::initSharedTextures()
     m_pDepthRenderMap->init(depthId, width, height, GL_DEPTH_COMPONENT32);
 }
 
+uint DrawManager::getDepthID() const
+{
+    return m_pDepthRenderMap->getID();
+}
+
 } } //end namespace

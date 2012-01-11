@@ -31,12 +31,10 @@
 namespace he {
     namespace gfx {
 
-AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true), m_DTime(0), m_ExposureSpeed(1.0f)
+AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true), m_DTime(0), m_ExposureSpeed(1.0f), m_bOnce(false)
 {
     m_pLumTexture[0] = Texture2D::pointer(NEW Texture2D());
     m_pLumTexture[1] = Texture2D::pointer(NEW Texture2D());
-
-    GAME->addToTickList(this);
 }
 
 AutoExposure::~AutoExposure()
@@ -118,6 +116,13 @@ const Texture2D::pointer& AutoExposure::getLuminanceMap() const
 
 void AutoExposure::tick( float dTime )
 {
+    // quick fix
+    if (!m_bOnce)
+    {
+        GAME->addToTickList(this);
+        m_bOnce = true;
+    }
+
     m_DTime = dTime;
 }
 

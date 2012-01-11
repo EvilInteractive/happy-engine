@@ -47,7 +47,7 @@
 #include "boost/timer.hpp"
 
 #include "Random.h"
-#include "SimpleForward3DRenderer.h"
+#include "ExtraForward3DRenderer.h"
 
 #include "BinaryStream.h"
 
@@ -530,10 +530,10 @@ void MainGame::drawGui()
     //GRAPHICS->clearAll();
     
     // TODO: implement into drawmanager/GRAPHICS
-    //HE3D->begin(CAMERAMANAGER->getActiveCamera());
+    //HE3DX->begin(CAMERAMANAGER->getActiveCamera());
     //m_pTestGrid->draw();
-    ////HE3D->drawBillboard(m_TestImage, vec3(0,5.0f,0));
-    //HE3D->end();
+    ////HE3DX->drawBillboard(m_TestImage, vec3(0,5.0f,0));
+    //HE3DX->end();
     PROFILER_END();
 }
 

@@ -36,7 +36,7 @@
 #include "CameraManager.h"
 #include "Console.h"
 #include "SoundEngine.h"
-#include "SimpleForward3DRenderer.h"
+#include "ExtraForward3DRenderer.h"
 #include "fx/FxManager.h"
 
 #ifdef HE_ENABLE_QT
@@ -130,7 +130,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     {
         SDL_Init(SDL_INIT_EVERYTHING);
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
-        m_p3DRenderer = NEW gfx::SimpleForward3DRenderer();
+        m_p3DRenderer = NEW gfx::ExtraForward3DRenderer();
         m_pCameraManager = NEW game::CameraManager();
     }
 
@@ -412,7 +412,7 @@ game::Game* HappyEngine::getGame() const
     return m_pGame;
 }
 
-gfx::SimpleForward3DRenderer* HappyEngine::get3DRenderer() const
+gfx::ExtraForward3DRenderer* HappyEngine::get3DRenderer() const
 {
     return m_p3DRenderer;
 }

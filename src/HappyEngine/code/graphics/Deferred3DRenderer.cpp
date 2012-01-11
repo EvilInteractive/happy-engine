@@ -533,6 +533,4 @@ void Deferred3DRenderer::setRenderSettings( const RenderSettings& settings )
     compileShaders();
 }
 
-
-
 } } //end namespace

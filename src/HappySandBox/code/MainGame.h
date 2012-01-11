@@ -30,6 +30,8 @@
 #include "Game.h"
 #include "SceneInfo.h"
 
+#include "Texture2D.h"
+
 namespace happysandbox {
 
 class MainGame : public he::gfx::HappyQtWidget
@@ -45,13 +47,13 @@ public:
 
 private:
 
-    void crazyStuff();
-
     he::tools::Grid* m_pBaseGrid;
 
     he::tools::HappyFxEditorBinding* m_pFxEditorBinding;
 
     SceneInfo* m_pSceneInfo;
+
+    he::gfx::Texture2D::pointer m_pTest;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

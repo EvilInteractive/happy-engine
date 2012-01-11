@@ -25,7 +25,7 @@
 #include "Vertex.h"
 #include <vector>
 #include "BufferLayout.h"
-#include "SimpleForward3DRenderer.h"
+#include "ExtraForward3DRenderer.h"
 
 namespace he {
 namespace tools {
@@ -94,8 +94,8 @@ void Grid::draw()
 {
     mat44 world(mat44::createTranslation(m_Position));
 
-    HE3D->drawSpline(m_pModelMesh, world, m_Color);
-    HE3D->drawSpline(m_pModelMesh2, world, m_Color2);
+    HE3DX->drawSpline(m_pModelMesh, world, m_Color);
+    HE3DX->drawSpline(m_pModelMesh2, world, m_Color2);
 }
 
 /* SETTERS */

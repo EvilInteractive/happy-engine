@@ -400,9 +400,6 @@
     <ClCompile Include="code\io\QtKeyboard.cpp">
       <Filter>happyengine\io\keyboard</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\SimpleForward3DRenderer.cpp">
-      <Filter>happyengine\graphics\rendering\forward</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
       <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClCompile>
@@ -567,6 +564,9 @@
     </ClCompile>
     <ClCompile Include="code\graphics\fx\FxParticleRotationRate.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\ExtraForward3DRenderer.cpp">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -927,9 +927,6 @@
     <ClInclude Include="code\io\Keys.h">
       <Filter>happyengine\io\keyboard</Filter>
     </ClInclude>
-    <ClInclude Include="code\graphics\SimpleForward3DRenderer.h">
-      <Filter>happyengine\graphics\rendering\forward</Filter>
-    </ClInclude>
     <ClInclude Include="code\graphics\Happy2DRenderer.h">
       <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClInclude>
@@ -1154,6 +1151,9 @@
     </ClInclude>
     <ClInclude Include="code\HappyMemory.h">
       <Filter>happyengine</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\ExtraForward3DRenderer.h">
+      <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

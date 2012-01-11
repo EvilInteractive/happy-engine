@@ -34,7 +34,7 @@
 #include "LightManager.h"
 #include "CameraManager.h"
 #include "Deferred3DRenderer.h"
-#include "SimpleForward3DRenderer.h"
+#include "ExtraForward3DRenderer.h"
 #include "FlyCamera.h"
 
 namespace happysandbox {
@@ -94,7 +94,7 @@ void MainGame::load()
 
     /* CAMERA */
     FlyCamera* pCamera(NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    pCamera->lookAt(vec3(-5, 2, -4), vec3::zero, vec3::up);
+    pCamera->lookAt(vec3(5, 2, 4), vec3::zero, vec3::up);
     pCamera->setLens(16.0f/9.0f,piOverFour,0.1f,1000.0f);
     CAMERAMANAGER->addCamera("default", pCamera);
     CAMERAMANAGER->setActiveCamera("default");
@@ -110,13 +110,14 @@ void MainGame::load()
     GRAPHICS->getDeferredRenderer()->setSSAOSettings(settings);*/
 
     /* GUI */
-    GUI->setBlending(false);
+    GUI->setBlending(true);
 
     /* SCENEINFO */
     m_pSceneInfo = NEW SceneInfo();
     GAME->addToTickList(m_pSceneInfo);
 
-    CONSOLE->registerCmd(boost::bind(&MainGame::crazyStuff, this), "c_cool");
+    /* TEST */
+    m_pTest = CONTENT->asyncLoadTexture("editor/light.png");
 }
 
 void MainGame::tick(float dTime)
@@ -128,17 +129,14 @@ void MainGame::tick(float dTime)
 
 void MainGame::drawGui()
 {
+
     /* TEMP */
-    HE3D->begin(CAMERAMANAGER->getActiveCamera());
+    HE3DX->begin(CAMERAMANAGER->getActiveCamera());
         m_pBaseGrid->draw();
-    HE3D->end();
+        HE3DX->drawBillboard(m_pTest, he::vec3(-3.0f,5.0f,-2.0f));
+    HE3DX->end();
 
     m_pSceneInfo->draw();
-}
-
-void MainGame::crazyStuff()
-{
-    CONSOLE->addMessage("This shit works like a boss", he::CMSG_TYPE_WARNING);
 }
 
 } //end namespace

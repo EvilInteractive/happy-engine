@@ -73,6 +73,9 @@
     <ClCompile Include="code\SceneInfo.cpp">
       <Filter>Game Files\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="code\TransformTools.cpp">
+      <Filter>Game Files\Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="HappySandbox.ui">
@@ -102,6 +105,9 @@
       <Filter>Game Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="code\SceneInfo.h">
+      <Filter>Game Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="code\TransformTools.h">
       <Filter>Game Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>

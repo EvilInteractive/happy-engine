@@ -102,12 +102,10 @@ gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort siz
 
 const gfx::Font::pointer& ContentManager::getDefaultFont(ushort size)
 {
-    if (m_pDefaultFont == nullptr)
-    {
-        m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
-    }
-
-    return m_pDefaultFont;
+    /*if (m_pDefaultFont == nullptr)
+    {*/
+    return m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
+    //}
 }
 
 gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
