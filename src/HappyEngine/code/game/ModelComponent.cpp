@@ -37,9 +37,10 @@ ModelComponent::~ModelComponent()
 {
 }
 
-void ModelComponent::init( Entity* pParent )
+void ModelComponent::init(Entity* pParent)
 {
     m_pParent = pParent;
+
     GRAPHICS->addToDrawList(this);
 }
 

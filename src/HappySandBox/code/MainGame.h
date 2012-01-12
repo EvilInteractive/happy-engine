@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -29,6 +29,7 @@
 #include "HappyFxEditorBinding.h"
 #include "Game.h"
 #include "SceneInfo.h"
+#include "TransformTools.h"
 
 #include "Texture2D.h"
 
@@ -54,6 +55,8 @@ private:
     SceneInfo* m_pSceneInfo;
 
     he::gfx::Texture2D::pointer m_pTest;
+
+    TransformTools* m_pTransFormTools;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

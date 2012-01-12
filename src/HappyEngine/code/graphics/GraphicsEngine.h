@@ -72,6 +72,7 @@ public:
     void toggleFullscreen(bool isFullscreen);
 
     uint pick(const vec2& screenPoint);
+    uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
 
     /* SETTERS */
     void setWindowTitle(const std::string& caption);

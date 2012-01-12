@@ -172,6 +172,86 @@ uint Picker::pick(const vec2& screenPoint)
         return ID2[(id - 1)];
 }
 
+uint Picker::pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList)
+{
+    ASSERT(m_bInitialized, "Initialize picker before using!");
+
+    std::vector<uint> ID1;
+
+    // cull drawlist
+    std::vector<IDrawable*> culledDrawList;
+
+    uint i(0);                                                    
+    std::for_each(drawList.cbegin(),drawList.cend(), [&](IDrawable* pDrawable)
+    {
+        /*if (pDrawable->isInCamera(CAMERAMANAGER->getActiveCamera()))
+        {*/
+            culledDrawList.push_back(pDrawable);
+            ID1.push_back(i);
+        //}
+
+        ++i;
+    });
+
+    // create list with items to be picked
+    std::vector<IDrawable*> pickList;
+    std::vector<uint> ID2;
+
+    i = 0;
+    std::sort(culledDrawList.begin(), culledDrawList.end());
+    std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
+    {
+        const gfx::IPickable* pPick(dynamic_cast<gfx::IPickable*>(pDrawable));
+        if (pPick != nullptr && pPick->isPickable())
+        {
+            pickList.push_back(pDrawable);
+            ID2.push_back(ID1[i]);
+        }
+
+        ++i;
+    });
+
+    GL::heBlendEnabled(false);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
+
+    GL::heBindFbo(m_RenderFboID);
+    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, buffers);
+
+    GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    i = 1;
+    std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
+    {
+        byte packedID[4];
+        he_memcpy(packedID, &i, 4);
+
+        m_pPickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
+        pDrawable->applyMaterial(m_pPickEffect->getMaterial(), CAMERAMANAGER->getActiveCamera());
+        pDrawable->draw();
+
+        ++i;
+    });
+
+    //glGetError();
+
+    byte packedID[4];
+    glReadPixels(	GRAPHICS->getScreenWidth() - static_cast<int>(screenPoint.x),
+        GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
+        1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
+
+    uint id(0);
+    he_memcpy(&id, packedID, 4);
+
+    if (id == 0)
+        return UINT_MAX;
+    else
+        return ID2[(id - 1)];
+}
+
 void Picker::drawDebug() const
 {
     GUI->drawTexture2D(m_pIDTexture, vec2(12, 12), vec2(640, 320));

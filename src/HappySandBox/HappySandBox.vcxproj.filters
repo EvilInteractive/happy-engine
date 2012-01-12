@@ -76,6 +76,18 @@
     <ClCompile Include="code\TransformTools.cpp">
       <Filter>Game Files\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="code\ContentBrowser.cpp">
+      <Filter>Game Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ContentBrowser.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ContentBrowser.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="code\World.cpp">
+      <Filter>Game Files\Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="HappySandbox.ui">
@@ -93,6 +105,12 @@
     <CustomBuild Include="code\HappySandbox.h">
       <Filter>Game Files\Editor</Filter>
     </CustomBuild>
+    <CustomBuild Include="ContentBrowser.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="code\ContentBrowser.h">
+      <Filter>Game Files\Editor</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_HappySandbox.h">
@@ -108,6 +126,12 @@
       <Filter>Game Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="code\TransformTools.h">
+      <Filter>Game Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_ContentBrowser.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="code\World.h">
       <Filter>Game Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>

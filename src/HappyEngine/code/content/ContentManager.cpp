@@ -119,7 +119,6 @@ gfx::Material ContentManager::loadMaterial(const std::string& asset)
     return m_pMaterialLoader->load(m_ContentRootDir + m_MaterialFolder + asset);
 }
 
-
 void ContentManager::setRootDir(const std::string& root)
 {
     m_ContentRootDir = root;

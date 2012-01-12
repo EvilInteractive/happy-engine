@@ -292,6 +292,7 @@ void GraphicsEngine::clearAll() const
 }
 void GraphicsEngine::clearColor() const
 {
+    GL::heClearColor(m_ClearColor);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 void GraphicsEngine::clearDepth() const
@@ -331,6 +332,11 @@ void GraphicsEngine::initPicking()
 uint GraphicsEngine::pick(const vec2& screenPoint)
 {
     return m_pPicker->pick(screenPoint);
+}
+
+uint GraphicsEngine::pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList)
+{
+    return m_pPicker->pick(screenPoint, drawList);
 }
 
 InstancingManager* GraphicsEngine::getInstancingManager() const

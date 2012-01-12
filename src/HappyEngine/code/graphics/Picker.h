@@ -42,6 +42,7 @@ public:
     void initialize();
     // returns ID of mesh in drawlist which is picked, or UINT_MAX if none
     uint pick(const vec2& screenPoint);
+    uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
 
     void drawDebug() const;
 

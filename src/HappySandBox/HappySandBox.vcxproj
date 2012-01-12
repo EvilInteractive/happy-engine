@@ -86,12 +86,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code\ContentBrowser.cpp" />
     <ClCompile Include="code\SceneInfo.cpp" />
     <ClCompile Include="code\FlyCamera.cpp" />
     <ClCompile Include="code\HappySandbox.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\MainGame.cpp" />
     <ClCompile Include="code\TransformTools.cpp" />
+    <ClCompile Include="code\World.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_ContentBrowser.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_HappyEngine.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -106,6 +111,9 @@
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ContentBrowser.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_HappyEngine.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -151,6 +159,16 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -D_UNICODE -DGLEW_STATIC "-I." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I." "-IC:\SDL\SDL_ttf-2.0.10" "-IC:\SDL\include" "-IC:\OpenAL 1.1 SDK\include" "-IC:\devil sdk\include" "-IC:\glew-1.6.0\include" "-IC:\sfml2\include" "-IC:\boost_1_47_0" "-IC:\sfml2\include" "-I." "-I."</Command>
     </CustomBuild>
+    <CustomBuild Include="code\ContentBrowser.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ContentBrowser.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DWIN32_LEAN_AND_MEAN -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DHE_ENABLE_QT -DGLEW_STATIC -D_UNICODE -DUNICODE "-I." "-I$(SolutionDir)code" "-I$(PHYSX_DIR)\PhysXAPI\characterkinematic" "-I$(PHYSX_DIR)\RepX\include" "-I$(PHYSX_DIR)\PhysXAPI" "-I$(PHYSX_DIR)\PhysXVisualDebugger\PVDCommLayer\Public" "-I$(PHYSX_DIR)\PhysXProfileSDK\sdk\include" "-I$(PHYSX_DIR)\PxFoundation\internal\include" "-I$(PHYSX_DIR)\PxFoundation" "-I$(PHYSX_DIR)\PxTask\include" "-I$(LIBSND_DIR)\include" "-I.\..\HappyEngine\code\physics" "-I.\..\HappyEngine\code\template" "-I.\..\HappyEngine\code\tools" "-I.\..\HappyEngine\code\networking" "-I.\..\HappyEngine\code\math" "-I.\..\HappyEngine\code\io" "-I.\..\HappyEngine\code\graphics" "-I.\..\HappyEngine\code\game" "-I.\..\HappyEngine\code\error" "-I.\..\HappyEngine\code\content" "-I.\..\HappyEngine\code\audio" "-I.\..\HappyEngine\code" "-I.\..\HappyEngine" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I." "-IC:\Libs\SDL-1.3.0-6116\ttf" "-IC:\Libs\assimp\include" "-IC:\Libs\SDL-1.3.0-6116\include" "-IC:\Libs\OpenAL-1.1-SDK\include" "-IC:\Libs\devil\include" "-IC:\Libs\glew-1.6.0\include" "-IC:\Libs\boost_1_47_0" "-I." "-I." "-I."</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ContentBrowser.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DGLEW_STATIC "-I." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I." "-IC:\Libs\SDL-1.3.0-6116\ttf" "-IC:\Libs\assimp\include" "-IC:\Libs\SDL-1.3.0-6116\include" "-IC:\Libs\OpenAL-1.1-SDK\include" "-IC:\Libs\devil\include" "-IC:\Libs\glew-1.6.0\include" "-IC:\Libs\boost_1_47_0" "-I." "-I."</Command>
+    </CustomBuild>
     <ClInclude Include="code\SceneInfo.h" />
     <ClInclude Include="code\FlyCamera.h" />
     <CustomBuild Include="code\HappySandbox.h">
@@ -165,6 +183,8 @@
     </CustomBuild>
     <ClInclude Include="code\MainGame.h" />
     <ClInclude Include="code\TransformTools.h" />
+    <ClInclude Include="code\World.h" />
+    <ClInclude Include="GeneratedFiles\ui_ContentBrowser.h" />
     <ClInclude Include="GeneratedFiles\ui_HappySandbox.h" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +198,19 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Rcc%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="ContentBrowser.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

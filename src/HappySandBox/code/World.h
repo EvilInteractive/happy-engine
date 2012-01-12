@@ -15,21 +15,43 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: 
+//Author:  Sebastiaan Sprengers
+//Created: 12/01/2012
 
-#include "X.h"
-#include "HappyPCH.h"
+#ifndef _WORLD_H_
+#define _WORLD_H_
+#pragma once
+
+#include "Entity.h"
+#include <vector>
 
 namespace happysandbox {
 
-X::X()
+class World
 {
-}
+public:
 
+    /* CONSTRUCTOR - DESTRUCTOR */
+    World();
+    virtual ~World();
 
-X::~X()
-{
-}
+    /* GENERAL */
+    void addEntity(he::game::Entity* pEnt);
+    void removeEntity(he::game::Entity* pEnt);
+
+    /* GETTERS */
+    const std::vector<he::game::Entity*>& getEntities();
+
+private:
+
+    /* DATAMEMBERS */
+    std::vector<he::game::Entity*> m_Entities;
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    World(const World&);
+    World& operator=(const World&);
+};
 
 } //end namespace
+
+#endif

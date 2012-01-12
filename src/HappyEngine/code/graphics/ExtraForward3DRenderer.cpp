@@ -114,6 +114,9 @@ void ExtraForward3DRenderer::begin(const Camera* pCamera)
     m_BillboardMatrix = mat44::createBillboard(pCamera);
 
     m_pCamera = pCamera;
+
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 }
 
 void ExtraForward3DRenderer::end()
@@ -157,7 +160,7 @@ void ExtraForward3DRenderer::drawColored(const ModelMesh::pointer& model, const 
     m_pColorEffect->setColor(color);
 
     GL::heBindVao(model->getVertexArraysID());
-    glDrawElements(GL_LINES, model->getNumIndices(), model->getIndexType(), 0);
+    glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
 }
 
 void ExtraForward3DRenderer::drawColoredNoDepth(const ModelMesh::pointer& model, const mat44& world, const Color& color) const
@@ -171,7 +174,7 @@ void ExtraForward3DRenderer::drawColoredNoDepth(const ModelMesh::pointer& model,
     m_pColorEffect->setColor(color);
 
     GL::heBindVao(model->getVertexArraysID());
-    glDrawElements(GL_LINES, model->getNumIndices(), model->getIndexType(), 0);
+    glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
 
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);

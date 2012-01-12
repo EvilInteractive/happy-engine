@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="HappySandBox">
+    <file>data/textures/icons/toolbar_content.png</file>
     <file>data/textures/icons/toolbar_rotate.png</file>
     <file>data/textures/icons/toolbar_scale.png</file>
     <file>data/textures/icons/toolbar_move.png</file>

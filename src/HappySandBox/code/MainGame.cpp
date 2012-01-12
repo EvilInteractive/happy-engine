@@ -1,19 +1,20 @@
-//HappySandbox Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
-//This file is part of HappySandbox.
+//This file is part of HappyEngine.
 //
-//    HappySandbox is free software: you can redistribute it and/or modify
+//    HappyEngine is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Lesser General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    HappySandbox is distributed in the hope that it will be useful,
+//    HappyEngine is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU Lesser General Public License for more details.
 //
 //    You should have received a copy of the GNU Lesser General Public License
-//    along with HappySandbox.  If not, see <http://www.gnu.org/licenses/>.
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+
 
 #include "MainGame.h"
 
@@ -40,7 +41,8 @@
 namespace happysandbox {
 
 MainGame::MainGame(QWidget* parent) :   HappyQtWidget(parent), m_pBaseGrid(nullptr),
-                                        m_pSceneInfo(nullptr), m_pFxEditorBinding(NEW he::tools::HappyFxEditorBinding())
+                                        m_pSceneInfo(nullptr), m_pFxEditorBinding(NEW he::tools::HappyFxEditorBinding()),
+                                        m_pTransFormTools(nullptr)
 {
 }
 
@@ -52,6 +54,7 @@ MainGame::~MainGame()
     delete m_pBaseGrid;
     delete m_pFxEditorBinding;
     delete m_pSceneInfo;
+    delete m_pTransFormTools;
 }
 
 void MainGame::init()
@@ -82,13 +85,15 @@ void MainGame::load()
 {
     using namespace he;
 
+    GRAPHICS->setBackgroundColor(he::Color(0.0f,0.0f,0.0f,0.0f));
+
     /* LIGHT */
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 10.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 5.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 30.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 1.0f);
 
     /* GRID */
     m_pBaseGrid = NEW he::tools::Grid(he::vec3(0,0,0), 100, 1.0f);
-    m_pBaseGrid->setColor(Color(0.6f,0.6f,0.6f), Color(1.0f,1.0f,1.0f));
+    m_pBaseGrid->setColor(Color(0.2f,0.2f,0.2f), Color(0.6f,0.6f,0.6f));
 
     GRAPHICS->initPicking();
 
@@ -116,6 +121,10 @@ void MainGame::load()
     m_pSceneInfo = NEW SceneInfo();
     GAME->addToTickList(m_pSceneInfo);
 
+    /* TRANSFORM TOOLS */
+    m_pTransFormTools = NEW TransformTools();
+    GAME->addToTickList(m_pTransFormTools);
+
     /* TEST */
     m_pTest = CONTENT->asyncLoadTexture("editor/light.png");
 }
@@ -133,6 +142,7 @@ void MainGame::drawGui()
     /* TEMP */
     HE3DX->begin(CAMERAMANAGER->getActiveCamera());
         m_pBaseGrid->draw();
+        m_pTransFormTools->draw();
         HE3DX->drawBillboard(m_pTest, he::vec3(-3.0f,5.0f,-2.0f));
     HE3DX->end();
 
