@@ -41,21 +41,21 @@ class TextureLoader
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	TextureLoader();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    TextureLoader();
     virtual ~TextureLoader();
     
-	/* GENERAL */
+    /* GENERAL */
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Texture2D::pointer asyncLoadTexture(const std::string& path);
+    gfx::Texture2D::pointer asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
     gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
 
-	gfx::Texture2D::pointer loadTexture(const std::string& path);
+    gfx::Texture2D::pointer loadTexture(const std::string& path);
     gfx::Texture2D::pointer makeTexture(const Color& color);
 
-	/* GETTERS */
+    /* GETTERS */
     bool isLoading() const;
 
 private:
@@ -68,6 +68,7 @@ private:
         uint height;
         uint format;
         uint id;
+        bool storePixels;
         Color color;
         gfx::Texture2D::pointer tex;
     };
@@ -84,7 +85,7 @@ private:
 
     boost::thread m_TextureLoadThread;
 
-	AssetContainer<gfx::Texture2D::pointer>* m_pAssetContainer;
+    AssetContainer<gfx::Texture2D::pointer>* m_pAssetContainer;
 
     /* DEFAULT COPY & ASSIGNMENT */
     TextureLoader(const TextureLoader&);

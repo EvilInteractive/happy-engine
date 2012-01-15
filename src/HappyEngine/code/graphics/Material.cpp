@@ -33,7 +33,7 @@
 namespace he {
 namespace gfx {
 
-Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false)
+Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false), m_IsBackground(false)
 {
 }
 
@@ -358,6 +358,18 @@ void Material::setNoPost( bool noPost )
 bool Material::noPost() const
 {
     return m_NoPost;
+}
+
+void Material::setIsBackground( bool isBackground )
+{
+    m_IsBackground = isBackground;
+    if (m_IsBackground)
+        m_NoPost = true;
+}
+
+bool Material::isBackground() const
+{
+    return m_IsBackground;
 }
 
 

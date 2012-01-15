@@ -116,10 +116,12 @@
     <ClCompile Include="code\graphics\Simple2DTextureEffect.cpp" />
     <ClCompile Include="code\graphics\SimpleColorEffect.cpp" />
     <ClCompile Include="code\graphics\ExtraForward3DRenderer.cpp" />
+    <ClCompile Include="code\graphics\SkyBox.cpp" />
     <ClCompile Include="code\graphics\SpotLight.cpp" />
     <ClCompile Include="code\graphics\Text.cpp" />
     <ClCompile Include="code\graphics\TextBox.cpp" />
     <ClCompile Include="code\graphics\Texture2D.cpp" />
+    <ClCompile Include="code\graphics\TextureCube.cpp" />
     <ClCompile Include="code\graphics\Vertex.cpp" />
     <ClCompile Include="code\graphics\BufferLayout.cpp" />
     <ClCompile Include="code\HappyEngine.cpp" />
@@ -293,10 +295,12 @@
     <ClInclude Include="code\graphics\Simple2DTextureEffect.h" />
     <ClInclude Include="code\graphics\SimpleColorEffect.h" />
     <ClInclude Include="code\graphics\ExtraForward3DRenderer.h" />
+    <ClInclude Include="code\graphics\SkyBox.h" />
     <ClInclude Include="code\graphics\SpotLight.h" />
     <ClInclude Include="code\graphics\Text.h" />
     <ClInclude Include="code\graphics\TextBox.h" />
     <ClInclude Include="code\graphics\Texture2D.h" />
+    <ClInclude Include="code\graphics\TextureCube.h" />
     <ClInclude Include="code\graphics\Vertex.h" />
     <ClInclude Include="code\graphics\BufferLayout.h" />
     <ClInclude Include="code\HappyEngine.h" />

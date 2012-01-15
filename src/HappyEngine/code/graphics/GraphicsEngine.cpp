@@ -121,6 +121,7 @@ void GraphicsEngine::init(bool useQt)
     GL::heSetWindingFrontFace(true);
     GL::heSetCullFace(false);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     io::IniReader reader;
     try { reader.open("settings.ini"); }

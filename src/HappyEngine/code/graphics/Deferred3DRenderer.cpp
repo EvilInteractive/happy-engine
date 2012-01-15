@@ -225,17 +225,17 @@ void Deferred3DRenderer::onScreenResized()
     m_pColorIllTexture = Texture2D::pointer(NEW Texture2D());
     m_pColorIllTexture->init(colorId, width, height, GL_RGBA8);
 
-    // SGI
-    uint sgiId;
-    glGenTextures(1, &sgiId);
-    GL::heBindTexture2D(0, sgiId);
+    // SG
+    uint sgId;
+    glGenTextures(1, &sgId);
+    GL::heBindTexture2D(0, sgId);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     m_pSGTexture = Texture2D::pointer(NEW Texture2D());
-    m_pSGTexture->init(sgiId, width, height, GL_RGBA8);
+    m_pSGTexture->init(sgId, width, height, GL_RGBA8);
 
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
@@ -271,7 +271,7 @@ void Deferred3DRenderer::clear( bool color, bool normal, bool depth )
     int numBuffers(0);
     if (color)
     {
-        buffers[numBuffers++] = GL_COLOR_ATTACHMENT0;
+        //buffers[numBuffers++] = GL_COLOR_ATTACHMENT0; //no use use the color of rendertarget
         buffers[numBuffers++] = GL_COLOR_ATTACHMENT1;
     }
     if (normal)
@@ -292,6 +292,13 @@ void Deferred3DRenderer::clear( bool color, bool normal, bool depth )
     GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
     glClear(flags);
 
+    if (color)
+    {
+        GL::heBindFbo(m_RenderFboId);
+        buffers[0] = GL_COLOR_ATTACHMENT0;
+        glDrawBuffers(1, buffers);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 }
 
 void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlags)
@@ -304,6 +311,13 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
+    GL::heBlendEnabled(false);
+
+    const static GLenum tempBuffer[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, tempBuffer);
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));    
+    glClear(GL_COLOR_BUFFER_BIT);
+
     const static GLenum collectBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, collectBuffers);
 
@@ -327,11 +341,9 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
     const static GLenum renderBuffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, renderBuffers);
 
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));    
-    glClear(GL_COLOR_BUFFER_BIT);
-
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_One, BlendFunc_One);
+    GL::heBlendEquation(BlendEquation_Add);
     GL::heSetDepthRead(false);
 
     m_SharedShaderData.projParams = vec4(
@@ -342,8 +354,8 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
     m_SharedShaderData.pSharedBuffer->setShaderVar(m_SharedShaderData.projParams);
 
 
-    /*m_pPointLightShader->bind();
-    postPointLights();   */         
+    m_pPointLightShader->bind();
+    postPointLights();           
 
     m_pSpotLightShader->bind();
     postSpotLights();
@@ -369,8 +381,8 @@ void Deferred3DRenderer::drawDebugTextures() const
     {
         GUI->drawTexture2D(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
         GUI->drawTexture2D(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+        GUI->drawTexture2D(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
     }
 }
 
@@ -467,9 +479,10 @@ void Deferred3DRenderer::postPointLights()
             m_pPointLightShader->setShaderVar(m_PointLightData.wvp, camera.getViewProjection() * pLight->getWorldMatrix());
 
             GL::heBindVao(pLight->getLightVolume()->getVertexArraysID());
-            glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+            glDrawElements(GL_TRIANGLES, pLight->getLightVolume()->getNumIndices(), pLight->getLightVolume()->getIndexType(), 0);
         }
     });
+    GL::heSetCullFace(false);
 }
 void Deferred3DRenderer::postSpotLights()
 {
@@ -521,7 +534,7 @@ void Deferred3DRenderer::postSpotLights()
             m_pSpotLightShader->setShaderVar(m_SpotLightData.wvp, camera.getViewProjection() * pLight->getWorldMatrix());
 
             GL::heBindVao(pLight->getLightVolume()->getVertexArraysID());
-            glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+            glDrawElements(GL_TRIANGLES, pLight->getLightVolume()->getNumIndices(), pLight->getLightVolume()->getIndexType(), 0);
         }
     });
 }

@@ -42,7 +42,7 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
 }
 void PointLight::calculateWorld()
 {
-    m_mtxWorld = mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation);
+    m_mtxWorld = mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation + 1);
 }
 
 

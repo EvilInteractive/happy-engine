@@ -291,6 +291,12 @@ void Shader::setShaderVar( uint id, const gfx::Texture2D* pTex2D ) const
     GL::heBindTexture2D(id, pTex2D->getID());
 }
 
+void Shader::setShaderVar( uint id, const gfx::TextureCube::pointer& texCube ) const
+{
+    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    GL::heBindTextureCube(id, texCube->getID());
+}
+
 
 void Shader::setBuffer( uint id, const UniformBuffer::pointer& pBuffer )
 {

@@ -32,6 +32,7 @@
 #include "FPSGraph.h"
 #include "Sound2D.h"
 #include "Sound3D.h"
+#include "SkyBox.h"
 
 #include <vector>
 
@@ -105,6 +106,8 @@ private:
     he::sfx::Sound3D* m_pTestSound3D;
 
     he::tools::Grid* m_pTestGrid;
+
+    he::gfx::SkyBox* m_pSkyBox;
 
     he::tools::HappyFxEditorBinding* m_pFxEditorBinding;
 

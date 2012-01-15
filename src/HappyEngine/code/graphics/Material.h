@@ -58,19 +58,21 @@ public:
                                       BlendFunc sourceBlend  = BlendFunc_One,
                                       BlendFunc destBlend    = BlendFunc_Zero);
     void setNoPost(bool noPost);
+    void setIsBackground(bool isBackground);
 
     bool isBlended() const;
     BlendEquation getBlendEquation() const;
     BlendFunc getSourceBlend() const;
     BlendFunc getDestBlend() const;
     bool noPost() const;
+    bool isBackground() const;
     bool isUsedForInstancing() const;
 
 private:
 
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
-    bool m_IsBlended, m_UsedForInstancing, m_NoPost;
+    bool m_IsBlended, m_UsedForInstancing, m_NoPost, m_IsBackground;
 
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;

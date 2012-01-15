@@ -44,9 +44,10 @@ public:
         F_Main_Blended = 1 << 1,
         F_Loc_AfterPost = 1 << 2,
         F_Loc_BeforePost = 1 << 3,
-        F_Sub_Single = 1 << 4,
-        F_Sub_Skinned = 1 << 5,
-        F_Sub_Instanced = 1 << 6,
+        F_Loc_Background = 1 << 4,
+        F_Sub_Single = 1 << 5,
+        F_Sub_Skinned = 1 << 6,
+        F_Sub_Instanced = 1 << 7,
     };
     void for_each(uint filter, const boost::function<void(IDrawable*)>& f) const;
 
@@ -59,7 +60,8 @@ private:
 
     static const int BEFOREPOST_INDEX = 0;
     static const int AFTERPOST_INDEX = 1;
-    static const int MAX_I0 = 2;
+    static const int BACKGROUND_INDEX = 2;
+    static const int MAX_I0 = 3;
 
     static const int OPAC_INDEX = 0;
     static const int BLENDING_INDEX = 1;

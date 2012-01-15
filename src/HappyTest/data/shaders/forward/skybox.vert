@@ -15,38 +15,18 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 14/10/2011
+//Author: Bastian Damman
 
 #version 150 core
 
-noperspective in vec2 texCoord;
+in vec3 inPosition;
 
-out vec4 outColor;
+out vec3 passPosition;
 
-uniform sampler2D map;
-#if HDR
-#if BRIGHTPASS
-uniform sampler2D lumMap;
-#endif
-#endif
+uniform mat4 matVP;
 
 void main()
 {
-    vec3 color = texture(map, texCoord).rgb;
-    
-#if BRIGHTPASS
-    float ex = 0.9f;
-#if HDR
-    ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.001f, 1.0f) / 4.0f;
-#endif
-    color *= ex;
-    color -= vec3(1.0f, 1.0f, 1.0f);
-    color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
-    color /= ex;
-#endif
-
-    outColor = vec4(color, 1.0f);
+    passPosition = inPosition.xyz;
+    gl_Position = (matVP * vec4(inPosition, 0.0f)).xyww;
 }
-
-

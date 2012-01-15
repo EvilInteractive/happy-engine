@@ -185,7 +185,12 @@ void main()
 {
     vec2 tex = vec2(1 - texCoord.x, texCoord.y);
 
-    vec3 color = textureLod(colorMap, tex, 0.0f).rgb;
+    vec4 sampleColor = textureLod(colorMap, tex, 0.0f);
+    
+    if (sampleColor.a < 0.01f)
+        discard;
+    
+    vec3 color = sampleColor.rgb;
     
 #if BLOOM
     color += texture(blur0, tex).rgb * 0.5f;  
@@ -195,7 +200,7 @@ void main()
 #endif
 
 #if HDR  
-    float ex = 1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f);
+    float ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.001f, 1.0f);
     color *= ex / 4.0f;  //0 -> 20
 #endif
  

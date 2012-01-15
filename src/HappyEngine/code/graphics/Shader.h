@@ -32,6 +32,7 @@
 #include "vec3.h"
 #include "vec4.h"
 #include "Texture2D.h"
+#include "TextureCube.h"
 #include "HappyTypes.h"
 
 #include "OpenGL.h"
@@ -189,6 +190,7 @@ public:
     void setShaderVar(uint id, const std::vector<mat44>& matrixArray) const;
     void setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const;
     void setShaderVar(uint id, const gfx::Texture2D* pTex2D) const;
+    void setShaderVar(uint id, const gfx::TextureCube::pointer& texCube) const;
 
     typedef boost::shared_ptr<Shader> pointer;
 

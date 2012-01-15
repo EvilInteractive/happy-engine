@@ -72,7 +72,7 @@ void Picker::initialize()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pIDTexture->init(renderTexture, width, height, GL_R32I);
+    m_pIDTexture->init(renderTexture, width, height, GL_RGBA8);
 
     glGenRenderbuffers(1, &m_DepthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderBuffer);

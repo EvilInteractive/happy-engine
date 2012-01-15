@@ -38,7 +38,7 @@ DrawListContainer::~DrawListContainer()
 void gfx::DrawListContainer::insert( IDrawable* pDrawable )
 {
     #if !GCC
-    uint i0(pDrawable->getMaterial().noPost()?AFTERPOST_INDEX:BEFOREPOST_INDEX);
+    uint i0(pDrawable->getMaterial().noPost()?(pDrawable->getMaterial().isBackground()?BACKGROUND_INDEX:AFTERPOST_INDEX):BEFOREPOST_INDEX);
     uint i1(pDrawable->getMaterial().isBlended()?BLENDING_INDEX:OPAC_INDEX);
     uint i2(pDrawable->isInstanced()?INSTANCE_INDEX:(pDrawable->isSkinned()?SKINNED_INDEX:SINGLE_INDEX));
     #else
@@ -47,7 +47,10 @@ void gfx::DrawListContainer::insert( IDrawable* pDrawable )
     uint i2(0);
 
     if (pDrawable->getMaterial().noPost())
-        i0 = AFTERPOST_INDEX;
+        if (pDrawable->getMaterial().isBackground())
+            i0 = BACKGROUND_INDEX;
+        else
+            i0 = AFTERPOST_INDEX;
     else
         i0 = BEFOREPOST_INDEX;
 
@@ -81,7 +84,7 @@ void removeFromVector( DrawListContainer::Container& vec, const IDrawable* pDraw
 void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
 {
     #if !GCC
-    uint i0(pDrawable->getMaterial().noPost()?AFTERPOST_INDEX:BEFOREPOST_INDEX);
+    uint i0(pDrawable->getMaterial().noPost()?(pDrawable->getMaterial().isBackground()?BACKGROUND_INDEX:AFTERPOST_INDEX):BEFOREPOST_INDEX);
     uint i1(pDrawable->getMaterial().isBlended()?BLENDING_INDEX:OPAC_INDEX);
     uint i2(pDrawable->isInstanced()?INSTANCE_INDEX:(pDrawable->isSkinned()?SKINNED_INDEX:SINGLE_INDEX));
     #else
@@ -90,7 +93,10 @@ void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
     uint i2(0);
 
     if (pDrawable->getMaterial().noPost())
-        i0 = AFTERPOST_INDEX;
+        if (pDrawable->getMaterial().isBackground())
+            i0 = BACKGROUND_INDEX;
+        else
+            i0 = AFTERPOST_INDEX;
     else
         i0 = BEFOREPOST_INDEX;
 
@@ -112,7 +118,7 @@ void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
 void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(IDrawable*)>& f ) const
 {
     #pragma region ASSERTS
-    ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost,
+    ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost || filter & F_Loc_Background,
         "flag at least one Location filter: F_Loc_BeforePost or F_Loc_AfterPost");
     ASSERT(filter & F_Sub_Single     || filter & F_Sub_Skinned     || filter & F_Sub_Instanced,
         "flag at least one sub filter: F_Sub_Single, F_Sub_Skinned or F_Sub_Instanced");
@@ -121,7 +127,8 @@ void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(I
     for (int i0(0); i0 < MAX_I0; ++i0)
     {
         if ((filter & F_Loc_BeforePost && BEFOREPOST_INDEX == i0 ||
-             filter & F_Loc_AfterPost  && AFTERPOST_INDEX  == i0) == false)
+             filter & F_Loc_AfterPost  && AFTERPOST_INDEX  == i0 || 
+             filter & F_Loc_Background && BACKGROUND_INDEX == i0) == false)
             continue;
 
         for (int i1(0); i1 < MAX_I1; ++i1)

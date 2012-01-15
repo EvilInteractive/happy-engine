@@ -94,12 +94,16 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
         glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
         glGenerateMipmap(GL_TEXTURE_2D);
 
+
+        if (data.storePixels)
+            data.tex->init(texID, data.width, data.height, data.format, data.pData, 4 * data.width * data.height);
+        else
+            data.tex->init(texID, data.width, data.height, data.format);
+
         if (data.path != "")
             ilDeleteImage(data.id);
         else
             delete data.pData;
-
-        data.tex->init(texID, data.width, data.height, data.format);
 
         HE_INFO("Texture create completed: " + data.path);
     }
@@ -136,7 +140,7 @@ gfx::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
         return tex2D;
     }
 }
-gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
+gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path, bool storePixelsInTexture)
 {
     if (m_pAssetContainer->isAssetPresent(path))
     {
@@ -154,6 +158,7 @@ gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path)
         data.height = 0;
         data.format = 0;
         data.tex = tex2D;
+        data.storePixels = storePixelsInTexture;
 
         m_TextureLoadQueueMutex.lock();
         m_TextureLoadQueue.push(data);

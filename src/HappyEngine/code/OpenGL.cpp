@@ -141,6 +141,12 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
         glBindTexture(GL_TEXTURE_2D, tex);
    // }
 }
+void GL::heBindTextureCube( uint texPos, uint tex )
+{
+    glActiveTexture(GL_TEXTURE0 + texPos);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+}
+
 void GL::heBindUniformBuffer( uint uboId, uint bufferId )
 {
     if (m_BoundUbo[uboId] != bufferId)

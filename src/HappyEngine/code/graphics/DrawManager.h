@@ -77,6 +77,9 @@ private:
 
     PostProcesser* m_pPostProcesser;
 
+    IRenderer* m_pBackgroundRenderer;
+    uint m_BackgroundRenderFlags;
+
     IRenderer* m_pAfterPostRenderer;
     uint m_AfterPostRenderFlags;
 

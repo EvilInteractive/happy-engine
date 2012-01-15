@@ -92,6 +92,8 @@ void AutoExposure::init(const RenderSettings& settings)
     ///                         LOAD RENDER QUAD                           ///
     //////////////////////////////////////////////////////////////////////////
     m_pQuad = CONTENT->getFullscreenQuad();
+
+    GAME->addToTickList(this);
 }
 
 void AutoExposure::calculate( const Texture2D::pointer& pHdrMap)
@@ -117,11 +119,11 @@ const Texture2D::pointer& AutoExposure::getLuminanceMap() const
 void AutoExposure::tick( float dTime )
 {
     // quick fix
-    if (!m_bOnce)
-    {
-        GAME->addToTickList(this);
-        m_bOnce = true;
-    }
+    //if (!m_bOnce)
+    //{
+    //    GAME->addToTickList(this);
+    //    m_bOnce = true;
+    //}
 
     m_DTime = dTime;
 }

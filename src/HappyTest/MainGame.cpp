@@ -72,6 +72,8 @@
 
 #include "SlotPContainer.h"
 
+#include "SkyBox.h"
+
 #include "fx/FxManager.h"
 #include "fx/FxTimeLine.h"
 #include "fx/FxTimeLineTrack.h"
@@ -97,7 +99,8 @@ MainGame::MainGame() : m_pTestObject(nullptr), m_BackgroundIndex(0),
                        m_pTextBox(nullptr), m_bTest(true), m_bTest2(true), m_Test3("You can edit this string via console"),
                        m_pScene(0), m_pSky(0),
                        m_pTestSound2D(nullptr), m_pTestGrid(nullptr),
-                       m_pFrictionTable(nullptr), m_pFxEditorBinding(NEW he::tools::HappyFxEditorBinding())
+                       m_pFrictionTable(nullptr), m_pFxEditorBinding(NEW he::tools::HappyFxEditorBinding()),
+                       m_pSkyBox(NEW he::gfx::SkyBox())
 {
     using namespace he;
     m_BackgroundColors[0] = Color((byte)10, (byte)130, (byte)131, (byte)255);
@@ -131,6 +134,8 @@ MainGame::~MainGame()
     delete m_pTestButton2;
     delete m_pTestButton3;
     delete m_pTestGrid;
+
+    delete m_pSkyBox;
 
     delete m_pFrictionTable;
 
@@ -191,25 +196,16 @@ void MainGame::load()
     PHYSICS->getCarManager()->init(m_pFrictionTable);
     PHYSICS->startSimulation();
 
-    gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 5.0f, 1, 10));
-    //m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(vec3(-1, 0, -1), vec3(-1, 0, 0), Color((byte)255, 255, 200, 255), 3.0f, piOverFour, 1, 30);
+    gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 10.0f, 0, 10));
 
-    /*Random r;
-    for (int i = 0; i < 100; ++i)
-    {
-        vec3 color(r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f), r.nextFloat(0.0f, 1.0f));
-        color = normalize(color);
-        GRAPHICS->getLightManager()->addPointLight(vec3(r.nextFloat(-50, 50), r.nextFloat(3, 20), r.nextFloat(-50, 50)), 
-                                    Color(color.x, color.y, color.z, 1.0f), r.nextFloat(50, 100), 1, r.nextFloat(20, 50));
-    }*/
+    m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 0, 30);
 
-    m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 1, 30);
-
-       //GRAPHICS->getLightManager()->addSpotLight(vec3(r.nextFloat(0, -100), r.nextFloat(5, 20), r.nextFloat(0, 100)), vec3(0, -1, 0), Color((byte)255, 255, 200, 255), 1.0f, piOverTwo, 1, 20);
-    //GRAPHICS->getLightManager()->setDirectionalLight(vec3(0, 1, 0), Color((byte)150, 200, 255, 255), 20.0f);
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.8f, 1.0f), 1.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.8f, 0.4f, 1.0f, 1.0f), 0.2f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 0.4f);
    
+    m_pSkyBox->load("skybox/night/night.png");
+    GRAPHICS->addToDrawList(m_pSkyBox);
+
     //Bullet
     gfx::Material matBullet(CONTENT->loadMaterial("bullet.material"));
     gfx::ModelMesh::pointer meshBullet(CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", matBullet.getCompatibleVertexLayout()));
@@ -241,14 +237,6 @@ void MainGame::load()
         he::px::PhysicsConcaveShape pShape(pMesh);
         pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(DM_Tarmac));
     });
-
-    m_pSky = NEW he::game::Entity();
-    game::ModelComponent* pSkyModelComp(NEW game::ModelComponent());
-    pSkyModelComp->setMaterial(CONTENT->loadMaterial("sky.material"));
-    pSkyModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("skydome.binobj", "M_Sky", pSkyModelComp->getMaterial().getCompatibleVertexLayout()));
-    pSkyModelComp->setLocalTransform(mat44::createScale(vec3(500, 100, 500)));
-    pSkyModelComp->setCastsShadow(false);
-    m_pSky->addComponent(pSkyModelComp);
             
     m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 
@@ -299,21 +287,6 @@ void MainGame::load()
     CONSOLE->registerCmd([](){ CAMERAMANAGER->setActiveCamera("fly"); }, "fly");
     CONSOLE->registerCmd([](){ CAMERAMANAGER->setActiveCamera("car"); }, "car");
 
-    // SSAO
-    /*he::gfx::Deferred3DRenderer::SSAOSettings settings;
-
-    settings.radius = 0.25f;
-    settings.intensity = 4.0f;
-    settings.scale = 4.0f;
-    settings.bias = 0.04f;
-    settings.passes = 2;
-    settings.minIterations = 2;
-    settings.maxIterations = 4;
-
-    GRAPHICS->getDeferredRenderer()->setSSAOSettings(settings);*/
-
-    //m_pFxEditorBinding->init();
-    //GUI->setBlending(true);
 
     CONSOLE->registerCmd(boost::bind(&MainGame::crazyStuff, this), "c_crazy");
 

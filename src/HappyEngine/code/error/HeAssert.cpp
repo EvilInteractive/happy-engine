@@ -36,6 +36,7 @@ void happyAssert(bool isOk, const std::string& message, const char* file, int li
         HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
         HE_ERROR("*" + message);
         #ifndef GCC
+
         __debugbreak();
         #else
         __builtin_trap();

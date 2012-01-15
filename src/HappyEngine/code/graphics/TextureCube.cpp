@@ -19,74 +19,53 @@
 //Created: 11/08/2011
 #include "HappyPCH.h" 
 
-#include "Texture2D.h"
+#include "TextureCube.h"
 #include "GL/glew.h"
-#include "SDL_ttf.h"
 
 namespace he {
 namespace gfx {
 
-uint Texture2D::s_Count = 0;
+uint TextureCube::s_Count = 0;
 
-Texture2D::Texture2D(): m_Id(UINT_MAX), m_Width(0), m_Height(0), m_Format(0), m_isInitialized(false), m_pPixels(nullptr)
+TextureCube::TextureCube(): m_Id(UINT_MAX), m_isInitialized(false)
 {
     ++s_Count;
 }
 
-void Texture2D::init(uint tex, uint width, uint height, uint format, void* pixels, uint bufferSize)
+void TextureCube::init(uint tex)
 {
-    ASSERT(width != 0 && height != 0, "Loaded texture with width = 0 or height = 0 !");
-
     if (m_Id != UINT_MAX)
         glDeleteTextures(1, &m_Id);
-    if (bufferSize > 0)
-    {
-        m_pPixels = he_malloc(bufferSize);
-        he_memcpy(m_pPixels, pixels, bufferSize);
-    }
     m_Id = tex;
-    m_Width = width;
-    m_Height = height;
-    m_Format = format;
     m_CallbackMutex.lock();
     m_isInitialized = true;
     Loaded();
     m_CallbackMutex.unlock();
 }
 
-bool Texture2D::isInitialized() const
+bool TextureCube::isInitialized() const
 {
     return m_isInitialized;
 }
 
-Texture2D::~Texture2D()
+TextureCube::~TextureCube()
 {
-    he_free(m_pPixels);
     glDeleteTextures(1, &m_Id);
     --s_Count;
 }
 
-uint Texture2D::getTextureCount()
+uint TextureCube::getTextureCount()
 {
     return s_Count;
 }
 
 
-uint Texture2D::getID() const
+uint TextureCube::getID() const
 {
     return m_Id;
 }
 
-uint Texture2D::getWidth() const
-{
-    return m_Width;
-}
-uint Texture2D::getHeight() const
-{
-    return m_Height;
-}
-
-void Texture2D::callbackIfLoaded( const boost::function<void()>& callback )
+void TextureCube::callbackIfLoaded( const boost::function<void()>& callback )
 {
     m_CallbackMutex.lock();
     if (m_isInitialized)
@@ -99,16 +78,6 @@ void Texture2D::callbackIfLoaded( const boost::function<void()>& callback )
         Loaded += callback;
         m_CallbackMutex.unlock();
     }
-}
-
-uint Texture2D::getFormat() const
-{
-    return m_Format;
-}
-
-void* Texture2D::getPixelsIfAvailable() const
-{
-    return m_pPixels;
 }
 
 } } //end namespace

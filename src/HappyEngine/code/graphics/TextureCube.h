@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 11/08/2011
 
-#ifndef _HE_TEXTURE2D_H_
-#define _HE_TEXTURE2D_H_
+#ifndef _HE_TEXTURE_CUBE_H_
+#define _HE_TEXTURE_CUBE_H_
 #pragma once
 
 #include "HeAssert.h"
@@ -39,25 +39,20 @@ namespace he {
 namespace gfx {
     
 
-class Texture2D
+class TextureCube
 {
 public:
-    Texture2D();
-    virtual ~Texture2D();
+    TextureCube();
+    virtual ~TextureCube();
 
-    void init(uint tex, uint width, uint height, uint format, void* pixels = nullptr, uint bufferSize = 0);
+    void init(uint tex);
 
-    typedef boost::shared_ptr<Texture2D> pointer;
-    typedef boost::weak_ptr<Texture2D> weak_pointer;
+    typedef boost::shared_ptr<TextureCube> pointer;
+    typedef boost::weak_ptr<TextureCube> weak_pointer;
 
     bool isInitialized() const;
 
     uint getID() const;
-    uint getWidth() const;
-    uint getHeight() const;
-    uint getFormat() const;
-
-    void* getPixelsIfAvailable() const;
 
     void callbackIfLoaded(const boost::function<void()>& callback);
 
@@ -66,21 +61,16 @@ public:
 private:
     boost::mutex m_CallbackMutex;
     event<void> Loaded;
-
-    uint m_Width, m_Height;
-    uint m_Format;
-
+    
     uint m_Id;
 
     static uint s_Count;
 
-    void* m_pPixels;
-
     bool m_isInitialized;
 
     //Disable default copy constructor and default assignment operator
-    Texture2D(const Texture2D&);
-    Texture2D& operator=(const Texture2D&);
+    TextureCube(const TextureCube&);
+    TextureCube& operator=(const TextureCube&);
 };
 
 } } //end namespace

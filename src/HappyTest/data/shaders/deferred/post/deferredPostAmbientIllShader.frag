@@ -124,8 +124,12 @@ float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
 }
 
 void main()
-{    
+{    	
     vec2 ndc = texCoord * 2.0f - 1.0f;
+    vec4 sg = texture(sgMap, texCoord);
+    
+    if (sg.a < 0.01f)
+        discard;
         
     vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
 
@@ -165,7 +169,6 @@ void main()
 #if SPECULAR
     if (shadow > 0.001f)
     {
-        vec4 sg = texture(sgMap, texCoord);	
         vec3 vCamDir = normalize(-position);
         spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
     }
@@ -176,5 +179,5 @@ void main()
      
     //Out         
     outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
-                        , 0.0f);		
+                        , 1.0f);		
 }
