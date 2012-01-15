@@ -22,6 +22,7 @@
 #include "Game.h"
 #include "RiggedModelComponent.h"
 #include "ModelComponent.h"
+#include "LightComponent.h"
 
 #include "HappyEngine.h"
 
@@ -117,6 +118,35 @@ TestObject::TestObject():
     pCharModelComp->setLocalTransform(mat44::createScale(vec3(1, 1, 1)) * mat44::createTranslation(vec3(0.0f, 0.25f, 1.0f)));
     pCharModelComp->setCastsShadow(true);
     addComponent(pCharModelComp);
+
+
+    game::SpotLightComponent* pHeadLight1(NEW game::SpotLightComponent());
+    addComponent(pHeadLight1);
+    pHeadLight1->setOffset(vec3(-0.607f, -0.095, 2.158f));
+    pHeadLight1->setMultiplier(5);
+    pHeadLight1->setAttenuation(0, 20);
+    pHeadLight1->setDirection(normalize(vec3(0, -0.2, -1)));
+
+    game::SpotLightComponent* pHeadLight2(NEW game::SpotLightComponent());
+    addComponent(pHeadLight2);
+    pHeadLight2->setOffset(vec3(0.607f, -0.095, 2.158f));
+    pHeadLight2->setMultiplier(5);
+    pHeadLight2->setAttenuation(0, 20);
+    pHeadLight2->setDirection(normalize(vec3(0, -0.2, -1)));
+
+    game::PointLightComponent* pRearLight1(NEW game::PointLightComponent());
+    addComponent(pRearLight1);
+    pRearLight1->setOffset(vec3(0.567f, 0.047, -2.219f));
+    pRearLight1->setMultiplier(2);
+    pRearLight1->setAttenuation(0, 1);
+    pRearLight1->setColor(vec3(1.0f, 0.5f, 0.5f));
+
+    game::PointLightComponent* pRearLight2(NEW game::PointLightComponent());
+    addComponent(pRearLight2);
+    pRearLight2->setOffset(vec3(-0.567f, 0.047, -2.219f));
+    pRearLight2->setMultiplier(2);
+    pRearLight2->setAttenuation(0, 1);
+    pRearLight2->setColor(vec3(1.0f, 0.2f, 0.2f));
 
     m_pCarEngineSfx = AUDIO->loadSound3D("../data/audio/carIdle.wav", false);
     m_pCarEngineSfx->setLooping(true);

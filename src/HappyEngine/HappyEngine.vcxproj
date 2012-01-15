@@ -49,6 +49,7 @@
     <ClCompile Include="code\game\Entity.cpp" />
     <ClCompile Include="code\game\FxComponent.cpp" />
     <ClCompile Include="code\game\InstancedModelComponent.cpp" />
+    <ClCompile Include="code\game\LightComponent.cpp" />
     <ClCompile Include="code\game\ModelComponent.cpp" />
     <ClCompile Include="code\game\DynamicPhysicsComponent.cpp" />
     <ClCompile Include="code\game\RiggedModelComponent.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="code\game\Game.h" />
     <ClInclude Include="code\game\InstancedModelComponent.h" />
     <ClInclude Include="code\game\ITickable.h" />
+    <ClInclude Include="code\game\LightComponent.h" />
     <ClInclude Include="code\game\ModelComponent.h" />
     <ClInclude Include="code\game\DynamicPhysicsComponent.h" />
     <ClInclude Include="code\game\RiggedModelComponent.h" />

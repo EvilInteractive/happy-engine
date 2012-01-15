@@ -26,6 +26,7 @@
 #include "Deferred3DRenderer.h"
 #include "Entity.h"
 #include "ContentManager.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {
@@ -38,7 +39,8 @@ SpotLight::SpotLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_Direction(0, 
     m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
     BufferLayout vertexLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight", vertexLayout);
+    //m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight", vertexLayout); //HACK: wrong volume
+    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight", vertexLayout); //HACK: wrong volume
     m_pModel = m_pLightVolume;
 }
 void SpotLight::calculateWorld()
@@ -132,6 +134,11 @@ const Material& SpotLight::getMaterial() const
 const ModelMesh::pointer& SpotLight::getModelMesh() const
 {
     return m_pModel;
+}
+
+float SpotLight::getFov() const
+{
+    return asinf(m_CosCutoff) * 2.0f;
 }
 
 } } //end namespace

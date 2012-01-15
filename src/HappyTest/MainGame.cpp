@@ -195,13 +195,9 @@ void MainGame::load()
 
     PHYSICS->getCarManager()->init(m_pFrictionTable);
     PHYSICS->startSimulation();
-
-    gfx::PointLight::pointer pPlight(GRAPHICS->getLightManager()->addPointLight(vec3(0, 2, 0), Color((byte)255, 50, 50, 255), 10.0f, 0, 10));
-
-    m_pCarLight = GRAPHICS->getLightManager()->addPointLight(vec3(), Color(1.0f, 0.8f, 0.5f), 5, 0, 30);
-
+    
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.8f, 0.4f, 1.0f, 1.0f), 0.2f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 0.4f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 0.7f);
    
     m_pSkyBox->load("skybox/night/night.png");
     GRAPHICS->addToDrawList(m_pSkyBox);
@@ -219,19 +215,19 @@ void MainGame::load()
 
     m_pScene = NEW he::game::Entity();
     game::ModelComponent* pSceneModelComp(NEW game::ModelComponent());
-    pSceneModelComp->setMaterial(CONTENT->loadMaterial("testScene.material"));
-    pSceneModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("testScene.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
+    pSceneModelComp->setMaterial(CONTENT->loadMaterial("testSceneBas.material"));
+    pSceneModelComp->setModelMesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", pSceneModelComp->getMaterial().getCompatibleVertexLayout()));
     pSceneModelComp->setVisible(true);
     m_pScene->addComponent(pSceneModelComp);
     game::StaticPhysicsComponent* pScenePxComp(NEW game::StaticPhysicsComponent());
     m_pScene->addComponent(pScenePxComp);
-    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testScene.pxcv"));
+    const auto& pSceneCVmeshes(CONTENT->loadPhysicsConvex("testSceneBas/testSceneBas.pxcv"));
     std::for_each(pSceneCVmeshes.cbegin(), pSceneCVmeshes.cend(), [&](const px::PhysicsConvexMesh::pointer& pMesh)
     {
         he::px::PhysicsConvexShape pShape(pMesh);
         pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(DM_Concrete));
     });
-    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testScene.pxcc"));
+    const auto& pSceneCCmeshes(CONTENT->loadPhysicsConcave("testSceneBas/testSceneBas.pxcc"));
     std::for_each(pSceneCCmeshes.cbegin(), pSceneCCmeshes.cend(), [&](const px::PhysicsConcaveMesh::pointer& pMesh)
     {
         he::px::PhysicsConcaveShape pShape(pMesh);
@@ -347,7 +343,7 @@ void MainGame::load()
     pColor->addPoint(1.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f));
     pPartColor->setValue(pColor);
 
-    pTL->start();
+    //pTL->start();
 }
 
 void MainGame::crazyStuff()
@@ -370,9 +366,7 @@ void MainGame::tick(float dTime)
 
     AUDIO->setListenerPos(CAMERAMANAGER->getActiveCamera()->getPosition());
     AUDIO->setListenerOrientation(CAMERAMANAGER->getActiveCamera()->getLook(), CAMERAMANAGER->getActiveCamera()->getUp());
-
-    m_pCarLight->setPosition(m_pTestObject->getWorldMatrix().getTranslation() + vec3(0, 2, 0));
-    
+        
     if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space))
     {
         game::Entity* pBullet(NEW game::Entity());

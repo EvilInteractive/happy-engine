@@ -574,6 +574,9 @@
     <ClCompile Include="code\graphics\TextureCube.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="code\game\LightComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -1166,6 +1169,9 @@
     </ClInclude>
     <ClInclude Include="code\graphics\TextureCube.h">
       <Filter>happyengine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\LightComponent.h">
+      <Filter>happyengine\game\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

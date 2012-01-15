@@ -73,6 +73,7 @@ public:
     float getEndAttenuation() const;
     const vec3& getColor() const;
     float getCosCutoff() const;
+    float getFov() const;
     
     mat44 getWorldMatrix() const;
     const ModelMesh::pointer& getLightVolume() const;

@@ -221,7 +221,7 @@ void Forward3DRenderer::clear( bool color, bool normal, bool depth )
         buffers[numBuffers++] = GL_COLOR_ATTACHMENT1;
 
     glDrawBuffers(numBuffers, buffers);
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
 
     GLbitfield flags(0);
     if (color || normal)

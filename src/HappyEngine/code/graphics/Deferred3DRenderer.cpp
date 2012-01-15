@@ -37,6 +37,7 @@
 #include "LightManager.h"
 #include "CameraManager.h"
 #include "Camera.h"
+#include "DrawManager.h"
 
 #include <vector>
 
@@ -450,10 +451,10 @@ void Deferred3DRenderer::postPointLights()
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
     std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
     {
-        if ( !(dot(normalize(pLight->getPosition() - camera.getPosition()), camera.getLook()) < 0 && 
-                lengthSqr(pLight->getPosition() - camera.getPosition()) > pLight->getEndAttenuation() * pLight->getEndAttenuation())) 
+        shapes::Sphere bsphere(pLight->getPosition(), pLight->getEndAttenuation());
+        if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false)  
         {
-            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation())) //if inside light
+            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() + camera.getNearClip() * 2)) //if inside light
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -502,10 +503,10 @@ void Deferred3DRenderer::postSpotLights()
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
     std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
     {
-        if ( !(dot(normalize(pLight->getPosition() - camera.getPosition()), camera.getLook()) < 0 && 
-            lengthSqr(pLight->getPosition() - camera.getPosition()) > pLight->getEndAttenuation() * pLight->getEndAttenuation())) 
+        shapes::Sphere bsphere(pLight->getPosition(), pLight->getEndAttenuation());
+        if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false) 
         {
-            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation())) //if inside light
+            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() + camera.getNearClip() * 2)) //if inside light
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -537,6 +538,7 @@ void Deferred3DRenderer::postSpotLights()
             glDrawElements(GL_TRIANGLES, pLight->getLightVolume()->getNumIndices(), pLight->getLightVolume()->getIndexType(), 0);
         }
     });
+    GL::heSetCullFace(false);
 }
 
 void Deferred3DRenderer::setRenderSettings( const RenderSettings& settings )

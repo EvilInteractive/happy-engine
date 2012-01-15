@@ -52,8 +52,11 @@ PointLight::~PointLight()
 
 void PointLight::setPosition(const vec3& position)
 {
-    m_Position = position;
-    calculateWorld();
+    if (m_Position != position)
+    {
+        m_Position = position;
+        calculateWorld();
+    }
 }
 void PointLight::setMultiplier(float multiplier)
 {
@@ -61,9 +64,12 @@ void PointLight::setMultiplier(float multiplier)
 }
 void PointLight::setAttenuation(float begin, float end)
 {
-    m_BeginAttenuation = begin;
-    m_EndAttenuation = end;
-    calculateWorld();
+    if (begin != m_BeginAttenuation && end != m_EndAttenuation)
+    {
+        m_BeginAttenuation = begin;
+        m_EndAttenuation = end;
+        calculateWorld();
+    }
 }
 void PointLight::setColor(const vec3& color)
 {

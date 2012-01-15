@@ -52,7 +52,7 @@ private:
 
 public:
     PointLight();
-    ~PointLight();
+    virtual ~PointLight();
     //default copy constructor and assignment operator are fine
 
     void setPosition(const vec3& position);
@@ -67,9 +67,9 @@ public:
     float getEndAttenuation() const;
     const vec3& getColor() const;
     
-    mat44 getWorldMatrix() const;
+    mat44 getWorldMatrix() const; 
     const ModelMesh::pointer& getLightVolume() const;
-
+    
     virtual bool getCastsShadow() const { return false; }
 
     virtual const Material& getMaterial() const;

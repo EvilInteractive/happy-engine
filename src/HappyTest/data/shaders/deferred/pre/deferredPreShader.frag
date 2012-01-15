@@ -51,6 +51,10 @@ vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 void main()
 {
     vec4 color = texture(diffuseMap, passTexCoord);
+    
+    if (color.a < 0.5f)
+        discard;
+    
     vec4 normal = texture(normalMap, passTexCoord);
     vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
     

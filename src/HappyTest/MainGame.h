@@ -92,10 +92,7 @@ private:
     he::game::Entity* m_pScene;
     he::game::Entity* m_pSky;
     he::game::Entity* m_pChar;
-
-    he::gfx::SpotLight::pointer m_pSpotLight;
-    he::gfx::PointLight::pointer m_pCarLight;
-
+    
     he::gui::Button* m_pTestButton;
     he::gui::Button* m_pTestButton2;
     he::gui::Button* m_pTestButton3;
