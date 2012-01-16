@@ -59,6 +59,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Expression.Controls" />
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -88,6 +89,9 @@
     <Compile Include="Effect\ComponentEditor\ComponentToolBox.xaml.cs">
       <DependentUpon>ComponentToolBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\CurveViewer.xaml.cs">
+      <DependentUpon>CurveViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Effect\ComponentEditor\PropertyViewer\PropertyGroupView.xaml.cs">
       <DependentUpon>PropertyGroupView.xaml</DependentUpon>
     </Compile>
@@ -96,6 +100,15 @@
     </Compile>
     <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\ConstantVarView.xaml.cs">
       <DependentUpon>ConstantVarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\CurveVarView.xaml.cs">
+      <DependentUpon>CurveVarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\CurveView.xaml.cs">
+      <DependentUpon>CurveView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\RandomVarView.xaml.cs">
+      <DependentUpon>RandomVarView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Effect\TimeLine\TimeLineTrackView.xaml.cs">
       <DependentUpon>TimeLineTrackView.xaml</DependentUpon>
@@ -133,6 +146,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\CurveViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Effect\ComponentEditor\PropertyViewer\PropertyGroupView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -144,6 +161,18 @@
     <Page Include="Effect\ComponentEditor\PropertyViewer\Variable\ConstantVarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\Variable\CurveVarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\Variable\CurveView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\Variable\RandomVarView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Effect\TimeLine\TimeLineTrackView.xaml">
       <SubType>Designer</SubType>

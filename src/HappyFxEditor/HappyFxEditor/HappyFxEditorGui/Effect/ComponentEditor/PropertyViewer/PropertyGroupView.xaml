@@ -15,7 +15,9 @@
 
     <Grid>
         <Expander Header="{Binding Name}" IsExpanded="True">
-            <ItemsControl ItemsSource="{Binding Items}" ItemTemplate="{StaticResource itemTemplate}"/>
+            <ListBox ItemsSource="{Binding Items}" 
+                     ItemTemplate="{StaticResource itemTemplate}" 
+                     SelectedItem="{Binding SelectedItem}" />
         </Expander>
     </Grid>
 </UserControl>

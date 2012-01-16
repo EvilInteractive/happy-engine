@@ -7,7 +7,7 @@ using HappyFxEditorBaseLib;
 
 namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables.Types
 {
-    class FloatType : UndoableChangeSource, IType
+    public class FloatType : UndoableChangeSource, IType
     {
         #region Value
         private float _value;
@@ -25,8 +25,8 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
 
         public string Name { get; private set; }
 
-        public float Min { get; private set; }
-        public float Max { get; private set; }
+        public float Min { get; set; }
+        public float Max { get; set; }
 
         public float Increment { get { return (Max - Min > 10.0f)? 1.0f : 0.01f; } }
 

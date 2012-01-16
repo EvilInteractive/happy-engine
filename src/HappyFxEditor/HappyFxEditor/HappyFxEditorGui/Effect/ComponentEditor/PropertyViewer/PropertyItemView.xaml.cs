@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer;
 
 namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer
 {
@@ -22,6 +23,12 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer
         public PropertyItemView()
         {
             InitializeComponent();
+        }
+        
+        private void ExpanderGotFocus(object sender, RoutedEventArgs e)
+        {
+            PropertyViewerItemContext item = (PropertyViewerItemContext) DataContext;
+            item.Group.SelectedItem = item;
         }
     }
 }

@@ -1,0 +1,106 @@
+﻿<UserControl x:Class="HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.CurveViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cpv="clr-namespace:HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable"
+             mc:Ignorable="d" 
+             d:DesignHeight="290" d:DesignWidth="442">
+    
+    <UserControl.Resources>
+        <Style x:Key="checkboxXStyle" TargetType="CheckBox">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Setter Property="Content" Value="X"/>
+            <Setter Property="IsChecked" Value="True"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableComponentCount}" Value="Rgba">
+                    <Setter Property="Content" Value="R"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="checkboxYStyle" TargetType="CheckBox">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Setter Property="Content" Value="Y"/>
+            <Setter Property="IsChecked" Value="True"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableComponentCount}" Value="X">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding VariableComponentCount}" Value="Rgba">
+                    <Setter Property="Content" Value="G"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="checkboxZStyle" TargetType="CheckBox">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="Content" Value="Z"/>
+            <Setter Property="IsChecked" Value="True"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableComponentCount}" Value="Xyz">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding VariableComponentCount}" Value="Rgba">
+                    <Setter Property="Content" Value="B"/>
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="checkboxWStyle" TargetType="CheckBox">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="Content" Value="A"/>
+            <Setter Property="IsChecked" Value="True"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableComponentCount}" Value="Rgba"> 
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox Grid.Row="0" Grid.Column="0" Height="24" Width="48" 
+                 VerticalAlignment="Top" Margin="2,8" 
+                 Text="{Binding Path=YRange, ElementName=_curve, FallbackValue=1.0}"
+                 LostFocus="TextBoxLostFocus"
+                 PreviewKeyDown="TextBoxPreviewKeyDown"/>
+        <TextBox Grid.Row="1" Grid.Column="0" Height="24" Width="48" 
+                 VerticalAlignment="Bottom"  Margin="2,8" 
+                 Text="{Binding Path=YOffset, ElementName=_curve, FallbackValue=0.0}"
+                 LostFocus="TextBoxLostFocus"
+                 PreviewKeyDown="TextBoxPreviewKeyDown"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Height="24" Width="48" 
+                 HorizontalAlignment="Right" Margin="8,2" 
+                 Text="{Binding Path=XRange, ElementName=_curve, FallbackValue=1.0}"
+                 LostFocus="TextBoxLostFocus"
+                 PreviewKeyDown="TextBoxPreviewKeyDown"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Height="24" Width="48" 
+                 HorizontalAlignment="Left" Margin="8,2" 
+                 Text="{Binding Path=XOffset, ElementName=_curve, FallbackValue=0.0}"
+                 LostFocus="TextBoxLostFocus"
+                 PreviewKeyDown="TextBoxPreviewKeyDown"/>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="4">
+            <CheckBox Style="{StaticResource checkboxXStyle}" IsChecked="{Binding ElementName=_curve, Path=XVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
+            <CheckBox Style="{StaticResource checkboxYStyle}" IsChecked="{Binding ElementName=_curve, Path=YVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
+            <CheckBox Style="{StaticResource checkboxZStyle}" IsChecked="{Binding ElementName=_curve, Path=ZVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
+            <CheckBox Style="{StaticResource checkboxWStyle}" IsChecked="{Binding ElementName=_curve, Path=WVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
+        </StackPanel>
+        
+        <Border Grid.Row="0" Grid.RowSpan="2"  Grid.Column="1" Margin="2" BorderThickness="2" BorderBrush="Black">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+                <cpv:CurveView x:Name="_curve"  CurvePoints="{Binding Variable.Points}"/>
+            </ScrollViewer>
+        </Border>
+        
+    </Grid>
+</UserControl>

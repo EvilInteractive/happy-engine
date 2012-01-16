@@ -82,8 +82,24 @@ namespace HappyFxEditorApp
         public NumericUpDown()
         {
             InitializeComponent();
-            DisplayValue = Value.ToString("F");
+            Loaded += (s, e) =>
+                               {
+                                   DependencyPropertyDescriptor dpd = DependencyPropertyDescriptor.FromProperty(NumericUpDown.ValueProperty, typeof(NumericUpDown));
+                                   if (dpd != null)
+                                   {
+                                       dpd.AddValueChanged(this, (se, ev) =>
+                                       {
+                                           DisplayValue = Value.ToString("F");
+                                       });
+                                   }
+                                   var b2 = GetBindingExpression(NumericUpDown.ValueProperty);
+                                   if (b2 != null)
+                                       b2.UpdateTarget();
+                                   DisplayValue = Value.ToString("F");
+                               };
         }
+
+
 
         private void IncrementClick(object sender, RoutedEventArgs e)
         {
@@ -114,7 +130,10 @@ namespace HappyFxEditorApp
         private void TextChangedKey(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
+            {
                 TextChanged(sender, e);
+                ((TextBox) sender).MoveFocus(new TraversalRequest(FocusNavigationDirection.Left));
+            }
         }
 
         void OnPropertyChanged(string prop)

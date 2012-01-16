@@ -9,15 +9,24 @@
     
     <UserControl.Resources>
         <DataTemplate x:Key="itemTemplate">
-            <StackPanel Orientation="Horizontal">  
-                <TextBlock Text="{Binding Name}" />
-                <TextBlock Text=":  "/>
-                <app:NumericUpDown Value="{Binding Value, Mode=TwoWay}" 
-                                   Minimum="{Binding Min}" Maximum="{Binding Max}" 
-                                   Increment="{Binding Increment}" 
-                                   Margin="4" Height="24" Width="128"/>
-                
-            </StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch"  Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text=":  "/>
+                </StackPanel >
+                <app:NumericUpDown  Grid.Row="0" Grid.Column="1"
+                                    Value="{Binding Value, Mode=TwoWay}" 
+                                    Minimum="{Binding Min}" Maximum="{Binding Max}" 
+                                    Increment="{Binding Increment}" 
+                                    Margin="4" Height="24" Width="128" HorizontalAlignment="Left"/>
+            </Grid>
         </DataTemplate>
     </UserControl.Resources>
     

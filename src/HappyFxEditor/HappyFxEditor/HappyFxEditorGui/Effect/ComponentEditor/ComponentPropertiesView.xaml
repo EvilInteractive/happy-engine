@@ -14,6 +14,22 @@
     </UserControl.Resources>
     
     <Grid>
-        <ItemsControl ItemsSource="{Binding Groups}" ItemTemplate="{StaticResource groupTemplate}" />
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".3*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width=".7*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ScrollViewer Grid.Row="0" Grid.Column="0">
+            <ItemsControl ItemsSource="{Binding Groups}" ItemTemplate="{StaticResource groupTemplate}" />
+        </ScrollViewer>
+
+        <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource gridSplitterHStyle}" HorizontalAlignment="Stretch" />
+
+        <pv:CurveViewer Grid.Row="0" Grid.Column="2" DataContext="{Binding SelectedGroup.SelectedItem}" />
+        
     </Grid>
 </UserControl>

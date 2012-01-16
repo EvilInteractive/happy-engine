@@ -40,9 +40,9 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".4*"/>
+                <ColumnDefinition Width=".2*"/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width=".6*"/>
+                <ColumnDefinition Width=".8*"/>
             </Grid.ColumnDefinitions>
 
                 <ce:ComponentEditorView Grid.Row="0" Grid.Column="0" DataContext="{Binding ComponentEditor}"/>

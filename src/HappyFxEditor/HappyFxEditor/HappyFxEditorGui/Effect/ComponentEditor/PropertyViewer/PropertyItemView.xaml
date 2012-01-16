@@ -6,9 +6,45 @@
              xmlns:pvv="clr-namespace:HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style x:Key="varConstStyle" TargetType="UserControl">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableType}" Value="Constant">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="varRandStyle" TargetType="UserControl">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableType}" Value="Random">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="varCurveStyle" TargetType="UserControl">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding VariableType}" Value="Curve">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <Grid Margin="32,0,0,0">
-        <Expander Header="{Binding Name}" IsExpanded="True">
-            <pvv:ConstantVarView DataContext="{Binding Variable}"/>
+        <Expander IsExpanded="True" GotFocus="ExpanderGotFocus">
+            <Expander.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name}" />
+                    <ComboBox ItemsSource="{Binding PossibleVars}" SelectedItem="{Binding Variable}"/>
+                </StackPanel>
+            </Expander.Header>
+            <StackPanel>
+                <pvv:ConstantVarView DataContext="{Binding Variable}" Style="{StaticResource varConstStyle}"/>
+                <pvv:RandomVarView DataContext="{Binding Variable}" Style="{StaticResource varRandStyle}"/>        
+                <pvv:CurveVarView DataContext="{Binding Variable}" Style="{StaticResource varCurveStyle}"/>       
+            </StackPanel>
         </Expander>
     </Grid>
 </UserControl>

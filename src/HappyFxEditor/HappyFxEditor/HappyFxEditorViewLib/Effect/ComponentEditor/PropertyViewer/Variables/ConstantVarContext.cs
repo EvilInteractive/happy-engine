@@ -8,7 +8,7 @@ using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables.Ty
 
 namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables
 {
-    class ConstantVarContext : PropertyChangeSource, IVariableContext
+    public class ConstantVarContext : PropertyChangeSource, IVariableContext
     {
         #region Value
         private List<IType> _value;
@@ -20,6 +20,7 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         }
         #endregion
 
+        public VariableType VariableType { get { return VariableType.Constant; } }
         public VariableComponentCount VariableComponentCount { get; private set; }
         public VariableComponentType VariableComponentType { get; private set; }
 
@@ -40,7 +41,7 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
 
         public VariableType GetVarType()
         {
-            return VariableType.Constant;
+            return VariableType;
         }
         public VariableComponentType GetVarComponentType()
         {
@@ -61,6 +62,11 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
             }
 
             return temp;
+        }
+
+        public override string ToString()
+        {
+            return "Constant " + VariableComponentCount;
         }
     }
 }

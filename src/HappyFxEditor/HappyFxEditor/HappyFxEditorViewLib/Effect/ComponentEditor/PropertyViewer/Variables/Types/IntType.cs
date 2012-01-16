@@ -7,7 +7,7 @@ using HappyFxEditorBaseLib;
 
 namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables.Types
 {
-    class IntType : UndoableChangeSource, IType
+    public class IntType : UndoableChangeSource, IType
     {
         #region Value
         private int _value;
