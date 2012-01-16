@@ -57,6 +57,7 @@
 #include "DynamicPhysicsComponent.h"
 #include "PhysicsConvexShape.h"
 #include "PhysicsConcaveShape.h"
+#include "LightComponent.h"
 
 #include "PhysicsCarManager.h"
 #include "LightManager.h"
@@ -197,7 +198,7 @@ void MainGame::load()
     PHYSICS->startSimulation();
     
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.8f, 0.4f, 1.0f, 1.0f), 0.2f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-0.5f, 2.0f, -1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 0.7f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, 1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 0.5f);
    
     m_pSkyBox->load("skybox/night/night.png");
     GRAPHICS->addToDrawList(m_pSkyBox);
@@ -233,6 +234,67 @@ void MainGame::load()
         he::px::PhysicsConcaveShape pShape(pMesh);
         pScenePxComp->addShape(&pShape, PHYSICS->getDriveableMaterial(DM_Tarmac));
     });
+    #pragma region lights
+    game::PointLightComponent* pTempPointLightComp(NEW game::PointLightComponent());
+    m_pScene->addComponent(pTempPointLightComp);
+    pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
+    pTempPointLightComp->setMultiplier(5.0f);
+    pTempPointLightComp->setColor(Color((byte)126, 190, 255, 255));
+    pTempPointLightComp->setAttenuation(0, 15);
+
+    pTempPointLightComp = NEW game::PointLightComponent(); //pyramids
+    m_pScene->addComponent(pTempPointLightComp);
+    pTempPointLightComp->setOffset(vec3(-41.428f, 23.483f, 46.274f));
+    pTempPointLightComp->setMultiplier(4.0f);
+    pTempPointLightComp->setColor(Color((byte)229, 174, 126, 255));
+    pTempPointLightComp->setAttenuation(0, 42.2f);
+    pTempPointLightComp->setBroken(true);
+
+    pTempPointLightComp = NEW game::PointLightComponent(); //green
+    m_pScene->addComponent(pTempPointLightComp);
+    pTempPointLightComp->setOffset(vec3(-37.718f, 23.483f, -17.693f));
+    pTempPointLightComp->setMultiplier(6.0f);
+    pTempPointLightComp->setColor(Color((byte)209, 243, 214, 255));
+    pTempPointLightComp->setAttenuation(0, 39.6f);
+
+    pTempPointLightComp = NEW game::PointLightComponent(); //small red
+    m_pScene->addComponent(pTempPointLightComp);
+    pTempPointLightComp->setOffset(vec3(-20.946f, 3.02f, -13.92f));
+    pTempPointLightComp->setMultiplier(6.0f);
+    pTempPointLightComp->setColor(Color((byte)238, 132, 115, 255));
+    pTempPointLightComp->setAttenuation(0, 11.9f);
+
+    pTempPointLightComp = NEW game::PointLightComponent(); //whiteblue side
+    m_pScene->addComponent(pTempPointLightComp);
+    pTempPointLightComp->setOffset(vec3(-18.697f, 5.963f, -63.635f));
+    pTempPointLightComp->setMultiplier(4.0f);
+    pTempPointLightComp->setColor(Color((byte)210, 223, 252, 255));
+    pTempPointLightComp->setAttenuation(0, 25.798f);
+
+    Random rand;
+    for (int i(0); i < 5; ++i) //back
+    {
+        pTempPointLightComp = NEW game::PointLightComponent(); 
+        m_pScene->addComponent(pTempPointLightComp);
+        pTempPointLightComp->setOffset(vec3(65.492f, 5.963f, -63.11f + 29.139*i));
+        pTempPointLightComp->setMultiplier(4.0f);
+        pTempPointLightComp->setColor(Color((byte)246, 240, 194, 255));
+        pTempPointLightComp->setAttenuation(0, 18.57f);
+        if (rand.nextInt(0, 3) == 0)
+            pTempPointLightComp->setBroken(true);
+    }
+    for (int i(0); i < 2; ++i) //back side
+    {
+        pTempPointLightComp = NEW game::PointLightComponent(); 
+        m_pScene->addComponent(pTempPointLightComp);
+        pTempPointLightComp->setOffset(vec3(41.317f - 24.175f * i, 5.963f, 53.443f));
+        pTempPointLightComp->setMultiplier(4.0f);
+        pTempPointLightComp->setColor(Color((byte)246, 240, 194, 255));
+        pTempPointLightComp->setAttenuation(0, 18.57f);
+        if (rand.nextInt(0, 3) == 0)
+            pTempPointLightComp->setBroken(true);
+    }
+    #pragma endregion
             
     m_TestImage = CONTENT->asyncLoadTexture("v8_vantage_color.png");
 

@@ -138,14 +138,14 @@ TestObject::TestObject():
     addComponent(pRearLight1);
     pRearLight1->setOffset(vec3(0.567f, 0.047, -2.219f));
     pRearLight1->setMultiplier(2);
-    pRearLight1->setAttenuation(0, 1);
+    pRearLight1->setAttenuation(0, 3);
     pRearLight1->setColor(vec3(1.0f, 0.5f, 0.5f));
 
     game::PointLightComponent* pRearLight2(NEW game::PointLightComponent());
     addComponent(pRearLight2);
     pRearLight2->setOffset(vec3(-0.567f, 0.047, -2.219f));
     pRearLight2->setMultiplier(2);
-    pRearLight2->setAttenuation(0, 1);
+    pRearLight2->setAttenuation(0, 3);
     pRearLight2->setColor(vec3(1.0f, 0.2f, 0.2f));
 
     m_pCarEngineSfx = AUDIO->loadSound3D("../data/audio/carIdle.wav", false);

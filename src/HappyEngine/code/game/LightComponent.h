@@ -28,6 +28,8 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 
+#include "Random.h"
+
 namespace he {
 namespace game {
     
@@ -57,6 +59,8 @@ public:
     void setColor(const vec3& color);
     void setColor(const Color& color);
 
+    void setBroken(bool broken);
+
     const vec3& getOffset() const;
     float getMultiplier() const;
     float getBeginAttenuation() const;
@@ -66,11 +70,17 @@ public:
 
 private:
     mat44 m_mtxLocalTransform;
+
+    bool m_Broken;
+    bool m_IsOn;
+    float m_BrokenCounter;
     
     Entity* m_pParent;
     
     gfx::PointLight m_OriginalPointLight;
     gfx::PointLight::pointer m_pPointLight;
+
+    static Random s_Random;
 
     //Disable default copy constructor and default assignment operator
     PointLightComponent(const PointLightComponent&);

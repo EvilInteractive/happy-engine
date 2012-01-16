@@ -64,7 +64,7 @@ void PointLight::setMultiplier(float multiplier)
 }
 void PointLight::setAttenuation(float begin, float end)
 {
-    if (begin != m_BeginAttenuation && end != m_EndAttenuation)
+    if (begin != m_BeginAttenuation || end != m_EndAttenuation)
     {
         m_BeginAttenuation = begin;
         m_EndAttenuation = end;

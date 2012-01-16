@@ -454,7 +454,7 @@ void Deferred3DRenderer::postPointLights()
         shapes::Sphere bsphere(pLight->getPosition(), pLight->getEndAttenuation());
         if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false)  
         {
-            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() + camera.getNearClip() * 2)) //if inside light
+            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -506,7 +506,7 @@ void Deferred3DRenderer::postSpotLights()
         shapes::Sphere bsphere(pLight->getPosition(), pLight->getEndAttenuation());
         if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false) 
         {
-            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() + camera.getNearClip() * 2)) //if inside light
+            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);

@@ -30,8 +30,10 @@
 namespace he {
 namespace game {
 
+Random PointLightComponent::s_Random;
+
 #pragma region Pointlight
-PointLightComponent::PointLightComponent()
+PointLightComponent::PointLightComponent(): m_Broken(false), m_IsOn(true), m_BrokenCounter(0)
 {
 }
 
@@ -70,9 +72,19 @@ void PointLightComponent::deserialize(const SerializerStream& stream)
     setAttenuation(beginAtt, endAtt);
 }
 
-void PointLightComponent::tick( float /*dTime*/ )
+void PointLightComponent::tick( float dTime )
 {
     m_pPointLight->setPosition(m_pParent->getWorldMatrix() * m_mtxLocalTransform * m_OriginalPointLight.getPosition());
+    if (m_Broken)
+    {
+        m_BrokenCounter -= dTime;
+        if (m_BrokenCounter <= 0)
+        {
+            m_IsOn = !m_IsOn;
+            m_pPointLight->setMultiplier(m_IsOn? m_OriginalPointLight.getMultiplier() : 0);
+            m_BrokenCounter = s_Random.nextFloat(0, 1);
+        }
+    }
 }
 
 void PointLightComponent::setLocalTransform( const mat44& mtxWorld )
@@ -138,6 +150,12 @@ const vec3& PointLightComponent::getColor() const
 {
     return m_OriginalPointLight.getColor();
 }
+
+void he::game::PointLightComponent::setBroken( bool broken )
+{
+    m_Broken = broken;
+}
+
 #pragma endregion
 
 #pragma region SpotLight
