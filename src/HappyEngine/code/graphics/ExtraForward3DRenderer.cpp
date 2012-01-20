@@ -90,6 +90,9 @@ void ExtraForward3DRenderer::init()
     m_pColorEffect->load();
     m_pBillboardEffect->load();
 
+    vec2 screenDim(static_cast<float>(GRAPHICS->getScreenWidth()), static_cast<float>(GRAPHICS->getScreenHeight()));
+    m_ScreenDimensions = screenDim;
+
     resize();    
 }
 
