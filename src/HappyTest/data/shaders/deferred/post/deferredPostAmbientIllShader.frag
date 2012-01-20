@@ -42,14 +42,14 @@ layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
-layout(packed) uniform LightBuffer
+layout(std140) uniform LightBuffer
 {
     DirectionalLight dirLight;
     AmbientLight ambLight;
 };
 
 #if SHADOWS
-layout(packed) uniform PerFrameBuffer
+layout(std140) uniform PerFrameBuffer
 {
     mat4 mtxDirLight0;
     mat4 mtxDirLight1;

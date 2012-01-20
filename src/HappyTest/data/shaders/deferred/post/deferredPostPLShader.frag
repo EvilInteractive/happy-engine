@@ -39,7 +39,7 @@ layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
-layout(packed) uniform LightBuffer
+layout(std140) uniform LightBuffer
 {
     PointLight light;
 };
