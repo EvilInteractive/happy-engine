@@ -22,7 +22,7 @@
 #include "cooking/PxCooking.h"
 #include "ObjLoader.h"
 #include <vector>
-#include "VertexLayout.h"
+#include "BufferLayout.h"
 #include "FileNotFoundException.h"
 #include "ObjLineLoader.h"
 #include "MathFunctions.h"

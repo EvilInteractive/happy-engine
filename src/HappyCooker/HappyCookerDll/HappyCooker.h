@@ -87,7 +87,7 @@ private:
     std::string m_PhysicsExportPath;
 
     static HappyCooker* s_pSingleton;
-	HappyCooker();
+    HappyCooker();
 
     he::px::PhysicsEngine* m_pPhysicsEngine;
     void addInfo(std::string info);

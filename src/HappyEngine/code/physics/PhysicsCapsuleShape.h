@@ -16,26 +16,33 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 02/11/2011
+//Created: 20/01/2012
 
-#ifndef _HE_BONE_H_
-#define _HE_BONE_H_
+#ifndef _HE_PHYSICS_CAPUSLE_SHAPE_H_
+#define _HE_PHYSICS_CAPUSLE_SHAPE_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "mat44.h"
+#include "IPhysicsShape.h"
 
 namespace he {
-namespace gfx {
+namespace px {
 
-struct Bone
+class PhysicsCapsuleShape : public IPhysicsShape
 {
+public:
+    explicit PhysicsCapsuleShape(float radius, float height);
+    virtual ~PhysicsCapsuleShape();
+    //Default copy constructor and assignment operator are OK
 
-    std::string m_Name;
-    mat44 m_BaseTransform;
+    virtual PhysicsShapeType getType() const { return PhysicsShapeType_Capsule; }
 
-    static const byte MAX_BONES = 64;
-    static const byte MAX_BONEWEIGHTS = 4;
+    const float getRadius() const;
+    const float getHeight() const;
+
+private:
+    float m_Radius;
+    float m_Height;
+
 };
 
 } } //end namespace

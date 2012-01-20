@@ -583,6 +583,12 @@
     <ClCompile Include="code\graphics\fx\FxParticleLife.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
+    <ClCompile Include="code\physics\PhysicsRagdoll.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="code\physics\PhysicsCapsuleShape.cpp">
+      <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -1184,6 +1190,12 @@
     </ClInclude>
     <ClInclude Include="code\graphics\fx\FxParticleLife.h">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsRagdoll.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsCapsuleShape.h">
+      <Filter>happyengine\physics\shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

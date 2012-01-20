@@ -156,6 +156,7 @@
     <ClCompile Include="code\networking\TcpServer.cpp" />
     <ClCompile Include="code\OpenGL.cpp" />
     <ClCompile Include="code\physics\PhysicsBoxShape.cpp" />
+    <ClCompile Include="code\physics\PhysicsCapsuleShape.cpp" />
     <ClCompile Include="code\physics\PhysicsCar.cpp" />
     <ClCompile Include="code\physics\PhysicsCarManager.cpp" />
     <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="code\physics\PhysicsEngine.cpp" />
     <ClCompile Include="code\physics\PhysicsFixedJoint.cpp" />
     <ClCompile Include="code\physics\PhysicsMaterial.cpp" />
+    <ClCompile Include="code\physics\PhysicsRagdoll.cpp" />
     <ClCompile Include="code\physics\PhysicsRevoluteJoint.cpp" />
     <ClCompile Include="code\physics\PhysicsSphereShape.cpp" />
     <ClCompile Include="code\physics\PhysicsSphericalJoint.cpp" />
@@ -352,6 +354,7 @@
     <ClInclude Include="code\physics\IPhysicsJoint.h" />
     <ClInclude Include="code\physics\IPhysicsShape.h" />
     <ClInclude Include="code\physics\PhysicsBoxShape.h" />
+    <ClInclude Include="code\physics\PhysicsCapsuleShape.h" />
     <ClInclude Include="code\physics\PhysicsCar.h" />
     <ClInclude Include="code\physics\PhysicsCarManager.h" />
     <ClInclude Include="code\physics\PhysicsConcaveMesh.h" />
@@ -362,6 +365,7 @@
     <ClInclude Include="code\physics\PhysicsEngine.h" />
     <ClInclude Include="code\physics\PhysicsFixedJoint.h" />
     <ClInclude Include="code\physics\PhysicsMaterial.h" />
+    <ClInclude Include="code\physics\PhysicsRagdoll.h" />
     <ClInclude Include="code\physics\PhysicsRevoluteJoint.h" />
     <ClInclude Include="code\physics\PhysicsSphereShape.h" />
     <ClInclude Include="code\physics\PhysicsSphericalJoint.h" />

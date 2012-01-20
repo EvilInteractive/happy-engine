@@ -28,6 +28,8 @@
 #include "PhysicsSphereShape.h"
 #include "PhysicsConvexShape.h"
 #include "PhysicsConcaveShape.h"
+#include "PhysicsCapsuleShape.h"
+#include "geometry/PxCapsuleGeometry.h"
 
 #include "vehicle/PxVehicle.h"
 #include "vehicle/PxVehicleUtils.h"
@@ -81,7 +83,14 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             break;
         }
     case PhysicsShapeType_Capsule:
-        ASSERT(false, "Not Implemented");
+        {
+            const PhysicsCapsuleShape* pCapsuleShape(dynamic_cast<const PhysicsCapsuleShape*>(pShape));
+            ASSERT(pCapsuleShape != nullptr, "IPhysicsShape type PhysicsShapeType_Capsule is not a PhysicsCapsuleShape");
+            pPxShape = m_pActor->createShape(
+                physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
+                *material.getInternalMaterial());
+            break;
+        }
         break;
     case PhysicsShapeType_Convex:
         {

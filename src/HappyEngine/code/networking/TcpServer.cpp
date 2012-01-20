@@ -40,8 +40,12 @@ TcpServer::TcpServer(): m_pAcceptor(nullptr), m_IsConnectionOpen(false), m_pSock
 TcpServer::~TcpServer()
 {
     m_IsShuttingDown = true;
-    m_pSocket->shutdown(boost::asio::socket_base::shutdown_both);
-
+    if (m_pSocket != nullptr)
+    {
+        if (m_pSocket->is_open())
+            m_pSocket->shutdown(boost::asio::socket_base::shutdown_both);
+        delete m_pSocket;
+    }
     he_free(m_pBuffer);
     if (m_pAcceptor != nullptr)
     {
@@ -86,10 +90,13 @@ void TcpServer::handleAccepted( const boost::system::error_code& error )
     }
     else
     {
-        delete m_pSocket;
-        m_pSocket = nullptr;
-        HE_ERROR("TcpServer: error accepting - msg: " + error.message());
-        startAccepting();
+        if (m_IsShuttingDown == false)
+        {
+            delete m_pSocket;
+            m_pSocket = nullptr;
+            HE_ERROR("TcpServer: error accepting - msg: " + error.message());
+            startAccepting();
+        }
     }
 }
 

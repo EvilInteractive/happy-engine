@@ -53,6 +53,11 @@ namespace HappyCookerGUIv2
                 MessageBox.Show(e.Message);
                 Application.Exit();
             }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                Application.Exit();
+            }
         }
 
         public void Dispose()

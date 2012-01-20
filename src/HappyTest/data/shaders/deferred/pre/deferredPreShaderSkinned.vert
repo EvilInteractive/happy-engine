@@ -33,7 +33,7 @@ out vec3 passTangent;
 uniform mat4 matWVP;
 uniform mat4 matWorld;
 
-uniform mat4[32] matBones;
+uniform mat4[64] matBones;
 
 void main()
 {

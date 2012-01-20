@@ -28,6 +28,8 @@
 #include "PhysicsBoxShape.h"
 #include "PhysicsSphereShape.h"
 #include "PhysicsConvexShape.h"
+#include "PhysicsCapsuleShape.h"
+#include "geometry/PxCapsuleGeometry.h"
 
 #include "vehicle/PxVehicleUtils.h"
 
@@ -63,7 +65,7 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
     PHYSICS->getScene()->addActor(*m_pActor);
     PHYSICS->unlock();
 }
-void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass ) const
+void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose ) const
 {
     PHYSICS->lock();
     physx::PxShape* pPxShape(nullptr);
@@ -75,7 +77,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             ASSERT(pBoxShape != nullptr, "IPhysicsShape type PhysicsShapeType_Box is not a PhysicsBoxShape");
             pPxShape = m_pActor->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
-                *material.getInternalMaterial());
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
             break;
         }
     case PhysicsShapeType_Sphere:
@@ -84,12 +86,18 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             ASSERT(pSphereShape != nullptr, "IPhysicsShape type PhysicsShapeType_Sphere is not a PhysicsSphereShape");
             pPxShape = m_pActor->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
-                *material.getInternalMaterial());
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
             break;
         }
     case PhysicsShapeType_Capsule:
-        ASSERT(false, "Not Implemented");
-        break;
+        {
+            const PhysicsCapsuleShape* pCapsuleShape(dynamic_cast<const PhysicsCapsuleShape*>(pShape));
+            ASSERT(pCapsuleShape != nullptr, "IPhysicsShape type PhysicsShapeType_Capsule is not a PhysicsCapsuleShape");
+            pPxShape = m_pActor->createShape(
+                physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+            break;
+        }
     case PhysicsShapeType_Convex:
         {
             const PhysicsConvexShape* pConvexShape(dynamic_cast<const PhysicsConvexShape*>(pShape));
@@ -97,7 +105,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             pPxShape = m_pActor->createShape(
                 physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
                     physx::PxMeshScale(physx::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
-                    *material.getInternalMaterial());
+                    *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
             break;
         }
 

@@ -48,7 +48,7 @@ namespace HappyCookerGUIv2
                 stream = new StreamReader("config.cfg");
                 _model.Deserialize(stream);
             }
-            catch (Exception)
+            catch (Exception e)
             {}
             if (stream != null)
                 stream.Close();
