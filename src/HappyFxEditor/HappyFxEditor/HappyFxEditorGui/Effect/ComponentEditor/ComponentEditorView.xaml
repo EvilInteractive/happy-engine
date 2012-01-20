@@ -9,11 +9,16 @@
     
     <UserControl.Resources>
         <DataTemplate x:Key="behaviourTemplate">
-            <ce:ComponentBehaviourView/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ce:ComponentBehaviourView Grid.Column="0" />          
+            </Grid>
         </DataTemplate>
     </UserControl.Resources>
 
     <ListBox ItemsSource="{Binding SelectedComponent.Behaviours}" ItemTemplate="{StaticResource behaviourTemplate}"
-             SelectedValue="{Binding SelectedBehaviour}"/>
+             SelectedValue="{Binding SelectedBehaviour}" HorizontalContentAlignment="Stretch"/>
     
 </UserControl>

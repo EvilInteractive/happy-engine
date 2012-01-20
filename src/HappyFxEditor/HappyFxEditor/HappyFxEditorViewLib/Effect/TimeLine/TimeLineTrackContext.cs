@@ -241,6 +241,8 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
                 if (c.X > ContextClickPos)
                     realRight = Math.Min(realRight, (int)c.X);
             }
+            realLeft = Math.Max(0, realLeft);
+            realRight = Math.Min((int)(TimeLine.Duration * TimeLine.TimeScale), realRight);
 
             if (left != realLeft && right != realRight)
                 return false;
@@ -254,6 +256,7 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
                     if (c.X > ContextClickPos)
                         realRight = Math.Min(realRight, (int)c.X);
                 }
+                realRight = Math.Min((int)(TimeLine.Duration * TimeLine.TimeScale), realRight);
                 if (right != realRight)
                     return false;
             }
@@ -266,6 +269,7 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
                     if (c.X + c.Width < ContextClickPos)
                         realLeft = Math.Max(realLeft, (int)(c.X + c.Width));
                 }
+                realLeft = Math.Max(0, realLeft);
                 if (left != realLeft)
                     return false;
             }

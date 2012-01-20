@@ -44,6 +44,13 @@ namespace HappyFxEditorContextLib
             OpenEffects = new ObservableCollection<EffectContext>();
             AssetManager = new AssetManagerContext();
             AssetManager.Refresh();
+
+            Application.Current.MainWindow.Closing += (s, e) =>
+                {
+                    Exit();
+                    if (OpenEffects.Count != 0)
+                        e.Cancel = true;
+                };
         }
 
         
@@ -64,14 +71,21 @@ namespace HappyFxEditorContextLib
         ///////////////////////////////////////////////////////////////////
         //     Methods
         ///////////////////////////////////////////////////////////////////
-        
+        bool _needsDispose = true;
         public void Exit()
         {
-            if (OpenEffects.Count != 0)
-                CloseAll();
-            HeConnectionManager.Instance.Dispose();
-            if (OpenEffects.Count == 0)
-                Application.Current.Shutdown();
+            if (_needsDispose)
+            {
+                if (OpenEffects.Count != 0)
+                    CloseAll();
+
+                if (OpenEffects.Count == 0)
+                {
+                    HeConnectionManager.Instance.Dispose();
+                    Application.Current.Shutdown();
+                    _needsDispose = false;  
+                }       
+            }
         }
 
         public void NewEffect()
@@ -83,6 +97,10 @@ namespace HappyFxEditorContextLib
         public void Close()
         {
             Debug.Assert(CurrentEffect != null, "Shouldn't be able to close when there is no effect");
+            Close(CurrentEffect);
+        }
+        public void Close(EffectContext effect)
+        {
             if (CurrentEffect.Modified)
             {
                 if (MessageBox.Show("Do you like to save '" + CurrentEffect.Name + "' before closing?",
@@ -91,10 +109,6 @@ namespace HappyFxEditorContextLib
                     SaveEffect();
                 }
             }
-            Close(CurrentEffect);
-        }
-        public void Close(EffectContext effect)
-        {
             OpenEffects.Remove(effect);
         }
         public void CloseAll()
@@ -115,8 +129,8 @@ namespace HappyFxEditorContextLib
                     {
                         break;
                     }
-                }
-                Close(effectContext);
+                } 
+                OpenEffects.Remove(effectContext);
             }
         }
         public bool CanClose()

@@ -51,7 +51,6 @@ void FxParticleContainer::resize(uint maxParticles)
     m_MaxCount = maxParticles;
 }
 
-
 bool FxParticleContainer::tryAddParticle()
 {
     if (m_Count < m_MaxCount)

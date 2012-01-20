@@ -104,9 +104,9 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         public CurvePointContext Copy(EffectContext effect)
         {
             CurvePointContext temp = new CurvePointContext(effect.Evolution);
+            temp.IsTimeLocked = IsTimeLocked;
             temp.Time = Time;
             temp.Variable = (ConstantVarContext)Variable.Copy(effect);
-            temp.IsTimeLocked = IsTimeLocked;
 
             return temp;
         }
@@ -173,7 +173,7 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
             CurvePointContext p1 = AddPoint();
             p1.IsTimeLocked = true;
             p1.Time = 1.0f;
-            p0.Variable = (ConstantVarContext)pointTemplate.Copy(effect);
+            p1.Variable = (ConstantVarContext)pointTemplate.Copy(effect);
 
             AddPointCommand = CommandFactory.Create(() => AddPoint());
             RemoveSelectedCommand = CommandFactory.Create(RemoveSelected,
@@ -242,6 +242,8 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
                 CurvePointContext p = new CurvePointContext(Effect.Evolution);
                 p.Variable = (ConstantVarContext)_pointTemplate.Copy(Effect);
                 p.DeSerialize(stream);
+                if (p.Time == 0.0f || p.Time == 1.0f)
+                    p.IsTimeLocked = true;
                 Points.Add(p);
             }
         }

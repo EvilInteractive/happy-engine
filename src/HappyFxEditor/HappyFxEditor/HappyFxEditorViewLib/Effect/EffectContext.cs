@@ -109,7 +109,7 @@ namespace HappyFxEditorContextLib.Effect
 
         public void Save()
         {
-            Modified = false;
+            Save(File);
         }
         public void Save(string path)
         {

@@ -73,8 +73,10 @@ namespace HappyFxEditorBaseLib.Net
         }
         public void Dispose()
         {
-            _stream.Close();
-            _client.Close();
+            if (_stream != null)
+                _stream.Close();
+            if (_client != null)
+                _client.Close();
         }
 
         public static HeConnectionManager Instance
@@ -96,7 +98,7 @@ namespace HappyFxEditorBaseLib.Net
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                //MessageBox.Show(e.Message);
             }
         }
 
@@ -117,7 +119,7 @@ namespace HappyFxEditorBaseLib.Net
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);              
+                //MessageBox.Show(e.Message);              
             }
         }
 
@@ -133,12 +135,12 @@ namespace HappyFxEditorBaseLib.Net
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message);
+                    //MessageBox.Show(e.Message);
                 }
             }
             else
             {
-                MessageBox.Show("Unable to write to network stream");
+                //MessageBox.Show("Unable to write to network stream");
             }
         }
 

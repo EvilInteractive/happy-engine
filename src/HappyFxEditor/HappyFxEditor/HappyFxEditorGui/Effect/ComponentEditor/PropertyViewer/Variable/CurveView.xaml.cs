@@ -49,21 +49,21 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
         public static readonly DependencyProperty YRangeProperty =
             DependencyProperty.Register("YRange", typeof(double), typeof(CurveView), new UIPropertyMetadata(1.0));
 
-        public double XOffset
+        public double XMin
         {
-            get { return (double)GetValue(XOffsetProperty); }
-            set { SetValue(XOffsetProperty, value); }
+            get { return (double)GetValue(XMinProperty); }
+            set { SetValue(XMinProperty, value); }
         }
-        public static readonly DependencyProperty XOffsetProperty =
-            DependencyProperty.Register("XOffset", typeof(double), typeof(CurveView), new UIPropertyMetadata(0.0));
+        public static readonly DependencyProperty XMinProperty =
+            DependencyProperty.Register("XMin", typeof(double), typeof(CurveView), new UIPropertyMetadata(0.0));
 
-        public double YOffset
+        public double YMin
         {
-            get { return (double)GetValue(YOffsetProperty); }
-            set { SetValue(YOffsetProperty, value); }
+            get { return (double)GetValue(YMinProperty); }
+            set { SetValue(YMinProperty, value); }
         }
-        public static readonly DependencyProperty YOffsetProperty =
-            DependencyProperty.Register("YOffset", typeof(double), typeof(CurveView), new UIPropertyMetadata(0.0));
+        public static readonly DependencyProperty YMinProperty =
+            DependencyProperty.Register("YMin", typeof(double), typeof(CurveView), new UIPropertyMetadata(0.0));
 
 
 
@@ -98,8 +98,10 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
 
         
 
-        public double XScale { get { return ActualWidth / XRange; } }
-        public double YScale { get { return ActualHeight / YRange; } }
+        public double XScale { get { return ActualWidth / (XRange - XMin); } }
+        public double YScale { get { return ActualHeight / (YRange - YMin); } }
+        public double XOffset { get { return -XMin; } }
+        public double YOffset { get { return -YMin; } }
 
         private readonly Pen _xPen = new Pen(Brushes.Red, 2);
         private readonly Pen _yPen = new Pen(Brushes.Green, 2);
@@ -273,7 +275,7 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
 
             if (_isPanning)
             {
-                YOffset = mousePoint.Y - _panStartPoint.Y + _startOffy;
+                //YOffset = mousePoint.Y - _panStartPoint.Y + _startOffy;
                 InvalidateVisual();
             }
             else if (_selectedPoint != null)
@@ -305,10 +307,10 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
 
         private void DrawGrid(DrawingContext drawingContext)
         {
-            double xSub = XRange / 10 * XScale,
-                   ySub = YRange / 10 * YScale,
-                   xOff = XOffset * XScale,
-                   yOff = YOffset * YScale;
+            double xSub = ActualWidth / 10,
+                   ySub = ActualHeight / 10,
+                   xOff = 0,
+                   yOff = 0;
 
             for (double x = 0; x < ActualWidth; x += xSub)
             {

@@ -97,7 +97,7 @@
         <!-- Effect & File Browser -->
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height=".3*"/>
+                <RowDefinition Height="32"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height=".7*"/>
             </Grid.RowDefinitions>

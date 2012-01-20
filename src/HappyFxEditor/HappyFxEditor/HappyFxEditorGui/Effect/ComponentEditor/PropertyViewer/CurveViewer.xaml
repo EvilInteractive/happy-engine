@@ -75,18 +75,18 @@
                  PreviewKeyDown="TextBoxPreviewKeyDown"/>
         <TextBox Grid.Row="1" Grid.Column="0" Height="24" Width="48" 
                  VerticalAlignment="Bottom"  Margin="2,8" 
-                 Text="{Binding Path=YOffset, ElementName=_curve, FallbackValue=0.0}"
+                 Text="{Binding Path=YMin, ElementName=_curve, FallbackValue=0.0}"
                  LostFocus="TextBoxLostFocus"
                  PreviewKeyDown="TextBoxPreviewKeyDown"/>
         <TextBox Grid.Row="2" Grid.Column="1" Height="24" Width="48" 
                  HorizontalAlignment="Right" Margin="8,2" 
                  Text="{Binding Path=XRange, ElementName=_curve, FallbackValue=1.0}"
-                 LostFocus="TextBoxLostFocus"
+                 LostFocus="TextBoxLostFocus" IsEnabled="False"
                  PreviewKeyDown="TextBoxPreviewKeyDown"/>
         <TextBox Grid.Row="2" Grid.Column="1" Height="24" Width="48" 
                  HorizontalAlignment="Left" Margin="8,2" 
-                 Text="{Binding Path=XOffset, ElementName=_curve, FallbackValue=0.0}"
-                 LostFocus="TextBoxLostFocus"
+                 Text="{Binding Path=XMin, ElementName=_curve, FallbackValue=0.0}"
+                 LostFocus="TextBoxLostFocus" IsEnabled="False"
                  PreviewKeyDown="TextBoxPreviewKeyDown"/>
         
         <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="4">
