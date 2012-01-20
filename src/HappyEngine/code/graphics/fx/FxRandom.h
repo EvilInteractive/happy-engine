@@ -32,6 +32,7 @@ class FxRandomFloat : public IFxVariable<float>
 {
 public:
     FxRandomFloat();
+    FxRandomFloat(float min, float max);
     virtual ~FxRandomFloat();
 
     typedef boost::shared_ptr<FxRandomFloat> pointer;

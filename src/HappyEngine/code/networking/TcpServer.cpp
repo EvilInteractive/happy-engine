@@ -31,7 +31,7 @@
 namespace he {
 namespace net {
 
-TcpServer::TcpServer(): m_pAcceptor(nullptr), m_IsConnectionOpen(false), m_pSocket(nullptr)
+TcpServer::TcpServer(): m_pAcceptor(nullptr), m_IsConnectionOpen(false), m_pSocket(nullptr), m_IsShuttingDown(false)
 {
     m_pBuffer = he_malloc(MAX_BUFFER_SIZE);
 }
@@ -39,6 +39,9 @@ TcpServer::TcpServer(): m_pAcceptor(nullptr), m_IsConnectionOpen(false), m_pSock
 
 TcpServer::~TcpServer()
 {
+    m_IsShuttingDown = true;
+    m_pSocket->shutdown(boost::asio::socket_base::shutdown_both);
+
     he_free(m_pBuffer);
     if (m_pAcceptor != nullptr)
     {
@@ -55,11 +58,11 @@ void TcpServer::start(ushort port)
 
     HE_INFO("TcpServer: P2P tpc accepting @" + itoa(port));
     startAccepting();
-
 }
 void TcpServer::startAccepting()
 {
     ASSERT(m_pSocket == nullptr, "m_pSocket is already initialized");
+    m_IsShuttingDown = false;
     m_pSocket = NEW boost::asio::ip::tcp::socket(NETWORK->getIoService());
     m_pAcceptor->async_accept(*m_pSocket, boost::bind(&TcpServer::handleAccepted, this, boost::asio::placeholders::error));
 }
@@ -103,11 +106,20 @@ void TcpServer::handleReceive( const boost::system::error_code& error, size_t by
     if (!error)
     {
         if (m_ReceiveCallback.empty() == false)
-            m_ReceiveCallback(byteReceived);
+            m_ReceiveCallback(m_pBuffer, byteReceived);
+
+        m_pSocket->async_receive(boost::asio::buffer(m_pBuffer, MAX_BUFFER_SIZE), 
+            boost::bind(&TcpServer::handleReceive, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
     }
     else
     {
         HE_ERROR("TcpServer: error receiving data - msg: " + error.message());
+        if (m_IsShuttingDown == false)
+        {
+            delete m_pSocket;
+            m_pSocket = nullptr;
+            startAccepting();
+        }
     }
 }
 
@@ -116,7 +128,7 @@ bool TcpServer::isConnected() const
     return m_IsConnectionOpen;
 }
 
-void TcpServer::setReceiveCallback( const boost::function<void (int bytesReceived)>& callback ) 
+void TcpServer::setReceiveCallback( const boost::function<void (const void* buffer, int bytesReceived)>& callback ) 
 {
     m_ReceiveCallback = callback;
 }

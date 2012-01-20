@@ -526,9 +526,6 @@
     <ClCompile Include="code\graphics\fx\FxCameraEffect.cpp">
       <Filter>happyengine\graphics\fx\components</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\fx\FxParticleColor.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\fx\FxParticleForce.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
@@ -559,9 +556,6 @@
     <ClCompile Include="code\graphics\fx\FxParticleLocation.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\fx\FxManager.cpp">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\fx\FxParticleRotationRate.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
@@ -576,6 +570,18 @@
     </ClCompile>
     <ClCompile Include="code\game\LightComponent.cpp">
       <Filter>happyengine\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\content\FxLoader.cpp">
+      <Filter>happyengine\content</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxManager.cpp">
+      <Filter>happyengine\graphics\fx</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleColor.cpp">
+      <Filter>happyengine\graphics\fx\components</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleLife.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1172,6 +1178,12 @@
     </ClInclude>
     <ClInclude Include="code\game\LightComponent.h">
       <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\content\FxLoader.h">
+      <Filter>happyengine\content</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\fx\FxParticleLife.h">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

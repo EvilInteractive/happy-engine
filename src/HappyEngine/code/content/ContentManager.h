@@ -33,6 +33,7 @@
 #include "FontLoader.h"
 #include "ShaderLoader.h"
 #include "MaterialLoader.h"
+#include "FxLoader.h"
 
 #include "RenderSettings.h"
 
@@ -76,6 +77,8 @@ public:
    
     gfx::Material loadMaterial(const std::string& path);
 
+    uint loadFx(const std::string& path);
+
     void setRootDir(const std::string& root);
     void setTextureFolder(const std::string& folder);
     void setModelFolder(const std::string& folder);
@@ -84,6 +87,7 @@ public:
     void setFontFolder(const std::string& folder);
     void setShaderFolder(const std::string& folder);
     void setMaterialFolder(const std::string& folder);
+    void setFxFolder(const std::string& folder);
     //void setFolder(const std::string& folder);
 
     const std::string& getRootDir() const;
@@ -94,6 +98,7 @@ public:
     const std::string& getFontFolder() const;
     const std::string& getShaderFolder() const;
     const std::string& getMaterialFolder() const;
+    const std::string& getFxFolder() const;
 
     void setRenderSettings(const gfx::RenderSettings& settings);
 
@@ -108,10 +113,11 @@ private:
     FontLoader* m_pFontLoader;
     ShaderLoader* m_pShaderLoader;
     MaterialLoader* m_pMaterialLoader;
+    FxLoader* m_pFxLoader;
 
     std::string m_ContentRootDir;   //include trailing /
     std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /
-                m_ShaderFolder, m_MaterialFolder;
+                m_ShaderFolder, m_MaterialFolder, m_FxFolder;
 
     gfx::Font::pointer m_pDefaultFont;
 

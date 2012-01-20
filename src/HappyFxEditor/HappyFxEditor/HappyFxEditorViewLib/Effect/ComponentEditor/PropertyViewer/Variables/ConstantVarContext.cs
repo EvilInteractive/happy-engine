@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DaeMvvmFramework;
@@ -21,21 +22,14 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         #endregion
 
         public VariableType VariableType { get { return VariableType.Constant; } }
-        public VariableComponentCount VariableComponentCount { get; private set; }
-        public VariableComponentType VariableComponentType { get; private set; }
 
-        public ConstantVarContext(VariableComponentCount components, IType defaultValue)
+        public ConstantVarContext(EffectContext effect, List<IType> var)
         {
-            VariableComponentCount = components;
-            Value = new List<IType>((int)components + 1);
-            for (int i = 0; i < (int)components + 1; i++)
+            Value = new List<IType>(var.Count);
+            foreach (var val in var)
             {
-                Value.Add(defaultValue.Copy());
-                Value[i].SetName((int) components + 1 == 4 ? new string[] {"R", "G", "B", "A"}[i]:
-                                 new string[] {"X", "Y", "Z"}[i]);
+                Value.Add(val.Copy());
             }
-
-            VariableComponentType = defaultValue.GetVarType();
         }
 
 
@@ -43,30 +37,32 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         {
             return VariableType;
         }
-        public VariableComponentType GetVarComponentType()
-        {
-            return VariableComponentType;
-        }
-        public VariableComponentCount GetComponentCount()
-        {
-            return VariableComponentCount;
-        }
 
-        public IVariableContext Copy()
+        public IVariableContext Copy(EffectContext effect)
         {
-            ConstantVarContext temp = new ConstantVarContext(VariableComponentCount, Value[0]);
-
-            for (int i = 0; i < Value.Count; ++i)
-            {
-                temp.Value[i] = Value[i].Copy();
-            }
-
+            ConstantVarContext temp = new ConstantVarContext(effect, Value);
             return temp;
         }
 
         public override string ToString()
         {
-            return "Constant " + VariableComponentCount;
+            return "Constant";
+        }
+
+
+        public void Serialize(BinaryWriter stream)
+        {
+            foreach (var value in Value)
+            {
+                value.Serialize(stream);
+            }
+        }
+        public void DeSerialize(BinaryReader stream)
+        {
+            foreach (var value in Value)
+            {
+                value.DeSerialize(stream);
+            }
         }
     }
 }

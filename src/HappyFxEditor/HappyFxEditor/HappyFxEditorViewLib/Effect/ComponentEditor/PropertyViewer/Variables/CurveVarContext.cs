@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -100,11 +101,12 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
             IsTimeLocked = false;
         }
 
-        public CurvePointContext Copy()
+        public CurvePointContext Copy(EffectContext effect)
         {
-            CurvePointContext temp = new CurvePointContext(Evolution);
+            CurvePointContext temp = new CurvePointContext(effect.Evolution);
             temp.Time = Time;
-            temp.Variable = (ConstantVarContext)Variable.Copy();
+            temp.Variable = (ConstantVarContext)Variable.Copy(effect);
+            temp.IsTimeLocked = IsTimeLocked;
 
             return temp;
         }
@@ -114,13 +116,20 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         {
             get { return _evolution; }
         }
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            stream.Write((float)Time);
+            Variable.Serialize(stream);
+        }
+
+        internal void DeSerialize(BinaryReader stream)
+        {
+            Time = stream.ReadSingle();
+            Variable.DeSerialize(stream);
+        }
     }
-    public struct Range
-    {
-        public float Min { get; set; }
-        public float Max { get; set; }
-    }
-    public class CurveVarContext : UndoableChangeSource, IVariableContext
+    public class CurveVarContext : PropertyChangeSource, IVariableContext
     {
         public UndoableCollection<CurvePointContext> Points { get; private set; }
 
@@ -147,40 +156,24 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         public ICommand RemoveSelectedCommand { get; private set; }
 
         public VariableType VariableType { get { return VariableType.Curve; } }
-        public VariableComponentCount VariableComponentCount { get; private set; }
         public VariableComponentType VariableComponentType { get { return VariableComponentType.Float; } }
 
-        private readonly List<Range> _ranges;
+        private readonly ConstantVarContext _pointTemplate;
 
-        public CurveVarContext(Evolution evolution, VariableComponentCount components, List<Range> ranges)
+        public CurveVarContext(EffectContext effect, ConstantVarContext pointTemplate)
         {
-            VariableComponentCount = components;
-            _ranges = ranges;
-            _evolution = evolution;
+            _effect = effect;
+            _pointTemplate = pointTemplate;
 
-            Points = new UndoableCollection<CurvePointContext>(this);
+            Points = new UndoableCollection<CurvePointContext>(effect);
             CurvePointContext p0 = AddPoint();
             p0.IsTimeLocked = true;
             p0.Time = 0.0f;
-            p0.Variable = new ConstantVarContext(components, new FloatType(_evolution, ranges[0].Min, ranges[0].Max, 0.0f));
-            for (int i = 0; i < (int)components + 1; ++i)
-            {
-                FloatType f = (FloatType) p0.Variable.Value[i];
-                f.Min = ranges[i].Min;
-                f.Max = ranges[i].Max;
-                f.Value = 0.0f;
-            }
+            p0.Variable = (ConstantVarContext)pointTemplate.Copy(effect);
             CurvePointContext p1 = AddPoint();
             p1.IsTimeLocked = true;
             p1.Time = 1.0f;
-            p1.Variable = new ConstantVarContext(components, new FloatType(_evolution, ranges[0].Min, ranges[0].Max, 1.0f));
-            for (int i = 0; i < (int)components + 1; ++i)
-            {
-                FloatType f = (FloatType) p1.Variable.Value[i];
-                f.Min = ranges[i].Min;
-                f.Max = ranges[i].Max;
-                f.Value = 1.0f;
-            }
+            p0.Variable = (ConstantVarContext)pointTemplate.Copy(effect);
 
             AddPointCommand = CommandFactory.Create(() => AddPoint());
             RemoveSelectedCommand = CommandFactory.Create(RemoveSelected,
@@ -193,7 +186,11 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
 
         public CurvePointContext AddPoint()
         {
-            CurvePointContext point = new CurvePointContext(Evolution) { Time = 0.5f, Variable = new ConstantVarContext(GetComponentCount(), new FloatType(Evolution, _ranges[0].Min, _ranges[0].Max, 0.0f)) };
+            CurvePointContext point = new CurvePointContext(Effect.Evolution)
+                                          {
+                                              Time = 0.5f,
+                                              Variable = (ConstantVarContext)_pointTemplate.Copy(Effect)
+                                          };
             point.PropertyChanged += (s, e) =>
                                          {
                                              if (e.PropertyName == CurvePointContext.IsSelectedProperty)
@@ -215,35 +212,49 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         {
             return VariableType;
         }
-        public VariableComponentType GetVarComponentType()
-        {
-            return VariableComponentType;
-        }
-        public VariableComponentCount GetComponentCount()
-        {
-            return VariableComponentCount;
-        }
 
-        public IVariableContext Copy()
+        public IVariableContext Copy(EffectContext effect)
         {
-            CurveVarContext temp = new CurveVarContext(Evolution, VariableComponentCount, _ranges);
-            temp.Points = new UndoableCollection<CurvePointContext>(temp);
+            CurveVarContext temp = new CurveVarContext(effect, _pointTemplate);
+            temp.Points = new UndoableCollection<CurvePointContext>(effect);
             foreach (var p in Points)
             {
-                temp.Points.Add(p.Copy());
+                temp.Points.Add(p.Copy(effect));
             }
             return temp;
         }
 
-        private Evolution _evolution;
-        public override Evolution Evolution
+        public void Serialize(BinaryWriter stream)
         {
-            get { return _evolution; }
+            stream.Write((UInt32)Points.Count);
+            foreach (var p in Points)
+            {
+                p.Serialize(stream);
+            }
+        }
+
+        public void DeSerialize(BinaryReader stream)
+        {
+            uint points = stream.ReadUInt32();
+            Points = new UndoableCollection<CurvePointContext>(Effect);
+            for (int i = 0; i < points; ++i)
+            {
+                CurvePointContext p = new CurvePointContext(Effect.Evolution);
+                p.Variable = (ConstantVarContext)_pointTemplate.Copy(Effect);
+                p.DeSerialize(stream);
+                Points.Add(p);
+            }
+        }
+
+        private EffectContext _effect;
+        public EffectContext Effect
+        {
+            get { return _effect; }
         }
 
         public override string ToString()
         {
-            return "Curve " + VariableComponentCount;
+            return "Curve";
         }
     }
 }

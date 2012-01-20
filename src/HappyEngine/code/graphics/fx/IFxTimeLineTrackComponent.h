@@ -28,7 +28,8 @@ namespace gfx {
 enum FxType
 {
     FxType_ParticleSystem = 0,
-    FxType_CameraEffect
+    FxType_CameraEffect,
+    FxType_AudioEffect
 };
 class IFxTimeLineTrackComponent
 {

@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using DaeMvvmFramework;
+using HappyFxEditorBaseLib.Net;
+using HappyFxEditorContextLib.Browsers;
 using HappyFxEditorContextLib.Effect;
 
 namespace HappyFxEditorContextLib
@@ -40,6 +42,8 @@ namespace HappyFxEditorContextLib
             ExitCommand = CommandFactory.Create(Exit);
 
             OpenEffects = new ObservableCollection<EffectContext>();
+            AssetManager = new AssetManagerContext();
+            AssetManager.Refresh();
         }
 
         
@@ -55,6 +59,7 @@ namespace HappyFxEditorContextLib
             set { Change(ref _currentEffect, value, CurrentEffectProperty); }
         }
 
+        public AssetManagerContext AssetManager { get; private set; }
 
         ///////////////////////////////////////////////////////////////////
         //     Methods
@@ -64,6 +69,7 @@ namespace HappyFxEditorContextLib
         {
             if (OpenEffects.Count != 0)
                 CloseAll();
+            HeConnectionManager.Instance.Dispose();
             if (OpenEffects.Count == 0)
                 Application.Current.Shutdown();
         }

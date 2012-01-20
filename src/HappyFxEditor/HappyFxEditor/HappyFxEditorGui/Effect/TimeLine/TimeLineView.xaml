@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:TimeLine="clr-namespace:HappyFxEditorApp.Effect.TimeLine" mc:Ignorable="d" 
+             xmlns:tl="clr-namespace:HappyFxEditorApp.Effect.TimeLine" mc:Ignorable="d" 
              d:DesignHeight="307" d:DesignWidth="447"
              MouseRightButtonUp="OnMouseRightButtonUp">
     <Grid>
@@ -18,17 +18,20 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TimeLine:TimeControl Grid.Row="0" Grid.Column="0"/>  
+        <tl:TimeLineVisualControl Grid.Row="0" Grid.Column="0" Height="32"
+                                  DataContext="{Binding TimeLine}"/>  
         <!-- loopbar placeholder -->
         <ScrollBar Orientation="Horizontal" Grid.Row="3" Grid.Column="0" 
                    x:Name="_horzScrollbar" 
                    Minimum="0"
-                   Maximum="{Binding TimeLine.Width}"
-                   ViewportSize="{Binding ElementName=_horzScrollbar, Path=ActualWidth}"
-                   Scroll="HorzScrollbarScroll" SmallChange="1" LargeChange="5" />
-        <TimeLine:TimeLineTrackContainer Grid.Row="2" Grid.Column="0" x:Name="_trackContainer"
-                                         SelectedTrack="{Binding TimeLine.SelectedTrack, Mode=TwoWay}"/>
-        <TimeLine:TimeLineControls Grid.Row="4" Grid.Column="0"/>
+                   Maximum="{Binding TimeLine.ScrollWidth}"
+                   ViewportSize="{Binding TimeLine.ScrollViewPort}"
+                   Scroll="HorzScrollbarScroll" SmallChange="1" LargeChange="5" 
+                   Value="{Binding TimeLine.Scroll, Mode=OneWayToSource}"/>
+        <tl:TimeLineTrackContainer Grid.Row="2" Grid.Column="0" x:Name="_trackContainer"
+                                   SelectedTrack="{Binding TimeLine.SelectedTrack, Mode=TwoWay}"
+                                   SizeChanged="TrackContainerOnSizeChanged" />
+        <tl:TimeLineControls Grid.Row="4" Grid.Column="0"/>
 
     </Grid>
 </UserControl>

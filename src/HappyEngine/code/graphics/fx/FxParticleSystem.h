@@ -50,7 +50,8 @@ enum ParticleInitComponentType
     PICT_Rotation,
     PICT_Scale,
     PICT_Speed,
-    PICT_Location
+    PICT_Location,
+    PICT_Life
 };
 enum ParticleModifyComponentType
 {

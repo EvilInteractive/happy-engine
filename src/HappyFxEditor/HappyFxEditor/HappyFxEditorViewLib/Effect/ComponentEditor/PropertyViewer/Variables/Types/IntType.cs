@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DaeMvvmFramework;
@@ -23,7 +24,7 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         }
         #endregion
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         public int Min { get; private set; }
         public int Max { get; private set; }
@@ -54,9 +55,13 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
             return VariableComponentType.Int;
         }
 
-        public void SetName(string name)
+        public void Serialize(BinaryWriter stream)
         {
-            Name = name;
+            stream.Write((Int32)Value);
+        }
+        public void DeSerialize(BinaryReader stream)
+        {
+            Value = stream.ReadInt32();
         }
     }
 }

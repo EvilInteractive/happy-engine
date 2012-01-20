@@ -1,28 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Xml;
 using DaeMvvmFramework;
 using HappyFxEditorBaseLib;
 using HappyFxEditorBaseLib.Behaviour;
 using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer;
 using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables;
+using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables.Types;
 
 namespace HappyFxEditorContextLib.Effect.ComponentEditor
 {
     public class BehaviourToolboxContext : PropertyChangeSource
     {
-        private ObservableCollection<BehaviourContext> _tools = new ObservableCollection<BehaviourContext>();
+        private readonly TimeLineTrackComponentType _type;
 
         public ComponentEditorContext ComponentEditor{ get; private set; }
 
         #region Tools
         public const string ToolsProperty = "Tools";
+        private ObservableCollection<BehaviourContext> _tools = new ObservableCollection<BehaviourContext>();
         public ObservableCollection<BehaviourContext> Tools
         {
             get { return _tools; }
             set { Change(ref _tools, value, ToolsProperty); }
+        }
+        #endregion
+
+        #region Required
+        public const string RequiredProperty = "Required";
+        private BehaviourContext _requiredBehaviour;
+        public BehaviourContext Required
+        {
+            get { return _requiredBehaviour; }
+            set { Change(ref _requiredBehaviour, value, RequiredProperty); }
         }
         #endregion
 
@@ -36,157 +51,289 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor
         }
         #endregion
 
+        private PropertyViewerContext _currentParseProperty;
+
         public BehaviourToolboxContext(ComponentEditorContext componentEditor, TimeLineTrackComponentType type)
         {
+            _type = type;
             ComponentEditor = componentEditor;
-            switch (type)
+            XmlTextReader reader = new XmlTextReader("properties.hxml");
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "Component" && reader.GetAttribute("id") == type.ToString())
+                    {
+                        ParseComponent(reader);
+                        break;
+                    }
+                }
+            }
+
+            reader.Close();
+        }
+
+        private void ParseComponent(XmlTextReader reader)
+        {
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "Behaviour")
+                    {
+                        ParseBehaviour(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == "Component")
+                    {
+                        break;
+                    }
+                }
+            }
+
+            int count = Required == null ? Tools.Count : Tools.Count + 1;
+            for (int i = 0; i < Tools.Count; i++)
+            {
+                Tools[i].Hue = (short)((360 / count) * i);
+            }
+            if (Required != null)
+                Required.Hue = (short) ((360/count)*Tools.Count);
+        }
+
+        private void ParseBehaviour(XmlTextReader reader)
+        {
+            _currentParseProperty = new PropertyViewerContext(ComponentEditor.Effect);
+            string tooltip = reader.GetAttribute("ToolTip");
+            string type = reader.GetAttribute("type");
+            string name = reader.GetAttribute("name");
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "PropertyGroup")
+                    {
+                        ParsePropertyGroup(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == "Behaviour")
+                    {
+                        break;
+                    }
+                }
+            }
+            BehaviourContext behaviour = new BehaviourContext(_currentParseProperty);
+            behaviour.ToolTip = tooltip;
+            switch (_type)
             {
                 case TimeLineTrackComponentType.ParticleSystem:
-                    GeneratePsItems();
+                    ParticleSystemBehaviour psb;
+                    if (Enum.TryParse(type, true, out psb) == false)
+                        MessageBox.Show("Could not parse ParticleSystemBehaviour got: " + _type);
+                    if (psb == ParticleSystemBehaviour.Required)
+                        Required = behaviour;
+                    else
+                        Tools.Add(behaviour);
+                    behaviour.SetType(psb, name); 
                     break;
                 case TimeLineTrackComponentType.CameraFx:
-                    GenerateCamFxItems();
+                    CameraFxBehaviour cfb;
+                    if (Enum.TryParse(type, true, out cfb) == false)
+                        MessageBox.Show("Could not parse CameraFxBehaviour got: " + _type);
+                    if (cfb == CameraFxBehaviour.Required)
+                        Required = behaviour;
+                    else
+                        Tools.Add(behaviour);
+                    behaviour.SetType(cfb, name); 
                     break;
                 case TimeLineTrackComponentType.AudioFx:
-                    GenerateAudFxItems();
+                    AudioFxBehaviour afb;
+                    if (Enum.TryParse(type, true, out afb) == false)
+                        MessageBox.Show("Could not parse AudioFxBehaviour got: " + _type);
+                    if (afb == AudioFxBehaviour.Required)
+                        Required = behaviour;
+                    else
+                        Tools.Add(behaviour);
+                    behaviour.SetType(afb, name); 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("type");
+                    throw new ArgumentOutOfRangeException();
+            }
+            _currentParseProperty = null;
+        }
+
+        private void ParsePropertyGroup(XmlTextReader reader)
+        {
+            _currentParseProperty.Groups.Add(new PropertyViewerGroupContext(_currentParseProperty,
+                                                                            reader.GetAttribute("name")));
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "Property")
+                    {
+                        ParseProperty(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == "PropertyGroup")
+                    {
+                        return;
+                    }
+                }
             }
         }
 
-        private void GeneratePsItems()
+        private struct ComponentDesc
         {
-            Tools.Clear();
-
-            #region Color
-            var property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Color"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Color", VariableComponentType.Float, VariableComponentCount.Rgba));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360/(int) ParticleSystemBehaviour.MAX)*0;
-            Tools[Tools.Count - 1].ToolTip = "Change Color and Alpha";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.Color, "Color");
-            #endregion
-
-            #region Force
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Force"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Force", VariableComponentType.Float, VariableComponentCount.Xyz));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)ParticleSystemBehaviour.MAX) * 1;
-            Tools[Tools.Count - 1].ToolTip = "Apply a force";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.Force, "Force");
-            #endregion
-
-            #region Location
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Location"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Location", VariableComponentType.Float, VariableComponentCount.Xyz));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)ParticleSystemBehaviour.MAX) * 2;
-            Tools[Tools.Count - 1].ToolTip = "Set the particle spawn location";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.Location, "Location");
-            #endregion
-
-            #region Rotation
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Rotation"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Rotation", VariableComponentType.Float, VariableComponentCount.X));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)ParticleSystemBehaviour.MAX) * 3;
-            Tools[Tools.Count - 1].ToolTip = "Set the rotation";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.Rotation, "Rotation");
-            #endregion
-
-            #region RotationRate
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "RotationRate"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "RotationRate", VariableComponentType.Float, VariableComponentCount.X));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)ParticleSystemBehaviour.MAX) * 4;
-            Tools[Tools.Count - 1].ToolTip = "Set the rotation rate / spin speed";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.RotationRate, "RotationRate");
-            #endregion
-
-            #region Location
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Scale"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Scale", VariableComponentType.Float, VariableComponentCount.Xyz));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)ParticleSystemBehaviour.MAX) * 5;
-            Tools[Tools.Count - 1].ToolTip = "Set the scale";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.Scale, "Scale");
-            #endregion
-
-            #region Speed
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Speed"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Speed", VariableComponentType.Float, VariableComponentCount.Xyz));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)ParticleSystemBehaviour.MAX) * 6;
-            Tools[Tools.Count - 1].ToolTip = "Set the speed/velocity";
-            Tools[Tools.Count - 1].SetType(ParticleSystemBehaviour.Speed, "Speed");
-            #endregion
+            public string Value;
+            public string Min;
+            public string Max;
+            public string Name;
         }
-        private void GenerateCamFxItems()
+        private void ParseProperty(XmlTextReader reader)
         {
-            Tools.Clear();
+            string name = reader.GetAttribute("name");
+            
+            VariableComponentType type = VariableComponentType.Float;
+            List<ComponentDesc> componentDescs = new List<ComponentDesc>();
+            List<VariableType> varTypes = new List<VariableType>();
 
-            #region Shake
-            var property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Shake"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Shake", VariableComponentType.Float, VariableComponentCount.Xyz));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)CameraFxBehaviour.MAX) * 0;
-            Tools[Tools.Count - 1].ToolTip = "Shake the camera";
-            Tools[Tools.Count - 1].SetType(CameraFxBehaviour.Shake, "Shake");
-            #endregion
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "Components")
+                    {
+                        if (Enum.TryParse(reader.GetAttribute("type"), true, out type) == false)
+                            MessageBox.Show("Failed to parse hxml, unkown type" + reader.GetAttribute("type"));
+                    }
+                    if (reader.Name == "Component")
+                    {
+                        ComponentDesc desc;
+                        desc.Min = reader.GetAttribute("min");
+                        desc.Max = reader.GetAttribute("max");
+                        desc.Value = reader.GetAttribute("value");
+                        desc.Name = reader.GetAttribute("name");
+                        componentDescs.Add(desc);
+                    }
+                    if (reader.Name == "Var")
+                    {
+                        VariableType varType = VariableType.Constant;
+                        if (Enum.TryParse(reader.GetAttribute("type"), true, out varType) == false)
+                            MessageBox.Show("Failed to parse hxml, unkown varType" + reader.GetAttribute("type"));
+                        else
+                            varTypes.Add(varType);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == "Property")
+                    {
+                        List<IVariableContext> vars = new List<IVariableContext>();
 
-            #region Flash
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Flash"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Power", VariableComponentType.Float, VariableComponentCount.X));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)CameraFxBehaviour.MAX) * 1;
-            Tools[Tools.Count - 1].ToolTip = "White over-exposure effect";
-            Tools[Tools.Count - 1].SetType(CameraFxBehaviour.Flash, "Flash");
-            #endregion
+                        foreach (var varType in varTypes)
+                        {
+                            switch (varType)
+                            {
+                                case VariableType.Curve:
+                                    vars.Add(new CurveVarContext(ComponentEditor.Effect, CreateConstantVar(componentDescs, type)));
+                                    break;
+                                case VariableType.Random:
+                                    vars.Add(new RandomVarContext(ComponentEditor.Effect, CreateConstantVar(componentDescs, type)));
+                                    break;
+                                case VariableType.Constant:
+                                    vars.Add(CreateConstantVar(componentDescs, type));
+                                    break;
+                                case VariableType.Asset:
+                                    vars.Add(new AssetVarContext(ComponentEditor.Effect, type));
+                                    break;
+                                case VariableType.Choose:
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        }
+
+                        _currentParseProperty.Groups.Last().Items.Add(new PropertyViewerItemContext(
+                            _currentParseProperty.Groups.Last(), name, vars));
+                        return;
+                    }
+                }
+            }
         }
-        private void GenerateAudFxItems()
+        private int ParseInt(string str)
         {
-            Tools.Clear();
-
-            #region Volume
-            var property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Volume"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Volume", VariableComponentType.Float, VariableComponentCount.X));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)AudioFxBehaviour.MAX) * 0;
-            Tools[Tools.Count - 1].ToolTip = "Set the volume";
-            Tools[Tools.Count - 1].SetType(AudioFxBehaviour.Volume, "Volume");
-            #endregion
-
-            #region Pan
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Pan"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Pan", VariableComponentType.Float, VariableComponentCount.X));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)AudioFxBehaviour.MAX) * 1;
-            Tools[Tools.Count - 1].ToolTip = "Set the audio panning";
-            Tools[Tools.Count - 1].SetType(AudioFxBehaviour.Pan, "Pan");
-            #endregion
-
-            #region Pitch
-            property = new PropertyViewerContext(ComponentEditor.Effect);
-            property.Groups.Add(new PropertyViewerGroupContext(property, "Pitch"));
-            property.Groups[0].Items.Add(new PropertyViewerItemContext(property.Groups[0], "Pitch", VariableComponentType.Float, VariableComponentCount.X));
-            Tools.Add(new BehaviourContext(property));
-            Tools[Tools.Count - 1].Hue = (360 / (int)AudioFxBehaviour.MAX) * 2;
-            Tools[Tools.Count - 1].ToolTip = "Change the pitch of the audio";
-            Tools[Tools.Count - 1].SetType(AudioFxBehaviour.Pitch, "Pitch");
-            #endregion
+            if (str == "min")
+                return int.MinValue;
+            else if (str == "max")
+                return int.MaxValue;
+            else
+            {
+                int temp = 0;
+                if (int.TryParse(str, out temp) == false)
+                    MessageBox.Show("Int Parse fail, got: " + str);
+                return temp;
+            }
+        }
+        private float ParseFloat(string str)
+        {
+            if (str == "min")
+                return float.MinValue;
+            else if (str == "max")
+                return float.MaxValue;
+            else
+            {
+                float temp = 0;
+                if (float.TryParse(str, out temp) == false)
+                    MessageBox.Show("Float Parse fail, got: " + str);
+                return temp;
+            }
+        }
+        private ConstantVarContext CreateConstantVar(List<ComponentDesc> componentDescs, VariableComponentType type)
+        {
+            List<IType> var = new List<IType>(componentDescs.Count);
+            foreach (var desc in componentDescs)
+            {
+                switch (type)
+                {
+                    case VariableComponentType.Int:
+                        var.Add(new IntType(ComponentEditor.Effect.Evolution,
+                            ParseInt(desc.Min), ParseInt(desc.Max), ParseInt(desc.Value)) { Name = desc.Name });
+                        break;
+                    case VariableComponentType.Float:
+                        var.Add(new FloatType(ComponentEditor.Effect.Evolution,
+                            ParseFloat(desc.Min), ParseFloat(desc.Max), ParseFloat(desc.Value)) { Name = desc.Name });
+                        break;
+                    case VariableComponentType.Enum:
+                        var.Add(new EnumType(new EnumTypeDesc(desc.Name, uint.Parse(desc.Value))));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            return new ConstantVarContext(ComponentEditor.Effect, var);
         }
 
+        public BehaviourContext GetNewBehaviour(int bType)
+        {
+            foreach (var behaviourContext in Tools)
+            {
+                if (behaviourContext.GetType<int>() == bType)
+                {
+                    return behaviourContext.Copy();
+                }
+            }
+            if (Required != null)
+                if (Required.GetType<int>() == bType)
+                    return Required.Copy();
+            throw new ArgumentOutOfRangeException("bType");
+        }
     }
 }

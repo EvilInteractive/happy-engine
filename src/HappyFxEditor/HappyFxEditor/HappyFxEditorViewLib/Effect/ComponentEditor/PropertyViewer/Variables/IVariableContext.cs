@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -9,27 +10,26 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
     {
         Curve,
         Random,
-        Constant
-    }
-    public enum VariableComponentCount
-    {
-        X,
-        Xy,
-        Xyz,
-        Rgba
+        Constant,
+        Asset,
+        Choose
     }
     public enum VariableComponentType
     {
         Int,
-        Float
+        Float,
+        Texture,
+        Enum
     }
 
     public interface IVariableContext
     {
         VariableType GetVarType();
-        VariableComponentType GetVarComponentType();
-        VariableComponentCount GetComponentCount();
 
-        IVariableContext Copy();
+        IVariableContext Copy(EffectContext effect);
+
+        void Serialize(BinaryWriter stream);
+
+        void DeSerialize(BinaryReader stream);
     }
 }

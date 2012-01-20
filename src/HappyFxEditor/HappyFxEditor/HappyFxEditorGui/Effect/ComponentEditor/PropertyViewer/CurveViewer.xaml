@@ -90,10 +90,18 @@
                  PreviewKeyDown="TextBoxPreviewKeyDown"/>
         
         <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="4">
-            <CheckBox Style="{StaticResource checkboxXStyle}" IsChecked="{Binding ElementName=_curve, Path=XVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
-            <CheckBox Style="{StaticResource checkboxYStyle}" IsChecked="{Binding ElementName=_curve, Path=YVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
-            <CheckBox Style="{StaticResource checkboxZStyle}" IsChecked="{Binding ElementName=_curve, Path=ZVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
-            <CheckBox Style="{StaticResource checkboxWStyle}" IsChecked="{Binding ElementName=_curve, Path=WVisible}" Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"/>
+            <CheckBox IsChecked="{Binding ElementName=_curve, Path=XVisible}" 
+                      Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"
+                      x:Name="_chkX"/>
+            <CheckBox IsChecked="{Binding ElementName=_curve, Path=YVisible}"
+                      Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"
+                      x:Name="_chkY"/>
+            <CheckBox IsChecked="{Binding ElementName=_curve, Path=ZVisible}"
+                      Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"
+                      x:Name="_chkZ"/>
+            <CheckBox IsChecked="{Binding ElementName=_curve, Path=WVisible}"
+                      Checked="CheckBoxCheckedChange" Unchecked="CheckBoxCheckedChange"
+                      x:Name="_chkW"/>
         </StackPanel>
         
         <Border Grid.Row="0" Grid.RowSpan="2"  Grid.Column="1" Margin="2" BorderThickness="2" BorderBrush="Black">

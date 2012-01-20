@@ -22,7 +22,7 @@
             <Expander>
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Point t = "/>
+                        <TextBlock Text="Point t = "  VerticalAlignment="Center" />
                         <app:NumericUpDown Value="{Binding Time, Mode=TwoWay}" Minimum="0" Maximum="1" Increment="0.01"
                                            Width="128" Height="24" Style="{StaticResource timeStyle}"/>
                     </StackPanel>

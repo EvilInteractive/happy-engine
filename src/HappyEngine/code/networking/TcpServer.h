@@ -52,7 +52,7 @@ public:
     bool isConnected() const;
 
     void send(const void* data, uint sizeInBytes);
-    void setReceiveCallback(const boost::function<void (int bytesReceived)>& callback);
+    void setReceiveCallback(const boost::function<void (const void* buffer, int bytesReceived)>& callback);
     void setConnectedCallback(const boost::function<void ()>& callback);
 
 private:
@@ -69,10 +69,11 @@ private:
     boost::asio::ip::tcp::socket* m_pSocket;
 
     bool m_IsConnectionOpen;
+    bool m_IsShuttingDown;
 
     void* m_pBuffer;
 
-    boost::function<void (int)> m_ReceiveCallback;
+    boost::function<void (const void*, int)> m_ReceiveCallback;
     boost::function<void ()> m_ConnectedCallback;
 
     //----------------------------------------------------------------

@@ -68,28 +68,28 @@ namespace HappyFxEditorBaseLib.Net
         public Guid ReadGuid(bool peek = false)
         {
             int off = _offset;
-            if (peek)
+            if (peek == false)
                 _offset += 16;
             return new Guid(_buffer.GetRange(off, 16).ToArray());
         }
         public float ReadFloat(bool peek = false)
         {
             int off = _offset;
-            if (peek)
+            if (peek == false)
                 _offset += sizeof(float);
             return BitConverter.ToSingle(_buffer.ToArray(), off);
         }
         public int ReadInt(bool peek = false)
         {
             int off = _offset;
-            if (peek)
+            if (peek == false)
                 _offset += sizeof(Int32);
             return BitConverter.ToInt32(_buffer.ToArray(), off);
         }
         public uint ReadUInt(bool peek = false)
         {
             int off = _offset;
-            if (peek)
+            if (peek == false)
                 _offset += sizeof(UInt32);
             return BitConverter.ToUInt32(_buffer.ToArray(), off);
         }
@@ -111,7 +111,7 @@ namespace HappyFxEditorBaseLib.Net
         public string ReadString()
         {
             uint len = ReadUInt();
-            string str = BitConverter.ToString(_buffer.ToArray(), _offset, (int)len);
+            string str = Encoding.ASCII.GetString(_buffer.ToArray(), _offset, (int)len);
             _offset += (int)len;
             return str;
         }
@@ -122,7 +122,7 @@ namespace HappyFxEditorBaseLib.Net
         }
         public int GetSize()
         {
-            return _offset;
+            return _buffer.Count;
         }
     }
 }

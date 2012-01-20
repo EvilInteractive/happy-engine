@@ -1,4 +1,7 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Input;
 using System.Windows.Media;
 using HappyFxEditorBaseLib;
 using DaeMvvmFramework;
@@ -29,7 +32,11 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             Track = track;
 
             if (Track != null)
+            {
                 _behaviours = new UndoableCollection<BehaviourContext>(Track.TimeLine.Effect);
+                if (track.TimeLine.Effect.ComponentEditor.GetToolBox(type).Required != null)
+                    _behaviours.Add(track.TimeLine.Effect.ComponentEditor.GetToolBox(type).Required.Copy());
+            }
 
             CutCommand = CommandFactory.Create(() =>
                                                    {
@@ -63,21 +70,57 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             }
         }
 
-        private int _x = 0;
-        public int X 
+        #region X
+        public const string XProperty = "X";
+        public double X
         {
-            get { return _x; }
-            set { Change(ref _x, value, "X"); }
+            get
+            {
+                if (Track != null)
+                    return StartTime * Track.TimeLine.TimeScale;
+                else
+                    return StartTime;
+            }
+            set
+            {
+                if (Track != null)
+                {
+                    double w = Width;
+                    StartTime = value / Track.TimeLine.TimeScale;
+                    EndTime = StartTime + w / Track.TimeLine.TimeScale;
+                }
+                else
+                {
+                    double w = Width;
+                    StartTime = value;
+                    EndTime = value + w;
+                }
+            }
         }
+        #endregion
 
-        private int _width = 16;
-        public int Width
+        #region Width
+        public const string WidthProperty = "Width";
+        public double Width
         {
-            get { return _width; }
-            set { Change(ref _width, value, "Width", "ForegroundWidth"); }
+            get
+            {
+                if (Track != null)
+                    return (EndTime - StartTime) * Track.TimeLine.TimeScale;
+                else
+                    return EndTime - StartTime;
+            }
+            set
+            {
+                if (Track != null)
+                    EndTime = StartTime + value / Track.TimeLine.TimeScale;
+                else
+                    EndTime = StartTime + value;
+            }
         }
-
-        private int _height = 16;
+        #endregion
+        
+        private int _height = 24;
         public int Height
         {
             get { return _height; }
@@ -91,6 +134,26 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             private set { Change(_hue, value, (newValue) => { _hue = newValue; UpdateColors(); }, "Hue", "BackgroundColor", "ForegroundColor"); }
         }
 
+        #region StartTime
+        private double _startTime;
+        public const string StartTimeProperty = "StartTime";
+        public double StartTime
+        {
+            get { return _startTime; }
+            set { Change(ref _startTime, value, StartTimeProperty, XProperty, WidthProperty, ForegroundWidthProperty); }
+        }
+        #endregion
+
+        #region EndTime
+        private double _endTime;
+        public const string EndTimeProperty = "EndTime";
+        public double EndTime
+        {
+            get { return _endTime; }
+            set { Change(ref _endTime, value, EndTimeProperty, WidthProperty, ForegroundWidthProperty); }
+        }
+        #endregion
+ 
         public TimeLineTrackComponentType Type { get; private set; }
 
         private string _text = "";
@@ -107,11 +170,12 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             set { Change(_isSelected, value, (newValue) => { _isSelected = newValue; UpdateColors(); }, "IsSelected", "BackgroundColor", "ForegroundColor"); }
         }
 
+        public const string ForegroundWidthProperty = "ForegroundWidth";
         public int ForegroundWidth
         {
             get
             {
-                return Width - 8;
+                return (int)Width - 8;
             }
         }
         public int ForegroundHeight { get { return Height - 8; } }
@@ -133,12 +197,51 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             comp.Height = Height;
             comp.X = X;
             comp.Width = Width;
+            comp.Behaviours = new UndoableCollection<BehaviourContext>(Track.TimeLine.Effect);
+            foreach (var behaviour in Behaviours)
+            {
+                comp.AddBehaviour(behaviour.Copy());
+            }
             return comp;
         }
 
         internal void AddBehaviour(BehaviourContext behaviourContext)
         {
             Behaviours.Add(behaviourContext);
+        }
+
+        internal void DeleteBehaviour(BehaviourContext behaviour)
+        {
+            _behaviours.Remove(behaviour);
+        }
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            stream.Write((UInt32)Type);
+            stream.Write((float)StartTime);
+            stream.Write((float)EndTime);
+
+            stream.Write((UInt32)Behaviours.Count);
+            foreach (var behaviour in Behaviours)
+            {
+                behaviour.Serialize(stream);
+            }
+        }
+
+        public static ComponentContext DeSerialize(BinaryReader stream, TimeLineTrackContext timeLineTrackContext)
+        {
+            ComponentContext comp = new ComponentContext(timeLineTrackContext, (TimeLineTrackComponentType)stream.ReadUInt32());
+            comp.StartTime = stream.ReadSingle();
+            comp.EndTime = stream.ReadSingle();
+            comp.Behaviours = new UndoableCollection<BehaviourContext>(timeLineTrackContext.TimeLine.Effect);
+
+            uint behaviours = stream.ReadUInt32();
+            for (int i = 0; i < behaviours; i++)
+            {
+                comp.AddBehaviour(BehaviourContext.DeSerialize(stream, comp));
+            }
+
+            return comp;
         }
     }
 }

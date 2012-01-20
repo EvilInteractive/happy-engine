@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
@@ -12,6 +13,9 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
 
         VariableComponentType GetVarType();
 
-        void SetName(string name);
+        string Name { get; set; }
+
+        void Serialize(BinaryWriter stream);
+        void DeSerialize(BinaryReader stream);
     }
 }

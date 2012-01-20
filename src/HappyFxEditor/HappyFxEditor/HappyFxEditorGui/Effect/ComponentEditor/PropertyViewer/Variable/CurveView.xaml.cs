@@ -143,9 +143,10 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
                     foreach (var point in curve.Points)
                     {
                         point.PropertyChanged -= PointPropertyChanged;
-                        for (int i = 0; i < (int)curve.VariableComponentCount + 1; i++)
+
+                        foreach (var value in point.Variable.Value)
                         {
-                            ((FloatType)point.Variable.Value[i]).PropertyChanged -= PointPropertyChanged;
+                            value.PropertyChanged -= PointPropertyChanged;
                         }
                     }
                 }
@@ -160,9 +161,9 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
                     foreach (var point in curve.Points)
                     {
                         point.PropertyChanged += PointPropertyChanged;
-                        for (int i = 0; i < (int)curve.VariableComponentCount + 1; i++)
+                        foreach (var value in point.Variable.Value)
                         {
-                            ((FloatType)point.Variable.Value[i]).PropertyChanged += PointPropertyChanged;
+                            value.PropertyChanged += PointPropertyChanged;
                         }
                     }
                 }
@@ -304,8 +305,8 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
 
         private void DrawGrid(DrawingContext drawingContext)
         {
-            double xSub = 0.1 * XScale, 
-                   ySub = 0.1 * YScale,
+            double xSub = XRange / 10 * XScale,
+                   ySub = YRange / 10 * YScale,
                    xOff = XOffset * XScale,
                    yOff = YOffset * YScale;
 
@@ -321,11 +322,12 @@ namespace HappyFxEditorApp.Effect.ComponentEditor.PropertyViewer.Variable
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-
             if (CurvePoints != null && CurvePoints.Count() > 0)
             {
                 List<CurvePointContext> points = CurvePoints.ToList();
                 points.Sort((a, b) => a.Time < b.Time? -1 : a.Time > b.Time? 1 : 0);
+
+
 
                 #region Set Background
                 LinearGradientBrush background = new LinearGradientBrush();

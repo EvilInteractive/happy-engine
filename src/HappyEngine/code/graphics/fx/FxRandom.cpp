@@ -28,6 +28,12 @@ namespace gfx {
 FxRandomFloat::FxRandomFloat(): m_Min(0), m_Max(1), m_Random()
 {
 }
+
+FxRandomFloat::FxRandomFloat( float min, float max ): m_Min(min), m_Max(max), m_Random()
+{
+
+}
+
 FxRandomFloat::~FxRandomFloat()
 {
 }

@@ -352,7 +352,7 @@ void MainGame::load()
     ///   Fx
     uint effectTestTL = FX->createTimeline();
     gfx::FxTimeLine* pTL(FX->getTimeline(effectTestTL));
-    pTL->setParent(m_pTestObject);
+    //pTL->setParent(m_pTestObject);
     pTL->setEndTime(80.0f);
     gfx::FxTimeLineTrack* pTrack(pTL->getTrack(pTL->addTrack()));
     gfx::FxParticleSystem* pEffect(pTrack->getComponent<gfx::FxParticleSystem>(pTrack->addComponent(gfx::FxType_ParticleSystem)));
@@ -363,11 +363,11 @@ void MainGame::load()
 
     pEffect->setSpawnRate(gfx::IFxVariable<float>::pointer(NEW gfx::FxConstant<float>(100)));
 
-    gfx::FxParticleSpeed* pPartSpeed(pEffect->getInitComponent<gfx::FxParticleSpeed>(pEffect->addInitComponent(gfx::PICT_Speed)));
+    /*gfx::FxParticleSpeed* pPartSpeed(pEffect->getInitComponent<gfx::FxParticleSpeed>(pEffect->addInitComponent(gfx::PICT_Speed)));
     gfx::FxRandomVec3::pointer pRandSpeed(NEW gfx::FxRandomVec3());
     pRandSpeed->setMin(vec3(-5,  1, -5));
     pRandSpeed->setMax(vec3(5, 25, 5));
-    pPartSpeed->setValue(pRandSpeed);
+    pPartSpeed->setValue(pRandSpeed);*/
 
     gfx::FxParticleRotation* pPartRot(pEffect->getInitComponent<gfx::FxParticleRotation>(pEffect->addInitComponent(gfx::PICT_Rotation)));
     gfx::FxRandomFloat::pointer pRot(NEW gfx::FxRandomFloat());
@@ -379,21 +379,18 @@ void MainGame::load()
     gfx::FxConstant<float>::pointer pRotRate(NEW gfx::FxConstant<float>(piOverTwo));
     pPartRotRate->setValue(pRotRate);
 
-    gfx::FxParticleLocation* pPartGrav(pEffect->getInitComponent<gfx::FxParticleLocation>(pEffect->addInitComponent(gfx::PICT_Location)));
-    gfx::FxConstant<vec3>::pointer pLoc(NEW gfx::FxConstant<vec3>(vec3(0, 0, 0)));
-    pPartGrav->setValue(pLoc);
-
-    gfx::FxParticleForce* pPartLoc(pEffect->getModifyComponent<gfx::FxParticleForce>(pEffect->addModifyComponent(gfx::PMCT_Force)));
-    gfx::FxConstant<vec3>::pointer pGrav(NEW gfx::FxConstant<vec3>(vec3(0, -9.81f, 0)));
-    pPartLoc->setValue(pGrav);
     
-    gfx::FxParticleScale* pPartScale(pEffect->getModifyComponent<gfx::FxParticleScale>(pEffect->addModifyComponent(gfx::PMCT_Scale)));
+    gfx::FxParticleForce* pPartGrav(pEffect->getModifyComponent<gfx::FxParticleForce>(pEffect->addModifyComponent(gfx::PMCT_Force)));
+    gfx::FxConstant<vec3>::pointer pGrav(NEW gfx::FxConstant<vec3>(vec3(0, 9.81f, 0)));
+    pPartGrav->setValue(pGrav);
+    
+    /*gfx::FxParticleScale* pPartScale(pEffect->getModifyComponent<gfx::FxParticleScale>(pEffect->addModifyComponent(gfx::PMCT_Scale)));
     gfx::FxCurve<vec3>::pointer pScale(NEW gfx::FxCurve<vec3>());
     pScale->addPoint(0.0f, vec3(0, 0, 0));
     pScale->addPoint(0.3f, vec3(2, 2, 2));
     pScale->addPoint(0.7f, vec3(2, 2, 2));
     pScale->addPoint(1.0f, vec3(1, 1, 1));
-    pPartScale->setValue(pScale);
+    pPartScale->setValue(pScale);*/
 
     gfx::FxParticleColor* pPartColor(pEffect->getModifyComponent<gfx::FxParticleColor>(pEffect->addModifyComponent(gfx::PMCT_Color)));
     gfx::FxCurve<vec4>::pointer pColor(NEW gfx::FxCurve<vec4>());
@@ -406,6 +403,7 @@ void MainGame::load()
     pPartColor->setValue(pColor);
 
     //pTL->start();
+    m_pFxEditorBinding->init();
 }
 
 void MainGame::crazyStuff()

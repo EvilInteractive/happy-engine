@@ -1,7 +1,8 @@
 ﻿<Window x:Class="HappyFxEditorApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:my="clr-namespace:HappyFxEditorApp" xmlns:Effect="clr-namespace:HappyFxEditorApp.Effect" Title="MainWindow" Height="350" Width="525">
+        xmlns:my="clr-namespace:HappyFxEditorApp" xmlns:Effect="clr-namespace:HappyFxEditorApp.Effect"
+        xmlns:brw="clr-namespace:HappyFxEditorApp.Browsers" Title="MainWindow" Height="350" Width="525">
     
     <Window.InputBindings>
         <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewCommand}" />
@@ -13,6 +14,7 @@
         <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding ExitCommand}" />
         <KeyBinding Key="Z" Modifiers="Control" Command="{Binding CurrentEffect.UndoCommand}" />
         <KeyBinding Key="Y" Modifiers="Control" Command="{Binding CurrentEffect.RedoCommand}" />
+        <KeyBinding Key="Delete" Command="{Binding CurrentEffect.DeleteCommand}" />
     </Window.InputBindings>
     
     <Window.Resources>
@@ -103,8 +105,12 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <Button Command="{Binding CurrentEffect.PlayCommand}" >Play</Button>
+            
             <GridSplitter Grid.Row="1" Grid.Column="0" Style="{StaticResource gridSplitterHStyle}" HorizontalAlignment="Stretch" />
-
+            
+            <brw:AssetManager Grid.Row="2" Grid.Column="0" DataContext="{Binding AssetManager}" />
+            
         </Grid>
 
         <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource gridSplitterVStyle}" HorizontalAlignment="Stretch" />

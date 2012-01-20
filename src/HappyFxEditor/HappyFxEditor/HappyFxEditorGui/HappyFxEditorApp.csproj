@@ -80,6 +80,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Browsers\AssetManager.xaml.cs">
+      <DependentUpon>AssetManager.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Effect\ComponentEditor\ComponentBehaviourView.xaml.cs">
       <DependentUpon>ComponentBehaviourView.xaml</DependentUpon>
     </Compile>
@@ -110,6 +113,9 @@
     <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\RandomVarView.xaml.cs">
       <DependentUpon>RandomVarView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Effect\ComponentEditor\PropertyViewer\Variable\AssetVarView.xaml.cs">
+      <DependentUpon>AssetVarView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Effect\TimeLine\TimeLineTrackView.xaml.cs">
       <DependentUpon>TimeLineTrackView.xaml</DependentUpon>
     </Compile>
@@ -125,15 +131,16 @@
     <Compile Include="Effect\TimeLine\TimeLineView.xaml.cs">
       <DependentUpon>TimeLineView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Effect\TimeLine\TimeControl.xaml.cs">
-      <DependentUpon>TimeControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Effect\TimeLine\TimeLineControls.xaml.cs">
       <DependentUpon>TimeLineControls.xaml</DependentUpon>
     </Compile>
     <Compile Include="Effect\TimeLine\TimeLineTrackContainer.xaml.cs">
       <DependentUpon>TimeLineTrackContainer.xaml</DependentUpon>
     </Compile>
+    <Page Include="Browsers\AssetManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Effect\ComponentEditor\ComponentBehaviourView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -174,6 +181,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Effect\ComponentEditor\PropertyViewer\Variable\AssetVarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Effect\TimeLine\TimeLineTrackView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -183,6 +194,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Effect\EffectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Effect\TimeLine\TimeLineVisualControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -196,6 +211,9 @@
     </Compile>
     <Compile Include="Effect\EffectView.xaml.cs">
       <DependentUpon>EffectView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Effect\TimeLine\TimeLineVisualControl.xaml.cs">
+      <DependentUpon>TimeLineVisualControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -212,10 +230,6 @@
     <Page Include="Effect\TimeLine\TimeLineView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Effect\TimeLine\TimeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Effect\TimeLine\TimeLineControls.xaml">
       <SubType>Designer</SubType>
@@ -292,6 +306,10 @@
       <Project>{26CCE4AC-2F37-430E-96CD-FFDE5ADAAC80}</Project>
       <Name>HappyFxEditorContextLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\folder.png" />
+    <Resource Include="Images\texture.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

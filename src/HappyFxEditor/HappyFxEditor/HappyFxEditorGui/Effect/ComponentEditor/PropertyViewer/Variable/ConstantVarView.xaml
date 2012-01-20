@@ -17,7 +17,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch"  Orientation="Horizontal">
+                <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"  Orientation="Horizontal">
                     <TextBlock Text="{Binding Name}" />
                     <TextBlock Text=":  "/>
                 </StackPanel >
@@ -25,13 +25,12 @@
                                     Value="{Binding Value, Mode=TwoWay}" 
                                     Minimum="{Binding Min}" Maximum="{Binding Max}" 
                                     Increment="{Binding Increment}" 
-                                    Margin="4" Height="24" Width="128" HorizontalAlignment="Left"/>
+                                    Margin="4,2" Height="20" Width="96" HorizontalAlignment="Left"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
     
     <Grid>
-        <ItemsControl ItemsSource="{Binding Value}" ItemTemplate="{StaticResource itemTemplate}">
-        </ItemsControl>
+        <ItemsControl ItemsSource="{Binding Value}" ItemTemplate="{StaticResource itemTemplate}"/>
     </Grid>
 </UserControl>

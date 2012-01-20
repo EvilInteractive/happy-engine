@@ -31,6 +31,7 @@
     <ClCompile Include="code\content\BinObjLoader.cpp" />
     <ClCompile Include="code\content\ContentManager.cpp" />
     <ClCompile Include="code\content\FontLoader.cpp" />
+    <ClCompile Include="code\content\FxLoader.cpp" />
     <ClCompile Include="code\content\LineLoader.cpp" />
     <ClCompile Include="code\content\MaterialLoader.cpp" />
     <ClCompile Include="code\content\ModelLoader.cpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="code\graphics\fx\FxParticleColor.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleContainer.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleForce.cpp" />
+    <ClCompile Include="code\graphics\fx\FxParticleLife.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleLocation.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleRotation.cpp" />
     <ClCompile Include="code\graphics\fx\FxParticleRotationRate.cpp" />
@@ -192,6 +194,7 @@
     <ClInclude Include="code\content\BinObjLoader.h" />
     <ClInclude Include="code\content\ContentManager.h" />
     <ClInclude Include="code\content\FontLoader.h" />
+    <ClInclude Include="code\content\FxLoader.h" />
     <ClInclude Include="code\content\IModelLoader.h" />
     <ClInclude Include="code\content\LineLoader.h" />
     <ClInclude Include="code\content\MaterialLoader.h" />
@@ -246,6 +249,7 @@
     <ClInclude Include="code\graphics\fx\FxParticleColor.h" />
     <ClInclude Include="code\graphics\fx\FxParticleContainer.h" />
     <ClInclude Include="code\graphics\fx\FxParticleForce.h" />
+    <ClInclude Include="code\graphics\fx\FxParticleLife.h" />
     <ClInclude Include="code\graphics\fx\FxParticleLocation.h" />
     <ClInclude Include="code\graphics\fx\FxParticleRotation.h" />
     <ClInclude Include="code\graphics\fx\FxParticleRotationRate.h" />

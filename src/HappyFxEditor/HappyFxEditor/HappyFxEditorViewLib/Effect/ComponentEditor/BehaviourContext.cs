@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using DaeMvvmFramework;
 using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer;
+using HappyFxEditorContextLib.Effect.TimeLine;
 
 namespace HappyFxEditorContextLib.Effect.ComponentEditor
 {
@@ -76,8 +78,25 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor
                            Name = this.Name,
                            Color = this.Color,
                            Hue = this.Hue,
-                           _type = this._type
+                           _type = this._type,
+                           Properties = this.Properties.Copy()
                        };
+        }
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            stream.Write((Int32)_type);
+            Properties.Serialize(stream);
+        }
+
+        public static BehaviourContext DeSerialize(BinaryReader stream, ComponentContext componentContext)
+        {
+            BehaviourContext behaviour =
+                componentContext.Track.TimeLine.Effect.ComponentEditor.GetToolBox(componentContext.Type).GetNewBehaviour(stream.ReadInt32());
+
+            behaviour.Properties.DeSerialize(stream);
+
+            return behaviour;
         }
     }
 }

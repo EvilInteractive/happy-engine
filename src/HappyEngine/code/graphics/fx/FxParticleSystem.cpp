@@ -42,6 +42,7 @@
 #include "FxParticleScale.h"
 #include "FxParticleSpeed.h"
 #include "FxParticleLocation.h"
+#include "FxParticleLife.h"
 #include "CameraManager.h"
 #include "ICamera.h"
 #include "Camera.h"
@@ -234,6 +235,8 @@ uint FxParticleSystem::addInitComponent( ParticleInitComponentType type )
             return m_ParticleInitComponents.insert(NEW FxParticleSpeed());
         case PICT_Location:
             return m_ParticleInitComponents.insert(NEW FxParticleLocation());
+        case PICT_Life:
+            return m_ParticleInitComponents.insert(NEW FxParticleLife());
         default:
             ASSERT(false, "Unkown PICT type"); return 0;
     }

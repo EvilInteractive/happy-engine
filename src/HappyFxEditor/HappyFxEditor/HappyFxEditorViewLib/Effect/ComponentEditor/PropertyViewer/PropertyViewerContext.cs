@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DaeMvvmFramework;
@@ -36,6 +37,22 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer
                 temp.Groups.Add(group.Copy(temp));
             }
             return temp;
+        }
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            foreach (var group in Groups)
+            {
+                group.Serialize(stream);
+            }
+        }
+
+        internal void DeSerialize(BinaryReader stream)
+        {
+            foreach (var group in Groups)
+            {
+                group.DeSerialize(stream);
+            }
         }
     }
 }

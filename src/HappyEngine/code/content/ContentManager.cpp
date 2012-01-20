@@ -8,7 +8,7 @@ namespace ct {
 
 ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureLoader(NEW TextureLoader()),
     m_pLineLoader(NEW LineLoader()), m_pPhysicsShapeLoader(NEW PhysicsShapeLoader()), m_pFontLoader(NEW FontLoader()),
-    m_pShaderLoader(NEW ShaderLoader()), m_pMaterialLoader(NEW MaterialLoader()),
+    m_pShaderLoader(NEW ShaderLoader()), m_pMaterialLoader(NEW MaterialLoader()), m_pFxLoader(NEW FxLoader()),
 
     m_ContentRootDir("../data/"),
     m_TextureFolder("textures/"), 
@@ -18,6 +18,7 @@ ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureL
     m_FontFolder("fonts/"),
     m_ShaderFolder("shaders/"), 
     m_MaterialFolder("materials/"),
+    m_FxFolder("fx/"),
     m_ParticleQuad(NEW gfx::ModelMesh("ParticleQuad"))
 {
 }
@@ -31,6 +32,7 @@ ContentManager::~ContentManager()
     delete m_pFontLoader;
     delete m_pShaderLoader;
     delete m_pMaterialLoader;
+    delete m_pFxLoader;
 }
 
 
@@ -119,6 +121,12 @@ gfx::Material ContentManager::loadMaterial(const std::string& asset)
     return m_pMaterialLoader->load(m_ContentRootDir + m_MaterialFolder + asset);
 }
 
+uint ContentManager::loadFx( const std::string& path )
+{
+    return m_pFxLoader->load(m_ContentRootDir + m_FxFolder + path);
+}
+
+
 void ContentManager::setRootDir(const std::string& root)
 {
     m_ContentRootDir = root;
@@ -150,6 +158,10 @@ void ContentManager::setShaderFolder(const std::string& folder)
 void ContentManager::setMaterialFolder(const std::string& folder)
 {
     m_MaterialFolder = folder;
+}
+void ContentManager::setFxFolder( const std::string& folder )
+{
+    m_FxFolder = folder;
 }
 const std::string& ContentManager::getRootDir() const
 {
@@ -183,6 +195,11 @@ const std::string& ContentManager::getMaterialFolder() const
 {
     return m_MaterialFolder;
 }
+const std::string& ContentManager::getFxFolder() const
+{
+    return m_FxFolder;
+}
+
 
 gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const
 {
@@ -249,5 +266,6 @@ const gfx::ModelMesh::pointer& ContentManager::getParticleQuad() const
     }
     return m_ParticleQuad;
 }
+
 
 } } //end namespace

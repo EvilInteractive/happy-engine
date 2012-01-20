@@ -1,4 +1,6 @@
-﻿using DaeMvvmFramework;
+﻿using System;
+using System.IO;
+using DaeMvvmFramework;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using HappyFxEditorBaseLib;
@@ -25,6 +27,7 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             get { return _selectedTrack; }
             set
             {
+                SelectedComponent = null;
                 Change(_selectedTrack, value, (newValue) =>
                 {
                     SelectedComponent = null;
@@ -46,6 +49,7 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             get { return _selectedComponent; }
             set
             {
+                Effect.ComponentEditor.SelectedBehaviour = null;
                 Change(_selectedComponent, value, (newValue) =>
                 {
                     _selectedComponent = value;
@@ -61,7 +65,76 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
         }
         #endregion
 
-        public int Width { get { return 2048; } }
+        #region Duration
+        private double _duration;
+        public const string DurationProperty = "Duration";
+        public double Duration
+        {
+            get { return _duration; }
+            set { Change(_duration, value, (newValue)=>Swap(ref _duration, newValue, DurationProperty, WidthProperty, ScrollWidthProperty)); }
+        }
+        #endregion
+
+        #region TimeScale in pixel/s
+        private double _timeScale;
+        public const string TimeScaleProperty = "TimeScale";
+        public double TimeScale
+        {
+            get { return _timeScale; }
+            set { Change(ref _timeScale, value, TimeScaleProperty, WidthProperty); }
+        }
+        #endregion
+
+        #region MinScale
+        public double MinScale
+        {
+            get { return 16; }
+        }
+        #endregion
+
+        #region MaxScale
+        public double MaxScale
+        {
+            get { return 1600; }
+        }
+        #endregion
+
+        #region Width
+        public const string WidthProperty = "Width";
+        public double Width
+        {
+            get { return Duration * TimeScale; }
+        }
+        #endregion        
+
+        #region Scroll
+        private double _scroll;
+        public const string ScrollProperty = "Scroll";
+        public double Scroll
+        {
+            get { return _scroll; }
+            set { Change(ref _scroll, value, ScrollProperty); }
+        }
+        #endregion
+
+        #region ScrollWidth
+        public const string ScrollWidthProperty = "ScrollWidth";
+        public double ScrollWidth
+        {
+            get { return Width - ScrollViewPort; }
+        }
+        #endregion
+
+        #region ScrollViewPort
+        private double _scrollViewPort;
+        public const string ScrollViewPortProperty = "ScrollViewPort";
+        public double ScrollViewPort
+        {
+            get { return _scrollViewPort; }
+            set { Change(ref _scrollViewPort, value, ScrollViewPortProperty, ScrollWidthProperty); }
+        }
+        #endregion
+        
 
         public ObservableCollection<ComponentContext> ComponentTools { get; private set; }
 
@@ -101,6 +174,8 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             DeleteComponentCommand = CommandFactory.Create(() => SelectedTrack.Remove(SelectedComponent),
                                                            () => SelectedTrack != null && SelectedComponent != null, this, SelectedTrackProperty, SelectedComponentProperty);
 
+            Duration = 2;
+            TimeScale = 256;
             ComponentTools = new ObservableCollection<ComponentContext>()
             {
                 new ComponentContext(null, TimeLineTrackComponentType.MAX_TYPES) { Width=128, Height=32 },  // Select tool
@@ -138,5 +213,28 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             SelectedComponentTool = ComponentTools[0];
         }
 
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            stream.Write((float)Duration);
+            stream.Write((UInt32)TimeLineTracks.Count);
+            foreach (var track in TimeLineTracks)
+            {
+                track.Serialize(stream);
+            }
+        }
+
+        internal static TimeLineContext DeSerialize(BinaryReader stream, EffectContext effectContext)
+        {
+            TimeLineContext timeLine = new TimeLineContext(effectContext);
+            timeLine.Duration = stream.ReadSingle();
+            uint tracks = stream.ReadUInt32();
+            for (int i = 0; i < tracks; i++)
+            {
+                timeLine.TimeLineTracks.Add(TimeLineTrackContext.DeSerialize(stream, timeLine));
+            }
+            timeLine.SetSelectTool();
+            return timeLine;
+        }
     }
 }

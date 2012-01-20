@@ -49,6 +49,7 @@ public:
     virtual		byte			readByte()								const;
     virtual		ushort			readWord()								const;
     virtual		uint			readDword()								const;
+    virtual		int			    readInt32()								const;
     virtual		float			readFloat()								const;
     virtual		double			readDouble()							const;
 

@@ -1,0 +1,12 @@
+[Forward]
+shader = "defaultForward.shader"
+
+[TEXTURE2D]
+diffuseMap = 1,0,1,1
+normalMap = 0.5, 0.5, 1, 1
+specGlossIllMap = 0.1, 0.1, 1, 0
+
+[info]
+blending = false
+post = false
+shadow = false

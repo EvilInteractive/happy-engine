@@ -75,6 +75,13 @@ uint BinaryStream::readDword() const
     ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return i;
 }
+int BinaryStream::readInt32() const
+{
+    int i(0);
+    size_t count(fread(&i, sizeof(int32), 1, m_pFile));
+    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    return i;
+}
 float BinaryStream::readFloat() const
 {
     float f(0);
@@ -214,5 +221,6 @@ physx::PxStream& BinaryStream::storeBuffer(const void* buffer, physx::PxU32 size
     }
     return *this;
 }
+
 
 } } //end namespace

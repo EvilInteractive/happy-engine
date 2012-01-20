@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using DaeMvvmFramework;
 using HappyFxEditorBaseLib;
@@ -126,8 +127,8 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             if (_createMoveModifier)
             {
                 int dir = _leftAligned
-                              ? xPos - (SelectedComponent.X + SelectedComponent.Width)
-                              : xPos - (SelectedComponent.X);
+                              ? xPos - (int)(SelectedComponent.X + SelectedComponent.Width)
+                              : xPos - (int)(SelectedComponent.X);
                 if (dir > 0)
                 {
                     int realMove = MoveRight(dir);
@@ -149,19 +150,19 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
                 {
                     if (_leftAligned == false)
                     {
-                        MoveLeft(_moveXPos - MIN_COMPONENT_WIDTH / 2 - SelectedComponent.X);
+                        MoveLeft(_moveXPos - MIN_COMPONENT_WIDTH / 2 - (int)SelectedComponent.X);
                         _leftAligned = true;
                     }
-                    MoveRight(xPos - (SelectedComponent.X + SelectedComponent.Width));
+                    MoveRight(xPos - (int)(SelectedComponent.X + SelectedComponent.Width));
                 }
                 else if (dir < 0)
                 {
                     if (_leftAligned == true)
                     {
-                        MoveRight(_moveXPos + MIN_COMPONENT_WIDTH/2 - (SelectedComponent.X + SelectedComponent.Width));
+                        MoveRight(_moveXPos + MIN_COMPONENT_WIDTH/2 - (int)(SelectedComponent.X + SelectedComponent.Width));
                         _leftAligned = false;
                     }
-                    MoveLeft(xPos - SelectedComponent.X);                
+                    MoveLeft(xPos - (int)SelectedComponent.X);                
                 }
             }
 
@@ -179,42 +180,46 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
 
         private int MoveRight(int move)
         {
-            int prevX = SelectedComponent.X + SelectedComponent.Width;
+            int prevX = (int)(SelectedComponent.X + SelectedComponent.Width);
             int newX = prevX + move;
 
             if (newX < prevX)
             {
-                newX = Math.Max(SelectedComponent.X + MIN_COMPONENT_WIDTH, newX);
+                newX = Math.Max((int)SelectedComponent.X + MIN_COMPONENT_WIDTH, newX);
             }
             else
             {
                 foreach (var c in Components)
                 {
                     if (c != SelectedComponent && newX > c.X && c.X >= prevX)
-                        newX = Math.Min(newX, c.X);
+                        newX = Math.Min(newX, (int)c.X);
                 }             
             }
+            newX = Math.Min(newX, (int) (TimeLine.Duration*TimeLine.TimeScale));
+
             SelectedComponent.Width = newX - SelectedComponent.X; 
 
             return newX - prevX;
         }
         private int MoveLeft(int move)
         {
-            int prevX = SelectedComponent.X;
+            int prevX = (int)SelectedComponent.X;
             int newX = prevX + move;
 
             if (newX > prevX)
             {
-                newX = Math.Min(SelectedComponent.X + SelectedComponent.Width - MIN_COMPONENT_WIDTH, newX);
+                newX = Math.Min((int)(SelectedComponent.X + SelectedComponent.Width) - MIN_COMPONENT_WIDTH, newX);
             }
             else
             {
                 foreach (var c in Components)
                 {
                     if (c != SelectedComponent && newX < c.X + c.Width && c.X + c.Width <= prevX)
-                        newX = Math.Max(newX, c.X + c.Width);
+                        newX = Math.Max(newX, (int)(c.X + c.Width));
                 }
             }
+            newX = Math.Max(0, newX);
+
             SelectedComponent.Width = prevX + SelectedComponent.Width - newX;
             SelectedComponent.X = newX;
 
@@ -223,8 +228,8 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
 
         private bool TryAddComponent(ComponentContext component)
         {
-            int left = ContextClickPos - component.Width / 2;
-            int right = ContextClickPos + component.Width / 2;
+            int left = ContextClickPos - (int)(component.Width / 2);
+            int right = ContextClickPos + (int)(component.Width / 2);
 
             int realLeft = left;
             int realRight = right;
@@ -232,9 +237,9 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
             foreach (var c in Components)
             {
                 if (c.X + c.Width < ContextClickPos)
-                    realLeft = Math.Max(realLeft, c.X + c.Width);
+                    realLeft = Math.Max(realLeft, (int)(c.X + c.Width));
                 if (c.X > ContextClickPos)
-                    realRight = Math.Min(realRight, c.X);
+                    realRight = Math.Min(realRight, (int)c.X);
             }
 
             if (left != realLeft && right != realRight)
@@ -247,7 +252,7 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
                 foreach (var c in Components)
                 {
                     if (c.X > ContextClickPos)
-                        realRight = Math.Min(realRight, c.X);
+                        realRight = Math.Min(realRight, (int)c.X);
                 }
                 if (right != realRight)
                     return false;
@@ -259,7 +264,7 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
                 foreach (var c in Components)
                 {
                     if (c.X + c.Width < ContextClickPos)
-                        realLeft = Math.Max(realLeft, c.X + c.Width);
+                        realLeft = Math.Max(realLeft, (int)(c.X + c.Width));
                 }
                 if (left != realLeft)
                     return false;
@@ -276,6 +281,28 @@ namespace HappyFxEditorContextLib.Effect.TimeLine
         {
             Components.Remove(componentContext);
             TimeLine.SelectedComponent = null;
+        }
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            stream.Write((UInt32)Components.Count);
+            foreach (var comp in Components)
+            {
+                comp.Serialize(stream);
+            }
+        }
+
+        public static TimeLineTrackContext DeSerialize(BinaryReader stream, TimeLineContext timeLineContext)
+        {
+            TimeLineTrackContext track = new TimeLineTrackContext(timeLineContext);
+
+            uint components = stream.ReadUInt32();
+            for (int i = 0; i < components; i++)
+            {
+                track.Components.Add(ComponentContext.DeSerialize(stream, track));
+            }
+
+            return track;
         }
     }
 }

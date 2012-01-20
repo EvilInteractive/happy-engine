@@ -31,9 +31,9 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor
             set { Change(ref _selectedBehaviour, value, SelectedBehaviourProperty); }
         }
         #endregion
-        
 
-        private List<BehaviourToolboxContext> _toolboxes = new List<BehaviourToolboxContext>();
+
+        public List<BehaviourToolboxContext> ToolBoxes { get; private set; }
 
         private BehaviourToolboxContext _toolbox = null;
         public const string ToolBoxProperty = "ToolBox";
@@ -46,30 +46,44 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor
         #region AddBehaviourCommand
 
         public ICommand AddBehaviourCommand { get; set; }
+        public ICommand DeleteBehaviourCommand { get; set; }
 
         #endregion
         
 
         public ComponentEditorContext(EffectContext effect)
         {
+            ToolBoxes = new List<BehaviourToolboxContext>();
             Effect = effect;
+            for (int i = 0; i < (int)TimeLineTrackComponentType.MAX_TYPES; ++i)
+            {
+                ToolBoxes.Add(new BehaviourToolboxContext(this, (TimeLineTrackComponentType)i));
+            }
+
+        }
+
+        public void Init()
+        {
             Effect.TimeLine.PropertyChanged += (s, e) =>
                                           {
                                               if (e.PropertyName == TimeLineContext.SelectedComponentProperty)
                                                   ChangeComponent(Effect.TimeLine.SelectedComponent);
                                           };
-            for (int i = 0; i < (int)TimeLineTrackComponentType.MAX_TYPES; ++i)
-            {
-                _toolboxes.Add(new BehaviourToolboxContext(this, (TimeLineTrackComponentType)i));
-            }
-
+            
             AddBehaviourCommand = CommandFactory.Create(() => SelectedComponent.AddBehaviour(ToolBox.SelectedTool.Copy()));
+            DeleteBehaviourCommand = CommandFactory.Create(() => SelectedComponent.DeleteBehaviour(SelectedBehaviour),
+                () => SelectedBehaviour != null && SelectedComponent != null);
         }
 
         private void ChangeComponent(ComponentContext componentContext)
         {
             SelectedComponent = componentContext;
-            ToolBox = (componentContext == null || componentContext.Type == TimeLineTrackComponentType.MAX_TYPES) ? null : _toolboxes[(int)componentContext.Type];
+            ToolBox = (componentContext == null || componentContext.Type == TimeLineTrackComponentType.MAX_TYPES) ? null : ToolBoxes[(int)componentContext.Type];
+        }
+
+        internal BehaviourToolboxContext GetToolBox(TimeLineTrackComponentType timeLineTrackComponentType)
+        {
+            return ToolBoxes[(int) timeLineTrackComponentType];
         }
     }
 }

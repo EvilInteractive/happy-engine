@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DaeMvvmFramework;
@@ -23,7 +24,7 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         }
         #endregion
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         public float Min { get; set; }
         public float Max { get; set; }
@@ -32,9 +33,9 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
 
         public FloatType(Evolution evolution, float min = 0.0f, float max = 1.0f, float value = 0.0f)
         {
-            Value = value;
             Min = min;
             Max = max;
+            Value = value;
             _evolution = evolution;
         }
 
@@ -54,9 +55,14 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
             return VariableComponentType.Float;
         }
 
-        public void SetName(string name)
+        public void Serialize(BinaryWriter stream)
         {
-            Name = name;
+            stream.Write(Value);
+        }
+
+        public void DeSerialize(BinaryReader stream)
+        {
+            Value = stream.ReadSingle();
         }
     }
 }

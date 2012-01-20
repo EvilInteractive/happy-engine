@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DaeMvvmFramework;
@@ -25,54 +27,13 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer
             set { Change(_variable, value, (newValue) => Swap(ref _variable, newValue, VariableProperty)); }
         }
         #endregion
-
-        public VariableComponentType VariableComponentType { get; private set; }
-        public VariableComponentCount VariableComponentCount { get; private set; }
-
-        public PropertyViewerItemContext(PropertyViewerGroupContext group, string name, VariableComponentType type, VariableComponentCount count)
+        
+        public PropertyViewerItemContext(PropertyViewerGroupContext group, string name, IEnumerable<IVariableContext> vars)
         {
             Group = group;
             Name = name;
-            VariableComponentType = type;
-            VariableComponentCount = count;
-            PossibleVars = new List<IVariableContext>();
-            
-            switch (type)
-            {
-                case VariableComponentType.Int:
-                    PossibleVars.Add(new ConstantVarContext(count, new IntType(group.PropertyViewer.Effect.Evolution)));
-                    PossibleVars.Add(new RandomVarContext(count, new IntType(group.PropertyViewer.Effect.Evolution), new IntType(group.PropertyViewer.Effect.Evolution)));
-                    Variable = PossibleVars[0];
-                    break;
-                case VariableComponentType.Float:
-                    PossibleVars.Add(new ConstantVarContext(count, new FloatType(group.PropertyViewer.Effect.Evolution)));
-                    PossibleVars.Add(new RandomVarContext(count, new FloatType(group.PropertyViewer.Effect.Evolution), new FloatType(group.PropertyViewer.Effect.Evolution)));
-                    if (count == VariableComponentCount.Rgba)
-                    {
-                        PossibleVars.Add(new CurveVarContext(Group.PropertyViewer.Effect.Evolution, count,
-                                                             new List<Range>()
-                                                                 {
-                                                                     new Range() {Min = 0.0f, Max = float.MaxValue},
-                                                                     new Range() {Min = 0.0f, Max = float.MaxValue},
-                                                                     new Range() {Min = 0.0f, Max = float.MaxValue},
-                                                                     new Range() {Min = 0.0f, Max = 1.0f},
-                                                                 }));
-                    }
-                    else
-                    {
-
-                        PossibleVars.Add(new CurveVarContext(Group.PropertyViewer.Effect.Evolution, count, new List<Range>()
-                                                                                                           {
-                                                                                                               new Range() {Min = float.MinValue, Max = float.MaxValue},
-                                                                                                               new Range() {Min = float.MinValue, Max = float.MaxValue},
-                                                                                                               new Range() {Min = float.MinValue, Max = float.MaxValue}
-                                                                                                           }));
-                    }
-                    Variable = PossibleVars[0];
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("type");
-            }
+            PossibleVars = new List<IVariableContext>(vars);
+            Variable = PossibleVars[0];
         }
 
         public override Evolution Evolution
@@ -82,9 +43,34 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer
 
         internal PropertyViewerItemContext Copy(PropertyViewerGroupContext group)
         {
-            PropertyViewerItemContext temp = new PropertyViewerItemContext(group, Name, VariableComponentType, VariableComponentCount);
-            temp.Variable = Variable.Copy();
+            PropertyViewerItemContext temp = new PropertyViewerItemContext(group, Name, PossibleVars);
+            for (int i = 0; i < PossibleVars.Count; i++)
+            {
+                temp.PossibleVars[i] = PossibleVars[i].Copy(group.PropertyViewer.Effect);
+                if (Variable == PossibleVars[i])
+                    temp.Variable = temp.PossibleVars[i];
+            }
             return temp;
+        }
+
+        internal void Serialize(BinaryWriter stream)
+        {
+            stream.Write((UInt32)Variable.GetVarType());
+            Variable.Serialize(stream);
+        }
+
+        internal void DeSerialize(BinaryReader stream)
+        {
+            VariableType varType = (VariableType)stream.ReadUInt32();
+            foreach (var possibleVar in PossibleVars)
+            {
+                if (possibleVar.GetVarType() == varType)
+                {
+                    possibleVar.DeSerialize(stream);
+                    Variable = possibleVar;
+                    break;
+                }
+            }
         }
     }
 }

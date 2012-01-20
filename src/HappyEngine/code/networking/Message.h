@@ -50,7 +50,7 @@ public:
     uint getSizeInBytes() const;
 
 private:
-	Message();
+    Message();
 
     void* m_pMsg;
     uint m_SizeInBytes;

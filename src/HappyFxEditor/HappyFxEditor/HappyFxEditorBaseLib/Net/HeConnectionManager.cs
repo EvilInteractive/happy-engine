@@ -39,6 +39,7 @@ namespace HappyFxEditorBaseLib.Net
         SetTexturePath,
         SetModelPath,
         SetAudioPath,
+
         TimeLineCreated,
         TimeLineTrackCreated,
         TimeLineTrackComponentCreated,
@@ -74,8 +75,6 @@ namespace HappyFxEditorBaseLib.Net
         {
             _stream.Close();
             _client.Close();
-            MessageBox.Show("HeConnectionManager Disposed");
-            // TODO: check if cleaned up
         }
 
         public static HeConnectionManager Instance
@@ -124,9 +123,22 @@ namespace HappyFxEditorBaseLib.Net
 
         public void SendPacket(Packet packet)
         {
-            if (Connected)
+            if (Connected == false)
+                Connect();
+            if (Connected && _stream.CanWrite)
             {
-                _stream.Write(packet.GetBuffer(), 0, packet.GetSize());
+                try
+                {
+                    _stream.BeginWrite(packet.GetBuffer(), 0, packet.GetSize(), (r) => _stream.EndWrite(r), null);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Unable to write to network stream");
             }
         }
 

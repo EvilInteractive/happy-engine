@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variables.Types;
@@ -12,43 +13,46 @@ namespace HappyFxEditorContextLib.Effect.ComponentEditor.PropertyViewer.Variable
         public ConstantVarContext MaxVar { get; private set; }
 
         public VariableType VariableType { get { return VariableType.Random; } }
-        public VariableComponentCount VariableComponentCount { get; private set; }
-        public VariableComponentType VariableComponentType { get; private set; }
 
-        public RandomVarContext(VariableComponentCount components, IType min, IType max)
+        private ConstantVarContext _template;
+
+        public RandomVarContext(EffectContext effect, ConstantVarContext template)
         {
-            VariableComponentCount = components;
-            MinVar = new ConstantVarContext(components, min);
-            MaxVar = new ConstantVarContext(components, max);
-
-            VariableComponentType = min.GetVarType();
+            _template = template;
+            MinVar = (ConstantVarContext)template.Copy(effect);
+            MaxVar = (ConstantVarContext)template.Copy(effect);
         }
 
         public VariableType GetVarType()
         {
             return VariableType;
         }
-        public VariableComponentType GetVarComponentType()
-        {
-            return VariableComponentType;
-        }
-        public VariableComponentCount GetComponentCount()
-        {
-            return VariableComponentCount;
-        }
 
-        public IVariableContext Copy()
+        public IVariableContext Copy(EffectContext effect)
         {
-            RandomVarContext temp = new RandomVarContext(VariableComponentCount, MinVar.Value[0], MaxVar.Value[0]);
-            temp.MinVar = MinVar.Copy() as ConstantVarContext;
-            temp.MaxVar = MaxVar.Copy() as ConstantVarContext;
+            RandomVarContext temp = new RandomVarContext(effect, _template);
+            temp.MinVar = (ConstantVarContext)MinVar.Copy(effect);
+            temp.MaxVar = (ConstantVarContext)MaxVar.Copy(effect);
 
             return temp;
         }
 
         public override string ToString()
         {
-            return "Random " + VariableComponentCount;
+            return "Random";
+        }
+
+
+        public void Serialize(BinaryWriter stream)
+        {
+            MinVar.Serialize(stream);
+            MaxVar.Serialize(stream);
+        }
+
+        public void DeSerialize(BinaryReader stream)
+        {
+            MinVar.DeSerialize(stream);
+            MaxVar.DeSerialize(stream);
         }
     }
 }

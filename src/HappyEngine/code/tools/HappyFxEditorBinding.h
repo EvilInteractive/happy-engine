@@ -24,11 +24,13 @@
 
 #include "TcpServer.h"
 
+#include "ITickable.h"
+
 namespace he {
 namespace tools {
 
 
-class HappyFxEditorBinding
+class HappyFxEditorBinding : public game::ITickable
 {
 public:
     HappyFxEditorBinding();
@@ -39,12 +41,30 @@ public:
 private:
     struct FxInHeader
     {
-        enum
+        enum FxInHeaderEnum
         {
             GetEffectPath = 0,
             GetTexturePath,
             GetModelPath,
             GetAudioPath,
+            Play,
+            Stop,
+            Pauze,
+            ResetAll,
+
+            //TimeLine
+            CreateTimeLine,
+            DeleteTimeLine,
+            SetTimeLineEndTime,
+            SetTimeLineCurrentTime,
+
+            //TimeLineTrack
+            CreateTimeLineTrack,
+            DeleteTimeLineTrack,
+
+            //TimeLineTrackComponent
+            CreateTimeLineTrackComponent,
+            DeleteTimeLineTrackComponent
         };
     };
     struct FxOutHeader
@@ -55,14 +75,24 @@ private:
             SetTexturePath,
             SetModelPath,
             SetAudioPath,
+
+            TimeLineCreated,
+            TimeLineTrackCreated,
+            TimeLineTrackComponentCreated,
         };
     };
 
     net::TcpServer* m_pServer;
 
     void connected(); 
-    void receiveData(int bytesReceived); 
+    void receiveData(const void* buffer, int bytesReceived); 
     void start();
+
+    virtual void tick(float dTime);
+
+    uint m_CurrentTimeLine;
+
+    bool m_StartNew;
 
     //Disable default copy constructor and default assignment operator
     HappyFxEditorBinding(const HappyFxEditorBinding&);
