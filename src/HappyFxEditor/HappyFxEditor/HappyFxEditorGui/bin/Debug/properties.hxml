@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Components>
+    <!-- ParticleSystem -->
+    <Component id="ParticleSystem">
+        <Behaviours>
+            <!-- Color -->
+            <Behaviour type="Color" name="Color" ToolTip="Change Color and Alpha">
+                <PropertyGroups>
+                    <PropertyGroup name="Color">
+                        <Properties>
+                            <Property name="Color">
+                                <Components type="Float">
+                                    <Component min="0" max="max" value="0" name="R" />
+                                    <Component min="0" max="max" value="0" name="G" />
+                                    <Component min="0" max="max" value="0" name="B" />
+                                    <Component min="0" max="1"   value="1" name="A" />                                  
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            
+            <!-- Force -->
+            <Behaviour type="Force" name="Force" ToolTip="Apply a force">
+                <PropertyGroups>
+                    <PropertyGroup name="Force">
+                        <Properties>
+                            <Property name="Force">
+                                <Components type="Float">
+                                    <Component min="min" max="max" value="0" name="X" />
+                                    <Component min="min" max="max" value="0" name="Y" />
+                                    <Component min="min" max="max" value="0" name="Z" />                                 
+                                </Components>
+                                <Vars>
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            
+            <!-- Location -->
+            <Behaviour type="Location" name="Location" ToolTip="Set the particle spawn location">
+                <PropertyGroups>
+                    <PropertyGroup name="Location">
+                        <Properties>
+                            <Property name="Location">
+                                <Components type="Float">
+                                    <Component min="min" max="max" value="0" name="X" />
+                                    <Component min="min" max="max" value="0" name="Y" />
+                                    <Component min="min" max="max" value="0" name="Z" />                                 
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            
+            <!-- Rotation -->
+            <Behaviour type="Rotation" name="Rotation" ToolTip="Set the rotation">
+                <PropertyGroups>
+                    <PropertyGroup name="Rotation">
+                        <Properties>
+                            <Property name="Rotation">
+                                <Components type="Float">
+                                    <Component min="min" max="max" value="0" name="rad" />                                
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            
+            <!-- RotationRate -->
+            <Behaviour type="RotationRate" name="Rotation Rate" ToolTip="Set the rotation rate / spin speed">
+                <PropertyGroups>
+                    <PropertyGroup name="RotationRate">
+                        <Properties>
+                            <Property name="RotationRate">
+                                <Components type="Float">
+                                    <Component min="min" max="max" value="0" name="rad/s" />                                
+                                </Components>
+                                <Vars>
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            
+            <!-- Scale -->
+            <Behaviour type="Scale" name="Scale" ToolTip="Set the scale">
+                <PropertyGroups>
+                    <PropertyGroup name="Scale">
+                        <Properties>
+                            <Property name="Scale">
+                                <Components type="Float">
+                                    <Component min="0" max="max" value="1" name="X" />  
+                                    <Component min="0" max="max" value="1" name="Y" />                              
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            
+            <!-- Speed -->
+            <Behaviour type="Speed" name="Speed" ToolTip="Set the speed/velocity">
+                <PropertyGroups>
+                    <PropertyGroup name="Speed">
+                        <Properties>
+                            <Property name="Speed">
+                                <Components type="Float">
+                                    <Component min="min" max="max" value="0" name="X" /> 
+                                    <Component min="min" max="max" value="0" name="Y" />
+                                    <Component min="min" max="max" value="0" name="Z" />                               
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+          
+            <!-- Required -->
+            <Behaviour type="Required" name="Required" ToolTip="Required properties">
+                <PropertyGroups>
+                    <PropertyGroup name="Visual">
+                        <Properties>
+                            <Property name="Texture">
+                                <Components type="Texture"/> 
+                                <Vars>
+                                    <Var type="Asset"/>
+                                </Vars>
+                            </Property>
+                            <Property name="UvTiles">
+                                <Components type="Int">
+                                    <Component min="1" max="100" value="1" name="X" /> 
+                                    <Component min="1" max="100" value="1" name="Y" />                              
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                </Vars>
+                            </Property>
+                            <Property name="UvTile">
+                                <Components type="Int">
+                                    <Component min="1" max="100" value="1" name="X" /> 
+                                    <Component min="1" max="100" value="1" name="Y" />                              
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                    <PropertyGroup name="Life">
+                        <Properties>
+                            <Property name="LifeTime">
+                                <Components type="Float">
+                                    <Component min="0" max="100" value="1" name="sec" />                                
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+          
+        </Behaviours>
+    </Component>
+    
+    <!-- CameraFx -->
+    <Component id="CameraFx">
+        <Behaviours>
+            <!-- Shake -->
+            <Behaviour type="Shake" name="Shake" ToolTip="Shake the camera">
+                <PropertyGroups>
+                    <PropertyGroup name="Shake">
+                        <Properties>
+                            <Property name="Shake">
+                                <Components type="Float">
+                                    <Component min="min" max="max" value="0" name="X" />
+                                    <Component min="min" max="max" value="0" name="Y" />
+                                    <Component min="min" max="max" value="0" name="Z" />                                 
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            <!-- Flash -->
+            <Behaviour type="Flash" name="Flash" ToolTip="White over-exposure effect">
+                <PropertyGroups>
+                    <PropertyGroup name="Flash">
+                        <Properties>
+                            <Property name="Flash">
+                                <Components type="Float">
+                                    <Component min="0" max="max" value="100" name="I" />                               
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+        </Behaviours>
+    </Component>
+    
+    <!-- AudioFx -->
+    <Component id="AudioFx">
+        <Behaviours>
+            <!-- Volume -->
+            <Behaviour type="Volume" name="Volume" ToolTip="Set the volume">
+                <PropertyGroups>
+                    <PropertyGroup name="Volume">
+                        <Properties>
+                            <Property name="Volume">
+                                <Components type="Float">
+                                    <Component min="0" max="100" value="100" name="V" />                                
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            <!-- Pan -->
+            <Behaviour type="Pan" name="Pan" ToolTip="Set the audio panning">
+                <PropertyGroups>
+                    <PropertyGroup name="Pan">
+                        <Properties>
+                            <Property name="Pan">
+                                <Components type="Float">
+                                    <Component min="-100" max="100" value="0" name="P" />                               
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+            <!-- Pitch -->
+            <Behaviour type="Pitch" name="Pitch" ToolTip="Change the pitch of the audio">
+                <PropertyGroups>
+                    <PropertyGroup name="Pitch">
+                        <Properties>
+                            <Property name="Pitch">
+                                <Components type="Float">
+                                    <Component min="-100" max="100" value="0" name="P" />                               
+                                </Components>
+                                <Vars>
+                                    <Var type="Constant" />
+                                    <Var type="Random" />
+                                    <Var type="Curve" />
+                                </Vars>
+                            </Property>
+                        </Properties>
+                    </PropertyGroup>
+                </PropertyGroups>
+            </Behaviour>
+        </Behaviours>
+    </Component>
+    
+</Components>
