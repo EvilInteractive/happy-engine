@@ -26,14 +26,7 @@ uniform bool blending;
 
 void main()
 {
-    if (blending)
-    {
-        if (color.a < 0.01f)
-        {
-            discard;
-        }
-    }
-    else
+    if (!blending)
     {
         if (color.a < 0.5f)
         {

@@ -30,7 +30,7 @@
 namespace he {
 namespace io {
 
-ControlsManager::ControlsManager(bool qt): m_pMouse(nullptr), m_pKeyboard(nullptr)
+ControlsManager::ControlsManager(bool qt): m_pMouse(nullptr), m_pKeyboard(nullptr), m_bLocked(false), m_pLockedObject(nullptr)
 {
     if (qt == false)
     {
@@ -66,6 +66,47 @@ const IKeyboard* ControlsManager::getKeyboard() const
 const IMouse* ControlsManager::getMouse() const
 {
     return m_pMouse;
+}
+
+bool ControlsManager::getFocus(void* pObject) const
+{
+    if (m_pLockedObject == nullptr)
+    {
+        if (!m_bLocked)
+        {
+            *(const_cast<bool*>(&m_bLocked)) = true;
+            const_cast<void*>(m_pLockedObject) = pObject;
+
+            return true;
+        }
+        else
+            return false;
+    }
+    else if (m_pLockedObject == pObject)
+        return true;
+    else
+        return false;
+}
+
+void ControlsManager::returnFocus(void* pObject) const
+{
+    if (m_pLockedObject == pObject)
+    {
+        if (m_bLocked)
+        {
+            *(const_cast<bool*>(&m_bLocked)) = false;
+
+            const_cast<void*>(m_pLockedObject) = nullptr;
+        }
+    }
+}
+
+bool ControlsManager::hasFocus(void* pObject) const
+{
+    if (m_pLockedObject == pObject)
+        return true;
+    else
+        return false;
 }
 
 } } //end namespace

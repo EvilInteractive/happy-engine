@@ -74,16 +74,18 @@ void TextBox::tick()
 		if (m_pHitrect->hitTest(CONTROLS->getMouse()->getPosition()))
 		{
 			m_bHasFocus = true;
+            CONTROLS->getFocus(this);
 			SDL_StartTextInput();
 		}
 		else
 		{
+            CONTROLS->returnFocus(this);
 			m_bHasFocus = false;
 			SDL_StopTextInput();
 		}
 	}
 
-	if (m_bHasFocus && m_bActive)
+	if (m_bHasFocus && m_bActive && CONTROLS->hasFocus(this))
 	{
 		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Left))
 		{

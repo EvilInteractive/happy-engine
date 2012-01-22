@@ -204,35 +204,40 @@ void TestObject::tick(float dTime)
     //////////////////////////////////////////////////////////////////////////
     ///     INPUT                                                          ///
     //////////////////////////////////////////////////////////////////////////
+    CONTROLS->getFocus(this);
 
-    m_pCar->inputAccel(CONTROLS->getKeyboard()->isKeyDown(io::Key_Up));
-    m_pCar->inputBrake(CONTROLS->getKeyboard()->isKeyDown(io::Key_Down));
-    m_pCar->inputTurnLeft(CONTROLS->getKeyboard()->isKeyDown(io::Key_Left));
-    m_pCar->inputTurnRight(CONTROLS->getKeyboard()->isKeyDown(io::Key_Right));
-    m_pCar->inputHandBrake(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lctrl));
-    m_pCar->inputGearUp(CONTROLS->getKeyboard()->isKeyPressed(io::Key_PageUp));
-    m_pCar->inputGearDown(CONTROLS->getKeyboard()->isKeyPressed(io::Key_PageDown));
-    if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Backspace))
+    if (CONTROLS->hasFocus(this))
     {
-        m_pCar->setPose(mat44::createTranslation(m_pCar->getPosition() + vec3(0, 2, 0)));
-        m_pCar->reset();
-    }
-    if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Delete))
-    {
-        m_pCar->setPose(mat44::createTranslation(vec3(0, 2, 0)));
-        m_pCar->reset();
+        m_pCar->inputAccel(CONTROLS->getKeyboard()->isKeyDown(io::Key_Up));
+        m_pCar->inputBrake(CONTROLS->getKeyboard()->isKeyDown(io::Key_Down));
+        m_pCar->inputTurnLeft(CONTROLS->getKeyboard()->isKeyDown(io::Key_Left));
+        m_pCar->inputTurnRight(CONTROLS->getKeyboard()->isKeyDown(io::Key_Right));
+        m_pCar->inputHandBrake(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lctrl));
+        m_pCar->inputGearUp(CONTROLS->getKeyboard()->isKeyPressed(io::Key_PageUp));
+        m_pCar->inputGearDown(CONTROLS->getKeyboard()->isKeyPressed(io::Key_PageDown));
+        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Backspace))
+        {
+            m_pCar->setPose(mat44::createTranslation(m_pCar->getPosition() + vec3(0, 2, 0)));
+            m_pCar->reset();
+        }
+        if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Delete))
+        {
+            m_pCar->setPose(mat44::createTranslation(vec3(0, 2, 0)));
+            m_pCar->reset();
+        }
+
+        if (m_pCar->isInAir() && CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
+            m_pCar->setAngularVelocity(vec3(0, 0, 0));
+        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
+        {
+            if (FX->getTimeline(m_CameraShakeTL)->isRunning() == false)
+                FX->getTimeline(m_CameraShakeTL)->start();
+            vec4 force(0, 0, 15000, 0);
+            m_pCar->addForce((m_pCar->getPose() * force).xyz());
+        }
     }
 
-    if (m_pCar->isInAir() && CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
-        m_pCar->setAngularVelocity(vec3(0, 0, 0));
-    if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
-    {
-        if (FX->getTimeline(m_CameraShakeTL)->isRunning() == false)
-            FX->getTimeline(m_CameraShakeTL)->start();
-        vec4 force(0, 0, 15000, 0);
-        m_pCar->addForce((m_pCar->getPose() * force).xyz());
-    }
-
+    CONTROLS->returnFocus(this);
 
     m_pCarEngineSfx->setPosition(getWorldMatrix().getTranslation());
     m_pCarEngineSfx->setPitch(he::clamp<float>(m_pCar->getEngineRPM() / 150 + 1.0f, 1, 6));

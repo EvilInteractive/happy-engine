@@ -39,10 +39,17 @@ public:
     const IKeyboard* getKeyboard() const;
     const IMouse* getMouse() const;
 
+    bool getFocus(void* pObject) const;
+    void returnFocus(void* pObject) const;
+    bool hasFocus(void* pObject) const;
+
 private:
 
     IKeyboard* m_pKeyboard;
     IMouse* m_pMouse;
+
+    bool m_bLocked;
+    void* m_pLockedObject;
 
     //Disable default copy constructor and default assignment operator
     ControlsManager(const ControlsManager&);

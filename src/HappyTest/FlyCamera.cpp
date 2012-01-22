@@ -43,6 +43,8 @@ FlyCamera::~FlyCamera()
 void FlyCamera::tick(float dTime)
 {
     using namespace he;
+
+    CONTROLS->getFocus(this);
     
     if (m_bMoveable)
     {
@@ -51,19 +53,22 @@ void FlyCamera::tick(float dTime)
         // camera controls
         vec3 dir(0.0f, 0.0f, 0.0f);
 
-        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
-            dir += m_vLookWorld;
-        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Q))
-            dir -= m_vRightWorld;
+        if (CONTROLS->hasFocus(this))
+        {
+            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
+                dir += m_vLookWorld;
+            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Q))
+                dir -= m_vRightWorld;
 
-        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_S))
-            dir -= m_vLookWorld;
-        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_D))
-            dir += m_vRightWorld;
+            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_S))
+                dir -= m_vLookWorld;
+            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_D))
+                dir += m_vRightWorld;
 
-        // fast forward
-        if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
-            bRunning = true;
+            // fast forward
+            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
+                bRunning = true;
+        }
 
         dir = normalize(dir);
 
@@ -83,7 +88,7 @@ void FlyCamera::tick(float dTime)
             m_Speed = 2;
     }*/
 
-    if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right))
+    if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right) && CONTROLS->hasFocus(this))
     {
         vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
         m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
@@ -101,6 +106,8 @@ void FlyCamera::tick(float dTime)
     }
     else
         m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+
+    CONTROLS->returnFocus(this);
 
     m_AspectRatio = GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth();
 

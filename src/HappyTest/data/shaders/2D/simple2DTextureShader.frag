@@ -35,14 +35,7 @@ void main()
 
     float alpha = color.a - (1.0f - inAlpha);
 
-    if (blending)
-    {
-        if (alpha < 0.01f)
-        {
-            discard;
-        }
-    }
-    else
+    if (!blending)
     {
         if (alpha < 0.5f)
         {

@@ -353,7 +353,7 @@ void HappyEngine::audioLoop()
         prevTime = boost::chrono::high_resolution_clock::now();
         dTime += (elapsedTime.count() / static_cast<float>(boost::nano::den));
 
-        if (dTime >= (1 / 30.0f))
+        if (dTime >= (1 / 60.0f))
         {
             m_pSoundEngine->tick(dTime);
             dTime = 0;

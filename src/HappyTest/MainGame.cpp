@@ -300,23 +300,28 @@ void MainGame::load()
 
     m_pFont = CONTENT->loadFont("MODES.ttf", 12);
 
-    m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 600), vec2(60,20));
+    m_pTestButton = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1200, 600), vec2(60,20));
     m_pTestButton->setText("Play 2D", 12);
-    m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000,630), vec2(60,20));
+    m_pTestButton2 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1200,630), vec2(60,20));
     m_pTestButton2->setText("Stop", 12);
-    m_pTestButton3 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1000, 570), vec2(60,20));
+    m_pTestButton3 = NEW gui::Button(gui::Button::TYPE_NORMAL, vec2(1200, 570), vec2(60,20));
     m_pTestButton3->setText("Play 3D", 12);
 
     m_pTextBox = NEW gui::TextBox(RectF(50,650,200,20), "testing", 10);
 
-    m_pTestSound2D = AUDIO->loadSound2D("../data/audio/goodkat_dnb.wav", true);
+    m_pTestSound2D = AUDIO->loadSound2D("../data/audio/stuff.wav", true);
     m_pTestSound2D->setLooping(true);
-    m_pTestSound2D->setPitch(0.6f);
+    m_pTestSound2D->setPitch(0.9f);
 
     m_pTestSound3D = AUDIO->loadSound3D("../data/audio/goodkat_dnb.wav", false);
     m_pTestSound3D->setLooping(true);
     m_pTestSound3D->setMaximumDistance(50.0f);
     m_pTestSound3D->setMinimumDistance(10.0f);
+    //m_pTestSound2D->play();
+
+    m_pTestButton->addOnClickListener([&](){m_pTestSound2D->play(true);});
+    m_pTestButton2->addOnClickListener([&](){m_pTestSound2D->stop();m_pTestSound3D->stop();});
+    m_pTestButton3->addOnClickListener([&](){m_pTestSound3D->play(true);});
 
     m_pTestObject = NEW TestObject();
 
@@ -417,17 +422,16 @@ void MainGame::tick(float dTime)
 
     PROFILER_BEGIN("MainGame::tick");
 
-
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Escape))
         HAPPYENGINE->quit();
 
-
-    //m_pTestSound2D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
+    m_pTestSound3D->setPosition(m_pTestObject->getWorldMatrix().getTranslation());
 
     AUDIO->setListenerPos(CAMERAMANAGER->getActiveCamera()->getPosition());
     AUDIO->setListenerOrientation(CAMERAMANAGER->getActiveCamera()->getLook(), CAMERAMANAGER->getActiveCamera()->getUp());
         
-    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space))
+    CONTROLS->getFocus(this);
+    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Space) && CONTROLS->hasFocus(this))
     {
         game::Entity* pBullet(NEW game::Entity());
         
@@ -447,6 +451,7 @@ void MainGame::tick(float dTime)
         m_Bullets.push_back(pBullet);
         std::cout << m_Bullets.size() << "\n";
     }
+    CONTROLS->returnFocus(this);
 
     he::game::Game::tick(dTime); //tick all components
 
@@ -457,21 +462,8 @@ void MainGame::tick(float dTime)
     m_pTestButton2->tick();
     m_pTestButton3->tick();
 
-    if (m_pTestButton->isClicked())
-    {
-        m_pTestSound2D->play(true);
-    }
-    else if (m_pTestButton2->isClicked())
-    {
-        m_pTestSound2D->stop();
-        m_pTestSound3D->stop();
-    }
-    else if (m_pTestButton3->isClicked())
-    {
-        m_pTestSound3D->play(true);
-    }
+    //m_pTextBox->tick();
 
-    m_pTextBox->tick();
     if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
     {
         uint id(GRAPHICS->pick(CONTROLS->getMouse()->getPosition()));
@@ -498,9 +490,9 @@ void MainGame::drawGui()
     PROFILER_BEGIN("MainGame::drawGui");
 
     // 2D test stuff
-    /*m_pTestButton->draw();
+    m_pTestButton->draw();
     m_pTestButton2->draw();
-    m_pTestButton3->draw();*/
+    m_pTestButton3->draw();
         
     /*m_pTextBox->draw();
 
@@ -528,10 +520,10 @@ void MainGame::drawGui()
 
     
     //stream.str("");
-    std::stringstream stream;
+    /*std::stringstream stream;
     stream << "pos: " << m_PickPos.x << " " << m_PickPos.y << " " << m_PickPos.z;
 
-    GUI->drawText(gui::Text(stream.str()), vec2(1050,610));
+    GUI->drawText(gui::Text(stream.str()), vec2(1050,610));*/
 
     
 
