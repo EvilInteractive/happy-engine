@@ -15,57 +15,40 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyTest.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _TEST_OBJECT_H_
-#define _TEST_OBJECT_H_
+#ifndef _CHARACTER_H_
+#define _CHARACTER_H_
 #pragma once
 
-#include "vec3.h"
-#include "mat44.h"
-#include "Font.h"
 #include "Entity.h"
-
 #include "ITickable.h"
-#pragma warning(disable:4505)
-#include "PhysicsCar.h"
-#pragma warning(default:4505)
 #include "RiggedModelComponent.h"
-
-#include "Text.h"
-#include "Font.h"
-#include "audio/Sound3D.h"
-
-#include "Character.h"
+#include "PhysicsRagdoll.h"
 
 namespace happytest {
 
-class TestObject : public he::game::Entity, public he::game::ITickable
+class Character : public he::game::Entity, public he::game::ITickable
 {
 public:
-    TestObject();
-    virtual ~TestObject();
+    Character();
+    virtual ~Character();
 
     virtual void tick(float dTime);
 
-private:   
-    he::gfx::Font::pointer m_pFont;
-    he::sfx::Sound3D* m_pCarEngineSfx;
+private:
 
-    float m_WheelOrientation, m_WheelMax, m_WheelTurnSpeed, m_WheelSpeedRotation;
-    float m_Rotation;
-    he::vec3 m_Position;
-    
-    he::px::PhysicsCar* m_pCar;
-    he::uint m_CameraShakeTL;
-
-    Character* m_pCharacter;
+    void initRagDoll();
 
     he::game::RiggedModelComponent* m_pRiggedModelComponent;
-    he::game::RiggedModelComponent::BoneTransform m_WheelFLBone, m_WheelFRBone, m_WheelBLBone, m_WheelBRBone;
-    void onModelLoaded();
+    he::game::RiggedModelComponent::BoneTransform m_bPelvis, m_bSpine1, m_bSpine2, m_bSpine3, m_bShoulderL, 
+                                                  m_bShoulderR, m_bNeck, m_bHead, m_bArmL1, m_bArmL2, m_bHandL, 
+                                                  m_bArmR1, m_bArmR2, m_bHandR, m_bLegL1, m_bLegL2, m_bFootL, 
+                                                  m_bLegR1, m_bLegR2, m_bFootR;
+
+    he::px::PhysicsRagdoll* m_pDoll;
 
     //Disable default copy constructor and default assignment operator
-    TestObject(const TestObject&);
-    TestObject& operator=(const TestObject&);
+    Character(const Character&);
+    Character& operator=(const Character&);
 };
 
 } //end namespace

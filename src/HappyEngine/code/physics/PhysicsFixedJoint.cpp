@@ -31,8 +31,8 @@ PhysicsFixedJoint::PhysicsFixedJoint(const IPhysicsActor* pActor0, const vec3& l
                                      const IPhysicsActor* pActor1, const vec3& localAttach1)
 {
     m_pJoint = physx::PxFixedJointCreate(*PHYSICS->getSDK(), 
-        pActor0->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
-        pActor1->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
+        pActor0 != nullptr ? pActor0->getInternalActor() : nullptr, physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
+        pActor1 != nullptr ? pActor1->getInternalActor() : nullptr, physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
 }
 
 

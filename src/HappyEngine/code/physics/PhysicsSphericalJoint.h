@@ -38,6 +38,8 @@ class PhysicsSphericalJoint : public IPhysicsJoint
 public:
     PhysicsSphericalJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
                           const IPhysicsActor* pActor1, const vec3& localAttach1);
+    PhysicsSphericalJoint(const IPhysicsActor* pActor0, const mat44& localAttach0,
+                          const IPhysicsActor* pActor1, const mat44& localAttach1);
     virtual ~PhysicsSphericalJoint();
 
     void setBreakForce( float force, float torque );

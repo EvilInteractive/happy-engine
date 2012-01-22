@@ -166,8 +166,6 @@ namespace HappyCookerGUIv2
             _OpenFolderExportDialog.ShowNewFolderButton = true;
             _OpenFolderExportDialog.Description = "Set the export directory";
 
-            HappyCooker cooker = new HappyCooker(); //check for dll
-            cooker.Dispose();
         }
 
         public void GetImportPath()
@@ -269,6 +267,7 @@ namespace HappyCookerGUIv2
         public void Cook()
         {
             HappyCooker cooker = new HappyCooker();
+            cooker.Init();
             OutputInfo.Clear();
             cooker.GetInfo += CookerCallback;
             cooker.SetImportPath(ImportPath);

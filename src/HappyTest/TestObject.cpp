@@ -47,10 +47,13 @@
 #include "fx/FxCameraEffect.h"
 #include "fx/FxRandom.h"
 #include "fx/FxTimeLineTrack.h"
+
+#include "PhysicsRagdoll.h"
+
 namespace happytest {
 
 TestObject::TestObject(): 
-    m_Rotation(0), m_Position(0, 0, 0), 
+    m_Rotation(0), m_Position(5, 0, 0), 
     m_pFont(CONTENT->loadFont("Ubuntu-Regular.ttf", 32, true)),
     m_WheelOrientation(0.0f), m_WheelMax(he::piOverFour), m_WheelTurnSpeed(2.0f/he::piOverFour), m_WheelSpeedRotation(0.0f)
 {
@@ -104,7 +107,7 @@ TestObject::TestObject():
     m_pCar->init(chassi, PHYSICS->getCarManager()->getFrictionTable()->getMaterial(DM_Metal),
                  tyres, PHYSICS->getCarManager()->getFrictionTable()->getMaterial(DM_Tyre));
     
-    m_pCar->setPose(mat44::createTranslation(vec3(0, 2, 0)));
+    m_pCar->setPose(mat44::createTranslation(vec3(5, 2, 0)));
 
     m_pRiggedModelComponent = NEW game::RiggedModelComponent();
     m_pRiggedModelComponent->setMaterial(CONTENT->loadMaterial("car.material"));
@@ -172,11 +175,16 @@ TestObject::TestObject():
     shakeIntens->setMax(vec3(0.25f, 0.25f, 10.0f));
     pEffect->setShakeIntensity(shakeIntens);
     pEffect->toggleShake(true);
+
+
+    //Ragdoll
+    m_pCharacter = NEW Character();
 }
 
 
 TestObject::~TestObject()
 {
+    delete m_pCharacter;
 }
 
 

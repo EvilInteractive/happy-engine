@@ -42,6 +42,10 @@ namespace HappyCookerGUIv2
         private GetInfoDelegateDll _infoCallback;
         public HappyCooker()
         {
+        }
+
+        public void Init()
+        {
             try
             {
                 initHappyCooker();
@@ -53,11 +57,15 @@ namespace HappyCookerGUIv2
                 MessageBox.Show(e.Message);
                 Application.Exit();
             }
+            catch (SEHException e)
+            {
+                MessageBox.Show(e.Message);
+            }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 Application.Exit();
-            }
+            }          
         }
 
         public void Dispose()

@@ -173,7 +173,7 @@ void PhysicsDynamicActor::keyframedSetPose(const vec3& move, const vec3& axis, f
         physx::PxQuat(angle, physx::PxVec3(axis.x, axis.y, axis.z))));
 }
 
-physx::PxRigidActor* PhysicsDynamicActor::getInternalActor() const
+physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const
 {
     return m_pActor;
 }

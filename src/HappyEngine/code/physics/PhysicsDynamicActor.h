@@ -43,7 +43,7 @@ public:
 
     virtual vec3 getPosition() const;
     virtual mat44 getPose() const;
-    virtual physx::PxRigidActor* getInternalActor() const;
+    virtual physx::PxRigidDynamic* getInternalActor() const;
 
     void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose = mat44::Identity) const;
 

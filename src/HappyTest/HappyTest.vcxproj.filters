@@ -70,6 +70,9 @@
     <ClCompile Include="FollowCamera.cpp">
       <Filter>happytest</Filter>
     </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>happytest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -94,6 +97,9 @@
       <Filter>happytest</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsData.h">
+      <Filter>happytest</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
       <Filter>happytest</Filter>
     </ClInclude>
   </ItemGroup>

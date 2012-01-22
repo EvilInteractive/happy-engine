@@ -35,6 +35,13 @@ PhysicsSphericalJoint::PhysicsSphericalJoint(const IPhysicsActor* pActor0, const
         pActor1->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
 }
 
+PhysicsSphericalJoint::PhysicsSphericalJoint( const IPhysicsActor* pActor0, const mat44& localAttach0, const IPhysicsActor* pActor1, const mat44& localAttach1 )
+{
+    m_pJoint = physx::PxSphericalJointCreate(*PHYSICS->getSDK(), 
+        pActor0->getInternalActor(), physx::PxTransform(localAttach0.getPhyicsMatrix()),
+        pActor1->getInternalActor(), physx::PxTransform(localAttach1.getPhyicsMatrix()));
+}
+
 
 PhysicsSphericalJoint::~PhysicsSphericalJoint()
 {
