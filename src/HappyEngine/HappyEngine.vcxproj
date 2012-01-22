@@ -56,6 +56,7 @@
     <ClCompile Include="code\game\RiggedModelComponent.cpp" />
     <ClCompile Include="code\game\SerializerStream.cpp" />
     <ClCompile Include="code\game\StaticPhysicsComponent.cpp" />
+    <ClCompile Include="code\game\TriggerComponent.cpp" />
     <ClCompile Include="code\graphics\AutoExposure.cpp" />
     <ClCompile Include="code\graphics\BillboardEffect.cpp" />
     <ClCompile Include="code\graphics\Bloom.cpp" />
@@ -177,6 +178,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="code\physics\PhysicsTrigger.cpp" />
     <ClCompile Include="code\template\X.cpp" />
     <ClCompile Include="code\tools\Console.cpp" />
     <ClCompile Include="code\tools\FPSGraph.cpp" />
@@ -226,6 +228,7 @@
     <ClInclude Include="code\game\RiggedModelComponent.h" />
     <ClInclude Include="code\game\SerializerStream.h" />
     <ClInclude Include="code\game\StaticPhysicsComponent.h" />
+    <ClInclude Include="code\game\TriggerComponent.h" />
     <ClInclude Include="code\graphics\AutoExposure.h" />
     <ClInclude Include="code\graphics\BillboardEffect.h" />
     <ClInclude Include="code\graphics\Bloom.h" />
@@ -370,6 +373,7 @@
     <ClInclude Include="code\physics\PhysicsSphereShape.h" />
     <ClInclude Include="code\physics\PhysicsSphericalJoint.h" />
     <ClInclude Include="code\physics\PhysicsStaticActor.h" />
+    <ClInclude Include="code\physics\PhysicsTrigger.h" />
     <ClInclude Include="code\SlotPContainer.h" />
     <ClInclude Include="code\HappyPCH.h" />
     <ClInclude Include="code\template\X.h" />

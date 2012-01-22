@@ -116,6 +116,8 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     }
     ASSERT(pPxShape != nullptr, "Shape creation failed");
 
+    pPxShape->userData = nullptr;
+
     physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
     //physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
 
@@ -130,7 +132,6 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     pPxShape->setSimulationFilterData(sFilter);
     PHYSICS->unlock();
 }
-
 
 PhysicsDynamicActor::~PhysicsDynamicActor()
 {
@@ -173,6 +174,11 @@ void PhysicsDynamicActor::keyframedSetPose(const vec3& move, const vec3& axis, f
 {
     m_pActor->moveKinematic(physx::PxTransform(physx::PxVec3(move.x, move.y, move.z),
         physx::PxQuat(angle, physx::PxVec3(axis.x, axis.y, axis.z))));
+}
+
+void PhysicsDynamicActor::keyframedSetPose(const mat44& pose)
+{
+    m_pActor->moveKinematic(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
 physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const

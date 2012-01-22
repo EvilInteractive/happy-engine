@@ -589,6 +589,12 @@
     <ClCompile Include="code\physics\PhysicsCapsuleShape.cpp">
       <Filter>happyengine\physics\shapes</Filter>
     </ClCompile>
+    <ClCompile Include="code\physics\PhysicsTrigger.cpp">
+      <Filter>happyengine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="code\game\TriggerComponent.cpp">
+      <Filter>happyengine\game\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -1196,6 +1202,12 @@
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsCapsuleShape.h">
       <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\physics\PhysicsTrigger.h">
+      <Filter>happyengine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="code\game\TriggerComponent.h">
+      <Filter>happyengine\game\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

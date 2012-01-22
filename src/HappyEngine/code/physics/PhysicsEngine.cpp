@@ -29,7 +29,7 @@
 #include "PxCudaContextManager.h"
 #include "PxProfileZoneManager.h"
 #include "PhysicsCarManager.h"
-
+#include "PhysicsTrigger.h"
 
 namespace he {
 namespace px {
@@ -100,6 +100,8 @@ void PhysicsEngine::createScene()
 
     m_pScene = m_pPhysXSDK->createScene(sceneDesc);
     ASSERT(m_pScene != nullptr, "createScene failed!");
+
+    m_pScene->setSimulationEventCallback(this);
 
     /*physx::PxRigidStatic* plane = m_pPhysXSDK->createRigidStatic(physx::PxTransform(physx::PxVec3(0, -20, 0), physx::PxQuat(piOverTwo, physx::PxVec3(0, 0, 1))));
     ASSERT(plane != nullptr, "");
@@ -211,5 +213,29 @@ void PhysicsEngine::unlock()
     m_PhysXMutex.unlock();
 }
 
+void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
+{
+    if (pairs->triggerShape->userData == nullptr)
+        return;
+
+    PhysicsTrigger* pTrigger(static_cast<PhysicsTrigger*>(pairs->triggerShape->userData));
+
+    switch (pairs->status)
+    {
+        case physx::PxPairFlag::eNOTIFY_TOUCH_FOUND:
+        {
+            pTrigger->onTriggerEnter(pairs->otherShape);
+            
+            break;
+        }
+
+        case physx::PxPairFlag::eNOTIFY_TOUCH_LOST:
+        {
+            pTrigger->onTriggerLeave(pairs->otherShape);
+
+            break;
+        }
+    }
+}
 
 } } //end namespace

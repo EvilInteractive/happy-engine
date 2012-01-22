@@ -28,6 +28,7 @@
 #include "extensions/PxExtensionsAPI.h"
 #include "PxCudaContextManager.h"
 #include "ExternalError.h"
+#include "PxSimulationEventCallback.h"
 
 #pragma warning(disable:4244)
 #include "boost/thread.hpp"
@@ -74,7 +75,7 @@ enum PxFilter
 
 class PhysicsCarManager;
 
-class PhysicsEngine
+class PhysicsEngine : public physx::PxSimulationEventCallback
 {
 public:
     PhysicsEngine();
@@ -94,6 +95,8 @@ public:
 
     physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
     const px::PhysicsMaterial& getDriveableMaterial( byte id );
+
+    virtual PX_INLINE void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
 
 private:
 

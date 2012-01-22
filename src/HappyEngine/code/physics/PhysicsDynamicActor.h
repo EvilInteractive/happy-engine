@@ -53,6 +53,7 @@ public:
 
     void setKeyframed(bool keyframed);
     void keyframedSetPose(const vec3& move, const vec3& axis, float angle);
+    void keyframedSetPose(const mat44& pose);
 
 private:
 
