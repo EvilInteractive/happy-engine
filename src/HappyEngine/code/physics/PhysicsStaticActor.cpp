@@ -39,28 +39,37 @@ namespace px {
 
 PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material)
 {
+    PHYSICS->lock();
     m_pActor = PHYSICS->getSDK()->createRigidStatic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
         physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
+    PHYSICS->unlock();
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     addShape(pShape, material);
 
+    PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_pActor);
+    PHYSICS->unlock();
 }
 PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
 {  
+    PHYSICS->lock();
     m_pActor = PHYSICS->getSDK()->createRigidStatic(physx::pubfnd3::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
         physx::pubfnd3::PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
+    PHYSICS->unlock();
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
+    PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_pActor);
+    PHYSICS->unlock();
 }
 void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material) const
 {
+    PHYSICS->lock();
     physx::PxShape* pPxShape(nullptr);
     switch (pShape->getType())
     {
@@ -127,13 +136,16 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
 
     pPxShape->setQueryFilterData(qFilter);
     pPxShape->setSimulationFilterData(sFilter);
+    PHYSICS->unlock();
 }
 
 PhysicsStaticActor::~PhysicsStaticActor()
 {
     if (PHYSICS != nullptr)
     {
+        PHYSICS->lock();
         PHYSICS->getScene()->removeActor(*m_pActor);
+        PHYSICS->unlock();
         m_pActor->release();
     }
 }

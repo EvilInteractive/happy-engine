@@ -30,22 +30,28 @@ namespace px {
 PhysicsSphericalJoint::PhysicsSphericalJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
                                              const IPhysicsActor* pActor1, const vec3& localAttach1)
 {
+    PHYSICS->lock();
     m_pJoint = physx::PxSphericalJointCreate(*PHYSICS->getSDK(), 
         pActor0->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
         pActor1->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
+    PHYSICS->unlock();
 }
 
 PhysicsSphericalJoint::PhysicsSphericalJoint( const IPhysicsActor* pActor0, const mat44& localAttach0, const IPhysicsActor* pActor1, const mat44& localAttach1 )
 {
+    PHYSICS->lock();
     m_pJoint = physx::PxSphericalJointCreate(*PHYSICS->getSDK(), 
         pActor0->getInternalActor(), physx::PxTransform(localAttach0.getPhyicsMatrix()),
         pActor1->getInternalActor(), physx::PxTransform(localAttach1.getPhyicsMatrix()));
+    PHYSICS->unlock();
 }
 
 
 PhysicsSphericalJoint::~PhysicsSphericalJoint()
 {
+    PHYSICS->lock();
     m_pJoint->release();
+    PHYSICS->unlock();
 }
 
 void PhysicsSphericalJoint::setBreakForce( float force, float torque )

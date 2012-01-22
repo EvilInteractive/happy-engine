@@ -140,7 +140,11 @@ void addJoint(physx::PxD6Joint** ppJoint,
 void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& desc, const PhysicsMaterial& material )
 {
     m_StartPosition = position;
+
+
+    PHYSICS->lock();
     m_pAggregate = PHYSICS->getSDK()->createAggregate(20, false);
+    PHYSICS->unlock();
 
     addBodyPart(&m_pArmL1, desc.armL1, material);
     addBodyPart(&m_pArmL2, desc.armL2, material);
@@ -240,9 +244,10 @@ void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& des
     addJoint(&m_pLegR2FootJoint, m_pLegR2, m_pFootR, desc.legR2, desc.footR,  
         physx::PxD6Motion::eLOCKED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
         0, 0, piOverFour, piOverFour);
-    
-    PHYSICS->getScene()->addAggregate(*m_pAggregate);
 
+    PHYSICS->lock();
+    PHYSICS->getScene()->addAggregate(*m_pAggregate);
+    PHYSICS->unlock();
 }
 
 

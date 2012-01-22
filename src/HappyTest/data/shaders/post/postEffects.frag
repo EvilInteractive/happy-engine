@@ -217,7 +217,7 @@ void main()
 #endif
 
 #if FOG
-    float beginFog = 0.995f;
+    float beginFog = 0.997f;
     float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));
 
     color = color * (1 - fog) + vec3(0.2f, 0.4f, 0.6f) * (fog);

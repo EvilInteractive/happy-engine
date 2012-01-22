@@ -149,7 +149,7 @@ void main()
 
     //Light
     vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f, 0.3f, 0.3f)) * dirLight.color.rgb * dirLight.color.a;
-    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb;
+    vec3 ambientLight = (clamp(dot(vec3(0, 1, 0), normal), 0.0f, 1.0f) * ambLight.color.a + ambLight.color.a / 2.0f) * ambLight.color.rgb;
     
     //Shadow
     float shadow = 1;
@@ -165,12 +165,12 @@ void main()
 #endif
 
     //Specular
-    vec3 spec = vec3(0.0f, 0.0f, 0.0f);
+    vec3 spec = vec3(0, 0, 0);
 #if SPECULAR
     if (shadow > 0.001f)
     {
         vec3 vCamDir = normalize(-position);
-        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.rgb;
+        spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.a * dirLight.color.rgb;
     }
 #endif
 

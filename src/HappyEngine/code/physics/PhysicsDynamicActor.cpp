@@ -38,10 +38,12 @@ namespace px {
 
 PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass)
 {
+    PHYSICS->lock();
     m_pActor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
         physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
+    PHYSICS->unlock();
     ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     addShape(pShape, material, mass);
