@@ -211,9 +211,9 @@ void ExtraForward3DRenderer::drawBillboard(const Texture2D::pointer& tex2D, cons
         size = vec2(static_cast<float>(tex2D->getWidth()), static_cast<float>(tex2D->getHeight()));
     //}
 
-    float a1 = acosf(dot(vec3::forward, m_pCamera->getLook()));
+    /*float a1 = acosf(dot(vec3::forward, m_pCamera->getLook()));
     float a2 = acosf(dot(vec3::up, m_pCamera->getUp()));
-    float a3 = acosf(dot(vec3::right, m_pCamera->getRight()));
+    float a3 = acosf(dot(vec3::right, m_pCamera->getRight()));*/
 
     mat44 world(    //mat44::createScale(size.x / 100.0f, size.y / 100.0f, 1.0f) * 
                     /*mat44::createRotation(vec3::right, a3) * mat44::createRotation(vec3::up, a2) * mat44::createRotation(vec3::forward, a1) **/

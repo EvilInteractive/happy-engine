@@ -23,6 +23,7 @@
 #include "ITickable.h"
 #include "RiggedModelComponent.h"
 #include "PhysicsRagdoll.h"
+#include "PhysicsFixedJoint.h"
 
 namespace happytest {
 
@@ -43,6 +44,8 @@ private:
                                                   m_bShoulderR, m_bNeck, m_bHead, m_bArmL1, m_bArmL2, m_bHandL, 
                                                   m_bArmR1, m_bArmR2, m_bHandR, m_bLegL1, m_bLegL2, m_bFootL, 
                                                   m_bLegR1, m_bLegR2, m_bFootR;
+
+    he::px::PhysicsFixedJoint* m_pCharacterFixJoint;
 
     he::px::PhysicsRagdoll* m_pDoll;
 

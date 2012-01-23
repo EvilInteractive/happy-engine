@@ -167,7 +167,7 @@ void HappyFxEditorBinding::connected()
 {
 }
 
-void HappyFxEditorBinding::tick( float dTime )
+void HappyFxEditorBinding::tick( float /*dTime*/ )
 {
     if (m_StartNew)
     {

@@ -213,7 +213,7 @@ void PhysicsEngine::unlock()
     m_PhysXMutex.unlock();
 }
 
-void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
+void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*/)
 {
     if (pairs->triggerShape->userData == nullptr)
         return;

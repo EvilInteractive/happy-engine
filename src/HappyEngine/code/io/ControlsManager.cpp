@@ -74,8 +74,9 @@ bool ControlsManager::getFocus(void* pObject) const
     {
         if (!m_bLocked)
         {
-            *(const_cast<bool*>(&m_bLocked)) = true;
-            const_cast<void*>(m_pLockedObject) = pObject;
+            ControlsManager* _this = const_cast<ControlsManager*>(this);
+            _this->m_bLocked = true;
+            _this->m_pLockedObject = pObject;
 
             return true;
         }
@@ -94,9 +95,10 @@ void ControlsManager::returnFocus(void* pObject) const
     {
         if (m_bLocked)
         {
-            *(const_cast<bool*>(&m_bLocked)) = false;
+            ControlsManager* _this = const_cast<ControlsManager*>(this);
+            _this->m_bLocked = false;
 
-            const_cast<void*>(m_pLockedObject) = nullptr;
+            _this->m_pLockedObject = nullptr;
         }
     }
 }

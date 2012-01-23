@@ -107,6 +107,7 @@ gfx::ParticleModifyComponentType getPsMCT(int type)
         case 6: return gfx::PMCT_Speed; break;
     }
     ASSERT(false, "unknown PMCT type");
+    return gfx::PMCT_Color;
 }
 gfx::ParticleInitComponentType getPsICT(int type)
 {
@@ -121,6 +122,7 @@ gfx::ParticleInitComponentType getPsICT(int type)
         case 6: return gfx::PICT_Speed; break;
     }
     ASSERT(false, "unknown PICT type");
+    return gfx::PICT_Color;
 }
 
 void addPSBehaviours(gfx::IFxTimeLineTrackComponent* pComp, const io::BinaryStream& stream, uint count)
@@ -143,23 +145,23 @@ void addPSBehaviours(gfx::IFxTimeLineTrackComponent* pComp, const io::BinaryStre
             pPS->setMaterial(material);
 
             varType = stream.readDword(); //uvtiles
-            int xTiles(stream.readInt32()); 
-            int yTiles(stream.readInt32());
+            /*int xTiles(*/stream.readInt32()/*)*/; 
+            /*int yTiles(*/stream.readInt32()/*)*/;
             //pPS->setTiles(FxConstant<vec2>::pointer(NEW FxConstant<vec2>(vec2((float)xTiles, (float)yTiles))));
 
             varType = stream.readDword(); //uvtile
             if (varType == 1) //random
             {
-                int xMin(stream.readInt32());
-                int yMin(stream.readInt32());
-                int xMax(stream.readInt32());
-                int yMax(stream.readInt32());
+                /*int xMin(*/stream.readInt32()/*)*/;
+                /*int yMin(*/stream.readInt32()/*)*/;
+                /*int xMax(*/stream.readInt32()/*)*/;
+                /*int yMax(*/stream.readInt32()/*)*/;
                 //pPS->setEndTime
             }
             else if (varType == 2) //const
             {
-                int xTile(stream.readInt32());
-                int yTile(stream.readInt32());
+                /*int xTile(*/stream.readInt32()/*)*/;
+                /*int yTile(*/stream.readInt32()/*)*/;
 
             }
 

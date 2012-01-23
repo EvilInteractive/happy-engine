@@ -26,7 +26,6 @@
 #include "PhysicsData.h"
 #include "PhysicsCarManager.h"
 
-#include "PhysicsFixedJoint.h"
 #include "PhysicsDynamicActor.h"
 
 using namespace he;
@@ -149,17 +148,18 @@ void Character::initRagDoll()
 
     m_pDoll->initProperties(vec3(0, 2, 0), desc, PHYSICS->getCarManager()->getFrictionTable()->getMaterial(DM_Concrete));
 
-    px::PhysicsFixedJoint* pFixedJoint(NEW px::PhysicsFixedJoint(m_pDoll->getHandL(), vec3::zero, 
-                                                                nullptr, m_pDoll->getHandL()->getPosition()));
+    m_pCharacterFixJoint = NEW px::PhysicsFixedJoint(m_pDoll->getHandL(), vec3::zero, 
+                                                    nullptr, m_pDoll->getHandL()->getPosition());
 }
 
 
 Character::~Character()
 {
+    delete m_pCharacterFixJoint;
     delete m_pDoll;
 }
 
-void Character::tick( float dTime )
+void Character::tick( float /*dTime*/ )
 {
     if (m_pRiggedModelComponent->isVisible())
     {

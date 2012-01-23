@@ -188,7 +188,7 @@ TestObject::~TestObject()
 }
 
 
-void TestObject::tick(float dTime)
+void TestObject::tick(float /*dTime*/)
 {
     using namespace he;
 

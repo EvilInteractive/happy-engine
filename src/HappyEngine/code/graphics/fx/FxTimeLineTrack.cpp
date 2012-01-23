@@ -68,7 +68,7 @@ void FxTimeLineTrack::tick( float currentTime, float dTime )
         std::for_each(m_EaseOutComponents.cbegin(), m_EaseOutComponents.cend(), [&currentTime,&dTime](IFxTimeLineTrackComponent* pComp)
         {
             float normTime( (currentTime - pComp->getStartTime()) / (pComp->getEndTime() / pComp->getStartTime()));
-            pComp->tick(currentTime, dTime);
+            pComp->tick(normTime, dTime);
         });
         if (m_EaseOutDoneComponents.size() > 0)
         {

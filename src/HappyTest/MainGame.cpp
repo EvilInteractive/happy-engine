@@ -276,7 +276,7 @@ void MainGame::load()
     {
         pTempPointLightComp = NEW game::PointLightComponent(); 
         m_pScene->addComponent(pTempPointLightComp);
-        pTempPointLightComp->setOffset(vec3(65.492f, 5.963f, -63.11f + 29.139*i));
+        pTempPointLightComp->setOffset(vec3(65.492f, 5.963f, -63.11f + 29.139f*i));
         pTempPointLightComp->setMultiplier(4.0f);
         pTempPointLightComp->setColor(Color((byte)246, 240, 194, 255));
         pTempPointLightComp->setAttenuation(0, 18.57f);
