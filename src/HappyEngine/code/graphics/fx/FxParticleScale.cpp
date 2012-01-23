@@ -38,7 +38,7 @@ void FxParticleScale::init( FxParticle* pParticle, const mat44& /*parentWorld*/ 
 {
     pParticle->m_Scale = m_Scale->getValue(0);
 }
-void FxParticleScale::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
+void FxParticleScale::transform( FxParticle* pParticle, float currentTime, float /*dTime*/, const mat44& /*parentWorld*/ )
 {
     pParticle->m_Scale = m_Scale->getValue(currentTime);
 }

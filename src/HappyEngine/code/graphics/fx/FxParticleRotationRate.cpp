@@ -34,7 +34,7 @@ FxParticleRotationRate::~FxParticleRotationRate()
 {
 }
 
-void FxParticleRotationRate::transform( FxParticle* pParticle, float currentTime, float dTime )
+void FxParticleRotationRate::transform( FxParticle* pParticle, float currentTime, float dTime, const mat44& /*parentWorld*/ )
 {
     pParticle->m_Rotation += m_RotationRate->getValue(currentTime) * dTime;
 }

@@ -56,12 +56,15 @@ public:
     void setParent(const I3DObject* pParent);
     const I3DObject* getParent() const;
     
-    event<void> EndEvent;
+    event<void> EndEvent;   // completely done
     event<void> StartEvent;
+    event<void> StopEvent; // start stopping
 
 private:
 
     SlotPContainer<FxTimeLineTrack*> m_Tracks;
+    std::vector<FxTimeLineTrack*> m_EaseOutTracks;
+    std::vector<FxTimeLineTrack*> m_EaseOutDoneTracks;
 
     float m_CurrentTime;
     float m_EndTime;

@@ -33,7 +33,8 @@
 namespace he {
 namespace gfx {
 
-Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false), m_IsBackground(false)
+Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false), m_IsBackground(false),
+    m_DepthRead(true), m_DepthWrite(true)
 {
 }
 
@@ -80,6 +81,8 @@ void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera )
         GL::heBlendEquation(m_BlendEquation);
         GL::heBlendFunc(m_SourceBlend, m_DestBlend);
     }
+    GL::heSetDepthRead(m_DepthRead);
+    GL::heSetDepthWrite(m_DepthWrite);
 
     m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
@@ -162,6 +165,8 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
         GL::heBlendEquation(m_BlendEquation);
         GL::heBlendFunc(m_SourceBlend, m_DestBlend);
     }
+    GL::heSetDepthRead(m_DepthRead);
+    GL::heSetDepthWrite(m_DepthWrite);
 
     m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
@@ -231,6 +236,9 @@ void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera 
         GL::heBlendEquation(m_BlendEquation);
         GL::heBlendFunc(m_SourceBlend, m_DestBlend);
     }
+
+    GL::heSetDepthRead(m_DepthRead);
+    GL::heSetDepthWrite(m_DepthWrite);
 
     m_pShader->bind();
     std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](const ShaderVar::pointer& pVar)
@@ -370,6 +378,16 @@ void Material::setIsBackground( bool isBackground )
 bool Material::isBackground() const
 {
     return m_IsBackground;
+}
+
+void Material::setDepthWriteEnabled( bool enable )
+{
+    m_DepthWrite = enable;
+}
+
+void Material::setDepthReadEnabled( bool enable )
+{
+    m_DepthRead = enable;
 }
 
 

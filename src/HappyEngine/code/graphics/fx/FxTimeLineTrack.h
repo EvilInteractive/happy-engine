@@ -57,6 +57,9 @@ public:
 
     void tick(float currentTime, float dTime);
 
+    event<void> EaseOutStart;
+    event<void> EaseOutEnd;
+
 private:
 
     const FxTimeLine* m_pParent;

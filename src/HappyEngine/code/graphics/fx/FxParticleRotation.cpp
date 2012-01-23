@@ -38,7 +38,7 @@ void FxParticleRotation::init( FxParticle* pParticle, const mat44& /*parentWorld
 {
     pParticle->m_Rotation = m_Rotation->getValue(0);
 }
-void FxParticleRotation::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
+void FxParticleRotation::transform( FxParticle* pParticle, float currentTime, float /*dTime*/, const mat44& /*parentWorld*/ )
 {
     pParticle->m_Rotation = m_Rotation->getValue(currentTime);
 }

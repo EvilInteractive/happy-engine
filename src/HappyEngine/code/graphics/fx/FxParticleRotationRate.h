@@ -36,7 +36,7 @@ public:
     FxParticleRotationRate();
     virtual ~FxParticleRotationRate();
 
-    virtual void transform(FxParticle* pParticle, float currentTime, float dTime);
+    virtual void transform(FxParticle* pParticle, float currentTime, float dTime, const mat44& parentWorld);
 
     void setValue(const IFxVariable<float>::pointer& value);
     const IFxVariable<float>::pointer& getValue() const;

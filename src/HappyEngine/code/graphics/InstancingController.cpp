@@ -27,6 +27,7 @@
 #include "I3DObject.h"
 #include "DynamicBuffer.h"
 #include "IInstancible.h"
+#include "IInstanceFiller.h"
 
 namespace he {
 namespace gfx {
@@ -35,7 +36,8 @@ namespace gfx {
 
 InstancingController::InstancingController(bool dynamic, const ModelMesh::pointer& mesh, const Material& material):
     m_Dynamic(dynamic), m_pModelMesh(mesh), m_Material(material), m_NeedsUpdate(false), m_BufferCapacity(32),
-    m_InstancingLayout(material.getCompatibleInstancingLayout()), m_CpuBuffer(material.getCompatibleInstancingLayout().getSize(), 32)
+    m_InstancingLayout(material.getCompatibleInstancingLayout()), m_CpuBuffer(material.getCompatibleInstancingLayout().getSize(), 32),
+    m_ManualMode(false)
 {
     m_pModelMesh->callbackIfLoaded(boost::bind(&InstancingController::init, this));
 }
@@ -185,7 +187,7 @@ void InstancingController::updateBuffer()
         }
 
         m_CpuBuffer.reset();
-        if (m_ManualFillCpuBuffer.empty())
+        if (m_ManualMode == false)
         {
             DynamicBuffer b(m_InstancingLayout);
             he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&](const IInstancible* pObj)
@@ -197,7 +199,10 @@ void InstancingController::updateBuffer()
         }
         else
         {
-            m_ManualFillCpuBuffer(m_CpuBuffer);
+            std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](IInstanceFiller* pFiller)
+            {
+                pFiller->fillInstancingBuffer(m_CpuBuffer);
+            });
         }
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
@@ -231,7 +236,7 @@ uint InstancingController::addInstance(const IInstancible* pObj)
 }
 uint InstancingController::addInstance()
 {
-    ASSERT(m_ManualFillCpuBuffer.empty() == false, "Only valid in manual mode");
+    ASSERT(m_ManualCpuBufferFillers.empty() == false, "Only valid in manual mode");
     m_NeedsUpdate = true;
     return m_Instances.insert(nullptr); // HACK: is a bit hacky
 }
@@ -286,9 +291,17 @@ uint InstancingController::getCount() const
     return m_CpuBuffer.getCount();
 }
 
-void InstancingController::setManual( const boost::function<void(details::InstancingBuffer&)>& func )
+void InstancingController::addManualFiller( IInstanceFiller* pFiller )
 {
-    m_ManualFillCpuBuffer = func;
+    ASSERT(std::find(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), pFiller) == m_ManualCpuBufferFillers.cend(), "filler is already bound to this controller");
+    m_ManualMode = true;
+    m_ManualCpuBufferFillers.push_back(pFiller);
+}
+
+void InstancingController::removeManualFiller( const IInstanceFiller* pFiller )
+{
+    m_ManualCpuBufferFillers.erase(std::remove(m_ManualCpuBufferFillers.begin(), m_ManualCpuBufferFillers.end(),
+        pFiller), m_ManualCpuBufferFillers.end());
 }
 
 } } //end namespace

@@ -57,6 +57,9 @@ void FxRandomFloat::setSeed( uint seed )
 FxRandomVec3::FxRandomVec3(): m_Min(0, 0, 0), m_Max(1, 1, 1), m_Random()
 {
 }
+FxRandomVec3::FxRandomVec3(const vec3& min, const vec3& max): m_Min(min), m_Max(max), m_Random()
+{
+}
 FxRandomVec3::~FxRandomVec3()
 {
 }

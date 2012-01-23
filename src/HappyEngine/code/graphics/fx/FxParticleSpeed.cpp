@@ -34,13 +34,13 @@ FxParticleSpeed::~FxParticleSpeed()
 {
 }
 
-void FxParticleSpeed::init( FxParticle* pParticle, const mat44& /*parentWorld*/ )
+void FxParticleSpeed::init( FxParticle* pParticle, const mat44& parentWorld )
 {
-    pParticle->m_Velocity = m_Speed->getValue(0);
+    pParticle->m_Velocity = (parentWorld * vec4(m_Speed->getValue(0.0f), 0.0f)).xyz();
 }
-void FxParticleSpeed::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
+void FxParticleSpeed::transform( FxParticle* pParticle, float currentTime, float /*dTime*/, const mat44& parentWorld )
 {
-    pParticle->m_Velocity = m_Speed->getValue(currentTime);
+    pParticle->m_Velocity = (parentWorld * vec4(m_Speed->getValue(currentTime), 0.0f)).xyz();
 }
 
 void FxParticleSpeed::setValue( const IFxVariable<vec3>::pointer& value )

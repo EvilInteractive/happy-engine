@@ -61,6 +61,7 @@ class FxRandomVec3 : public IFxVariable<vec3>
 {
 public:
     FxRandomVec3();
+    FxRandomVec3(const vec3& min, const vec3& max);
     virtual ~FxRandomVec3();
 
     typedef boost::shared_ptr<FxRandomVec3> pointer;

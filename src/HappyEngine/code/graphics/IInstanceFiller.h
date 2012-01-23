@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -16,37 +16,25 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/12/2011
-#include "HappyPCH.h" 
+//Created: 22/01/2012
 
-#include "FxParticleForce.h"
-#include "FxParticle.h"
+#ifndef _HE_IINSTANCEFILLER_H_
+#define _HE_IINSTANCEFILLER_H_
+#pragma once
 
 namespace he {
 namespace gfx {
-
-FxParticleForce::FxParticleForce()
-{
+namespace details {
+class InstancingBuffer;
 }
-
-
-FxParticleForce::~FxParticleForce()
+class IInstanceFiller
 {
-}
-
-
-void FxParticleForce::transform( FxParticle* pParticle, float currentTime, float dTime, const mat44& /*parentWorld*/ )
-{
-    pParticle->m_Velocity += m_Force->getValue(currentTime) * dTime;
-}
-
-void FxParticleForce::setValue( const IFxVariable<vec3>::pointer& value )
-{
-    m_Force = value;
-}
-const IFxVariable<vec3>::pointer& FxParticleForce::getValue() const
-{
-    return m_Force;
-}
+public:
+    virtual ~IInstanceFiller() {}
+    
+    virtual void fillInstancingBuffer(details::InstancingBuffer& buffer) = 0;
+};  
 
 } } //end namespace
+
+#endif

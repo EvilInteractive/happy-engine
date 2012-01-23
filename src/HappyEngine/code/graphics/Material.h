@@ -68,6 +68,9 @@ public:
     bool isBackground() const;
     bool isUsedForInstancing() const;
 
+    void setDepthWriteEnabled(bool enable);
+    void setDepthReadEnabled(bool enable);
+
 private:
 
     BlendEquation m_BlendEquation;
@@ -76,6 +79,8 @@ private:
 
     Shader::pointer m_pShader;
     std::vector<ShaderVar::pointer> m_ShaderVar;
+
+    bool m_DepthRead, m_DepthWrite;
 
     BufferLayout m_CompatibleVL;
     BufferLayout m_CompatibleIL;

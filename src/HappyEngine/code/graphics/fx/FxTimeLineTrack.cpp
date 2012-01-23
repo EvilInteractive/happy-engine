@@ -63,17 +63,25 @@ void FxTimeLineTrack::tick( float currentTime, float dTime )
             }
         }
     }
-    std::for_each(m_EaseOutComponents.cbegin(), m_EaseOutComponents.cend(), [&dTime](IFxTimeLineTrackComponent* pComp)
+    if (m_EaseOutComponents.size() > 0)
     {
-        pComp->tick(1.0f, dTime);
-    });
-    if (m_EaseOutDoneComponents.size() > 0)
-    {
-        std::for_each(m_EaseOutDoneComponents.cbegin(), m_EaseOutDoneComponents.cend(), [&](IFxTimeLineTrackComponent* pComp)
+        std::for_each(m_EaseOutComponents.cbegin(), m_EaseOutComponents.cend(), [&currentTime,&dTime](IFxTimeLineTrackComponent* pComp)
         {
-            m_EaseOutComponents.erase(std::remove(m_EaseOutComponents.begin(), m_EaseOutComponents.end(), pComp), m_EaseOutComponents.end());
+            float normTime( (currentTime - pComp->getStartTime()) / (pComp->getEndTime() / pComp->getStartTime()));
+            pComp->tick(currentTime, dTime);
         });
-        m_EaseOutDoneComponents.clear();
+        if (m_EaseOutDoneComponents.size() > 0)
+        {
+            std::for_each(m_EaseOutDoneComponents.cbegin(), m_EaseOutDoneComponents.cend(), [&](IFxTimeLineTrackComponent* pComp)
+            {
+                m_EaseOutComponents.erase(std::remove(m_EaseOutComponents.begin(), m_EaseOutComponents.end(), pComp), m_EaseOutComponents.end());
+            });
+            m_EaseOutDoneComponents.clear();
+        }
+        if (m_EaseOutComponents.size() == 0)
+        {
+            EaseOutEnd();
+        }
     }
 }
 
@@ -83,6 +91,8 @@ bool timeSort(const IFxTimeLineTrackComponent* pComponent1, const IFxTimeLineTra
 }
 void FxTimeLineTrack::start()
 {
+    m_EaseOutComponents.clear();
+    m_EaseOutDoneComponents.clear();
     std::vector<IFxTimeLineTrackComponent*> tempComponents;
     he::for_each(m_Components.cbegin(), m_Components.cend(), [&](IFxTimeLineTrackComponent* pComp)
     {
@@ -126,8 +136,11 @@ void FxTimeLineTrack::removeComponent( uint id )
 
 void FxTimeLineTrack::stop()
 {
+    EaseOutStart();
     if (m_PlayQueue.size() > 0)
         m_Components[m_PlayQueue.front()]->stop();
+    if (m_EaseOutComponents.size() == 0)
+        EaseOutEnd();
 }
 
 const FxTimeLine* FxTimeLineTrack::getParent() const

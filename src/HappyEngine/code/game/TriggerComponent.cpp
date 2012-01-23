@@ -37,6 +37,7 @@ TriggerComponent::TriggerComponent() :  m_pTrigger(nullptr),
 TriggerComponent::~TriggerComponent()
 {
     delete m_pTrigger;
+    GAME->removeFromTickList(this);
 }
 
 /* ICOMPONENT */

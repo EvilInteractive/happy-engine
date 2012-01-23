@@ -44,13 +44,17 @@ FxTimeLine::~FxTimeLine()
 void FxTimeLine::start()
 {
     StartEvent();
+    m_EaseOutTracks.clear();
+    m_EaseOutDoneTracks.clear();
     m_IsRunning = true;
     m_CurrentTime = 0;
 }
 void FxTimeLine::stop()
 {
     m_CurrentTime = m_EndTime + 1;
-    EndEvent();
+    StopEvent();
+    if (m_EaseOutTracks.size() == 0)
+        EndEvent();
     m_IsRunning = false;
 }
 void FxTimeLine::setTime( float time )
@@ -68,14 +72,37 @@ void FxTimeLine::setEndTime( float endTime )
 void FxTimeLine::tick( float dTime )
 {
     m_CurrentTime += dTime;
-    if (m_CurrentTime > m_EndTime)
-        stop();
-    else
+    if (m_IsRunning)
     {
-        he::for_each(m_Tracks.cbegin(), m_Tracks.cend(), [&](FxTimeLineTrack* pTrack)
+        if (m_CurrentTime > m_EndTime)
+            stop();
+        else
+        {
+            he::for_each(m_Tracks.cbegin(), m_Tracks.cend(), [&](FxTimeLineTrack* pTrack)
+            {
+                pTrack->tick(m_CurrentTime, dTime);
+            });
+        }
+    }
+
+    if (m_EaseOutTracks.size() > 0)
+    {
+        std::for_each(m_EaseOutTracks.cbegin(), m_EaseOutTracks.cend(), [&](FxTimeLineTrack* pTrack)
         {
             pTrack->tick(m_CurrentTime, dTime);
         });
+        if (m_EaseOutDoneTracks.size() > 0)
+        {
+            std::for_each(m_EaseOutDoneTracks.cbegin(), m_EaseOutDoneTracks.cend(), [&](FxTimeLineTrack* pTrack)
+            {
+                m_EaseOutTracks.erase(std::remove(m_EaseOutTracks.begin(), m_EaseOutTracks.end(), pTrack), m_EaseOutTracks.end());
+            });
+            m_EaseOutDoneTracks.clear();
+        }
+        if (m_EaseOutTracks.size() == 0)
+        {
+            EndEvent();
+        }
     }
 }
 
@@ -83,7 +110,15 @@ uint FxTimeLine::addTrack()
 {
     FxTimeLineTrack* pTrack(NEW FxTimeLineTrack(this));
     StartEvent += boost::bind(&FxTimeLineTrack::start, pTrack);
-    EndEvent += boost::bind(&FxTimeLineTrack::stop, pTrack);
+    StopEvent += boost::bind(&FxTimeLineTrack::stop, pTrack);
+
+    std::vector<FxTimeLineTrack*>& easeOutTracks(m_EaseOutTracks);
+    pTrack->EaseOutStart += [pTrack, &easeOutTracks](){ easeOutTracks.push_back(pTrack); };
+
+    std::vector<FxTimeLineTrack*>& easeOutDoneTracks(m_EaseOutDoneTracks);
+    pTrack->EaseOutEnd += [pTrack, &easeOutDoneTracks](){ easeOutDoneTracks.push_back(pTrack); };
+
+
     return m_Tracks.insert(pTrack);
 }
 

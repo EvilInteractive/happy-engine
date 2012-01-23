@@ -38,7 +38,7 @@ void FxParticleColor::init( FxParticle* pParticle, const mat44& /*parentWorld*/ 
 {
     pParticle->m_BlendColor = m_Color->getValue(0);
 }
-void FxParticleColor::transform( FxParticle* pParticle, float currentTime, float /*dTime*/ )
+void FxParticleColor::transform( FxParticle* pParticle, float currentTime, float /*dTime*/, const mat44& /*parentWorld*/ )
 {
     pParticle->m_BlendColor = m_Color->getValue(currentTime);
 }

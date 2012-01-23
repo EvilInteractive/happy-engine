@@ -577,9 +577,6 @@
     <ClCompile Include="code\graphics\fx\FxManager.cpp">
       <Filter>happyengine\graphics\fx</Filter>
     </ClCompile>
-    <ClCompile Include="code\graphics\fx\FxParticleColor.cpp">
-      <Filter>happyengine\graphics\fx\components</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\fx\FxParticleLife.cpp">
       <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
@@ -588,6 +585,9 @@
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsCapsuleShape.cpp">
       <Filter>happyengine\physics\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\fx\FxParticleColor.cpp">
+      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsTrigger.cpp">
       <Filter>happyengine\physics</Filter>
@@ -1202,6 +1202,9 @@
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsCapsuleShape.h">
       <Filter>happyengine\physics\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\IInstanceFiller.h">
+      <Filter>happyengine\graphics\rendering\instancing</Filter>
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsTrigger.h">
       <Filter>happyengine\physics</Filter>

@@ -275,6 +275,7 @@
     <ClInclude Include="code\graphics\HappyQtWidget.h" />
     <ClInclude Include="code\graphics\Hitregion.h" />
     <ClInclude Include="code\graphics\IDrawable.h" />
+    <ClInclude Include="code\graphics\IInstanceFiller.h" />
     <ClInclude Include="code\graphics\IInstancible.h" />
     <ClInclude Include="code\graphics\InstancingBuffer.h" />
     <ClInclude Include="code\graphics\InstancingController.h" />

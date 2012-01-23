@@ -32,7 +32,7 @@ class IFxParticleModifyComponent
 public:
     virtual ~IFxParticleModifyComponent() {}
 
-    virtual void transform(FxParticle* pParticle, float normTime, float dTime) = 0; //normTime [0, 1]
+    virtual void transform(FxParticle* pParticle, float normTime, float dTime, const mat44& parentWorld) = 0; //normTime [0, 1]
 };
 
 } } //end namespace

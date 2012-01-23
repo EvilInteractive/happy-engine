@@ -73,8 +73,8 @@ FxTimeLine* FxManager::getTimeline( uint id ) const
 
 void FxManager::timelineStarted( uint id )
 {
-    ASSERT(m_ActiveTimelines.find(id) == m_ActiveTimelines.cend(), "Timeline already active!");
-    m_ActiveTimelines.insert(id);
+    if (m_ActiveTimelines.find(id) == m_ActiveTimelines.cend()) //Timeline not active?
+        m_ActiveTimelines.insert(id);
 }
 
 void FxManager::timelineStopped( uint id )

@@ -48,18 +48,36 @@ public:
         {
             pObj->tick(dTime);
         });
+        if (m_NewTickList.size() > 0)
+        {
+            std::for_each(m_NewTickList.cbegin(), m_NewTickList.cend(), [&](ITickable* pObj)
+            {
+                m_TickList.push_back(pObj);
+            });
+            m_NewTickList.clear();
+        }
+        if (m_RemoveTickList.size() > 0)
+        {
+            std::for_each(m_RemoveTickList.cbegin(), m_RemoveTickList.cend(), [&](ITickable* pObj)
+            {
+                m_TickList.erase(std::remove(m_TickList.begin(), m_TickList.end(), pObj), m_TickList.end());
+            });
+            m_RemoveTickList.clear();
+        }
     }
     virtual void addToTickList(ITickable* pObj)
     {
-        m_TickList.push_back(pObj);
+        m_NewTickList.push_back(pObj);
     }
     virtual void removeFromTickList(ITickable* pObj)
     {
-        m_TickList.erase(std::remove(m_TickList.begin(), m_TickList.end(), pObj), m_TickList.end());
+        m_RemoveTickList.push_back(pObj);
     }
     
 private:
     std::vector<ITickable*> m_TickList;
+    std::vector<ITickable*> m_NewTickList;
+    std::vector<ITickable*> m_RemoveTickList;
 };
 
 } } //end namespace

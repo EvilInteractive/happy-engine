@@ -31,6 +31,8 @@
 #include "ShaderVar.h"
 #include "Material.h"
 
+#include "IInstanceFiller.h"
+
 namespace he {
 namespace gfx {
 
@@ -63,7 +65,7 @@ enum ParticleModifyComponentType
     PMCT_Speed
 };
 class FxTimeLineTrack;
-class FxParticleSystem : public IFxTimeLineTrackComponent
+class FxParticleSystem : public IFxTimeLineTrackComponent, protected IInstanceFiller
 {
 public:
     FxParticleSystem(const FxTimeLineTrack* pParent);
@@ -98,11 +100,13 @@ public:
 
     virtual void tick(float normTime, float dTime);
 
+protected:
+
+    virtual void fillInstancingBuffer(details::InstancingBuffer& buffer);
+
 private:
 
     const FxTimeLineTrack* m_pParent;
-
-    void instancingUpdater(details::InstancingBuffer& buffer);
 
     bool m_Emit, m_Stopped;
     

@@ -60,9 +60,17 @@ FxParticleSystem::FxParticleSystem(const FxTimeLineTrack* pParent):
                                       m_Emit(false), m_Stopped(false), m_UvTiles(NEW FxConstant<vec2>(vec2(1, 1))),
                                       m_SpawnRate(NEW FxConstant<float>(20)),
                                       m_pFxParticleContainer(NEW FxParticleContainer(512)),
-                                      m_TimeSinceLastSpawn(0), m_pParent(pParent)
+                                      m_TimeSinceLastSpawn(0), m_pParent(pParent), m_pInstancingController(nullptr)
 
 {
+    EaseOutEnd += [&]()
+    { 
+        if (m_pInstancingController != nullptr)
+        {
+            m_pInstancingController->removeManualFiller(this); 
+            m_pInstancingController = nullptr; 
+        }
+    };
 }
 
 
@@ -88,24 +96,31 @@ void FxParticleSystem::start()
         boost::weak_ptr<ShaderUserVar<Texture2D::pointer>> weakTex(pTexture);
         pTexture->getData()->callbackIfLoaded([&, weakTex]()
         {
-            ShaderUserVar<Texture2D::pointer>::pointer sharedTex(weakTex);
-            std::stringstream stream;
-            stream << "part_" << sharedTex->getData()->getID() << "_" << m_UvTiles->getValue(0).x << "," << m_UvTiles->getValue(0).y;
-            m_ShaderUvTiles = boost::dynamic_pointer_cast<ShaderUserVar<vec2>>(m_Material.getVar("uvTiles"));
-            m_ShaderUvTiles->setData(m_UvTiles->getValue(0));
-            if (GRAPHICS->getInstancingManager()->getController(stream.str()) == nullptr)
+            if (m_Stopped == false)
             {
-                GRAPHICS->getInstancingManager()->createController(stream.str(), true, CONTENT->getParticleQuad(), m_Material);
-                m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
+                ShaderUserVar<Texture2D::pointer>::pointer sharedTex(weakTex);
+                std::stringstream stream;
+                stream << "part_" << sharedTex->getData()->getID() << "_" << m_UvTiles->getValue(0).x << "," << m_UvTiles->getValue(0).y;
+                m_ShaderUvTiles = boost::dynamic_pointer_cast<ShaderUserVar<vec2>>(m_Material.getVar("uvTiles"));
+                m_ShaderUvTiles->setData(m_UvTiles->getValue(0));
+                if (m_pInstancingController == nullptr)
+                {
+                    if (GRAPHICS->getInstancingManager()->getController(stream.str()) == nullptr)
+                    {
+                        GRAPHICS->getInstancingManager()->createController(stream.str(), true, CONTENT->getParticleQuad(), m_Material);
+                        m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
 
-                m_pInstancingController->setManual(boost::bind(&FxParticleSystem::instancingUpdater, this, _1));
-                m_pInstancingController->setCastsShadow(false);
+                        m_pInstancingController->addManualFiller(this);
+                        m_pInstancingController->setCastsShadow(false);
+                    }
+                    else
+                    {
+                        m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
+                        m_pInstancingController->addManualFiller(this);
+                    }
+                }
+                m_Emit = true;
             }
-            else
-            {
-                m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
-            }
-            m_Emit = true;
         });
     }
     else
@@ -113,7 +128,7 @@ void FxParticleSystem::start()
         HE_ERROR("Starting particlesystem without texture");
     }
 }
-void FxParticleSystem::instancingUpdater( details::InstancingBuffer& buffer )
+void FxParticleSystem::fillInstancingBuffer( details::InstancingBuffer& buffer )
 {
     DynamicBuffer dbuffer(m_pInstancingController->getMaterial().getCompatibleInstancingLayout());
     ICamera* pCam(CAMERAMANAGER->getActiveCamera());
@@ -177,9 +192,13 @@ void FxParticleSystem::tick( float normTime, float dTime )
         {
             float particleTime(pParticle->m_LifeTime / pParticle->m_MaxLifeTime);
             float& dTime_(dTime);
-            he::for_each(components.cbegin(), components.cend(), [&pParticle, &particleTime, &dTime_](IFxParticleModifyComponent* pComponent)
+
+            mat44 parentWorld;
+            if (m_pParent->getParent()->getParent() != nullptr)
+                parentWorld = m_pParent->getParent()->getParent()->getWorldMatrix();
+            he::for_each(components.cbegin(), components.cend(), [&pParticle, &particleTime, &dTime_, &parentWorld](IFxParticleModifyComponent* pComponent)
             {
-                pComponent->transform(pParticle, particleTime, dTime_);
+                pComponent->transform(pParticle, particleTime, dTime_, parentWorld);
             });
             pParticle->m_Position += pParticle->m_Velocity * dTime;
         }
@@ -207,6 +226,7 @@ void FxParticleSystem::tick( float normTime, float dTime )
 void FxParticleSystem::setMaterial( const Material& mat )
 {
     m_Material = mat;
+    m_Material.setDepthWriteEnabled(false);
 }
 void FxParticleSystem::setTiles( const IFxVariable<vec2>::pointer& tiles )
 {

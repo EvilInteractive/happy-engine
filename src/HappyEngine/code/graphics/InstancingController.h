@@ -37,6 +37,7 @@ namespace he {
 namespace gfx {
 
 class IInstancible;
+class IInstanceFiller;
 
 class InstancingController : public IInstancedDrawable
 {
@@ -69,13 +70,14 @@ public:
     virtual void draw();
     virtual void drawShadow();
 
-    void setManual(const boost::function<void(details::InstancingBuffer&)>& func);
+    void addManualFiller(IInstanceFiller* pFiller);
+    void removeManualFiller(const IInstanceFiller* pFiller);
 
 private:
     void init();
     void updateBuffer();
 
-    bool m_Dynamic, m_NeedsUpdate;
+    bool m_Dynamic, m_NeedsUpdate, m_ManualMode;
 
     details::InstancingBuffer m_CpuBuffer;
     uint  m_GpuBuffer;
@@ -95,7 +97,7 @@ private:
 
     boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
 
-    boost::function<void(details::InstancingBuffer&)> m_ManualFillCpuBuffer;
+    std::vector<IInstanceFiller*> m_ManualCpuBufferFillers;
 
     //Disable default copy constructor and default assignment operator
     InstancingController(const InstancingController&);

@@ -37,7 +37,7 @@ public:
     virtual ~FxParticleSpeed();
 
     virtual void init(FxParticle* pParticle, const mat44& parentWorld);
-    virtual void transform(FxParticle* pParticle, float currentTime, float dTime);
+    virtual void transform(FxParticle* pParticle, float currentTime, float dTime, const mat44& parentWorld);
 
     void setValue(const IFxVariable<vec3>::pointer& value);
     const IFxVariable<vec3>::pointer& getValue() const;

@@ -177,13 +177,13 @@ void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& des
     //Spine
     addJoint(&m_pPelvisSpine3Joint, m_pPelvis, m_pSpine3, desc.pelvis, desc.spine3,  
               physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
-              -pi / 16.0f, pi / 16.0f, piOverFour, piOverFour);
+              -pi / 16.0f, pi / 16.0f, pi / 8.0f, pi / 8.0f);
     addJoint(&m_pSpine3Spine2Joint, m_pSpine3, m_pSpine2, desc.spine3, desc.spine2,  
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
-        -pi / 8.0f, pi / 8.0f, piOverFour, piOverFour);
+        -pi / 8.0f, pi / 8.0f, pi / 8.0f, pi / 8.0f);
     addJoint(&m_pSpine2Spine1Joint, m_pSpine2, m_pSpine1, desc.spine2, desc.spine1,  
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
-        -pi / 4.0f, pi / 4.0f, piOverFour, piOverFour);
+        -pi / 8.0f, pi / 8.0f, pi / 8.0f, pi / 8.0f);
 
     //Shoulders
     addJoint(&m_pSpine1ShoulderLJoint, m_pSpine1, m_pShoulderL, desc.spine1, desc.shoulderL,  
@@ -199,22 +199,22 @@ void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& des
         0, 0, pi/6, pi/6);
     addJoint(&m_pNeckHeadJoint, m_pNeck, m_pHead, desc.neck, desc.head,
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
-        -piOverTwo, piOverTwo, pi/6, pi/6);
+        -pi/6, pi/6, pi/6, pi/6);
     
     //Arms
     addJoint(&m_pShouldersArmL1Joint, m_pShoulderL, m_pArmL1, desc.shoulderL, desc.armL1,  
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
-        -pi / 6.0f, pi / 6.0f, piOverTwo, piOverTwo);
+        -pi / 8.0f, pi / 8.0f, pi / 6, pi / 6);
     addJoint(&m_pShouldersArmR1Joint, m_pShoulderR, m_pArmR1, desc.shoulderR, desc.armR1,  
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
-        -pi / 6.0f, pi / 6.0f, piOverTwo, piOverTwo);
+        -pi / 8.0f, pi / 8.0f, pi / 6, pi / 6);
 
     addJoint(&m_pArmL1ArmL2Joint, m_pArmL1, m_pArmL2, desc.armL1, desc.armL2,  
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLOCKED,
-        -pi / 8.0f, pi / 8.0f, pi / 3, pi / 3);
+        -pi / 8.0f, pi / 8.0f, pi / 6, pi / 6);
     addJoint(&m_pArmR1ArmR2Joint, m_pArmR1, m_pArmR2, desc.armR1, desc.armR2,  
         physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLOCKED,
-        -pi / 8.0f, pi / 8.0f, pi / 3, pi / 3);
+        -pi / 8.0f, pi / 8.0f, pi / 6, pi / 6);
 
     addJoint(&m_pArmL2HandJoint, m_pArmL2, m_pHandL, desc.armL2, desc.handL,  
         physx::PxD6Motion::eLOCKED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
