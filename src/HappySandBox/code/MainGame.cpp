@@ -127,6 +127,9 @@ void MainGame::load()
 
     /* TEST */
     m_pTest = CONTENT->asyncLoadTexture("editor/light.png");
+
+    /* PICKING */
+    GRAPHICS->initPicking();
 }
 
 void MainGame::tick(float dTime)

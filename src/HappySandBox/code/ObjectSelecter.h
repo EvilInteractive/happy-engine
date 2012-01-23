@@ -13,25 +13,43 @@
 //    GNU Lesser General Public License for more details.
 //
 //    You should have received a copy of the GNU Lesser General Public License
-//    along with HappySandBox.  If not, see <http://www.gnu.org/licenses/>.
+//  along with HappySandBox.  If not, see <http://www.gnu.org/licenses/>.
+// 
+//Author:  Sebastiaan Sprengers
+//Created: 22/01/2012
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _OBJECT_SELECTER_H_
+#define _OBJECT_SELECTER_H_
 #pragma once
+
+#include "Entity.h"
+#include "vec2.h"
 
 namespace happysandbox {
 
-class X
+class ObjectSelecter
 {
 public:
-    X();
-    virtual ~X();
+
+    /* CONSTRUCTOR - DESTRUCTOR */
+    ObjectSelecter();
+    virtual ~ObjectSelecter();
+
+    /* GENERAL */
+    void deselect();
+    void selectEntity(he::vec2 mousePos);
+
+    /* GETTERS */
+    he::game::Entity* getSelectedEntity() const;
 
 private:
 
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
+    /* DATAMEMBERS */
+    he::game::Entity* m_pSelectedEntity; // currently only one selection for simplicity, later array of selected objects
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    ObjectSelecter(const ObjectSelecter&);
+    ObjectSelecter& operator=(const ObjectSelecter&);
 };
 
 } //end namespace

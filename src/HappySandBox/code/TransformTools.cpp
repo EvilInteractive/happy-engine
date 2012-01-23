@@ -29,7 +29,7 @@
 namespace happysandbox {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-TransformTools::TransformTools() :	m_Mode(MODE_MOVE),
+TransformTools::TransformTools() :	m_Mode(MODE_OFF),
                                     m_Pos(0.0f,0.0f,0.0f),
                                     m_Scale(1.0f),
                                     m_bButtonDown(false),

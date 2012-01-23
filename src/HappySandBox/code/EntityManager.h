@@ -14,43 +14,46 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Sebastiaan Sprengers
+//Created: 19/01/2012
 
+#ifndef _ENTITYMANAGER_H_
+#define _ENTITYMANAGER_H_
+#pragma once
 
-#ifndef HAPPYSANDBOX_H
-#define HAPPYSANDBOX_H
+#include "HappyTypes.h"
+#include "Entity.h"
+#include <vector>
 
-#include "HappyQtWidget.h"
-#pragma warning(disable:4127)
-#include <QtGui/QMainWindow>
-#include "ui_HappySandBox.h"
-#pragma warning(default:4127)
+namespace happysandbox {
 
-#include "ContentBrowser.h"
-#include "EntityManager.h"
-
-class HappySandBox : public QMainWindow
+class EntityManager
 {
-    Q_OBJECT
-
 public:
-    HappySandBox(QWidget *parent = 0, Qt::WFlags flags = 0);
-    ~HappySandBox();
 
-    he::gfx::HappyQtWidget* getGameWidget();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    EntityManager();
+    virtual ~EntityManager();
 
-private slots:
+    /* GENERAL */
+    he::uint addEntity(he::game::Entity* pEntity);
+    void deleteEntity(he::uint id);
 
-    void openContentBrowser();
+    /* GETTERS */
+    he::game::Entity* getEntity(he::uint id) const;
+    const std::vector<he::game::Entity*>& getEntityList() const;
 
 private:
 
-    Ui::HappySandBoxClass ui;
+    /* DATAMEMBERS */
+    std::vector<he::game::Entity*> m_EntityList;
 
-    happysandbox::ContentBrowser* m_pContentBrowser;
-
-    happysandbox::EntityManager* m_pEntityManager;
-
-    he::gfx::HappyQtWidget* m_pGame;
+    /* DEFAULT COPY & ASSIGNMENT */
+    EntityManager(const EntityManager&);
+    EntityManager& operator=(const EntityManager&);
 };
 
-#endif // HAPPYSANDBOX_H
+} //end namespace
+
+#endif

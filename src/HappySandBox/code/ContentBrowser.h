@@ -28,11 +28,11 @@
 #include "ui_ContentBrowser.h"
 #pragma warning(default:4127)
 
-#include "World.h"
 #include <map>
 #include "Texture2D.h"
 #include "Model.h"
 #include "Material.h"
+#include "EntityManager.h"
 
 namespace happysandbox {
 
@@ -47,8 +47,10 @@ public:
     ~ContentBrowser();
 
     /* GENERAL */
-    void setWorld(World* pWorld);
     void keyPressEvent(QKeyEvent* event);
+
+    /* TEMP */
+    void setWorld(EntityManager* pWorld);
 
 private slots:
 
@@ -71,12 +73,12 @@ private:
     bool m_bEdit;
     bool m_bOnce;
 
-    World* m_pWorld;
-
     std::map<uint, he::gfx::Texture2D::pointer> m_Textures;
     std::map<uint, he::gfx::Model::pointer> m_Models;
 
     he::gfx::Material m_DefaultMaterial;
+
+    EntityManager* m_pWorld;
 };
 
 } //end namespace

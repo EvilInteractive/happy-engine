@@ -504,7 +504,7 @@
       <PreprocessorDefinitions>HE_ENABLE_QT;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>HappyPCH.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

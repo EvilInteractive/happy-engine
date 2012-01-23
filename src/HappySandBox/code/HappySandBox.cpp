@@ -17,27 +17,34 @@
 
 
 #include "HappySandBox.h"
+#include "Qt/qsizegrip.h"
 
 HappySandBox::HappySandBox(QWidget *parent, Qt::WFlags flags)
     :   QMainWindow(parent, flags),
-        m_pWorld(NEW happysandbox::World())
+        m_pEntityManager(NEW happysandbox::EntityManager()),
+        m_pGame(nullptr)
 {
     ui.setupUi(this);
 
     m_pContentBrowser = NEW happysandbox::ContentBrowser(parent, flags);
-    m_pContentBrowser->resize(500,400);
+    m_pContentBrowser->resize(800,600);
     m_pContentBrowser->setWindowTitle(QString("HappySandBox - Content Browser"));
-    m_pContentBrowser->setWorld(m_pWorld);
+    m_pContentBrowser->setWorld(m_pEntityManager);
+
+    ui.menuAdd_component->setDisabled(true);
+
+    m_pGame = ui.gameWidget;
 }
 
 HappySandBox::~HappySandBox()
 {
     delete m_pContentBrowser;
+    delete m_pEntityManager;
 }
 
 he::gfx::HappyQtWidget* HappySandBox::getGameWidget()
 {
-    return ui.centralWidget->findChild<he::gfx::HappyQtWidget*>("gameWidget");
+    return ui.gameWidget; //->findChild<QGridLayout*>("gridLayout")->findChild<he::gfx::HappyQtWidget*>("gameWidget");
 }
 
 void HappySandBox::openContentBrowser()

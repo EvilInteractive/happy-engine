@@ -87,13 +87,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="code\ContentBrowser.cpp" />
+    <ClCompile Include="code\EntityManager.cpp" />
+    <ClCompile Include="code\ObjectSelecter.cpp" />
     <ClCompile Include="code\SceneInfo.cpp" />
     <ClCompile Include="code\FlyCamera.cpp" />
     <ClCompile Include="code\HappySandbox.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\MainGame.cpp" />
     <ClCompile Include="code\TransformTools.cpp" />
-    <ClCompile Include="code\World.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ContentBrowser.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -169,6 +170,8 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DGLEW_STATIC "-I." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I." "-IC:\Libs\SDL-1.3.0-6116\ttf" "-IC:\Libs\assimp\include" "-IC:\Libs\SDL-1.3.0-6116\include" "-IC:\Libs\OpenAL-1.1-SDK\include" "-IC:\Libs\devil\include" "-IC:\Libs\glew-1.6.0\include" "-IC:\Libs\boost_1_47_0" "-I." "-I."</Command>
     </CustomBuild>
+    <ClInclude Include="code\EntityManager.h" />
+    <ClInclude Include="code\ObjectSelecter.h" />
     <ClInclude Include="code\SceneInfo.h" />
     <ClInclude Include="code\FlyCamera.h" />
     <CustomBuild Include="code\HappySandbox.h">
@@ -183,7 +186,6 @@
     </CustomBuild>
     <ClInclude Include="code\MainGame.h" />
     <ClInclude Include="code\TransformTools.h" />
-    <ClInclude Include="code\World.h" />
     <ClInclude Include="GeneratedFiles\ui_ContentBrowser.h" />
     <ClInclude Include="GeneratedFiles\ui_HappySandbox.h" />
   </ItemGroup>

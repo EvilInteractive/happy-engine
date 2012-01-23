@@ -14,19 +14,40 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappySandBox.  If not, see <http://www.gnu.org/licenses/>.
+// 
+//Author:  Sebastiaan Sprengers
+//Created: 22/01/2012
 
-#include "X.h"
+#include "ObjectSelecter.h"
 #include "HappyPCH.h"
+#include "GraphicsEngine.h"
 
 namespace happysandbox {
 
-X::X()
+/* CONSTRUCTOR - DESTRUCTOR */
+ObjectSelecter::ObjectSelecter() :  m_pSelectedEntity(nullptr)
 {
 }
 
-
-X::~X()
+ObjectSelecter::~ObjectSelecter()
 {
+}
+
+/* GENERAL */
+void ObjectSelecter::deselect()
+{
+    m_pSelectedEntity = nullptr;
+}
+
+void ObjectSelecter::selectEntity(he::vec2 mousePos)
+{
+    //GRAPHICS->pick(
+}
+
+/* GETTERS */
+he::game::Entity* ObjectSelecter::getSelectedEntity() const
+{
+    return nullptr;
 }
 
 } //end namespace

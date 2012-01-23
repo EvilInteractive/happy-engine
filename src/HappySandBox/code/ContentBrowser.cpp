@@ -31,15 +31,16 @@
 #include "ContentManager.h"
 #include "Material.h"
 #include "ModelComponent.h"
+#include "Entity.h"
 
 namespace happysandbox {
 
 ContentBrowser::ContentBrowser(QWidget* parent, Qt::WFlags flags) : QWidget (parent, flags),
                                                                     m_SelectedItem(nullptr),
                                                                     m_bEdit(false),
-                                                                    m_pWorld(nullptr),
                                                                     m_NrItems(0),
-                                                                    m_bOnce(false)
+                                                                    m_bOnce(false),
+                                                                    m_pWorld(nullptr)
 {
     ui.setupUi(this);
 }
@@ -49,10 +50,6 @@ ContentBrowser::~ContentBrowser()
 }
 
 /* GENERAL */
-void ContentBrowser::setWorld(World* pWorld)
-{
-    m_pWorld = pWorld;
-}
 
 void ContentBrowser::keyPressEvent(QKeyEvent* event)
 {
@@ -109,6 +106,8 @@ void ContentBrowser::importFile()
                 name += "Unknown";
             }
 
+            name += QVariant(m_NrItems).toString();
+
             QStringList list;
             list.push_back(QVariant(m_NrItems).toString());
             list.push_back(name);
@@ -128,7 +127,7 @@ void ContentBrowser::importFile()
             else if (type == "Model")
             {
                 //mod->getMesh(0)->callbackIfLoaded([&](){m_ContentItems[m_ContentItems.size() - 1]->setData(3,0, QVariant("Loaded"));});
-                m_ContentItems[m_ContentItems.size() - 1]->setData(4,0, QVariant("-PROBABLY LOADED? NEED TO BE FIXED-"));
+                m_ContentItems[m_ContentItems.size() - 1]->setData(4,0, QVariant("-PROBABLY LOADED? !CHECK CONSOLE! NEEDs TO BE FIXED-"));
                 m_Models[m_NrItems] = mod;
             }
             else
@@ -204,6 +203,12 @@ void ContentBrowser::addToScene()
 
         m_pWorld->addEntity(pEntity);
     }
+}
+
+/* TEMP */
+void ContentBrowser::setWorld(EntityManager* pWorld)
+{
+    m_pWorld = pWorld;
 }
 
 } //end namespace

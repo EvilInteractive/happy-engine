@@ -85,7 +85,10 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ContentBrowser.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="code\World.cpp">
+    <ClCompile Include="code\EntityManager.cpp">
+      <Filter>Game Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="code\ObjectSelecter.cpp">
       <Filter>Game Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,7 +134,10 @@
     <ClInclude Include="GeneratedFiles\ui_ContentBrowser.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="code\World.h">
+    <ClInclude Include="code\EntityManager.h">
+      <Filter>Game Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="code\ObjectSelecter.h">
       <Filter>Game Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>
