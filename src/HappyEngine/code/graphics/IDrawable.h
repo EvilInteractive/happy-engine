@@ -25,13 +25,14 @@
 #include "ModelMesh.h"
 #include "Material.h"
 #include "I3DObject.h"
+#include "IPickable.h"
 
 namespace he {
 namespace gfx {
 
 class ICamera;
 
-class IDrawable
+class IDrawable : public IPickable
 {
 public:
     virtual ~IDrawable() {}

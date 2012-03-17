@@ -55,6 +55,7 @@ public:
 	virtual float getLength() const = 0;
 	virtual SOUND_STATE getState() const = 0;
 	virtual SOUND_TYPE getType() const = 0;
+    virtual bool getToMono() const = 0;
 
 };
 

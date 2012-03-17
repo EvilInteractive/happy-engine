@@ -88,14 +88,14 @@ public:
     template <typename T>
     T* getInitComponent(uint id)
     {
-        return dynamic_cast<T*>(m_ParticleInitComponents.get(id));
+        return static_cast<T*>(m_ParticleInitComponents.get(id));
     }
 
     uint addModifyComponent(ParticleModifyComponentType type);
     template <typename T>
     T* getModifyComponent(uint id)
     {
-        return dynamic_cast<T*>(m_ParticleModifyComponents.get(id));
+        return static_cast<T*>(m_ParticleModifyComponents.get(id));
     }
 
     virtual void tick(float normTime, float dTime);

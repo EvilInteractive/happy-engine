@@ -79,7 +79,7 @@ void InstancingController::init()
                 case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
 
                 #pragma warning(disable:4127)
-                default: ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
+                default: HE_ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
                 #pragma warning(default:4127)
             }
             glVertexAttribPointer(e.getElementIndex(), components, type, 
@@ -116,7 +116,7 @@ void InstancingController::init()
                 case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
 
                 #pragma warning(disable:4127)
-                default: ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
+                default: HE_ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
                 #pragma warning(default:4127)
             }
             glEnableVertexAttribArray(vertexElements.size() + element.getElementIndex());
@@ -236,7 +236,7 @@ uint InstancingController::addInstance(const IInstancible* pObj)
 }
 uint InstancingController::addInstance()
 {
-    ASSERT(m_ManualCpuBufferFillers.empty() == false, "Only valid in manual mode");
+    HE_ASSERT(m_ManualCpuBufferFillers.empty() == false, "Only valid in manual mode");
     m_NeedsUpdate = true;
     return m_Instances.insert(nullptr); // HACK: is a bit hacky
 }
@@ -293,7 +293,7 @@ uint InstancingController::getCount() const
 
 void InstancingController::addManualFiller( IInstanceFiller* pFiller )
 {
-    ASSERT(std::find(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), pFiller) == m_ManualCpuBufferFillers.cend(), "filler is already bound to this controller");
+    HE_ASSERT(std::find(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), pFiller) == m_ManualCpuBufferFillers.cend(), "filler is already bound to this controller");
     m_ManualMode = true;
     m_ManualCpuBufferFillers.push_back(pFiller);
 }

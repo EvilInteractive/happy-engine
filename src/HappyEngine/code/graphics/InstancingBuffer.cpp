@@ -44,14 +44,14 @@ void InstancingBuffer::resize( uint newSize )
     {
         m_Size = newSize;
         m_Buffer = static_cast<char*>(he_realloc(m_Buffer, newSize));
-        ASSERT(m_Buffer != nullptr, "realloc failed - out of memory?");
+        HE_ASSERT(m_Buffer != nullptr, "realloc failed - out of memory?");
         reset();
     }
 }
 
 char* InstancingBuffer::addItem()
 {
-    ASSERT(getCount() < getCountCapacity(), "Buffer overrun! resize buffer!");
+    HE_ASSERT(getCount() < getCountCapacity(), "Buffer overrun! resize buffer!");
     ++m_Count;
     m_End += m_ItemSize;
     return m_End - m_ItemSize;

@@ -25,7 +25,7 @@
 
 #include "HeAssert.h"
 #undef assert
-#define assert ASSERT
+#define assert HE_ASSERT
 
 #include <vector>
 #include "BufferLayout.h"

@@ -25,8 +25,10 @@
 namespace he {
 namespace game {
 
-SerializerStream::SerializerStream(const std::string& path, bool save): m_Stream(path, save?io::BinaryStream::Write:io::BinaryStream::Read)
+SerializerStream::SerializerStream(const std::string& path, bool save)
 {
+    if (m_Stream.open(path, save?io::BinaryStream::Write:io::BinaryStream::Read) == false)
+        HE_ERROR("Error loading save file: " + path);
 }
 
 

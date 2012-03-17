@@ -129,7 +129,7 @@ void GL::heBindVao(uint vao)
 }
 void GL::heBindTexture2D(uint samplerPos, uint tex)
 {
-    ASSERT(samplerPos < MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
+    HE_ASSERT(samplerPos < MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
     //if (m_BoundTex2D[samplerPos] != tex)
     //{
         if (m_ActiveTex != samplerPos)

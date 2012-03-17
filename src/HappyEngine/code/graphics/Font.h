@@ -37,7 +37,7 @@
 namespace he {
 
 namespace gui {
-	class Text;
+    class Text;
 }
 
 namespace gfx {
@@ -46,46 +46,46 @@ class Font
 {
 public:
 
-	enum HAlignment
-	{
-		HAlignment_Left, 
-		HAlignment_Center, 
-		HAlignment_Right
-	};
-	enum VAlignment
-	{
-		VAlignment_Top, 
-		VAlignment_Center, 
-		VAlignment_Bottom
-	};
+    enum HAlignment
+    {
+        HAlignment_Left, 
+        HAlignment_Center, 
+        HAlignment_Right
+    };
+    enum VAlignment
+    {
+        VAlignment_Top, 
+        VAlignment_Center, 
+        VAlignment_Bottom
+    };
 
-	typedef boost::shared_ptr<Font> pointer;
+    typedef boost::shared_ptr<Font> pointer;
 
-	/* CONSTRUCTOR - DESTRUCTOR */
+    /* CONSTRUCTOR - DESTRUCTOR */
     explicit Font(TTF_Font* pFont);
     virtual ~Font();
     
-	/* GETTERS */
+    /* GETTERS */
     Texture2D::pointer createTextureText(const std::string& text, const Color& color,
-										 bool bAntiAliased = true, vec2* sizeText = nullptr);
-	Texture2D::pointer createTextureText(const gui::Text& text, const Color& color,
-										 bool bAntiAliased = true);
+                                         bool bAntiAliased = true, vec2* sizeText = nullptr);
+    Texture2D::pointer createTextureText(const gui::Text& text, const Color& color,
+                                         bool bAntiAliased = true);
 
-	const std::string& getPath() const;
+    const std::string& getPath() const;
 
-	uint getFontPixelHeight() const;
-	uint getFontLineSpacing() const;
-	uint getStringWidth(const std::string& string) const;
+    uint getFontPixelHeight() const;
+    uint getFontLineSpacing() const;
+    uint getStringWidth(const std::string& string) const;
 
-	/* SETTERS */
-	void setPath(const std::string& path);
+    /* SETTERS */
+    void setPath(const std::string& path);
 
 private:
 
-	/* DATAMEMBERS */
+    /* DATAMEMBERS */
     TTF_Font* m_pFont;
 
-	std::string m_Path;
+    std::string m_Path;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Font(const Font&);

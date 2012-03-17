@@ -23,6 +23,7 @@
 #include "HappyNew.h"
 #include "vec2.h"
 #include "MathFunctions.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace ct {
@@ -48,7 +49,7 @@ std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
     else if (indexStride == gfx::IndexStride_UInt)
         pIndicesUInt = static_cast<const uint*>(pIndices);
     else
-        ASSERT("unkown index stride");
+        HE_ASSERT("unkown index stride");
     
     for (uint i = 0; i < numIndices; i += 3) //per triangle
     {
@@ -73,32 +74,32 @@ std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
         }
 
         const vec3& v1 = *reinterpret_cast<const vec3*>(pCharVertices + (i1 * vertStride + posOff));
-	    const vec3& v2 = *reinterpret_cast<const vec3*>(pCharVertices + (i2 * vertStride + posOff));
-	    const vec3& v3 = *reinterpret_cast<const vec3*>(pCharVertices + (i3 * vertStride + posOff));
+        const vec3& v2 = *reinterpret_cast<const vec3*>(pCharVertices + (i2 * vertStride + posOff));
+        const vec3& v3 = *reinterpret_cast<const vec3*>(pCharVertices + (i3 * vertStride + posOff));
 
         const vec2& tx1 = *reinterpret_cast<const vec2*>(pCharVertices + (i1 * vertStride + texOff));
-	    const vec2& tx2 = *reinterpret_cast<const vec2*>(pCharVertices + (i2 * vertStride + texOff));
-	    const vec2& tx3 = *reinterpret_cast<const vec2*>(pCharVertices + (i3 * vertStride + texOff));
+        const vec2& tx2 = *reinterpret_cast<const vec2*>(pCharVertices + (i2 * vertStride + texOff));
+        const vec2& tx3 = *reinterpret_cast<const vec2*>(pCharVertices + (i3 * vertStride + texOff));
 
-	    float x1 = v2.x - v1.x;
-	    float x2 = v3.x - v1.x;
-	    float y1 = v2.y - v1.y;
-	    float y2 = v3.y - v1.y;
-	    float z1 = v2.z - v1.z;
-	    float z2 = v3.z - v1.z;
+        float x1 = v2.x - v1.x;
+        float x2 = v3.x - v1.x;
+        float y1 = v2.y - v1.y;
+        float y2 = v3.y - v1.y;
+        float z1 = v2.z - v1.z;
+        float z2 = v3.z - v1.z;
 
-	    float s1 = tx2.x - tx1.x;
-	    float s2 = tx3.x - tx1.x;
-	    float t1 = tx2.y - tx1.y;
-	    float t2 = tx3.y - tx1.y;
+        float s1 = tx2.x - tx1.x;
+        float s2 = tx3.x - tx1.x;
+        float t1 = tx2.y - tx1.y;
+        float t2 = tx3.y - tx1.y;
 
-	    float r = 1.0f / (s1 * t2 - s2 * t1);
+        float r = 1.0f / (s1 * t2 - s2 * t1);
 
-	    vec3 sdir(
+        vec3 sdir(
             (t2 * x1 - t1 * x2) * r, 
             (t2 * y1 - t1 * y2) * r, 
             (t2 * z1 - t1 * z2) * r );
-	    vec3 tdir(
+        vec3 tdir(
             (s1 * x2 - s2 * x1) * r, 
             (s1 * y2 - s2 * y1) * r, 
             (s1 * z2 - s2 * z1) * r );

@@ -47,11 +47,11 @@ HappyQtWidget::~HappyQtWidget()
 
 void HappyQtWidget::initializeGL()
 {
-    m_pMouse = dynamic_cast<io::QtMouse*>(const_cast<io::IMouse*>(CONTROLS->getMouse()));
-    ASSERT(m_pMouse != nullptr, "HappyQtWidget is used but not the qtMouse !");
+    m_pMouse = static_cast<io::QtMouse*>(const_cast<io::IMouse*>(CONTROLS->getMouse()));
+    HE_ASSERT(m_pMouse != nullptr, "HappyQtWidget is used but not the qtMouse !");
 
-    m_pKeyboard = dynamic_cast<io::QtKeyboard*>(const_cast<io::IKeyboard*>(CONTROLS->getKeyboard()));
-    ASSERT(m_pKeyboard != nullptr, "HappyQtWidget is used but not the qtKeyboard !");
+    m_pKeyboard = static_cast<io::QtKeyboard*>(const_cast<io::IKeyboard*>(CONTROLS->getKeyboard()));
+    HE_ASSERT(m_pKeyboard != nullptr, "HappyQtWidget is used but not the qtKeyboard !");
 
     init();
     if (GRAPHICS != nullptr)

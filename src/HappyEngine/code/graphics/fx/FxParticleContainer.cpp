@@ -31,7 +31,7 @@ FxParticleContainer::FxParticleContainer(uint maxParticles): m_MaxCount(maxParti
 {
     m_MemPool = static_cast<FxParticle*>(he_aligned_malloc(maxParticles * sizeof(FxParticle), 16));
 
-    ASSERT(m_MemPool != nullptr, "particle container: out of memory");
+    HE_ASSERT(m_MemPool != nullptr, "particle container: out of memory");
     he_memset(m_MemPool, 0, maxParticles * sizeof(FxParticle));
     m_End = m_MemPool;
 }
@@ -44,7 +44,7 @@ void FxParticleContainer::resize(uint maxParticles)
 {
     m_MemPool = static_cast<FxParticle*>(he_aligned_realloc(m_MemPool, m_Count * sizeof(FxParticle), 
                                                             maxParticles * sizeof(FxParticle), 16));
-    ASSERT(m_MemPool != nullptr, "particle container: out of memory");
+    HE_ASSERT(m_MemPool != nullptr, "particle container: out of memory");
     if (maxParticles < m_Count)
         m_Count = maxParticles;
     m_End = m_MemPool + m_Count;

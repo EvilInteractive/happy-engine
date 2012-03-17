@@ -54,7 +54,7 @@ uint ceilToPowerOfTwo(uint value)
 }
 SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf)
 {
-    ASSERT(pSurf != nullptr, "pSurf == nullPtr !");
+    HE_ASSERT(pSurf != nullptr, "pSurf == nullPtr !");
 
     uint width(ceilToPowerOfTwo(pSurf->w)), 
         height(ceilToPowerOfTwo(pSurf->h));

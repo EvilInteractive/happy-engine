@@ -55,7 +55,7 @@ TcpServer::~TcpServer()
 
 void TcpServer::start(ushort port)
 {
-    ASSERT(m_pAcceptor == nullptr, "m_pAcceptor is already initialized");
+    HE_ASSERT(m_pAcceptor == nullptr, "m_pAcceptor is already initialized");
     m_pAcceptor = NEW boost::asio::ip::tcp::acceptor(
         NETWORK->getIoService(), 
         boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
@@ -65,7 +65,7 @@ void TcpServer::start(ushort port)
 }
 void TcpServer::startAccepting()
 {
-    ASSERT(m_pSocket == nullptr, "m_pSocket is already initialized");
+    HE_ASSERT(m_pSocket == nullptr, "m_pSocket is already initialized");
     m_IsShuttingDown = false;
     m_pSocket = NEW boost::asio::ip::tcp::socket(NETWORK->getIoService());
     m_pAcceptor->async_accept(*m_pSocket, boost::bind(&TcpServer::handleAccepted, this, boost::asio::placeholders::error));

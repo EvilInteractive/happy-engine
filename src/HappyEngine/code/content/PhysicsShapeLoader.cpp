@@ -51,7 +51,12 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
     {
         if (path.rfind(".pxcv") != std::string::npos)
         {
-            io::BinaryStream stream(path, io::BinaryStream::Read);
+            io::BinaryStream stream;
+            if (stream.open(path, io::BinaryStream::Read) == false)
+            {
+                HE_ERROR("Error loading convex mesh: " + path);
+                return m_pConvexAssetContainer->getAsset("");
+            }
             byte numConvex(stream.readByte());
 
             std::vector<px::PhysicsConvexMesh::pointer> shapes;
@@ -65,7 +70,7 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
         }
         else
         {
-            ASSERT(false, "no loader defined for this extension");
+            HE_ASSERT(false, "no loader defined for this extension");
             return m_pConvexAssetContainer->getAsset("");
         }
     }
@@ -80,7 +85,12 @@ const std::vector<px::PhysicsConcaveMesh::pointer>& PhysicsShapeLoader::loadConc
     {
         if (path.rfind(".pxcc") != std::string::npos)
         {
-            io::BinaryStream stream(path, io::BinaryStream::Read);
+            io::BinaryStream stream;
+            if (stream.open(path, io::BinaryStream::Read) == false)
+            {
+                HE_ERROR("Error loading concave mesh: " + path);
+                return m_pConcaveAssetContainer->getAsset("");
+            }
             byte numConcave(stream.readByte());
 
             std::vector<px::PhysicsConcaveMesh::pointer> shapes;
@@ -94,7 +104,7 @@ const std::vector<px::PhysicsConcaveMesh::pointer>& PhysicsShapeLoader::loadConc
         }
         else
         {
-            ASSERT(false, "no loader defined for this extension");
+            HE_ASSERT(false, "no loader defined for this extension");
             return m_pConcaveAssetContainer->getAsset("");
         }
     }

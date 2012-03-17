@@ -50,7 +50,7 @@ void Simple2DEffect::load()
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
     bool shaderInited(m_pShader->initFromFile(folder + "2D/simple2DShader.vert", 
                                               folder + "2D/simple2DShader.frag", layout, shaderOutputs));
-    ASSERT(shaderInited == true);
+    HE_ASSERT(shaderInited == true);
 
     m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
     m_ShaderColorPos = m_pShader->getShaderVarId("color");

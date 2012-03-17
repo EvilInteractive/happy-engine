@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyTest.  If not, see <http://www.gnu.org/licenses/>.
-
+#include "HappyPCH.h"
 #include "MainGame.h"
 
 #include <vector>
@@ -39,7 +39,6 @@
 #include "SoundEngine.h"
 
 #include "IniReader.h"
-#include "FileNotFoundException.h"
 #include "Circle.h"
 
 #include "HappyNew.h"
@@ -149,10 +148,7 @@ void MainGame::init()
 {
     using namespace he;
     io::IniReader reader;
-    try { reader.open("../data/settings.ini"); }
-    catch (err::FileNotFoundException& e)
-    { std::wcout << e.getMsg() << "\n"; }
-    if (reader.isOpen())
+    if (reader.open("../data/settings.ini"))
     {
         vec2 windowDim(reader.readVector2(L"Window", L"dimension", vec2(1280, 720)));
         GRAPHICS->setScreenDimension(static_cast<int>(windowDim.x), static_cast<int>(windowDim.y));
@@ -164,8 +160,11 @@ void MainGame::init()
         GRAPHICS->setVSync(reader.readBool(L"Graphics", L"vsync", true));
         GRAPHICS->toggleFullscreen(reader.readBool(L"Graphics", L"fullscreen"));
     }
+    else
+    {
+        HE_WARNING("unable to open settings.ini");
+    }
 }
-
 void MainGame::load()
 {
     using namespace he;

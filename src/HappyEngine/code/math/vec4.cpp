@@ -21,6 +21,7 @@
 
 #include "vec4.h"
 #include "vec3.h"
+#include "PxVec4.h"
 
 namespace he {
 
@@ -28,7 +29,7 @@ namespace he {
 vec4::vec4(): x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 {
 }
-vec4::vec4(physx::pubfnd3::PxVec4 vec) : x(vec.x), y(vec.y), z(vec.z), w(vec.w)
+vec4::vec4(const physx::pubfnd3::PxVec4& vec) : x(vec.x), y(vec.y), z(vec.z), w(vec.w)
 {
 }
 vec4::vec4(const vec3& vec, float w_): x(vec.x), y(vec.y), z(vec.z), w(w_)

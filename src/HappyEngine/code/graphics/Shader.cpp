@@ -21,7 +21,6 @@
 #include "HeAssert.h"
 
 #include "FileReader.h"
-#include "FileNotFoundException.h"
 #include "ShaderPreProcessor.h"
 
 #include <iostream>
@@ -114,25 +113,33 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
 }
 bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
 {
-    ASSERT(m_Id != -1, "no need to init twice");
+    HE_ASSERT(m_Id != -1, "no need to init twice");
 
     // Read VS and FS files --------------------------->
     io::FileReader reader;
 
     std::string strVS;
     std::string strFS;
-    try
+    if (reader.open(vsPath, io::FileReader::OpenType_ASCII))
     {
-        reader.open(vsPath, io::FileReader::OpenType_ASCII);
         strVS = reader.readToEnd();
         reader.close();
-
-        reader.open(fsPath, io::FileReader::OpenType_ASCII);
+    }
+    else
+    {
+        HE_ERROR("Error reading: " + vsPath);
+        return false;
+    }
+    if (reader.open(fsPath, io::FileReader::OpenType_ASCII))
+    {
         strFS = reader.readToEnd();
         reader.close();
     }
-    catch (const err::FileNotFoundException& e)
-    { std::wcout << e.getMsg(); return false; }
+    else
+    {
+        HE_ERROR("Error reading: " + fsPath);
+        return false;
+    }
     // <-----------------------------------------------
 
     return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
@@ -241,59 +248,59 @@ uint Shader::getShaderSamplerId(const std::string& name)
 
 void Shader::setShaderVar(uint id, int value) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1i(id, value);
 }
 void Shader::setShaderVar(uint id, uint value) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1ui(id, value);
 }
 void Shader::setShaderVar(uint id, float value) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1f(id, value);
 }
 void Shader::setShaderVar(uint id, const vec2& vec) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform2f(id, vec.x, vec.y);
 }
 void Shader::setShaderVar(uint id, const vec3& vec) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform3f(id, vec.x, vec.y, vec.z);
 }
 void Shader::setShaderVar(uint id, const vec4& vec) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform4f(id, vec.x, vec.y, vec.z, vec.w);
 }
 void Shader::setShaderVar(uint id, const mat44& matrix) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniformMatrix4fv(id, 1, GL_FALSE, matrix.toFloatArray());
 }
 void Shader::setShaderVar(uint id, const std::vector<mat44>& matrixArray) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
     glUniformMatrix4fv(id, matrixArray.size(), GL_FALSE, matrixArray[0].toFloatArray());
 }
 void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, tex2D->getID());
 }
 void Shader::setShaderVar( uint id, const gfx::Texture2D* pTex2D ) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, pTex2D->getID());
 }
 
 void Shader::setShaderVar( uint id, const gfx::TextureCube::pointer& texCube ) const
 {
-    ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
+    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTextureCube(id, texCube->getID());
 }
 

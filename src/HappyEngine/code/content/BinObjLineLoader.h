@@ -41,16 +41,16 @@ namespace lines {
 class BinObjLineLoader
 {
 public:
-	BinObjLineLoader();
+    BinObjLineLoader();
     virtual ~BinObjLineLoader();
 
-    virtual void load(const std::string& path);
+    virtual bool load(const std::string& path);
         
     virtual const std::vector<vec3>& getPoints() const;
     virtual const std::vector<ushort>& getIndices() const;
 
 private:
-    void read(const std::string& path);
+    bool read(const std::string& path);
 
     std::vector<vec3> m_PointData;
     std::vector<ushort> m_Indices;

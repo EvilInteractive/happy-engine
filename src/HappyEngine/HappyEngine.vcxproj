@@ -43,9 +43,7 @@
     <ClCompile Include="code\content\ShaderPreProcessor.cpp" />
     <ClCompile Include="code\content\TextureLoader.cpp" />
     <ClCompile Include="code\error\HeAssert.cpp" />
-    <ClCompile Include="code\error\Exception.cpp" />
     <ClCompile Include="code\error\ExternalError.cpp" />
-    <ClCompile Include="code\error\FileNotFoundException.cpp" />
     <ClCompile Include="code\game\CameraManager.cpp" />
     <ClCompile Include="code\game\Entity.cpp" />
     <ClCompile Include="code\game\FxComponent.cpp" />
@@ -211,9 +209,7 @@
     <ClInclude Include="code\content\ShaderPreProcessor.h" />
     <ClInclude Include="code\content\TextureLoader.h" />
     <ClInclude Include="code\error\HeAssert.h" />
-    <ClInclude Include="code\error\Exception.h" />
     <ClInclude Include="code\error\ExternalError.h" />
-    <ClInclude Include="code\error\FileNotFoundException.h" />
     <ClInclude Include="code\event.h" />
     <ClInclude Include="code\game\CameraManager.h" />
     <ClInclude Include="code\game\Entity.h" />
@@ -491,6 +487,12 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <CompileAsManaged>false</CompileAsManaged>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -529,6 +531,14 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CompileAsManaged>false</CompileAsManaged>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

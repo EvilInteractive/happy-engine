@@ -61,7 +61,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout&
 {
     //err::glCheckForErrors(false);
 
-    ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
+    HE_ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
     m_VertexLayout = vertexLayout;
 
@@ -110,7 +110,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout&
             case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
             
             #pragma warning(disable:4127)
-            default: ASSERT(false, "unknown type"); break;
+            default: HE_ASSERT(false, "unknown type"); break;
             #pragma warning(default:4127)
         }
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getSize(), 
@@ -176,7 +176,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout&
 }
 void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
 {
-    ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModelMesh instead");
+    HE_ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModelMesh instead");
     m_NumIndices = num;
     
     GL::heBindVao(m_VaoID[0]);
@@ -193,7 +193,7 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
         case IndexStride_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
         case IndexStride_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
         case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
-        default: ASSERT("unkown type"); break;
+        default: HE_ASSERT("unkown type"); break;
     }
 
     if (m_NumVertices > 0)

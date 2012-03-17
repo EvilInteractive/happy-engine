@@ -54,13 +54,13 @@ gfx::Camera* game::CameraManager::getActiveCamera() const
 
 void game::CameraManager::addCamera( const std::string& id, gfx::Camera* pCamera )
 {
-    ASSERT(m_Cameras.find(id) == m_Cameras.cend(), "Adding camera to existing ID, memleak will occure");
+    HE_ASSERT(m_Cameras.find(id) == m_Cameras.cend(), "Adding camera to existing ID, memleak will occure");
     m_Cameras[id] = pCamera;
 }
 
 void game::CameraManager::deleteCamera( const std::string& id )
 {
-    ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Deleting non existing camera");
+    HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Deleting non existing camera");
     delete m_Cameras[id];
     m_Cameras.erase(id);
 }
@@ -76,7 +76,7 @@ void game::CameraManager::deleteAllCameras()
 
 void game::CameraManager::setActiveCamera( const std::string& id )
 {
-    ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Selected Camera does not exist");
+    HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Selected Camera does not exist");
     m_pActiveCamera = m_Cameras.find(id)->second;
 }
 

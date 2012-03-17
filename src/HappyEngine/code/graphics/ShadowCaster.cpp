@@ -50,7 +50,7 @@ ShadowCaster::~ShadowCaster()
 void ShadowCaster::init(const RenderSettings& settings)
 {
     m_ShadowSize = 512 * settings.shadowMult;
-    ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
+    HE_ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
     //////////////////////////////////////////////////////////////////////////
     ///                             Textures                               ///
     //////////////////////////////////////////////////////////////////////////

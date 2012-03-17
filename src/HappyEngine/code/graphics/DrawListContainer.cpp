@@ -118,9 +118,9 @@ void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
 void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(IDrawable*)>& f ) const
 {
     #pragma region ASSERTS
-    ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost || filter & F_Loc_Background,
+    HE_ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost || filter & F_Loc_Background,
         "flag at least one Location filter: F_Loc_BeforePost or F_Loc_AfterPost");
-    ASSERT(filter & F_Sub_Single     || filter & F_Sub_Skinned     || filter & F_Sub_Instanced,
+    HE_ASSERT(filter & F_Sub_Single     || filter & F_Sub_Skinned     || filter & F_Sub_Instanced,
         "flag at least one sub filter: F_Sub_Single, F_Sub_Skinned or F_Sub_Instanced");
     #pragma endregion
 

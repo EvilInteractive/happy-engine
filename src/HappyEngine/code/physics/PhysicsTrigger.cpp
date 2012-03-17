@@ -54,8 +54,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* pShape, const mat44& l
     {
     case PhysicsShapeType_Box:
         {
-            const PhysicsBoxShape* pBoxShape(dynamic_cast<const PhysicsBoxShape*>(pShape));
-            ASSERT(pBoxShape != nullptr, "IPhysicsShape type PhysicsShapeType_Box is not a PhysicsBoxShape");
+            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(pShape));
             pPxShape = m_pActor->getInternalActor()->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
                 *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
@@ -63,8 +62,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* pShape, const mat44& l
         }
     case PhysicsShapeType_Sphere:
         {
-            const PhysicsSphereShape* pSphereShape(dynamic_cast<const PhysicsSphereShape*>(pShape));
-            ASSERT(pSphereShape != nullptr, "IPhysicsShape type PhysicsShapeType_Sphere is not a PhysicsSphereShape");
+            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(pShape));
             pPxShape = m_pActor->getInternalActor()->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
                 *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
@@ -72,8 +70,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* pShape, const mat44& l
         }
     case PhysicsShapeType_Capsule:
         {
-            const PhysicsCapsuleShape* pCapsuleShape(dynamic_cast<const PhysicsCapsuleShape*>(pShape));
-            ASSERT(pCapsuleShape != nullptr, "IPhysicsShape type PhysicsShapeType_Capsule is not a PhysicsCapsuleShape");
+            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
             pPxShape = m_pActor->getInternalActor()->createShape(
                 physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
                 *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
@@ -81,8 +78,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* pShape, const mat44& l
         }
     case PhysicsShapeType_Convex:
         {
-            const PhysicsConvexShape* pConvexShape(dynamic_cast<const PhysicsConvexShape*>(pShape));
-            ASSERT(pConvexShape != nullptr, "IPhysicsShape type PhysicsShapeType_Convex is not a PhysicsConvexShape");
+            const PhysicsConvexShape* pConvexShape(static_cast<const PhysicsConvexShape*>(pShape));
             pPxShape = m_pActor->getInternalActor()->createShape(
                 physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
                 physx::PxMeshScale(physx::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
@@ -90,10 +86,10 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* pShape, const mat44& l
             break;
         }
 
-    default: ASSERT(false, "Type not supported with dynamic actors");
+    default: HE_ASSERT(false, "Type not supported with dynamic actors");
         break;
     }
-    ASSERT(pPxShape != nullptr, "Trigger shape creation failed");
+    HE_ASSERT(pPxShape != nullptr, "Trigger shape creation failed");
 
     pPxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
     pPxShape->userData = this;

@@ -59,7 +59,7 @@ void PickEffect::load()
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
     bool shaderInit(pShader->initFromFile(folder + "2D/pickingShader.vert", 
                                           folder + "2D/pickingShader.frag", layout));
-    ASSERT(shaderInit == true);
+    HE_ASSERT(shaderInit == true);
 
     m_PickMaterial.setShader(pShader, vertexLayout, instancingLayout);
 
@@ -73,7 +73,7 @@ void PickEffect::load()
 /* SETTERS */
 void PickEffect::setID(const vec4& id)
 {
-    dynamic_cast<ShaderUserVar<vec4>*>(m_IdVar.get())->setData(id); // TODO change this ugly line
+    static_cast<ShaderUserVar<vec4>*>(m_IdVar.get())->setData(id); // TODO: change this ugly line
 }
 
 const Material& PickEffect::getMaterial() const

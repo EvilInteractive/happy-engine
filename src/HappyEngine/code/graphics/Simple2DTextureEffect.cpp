@@ -53,7 +53,7 @@ void Simple2DTextureEffect::load()
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
     bool compiled = m_pShader->initFromFile(folder + "2D/simple2DTextureShader.vert", 
                                             folder + "2D/simple2DTextureShader.frag", layout, shaderOutputs);
-    ASSERT(compiled, "");
+    HE_ASSERT(compiled, "");
 
     m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");

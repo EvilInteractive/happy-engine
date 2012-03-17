@@ -26,13 +26,45 @@
 #include <sstream>
 
 #include "BinaryStream.h"
-#include "FileNotFoundException.h"
-
-#include "HeAssert.h"
+#include "BufferLayout.h"
+#include "boost/shared_ptr.hpp"
+#include "Model.h"
+#include "HappyTypes.h"
+#include "Bone.h"
 
 namespace he {
 namespace ct {
 namespace models {
+
+struct BinObjLoader::InternalVertex
+{
+    vec3 pos;
+    vec2 tex;
+    vec3 norm;
+    vec3 tan;
+    byte boneID[gfx::Bone::MAX_BONEWEIGHTS];
+    float boneWeight[gfx::Bone::MAX_BONEWEIGHTS];
+
+    InternalVertex(): pos(), tex(), norm(), tan()
+    {
+        for (int i = 0; i < gfx::Bone::MAX_BONEWEIGHTS; ++i)
+        {
+            boneID[i] = 0;
+            boneWeight[i] = 0.0f;
+        }
+    } 
+};
+struct BinObjLoader::InternalVertexNoBones
+{
+    vec3 pos;
+    vec2 tex;
+    vec3 norm;
+    vec3 tan;
+
+    InternalVertexNoBones(): pos(), tex(), norm(), tan()
+    {
+    } 
+};
 
 BinObjLoader::BinObjLoader(): m_NumIndices(0)
 {
@@ -50,9 +82,10 @@ BinObjLoader::~BinObjLoader()
         he_free(pInd);
     });
 }
-void BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
+bool BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
-    read(path, allowByteIndices);
+    if (read(path, allowByteIndices) == false)
+        return false;
     
     std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
     {
@@ -63,14 +96,16 @@ void BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLa
     for (uint i = 0; i < m_VertexData.size(); ++i)
     {
         void* pVert(he_malloc(vertLayout.getSize() * m_VertexData[i].size()));
-        ASSERT(pVert != nullptr, "not enough memory!");
+        HE_ASSERT(pVert != nullptr, "not enough memory!");
         m_Vertices.push_back(pVert);
     }
     
     fill(vertLayout);
+
+    return true;
 }
 
-void BinObjLoader::read(const std::string& path, bool allowByteIndices)
+bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
 {
     //Clean
     std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
@@ -82,7 +117,9 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
 
     using namespace std;
 
-    io::BinaryStream stream(path, io::BinaryStream::Read); //throws err::FileNotFoundException
+    io::BinaryStream stream;
+    if (stream.open(path, io::BinaryStream::Read) == false)
+        return false;
     
     uint meshes(stream.readDword());
 
@@ -122,10 +159,11 @@ void BinObjLoader::read(const std::string& path, bool allowByteIndices)
             m_IndexStride.push_back(stride);
         
         void* pInd = he_malloc(stride * m_NumIndices.back());
-        ASSERT(pInd != nullptr, "not enough memory!");
+        HE_ASSERT(pInd != nullptr, "not enough memory!");
         stream.readBuffer(pInd, stride * m_NumIndices.back());
         m_Indices.push_back(pInd);
     }
+    return true;
 }
 
 void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
@@ -187,7 +225,7 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
             }
             if (boneOff != -1)
             {
-                ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "Unsupported max boneWeight value only 4 is supported");
+                HE_ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "Unsupported max boneWeight value only 4 is supported");
                 vec4 boneIDs(vert.boneID[0], vert.boneID[1], vert.boneID[2], vert.boneID[3]);
                 he_memcpy(&pCharData[count * vertLayout.getSize() + boneOff], &boneIDs, sizeof(vec4));
             }
@@ -232,7 +270,7 @@ const std::string& BinObjLoader::getMeshName(uint mesh) const
 
 const std::vector<gfx::Bone>& BinObjLoader::getBones( uint mesh ) const
 {
-    ASSERT(mesh < m_BoneData.size(), "mesh outside array");
+    HE_ASSERT(mesh < m_BoneData.size(), "mesh outside array");
     return m_BoneData[mesh];
 }
 

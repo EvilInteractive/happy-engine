@@ -22,7 +22,11 @@
 #define _HE_VECTOR4_H_
 #pragma once
 
-#include "PxVec4.h"
+namespace physx {
+    namespace pubfnd3 {
+        class PxVec4;
+    }
+}
 
 namespace he {
 
@@ -34,10 +38,10 @@ struct vec4
 public:
     float x, y, z, w;
 
-	vec4();
-    explicit vec4(physx::pubfnd3::PxVec4 vec);
+    vec4();
+    explicit vec4(const physx::pubfnd3::PxVec4& vec);
     vec4(const vec3& vec, float w);
-	vec4(float x, float y, float z, float w);
+    vec4(float x, float y, float z, float w);
     ~vec4();
 
     vec4(const vec4& other);
@@ -49,21 +53,21 @@ public:
     //<---------------------------------------<
 
     //>---------Operators--------------------->
-	vec4 operator-() const;
+    vec4 operator-() const;
 
-	vec4 operator*(float a) const;
-	vec4 operator/(float a) const;
+    vec4 operator*(float a) const;
+    vec4 operator/(float a) const;
 
-	vec4 operator+(const vec4& v) const;
-	vec4 operator-(const vec4& v) const;
+    vec4 operator+(const vec4& v) const;
+    vec4 operator-(const vec4& v) const;
 
-	vec4& operator+=(const vec4& v);
-	vec4& operator-=(const vec4& v);
-	vec4& operator*=(float a);
-	vec4& operator/=(float a);
+    vec4& operator+=(const vec4& v);
+    vec4& operator-=(const vec4& v);
+    vec4& operator*=(float a);
+    vec4& operator/=(float a);
 
-	bool operator==(const vec4& v) const;
-	bool operator!=(const vec4& v) const;
+    bool operator==(const vec4& v) const;
+    bool operator!=(const vec4& v) const;
     //<---------------------------------------<
 };
 

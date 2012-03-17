@@ -151,13 +151,7 @@
     <ClCompile Include="code\content\TextureLoader.cpp">
       <Filter>happyengine\content</Filter>
     </ClCompile>
-    <ClCompile Include="code\error\Exception.cpp">
-      <Filter>happyengine\error</Filter>
-    </ClCompile>
     <ClCompile Include="code\error\ExternalError.cpp">
-      <Filter>happyengine\error</Filter>
-    </ClCompile>
-    <ClCompile Include="code\error\FileNotFoundException.cpp">
       <Filter>happyengine\error</Filter>
     </ClCompile>
     <ClCompile Include="code\game\Entity.cpp">
@@ -624,13 +618,7 @@
     <ClInclude Include="code\content\TextureLoader.h">
       <Filter>happyengine\content</Filter>
     </ClInclude>
-    <ClInclude Include="code\error\Exception.h">
-      <Filter>happyengine\error</Filter>
-    </ClInclude>
     <ClInclude Include="code\error\ExternalError.h">
-      <Filter>happyengine\error</Filter>
-    </ClInclude>
-    <ClInclude Include="code\error\FileNotFoundException.h">
       <Filter>happyengine\error</Filter>
     </ClInclude>
     <ClInclude Include="code\game\Entity.h">

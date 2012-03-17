@@ -33,9 +33,9 @@ Message::Message(): m_pMsg(nullptr), m_SizeInBytes(0)
 
 Message::pointer Message::createServerMsg(const void* msg, uint sizeInBytes, const void* header, uint headerSize)
 {
-    ASSERT(header != nullptr, "header == nullptr");
-    ASSERT(sizeInBytes + headerSize != 0, "msg + header size == 0");
-    ASSERT(!(sizeInBytes > 0 && msg == nullptr), "msg == nullptr");
+    HE_ASSERT(header != nullptr, "header == nullptr");
+    HE_ASSERT(sizeInBytes + headerSize != 0, "msg + header size == 0");
+    HE_ASSERT(!(sizeInBytes > 0 && msg == nullptr), "msg == nullptr");
 
     Message::pointer pMsg(NEW Message());
     pMsg->m_pMsg = he_malloc(sizeInBytes + headerSize);
@@ -49,8 +49,8 @@ Message::pointer Message::createServerMsg(const void* msg, uint sizeInBytes, con
 }
 Message::pointer Message::createServerMsg(const void* msg, uint sizeInBytes)
 {
-    ASSERT(msg != nullptr, "msg == nullptr");
-    ASSERT(sizeInBytes != 0, "msg size == 0");
+    HE_ASSERT(msg != nullptr, "msg == nullptr");
+    HE_ASSERT(sizeInBytes != 0, "msg size == 0");
 
     Message::pointer pMsg(NEW Message());
     pMsg->m_pMsg = he_malloc(sizeInBytes);

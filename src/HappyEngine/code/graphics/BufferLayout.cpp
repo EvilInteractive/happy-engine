@@ -27,7 +27,7 @@ BufferElement::BufferElement(uint elementIndex, Type type, Usage usage, uint siz
         m_ElementIndex(elementIndex), m_Type(type), m_Usage(usage),
         m_Size(size), m_ByteOffset(byteOffset)
 {
-    ASSERT(m_Size != 0, "element size == 0");
+    HE_ASSERT(m_Size != 0, "element size == 0");
 }
 uint BufferElement::getElementIndex() const
 {

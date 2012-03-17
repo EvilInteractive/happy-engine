@@ -19,7 +19,11 @@
 #define _HE_VECTOR3_H_
 #pragma once
 
-#include "PxVec3.h"
+namespace physx {
+    namespace pubfnd3 {
+        class PxVec3;
+    }
+}
 
 namespace he {
 

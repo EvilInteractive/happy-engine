@@ -30,10 +30,10 @@ namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Sound3D::Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type) :	m_Source(source),
-																				m_Buffer(buffer),
-																				m_SoundFile(soundFile),
-																				m_Type(type),
-																				m_bLooping(false)
+                                                                                m_Buffer(buffer),
+                                                                                m_SoundFile(soundFile),
+                                                                                m_Type(type),
+                                                                                m_bLooping(false)
 {
 }
 
@@ -45,167 +45,172 @@ Sound3D::~Sound3D()
 /* GENERAL */
 void Sound3D::play(bool forceRestart)
 {
-	AUDIO->playSound(this, forceRestart);
+    AUDIO->playSound(this, forceRestart);
 }
 void Sound3D::stop()
 {
-	AUDIO->stopSound(this);
+    AUDIO->stopSound(this);
 }
 void Sound3D::pause()
 {
-	alSourcePause(AUDIO->getALSource(m_Source));
+    alSourcePause(AUDIO->getALSource(m_Source));
 }
 
 /* SETTERS */
 void Sound3D::setVolume(float volume)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_GAIN, volume);
+    alSourcef(AUDIO->getALSource(m_Source), AL_GAIN, volume);
 }
 void Sound3D::setLooping(bool loop)
 {
-	m_bLooping = loop;
+    m_bLooping = loop;
 }
 void Sound3D::setPitch(float pitch)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_PITCH, pitch);
+    alSourcef(AUDIO->getALSource(m_Source), AL_PITCH, pitch);
 }
 void Sound3D::setPosition(const vec3& pos)
 {
-	alSource3f(AUDIO->getALSource(m_Source), AL_POSITION, pos.x, pos.y, pos.z);
+    alSource3f(AUDIO->getALSource(m_Source), AL_POSITION, pos.x, pos.y, pos.z);
 }
 void Sound3D::setVelocity(const vec3& vel)
 {
-	alSource3f(AUDIO->getALSource(m_Source), AL_VELOCITY, vel.x, vel.y, vel.z);
+    alSource3f(AUDIO->getALSource(m_Source), AL_VELOCITY, vel.x, vel.y, vel.z);
 }
 void Sound3D::setMinimumDistance(float distance)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_REFERENCE_DISTANCE, distance);
+    alSourcef(AUDIO->getALSource(m_Source), AL_REFERENCE_DISTANCE, distance);
 }
 void Sound3D::setMaximumDistance(float distance)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_MAX_DISTANCE, distance);
+    alSourcef(AUDIO->getALSource(m_Source), AL_MAX_DISTANCE, distance);
 }
 void Sound3D::setRolloffFactor(float factor)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_ROLLOFF_FACTOR, factor);
+    alSourcef(AUDIO->getALSource(m_Source), AL_ROLLOFF_FACTOR, factor);
 }
 void Sound3D::setMinimumVolume(float volume)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_MIN_GAIN, volume);
+    alSourcef(AUDIO->getALSource(m_Source), AL_MIN_GAIN, volume);
 }
 void Sound3D::setMaximumVolume(float volume)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_MAX_GAIN, volume);
+    alSourcef(AUDIO->getALSource(m_Source), AL_MAX_GAIN, volume);
 }
 
 /* GETTERS */
 uint Sound3D::getSource() const
 {
-	return m_Source;
+    return m_Source;
 }
 uint Sound3D::getBuffer() const
 {
-	return m_Buffer;
+    return m_Buffer;
 }
 uint Sound3D::getSoundFile() const
 {
-	return m_SoundFile;
+    return m_SoundFile;
 }
 SOUND_STATE Sound3D::getState() const
 {
-	SOUND_STATE state(SOUND_STATE_STOPPED);
-	ALenum alState;
+    SOUND_STATE state(SOUND_STATE_STOPPED);
+    ALenum alState;
 
-	alGetSourcei(AUDIO->getALSource(m_Source), AL_SOURCE_STATE, &alState);
+    alGetSourcei(AUDIO->getALSource(m_Source), AL_SOURCE_STATE, &alState);
 
-	if (alState == AL_PLAYING)
-		state = SOUND_STATE_PLAYING;
-	else if (alState == AL_PAUSED)
-		state = SOUND_STATE_PAUSED;
+    if (alState == AL_PLAYING)
+        state = SOUND_STATE_PLAYING;
+    else if (alState == AL_PAUSED)
+        state = SOUND_STATE_PAUSED;
 
-	return state;
+    return state;
 }
 SOUND_TYPE Sound3D::getType() const
 {
-	return m_Type;
+    return m_Type;
 }
 float Sound3D::getVolume() const
 {
-	float volume;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_GAIN, &volume);
+    float volume;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_GAIN, &volume);
 
-	return volume;
+    return volume;
 }
 bool Sound3D::getLooping() const
 {
-	return m_bLooping;
+    return m_bLooping;
 }
 float Sound3D::getPitch() const
 {
-	float pitch;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_PITCH, &pitch);
+    float pitch;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_PITCH, &pitch);
 
-	return pitch;
+    return pitch;
 }
 float Sound3D::getLength() const
 {
-	SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
+    SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
 
-	return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount / getPitch()));
+    return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount / getPitch()));
 }
 
 float Sound3D::getPlayTime()
 {
-	return AUDIO->getPlayTime(this);
+    return AUDIO->getPlayTime(this);
 }
 vec3 Sound3D::getPosition() const
 {
-	vec3 pos;
-	alGetSource3f(AUDIO->getALSource(m_Source), AL_POSITION, &pos.x, &pos.y, &pos.z);
+    vec3 pos;
+    alGetSource3f(AUDIO->getALSource(m_Source), AL_POSITION, &pos.x, &pos.y, &pos.z);
 
-	return pos;
+    return pos;
 }
 vec3 Sound3D::getVelocity() const
 {
-	vec3 vel;
-	alGetSource3f(AUDIO->getALSource(m_Source), AL_VELOCITY, &vel.x, &vel.y, &vel.z);
+    vec3 vel;
+    alGetSource3f(AUDIO->getALSource(m_Source), AL_VELOCITY, &vel.x, &vel.y, &vel.z);
 
-	return vel;
+    return vel;
 }
 float Sound3D::getMinimumDistance() const
 {
-	float min;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_REFERENCE_DISTANCE, &min);
+    float min;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_REFERENCE_DISTANCE, &min);
 
-	return min;
+    return min;
 }
 float Sound3D::getMaximumDistance() const
 {
-	float max;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_MAX_DISTANCE, &max);
+    float max;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_MAX_DISTANCE, &max);
 
-	return max;
+    return max;
 }
 float Sound3D::getRolloffFactor() const
 {
-	float factor;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_ROLLOFF_FACTOR, &factor);
+    float factor;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_ROLLOFF_FACTOR, &factor);
 
-	return factor;
+    return factor;
 }
 float Sound3D::getMinimumVolume() const
 {
-	float vol;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_MIN_GAIN, &vol);
+    float vol;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_MIN_GAIN, &vol);
 
-	return vol;
+    return vol;
 }
 float Sound3D::getMaximumVolume() const
 {
-	float vol;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_MAX_GAIN, &vol);
+    float vol;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_MAX_GAIN, &vol);
 
-	return vol;
+    return vol;
+}
+
+bool Sound3D::getToMono() const
+{
+    return true;
 }
 
 } } //end namespace

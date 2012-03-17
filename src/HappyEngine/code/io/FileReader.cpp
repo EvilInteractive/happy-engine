@@ -17,9 +17,7 @@
 #include "HappyPCH.h" 
 
 #include "FileReader.h"
-#include "FileNotFoundException.h"
 #include <sstream>
-#include "HeAssert.h"
 
 namespace he {
 namespace io {
@@ -32,21 +30,22 @@ FileReader::~FileReader()
 {
     close();
 }
-void FileReader::open(const std::string& path, OpenType type)
+bool FileReader::open( const std::string& path, OpenType type )
 {
     close();
     if (type == OpenType_Unicode)
     {
         m_Wfstream.open(path.c_str(), std::ios_base::in);
         if (m_Wfstream.is_open() == false)
-            throw err::FileNotFoundException(path);
+            return false;
     }
     else
     {
         m_fstream.open(path.c_str(), std::ios_base::in);
         if (m_fstream.is_open() == false)
-            throw err::FileNotFoundException(path);
+            return false;
     }
+    return true;
 }
 void FileReader::close()
 {
@@ -65,14 +64,14 @@ bool FileReader::eof() const
 }
 std::string FileReader::readLine()
 {
-    ASSERT(m_fstream.is_open(), "ASCII line reader is not open, did you check for open exceptions? or did you open it for unicode?");
+    HE_ASSERT(m_fstream.is_open(), "ASCII line reader is not open, did you check for open errors? or did you open it for unicode?");
     std::string str;
     std::getline(m_fstream, str);
     return str;
 }
 std::string FileReader::readToEnd()
 {
-    ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open exceptions? or did you open it for unicode?");
+    HE_ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open errors? or did you open it for unicode?");
 
     std::stringstream file;
 
@@ -87,7 +86,7 @@ std::string FileReader::readToEnd()
 }
 std::vector<std::string> FileReader::readToEndSplit()
 {
-    ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open exceptions? or did you open it for unicode?");
+    HE_ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open errors? or did you open it for unicode?");
 
     std::vector<std::string> file;
 
@@ -103,14 +102,14 @@ std::vector<std::string> FileReader::readToEndSplit()
 
 std::wstring FileReader::readLineW()
 {
-    ASSERT(m_Wfstream.is_open(), "Unicode line reader is not open, did you check for open exceptions? or did you open it for ASCII?");
+    HE_ASSERT(m_Wfstream.is_open(), "Unicode line reader is not open, did you check for open errors? or did you open it for ASCII?");
     std::string str;
     std::getline(m_fstream, str);
     return L"";
 }
 std::wstring FileReader::readToEndW()
 {    
-    ASSERT(m_Wfstream.is_open(), "unicode file reader is not open, did you check for open exceptions? or did you open it for ASCII?");
+    HE_ASSERT(m_Wfstream.is_open(), "unicode file reader is not open, did you check for open errors? or did you open it for ASCII?");
     std::wstringstream file;
 
     while (m_Wfstream.eof() == false)
@@ -124,7 +123,7 @@ std::wstring FileReader::readToEndW()
 }
 std::vector<std::wstring> FileReader::readToEndSplitW()
 {    
-    ASSERT(m_Wfstream.is_open(), "unicode file reader is not open, did you check for open exceptions? or did you open it for ASCII?");
+    HE_ASSERT(m_Wfstream.is_open(), "unicode file reader is not open, did you check for open errors? or did you open it for ASCII?");
     std::vector<std::wstring> file;
 
     while (m_Wfstream.eof() == false)

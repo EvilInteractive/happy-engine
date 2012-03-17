@@ -95,7 +95,7 @@ void Forward3DRenderer::init( const RenderSettings& settings,
 }
 void Forward3DRenderer::initFbo()
 {
-    ASSERT(m_pOutDepthTexture != nullptr, "Please supply a valid depthBuffer");
+    HE_ASSERT(m_pOutDepthTexture != nullptr, "Please supply a valid depthBuffer");
     if (m_OwnsColorBuffer)
     {
         uint colorId;

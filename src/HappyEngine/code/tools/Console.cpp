@@ -22,12 +22,10 @@
 #include "Console.h"
 #include "HappyNew.h"
 
-#include "Exception.h"
 #include <iostream>
 #include <sstream>
 #include "HappyEngine.h"
 #include <algorithm>
-#include "Exception.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "ControlsManager.h"
@@ -432,7 +430,7 @@ void Console::registerCmd(boost::function<void()> command, const std::string& cm
         std::stringstream str;
         str << "Command: '" << cmdKey << "' already registered!";
 
-        ASSERT(false, str.str());
+        HE_ASSERT(false, str.str());
     }
     else
     {
@@ -450,7 +448,7 @@ void Console::addTypeHandler(ITypeHandler* typeHandler)
     {
         std::string s(typeHandler->getType());
 
-        ASSERT(false, "Type handler for '" + s + "' already added!");
+        HE_ASSERT(false, "Type handler for '" + s + "' already added!");
     }
 }
 

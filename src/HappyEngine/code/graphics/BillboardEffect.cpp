@@ -52,7 +52,7 @@ void BillboardEffect::load()
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
     bool compiled = m_pShader->initFromFile(folder + "2D/billboardShader.vert", 
                                             folder + "2D/billboardShader.frag", layout, shaderOutputs);
-    ASSERT(compiled, "");
+    HE_ASSERT(compiled, "");
 
     m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");

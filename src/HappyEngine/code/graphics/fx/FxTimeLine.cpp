@@ -59,12 +59,12 @@ void FxTimeLine::stop()
 }
 void FxTimeLine::setTime( float time )
 {
-    ASSERT(time >= 0, "time should be positive");
+    HE_ASSERT(time >= 0, "time should be positive");
     m_CurrentTime = time;
 }
 void FxTimeLine::setEndTime( float endTime )
 {
-    ASSERT(endTime >= 0, "end time should be positive");
+    HE_ASSERT(endTime >= 0, "end time should be positive");
     m_EndTime = endTime;
 }
 

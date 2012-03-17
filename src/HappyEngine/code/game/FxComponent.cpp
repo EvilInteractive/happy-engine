@@ -83,17 +83,17 @@ uint FxComponent::getTimeline() const
 
 void FxComponent::start()
 {
-    ASSERT(m_TimelineId != UINT_MAX, "Set Time line first!");
+    HE_ASSERT(m_TimelineId != UINT_MAX, "Set Time line first!");
     FX->getTimeline(m_TimelineId)->start();
 }
 void FxComponent::stop()
 {
-    ASSERT(m_TimelineId != UINT_MAX, "Set Time line first!");
+    HE_ASSERT(m_TimelineId != UINT_MAX, "Set Time line first!");
     FX->getTimeline(m_TimelineId)->stop();
 }
 void FxComponent::isPlaying() const
 {
-    ASSERT(m_TimelineId != UINT_MAX, "Set Time line first!");
+    HE_ASSERT(m_TimelineId != UINT_MAX, "Set Time line first!");
     FX->getTimeline(m_TimelineId)->isRunning();
 }
 

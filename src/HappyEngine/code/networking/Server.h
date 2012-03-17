@@ -32,7 +32,7 @@
 #undef assert
 #include "boost/asio.hpp"
 #undef assert
-#define assert ASSERT
+#define assert HE_ASSERT
 #include "Message.h"
 
 namespace he {

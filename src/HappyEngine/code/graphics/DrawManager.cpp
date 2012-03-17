@@ -197,12 +197,12 @@ void DrawManager::renderShadow()
 
 void DrawManager::addDrawable( IDrawable* pDrawable )
 {
-    ASSERT(pDrawable != nullptr, "adding a nullptr drawable");
+    HE_ASSERT(pDrawable != nullptr, "adding a nullptr drawable");
     m_DrawList.insert(pDrawable);
 }
 void DrawManager::removeDrawable( const IDrawable* pDrawable )
 {
-    ASSERT(pDrawable != nullptr, "removing a nullptr drawable");
+    HE_ASSERT(pDrawable != nullptr, "removing a nullptr drawable");
     m_DrawList.remove(pDrawable);
 }
 

@@ -27,7 +27,6 @@
 #include <sstream>
 
 #include "ContentManager.h"
-#include "FileNotFoundException.h"
 
 namespace he {
 namespace ct {
@@ -90,24 +89,25 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
                 if (line.find("#include ") != std::string::npos)
                 {
                     std::string includeRelativePath(CONTENT->getRootDir() + CONTENT->getShaderFolder());
-                    ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
+                    HE_ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
                     std::string fName(line.substr(10, line.length() - 11));
 
                     io::FileReader reader;
 
-                    try 
+                    if (reader.open(includeRelativePath + fName, io::FileReader::OpenType_ASCII)) 
                     {
                         std::string str;
-                        reader.open(includeRelativePath + fName, io::FileReader::OpenType_ASCII);
                         str = reader.readToEnd();
                         reader.close();
 
                         stream << process(str, defines);
+                        reader.close();
                     }
-                    catch (const err::FileNotFoundException& e)
-                    { std::wcout << e.getMsg(); }
+                    else
+                    {
+                        HE_ERROR("Error when preprocessing shader: including " + includeRelativePath + fName + " failed");
+                    }
 
-                    reader.close();
                 }
                 else
                     stream << line << "\n";

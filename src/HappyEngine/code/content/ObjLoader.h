@@ -51,10 +51,10 @@ public:
                             pos(p), tex(t), norm(n)
         {}       
     };
-	ObjLoader();
+    ObjLoader();
     virtual ~ObjLoader();
 
-    virtual void load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
+    virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
     virtual uint getNumMeshes() const;
     virtual const std::string& getMeshName(uint mesh) const;
@@ -76,7 +76,7 @@ private:
         uint end;
     };
 
-    void read(const std::string& path);
+    bool read(const std::string& path);
     void flushCreateGroup(uint group);
     void create(bool allowByteIndices);
     void addIndex(uint index, uint group);

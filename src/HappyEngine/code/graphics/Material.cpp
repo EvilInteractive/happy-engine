@@ -45,7 +45,7 @@ Material::~Material()
 
 void Material::addVar(const ShaderVar::pointer& var)
 {
-    ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
+    HE_ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
     m_ShaderVar.push_back(var);
 }
 
@@ -53,7 +53,7 @@ void Material::setShader(const Shader::pointer& pShader, const BufferLayout& com
 {
     m_UsedForInstancing = compatibleInstancingLayout.getSize() > 0;
     m_pShader = pShader;
-    ASSERT(compatibleVertexLayout.getSize() > 0, "VertexLayout size == 0!");
+    HE_ASSERT(compatibleVertexLayout.getSize() > 0, "VertexLayout size == 0!");
     m_CompatibleVL = compatibleVertexLayout;
     m_CompatibleIL = compatibleInstancingLayout;
 }
@@ -74,7 +74,7 @@ const ShaderVar::pointer& Material::getVar( const std::string& var )
 
 void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera ) const
 {
-    ASSERT(m_pShader != nullptr, "set shader first!");
+    HE_ASSERT(m_pShader != nullptr, "set shader first!");
 
     if (m_IsBlended)
     {
@@ -150,15 +150,15 @@ void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera )
                     m_pShader->setShaderVar(pVar->getId(), GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3)); 
                     break;
 
-                default: ASSERT(false, "unkown shaderVartype for single"); break;
+                default: HE_ASSERT(false, "unkown shaderVartype for single"); break;
             }
         }
     });
 }
 void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pCamera ) const
 {
-    ASSERT(m_pShader != nullptr, "set shader first!");
-    ASSERT(m_UsedForInstancing, "shader not capable for instancing!");
+    HE_ASSERT(m_pShader != nullptr, "set shader first!");
+    HE_ASSERT(m_UsedForInstancing, "shader not capable for instancing!");
 
     if (m_IsBlended)
     {
@@ -222,14 +222,14 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
                     m_pShader->setShaderVar(pVar->getId(), GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3)); 
                     break;
 
-                default: ASSERT(false, "unkown shaderVartype for instancing"); break;
+                default: HE_ASSERT(false, "unkown shaderVartype for instancing"); break;
             }
         }
     });
 }
 void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera ) const
 {
-    ASSERT(m_pShader != nullptr, "set shader first!");
+    HE_ASSERT(m_pShader != nullptr, "set shader first!");
 
     if (m_IsBlended)
     {
@@ -309,7 +309,7 @@ void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera 
                     m_pShader->setShaderVar(pVar->getId(), GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3)); 
                     break;
 
-                default: ASSERT(false, "unkown shaderVartype for skinning"); break;
+                default: HE_ASSERT(false, "unkown shaderVartype for skinning"); break;
             }
         }
     });

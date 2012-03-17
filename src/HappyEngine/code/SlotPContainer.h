@@ -55,13 +55,13 @@ public:
     }
     const T& get(uint id)
     {
-        ASSERT(id < m_MemPool.size(), "id is not in a valid range");
-        ASSERT(m_MemPool[id] != nullptr, "no object @id");
+        HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
+        HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
     T remove(uint id)
     {
-        ASSERT(id < m_MemPool.size(), "id is not in a valid range");
+        HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
 
         m_FreeSlots.push(id);
 
@@ -72,25 +72,25 @@ public:
     }
     uint getId(const T& obj)
     {
-        ASSERT(obj != nullptr, "object == nullptr");
+        HE_ASSERT(obj != nullptr, "object == nullptr");
 
         for (uint i(0); i < m_MemPool.size(); ++i)
             if (m_MemPool[i] == obj)
                 return i;
-        ASSERT(false, "object not present in container");
+        HE_ASSERT(false, "object not present in container");
         return 0;
     }
 
     T& operator[](uint id)
     {
-        ASSERT(id < m_MemPool.size(), "id is not in a valid range");
-        ASSERT(m_MemPool[id] != nullptr, "no object @id");
+        HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
+        HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
     const T& operator[](uint id) const
     {
-        ASSERT(id < m_MemPool.size(), "id is not in a valid range");
-        ASSERT(m_MemPool[id] != nullptr, "no object @id");
+        HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
+        HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
 

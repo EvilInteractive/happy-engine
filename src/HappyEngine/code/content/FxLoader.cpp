@@ -106,7 +106,7 @@ gfx::ParticleModifyComponentType getPsMCT(int type)
         case 5: return gfx::PMCT_Scale; break;
         case 6: return gfx::PMCT_Speed; break;
     }
-    ASSERT(false, "unknown PMCT type");
+    HE_ASSERT(false, "unknown PMCT type");
     return gfx::PMCT_Color;
 }
 gfx::ParticleInitComponentType getPsICT(int type)
@@ -121,7 +121,7 @@ gfx::ParticleInitComponentType getPsICT(int type)
         case 5: return gfx::PICT_Scale; break;
         case 6: return gfx::PICT_Speed; break;
     }
-    ASSERT(false, "unknown PICT type");
+    HE_ASSERT(false, "unknown PICT type");
     return gfx::PICT_Color;
 }
 
@@ -129,7 +129,7 @@ void addPSBehaviours(gfx::IFxTimeLineTrackComponent* pComp, const io::BinaryStre
 {
     using namespace gfx;
 
-    FxParticleSystem* pPS(dynamic_cast<FxParticleSystem*>(pComp));
+    FxParticleSystem* pPS(static_cast<FxParticleSystem*>(pComp));
     pPS->setMaxParticles(500);
     pPS->setSpawnRate(gfx::IFxVariable<float>::pointer(NEW gfx::FxConstant<float>(100)));
     for (uint i(0); i < count; ++i)
@@ -140,7 +140,7 @@ void addPSBehaviours(gfx::IFxTimeLineTrackComponent* pComp, const io::BinaryStre
         {
             uint varType(stream.readDword()); //texture
             Material material(CONTENT->loadMaterial("particles/particles.material"));
-            gfx::ShaderUserVar<gfx::Texture2D::pointer>::pointer texture(boost::dynamic_pointer_cast<gfx::ShaderUserVar<gfx::Texture2D::pointer>>(material.getVar("diffuseMap")));           
+            gfx::ShaderUserVar<gfx::Texture2D::pointer>::pointer texture(boost::static_pointer_cast<gfx::ShaderUserVar<gfx::Texture2D::pointer>>(material.getVar("diffuseMap")));           
             texture->setData(CONTENT->asyncLoadTexture(stream.readString()));
             pPS->setMaterial(material);
 
@@ -241,7 +241,9 @@ uint FxLoader::load( const std::string& asset )
 
     uint timeLineId(FX->createTimeline());
     FxTimeLine* pTimeLine(FX->getTimeline(timeLineId));   
-    io::BinaryStream stream(asset, io::BinaryStream::Read);
+    io::BinaryStream stream;
+    if (stream.open(asset, io::BinaryStream::Read) == false) // TODO: good error handling needed
+        return UINT_MAX;
     pTimeLine->setEndTime(stream.readFloat() * 2);
     uint tracks(stream.readDword());
 
@@ -280,7 +282,7 @@ uint FxLoader::load( const std::string& asset )
                         break;
                     }
                 default:
-                    ASSERT(false, "Unknown compType: " + compType);
+                    HE_ASSERT(false, "Unknown compType: " + compType);
             }
         }
     }

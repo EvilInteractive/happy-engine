@@ -29,7 +29,7 @@
 namespace he {
 namespace game {
     
-class ModelComponent : public gfx::DefaultSingleDrawable, public IComponent, public gfx::IPickable
+class ModelComponent : public gfx::DefaultSingleDrawable, public IComponent
 {
 public:
     ModelComponent();

@@ -24,13 +24,13 @@
 
 #include "HeAssert.h"
 #undef assert
-#define assert ASSERT
+#define assert HE_ASSERT
 
 #include "boost/shared_ptr.hpp"
 #undef assert
 #include "boost/asio.hpp"
 #undef assert
-#define assert ASSERT
+#define assert HE_ASSERT
 #include "HappyTypes.h"
 #include "Message.h"
 #include "Server.h"

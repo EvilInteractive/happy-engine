@@ -45,7 +45,7 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* p
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
     PHYSICS->unlock();
-    ASSERT(m_pActor != nullptr, "Actor creation failed");
+    HE_ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     addShape(pShape, material);
 
@@ -61,7 +61,7 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
     PHYSICS->unlock();
-    ASSERT(m_pActor != nullptr, "Actor creation failed");
+    HE_ASSERT(m_pActor != nullptr, "Actor creation failed");
 
     PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_pActor);
@@ -75,8 +75,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
     {
     case PhysicsShapeType_Box:
         {
-            const PhysicsBoxShape* pBoxShape(dynamic_cast<const PhysicsBoxShape*>(pShape));
-            ASSERT(pBoxShape != nullptr, "IPhysicsShape type PhysicsShapeType_Box is not a PhysicsBoxShape");
+            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
                 *material.getInternalMaterial());
@@ -84,8 +83,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         }
     case PhysicsShapeType_Sphere:
         {
-            const PhysicsSphereShape* pSphereShape(dynamic_cast<const PhysicsSphereShape*>(pShape));
-            ASSERT(pSphereShape != nullptr, "IPhysicsShape type PhysicsShapeType_Sphere is not a PhysicsSphereShape");
+            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
                 *material.getInternalMaterial());
@@ -93,8 +91,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         }
     case PhysicsShapeType_Capsule:
         {
-            const PhysicsCapsuleShape* pCapsuleShape(dynamic_cast<const PhysicsCapsuleShape*>(pShape));
-            ASSERT(pCapsuleShape != nullptr, "IPhysicsShape type PhysicsShapeType_Capsule is not a PhysicsCapsuleShape");
+            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
                 *material.getInternalMaterial());
@@ -103,8 +100,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         break;
     case PhysicsShapeType_Convex:
         {
-            const PhysicsConvexShape* pConvexShape(dynamic_cast<const PhysicsConvexShape*>(pShape));
-            ASSERT(pConvexShape != nullptr, "IPhysicsShape type PhysicsShapeType_Convex is not a PhysicsConvexShape");
+            const PhysicsConvexShape* pConvexShape(static_cast<const PhysicsConvexShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
                 physx::PxMeshScale(physx::pubfnd3::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
@@ -113,8 +109,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         }
     case PhysicsShapeType_Concave:
         {
-            const PhysicsConcaveShape* pConcaveShape(dynamic_cast<const PhysicsConcaveShape*>(pShape));
-            ASSERT(pConcaveShape != nullptr, "IPhysicsShape type PhysicsShapeType_Concave is not a PhysicsConcaveShape");
+            const PhysicsConcaveShape* pConcaveShape(static_cast<const PhysicsConcaveShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxTriangleMeshGeometry(pConcaveShape->getInternalMesh(), 
                 physx::PxMeshScale(physx::pubfnd3::PxVec3(pConcaveShape->getScale().x, pConcaveShape->getScale().y, pConcaveShape->getScale().z), physx::PxQuat::createIdentity())),
@@ -123,10 +118,10 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         }
 
     default: 
-        ASSERT(false, "Not Implemented");
+        HE_ASSERT(false, "Not Implemented");
         break;
     }
-    ASSERT(pPxShape != nullptr, "Shape creation failed");
+    HE_ASSERT(pPxShape != nullptr, "Shape creation failed");
 
     physx::PxFilterData sFilter;
     sFilter.word0 = COLLISION_FLAG_GROUND;

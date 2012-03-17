@@ -79,7 +79,7 @@ void FxManager::timelineStarted( uint id )
 
 void FxManager::timelineStopped( uint id )
 {
-    ASSERT(m_ActiveTimelines.find(id) != m_ActiveTimelines.cend(), "Timeline already stopped!");
+    HE_ASSERT(m_ActiveTimelines.find(id) != m_ActiveTimelines.cend(), "Timeline already stopped!");
     m_ActiveTimelines.erase(id);
 }
 

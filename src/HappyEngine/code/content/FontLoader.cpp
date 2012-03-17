@@ -54,7 +54,7 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
         {
             HE_ERROR("Font error: " + std::string(TTF_GetError()));
 
-            ASSERT(false, "Error loading font!");
+            HE_ASSERT(false, "Error loading font!");
 
             return false;
         }

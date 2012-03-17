@@ -23,7 +23,6 @@
 #include "HappyNew.h"
 #include "ObjLineLoader.h"
 #include "BinObjLineLoader.h"
-#include "FileNotFoundException.h"
 
 namespace he {
 namespace ct {
@@ -34,25 +33,24 @@ LineLoader::LineLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Line::pointe
 
 LineLoader::~LineLoader()
 {
-	delete m_pAssetContainer;
+    delete m_pAssetContainer;
 }
 
 
 gfx::Line::pointer LineLoader::loadLine(const std::string& path)
 {
-	if (m_pAssetContainer->isAssetPresent(path))
-	{
-		return m_pAssetContainer->getAsset(path);
-	}
-	else
-	{
-		if (path.rfind(".obj") != std::string::npos)
-		{
+    if (m_pAssetContainer->isAssetPresent(path))
+    {
+        return m_pAssetContainer->getAsset(path);
+    }
+    else
+    {
+        if (path.rfind(".obj") != std::string::npos)
+        {
             lines::ObjLineLoader loader;
-            try { loader.load(path); }
-            catch (err::FileNotFoundException& e)
+            if (loader.load(path) == false)
             {
-                std::wcout << e.getMsg() << "\n";
+                HE_ERROR("Line load failed: " + path);
             }
             
             gfx::Line::pointer pLine(NEW gfx::Line());
@@ -60,15 +58,15 @@ gfx::Line::pointer LineLoader::loadLine(const std::string& path)
             pLine->setIndices(loader.getIndices());
             m_pAssetContainer->addAsset(path, pLine);
 
-		    return pLine;
-		}
-		else if (path.rfind(".binobj") != std::string::npos)
-		{
+            return pLine;
+        }
+        else if (path.rfind(".binobj") != std::string::npos)
+        {
             lines::BinObjLineLoader loader;
-            try { loader.load(path); }
-            catch (err::FileNotFoundException& e)
+            if (loader.load(path) == false)
             {
-                std::wcout << e.getMsg() << "\n";
+                HE_ERROR("Error loading binobj line: " + path);
+                return gfx::Line::pointer(NEW gfx::Line());
             }
             
             gfx::Line::pointer pLine(NEW gfx::Line());
@@ -76,15 +74,15 @@ gfx::Line::pointer LineLoader::loadLine(const std::string& path)
             pLine->setIndices(loader.getIndices());
             m_pAssetContainer->addAsset(path, pLine);
 
-		    return pLine;
-		}
-		else
-		{
-			ASSERT("unkown model extension");
+            return pLine;
+        }
+        else
+        {
+            HE_ASSERT("unkown model extension");
             gfx::Line::pointer pLine(NEW gfx::Line());
             return pLine;
-		}
-	}
+        }
+    }
 }
 
 } } //end namespace

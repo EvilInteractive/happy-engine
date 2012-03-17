@@ -128,7 +128,7 @@ void SkyBox::faceLoaded()
 {
     if (++m_LoadedCount == 6)
     {
-        ASSERT(m_pCubeMap->isInitialized() == false, "cubemap allready initialized");
+        HE_ASSERT(m_pCubeMap->isInitialized() == false, "cubemap allready initialized");
 
         uint cubeMapId;
         glGenTextures(1, &cubeMapId);

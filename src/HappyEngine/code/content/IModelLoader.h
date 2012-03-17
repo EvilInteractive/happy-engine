@@ -15,21 +15,18 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
 
 #ifndef _HE_IMODEL_LOADER_H_
 #define _HE_IMODEL_LOADER_H_
 #pragma once
 
-#include <string>
-#include <vector>
-#include "BufferLayout.h"
-#include "HappyTypes.h"
-#include "Model.h"
-#include "Bone.h"
-
 namespace he {
+namespace gfx {
+    struct Bone;
+    class BufferLayout;
+    enum IndexStride;
+}
 namespace ct {
 namespace models {
 
@@ -38,7 +35,7 @@ class IModelLoader
 public:
     virtual ~IModelLoader() {}
   
-    virtual void load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
+    virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
 
     virtual uint getNumMeshes() const = 0;
     virtual const std::string& getMeshName(uint mesh) const = 0;

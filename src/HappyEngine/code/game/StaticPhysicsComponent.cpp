@@ -61,7 +61,7 @@ void StaticPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material )
 {
-    ASSERT(m_pStaticActor != nullptr, "attach component first to entity");
+    HE_ASSERT(m_pStaticActor != nullptr, "attach component first to entity");
     m_pStaticActor->addShape(pShape, material);
 }
 

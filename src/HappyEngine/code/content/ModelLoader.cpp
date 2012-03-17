@@ -26,7 +26,6 @@
 #include "HappyNew.h"
 #include "BinObjLoader.h"
 #include "ObjLoader.h"
-#include "FileNotFoundException.h"
 #include "HappyEngine.h"
 #include "Console.h"
 
@@ -227,17 +226,18 @@ void ModelLoader::ModelLoadThread()
 
         if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
         {
-            try 
+            if (data->loader->load(data->path, data->vertexLayout)) 
             { 
-                data->loader->load(data->path, data->vertexLayout); 
                 HE_INFO("Model load completed: " + data->path);
                 m_ModelInvokeQueueMutex.lock();
                 m_ModelInvokeQueue.push(data);
                 m_ModelInvokeQueueMutex.unlock();
             }
-            catch (err::FileNotFoundException& e)
+            else
             {
-                HE_ERROR(std::string(e.getMsg().cbegin(), e.getMsg().cend()));
+                HE_ERROR("Error loading model: " + data->path);
+                delete data->loader;
+                delete data;
             }            
         }
         else
@@ -283,15 +283,13 @@ gfx::Model::pointer ModelLoader::loadModel(const std::string& path, const gfx::B
 
         if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
         {
-            try 
+            if (data->loader->load(data->path, data->vertexLayout)) 
             { 
-                data->loader->load(data->path, data->vertexLayout); 
-                std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
+                HE_INFO("**ML INFO** obj load completed: " + data->path);
             }
-            catch (err::FileNotFoundException& e)
+            else
             {
-                CONSOLE->addMessage(std::string(e.getMsg().cbegin(), e.getMsg().cend()), CMSG_TYPE_ERROR);
-                std::wcout << e.getMsg() << "\n";
+                HE_ERROR("Model load failed: " + data->path);
             }
 
             uint unloadedMeshes(data->pModel->getNumMeshes());
@@ -320,7 +318,7 @@ gfx::Model::pointer ModelLoader::loadModel(const std::string& path, const gfx::B
                 pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
                 pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
 
-                std::cout << "**ML INFO** model create completed: " << data->path << "\n";
+                HE_INFO("**ML INFO** model create completed: " + data->path);
             }
 
             data->pModel->setComplete();
@@ -393,15 +391,13 @@ gfx::ModelMesh::pointer ModelLoader::loadModelMesh(const std::string& path, cons
 
         if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
         {
-            try 
+            if (data->loader->load(data->path, data->vertexLayout)) 
             { 
-                data->loader->load(data->path, data->vertexLayout); 
-                std::cout << "**ML INFO** obj load completed: " << data->path << "\n";
+                HE_INFO("**ML INFO** obj load completed: " + data->path);
             }
-            catch (err::FileNotFoundException& e)
+            else
             {
-                CONSOLE->addMessage(std::string(e.getMsg().cbegin(), e.getMsg().cend()), CMSG_TYPE_ERROR);
-                std::wcout << e.getMsg() << "\n";
+                HE_ERROR("Model load failed: " + data->path);
             }            
         }
 

@@ -101,7 +101,7 @@ void PhysicsCarManager::tick( float dTime )
 DriveableSurfaceTyreFrictionTable::DriveableSurfaceTyreFrictionTable( byte drivableSurfaces, byte tyreTypes ):
         m_DrivableSurfaces(drivableSurfaces), m_TyreTypes(tyreTypes)
 {
-    ASSERT((drivableSurfaces * tyreTypes) % 4 == 0, "Error drivableSurfaces * tyreTypes must be multiple of 4");
+    HE_ASSERT((drivableSurfaces * tyreTypes) % 4 == 0, "Error drivableSurfaces * tyreTypes must be multiple of 4");
 
     m_TyreFrictionPair = (float*)he_aligned_malloc(drivableSurfaces * tyreTypes * sizeof(float), 16);
     m_VehicleDrivableSurfaceTypes = (physx::PxVehicleDrivableSurfaceType*)he_aligned_malloc(sizeof(physx::PxVehicleDrivableSurfaceType) * m_DrivableSurfaces, 16);
@@ -118,7 +118,7 @@ DriveableSurfaceTyreFrictionTable::~DriveableSurfaceTyreFrictionTable()
 
 void DriveableSurfaceTyreFrictionTable::setMaterial(byte id, const PhysicsMaterial& material)
 {
-    ASSERT(id < m_DrivableSurfaces, "id >= max driveable surfaces");
+    HE_ASSERT(id < m_DrivableSurfaces, "id >= max driveable surfaces");
     m_DrivableMaterials[id] = material;
     m_PxDrivableMaterials[id] = material.getInternalMaterial();
 
@@ -128,7 +128,7 @@ void DriveableSurfaceTyreFrictionTable::setMaterial(byte id, const PhysicsMateri
 }
 void DriveableSurfaceTyreFrictionTable::setTyreType(byte id, float globalFrictionMult)
 {
-    ASSERT(id < m_TyreTypes, "id >= max tyre type");
+    HE_ASSERT(id < m_TyreTypes, "id >= max tyre type");
     for (int groundID(0); groundID < m_DrivableSurfaces; ++groundID)
     {
         m_TyreFrictionPair[groundID * m_TyreTypes + id] = m_DrivableMaterials[groundID].getInternalMaterial()->getStaticFriction() * globalFrictionMult;
@@ -136,8 +136,8 @@ void DriveableSurfaceTyreFrictionTable::setTyreType(byte id, float globalFrictio
 }
 void DriveableSurfaceTyreFrictionTable::setTyreMaterialMult(byte tyreId, byte materialId, float mult)
 {
-    ASSERT(tyreId < m_TyreTypes, "tyreId >= max tyre type");
-    ASSERT(materialId < m_DrivableSurfaces, "materialId >= max driveable surfaces");
+    HE_ASSERT(tyreId < m_TyreTypes, "tyreId >= max tyre type");
+    HE_ASSERT(materialId < m_DrivableSurfaces, "materialId >= max driveable surfaces");
     m_TyreFrictionPair[materialId * m_TyreTypes + tyreId] = m_DrivableMaterials[materialId].getInternalMaterial()->getStaticFriction() * mult;
 }
 
@@ -158,7 +158,7 @@ byte DriveableSurfaceTyreFrictionTable::getNumTyreTypes() const
 
 const PhysicsMaterial& DriveableSurfaceTyreFrictionTable::getMaterial( byte materialId ) const
 {
-    ASSERT(materialId < m_DrivableSurfaces, "materialId >= max driveable surfaces");
+    HE_ASSERT(materialId < m_DrivableSurfaces, "materialId >= max driveable surfaces");
     return m_DrivableMaterials[materialId];
 }
 

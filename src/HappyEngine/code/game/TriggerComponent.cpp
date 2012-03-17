@@ -68,7 +68,7 @@ void TriggerComponent::tick(float /*dTime*/)
 /* GENERAL */
 void TriggerComponent::addShape(const px::IPhysicsShape* pShape, const mat44& localPose)
 {
-    ASSERT(m_pTrigger != nullptr, "attach component first to entity");
+    HE_ASSERT(m_pTrigger != nullptr, "attach component first to entity");
 
     m_pTrigger->addTriggerShape(pShape, localPose);
 }

@@ -90,7 +90,7 @@ FxParticleSystem::~FxParticleSystem()
 void FxParticleSystem::start()
 {
     m_Stopped = false;
-    ShaderUserVar<Texture2D::pointer>::pointer pTexture(boost::dynamic_pointer_cast<ShaderUserVar<Texture2D::pointer>>(m_Material.getVar("diffuseMap")));
+    ShaderUserVar<Texture2D::pointer>::pointer pTexture(boost::static_pointer_cast<ShaderUserVar<Texture2D::pointer>>(m_Material.getVar("diffuseMap")));
     if (pTexture != nullptr)
     {
         boost::weak_ptr<ShaderUserVar<Texture2D::pointer>> weakTex(pTexture);
@@ -101,7 +101,7 @@ void FxParticleSystem::start()
                 ShaderUserVar<Texture2D::pointer>::pointer sharedTex(weakTex);
                 std::stringstream stream;
                 stream << "part_" << sharedTex->getData()->getID() << "_" << m_UvTiles->getValue(0).x << "," << m_UvTiles->getValue(0).y;
-                m_ShaderUvTiles = boost::dynamic_pointer_cast<ShaderUserVar<vec2>>(m_Material.getVar("uvTiles"));
+                m_ShaderUvTiles = boost::static_pointer_cast<ShaderUserVar<vec2>>(m_Material.getVar("uvTiles"));
                 m_ShaderUvTiles->setData(m_UvTiles->getValue(0));
                 if (m_pInstancingController == nullptr)
                 {
@@ -258,7 +258,7 @@ uint FxParticleSystem::addInitComponent( ParticleInitComponentType type )
         case PICT_Life:
             return m_ParticleInitComponents.insert(NEW FxParticleLife());
         default:
-            ASSERT(false, "Unkown PICT type"); return 0;
+            HE_ASSERT(false, "Unkown PICT type"); return 0;
     }
 }
 
@@ -279,7 +279,7 @@ uint FxParticleSystem::addModifyComponent( ParticleModifyComponentType type )
         case PMCT_Speed:
             return m_ParticleModifyComponents.insert(NEW FxParticleSpeed());
         default:
-            ASSERT(false, "Unkown PMCT type"); return 0;
+            HE_ASSERT(false, "Unkown PMCT type"); return 0;
     }
 }
 

@@ -43,8 +43,11 @@ public:
     {
         Read, Write
     };
-    BinaryStream(const std::string& path, OpenType openType);
+    BinaryStream();
     virtual ~BinaryStream();
+
+    bool open(const std::string& path, OpenType openType);
+    void close();
 
     virtual		byte			readByte()								const;
     virtual		ushort			readWord()								const;

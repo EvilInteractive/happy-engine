@@ -167,7 +167,7 @@ void Client::handleInternalMessage(void* msg, size_t /*msg_size*/, Server::Heade
 {
     switch (pHeader->type)
     {
-        case ServerMessage_None: ASSERT("must be handled in previous method"); break;
+        case ServerMessage_None: HE_ASSERT("must be handled in previous method"); break;
         case ServerMessage_Connect: 
             if ((*static_cast<byte*>(msg)) == 0)
             {
@@ -187,7 +187,7 @@ void Client::handleInternalMessage(void* msg, size_t /*msg_size*/, Server::Heade
             HE_INFO("Server kicked you!");
             disconnect();
             break;
-        default: ASSERT("unkown message type"); break;
+        default: HE_ASSERT("unkown message type"); break;
     }
 }
 bool Client::isConnected() const

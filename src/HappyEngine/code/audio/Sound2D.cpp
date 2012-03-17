@@ -30,105 +30,110 @@ namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Sound2D::Sound2D(uint source, uint buffer, uint soundFile, SOUND_TYPE type) :	m_Source(source),
-																				m_Buffer(buffer),
-																				m_SoundFile(soundFile),
-																				m_Type(type),
-																				m_bLooping(false)
+                                                                                m_Buffer(buffer),
+                                                                                m_SoundFile(soundFile),
+                                                                                m_Type(type),
+                                                                                m_bLooping(false)
 {
 }
 
 Sound2D::~Sound2D()
 {
-	
+    
 }
 
 /* GENERAL */
 void Sound2D::play(bool forceRestart)
 {
-	AUDIO->playSound(this, forceRestart);
+    AUDIO->playSound(this, forceRestart);
 }
 void Sound2D::stop()
 {
-	AUDIO->stopSound(this);
+    AUDIO->stopSound(this);
 }
 void Sound2D::pause()
 {
-	alSourcePause(AUDIO->getALSource(m_Source));
+    alSourcePause(AUDIO->getALSource(m_Source));
 }
 
 /* SETTERS */
 void Sound2D::setVolume(float volume)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_GAIN, volume);
+    alSourcef(AUDIO->getALSource(m_Source), AL_GAIN, volume);
 }
 void Sound2D::setLooping(bool loop)
 {
-	m_bLooping = loop;
+    m_bLooping = loop;
 }
 void Sound2D::setPitch(float pitch)
 {
-	alSourcef(AUDIO->getALSource(m_Source), AL_PITCH, pitch);
+    alSourcef(AUDIO->getALSource(m_Source), AL_PITCH, pitch);
 }
 
 /* GETTERS */
 uint Sound2D::getSource() const
 {
-	return m_Source;
+    return m_Source;
 }
 uint Sound2D::getBuffer() const
 {
-	return m_Buffer;
+    return m_Buffer;
 }
 uint Sound2D::getSoundFile() const
 {
-	return m_SoundFile;
+    return m_SoundFile;
 }
 SOUND_STATE Sound2D::getState() const
 {
-	SOUND_STATE state(SOUND_STATE_STOPPED);
-	ALenum alState;
+    SOUND_STATE state(SOUND_STATE_STOPPED);
+    ALenum alState;
 
-	alGetSourcei(AUDIO->getALSource(m_Source), AL_SOURCE_STATE, &alState);
+    alGetSourcei(AUDIO->getALSource(m_Source), AL_SOURCE_STATE, &alState);
 
-	if (alState == AL_PLAYING)
-		state = SOUND_STATE_PLAYING;
-	else if (alState == AL_PAUSED)
-		state = SOUND_STATE_PAUSED;
+    if (alState == AL_PLAYING)
+        state = SOUND_STATE_PLAYING;
+    else if (alState == AL_PAUSED)
+        state = SOUND_STATE_PAUSED;
 
-	return state;
+    return state;
 }
 SOUND_TYPE Sound2D::getType() const
 {
-	return m_Type;
+    return m_Type;
 }
 float Sound2D::getVolume() const
 {
-	float volume;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_GAIN, &volume);
+    float volume;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_GAIN, &volume);
 
-	return volume;
+    return volume;
 }
 bool Sound2D::getLooping() const
 {
-	return m_bLooping;
+    return m_bLooping;
 }
 float Sound2D::getPitch() const
 {
-	float pitch;
-	alGetSourcef(AUDIO->getALSource(m_Source), AL_PITCH, &pitch);
+    float pitch;
+    alGetSourcef(AUDIO->getALSource(m_Source), AL_PITCH, &pitch);
 
-	return pitch;
+    return pitch;
 }
 float Sound2D::getLength() const
 {
-	SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
+    SoundFileProperties props(AUDIO->getSoundFile(m_SoundFile).getProperties());
 
-	return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount / getPitch()));
+    return (static_cast<float>(props.samplesCount / props.samplerate / props.channelsCount / getPitch()));
 }
 
 float Sound2D::getPlayTime()
 {
-	return AUDIO->getPlayTime(this);
+    return AUDIO->getPlayTime(this);
+}
+
+bool Sound2D::getToMono() const
+{
+    return false;
 }
 
 } } //end namespace

@@ -55,7 +55,7 @@ void SimpleColorEffect::load()
     std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
     bool shaderInit(m_pShader->initFromFile(folder + "2D/simpleShader.vert", 
                                             folder + "2D/simpleShader.frag", layout, shaderOutputs));
-    ASSERT(shaderInit == true);
+    HE_ASSERT(shaderInit == true);
 
     m_ShaderVPPos = m_pShader->getShaderVarId("matVP");
     m_ShaderWPos = m_pShader->getShaderVarId("matW");

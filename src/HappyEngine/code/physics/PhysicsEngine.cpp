@@ -48,10 +48,10 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
     m_pPhysXSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pAllocator, *m_pErrorCallback, 
                                     physx::PxTolerancesScale(), memDebug);
     
-    ASSERT(m_pPhysXSDK != nullptr, "init of physX failed");
+    HE_ASSERT(m_pPhysXSDK != nullptr, "init of physX failed");
    
     if (!PxInitExtensions(*m_pPhysXSDK))
-        ASSERT("PxInitExtensions failed!");
+        HE_ASSERT("PxInitExtensions failed!");
 
 //#if _DEBUG || DEBUG
     HE_INFO("connecting to PVD")
@@ -67,7 +67,7 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
 }
 void PhysicsEngine::createScene()
 {
-    ASSERT(m_pPhysXSDK != nullptr, "m_pPhysXSDK == null");
+    HE_ASSERT(m_pPhysXSDK != nullptr, "m_pPhysXSDK == null");
     physx::PxSceneDesc sceneDesc(m_pPhysXSDK->getTolerancesScale());
 
     sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
@@ -77,7 +77,7 @@ void PhysicsEngine::createScene()
         HE_INFO("PhysX using Cpu - " + itoa(SDL_GetCPUCount()) + " cores");
         m_pCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(SDL_GetCPUCount());
 
-        ASSERT(m_pCpuDispatcher != nullptr, "PxDefaultCpuDispatcherCreate failed!");
+        HE_ASSERT(m_pCpuDispatcher != nullptr, "PxDefaultCpuDispatcherCreate failed!");
 
         sceneDesc.cpuDispatcher = m_pCpuDispatcher;
     }
@@ -99,14 +99,14 @@ void PhysicsEngine::createScene()
     #endif
 
     m_pScene = m_pPhysXSDK->createScene(sceneDesc);
-    ASSERT(m_pScene != nullptr, "createScene failed!");
+    HE_ASSERT(m_pScene != nullptr, "createScene failed!");
 
     m_pScene->setSimulationEventCallback(this);
 
     /*physx::PxRigidStatic* plane = m_pPhysXSDK->createRigidStatic(physx::PxTransform(physx::PxVec3(0, -20, 0), physx::PxQuat(piOverTwo, physx::PxVec3(0, 0, 1))));
-    ASSERT(plane != nullptr, "");
+    HE_ASSERT(plane != nullptr, "");
     physx::PxShape* pShape = plane->createShape(physx::PxPlaneGeometry(), *m_pPhysXSDK->createMaterial(0.3f, 0.6f, 0.2f) );
-    ASSERT(pShape != nullptr, "");
+    HE_ASSERT(pShape != nullptr, "");
     m_pScene->addActor(*plane);*/
 
 }

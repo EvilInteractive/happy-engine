@@ -89,7 +89,7 @@ void Picker::initialize()
 }
 uint Picker::pick(const vec2& screenPoint)
 {
-    ASSERT(m_bInitialized, "Initialize picker before using!");
+    HE_ASSERT(m_bInitialized, "Initialize picker before using!");
 
     std::vector<uint> ID1;
 
@@ -121,7 +121,7 @@ uint Picker::pick(const vec2& screenPoint)
     std::sort(culledDrawList.begin(), culledDrawList.end());
     std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
     {
-        const gfx::IPickable* pPick(dynamic_cast<gfx::IPickable*>(pDrawable));
+        const gfx::IPickable* pPick(static_cast<gfx::IPickable*>(pDrawable));
         if (pPick != nullptr && pPick->isPickable())
         {
             pickList.push_back(pDrawable);
@@ -174,7 +174,7 @@ uint Picker::pick(const vec2& screenPoint)
 
 uint Picker::pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList)
 {
-    ASSERT(m_bInitialized, "Initialize picker before using!");
+    HE_ASSERT(m_bInitialized, "Initialize picker before using!");
 
     std::vector<uint> ID1;
 
@@ -201,7 +201,7 @@ uint Picker::pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawLi
     std::sort(culledDrawList.begin(), culledDrawList.end());
     std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
     {
-        const gfx::IPickable* pPick(dynamic_cast<gfx::IPickable*>(pDrawable));
+        const gfx::IPickable* pPick(static_cast<gfx::IPickable*>(pDrawable));
         if (pPick != nullptr && pPick->isPickable())
         {
             pickList.push_back(pDrawable);

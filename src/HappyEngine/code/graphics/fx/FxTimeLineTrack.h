@@ -50,8 +50,7 @@ public:
     void removeComponent(uint id);
     template<typename T> T* getComponent(uint id) const
     {
-        T* pComp(dynamic_cast<T*>(m_Components[id]));
-        ASSERT(pComp != nullptr, "pComp is not a T*");
+        T* pComp(static_cast<T*>(m_Components[id]));
         return pComp;
     }
 

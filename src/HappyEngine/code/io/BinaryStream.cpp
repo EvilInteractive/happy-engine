@@ -20,80 +20,91 @@
 #include "HappyPCH.h"
 
 #include "BinaryStream.h"
-#include "FileNotFoundException.h"
 #include "HeAssert.h"
 
 namespace he {
 namespace io {
 
-BinaryStream::BinaryStream(const std::string& path, OpenType openType):
-    m_pFile(nullptr), m_FileName(path)
+BinaryStream::BinaryStream():
+    m_pFile(nullptr), m_FileName("")
 {
+}
+bool BinaryStream::open( const std::string& path, OpenType openType )
+{
+    m_FileName = path;
+
     int err(0);
-    #ifndef GCC
+#ifndef GCC
     err = fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb");
-    #else
+#else
     m_pFile = fopen(path.c_str(), (openType == Read)? "rb" : "wb");
     if (m_pFile == nullptr)
         err = 1;
     else
         err = 0;
-    #endif
+#endif
     if (err != 0)
     {
-        char sErrNo[5];
-        sprintf(sErrNo, "%d", err);
-        HE_ERROR("Bin open failed('"+ path +"'): errno: " + std::string(sErrNo));
-        throw err::FileNotFoundException(path);
+        HE_ERROR("Bin open failed('"+ path +"'): errno: " + itoa(err));
+        return false;
     }
+    return true;
 }
-
 
 BinaryStream::~BinaryStream()
 {
-    fclose(m_pFile);
+    close();
 }
+void BinaryStream::close()
+{
+    if (m_pFile != nullptr)
+    {
+        fclose(m_pFile);
+        m_pFile = nullptr;
+    }
+}
+
 
 byte BinaryStream::readByte() const
 {
     byte b(0);
     size_t count(fread(&b, sizeof(byte), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return b;
 }
 ushort BinaryStream::readWord() const
 {
     ushort s(0);
     size_t count(fread(&s, sizeof(uint16), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return s;
 }
 uint BinaryStream::readDword() const
 {
     uint i(0);
     size_t count(fread(&i, sizeof(uint32), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return i;
 }
 int BinaryStream::readInt32() const
 {
     int i(0);
     size_t count(fread(&i, sizeof(int32), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return i;
 }
 float BinaryStream::readFloat() const
 {
     float f(0);
     size_t count(fread(&f, sizeof(float), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return f;
 }
 double BinaryStream::readDouble() const
 {
     double d(0);
     size_t count(fread(&d, sizeof(double), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     return d;
 }
 vec2 BinaryStream::readVector2() const
@@ -143,38 +154,38 @@ void BinaryStream::readBuffer(void* buffer, physx::PxU32 size)	const
     if (size > 0)
     {
         size_t count(fread(buffer, size, 1, m_pFile));
-        ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
+        HE_ASSERT(count == 1, ("unsuccesfull read operation in file: " + m_FileName).c_str());
     }
 }
 
 physx::PxStream& BinaryStream::storeByte(byte b)
 {
     size_t count(fwrite(&b, sizeof(byte), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 physx::PxStream& BinaryStream::storeWord(ushort w)
 {
     size_t count(fwrite(&w, sizeof(uint16), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 physx::PxStream& BinaryStream::storeDword(uint d)
 {
     size_t count(fwrite(&d, sizeof(uint32), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 physx::PxStream& BinaryStream::storeFloat(float f)
 {
     size_t count(fwrite(&f, sizeof(float), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 physx::PxStream& BinaryStream::storeDouble(double d)
 {
     size_t count(fwrite(&d, sizeof(double), 1, m_pFile));
-    ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+    HE_ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     return *this;
 }
 
@@ -217,7 +228,7 @@ physx::PxStream& BinaryStream::storeBuffer(const void* buffer, physx::PxU32 size
     if (size > 0)
     {
         size_t count(fwrite(buffer, size, 1, m_pFile));
-        ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
+        HE_ASSERT(count == 1, ("unsuccesfull write operation in file: " + m_FileName).c_str());
     }
     return *this;
 }

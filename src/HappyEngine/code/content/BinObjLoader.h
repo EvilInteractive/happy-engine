@@ -22,18 +22,7 @@
 #define _HE_BINOBJ_LOADER_H_
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map>
-
-#include "BufferLayout.h"
-#include "boost/shared_ptr.hpp"
-#include "vec3.h"
-#include "vec2.h"
-#include "Model.h"
-#include "HappyTypes.h"
 #include "IModelLoader.h"
-#include "Bone.h"
 
 namespace he {
 namespace ct {
@@ -42,39 +31,13 @@ namespace models {
 class BinObjLoader : public IModelLoader
 {
 public:
-    struct InternalVertex
-    {
-        vec3 pos;
-        vec2 tex;
-        vec3 norm;
-        vec3 tan;
-        byte boneID[gfx::Bone::MAX_BONEWEIGHTS];
-        float boneWeight[gfx::Bone::MAX_BONEWEIGHTS];
+    struct InternalVertex;
+    struct InternalVertexNoBones;
 
-        InternalVertex(): pos(), tex(), norm(), tan()
-        {
-            for (int i = 0; i < gfx::Bone::MAX_BONEWEIGHTS; ++i)
-            {
-                boneID[i] = 0;
-                boneWeight[i] = 0.0f;
-            }
-        } 
-    };
-    struct InternalVertexNoBones
-    {
-        vec3 pos;
-        vec2 tex;
-        vec3 norm;
-        vec3 tan;
- 
-        InternalVertexNoBones(): pos(), tex(), norm(), tan()
-        {
-        } 
-    };
-	BinObjLoader();
+    BinObjLoader();
     virtual ~BinObjLoader();
 
-    virtual void load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
+    virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
     virtual uint getNumMeshes() const;
     virtual const std::string& getMeshName(uint mesh) const;
@@ -90,7 +53,7 @@ public:
 
 
 private:
-    void read(const std::string& path, bool allowByteIndices);
+    bool read(const std::string& path, bool allowByteIndices);
     void fill(const gfx::BufferLayout& vertLayout) const;
 
     std::vector<std::vector<InternalVertex>> m_VertexData;

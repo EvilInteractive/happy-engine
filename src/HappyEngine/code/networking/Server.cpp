@@ -89,7 +89,7 @@ void Server::stop()
 }
 void Server::start(ushort port, byte maxConnections)
 {
-    ASSERT(m_pUdpSocket == nullptr, "m_pUdpSocket is allready initialized");
+    HE_ASSERT(m_pUdpSocket == nullptr, "m_pUdpSocket is allready initialized");
 
     m_pUdpSocket = NEW boost::asio::ip::udp::socket(
         NETWORK->getIoService(), 
@@ -149,7 +149,7 @@ void Server::handleServerMessage(void* /*raw_msg*/, size_t /*msg_size*/, Header*
 {
     switch (pHeader->type)
     {
-        case ServerMessage_None: ASSERT("should be handled in previous method"); break;
+        case ServerMessage_None: HE_ASSERT("should be handled in previous method"); break;
         case ServerMessage_Connect: userConnecting(); break;
         case ServerMessage_Disconnect: userDisconnecting(pHeader->user); break;
         char sHeaderType[5];
@@ -196,7 +196,7 @@ void Server::userConnecting()
 }
 void Server::userDisconnecting(byte userId)
 {
-    ASSERT(userId < m_Users.size(), "userID > than allowed users");
+    HE_ASSERT(userId < m_Users.size(), "userID > than allowed users");
     if (m_Users[userId].connected == true)
     {
         handleUserDisconnecting(userId);

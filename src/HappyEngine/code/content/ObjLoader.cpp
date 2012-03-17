@@ -26,7 +26,6 @@
 #include <sstream>
 
 #include "FileReader.h"
-#include "FileNotFoundException.h"
 
 #include "HeAssert.h"
 #include "ModelLoaderFunctions.h"
@@ -44,12 +43,16 @@ ObjLoader::~ObjLoader()
 {
     he_free(m_Vertices);
 }
-void ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
+bool ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
     std::cout << "reading...\n";
     m_VertexLayout = vertLayout;
 
-    read(path);
+    if (read(path) == false)
+    {
+        HE_WARNING("Obj read failed: " + path);
+        return false;
+    }
 
     std::cout << "creating...\n";
     create(allowByteIndices);
@@ -57,13 +60,15 @@ void ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayou
     he_free(m_Vertices);
     m_Vertices = he_malloc(vertLayout.getSize() * m_NumVertices);
     std::cout << "malloc " << vertLayout.getSize() * m_NumVertices << " bytes\n";
-    ASSERT(m_Vertices != nullptr, "not enough memory!");
+    HE_ASSERT(m_Vertices != nullptr, "not enough memory!");
 
     std::cout << "filling...\n";
     fill(m_Vertices, vertLayout);
+
+    return true;
 }
 
-void ObjLoader::read(const std::string& path)
+bool ObjLoader::read(const std::string& path)
 {
     //Clean
     m_PositionData.clear();
@@ -75,17 +80,16 @@ void ObjLoader::read(const std::string& path)
 
     io::FileReader reader;
     vector<string> objData;
-    try
+    if (reader.open(path, io::FileReader::OpenType_ASCII))
     {
-        reader.open(path, io::FileReader::OpenType_ASCII);
         objData = reader.readToEndSplit();
-    }
-    catch (err::FileNotFoundException&)
-    {
         reader.close();
-        throw;
     }
-
+    else
+    {
+        return false;
+    }
+    
     for_each(objData.cbegin(), objData.cend(), [&](const string& line)
     {
         if (line[0] == 'v' && line[1] == ' ')
@@ -144,6 +148,8 @@ void ObjLoader::read(const std::string& path)
         r.begin = 0;
     r.end = m_FaceData.size();
     m_FaceDataMeshRange.push_back(r);
+
+    return true;
 }
 
 void ObjLoader::flushCreateGroup(uint group)
@@ -156,7 +162,7 @@ void ObjLoader::flushCreateGroup(uint group)
         case gfx::IndexStride_Byte:   r.end = m_IndicesByte.size(); break;
         case gfx::IndexStride_UShort: r.end = m_IndicesUShort.size(); break;
         case gfx::IndexStride_UInt:   r.end = m_IndicesUInt.size(); break;
-        default: ASSERT("unkown type"); r.end = 0; break;
+        default: HE_ASSERT("unkown type"); r.end = 0; break;
     }
     r.begin = r.end - m_NumIndices[group];
     //std::cout << "begin: " << r.begin << ", end: " << r.end << ", num: " << m_NumIndices[group] << ", group: " << group << ", stride: " << m_IndexStride[group] << "\n";
@@ -199,7 +205,7 @@ void ObjLoader::create(bool allowByteIndices)
         }
         else
         {
-            ASSERT(false, "too many indices");
+            HE_ASSERT(false, "too many indices");
         }
     });
 
@@ -270,7 +276,7 @@ void ObjLoader::addIndex(uint index, uint group)
         case gfx::IndexStride_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
         case gfx::IndexStride_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
         case gfx::IndexStride_UInt:   m_IndicesUInt.push_back(index); break;
-        default: ASSERT("unkown type"); break;
+        default: HE_ASSERT("unkown type"); break;
     }
 }
 void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) const
@@ -366,7 +372,7 @@ const void* ObjLoader::getIndices(uint mesh) const
         case gfx::IndexStride_Byte:   return &m_IndicesByte[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UShort: return &m_IndicesUShort[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UInt:   return &m_IndicesUInt[m_IndexMeshRange[mesh].begin];
-        default: ASSERT("unkown type");  return 0;
+        default: HE_ASSERT("unkown type");  return 0;
     }
 }
 gfx::IndexStride ObjLoader::getIndexStride(uint mesh) const

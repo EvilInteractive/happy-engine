@@ -76,8 +76,8 @@ namespace gfx {
 //    scissor.width = static_cast<int>(scissor.width * (max.x - min.x));
 //    scissor.height = static_cast<int>(scissor.height * (max.y - min.y));
 //
-//    ASSERT(scissor.width >= 0, "must be >= 0");
-//    ASSERT(scissor.height >= 0, "must be >= 0");
+//    HE_ASSERT(scissor.width >= 0, "must be >= 0");
+//    HE_ASSERT(scissor.height >= 0, "must be >= 0");
 //
 //    return scissor;
 //}

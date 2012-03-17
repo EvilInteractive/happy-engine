@@ -24,7 +24,7 @@
 
 #include "HeAssert.h"
 #undef assert
-#define assert ASSERT
+#define assert HE_ASSERT
 
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"

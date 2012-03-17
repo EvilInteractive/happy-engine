@@ -38,7 +38,6 @@
 #include "LightManager.h"
 
 #include "ContentManager.h"
-#include "FileNotFoundException.h"
 
 namespace he {
 namespace gfx {
@@ -124,9 +123,10 @@ void GraphicsEngine::init(bool useQt)
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     io::IniReader reader;
-    try { reader.open("settings.ini"); }
-    catch (const err::FileNotFoundException& /*e*/)
-    { HE_ERROR("settings.ini not found!, using defaults"); }
+    if (reader.open("settings.ini") == false)
+    { 
+        HE_WARNING("settings.ini not found!, using defaults"); 
+    }
 
     if (reader.isOpen())
     {
@@ -192,7 +192,7 @@ void GraphicsEngine::init(bool useQt)
 void GraphicsEngine::initWindow()
 {
     m_pMainWindow = SDL_CreateWindow(m_WindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        m_ScreenRect.width, m_ScreenRect.height, /*SDL_WINDOW_SHOWN |*/ SDL_WINDOW_OPENGL | SDL_RESIZABLE);
+        m_ScreenRect.width, m_ScreenRect.height, /*SDL_WINDOW_SHOWN |*/ SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     
     int x, y;
     SDL_GetWindowPosition(m_pMainWindow, &x, &y);

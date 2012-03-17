@@ -150,7 +150,7 @@ void Bloom::resize()
 
 void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& pLumMap )
 {
-    ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
+    HE_ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
 
     GL::heBindVao(m_pMesh->getVertexArraysID());
 

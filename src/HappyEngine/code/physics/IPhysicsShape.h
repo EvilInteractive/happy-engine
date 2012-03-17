@@ -24,7 +24,7 @@
 
 #include "HeAssert.h"
 #undef assert
-#define assert ASSERT
+#define assert HE_ASSERT
 
 #include "PxShape.h"
 #include "boost/shared_ptr.hpp"

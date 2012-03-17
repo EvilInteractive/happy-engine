@@ -17,6 +17,7 @@
 #include "HappyPCH.h" 
 
 #include "vec2.h"
+#include "PxVec2.h"
 
 namespace he {
 
@@ -26,7 +27,7 @@ vec2::vec2(): x(0), y(0)
 vec2::vec2(float x_, float y_): x(x_), y(y_)
 {
 }
-vec2::vec2(physx::pubfnd3::PxVec2 vec) : x(vec.x), y(vec.y)
+vec2::vec2(const physx::pubfnd3::PxVec2& vec) : x(vec.x), y(vec.y)
 {
 }
 vec2::~vec2()

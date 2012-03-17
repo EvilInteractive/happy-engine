@@ -175,12 +175,12 @@ void SoundEngine::initialize()
         {
             alcCloseDevice(m_pALDevice);
 
-            ASSERT(false, "Creating OpenAL context failed!");
+            HE_ASSERT(false, "Creating OpenAL context failed!");
         }
     }
     else
     {
-        ASSERT(false,"Init OpenAL device failed!");
+        HE_ASSERT(false,"Init OpenAL device failed!");
     }
 
     alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
@@ -224,13 +224,8 @@ void SoundEngine::tick(float dTime)
 
                     alSourceUnqueueBuffers(source, 1, &buffer);
 
-                    // if 3D sound, convert to mono
-                    bool toMono(false);
-                    if (dynamic_cast<Sound3D*>(pSound))
-                        toMono = true;
-
                     // if nothing to read
-                    if (streamSound(m_SoundFiles[pSound->getSoundFile()], buffer, toMono) == false)
+                    if (streamSound(m_SoundFiles[pSound->getSoundFile()], buffer, pSound->getToMono()) == false)
                     {
                         // check if sound is looping
                         if (pSound->getLooping())
@@ -267,12 +262,12 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
     std::string err("Failed to open sound file: ");
     err += path;
 
-    ASSERT(success == true, err);
+    HE_ASSERT(success == true, err);
 
     // get soundfile properties
     SoundFileProperties props(soundFile.getProperties());
 
-    ASSERT(props.channelsCount <= 2, "More channels than supported");
+    HE_ASSERT(props.channelsCount <= 2, "More channels than supported");
 
     if (stream == true)
     {
@@ -312,7 +307,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 
         success = (soundFile.read(&data[0], props.samplesCount) == props.samplesCount);
         
-        ASSERT(success == true, err);
+        HE_ASSERT(success == true, err);
 
         // fill soundbuffer with data
         alBufferData(
@@ -360,12 +355,12 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
     std::string err("Failed to open sound file: ");
     err += path;
 
-    ASSERT(success == true, err);
+    HE_ASSERT(success == true, err);
 
     // get soundfile properties
     SoundFileProperties props(soundFile.getProperties());
 
-    ASSERT(props.channelsCount <= 2, "More channels than supported");
+    HE_ASSERT(props.channelsCount <= 2, "More channels than supported");
 
     if (stream == true)
     {
@@ -405,7 +400,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 
         success = (soundFile.read(&data[0], props.samplesCount) == props.samplesCount);
 
-        ASSERT(success == true, err);
+        HE_ASSERT(success == true, err);
 
         if (props.channelsCount == 2)
         {

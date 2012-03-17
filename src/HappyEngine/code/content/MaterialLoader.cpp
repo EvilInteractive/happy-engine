@@ -25,7 +25,6 @@
 #include "HappyEngine.h"
 #include "BufferLayout.h"
 #include "Texture2D.h"
-#include "FileNotFoundException.h"
 #include "ContentManager.h"
 #include "Bone.h"
 
@@ -133,11 +132,14 @@ gfx::Material MaterialLoader::load(const std::string& path)
     {
         io::IniReader reader;
         
-        try { reader.open(path); }
-        catch (err::FileNotFoundException& e)
-        { std::wcout << e.getMsg() << "\n"; }
-        
         gfx::Material material;
+        if (reader.open(path) == false)
+        {
+            HE_ERROR("Error loading material: " + path);
+            return material;
+
+        }
+        
         if (reader.isOpen())
         {     
             gfx::BufferLayout vertexLayout;
@@ -155,12 +157,11 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 }
 
                 io::IniReader shaderReader;
-                try 
+                if (shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + file) == false)
                 { 
-                    shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + file); 
+                    HE_ERROR("Error loading material shader: " + path);
+                    return material;
                 }
-                catch (err::FileNotFoundException& e)
-                { std::wcout << e.getMsg() << L": in " + std::wstring(path.cbegin(), path.cend()) + L"\n"; }
 
                 std::vector<std::string> shaderOutputs;
 
@@ -180,7 +181,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                             else if (p.second == L"GBUFFER_NORMAL")
                                 shaderOutputs[2] = std::string(p.first.cbegin(), p.first.cend());
                             else
-                                ASSERT(false, "unknow semantic");
+                                HE_ASSERT(false, "unknow semantic");
                         });
                     }
                     else if (outNodes.size() == 2)
@@ -193,7 +194,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                             else if (p.second == L"GBUFFER_NORMAL")
                                 shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
                             else
-                                ASSERT(false, "unknow semantic");
+                                HE_ASSERT(false, "unknow semantic");
                         });
                     }
                 }
@@ -232,7 +233,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                     }
                     else if (p.second == L"BONEWEIGHTS")
                     {
-                        ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
+                        HE_ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
                         vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneWeights, sizeof(vec4), offset));
                         offset += sizeof(vec4);
                     }

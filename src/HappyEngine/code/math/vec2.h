@@ -19,7 +19,11 @@
 #define _HE_VECTOR2_H_
 #pragma once
 
-#include "PxVec2.h"
+namespace physx {
+    namespace pubfnd3 {
+        class PxVec2;
+    }
+}
 
 namespace he {
 
@@ -28,32 +32,32 @@ struct vec2
 public:
     float x, y;
 
-	vec2();
-    explicit vec2(physx::pubfnd3::PxVec2 vec);
-	vec2(float x, float y);
+    vec2();
+    explicit vec2(const physx::pubfnd3::PxVec2& vec);
+    vec2(float x, float y);
     ~vec2();
 
     vec2(const vec2& other);
     vec2& operator=(const vec2& other);
 
     //>---------Operators--------------------->
-	vec2 operator-() const;
+    vec2 operator-() const;
 
-	vec2 operator*(float a) const;
-	vec2 operator/(float a) const;
+    vec2 operator*(float a) const;
+    vec2 operator/(float a) const;
 
-	vec2 operator+(const vec2& v) const;
-	vec2 operator-(const vec2& v) const;
+    vec2 operator+(const vec2& v) const;
+    vec2 operator-(const vec2& v) const;
 
-	vec2& operator+=(const vec2& v);
-	vec2& operator-=(const vec2& v);
-	vec2& operator*=(float a);
-	vec2& operator/=(float a);
-	vec2& operator*=(const vec2& v);
-	vec2& operator/=(const vec2& v);
+    vec2& operator+=(const vec2& v);
+    vec2& operator-=(const vec2& v);
+    vec2& operator*=(float a);
+    vec2& operator/=(float a);
+    vec2& operator*=(const vec2& v);
+    vec2& operator/=(const vec2& v);
 
-	bool operator==(const vec2& v) const;
-	bool operator!=(const vec2& v) const;
+    bool operator==(const vec2& v) const;
+    bool operator!=(const vec2& v) const;
     //<----------------------------------------<
 };
 

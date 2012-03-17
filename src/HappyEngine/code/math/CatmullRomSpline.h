@@ -93,7 +93,7 @@ public:
         {
             for(;;)
             {
-                ASSERT(m_PrevDistLookupIndex < m_DistTrelation.size(), "should've been catched by prev. if...");
+                HE_ASSERT(m_PrevDistLookupIndex < m_DistTrelation.size(), "should've been catched by prev. if...");
                 if (nextDistance < m_DistTrelation[m_PrevDistLookupIndex].first)
                 {
                     float prev(m_DistTrelation[m_PrevDistLookupIndex - 1].first);

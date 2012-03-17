@@ -45,7 +45,7 @@ static int s_scope = 0;
 ////
 
 #if _DEBUG || TEST
-#define ASSERT \
+#define HE_ASSERT \
 if (he::err::details::s_scope < 0) {} \
 else \
     struct HappyAssert \
@@ -72,7 +72,7 @@ else \
         } \
     } myAssert = HappyAssert
 #else
-#define ASSERT(...) {}
+#define HE_ASSERT(...) {}
 #endif
 
 #pragma warning(default:4127)

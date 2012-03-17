@@ -458,11 +458,11 @@ void Happy2DRenderer::createLayer(const std::string& name, byte depth)
 
     std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p)
     {
-        ASSERT(p.first != name, error);
+        HE_ASSERT(p.first != name, error);
 
         std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p2)
         {
-            ASSERT((p.second != p2.second) || (p.first == p2.first), "Layer depth already assigned!");
+            HE_ASSERT((p.second != p2.second) || (p.first == p2.first), "Layer depth already assigned!");
         });
     });
     #endif
@@ -576,14 +576,14 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buf
         case gui::Text::HAlignment_Left: position.x = rect.x; break;
         case gui::Text::HAlignment_Center: position.x = rect.x + rect.width/2 - textSize.x/2; break;
         case gui::Text::HAlignment_Right: position.x = rect.x + rect.width - textSize.x; break;
-        default: ASSERT("unkown font alignment");
+        default: HE_ASSERT("unkown font alignment");
         }
         switch (txt.getVerticalAlignment())
         {
         case gui::Text::VAlignment_Top: position.y = rect.y; break;
         case gui::Text::VAlignment_Center: position.y = rect.y + rect.height/2 - height/2; break;
         case gui::Text::VAlignment_Bottom: position.y = rect.y + rect.height - height; break;
-        default: ASSERT("unkown font alignment");
+        default: HE_ASSERT("unkown font alignment");
         }
 
         position.y += (txt.getFont()->getFontPixelHeight() + txt.getFont()->getFontLineSpacing()) * i;

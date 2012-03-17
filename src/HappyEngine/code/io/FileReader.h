@@ -35,10 +35,10 @@ public:
         OpenType_ASCII
     };
 
-	FileReader();
+    FileReader();
     virtual ~FileReader();
 
-    void open(const std::string& path, OpenType type);
+    bool open(const std::string& path, OpenType type);
     void close();
 
     std::string readLine();

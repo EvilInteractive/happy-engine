@@ -73,25 +73,25 @@ const vec3& DirectionalLight::getDirection() const
 
 void DirectionalLight::setShadowMap( int index, const Texture2D::pointer& map )
 {
-    ASSERT(index < CASCADES, "setting shadowmap with index >= CASCADES");
+    HE_ASSERT(index < CASCADES, "setting shadowmap with index >= CASCADES");
     m_pShadowMap[index] = map;
 }
 
 const Texture2D::pointer& DirectionalLight::getShadowMap(int index) const
 {
-    ASSERT(index < CASCADES, "getting shadowmap with index >= CASCADES");
+    HE_ASSERT(index < CASCADES, "getting shadowmap with index >= CASCADES");
     return m_pShadowMap[index];
 }
 
 void DirectionalLight::setShadowMatrix( int index, const mat44& mtx )
 {
-    ASSERT(index < CASCADES, "setting shadowmatrix with index >= CASCADES");
+    HE_ASSERT(index < CASCADES, "setting shadowmatrix with index >= CASCADES");
     m_ShadowMatrix[index] = mtx;
 }
 
 const mat44& DirectionalLight::getShadowMatrix(int index) const
 {
-    ASSERT(index < CASCADES, "getting shadowmatrix with index >= CASCADES");
+    HE_ASSERT(index < CASCADES, "getting shadowmatrix with index >= CASCADES");
     return m_ShadowMatrix[index];
 }
 

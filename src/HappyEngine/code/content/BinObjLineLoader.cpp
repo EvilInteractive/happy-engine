@@ -26,7 +26,6 @@
 #include <sstream>
 
 #include "BinaryStream.h"
-#include "FileNotFoundException.h"
 
 #include "HeAssert.h"
 
@@ -42,12 +41,12 @@ BinObjLineLoader::BinObjLineLoader()
 BinObjLineLoader::~BinObjLineLoader()
 {
 }
-void BinObjLineLoader::load(const std::string& path)
+bool BinObjLineLoader::load(const std::string& path)
 {
-    read(path);
+    return read(path);
 }
 
-void BinObjLineLoader::read(const std::string& path)
+bool BinObjLineLoader::read(const std::string& path)
 {
     //Clean
     m_PointData.clear();
@@ -55,13 +54,17 @@ void BinObjLineLoader::read(const std::string& path)
 
     using namespace std;
 
-    io::BinaryStream stream(path, io::BinaryStream::Read); //throws err::FileNotFoundException
+    io::BinaryStream stream;
+    if (stream.open(path, io::BinaryStream::Read) == false)
+        return false;
     
     m_PointData.resize(stream.readDword());
     stream.readBuffer(&m_PointData[0], m_PointData.size() * sizeof(vec3));
 
     m_Indices.resize(stream.readDword());
     stream.readBuffer(&m_Indices[0], m_Indices.size() * sizeof(ushort));
+
+    return true;
 }
 
 

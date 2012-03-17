@@ -17,6 +17,7 @@
 #include "HappyPCH.h" 
 
 #include "vec3.h"
+#include "PxVec3.h"
 #include "MathFunctions.h"
 
 namespace he {

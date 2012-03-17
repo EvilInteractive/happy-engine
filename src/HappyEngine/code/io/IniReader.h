@@ -39,11 +39,11 @@ class IniReader
 private:
 typedef std::map<std::wstring, std::map<std::wstring, std::wstring>> IniReadData;
 public:
-	IniReader();
+    IniReader();
     virtual ~IniReader();
 
     //throws FileNotFoundException
-    void open(const std::string& path);
+    bool open(const std::string& path);
 
     bool isOpen() const;
 

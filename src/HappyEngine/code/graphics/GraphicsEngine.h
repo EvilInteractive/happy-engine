@@ -24,14 +24,9 @@
 #pragma once
 
 #include "Rect.h"
-#include "vec2.h"
-#include "HappyTypes.h"
-#include "Color.h"
 
 #include <string>
-
 #include "RenderSettings.h"
-#include "ModelMesh.h"
 
 struct SDL_Window;
 

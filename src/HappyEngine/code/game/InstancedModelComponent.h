@@ -30,7 +30,7 @@
 namespace he {
 namespace game {
     
-class InstancedModelComponent : public IComponent, public gfx::IInstancible, public gfx::I3DObject, public gfx::IPickable
+class InstancedModelComponent : public IComponent, public gfx::IInstancible, public gfx::I3DObject
 {
 public:
     InstancedModelComponent();

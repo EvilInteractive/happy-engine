@@ -30,7 +30,7 @@ namespace px {
 PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
 {    
     m_pInternalMaterial = PHYSICS->createMaterial(staticFriction, dynamicFriction, restitution);
-    ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
+    HE_ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
 }
 
 PhysicsMaterial::PhysicsMaterial(): m_pInternalMaterial(nullptr)

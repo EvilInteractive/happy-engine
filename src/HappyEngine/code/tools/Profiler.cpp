@@ -25,10 +25,38 @@
 
 #include "ContentManager.h"
 
+#include "boost/chrono.hpp"
+#include "Text.h"
+
 namespace he {
 namespace tools {
 
 Profiler* Profiler::s_Profiler = nullptr;
+
+struct ProfileData
+{
+    boost::chrono::high_resolution_clock::time_point startTime;
+    boost::chrono::high_resolution_clock::time_point endTime;
+
+    double getDuration() const
+    {
+        boost::chrono::high_resolution_clock::duration elapsedTime(endTime - startTime);
+        return elapsedTime.count() / static_cast<double>(boost::nano::den);
+    }
+};
+
+struct Profiler::ProfileTreeNode
+{
+    ProfileTreeNode* m_Parent;
+    std::deque<ProfileData> m_Data;
+    std::string m_Name;
+    std::map<std::string, ProfileTreeNode> m_Nodes;
+
+    bool operator<(const ProfileTreeNode& node) const
+    {
+        return m_Name < node.m_Name;
+    }
+};
 
 Profiler::Profiler(): m_CurrentNode(nullptr)
 {
@@ -75,7 +103,7 @@ void Profiler::begin( const std::string& name )
 
 void Profiler::end()
 {
-    ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
+    HE_ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
     m_CurrentNode->m_Data.back().endTime = boost::chrono::high_resolution_clock::now();
     m_CurrentNode = m_CurrentNode->m_Parent;
 }

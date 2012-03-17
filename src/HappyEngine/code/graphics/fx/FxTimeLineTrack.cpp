@@ -115,7 +115,7 @@ uint FxTimeLineTrack::addComponent( FxType type )
     {
         case FxType_ParticleSystem: id = m_Components.insert(NEW FxParticleSystem(this)); break;
         case FxType_CameraEffect:   id = m_Components.insert(NEW FxCameraEffect()); break;
-        default: ASSERT(false, "Unkown fx type"); id = UINT_MAX; break;
+        default: HE_ASSERT(false, "Unkown fx type"); id = UINT_MAX; break;
     }
     
     //////////////////////////////////////////////////////////////////////////

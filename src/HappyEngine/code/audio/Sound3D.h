@@ -34,65 +34,67 @@ class Sound3D : public ISound
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type);
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type);
 
-	virtual ~Sound3D();
+    virtual ~Sound3D();
 
-	/* GENERAL */
-	void play(bool forceRestart = false);
-	void stop();
-	void pause();
+    /* GENERAL */
+    void play(bool forceRestart = false);
+    void stop();
+    void pause();
 
-	/* SETTERS */
-	void setVolume(float volume); // 0.0f = sound turned off, 1.0f = normal volume
-	void setLooping(bool loop); // -1 = infinite looping, 0 = no looping
-	void setPitch(float pitch = 1.0f); // 1 = normal pitch
+    /* SETTERS */
+    void setVolume(float volume); // 0.0f = sound turned off, 1.0f = normal volume
+    void setLooping(bool loop); // -1 = infinite looping, 0 = no looping
+    void setPitch(float pitch = 1.0f); // 1 = normal pitch
 
-	void setPosition(const vec3& pos);
-	void setVelocity(const vec3& vel);
-	void setMinimumDistance(float distance);
-	void setMaximumDistance(float distance);
-	void setRolloffFactor(float factor = 1.0f);
-	void setMinimumVolume(float volume = 0.0f);
-	void setMaximumVolume(float volume = 1.0f);
+    void setPosition(const vec3& pos);
+    void setVelocity(const vec3& vel);
+    void setMinimumDistance(float distance);
+    void setMaximumDistance(float distance);
+    void setRolloffFactor(float factor = 1.0f);
+    void setMinimumVolume(float volume = 0.0f);
+    void setMaximumVolume(float volume = 1.0f);
 
-	/* GETTERS */
-	uint getSource() const;
-	uint getBuffer() const;
-	uint getSoundFile() const;
-	SOUND_STATE getState() const;
-	SOUND_TYPE getType() const;
+    /* GETTERS */
+    uint getSource() const;
+    uint getBuffer() const;
+    uint getSoundFile() const;
+    SOUND_STATE getState() const;
+    SOUND_TYPE getType() const;
 
-	float getVolume() const;
-	bool getLooping() const;
-	float getPitch() const;
+    float getVolume() const;
+    bool getLooping() const;
+    float getPitch() const;
 
-	float getLength() const;
-	float getPlayTime();
+    float getLength() const;
+    float getPlayTime();
 
-	vec3 getPosition() const;
-	vec3 getVelocity() const;
-	float getMinimumDistance() const;
-	float getMaximumDistance() const;
-	float getRolloffFactor() const;
-	float getMinimumVolume() const;
-	float getMaximumVolume() const;
+    vec3 getPosition() const;
+    vec3 getVelocity() const;
+    float getMinimumDistance() const;
+    float getMaximumDistance() const;
+    float getRolloffFactor() const;
+    float getMinimumVolume() const;
+    float getMaximumVolume() const;
+
+    bool getToMono() const;
 
 private:
 
-	/* DATAMEMBERS */
-	uint m_SoundFile;
-	uint m_Buffer;
-	uint m_Source;
+    /* DATAMEMBERS */
+    uint m_SoundFile;
+    uint m_Buffer;
+    uint m_Source;
 
-	SOUND_TYPE m_Type;
+    SOUND_TYPE m_Type;
 
-	bool m_bLooping;
+    bool m_bLooping;
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
-	Sound3D(const Sound3D&);
-	Sound3D& operator=(const Sound3D&);
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    Sound3D(const Sound3D&);
+    Sound3D& operator=(const Sound3D&);
 };
 
 } } //end namespace

@@ -26,7 +26,6 @@
 #include <sstream>
 
 #include "FileReader.h"
-#include "FileNotFoundException.h"
 
 #include "HeAssert.h"
 
@@ -42,12 +41,12 @@ ObjLineLoader::ObjLineLoader()
 ObjLineLoader::~ObjLineLoader()
 {
 }
-void ObjLineLoader::load(const std::string& path)
+bool ObjLineLoader::load(const std::string& path)
 {
-    read(path);
+    return read(path);
 }
 
-void ObjLineLoader::read(const std::string& path)
+bool ObjLineLoader::read(const std::string& path)
 {
     //Clean
     m_PointData.clear();
@@ -57,15 +56,14 @@ void ObjLineLoader::read(const std::string& path)
 
     io::FileReader reader;
     vector<string> objData;
-    try
+    if (reader.open(path, io::FileReader::OpenType_ASCII))
     {
-        reader.open(path, io::FileReader::OpenType_ASCII);
         objData = reader.readToEndSplit();
-    }
-    catch (err::FileNotFoundException&)
-    {
         reader.close();
-        throw;
+    }
+    else
+    {
+        return false;
     }
 
     for_each(objData.cbegin(), objData.cend(), [&](const string& line)
@@ -101,6 +99,7 @@ void ObjLineLoader::read(const std::string& path)
             indices.push_back(i);
         }
     });
+    return true;
 }
 const std::vector<vec3>& ObjLineLoader::getPoints() const
 {

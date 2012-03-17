@@ -35,7 +35,7 @@ Texture2D::Texture2D(): m_Id(UINT_MAX), m_Width(0), m_Height(0), m_Format(0), m_
 
 void Texture2D::init(uint tex, uint width, uint height, uint format, void* pixels, uint bufferSize)
 {
-    ASSERT(width != 0 && height != 0, "Loaded texture with width = 0 or height = 0 !");
+    HE_ASSERT(width != 0 && height != 0, "Loaded texture with width = 0 or height = 0 !");
 
     if (m_Id != UINT_MAX)
         glDeleteTextures(1, &m_Id);

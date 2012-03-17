@@ -20,8 +20,6 @@
 #include "HappyPCH.h"
 
 #include "IniReader.h"
-#include "HeAssert.h"
-#include "FileNotFoundException.h"
 
 #include <fstream>
 #include <sstream>
@@ -90,7 +88,7 @@ void removeSpaces(std::wstring& str)
     });
     str = stream.str();
 }
-void IniReader::open(const std::string& path)
+bool IniReader::open(const std::string& path)
 {
     using namespace std;
 
@@ -130,10 +128,11 @@ void IniReader::open(const std::string& path)
             m_Data.insert(make_pair(sub, subData));
         file.close();
         m_IsOpen = true;
+        return true;
     }
     else
     {
-        throw err::FileNotFoundException(path);
+        return false;
     }
 }
 bool IniReader::isOpen() const
@@ -288,7 +287,7 @@ std::wstring IniReader::readWString(const std::wstring& root, const std::wstring
 
 bool IniReader::readRaw(const std::wstring& root, const std::wstring& node, std::wstring& returnValue) const
 {
-    ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
+    HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
     IniReadData::const_iterator itRoot = m_Data.find(root);
     if (itRoot != m_Data.cend())
@@ -311,14 +310,14 @@ bool IniReader::readRaw(const std::wstring& root, const std::wstring& node, std:
 }
 const std::map<std::wstring, std::wstring>& IniReader::getNodes(const std::wstring& root) const
 {
-    ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
+    HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
     IniReadData::const_iterator itRoot = m_Data.find(root);
     return itRoot->second;
 }
 bool IniReader::containsRoot(const std::wstring& root) const
 {
-    ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
+    HE_ASSERT(m_IsOpen, "there is no file open, please call open first or check for unhandled open errors");
 
     IniReadData::const_iterator itRoot = m_Data.find(root);
     return itRoot != m_Data.cend();

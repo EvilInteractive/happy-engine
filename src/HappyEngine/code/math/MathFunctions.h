@@ -47,6 +47,11 @@ inline T clamp(T p_value, T p_min, T p_max)
 {
     return max(p_min, min(p_max, p_value));
 }
+template<typename T>
+inline T sign(T p_value)
+{
+    return p_value < 0? -1 : 1;
+}
 
 
 

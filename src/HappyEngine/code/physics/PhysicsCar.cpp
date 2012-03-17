@@ -171,7 +171,7 @@ void PhysicsCar::init(const ChassiDesc& chassisDesc, const PhysicsMaterial& chas
     m_pActor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform::createIdentity());
 
     //We need to add wheel collision shapes, a material for the wheels, and a simulation filter for the wheels.
-    ASSERT(tyreDescs.size() == 4, "car needs 4 wheels!");
+    HE_ASSERT(tyreDescs.size() == 4, "car needs 4 wheels!");
     physx::PxConvexMeshGeometry frontLeftWheelGeom(tyreDescs[Tyre_FrontLeft].m_Shape.getInternalMesh());
     physx::PxConvexMeshGeometry frontRightWheelGeom(tyreDescs[Tyre_FrontRight].m_Shape.getInternalMesh());
     physx::PxConvexMeshGeometry rearLeftWheelGeom(tyreDescs[Tyre_RearLeft].m_Shape.getInternalMesh());

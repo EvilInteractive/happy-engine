@@ -24,24 +24,15 @@
 
 #include <map>
 #include <deque>
-#include "boost/chrono.hpp"
-#include "Text.h"
 #include "Font.h"
 
 namespace he {
+    namespace gui {
+        class Text;
+    }
 namespace tools {
 
-struct ProfileData
-{
-    boost::chrono::high_resolution_clock::time_point startTime;
-    boost::chrono::high_resolution_clock::time_point endTime;
-
-    double getDuration() const
-    {
-        boost::chrono::high_resolution_clock::duration elapsedTime(endTime - startTime);
-        return elapsedTime.count() / static_cast<double>(boost::nano::den);
-    }
-};
+struct ProfileData;
 
 class Profiler
 {
@@ -55,23 +46,12 @@ public:
     void draw() const;
     
 private:
+    struct ProfileTreeNode;
+
     Profiler();
     virtual ~Profiler();
 
     static Profiler* s_Profiler;
-
-    struct ProfileTreeNode
-    {
-        ProfileTreeNode* m_Parent;
-        std::deque<ProfileData> m_Data;
-        std::string m_Name;
-        std::map<std::string, ProfileTreeNode> m_Nodes;
-
-        bool operator<(const ProfileTreeNode& node) const
-        {
-            return m_Name < node.m_Name;
-        }
-    };
 
     static const int MAX_DATA = 50;
     std::map<std::string, ProfileTreeNode> m_Data;

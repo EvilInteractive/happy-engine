@@ -197,7 +197,7 @@ bool QtKeyboard::isKeyPressed(Key key) const
 }
 bool QtKeyboard::isKeyPressed(KeyScanCode code) const
 {
-    ASSERT(false, "not implemented");
+    HE_ASSERT(false, "not implemented");
 	return m_CurrentKeyState[code] != 0 && m_PrevKeyState[code] == 0;
 }
 bool QtKeyboard::isKeyReleased(Key key) const
@@ -206,7 +206,7 @@ bool QtKeyboard::isKeyReleased(Key key) const
 }
 bool QtKeyboard::isKeyReleased(KeyScanCode code) const
 {
-    ASSERT(false, "not implemented");
+    HE_ASSERT(false, "not implemented");
 	return m_CurrentKeyState[code] == 0 && m_PrevKeyState[code] != 0;
 }
 

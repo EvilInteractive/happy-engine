@@ -68,7 +68,7 @@ void DynamicPhysicsComponent::tick( float /*dTime*/ )
 
 void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass )
 {
-    ASSERT(m_pDynamicActor != nullptr, "attach component first to entity");
+    HE_ASSERT(m_pDynamicActor != nullptr, "attach component first to entity");
     m_pDynamicActor->addShape(pShape, material, mass);
 }
 
