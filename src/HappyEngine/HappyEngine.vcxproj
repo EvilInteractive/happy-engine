@@ -191,6 +191,10 @@
     <ClInclude Include="code\audio\Sound3D.h" />
     <ClInclude Include="code\audio\SoundEngine.h" />
     <ClInclude Include="code\audio\SoundFile.h" />
+    <ClInclude Include="code\containers\ObjectFactory.h" />
+    <ClInclude Include="code\containers\Resource.h" />
+    <ClInclude Include="code\containers\ResourceFactory.h" />
+    <ClInclude Include="code\containers\SlotPContainer.h" />
     <ClInclude Include="code\content\AssetContainer.h" />
     <ClInclude Include="code\content\BinObjLineLoader.h" />
     <ClInclude Include="code\content\BinObjLoader.h" />
@@ -371,7 +375,6 @@
     <ClInclude Include="code\physics\PhysicsSphericalJoint.h" />
     <ClInclude Include="code\physics\PhysicsStaticActor.h" />
     <ClInclude Include="code\physics\PhysicsTrigger.h" />
-    <ClInclude Include="code\SlotPContainer.h" />
     <ClInclude Include="code\HappyPCH.h" />
     <ClInclude Include="code\template\X.h" />
     <ClInclude Include="code\tools\BoolTypeHandler.h" />
@@ -451,7 +454,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
-    <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;$(IncludePath)</IncludePath>
+    <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;./code/containers;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -461,7 +464,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
-    <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;$(IncludePath)</IncludePath>
+    <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;./code/containers;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QtRelease|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -493,6 +496,7 @@
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <OpenMPSupport>false</OpenMPSupport>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -539,6 +543,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -1,0 +1,6 @@
+src/*/Release/*
+*.user
+src/*/bin/*
+*.sdf
+src/*/Debug/*
+*.opensdf

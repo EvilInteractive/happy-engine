@@ -122,6 +122,9 @@
     <Filter Include="happyengine\graphics\fx\components\particles\components">
       <UniqueIdentifier>{3a31b99f-382c-4d52-9130-003dfe051953}</UniqueIdentifier>
     </Filter>
+    <Filter Include="happyengine\containers">
+      <UniqueIdentifier>{2e6010a7-4297-4365-b81d-95b19339037c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\content\BinObjLineLoader.cpp">
@@ -1005,9 +1008,6 @@
     <ClInclude Include="code\event.h">
       <Filter>happyengine</Filter>
     </ClInclude>
-    <ClInclude Include="code\SlotPContainer.h">
-      <Filter>happyengine</Filter>
-    </ClInclude>
     <ClInclude Include="code\HappyPCH.h">
       <Filter>happyengine</Filter>
     </ClInclude>
@@ -1199,6 +1199,18 @@
     </ClInclude>
     <ClInclude Include="code\game\TriggerComponent.h">
       <Filter>happyengine\game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="code\containers\SlotPContainer.h">
+      <Filter>happyengine\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="code\containers\ObjectFactory.h">
+      <Filter>happyengine\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="code\containers\ResourceFactory.h">
+      <Filter>happyengine\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="code\containers\Resource.h">
+      <Filter>happyengine\containers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
