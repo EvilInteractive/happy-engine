@@ -592,6 +592,12 @@
     <ClCompile Include="code\game\TriggerComponent.cpp">
       <Filter>happyengine\game\components</Filter>
     </ClCompile>
+    <ClCompile Include="code\graphics\Canvas2D.cpp">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="code\graphics\Renderer2D.cpp">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -1211,6 +1217,12 @@
     </ClInclude>
     <ClInclude Include="code\containers\Resource.h">
       <Filter>happyengine\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Canvas2D.h">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="code\graphics\Renderer2D.h">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

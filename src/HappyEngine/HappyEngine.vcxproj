@@ -61,6 +61,7 @@
     <ClCompile Include="code\graphics\Bone.cpp" />
     <ClCompile Include="code\graphics\Button.cpp" />
     <ClCompile Include="code\graphics\Camera.cpp" />
+    <ClCompile Include="code\graphics\Canvas2D.cpp" />
     <ClCompile Include="code\graphics\Color.cpp" />
     <ClCompile Include="code\graphics\DefaultSingleDrawable.cpp" />
     <ClCompile Include="code\graphics\DefaultSkinnedDrawable.cpp" />
@@ -109,6 +110,7 @@
     <ClCompile Include="code\graphics\Polygon2D.cpp" />
     <ClCompile Include="code\graphics\PostProcesser.cpp" />
     <ClCompile Include="code\graphics\Rectangle2D.cpp" />
+    <ClCompile Include="code\graphics\Renderer2D.cpp" />
     <ClCompile Include="code\graphics\RoundedRectangle2D.cpp" />
     <ClCompile Include="code\graphics\Scrollbar.cpp" />
     <ClCompile Include="code\graphics\Shader.cpp" />
@@ -235,6 +237,7 @@
     <ClInclude Include="code\graphics\Bone.h" />
     <ClInclude Include="code\graphics\Button.h" />
     <ClInclude Include="code\graphics\Camera.h" />
+    <ClInclude Include="code\graphics\Canvas2D.h" />
     <ClInclude Include="code\graphics\Color.h" />
     <ClInclude Include="code\graphics\DefaultSingleDrawable.h" />
     <ClInclude Include="code\graphics\DefaultSkinnedDrawable.h" />
@@ -295,6 +298,7 @@
     <ClInclude Include="code\graphics\Polygon2D.h" />
     <ClInclude Include="code\graphics\PostProcesser.h" />
     <ClInclude Include="code\graphics\Rectangle2D.h" />
+    <ClInclude Include="code\graphics\Renderer2D.h" />
     <ClInclude Include="code\graphics\RenderSettings.h" />
     <ClInclude Include="code\graphics\RoundedRectangle2D.h" />
     <ClInclude Include="code\graphics\Scrollbar.h" />
