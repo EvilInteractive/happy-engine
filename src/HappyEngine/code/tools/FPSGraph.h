@@ -44,9 +44,9 @@ public:
     void draw();
 
     /* GETTERS */
-    byte getMaxFPS() const;
-    byte getMinFPS() const;
-    byte getAverageFPS() const;
+    ushort getMaxFPS() const;
+    ushort getMinFPS() const;
+    ushort getAverageFPS() const;
 
     /* SETTERS */
     void setType(int type);
@@ -54,19 +54,19 @@ public:
 
 private:
 
-    byte cap(float fps);
+    ushort cap(float fps);
     void drawTextOnly();
     void drawFull();
 
     /* DATAMEMBERS */
-    std::vector<byte> m_FpsHistory;
+    std::vector<ushort> m_FpsHistory;
 
     float m_GameTime;
     float m_TBase;
     float m_CurrentDTime;
     float m_Interval;
 
-    byte m_CurrentFPS;
+    ushort m_CurrentFPS;
     
     gfx::Font::pointer m_pFont;
 

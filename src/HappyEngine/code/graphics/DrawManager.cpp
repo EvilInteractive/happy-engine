@@ -151,6 +151,8 @@ void DrawManager::draw()
 {
     PROFILER_BEGIN("DrawManager::draw");
 
+    HE_ASSERT(CAMERAMANAGER->getActiveCamera() != nullptr, "Please set an active camera.");
+
     PROFILER_BEGIN("ShadowCaster::render");
     renderShadow();
     PROFILER_END();

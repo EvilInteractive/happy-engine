@@ -19,15 +19,30 @@
 #define _HE_HAPPYPCH_H_
 #pragma once
 
+#pragma message("-------------------------------------------")
+#pragma message("HappyEngine: Compiling precompiled headers.")
+#pragma message("-------------------------------------------\n")
+
 #include <cstdlib>
 #include <string>
 #include <vector>
 #include <map>
 #include <deque>
+
+#include "boost/shared_ptr.hpp"
+#pragma warning (disable : 4244)
+#include "boost/thread.hpp"
+#pragma warning (default : 4244)
+#include "boost/chrono.hpp"
+
+#define SDL_NO_COMPAT
+#include "SDL.h"
+#include "GL/glew.h"
+
+#include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
-
 
 #include "HeAssert.h"
 #include "HappyMemory.h"

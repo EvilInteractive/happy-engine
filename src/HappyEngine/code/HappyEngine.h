@@ -19,19 +19,7 @@
 #define _HE_HAPPYENGINE_H_
 #pragma once
 
-#define SDL_NO_COMPAT
-#include "boost/shared_ptr.hpp"
-
-#pragma warning (disable : 4244)
-#undef assert
-#include "boost/thread.hpp"
-#pragma warning (default : 4244)
-
-#include "SDL.h"
-#include "GL/glew.h"
-
 #include <vector>
-#include "boost/chrono.hpp"
 
 #include "LoadingScreen.h"
 
@@ -150,7 +138,7 @@ private:
     static HappyEngine* s_pHappyEngine;
     void initSubEngines(int subengines);
 
-	void drawLoadingScreen();
+    void drawLoadingScreen();
 
     tools::LoadingScreen* m_pLoadingScreen;
 
@@ -171,7 +159,7 @@ private:
 
     bool m_Quit;
     bool m_bShowProfiler;
-	bool m_bGameLoading;
+    bool m_bGameLoading;
 
     int m_SubEngines;
 

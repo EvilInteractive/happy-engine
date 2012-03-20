@@ -37,60 +37,60 @@ class Canvas2D
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
+    /* CONSTRUCTOR - DESTRUCTOR */
     Canvas2D(void* pRenderer);
     virtual ~Canvas2D();
 
-	/* GENERAL */
-	void translate(const vec2& translation);
-	void rotate(float rotation);
-	void scale(const vec2& scale);
+    /* GENERAL */
+    void translate(const vec2& translation);
+    void rotate(float rotation);
+    void scale(const vec2& scale);
 
-	void save();
-	void restore();
+    void save();
+    void restore();
 
-	/* SETTERS */
-	void setStrokeColor(const Color& newColor);
-	void setFillColor(const Color& newColor);
+    /* SETTERS */
+    void setStrokeColor(const Color& newColor);
+    void setFillColor(const Color& newColor);
 
-	void setLineWidth(float width);
+    void setLineWidth(float width);
 
-	void setGlobalAlpha(float alpha);
-	
-	/* DRAW METHODS */
-	void strokeRect(const vec2& pos, const vec2& size);
-	void fillRect(const vec2& pos, const vec2& size);
+    void setGlobalAlpha(float alpha);
+    
+    /* DRAW METHODS */
+    void strokeRect(const vec2& pos, const vec2& size);
+    void fillRect(const vec2& pos, const vec2& size);
 
-	void strokeArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
-	void fillArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
+    void strokeArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
+    void fillArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
 
-	void beginPath();
-	void closePath();
-	void moveTo(const vec2& pos);
-	void lineTo(const vec2& pos);
-	void arcTo(float radius, float startAngle, float endAngle, bool antiClockwise);
-	void quadraticCurveTo(const vec2& cp, cons vec2& pos);
-	void bezierCurveTo(const vec2& cp1, const vec2& cp2, const vec2& pos);
-	void fill();
-	void stroke();
+    void beginPath();
+    void closePath();
+    void moveTo(const vec2& pos);
+    void lineTo(const vec2& pos);
+    void arcTo(float radius, float startAngle, float endAngle, bool antiClockwise);
+    void quadraticCurveTo(const vec2& cp, const vec2& pos);
+    void bezierCurveTo(const vec2& cp1, const vec2& cp2, const vec2& pos);
+    void fill();
+    void stroke();
 
-	void fillText(const gui::Text& txt, const vec2& pos);
+    void fillText(const gui::Text& txt, const vec2& pos);
 
-	void drawImage(	const Texture2D::pointer& tex2D, const vec2& pos,
-					const vec2& newDimensions = vec2(0.0f,0.0f),
-					const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+    void drawImage(	const Texture2D::pointer& tex2D, const vec2& pos,
+                    const vec2& newDimensions = vec2(0.0f,0.0f),
+                    const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
 
 private:
 
-	/* DATAMEMBERS */
-	std::stack<mat33> m_TransformationStack;
-	ushort m_StackDepth;
+    /* DATAMEMBERS */
+    std::stack<mat33> m_TransformationStack;
+    ushort m_StackDepth;
 
-	Color m_StrokeColor;
-	Color m_FillColor;
+    Color m_StrokeColor;
+    Color m_FillColor;
 
-	float m_LineWidth;
-	float m_GlobalAlpha;
+    float m_LineWidth;
+    float m_GlobalAlpha;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

@@ -4,3 +4,10 @@ src/*/bin/*
 *.sdf
 src/*/Debug/*
 *.opensdf
+*.suo
+src/HappyTests/build/*/build/Debug/*
+src/HappyTests/build/*/build/Release/*
+!src/HappyTests/build/HappyTemplateProject/*.user
+src/HappyTools/*/Debug/*
+src/HappyTools/*/Release/*
+*.ipch

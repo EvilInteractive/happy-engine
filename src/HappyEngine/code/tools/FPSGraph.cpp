@@ -64,7 +64,7 @@ void FPSGraph::tick(float dTime, float interval)
     {
         m_TBase = m_GameTime;
 
-        byte fps(cap(1 / dTime));
+        ushort fps(cap(1 / dTime));
 
         m_CurrentFPS = fps;
         m_CurrentDTime = dTime;
@@ -97,12 +97,12 @@ void FPSGraph::draw()
     }
 }
 
-byte FPSGraph::cap(float fps)
+ushort FPSGraph::cap(float fps)
 {
-    if (fps > 250.0f)
+   /* if (fps > 250.0f)
         return 250;
-    else
-        return static_cast<byte>(fps);
+    else*/
+        return static_cast<ushort>(fps);
 }
 
 void FPSGraph::drawTextOnly()
@@ -142,9 +142,9 @@ void FPSGraph::drawFull()
 
     uint j(m_FpsHistory.size());
 
-    byte k(0);
-    byte currentFPS(0);
-    //byte prevFPS(0);
+    ushort k(0);
+    ushort currentFPS(0);
+    //ushort prevFPS(0);
 
     for (; i < j ; ++i)
     {
@@ -188,13 +188,13 @@ void FPSGraph::drawFull()
     }
 
     k = 0;
-    byte currentDTime(0);
-    //byte prevDTime(0);
+    ushort currentDTime(0);
+    //ushort prevDTime(0);
 
     for (; i < j ; ++i)
     {
-        currentDTime = static_cast<byte>((1.0f / m_FpsHistory[i]) * 1000.0f);
-        //prevDTime = static_cast<byte>((1.0f / m_FpsHistory[i - 1]) * 1000.0f);
+        currentDTime = static_cast<ushort>((1.0f / m_FpsHistory[i]) * 1000.0f);
+        //prevDTime = static_cast<ushort>((1.0f / m_FpsHistory[i - 1]) * 1000.0f);
 
         if (currentDTime > 80)
             currentDTime = 80;
@@ -222,7 +222,7 @@ void FPSGraph::drawFull()
 
     poly2.addPoint(vec2(m_Pos.x + 100.0f, m_Pos.y + 40.0f));
 
-    if (m_CurrentFPS >= static_cast<byte>(m_CurrentDTime * 1000.0f))
+    if (m_CurrentFPS >= static_cast<ushort>(m_CurrentDTime * 1000.0f))
     {
         GUI->setColor(1.0f,0.7f,0.7f);
         GUI->fillShape2D(poly);
@@ -245,7 +245,7 @@ void FPSGraph::drawFull()
         GUI->drawShape2D(poly);
     }
 
-    byte avFPS(getAverageFPS());
+    ushort avFPS(getAverageFPS());
 
     if (avFPS > 80)
         avFPS = 80;
@@ -270,10 +270,10 @@ void FPSGraph::drawFull()
 }
 
 /* GETTERS */
-byte FPSGraph::getMaxFPS() const
+ushort FPSGraph::getMaxFPS() const
 {
-    byte maxFPS(0);
-    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](byte FPS)
+    ushort maxFPS(0);
+    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](ushort FPS)
     {
         if (FPS > maxFPS)
             maxFPS = FPS;
@@ -282,10 +282,10 @@ byte FPSGraph::getMaxFPS() const
     return maxFPS;
 }
 
-byte FPSGraph::getMinFPS() const
+ushort FPSGraph::getMinFPS() const
 {
-    byte minFPS(255);
-    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](byte FPS)
+    ushort minFPS(0xffff);
+    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](ushort FPS)
     {
         if (FPS < minFPS)
             minFPS = FPS;
@@ -294,7 +294,7 @@ byte FPSGraph::getMinFPS() const
     return minFPS;
 }
 
-byte FPSGraph::getAverageFPS() const
+ushort FPSGraph::getAverageFPS() const
 {
     if (m_FpsHistory.size() == 0)
         return 0;
@@ -324,7 +324,7 @@ byte FPSGraph::getAverageFPS() const
         avFPS /= m_FpsHistory.size();
     }
 
-    return (byte)avFPS;
+    return (ushort)avFPS;
 }
 
 /* SETTERS */

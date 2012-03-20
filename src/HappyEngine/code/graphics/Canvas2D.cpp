@@ -126,7 +126,7 @@ void arcTo(float radius, float startAngle, float endAngle, bool antiClockwise)
 
 }
 
-void quadraticCurveTo(const vec2& cp, cons vec2& pos)
+void quadraticCurveTo(const vec2& cp, const vec2& pos)
 {
 
 }
