@@ -1,0 +1,15 @@
+[Deferred]
+shader = "defaultDeferredInstanced.shader"
+
+[Forward]
+shader = "defaultForwardInstanced.shader"
+
+[TEXTURE2D]
+diffuseMap = "testTex.png"
+normalMap = "gravel_normal.png"
+specGlossIllMap = 0.2, 0.3, 1.0, 1.0
+
+[info]
+blending = false
+post = true
+shadow = true

@@ -1,0 +1,60 @@
+﻿Build started 3/18/2012 9:47:41 PM.
+     1>Project "C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\HappyTest.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\HappyTest.lastbuildstate".
+       InitializeBuildStatus:
+         Touching "Debug\HappyTest.unsuccessfulbuild".
+       ClCompile:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"D:\Program Files (x86)\Mega-Nerd\libsndfile\include" /I..\HappyEngine /I..\HappyEngine\code\physics /I..\HappyEngine\code\template /I..\HappyEngine\code\tools /I..\HappyEngine\code\networking /I..\HappyEngine\code\math /I..\HappyEngine\code\io /I..\HappyEngine\code\graphics /I..\HappyEngine\code\game /I..\HappyEngine\code\error /I..\HappyEngine\code\content /I..\HappyEngine\code\audio /I..\HappyEngine\code\containers /I..\HappyEngine\code /ID:\Libs\PhysX\SDKs\PxTask\include /ID:\Libs\PhysX\SDKs\PxFoundation /ID:\Libs\PhysX\SDKs\PxFoundation\internal\include /ID:\Libs\PhysX\SDKs\PhysXProfileSDK\sdk\include /ID:\Libs\PhysX\SDKs\PhysXVisualDebuggerSDK\PVDCommLayer\Public /ID:\Libs\PhysX\SDKs\PhysXAPI /ID:\Libs\PhysX\SDKs\RepX\include /ID:\Libs\PhysX\SDKs\PhysXAPI\characterkinematic /ID:\Libs\Boost\boost_1_47_0 /ID:\Libs\SDL_ttf\include /ID:\Libs\SDL\include /ID:\Libs\glew\include /ID:\Libs\DevIL\include /I"D:\Program Files (x86)\OpenAL 1.1 SDK\include" /ZI /nologo /W4 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _WIN32_WINNT=0x0501 /D PX_PHYSX_CHARACTER_STATIC_LIB /D PHYSX_PROFILE_SDK /D PX_CHECKED /D GLEW_STATIC /D GLEW_STATIC /D _UNICODE /D UNICODE /D _UNICODE /D UNICODE /Gm- /EHsc /MDd /GS /arch:SSE2 /fp:fast /fp:except- /Zc:wchar_t /Zc:forScope /GR- /openmp- /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Character.cpp FlyCamera.cpp FollowCamera.cpp main.cpp MainGame.cpp MyClient.cpp MyServer.cpp TestObject.cpp VertexPNT.cpp
+         Character.cpp
+         FlyCamera.cpp
+         FollowCamera.cpp
+         main.cpp
+         MainGame.cpp
+         MyClient.cpp
+         MyServer.cpp
+         TestObject.cpp
+         VertexPNT.cpp
+     1>d:\libs\physx\sdks\physxapi\vehicle\pxvehicleutils.h(587): warning C4505: 'physx::PxWheelRaycastPreFilter' : unreferenced local function has been removed
+     1>d:\libs\physx\sdks\physxapi\vehicle\pxvehicleutils.h(587): warning C4505: 'physx::PxWheelRaycastPreFilter' : unreferenced local function has been removed
+     1>d:\libs\physx\sdks\physxapi\vehicle\pxvehicleutils.h(587): warning C4505: 'physx::PxWheelRaycastPreFilter' : unreferenced local function has been removed
+     1>d:\libs\physx\sdks\physxapi\vehicle\pxvehicleutils.h(587): warning C4505: 'physx::PxWheelRaycastPreFilter' : unreferenced local function has been removed
+       ManifestResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\HappyTest.exe.embed.manifest.res" Debug\HappyTest_manifest.rc 
+       Link:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.exe" /INCREMENTAL /NOLOGO /LIBPATH:"D:\Program Files (x86)\Mega-Nerd\libsndfile\lib" /LIBPATH:../HappyEngine/bin /LIBPATH:D:\Libs\PhysX\SDKs\lib\win32\Debug /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\chrono\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\system\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\thread\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\date_time\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\regex\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:D:\Libs\SDL\lib /LIBPATH:D:\Libs\DevIL\lib /LIBPATH:D:\Libs\SDL_ttf\lib\x86 /LIBPATH:"D:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32" /LIBPATH:"D:\Program Files (x86)\Mega-Nerd\libsndfile\lib" /LIBPATH:D:\Libs\glew\lib HappyEngine.lib Foundation.lib PhysX3Common.lib PhysX3CharacterKinematic.lib PhysX3Vehicle.lib PhysX3Cooking_x86.lib PhysX3_x86.lib PhysX3Extensions.lib LowLevel.lib GeomUtils.lib SceneQuery.lib SimulationController.lib PvdRuntime.lib RepX3.lib PxTask.lib PhysX3Gpu_x86.lib "libsndfile-1.lib" "libboost_system-vc100-mt-gd-1_47.lib" "libboost_date_time-vc100-mt-gd-1_47.lib" "libboost_regex-vc100-mt-gd-1_47.lib" "libboost_thread-vc100-mt-gd-1_47.lib" "libboost_chrono-vc100-mt-gd-1_47.lib" SDL.lib SDLmain.lib SDL_ttf.lib glew32s.lib glu32.lib opengl32.lib DevIL.lib ILU.lib "libsndfile-1.lib" OpenAL32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt /MANIFEST /ManifestFile:"Debug\HappyTest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.lib" /MACHINE:X86 Debug\HappyTest.exe.embed.manifest.res
+         Debug\Character.obj
+         Debug\FlyCamera.obj
+         Debug\FollowCamera.obj
+         Debug\main.obj
+         Debug\MainGame.obj
+         Debug\MyClient.obj
+         Debug\MyServer.obj
+         Debug\TestObject.obj
+         Debug\VertexPNT.obj
+     1>LINK : warning LNK4098: defaultlib 'LIBCMTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+       Manifest:
+         Deleting file "Debug\HappyTest.exe.embed.manifest".
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\HappyTest.exe.embed.manifest" /manifest Debug\HappyTest.exe.intermediate.manifest
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\HappyTest.exe.embed.manifest.res" Debug\HappyTest_manifest.rc 
+       LinkEmbedManifest:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.exe" /INCREMENTAL /NOLOGO /LIBPATH:"D:\Program Files (x86)\Mega-Nerd\libsndfile\lib" /LIBPATH:../HappyEngine/bin /LIBPATH:D:\Libs\PhysX\SDKs\lib\win32\Debug /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\chrono\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\system\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\thread\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\date_time\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:"D:\Libs\Boost\boost_1_47_0\bin.v2\libs\regex\build\msvc-10.0\debug\link-static\threading-multi" /LIBPATH:D:\Libs\SDL\lib /LIBPATH:D:\Libs\DevIL\lib /LIBPATH:D:\Libs\SDL_ttf\lib\x86 /LIBPATH:"D:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32" /LIBPATH:"D:\Program Files (x86)\Mega-Nerd\libsndfile\lib" /LIBPATH:D:\Libs\glew\lib HappyEngine.lib Foundation.lib PhysX3Common.lib PhysX3CharacterKinematic.lib PhysX3Vehicle.lib PhysX3Cooking_x86.lib PhysX3_x86.lib PhysX3Extensions.lib LowLevel.lib GeomUtils.lib SceneQuery.lib SimulationController.lib PvdRuntime.lib RepX3.lib PxTask.lib PhysX3Gpu_x86.lib "libsndfile-1.lib" "libboost_system-vc100-mt-gd-1_47.lib" "libboost_date_time-vc100-mt-gd-1_47.lib" "libboost_regex-vc100-mt-gd-1_47.lib" "libboost_thread-vc100-mt-gd-1_47.lib" "libboost_chrono-vc100-mt-gd-1_47.lib" SDL.lib SDLmain.lib SDL_ttf.lib glew32s.lib glu32.lib opengl32.lib DevIL.lib ILU.lib "libsndfile-1.lib" OpenAL32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt /MANIFEST /ManifestFile:"Debug\HappyTest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.lib" /MACHINE:X86 Debug\HappyTest.exe.embed.manifest.res
+         Debug\Character.obj
+         Debug\FlyCamera.obj
+         Debug\FollowCamera.obj
+         Debug\main.obj
+         Debug\MainGame.obj
+         Debug\MyClient.obj
+         Debug\MyServer.obj
+         Debug\TestObject.obj
+         Debug\VertexPNT.obj
+     1>LINK : warning LNK4098: defaultlib 'LIBCMTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+         HappyTest.vcxproj -> C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\bin\HappyTest.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\HappyTest.unsuccessfulbuild".
+         Touching "Debug\HappyTest.lastbuildstate".
+     1>Done Building Project "C:\SSDProgramming\EvilInteractive\happy-engine\src\HappyTest\HappyTest.vcxproj" (rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:18.20

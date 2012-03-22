@@ -1,0 +1,16 @@
+[Deferred]
+shader = "defaultDeferred.shader"
+
+[Forward]
+shader = "defaultForward.shader"
+
+[TEXTURE2D]
+diffuseMap = "editor/checkered.png"
+normalMap = "v8_vantage_normal.png"
+specGlossIllMap = "v8_vantage_specGlossIll.png"
+
+[info]
+blending = false
+post = true
+shadow = true
+

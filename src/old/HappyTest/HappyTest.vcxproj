@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CF65A849-EFF9-436D-B38E-D7232BD567BA}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>HappyTest</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Boost.debug.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Boost.release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;PX_PHYSX_CHARACTER_STATIC_LIB;PHYSX_PROFILE_SDK;PX_CHECKED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(LIBSND_DIR)\include;..\HappyEngine;..\HappyEngine\code\physics;..\HappyEngine\code\template;..\HappyEngine\code\tools;..\HappyEngine\code\networking;..\HappyEngine\code\math;..\HappyEngine\code\io;..\HappyEngine\code\graphics;..\HappyEngine\code\game;..\HappyEngine\code\error;..\HappyEngine\code\content;..\HappyEngine\code\audio;..\HappyEngine\code\containers;..\HappyEngine\code;$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <CompileAsManaged>false</CompileAsManaged>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(LIBSND_DIR)\lib;../HappyEngine/bin;$(PHYSX_DIR)\lib\win32\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>HappyEngine.lib;Foundation.lib;PhysX3Common.lib;PhysX3CharacterKinematic.lib;PhysX3Vehicle.lib;PhysX3Cooking_x86.lib;PhysX3_x86.lib;PhysX3Extensions.lib;LowLevel.lib;GeomUtils.lib;SceneQuery.lib;SimulationController.lib;PvdRuntime.lib;RepX3.lib;PxTask.lib;PhysX3Gpu_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(LIBSND_DIR)\include;..\HappyEngine;..\HappyEngine\code\physics;..\HappyEngine\code\template;..\HappyEngine\code\tools;..\HappyEngine\code\networking;..\HappyEngine\code\math;..\HappyEngine\code\io;..\HappyEngine\code\graphics;..\HappyEngine\code\game;..\HappyEngine\code\error;..\HappyEngine\code\content;..\HappyEngine\code\containers;..\HappyEngine\code\audio;..\HappyEngine\code;$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(LIBSND_DIR)\lib;../HappyEngine/bin;$(PHYSX_DIR)\lib\win32\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libsndfile-1.lib;HappyEngine.lib;Foundation.lib;PhysX3Common.lib;PhysX3CharacterKinematic.lib;PhysX3Vehicle.lib;PhysX3Cooking_x86.lib;PhysX3_x86.lib;PhysX3Extensions.lib;LowLevel.lib;GeomUtils.lib;SceneQuery.lib;SimulationController.lib;PvdRuntime.lib;RepX3.lib;PxTask.lib;PhysX3Gpu_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
+      <Profile>true</Profile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="FlyCamera.cpp" />
+    <ClCompile Include="FollowCamera.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="MyClient.cpp" />
+    <ClCompile Include="MyServer.cpp" />
+    <ClCompile Include="TestObject.cpp" />
+    <ClCompile Include="VertexPNT.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="FlyCamera.h" />
+    <ClInclude Include="FollowCamera.h" />
+    <ClInclude Include="MainGame.h" />
+    <ClInclude Include="MyClient.h" />
+    <ClInclude Include="MyServer.h" />
+    <ClInclude Include="PhysicsData.h" />
+    <ClInclude Include="TestObject.h" />
+    <ClInclude Include="VertexPNT.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\settings.ini" />
+    <None Include="data\shaders\2D\billboardShader.frag" />
+    <None Include="data\shaders\2D\billboardShader.vert" />
+    <None Include="data\shaders\2D\pickingShader.frag" />
+    <None Include="data\shaders\2D\pickingShader.vert" />
+    <None Include="data\shaders\2D\simple2DShader.frag" />
+    <None Include="data\shaders\2D\simple2DShader.vert" />
+    <None Include="data\shaders\2D\simple2DTextureShader.frag" />
+    <None Include="data\shaders\2D\simple2DTextureShader.vert" />
+    <None Include="data\shaders\2D\simpleShader.frag" />
+    <None Include="data\shaders\2D\simpleShader.vert" />
+    <None Include="data\shaders\2D\simpleTextureShader.frag" />
+    <None Include="data\shaders\2D\simpleTextureShader.vert" />
+    <None Include="data\shaders\deferred\post\deferredPostAmbientIllShader.frag" />
+    <None Include="data\shaders\deferred\post\deferredPostPLShader.frag" />
+    <None Include="data\shaders\deferred\post\deferredPostShader.vert" />
+    <None Include="data\shaders\deferred\post\deferredPostSLShader.frag" />
+    <None Include="data\shaders\deferred\pre\deferredPreShader.frag" />
+    <None Include="data\shaders\deferred\pre\deferredPreShader.vert" />
+    <None Include="data\shaders\deferred\pre\deferredPreShaderInstanced.vert" />
+    <None Include="data\shaders\deferred\pre\deferredPreShaderSkinned.vert" />
+    <None Include="data\shaders\forward\forwardShader.frag" />
+    <None Include="data\shaders\forward\forwardShader.vert" />
+    <None Include="data\shaders\forward\forwardShaderInstanced.vert" />
+    <None Include="data\shaders\forward\forwardShaderSkinned.vert" />
+    <None Include="data\shaders\packing\decode.frag" />
+    <None Include="data\shaders\packing\encode.frag" />
+    <None Include="data\shaders\post\autoLum.frag" />
+    <None Include="data\shaders\post\bloom.frag" />
+    <None Include="data\shaders\post\gaussblur.frag" />
+    <None Include="data\shaders\post\postEffects.frag" />
+    <None Include="data\shaders\shadow\preShadowShader.frag" />
+    <None Include="data\shaders\shadow\preShadowShader.vert" />
+    <None Include="data\shaders\shadow\preShadowShaderInstanced.vert" />
+    <None Include="data\shaders\shadow\preShadowShaderSkinned.vert" />
+    <None Include="data\shaders\shadow\shadowBlur.frag" />
+    <None Include="data\shaders\shared\postShaderQuad.vert" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

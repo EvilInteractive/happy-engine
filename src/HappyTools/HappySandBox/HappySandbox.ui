@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HappySandBoxClass</class>
+ <widget class="QMainWindow" name="HappySandBoxClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HappySandBox</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0" rowspan="5">
+       <widget class="happysandbox::MainGame" name="gameWidget" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+       </widget>
+      </item>
+      <item row="0" column="1" rowspan="5">
+       <widget class="QFrame" name="frame">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="labelEdit">
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <property name="text">
+            <string>no object selected</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Entities</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+        <zorder>labelEdit</zorder>
+        <zorder>listWidget</zorder>
+        <zorder>label</zorder>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1280</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew_scene"/>
+    <addaction name="actionOpen_scene"/>
+    <addaction name="actionSave_scene"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEntities">
+    <property name="title">
+     <string>Entities</string>
+    </property>
+    <widget class="QMenu" name="menuNew_entity">
+     <property name="title">
+      <string>New entity</string>
+     </property>
+     <widget class="QMenu" name="menuLights_2">
+      <property name="title">
+       <string>Lights</string>
+      </property>
+      <addaction name="actionPointlight_2"/>
+      <addaction name="actionSpotlight_2"/>
+     </widget>
+     <addaction name="actionEmpty"/>
+     <addaction name="separator"/>
+     <addaction name="menuLights_2"/>
+    </widget>
+    <widget class="QMenu" name="menuAdd_component">
+     <property name="title">
+      <string>Add component</string>
+     </property>
+     <addaction name="actionModel_component"/>
+     <addaction name="actionPhysics_component"/>
+     <addaction name="action_Light_component"/>
+     <addaction name="actionSound_component"/>
+    </widget>
+    <addaction name="menuNew_entity"/>
+    <addaction name="separator"/>
+    <addaction name="menuAdd_component"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEntities"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSelect"/>
+   <addaction name="actionMove"/>
+   <addaction name="actionRotate"/>
+   <addaction name="actionScale"/>
+   <addaction name="separator"/>
+   <addaction name="actionContent"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionSelect">
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="HappySandbox.qrc">
+     <normaloff>:/HappySandBox/data/textures/icons/toolbar_select.png</normaloff>:/HappySandBox/data/textures/icons/toolbar_select.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select</string>
+   </property>
+   <property name="toolTip">
+    <string>Select object in the scene.</string>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+  </action>
+  <action name="actionMove">
+   <property name="icon">
+    <iconset resource="HappySandbox.qrc">
+     <normaloff>:/HappySandBox/data/textures/icons/toolbar_move.png</normaloff>:/HappySandBox/data/textures/icons/toolbar_move.png</iconset>
+   </property>
+   <property name="text">
+    <string>Move</string>
+   </property>
+   <property name="toolTip">
+    <string>Move objects in the scene</string>
+   </property>
+  </action>
+  <action name="actionRotate">
+   <property name="icon">
+    <iconset resource="HappySandbox.qrc">
+     <normaloff>:/HappySandBox/data/textures/icons/toolbar_rotate.png</normaloff>:/HappySandBox/data/textures/icons/toolbar_rotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rotate</string>
+   </property>
+   <property name="toolTip">
+    <string>Rotate objects in the scene.</string>
+   </property>
+  </action>
+  <action name="actionScale">
+   <property name="icon">
+    <iconset resource="HappySandbox.qrc">
+     <normaloff>:/HappySandBox/data/textures/icons/toolbar_scale.png</normaloff>:/HappySandBox/data/textures/icons/toolbar_scale.png</iconset>
+   </property>
+   <property name="text">
+    <string>Scale</string>
+   </property>
+   <property name="toolTip">
+    <string>Scale objects in the scene.</string>
+   </property>
+  </action>
+  <action name="actionNew_scene">
+   <property name="text">
+    <string>New scene</string>
+   </property>
+  </action>
+  <action name="actionOpen_scene">
+   <property name="text">
+    <string>Open scene</string>
+   </property>
+  </action>
+  <action name="actionSave_scene">
+   <property name="text">
+    <string>Save scene</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionContent">
+   <property name="icon">
+    <iconset resource="HappySandbox.qrc">
+     <normaloff>:/HappySandBox/data/textures/icons/toolbar_content.png</normaloff>:/HappySandBox/data/textures/icons/toolbar_content.png</iconset>
+   </property>
+   <property name="text">
+    <string>Content</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the content browser.</string>
+   </property>
+  </action>
+  <action name="actionPointlight">
+   <property name="text">
+    <string>Pointlight</string>
+   </property>
+  </action>
+  <action name="actionSpotlight">
+   <property name="text">
+    <string>Spotlight</string>
+   </property>
+  </action>
+  <action name="actionDirectional_light">
+   <property name="text">
+    <string>Directional light</string>
+   </property>
+  </action>
+  <action name="action3D_sound">
+   <property name="text">
+    <string>3D sound</string>
+   </property>
+  </action>
+  <action name="actionModel_component">
+   <property name="text">
+    <string>Model component</string>
+   </property>
+  </action>
+  <action name="actionPhysics_component">
+   <property name="text">
+    <string>Physics component</string>
+   </property>
+  </action>
+  <action name="action_Light_component">
+   <property name="text">
+    <string>Light component</string>
+   </property>
+  </action>
+  <action name="actionSound_component">
+   <property name="text">
+    <string>Sound component</string>
+   </property>
+  </action>
+  <action name="actionEmpty">
+   <property name="text">
+    <string>Empty</string>
+   </property>
+  </action>
+  <action name="actionPointlight_2">
+   <property name="text">
+    <string>Pointlight</string>
+   </property>
+  </action>
+  <action name="actionSpotlight_2">
+   <property name="text">
+    <string>Spotlight</string>
+   </property>
+  </action>
+  <action name="actionDirectional_light_2">
+   <property name="text">
+    <string>Directional light</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>happysandbox::MainGame</class>
+   <extends>QWidget</extends>
+   <header>MainGame.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="HappySandbox.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionContent</sender>
+   <signal>triggered()</signal>
+   <receiver>HappySandBoxClass</receiver>
+   <slot>openContentBrowser()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>openContentBrowser()</slot>
+ </slots>
+</ui>
