@@ -47,45 +47,64 @@ public:
                 delete m_Pool[i];
                 m_FreeHandles.push(i);
             }
+            ++m_Salt[i];
+            HE_ASSERT(m_Salt[handle.index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (" + m_DisplayName + "): salt is growing out of bounds");
         }
     }
 
     virtual ObjectHandle create()
     {
         ObjectHandle handle(getFreeHandle());
-        m_Pool[handle] = NEW T();
+        m_Pool[handle.index] = NEW T();
         return handle;
     }
     virtual void destroyObject(const ObjectHandle& handle)
     {
-        ASSERT(m_Pool[handle] != nullptr, "ObjectFactory (" + m_DisplayName + "): destroying non existing object");
-        m_FreeHandles.push(handle);
-        delete m_Pool[handle];
-        m_Pool[handle] = nullptr;
+        if (m_Salt[handle.index] != handle.salt)
+        {
+            HE_ERROR("ObjectFactory (" + m_DisplayName + "): salt mismatch when destroying object");
+        }
+        else
+        {
+            HE_ASSERT(m_Pool[handle.index] != nullptr, "ObjectFactory (" + m_DisplayName + "): destroying non existing handle");
+            m_FreeHandles.push(handle.index);
+            delete m_Pool[handle.index];
+            m_Pool[handle.index] = nullptr;
+            ++m_Salt[handle.index];
+            HE_ASSERT(m_Salt[handle.index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (" + m_DisplayName + "): salt is growing out of bounds");
+        }
     }
     virtual ObjectHandle register(T* obj)
     {
         ObjectHandle handle(getFreeHandle());
-        m_Pool[handle] = obj;
+        m_Pool[handle.index] = obj;
         return handle;
     }
 
     virtual T* get(const ObjectHandle& handle)
     {
-        return m_Pool[handle];
+        HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (" + m_DisplayName + "): salt mismatch when getting object");
+        return m_Pool[handle.index];
     }
 
+    virtual bool isAlive(const ObjectHandle& handle)
+    {
+        return m_Salt[handle.index] == handle.salt;
+    }
 
 protected:
     virtual void resize(uint newSize)
     {
+        HE_ASSERT(newSize > OBJECTHANDLE_MAX, "ObjectFactory (" + m_DisplayName + "): resize out of range: " + itoa(newSize));
         HE_WARNING("ObjectFactory (" + m_DisplayName + "): increasing pool to " + itoa(newSize));
         uint oldSize(m_Pool.size());
         m_Pool.resize(newSize);
+        m_Salt.resize(newSize);
         for (uint i(oldSize); i < newSize; ++i)
         {
             m_FreeHandles.push(i);
             m_Pool[i] = nullptr;
+            m_Salt[i] = 0;
         }
     }
 
@@ -99,15 +118,19 @@ private:
             resize(m_Pool.size() + m_IncreaseSize);
         }
 
-        ObjectHandle handle(m_FreeHandles.front());
+        ObjectHandle::Type index(m_FreeHandles.front());
         m_FreeHandles.pop();
+        ObjectHandle handle;
+        handle.index = index;
+        handle.salt = m_Salt[index];       
         return handle;
     }
 
     uint m_IncreaseSize;
 
     std::vector<T*> m_Pool;
-    std::queue<ObjectHandle> m_FreeHandles;
+    std::vector<ObjectHandle::Type> m_Salt;
+    std::queue<ObjectHandle::Type> m_FreeHandles;
 
     //Disable default copy constructor and default assignment operator
     ObjectFactory(const ObjectFactory&);

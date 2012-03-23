@@ -28,7 +28,7 @@ namespace he {
 
 typedef unsigned long ulong;
 typedef unsigned int uint;
-typedef unsigned short ushort;
+typedef unsigned short Type;
 typedef unsigned char byte;
 
 typedef uint8_t uint8;
@@ -41,7 +41,13 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
-typedef uint ObjectHandle;
+#define OBJECTHANDLE_MAX 0xffff
+struct ObjectHandle
+{
+    typedef ushort Type;
+    Type index;
+    Type salt;
+};
 
 } //end namespace
 

@@ -34,16 +34,16 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///  Singleton
     //////////////////////////////////////////////////////////////////////////
-    void init(uint startSize, uint increaseSize, const std::string& displayName)
+    static void init(uint startSize, uint increaseSize, const std::string& displayName)
     {
         HE_ASSERT(s_Instance == nullptr, "initing an already inited resource factory: " + displayName);
         s_Instance = NEW ResourceFactory<T>(startSize, increaseSize, displayName);
     }
-    void destroy()
+    static void destroy()
     {
         delete s_Instance;
     }
-    ResourceFactory<T>* getInstance()
+    static ResourceFactory<T>* getInstance()
     {
         ASSERT(s_Instance != nullptr, "Resource factory has not been initialized!");
         return s_Instance;
@@ -70,13 +70,13 @@ public:
     }
     void release(const ObjectHandle& handle)
     {
-        HE_ASSERT(m_RefCounter[handle] != 0, "ResourceFactory (" + m_DisplayName + ") All refs are already checkedIn");
+        HE_ASSERT(m_RefCounter[handle] != 0, "ResourceFactory (" + m_DisplayName + "): All refs are already released");
         --m_RefCounter[handle];
     }
 
-    bool exists(const ObjectHandle& handle)
+    uint getRefCount(const ObjectHandle& handle)
     {
-        return m_Factory->get(handle) != nullptr;
+        return m_RefCounter[handle.index];
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -91,11 +91,12 @@ public:
     virtual ObjectHandle register(T* obj)
     {
         ObjectHandle handle(ObjectFactory<T>::register(obj));
-        handle->setHandle(handle);
+        get(handle)->setHandle(handle);
         return handle;
     }
 
 protected:
+    // --> Disable
     virtual void destroyAll()
     {
         ObjectFactory<T>::destroyAll();
@@ -104,6 +105,8 @@ protected:
     {
         ObjectFactory<T>::destroyObject(handle);
     }
+    // <--
+
     virtual void resize(uint newSize)
     {
         ObjectFactory<T>::resize(newSize);
