@@ -68,19 +68,26 @@ const char* fragQuadShader =
 
 /* CONSTRUCTOR - DESCTRUCTOR */
 Forward3DRenderer::Forward3DRenderer():
-    m_FboId(UINT_MAX), m_pQuadShader(nullptr)
+    m_FboId(UINT_MAX), m_pQuadShader(nullptr),
+    m_pOutColorTexture(nullptr), m_pOutDepthTexture(nullptr), m_pOutNormalTexture(nullptr)
 {
 }
 
 Forward3DRenderer::~Forward3DRenderer()
 {
+    if (m_pOutColorTexture != nullptr)
+        m_pOutColorTexture->release();
+    if (m_pOutNormalTexture != nullptr)
+        m_pOutNormalTexture->release();
+    if (m_pOutDepthTexture != nullptr)
+        m_pOutDepthTexture->release();
     if (m_FboId != 0 || m_FboId != UINT_MAX)
         glDeleteFramebuffers(1, &m_FboId);
     delete m_pQuadShader;
 }
 
 void Forward3DRenderer::init( const RenderSettings& settings, 
-    const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget )
+    const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget )
 {
     m_pQuad = CONTENT->getFullscreenQuad();
 
@@ -89,6 +96,13 @@ void Forward3DRenderer::init( const RenderSettings& settings,
 
     m_pOutNormalTexture = pOutNormalTarget;
     m_pOutDepthTexture = pOutDepthTarget;
+
+    if (m_pOutColorTexture != nullptr)
+        ResourceFactory<Texture2D>::getInstance()->instantiate(m_pOutColorTexture->getHandle());
+    if (m_pOutNormalTexture != nullptr)
+        ResourceFactory<Texture2D>::getInstance()->instantiate(m_pOutNormalTexture->getHandle());
+    if (m_pOutDepthTexture != nullptr)
+        ResourceFactory<Texture2D>::getInstance()->instantiate(m_pOutDepthTexture->getHandle());
 
     initFbo();
     setRenderSettings(settings);
@@ -106,10 +120,14 @@ void Forward3DRenderer::initFbo()
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-        //const cast to keep code clean
         if (m_pOutColorTexture == nullptr)
-            m_pOutColorTexture = Texture2D::pointer(NEW Texture2D());
-        m_pOutColorTexture->init(colorId, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), GL_RGBA8);
+        {
+            ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+            m_pOutColorTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+            ResourceFactory<Texture2D>::getInstance()->get(handle)->setName("Forward3DRenderer::m_pOutColorTexture");
+        }
+        ResourceFactory<Texture2D>::getInstance()->get(m_pOutColorTexture->getHandle())->init(
+            colorId, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), GL_RGBA8);
     }
 
     if ((m_FboId == 0 || m_FboId == UINT_MAX) == false)

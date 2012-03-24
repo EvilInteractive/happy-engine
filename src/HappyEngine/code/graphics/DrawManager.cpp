@@ -41,9 +41,14 @@ namespace gfx {
 DrawManager::DrawManager(): m_pShadowCaster(nullptr), m_pMainRenderer(nullptr), 
                             m_pFallbackRenderer(nullptr), m_pAfterPostRenderer(nullptr), 
                             m_pBackgroundRenderer(nullptr), m_pPostProcesser(nullptr),
-                            m_pColorRenderMap(NEW Texture2D()), m_pNormalRenderMap(NEW Texture2D()), m_pDepthRenderMap(NEW Texture2D()),
+                            m_pColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
+                            m_pNormalRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
+                            m_pDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
                             m_RenderDebugTextures(false)
 {
+    m_pColorRenderMap->setName("DrawManager::m_pColorRenderMap");
+    m_pNormalRenderMap->setName("DrawManager::m_pNormalRenderMap");
+    m_pDepthRenderMap->setName("DrawManager::m_pDepthRenderMap");
 }
 
 
@@ -55,6 +60,9 @@ DrawManager::~DrawManager()
     delete m_pAfterPostRenderer;
     delete m_pPostProcesser;
     delete m_pShadowCaster;
+    m_pColorRenderMap->release();
+    m_pNormalRenderMap->release();
+    m_pDepthRenderMap->release();
 }
 
 bool DrawManager::viewClip(const ICamera* pCamera, const shapes::Sphere& boundingSphere)
@@ -87,7 +95,6 @@ void DrawManager::init(const RenderSettings& settings)
 {
     m_RenderSettings = settings;
     initSharedTextures();
-    Texture2D::pointer nullTexture;
     if (settings.enableDeferred)
     {
         m_pMainRenderer = NEW Deferred3DRenderer();
@@ -118,7 +125,7 @@ void DrawManager::init(const RenderSettings& settings)
     }
 
     m_pBackgroundRenderer = NEW Forward3DRenderer();
-    m_pBackgroundRenderer->init(settings, nullTexture, nullTexture, m_pDepthRenderMap);
+    m_pBackgroundRenderer->init(settings, nullptr, nullptr, m_pDepthRenderMap);
     m_BackgroundRenderFlags = DrawListContainer::F_Main_Blended    | 
                               DrawListContainer::F_Main_Opac       |
                               DrawListContainer::F_Loc_Background  |
@@ -127,7 +134,7 @@ void DrawManager::init(const RenderSettings& settings)
                               DrawListContainer::F_Sub_Instanced;
 
     m_pAfterPostRenderer = NEW Forward3DRenderer();
-    m_pAfterPostRenderer->init(settings, nullTexture, nullTexture, m_pDepthRenderMap);
+    m_pAfterPostRenderer->init(settings, nullptr, nullptr, m_pDepthRenderMap);
     m_AfterPostRenderFlags =  DrawListContainer::F_Main_Blended    | 
                               DrawListContainer::F_Main_Opac       |
                               DrawListContainer::F_Loc_AfterPost   |

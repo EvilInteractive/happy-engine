@@ -20,8 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "ShadowCaster.h"
-#include "HappyNew.h"
-#include "OpenGL.h"
+
 #include "ExternalError.h"
 #include "GraphicsEngine.h"
 #include "InstancingManager.h"
@@ -30,7 +29,6 @@
 #include "CameraManager.h"
 #include "Camera.h"
 #include "LightManager.h"
-#include "Console.h"
 
 namespace he {
 namespace gfx {
@@ -38,11 +36,20 @@ namespace gfx {
 ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0)
 {
     CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
+    for (int i = 0; i < COUNT; ++i)
+    {
+        m_pShadowTexture[i] = nullptr;
+    }
 }
 
 
 ShadowCaster::~ShadowCaster()
 {
+    for (int i = 0; i < COUNT; ++i)
+    {
+        if (m_pShadowTexture[i] != nullptr)
+            m_pShadowTexture[i]->release();
+    }
     glDeleteRenderbuffers(1, &m_DepthRenderbuff);
     glDeleteFramebuffers(1, &m_FboId);
 }
@@ -67,7 +74,11 @@ void ShadowCaster::init(const RenderSettings& settings)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 
             m_ShadowSize, m_ShadowSize, 
             0, GL_RG, GL_FLOAT, 0);
-        m_pShadowTexture[i] = Texture2D::pointer(NEW Texture2D());
+        if (m_pShadowTexture[i] != nullptr)
+            m_pShadowTexture[i]->release();
+        ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+        m_pShadowTexture[i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
+        m_pShadowTexture[i]->setName("ShadowCaster::m_pShadowTexture[i]");
         m_pShadowTexture[i]->init(texId[i], m_ShadowSize, m_ShadowSize, GL_RG16F);
     }
     //////////////////////////////////////////////////////////////////////////
@@ -179,9 +190,6 @@ void ShadowCaster::setSettings( const RenderSettings& settings )
         init(settings);
     }
 }
-
-
-
 
 mat44 getProjection(const mat44& mtxShadowView, float nearClip, float farClip)
 {

@@ -140,7 +140,7 @@ void addPSBehaviours(gfx::IFxTimeLineTrackComponent* pComp, const io::BinaryStre
         {
             uint varType(stream.readDword()); //texture
             Material material(CONTENT->loadMaterial("particles/particles.material"));
-            gfx::ShaderUserVar<gfx::Texture2D::pointer>::pointer texture(boost::static_pointer_cast<gfx::ShaderUserVar<gfx::Texture2D::pointer>>(material.getVar("diffuseMap")));           
+            gfx::ShaderUserVar<const gfx::Texture2D*>::pointer texture(boost::static_pointer_cast<gfx::ShaderUserVar<const gfx::Texture2D*>>(material.getVar("diffuseMap")));           
             texture->setData(CONTENT->asyncLoadTexture(stream.readString()));
             pPS->setMaterial(material);
 

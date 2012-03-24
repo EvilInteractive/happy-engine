@@ -51,6 +51,7 @@ LoadingScreen::LoadingScreen() :    m_pFontLoading(CONTENT->getDefaultFont(14)),
 
 LoadingScreen::~LoadingScreen()
 {
+    m_pLogo->release();
 }
 
 /* GENERAL */
@@ -92,7 +93,7 @@ void LoadingScreen::draw()
     //GUI->drawText(message, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()),true);
 
     GUI->drawTexture2D(m_pLogo, vec2(	GRAPHICS->getScreenWidth()/2.0f - m_pLogo->getWidth()/2.0f,
-										GRAPHICS->getScreenHeight()/2.0f - m_pLogo->getHeight()/2.0f));
+                                        GRAPHICS->getScreenHeight()/2.0f - m_pLogo->getHeight()/2.0f));
 
     gui::Text loading("HAPPY ENGINE // LOADING", m_pFontLoading);
     loading.setHorizontalAlignment(gui::Text::HAlignment_Left);

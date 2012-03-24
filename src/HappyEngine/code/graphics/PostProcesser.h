@@ -44,7 +44,7 @@ public:
 
     void onScreenResized();
 
-    void draw(const Texture2D::pointer& pColorMap, const Texture2D::pointer& pNormalMap, const Texture2D::pointer& pDepthMap);
+    void draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap);
 
 private:
 
@@ -80,7 +80,7 @@ private:
     Shader* m_pPostShader;
     uint m_PostShaderVars[MAX_POST_SHADER_VARS];
 
-    Texture2D::pointer m_pRandomNormals;
+    const Texture2D* m_pRandomNormals;
 
     ModelMesh::pointer m_pQuad;
 

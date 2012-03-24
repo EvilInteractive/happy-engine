@@ -46,9 +46,9 @@ public:
     ContentManager();
     virtual ~ContentManager();
 
-    //gfx::Texture2D::pointer loadTexture2D(const std::string& path);
-    // gfx::Texture2D::pointer asyncLoadTexture2D(const std::string& path);
-    // asyncLoadTexture2D(const std::string& path, gfx::Texture2D::pointer*);
+    //gfx::Texture2D* loadTexture2D(const std::string& path);
+    // gfx::Texture2D* asyncLoadTexture2D(const std::string& path);
+    // asyncLoadTexture2D(const std::string& path, gfx::Texture2D**);
 
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
@@ -60,10 +60,10 @@ public:
     gfx::ModelMesh::pointer getFullscreenQuad() const;
     const gfx::ModelMesh::pointer& getParticleQuad() const;
 
-    gfx::Texture2D::pointer asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
-    gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
-    gfx::Texture2D::pointer loadTexture(const std::string& path);
-    gfx::Texture2D::pointer makeTexture(const Color& color);
+    const gfx::Texture2D* asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
+    const gfx::Texture2D* asyncMakeTexture(const Color& color);
+    const gfx::Texture2D* loadTexture(const std::string& path);
+    const gfx::Texture2D* makeTexture(const Color& color);
 
     gfx::Line::pointer loadLine(const std::string& path);
 

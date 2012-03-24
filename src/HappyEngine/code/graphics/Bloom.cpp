@@ -21,14 +21,13 @@
 #include "HappyPCH.h" 
 
 #include "Bloom.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
 #include "ContentManager.h"
 #include "GraphicsEngine.h"
 #include "Vertex.h"
 
-#include "OpenGL.h"
 #include "ExternalError.h"
+
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
@@ -43,6 +42,10 @@ Bloom::~Bloom()
 {
     for (int pass = 0; pass < 2; ++pass)
     {
+        for (int i(0); i < m_DownSamples; ++i)
+        {
+            m_Texture[pass][i]->release();
+        }
         std::for_each(m_FboId[pass].cbegin(), m_FboId[pass].cend(), [](const uint& id)
         {
             glDeleteFramebuffers(1, &id);
@@ -128,7 +131,9 @@ void Bloom::resize()
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
                 GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
                 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-            m_Texture[pass][i] = Texture2D::pointer(NEW Texture2D());
+            ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+            m_Texture[pass][i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
+            m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
             m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
         }
 
@@ -148,7 +153,7 @@ void Bloom::resize()
     }
 }
 
-void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer& pLumMap )
+void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
 {
     HE_ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
 
@@ -189,7 +194,7 @@ void Bloom::render( const Texture2D::pointer& pTexture, const Texture2D::pointer
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
 }
 
-const Texture2D::pointer& Bloom::getBloom( byte level ) const
+const Texture2D* Bloom::getBloom( byte level ) const
 {
     return m_Texture[0][level];
 }

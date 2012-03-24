@@ -38,6 +38,8 @@
 #include "SoundEngine.h"
 #include "ExtraForward3DRenderer.h"
 #include "fx/FxManager.h"
+#include "LoadingScreen.h"
+#include "StaticDataManager.h"
 
 #ifdef HE_ENABLE_QT
 #pragma warning(disable:4127)
@@ -74,6 +76,7 @@ void HappyEngine::dispose()
     HAPPYENGINE->cleanup();
     delete s_pHappyEngine;
     s_pHappyEngine = nullptr;
+    StaticDataManager::destroy();
 }
 void HappyEngine::cleanup()
 {  
@@ -115,6 +118,7 @@ void HappyEngine::cleanup()
 }
 void HappyEngine::init(int subengines)
 {
+    StaticDataManager::init();
     if (s_pHappyEngine == nullptr)
         s_pHappyEngine = NEW HappyEngine();
     GL::init();

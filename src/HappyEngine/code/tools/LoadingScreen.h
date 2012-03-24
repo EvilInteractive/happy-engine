@@ -58,7 +58,7 @@ private:
     gfx::Font::pointer m_pFontLoading;
     gfx::Font::pointer m_pFontMessage;
 
-    gfx::Texture2D::pointer m_pLogo;
+    const gfx::Texture2D* m_pLogo;
 
     /* DEFAULT COPY & ASSIGNMENT */
     LoadingScreen(const LoadingScreen&);

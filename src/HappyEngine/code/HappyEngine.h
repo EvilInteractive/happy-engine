@@ -19,12 +19,6 @@
 #define _HE_HAPPYENGINE_H_
 #pragma once
 
-#include <vector>
-
-#include "LoadingScreen.h"
-
-// forward declaration
-
 #ifdef HE_ENABLE_QT
 #pragma warning(disable:4127)
 #include <QTimer>
@@ -54,6 +48,7 @@ namespace net {
 }
 namespace tools {
     class Console;
+    class LoadingScreen;
 }
 namespace sfx {
     class SoundEngine;

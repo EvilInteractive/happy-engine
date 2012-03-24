@@ -21,13 +21,10 @@
 #include "HappyPCH.h" 
 
 #include "Font.h"
-#include "SDL.h"
-#include "OpenGL.h"
-#include "HeAssert.h"
-#include "HappyNew.h"
 #include "Text.h"
+#include "ResourceFactory.h"
+#include "Texture2D.h"
 
-#include <algorithm>
 
 namespace he {
 namespace gfx {
@@ -69,8 +66,8 @@ SDL_Surface* convertNonP2ToP2Surface(SDL_Surface* pSurf)
 
     return pP2Surf;
 }
-Texture2D::pointer Font::createTextureText(const std::string& text, const Color& color,
-                                            bool bAntiAliased, vec2* sizeText)
+const Texture2D* Font::createTextureText(const std::string& text, const Color& color,
+                                         bool bAntiAliased, vec2* sizeText)
 {
     SDL_Color col;
     col.r = color.rByte();
@@ -111,13 +108,15 @@ Texture2D::pointer Font::createTextureText(const std::string& text, const Color&
     
     SDL_FreeSurface(pSurf);
 
-    gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
+    ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+    gfx::Texture2D* tex2D(ResourceFactory<Texture2D>::getInstance()->get(handle));
+    tex2D->setName("Font::tex2D: " + text);
     tex2D->init(texID, pSurf->w, pSurf->h, GL_BGRA);
     return tex2D;    
 }
 
-Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& color,
-                                           bool bAntiAliased)
+const Texture2D* Font::createTextureText(const gui::Text& text, const Color& color,
+                                         bool bAntiAliased)
 {
     SDL_Color col;
     col.r = color.rByte();
@@ -180,8 +179,10 @@ Texture2D::pointer Font::createTextureText(const gui::Text& text, const Color& c
     
     SDL_FreeSurface(pSurf);
 
-    gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
+    ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+    gfx::Texture2D* tex2D(ResourceFactory<Texture2D>::getInstance()->get(handle));
     tex2D->init(texID, pSurf->w, pSurf->h, GL_BGRA);
+    tex2D->setName("Font::tex2D: " + text.getLine(0));
     return tex2D;    
 }
 

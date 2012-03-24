@@ -26,7 +26,6 @@
 #include "mat44.h"
 #include "Color.h"
 #include "Model.h"
-#include "Texture2D.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -34,6 +33,7 @@
 
 namespace he {
 namespace gfx {
+class Texture2D;
 
 class DirectionalLight
 {
@@ -46,7 +46,7 @@ private:
     vec3 m_Direction;
 
     mat44 m_ShadowMatrix[CASCADES];
-    Texture2D::pointer m_pShadowMap[CASCADES];
+    const Texture2D* m_pShadowMap[CASCADES];
     
 public:
 
@@ -58,17 +58,17 @@ public:
     void setColor(const vec3& color);
     void setColor(const Color& color);
     void setDirection(const vec3& direction);
-    void setShadowMap(int index, const Texture2D::pointer& map);
+    void setShadowMap(int index, const Texture2D* map);
     void setShadowMatrix(int index, const mat44& mtx);
     
     float getMultiplier() const;
     const vec3& getColor() const;
-	const vec3& getDirection() const;
+    const vec3& getDirection() const;
 
     const mat44& getShadowMatrix(int index) const;
-    const Texture2D::pointer& getShadowMap(int index) const;
+    const Texture2D* getShadowMap(int index) const;
 
-	typedef boost::shared_ptr<DirectionalLight> pointer;
+    typedef boost::shared_ptr<DirectionalLight> pointer;
 };
 
 } } //end namespace

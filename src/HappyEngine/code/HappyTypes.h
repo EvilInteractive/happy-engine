@@ -28,7 +28,7 @@ namespace he {
 
 typedef unsigned long ulong;
 typedef unsigned int uint;
-typedef unsigned short Type;
+typedef unsigned short ushort;
 typedef unsigned char byte;
 
 typedef uint8_t uint8;

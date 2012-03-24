@@ -39,10 +39,10 @@ public:
 
     void init(const RenderSettings& settings);
 
-    void calculate(const Texture2D::pointer& pHdrMap );
+    void calculate(const Texture2D* pHdrMap );
     virtual void tick(float dTime);
 
-    const Texture2D::pointer& getLuminanceMap() const;
+    const Texture2D* getLuminanceMap() const;
 
 private:
 
@@ -54,7 +54,7 @@ private:
     float m_DTime;
     float m_ExposureSpeed;
 
-    Texture2D::pointer m_pLumTexture[2]; //double buffered
+    Texture2D* m_pLumTexture[2]; //double buffered
     bool m_FirstBuffer;
 
     uint m_FboID;

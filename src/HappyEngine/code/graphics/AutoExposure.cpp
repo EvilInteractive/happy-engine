@@ -33,12 +33,18 @@ namespace he {
 
 AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true), m_DTime(0), m_ExposureSpeed(1.0f), m_bOnce(false)
 {
-    m_pLumTexture[0] = Texture2D::pointer(NEW Texture2D());
-    m_pLumTexture[1] = Texture2D::pointer(NEW Texture2D());
+    ObjectHandle handle1(ResourceFactory<Texture2D>::getInstance()->create());
+    ObjectHandle handle2(ResourceFactory<Texture2D>::getInstance()->create());
+    m_pLumTexture[0] = ResourceFactory<Texture2D>::getInstance()->get(handle1);
+    m_pLumTexture[0]->setName("AutoExposure::m_pLumTexture[0]");
+    m_pLumTexture[1] = ResourceFactory<Texture2D>::getInstance()->get(handle2);
+    m_pLumTexture[1]->setName("AutoExposure::m_pLumTexture[1]");
 }
 
 AutoExposure::~AutoExposure()
 {
+    m_pLumTexture[0]->release();
+    m_pLumTexture[1]->release();
     glDeleteFramebuffers(1, &m_FboID);
     if (GAME != nullptr)
         GAME->removeFromTickList(this);
@@ -96,7 +102,7 @@ void AutoExposure::init(const RenderSettings& settings)
     GAME->addToTickList(this);
 }
 
-void AutoExposure::calculate( const Texture2D::pointer& pHdrMap)
+void AutoExposure::calculate( const Texture2D* pHdrMap)
 {
     m_FirstBuffer = !m_FirstBuffer;
 
@@ -111,20 +117,13 @@ void AutoExposure::calculate( const Texture2D::pointer& pHdrMap)
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
 }
 
-const Texture2D::pointer& AutoExposure::getLuminanceMap() const
+const Texture2D* AutoExposure::getLuminanceMap() const
 {
     return m_pLumTexture[m_FirstBuffer? 0 : 1];
 }
 
 void AutoExposure::tick( float dTime )
 {
-    // quick fix
-    //if (!m_bOnce)
-    //{
-    //    GAME->addToTickList(this);
-    //    m_bOnce = true;
-    //}
-
     m_DTime = dTime;
 }
 

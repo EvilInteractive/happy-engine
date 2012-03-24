@@ -28,22 +28,16 @@
 #include "IL/il.h"
 #include "IL/ilu.h"
 
-#include "OpenGL.h"
-
-#include "HappyTypes.h"
-#include <iostream>
 #include "Texture2D.h"
+#include "ResourceFactory.h"
 
-#include "HappyEngine.h"
-#include "Console.h"
-
-#include "HappyNew.h"
+#define FACTORY ResourceFactory<gfx::Texture2D>::getInstance()
 
 namespace he {
 namespace ct {
 
 TextureLoader::TextureLoader(): m_isLoadThreadRunning(false),
-                                m_pAssetContainer(NEW AssetContainer<gfx::Texture2D::pointer>())
+                                m_pAssetContainer(NEW AssetContainer<ObjectHandle>())
 {
 }
 
@@ -67,6 +61,7 @@ inline void handleILError(const std::string& file)
 
 void TextureLoader::tick(float /*dTime*/) //checks for new load operations, if true start thread
 {
+    ResourceFactory<gfx::Texture2D>::getInstance()->garbageCollect();
     if (m_isLoadThreadRunning == false)
         if (m_TextureLoadQueue.empty() == false)
         {
@@ -83,43 +78,23 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
         m_TextureInvokeQueue.pop();
         m_TextureInvokeQueueMutex.unlock();
 
-        GLuint texID;
-        glGenTextures(1, &texID);
-        GL::heBindTexture2D(0, texID);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-
-        if (data.storePixels)
-            data.tex->init(texID, data.width, data.height, data.format, data.pData, 4 * data.width * data.height);
-        else
-            data.tex->init(texID, data.width, data.height, data.format);
-
-        if (data.path != "")
-            ilDeleteImage(data.id);
-        else
-            delete data.pData;
-
-        HE_INFO("Texture create completed: " + data.path);
+        createTexture(data);
     }
 }
 
-gfx::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
+const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_pAssetContainer->isAssetPresent(stream.str()))
+    if (m_pAssetContainer->isAssetPresent(stream.str()) && FACTORY->isAlive(m_pAssetContainer->getAsset(stream.str())))
     {
-        return m_pAssetContainer->getAsset(stream.str());
+        ObjectHandle handle(m_pAssetContainer->getAsset(stream.str()));
+        FACTORY->instantiate(handle);       
+        return FACTORY->get(handle);
     }
     else
     {
-        gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
+        ObjectHandle handle(FACTORY->create());
 
         TextureLoadData data;
         data.path = "";
@@ -129,26 +104,28 @@ gfx::Texture2D::pointer TextureLoader::asyncMakeTexture(const Color& color)
         data.height = 0;
         data.format = 0;
         data.color = color;
-        data.tex = tex2D;
+        data.tex = handle;
 
         m_TextureLoadQueueMutex.lock();
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
-        m_pAssetContainer->addAsset(stream.str(), tex2D);
+        m_pAssetContainer->addAsset(stream.str(), handle);
 
-        return tex2D;
+        return FACTORY->get(handle);
     }
 }
-gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path, bool storePixelsInTexture)
+const gfx::Texture2D* TextureLoader::asyncLoadTexture(const std::string& path, bool storePixelsInTexture)
 {
-    if (m_pAssetContainer->isAssetPresent(path))
+    if (m_pAssetContainer->isAssetPresent(path) && FACTORY->isAlive(m_pAssetContainer->getAsset(path)))
     {
-        return m_pAssetContainer->getAsset(path);
+        ObjectHandle handle(m_pAssetContainer->getAsset(path));
+        FACTORY->instantiate(handle); 
+        return FACTORY->get(handle);
     }
     else
     {
-        gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
+        ObjectHandle handle(FACTORY->create());
 
         TextureLoadData data;
         data.path = path;
@@ -157,17 +134,157 @@ gfx::Texture2D::pointer TextureLoader::asyncLoadTexture(const std::string& path,
         data.width = 0;
         data.height = 0;
         data.format = 0;
-        data.tex = tex2D;
+        data.tex = handle;
         data.storePixels = storePixelsInTexture;
 
         m_TextureLoadQueueMutex.lock();
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
-        m_pAssetContainer->addAsset(path, tex2D);
+        m_pAssetContainer->addAsset(path, handle);
 
-        return tex2D;
+        return FACTORY->get(handle);
     }
+}
+const gfx::Texture2D* TextureLoader::loadTexture(const std::string& path, bool storePixelsInTexture)
+{
+    if (m_pAssetContainer->isAssetPresent(path) && FACTORY->isAlive(m_pAssetContainer->getAsset(path)))
+    {
+        ObjectHandle handle(m_pAssetContainer->getAsset(path));
+        FACTORY->instantiate(handle); 
+        return FACTORY->get(handle);
+    }
+    else
+    {
+        ObjectHandle handle(FACTORY->create());
+        m_pAssetContainer->addAsset(path, handle);
+
+        TextureLoadData data;
+        data.path = path;
+        data.id = 0;
+        data.pData = 0;
+        data.width = 0;
+        data.height = 0;
+        data.format = 0;
+        data.tex = handle;
+        data.storePixels = storePixelsInTexture;
+
+        if (loadData(data))
+        {
+            createTexture(data);
+        }
+
+        return FACTORY->get(handle);
+    }
+}
+
+const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
+{
+    std::stringstream stream;
+    stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
+    if (m_pAssetContainer->isAssetPresent(stream.str()) && FACTORY->isAlive(m_pAssetContainer->getAsset(stream.str())))
+    {
+        ObjectHandle handle(m_pAssetContainer->getAsset(stream.str()));
+        FACTORY->instantiate(handle); 
+        return FACTORY->get(handle);
+    }
+    else
+    {
+        ObjectHandle handle(FACTORY->create());
+        m_pAssetContainer->addAsset(stream.str(), handle);
+
+        TextureLoadData data;
+        data.path = "";
+        data.id = 0;
+        data.format = 0;
+        data.color = color;
+        data.tex = handle;
+
+        makeData(data);
+
+        createTexture(data);
+
+        return FACTORY->get(handle);
+    }
+}
+
+bool TextureLoader::createTexture( const TextureLoadData& data )
+{
+    GLuint texID;
+    glGenTextures(1, &texID);
+    GL::heBindTexture2D(0, texID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    if (data.storePixels)
+        FACTORY->get(data.tex)->init(texID, data.width, data.height, data.format, data.pData, 4 * data.width * data.height);
+    else
+        FACTORY->get(data.tex)->init(texID, data.width, data.height, data.format);
+
+    FACTORY->get(data.tex)->setName(data.path);
+
+    if (data.path != "")
+        ilDeleteImage(data.id);
+    else
+        delete data.pData;
+
+    HE_INFO("Texture create completed: " + data.path);
+
+    return true;
+}
+
+bool TextureLoader::loadData( TextureLoadData& data )
+{
+    ILuint id = ilGenImage();
+    ilBindImage(id);
+    if (ilLoadImage(data.path.c_str()))
+    {
+        if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
+        {
+            iluFlipImage();
+            data.id = id;
+            data.width = ilGetInteger(IL_IMAGE_WIDTH);
+            data.height = ilGetInteger(IL_IMAGE_HEIGHT);
+            data.format = ilGetInteger(IL_IMAGE_FORMAT);
+            data.pData = ilGetData();
+
+            HE_INFO("Texture load completed: " + data.path);
+
+            return true;
+        }
+        else
+        {
+            handleILError(data.path);
+        }
+    }
+    else
+    {
+        handleILError(data.path);
+    }
+    return false;
+}
+
+bool TextureLoader::makeData( TextureLoadData& data )
+{
+    data.id = 0;
+    data.width = 8;
+    data.height = 8;
+    data.format = GL_BGRA;
+    data.pData = NEW byte[8*8*4];
+    for (uint i = 0; i < 64*4; i += 4)
+    {
+        data.pData[i] = data.color.bByte();
+        data.pData[i+1] = data.color.gByte();
+        data.pData[i+2] = data.color.rByte();
+        data.pData[i+3] = data.color.aByte();
+    }
+    HE_INFO("Texture color load completed: " + data.path);
+    return true;
 }
 
 void TextureLoader::TextureLoadThread()
@@ -182,179 +299,25 @@ void TextureLoader::TextureLoadThread()
 
         if (data.path != "")
         {
-            ILuint id = ilGenImage();
-            ilBindImage(id);
-            if (ilLoadImage(data.path.c_str()))
+            if (loadData(data))
             {
-                if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
-                {
-                    iluFlipImage();
-                    data.id = id;
-                    data.width = ilGetInteger(IL_IMAGE_WIDTH);
-                    data.height = ilGetInteger(IL_IMAGE_HEIGHT);
-                    data.format = ilGetInteger(IL_IMAGE_FORMAT);
-                    data.pData = ilGetData();
-
-                    m_TextureInvokeQueueMutex.lock();
-                    m_TextureInvokeQueue.push(data);
-                    m_TextureInvokeQueueMutex.unlock();
-
-                    HE_INFO("Texture load completed: " + data.path);
-                }
-                else
-                {
-                    handleILError(data.path);
-                }
-            }
-            else
-            {
-                handleILError(data.path);
+                m_TextureInvokeQueueMutex.lock();
+                m_TextureInvokeQueue.push(data);
+                m_TextureInvokeQueueMutex.unlock();
             }
         }
         else
         {
-            data.id = 0;
-            data.width = 8;
-            data.height = 8;
-            data.format = GL_BGRA;
-            data.pData = NEW byte[8*8*4];
-            for (uint i = 0; i < 64*4; i += 4)
+            if (makeData(data))
             {
-                data.pData[i] = data.color.bByte();
-                data.pData[i+1] = data.color.gByte();
-                data.pData[i+2] = data.color.rByte();
-                data.pData[i+3] = data.color.aByte();
+                m_TextureInvokeQueueMutex.lock();
+                m_TextureInvokeQueue.push(data);
+                m_TextureInvokeQueueMutex.unlock();
             }
-            m_TextureInvokeQueueMutex.lock();
-            m_TextureInvokeQueue.push(data);
-            m_TextureInvokeQueueMutex.unlock();
-            HE_INFO("Texture color load completed: " + data.path);
         }
     }
     m_isLoadThreadRunning = false;
     HE_INFO("Texture load thread stopped");
-}
-
-gfx::Texture2D::pointer TextureLoader::loadTexture(const std::string& path)
-{
-    if (m_pAssetContainer->isAssetPresent(path))
-    {
-        return m_pAssetContainer->getAsset(path);
-    }
-    else
-    {
-        gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
-
-        TextureLoadData data;
-        data.path = path;
-        data.id = 0;
-        data.pData = 0;
-        data.width = 0;
-        data.height = 0;
-        data.format = 0;
-        data.tex = tex2D;
-
-        m_pAssetContainer->addAsset(path, tex2D);
-
-        ILuint id = ilGenImage();
-        ilBindImage(id);
-        if (ilLoadImage(data.path.c_str()))
-        {
-            if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
-            {
-                iluFlipImage();
-                data.id = id;
-                data.width = ilGetInteger(IL_IMAGE_WIDTH);
-                data.height = ilGetInteger(IL_IMAGE_HEIGHT);
-                data.format = ilGetInteger(IL_IMAGE_FORMAT);
-                data.pData = ilGetData();
-            }
-            else
-            {
-                handleILError(data.path);
-            }
-        }
-        else
-        {
-            handleILError(data.path);
-        }
-
-        GLuint texID;
-        glGenTextures(1, &texID);
-        GL::heBindTexture2D(0, texID);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        if (data.path != "")
-            ilDeleteImage(data.id);
-        else
-            delete data.pData;
-
-        data.tex->init(texID, data.width, data.height, data.format);
-
-        return tex2D;
-    }
-}
-
-gfx::Texture2D::pointer TextureLoader::makeTexture(const Color& color)
-{
-    std::stringstream stream;
-    stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_pAssetContainer->isAssetPresent(stream.str()))
-    {
-        return m_pAssetContainer->getAsset(stream.str());
-    }
-    else
-    {
-        gfx::Texture2D::pointer tex2D(NEW gfx::Texture2D());
-
-        TextureLoadData data;
-        data.path = "";
-        data.id = 0;
-        data.format = 0;
-        data.color = color;
-        data.tex = tex2D;
-
-        m_pAssetContainer->addAsset(stream.str(), tex2D);
-
-        data.width = 8;
-        data.height = 8;
-        data.format = GL_BGRA;
-        data.pData = NEW byte[8*8*4];
-
-        for (uint i = 0; i < 64*4; i += 4)
-        {
-            data.pData[i] = data.color.bByte();
-            data.pData[i+1] = data.color.gByte();
-            data.pData[i+2] = data.color.rByte();
-            data.pData[i+3] = data.color.aByte();
-        }
-
-        GLuint texID;
-        glGenTextures(1, &texID);
-        GL::heBindTexture2D(0, texID);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        if (data.path != "")
-            ilDeleteImage(data.id);
-        else
-            delete data.pData;
-
-        data.tex->init(texID, data.width, data.height, data.format);
-
-        return tex2D;
-    }
 }
 
 /* GETTERS */

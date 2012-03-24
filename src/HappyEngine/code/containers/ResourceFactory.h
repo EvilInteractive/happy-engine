@@ -45,7 +45,7 @@ public:
     }
     static ResourceFactory<T>* getInstance()
     {
-        ASSERT(s_Instance != nullptr, "Resource factory has not been initialized!");
+        HE_ASSERT(s_Instance != nullptr, "Resource factory has not been initialized!");
         return s_Instance;
     }
 
@@ -54,11 +54,11 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void garbageCollect()
     {
-        for (uint i(0); i < m_RefCounter.size(); ++i)
+        for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
         {
-            if (m_RefCounter[i] == 0)
+            if (m_RefCounter[i] == 0 && isAliveAt(i))
             {
-                destroyObject(i);
+                destroyAt(i);
             }
         }
     }
@@ -66,12 +66,12 @@ public:
     void instantiate(const ObjectHandle& handle)
     {
         HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (" + m_DisplayName + "): oops handle has been garbage collected");
-        ++m_RefCounter[handle];
+        ++m_RefCounter[handle.index];
     }
     void release(const ObjectHandle& handle)
     {
-        HE_ASSERT(m_RefCounter[handle] != 0, "ResourceFactory (" + m_DisplayName + "): All refs are already released");
-        --m_RefCounter[handle];
+        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (" + m_DisplayName + "): All refs are already released (" + get(handle)->getName() + ")");
+        --m_RefCounter[handle.index];
     }
 
     uint getRefCount(const ObjectHandle& handle)
@@ -86,12 +86,14 @@ public:
     {
         ObjectHandle handle(ObjectFactory<T>::create());
         get(handle)->setHandle(handle);
+        instantiate(handle);
         return handle;
     }
-    virtual ObjectHandle register(T* obj)
+    virtual ObjectHandle create(T* obj)
     {
-        ObjectHandle handle(ObjectFactory<T>::register(obj));
+        ObjectHandle handle(ObjectFactory<T>::create(obj));
         get(handle)->setHandle(handle);
+        instantiate(handle);
         return handle;
     }
 
@@ -105,6 +107,10 @@ protected:
     {
         ObjectFactory<T>::destroyObject(handle);
     }
+    virtual void destroyAt(ObjectHandle::Type index)
+    {
+        ObjectFactory<T>::destroyAt(index);
+    }
     // <--
 
     virtual void resize(uint newSize)
@@ -112,19 +118,27 @@ protected:
         ObjectFactory<T>::resize(newSize);
         uint prevSize(m_RefCounter.size());
         m_RefCounter.resize(newSize);
-        for (uint i(prevSize); i < newsize; ++i)
+        for (uint i(prevSize); i < newSize; ++i)
             m_RefCounter[i] = 0;
     }
     
 private:
-    static ResourceFactory<T> s_Instance;
+    static ResourceFactory<T>* s_Instance;
 
-    ResourceFactory(uint startSize, uint increaseSize, const std::string& displayName):
-       ObjectFactory<T>(startSize, increaseSize, displayName)
+    ResourceFactory(uint startSize, uint increaseSize, const std::string& displayName): ObjectFactory<T>()
     {
+        ObjectFactory<T>::init(startSize, increaseSize, displayName);
     }
     virtual ~ResourceFactory() 
     {
+        garbageCollect();
+        for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
+        {
+            if (m_RefCounter[i] != 0)
+            {
+                HE_WARNING(m_DisplayName + ": resource " + getAt(i)->getName() + " has " + itoa(m_RefCounter[i]) + " references open!")
+            }
+        }
     }
 
     std::vector<uint> m_RefCounter;
@@ -133,6 +147,9 @@ private:
     ResourceFactory(const ResourceFactory&);
     ResourceFactory& operator=(const ResourceFactory&);
 };
+
+template<typename T>
+ResourceFactory<T>* ResourceFactory<T>::s_Instance = nullptr;
 
 } //end namespace
 

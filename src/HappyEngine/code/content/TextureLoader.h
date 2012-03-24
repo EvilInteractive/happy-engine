@@ -24,17 +24,12 @@
 #define _HE_TEXTURE_LOADER_H_
 #pragma once
 
-#include <string>
-#include <queue>
-#include "Texture2D.h"
-
-#include "boost/thread.hpp"
-
-#include "HappyTypes.h"
 #include "AssetContainer.h"
-#include "Color.h"
 
 namespace he {
+namespace gfx {
+    class Texture2D;
+}
 namespace ct {
 
 class TextureLoader
@@ -49,11 +44,11 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Texture2D::pointer asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
-    gfx::Texture2D::pointer asyncMakeTexture(const Color& color);
+    const gfx::Texture2D* asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
+    const gfx::Texture2D* asyncMakeTexture(const Color& color);
 
-    gfx::Texture2D::pointer loadTexture(const std::string& path);
-    gfx::Texture2D::pointer makeTexture(const Color& color);
+    const gfx::Texture2D* loadTexture(const std::string& path, bool storePixelsInTexture = false);
+    const gfx::Texture2D* makeTexture(const Color& color);
 
     /* GETTERS */
     bool isLoading() const;
@@ -70,11 +65,15 @@ private:
         uint id;
         bool storePixels;
         Color color;
-        gfx::Texture2D::pointer tex;
+        ObjectHandle tex;
     };
 
     bool m_isLoadThreadRunning;
     void TextureLoadThread();
+
+    bool loadData(TextureLoadData& data);
+    bool makeData(TextureLoadData& data);
+    bool createTexture(const TextureLoadData& data);
 
     /* DATAMEMBERS */
     std::queue<TextureLoadData> m_TextureLoadQueue;
@@ -85,7 +84,7 @@ private:
 
     boost::thread m_TextureLoadThread;
 
-    AssetContainer<gfx::Texture2D::pointer>* m_pAssetContainer;
+    AssetContainer<ObjectHandle>* m_pAssetContainer;
 
     /* DEFAULT COPY & ASSIGNMENT */
     TextureLoader(const TextureLoader&);

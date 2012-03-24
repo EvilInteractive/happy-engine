@@ -20,12 +20,7 @@
 #include "HappyPCH.h"
 
 #include "Console.h"
-#include "HappyNew.h"
 
-#include <iostream>
-#include <sstream>
-#include "HappyEngine.h"
-#include <algorithm>
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "ControlsManager.h"
@@ -39,6 +34,9 @@
 #include "Vec3TypeHandler.h"
 #include "Vec4TypeHandler.h"
 #include "StringTypeHandler.h"
+
+#include "Scrollbar.h"
+#include "TextBox.h"
 
 namespace he {
 namespace tools {

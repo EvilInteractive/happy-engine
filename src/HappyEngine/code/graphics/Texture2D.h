@@ -17,6 +17,8 @@
 //
 //Author:  Bastian Damman
 //Created: 11/08/2011
+//
+// 23/03/2012: shared_ptr be gone!
 
 #ifndef _HE_TEXTURE2D_H_
 #define _HE_TEXTURE2D_H_
@@ -26,8 +28,6 @@
 #undef assert
 #define assert HE_ASSERT
 
-#include "boost/shared_ptr.hpp"
-#include "boost/weak_ptr.hpp"
 #include "HappyTypes.h"
 
 #include "boost/function.hpp"
@@ -35,21 +35,19 @@
 
 #include "event.h"
 
+#include "Resource.h"
+
 namespace he {
 namespace gfx {
     
-
-class Texture2D
+class Texture2D : public Resource<Texture2D>
 {
 public:
     Texture2D();
     virtual ~Texture2D();
 
     void init(uint tex, uint width, uint height, uint format, void* pixels = nullptr, uint bufferSize = 0);
-
-    typedef boost::shared_ptr<Texture2D> pointer;
-    typedef boost::weak_ptr<Texture2D> weak_pointer;
-
+    
     bool isInitialized() const;
 
     uint getID() const;
@@ -59,7 +57,7 @@ public:
 
     void* getPixelsIfAvailable() const;
 
-    void callbackIfLoaded(const boost::function<void()>& callback);
+    void callbackIfLoaded(const boost::function<void()>& callback) const;
 
     static uint getTextureCount();
 

@@ -22,20 +22,8 @@
 #define _HE_CONSOLE_H_
 #pragma once
 
-#include "boost/any.hpp"
-#include "boost/function.hpp"
-#include <map>
-#include <vector>
-#include <utility>
-#include <string>
-#include "Keyboard.h"
-#include "Color.h"
 #include "Font.h"
-#include "TextBox.h"
-#include "Text.h"
 #include <typeinfo>
-#include "ITypeHandler.h"
-#include "Scrollbar.h"
 
 namespace he {
 
@@ -48,8 +36,14 @@ enum CMSG_TYPE
     CMSG_TYPE_COMMAND = 4
 };
 
-namespace tools {
+namespace gui {
+    class TextBox;
+    class Text;
+    class Scrollbar;
+}
 
+namespace tools {
+class ITypeHandler;
 class Console
 {
 public:

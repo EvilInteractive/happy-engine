@@ -18,6 +18,9 @@
     <ClCompile Include="..\..\code\HappyTestsPCH.cpp">
       <Filter>pch</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\HappyBasTest\FlyCamera.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\HappyBasTest\MainGame.h">
@@ -25,6 +28,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\HappyTestsPCH.h">
       <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\HappyBasTest\FlyCamera.h">
+      <Filter>code</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

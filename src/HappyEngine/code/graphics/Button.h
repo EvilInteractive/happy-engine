@@ -22,16 +22,13 @@
 #define _HE_BUTTON_H_
 #pragma once
 
-#include "vec2.h"
-#include "HappyEngine.h"
-#include "Texture2D.h"
-#include <vector>
 #include "Hitregion.h"
-#include <string>
 #include "Font.h"
-#include "event.h"
 
 namespace he {
+namespace gfx {
+    class Texture2D;
+}
 namespace gui {
 
 class Button
@@ -68,11 +65,11 @@ public:
     virtual void draw();
 
     /* SETTERS */
-    virtual void setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet);
-    virtual void setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
-                                const gfx::Texture2D::pointer& pHoverSprite,
-                                const gfx::Texture2D::pointer& pDownSprite,
-                                const gfx::Texture2D::pointer& pDisabledSprite);
+    virtual void setSpriteSheet(const ObjectHandle& spriteSheet);
+    virtual void setSprites(	const ObjectHandle& normalSprite,
+                                const ObjectHandle& hoverSprite,
+                                const ObjectHandle& downSprite,
+                                const ObjectHandle& disabledSprite);
     virtual void setState(STATE state);
     virtual void setActivationMode(ACTIVATION activationMode);
     virtual void setPosition(const vec2& centerPos);
@@ -107,8 +104,8 @@ protected:
     STATE m_State;
     ACTIVATION m_ActivationType;
 
-    std::vector<gfx::Texture2D::pointer> m_Sprites;
-    gfx::Texture2D::pointer m_pSpriteSheet;
+    std::vector<const gfx::Texture2D*> m_Sprites;
+    const gfx::Texture2D* m_pSpriteSheet;
 
     Hitregion* m_pHitregion;
 

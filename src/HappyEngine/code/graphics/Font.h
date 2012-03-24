@@ -23,17 +23,6 @@
 #define _HE_FONT_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "SDL_ttf.h"
-#include "Texture2D.h"
-#include "vec2.h"
-
-#include <string>
-#include "Color.h"
-
-#include "boost/shared_ptr.hpp"
-#include <vector>
-
 namespace he {
 
 namespace gui {
@@ -41,6 +30,8 @@ namespace gui {
 }
 
 namespace gfx {
+
+class Texture2D;
 
 class Font
 {
@@ -66,10 +57,10 @@ public:
     virtual ~Font();
     
     /* GETTERS */
-    Texture2D::pointer createTextureText(const std::string& text, const Color& color,
-                                         bool bAntiAliased = true, vec2* sizeText = nullptr);
-    Texture2D::pointer createTextureText(const gui::Text& text, const Color& color,
-                                         bool bAntiAliased = true);
+    const Texture2D* createTextureText(const std::string& text, const Color& color,
+                                       bool bAntiAliased = true, vec2* sizeText = nullptr);
+    const Texture2D* createTextureText(const gui::Text& text, const Color& color,
+                                       bool bAntiAliased = true);
 
     const std::string& getPath() const;
 

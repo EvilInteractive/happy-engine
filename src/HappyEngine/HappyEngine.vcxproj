@@ -181,6 +181,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsTrigger.cpp" />
+    <ClCompile Include="code\StaticDataManager.cpp" />
     <ClCompile Include="code\template\X.cpp" />
     <ClCompile Include="code\tools\Console.cpp" />
     <ClCompile Include="code\tools\FPSGraph.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="code\content\ShaderLoader.h" />
     <ClInclude Include="code\content\ShaderPreProcessor.h" />
     <ClInclude Include="code\content\TextureLoader.h" />
+    <ClInclude Include="code\error\HappyInfo.h" />
     <ClInclude Include="code\error\HeAssert.h" />
     <ClInclude Include="code\error\ExternalError.h" />
     <ClInclude Include="code\event.h" />
@@ -382,6 +384,7 @@
     <ClInclude Include="code\physics\PhysicsStaticActor.h" />
     <ClInclude Include="code\physics\PhysicsTrigger.h" />
     <ClInclude Include="code\HappyPCH.h" />
+    <ClInclude Include="code\StaticDataManager.h" />
     <ClInclude Include="code\template\X.h" />
     <ClInclude Include="code\tools\BoolTypeHandler.h" />
     <ClInclude Include="code\tools\Console.h" />

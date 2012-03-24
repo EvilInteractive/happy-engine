@@ -23,11 +23,9 @@
 #define _HE_DEFERRED_3D_RENDERER_H_
 #pragma once
 
-#include "HappyTypes.h"
 #include "Shader.h"
 #include "Model.h"
 #include "ModelMesh.h"
-#include "Texture2D.h"
 #include "IRenderer.h"
 #include "DrawListContainer.h"
 
@@ -38,6 +36,7 @@ class LightManager;
 class Bloom;
 class AutoExposure;
 class DrawSettings;
+class Texture2D;
 
 class Deferred3DRenderer : public IRenderer
 {
@@ -109,7 +108,7 @@ public:
     virtual ~Deferred3DRenderer();
 
     virtual void init(const RenderSettings& settings, 
-        const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget);
+        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget);
 
     virtual void setRenderSettings(const RenderSettings& settings);
     virtual void onScreenResized();
@@ -136,19 +135,19 @@ private:
     //////////////////////////////////////////////////////////////////////////
     // Collection FBO
     uint m_CollectionFboId;
-    Texture2D::pointer m_pColorIllTexture;
-    Texture2D::pointer m_pSGTexture;
-    Texture2D::pointer m_pNormalTexture;
-    Texture2D::pointer m_pDepthTexture;
+    Texture2D* m_pColorIllTexture;
+    Texture2D* m_pSGTexture;
+    const Texture2D* m_pNormalTexture;
+    const Texture2D* m_pDepthTexture;
 
     // Render FBO
     uint m_RenderFboId;
-    Texture2D::pointer m_pOutTexture;
+    const Texture2D* m_pOutTexture;
     
     //////////////////////////////////////////////////////////////////////////
     ///                              SHADERS                               ///
     //////////////////////////////////////////////////////////////////////////
-    Texture2D::pointer m_pColorRampTex;
+    const Texture2D* m_pColorRampTex;
     PostSharedData m_SharedShaderData;
 
     //Point light

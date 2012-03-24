@@ -104,6 +104,36 @@ public:
 private:
     T m_Data;
 };
+template<>
+class ShaderUserVar<const Texture2D*> : public ShaderVar
+{
+public:
+    ShaderUserVar(uint id, const std::string& name, const Texture2D* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    {
+        ResourceFactory<Texture2D>::getInstance()->instantiate(m_Data->getHandle());
+    }
+    virtual ~ShaderUserVar()
+    {
+        m_Data->release();
+    }
+
+    const Texture2D* getData() const { return m_Data; }
+    void setData(const Texture2D* data) 
+    { 
+        m_Data->release();
+        m_Data = data; 
+        ResourceFactory<Texture2D>::getInstance()->instantiate(m_Data->getHandle());
+    }
+
+    virtual void assignData(const Shader::pointer& pShader)
+    {
+        pShader->setShaderVar(m_Id, m_Data);
+    }
+
+    typedef boost::shared_ptr<ShaderUserVar<const Texture2D*>> pointer;
+private:
+    const Texture2D* m_Data;
+};
 
 } } //end namespace
 

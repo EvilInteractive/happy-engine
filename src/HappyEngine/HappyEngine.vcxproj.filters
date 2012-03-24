@@ -598,6 +598,9 @@
     <ClCompile Include="code\graphics\Renderer2D.cpp">
       <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClCompile>
+    <ClCompile Include="code\StaticDataManager.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">
@@ -1223,6 +1226,12 @@
     </ClInclude>
     <ClInclude Include="code\graphics\Renderer2D.h">
       <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="code\error\HappyInfo.h">
+      <Filter>happyengine\error</Filter>
+    </ClInclude>
+    <ClInclude Include="code\StaticDataManager.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

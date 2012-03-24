@@ -64,19 +64,19 @@ gfx::ModelMesh::pointer ContentManager::loadModelMesh(const std::string& path, c
     return m_pModelLoader->loadModelMesh(m_ContentRootDir + m_ModelFolder +path, meshName, vertexLayout);
 }
 
-gfx::Texture2D::pointer ContentManager::asyncLoadTexture(const std::string& asset, bool storePixelsInTexture)
+const gfx::Texture2D* ContentManager::asyncLoadTexture(const std::string& asset, bool storePixelsInTexture)
 {
     return m_pTextureLoader->asyncLoadTexture(m_ContentRootDir + m_TextureFolder + asset, storePixelsInTexture);
 }
-gfx::Texture2D::pointer ContentManager::asyncMakeTexture(const Color& color)
+const gfx::Texture2D* ContentManager::asyncMakeTexture(const Color& color)
 {
     return m_pTextureLoader->asyncMakeTexture(color);
 }
-gfx::Texture2D::pointer ContentManager::loadTexture(const std::string& path)
+const gfx::Texture2D* ContentManager::loadTexture(const std::string& path)
 {
     return m_pTextureLoader->loadTexture(m_ContentRootDir + m_TextureFolder + path);
 }
-gfx::Texture2D::pointer ContentManager::makeTexture(const Color& color)
+const gfx::Texture2D* ContentManager::makeTexture(const Color& color)
 {
     return m_pTextureLoader->makeTexture(color);
 }

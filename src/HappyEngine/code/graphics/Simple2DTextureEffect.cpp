@@ -20,9 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "Simple2DTextureEffect.h"
-#include "HappyNew.h"
-#include "HeAssert.h"
-
 #include "ContentManager.h"
 
 namespace he {
@@ -82,12 +79,7 @@ void Simple2DTextureEffect::setWorldMatrix(const he::mat44& mat) const
     m_pShader->setShaderVar(m_ShaderWVPPos, mat);
 }
 
-void Simple2DTextureEffect::setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const
-{
-    m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
-}
-
-void Simple2DTextureEffect::setDiffuseMap( const he::gfx::Texture2D* diffuseMap ) const
+void Simple2DTextureEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
     m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
 }

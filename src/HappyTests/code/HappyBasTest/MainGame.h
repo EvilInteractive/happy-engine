@@ -28,6 +28,9 @@ namespace he {
     namespace tools {
         class FPSGraph;
     }
+    namespace game {
+        class Entity;
+    }
 }
 
 namespace ht {
@@ -45,6 +48,8 @@ public:
 
 private:
     he::tools::FPSGraph* m_pFPSGraph;
+
+    std::vector<he::game::Entity*> m_EntityList;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

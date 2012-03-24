@@ -31,12 +31,21 @@ namespace he {
 namespace gfx {
 
 DirectionalLight::DirectionalLight(): m_Multiplier(1.0f), m_Color(1.0f, 1.0f, 1.0f)
-{
+{   
+    for (int i(0); i < CASCADES; ++i)
+    {
+        m_pShadowMap[i] = nullptr;
+    }
 }
 
 
 DirectionalLight::~DirectionalLight()
 {
+    for (int i(0); i < CASCADES; ++i)
+    {
+        if (m_pShadowMap[i] != nullptr)
+            m_pShadowMap[i]->release();
+    }
 }
 
 void DirectionalLight::setMultiplier(float multiplier)
@@ -71,13 +80,16 @@ const vec3& DirectionalLight::getDirection() const
     return m_Direction;
 }
 
-void DirectionalLight::setShadowMap( int index, const Texture2D::pointer& map )
+void DirectionalLight::setShadowMap( int index, const Texture2D* map )
 {
     HE_ASSERT(index < CASCADES, "setting shadowmap with index >= CASCADES");
+    if (m_pShadowMap[index] != nullptr)
+        m_pShadowMap[index]->release();
+    ResourceFactory<Texture2D>::getInstance()->instantiate(map->getHandle());
     m_pShadowMap[index] = map;
 }
 
-const Texture2D::pointer& DirectionalLight::getShadowMap(int index) const
+const Texture2D* DirectionalLight::getShadowMap(int index) const
 {
     HE_ASSERT(index < CASCADES, "getting shadowmap with index >= CASCADES");
     return m_pShadowMap[index];

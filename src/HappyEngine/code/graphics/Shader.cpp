@@ -287,17 +287,11 @@ void Shader::setShaderVar(uint id, const std::vector<mat44>& matrixArray) const
     HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
     glUniformMatrix4fv(id, matrixArray.size(), GL_FALSE, matrixArray[0].toFloatArray());
 }
-void Shader::setShaderVar(uint id, const gfx::Texture2D::pointer& tex2D) const
+void Shader::setShaderVar(uint id, const gfx::Texture2D* tex2D) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, tex2D->getID());
 }
-void Shader::setShaderVar( uint id, const gfx::Texture2D* pTex2D ) const
-{
-    HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
-    GL::heBindTexture2D(id, pTex2D->getID());
-}
-
 void Shader::setShaderVar( uint id, const gfx::TextureCube::pointer& texCube ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");

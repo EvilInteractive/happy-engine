@@ -37,12 +37,12 @@ public:
     {
     }
 
-    virtual void release()
+    virtual void release() const
     {
         ResourceFactory<T>::getInstance()->release(m_Handle);
     }
 
-    const ObjectHandle& getHandle()
+    const ObjectHandle& getHandle() const
     {
         return m_Handle;
     }
@@ -51,9 +51,19 @@ public:
         m_Handle = handle;
     }
 
+    void setName(const std::string& name)
+    {
+        m_Name = name;
+    }
+    const std::string& getName() const
+    {
+        return m_Name;
+    }
+
 private:
 
     ObjectHandle m_Handle;
+    std::string m_Name;
 
     // disabled assignment operator
     Resource& operator=(const Resource&);

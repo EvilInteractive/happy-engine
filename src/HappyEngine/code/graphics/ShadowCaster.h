@@ -49,7 +49,7 @@ private:
     uint m_FboId;
 
     const static int COUNT = DirectionalLight::CASCADES + 1;
-    Texture2D::pointer m_pShadowTexture[COUNT]; //first = blur temp
+    Texture2D* m_pShadowTexture[COUNT]; //first = blur temp
     uint m_DepthRenderbuff;
     
     Material m_MatSingle;

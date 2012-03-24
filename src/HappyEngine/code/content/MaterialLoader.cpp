@@ -446,16 +446,17 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         // Texture
                         else if (node.second == L"TEXTURE2D")
                         {
-                            gfx::Texture2D::pointer tex; 
+                            const gfx::Texture2D* tex; 
                             vec4 testColorMap(reader.readVector4(L"TEXTURE2D", node.first, vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN)));
                             if (testColorMap == vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN))
                                 tex = CONTENT->asyncLoadTexture(reader.readString(L"TEXTURE2D", node.first, ""));
                             else
                                 tex = CONTENT->asyncMakeTexture(Color(testColorMap));
                             gfx::ShaderVar::pointer var(
-                                NEW gfx::ShaderUserVar<gfx::Texture2D::pointer>(
+                                NEW gfx::ShaderUserVar<const gfx::Texture2D*>(
                                     pShader->getShaderSamplerId(name), name, tex));
                             material.addVar(var);
+                            tex->release();
                         }
 
                         // User

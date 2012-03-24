@@ -22,14 +22,13 @@
 #define _HE_BLOOM_H_
 #pragma once
 
-#include <vector>
-#include "HappyTypes.h"
-#include "Texture2D.h"
 #include "Shader.h"
 #include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
+
+class Texture2D;
 
 class Bloom
 {
@@ -40,14 +39,14 @@ public:
     void init(bool hdr);
     void resize();
 
-    const Texture2D::pointer& getBloom(byte level) const;
+    const Texture2D* getBloom(byte level) const;
 
-    void render( const Texture2D::pointer& pTexture, const Texture2D::pointer& pLumMap = Texture2D::pointer() );
+    void render( const Texture2D* pTexture, const Texture2D* pLumMap = nullptr );
 
 private:
     
     std::vector<uint> m_FboId[2];
-    std::vector<Texture2D::pointer> m_Texture[2];
+    std::vector<Texture2D*> m_Texture[2];
     
     Shader::pointer m_pDownSampleBrightPassShader;
     uint m_DownSampleBrightPassMap;
@@ -60,7 +59,7 @@ private:
     uint m_BlurMapPos[2];
     uint m_BlurTexelSize[2];
         
-    byte m_DownSamples;
+    const byte m_DownSamples;
 
     bool m_Hdr;
 

@@ -42,13 +42,15 @@ namespace gfx {
 Picker::Picker() :	m_pPickEffect(NEW PickEffect()),
                     m_RenderFboID(0),
                     m_bInitialized(false),
-                    m_pIDTexture(NEW Texture2D())
+                    m_pIDTexture(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create()))
 {
+    m_pIDTexture->setName("Picker::m_pIDTexture");
 }
 
 Picker::~Picker()
 {
     delete m_pPickEffect;
+    m_pIDTexture->release();
 
     glDeleteRenderbuffers(1, &m_DepthRenderBuffer);
     glDeleteFramebuffers(1, &m_RenderFboID);

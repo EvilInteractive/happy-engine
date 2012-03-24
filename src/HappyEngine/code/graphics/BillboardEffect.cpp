@@ -78,7 +78,7 @@ void BillboardEffect::setWorldViewProjection(const he::mat44& mat) const
     m_pShader->setShaderVar(m_ShaderWVPPos, mat);
 }
 
-void BillboardEffect::setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const
+void BillboardEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
     m_pShader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
 }

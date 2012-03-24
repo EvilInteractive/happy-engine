@@ -53,7 +53,7 @@ private:
 
     uint m_RenderFboID;
     uint m_DepthRenderBuffer;
-    Texture2D::pointer m_pIDTexture;
+    Texture2D* m_pIDTexture;
 
     bool m_bInitialized;
 

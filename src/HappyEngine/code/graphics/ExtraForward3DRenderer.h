@@ -52,7 +52,7 @@ public:
     void drawColored(const ModelMesh::pointer& model, const mat44& world, const Color& color) const;
     void drawColoredNoDepth(const ModelMesh::pointer& model, const mat44& world, const Color& color) const;
     void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
-    void drawBillboard(const Texture2D::pointer& tex2D, const vec3& pos);
+    void drawBillboard(const Texture2D* tex2D, const vec3& pos);
 
 private:
 
@@ -65,7 +65,7 @@ private:
     mat44 m_BillboardMatrix;
 
     uint m_RenderFboID;
-    Texture2D::pointer m_pRenderTexture;
+    Texture2D* m_pRenderTexture;
 
     ModelMesh::pointer m_pBillboardQuad;
     BufferLayout m_VertexLayoutBillboard;

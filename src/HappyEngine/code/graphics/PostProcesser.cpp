@@ -31,7 +31,7 @@
 namespace he {
 namespace gfx {
 
-PostProcesser::PostProcesser(): m_pPostShader(nullptr), m_pBloom(nullptr), m_pAutoExposure(nullptr)
+PostProcesser::PostProcesser(): m_pPostShader(nullptr), m_pBloom(nullptr), m_pAutoExposure(nullptr), m_pRandomNormals(nullptr)
 {
 }
 
@@ -41,6 +41,9 @@ PostProcesser::~PostProcesser()
     delete m_pPostShader;
     delete m_pBloom;
     delete m_pAutoExposure;
+
+    if (m_pRandomNormals != nullptr)
+        m_pRandomNormals->release();
 }
 
 
@@ -103,6 +106,8 @@ void PostProcesser::setSettings( const RenderSettings& settings )
         m_PostShaderVars[PV_Bloom2] = m_pPostShader->getShaderSamplerId("blur2");
         m_PostShaderVars[PV_Bloom3] = m_pPostShader->getShaderSamplerId("blur3");
     }
+    if (m_pRandomNormals != nullptr)
+        m_pRandomNormals->release();
     if (m_Settings.enableSSAO)
     {
         m_pRandomNormals = CONTENT->asyncLoadTexture("engine/random_normals.png");
@@ -130,7 +135,7 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     }
 }
 
-void PostProcesser::draw(const Texture2D::pointer& pColorMap, const Texture2D::pointer& pNormalMap, const Texture2D::pointer& pDepthMap)
+void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap)
 {    
     if (m_Settings.enableHDR)
     {

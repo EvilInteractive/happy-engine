@@ -20,9 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "Text.h"
-#include "HappyNew.h"
-#include <algorithm>
-#include "HappyEngine.h"
 #include "ContentManager.h"
 
 namespace he {

@@ -35,17 +35,19 @@ namespace gfx {
 /* CONSTRUCTOR - DESCTRUCTOR */
 ExtraForward3DRenderer::ExtraForward3DRenderer() :	m_pColorEffect(NEW SimpleColorEffect()),
                                                     m_RenderFboID(UINT_MAX),
-                                                    m_pRenderTexture(NEW Texture2D()),
+                                                    m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
                                                     m_pBillboardEffect(NEW BillboardEffect()),
                                                     m_pBillboardQuad(NEW ModelMesh("")),
                                                     m_ScreenDimensions(0,0)
 {
+    m_pRenderTexture->setName("ExtraForward3DRenderer::m_pRenderTexture");
 }
 
 ExtraForward3DRenderer::~ExtraForward3DRenderer()
 {
     delete m_pColorEffect;
     delete m_pBillboardEffect;
+    m_pRenderTexture->release();
 }
 
 void ExtraForward3DRenderer::createBillboardQuad()
@@ -194,7 +196,7 @@ void ExtraForward3DRenderer::drawSpline(const ModelMesh::pointer& spline, const 
     glDrawElements(GL_LINES, spline->getNumIndices(), spline->getIndexType(), 0);
 }
 
-void ExtraForward3DRenderer::drawBillboard(const Texture2D::pointer& tex2D, const vec3& pos)
+void ExtraForward3DRenderer::drawBillboard(const Texture2D* tex2D, const vec3& pos)
 {
     vec2 tcScale(1.0f,1.0f);
     vec2 size;

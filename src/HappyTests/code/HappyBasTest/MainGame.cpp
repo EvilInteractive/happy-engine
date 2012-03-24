@@ -24,8 +24,14 @@
 #include "GraphicsEngine.h"
 #include "CameraManager.h"
 
-#include "Camera.h"
+#include "FlyCamera.h"
 #include "FPSGraph.h"
+
+#include "Entity.h"
+#include "ModelComponent.h"
+#include "ContentManager.h"
+
+#include "LightManager.h"
 
 namespace ht {
 
@@ -36,6 +42,11 @@ MainGame::MainGame(): m_pFPSGraph(nullptr)
 
 MainGame::~MainGame()
 {
+    std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::game::Entity* entity)
+    {
+        delete entity;     
+    });
+
     CAMERAMANAGER->deleteAllCameras();
     delete m_pFPSGraph;
 }
@@ -49,11 +60,20 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    CAMERAMANAGER->addCamera("default", NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
+    CAMERAMANAGER->getActiveCamera()->setLens(1280/720.0f, he::piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
 
     m_pFPSGraph = NEW he::tools::FPSGraph();
 
+    he::game::Entity* scene(NEW he::game::Entity());
+    he::game::ModelComponent* modelComp(NEW he::game::ModelComponent());
+    modelComp->setMaterial(CONTENT->loadMaterial("testSceneBas.material"));
+    modelComp->setModelMesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
+    scene->addComponent(modelComp);
+    m_EntityList.push_back(scene);
+
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(he::vec3(1.0f, 5.0f, 0.5f)), he::Color(1.0f, 1.0f, 0.5f), 10.0f);
 }
 
 void MainGame::tick( float dTime )

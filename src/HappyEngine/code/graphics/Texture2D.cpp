@@ -39,6 +39,8 @@ void Texture2D::init(uint tex, uint width, uint height, uint format, void* pixel
 
     if (m_Id != UINT_MAX)
         glDeleteTextures(1, &m_Id);
+    he_free(m_pPixels);
+    m_pPixels = nullptr;
     if (bufferSize > 0)
     {
         m_pPixels = he_malloc(bufferSize);
@@ -86,18 +88,19 @@ uint Texture2D::getHeight() const
     return m_Height;
 }
 
-void Texture2D::callbackIfLoaded( const boost::function<void()>& callback )
+void Texture2D::callbackIfLoaded( const boost::function<void()>& callback ) const
 {
-    m_CallbackMutex.lock();
+    Texture2D* _this(const_cast<Texture2D*>(this));
+    _this->m_CallbackMutex.lock();
     if (m_isInitialized)
     {
-        m_CallbackMutex.unlock();
+        _this->m_CallbackMutex.unlock();
         callback();
     }
     else
     {
-        Loaded += callback;
-        m_CallbackMutex.unlock();
+        _this->Loaded += callback;
+        _this->m_CallbackMutex.unlock();
     }
 }
 

@@ -118,6 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\code\HappyBasTest\FlyCamera.cpp" />
     <ClCompile Include="..\..\code\HappyBasTest\main.cpp" />
     <ClCompile Include="..\..\code\HappyBasTest\MainGame.cpp" />
     <ClCompile Include="..\..\code\HappyTestsPCH.cpp">
@@ -126,6 +127,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\code\HappyBasTest\FlyCamera.h" />
     <ClInclude Include="..\..\code\HappyBasTest\MainGame.h" />
     <ClInclude Include="..\..\code\HappyTestsPCH.h" />
   </ItemGroup>

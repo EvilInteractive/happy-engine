@@ -32,10 +32,21 @@ SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCu
 
 SkyBox::~SkyBox()
 {
+    unload();
+}
+
+void SkyBox::unload()
+{
+    for (int i(0); i < 6; ++i)
+    {
+        if (m_CubeFaces[i] != nullptr)
+            m_CubeFaces[i]->release();
+    }
 }
 
 void SkyBox::load( const std::string& asset )
 {
+    unload();
 
     //////////////////////////////////////////////////////////////////////////
     /// Load Textures
@@ -128,7 +139,7 @@ void SkyBox::faceLoaded()
 {
     if (++m_LoadedCount == 6)
     {
-        HE_ASSERT(m_pCubeMap->isInitialized() == false, "cubemap allready initialized");
+        HE_ASSERT(m_pCubeMap->isInitialized() == false, "cube map already initialized");
 
         uint cubeMapId;
         glGenTextures(1, &cubeMapId);
@@ -143,6 +154,8 @@ void SkyBox::faceLoaded()
         for (int i(0); i < 6; ++i)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, 512, 512, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_CubeFaces[i]->getPixelsIfAvailable());
+            m_CubeFaces[i]->release();
+            m_CubeFaces[i] = nullptr;
         }
 
         m_IsVisible = true;

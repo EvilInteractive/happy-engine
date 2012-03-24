@@ -43,7 +43,7 @@ public:
 	void end() const;
 
 	void setWorldViewProjection(const he::mat44& mat) const;
-	void setDiffuseMap(const he::gfx::Texture2D::pointer& diffuseMap) const;
+	void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
 	void setTCScale(const vec2& scale) const;
 
 private:

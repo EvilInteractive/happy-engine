@@ -23,14 +23,9 @@
 #pragma once
 
 #include "Vertex.h"
-#include "Color.h"
-#include "Texture2D.h"
 #include "Simple2DEffect.h"
 #include "Simple2DTextureEffect.h"
-#include "mat44.h"
 #include "Font.h"
-#include "vec2.h"
-#include "HappyTypes.h"
 #include "AssetContainer.h"
 #include "ModelMesh.h"
 #include "Rect.h"
@@ -47,6 +42,7 @@
 
 namespace he {
 namespace gfx {
+class Texture2D;
 
 class Happy2DRenderer
 {
@@ -76,7 +72,7 @@ public:
     void setBlending(bool bB);
     // * Set current GUI layer, default = depth 50
     void setLayer(const std::string& layer = "default");
-	// * Set depth directly, without layer. *
+    // * Set depth directly, without layer. *
     void setDepth(byte depth);
 
     /* DRAW METHODS */
@@ -89,12 +85,9 @@ public:
     // * Draws a filled 2D shape. *
     void fillShape2D(const gui::Shape2D& shape, bool buffered = false);
     // * Draws a 2D texture with options for resizing, alpha, cliprect. *
-    void drawTexture2D(	const Texture2D::pointer& tex2D, const vec2& pos,
+    void drawTexture2D(	const Texture2D* tex2D, const vec2& pos,
                         const vec2& newDimensions = vec2(0.0f,0.0f),
                         const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
-    /*void drawTexture2D(	const Texture2D* tex2D, const vec2& pos,
-                        const vec2& newDimensions = vec2(0.0f,0.0f),
-                        const float alpha = 1.0f, const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));*/
 
 private:
 
@@ -102,7 +95,8 @@ private:
     {
     public:
 
-        Shape(	const gui::Shape2D& s,
+        Shape(	
+            const gui::Shape2D& s,
             const Color& c,
             bool f, bool a,
             const std::string& l,
@@ -128,24 +122,20 @@ private:
     {
     public:
 
-        Texture(	const Texture2D::pointer& tex, //Bastian edit: removed shared_ptr. This is bad and should be put back
-            const vec2& pos,                       //              I changed it for debug sake
+        Texture(
+            const Texture2D* tex,
+            const vec2& pos,                      
             const vec2& newDimensions,
             const float alpha,
             const RectF& regionToDraw,
             const std::string& layer,
-            bool buffered)
-            : tex2D(tex),
-            pos(pos),
-            newDimensions(newDimensions),
-            alpha(alpha),
-            regionToDraw(regionToDraw),
-            layer(layer),
-            buffered(buffered)
-        {
-        }
+            bool buffered);
+        Texture();
+        ~Texture();
+        explicit Texture(const Texture& tex);
+        Texture& operator=(const Texture& tex);
 
-        Texture2D::pointer tex2D;
+        const Texture2D* tex2D;
         vec2 pos;
         vec2 newDimensions;
         float alpha;
@@ -164,7 +154,7 @@ private:
     /* DATAMEMBERS */
     uint m_RenderFboID;
     uint m_DepthRenderTarget;
-    Texture2D::pointer m_pRenderTexture;
+    Texture2D* m_pRenderTexture;
 
     bool m_bAntiAliasing;
     bool m_bBlending;
@@ -183,11 +173,11 @@ private:
     ModelMesh::pointer m_pTextureQuad;
 
     ct::AssetContainer<ModelMesh::pointer, int>* m_pModelBuffer;
-    ct::AssetContainer<std::pair<gfx::Texture2D::pointer, vec2> >* m_pTextureBuffer;
+    ct::AssetContainer<std::pair<const gfx::Texture2D*, vec2> >* m_pTextureBuffer;
 
     std::map<std::string, float> m_Layers;
     std::string m_CurrentLayer;
-	int m_CurrentDepth;
+    int m_CurrentDepth;
     
     std::vector<std::pair<Shape, float> > m_ShapeBuffer;
     std::vector<std::pair<Texture, float> > m_TextureBuffer;

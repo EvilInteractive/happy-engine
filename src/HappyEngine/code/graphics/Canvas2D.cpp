@@ -151,7 +151,7 @@ void fillText(const gui::Text& txt, const vec2& pos)
 
 }
 
-void drawImage(	const Texture2D::pointer& tex2D, const vec2& pos,
+void drawImage(	const Texture2D* tex2D, const vec2& pos,
 				const vec2& newDimensions = vec2(0.0f,0.0f),
 				const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f))
 {

@@ -78,9 +78,11 @@ private:
 
     void faceLoaded();
 
+    void unload();
+
     ModelMesh::pointer m_pCube;
     TextureCube::pointer m_pCubeMap;
-    Texture2D::pointer m_CubeFaces[6];
+    const Texture2D* m_CubeFaces[6];
     Material m_Material;
     
     bool m_IsVisible;

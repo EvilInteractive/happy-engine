@@ -90,15 +90,15 @@ FxParticleSystem::~FxParticleSystem()
 void FxParticleSystem::start()
 {
     m_Stopped = false;
-    ShaderUserVar<Texture2D::pointer>::pointer pTexture(boost::static_pointer_cast<ShaderUserVar<Texture2D::pointer>>(m_Material.getVar("diffuseMap")));
+    ShaderUserVar<Texture2D*>::pointer pTexture(boost::static_pointer_cast<ShaderUserVar<Texture2D*>>(m_Material.getVar("diffuseMap")));
     if (pTexture != nullptr)
     {
-        boost::weak_ptr<ShaderUserVar<Texture2D::pointer>> weakTex(pTexture);
+        boost::weak_ptr<ShaderUserVar<Texture2D*>> weakTex(pTexture);
         pTexture->getData()->callbackIfLoaded([&, weakTex]()
         {
             if (m_Stopped == false)
             {
-                ShaderUserVar<Texture2D::pointer>::pointer sharedTex(weakTex);
+                ShaderUserVar<Texture2D*>::pointer sharedTex(weakTex);
                 std::stringstream stream;
                 stream << "part_" << sharedTex->getData()->getID() << "_" << m_UvTiles->getValue(0).x << "," << m_UvTiles->getValue(0).y;
                 m_ShaderUvTiles = boost::static_pointer_cast<ShaderUserVar<vec2>>(m_Material.getVar("uvTiles"));

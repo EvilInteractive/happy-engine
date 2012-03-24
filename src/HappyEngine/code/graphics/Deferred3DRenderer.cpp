@@ -58,13 +58,22 @@ Deferred3DRenderer::Deferred3DRenderer():
             m_CollectionFboId(UINT_MAX),
             m_RenderFboId(UINT_MAX)
 {
+    ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+    m_pColorIllTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+    m_pColorIllTexture->setName("Deferred3DRenderer::m_pColorIllTexture");
+    handle = ResourceFactory<Texture2D>::getInstance()->create();
+    m_pSGTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+    m_pSGTexture->setName("Deferred3DRenderer::m_pSGTexture");
 }
 void Deferred3DRenderer::init( const RenderSettings& settings, 
-            const Texture2D::pointer& pOutTarget, const Texture2D::pointer& pOutNormalTarget, const Texture2D::pointer& pOutDepthTarget )
+            const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget )
 {
     m_RenderSettings = settings;
     CONSOLE->registerVar(&m_ShowDebugTextures, "debugTex");
 
+    ResourceFactory<Texture2D>::getInstance()->instantiate(pOutTarget->getHandle());
+    ResourceFactory<Texture2D>::getInstance()->instantiate(pOutNormalTarget->getHandle());
+    ResourceFactory<Texture2D>::getInstance()->instantiate(pOutDepthTarget->getHandle());
     m_pOutTexture = pOutTarget;
     m_pNormalTexture = pOutNormalTarget;
     m_pDepthTexture = pOutDepthTarget;
@@ -89,6 +98,13 @@ void Deferred3DRenderer::init( const RenderSettings& settings,
 
 Deferred3DRenderer::~Deferred3DRenderer()
 {
+    m_pColorIllTexture->release();
+    m_pSGTexture->release();
+    m_pOutTexture->release();
+    m_pNormalTexture->release();
+    m_pDepthTexture->release();
+    m_pColorRampTex->release();
+
     glDeleteFramebuffers(1, &m_CollectionFboId);
     glDeleteFramebuffers(1, &m_RenderFboId);
 
@@ -223,7 +239,6 @@ void Deferred3DRenderer::onScreenResized()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pColorIllTexture = Texture2D::pointer(NEW Texture2D());
     m_pColorIllTexture->init(colorId, width, height, GL_RGBA8);
 
     // SG
@@ -235,7 +250,6 @@ void Deferred3DRenderer::onScreenResized()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pSGTexture = Texture2D::pointer(NEW Texture2D());
     m_pSGTexture->init(sgId, width, height, GL_RGBA8);
 
     //////////////////////////////////////////////////////////////////////////

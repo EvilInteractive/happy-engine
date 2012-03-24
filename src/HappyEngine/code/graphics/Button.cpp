@@ -20,8 +20,8 @@
 #include "HappyPCH.h" 
 
 #include "Button.h"
-#include "HappyNew.h"
-#include <algorithm>
+#include "ResourceFactory.h"
+#include "Texture2D.h"
 #include "ContentManager.h"
 #include "Rect.h"
 #include "ControlsManager.h"
@@ -38,13 +38,20 @@ Button::Button(TYPE type, const vec2& pos, const vec2& size) :	m_Type(type),
                                                                 m_ActivationType(ACTIVATION_MOUSE),
                                                                 m_pHitregion(nullptr),
                                                                 m_bClicked(false),
-                                                                m_Text("")
+                                                                m_Text(""),
+                                                                m_pSpriteSheet(nullptr)
 {
     m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE, pos, size);
 }
 
 Button::~Button()
 {
+    if (m_pSpriteSheet != nullptr)
+        m_pSpriteSheet->release();
+    std::for_each(m_Sprites.cbegin(), m_Sprites.cend(), [](const gfx::Texture2D* tex2D)
+    {
+        tex2D->release();
+    });
     delete m_pHitregion;
 }
 
@@ -100,20 +107,26 @@ void Button::draw()
 }
 
 /* SETTERS */
-void Button::setSpriteSheet(const gfx::Texture2D::pointer& pSpriteSheet)
+void Button::setSpriteSheet(const ObjectHandle& spriteSheet)
 {
-    m_pSpriteSheet = pSpriteSheet;
+    ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(spriteSheet);
+    m_pSpriteSheet = ResourceFactory<gfx::Texture2D>::getInstance()->get(spriteSheet);
 }
 
-void Button::setSprites(	const gfx::Texture2D::pointer& pNormalSprite,
-                            const gfx::Texture2D::pointer& pHoverSprite,
-                            const gfx::Texture2D::pointer& pDownSprite,
-                            const gfx::Texture2D::pointer& pDisabledSprite)
+void Button::setSprites(	const ObjectHandle& normalSprite,
+                            const ObjectHandle& hoverSprite,
+                            const ObjectHandle& downSprite,
+                            const ObjectHandle& disabledSprite)
 {
-    m_Sprites.push_back(pNormalSprite);
-    m_Sprites.push_back(pHoverSprite);
-    m_Sprites.push_back(pDownSprite);
-    m_Sprites.push_back(pDisabledSprite);
+    ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(normalSprite);
+    ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(hoverSprite);
+    ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(downSprite);
+    ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(disabledSprite);
+
+    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(normalSprite));
+    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(hoverSprite));
+    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(downSprite));
+    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(disabledSprite));
 }
 
 void Button::setState(STATE state)

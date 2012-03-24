@@ -28,21 +28,31 @@
 #include <vector>
 #include <map>
 #include <deque>
+#include <queue>
+#include <algorithm>
+#include <utility>
+#include <iostream>
+#include <sstream>
 
 #include "boost/shared_ptr.hpp"
 #pragma warning (disable : 4244)
 #include "boost/thread.hpp"
 #pragma warning (default : 4244)
 #include "boost/chrono.hpp"
+#include "boost/any.hpp"
+#include "boost/function.hpp"
 
 #define SDL_NO_COMPAT
 #include "SDL.h"
+#include "SDL_ttf.h"
 #include "GL/glew.h"
+#include "OpenGL.h"
 
 #include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
+#include "Color.h"
 
 #include "HeAssert.h"
 #include "HappyMemory.h"
@@ -54,15 +64,13 @@
 
 #include "event.h"
 
+#include "Keys.h"
+
 #include "HappyEngine.h"
 #include "Console.h"
 
-#define HE_INFO(str) {std::cout << "Info: " << str << "\n"; \
-                      if (HAPPYENGINE != nullptr) CONSOLE->addMessage(str, CMSG_TYPE_ENGINE);}
-#define HE_ERROR(str) {std::cout << "Error: " << str << "\n"; \
-                       if (HAPPYENGINE != nullptr) CONSOLE->addMessage(str, CMSG_TYPE_ERROR);} 
-#define HE_WARNING(str) {std::cout << "Warning: " << str << "\n"; \
-                         if (HAPPYENGINE != nullptr) CONSOLE->addMessage(str, CMSG_TYPE_WARNING); }
+#include "HappyInfo.h"
+
 
 std::string itoa(int i);
 

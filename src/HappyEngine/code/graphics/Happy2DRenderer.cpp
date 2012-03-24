@@ -20,15 +20,8 @@
 #include "HappyPCH.h" 
 
 #include "Happy2DRenderer.h"
-#include "HappyNew.h"
-#include "OpenGL.h"
-#include "HappyEngine.h"
-#include "MathFunctions.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
-
-#include <algorithm>
-#include <vector>
 
 namespace he {
 namespace gfx {
@@ -41,15 +34,17 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
                                         m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
                                         m_ViewPortSize(0.0f,0.0f),
                                         m_pModelBuffer(NEW ct::AssetContainer<ModelMesh::pointer, int>()),
-                                        m_pTextureBuffer(NEW ct::AssetContainer<std::pair<gfx::Texture2D::pointer, vec2> >()),
+                                        m_pTextureBuffer(NEW ct::AssetContainer<std::pair<const gfx::Texture2D*, vec2> >([](const std::pair<const gfx::Texture2D*, vec2>& p)
+                                        {
+                                            p.first->release();
+                                        })),
                                         m_pTextureQuad(NEW ModelMesh("")),
                                         m_CurrentLayer("default"),
                                         m_RenderFboID(UINT_MAX),
                                         m_DepthRenderTarget(UINT_MAX),
-                                        m_pRenderTexture(NEW Texture2D()),
-										m_CurrentDepth(-1)
+                                        m_pRenderTexture(nullptr),
+                                        m_CurrentDepth(-1)
 {
-    
 }
 
 Happy2DRenderer::~Happy2DRenderer()
@@ -58,6 +53,8 @@ Happy2DRenderer::~Happy2DRenderer()
     delete m_pTextureEffect;
     delete m_pModelBuffer;
     delete m_pTextureBuffer;
+
+    m_pRenderTexture->release();
 
     glDeleteFramebuffers(1, &m_RenderFboID);
     glDeleteRenderbuffers(1, &m_DepthRenderTarget);
@@ -220,7 +217,7 @@ float Happy2DRenderer::getDepth()
     float layerDepth(m_Layers[m_CurrentLayer]);
     float depth(0.0f);
 
-	if (m_CurrentDepth > 0)
+    if (m_CurrentDepth > 0)
         layerDepth = static_cast<float>(m_CurrentDepth);
 
     if (m_DepthMap.find(layerDepth) != m_DepthMap.end())
@@ -249,7 +246,10 @@ void Happy2DRenderer::resize()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
+    ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+    m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
     m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
+    m_pRenderTexture->setName("Happy2DRenderer::m_pRenderTexture");
 
     if (m_DepthRenderTarget != UINT_MAX)
         glDeleteRenderbuffers(1, &m_DepthRenderTarget);
@@ -352,7 +352,6 @@ void Happy2DRenderer::draw()
     std::for_each(m_TextureBuffer.begin(), m_TextureBuffer.end(), [&](std::pair<Texture, float> p)
     {
         m_pTextureEffect->setDepth(p.second);
-
         drawTexture(p.first);
     });
     PROFILER_END();
@@ -500,7 +499,7 @@ void Happy2DRenderer::setLayer(const std::string& layer)
     if (m_CurrentLayer != layer)
         m_CurrentLayer = layer;
 
-	m_CurrentDepth = -1;
+    m_CurrentDepth = -1;
 }
 
 void Happy2DRenderer::setDepth(byte depth)
@@ -516,7 +515,7 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const vec2& pos, bool buffe
         vec2 position(pos);
         position.y += (txt.getFont()->getFontPixelHeight() + txt.getFont()->getFontLineSpacing()) * i;
 
-        Texture2D::pointer texFont;
+        const Texture2D* texFont;
 
         std::stringstream stream;
         stream << txt.getLine(i) << "." << m_CurrentColor.r() << "." << m_CurrentColor.g() << "." << m_CurrentColor.b() << "." << m_CurrentColor.a();
@@ -524,16 +523,21 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const vec2& pos, bool buffe
         if (m_pTextureBuffer->isAssetPresent(stream.str()) && buffered)
         {
             texFont = m_pTextureBuffer->getAsset(stream.str()).first;
+            ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
         }
         else
         {
-            texFont = Texture2D::pointer(txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing));
+            texFont = txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing);
 
             if (buffered)
-                m_pTextureBuffer->addAsset(stream.str(), std::pair<gfx::Texture2D::pointer, vec2>(texFont, vec2()));
+            {
+                ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
+                m_pTextureBuffer->addAsset(stream.str(), std::pair<const gfx::Texture2D*, vec2>(texFont, vec2()));
+            }
         }
 
         drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+        texFont->release();
     }
 }
 void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buffered)
@@ -551,7 +555,7 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buf
     for (uint i(0); i < txt.getText().size(); ++i)
     {
         vec2 textSize;
-        Texture2D::pointer texFont;
+        const Texture2D* texFont;
 
         std::stringstream stream;
         stream << txt.getLine(i) << "." << m_CurrentColor.r() << "." << m_CurrentColor.g() << "." << m_CurrentColor.b() << "." << m_CurrentColor.a();
@@ -559,14 +563,18 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buf
         if (m_pTextureBuffer->isAssetPresent(stream.str()) && buffered)
         {
             texFont = m_pTextureBuffer->getAsset(stream.str()).first;
+            ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
             textSize = m_pTextureBuffer->getAsset(stream.str()).second;
         }
         else
         {
-            texFont = Texture2D::pointer(txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing, &textSize));
+            texFont = txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing, &textSize);
 
             if (buffered)
-                m_pTextureBuffer->addAsset(stream.str(), std::pair<gfx::Texture2D::pointer, vec2>(texFont, textSize));
+            {
+                ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
+                m_pTextureBuffer->addAsset(stream.str(), std::pair<const gfx::Texture2D*, vec2>(texFont, textSize));
+            }
         }
 
         vec2 position;
@@ -589,6 +597,7 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buf
         position.y += (txt.getFont()->getFontPixelHeight() + txt.getFont()->getFontLineSpacing()) * i;
 
         drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+        texFont->release();
     }
 }
 
@@ -604,16 +613,66 @@ void Happy2DRenderer::fillShape2D(const gui::Shape2D& shape, bool buffered)
         (Shape(shape, m_CurrentColor, true, m_bAntiAliasing, m_CurrentLayer, buffered), getDepth()));
 }
 
-void Happy2DRenderer::drawTexture2D(const Texture2D::pointer& tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
+void Happy2DRenderer::drawTexture2D(const Texture2D* tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
 {
     m_TextureBuffer.push_back(std::pair<Texture, float>
         (Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer, true), getDepth()));
 }
-//void Happy2DRenderer::drawTexture2D( const Texture2D* tex2D, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw)
-//{
-//    m_TextureBuffer.push_back(std::pair<Texture, float>
-//        (Texture(tex2D, pos, newDimensions, alpha, regionToDraw, m_CurrentLayer, true), getDepth()));  
-//}
 
+
+
+Happy2DRenderer::Texture::Texture( const Texture2D* tex, const vec2& pos, const vec2& newDimensions, const float alpha, const RectF& regionToDraw, const std::string& layer, bool buffered )
+    : tex2D(tex),
+    pos(pos),
+    newDimensions(newDimensions),
+    alpha(alpha),
+    regionToDraw(regionToDraw),
+    layer(layer),
+    buffered(buffered)
+{
+    ResourceFactory<Texture2D>::getInstance()->instantiate(tex2D->getHandle());
+}
+Happy2DRenderer::Texture::Texture():
+    tex2D(nullptr)
+{
+}
+
+
+Happy2DRenderer::Texture::Texture( const Texture& other )
+{
+    tex2D         = other.tex2D;
+    pos           = other.pos;
+    newDimensions = other.newDimensions;
+    alpha         = other.alpha;
+    regionToDraw  = other.regionToDraw;
+    layer         = other.layer;
+    buffered      = other.buffered;
+
+    ResourceFactory<Texture2D>::getInstance()->instantiate(tex2D->getHandle());
+}
+
+Happy2DRenderer::Texture& Happy2DRenderer::Texture::operator=( const Texture& other )
+{
+    if (tex2D != nullptr)
+        tex2D->release();
+
+    tex2D         = other.tex2D;
+    pos           = other.pos;
+    newDimensions = other.newDimensions;
+    alpha         = other.alpha;
+    regionToDraw  = other.regionToDraw;
+    layer         = other.layer;
+    buffered      = other.buffered;
+
+    ResourceFactory<Texture2D>::getInstance()->instantiate(tex2D->getHandle());
+
+    return *this;
+}
+
+
+Happy2DRenderer::Texture::~Texture()
+{
+    tex2D->release();
+}
 
 } } //end namespace
