@@ -38,7 +38,9 @@ void Texture2D::init(uint tex, uint width, uint height, uint format, void* pixel
     HE_ASSERT(width != 0 && height != 0, "Loaded texture with width = 0 or height = 0 !");
 
     if (m_Id != UINT_MAX)
+    {
         glDeleteTextures(1, &m_Id);
+    }
     he_free(m_pPixels);
     m_pPixels = nullptr;
     if (bufferSize > 0)
@@ -64,7 +66,10 @@ bool Texture2D::isInitialized() const
 Texture2D::~Texture2D()
 {
     he_free(m_pPixels);
-    glDeleteTextures(1, &m_Id);
+    if (m_Id != UINT_MAX)
+    {
+        glDeleteTextures(1, &m_Id);
+    }
     --s_Count;
 }
 

@@ -31,6 +31,9 @@ namespace he {
     namespace game {
         class Entity;
     }
+    namespace gfx {
+        class SkyBox;
+    }
 }
 
 namespace ht {
@@ -50,6 +53,7 @@ private:
     he::tools::FPSGraph* m_pFPSGraph;
 
     std::vector<he::game::Entity*> m_EntityList;
+    he::gfx::SkyBox* m_pSkyBox;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

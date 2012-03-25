@@ -48,7 +48,7 @@ GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr),
                                   m_IsFullScreen(false),
                                   m_WindowTitle("HappyEngine"),
                                   m_VSyncEnabled(true),
-                                  m_pDrawManager(NEW DrawManager()),
+                                  m_pDrawManager(nullptr),
                                   m_pPicker(NEW Picker()),
                                   m_pInstancingManager(NEW InstancingManager()),
                                   m_pLightManager(NEW LightManager())
@@ -187,6 +187,7 @@ void GraphicsEngine::init(bool useQt)
 
     CONTENT->setRenderSettings(m_Settings);
 
+    m_pDrawManager = NEW DrawManager();
     m_pDrawManager->init(m_Settings);
 }
 void GraphicsEngine::initWindow()

@@ -27,6 +27,10 @@ namespace gfx {
 
 SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCube())
 {
+    for (int i(0); i < 6; ++i)
+    {
+        m_CubeFaces[i] = nullptr;
+    }
 }
 
 
