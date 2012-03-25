@@ -5,14 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="QtDebug|Win32">
-      <Configuration>QtDebug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="QtRelease|Win32">
-      <Configuration>QtRelease</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -90,7 +82,6 @@
     <ClCompile Include="code\graphics\fx\FxTimeLineTrack.cpp" />
     <ClCompile Include="code\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp" />
-    <ClCompile Include="code\graphics\HappyQtWidget.cpp" />
     <ClCompile Include="code\graphics\Hitregion.cpp" />
     <ClCompile Include="code\graphics\InstancingBuffer.cpp" />
     <ClCompile Include="code\graphics\InstancingController.cpp" />
@@ -174,9 +165,6 @@
     <ClCompile Include="code\physics\PhysicsSphericalJoint.cpp" />
     <ClCompile Include="code\physics\PhysicsStaticActor.cpp" />
     <ClCompile Include="code\HappyPCH.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">HappyPCH.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -279,7 +267,6 @@
     <ClInclude Include="code\graphics\ICamera.h" />
     <ClInclude Include="code\graphics\GraphicsEngine.h" />
     <ClInclude Include="code\graphics\Happy2DRenderer.h" />
-    <ClInclude Include="code\graphics\HappyQtWidget.h" />
     <ClInclude Include="code\graphics\Hitregion.h" />
     <ClInclude Include="code\graphics\IDrawable.h" />
     <ClInclude Include="code\graphics\IInstanceFiller.h" />
@@ -413,18 +400,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QtRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -443,15 +419,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(UserRootDir)\Boost.debug.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(UserRootDir)\Boost.debug.props" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(UserRootDir)\Boost.release.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='QtRelease|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(UserRootDir)\Boost.release.props" />
   </ImportGroup>
@@ -465,20 +433,10 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;./code/containers;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\</OutDir>
-    <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;$(IncludePath)</IncludePath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;./code/containers;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QtRelease|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\</OutDir>
-    <IncludePath>./code/physics;./code/template;./code/tools;./code/networking;./code/math;./code/io;./code/graphics;./code/game;./code/error;./code/content;./code/audio;./code;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -512,24 +470,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='QtDebug|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>HE_ENABLE_QT;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>HappyPCH.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
-      <TreatWarningAsError>false</TreatWarningAsError>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>NotSet</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -542,7 +482,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(LIBSND_DIR)\include;$(SFML_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>Sync</ExceptionHandling>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -553,28 +493,6 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='QtRelease|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>HE_ENABLE_QT;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;_WIN32_WINNT=0x0501;WIN32;NDEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>HappyPCH.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
-      <TreatWarningAsError>false</TreatWarningAsError>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(PHYSX_DIR)\PxTask\include;$(PHYSX_DIR)\PxFoundation;$(PHYSX_DIR)\PxFoundation\internal\include;$(PHYSX_DIR)\PhysXProfileSDK\sdk\include;$(PHYSX_DIR)\PhysXVisualDebuggerSDK\PVDCommLayer\Public;$(PHYSX_DIR)\PhysXAPI;$(PHYSX_DIR)\RepX\include;$(PHYSX_DIR)\PhysXAPI\characterkinematic;$(LIBSND_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

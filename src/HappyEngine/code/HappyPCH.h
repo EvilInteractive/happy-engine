@@ -42,9 +42,8 @@
 #include "boost/any.hpp"
 #include "boost/function.hpp"
 
-#define SDL_NO_COMPAT
-#include "SDL.h"
-#include "SDL_ttf.h"
+#include "SFML/Window.hpp"
+
 #include "GL/glew.h"
 #include "OpenGL.h"
 

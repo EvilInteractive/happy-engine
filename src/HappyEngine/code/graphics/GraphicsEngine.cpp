@@ -17,10 +17,11 @@
 //
 //Author:  Bastian Damman
 //Created: 04/08/2011
+//Changed: Sebastiaan Sprengers
+
 #include "HappyPCH.h" 
 
 #include "GraphicsEngine.h"
-#include "SDL.h"
 
 #include "OpenGL.h"
 #include "ExternalError.h"
@@ -62,22 +63,14 @@ GraphicsEngine::~GraphicsEngine()
     delete m_pPicker;
     delete m_pInstancingManager;
     delete m_pLightManager;
-    SDL_GL_DeleteContext(m_GLContext);
-    SDL_DestroyWindow(m_pMainWindow);
+    delete m_pMainWindow;
 }
-void GraphicsEngine::init(bool useQt)
+void GraphicsEngine::init()
 {
     using namespace err;
-    if (useQt == false)
-    {
-        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3));
-        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2));
 
-        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
-        sdlHandleError(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24));
+    initWindow();
 
-        initWindow();
-    }
     glewExperimental = true;
     glHandleError(glewInit());
 
@@ -95,7 +88,7 @@ void GraphicsEngine::init(bool useQt)
 
     int doubleBuff;
     glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
-    HE_INFO(std::string("Doubly buffered: ") + ((doubleBuff == GL_TRUE)?"TRUE":"FALSE"));
+    HE_INFO(std::string("Double buffered: ") + ((doubleBuff == GL_TRUE)?"TRUE":"FALSE"));
 
     int maxTexSize, maxRenderSize, maxRectSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
@@ -192,10 +185,15 @@ void GraphicsEngine::init(bool useQt)
 }
 void GraphicsEngine::initWindow()
 {
-    m_pMainWindow = SDL_CreateWindow(m_WindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        m_ScreenRect.width, m_ScreenRect.height, /*SDL_WINDOW_SHOWN |*/ SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    
-    int x, y;
+    sf::ContextSettings settings;
+    settings.depthBits = 24;
+    settings.antialiasingLevel = 0;
+    settings.majorVersion = 3;
+    settings.minorVersion = 2;
+
+    m_pMainWindow = NEW sf::Window(sf::VideoMode(m_ScreenRect.width, m_ScreenRect.height, 32), m_WindowTitle, sf::Style::Close, settings);
+
+    /*int x, y;
     SDL_GetWindowPosition(m_pMainWindow, &x, &y);
     if (m_ScreenRect.x == -1)
         m_ScreenRect.x = x;
@@ -206,7 +204,7 @@ void GraphicsEngine::initWindow()
     SDL_SetWindowFullscreen(m_pMainWindow, static_cast<SDL_bool>(m_IsFullScreen));
 
     m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
-    err::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));
+    err::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));*/
 }
 
 void GraphicsEngine::setScreenPosition(int x, int y)
@@ -214,7 +212,7 @@ void GraphicsEngine::setScreenPosition(int x, int y)
     m_ScreenRect.x = x;
     m_ScreenRect.y = y;
     if (m_pMainWindow != nullptr)
-        SDL_SetWindowPosition(m_pMainWindow, x, y);
+        m_pMainWindow->setPosition(sf::Vector2i(x,y));
 }
 void GraphicsEngine::getScreenPosition(int& x, int& y) const
 {
@@ -230,7 +228,7 @@ void GraphicsEngine::setScreenDimension(uint width, uint height)
     m_ScreenRect.width = width;
     m_ScreenRect.height = height;
     if (m_pMainWindow != nullptr)
-        SDL_SetWindowSize(m_pMainWindow, static_cast<int>(width), static_cast<int>(height));
+        m_pMainWindow->setSize(sf::Vector2u(static_cast<uint>(width), static_cast<uint>(height)));
     if (m_pDrawManager != nullptr)
         m_pDrawManager->onScreenResized();
 }
@@ -245,15 +243,15 @@ uint GraphicsEngine::getScreenHeight() const
 
 void GraphicsEngine::toggleFullscreen(bool isFullscreen)
 {
-    m_IsFullScreen = isFullscreen;
+    /*m_IsFullScreen = isFullscreen;
     if (m_pMainWindow != nullptr)
-        SDL_SetWindowFullscreen(m_pMainWindow, static_cast<SDL_bool>(isFullscreen));
+        m_pMainWindow->, static_cast<SDL_bool>(isFullscreen));*/
 }
 void GraphicsEngine::setWindowTitle(const std::string& title)
 {
     m_WindowTitle = title;
     if (m_pMainWindow != nullptr)
-        SDL_SetWindowTitle(m_pMainWindow, title.c_str());
+        m_pMainWindow->setTitle(title);
 }
 
 void GraphicsEngine::setViewport(const RectI& viewport)
@@ -271,9 +269,9 @@ void GraphicsEngine::setVSync(bool enable)
     if (m_pMainWindow != nullptr)
     {
         if (enable)
-            err::sdlHandleError(SDL_GL_SetSwapInterval(1));
+            m_pMainWindow->setVerticalSyncEnabled(true);
         else
-            err::sdlHandleError(SDL_GL_SetSwapInterval(0));
+            m_pMainWindow->setVerticalSyncEnabled(false);
         m_VSyncEnabled = enable;
     }
     else
@@ -310,7 +308,7 @@ void GraphicsEngine::drawScene()
 void GraphicsEngine::present() const
 {    
     PROFILER_BEGIN("GraphicsEngine::present");
-    SDL_GL_SwapWindow(m_pMainWindow);
+    m_pMainWindow->display();
     PROFILER_END();
 }
 LightManager* GraphicsEngine::getLightManager() const

@@ -68,9 +68,6 @@
     <Filter Include="happyengine\physics\shapes">
       <UniqueIdentifier>{4eeb95cb-74a4-41d4-b757-4d6624ffc6a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\QT">
-      <UniqueIdentifier>{f5ff196e-8eb8-498a-86db-ef0bda1b2b43}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\tools\console">
       <UniqueIdentifier>{edcf7455-17f1-4366-8d5f-a3a188bf04d7}</UniqueIdentifier>
     </Filter>
@@ -369,9 +366,6 @@
     </ClCompile>
     <ClCompile Include="code\physics\PhysicsConcaveMesh.cpp">
       <Filter>happyengine\physics\shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="code\graphics\HappyQtWidget.cpp">
-      <Filter>happyengine\graphics\QT</Filter>
     </ClCompile>
     <ClCompile Include="code\io\Mouse.cpp">
       <Filter>happyengine\io\mouse</Filter>
@@ -893,9 +887,6 @@
     </ClInclude>
     <ClInclude Include="code\physics\PhysicsConcaveShape.h">
       <Filter>happyengine\physics\shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="code\graphics\HappyQtWidget.h">
-      <Filter>happyengine\graphics\QT</Filter>
     </ClInclude>
     <ClInclude Include="code\io\Mouse.h">
       <Filter>happyengine\io\mouse</Filter>

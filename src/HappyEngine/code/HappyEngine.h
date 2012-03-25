@@ -19,13 +19,6 @@
 #define _HE_HAPPYENGINE_H_
 #pragma once
 
-#ifdef HE_ENABLE_QT
-#pragma warning(disable:4127)
-#include <QTimer>
-#include <qobject.h>
-#pragma warning(default:4127)
-#endif
-
 namespace he {
 namespace gfx {
     class GraphicsEngine;
@@ -165,12 +158,6 @@ private:
 
     // Methods
     void initWindow();
-
-#ifdef HE_ENABLE_QT
-    /*qt::*/QTimer m_qtLoopTimer;
-    gfx::HappyQtWidget* m_pQtWidget;
-private slots:
-#endif
     void loop();
 private:
     void updateLoop(float dTime);

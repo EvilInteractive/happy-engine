@@ -41,13 +41,6 @@
 #include "LoadingScreen.h"
 #include "StaticDataManager.h"
 
-#ifdef HE_ENABLE_QT
-#pragma warning(disable:4127)
-#include <QtGui/QApplication>
-#pragma warning(default:4127)
-#include "HappyQtWidget.h"
-#endif
-
 namespace he {
 
 HappyEngine* HappyEngine::s_pHappyEngine = nullptr;

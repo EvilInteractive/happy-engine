@@ -24,11 +24,7 @@
 #pragma once
 
 #include "Rect.h"
-
-#include <string>
 #include "RenderSettings.h"
-
-struct SDL_Window;
 
 namespace he {
 namespace gfx {
@@ -49,7 +45,7 @@ public:
     virtual ~GraphicsEngine();
 
     /* GENERAL */
-    void init(bool useQt);
+    void init();
 
     // only init picking when needed, because it requires extra FBO & shader
     void initPicking();
@@ -92,8 +88,8 @@ private:
     void initWindow();
 
     /* DATAMEMBERS */
-    SDL_Window* m_pMainWindow;
-    void* m_GLContext;
+    sf::Window* m_pMainWindow;
+    //void* m_GLContext; ----- needed?
 
     RectI m_Viewport;
     RectI m_ScreenRect;
