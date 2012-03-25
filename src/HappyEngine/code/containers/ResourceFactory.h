@@ -34,9 +34,9 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///  Singleton
     //////////////////////////////////////////////////////////////////////////
-    static void init(uint startSize, uint increaseSize, const std::string& displayName)
+    static void init(size_t startSize, size_t increaseSize, const std::string& displayName)
     {
-        HE_ASSERT(s_Instance == nullptr, "initing an already inited resource factory: " + displayName);
+        HE_ASSERT(s_Instance == nullptr, "initing an already inited resource factory: %s", displayName.c_str());
         s_Instance = NEW ResourceFactory<T>(startSize, increaseSize, displayName);
     }
     static void destroy()
@@ -65,12 +65,12 @@ public:
 
     void instantiate(const ObjectHandle& handle)
     {
-        HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (" + m_DisplayName + "): oops handle has been garbage collected");
+        HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", m_DisplayName.c_str());
         ++m_RefCounter[handle.index];
     }
     void release(const ObjectHandle& handle)
     {
-        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (" + m_DisplayName + "): All refs are already released (" + get(handle)->getName() + ")");
+        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", m_DisplayName.c_str(), get(handle)->getName().c_str());
         --m_RefCounter[handle.index];
     }
 
@@ -113,19 +113,19 @@ protected:
     }
     // <--
 
-    virtual void resize(uint newSize)
+    virtual void resize(size_t newSize)
     {
         ObjectFactory<T>::resize(newSize);
-        uint prevSize(m_RefCounter.size());
+        size_t prevSize(m_RefCounter.size());
         m_RefCounter.resize(newSize);
-        for (uint i(prevSize); i < newSize; ++i)
+        for (size_t i(prevSize); i < newSize; ++i)
             m_RefCounter[i] = 0;
     }
     
 private:
     static ResourceFactory<T>* s_Instance;
 
-    ResourceFactory(uint startSize, uint increaseSize, const std::string& displayName): ObjectFactory<T>()
+    ResourceFactory(size_t startSize, size_t increaseSize, const std::string& displayName): ObjectFactory<T>()
     {
         ObjectFactory<T>::init(startSize, increaseSize, displayName);
     }
@@ -136,7 +136,7 @@ private:
         {
             if (m_RefCounter[i] != 0)
             {
-                HE_WARNING(m_DisplayName + ": resource " + getAt(i)->getName() + " has " + itoa(m_RefCounter[i]) + " references open!")
+                HE_WARNING("%s: resource %s has %d references open!", m_DisplayName.c_str(), getAt(i)->getName().c_str(), (int)m_RefCounter[i]);
             }
         }
     }

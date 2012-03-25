@@ -428,7 +428,7 @@ void Console::registerCmd(boost::function<void()> command, const std::string& cm
         std::stringstream str;
         str << "Command: '" << cmdKey << "' already registered!";
 
-        HE_ASSERT(false, str.str());
+        HE_ASSERT(false, str.str().c_str());
     }
     else
     {
@@ -444,9 +444,7 @@ void Console::addTypeHandler(ITypeHandler* typeHandler)
     }
     else
     {
-        std::string s(typeHandler->getType());
-
-        HE_ASSERT(false, "Type handler for '" + s + "' already added!");
+        HE_ASSERT(false, "Type handler for '%s' already added!", typeHandler->getType().c_str());
     }
 }
 

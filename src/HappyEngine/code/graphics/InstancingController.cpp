@@ -183,7 +183,7 @@ void InstancingController::updateBuffer()
             m_CpuBuffer.resize(m_BufferCapacity * m_InstancingLayout.getSize());
             glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
-            HE_INFO("Increasing instancing controller's capacity to " + itoa(m_BufferCapacity));
+            HE_INFO("Increasing instancing controller's capacity to %d", (int)m_BufferCapacity);
         }
 
         m_CpuBuffer.reset();

@@ -42,7 +42,7 @@ ModelLoader::ModelLoader(): m_isModelThreadRunning(false), m_pAssetContainer(nul
         {
             if (mesh.use_count() > 1)
             {
-                HE_ERROR("Possible mesh leak: " + mesh->getName());
+                HE_ERROR("Possible mesh leak: %s", mesh->getName().c_str());
             }
         });
     });
@@ -99,7 +99,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
             pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
             pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
 
-            HE_INFO("Model create completed: " + data->path);
+            HE_INFO("Model create completed: %s", data->path.c_str());
         }
         data->pModel->setComplete();
         m_WaitListMutex.unlock();
@@ -228,14 +228,14 @@ void ModelLoader::ModelLoadThread()
         {
             if (data->loader->load(data->path, data->vertexLayout)) 
             { 
-                HE_INFO("Model load completed: " + data->path);
+                HE_INFO("Model load completed: %s", data->path.c_str());
                 m_ModelInvokeQueueMutex.lock();
                 m_ModelInvokeQueue.push(data);
                 m_ModelInvokeQueueMutex.unlock();
             }
             else
             {
-                HE_ERROR("Error loading model: " + data->path);
+                HE_ERROR("Error loading model: %s", data->path.c_str());
                 delete data->loader;
                 delete data;
             }            
@@ -285,11 +285,11 @@ gfx::Model::pointer ModelLoader::loadModel(const std::string& path, const gfx::B
         {
             if (data->loader->load(data->path, data->vertexLayout)) 
             { 
-                HE_INFO("**ML INFO** obj load completed: " + data->path);
+                HE_INFO("**ML INFO** obj load completed: %s", data->path.c_str());
             }
             else
             {
-                HE_ERROR("Model load failed: " + data->path);
+                HE_ERROR("Model load failed: %s", data->path.c_str());
             }
 
             uint unloadedMeshes(data->pModel->getNumMeshes());
@@ -318,7 +318,7 @@ gfx::Model::pointer ModelLoader::loadModel(const std::string& path, const gfx::B
                 pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
                 pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
 
-                HE_INFO("**ML INFO** model create completed: " + data->path);
+                HE_INFO("**ML INFO** model create completed: %s", data->path.c_str());
             }
 
             data->pModel->setComplete();
@@ -393,11 +393,11 @@ gfx::ModelMesh::pointer ModelLoader::loadModelMesh(const std::string& path, cons
         {
             if (data->loader->load(data->path, data->vertexLayout)) 
             { 
-                HE_INFO("**ML INFO** obj load completed: " + data->path);
+                HE_INFO("**ML INFO** obj load completed: %s", data->path.c_str());
             }
             else
             {
-                HE_ERROR("Model load failed: " + data->path);
+                HE_ERROR("Model load failed: %s", data->path.c_str());
             }            
         }
 

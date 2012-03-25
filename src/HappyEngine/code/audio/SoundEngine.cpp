@@ -262,7 +262,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
     std::string err("Failed to open sound file: ");
     err += path;
 
-    HE_ASSERT(success == true, err);
+    HE_ASSERT(success == true, err.c_str());
 
     // get soundfile properties
     SoundFileProperties props(soundFile.getProperties());
@@ -307,7 +307,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
 
         success = (soundFile.read(&data[0], props.samplesCount) == props.samplesCount);
         
-        HE_ASSERT(success == true, err);
+        HE_ASSERT(success == true, err.c_str());
 
         // fill soundbuffer with data
         alBufferData(
@@ -355,7 +355,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
     std::string err("Failed to open sound file: ");
     err += path;
 
-    HE_ASSERT(success == true, err);
+    HE_ASSERT(success == true, err.c_str());
 
     // get soundfile properties
     SoundFileProperties props(soundFile.getProperties());
@@ -400,7 +400,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
 
         success = (soundFile.read(&data[0], props.samplesCount) == props.samplesCount);
 
-        HE_ASSERT(success == true, err);
+        HE_ASSERT(success == true, err.c_str());
 
         if (props.channelsCount == 2)
         {

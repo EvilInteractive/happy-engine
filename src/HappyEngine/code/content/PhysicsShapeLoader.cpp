@@ -54,7 +54,7 @@ const std::vector<px::PhysicsConvexMesh::pointer>& PhysicsShapeLoader::loadConve
             io::BinaryStream stream;
             if (stream.open(path, io::BinaryStream::Read) == false)
             {
-                HE_ERROR("Error loading convex mesh: " + path);
+                HE_ERROR("Error loading convex mesh: %s", path);
                 return m_pConvexAssetContainer->getAsset("");
             }
             byte numConvex(stream.readByte());
@@ -88,7 +88,7 @@ const std::vector<px::PhysicsConcaveMesh::pointer>& PhysicsShapeLoader::loadConc
             io::BinaryStream stream;
             if (stream.open(path, io::BinaryStream::Read) == false)
             {
-                HE_ERROR("Error loading concave mesh: " + path);
+                HE_ERROR("Error loading concave mesh: %s", path.c_str());
                 return m_pConcaveAssetContainer->getAsset("");
             }
             byte numConcave(stream.readByte());

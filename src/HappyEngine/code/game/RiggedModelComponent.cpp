@@ -111,7 +111,7 @@ void RiggedModelComponent::modelLoadedCallback()
     }
     else
     {
-        HE_ERROR("SkinnedMesh error: no bones found in " + m_pModel->getName());
+        HE_ERROR("SkinnedMesh error: no bones found in %s", m_pModel->getName());
     }
 }
 
@@ -131,7 +131,7 @@ RiggedModelComponent::BoneTransform RiggedModelComponent::getBone( const std::st
     std::map<std::string, BoneTransform>::const_iterator it(m_Bones.find(name));
     if (it == m_Bones.cend())
     {
-        HE_ERROR("RiggedModelComponent error: No bone exists with name: " + name);
+        HE_ERROR("RiggedModelComponent error: No bone exists with name: %s", name.c_str());
         return BoneTransform();
     }
     else

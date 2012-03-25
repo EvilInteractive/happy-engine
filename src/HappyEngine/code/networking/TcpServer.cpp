@@ -60,7 +60,7 @@ void TcpServer::start(ushort port)
         NETWORK->getIoService(), 
         boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
 
-    HE_INFO("TcpServer: P2P tpc accepting @" + itoa(port));
+    HE_INFO("TcpServer: P2P tpc accepting @%d", (int)port);
     startAccepting();
 }
 void TcpServer::startAccepting()
@@ -94,7 +94,7 @@ void TcpServer::handleAccepted( const boost::system::error_code& error )
         {
             delete m_pSocket;
             m_pSocket = nullptr;
-            HE_ERROR("TcpServer: error accepting - msg: " + error.message());
+            HE_ERROR("TcpServer: error accepting - msg: %s", error.message());
             startAccepting();
         }
     }
@@ -104,7 +104,7 @@ void TcpServer::handleWrite( const boost::system::error_code& error, size_t /*by
 {
     if (error)
     {
-        HE_ERROR("TcpServer: error sending data - msg: " + error.message());
+        HE_ERROR("TcpServer: error sending data - msg: %s", error.message());
     }
 }
 
@@ -120,7 +120,7 @@ void TcpServer::handleReceive( const boost::system::error_code& error, size_t by
     }
     else
     {
-        HE_ERROR("TcpServer: error receiving data - msg: " + error.message());
+        HE_ERROR("TcpServer: error receiving data - msg: %s", error.message().c_str());
         if (m_IsShuttingDown == false)
         {
             delete m_pSocket;

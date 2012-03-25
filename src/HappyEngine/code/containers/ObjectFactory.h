@@ -31,7 +31,7 @@ public:
     ObjectFactory(): m_IncreaseSize(32), m_DisplayName("unknown")
     {
     }
-    void init(uint startSize, uint increaseSize, const std::string& displayName)
+    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
     {
         m_IncreaseSize = increaseSize;
         m_DisplayName = displayName;
@@ -52,7 +52,7 @@ public:
                 m_FreeHandles.push(i);
             }
             ++m_Salt[i];
-            HE_ASSERT(m_Salt[i] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (" + m_DisplayName + "): salt is growing out of bounds");
+            HE_ASSERT(m_Salt[i] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
         }
     }
 
@@ -72,7 +72,7 @@ public:
     {
         if (m_Salt[handle.index] != handle.salt)
         {
-            HE_ERROR("ObjectFactory (" + m_DisplayName + "): salt mismatch when destroying object");
+            HE_ERROR("ObjectFactory (%s): salt mismatch when destroying object", m_DisplayName.c_str());
         }
         else
         {
@@ -81,17 +81,17 @@ public:
     }
     virtual void destroyAt(ObjectHandle::Type index)
     {
-        HE_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (" + m_DisplayName + "): destroying non existing handle");
+        HE_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str());
         m_FreeHandles.push(index);
         delete m_Pool[index];
         m_Pool[index] = nullptr;
         ++m_Salt[index];
-        HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (" + m_DisplayName + "): salt is growing out of bounds");
+        HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
     }
 
     virtual T* get(const ObjectHandle& handle)
     {
-        HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (" + m_DisplayName + "): salt mismatch when getting object");
+        HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
         return m_Pool[handle.index];
     }
     virtual T* getAt(ObjectHandle::Type index)
@@ -103,16 +103,16 @@ public:
     {
         return m_Salt[handle.index] == handle.salt;
     }
-    virtual bool isAliveAt(uint index)
+    virtual bool isAliveAt(size_t index)
     {
         return m_Pool[index] != nullptr;
     }
 
 protected:
-    virtual void resize(uint newSize)
+    virtual void resize(size_t newSize)
     {
-        HE_ASSERT(newSize < OBJECTHANDLE_MAX, "ObjectFactory (" + m_DisplayName + "): resize out of range: " + itoa(newSize));
-        HE_WARNING("ObjectFactory (" + m_DisplayName + "): increasing pool to " + itoa(newSize));
+        HE_ASSERT(newSize < OBJECTHANDLE_MAX, "ObjectFactory (%s): resize out of range: %d", m_DisplayName.c_str(), (int)newSize);
+        HE_WARNING("ObjectFactory (%s): increasing pool to %d", m_DisplayName.c_str(), (int)newSize);
         ObjectHandle::Type oldSize(static_cast<ObjectHandle::Type>(m_Pool.size()));
         m_Pool.resize(newSize);
         m_Salt.resize(newSize);
@@ -142,7 +142,7 @@ private:
         return handle;
     }
 
-    uint m_IncreaseSize;
+    size_t m_IncreaseSize;
 
     std::vector<T*> m_Pool;
     std::vector<ObjectHandle::Type> m_Salt;

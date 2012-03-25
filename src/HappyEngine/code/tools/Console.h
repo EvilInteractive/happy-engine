@@ -70,7 +70,7 @@ public:
                 std::stringstream str;
                 str << "Variable: '" << varKey << "' already registered!";
 
-                HE_ASSERT(false, str.str());
+                HE_ASSERT(false, str.str().c_str());
             }
             else
             {
@@ -82,7 +82,7 @@ public:
             std::stringstream str;
             str << "Type handler for '" << typeid(T).name() << "'not specfied!";
 
-            HE_ASSERT(false, str.str());
+            HE_ASSERT(false, str.str().c_str());
         }
     }
 

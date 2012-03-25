@@ -67,7 +67,7 @@ const ShaderVar::pointer& Material::getVar( const std::string& var )
             return *it;
         }
     }
-    HE_ERROR("Unable to find var: " + var);
+    HE_ERROR("Unable to find var: %s", var.c_str());
     return *it;
 }
 

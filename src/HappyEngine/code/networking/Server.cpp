@@ -84,8 +84,8 @@ void Server::stop()
     sprintf(sReceivedMB, "%7.2f", m_ReceivedBytes / 1024.0f / 1024.0f);
 
     HE_INFO("Server: Connection closed");
-    HE_INFO("Server: Send " + std::string(sSendMB) + "MB");
-    HE_INFO("Server: Received " + std::string(sReceivedMB) + "MB");
+    HE_INFO("Server: Send %s", std::string(sSendMB) + "MB");
+    HE_INFO("Server: Received %s", std::string(sReceivedMB) + "MB");
 }
 void Server::start(ushort port, byte maxConnections)
 {
@@ -107,8 +107,7 @@ void Server::start(ushort port, byte maxConnections)
     }
 
     
-    HE_INFO("Server: Connection opened: " + m_pUdpSocket->local_endpoint().address().to_string() +
-        ":" + itoa(port));
+    HE_INFO("Server: Connection opened: %s:%d", m_pUdpSocket->local_endpoint().address().to_string(), port);
 
     asycRead();
 }
@@ -137,7 +136,7 @@ void Server::handleReceive(const boost::system::error_code& error, size_t bytesR
     }
     else if (error != boost::asio::error::eof)
     {
-        HE_ERROR("Server: Error receiving message (" + error.message() + ")");
+        HE_ERROR("Server: Error receiving message (%s)", error.message().c_str());
     }
     else
     {
@@ -152,9 +151,7 @@ void Server::handleServerMessage(void* /*raw_msg*/, size_t /*msg_size*/, Header*
         case ServerMessage_None: HE_ASSERT("should be handled in previous method"); break;
         case ServerMessage_Connect: userConnecting(); break;
         case ServerMessage_Disconnect: userDisconnecting(pHeader->user); break;
-        char sHeaderType[5];
-        sprintf(sHeaderType, "%d", (int)pHeader->type);
-        default: HE_ERROR("Server: unkown server message received: " + std::string(sHeaderType));
+        default: HE_ERROR("Server: unknown server message received: %d", (int)pHeader->type);
     }
 }
 void Server::userConnecting()
@@ -177,13 +174,11 @@ void Server::userConnecting()
 
         sendMessageToUser(details::Message::createServerMsg(&msg, sizeof(byte), &header, sizeof(Header)), slot);
 
-        HE_INFO("Server: User: " + itoa((int)slot) + " connected! ("+ m_LastPacketSender.address().to_string() + ":" + 
-            itoa((int)m_LastPacketSender.port()) + ")");
+        HE_INFO("Server: User: %d connected! (%s:%d)", (int)slot, m_LastPacketSender.address().to_string().c_str(), (int)m_LastPacketSender.port());
     }
     else
     {
-        HE_INFO("Server: failed to connect ("+ m_LastPacketSender.address().to_string() + ":" + 
-            itoa((int)m_LastPacketSender.port()) + "): to many users");
+        HE_INFO("Server: failed to connect (%s:%d)", m_LastPacketSender.address().to_string().c_str(), (int)m_LastPacketSender.port());
         
         Header header;
         header.type = ServerMessage_Connect;
@@ -203,7 +198,7 @@ void Server::userDisconnecting(byte userId)
         m_Users[userId].connected = false;
         m_FreeSlots.push(userId);
         m_ConnectedUsers.erase(std::remove(m_ConnectedUsers.begin(), m_ConnectedUsers.end(), userId), m_ConnectedUsers.end());
-        HE_INFO("Server User " + itoa((int)userId) + " disconnected!");
+        HE_INFO("Server User %d disconnected!", (int)userId);
     }
     else
         HE_WARNING("Server: disconnecting disconnected user!");
@@ -279,7 +274,7 @@ void Server::handleWrite(
     }
     else if (error != boost::asio::error::eof)
     {
-        HE_ERROR("Server: error while sending message: " + error.message());
+        HE_ERROR("Server: error while sending message: %s", error.message().c_str());
     }
     else
     {

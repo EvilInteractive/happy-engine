@@ -21,10 +21,3 @@
 // stdafx.obj will contain the pre-compiled type information
 
 #include "HappyPCH.h"
-
-std::string itoa(int i)
-{
-    char temp[11];
-    sprintf(temp, "%d", i);
-    return std::string(temp);
-}

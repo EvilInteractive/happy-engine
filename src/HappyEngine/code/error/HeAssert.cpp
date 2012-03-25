@@ -26,58 +26,58 @@
 namespace he {
 namespace err {
 namespace details {
-void happyAssert(bool isOk, const std::string& message, const char* file, int line)
+void happyAssert(bool isOk, const char* file, int line, const char* message, va_list args)
 {
-    if (!isOk)
-    {
-        char sline[5];
-        sprintf(sline, "%d", line);
-        HE_ERROR("**ASSERTION FAILURE!**");
-        HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
-        HE_ERROR("*" + message);
-        #ifndef GCC
-
-        __debugbreak();
-        #else
-        __builtin_trap();
-        #endif
-    }
-}
-void happyAssert(bool isOk, const char* file, int line)
-{
-    if (!isOk)
-    {
-        char sline[5];
-        sprintf(sline, "%d", line);
-        HE_ERROR("**ASSERTION FAILURE!**");
-        HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
-        #ifndef GCC
-        __debugbreak();
-        #else
-        __builtin_trap();
-        #endif
-    }
-}
-void happyAssert(int isOk, const char* file, int line)
-{
-    happyAssert(isOk != 0, file, line);
-}
-void happyAssert(void* isOk, const char* file, int line)
-{
-    happyAssert(isOk != nullptr, file, line);
-}
-void happyAssert(const std::string& message, const char* file, int line)
-{
-    char sline[5];
-    sprintf(sline, "%d", line);
+    if (isOk == true)
+        return;
+    
     HE_ERROR("**ASSERTION FAILURE!**");
-    HE_ERROR("*err in file " + std::string(file) + "(" + std::string(sline) + ")");
-    HE_ERROR("*" + message);
+    HE_ERROR("in file %s (%d)", file, line);
+    he::details::HE_ERROR(message, args);
+    
+    // TODO : Messagebox
     #ifndef GCC
     __debugbreak();
     #else
     __builtin_trap();
     #endif
+    
 }
+//void happyAssert(bool isOk, const char* file, int line)
+//{
+//    if (!isOk)
+//    {
+//        char sline[5];
+//        sprintf(sline, "%d", line);
+//        HE_ERROR("**ASSERTION FAILURE!**");
+//        HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
+//        #ifndef GCC
+//        __debugbreak();
+//        #else
+//        __builtin_trap();
+//        #endif
+//    }
+//}
+void happyAssert(int isOk, const char* file, int line)
+{
+    happyAssert(isOk != 0, file, line, "", 0);
+}
+void happyAssert(void* isOk, const char* file, int line)
+{
+    happyAssert(isOk != nullptr, file, line, "", 0);
+}
+//void happyAssert(const std::string& message, const char* file, int line)
+//{
+//    char sline[5];
+//    sprintf(sline, "%d", line);
+//    HE_ERROR("**ASSERTION FAILURE!**");
+//    HE_ERROR("*err in file " + std::string(file) + "(" + std::string(sline) + ")");
+//    HE_ERROR("*" + message);
+//    #ifndef GCC
+//    __debugbreak();
+//    #else
+//    __builtin_trap();
+//    #endif
+//}
 } } } //end namespace
 #pragma warning(default:4127)

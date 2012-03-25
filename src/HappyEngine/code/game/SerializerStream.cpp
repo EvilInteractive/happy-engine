@@ -28,7 +28,7 @@ namespace game {
 SerializerStream::SerializerStream(const std::string& path, bool save)
 {
     if (m_Stream.open(path, save?io::BinaryStream::Write:io::BinaryStream::Read) == false)
-        HE_ERROR("Error loading save file: " + path);
+        HE_ERROR("Error loading save file: %s", path.c_str());
 }
 
 

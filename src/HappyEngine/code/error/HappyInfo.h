@@ -22,17 +22,17 @@
 #define _HE_HAPPYINFO_H_
 #pragma once
 
-#include "HappyEngine.h"
-#include "Console.h"
-
 namespace he {
 
-#define HE_INFO(str) {std::cout << "Info: " << str << "\n"; \
-    if (HAPPYENGINE != nullptr) CONSOLE->addMessage(str, CMSG_TYPE_ENGINE);}
-#define HE_ERROR(str) {std::cout << "Error: " << str << "\n"; \
-    if (HAPPYENGINE != nullptr) CONSOLE->addMessage(str, CMSG_TYPE_ERROR);} 
-#define HE_WARNING(str) {std::cout << "Warning: " << str << "\n"; \
-    if (HAPPYENGINE != nullptr) CONSOLE->addMessage(str, CMSG_TYPE_WARNING); }
+namespace details {
+void HE_INFO(const char* msg, va_list args);
+void HE_ERROR(const char* msg, va_list args);
+void HE_WARNING(const char* msg, va_list args);
+}
+
+void HE_INFO(const char* msg, ...);
+void HE_ERROR(const char* msg, ...);
+void HE_WARNING(const char* msg, ...);
 
 } //end namespace
 

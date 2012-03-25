@@ -105,7 +105,7 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
                     }
                     else
                     {
-                        HE_ERROR("Error when preprocessing shader: including " + includeRelativePath + fName + " failed");
+                        HE_ERROR("Error when preprocessing shader: including %s%s failed", includeRelativePath.c_str(), fName.c_str());
                     }
 
                 }

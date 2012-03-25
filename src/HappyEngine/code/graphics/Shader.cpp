@@ -59,10 +59,8 @@ bool validateShader(GLuint shaderID, const std::string& file)
 
         glGetShaderInfoLog(shaderID, BUFFER_SIZE, &length, buffer);
 
-        char sId[5];
-        sprintf(sId, "%d", shaderID);
-        HE_ERROR("Shader " + std::string(sId) + " (" + file + ") compile err: ");
-        HE_ERROR(std::string(buffer));
+        HE_ERROR("Shader %d(%s) compile err:", shaderID, file.c_str());
+        HE_ERROR(buffer);
     }
     return compiled == GL_TRUE;
 }
@@ -82,10 +80,8 @@ bool validateProgram(GLuint programID)
         glGetProgramInfoLog(programID, BUFFER_SIZE, &length, buffer);
         if (length > 0)
         {
-            char sId[5];
-            sprintf(sId, "%d", (int)programID);
-            HE_ERROR("Program " + std::string(sId) + "link err:");
-            HE_ERROR(std::string(buffer));
+            HE_ERROR("Program %d link err:", (int)programID);
+            HE_ERROR(buffer);
         }
         succes = false;
     }
@@ -95,9 +91,7 @@ bool validateProgram(GLuint programID)
     glGetProgramiv(programID, GL_VALIDATE_STATUS, &validateStatus);
     if (validateStatus == GL_FALSE)
     {
-        char sId[5];
-        sprintf(sId, "%d", (int)programID);
-        HE_ERROR("Error validating shader " + std::string(sId));
+        HE_ERROR("Error validating shader %d", programID);
         succes = false;
     }
 
@@ -127,7 +121,7 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
     }
     else
     {
-        HE_ERROR("Error reading: " + vsPath);
+        HE_ERROR("Error reading: %s", vsPath);
         return false;
     }
     if (reader.open(fsPath, io::FileReader::OpenType_ASCII))
@@ -137,7 +131,7 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
     }
     else
     {
-        HE_ERROR("Error reading: " + fsPath);
+        HE_ERROR("Error reading: %s", fsPath);
         return false;
     }
     // <-----------------------------------------------
@@ -212,8 +206,8 @@ uint Shader::getBufferId( const std::string& name ) const
     uint loc(glGetUniformBlockIndex(m_Id, name.c_str()));
     if (loc == -1)
     {
-        HE_ERROR("Uniform buffer: '" + name + "' not found!");
-        HE_ERROR("In shader: " + m_FragShaderName);
+        HE_ERROR("Uniform buffer: '%s' not found!", name.c_str());
+        HE_ERROR("In shader: %s", m_FragShaderName);
     }
     return loc;
 }
@@ -223,8 +217,8 @@ uint Shader::getShaderVarId(const std::string& name) const
     uint loc(glGetUniformLocation(m_Id, name.c_str()));
     if (loc == -1)
     {
-        HE_ERROR("Shader var: '" + name + "' not found!");
-        HE_ERROR("In shader: " + m_FragShaderName);
+        HE_ERROR("Shader var: '%s' not found!", name.c_str());
+        HE_ERROR("In shader: %s", m_FragShaderName.c_str());
     }
     return loc;
 }

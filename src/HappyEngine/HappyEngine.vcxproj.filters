@@ -601,6 +601,9 @@
     <ClCompile Include="code\StaticDataManager.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
+    <ClCompile Include="code\error\HappyInfo.cpp">
+      <Filter>happyengine\error</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\content\BinObjLineLoader.h">

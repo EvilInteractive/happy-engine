@@ -71,7 +71,4 @@
 
 #include "HappyInfo.h"
 
-
-std::string itoa(int i);
-
 #endif
