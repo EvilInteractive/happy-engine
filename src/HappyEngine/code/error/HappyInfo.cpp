@@ -21,6 +21,8 @@
 
 #include "HappyInfo.h"
 
+#pragma warning(disable:4996) // use _s version instead
+
 namespace he {
 
 namespace details {
@@ -78,5 +80,6 @@ void HE_WARNING( const char* msg, ...)
     va_end(arg_list);
 }
 
+#pragma warning(default:4996) // use _s version instead
 
 }

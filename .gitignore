@@ -11,3 +11,4 @@ src/*/build/*/*/*
 src/HappyTools/*/Debug/*
 src/HappyTools/*/Release/*
 *.ipch
+src/3thParty/*/*/*
