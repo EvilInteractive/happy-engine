@@ -21,7 +21,6 @@
 
 #include "Texture2D.h"
 #include "GL/glew.h"
-#include "SDL_ttf.h"
 
 namespace he {
 namespace gfx {

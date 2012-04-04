@@ -23,7 +23,6 @@
 #pragma once
 
 #include "GL/glew.h"
-#include "SDL.h"
 #include <iostream>
 #include "PxPhysicsAPI.h"
 #include "HappyEngine.h"
@@ -34,7 +33,7 @@ namespace err {
 
 void glHandleError(GLenum err);
 void glCheckForErrors(bool postErrors = true);
-void sdlHandleError(int err);
+//void sdlHandleError(int err);
 void checkFboStatus(const std::string& name);
 
 class HappyPhysicsErrorCallback : public physx::PxErrorCallback

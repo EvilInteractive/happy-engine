@@ -31,7 +31,7 @@ namespace io {
 class ControlsManager
 {
 public:
-	ControlsManager(bool qt);
+	ControlsManager();
     virtual ~ControlsManager();
 
     void tick();

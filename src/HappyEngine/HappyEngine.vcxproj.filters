@@ -388,9 +388,6 @@
     <ClCompile Include="code\io\Keyboard.cpp">
       <Filter>happyengine\io\keyboard</Filter>
     </ClCompile>
-    <ClCompile Include="code\io\QtKeyboard.cpp">
-      <Filter>happyengine\io\keyboard</Filter>
-    </ClCompile>
     <ClCompile Include="code\graphics\Happy2DRenderer.cpp">
       <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClCompile>
@@ -937,9 +934,6 @@
       <Filter>happyengine\io\keyboard</Filter>
     </ClInclude>
     <ClInclude Include="code\io\IKeyboard.h">
-      <Filter>happyengine\io\keyboard</Filter>
-    </ClInclude>
-    <ClInclude Include="code\io\QtKeyboard.h">
       <Filter>happyengine\io\keyboard</Filter>
     </ClInclude>
     <ClInclude Include="code\io\Keys.h">

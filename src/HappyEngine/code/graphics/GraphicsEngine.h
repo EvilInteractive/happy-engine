@@ -82,6 +82,7 @@ public:
     LightManager* getLightManager() const;
     const RenderSettings& getSettings() const;
     const DrawManager* getDrawManager() const;
+    sf::Window* getWindow() const;
 
 private:
 

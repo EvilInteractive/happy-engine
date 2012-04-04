@@ -77,32 +77,24 @@ enum SubEngine
     SubEngine_Content = 1 << 4,
     SubEngine_2DRenderer = 1 << 5,
     SubEngine_Audio = 1 << 6,
-    SubEngine_Qt = 1 << 7,
     SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6
 };
-#ifdef HE_ENABLE_QT
-class HappyEngine  : public /*qt::*/QObject
-{
-    Q_OBJECT
-#else
+
 class HappyEngine
 {
-#endif
 public:
     virtual ~HappyEngine();
 
     static void init(int subengines);
     void start(game::Game* pGame);
-#ifdef HE_ENABLE_QT
-    void start(gfx::HappyQtWidget* pWidget);
-#endif
+
     static void dispose();
 
     static HappyEngine* getPointer();
 
     void quit();
 
-    const std::vector<SDL_Event>& getSDLEvents() const;
+    const std::vector<sf::Event>& getEvents() const;
 
     void audioLoop();
 
@@ -151,10 +143,12 @@ private:
 
     int m_SubEngines;
 
-    std::vector<SDL_Event> m_SDLEvents;
+    std::vector<sf::Event> m_Events;
     boost::thread m_AudioThread;
 
     boost::chrono::high_resolution_clock::time_point m_PrevTime;
+
+    sf::Window* m_pMainWindow;
 
     // Methods
     void initWindow();

@@ -349,4 +349,9 @@ const DrawManager* GraphicsEngine::getDrawManager() const
     return m_pDrawManager;
 }
 
+sf::Window* GraphicsEngine::getWindow() const
+{
+    return m_pMainWindow;
+}
+
 } } //end namespace

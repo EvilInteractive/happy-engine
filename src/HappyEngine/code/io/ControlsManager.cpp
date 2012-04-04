@@ -22,28 +22,16 @@
 #include "ControlsManager.h"
 #include "HappyNew.h"
 #include "Mouse.h"
-#include "QtMouse.h"
 #include "Keyboard.h"
-#include "QtKeyboard.h"
 
 
 namespace he {
 namespace io {
 
-ControlsManager::ControlsManager(bool qt): m_pMouse(nullptr), m_pKeyboard(nullptr), m_bLocked(false), m_pLockedObject(nullptr)
+ControlsManager::ControlsManager(): m_pMouse(nullptr), m_pKeyboard(nullptr), m_bLocked(false), m_pLockedObject(nullptr)
 {
-    if (qt == false)
-    {
-        m_pMouse = NEW Mouse();
-        m_pKeyboard = NEW Keyboard();
-    }
-#if HE_ENABLE_QT
-    else
-    {
-        m_pMouse = NEW QtMouse();
-        m_pKeyboard = NEW QtKeyboard();
-    }
-#endif
+    m_pMouse = NEW Mouse();
+    m_pKeyboard = NEW Keyboard();
 }
 
 

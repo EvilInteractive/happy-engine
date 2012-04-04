@@ -50,7 +50,8 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
-                            m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true)
+                            m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
+                            m_pMainWindow(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -125,7 +126,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     if (subengines & SubEngine_Graphics)
     {
-        SDL_Init(SDL_INIT_EVERYTHING);
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
         m_p3DRenderer = NEW gfx::ExtraForward3DRenderer();
         m_pCameraManager = NEW game::CameraManager();
@@ -141,7 +141,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     
     if (subengines & SubEngine_Controls)
     {
-        m_pControlsManager = NEW io::ControlsManager((subengines & SubEngine_Qt) == SubEngine_Qt);
+        m_pControlsManager = NEW io::ControlsManager();
     }
 
     if (subengines & SubEngine_Physics)
@@ -178,7 +178,7 @@ void HappyEngine::start(game::Game* pGame)
     cout << "*************  HappyEngine :D  *************\n";
     cout << "  ***************          ***************  \n";
     cout << "       ******************************       \n";
-    cout << "os: " << SDL_GetPlatform() << "\n\n";
+    //cout << "os: " << SDL_GetPlatform() << "\n\n";
 
     m_pGame = pGame;
 
@@ -190,7 +190,10 @@ void HappyEngine::start(game::Game* pGame)
     //load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
-        m_pGraphicsEngine->init(false);
+        m_pGraphicsEngine->init();
+
+        m_pMainWindow = m_pGraphicsEngine->getWindow();
+
         m_p3DRenderer->init();
         m_pCameraManager->init();
     }
@@ -211,70 +214,44 @@ void HappyEngine::start(game::Game* pGame)
         loop();
     }   
 }
-#ifdef HE_ENABLE_QT
-void HappyEngine::start(gfx::HappyQtWidget* pWidget)
-{
-    using namespace std;
-    cout << "       ******************************       \n";
-    cout << "  ****************   Qt   ****************  \n";
-    cout << "*************  HappyEngine :3  *************\n";
-    cout << "  ***************          ***************  \n";
-    cout << "       ******************************       \n";
-    m_SubEngines |= SubEngine_Qt;    
-
-    m_pGame = pWidget;
-    m_pCameraManager->init();
-    m_pGame->load();
-    m_pQtWidget = pWidget;
-
-    m_pLoadingScreen = NEW tools::LoadingScreen();
-    
-    m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
-
-    m_qtLoopTimer.setSingleShot(true); //as fast as possible
-    connect(&m_qtLoopTimer, SIGNAL(timeout()), this, SLOT(loop()));
-    m_qtLoopTimer.start(0);
-
-    QApplication::exec();
-    m_Quit = true;
-}
-#endif
 void HappyEngine::loop()
 {
     PROFILER_BEGIN("Main Loop");
+
     boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
     m_PrevTime = boost::chrono::high_resolution_clock::now();
+
     float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+
     updateLoop(dTime);
+
     if (m_SubEngines & SubEngine_Graphics)
     {
         drawLoop();
     }
-    PROFILER_END();
 
-#ifdef HE_ENABLE_QT
-    if ((m_SubEngines & SubEngine_Qt) && m_Quit == false)
-        m_qtLoopTimer.start(0);
-#endif
+    PROFILER_END();
 }
 void HappyEngine::updateLoop(float dTime)
 {
     PROFILER_BEGIN("Update Loop");
-    if ((m_SubEngines & SubEngine_Qt) != SubEngine_Qt)
-    {
-        SDL_Event event;
-        m_SDLEvents.clear();
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-                case SDL_QUIT: m_Quit = true; break;
-            }
 
-            // needed for checking events in other places in program
-            m_SDLEvents.push_back(event);
+    sf::Event event;
+    m_Events.clear();
+
+    while (m_pMainWindow->pollEvent(event))
+    {
+        switch (event.type)
+        {
+            case sf::Event::Closed:
+                m_Quit = true;
+                break;
         }
+
+        // needed for checking events in other places in program
+        m_Events.push_back(event);
     }
+
     if (m_SubEngines & SubEngine_Controls)
         m_pControlsManager->tick();
     if (m_SubEngines & SubEngine_Content)
@@ -317,12 +294,7 @@ void HappyEngine::drawLoop()
 
     // display 2D
     GUI->draw();    
- 
-#ifdef HE_ENABLE_QT
-    if (m_SubEngines & SubEngine_Qt)
-        m_pQtWidget->present();
-    else 
-#endif
+
     if (m_SubEngines & SubEngine_Graphics)
         m_pGraphicsEngine->present();
     PROFILER_END();
@@ -333,9 +305,9 @@ HappyEngine* HappyEngine::getPointer()
     return s_pHappyEngine;
 }
 
-const std::vector<SDL_Event>& HappyEngine::getSDLEvents() const
+const std::vector<sf::Event>& HappyEngine::getEvents() const
 {
-    return m_SDLEvents;
+    return m_Events;
 }
 
 void HappyEngine::audioLoop()

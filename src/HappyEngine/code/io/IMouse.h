@@ -24,7 +24,6 @@
 
 #include "vec2.h"
 #include "HappyTypes.h"
-#include "SDL.h"
 
 namespace he {
 namespace io {

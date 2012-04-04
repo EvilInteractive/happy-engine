@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "Keyboard.h"
-#include "SDL.h"
 #include "HappyNew.h"
 #include "boost/thread.hpp"
 

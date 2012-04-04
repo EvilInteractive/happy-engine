@@ -21,7 +21,6 @@
 
 #include "TextBox.h"
 #include "HappyNew.h"
-#include "SDL.h"
 #include <algorithm>
 #include "HappyEngine.h"
 #include "ContentManager.h"
