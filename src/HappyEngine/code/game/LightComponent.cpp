@@ -74,7 +74,12 @@ void PointLightComponent::deserialize(const SerializerStream& stream)
 
 void PointLightComponent::tick( float dTime )
 {
-    m_pPointLight->setPosition(m_pParent->getWorldMatrix() * m_mtxLocalTransform * m_OriginalPointLight.getPosition());
+    mat44 parentWorld(mat44::Identity);
+    if (m_pParent != nullptr)
+    {
+        parentWorld = m_pParent->getWorldMatrix();
+    }
+    m_pPointLight->setPosition(parentWorld * m_mtxLocalTransform * m_OriginalPointLight.getPosition());
     if (m_Broken)
     {
         m_BrokenCounter -= dTime;
@@ -209,8 +214,15 @@ void SpotLightComponent::deserialize( const SerializerStream& stream )
 
 void SpotLightComponent::tick( float /*dTime*/ )
 {
-    m_pSpotLight->setPosition(m_pParent->getWorldMatrix() * m_mtxLocalTransform * m_OriginalSpotLight.getPosition());
-    m_pSpotLight->setDirection((m_pParent->getWorldMatrix() * m_mtxLocalTransform * vec4(m_OriginalSpotLight.getDirection(), 0.0f)).xyz());
+    mat44 parentWorld(mat44::Identity);
+    if (m_pParent != nullptr)
+    {
+        parentWorld = m_pParent->getWorldMatrix();
+    }
+
+    m_pSpotLight->setPosition(parentWorld * m_mtxLocalTransform * m_OriginalSpotLight.getPosition());
+    m_pSpotLight->setDirection((parentWorld * m_mtxLocalTransform * vec4(m_OriginalSpotLight.getDirection(), 0.0f)).xyz());
+
 }
 
 void SpotLightComponent::setLocalTransform( const mat44& mtxWorld )

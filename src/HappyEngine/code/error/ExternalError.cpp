@@ -58,7 +58,7 @@ void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const
 
     stream << "': " << message << " [" << file << "(" << line << ")] \n";
 
-    HE_WARNING(stream.str());
+    HE_WARNING(stream.str().c_str());
 }
 
 void checkFboStatus( const std::string& name )
@@ -66,7 +66,7 @@ void checkFboStatus( const std::string& name )
     GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (err != GL_FRAMEBUFFER_COMPLETE)
     {
-        HE_ERROR("Woops something went wrong with the " + name + " framebuffer");
+        HE_ERROR("Woops something went wrong with the %s framebuffer", name.c_str());
         switch (err)
         {
         case GL_FRAMEBUFFER_UNDEFINED:                      HE_ERROR("GL_FRAMEBUFFER_UNDEFINED");                      break;
@@ -86,7 +86,7 @@ void sdlHandleError( int err )
 {
     if (err != 0)
     {
-        HE_ERROR("SDL: " + std::string(SDL_GetError()));
+        HE_ERROR("SDL: %s", SDL_GetError());
     }
 }
 
@@ -94,7 +94,7 @@ void glHandleError( GLenum err )
 {
     if (err != GL_NO_ERROR)
     {
-        HE_ERROR("GL: " + std::string((char*)glewGetErrorString(err)));
+        HE_ERROR("GL: %s", (char*)glewGetErrorString(err));
     }
 }
 

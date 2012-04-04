@@ -66,7 +66,7 @@ void MainGame::init()
 void MainGame::load()
 {
     using namespace he;
-
+    
     CAMERAMANAGER->addCamera("default", NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
     CAMERAMANAGER->getActiveCamera()->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);

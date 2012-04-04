@@ -54,7 +54,7 @@ inline void handleILError(const std::string& file)
     while (err != IL_NO_ERROR)
     {
         const char* errorstr(iluErrorString(err));
-        HE_ERROR(std::string(errorstr) + ": " + file);
+        HE_ERROR("%s: %s", errorstr, file);
         err = ilGetError();
     }
 }
@@ -194,7 +194,7 @@ const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
         m_pAssetContainer->addAsset(stream.str(), handle);
 
         TextureLoadData data;
-        data.path = "";
+        data.path = stream.str();
         data.id = 0;
         data.format = 0;
         data.color = color;
@@ -233,7 +233,7 @@ bool TextureLoader::createTexture( const TextureLoadData& data )
     else
         delete data.pData;
 
-    HE_INFO("Texture create completed: " + data.path);
+    HE_INFO("Texture create completed: %s", data.path.c_str());
 
     return true;
 }
@@ -253,7 +253,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
             data.format = ilGetInteger(IL_IMAGE_FORMAT);
             data.pData = ilGetData();
 
-            HE_INFO("Texture load completed: " + data.path);
+            HE_INFO("Texture load completed: %s", data.path.c_str());
 
             return true;
         }
@@ -283,7 +283,7 @@ bool TextureLoader::makeData( TextureLoadData& data )
         data.pData[i+2] = data.color.rByte();
         data.pData[i+3] = data.color.aByte();
     }
-    HE_INFO("Texture color load completed: " + data.path);
+    HE_INFO("Texture color load completed: (%d,%d,%d,%d)", (int)data.color.rByte(), (int)data.color.gByte(), (int)data.color.bByte(), (int)data.color.aByte());
     return true;
 }
 

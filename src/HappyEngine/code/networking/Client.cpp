@@ -81,10 +81,7 @@ void Client::handleConnect(const boost::system::error_code& err)
 {
     if (!err)
     {
-        char sPort[10];
-        sprintf(sPort, "%d", m_ServerEndpoint.port());
-        HE_INFO("Successful connected to " + m_ServerEndpoint.address().to_string() + ":" + 
-            std::string(sPort));
+        HE_INFO("Successful connected to %s:%d", m_ServerEndpoint.address().to_string().c_str(), (int)m_ServerEndpoint.port());
         
         asycRead();
 
@@ -96,10 +93,7 @@ void Client::handleConnect(const boost::system::error_code& err)
     }
     else
     {
-        char sPort[10];
-        sprintf(sPort, "%d", m_ServerEndpoint.port());
-        HE_INFO("Failed to connect to " + m_ServerEndpoint.address().to_string() + ":" + 
-            std::string(sPort));
+        HE_INFO("Failed to connect to %s:%d", m_ServerEndpoint.address().to_string().c_str(), (int)m_ServerEndpoint.port());
         disconnect();
     }
 }
@@ -121,7 +115,7 @@ void Client::handleReceive(const boost::system::error_code& err, size_t bytesRec
     }
     else if (err != boost::asio::error::eof)
     {
-        HE_ERROR("Errro receiving message from server (" + err.message() + ")");
+        HE_ERROR("Error receiving message from server (%s)", err.message().c_str());
     }
     else
     {
@@ -135,7 +129,7 @@ void Client::handleWrite(details::Message::pointer /*msg*/, const boost::system:
     }
     else if (error != boost::asio::error::eof)
     {
-        HE_ERROR("Error sending message to server (" + error.message() + ")");
+        HE_ERROR("Error sending message to server (%s)", error.message().c_str());
     }
     else
     {
@@ -172,9 +166,7 @@ void Client::handleInternalMessage(void* msg, size_t /*msg_size*/, Server::Heade
             if ((*static_cast<byte*>(msg)) == 0)
             {
                 m_UserId = pHeader->user;
-                char sUserId[10];
-                sprintf(sUserId, "%d", (int)m_UserId);
-                HE_INFO("Client: Logged in successfull got slot: " + std::string(sUserId));
+                HE_INFO("Client: Logged in successfull got slot: %d", (int)m_UserId);
                 handleLoggedIn();
             }
             else

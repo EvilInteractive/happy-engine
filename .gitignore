@@ -1,13 +1,14 @@
 src/*/Release/*
 *.user
 src/*/bin/*
+src/*/bin(x64)/*
 *.sdf
 src/*/Debug/*
 *.opensdf
 *.suo
-src/HappyTests/build/*/build/Debug/*
-src/HappyTests/build/*/build/Release/*
+src/*/build/*/*/*
 !src/HappyTests/build/HappyTemplateProject/*.user
 src/HappyTools/*/Debug/*
 src/HappyTools/*/Release/*
 *.ipch
+src/3thParty/*/*/*

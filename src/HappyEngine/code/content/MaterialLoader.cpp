@@ -65,7 +65,7 @@ BlendEquation blendEquationFromString(const std::string& str)
     }
     else 
     {
-        HE_ERROR("unknown blendEquationFromString: " + str);
+        HE_ERROR("unknown blendEquationFromString: %s", str.c_str());
         return BlendEquation_Add;
     }
 }
@@ -117,7 +117,7 @@ BlendFunc blendFuncFromString(const std::string& str)
     }
     else 
     {
-        HE_ERROR("unknown blendFuncFromString: " + str);
+        HE_ERROR("unknown blendFuncFromString: %s", str.c_str());
         return BlendFunc_One;
     }
 }
@@ -135,7 +135,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
         gfx::Material material;
         if (reader.open(path) == false)
         {
-            HE_ERROR("Error loading material: " + path);
+            HE_ERROR("Error loading material: %s", path.c_str());
             return material;
 
         }
@@ -159,7 +159,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 io::IniReader shaderReader;
                 if (shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + file) == false)
                 { 
-                    HE_ERROR("Error loading material shader: " + path);
+                    HE_ERROR("Error loading material shader: %s", path.c_str());
                     return material;
                 }
 
@@ -239,7 +239,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                     }
                     else
                     {
-                        HE_ERROR("Material: unkown attribute " + std::string(p.second.cbegin(), p.second.cend()));
+                        HE_ERROR("Material: unkown attribute %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
                     } 
                     shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));
                 }); 
@@ -295,7 +295,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         }
                         else
                         {
-                            HE_ERROR("Material: instancing unkown type " + std::string(p.second.cbegin(), p.second.cend()));
+                            HE_ERROR("Material: instancing unkown type %s", std::string(p.second.cbegin(), p.second.cend()));
                         }
                         shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));  
                     });
@@ -492,7 +492,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         }
                         else
                         {
-                            HE_ERROR("Material: unkown semantic " + std::string(node.second.cbegin(), node.second.cend()));
+                            HE_ERROR("Material: unkown semantic %s", std::string(node.second.cbegin(), node.second.cend()).c_str());
                         }
                     });
                 }

@@ -1,0 +1,15 @@
+[Deferred]
+shader = "defaultDeferred.shader"
+
+[Forward]
+shader = "defaultForward.shader"
+
+[TEXTURE2D]
+diffuseMap = "pong/board_diffuse.png"
+normalMap = "pong/board_normal.png"
+specGlossIllMap = "pong/board_sgi.png"
+
+[info]
+blending = false
+post = true
+shadow = true

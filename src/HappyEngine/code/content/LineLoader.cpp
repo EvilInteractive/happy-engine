@@ -50,7 +50,7 @@ gfx::Line::pointer LineLoader::loadLine(const std::string& path)
             lines::ObjLineLoader loader;
             if (loader.load(path) == false)
             {
-                HE_ERROR("Line load failed: " + path);
+                HE_ERROR("Line load failed: %s", path.c_str());
             }
             
             gfx::Line::pointer pLine(NEW gfx::Line());
@@ -65,7 +65,7 @@ gfx::Line::pointer LineLoader::loadLine(const std::string& path)
             lines::BinObjLineLoader loader;
             if (loader.load(path) == false)
             {
-                HE_ERROR("Error loading binobj line: " + path);
+                HE_ERROR("Error loading binobj line: %s", path.c_str());
                 return gfx::Line::pointer(NEW gfx::Line());
             }
             

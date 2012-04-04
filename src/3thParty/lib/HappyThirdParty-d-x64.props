@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\3thParty\lib\PhysX\include\PxTask\include;..\..\..\3thParty\lib\PhysX\include\PxFoundation;..\..\..\3thParty\lib\PhysX\include\PxFoundation\internal\include;..\..\..\3thParty\lib\PhysX\include\PhysXProfileSDK\sdk\include;..\..\..\3thParty\lib\PhysX\include\PhysXVisualDebuggerSDK\PVDCommLayer\Public;..\..\..\3thParty\lib\PhysX\include\PhysXAPI;..\..\..\3thParty\lib\PhysX\include\RepX\include;..\..\..\3thParty\lib\PhysX\include\PhysXAPI\characterkinematic;..\..\..\3thParty\lib\Assimp\include;..\..\..\3thParty\lib\Boost\include;..\..\..\3thParty\lib\DevIL\x64\include;..\..\..\3thParty\lib\glew\x64\include;..\..\..\3thParty\lib\libsndfile\x64\include;..\..\..\3thParty\lib\OpenAl\include;..\..\..\3thParty\lib\PhysX\include;..\..\..\3thParty\lib\SDL\include;..\..\..\3thParty\lib\SDL_ttf\include;..\..\..\3thParty\lib\SFML2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>assimp.lib;libboost_system-vc100-mt-gd-1_49.lib;libboost_date_time-vc100-mt-gd-1_49.lib;libboost_regex-vc100-mt-gd-1_49.lib;libboost_thread-vc100-mt-gd-1_49.lib;libboost_chrono-vc100-mt-gd-1_49.lib;DevIL.lib;ILU.lib;glew32s.lib;glu32.lib
+;opengl32.lib;libsndfile-1.lib;OpenAL32.lib;Foundation.lib;PhysX3Common.lib;PhysX3CharacterKinematic.lib;PhysX3Vehicle.lib;PhysX3Cooking_x64.lib;PhysX3_x64.lib;PhysX3Extensions.lib;LowLevel.lib;GeomUtils.lib;SceneQuery.lib;SimulationController.lib;PvdRuntime.lib;RepX3.lib;PxTask.lib;PhysX3Gpu_x64.lib;SDL.lib
+;SDLmain.lib;SDL_ttf.lib;sfml-main-d.lib;sfml-system-s-d.lib;sfml-window-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\3thParty\lib\Assimp\lib\x64;..\..\..\3thParty\lib\Boost\lib\x64;..\..\..\3thParty\lib\DevIL\x64\lib;..\..\..\3thParty\lib\glew\x64\lib;..\..\..\3thParty\lib\libsndfile\x64\lib;..\..\..\3thParty\lib\OpenAl\libs\x64;..\..\..\3thParty\lib\PhysX\lib\x64\Debug;..\..\..\3thParty\lib\SDL\lib\x64;..\..\..\3thParty\lib\SDL_ttf\lib\x64;..\..\..\3thParty\lib\SFML2.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

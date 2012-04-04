@@ -74,31 +74,27 @@ void GraphicsEngine::init()
     glewExperimental = true;
     glHandleError(glewInit());
 
-    HE_INFO(std::string((char*)glGetString(GL_VENDOR)));
-    HE_INFO(std::string((char*)glGetString(GL_RENDERER)));
-    HE_INFO(std::string((char*)glGetString(GL_VERSION)));
-    HE_INFO(std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    HE_INFO((char*)glGetString(GL_VENDOR));
+    HE_INFO((char*)glGetString(GL_RENDERER));
+    HE_INFO((char*)glGetString(GL_VERSION));
+    HE_INFO((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     int major, minor;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    char sMajor[5];                     char sMinor[5];
-    sprintf(sMajor, "%d", major);       sprintf(sMinor, "%d", minor);   
-    HE_INFO("GL version " + std::string(sMajor) + "." + std::string(sMinor));
+    HE_INFO("GL version %d.%d", major, minor);
 
     int doubleBuff;
     glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
-    HE_INFO(std::string("Double buffered: ") + ((doubleBuff == GL_TRUE)?"TRUE":"FALSE"));
+    HE_INFO("Doubly buffered: %s", (doubleBuff == GL_TRUE)?"TRUE":"FALSE");
 
     int maxTexSize, maxRenderSize, maxRectSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
     glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
-    char sMaxTexSize[10];                     char sMaxRenderSize[10];                       char sMaxRectSize[10];
-    sprintf(sMaxTexSize, "%d", maxTexSize);   sprintf(sMaxRenderSize, "%d", maxRenderSize);  sprintf(sMaxRectSize, "%d", maxRectSize);
-    HE_INFO("Max texture size: " + std::string(sMaxTexSize));
-    HE_INFO("Max render size: " + std::string(sMaxRenderSize));
-    HE_INFO("Max rect tex size: " + std::string(sMaxRectSize));
+    HE_INFO("Max texture size: %d", maxTexSize);
+    HE_INFO("Max render size: %d", maxRenderSize);
+    HE_INFO("Max rect tex size: %d", maxRectSize);
 
 
     setVSync(m_VSyncEnabled);

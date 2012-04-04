@@ -50,7 +50,7 @@ bool ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayou
 
     if (read(path) == false)
     {
-        HE_WARNING("Obj read failed: " + path);
+        HE_WARNING("Obj read failed: %s", path.c_str());
         return false;
     }
 

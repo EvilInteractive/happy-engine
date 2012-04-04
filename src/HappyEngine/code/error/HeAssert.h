@@ -32,9 +32,7 @@ namespace err {
 namespace details {
 
 #if _DEBUG || TEST
-void happyAssert(bool isOk, const std::string& message, const char* file, int line);
-void happyAssert(const std::string& message, const char* file, int line);
-void happyAssert(bool isOk, const char* file, int line);
+void happyAssert(bool isOk, const char* file, int line, const char* message, va_list args);
 void happyAssert(int isOk, const char* file, int line); //for boost
 void happyAssert(void* isOk, const char* file, int line); //for boost
 #endif
@@ -54,13 +52,12 @@ else \
         { \
             return line; \
         } \
-        explicit HappyAssert(bool isOk, const std::string& message = "") \
+        explicit HappyAssert(bool isOk, const char* message = "", ...) \
         { \
-            he::err::details::happyAssert(isOk, message, __FILE__, HappyAssert::getLine()); \
-        } \
-        explicit HappyAssert(const std::string& message) \
-        { \
-            he::err::details::happyAssert(message, __FILE__, HappyAssert::getLine()); \
+            va_list arg_list;\
+            va_start(arg_list, message);\
+            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getLine(), message, arg_list); \
+            va_end(arg_list);\
         } \
         explicit HappyAssert(void* isOk) \
         { \

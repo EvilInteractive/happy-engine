@@ -52,7 +52,7 @@ void NetworkManager::asioThread()
     catch (std::exception& e)
     {
         HE_INFO("Unhandled exception (AsioThread):");
-        HE_INFO("  " + std::string(e.what()));
+        HE_INFO("  %s", e.what());
     }
     m_AsioIsAlive = false;
     HE_INFO("Asio Ended");

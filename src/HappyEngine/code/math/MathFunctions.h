@@ -150,6 +150,10 @@ inline vec3 cross(const vec3& vector1, const vec3& vector2)
         vector1.z * vector2.x - vector1.x * vector2.z,
         vector1.x * vector2.y - vector1.y * vector2.x);
 }
+inline vec3 reflect(const vec3& v1, const vec3& normal)
+{
+    return normal * 2 * (he::dot(normal, v1)) - v1;
+}
 inline const vec3& min(const vec3& a, const vec3& b)
 {
     return lengthSqr(a) <= lengthSqr(b)? a : b;
