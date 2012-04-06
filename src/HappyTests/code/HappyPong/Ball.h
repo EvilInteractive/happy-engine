@@ -39,11 +39,16 @@ public:
     virtual void tick(float dTime);
 
     void reset();
+    const he::vec3& getPosition() const;
+    const he::vec3& getVelocity() const;
+    float getRadius() const;
 
 private:
 
     he::vec3 m_Velocity;
     he::vec3 m_Position;
+
+    float m_Restitution;
 
     const float m_Radius;
 

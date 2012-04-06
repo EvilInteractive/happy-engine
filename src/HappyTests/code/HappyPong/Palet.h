@@ -27,11 +27,11 @@
 
 namespace ht {
 class LightFlashComponent;
-
+class MainGame;
 class Palet : public he::game::Entity, public he::game::ITickable
 {
 public:
-    Palet(he::byte player, const he::vec2& boardDim);
+    Palet(const MainGame* game, he::byte player, bool ai);
     virtual ~Palet();
 
     //////////////////////////////////////////////////////////////////////////
@@ -53,12 +53,14 @@ private:
     float m_Speed;
 
     const he::vec2 m_PaletDim;
-    const he::vec2 m_BoardDim;
 
     LightFlashComponent* m_LightFlashComponent;
     LightFlashComponent* m_LightFlashAddPointComponent;
 
     he::byte m_Player;
+    bool m_Ai;
+
+    const MainGame* m_Game;
 
     //Disable default copy constructor and default assignment operator
     Palet(const Palet&);

@@ -36,7 +36,8 @@ Ball::Ball(MainGame* mainGame):
     m_Position(0, 0, 0), 
     m_Velocity(0, 0, 0), 
     m_MainGame(mainGame),
-    m_Radius(1.0f)
+    m_Radius(1.0f),
+    m_Restitution(1.01f)
 {
     reset();
 
@@ -153,10 +154,26 @@ void Ball::tick( float dTime )
 
     if (reflect)
     {
-        m_Velocity = he::reflect(-m_Velocity, he::normalize(normal));
+        m_Velocity = he::reflect(-m_Velocity, he::normalize(normal)) * m_Restitution;
         m_LightFlashComponent->flash();
+
     }
     setWorldMatrix(he::mat44::createTranslation(m_Position));
+}
+
+const he::vec3& Ball::getPosition() const
+{
+    return m_Position;
+}
+
+const he::vec3& Ball::getVelocity() const
+{
+    return m_Velocity;
+}
+
+float Ball::getRadius() const
+{
+    return m_Radius;
 }
 
 } //end namespace

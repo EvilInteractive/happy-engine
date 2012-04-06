@@ -98,8 +98,8 @@ void MainGame::load()
     m_EntityList.push_back(board);
 
 
-    m_Palets.push_back(NEW Palet(0, m_BoardDimension));
-    m_Palets.push_back(NEW Palet(1, m_BoardDimension));
+    m_Palets.push_back(NEW Palet(this, 0, true));
+    m_Palets.push_back(NEW Palet(this, 1, false));
     m_Ball = NEW Ball(this);
     m_Obstacles.push_back(NEW Obstacle());
 
@@ -157,6 +157,11 @@ void MainGame::restart( bool timeout )
     {
         m_Ball->reset();
     }
+}
+
+Ball* MainGame::getBall() const
+{
+    return m_Ball;
 }
 
 } //end namespace
