@@ -51,6 +51,7 @@ public:
     const std::vector<Palet*>& getPalets() const;
     const std::vector<Obstacle*>& getObstacles() const;
     const he::vec2& getBoardDimension() const;
+    Ball* getBall() const;
 
     void addPoint(he::byte player);
     void restart(bool timeout);

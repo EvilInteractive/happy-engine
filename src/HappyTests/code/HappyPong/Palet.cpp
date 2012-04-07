@@ -31,13 +31,17 @@
 #include "Game.h"
 #include "LightFlashComponent.h"
 
+#include "MainGame.h"
+#include "Ball.h"
+
 namespace ht {
 
-Palet::Palet(he::byte player, const he::vec2& boardDim): 
-    m_BoardDim(boardDim), 
+Palet::Palet(const MainGame* game, he::byte player, bool ai): 
     m_Speed(50.0f), 
     m_PaletDim(1.0f, 5.0f),
-    m_Player(player)
+    m_Player(player),
+    m_Game(game),
+    m_Ai(ai)
 {
     if (m_Player == 0)
         m_Position = he::vec3(40, 0, 0);
@@ -67,12 +71,12 @@ Palet::Palet(he::byte player, const he::vec2& boardDim):
     m_LightFlashAddPointComponent->setAttenuation(1.0f, 100);
     if (m_Player == 0)
     {
-        m_LightFlashAddPointComponent->setOffset(he::vec3(-boardDim.x/2, 0.5f, 0));
+        m_LightFlashAddPointComponent->setOffset(he::vec3(-m_Game->getBoardDimension().x/2, 0.5f, 0));
         m_LightFlashAddPointComponent->setColor(he::Color(0.2f, 1.0f, 0.2f));
     }
     else
     {
-        m_LightFlashAddPointComponent->setOffset(he::vec3(boardDim.x/2, 0.5f, 0));
+        m_LightFlashAddPointComponent->setOffset(he::vec3(m_Game->getBoardDimension().x/2, 0.5f, 0));
         m_LightFlashAddPointComponent->setColor(he::Color(0.2f, 0.2f, 1.0f));
     }
     m_LightFlashAddPointComponent->setFlashMultiplier(200);
@@ -91,20 +95,45 @@ Palet::~Palet()
 
 void Palet::tick( float dTime )
 {
-    he::io::Key up(m_Player == 0? he::io::Key_W : he::io::Key_Up);
-    he::io::Key down(m_Player == 0? he::io::Key_S : he::io::Key_Down);
-
-    if (CONTROLS->getKeyboard()->isKeyDown(up))
+    if (m_Ai)
     {
-        m_Position.z += m_Speed * dTime;
-        if (m_Position.z + m_PaletDim.y / 2 > m_BoardDim.y / 2)
-            m_Position.z = m_BoardDim.y / 2 - m_PaletDim.y / 2;
+        Ball* ball(m_Game->getBall());
+        if (he::dot(ball->getVelocity(), m_Position) > 0.0)
+        {
+            float z(ball->getPosition().z);
+            if (fabs(m_Position.z - z) > m_PaletDim.y/2)
+            {
+                if (m_Position.z < z - m_Speed * dTime)
+                    m_Position.z += m_Speed * dTime;
+                else if (m_Position.z > z + m_Speed * dTime)
+                    m_Position.z -= m_Speed * dTime;
+            }
+        }
+        else
+        {// return to center
+            if (m_Position.z < -m_Speed * dTime)
+                m_Position.z += m_Speed * dTime;
+            else if (m_Position.z > m_Speed * dTime)
+                m_Position.z -= m_Speed * dTime;
+        }
     }
-    if (CONTROLS->getKeyboard()->isKeyDown(down))
+    else
     {
-        m_Position.z -= m_Speed * dTime;
-        if (m_Position.z - m_PaletDim.y / 2 <  -m_BoardDim.y / 2)
-            m_Position.z = -m_BoardDim.y / 2 + m_PaletDim.y / 2;
+        he::io::Key up(m_Player == 0? he::io::Key_W : he::io::Key_Up);
+        he::io::Key down(m_Player == 0? he::io::Key_S : he::io::Key_Down);
+
+        if (CONTROLS->getKeyboard()->isKeyDown(up))
+        {
+            m_Position.z += m_Speed * dTime;
+            if (m_Position.z + m_PaletDim.y / 2 > m_Game->getBoardDimension().y / 2)
+                m_Position.z = m_Game->getBoardDimension().y / 2 - m_PaletDim.y / 2;
+        }
+        if (CONTROLS->getKeyboard()->isKeyDown(down))
+        {
+            m_Position.z -= m_Speed * dTime;
+            if (m_Position.z - m_PaletDim.y / 2 <  -m_Game->getBoardDimension().y / 2)
+                m_Position.z = -m_Game->getBoardDimension().y / 2 + m_PaletDim.y / 2;
+        }
     }
     setWorldMatrix(he::mat44::createTranslation(m_Position));
 }
