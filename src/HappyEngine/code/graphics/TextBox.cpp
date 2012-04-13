@@ -74,13 +74,13 @@ void TextBox::tick()
 		{
 			m_bHasFocus = true;
             CONTROLS->getFocus(this);
-			SDL_StartTextInput();
+			//SDL_StartTextInput();
 		}
 		else
 		{
             CONTROLS->returnFocus(this);
 			m_bHasFocus = false;
-			SDL_StopTextInput();
+			//SDL_StopTextInput();
 		}
 	}
 
@@ -121,7 +121,7 @@ void TextBox::tick()
 		}
 		else
 		{
-			std::for_each(HAPPYENGINE->getSDLEvents().cbegin(), HAPPYENGINE->getSDLEvents().cend(), [&](SDL_Event sdlEvent)
+			/*std::for_each(HAPPYENGINE->getSDLEvents().cbegin(), HAPPYENGINE->getSDLEvents().cend(), [&](SDL_Event sdlEvent)
 			{
 				if (sdlEvent.type == SDL_TEXTINPUT)
 				{
@@ -129,11 +129,11 @@ void TextBox::tick()
 
 					++m_CursorPos;
 				}
-			});
+			});*/
 		}
 
-		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return) ||
-			CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2))
+		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return)/* ||
+			CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2)*/)
 		{
 			m_bEntered = true;
 		}

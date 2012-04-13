@@ -32,7 +32,7 @@ class IKeyboard
 public:
     virtual ~IKeyboard() {}
 
-    virtual void tick() = 0;
+    virtual void tick(bool* pKeyState) = 0;
 
     virtual bool isKeyUp(Key key) const = 0;
     virtual bool isKeyDown(Key key) const = 0;

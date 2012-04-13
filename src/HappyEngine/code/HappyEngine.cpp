@@ -103,7 +103,7 @@ void HappyEngine::cleanup()
 
     if (m_SubEngines & SubEngine_Graphics)
     {
-        SDL_Quit();
+        m_pMainWindow->close();
     }
 
 

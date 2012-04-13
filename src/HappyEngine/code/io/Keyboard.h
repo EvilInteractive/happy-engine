@@ -35,7 +35,7 @@ public:
 	Keyboard();
     virtual ~Keyboard();
 
-    virtual void tick();
+    virtual void tick(bool* pKeyState);
 
     virtual bool isKeyUp(Key key) const;
     virtual bool isKeyDown(Key key) const;
@@ -47,9 +47,9 @@ public:
 
 
 private:
-    byte* m_NewKeyState;
-    byte* m_CurrentKeyState;
-    byte* m_PrevKeyState;
+    bool* m_NewKeyState;
+    bool* m_CurrentKeyState;
+    bool* m_PrevKeyState;
 
     int m_NumKeys;
 

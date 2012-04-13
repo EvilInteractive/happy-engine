@@ -28,13 +28,12 @@ namespace io {
 
 Keyboard::Keyboard(): m_NewKeyState(nullptr), m_CurrentKeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0)
 {
-    //Make sure that the prevkeystate is filled in to prevent array errors
-    m_NewKeyState = SDL_GetKeyboardState(&m_NumKeys);
-    m_CurrentKeyState = NEW byte[m_NumKeys];
-    m_PrevKeyState = NEW byte[m_NumKeys];
+    m_NumKeys = sf::Keyboard::KeyCount;
 
-    tick();
-    tick();
+    //Make sure that the prevkeystate is filled in to prevent array errors
+    m_NewKeyState = NEW bool[m_NumKeys];
+    m_CurrentKeyState = NEW bool[m_NumKeys];
+    m_PrevKeyState = NEW bool[m_NumKeys];
 }
 
 
@@ -43,24 +42,25 @@ Keyboard::~Keyboard()
     delete[] m_PrevKeyState;
     delete[] m_CurrentKeyState;
 }
-void Keyboard::tick()
-{   
+void Keyboard::tick(bool* pKeyState)
+{
+    he_memcpy(m_NewKeyState, pKeyState, m_NumKeys * sizeof(bool));
     std::swap(m_PrevKeyState, m_CurrentKeyState); 
-    he_memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(byte));
+    he_memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(bool));
 }
 
 bool Keyboard::isKeyUp(Key key) const
 {
-    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] == 0;
+    return !m_CurrentKeyState[key];
 }
 bool Keyboard::isKeyDown(Key key) const
 {
-    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] != 0;
+    return m_CurrentKeyState[key];
 }
 
 bool Keyboard::isKeyPressed(Key key) const
 {
-    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] != 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] == 0;
+    return (m_CurrentKeyState[key] && !m_PrevKeyState[key]);
 }
 bool Keyboard::isKeyPressed(KeyScanCode code) const
 {
@@ -69,7 +69,7 @@ bool Keyboard::isKeyPressed(KeyScanCode code) const
 }
 bool Keyboard::isKeyReleased(Key key) const
 {
-    return m_CurrentKeyState[SDL_GetScancodeFromKey(key)] == 0 && m_PrevKeyState[SDL_GetScancodeFromKey(key)] != 0;
+    return (!m_CurrentKeyState[key] && m_PrevKeyState[key]);
 }
 bool Keyboard::isKeyReleased(KeyScanCode code) const
 {

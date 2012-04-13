@@ -53,7 +53,7 @@ public:
     typedef boost::shared_ptr<Font> pointer;
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    explicit Font(/*TTF_Font* pFont*/);
+    explicit Font(void* pFont);
     virtual ~Font();
     
     /* GETTERS */
@@ -74,7 +74,7 @@ public:
 private:
 
     /* DATAMEMBERS */
-    //TTF_Font* m_pFont;
+    void* m_pFont;
 
     std::string m_Path;
 

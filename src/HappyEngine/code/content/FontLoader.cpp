@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "FontLoader.h"
-#include "SDL_ttf.h"
 
 #include <iostream>
 #include <sstream>
@@ -33,7 +32,7 @@ namespace ct {
 
 FontLoader::FontLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Font::pointer>())
 {
-    TTF_Init();
+   // TTF_Init();
 }
 
 
@@ -47,7 +46,7 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
     std::stringstream stream;
     stream << path << size;
 
-    if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
+    /*if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
     {
         TTF_Font* pFont(TTF_OpenFont(path.c_str(), size));
         if (pFont == nullptr)
@@ -82,7 +81,11 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
     {
         pOutFont = m_pAssetContainer->getAsset(stream.str());
         return true;
-    }
+    }*/
+
+    pOutFont = gfx::Font::pointer(NEW gfx::Font(nullptr));
+
+    return true;
 }
 
 } } //end namespace

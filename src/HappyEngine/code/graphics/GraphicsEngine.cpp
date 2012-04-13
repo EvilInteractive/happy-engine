@@ -96,7 +96,6 @@ void GraphicsEngine::init()
     HE_INFO("Max render size: %d", maxRenderSize);
     HE_INFO("Max rect tex size: %d", maxRectSize);
 
-
     setVSync(m_VSyncEnabled);
     setViewport(m_Viewport);
 

@@ -33,19 +33,19 @@ public:
 	Mouse();
     virtual ~Mouse();
 
-    void tick();
+    void tick(bool* mouseState);
 
-    bool isButtonDown(byte button) const;
-    bool isButtonUp(byte button) const;
-    bool isButtonReleased(byte button) const; //true when it goes from down to up
-    bool isButtonPressed(byte button) const;  //true when it goes from up to down
+    bool isButtonDown(MouseButton button) const;
+    bool isButtonUp(MouseButton button) const;
+    bool isButtonReleased(MouseButton button) const; //true when it goes from down to up
+    bool isButtonPressed(MouseButton button) const;  //true when it goes from up to down
 
     vec2 getPosition() const;
 
 private:
     vec2 m_Position;
-    byte m_ButtonState;
-    byte m_PrevButtonState;
+    bool* m_ButtonState;
+    bool* m_PrevButtonState;
 
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);

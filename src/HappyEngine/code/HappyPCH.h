@@ -33,6 +33,7 @@
 #include <utility>
 #include <iostream>
 #include <sstream>
+#include <cstdarg>
 
 #include "boost/shared_ptr.hpp"
 #pragma warning (disable : 4244)

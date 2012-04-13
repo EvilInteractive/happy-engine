@@ -30,24 +30,24 @@ namespace io {
 
 enum MouseButton
 {
-    MouseButton_None = 0,
-    MouseButton_Left = SDL_BUTTON_LMASK, 
-    MouseButton_Right = SDL_BUTTON_RMASK, 
-    MouseButton_Middle = SDL_BUTTON_MMASK, 
-    MouseButton_ScrollUp = SDL_BUTTON_X1MASK, 
-    MouseButton_ScrollDown = SDL_BUTTON_X2MASK
+    //MouseButton_None = 0,
+    MouseButton_Left = sf::Mouse::Button::Left, 
+    MouseButton_Right = sf::Mouse::Button::Right, 
+    MouseButton_Middle = sf::Mouse::Button::Middle 
+   // MouseButton_ScrollUp = sf::Mouse::Button::, 
+    //MouseButton_ScrollDown = sf::Mouse::Button::XButton2
 };
 class IMouse
 {
 public:
     virtual ~IMouse() {}
 
-    virtual void tick() = 0;
+    virtual void tick(bool* mouseState) = 0;
 
-    virtual bool isButtonDown(byte button) const = 0;
-    virtual bool isButtonUp(byte button) const = 0;
-    virtual bool isButtonReleased(byte button) const = 0; //true when it goes from down to up
-    virtual bool isButtonPressed(byte button) const = 0;  //true when it goes from up to down
+    virtual bool isButtonDown(MouseButton button) const = 0;
+    virtual bool isButtonUp(MouseButton button) const = 0;
+    virtual bool isButtonReleased(MouseButton button) const = 0; //true when it goes from down to up
+    virtual bool isButtonPressed(MouseButton button) const = 0;  //true when it goes from up to down
 
     virtual vec2 getPosition() const = 0;
 };

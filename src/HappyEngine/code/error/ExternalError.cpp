@@ -82,14 +82,6 @@ void checkFboStatus( const std::string& name )
     }
 }
 
-void sdlHandleError( int err )
-{
-    if (err != 0)
-    {
-        HE_ERROR("SDL: %s", SDL_GetError());
-    }
-}
-
 void glHandleError( GLenum err )
 {
     if (err != GL_NO_ERROR)

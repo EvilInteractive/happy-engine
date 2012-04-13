@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="happyengine">
@@ -376,9 +376,6 @@
     <ClCompile Include="..\..\code\io\Mouse.cpp">
       <Filter>happyengine\io\mouse</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\io\QtMouse.cpp">
-      <Filter>happyengine\io\mouse</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\tools\Console.cpp">
       <Filter>happyengine\tools\console</Filter>
     </ClCompile>
@@ -392,9 +389,6 @@
       <Filter>happyengine\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\io\Keyboard.cpp">
-      <Filter>happyengine\io\keyboard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\io\QtKeyboard.cpp">
       <Filter>happyengine\io\keyboard</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\graphics\Happy2DRenderer.cpp">
@@ -906,9 +900,6 @@
     <ClInclude Include="..\..\code\io\IMouse.h">
       <Filter>happyengine\io\mouse</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\io\QtMouse.h">
-      <Filter>happyengine\io\mouse</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\tools\Vec4TypeHandler.h">
       <Filter>happyengine\tools\console</Filter>
     </ClInclude>
@@ -949,9 +940,6 @@
       <Filter>happyengine\io\keyboard</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\io\IKeyboard.h">
-      <Filter>happyengine\io\keyboard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\io\QtKeyboard.h">
       <Filter>happyengine\io\keyboard</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\io\Keys.h">

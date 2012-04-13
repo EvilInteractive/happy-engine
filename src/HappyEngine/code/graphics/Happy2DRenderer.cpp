@@ -510,39 +510,39 @@ void Happy2DRenderer::setDepth(byte depth)
 /* DRAW METHODS */
 void Happy2DRenderer::drawText(const gui::Text& txt, const vec2& pos, bool buffered)
 {
-    for (uint i(0); i < txt.getText().size(); ++i)
+    /*for (uint i(0); i < txt.getText().size(); ++i)
     {
-        vec2 position(pos);
-        position.y += (txt.getFont()->getFontPixelHeight() + txt.getFont()->getFontLineSpacing()) * i;
+    vec2 position(pos);
+    position.y += (txt.getFont()->getFontPixelHeight() + txt.getFont()->getFontLineSpacing()) * i;
 
-        const Texture2D* texFont;
+    const Texture2D* texFont;
 
-        std::stringstream stream;
-        stream << txt.getLine(i) << "." << m_CurrentColor.r() << "." << m_CurrentColor.g() << "." << m_CurrentColor.b() << "." << m_CurrentColor.a();
+    std::stringstream stream;
+    stream << txt.getLine(i) << "." << m_CurrentColor.r() << "." << m_CurrentColor.g() << "." << m_CurrentColor.b() << "." << m_CurrentColor.a();
 
-        if (m_pTextureBuffer->isAssetPresent(stream.str()) && buffered)
-        {
-            texFont = m_pTextureBuffer->getAsset(stream.str()).first;
-            ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
-        }
-        else
-        {
-            texFont = txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing);
-
-            if (buffered)
-            {
-                ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
-                m_pTextureBuffer->addAsset(stream.str(), std::pair<const gfx::Texture2D*, vec2>(texFont, vec2()));
-            }
-        }
-
-        drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
-        texFont->release();
+    if (m_pTextureBuffer->isAssetPresent(stream.str()) && buffered)
+    {
+    texFont = m_pTextureBuffer->getAsset(stream.str()).first;
+    ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
     }
+    else
+    {
+    texFont = txt.getFont()->createTextureText(txt.getLine(i), m_CurrentColor, m_bAntiAliasing);
+
+    if (buffered)
+    {
+    ResourceFactory<Texture2D>::getInstance()->instantiate(texFont->getHandle());
+    m_pTextureBuffer->addAsset(stream.str(), std::pair<const gfx::Texture2D*, vec2>(texFont, vec2()));
+    }
+    }
+
+    drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
+    texFont->release();
+    }*/
 }
 void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buffered)
 {
-    uint width(0), height(0);
+    /*uint width(0), height(0);
     height = (txt.getFont()->getFontPixelHeight() * txt.getText().size()) + (txt.getFont()->getFontLineSpacing() * (txt.getText().size() - 1));
     std::for_each(txt.getText().cbegin(), txt.getText().cend(), [&](const std::string s)
     {
@@ -598,7 +598,7 @@ void Happy2DRenderer::drawText(const gui::Text& txt, const RectF& rect, bool buf
 
         drawTexture2D(texFont, position, vec2(static_cast<float>(texFont->getWidth()), -static_cast<float>(texFont->getHeight())));
         texFont->release();
-    }
+    }*/
 }
 
 void Happy2DRenderer::drawShape2D(const gui::Shape2D& shape, bool buffered)

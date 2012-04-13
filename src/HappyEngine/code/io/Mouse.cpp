@@ -26,37 +26,44 @@ namespace io {
 
 Mouse::Mouse(): m_Position(0.0f, 0.0f), m_ButtonState(0), m_PrevButtonState(0)
 {
+    m_ButtonState = NEW bool[sf::Mouse::ButtonCount];
+    m_PrevButtonState = NEW bool[sf::Mouse::ButtonCount];
 }
 
 
 Mouse::~Mouse()
 {
+    delete[] m_ButtonState;
+    delete[] m_PrevButtonState;
 }
 
-void Mouse::tick()
+void Mouse::tick(bool* pMouseState)
 {
-    int x, y;
     m_PrevButtonState = m_ButtonState;
-    m_ButtonState = SDL_GetMouseState(&x, &y);
-    m_Position.x = static_cast<float>(x);
-    m_Position.y = static_cast<float>(y);
+
+    m_ButtonState = pMouseState;
+    
+    sf::Vector2i vec = sf::Mouse::getPosition();
+
+    m_Position.x = static_cast<float>(vec.x);
+    m_Position.y = static_cast<float>(vec.y);
 }
 
-bool Mouse::isButtonDown(byte button) const
+bool Mouse::isButtonDown(MouseButton button) const
 {
-    return (m_ButtonState & button) == button;
+    return m_ButtonState[button];
 }
-bool Mouse::isButtonUp(byte button) const
+bool Mouse::isButtonUp(MouseButton button) const
 {
-    return (~m_ButtonState & button) == button;
+    return !m_ButtonState[button];
 }
-bool Mouse::isButtonReleased(byte button) const
+bool Mouse::isButtonReleased(MouseButton button) const
 {
-    return ((~m_ButtonState & button) == button) && ((m_PrevButtonState & button) == button);
+    return (!m_ButtonState[button] && m_PrevButtonState[button]);
 }
-bool Mouse::isButtonPressed(byte button) const
+bool Mouse::isButtonPressed(MouseButton button) const
 {
-    return ((m_ButtonState & button) == button) && ((~m_PrevButtonState & button) == button);
+    return (m_ButtonState[button] && !m_PrevButtonState[button]);
 }
 
 vec2 Mouse::getPosition() const

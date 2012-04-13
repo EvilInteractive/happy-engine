@@ -32,19 +32,47 @@ ControlsManager::ControlsManager(): m_pMouse(nullptr), m_pKeyboard(nullptr), m_b
 {
     m_pMouse = NEW Mouse();
     m_pKeyboard = NEW Keyboard();
-}
 
+    m_pKeys = NEW bool[sf::Keyboard::KeyCount];
+    m_pButtons = NEW bool[sf::Mouse::ButtonCount];
+}
 
 ControlsManager::~ControlsManager()
 {
     delete m_pKeyboard;
     delete m_pMouse;
+
+    delete[] m_pKeys;
+    delete[] m_pButtons;
 }
 
 void ControlsManager::tick()
 {
-    m_pKeyboard->tick();
-    m_pMouse->tick();
+    for (ushort i(0); i < sf::Keyboard::KeyCount; ++i)
+    {
+        m_pKeys[i] = false;
+    }
+
+    for (ushort i(0); i < sf::Mouse::ButtonCount; ++i)
+    {
+        m_pButtons[i] = false;
+    }
+
+    std::for_each(HAPPYENGINE->getEvents().cbegin(), HAPPYENGINE->getEvents().cend(), [&](sf::Event ev)
+    {
+        switch(ev.type)
+        {
+            case sf::Event::KeyPressed:
+                m_pKeys[ev.key.code] = true;
+                break;
+            case sf::Event::MouseButtonPressed:
+                m_pButtons[ev.mouseButton.button] = true;
+                break;
+        }
+    });
+
+    m_pKeyboard->tick(m_pKeys);
+    m_pMouse->tick(m_pButtons);
 }
 
 const IKeyboard* ControlsManager::getKeyboard() const

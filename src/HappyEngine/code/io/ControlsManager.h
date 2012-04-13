@@ -51,6 +51,9 @@ private:
     bool m_bLocked;
     void* m_pLockedObject;
 
+    bool* m_pKeys;
+    bool* m_pButtons;
+
     //Disable default copy constructor and default assignment operator
     ControlsManager(const ControlsManager&);
     ControlsManager& operator=(const ControlsManager&);

@@ -122,9 +122,9 @@ enum Key
     //Key_Pause = sf::Keyboard::A,
     Key_Insert = sf::Keyboard::A,
     Key_Home = sf::Keyboard::A,
-    Key_PageUp = sf::Keyboard::A,
-    Key_Delete = sf::Keyboard::A,
-    Key_End = sf::Keyboard::A,
+    Key_PageUp = sf::Keyboard::A,*/
+    Key_Delete = sf::Keyboard::Delete,
+    /*Key_End = sf::Keyboard::A,
     Key_PageDown = sf::Keyboard::A,*/
     Key_Right = sf::Keyboard::Right,
     Key_Left = sf::Keyboard::Left,
