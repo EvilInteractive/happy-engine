@@ -107,7 +107,9 @@ void FxParticleSystem::start()
                 {
                     if (GRAPHICS->getInstancingManager()->getController(stream.str()) == nullptr)
                     {
-                        GRAPHICS->getInstancingManager()->createController(stream.str(), true, CONTENT->getParticleQuad(), m_Material);
+                        ModelMesh* quad(CONTENT->getParticleQuad());
+                        GRAPHICS->getInstancingManager()->createController(stream.str(), true, quad->getHandle(), m_Material);
+                        quad->release();
                         m_pInstancingController = GRAPHICS->getInstancingManager()->getController(stream.str());
 
                         m_pInstancingController->addManualFiller(this);

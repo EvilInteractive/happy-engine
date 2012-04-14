@@ -252,19 +252,31 @@ void HappyEngine::updateLoop(float dTime)
         m_Events.push_back(event);
     }
 
+    PROFILER_BEGIN("Controls");
     if (m_SubEngines & SubEngine_Controls)
         m_pControlsManager->tick();
+    PROFILER_END();
+
+    PROFILER_BEGIN("Content");
     if (m_SubEngines & SubEngine_Content)
     {
         m_pContentManager->tick(dTime);
         m_pContentManager->glThreadInvoke();
     }
+    PROFILER_END();
+
+    PROFILER_BEGIN("Physx");
     if (m_SubEngines & SubEngine_Physics)
         m_pPhysicsEngine->tick(dTime);
+    PROFILER_END();
 
+    PROFILER_BEGIN("Fx man");
     m_pFxManager->tick(dTime);
+    PROFILER_END();
 
+    PROFILER_BEGIN("Game");
     m_pGame->tick(dTime);
+    PROFILER_END();
 
     CONSOLE->tick();
 

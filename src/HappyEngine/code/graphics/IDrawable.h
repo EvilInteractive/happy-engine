@@ -22,7 +22,6 @@
 #define _HE_IDRAWABLE_H_
 #pragma once
 
-#include "ModelMesh.h"
 #include "Material.h"
 #include "I3DObject.h"
 #include "IPickable.h"
@@ -31,6 +30,7 @@ namespace he {
 namespace gfx {
 
 class ICamera;
+class ModelMesh;
 
 class IDrawable : public IPickable
 {
@@ -41,7 +41,7 @@ public:
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
     virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
 
-    virtual const ModelMesh::pointer& getModelMesh() const = 0;
+    virtual const ModelMesh* getModelMesh() const = 0;
     
     virtual bool getCastsShadow() const = 0;
     virtual void setCastsShadow(bool castShadow) = 0;
@@ -69,7 +69,7 @@ public:
     virtual void applyMaterial(const ICamera* pCamera) const = 0; 
     virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
 
-    virtual const ModelMesh::pointer& getModelMesh() const = 0;
+    virtual const ModelMesh* getModelMesh() const = 0;
 
     virtual mat44 getWorldMatrix() const = 0;
 
@@ -100,7 +100,7 @@ public:
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
     virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
 
-    virtual const ModelMesh::pointer& getModelMesh() const = 0;
+    virtual const ModelMesh* getModelMesh() const = 0;
 
     virtual bool getCastsShadow() const = 0;
     virtual void setCastsShadow(bool castShadow) = 0;
@@ -131,7 +131,7 @@ public:
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
     virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
 
-    virtual const ModelMesh::pointer& getModelMesh() const = 0;
+    virtual const ModelMesh* getModelMesh() const = 0;
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
 
     virtual mat44 getWorldMatrix() const = 0;

@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "InstancingController.h"
-#include "HappyEngine.h"
 #include "CameraManager.h"
 #include "GraphicsEngine.h"
 #include "OpenGL.h"
@@ -29,17 +28,21 @@
 #include "IInstancible.h"
 #include "IInstanceFiller.h"
 
+#include "ModelMesh.h"
+
 namespace he {
 namespace gfx {
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
-InstancingController::InstancingController(bool dynamic, const ModelMesh::pointer& mesh, const Material& material):
-    m_Dynamic(dynamic), m_pModelMesh(mesh), m_Material(material), m_NeedsUpdate(false), m_BufferCapacity(32),
+InstancingController::InstancingController(bool dynamic, const ObjectHandle& modelHandle, const Material& material):
+    m_Dynamic(dynamic), m_pModelMesh(nullptr), m_Material(material), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_InstancingLayout(material.getCompatibleInstancingLayout()), m_CpuBuffer(material.getCompatibleInstancingLayout().getSize(), 32),
     m_ManualMode(false)
 {
-    m_pModelMesh->callbackIfLoaded(boost::bind(&InstancingController::init, this));
+    ResourceFactory<ModelMesh>::getInstance()->instantiate(modelHandle);
+    m_pModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
+    ResourceFactory<ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&InstancingController::init, this));
 }
 
 
@@ -47,6 +50,7 @@ InstancingController::~InstancingController()
 {
     glDeleteVertexArrays(1, &m_Vao);
     glDeleteBuffers(1, &m_GpuBuffer);
+    m_pModelMesh->release();
 }
 
 
@@ -252,7 +256,7 @@ const Material& InstancingController::getMaterial() const
 {
     return m_Material;
 }
-const ModelMesh::pointer& InstancingController::getModelMesh() const
+const ModelMesh* InstancingController::getModelMesh() const
 {
     return m_pModelMesh;
 }

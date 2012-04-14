@@ -49,6 +49,11 @@ public:
         });
     }
 
+    void clear()
+    {
+        m_FuncList.clear();
+    }
+
 private:
     std::vector<function> m_FuncList;
 

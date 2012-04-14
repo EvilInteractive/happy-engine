@@ -23,7 +23,6 @@
 #pragma once
 
 #include "Light.h"
-#include "Texture2D.h"
 #include "RenderSettings.h"
 #include "DrawListContainer.h"
 #include "Material.h"
@@ -32,6 +31,8 @@ namespace he {
 namespace gfx {
 
 class Shader;
+class Texture2D;
+class ModelMesh;
 
 class ShadowCaster
 {
@@ -59,7 +60,7 @@ private:
     Shader::pointer m_pShadowBlurShaderPass[2];
     uint m_BlurShaderTexPosPass[2];
 
-    ModelMesh::pointer m_pQuad;
+    ModelMesh* m_pQuad;
 
     ushort m_ShadowSize;
 

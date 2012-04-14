@@ -22,14 +22,6 @@
 #define _HE_SpotLight_H_
 #pragma once
 
-
-#include "vec3.h"
-#include "mat44.h"
-#include "Color.h"
-#include "ModelMesh.h"
-
-#include "boost/shared_ptr.hpp"
-
 #include "DefaultSingleDrawable.h"
 
 namespace he {
@@ -49,13 +41,13 @@ private:
     mat44 m_mtxWorld;
     void calculateWorld();
 
-    ModelMesh::pointer m_pLightVolume;
-    ModelMesh::pointer m_pModel;
+    ModelMesh* m_pLightVolume;
+    ModelMesh* m_pModel;
     Material m_Material;
 
 public:
     SpotLight();
-    ~SpotLight();
+    virtual ~SpotLight();
     //default copy constructor and assignment operator are fine
 
     void setPosition(const vec3& position);
@@ -76,12 +68,12 @@ public:
     float getFov() const;
     
     mat44 getWorldMatrix() const;
-    const ModelMesh::pointer& getLightVolume() const;
+    const ModelMesh* getLightVolume() const;
 
     virtual bool getCastsShadow() const { return false; }
     
     virtual const Material& getMaterial() const;
-    virtual const ModelMesh::pointer& getModelMesh() const;
+    virtual const ModelMesh* getModelMesh() const;
     
     typedef boost::shared_ptr<SpotLight> pointer;
 };

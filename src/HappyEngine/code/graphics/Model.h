@@ -23,50 +23,50 @@
 #define _HE_MODEL_H_
 #pragma once
 
-#include "HeAssert.h"
-#undef assert
-#define assert HE_ASSERT
-
-#include <vector>
 #include "BufferLayout.h"
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
 #include "ModelMesh.h"
 #include "BufferLayout.h"
 
 #include "Sphere.h"
+#include "Resource.h"
 
 namespace he {
 namespace gfx {
 
-class Model
+class Model : public Resource<Model>
 {
 public:
-    typedef boost::shared_ptr<Model> pointer;
-
-	Model(const BufferLayout& vertexLayout);
+    Model();
     virtual ~Model();
-    
-    void addMesh(const ModelMesh::pointer& pMesh);
+
+    //////////////////////////////////////////////////////////////////////////
+    /// Resource
+    virtual void release();
+    virtual bool canBeGarbageCollected();
+
+    //////////////////////////////////////////////////////////////////////////
+    /// Model
+    void addMesh(const ObjectHandle& handle);
     uint getNumMeshes() const;
-    ModelMesh::pointer getMesh(int index) const;
-    ModelMesh::pointer getMesh(const std::string& name) const;
-    std::vector<ModelMesh::pointer> getMeshesWithPrefix(const std::string& prefix) const;
+    ModelMesh* instantiateMesh(uint index) const;
+    ModelMesh* instantiateMesh(const std::string& name) const;
+    Model* instantiateMeshesWithPrefix(const std::string& prefix) const;
 
-    std::vector<ModelMesh::pointer>::const_iterator cbegin() const;
-    std::vector<ModelMesh::pointer>::const_iterator cend() const;
+    std::vector<ModelMesh*>::const_iterator cbegin() const;
+    std::vector<ModelMesh*>::const_iterator cend() const;
 
-    bool isComplete() const; //used as mutex
-    void setComplete();
+    void callbackOnceIfLoaded(const boost::function<void()>& callback);
 
-    const BufferLayout& getVertexLayout() const;
+    bool isLoaded() const;
+    void setLoaded();
 
 private:
 
-    BufferLayout m_VertexLayout;
-    //std::vector<std::vector<ModelMesh::pointer>> m_MeshesPerLod;
-    std::vector<ModelMesh::pointer> m_Meshes;
-    bool m_Complete;
+    event<void> m_LoadedCallback;
+    boost::mutex m_LoadedMutex;
+
+    std::vector<ModelMesh*> m_Meshes;
+    bool m_IsLoaded;
 
     shapes::Sphere m_BoundingSphere;
 

@@ -22,17 +22,23 @@
 #include "StaticDataManager.h"
 #include "ResourceFactory.h"
 #include "Texture2D.h"
+#include "Model.h"
+#include "ModelMesh.h"
 
 namespace he {
 
 void StaticDataManager::init()
 {
     ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
+    ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
+    ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
 }
 
 void StaticDataManager::destroy()
 {
     ResourceFactory<gfx::Texture2D>::destroy();
+    ResourceFactory<gfx::Model>::destroy();
+    ResourceFactory<gfx::ModelMesh>::destroy();
 }
 
 } //end namespace

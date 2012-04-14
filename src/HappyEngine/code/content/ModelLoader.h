@@ -19,6 +19,7 @@
 //Created:	23/08/2011
 //Extended:	Sebastiaan Sprengers
 //Removed concurrency queue because not cross platform: Bastian Damman - 29/10/2011
+//Removed shared_ptr
 
 #ifndef _HE_MODEL_LOADER_H_
 #define _HE_MODEL_LOADER_H_
@@ -26,16 +27,19 @@
 
 #include "Model.h"
 #include "BufferLayout.h"
-#include "IModelLoader.h"
 #include "AssetContainer.h"
 
-#include <string>
-#include <queue>
-
-#include "boost/thread.hpp"
-
 namespace he {
+namespace gfx {
+    class Model;
+    class ModelMesh;
+};
+
 namespace ct {
+
+namespace models {
+    class IModelLoader;
+}
 
 class ModelLoader
 {
@@ -49,11 +53,11 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
 
-    gfx::Model::pointer loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh::pointer loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
 
     /* GETTERS */
     bool isLoading() const;
@@ -64,30 +68,35 @@ private:
     public:
         std::string path;
         gfx::BufferLayout vertexLayout;
-        gfx::Model::pointer pModel;
+        ObjectHandle modelHandle;
         models::IModelLoader* loader;
-
-        ModelLoadData() {}
-        virtual ~ModelLoadData() {}
-    private:
-        //Disable default copy constructor and default assignment operator
-        ModelLoadData(const ModelLoadData&);
-        ModelLoadData& operator=(const ModelLoadData&);
     };
 
-    std::queue<ModelLoadData*> m_ModelLoadQueue;
+    bool getModelLoader(ModelLoadData& data);
+    bool startAsyncLoadModel(ModelLoadData& data);
+    bool startSyncLoadModel(ModelLoadData& data);
+
+    bool loadModel(ModelLoadData& data);
+    bool createModel(ModelLoadData& data);
+
+    bool isModelLoaded(const std::string& path, ObjectHandle& outHandle);
+    void modelLoadThread();
+    bool m_isModelThreadRunning;
+
+    std::queue<ModelLoadData> m_ModelLoadQueue;
     boost::mutex m_ModelLoadQueueMutex;
-    std::queue<ModelLoadData*> m_ModelInvokeQueue;
+    std::queue<ModelLoadData> m_ModelInvokeQueue;
     boost::mutex m_ModelInvokeQueueMutex;
 
     boost::mutex m_WaitListMutex;
 
     boost::thread m_ModelLoadThread;
 
-    void ModelLoadThread();
-    bool m_isModelThreadRunning;
 
-    AssetContainer<gfx::Model::pointer>* m_pAssetContainer;
+    AssetContainer<ObjectHandle> m_AssetContainer;
+
+    gfx::ModelMesh* m_EmptyMesh;
+    
 
     //Disable default copy constructor and default assignment operator
     ModelLoader(const ModelLoader&);

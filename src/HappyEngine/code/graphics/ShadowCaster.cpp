@@ -21,7 +21,6 @@
 
 #include "ShadowCaster.h"
 
-#include "ExternalError.h"
 #include "GraphicsEngine.h"
 #include "InstancingManager.h"
 #include "ContentManager.h"
@@ -33,7 +32,7 @@
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0)
+ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad(nullptr)
 {
     CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
     for (int i = 0; i < COUNT; ++i)
@@ -50,6 +49,8 @@ ShadowCaster::~ShadowCaster()
         if (m_pShadowTexture[i] != nullptr)
             m_pShadowTexture[i]->release();
     }
+    if (m_pQuad != nullptr)
+        m_pQuad->release();
     glDeleteRenderbuffers(1, &m_DepthRenderbuff);
     glDeleteFramebuffers(1, &m_FboId);
 }

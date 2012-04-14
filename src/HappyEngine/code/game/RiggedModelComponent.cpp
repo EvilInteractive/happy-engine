@@ -20,22 +20,24 @@
 #include "HappyPCH.h" 
 
 #include "RiggedModelComponent.h"
-#include "HappyNew.h"
+
 #include "Entity.h"
-#include "HappyEngine.h"
 #include "GraphicsEngine.h"
 #include "Console.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace game {
 
-RiggedModelComponent::RiggedModelComponent()
+RiggedModelComponent::RiggedModelComponent(): m_pModel(nullptr), m_pParent(nullptr)
 {
 }
 
 
 RiggedModelComponent::~RiggedModelComponent()
 {
+    if (m_pModel != nullptr)
+        m_pModel->release();
 }
 
 void RiggedModelComponent::init( Entity* pParent )
@@ -60,7 +62,7 @@ const gfx::Material& RiggedModelComponent::getMaterial() const
     return m_Material;
 }
 
-const gfx::ModelMesh::pointer& RiggedModelComponent::getModelMesh() const
+const gfx::ModelMesh* RiggedModelComponent::getModelMesh() const
 {
     return m_pModel;
 }
@@ -80,13 +82,16 @@ const mat44& RiggedModelComponent::getLocalTransform() const
     return m_mtxLocalTransform;
 }
 
-void RiggedModelComponent::setModelMesh( const gfx::ModelMesh::pointer& pModel )
+void RiggedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
 {
-    m_pModel = pModel;
+    if (m_pModel != nullptr)
+        m_pModel->release();
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
+    m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     m_BoneTransform.clear();
     m_Bones.clear();
 
-    pModel->callbackIfLoaded(boost::bind(&RiggedModelComponent::modelLoadedCallback, this));
+    ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&RiggedModelComponent::modelLoadedCallback, this));
 }
 void RiggedModelComponent::modelLoadedCallback()
 {

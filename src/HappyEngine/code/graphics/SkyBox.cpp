@@ -22,10 +22,12 @@
 #include "SkyBox.h"
 #include "ContentManager.h"
 
+#include "ModelMesh.h"
+
 namespace he {
 namespace gfx {
 
-SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCube())
+SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCube()), m_pCube(nullptr)
 {
     for (int i(0); i < 6; ++i)
     {
@@ -46,6 +48,8 @@ void SkyBox::unload()
         if (m_CubeFaces[i] != nullptr)
             m_CubeFaces[i]->release();
     }
+    if (m_pCube != nullptr)
+        m_pCube->release();
 }
 
 void SkyBox::load( const std::string& asset )
@@ -79,7 +83,8 @@ void SkyBox::load( const std::string& asset )
     //////////////////////////////////////////////////////////////////////////
     /// Load Model
     //////////////////////////////////////////////////////////////////////////
-    m_pCube = ModelMesh::pointer(NEW ModelMesh("skyBox"));
+    m_pCube = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_pCube->setName("skybox");
     std::vector<vec3> vertices;
     vertices.push_back(vec3(-1,  1, -1));
     vertices.push_back(vec3( 1,  1, -1));
@@ -167,7 +172,7 @@ void SkyBox::faceLoaded()
 }
 
 
-const ModelMesh::pointer& SkyBox::getModelMesh() const
+const ModelMesh* SkyBox::getModelMesh() const
 {
     return m_pCube;
 }

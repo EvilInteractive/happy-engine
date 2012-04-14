@@ -20,13 +20,9 @@
 #include "HappyPCH.h" 
 
 #include "SpotLight.h"
-#include "HappyNew.h"
-#include "MathFunctions.h"
-#include "HappyEngine.h"
-#include "Deferred3DRenderer.h"
-#include "Entity.h"
+
 #include "ContentManager.h"
-#include "GraphicsEngine.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
@@ -53,7 +49,9 @@ void SpotLight::calculateWorld()
 }
 
 SpotLight::~SpotLight()
-{
+{   
+    //m_pModel->release();
+    m_pLightVolume->release();
 }
 
 void SpotLight::setPosition(const vec3& position)
@@ -123,7 +121,7 @@ mat44 SpotLight::getWorldMatrix() const
 {
     return m_mtxWorld;
 }
-const ModelMesh::pointer& SpotLight::getLightVolume() const
+const ModelMesh* SpotLight::getLightVolume() const
 {
     return m_pLightVolume;
 }
@@ -131,7 +129,7 @@ const Material& SpotLight::getMaterial() const
 {
     return m_Material;
 }
-const ModelMesh::pointer& SpotLight::getModelMesh() const
+const ModelMesh* SpotLight::getModelMesh() const
 {
     return m_pModel;
 }

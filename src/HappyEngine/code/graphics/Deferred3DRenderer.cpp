@@ -23,23 +23,16 @@
 
 #include "Deferred3DRenderer.h"
 #include "Happy2DRenderer.h"
-#include "HappyEngine.h"
-#include "OpenGL.h"
 #include "BufferLayout.h"
 #include "Vertex.h"
-#include "HeAssert.h"
 #include "Light.h"
-#include "HappyNew.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
-#include "ExternalError.h"
 
 #include "LightManager.h"
 #include "CameraManager.h"
 #include "Camera.h"
 #include "DrawManager.h"
-
-#include <vector>
 
 namespace he {
 namespace gfx {
@@ -50,7 +43,7 @@ namespace gfx {
 BufferLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = BufferLayout();
 
 Deferred3DRenderer::Deferred3DRenderer(): 
-            m_pQuad(NEW ModelMesh("deferred3DRenderer_QUAD")), 
+            m_pQuad(nullptr), 
             m_ShowDebugTextures(false),
             m_pPointLightShader(nullptr),
             m_pSpotLightShader(nullptr),
@@ -104,6 +97,8 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_pNormalTexture->release();
     m_pDepthTexture->release();
     m_pColorRampTex->release();
+
+    m_pQuad->release();
 
     glDeleteFramebuffers(1, &m_CollectionFboId);
     glDeleteFramebuffers(1, &m_RenderFboId);

@@ -28,10 +28,17 @@
 #include "CameraManager.h"
 #include "Camera.h"
 
+#include "ModelMesh.h"
+
 namespace he {
 namespace gfx {
 
-PostProcesser::PostProcesser(): m_pPostShader(nullptr), m_pBloom(nullptr), m_pAutoExposure(nullptr), m_pRandomNormals(nullptr)
+PostProcesser::PostProcesser(): 
+    m_pPostShader(nullptr), 
+    m_pBloom(nullptr), 
+    m_pAutoExposure(nullptr), 
+    m_pRandomNormals(nullptr),
+    m_pQuad(nullptr)
 {
 }
 
@@ -44,6 +51,9 @@ PostProcesser::~PostProcesser()
 
     if (m_pRandomNormals != nullptr)
         m_pRandomNormals->release();
+
+    if (m_pQuad != nullptr)
+        m_pQuad->release();
 }
 
 

@@ -19,46 +19,49 @@
 #define _HE_CONTENT_MANAGER_H_
 #pragma once
 
-#include <string>
 #include "BufferLayout.h"
-#include "Model.h"
-#include "Texture2D.h"
-#include "vec3.h"
 #include "Line.h"
-
-#include "PhysicsShapeLoader.h"
-#include "TextureLoader.h"
-#include "ModelLoader.h"
-#include "LineLoader.h"
-#include "FontLoader.h"
-#include "ShaderLoader.h"
-#include "MaterialLoader.h"
-#include "FxLoader.h"
 
 #include "RenderSettings.h"
 
+#include "PhysicsConcaveMesh.h"
+#include "PhysicsConvexMesh.h"
+
+#include "Shader.h"
+#include "Material.h"
+
 namespace he {
+namespace gfx {
+    class Model;
+    class ModelMesh;
+    class Texture2D;
+}
+
 namespace ct {
+class ModelLoader;
+class TextureLoader;
+class PhysicsShapeLoader;
+class LineLoader;
+class FontLoader;
+class ShaderLoader;
+class MaterialLoader;
+class FxLoader;
 
 class ContentManager
 {
 public:
     ContentManager();
     virtual ~ContentManager();
-
-    //gfx::Texture2D* loadTexture2D(const std::string& path);
-    // gfx::Texture2D* asyncLoadTexture2D(const std::string& path);
-    // asyncLoadTexture2D(const std::string& path, gfx::Texture2D**);
-
+    
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model::pointer asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh::pointer asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
-    gfx::Model::pointer loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh::pointer loadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh::pointer getFullscreenQuad() const;
-    const gfx::ModelMesh::pointer& getParticleQuad() const;
+    gfx::Model* asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* loadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* getFullscreenQuad();
+    gfx::ModelMesh* getParticleQuad();
 
     const gfx::Texture2D* asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
     const gfx::Texture2D* asyncMakeTexture(const Color& color);
@@ -121,7 +124,8 @@ private:
 
     gfx::Font::pointer m_pDefaultFont;
 
-    gfx::ModelMesh::pointer m_ParticleQuad;
+    gfx::ModelMesh* m_ParticleQuad;
+    gfx::ModelMesh* m_FullscreenQuad;
 
     //Disable default copy constructor and default assignment operator
     ContentManager(const ContentManager&);

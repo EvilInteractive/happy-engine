@@ -22,85 +22,120 @@
 
 #include "Model.h"
 
-#include "GL/glew.h"
-#include <algorithm>
-#include "HeAssert.h"
-#include "Color.h"
-#include "ExternalError.h"
-
 namespace he {
 namespace gfx {
     
-Model::Model(const BufferLayout& vertexLayout): m_Complete(false), m_VertexLayout(vertexLayout)
+Model::Model(): m_IsLoaded(false)
 {
 }
 
 
 Model::~Model()
 {
+    std::for_each(cbegin(), cend(), [&](ModelMesh* pMesh)
+    {
+        pMesh->release();
+    });
 }
 
-void Model::addMesh(const ModelMesh::pointer& pMesh)
+void Model::release()
 {
-    m_Meshes.push_back(pMesh);
+    Resource<Model>::release();
+}
+bool Model::canBeGarbageCollected()
+{
+    // only GC if all meshes are referenced just by this instance
+    bool block(std::any_of(cbegin(), cend(), [](ModelMesh* mesh)
+    {
+        return ResourceFactory<ModelMesh>::getInstance()->getRefCount(mesh->getHandle()) == 1;
+    }));
+    return !block;
+}
+
+void Model::addMesh(const ObjectHandle& handle)
+{
+    ResourceFactory<ModelMesh>::getInstance()->instantiate(handle);
+    m_Meshes.push_back(ResourceFactory<ModelMesh>::getInstance()->get(handle));
 }
 uint Model::getNumMeshes() const
 {
     return m_Meshes.size();
 }
-ModelMesh::pointer Model::getMesh(int index) const
+ModelMesh* Model::instantiateMesh(uint index) const
 {
-    return m_Meshes[index];
+    HE_ASSERT(index >= m_Meshes.size(), "Model::instantiateMesh: index out of range");
+    ModelMesh* mesh(m_Meshes[index]);
+    ResourceFactory<ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+    return mesh;
 }
 
-ModelMesh::pointer Model::getMesh( const std::string& name ) const
+ModelMesh* Model::instantiateMesh( const std::string& name ) const
 {
-    ModelMesh::pointer retMesh;
-    std::for_each(cbegin(), cend(), [&](const ModelMesh::pointer& pMesh)
+    std::vector<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* pMesh)
     {
-        if (pMesh->getName() == name)
+        return pMesh->getName() == name;
+    }));
+
+    if (it != cend())
+    {
+        ModelMesh* mesh(*it);
+        ResourceFactory<ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+        return mesh;
+    }
+    HE_ERROR("Mesh in model (%s) not found with name %s", getName().c_str(), name.c_str());
+    return nullptr;
+}
+
+Model* Model::instantiateMeshesWithPrefix( const std::string& prefix ) const
+{
+    ObjectHandle modelHandle(ResourceFactory<Model>::getInstance()->create());
+    Model* model(ResourceFactory<Model>::getInstance()->get(modelHandle));
+
+    std::for_each(cbegin(), cend(), [&](ModelMesh* mesh)
+    {
+        if (mesh->getName().find(prefix) == 0)
         {
-            retMesh = pMesh;
-            return;
+            model->addMesh(mesh->getHandle());
         }
     });
-    return retMesh;
+    return model;
 }
 
-std::vector<ModelMesh::pointer> Model::getMeshesWithPrefix( const std::string& prefix ) const
-{
-    std::vector<ModelMesh::pointer> meshes;
-    std::for_each(cbegin(), cend(), [&](const ModelMesh::pointer& pMesh)
-    {
-        if (pMesh->getName().find(prefix) == 0)
-        {
-            meshes.push_back(pMesh);
-        }
-    });
-    return meshes;
-}
-
-std::vector<ModelMesh::pointer>::const_iterator Model::cbegin() const
+std::vector<ModelMesh*>::const_iterator Model::cbegin() const
 {
     return m_Meshes.cbegin();
 }
-std::vector<ModelMesh::pointer>::const_iterator Model::cend() const
+std::vector<ModelMesh*>::const_iterator Model::cend() const
 {
     return m_Meshes.cend();
 }
 
-bool Model::isComplete() const
+bool Model::isLoaded() const
 {
-    return m_Complete;
+    return m_IsLoaded;
 }
-void Model::setComplete()
+void Model::setLoaded()
 {
-    m_Complete = true;
+    m_IsLoaded = true;
+    m_LoadedMutex.lock();
+    m_LoadedCallback();
+    m_LoadedCallback.clear();
+    m_LoadedMutex.unlock();
 }
 
-const BufferLayout& Model::getVertexLayout() const
+void Model::callbackOnceIfLoaded( const boost::function<void()>& callback )
 {
-    return m_VertexLayout;
+    m_LoadedMutex.lock();
+    if (isLoaded())
+    {
+        m_LoadedMutex.unlock();
+        callback();
+    }
+    else
+    {
+        m_LoadedCallback += callback;
+        m_LoadedMutex.unlock();
+    }
 }
 
 } } //end namespace

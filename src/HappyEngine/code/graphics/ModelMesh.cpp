@@ -21,22 +21,13 @@
 
 #include "ModelMesh.h"
 
-#include "OpenGL.h"
-#include <algorithm>
-#include "HeAssert.h"
-#include "Color.h"
-#include "ExternalError.h"
-
 namespace he {
 namespace gfx {
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-uint ModelMesh::s_AllocatedModelCount = 0;
-
-ModelMesh::ModelMesh(const std::string& name): m_NumVertices(0), m_NumIndices(0), m_isLoaded(false), m_isVisible(true), m_Name(name)
+#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
+    
+ModelMesh::ModelMesh(): m_NumVertices(0), m_NumIndices(0), m_isLoaded(false), m_isVisible(true)
 {
-    ++s_AllocatedModelCount;
 }
 
 
@@ -47,7 +38,6 @@ ModelMesh::~ModelMesh()
     glDeleteBuffers(1, m_VertexVboID);
     glDeleteBuffers(1, m_VertexVboShadowID);
     glDeleteBuffers(1, m_IndexVboID);
-    --s_AllocatedModelCount;
 }
 
 void ModelMesh::init()
@@ -59,8 +49,6 @@ void ModelMesh::init()
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
 void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout)
 {
-    //err::glCheckForErrors(false);
-
     HE_ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
     m_VertexLayout = vertexLayout;
@@ -86,7 +74,6 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout&
     m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getSize(), posOffset);
 
     GL::heBindVao(m_VaoID[0]);
-    //err::glCheckForErrors();
 
     BufferLayout::layout elements(vertexLayout.getElements());
 
@@ -116,10 +103,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout&
         glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getSize(), 
             BUFFER_OFFSET(e.getByteOffset())); 
         glEnableVertexAttribArray(e.getElementIndex());
-        //err::glCheckForErrors();
     });
-
-
 
     //////////////////////////////////////////////////////////////////////////
     ///                             Shadow                                 ///
@@ -202,11 +186,6 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
     GL::heBindVao(0);
 }
 
-const std::string& ModelMesh::getName() const
-{
-    return m_Name;
-}
-
 uint ModelMesh::getVertexArraysID() const
 {
     return m_VaoID[0];
@@ -251,7 +230,7 @@ bool ModelMesh::isLoaded() const
     return m_isLoaded;
 }
 
-void ModelMesh::callbackIfLoaded( const boost::function<void()>& callback )
+void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
 {
     m_LoadMutex.lock();
     if (m_isLoaded)
@@ -271,6 +250,7 @@ void ModelMesh::setLoaded()
     m_isLoaded = true;
     m_LoadMutex.lock();
     Loaded();
+    Loaded.clear();
     m_LoadMutex.unlock();
 }
 
@@ -292,11 +272,6 @@ uint ModelMesh::getVBOIndexID() const
 const BufferLayout& ModelMesh::getVertexLayout() const
 {
     return m_VertexLayout;
-}
-
-uint ModelMesh::getAllocatedModelMeshCount()
-{
-    return s_AllocatedModelCount;
 }
 
 

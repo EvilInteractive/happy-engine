@@ -55,6 +55,7 @@
 #include "Color.h"
 
 #include "HeAssert.h"
+#include "ExternalError.h"
 #include "HappyMemory.h"
 #include "HappyNew.h"
 #include "MathConstants.h"

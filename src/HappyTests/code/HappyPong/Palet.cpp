@@ -50,7 +50,9 @@ Palet::Palet(const MainGame* game, he::byte player, bool ai):
 
     he::game::ModelComponent* model(NEW he::game::ModelComponent());
     model->setMaterial(CONTENT->loadMaterial("pong/palet.material"));
-    model->setModelMesh(CONTENT->asyncLoadModelMesh("pong/palet.binobj", "M_Palet", model->getMaterial().getCompatibleVertexLayout()));
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/palet.binobj", "M_Palet", model->getMaterial().getCompatibleVertexLayout()));
+    model->setModelMesh(mesh->getHandle());
+    mesh->release();
     model->setLocalTransform(he::mat44::createScale(100));
     addComponent(model);
     

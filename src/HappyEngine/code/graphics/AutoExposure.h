@@ -23,13 +23,13 @@
 #pragma once
 
 #include "Shader.h"
-#include "Texture2D.h"
-#include "ModelMesh.h"
 #include "ITickable.h"
 #include "RenderSettings.h"
 
 namespace he {
 namespace gfx {
+class Texture2D;
+class ModelMesh;
 
 class AutoExposure : public game::ITickable
 {
@@ -59,7 +59,7 @@ private:
 
     uint m_FboID;
 
-    ModelMesh::pointer m_pQuad;
+    ModelMesh* m_pQuad;
 
     bool m_bOnce;
 

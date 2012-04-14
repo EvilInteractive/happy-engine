@@ -60,6 +60,11 @@ public:
         return m_Name;
     }
 
+    virtual bool canBeGarbageCollected() const
+    {
+        return true;
+    }
+
 private:
 
     ObjectHandle m_Handle;

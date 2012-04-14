@@ -46,8 +46,8 @@ private:
     mat44 m_mtxWorld;
     void calculateWorld();
 
-    ModelMesh::pointer m_pLightVolume;
-    ModelMesh::pointer m_pModel;
+    ModelMesh* m_pLightVolume;
+    ModelMesh* m_pModel;
     Material m_Material;
 
 public:
@@ -68,12 +68,12 @@ public:
     const vec3& getColor() const;
     
     mat44 getWorldMatrix() const; 
-    const ModelMesh::pointer& getLightVolume() const;
+    const ModelMesh* getLightVolume() const;
     
     virtual bool getCastsShadow() const { return false; }
 
     virtual const Material& getMaterial() const;
-    virtual const ModelMesh::pointer& getModelMesh() const;
+    virtual const ModelMesh* getModelMesh() const;
 
     typedef boost::shared_ptr<PointLight> pointer;
 };

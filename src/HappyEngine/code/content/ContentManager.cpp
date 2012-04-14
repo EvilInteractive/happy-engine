@@ -1,14 +1,49 @@
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//
+//This file is part of HappyEngine.
+//
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "HappyPCH.h" 
+
 #include "ContentManager.h"
-#include "HappyNew.h"
+
 #include "Vertex.h"
+#include "ModelMesh.h"
+
+#include "TextureLoader.h"
+#include "ModelLoader.h"
+#include "LineLoader.h"
+#include "PhysicsShapeLoader.h"
+#include "MaterialLoader.h"
+#include "LineLoader.h"
+#include "FxLoader.h"
+#include "FontLoader.h"
+#include "ShaderLoader.h"
 
 namespace he {
 namespace ct {
 
-ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureLoader(NEW TextureLoader()),
-    m_pLineLoader(NEW LineLoader()), m_pPhysicsShapeLoader(NEW PhysicsShapeLoader()), m_pFontLoader(NEW FontLoader()),
-    m_pShaderLoader(NEW ShaderLoader()), m_pMaterialLoader(NEW MaterialLoader()), m_pFxLoader(NEW FxLoader()),
+ContentManager::ContentManager(): 
+    m_pModelLoader(NEW ModelLoader()), 
+    m_pTextureLoader(NEW TextureLoader()),
+    m_pLineLoader(NEW LineLoader()), 
+    m_pPhysicsShapeLoader(NEW PhysicsShapeLoader()), 
+    m_pFontLoader(NEW FontLoader()),
+    m_pShaderLoader(NEW ShaderLoader()), 
+    m_pMaterialLoader(NEW MaterialLoader()), 
+    m_pFxLoader(NEW FxLoader()),
 
     m_ContentRootDir("../data/"),
     m_TextureFolder("textures/"), 
@@ -19,7 +54,9 @@ ContentManager::ContentManager(): m_pModelLoader(NEW ModelLoader()), m_pTextureL
     m_ShaderFolder("shaders/"), 
     m_MaterialFolder("materials/"),
     m_FxFolder("fx/"),
-    m_ParticleQuad(NEW gfx::ModelMesh("ParticleQuad"))
+
+    m_ParticleQuad(nullptr),
+    m_FullscreenQuad(nullptr)
 {
 }
 
@@ -33,13 +70,23 @@ ContentManager::~ContentManager()
     delete m_pShaderLoader;
     delete m_pMaterialLoader;
     delete m_pFxLoader;
+
+    if (m_ParticleQuad != nullptr)
+        m_ParticleQuad->release();
+    if (m_FullscreenQuad != nullptr)
+        m_FullscreenQuad->release();
 }
 
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
+    PROFILER_BEGIN("Model Loader loop");
     m_pModelLoader->tick(dTime);
+    PROFILER_END();
+
+    PROFILER_BEGIN("Texture Loader loop");
     m_pTextureLoader->tick(dTime);
+    PROFILER_END();
 }
 void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 {
@@ -47,23 +94,25 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
     m_pTextureLoader->glThreadInvoke();
 }
 
-gfx::Model::pointer ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
+//////////////////////////////////////////////////////////////////////////
+gfx::Model* ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
     return m_pModelLoader->asyncLoadModel(m_ContentRootDir + m_ModelFolder + asset, vertexLayout);
 }
-gfx::ModelMesh::pointer ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
+gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
 {
     return m_pModelLoader->asyncLoadModelMesh(m_ContentRootDir + m_ModelFolder + asset, meshName, vertexLayout);
 }
-gfx::Model::pointer ContentManager::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
 {
     return m_pModelLoader->loadModel(m_ContentRootDir + m_ModelFolder + path, vertexLayout);
 }
-gfx::ModelMesh::pointer ContentManager::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->loadModelMesh(m_ContentRootDir + m_ModelFolder +path, meshName, vertexLayout);
+    return m_pModelLoader->loadModelMesh(m_ContentRootDir + m_ModelFolder + path, meshName, vertexLayout);
 }
 
+//////////////////////////////////////////////////////////////////////////
 const gfx::Texture2D* ContentManager::asyncLoadTexture(const std::string& asset, bool storePixelsInTexture)
 {
     return m_pTextureLoader->asyncLoadTexture(m_ContentRootDir + m_TextureFolder + asset, storePixelsInTexture);
@@ -81,11 +130,13 @@ const gfx::Texture2D* ContentManager::makeTexture(const Color& color)
     return m_pTextureLoader->makeTexture(color);
 }
 
+//////////////////////////////////////////////////////////////////////////
 gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
 {
     return m_pLineLoader->loadLine(m_ContentRootDir + m_LineFolder + asset);
 }
 
+//////////////////////////////////////////////////////////////////////////
 const std::vector<px::PhysicsConvexMesh::pointer>& ContentManager::loadPhysicsConvex(const std::string& asset)
 {
     return m_pPhysicsShapeLoader->loadConvex(m_ContentRootDir + m_PhysicsFolder + asset);
@@ -95,6 +146,7 @@ const std::vector<px::PhysicsConcaveMesh::pointer>& ContentManager::loadPhysicsC
     return m_pPhysicsShapeLoader->loadConcave(m_ContentRootDir + m_PhysicsFolder + asset);
 }
 
+//////////////////////////////////////////////////////////////////////////
 gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
 {
     gfx::Font::pointer p;
@@ -110,23 +162,25 @@ const gfx::Font::pointer& ContentManager::getDefaultFont(ushort size)
     //}
 }
 
+//////////////////////////////////////////////////////////////////////////
 gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
     return m_pShaderLoader->load(m_ContentRootDir + m_ShaderFolder + vsAsset, m_ContentRootDir + m_ShaderFolder + fsAsset, shaderLayout, outputs);
 }
 
-
+//////////////////////////////////////////////////////////////////////////
 gfx::Material ContentManager::loadMaterial(const std::string& asset)
 {
     return m_pMaterialLoader->load(m_ContentRootDir + m_MaterialFolder + asset);
 }
 
+//////////////////////////////////////////////////////////////////////////
 uint ContentManager::loadFx( const std::string& path )
 {
     return m_pFxLoader->load(m_ContentRootDir + m_FxFolder + path);
 }
 
-
+//////////////////////////////////////////////////////////////////////////
 void ContentManager::setRootDir(const std::string& root)
 {
     m_ContentRootDir = root;
@@ -200,30 +254,36 @@ const std::string& ContentManager::getFxFolder() const
     return m_FxFolder;
 }
 
-
-gfx::ModelMesh::pointer ContentManager::getFullscreenQuad() const
+//////////////////////////////////////////////////////////////////////////
+gfx::ModelMesh* ContentManager::getFullscreenQuad()
 {
     using namespace gfx;
-    BufferLayout layout;
-    layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+    if (m_FullscreenQuad == nullptr)
+    {
+        BufferLayout layout;
+        layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
-    gfx::ModelMesh::pointer pQuad(NEW gfx::ModelMesh("fullscreenQuad"));
+        ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
+        m_FullscreenQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
+        m_FullscreenQuad->setName("Full screen quad");
 
-    std::vector<VertexPos> vertices;
-    vertices.push_back(VertexPos(vec3(-1, 1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(1, 1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
-    vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
+        std::vector<VertexPos> vertices;
+        vertices.push_back(VertexPos(vec3(-1, 1, 1.0f)));
+        vertices.push_back(VertexPos(vec3(1, 1, 1.0f)));
+        vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
+        vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
 
-    std::vector<byte> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
-    indices.push_back(1); indices.push_back(3); indices.push_back(2);
+        std::vector<byte> indices;
+        indices.push_back(0); indices.push_back(1); indices.push_back(2);
+        indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
-    pQuad->init();
-    pQuad->setVertices(&vertices[0], 4, layout);
-    pQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        m_FullscreenQuad->init();
+        m_FullscreenQuad->setVertices(&vertices[0], 4, layout);
+        m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    }
 
-    return pQuad;
+    ResourceFactory<ModelMesh>::getInstance()->instantiate(m_FullscreenQuad->getHandle());
+    return m_FullscreenQuad;
 }
 
 void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
@@ -239,12 +299,13 @@ bool ContentManager::isLoading() const
     else
         return false;
 }
-const gfx::ModelMesh::pointer& ContentManager::getParticleQuad() const
+
+//////////////////////////////////////////////////////////////////////////
+///  Particle Quad
+gfx::ModelMesh* ContentManager::getParticleQuad()
 {
-    if (m_ParticleQuad->isLoaded() == false)
+    if (m_ParticleQuad == nullptr)
     {    
-        //////////////////////////////////////////////////////////////////////////
-        ///  Particle Quad
         using namespace gfx;
         BufferLayout layout;
         layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
@@ -262,10 +323,12 @@ const gfx::ModelMesh::pointer& ContentManager::getParticleQuad() const
         m_ParticleQuad->init();
         m_ParticleQuad->setVertices(&vertices[0], 4, layout);
         m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte);
-        //////////////////////////////////////////////////////////////////////////
     }
+
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_ParticleQuad->getHandle());
     return m_ParticleQuad;
 }
+//////////////////////////////////////////////////////////////////////////
 
 
 } } //end namespace

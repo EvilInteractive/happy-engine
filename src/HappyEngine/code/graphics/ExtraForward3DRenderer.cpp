@@ -21,10 +21,7 @@
 #include "HappyPCH.h" 
 
 #include "ExtraForward3DRenderer.h"
-#include "OpenGL.h"
-#include "HeAssert.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
+
 #include "GraphicsEngine.h"
 #include "DrawManager.h"
 #include "Happy2DRenderer.h"
@@ -37,7 +34,7 @@ ExtraForward3DRenderer::ExtraForward3DRenderer() :	m_pColorEffect(NEW SimpleColo
                                                     m_RenderFboID(UINT_MAX),
                                                     m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
                                                     m_pBillboardEffect(NEW BillboardEffect()),
-                                                    m_pBillboardQuad(NEW ModelMesh("")),
+                                                    m_pBillboardQuad(nullptr),
                                                     m_ScreenDimensions(0,0)
 {
     m_pRenderTexture->setName("ExtraForward3DRenderer::m_pRenderTexture");
@@ -48,6 +45,8 @@ ExtraForward3DRenderer::~ExtraForward3DRenderer()
     delete m_pColorEffect;
     delete m_pBillboardEffect;
     m_pRenderTexture->release();
+    if (m_pBillboardQuad != nullptr)
+        m_pBillboardQuad->release();
 }
 
 void ExtraForward3DRenderer::createBillboardQuad()
@@ -55,6 +54,7 @@ void ExtraForward3DRenderer::createBillboardQuad()
     m_VertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
     m_VertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
 
+    m_pBillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_pBillboardQuad->init();
 
     std::vector<VertexPosTex> vertices;
@@ -157,7 +157,7 @@ void ExtraForward3DRenderer::resize()
 }
 
 /* DRAW METHODS */
-void ExtraForward3DRenderer::drawColored(const ModelMesh::pointer& model, const mat44& world, const Color& color) const
+void ExtraForward3DRenderer::drawColored(const ModelMesh* model, const mat44& world, const Color& color) const
 {
     m_pColorEffect->begin();
     m_pColorEffect->setViewProjection(m_ViewProjection);
@@ -168,7 +168,7 @@ void ExtraForward3DRenderer::drawColored(const ModelMesh::pointer& model, const 
     glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
 }
 
-void ExtraForward3DRenderer::drawColoredNoDepth(const ModelMesh::pointer& model, const mat44& world, const Color& color) const
+void ExtraForward3DRenderer::drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const
 {
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
@@ -185,7 +185,7 @@ void ExtraForward3DRenderer::drawColoredNoDepth(const ModelMesh::pointer& model,
     GL::heSetDepthWrite(true);
 }
 
-void ExtraForward3DRenderer::drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const
+void ExtraForward3DRenderer::drawSpline(const ModelMesh* spline, const mat44& world, const Color& color) const
 {
     m_pColorEffect->begin();
     m_pColorEffect->setViewProjection(m_ViewProjection);

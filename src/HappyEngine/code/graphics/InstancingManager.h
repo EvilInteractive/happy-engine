@@ -22,7 +22,6 @@
 #define _HE_INSTANCING_MANAGER_H_
 #pragma once
 
-#include <map>
 #include "ModelMesh.h"
 #include "Material.h"
 #include "BufferLayout.h"
@@ -38,7 +37,7 @@ public:
     InstancingManager();
     virtual ~InstancingManager();
 
-    void createController(const std::string& id, bool dynamic, const ModelMesh::pointer& pMesh, const Material& material);
+    void createController(const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const Material& material);
     InstancingController* getController(const std::string& id);
 
 private:

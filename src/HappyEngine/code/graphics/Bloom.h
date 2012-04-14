@@ -23,12 +23,12 @@
 #pragma once
 
 #include "Shader.h"
-#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
 
 class Texture2D;
+class ModelMesh;
 
 class Bloom
 {
@@ -63,7 +63,7 @@ private:
 
     bool m_Hdr;
 
-    ModelMesh::pointer m_pMesh;
+    ModelMesh* m_pMesh;
 
     //Disable default copy constructor and default assignment operator
     Bloom(const Bloom&);

@@ -23,16 +23,15 @@
 #pragma once
 
 #include "ModelMesh.h"
-#include "mat44.h"
-#include "Color.h"
 #include "SimpleColorEffect.h"
 #include "Camera.h"
-#include "Texture2D.h"
-#include "vec3.h"
 #include "BillboardEffect.h"
 
 namespace he {
 namespace gfx {
+
+class Texture2D;
+class ModelMesh;
 
 class ExtraForward3DRenderer
 {
@@ -49,9 +48,9 @@ public:
     void resize();
 
     /* DRAW METHODS */
-    void drawColored(const ModelMesh::pointer& model, const mat44& world, const Color& color) const;
-    void drawColoredNoDepth(const ModelMesh::pointer& model, const mat44& world, const Color& color) const;
-    void drawSpline(const ModelMesh::pointer& spline, const mat44& world, const Color& color) const;
+    void drawColored(const ModelMesh* model, const mat44& world, const Color& color) const;
+    void drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const;
+    void drawSpline(const ModelMesh* spline, const mat44& world, const Color& color) const;
     void drawBillboard(const Texture2D* tex2D, const vec3& pos);
 
 private:
@@ -67,7 +66,7 @@ private:
     uint m_RenderFboID;
     Texture2D* m_pRenderTexture;
 
-    ModelMesh::pointer m_pBillboardQuad;
+    ModelMesh* m_pBillboardQuad;
     BufferLayout m_VertexLayoutBillboard;
     BillboardEffect* m_pBillboardEffect;
 

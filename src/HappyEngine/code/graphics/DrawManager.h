@@ -27,6 +27,7 @@
 #include "DrawListContainer.h"
 #include "RenderSettings.h"
 #include "Texture2D.h"
+#include "Sphere.h"
 
 namespace he {
 namespace gfx {

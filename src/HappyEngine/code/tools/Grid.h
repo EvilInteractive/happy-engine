@@ -22,13 +22,12 @@
 #define _HE_GRID_H_
 #pragma once
 
-#include "vec3.h"
 #include "Entity.h"
-#include "HappyEngine.h"
-#include "Color.h"
-#include "ModelMesh.h"
 
 namespace he {
+namespace gfx {
+    class ModelMesh;
+}
 namespace tools {
 
 class Grid : public he::game::Entity
@@ -54,8 +53,8 @@ private:
     Color m_Color;
     Color m_Color2;
 
-    gfx::ModelMesh::pointer m_pModelMesh;
-    gfx::ModelMesh::pointer m_pModelMesh2;
+    gfx::ModelMesh* m_pModelMesh;
+    gfx::ModelMesh* m_pModelMesh2;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Grid(const Grid&);

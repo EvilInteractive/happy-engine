@@ -21,9 +21,8 @@
 #include "HappyPCH.h" 
 
 #include "Grid.h"
-#include "HappyNew.h"
+
 #include "Vertex.h"
-#include <vector>
 #include "BufferLayout.h"
 #include "ExtraForward3DRenderer.h"
 
@@ -58,7 +57,8 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
         indices.push_back(index++);
     }
 
-    m_pModelMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(""));
+    m_pModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_pModelMesh->setName("Grid mesh 1");
     m_pModelMesh->init();
     m_pModelMesh->setVertices(&vertices[0], vertices.size(), layout);
     m_pModelMesh->setIndices(&indices[0], indices.size(), gfx::IndexStride_UInt);
@@ -79,7 +79,8 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
     indices2.push_back(index++);
     indices2.push_back(index++);
 
-    m_pModelMesh2 = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(""));
+    m_pModelMesh2 = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_pModelMesh2->setName("Grid mesh 2");
     m_pModelMesh2->init();
     m_pModelMesh2->setVertices(&vertices2[0], vertices2.size(), layout);
     m_pModelMesh2->setIndices(&indices2[0], indices2.size(), gfx::IndexStride_UInt);
@@ -87,6 +88,8 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
 
 Grid::~Grid()
 {
+    m_pModelMesh->release();
+    m_pModelMesh2->release();
 }
 
 /* GENERAL */

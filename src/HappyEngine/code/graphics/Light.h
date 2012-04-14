@@ -22,11 +22,8 @@
 #define _HE_LIGHT_H_
 #pragma once
 
-#include "vec3.h"
-#include "boost/shared_ptr.hpp"
 #include "Rect.h"
 #include "Camera.h"
-#include "MathFunctions.h"
 
 #include "SpotLight.h"
 #include "PointLight.h"

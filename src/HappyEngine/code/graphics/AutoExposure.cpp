@@ -21,17 +21,22 @@
 #include "HappyPCH.h" 
 
 #include "AutoExposure.h"
-#include "HappyNew.h"
+
 #include "ContentManager.h"
-#include "OpenGL.h"
-#include "ExternalError.h"
 #include "GraphicsEngine.h"
 #include "Game.h"
+#include "ModelMesh.h"
 
 namespace he {
     namespace gfx {
 
-AutoExposure::AutoExposure(): m_pLumShader(NEW Shader()), m_FirstBuffer(true), m_DTime(0), m_ExposureSpeed(1.0f), m_bOnce(false)
+AutoExposure::AutoExposure():
+    m_pLumShader(NEW Shader()), 
+    m_FirstBuffer(true),
+    m_DTime(0), 
+    m_ExposureSpeed(1.0f), 
+    m_bOnce(false),
+    m_pQuad(nullptr)
 {
     ObjectHandle handle1(ResourceFactory<Texture2D>::getInstance()->create());
     ObjectHandle handle2(ResourceFactory<Texture2D>::getInstance()->create());
@@ -48,6 +53,8 @@ AutoExposure::~AutoExposure()
     glDeleteFramebuffers(1, &m_FboID);
     if (GAME != nullptr)
         GAME->removeFromTickList(this);
+    if (m_pQuad != nullptr)
+        m_pQuad->release();
 }
 
 void AutoExposure::init(const RenderSettings& settings)

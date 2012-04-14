@@ -34,378 +34,345 @@
 namespace he {
 namespace ct {
 
-ModelLoader::ModelLoader(): m_isModelThreadRunning(false), m_pAssetContainer(nullptr)                
+ModelLoader::ModelLoader(): m_isModelThreadRunning(false)               
 {
-    m_pAssetContainer = NEW AssetContainer<gfx::Model::pointer>([](const gfx::Model::pointer& model)
-    {
-        std::for_each(model->cbegin(), model->cend(), [](const gfx::ModelMesh::pointer& mesh)
-        {
-            if (mesh.use_count() > 1)
-            {
-                HE_ERROR("Possible mesh leak: %s", mesh->getName().c_str());
-            }
-        });
-    });
+    ObjectHandle handle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_EmptyMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(handle);
 }
 
 ModelLoader::~ModelLoader()
 {
-    delete m_pAssetContainer;
+    m_EmptyMesh->release();
 }
 
 void ModelLoader::tick(float /*dTime*/)
 {
     if (m_isModelThreadRunning == false)
+    {
         if (m_ModelLoadQueue.empty() == false)
         {
             m_isModelThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_ModelLoadThread = boost::thread(boost::bind(&ModelLoader::ModelLoadThread, this));
+            m_ModelLoadThread = boost::thread(boost::bind(&ModelLoader::modelLoadThread, this));
         }
+    }
 }
+
 void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_ModelInvokeQueue.empty() == false)
     {
         m_ModelInvokeQueueMutex.lock();
-        ModelLoadData* data(m_ModelInvokeQueue.front());
+        ModelLoadData data(m_ModelInvokeQueue.front());
         m_ModelInvokeQueue.pop();
         m_ModelInvokeQueueMutex.unlock();
 
-        m_WaitListMutex.lock();
-
-        uint unloadedMeshes(data->pModel->getNumMeshes());
-        for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
-        {
-            gfx::ModelMesh::pointer pMesh;
-            if (unloadedMeshes > 0)
-            {
-                for (uint iUnloaded = 0; iUnloaded < unloadedMeshes; ++iUnloaded) // TODO: optimize
-                {
-                    if (data->loader->getMeshName(i) == data->pModel->getMesh(iUnloaded)->getName())
-                    {
-                        pMesh = data->pModel->getMesh(iUnloaded);
-                        break;
-                    }
-                }
-            }
-            if (pMesh == nullptr)
-            {
-                pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
-                data->pModel->addMesh(pMesh);
-            }
-
-            pMesh->init();
-            pMesh->setBones(data->loader->getBones(i));
-            pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
-            pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
-
-            HE_INFO("Model create completed: %s", data->path.c_str());
-        }
-        data->pModel->setComplete();
-        m_WaitListMutex.unlock();
-        delete data->loader;
-        delete data;
+        createModel(data);
     }
 }
 
-gfx::Model::pointer ModelLoader::asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
-{
-    if (m_pAssetContainer->isAssetPresent(path))
-    {
-        return m_pAssetContainer->getAsset(path);
-    }
-    else
-    {
-        ModelLoadData* data(NEW ModelLoadData());
-        data->path = path;
-        data->vertexLayout = vertexLayout;
-        data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
-
-        if (data->path.rfind(".obj") != std::string::npos)
-        {
-            data->loader = NEW models::ObjLoader();
-        }
-        else if (data->path.rfind(".binobj") != std::string::npos)
-        {
-            data->loader = NEW models::BinObjLoader();
-        }
-        else
-        {
-            gfx::Model::pointer m(data->pModel);
-            m->setComplete();
-            delete data;
-            return m;
-        }
-
-        m_ModelLoadQueueMutex.lock();
-        m_ModelLoadQueue.push(data);
-        m_ModelLoadQueueMutex.unlock();
-
-        m_pAssetContainer->addAsset(path, data->pModel);
-
-        return data->pModel;
-    }
-}
-gfx::ModelMesh::pointer ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
-{
-    if (m_pAssetContainer->isAssetPresent(path))
-    {
-        gfx::ModelMesh::pointer pMesh;
-        m_WaitListMutex.lock();
-
-        gfx::Model::pointer pModel(m_pAssetContainer->getAsset(path));
-        if (pModel->isComplete())
-        {
-            pMesh = pModel->getMesh(meshName);
-            if (pMesh == nullptr)
-                pMesh = pModel->getMesh(0);
-        }
-        else
-        {
-            if (pModel->getNumMeshes() > 0)
-            {
-                pMesh = pModel->getMesh(meshName);
-            }
-            if (pMesh == nullptr)
-            {
-                pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName));
-                
-                pModel->addMesh(pMesh);
-            }
-        }
-
-        m_WaitListMutex.unlock();
-        return pMesh;
-    }
-    else
-    {
-        ModelLoadData* data(NEW ModelLoadData());
-        data->path = path;
-        data->vertexLayout = vertexLayout;
-        data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
-        data->pModel->addMesh(gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName)));
-
-        if (data->path.rfind(".obj") != std::string::npos)
-        {
-            data->loader = NEW models::ObjLoader();
-        }
-        else if (data->path.rfind(".binobj") != std::string::npos)
-        {
-            data->loader = NEW models::BinObjLoader();
-        }
-        else
-        {
-            gfx::ModelMesh::pointer m(data->pModel->getMesh(0));
-            delete data;
-            std::stringstream stream;
-            stream << "Model error: unkown extension (" << path << ")";
-            CONSOLE->addMessage(stream.str(), CMSG_TYPE_ERROR);
-            return m;
-        }
-
-        m_ModelLoadQueueMutex.lock();
-        m_ModelLoadQueue.push(data);
-        m_ModelLoadQueueMutex.unlock();
-
-        m_pAssetContainer->addAsset(path, data->pModel);
-
-        return data->pModel->getMesh(0);
-    }
-}
-
-
-void ModelLoader::ModelLoadThread()
+void ModelLoader::modelLoadThread()
 {
     HE_INFO("Model Load thread started");
     while (m_ModelLoadQueue.empty() == false)
     {
         m_ModelLoadQueueMutex.lock();
-        ModelLoadData* data(m_ModelLoadQueue.front());
+        ModelLoadData data(m_ModelLoadQueue.front());
         m_ModelLoadQueue.pop();
         m_ModelLoadQueueMutex.unlock();
 
-        if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
+        if (loadModel(data))
         {
-            if (data->loader->load(data->path, data->vertexLayout)) 
-            { 
-                HE_INFO("Model load completed: %s", data->path.c_str());
-                m_ModelInvokeQueueMutex.lock();
-                m_ModelInvokeQueue.push(data);
-                m_ModelInvokeQueueMutex.unlock();
-            }
-            else
-            {
-                HE_ERROR("Error loading model: %s", data->path.c_str());
-                delete data->loader;
-                delete data;
-            }            
-        }
-        else
-        {
-            delete data->loader;
-            delete data;
-        }
+            m_ModelInvokeQueueMutex.lock();
+            m_ModelInvokeQueue.push(data);
+            m_ModelInvokeQueueMutex.unlock();
+        }                
     }
     HE_INFO("Model load thread stopped");
     m_isModelThreadRunning = false;
 }
-
-gfx::Model::pointer ModelLoader::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+bool ModelLoader::loadModel( ModelLoadData& data )
 {
-    if (m_pAssetContainer->isAssetPresent(path))
-    {
-        return m_pAssetContainer->getAsset(path);
+    if (data.loader->load(data.path, data.vertexLayout)) 
+    { 
+        HE_INFO("Model load completed: %s", data.path.c_str());
+        return true;
     }
     else
     {
-        ModelLoadData* data(NEW ModelLoadData());
-        data->path = path;
-        data->vertexLayout = vertexLayout;
-        data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
+        HE_ERROR("Error loading model: %s", data.path.c_str());
+        ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle)->release();
+        delete data.loader;
+        data.loader = nullptr;
+        return false;
+    } 
+}
+bool ModelLoader::createModel( ModelLoadData& data )
+{
+    m_WaitListMutex.lock();
 
-        if (data->path.rfind(".obj") != std::string::npos)
+    gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
+    uint notLoadedMeshes(model->getNumMeshes());
+    for (uint i = 0; i < data.loader->getNumMeshes(); ++i)
+    {
+        const std::string& meshName(data.loader->getMeshName(i));
+        gfx::ModelMesh* mesh(nullptr);
+        if (notLoadedMeshes > 0)
         {
-            data->loader = NEW models::ObjLoader();
+            for (uint iNotLoaded = 0; iNotLoaded < notLoadedMeshes; ++iNotLoaded)
+            {
+                mesh = model->instantiateMesh(meshName);
+                if (mesh != nullptr)
+                    break;
+            }
         }
-        else if (data->path.rfind(".binobj") != std::string::npos)
+        if (mesh == nullptr)
         {
-            data->loader = NEW models::BinObjLoader();
+            ObjectHandle handle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+            mesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(handle);
+            mesh->setName(meshName);
+            model->addMesh(handle);
+        }
+
+        mesh->init();
+        mesh->setBones(data.loader->getBones(i));
+        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), data.vertexLayout);
+        mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
+
+        mesh->release();
+    }
+    HE_INFO("Model create completed: %s", data.path.c_str());
+    model->setLoaded();
+    m_WaitListMutex.unlock();
+
+    model->release();
+    delete data.loader;
+    data.loader = nullptr;
+
+    return true;
+}
+
+bool ModelLoader::isModelLoaded( const std::string& path, ObjectHandle& outHandle )
+{
+    bool isLoaded(true);
+    isLoaded &= m_AssetContainer.isAssetPresent(path);
+    if (isLoaded == true) // in assetContainer
+    {
+        outHandle = m_AssetContainer.getAsset(path);
+        isLoaded &= ResourceFactory<gfx::Model>::getInstance()->isAlive(outHandle); // check if not GC'ed
+    }
+    return isLoaded;
+}
+
+gfx::Model* ModelLoader::asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+{
+    ObjectHandle handle;
+    if (isModelLoaded(path, handle))
+    {
+        ResourceFactory<gfx::Model>::getInstance()->instantiate(handle);
+        return ResourceFactory<gfx::Model>::getInstance()->get(handle);
+    }
+    else
+    {
+        ModelLoadData data;
+        data.path = path;
+        data.vertexLayout = vertexLayout;
+        data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
+        
+        gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
+        model->setName(path);
+
+        startAsyncLoadModel(data);
+
+        return model;
+    }
+}
+gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
+{
+    ObjectHandle modelHandle;
+    if (isModelLoaded(path, modelHandle)) // if model is loading/loaded
+    {
+        gfx::ModelMesh* mesh(nullptr);
+        m_WaitListMutex.lock();
+
+        gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(modelHandle));
+        if (model->isLoaded()) // if loading done
+        { 
+            //try get mesh
+            mesh = model->instantiateMesh(meshName);
+            if (mesh == nullptr)
+            {
+                //failed: get empty modelmesh
+                HE_ERROR("Model Load error: mesh: %s not found in %s", meshName.c_str(), path.c_str());
+                mesh = m_EmptyMesh;
+                ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+            }
         }
         else
         {
-            gfx::Model::pointer m(data->pModel);
-            m->setComplete();
-            delete data;
-            return m;
+            if (model->getNumMeshes() > 0) // model is partially loaded
+            {
+                mesh = model->instantiateMesh(meshName); // try get
+            }
+            if (mesh == nullptr) // not loaded yet -> add new empty mesh
+            {
+                ObjectHandle handle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+                mesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(handle);
+                model->addMesh(handle); // to be loaded
+            }
         }
 
-        m_pAssetContainer->addAsset(path, data->pModel);
+        m_WaitListMutex.unlock();
 
-        if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
-        {
-            if (data->loader->load(data->path, data->vertexLayout)) 
-            { 
-                HE_INFO("**ML INFO** obj load completed: %s", data->path.c_str());
-            }
-            else
-            {
-                HE_ERROR("Model load failed: %s", data->path.c_str());
-            }
+        HE_ASSERT(mesh != nullptr, "Post load model should not be nullptr");
+        return mesh;
+    }
+    else
+    {
+        ObjectHandle modelHandle(ResourceFactory<gfx::Model>::getInstance()->create());
+        ObjectHandle meshHandle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
 
-            uint unloadedMeshes(data->pModel->getNumMeshes());
-            for (uint i = 0; i < data->loader->getNumMeshes(); ++i)
-            {
-                gfx::ModelMesh::pointer pMesh;
-                if (unloadedMeshes > 0)
-                {
-                    for (uint iUnloaded = 0; iUnloaded < unloadedMeshes; ++iUnloaded) // TODO: optimize
-                    {
-                        if (data->loader->getMeshName(i) == data->pModel->getMesh(iUnloaded)->getName())
-                        {
-                            pMesh = data->pModel->getMesh(iUnloaded);
-                            break;
-                        }
-                    }
-                }
-                if (pMesh == nullptr)
-                {
-                    pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(data->loader->getMeshName(i)));
-                    data->pModel->addMesh(pMesh);
-                }
+        ModelLoadData data;
+        data.path = path;
+        data.vertexLayout = vertexLayout;
+        data.modelHandle = modelHandle;
 
-                pMesh->init();
-                pMesh->setBones(data->loader->getBones(i));
-                pMesh->setVertices(data->loader->getVertices(i), data->loader->getNumVertices(i), data->vertexLayout);
-                pMesh->setIndices(data->loader->getIndices(i), data->loader->getNumIndices(i), data->loader->getIndexStride(i));
+        gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(modelHandle));
+        model->setName(path);
+        gfx::ModelMesh* mesh(ResourceFactory<gfx::ModelMesh>::getInstance()->get(meshHandle));
+        mesh->setName(meshName);
+        model->addMesh(meshHandle);
 
-                HE_INFO("**ML INFO** model create completed: %s", data->path.c_str());
-            }
+        startAsyncLoadModel(data);
 
-            data->pModel->setComplete();
-        }
+        model->release(); // no need to keep the model instance
+        return mesh; // instance passed to user
+    }
 
-        delete data->loader;
-        gfx::Model::pointer m(data->pModel);
-        delete data;
+}
 
-        return m;
+
+bool ModelLoader::getModelLoader( ModelLoadData& data )
+{
+    if (data.path.rfind(".obj") != std::string::npos)
+    {
+        data.loader = NEW models::ObjLoader();
+    }
+    else if (data.path.rfind(".binobj") != std::string::npos)
+    {
+        data.loader = NEW models::BinObjLoader();
+    }
+    else
+    {
+        HE_ERROR("Model loading failed: %s has unknown extension", data.path.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModelLoader::startAsyncLoadModel(ModelLoadData& data)
+{
+    bool doLoad(getModelLoader(data));
+
+    // failed assets are also saved -> we do not need to check it twice
+    m_AssetContainer.addAsset(data.path, data.modelHandle);
+
+    if (doLoad)
+    {
+        // need reference for async loading
+        ResourceFactory<gfx::Model>::getInstance()->instantiate(data.modelHandle);
+        m_ModelLoadQueueMutex.lock();
+        m_ModelLoadQueue.push(data);
+        m_ModelLoadQueueMutex.unlock();
+    }
+
+    return doLoad;
+}
+
+bool ModelLoader::startSyncLoadModel( ModelLoadData& data )
+{
+    bool success(getModelLoader(data));
+
+    // failed assets are also saved -> we do not need to check it twice
+    m_AssetContainer.addAsset(data.path, data.modelHandle);
+
+    if (success)
+    {
+        success &= loadModel(data);
+        if (success)
+            success &= createModel(data);
+    }
+    return success;
+}
+
+
+gfx::Model* ModelLoader::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+{
+    ObjectHandle handle;
+    if (isModelLoaded(path, handle))
+    {
+        ResourceFactory<gfx::Model>::getInstance()->instantiate(handle);
+        return ResourceFactory<gfx::Model>::getInstance()->get(handle);
+    }
+    else
+    {
+        ModelLoadData data;
+        data.path = path;
+        data.vertexLayout = vertexLayout;
+        data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
+        gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
+        model->setName(path);
+
+        startSyncLoadModel(data);
+        
+        return model;
     }
 }
 
-gfx::ModelMesh::pointer ModelLoader::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ModelLoader::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
 {
-    if (m_pAssetContainer->isAssetPresent(path))
+    ObjectHandle modelHandle;
+    if (isModelLoaded(path, modelHandle))
     {
-        gfx::ModelMesh::pointer pMesh;
-
-        gfx::Model::pointer pModel(m_pAssetContainer->getAsset(path));
-        if (pModel->isComplete())
+        gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(modelHandle));
+        gfx::ModelMesh* mesh(nullptr);
+        if (model->isLoaded())
         {
-            pMesh = pModel->getMesh(meshName);
-            if (pMesh == nullptr)
-                pMesh = pModel->getMesh(0);
+            mesh = model->instantiateMesh(meshName);
+            if (mesh == nullptr)
+            {
+                //failed: get empty modelmesh
+                HE_ERROR("Model Load error: mesh: %s not found in %s", meshName.c_str(), path.c_str());
+                mesh = m_EmptyMesh;
+                ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(mesh->getHandle());
+            }
         }
         else
         {
-            if (pModel->getNumMeshes() > 0)
-            {
-                pMesh = pModel->getMesh(meshName);
-            }
-            if (pMesh == nullptr)
-            {
-                gfx::ModelMesh::pointer pMesh = gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName));
-
-                pModel->addMesh(pMesh);
-            }
+            // this will be a problem because the model is loaded async as well
+            HE_WARNING("Loading mesh: %s - %s problem. Trying to load sync but mesh is already loading async -> loading async", path.c_str(), meshName.c_str());
+            mesh = asyncLoadModelMesh(path, meshName, vertexLayout);
         }
 
-        return pMesh;
+        return mesh;
     }
     else
     {
-        ModelLoadData* data(NEW ModelLoadData());
-        data->path = path;
-        data->vertexLayout = vertexLayout;
-        data->pModel = gfx::Model::pointer(NEW gfx::Model(vertexLayout));
-        data->pModel->addMesh(gfx::ModelMesh::pointer(NEW gfx::ModelMesh(meshName)));
+        ModelLoadData data;
+        data.path = path;
+        data.vertexLayout = vertexLayout;
+        data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
 
-        if (data->path.rfind(".obj") != std::string::npos)
-        {
-            data->loader = NEW models::ObjLoader();
-        }
-        else if (data->path.rfind(".binobj") != std::string::npos)
-        {
-            data->loader = NEW models::BinObjLoader();
-        }
-        else
-        {
-            gfx::ModelMesh::pointer m(data->pModel->getMesh(0));
-            delete data;
-            std::stringstream stream;
-            stream << "Model error: unkown extension (" << path << ")";
-            CONSOLE->addMessage(stream.str(), CMSG_TYPE_ERROR);
-            return m;
-        }
+        ObjectHandle meshHandle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+        gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
+        model->setName(path);
+        gfx::ModelMesh* mesh(ResourceFactory<gfx::ModelMesh>::getInstance()->get(meshHandle));
+        mesh->setName(meshName);
+        model->addMesh(meshHandle);
 
-        m_pAssetContainer->addAsset(path, data->pModel);
+        startSyncLoadModel(data);
 
-        if (data->path.rfind(".obj") != std::string::npos || data->path.rfind(".binobj") != std::string::npos)
-        {
-            if (data->loader->load(data->path, data->vertexLayout)) 
-            { 
-                HE_INFO("**ML INFO** obj load completed: %s", data->path.c_str());
-            }
-            else
-            {
-                HE_ERROR("Model load failed: %s", data->path.c_str());
-            }            
-        }
-
-        delete data->loader;
-        gfx::ModelMesh::pointer m(data->pModel->getMesh(0));
-        delete data;
-
-        return m;
+        model->release();
+        return mesh;
     }
 }
 
@@ -414,5 +381,6 @@ bool ModelLoader::isLoading() const
 {
     return m_isModelThreadRunning;
 }
+
 
 } } //end namespace

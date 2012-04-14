@@ -20,12 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "DirectionalLight.h"
-#include "HappyNew.h"
-#include "MathFunctions.h"
-#include "HappyEngine.h"
-#include "Deferred3DRenderer.h"
-#include "Entity.h"
-#include "ContentManager.h"
 
 namespace he {
 namespace gfx {

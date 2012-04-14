@@ -38,7 +38,9 @@ Obstacle::Obstacle():
 {
     he::game::ModelComponent* model(NEW he::game::ModelComponent());
     model->setMaterial(CONTENT->loadMaterial("pong/obstacle.material"));
-    model->setModelMesh(CONTENT->asyncLoadModelMesh("pong/obstacles.binobj", "M_Torus", model->getMaterial().getCompatibleVertexLayout()));
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/obstacles.binobj", "M_Torus", model->getMaterial().getCompatibleVertexLayout()));
+    model->setModelMesh(mesh->getHandle());
+    mesh->release();
     model->setLocalTransform(he::mat44::createScale(100));
     addComponent(model);
 

@@ -23,6 +23,8 @@
 #include "DrawManager.h"
 #include "ICamera.h"
 
+#include "ModelMesh.h"
+
 namespace he {
 namespace gfx {
 

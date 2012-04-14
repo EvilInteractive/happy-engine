@@ -24,10 +24,9 @@
 #pragma once
 
 #include "Shader.h"
-#include "Model.h"
-#include "ModelMesh.h"
 #include "IRenderer.h"
 #include "DrawListContainer.h"
+#include "BufferLayout.h"
 
 namespace he {
 namespace gfx {
@@ -37,6 +36,7 @@ class Bloom;
 class AutoExposure;
 class DrawSettings;
 class Texture2D;
+class ModelMesh;
 
 class Deferred3DRenderer : public IRenderer
 {
@@ -165,7 +165,7 @@ private:
     //////////////////////////////////////////////////////////////////////////
     ///                              Data                                  ///
     ////////////////////////////////////////////////////////////////////////// 
-    ModelMesh::pointer m_pQuad;
+    ModelMesh* m_pQuad;
 
     //////////////////////////////////////////////////////////////////////////
     ///                              Settings                              ///

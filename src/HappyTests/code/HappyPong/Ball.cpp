@@ -43,7 +43,9 @@ Ball::Ball(MainGame* mainGame):
 
     he::game::ModelComponent* model(NEW he::game::ModelComponent());
     model->setMaterial(CONTENT->loadMaterial("pong/ball.material"));
-    model->setModelMesh(CONTENT->asyncLoadModelMesh("pong/ball.binobj", "M_Bal", model->getMaterial().getCompatibleVertexLayout()));
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/ball.binobj", "M_Bal", model->getMaterial().getCompatibleVertexLayout()));
+    model->setModelMesh(mesh->getHandle());
+    mesh->release();
     model->setLocalTransform(he::mat44::createScale(100));
     addComponent(model);
 

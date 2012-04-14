@@ -22,10 +22,8 @@
 #define _HE_SHAPE_2D_H_
 #pragma once
 
-#include "Polygon.h"
-#include "mat44.h"
-#include "HappyNew.h"
 #include "ModelMesh.h"
+#include "Polygon.h"
 
 namespace he {
 namespace gui {
@@ -35,13 +33,14 @@ class Shape2D
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Shape2D() : m_Polygon(Polygon())
+    Shape2D() : m_Polygon(Polygon()), m_pMesh(nullptr)
     {
     }
 
     virtual ~Shape2D()
     {
-
+        if (m_pMesh != nullptr)
+            m_pMesh->release();
     }
 
     /* GETTERS */
@@ -55,13 +54,13 @@ public:
         return m_World;
     }
 
-    virtual const gfx::ModelMesh::pointer& getMesh() const
+    virtual const gfx::ModelMesh* getMesh() const
     {
         return m_pMesh;
     }
 
     /* SETTERS */
-    virtual void setMesh(const gfx::ModelMesh::pointer& pMesh)
+    virtual void setMesh(const gfx::ModelMesh* pMesh)
     {
         m_pMesh = pMesh;
     }
@@ -88,7 +87,7 @@ protected:
     /* DATAMEMBERS */
     Polygon m_Polygon;
     mat44 m_World;
-    gfx::ModelMesh::pointer m_pMesh;
+    const gfx::ModelMesh* m_pMesh;
 };
 
 } } //end namespace

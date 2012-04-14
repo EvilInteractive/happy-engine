@@ -23,12 +23,13 @@
 #pragma once
 
 #include "IRenderer.h"
-#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
 
 class Shader;
+class ModelMesh;
+class Texture2D;
 
 class Forward3DRenderer : public IRenderer
 {
@@ -63,7 +64,7 @@ private:
     const Texture2D* m_pOutNormalTexture;
     const Texture2D* m_pOutDepthTexture;
 
-    ModelMesh::pointer m_pQuad;
+    ModelMesh* m_pQuad;
 
     Shader* m_pQuadShader;
     uint m_QuadShaderTexPos;

@@ -91,7 +91,9 @@ void MainGame::load()
     he::game::Entity* board(NEW he::game::Entity());
     he::game::ModelComponent* boardModel(NEW he::game::ModelComponent());
     boardModel->setMaterial(CONTENT->loadMaterial("pong/board.material"));
-    boardModel->setModelMesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial().getCompatibleVertexLayout()));
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial().getCompatibleVertexLayout()));
+    boardModel->setModelMesh(mesh->getHandle());
+    mesh->release();
     board->setWorldMatrix(he::mat44::createScale(100));
 
     board->addComponent(boardModel);
@@ -99,7 +101,7 @@ void MainGame::load()
 
 
     m_Palets.push_back(NEW Palet(this, 0, true));
-    m_Palets.push_back(NEW Palet(this, 1, false));
+    m_Palets.push_back(NEW Palet(this, 1, true));
     m_Ball = NEW Ball(this);
     m_Obstacles.push_back(NEW Obstacle());
 
@@ -109,7 +111,10 @@ void MainGame::tick( float dTime )
 {
     he::game::Game::tick(dTime);
 
+
+    PROFILER_BEGIN("Fps graph");
     m_pFPSGraph->tick(dTime);
+    PROFILER_END();
 
     if (m_RestartTimer > 0.0f)
     {

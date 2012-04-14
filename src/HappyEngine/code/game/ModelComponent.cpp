@@ -20,21 +20,22 @@
 #include "HappyPCH.h" 
 
 #include "ModelComponent.h"
-#include "HappyNew.h"
 #include "Entity.h"
-#include "HappyEngine.h"
 #include "GraphicsEngine.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace game {
 
-ModelComponent::ModelComponent()
+ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr)
 {
 }
 
 
 ModelComponent::~ModelComponent()
 {
+    if (m_pModel != nullptr)
+        m_pModel->release();
 }
 
 void ModelComponent::init(Entity* pParent)
@@ -59,7 +60,7 @@ const gfx::Material& ModelComponent::getMaterial() const
     return m_Material;
 }
 
-const gfx::ModelMesh::pointer& ModelComponent::getModelMesh() const
+const gfx::ModelMesh* ModelComponent::getModelMesh() const
 {
     return m_pModel;
 }
@@ -79,9 +80,12 @@ const mat44& ModelComponent::getLocalTransform() const
     return m_mtxLocalTransform;
 }
 
-void ModelComponent::setModelMesh( const gfx::ModelMesh::pointer& pModel, bool isPickable )
+void ModelComponent::setModelMesh( const ObjectHandle& modelHandle, bool isPickable )
 {
-    m_pModel = pModel;
+    if (m_pModel != nullptr)
+        m_pModel->release();
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
+    m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     setPickable(isPickable);
 }
 

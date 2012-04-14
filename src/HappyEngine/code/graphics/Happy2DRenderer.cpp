@@ -33,12 +33,15 @@ Happy2DRenderer::Happy2DRenderer() :	m_pColorEffect(NEW Simple2DEffect()),
                                         m_bBlending(true),
                                         m_CurrentColor(1.0f,1.0f,1.0f,1.0f),
                                         m_ViewPortSize(0.0f,0.0f),
-                                        m_pModelBuffer(NEW ct::AssetContainer<ModelMesh::pointer, int>()),
+                                        m_pModelBuffer(NEW ct::AssetContainer<const ModelMesh*, int>([](const gfx::ModelMesh* mesh)
+                                        {
+                                            mesh->release();
+                                        })),
                                         m_pTextureBuffer(NEW ct::AssetContainer<std::pair<const gfx::Texture2D*, vec2> >([](const std::pair<const gfx::Texture2D*, vec2>& p)
                                         {
                                             p.first->release();
                                         })),
-                                        m_pTextureQuad(NEW ModelMesh("")),
+                                        m_pTextureQuad(nullptr),
                                         m_CurrentLayer("default"),
                                         m_RenderFboID(UINT_MAX),
                                         m_DepthRenderTarget(UINT_MAX),
@@ -55,6 +58,7 @@ Happy2DRenderer::~Happy2DRenderer()
     delete m_pTextureBuffer;
 
     m_pRenderTexture->release();
+    m_pTextureQuad->release();
 
     glDeleteFramebuffers(1, &m_RenderFboID);
     glDeleteRenderbuffers(1, &m_DepthRenderTarget);
@@ -65,7 +69,7 @@ void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
     if (shape.getPolygon().getVertexCount() < 2)
         return;
 
-    ModelMesh::pointer p;
+    const ModelMesh* mesh(nullptr);
 
     int id(0);
     
@@ -82,7 +86,7 @@ void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
 
     if (m_pModelBuffer->isAssetPresent(id) && buffered)
     {
-        p = m_pModelBuffer->getAsset(id);
+        mesh = m_pModelBuffer->getAsset(id);
     }
     else
     {
@@ -96,17 +100,21 @@ void Happy2DRenderer::drawMesh(gui::Shape2D& shape, bool buffered)
             indices.push_back(i++);
         });
 
-        p = ModelMesh::pointer(NEW ModelMesh(""));
-        p->init();
-        p->setVertices(&vertices[0], vertices.size(), m_VertexLayoutColor);
-        p->setIndices(&indices[0], indices.size(), IndexStride_UInt);
+        ModelMesh* temp(ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create()));
+        temp->init();
+        temp->setVertices(&vertices[0], vertices.size(), m_VertexLayoutColor);
+        temp->setIndices(&indices[0], indices.size(), IndexStride_UInt);
+        temp->setName("2D shape");
+        mesh = temp;
 
         if (buffered)
-            m_pModelBuffer->addAsset(id, p);
+            m_pModelBuffer->addAsset(id, mesh);
+        else
+            mesh->release();
     }
 
-    GL::heBindVao(p->getVertexArraysID());
-    glDrawElements(GL_LINE_LOOP, p->getNumVertices(), p->getIndexType(), 0);
+    GL::heBindVao(mesh->getVertexArraysID());
+    glDrawElements(GL_LINE_LOOP, mesh->getNumVertices(), mesh->getIndexType(), 0);
 }
 
 void Happy2DRenderer::fillMesh(gui::Shape2D& shape, bool buffered)
@@ -114,7 +122,7 @@ void Happy2DRenderer::fillMesh(gui::Shape2D& shape, bool buffered)
     if (shape.getPolygon().getVertexCount() < 3)
         return;
 
-    ModelMesh::pointer p;
+    const ModelMesh* mesh(nullptr);
 
     int id(0);
     
@@ -140,7 +148,7 @@ void Happy2DRenderer::fillMesh(gui::Shape2D& shape, bool buffered)
 
     if (m_pModelBuffer->isAssetPresent(id) && buffered)
     {
-        p = m_pModelBuffer->getAsset(id);
+        mesh = m_pModelBuffer->getAsset(id);
     }
     else
     {
@@ -160,17 +168,22 @@ void Happy2DRenderer::fillMesh(gui::Shape2D& shape, bool buffered)
             vertices.push_back(VertexPos2D(point));
         });
 
-        p = ModelMesh::pointer(NEW ModelMesh(""));
-        p->init();
-        p->setVertices(&vertices[0], vertices.size(), m_VertexLayoutColor);
-        p->setIndices(&indices[0], indices.size(), IndexStride_UInt);
+
+        ModelMesh* temp(ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create()));
+        temp->init();
+        temp->setVertices(&vertices[0], vertices.size(), m_VertexLayoutColor);
+        temp->setIndices(&indices[0], indices.size(), IndexStride_UInt);
+        temp->setName("2D shape");
+        mesh = temp;
 
         if (buffered)
-            m_pModelBuffer->addAsset(id, p);
+            m_pModelBuffer->addAsset(id, mesh);
+        else
+            mesh->release();
     }
 
-    GL::heBindVao(p->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, p->getNumIndices(), p->getIndexType(), 0);
+    GL::heBindVao(mesh->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, mesh->getNumIndices(), mesh->getIndexType(), 0);
 }
 
 void Happy2DRenderer::drawTexture(const Texture& tex)
@@ -393,6 +406,7 @@ void Happy2DRenderer::draw()
 void Happy2DRenderer::createTextureQuad()
 {
     // model texturequad
+    m_pTextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_pTextureQuad->init();
 
     std::vector<VertexPosTex2D> vertices;

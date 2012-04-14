@@ -23,26 +23,23 @@
 #pragma once
 
 #include "SlotPContainer.h"
-#include "ModelMesh.h"
 #include "Material.h"
-#include "boost/chrono.hpp"
 
 #include "IDrawable.h"
 #include "BufferLayout.h"
 #include "InstancingBuffer.h"
-
-#include "boost/function.hpp"
 
 namespace he {
 namespace gfx {
 
 class IInstancible;
 class IInstanceFiller;
+class ModelMesh;
 
 class InstancingController : public IInstancedDrawable
 {
 public:
-    InstancingController(bool dynamic, const ModelMesh::pointer& mesh, const Material& material);
+    InstancingController(bool dynamic, const ObjectHandle& modelHandle, const Material& material);
     virtual ~InstancingController();
 
     uint addInstance(const IInstancible* pObj); //return id
@@ -53,7 +50,7 @@ public:
     virtual void applyMaterial(const ICamera* pCamera) const;
     virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const;
 
-    virtual const ModelMesh::pointer& getModelMesh() const;
+    virtual const ModelMesh* getModelMesh() const;
 
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);
@@ -87,7 +84,7 @@ private:
     uint m_ShadowVao;
 
     BufferLayout m_InstancingLayout;
-    ModelMesh::pointer m_pModelMesh;
+    const ModelMesh* m_pModelMesh;
     Material m_Material;
 
     bool m_CastShadows;

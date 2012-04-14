@@ -170,9 +170,9 @@ private:
     vec2 m_ViewPortSize;
     mat44 m_matOrthoGraphic;
 
-    ModelMesh::pointer m_pTextureQuad;
+    ModelMesh* m_pTextureQuad;
 
-    ct::AssetContainer<ModelMesh::pointer, int>* m_pModelBuffer;
+    ct::AssetContainer<const ModelMesh*, int>* m_pModelBuffer;
     ct::AssetContainer<std::pair<const gfx::Texture2D*, vec2> >* m_pTextureBuffer;
 
     std::map<std::string, float> m_Layers;

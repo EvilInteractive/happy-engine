@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "ExternalError.h"
-#include <sstream>
 
 namespace he {
 namespace err {

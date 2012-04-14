@@ -38,9 +38,9 @@ InstancingManager::~InstancingManager()
     });
 }
 
-void InstancingManager::createController( const std::string& id, bool dynamic, const ModelMesh::pointer& pMesh, const Material& material )
+void InstancingManager::createController( const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const Material& material )
 {
-    InstancingController* pController(NEW InstancingController(dynamic, pMesh, material));
+    InstancingController* pController(NEW InstancingController(dynamic, modelHandle, material));
     m_Controllers[id] = pController;
 }
 

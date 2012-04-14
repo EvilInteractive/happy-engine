@@ -56,7 +56,7 @@ public:
     {
         for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
         {
-            if (m_RefCounter[i] == 0 && isAliveAt(i))
+            if (m_RefCounter[i] == 0 && isAliveAt(i) && getAt(i)->canBeGarbageCollected())
             {
                 destroyAt(i);
             }

@@ -21,12 +21,9 @@
 #include "HappyPCH.h" 
 
 #include "Forward3DRenderer.h"
-#include "OpenGL.h"
-#include "HappyEngine.h"
 #include "GraphicsEngine.h"
 #include "Deferred3DRenderer.h"
 #include "Happy2DRenderer.h"
-#include "ExternalError.h"
 #include "ContentManager.h"
 #include "Shader.h"
 #include "IDrawable.h"
@@ -69,7 +66,8 @@ const char* fragQuadShader =
 /* CONSTRUCTOR - DESCTRUCTOR */
 Forward3DRenderer::Forward3DRenderer():
     m_FboId(UINT_MAX), m_pQuadShader(nullptr),
-    m_pOutColorTexture(nullptr), m_pOutDepthTexture(nullptr), m_pOutNormalTexture(nullptr)
+    m_pOutColorTexture(nullptr), m_pOutDepthTexture(nullptr), m_pOutNormalTexture(nullptr),
+    m_pQuad(nullptr)
 {
 }
 
@@ -81,6 +79,8 @@ Forward3DRenderer::~Forward3DRenderer()
         m_pOutNormalTexture->release();
     if (m_pOutDepthTexture != nullptr)
         m_pOutDepthTexture->release();
+    if (m_pQuad != nullptr)
+        m_pQuad->release();
     if (m_FboId != 0 || m_FboId != UINT_MAX)
         glDeleteFramebuffers(1, &m_FboId);
     delete m_pQuadShader;

@@ -55,7 +55,7 @@ public:
     ///                         ISkinnedDrawable                           ///
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material& getMaterial() const;
-    virtual const gfx::ModelMesh::pointer& getModelMesh() const; 
+    virtual const gfx::ModelMesh* getModelMesh() const; 
     virtual const std::vector<mat44>& getBoneTransforms() const;
     virtual mat44 getWorldMatrix() const;
     //////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ public:
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
    
-    void setModelMesh(const gfx::ModelMesh::pointer& pModel);
+    void setModelMesh(const ObjectHandle& modelHandle);
 
     void setMaterial(const gfx::Material& material);
 
@@ -75,7 +75,7 @@ protected:
 private:
     void modelLoadedCallback();
 
-    gfx::ModelMesh::pointer m_pModel;
+    const gfx::ModelMesh* m_pModel;
     gfx::Material m_Material;
 
     std::vector<mat44> m_BoneTransform;

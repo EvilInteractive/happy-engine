@@ -22,22 +22,11 @@
 #define _HE_MODELMESH_H_
 #pragma once
 
-#include "HeAssert.h"
-#undef assert
-#define assert HE_ASSERT
-
-#include <vector>
-#include <string>
 #include "BufferLayout.h"
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
 #include "Sphere.h"
 #include "Bone.h"
 
-#include "boost/function.hpp"
-#include "boost/thread/mutex.hpp"
-
-#include "event.h"
+#include "Resource.h"
 
 namespace he {
 namespace gfx {
@@ -49,12 +38,10 @@ enum IndexStride
     IndexStride_UInt = sizeof(uint)
 };
 
-class ModelMesh
+class ModelMesh : public Resource<ModelMesh>
 {
 public:
-    typedef boost::shared_ptr<ModelMesh> pointer;
-
-    explicit ModelMesh(const std::string& name);
+    ModelMesh();
     virtual ~ModelMesh();
 
     void init();
@@ -76,15 +63,11 @@ public:
     uint getIndexType() const;
     const BufferLayout& getVertexLayout() const;
 
-    const std::string& getName() const;
-
     bool isLoaded() const;
 
     const shapes::Sphere& getBoundingSphere() const;
 
-    void callbackIfLoaded(const boost::function<void()>& callback);
-
-    static uint getAllocatedModelMeshCount();
+    void callbackOnceIfLoaded(const boost::function<void()>& callback);
 
 private:
     struct ShadowSkinnedVertex
@@ -112,16 +95,12 @@ private:
     BufferLayout m_VertexLayout;
     uint m_IndexType;
 
-    std::string m_Name;
-
     bool m_isVisible;
     bool m_isLoaded;
 
     shapes::Sphere m_BoundingSphere;
 
     std::vector<Bone> m_BoneList;
-
-    static uint s_AllocatedModelCount;
 
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);

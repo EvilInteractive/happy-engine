@@ -28,12 +28,14 @@
 #include "ExternalError.h"
 
 #include "Texture2D.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
 
 Bloom::Bloom(): m_DownSamples(4),
-                m_pDownSampleShader(NEW Shader()), m_pDownSampleBrightPassShader(NEW Shader())
+                m_pDownSampleShader(NEW Shader()), m_pDownSampleBrightPassShader(NEW Shader()),
+                m_pMesh(nullptr)
 {
 }
 
@@ -51,6 +53,8 @@ Bloom::~Bloom()
             glDeleteFramebuffers(1, &id);
         });
     }
+    if (m_pMesh != nullptr)
+        m_pMesh->release();
 }
 
 void Bloom::init(bool hdr)

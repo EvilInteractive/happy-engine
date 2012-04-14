@@ -22,11 +22,7 @@
 #define _HE_EXTRERNAL_ERROR_H_
 #pragma once
 
-#include "GL/glew.h"
-#include <iostream>
 #include "PxPhysicsAPI.h"
-#include "HappyEngine.h"
-#include "Console.h"
 
 namespace he {
 namespace err {

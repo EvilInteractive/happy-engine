@@ -39,9 +39,6 @@ int main( int /*argc*/, char** /*args[]*/ )
 
     HAPPYENGINE->dispose();
 
-    std::cout << "\nallocated textures:    " << he::gfx::Texture2D::getTextureCount();
-    std::cout << "\nallocated modelMeshes: " << he::gfx::ModelMesh::getAllocatedModelMeshCount() << "\n";
-
     std::cout << "\npress enter to quit\n";
     std::cin.get();
 

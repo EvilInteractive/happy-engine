@@ -23,8 +23,6 @@
 #pragma once
 
 #include "RenderSettings.h"
-#include "ModelMesh.h"
-#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
@@ -32,6 +30,8 @@ namespace gfx {
 class Shader;
 class Bloom;
 class AutoExposure;
+class Texture2D;
+class ModelMesh;
 
 class PostProcesser
 {
@@ -82,7 +82,7 @@ private:
 
     const Texture2D* m_pRandomNormals;
 
-    ModelMesh::pointer m_pQuad;
+    ModelMesh* m_pQuad;
 
     //Disable default copy constructor and default assignment operator
     PostProcesser(const PostProcesser&);

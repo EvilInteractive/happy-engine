@@ -20,11 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "PointLight.h"
-#include "HappyNew.h"
-#include "MathFunctions.h"
-#include "HappyEngine.h"
-#include "Deferred3DRenderer.h"
-#include "Entity.h"
+
 #include "ContentManager.h"
 
 namespace he {
@@ -48,6 +44,8 @@ void PointLight::calculateWorld()
 
 PointLight::~PointLight()
 {
+    //m_pModel->release();
+    m_pLightVolume->release();
 }
 
 void PointLight::setPosition(const vec3& position)
@@ -105,7 +103,7 @@ mat44 PointLight::getWorldMatrix() const
 {
     return m_mtxWorld;
 }
-const ModelMesh::pointer& PointLight::getLightVolume() const
+const ModelMesh* PointLight::getLightVolume() const
 {
     return m_pLightVolume;
 }
@@ -113,7 +111,7 @@ const Material& PointLight::getMaterial() const
 {
     return m_Material;
 }
-const ModelMesh::pointer& PointLight::getModelMesh() const
+const ModelMesh* PointLight::getModelMesh() const
 {
     return m_pModel;
 }

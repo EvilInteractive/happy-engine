@@ -22,11 +22,7 @@
 #define _HE_LIGHT_MANAGER_H_
 #pragma once
 
-#include <vector>
-
 #include "Light.h"
-#include "vec3.h"
-#include "Color.h"
 
 namespace he {
 namespace gfx {

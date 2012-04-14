@@ -76,7 +76,9 @@ void MainGame::load()
     game::Entity* scene(NEW game::Entity());
     game::ModelComponent* modelComp(NEW game::ModelComponent());
     modelComp->setMaterial(CONTENT->loadMaterial("testSceneBas.material"));
-    modelComp->setModelMesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground1", modelComp->getMaterial().getCompatibleVertexLayout()));
+    modelComp->setModelMesh(mesh->getHandle());
+    mesh->release();
     scene->addComponent(modelComp);
     m_EntityList.push_back(scene);
 
