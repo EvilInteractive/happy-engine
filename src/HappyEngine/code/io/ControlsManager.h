@@ -31,7 +31,7 @@ namespace io {
 class ControlsManager
 {
 public:
-	ControlsManager();
+    ControlsManager();
     virtual ~ControlsManager();
 
     void tick();
@@ -51,8 +51,8 @@ private:
     bool m_bLocked;
     void* m_pLockedObject;
 
-    bool* m_pKeys;
-    bool* m_pButtons;
+    byte* m_pKeys;
+    byte* m_pButtons;
 
     //Disable default copy constructor and default assignment operator
     ControlsManager(const ControlsManager&);

@@ -30,22 +30,26 @@ namespace io {
 class Mouse : public IMouse
 {
 public:
-	Mouse();
+    Mouse();
     virtual ~Mouse();
 
-    void tick(bool* mouseState);
+    virtual void tick(byte* mouseState, int scrollSate);
 
-    bool isButtonDown(MouseButton button) const;
-    bool isButtonUp(MouseButton button) const;
-    bool isButtonReleased(MouseButton button) const; //true when it goes from down to up
-    bool isButtonPressed(MouseButton button) const;  //true when it goes from up to down
+    virtual bool isButtonDown(MouseButton button) const;
+    virtual bool isButtonUp(MouseButton button) const;
+    virtual bool isButtonReleased(MouseButton button) const; //true when it goes from down to up
+    virtual bool isButtonPressed(MouseButton button) const;  //true when it goes from up to down
 
-    vec2 getPosition() const;
+    virtual int getScroll() const;
+
+    virtual const vec2& getPosition() const;
 
 private:
     vec2 m_Position;
-    bool* m_ButtonState;
-    bool* m_PrevButtonState;
+    byte* m_ButtonState;
+    byte* m_PrevButtonState;
+
+    int m_Scroll;
 
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);

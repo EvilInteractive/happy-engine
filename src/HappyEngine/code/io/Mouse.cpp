@@ -24,14 +24,14 @@
 namespace he {
 namespace io {
 
-#define MOUSE_ARRAY_SIZE sf::Mouse::ButtonCount * sizeof(bool)
+#define MOUSE_ARRAY_SIZE sf::Mouse::ButtonCount * sizeof(byte)
 
 Mouse::Mouse(): m_Position(0.0f, 0.0f), m_ButtonState(0), m_PrevButtonState(0)
 {
-    m_ButtonState = static_cast<bool*>(he_malloc(MOUSE_ARRAY_SIZE));
-    m_PrevButtonState = static_cast<bool*>(he_malloc(MOUSE_ARRAY_SIZE));
-    he_memset(m_ButtonState, 0, MOUSE_ARRAY_SIZE);
-    he_memset(m_PrevButtonState, 0, MOUSE_ARRAY_SIZE);
+    m_ButtonState = static_cast<byte*>(he_malloc(MOUSE_ARRAY_SIZE));
+    m_PrevButtonState = static_cast<byte*>(he_malloc(MOUSE_ARRAY_SIZE));
+    he_memset(m_ButtonState, FALSE, MOUSE_ARRAY_SIZE);
+    he_memset(m_PrevButtonState, FALSE, MOUSE_ARRAY_SIZE);
 }
 
 
@@ -41,12 +41,14 @@ Mouse::~Mouse()
     he_free(m_PrevButtonState);
 }
 
-void Mouse::tick(bool* pMouseState)
+void Mouse::tick(byte* pMouseState, int scrollState)
 {
+    m_Scroll = scrollState;
+
     std::swap(m_ButtonState, m_PrevButtonState);
     he_memcpy(m_ButtonState, pMouseState, MOUSE_ARRAY_SIZE);
         
-    sf::Vector2i vec = sf::Mouse::getPosition();
+    sf::Vector2i vec(sf::Mouse::getPosition());
 
     m_Position.x = static_cast<float>(vec.x);
     m_Position.y = static_cast<float>(vec.y);
@@ -54,24 +56,29 @@ void Mouse::tick(bool* pMouseState)
 
 bool Mouse::isButtonDown(MouseButton button) const
 {
-    return m_ButtonState[button];
+    return m_ButtonState[button] == TRUE;
 }
 bool Mouse::isButtonUp(MouseButton button) const
 {
-    return !m_ButtonState[button];
+    return m_ButtonState[button] == FALSE;
 }
 bool Mouse::isButtonReleased(MouseButton button) const
 {
-    return (!m_ButtonState[button] && m_PrevButtonState[button]);
+    return (m_ButtonState[button] == FALSE && m_PrevButtonState[button] == TRUE);
 }
 bool Mouse::isButtonPressed(MouseButton button) const
 {
-    return (m_ButtonState[button] && !m_PrevButtonState[button]);
+    return (m_ButtonState[button] == TRUE && m_PrevButtonState[button] == FALSE);
 }
 
-vec2 Mouse::getPosition() const
+const vec2& Mouse::getPosition() const
 {
     return m_Position;
+}
+
+int Mouse::getScroll() const
+{
+    return m_Scroll;
 }
 
 } } //end namespace

@@ -49,7 +49,9 @@ void ModelLoader::tick(float /*dTime*/)
 {
     if (m_isModelThreadRunning == false)
     {
-        ResourceFactory<gfx::ModelMesh>::getInstance()->garbageCollect();
+        PROFILER_BEGIN("ModelFactory garbage collect");
+        //ResourceFactory<gfx::ModelMesh>::getInstance()->garbageCollect();
+        PROFILER_END();
         if (m_ModelLoadQueue.empty() == false)
         {
             m_isModelThreadRunning = true; //must be here else it could happen that the load thread starts twice

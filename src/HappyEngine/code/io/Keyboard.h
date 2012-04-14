@@ -32,26 +32,23 @@ namespace io {
 class Keyboard : public IKeyboard
 {
 public:
-	Keyboard();
+    Keyboard();
     virtual ~Keyboard();
 
-    virtual void tick(bool* pKeyState);
+    virtual void tick(byte* pKeyState);
 
     virtual bool isKeyUp(Key key) const;
     virtual bool isKeyDown(Key key) const;
 
     virtual bool isKeyPressed(Key key) const;           //true when state goes from up to down
-	virtual bool isKeyPressed(KeyScanCode code) const;
+    virtual bool isKeyPressed(KeyScanCode code) const;
     virtual bool isKeyReleased(Key key) const;          //true when state goes from down to up
-	virtual bool isKeyReleased(KeyScanCode code) const;
+    virtual bool isKeyReleased(KeyScanCode code) const;
 
 
 private:
-    bool* m_NewKeyState;
-    bool* m_CurrentKeyState;
-    bool* m_PrevKeyState;
-
-    int m_NumKeys;
+    byte* m_CurrentKeyState;
+    byte* m_PrevKeyState;
 
     //Disable default copy constructor and default assignment operator
     Keyboard(const Keyboard&);

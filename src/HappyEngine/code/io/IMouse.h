@@ -33,23 +33,25 @@ enum MouseButton
     //MouseButton_None = 0,
     MouseButton_Left = sf::Mouse::Left, 
     MouseButton_Right = sf::Mouse::Right, 
-    MouseButton_Middle = sf::Mouse::Middle 
-   // MouseButton_ScrollUp = sf::Mouse::Button::, 
-    //MouseButton_ScrollDown = sf::Mouse::Button::XButton2
+    MouseButton_Middle = sf::Mouse::Middle,
+    MouseButton_X1 = sf::Mouse::XButton1, 
+    MouseButton_X2 = sf::Mouse::XButton2
 };
 class IMouse
 {
 public:
     virtual ~IMouse() {}
 
-    virtual void tick(bool* mouseState) = 0;
+    virtual void tick(byte* mouseState, int scrollState) = 0;
 
     virtual bool isButtonDown(MouseButton button) const = 0;
     virtual bool isButtonUp(MouseButton button) const = 0;
     virtual bool isButtonReleased(MouseButton button) const = 0; //true when it goes from down to up
     virtual bool isButtonPressed(MouseButton button) const = 0;  //true when it goes from up to down
 
-    virtual vec2 getPosition() const = 0;
+    virtual int getScroll() const = 0;
+
+    virtual const vec2& getPosition() const = 0;
 };
 
 } } //end namespace

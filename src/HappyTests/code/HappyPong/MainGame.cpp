@@ -85,6 +85,7 @@ void MainGame::load()
     GRAPHICS->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 5.0f);
 
     m_pFPSGraph = NEW he::tools::FPSGraph();
+    m_pFPSGraph->setType(1);
 
     m_BoardDimension = he::vec2(85, 47);
 

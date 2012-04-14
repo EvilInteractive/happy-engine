@@ -26,55 +26,54 @@
 namespace he {
 namespace io {
 
-Keyboard::Keyboard(): m_NewKeyState(nullptr), m_CurrentKeyState(nullptr), m_PrevKeyState(nullptr), m_NumKeys(0)
-{
-    m_NumKeys = sf::Keyboard::KeyCount;
+#define KEYBOARD_ARRAY_SIZE sizeof(byte) * sf::Keyboard::KeyCount
 
-    //Make sure that the prevkeystate is filled in to prevent array errors
-    m_NewKeyState = NEW bool[m_NumKeys];
-    m_CurrentKeyState = NEW bool[m_NumKeys];
-    m_PrevKeyState = NEW bool[m_NumKeys];
+Keyboard::Keyboard(): m_CurrentKeyState(nullptr), m_PrevKeyState(nullptr)
+{
+    m_CurrentKeyState = static_cast<byte*>(he_malloc(KEYBOARD_ARRAY_SIZE));
+    m_PrevKeyState = static_cast<byte*>(he_malloc(KEYBOARD_ARRAY_SIZE));
+    he_memset(m_CurrentKeyState, FALSE, KEYBOARD_ARRAY_SIZE);
+    he_memset(m_PrevKeyState, FALSE, KEYBOARD_ARRAY_SIZE);
 }
 
 
 Keyboard::~Keyboard()
 {
-    delete[] m_PrevKeyState;
-    delete[] m_CurrentKeyState;
+    he_free(m_PrevKeyState);
+    he_free(m_CurrentKeyState);
 }
-void Keyboard::tick(bool* pKeyState)
+void Keyboard::tick(byte* pKeyState)
 {
-    he_memcpy(m_NewKeyState, pKeyState, m_NumKeys * sizeof(bool));
     std::swap(m_PrevKeyState, m_CurrentKeyState); 
-    he_memcpy(m_CurrentKeyState, m_NewKeyState, m_NumKeys * sizeof(bool));
+    he_memcpy(m_CurrentKeyState, pKeyState, KEYBOARD_ARRAY_SIZE);
 }
 
 bool Keyboard::isKeyUp(Key key) const
 {
-    return !m_CurrentKeyState[key];
+    return m_CurrentKeyState[key] == FALSE;
 }
 bool Keyboard::isKeyDown(Key key) const
 {
-    return m_CurrentKeyState[key];
+    return m_CurrentKeyState[key] == TRUE;
 }
 
 bool Keyboard::isKeyPressed(Key key) const
 {
-    return (m_CurrentKeyState[key] && !m_PrevKeyState[key]);
+    return (m_CurrentKeyState[key] == TRUE && m_PrevKeyState[key] == FALSE);
 }
 bool Keyboard::isKeyPressed(KeyScanCode code) const
 {
     HE_ASSERT(false, "not implemented");
-    return m_CurrentKeyState[code] != 0 && m_PrevKeyState[code] == 0;
+    return m_CurrentKeyState[code] == TRUE && m_PrevKeyState[code] == FALSE;
 }
 bool Keyboard::isKeyReleased(Key key) const
 {
-    return (!m_CurrentKeyState[key] && m_PrevKeyState[key]);
+    return (m_CurrentKeyState[key] == FALSE && m_PrevKeyState[key] == TRUE);
 }
 bool Keyboard::isKeyReleased(KeyScanCode code) const
 {
     HE_ASSERT(false, "not implemented");
-    return m_CurrentKeyState[code] == 0 && m_PrevKeyState[code] != 0;
+    return m_CurrentKeyState[code] == FALSE && m_PrevKeyState[code] == TRUE;
 }
 
 } } //end namespace

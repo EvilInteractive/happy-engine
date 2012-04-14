@@ -61,11 +61,11 @@ inline void handleILError(const std::string& file)
 
 void TextureLoader::tick(float /*dTime*/) //checks for new load operations, if true start thread
 {
-    PROFILER_BEGIN("ResourceFactory garbage collect");
-    ResourceFactory<gfx::Texture2D>::getInstance()->garbageCollect();
-    PROFILER_END();
     if (m_isLoadThreadRunning == false)
     {
+        PROFILER_BEGIN("TextureFactory garbage collect");
+        //ResourceFactory<gfx::Texture2D>::getInstance()->garbageCollect();
+        PROFILER_END();
         if (m_TextureLoadQueue.empty() == false)
         {
             m_isLoadThreadRunning = true; //must be here else it could happen that the load thread starts twice

@@ -33,8 +33,10 @@ ControlsManager::ControlsManager(): m_pMouse(nullptr), m_pKeyboard(nullptr), m_b
     m_pMouse = NEW Mouse();
     m_pKeyboard = NEW Keyboard();
 
-    m_pKeys = NEW bool[sf::Keyboard::KeyCount];
-    m_pButtons = NEW bool[sf::Mouse::ButtonCount];
+    m_pKeys = static_cast<byte*>(he_malloc(sf::Keyboard::KeyCount * sizeof(byte)));
+    m_pButtons = static_cast<byte*>(he_malloc(sf::Keyboard::KeyCount * sizeof(byte)));
+    memset(m_pKeys, FALSE, sf::Keyboard::KeyCount * sizeof(byte));
+    memset(m_pButtons, FALSE, sf::Keyboard::KeyCount * sizeof(byte));
 }
 
 ControlsManager::~ControlsManager()
@@ -48,31 +50,31 @@ ControlsManager::~ControlsManager()
 
 void ControlsManager::tick()
 {
-    for (ushort i(0); i < sf::Keyboard::KeyCount; ++i)
-    {
-        m_pKeys[i] = false;
-    }
-
-    for (ushort i(0); i < sf::Mouse::ButtonCount; ++i)
-    {
-        m_pButtons[i] = false;
-    }
-
+    int scrollState(0);
     std::for_each(HAPPYENGINE->getEvents().cbegin(), HAPPYENGINE->getEvents().cend(), [&](sf::Event ev)
     {
         switch(ev.type)
         {
             case sf::Event::KeyPressed:
-                m_pKeys[ev.key.code] = true;
+                m_pKeys[ev.key.code] = TRUE;
+                break;
+            case sf::Event::KeyReleased:
+                m_pKeys[ev.key.code] = FALSE;
                 break;
             case sf::Event::MouseButtonPressed:
-                m_pButtons[ev.mouseButton.button] = true;
+                m_pButtons[ev.mouseButton.button] = TRUE;
+                break;
+            case sf::Event::MouseButtonReleased:
+                m_pButtons[ev.mouseButton.button] = FALSE;
+                break;
+            case sf::Event::MouseWheelMoved:
+                scrollState = ev.mouseWheel.delta;
                 break;
         }
     });
 
     m_pKeyboard->tick(m_pKeys);
-    m_pMouse->tick(m_pButtons);
+    m_pMouse->tick(m_pButtons, scrollState);
 }
 
 const IKeyboard* ControlsManager::getKeyboard() const

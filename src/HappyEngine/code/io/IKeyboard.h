@@ -32,15 +32,15 @@ class IKeyboard
 public:
     virtual ~IKeyboard() {}
 
-    virtual void tick(bool* pKeyState) = 0;
+    virtual void tick(byte* pKeyState) = 0;
 
     virtual bool isKeyUp(Key key) const = 0;
     virtual bool isKeyDown(Key key) const = 0;
 
     virtual bool isKeyPressed(Key key) const = 0;           //true when state goes from up to down
-	virtual bool isKeyPressed(KeyScanCode code) const = 0;
+    virtual bool isKeyPressed(KeyScanCode code) const = 0;
     virtual bool isKeyReleased(Key key) const = 0;          //true when state goes from down to up
-	virtual bool isKeyReleased(KeyScanCode code) const = 0;
+    virtual bool isKeyReleased(KeyScanCode code) const = 0;
 };
 
 } } //end namespace

@@ -189,6 +189,7 @@ void GraphicsEngine::initWindow()
     settings.minorVersion = 2;
 
     m_pMainWindow = NEW sf::Window(sf::VideoMode(m_ScreenRect.width, m_ScreenRect.height, 32), m_WindowTitle, sf::Style::Close, settings);
+    m_pMainWindow->setKeyRepeatEnabled(false);
 
     /*int x, y;
     SDL_GetWindowPosition(m_pMainWindow, &x, &y);

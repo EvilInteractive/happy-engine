@@ -20,12 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "PhysicsEngine.h"
-#include "HeAssert.h"
-#include "SDL.h"
-#include "HappyTypes.h"
-#include "boost/bind.hpp"
-#include "MathConstants.h"
-#include "HappyNew.h"
 #include "PxCudaContextManager.h"
 #include "PxProfileZoneManager.h"
 #include "PhysicsCarManager.h"
@@ -74,8 +68,8 @@ void PhysicsEngine::createScene()
 
     if(!sceneDesc.cpuDispatcher)
     {
-        HE_INFO("PhysX using Cpu - %d cores", (int)SDL_GetCPUCount());
-        m_pCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(SDL_GetCPUCount());
+        //HE_INFO("PhysX using Cpu - %d cores", (int)sf::());
+        m_pCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 
         HE_ASSERT(m_pCpuDispatcher != nullptr, "PxDefaultCpuDispatcherCreate failed!");
 

@@ -41,6 +41,11 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
+#undef TRUE
+#undef FALSE
+#define TRUE 1
+#define FALSE 0
+
 #define OBJECTHANDLE_MAX 0xffff
 struct ObjectHandle
 {
