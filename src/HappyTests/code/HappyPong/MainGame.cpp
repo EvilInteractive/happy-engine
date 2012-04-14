@@ -100,7 +100,7 @@ void MainGame::load()
     m_EntityList.push_back(board);
 
 
-    m_Palets.push_back(NEW Palet(this, 0, true));
+    m_Palets.push_back(NEW Palet(this, 0, false));
     m_Palets.push_back(NEW Palet(this, 1, true));
     m_Ball = NEW Ball(this);
     m_Obstacles.push_back(NEW Obstacle());

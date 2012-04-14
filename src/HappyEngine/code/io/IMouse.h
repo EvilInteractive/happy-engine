@@ -31,9 +31,9 @@ namespace io {
 enum MouseButton
 {
     //MouseButton_None = 0,
-    MouseButton_Left = sf::Mouse::Button::Left, 
-    MouseButton_Right = sf::Mouse::Button::Right, 
-    MouseButton_Middle = sf::Mouse::Button::Middle 
+    MouseButton_Left = sf::Mouse::Left, 
+    MouseButton_Right = sf::Mouse::Right, 
+    MouseButton_Middle = sf::Mouse::Middle 
    // MouseButton_ScrollUp = sf::Mouse::Button::, 
     //MouseButton_ScrollDown = sf::Mouse::Button::XButton2
 };

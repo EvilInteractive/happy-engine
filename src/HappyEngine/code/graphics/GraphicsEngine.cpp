@@ -63,6 +63,8 @@ GraphicsEngine::~GraphicsEngine()
     delete m_pPicker;
     delete m_pInstancingManager;
     delete m_pLightManager;
+
+    m_pMainWindow->close();
     delete m_pMainWindow;
 }
 void GraphicsEngine::init()

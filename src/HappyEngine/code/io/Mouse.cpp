@@ -24,25 +24,28 @@
 namespace he {
 namespace io {
 
+#define MOUSE_ARRAY_SIZE sf::Mouse::ButtonCount * sizeof(bool)
+
 Mouse::Mouse(): m_Position(0.0f, 0.0f), m_ButtonState(0), m_PrevButtonState(0)
 {
-    m_ButtonState = NEW bool[sf::Mouse::ButtonCount];
-    m_PrevButtonState = NEW bool[sf::Mouse::ButtonCount];
+    m_ButtonState = static_cast<bool*>(he_malloc(MOUSE_ARRAY_SIZE));
+    m_PrevButtonState = static_cast<bool*>(he_malloc(MOUSE_ARRAY_SIZE));
+    he_memset(m_ButtonState, 0, MOUSE_ARRAY_SIZE);
+    he_memset(m_PrevButtonState, 0, MOUSE_ARRAY_SIZE);
 }
 
 
 Mouse::~Mouse()
 {
-    delete[] m_ButtonState;
-    delete[] m_PrevButtonState;
+    he_free(m_ButtonState);
+    he_free(m_PrevButtonState);
 }
 
 void Mouse::tick(bool* pMouseState)
 {
-    m_PrevButtonState = m_ButtonState;
-
-    m_ButtonState = pMouseState;
-    
+    std::swap(m_ButtonState, m_PrevButtonState);
+    he_memcpy(m_ButtonState, pMouseState, MOUSE_ARRAY_SIZE);
+        
     sf::Vector2i vec = sf::Mouse::getPosition();
 
     m_Position.x = static_cast<float>(vec.x);

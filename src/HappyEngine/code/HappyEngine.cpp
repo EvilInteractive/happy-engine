@@ -100,13 +100,7 @@ void HappyEngine::cleanup()
     m_pCameraManager = nullptr;
 
     delete m_pLoadingScreen;
-
-    if (m_SubEngines & SubEngine_Graphics)
-    {
-        m_pMainWindow->close();
-    }
-
-
+    m_pLoadingScreen = nullptr;
     delete m_pConsole;
     m_pConsole = nullptr;
 }
@@ -235,7 +229,7 @@ void HappyEngine::loop()
 void HappyEngine::updateLoop(float dTime)
 {
     PROFILER_BEGIN("Update Loop");
-
+    
     sf::Event event;
     m_Events.clear();
 
