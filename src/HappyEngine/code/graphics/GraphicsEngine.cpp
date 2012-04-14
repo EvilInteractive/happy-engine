@@ -184,12 +184,14 @@ void GraphicsEngine::initWindow()
 {
     sf::ContextSettings settings;
     settings.depthBits = 24;
+    settings.stencilBits = 8;
     settings.antialiasingLevel = 0;
     settings.majorVersion = 3;
     settings.minorVersion = 2;
 
     m_pMainWindow = NEW sf::Window(sf::VideoMode(m_ScreenRect.width, m_ScreenRect.height, 32), m_WindowTitle, sf::Style::Close, settings);
     m_pMainWindow->setKeyRepeatEnabled(false);
+    m_pMainWindow->setFramerateLimit(0);
 
     /*int x, y;
     SDL_GetWindowPosition(m_pMainWindow, &x, &y);
