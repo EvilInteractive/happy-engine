@@ -212,6 +212,23 @@ const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
     }
 }
 
+gfx::Texture2D* TextureLoader::makeEmptyTexture(const vec2& size)
+{
+    GLuint texID;
+    glGenTextures(1, &texID);
+    GL::heBindTexture2D(0, texID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    ObjectHandle handle(FACTORY->create());
+
+    FACTORY->get(handle)->init(texID, size.x, size.y, GL_BGRA);
+
+    return FACTORY->get(handle);
+}
+
 bool TextureLoader::createTexture( const TextureLoadData& data )
 {
     GLuint texID;

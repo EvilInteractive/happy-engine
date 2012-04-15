@@ -51,6 +51,8 @@ ControlsManager::~ControlsManager()
 void ControlsManager::tick()
 {
     int scrollState(0);
+    vec2 mousePos(-1.0f,-1.0f);
+
     std::for_each(HAPPYENGINE->getEvents().cbegin(), HAPPYENGINE->getEvents().cend(), [&](sf::Event ev)
     {
         switch(ev.type)
@@ -70,11 +72,15 @@ void ControlsManager::tick()
             case sf::Event::MouseWheelMoved:
                 scrollState = ev.mouseWheel.delta;
                 break;
+            case sf::Event::MouseMoved:
+                mousePos.x = static_cast<float>(ev.mouseMove.x);
+                mousePos.y = static_cast<float>(ev.mouseMove.y);
+                break;
         }
     });
 
     m_pKeyboard->tick(m_pKeys);
-    m_pMouse->tick(m_pButtons, scrollState);
+    m_pMouse->tick(m_pButtons, scrollState, mousePos);
 }
 
 const IKeyboard* ControlsManager::getKeyboard() const

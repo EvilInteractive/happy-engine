@@ -32,7 +32,7 @@ namespace tools {
 
 LoadingScreen::LoadingScreen() :    m_pFontLoading(CONTENT->getDefaultFont(14)),
                                     m_pFontMessage(CONTENT->getDefaultFont(32)),
-                                    m_pLogo(CONTENT->loadTexture("engine/he_logo_christmas.png"))
+                                    m_pLogo(CONTENT->loadTexture("engine/he_logo.png"))
 {
     /*SnowFlake temp;
     for (uint i(0); i < 250; ++i)

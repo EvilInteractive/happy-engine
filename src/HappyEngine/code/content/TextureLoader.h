@@ -49,6 +49,7 @@ public:
 
     const gfx::Texture2D* loadTexture(const std::string& path, bool storePixelsInTexture = false);
     const gfx::Texture2D* makeTexture(const Color& color);
+    gfx::Texture2D* makeEmptyTexture(const vec2& size);
 
     /* GETTERS */
     bool isLoading() const;

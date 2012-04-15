@@ -33,7 +33,7 @@ public:
     Mouse();
     virtual ~Mouse();
 
-    virtual void tick(byte* mouseState, int scrollSate);
+    virtual void tick(byte* mouseState, int scrollSate, const vec2& mousePos);
 
     virtual bool isButtonDown(MouseButton button) const;
     virtual bool isButtonUp(MouseButton button) const;
@@ -44,8 +44,13 @@ public:
 
     virtual const vec2& getPosition() const;
 
+    virtual const vec2& getMove() const;
+
 private:
+
     vec2 m_Position;
+    vec2 m_PrevPosition;
+
     byte* m_ButtonState;
     byte* m_PrevButtonState;
 

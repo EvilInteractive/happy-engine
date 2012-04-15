@@ -26,6 +26,7 @@ namespace gfx {
     class HappyQtWidget;
     class ExtraForward3DRenderer;
     class FxManager;
+    class Renderer2D;
 }
 namespace io {
     class ControlsManager;
@@ -59,6 +60,7 @@ namespace game {
 #define CONTENT HAPPYENGINE->getContentManager()
 #define NETWORK HAPPYENGINE->getNetworkManager()
 #define GUI HAPPYENGINE->get2DRenderer()
+#define GUI_NEW HAPPYENGINE->getRenderer2D()
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
@@ -105,6 +107,7 @@ public:
     ct::ContentManager* getContentManager() const;
     net::NetworkManager* getNetworkManager() const;
     gfx::Happy2DRenderer* get2DRenderer() const;
+    gfx::Renderer2D* getRenderer2D() const;
     tools::Console* getConsole() const;
     sfx::SoundEngine* getSoundEngine() const;
     game::Game* getGame() const;
@@ -127,6 +130,7 @@ private:
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
     gfx::Happy2DRenderer* m_p2DRenderer;
+    gfx::Renderer2D* m_pRenderer2D;
     gfx::ExtraForward3DRenderer* m_p3DRenderer;
     gfx::FxManager* m_pFxManager;
 

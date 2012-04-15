@@ -41,17 +41,19 @@ Mouse::~Mouse()
     he_free(m_PrevButtonState);
 }
 
-void Mouse::tick(byte* pMouseState, int scrollState)
+void Mouse::tick(byte* pMouseState, int scrollState, const vec2& mousePos)
 {
     m_Scroll = scrollState;
 
     std::swap(m_ButtonState, m_PrevButtonState);
     he_memcpy(m_ButtonState, pMouseState, MOUSE_ARRAY_SIZE);
-        
-    sf::Vector2i vec(sf::Mouse::getPosition());
+    
+    m_PrevPosition = m_Position;
 
-    m_Position.x = static_cast<float>(vec.x);
-    m_Position.y = static_cast<float>(vec.y);
+    if (mousePos.x >= 0 && mousePos.y >= 0)
+    {
+        m_Position = mousePos;   
+    }
 }
 
 bool Mouse::isButtonDown(MouseButton button) const
@@ -79,6 +81,11 @@ const vec2& Mouse::getPosition() const
 int Mouse::getScroll() const
 {
     return m_Scroll;
+}
+
+const vec2& Mouse::getMove() const
+{
+    return (m_Position - m_PrevPosition);
 }
 
 } } //end namespace

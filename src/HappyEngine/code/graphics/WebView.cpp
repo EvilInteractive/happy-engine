@@ -16,55 +16,57 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 19/03/2012
+//Created: 14/04/2012
 
-#ifndef _HE_RENDERER2D_H_
-#define _HE_RENDERER2D_H_
-#pragma once
+#include "HappyPCH.h" 
 
-#include "Canvas2D.h"
 #include "WebView.h"
-#include "Awesomium/WebCore.h"
-#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
 
-class Renderer2D
+WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput) :    m_pWebView(pView),
+                                                                        m_bInputEnabled(bEnableUserInput)
 {
-public:
+}
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-    Renderer2D();
-    virtual ~Renderer2D();
+WebView::~WebView()
+{
+    m_pWebView->Destroy();
+}
 
-	/* GENERAL */
-    Canvas2D* createCanvas();
-    WebView* createWebView(bool bEnableUserInput = false);
+/* GENERAL */
+void WebView::loadUrl(const std::string& url)
+{
+    Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
+    m_pWebView->LoadURL(webUrl);
+}
 
-    void tick();
-    void draw();
+void WebView::focus()
+{
+    m_pWebView->Focus();
+}
 
-    void init();
+void WebView::unfocus()
+{
+    m_pWebView->Unfocus();
+}
 
-private:
+/* GETTERS */
+Awesomium::WebView* WebView::getAWEView() const
+{
+    return m_pWebView;
+}
 
-    /* EXTRA */
-    void handleWebViewInput();
+bool WebView::inputEnabled() const
+{
+    return m_bInputEnabled;
+}
 
-	/* DATAMEMBERS */
-    Awesomium::WebCore* m_pWebCore;
+/* SETTERS */
+void WebView::enableInput(bool bInput)
+{
+    m_bInputEnabled = bInput;
+}
 
-    std::vector<WebView*> m_WebViews;
-    std::vector<Canvas2D*> m_Canvas2Ds;
-
-    std::vector<Texture2D*> m_WebViewRenderTextures;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    Renderer2D(const Renderer2D&);
-    Renderer2D& operator=(const Renderer2D&);
-};
-
-} } //end namespace
-
-#endif
+}} //end namespace

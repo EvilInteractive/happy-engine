@@ -55,7 +55,10 @@ public:
     uint getHeight() const;
     uint getFormat() const;
 
+    void setPixelData(const void* pData, bool bCompressed = false);
     void* getPixelsIfAvailable() const;
+
+    void resize(const vec2& size);
 
     void callbackIfLoaded(const boost::function<void()>& callback) const;
 

@@ -285,6 +285,16 @@ enum KeyScanCode
 
 };
 
+#define mapKey(a, b) case Key_##a: return Awesomium::KeyCodes::AK_##b;
+
+int getWebKeyFromKey(Key key)
+{
+    switch (key)
+    {
+        mapKey(
+    }
+}
+
 } } //end namespace
 
 #endif

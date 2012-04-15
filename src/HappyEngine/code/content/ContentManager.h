@@ -67,6 +67,7 @@ public:
     const gfx::Texture2D* asyncMakeTexture(const Color& color);
     const gfx::Texture2D* loadTexture(const std::string& path);
     const gfx::Texture2D* makeTexture(const Color& color);
+    gfx::Texture2D* makeEmptyTexture(const vec2& size);
 
     gfx::Line::pointer loadLine(const std::string& path);
 

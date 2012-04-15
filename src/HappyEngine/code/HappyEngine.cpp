@@ -32,6 +32,7 @@
 #include "ContentManager.h"
 #include "NetworkManager.h"
 #include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "Game.h"
 #include "CameraManager.h"
 #include "Console.h"
@@ -48,7 +49,7 @@ HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr),
+                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr), m_pRenderer2D(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
                             m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
                             m_pMainWindow(nullptr)
@@ -82,6 +83,8 @@ void HappyEngine::cleanup()
     m_p3DRenderer = nullptr;
     delete m_p2DRenderer;
     m_p2DRenderer = nullptr;
+    delete m_pRenderer2D;
+    m_pRenderer2D = nullptr;
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
     delete m_pFxManager;
@@ -151,6 +154,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     if (subengines & SubEngine_2DRenderer)
     {
         m_p2DRenderer = NEW gfx::Happy2DRenderer();
+        m_pRenderer2D = NEW gfx::Renderer2D();
     }
 
     if (subengines & SubEngine_Audio)
@@ -190,6 +194,7 @@ void HappyEngine::start(game::Game* pGame)
 
         m_p3DRenderer->init();
         m_pCameraManager->init();
+        m_pRenderer2D->init();
     }
 
     if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
@@ -272,6 +277,8 @@ void HappyEngine::updateLoop(float dTime)
     m_pGame->tick(dTime);
     PROFILER_END();
 
+    GUI_NEW->tick();
+
     CONSOLE->tick();
 
     if (CONTENT->isLoading() == false && m_bGameLoading == true)
@@ -291,6 +298,8 @@ void HappyEngine::drawLoop()
     else
         m_pGame->drawGui();
 
+    GUI_NEW->draw();
+
     // draw profiler if needed
     if (m_bShowProfiler)
         PROFILER->draw();
@@ -300,7 +309,7 @@ void HappyEngine::drawLoop()
 
     // display 2D
     GUI->draw();    
-
+    
     if (m_SubEngines & SubEngine_Graphics)
         m_pGraphicsEngine->present();
     PROFILER_END();
@@ -371,6 +380,10 @@ net::NetworkManager* HappyEngine::getNetworkManager() const
 gfx::Happy2DRenderer* HappyEngine::get2DRenderer() const
 {
     return m_p2DRenderer;
+}
+gfx::Renderer2D* HappyEngine::getRenderer2D() const
+{
+    return m_pRenderer2D;
 }
 tools::Console* HappyEngine::getConsole() const
 {

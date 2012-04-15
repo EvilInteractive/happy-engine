@@ -141,6 +141,11 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
         glBindTexture(GL_TEXTURE_2D, tex);
    // }
 }
+void GL::heBindTexture2D(uint tex)
+{
+    m_BoundTex2D[0] = tex;
+    glBindTexture(GL_TEXTURE_2D, tex);
+}
 void GL::heBindTextureCube( uint texPos, uint tex )
 {
     glActiveTexture(GL_TEXTURE0 + texPos);

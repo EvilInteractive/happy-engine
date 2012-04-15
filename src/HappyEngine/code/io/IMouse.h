@@ -42,7 +42,7 @@ class IMouse
 public:
     virtual ~IMouse() {}
 
-    virtual void tick(byte* mouseState, int scrollState) = 0;
+    virtual void tick(byte* mouseState, int scrollState, const vec2& mousePos) = 0;
 
     virtual bool isButtonDown(MouseButton button) const = 0;
     virtual bool isButtonUp(MouseButton button) const = 0;
@@ -52,6 +52,8 @@ public:
     virtual int getScroll() const = 0;
 
     virtual const vec2& getPosition() const = 0;
+
+    virtual const vec2& getMove() const = 0;
 };
 
 } } //end namespace

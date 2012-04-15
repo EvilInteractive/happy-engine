@@ -118,4 +118,28 @@ void* Texture2D::getPixelsIfAvailable() const
     return m_pPixels;
 }
 
+void Texture2D::setPixelData(const void* pData, bool bCompressed)
+{
+    if (m_Id != UINT_MAX)
+    {
+        GL::heBindTexture2D(m_Id);
+
+        if (bCompressed)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, m_Width, m_Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData);
+        else
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData);
+    }
+}
+
+void Texture2D::resize(const vec2& size)
+{
+    vec2 dimensions(m_Width, m_Height);
+
+    if (size != dimensions)
+    {
+        m_Width = static_cast<uint>(size.x);
+        m_Height = static_cast<uint>(size.y);
+    }
+}
+
 } } //end namespace

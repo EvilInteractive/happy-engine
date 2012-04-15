@@ -130,6 +130,11 @@ const gfx::Texture2D* ContentManager::makeTexture(const Color& color)
     return m_pTextureLoader->makeTexture(color);
 }
 
+gfx::Texture2D* ContentManager::makeEmptyTexture(const vec2& size)
+{
+    return m_pTextureLoader->makeEmptyTexture(size);
+}
+
 //////////////////////////////////////////////////////////////////////////
 gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
 {

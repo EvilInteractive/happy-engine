@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,34 +15,33 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author: Sebastiaan Sprengers
+//Author:  Sebastiaan Sprengers
+//Created: 14/04/2012
 
-#version 150 core
+#include "HappyTestsPCH.h" 
 
-in vec2 passTexCoord;
+#include "Texture2D.h"
+#include "ModelMesh.h"
 
-out vec4 outColor;
+#include "MainGame.h"
 
-uniform sampler2D diffuseMap;
-uniform float inAlpha;
-uniform vec2 texCoordOffset;
-uniform vec2 texCoordScale;
-uniform bool blending;
-
-void main()
+int main( int /*argc*/, char** /*args[]*/ )
 {
-    vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale) + texCoordOffset);
 
-    float alpha = color.a - (1.0f - inAlpha);
+#if _DEBUG && !GCC
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 
-   // if (!blending)
-    //{
-      //  if (alpha < 0.5f)
-        //{
-           
-//		   discard;
-   //     }
-    //}
+    HAPPYENGINE->init(he::SubEngine_All);
 
-    outColor =  vec4(color.rgb, alpha);
+    he::game::Game* game(NEW ht::MainGame());
+    HAPPYENGINE->start(game);
+    delete game;
+
+    HAPPYENGINE->dispose();
+
+    std::cout << "\npress enter to quit\n";
+    std::cin.get();
+
+    return 0;
 }

@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyBasTest", "build\Happy
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HappyPong", "build\HappyPong\HappyPong.vcxproj", "{5DB078E9-BE9C-4747-863C-7383595C2926}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Happy2D", "build\Happy2D\Happy2D.vcxproj", "{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -29,6 +31,14 @@ Global
 		{5DB078E9-BE9C-4747-863C-7383595C2926}.Release|Win32.Build.0 = Release|Win32
 		{5DB078E9-BE9C-4747-863C-7383595C2926}.Release|x64.ActiveCfg = Release|x64
 		{5DB078E9-BE9C-4747-863C-7383595C2926}.Release|x64.Build.0 = Release|x64
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Debug|Win32.Build.0 = Debug|Win32
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Debug|x64.ActiveCfg = Debug|x64
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Debug|x64.Build.0 = Debug|x64
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Release|Win32.ActiveCfg = Release|Win32
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Release|Win32.Build.0 = Release|Win32
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Release|x64.ActiveCfg = Release|x64
+		{B0F0A4D8-CCF3-461F-BEE0-4DD2666D7CD4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

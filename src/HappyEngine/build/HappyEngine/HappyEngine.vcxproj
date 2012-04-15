@@ -126,6 +126,7 @@
     <ClCompile Include="..\..\code\graphics\TextureCube.cpp" />
     <ClCompile Include="..\..\code\graphics\Vertex.cpp" />
     <ClCompile Include="..\..\code\graphics\BufferLayout.cpp" />
+    <ClCompile Include="..\..\code\graphics\WebView.cpp" />
     <ClCompile Include="..\..\code\HappyEngine.cpp" />
     <ClCompile Include="..\..\code\io\BinaryStream.cpp" />
     <ClCompile Include="..\..\code\io\ControlsManager.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="..\..\code\graphics\TextureCube.h" />
     <ClInclude Include="..\..\code\graphics\Vertex.h" />
     <ClInclude Include="..\..\code\graphics\BufferLayout.h" />
+    <ClInclude Include="..\..\code\graphics\WebView.h" />
     <ClInclude Include="..\..\code\HappyEngine.h" />
     <ClInclude Include="..\..\code\HappyMemory.h" />
     <ClInclude Include="..\..\code\HappyNew.h" />

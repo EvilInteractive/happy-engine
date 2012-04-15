@@ -98,6 +98,7 @@ public:
     //Binding
     static void heBindFbo(uint fbo);
     static void heBindVao(uint vao);
+    static void heBindTexture2D(uint tex);
     static void heBindTexture2D(uint texPos, uint tex);
     static void heBindTextureCube(uint texPos, uint tex);
     static void heBindUniformBuffer(uint uboId, uint bufferId);

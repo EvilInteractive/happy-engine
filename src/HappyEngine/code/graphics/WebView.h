@@ -16,55 +16,48 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 19/03/2012
+//Created: 14/04/2012
 
-#ifndef _HE_RENDERER2D_H_
-#define _HE_RENDERER2D_H_
+#ifndef _HE_WEBVIEW_H_
+#define _HE_WEBVIEW_H_
 #pragma once
 
-#include "Canvas2D.h"
-#include "WebView.h"
 #include "Awesomium/WebCore.h"
-#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
 
-class Renderer2D
+class WebView
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-    Renderer2D();
-    virtual ~Renderer2D();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    WebView(Awesomium::WebView* pView, bool bEnableUserInput);
+    virtual ~WebView();
 
-	/* GENERAL */
-    Canvas2D* createCanvas();
-    WebView* createWebView(bool bEnableUserInput = false);
+    /* GENERAL */
+    void loadUrl(const std::string& url);
+    void focus();
+    void unfocus();
 
-    void tick();
-    void draw();
+    /* GETTERS */
+    Awesomium::WebView* getAWEView() const;
+    bool inputEnabled() const;
 
-    void init();
+    /* SETTERS */
+    void enableInput(bool bInput);
 
 private:
 
-    /* EXTRA */
-    void handleWebViewInput();
-
-	/* DATAMEMBERS */
-    Awesomium::WebCore* m_pWebCore;
-
-    std::vector<WebView*> m_WebViews;
-    std::vector<Canvas2D*> m_Canvas2Ds;
-
-    std::vector<Texture2D*> m_WebViewRenderTextures;
+    /* DATAMEMBERS */
+    Awesomium::WebView* m_pWebView;
+    bool m_bInputEnabled;
 
     /* DEFAULT COPY & ASSIGNMENT */
-    Renderer2D(const Renderer2D&);
-    Renderer2D& operator=(const Renderer2D&);
+    WebView(const WebView&);
+    WebView& operator=(const WebView&);
 };
 
-} } //end namespace
+}} //end namespace
 
 #endif
