@@ -12,7 +12,7 @@ src/HappyTools/*/Debug/*
 src/HappyTools/*/Release/*
 src/HappyTools/*/bin/*
 src/HappyTools/*/bin(x64)/*
-src/HappyTools/*/build/*
+src/HappyTools/*/build/*/*
 *.ipch
 src/3thParty/*/*/*
 src/3thParty/lib/*
