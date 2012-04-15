@@ -35,14 +35,13 @@ void main()
 
     float alpha = color.a - (1.0f - inAlpha);
 
-   // if (!blending)
-    //{
-      //  if (alpha < 0.5f)
-        //{
-           
-//		   discard;
-   //     }
-    //}
+    if (!blending)
+    {
+        if (alpha < 0.5f)
+        {
+			discard;
+        }
+    }
 
     outColor =  vec4(color.rgb, alpha);
 }
