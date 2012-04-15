@@ -16,31 +16,44 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Created: 15/04/2012
+#include "HappyModelViewerPCH.h" 
 
 #include "Texture2D.h"
 #include "ModelMesh.h"
 
 #include "MainGame.h"
+#include "ContentManager.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+int main( int argc, char** args )
 {
+    if (argc == 2)
+    {
 
 #if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    HAPPYENGINE->init(he::SubEngine_All);
+        HAPPYENGINE->init(he::SubEngine_All);
 
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
+        std::string workDir(args[0]);
+        std::string contentDir(
+            workDir.substr(0, workDir.rfind("bin")) + "data/");
+        CONTENT->setRootDir(contentDir);
+        std::string file(args[1]);
 
-    HAPPYENGINE->dispose();
+        he::game::Game* game(NEW hmv::MainGame(file));
+        HAPPYENGINE->start(game);
+        delete game;
 
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
+        HAPPYENGINE->dispose();
+    
+//#if _DEBUG
+//        std::cout << "\npress enter to quit\n";
+//        std::cin.get();
+//#endif
+
+    }
 
     return 0;
 }

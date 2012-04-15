@@ -1,0 +1,15 @@
+[Deferred]
+shader = "defaultDeferred.shader"
+
+[Forward]
+shader = "defaultForward.shader"
+
+[TEXTURE2D]
+diffuseMap = "default_diffuse.png"
+normalMap = "default_normal.png"
+specGlossIllMap = "default_sgi.png"
+
+[info]
+blending = false
+post = true
+shadow = true

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -16,31 +16,15 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
-
-#include "MainGame.h"
-
-int main( int /*argc*/, char** /*args[]*/ )
+//source: http://aras-p.info/texts/CompactNormalStorage.html#method04spheremap
+//vec2 encodeNormal(vec3 normal)
+//{
+    //vec2 encNormal = normalize(normal.xy) * sqrt(-normal.z * 0.5f + 0.5f);
+    //return encNormal * 0.5f + 0.5f;
+//}
+vec2 encodeNormal(vec3 normal)
 {
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+    float f = sqrt(-normal.z * 8.0f + 8.0f);
+    return normal.xy / f + 0.5f;
 }

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -15,32 +15,25 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Author: Bastian Damman
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#version 150 core
 
-#include "MainGame.h"
+out vec4 outColor;
 
-int main( int /*argc*/, char** /*args[]*/ )
+in vec2 passTexCoord;
+in vec4 passBlendColor;
+in vec2 passUvTile;
+
+uniform sampler2D diffuseMap;
+uniform vec2 uvTiles;
+
+void main()
 {
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+    vec4 diff = texture(diffuseMap, (passTexCoord / uvTiles) * (1 + passUvTile) );
+    if (diff.a < 0.01f)
+        discard;
+    outColor = diff * passBlendColor;
 }
+
+

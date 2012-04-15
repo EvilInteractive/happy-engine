@@ -19,28 +19,54 @@
 //Created: 20/03/2012
 #include "HappyTestsPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
-
 #include "MainGame.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+#include "GraphicsEngine.h"
+#include "CameraManager.h"
+
+#include "Camera.h"
+#include "FPSGraph.h"
+
+namespace ht {
+
+MainGame::MainGame(): m_pFPSGraph(nullptr)
 {
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
 }
+
+
+MainGame::~MainGame()
+{
+    CAMERAMANAGER->deleteAllCameras();
+    delete m_pFPSGraph;
+}
+
+void MainGame::init()
+{
+    GRAPHICS->setVSync(false);
+    GRAPHICS->setScreenDimension(1280, 720);
+    GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
+}
+
+void MainGame::load()
+{
+    CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    CAMERAMANAGER->setActiveCamera("default");
+
+    m_pFPSGraph = NEW he::tools::FPSGraph();
+
+}
+
+void MainGame::tick( float dTime )
+{
+    he::game::Game::tick(dTime);
+
+    m_pFPSGraph->tick(dTime);
+}
+
+void MainGame::drawGui()
+{
+    m_pFPSGraph->draw();
+
+}
+
+} //end namespace

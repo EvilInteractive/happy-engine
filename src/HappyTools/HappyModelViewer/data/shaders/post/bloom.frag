@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -16,31 +16,37 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Created: 14/10/2011
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#version 150 core
 
-#include "MainGame.h"
+noperspective in vec2 texCoord;
 
-int main( int /*argc*/, char** /*args[]*/ )
-{
+out vec4 outColor;
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+uniform sampler2D map;
+#if HDR
+#if BRIGHTPASS
+uniform sampler2D lumMap;
+#endif
 #endif
 
-    HAPPYENGINE->init(he::SubEngine_All);
+void main()
+{
+    vec3 color = texture(map, texCoord).rgb;
+    
+#if BRIGHTPASS
+    float ex = 0.9f;
+#if HDR
+    ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.001f, 1.0f) / 4.0f;
+#endif
+    color *= ex;
+    color -= vec3(1.0f, 1.0f, 1.0f);
+    color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
+    color /= ex;
+#endif
 
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+    outColor = vec4(color, 1.0f);
 }
+
+
