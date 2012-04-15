@@ -25,6 +25,7 @@
 #include "HappyTypes.h"
 #include "Keys.h"
 #include "IKeyboard.h"
+#include "event.h"
 
 namespace he {
 namespace io {
@@ -45,10 +46,17 @@ public:
     virtual bool isKeyReleased(Key key) const;          //true when state goes from down to up
     virtual bool isKeyReleased(KeyScanCode code) const;
 
+    virtual void addOnKeyPressedListener(boost::function<void(Key)> callback) const;
+    virtual eventExt<void, Key>& getOnKeyPressedListeners();
+    virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const;
+    virtual eventExt<void, Key>& getOnKeyReleasedListeners();
 
 private:
     byte* m_CurrentKeyState;
     byte* m_PrevKeyState;
+
+    eventExt<void, Key> m_OnKeyPressedListeners;
+    eventExt<void, Key> m_OnKeyReleasedListeners;
 
     //Disable default copy constructor and default assignment operator
     Keyboard(const Keyboard&);

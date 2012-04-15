@@ -52,13 +52,11 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    CAMERAMANAGER->setActiveCamera("default");
-
     m_pWebView = GUI_NEW->createWebView(true);
     m_pWebView->focus();
     m_pWebView->loadUrl("http://www.google.be");
-    //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/JSTest/");
+    //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
+    //m_pWebView->loadUrl("http://www.youtube.be");
 }
 
 void MainGame::tick( float dTime )

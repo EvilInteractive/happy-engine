@@ -68,6 +68,80 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
     Texture2D* pRenderTexture = CONTENT->makeEmptyTexture(vec2(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     m_WebViewRenderTextures.push_back(pRenderTexture);
 
+    if (bEnableUserInput)
+    {
+        CONTROLS->getKeyboard()->addOnKeyPressedListener([&](io::Key key)
+        {
+            WebView* pW = m_WebViews[m_WebViews.size() - 1];
+
+            if (pW != nullptr)
+            {
+                Awesomium::WebKeyboardEvent keyEvent;
+
+                uint chr = io::getWebKeyFromKey(key);
+
+                keyEvent.virtual_key_code = chr;
+                char* buf = new char[20];
+
+                Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buf);
+                strcpy(keyEvent.key_identifier, buf);
+
+                delete[] buf;
+
+                keyEvent.modifiers = 0;
+                keyEvent.native_key_code = 0;
+                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
+
+                pW->getAWEView()->InjectKeyboardEvent(keyEvent);
+
+                // if it is an ASCII char
+                if (chr >= 32 && chr <= 126)
+                {
+                    // if letter
+                    if (chr >= 65 && chr <= 90)
+                    {
+                        if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
+                            CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
+                        {
+                            chr += 32; // to lowercase ASCII
+                        }
+                    }
+
+                    keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
+                    keyEvent.text[0] = chr;
+                    keyEvent.unmodified_text[0] = chr;
+                    keyEvent.native_key_code = chr;
+
+                    pW->getAWEView()->InjectKeyboardEvent(keyEvent);
+                }
+            }
+        });
+
+        CONTROLS->getKeyboard()->addOnKeyReleasedListener([&](io::Key key)
+        {
+            WebView* pW = m_WebViews[m_WebViews.size() - 1];
+
+            if (pW != nullptr)
+            {
+                Awesomium::WebKeyboardEvent keyEvent;
+
+                char* buf = new char[20];
+                keyEvent.virtual_key_code = io::getWebKeyFromKey(key);
+
+                Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buf);
+                strcpy(keyEvent.key_identifier, buf);
+
+                delete[] buf;
+
+                keyEvent.modifiers = 0;
+                keyEvent.native_key_code = 0;
+                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyUp;
+
+                pW->getAWEView()->InjectKeyboardEvent(keyEvent);
+            }
+        });
+    }
+
     return pWeb;
 }
 
@@ -110,7 +184,7 @@ void Renderer2D::handleWebViewInput()
             vec2 mouseMove = CONTROLS->getMouse()->getPosition();
             pWeb->InjectMouseMove(static_cast<int>(mouseMove.x), static_cast<int>(mouseMove.y));
 
-            pWeb->InjectMouseWheel(CONTROLS->getMouse()->getScroll(),0);
+            pWeb->InjectMouseWheel(CONTROLS->getMouse()->getScroll() * 10,0);
         }
     });
 }
@@ -137,7 +211,7 @@ void Renderer2D::draw()
                 pSurface->CopyTo(buffer, pSurface->width() * 4, 4, false, true);
 
                 m_WebViewRenderTextures[i]->resize(vec2(pSurface->width(), pSurface->height()));
-                m_WebViewRenderTextures[i]->setPixelData(buffer, true);
+                m_WebViewRenderTextures[i]->setPixelData(buffer, false);
 
                 delete[] buffer;
 

@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 27/11/2011
+//Extended: Sebastiaan Sprengers
 
 #ifndef _HE_EVENT_H_
 #define _HE_EVENT_H_
@@ -60,6 +61,41 @@ private:
     //Disable default copy constructor and default assignment operator
     event(const event&);
     event& operator=(const event&);
+};
+
+template<typename returnType, typename parameterType>
+class eventExt
+{
+private: 
+    typedef boost::function<returnType(parameterType)> function;
+
+public:
+    eventExt() {}
+    ~eventExt() {}
+
+    void operator+=(const function& func)
+    {
+        m_FuncList.push_back(func);
+    }
+    returnType operator()(parameterType par)
+    {
+        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [&](const function& func)
+        {
+            func(par);
+        });
+    }
+
+    void clear()
+    {
+        m_FuncList.clear();
+    }
+
+private:
+    std::vector<function> m_FuncList;
+
+    //Disable default copy constructor and default assignment operator
+    eventExt(const eventExt&);
+    eventExt& operator=(const eventExt&);
 };
 
 } //end namespace

@@ -41,6 +41,11 @@ public:
     virtual bool isKeyPressed(KeyScanCode code) const = 0;
     virtual bool isKeyReleased(Key key) const = 0;          //true when state goes from down to up
     virtual bool isKeyReleased(KeyScanCode code) const = 0;
+
+    virtual void addOnKeyPressedListener(boost::function<void(Key)> callback) const = 0;
+    virtual eventExt<void, Key>& getOnKeyPressedListeners() = 0;
+    virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const = 0;
+    virtual eventExt<void, Key>& getOnKeyReleasedListeners() = 0;
 };
 
 } } //end namespace

@@ -44,9 +44,6 @@ public:
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
 
-    /* SETTERS */
-    void enableInput(bool bInput);
-
 private:
 
     /* DATAMEMBERS */

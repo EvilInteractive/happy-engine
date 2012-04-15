@@ -58,9 +58,11 @@ void ControlsManager::tick()
         switch(ev.type)
         {
             case sf::Event::KeyPressed:
+                m_pKeyboard->getOnKeyPressedListeners()((Key)ev.key.code);
                 m_pKeys[ev.key.code] = TRUE;
                 break;
             case sf::Event::KeyReleased:
+                m_pKeyboard->getOnKeyReleasedListeners()((Key)ev.key.code);
                 m_pKeys[ev.key.code] = FALSE;
                 break;
             case sf::Event::MouseButtonPressed:

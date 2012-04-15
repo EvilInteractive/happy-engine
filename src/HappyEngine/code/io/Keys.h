@@ -22,10 +22,13 @@
 #define _HE_KEYS_H_
 #pragma once
 
+#include "Awesomium/WebKeyboardCodes.h"
+
 namespace he {
 namespace io {
 
 #define MAX_KEYS 512
+#define mapWebKey(a, b) case Key_##a: return Awesomium::KeyCodes::AK_##b;
 
 enum Key
 {
@@ -285,15 +288,7 @@ enum KeyScanCode
 
 };
 
-#define mapKey(a, b) case Key_##a: return Awesomium::KeyCodes::AK_##b;
-
-int getWebKeyFromKey(Key key)
-{
-    switch (key)
-    {
-        mapKey(
-    }
-}
+int getWebKeyFromKey(Key key);
 
 } } //end namespace
 

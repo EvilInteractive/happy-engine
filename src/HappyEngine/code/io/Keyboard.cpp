@@ -76,4 +76,25 @@ bool Keyboard::isKeyReleased(KeyScanCode code) const
     return m_CurrentKeyState[code] == FALSE && m_PrevKeyState[code] == TRUE;
 }
 
+void Keyboard::addOnKeyPressedListener(boost::function<void(Key)> callback) const
+{
+    Keyboard* _this = const_cast<Keyboard*>(this);
+    _this->m_OnKeyPressedListeners+= callback;
+}
+
+eventExt<void, Key>& Keyboard::getOnKeyPressedListeners()
+{
+    return m_OnKeyPressedListeners;
+}
+
+void Keyboard::addOnKeyReleasedListener(boost::function<void(Key)> callback) const
+{
+    Keyboard* _this = const_cast<Keyboard*>(this);
+    _this->m_OnKeyReleasedListeners+= callback;
+}
+eventExt<void, Key>& Keyboard::getOnKeyReleasedListeners()
+{
+    return m_OnKeyReleasedListeners;
+}
+
 } } //end namespace

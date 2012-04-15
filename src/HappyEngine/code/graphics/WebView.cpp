@@ -63,10 +63,4 @@ bool WebView::inputEnabled() const
     return m_bInputEnabled;
 }
 
-/* SETTERS */
-void WebView::enableInput(bool bInput)
-{
-    m_bInputEnabled = bInput;
-}
-
 }} //end namespace

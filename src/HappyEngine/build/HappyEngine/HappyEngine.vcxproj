@@ -87,7 +87,6 @@
     <ClCompile Include="..\..\code\graphics\fx\FxTimeLineTrack.cpp" />
     <ClCompile Include="..\..\code\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="..\..\code\graphics\Happy2DRenderer.cpp" />
-    <ClCompile Include="..\..\code\graphics\HappyQtWidget.cpp" />
     <ClCompile Include="..\..\code\graphics\Hitregion.cpp" />
     <ClCompile Include="..\..\code\graphics\InstancingBuffer.cpp" />
     <ClCompile Include="..\..\code\graphics\InstancingController.cpp" />
@@ -134,6 +133,7 @@
     <ClCompile Include="..\..\code\io\IniReader.cpp" />
     <ClCompile Include="..\..\code\io\IniWriter.cpp" />
     <ClCompile Include="..\..\code\io\Keyboard.cpp" />
+    <ClCompile Include="..\..\code\io\Keys.cpp" />
     <ClCompile Include="..\..\code\io\Mouse.cpp" />
     <ClCompile Include="..\..\code\math\AABB.cpp" />
     <ClCompile Include="..\..\code\math\Circle.cpp" />
@@ -275,7 +275,6 @@
     <ClInclude Include="..\..\code\graphics\ICamera.h" />
     <ClInclude Include="..\..\code\graphics\GraphicsEngine.h" />
     <ClInclude Include="..\..\code\graphics\Happy2DRenderer.h" />
-    <ClInclude Include="..\..\code\graphics\HappyQtWidget.h" />
     <ClInclude Include="..\..\code\graphics\Hitregion.h" />
     <ClInclude Include="..\..\code\graphics\IDrawable.h" />
     <ClInclude Include="..\..\code\graphics\IInstanceFiller.h" />
