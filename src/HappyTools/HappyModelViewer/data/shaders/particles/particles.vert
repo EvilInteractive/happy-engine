@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -15,32 +15,29 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Author: Bastian Damman
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#version 150 core
 
-#include "MainGame.h"
+//Per vertex
+in vec3 inPosition;
 
-int main( int /*argc*/, char** /*args[]*/ )
-{
+//Per Instance
+in mat4 inWorld;
+in vec4 inBlendColor;
+in vec2 inUvTile;
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+// OUT
+out vec2 passTexCoord;
+out vec4 passBlendColor;
+out vec2 passUvTile;
 
-    HAPPYENGINE->init(he::SubEngine_All);
+uniform mat4 matVP;
 
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+void main()
+{  
+	gl_Position = matVP * inWorld * vec4(inPosition, 1.0f);
+	passTexCoord = inPosition.xy * 0.5 + 0.5;
+    passBlendColor = inBlendColor;
 }
+

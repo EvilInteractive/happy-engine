@@ -16,31 +16,46 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Created: 15/04/2012
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#ifndef _HMV_MainGame_H_
+#define _HMV_MainGame_H_
+#pragma once
 
-#include "MainGame.h"
+#include "Game.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
-{
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+namespace he {
+    namespace tools {
+        class FPSGraph;
+    }
+    namespace game {
+        class Entity;
+    }
 }
+
+namespace hmv {
+
+class MainGame : public he::game::Game
+{
+public:
+    MainGame(const std::string& file);
+    virtual ~MainGame();
+
+    virtual void init();
+    virtual void load();
+    virtual void tick(float dTime);
+    virtual void drawGui();
+
+private:
+    he::tools::FPSGraph* m_pFPSGraph;
+
+    std::vector<he::game::Entity*> m_Entities;
+
+    //Disable default copy constructor and default assignment operator
+    MainGame(const MainGame&);
+    MainGame& operator=(const MainGame&);
+};
+
+} //end namespace
+
+#endif

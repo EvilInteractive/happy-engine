@@ -15,32 +15,21 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 20/03/2012
+//Author:  
+//Created: //
 #include "HappyTestsPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#include "X.h"
 
-#include "MainGame.h"
+namespace ht {
 
-int main( int /*argc*/, char** /*args[]*/ )
+X::X()
 {
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
 }
+
+
+X::~X()
+{
+}
+
+} //end namespace

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -15,32 +15,30 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Author: Bastian Damman
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#version 150 core
 
-#include "MainGame.h"
+in vec3 inPosition;
+in vec4 inBoneId;
+in vec4 inBoneWeight;
 
-int main( int /*argc*/, char** /*args[]*/ )
-{
+uniform mat4 matWVP;
+uniform mat4[32] matBones;
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+out vec4 passPos;
 
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+void main()
+{    
+    ivec4 boneId = ivec4(inBoneId);
+    
+    vec4 position = matBones[boneId.x] * vec4(inPosition, 1.0f) * inBoneWeight.x;
+    position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
+    position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
+    position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
+    passPos = matWVP * vec4(position.xyz, 1.0f);
+    gl_Position = passPos;
 }
+
+
+

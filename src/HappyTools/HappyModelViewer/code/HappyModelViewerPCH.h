@@ -16,31 +16,14 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+//Created: 15/04/2012
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
+#ifndef _HMV_HappyModelViewerPCH_H_
+#define _HMV_HappyModelViewerPCH_H_
+#pragma once
 
-#include "MainGame.h"
+#pragma message("HappyModelViewer: Compiling precompiled headers.")
 
-int main( int /*argc*/, char** /*args[]*/ )
-{
+#include "HappyPCH.h"
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
-}
