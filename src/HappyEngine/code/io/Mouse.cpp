@@ -77,15 +77,50 @@ const vec2& Mouse::getPosition() const
 {
     return m_Position;
 }
-
 int Mouse::getScroll() const
 {
     return m_Scroll;
 }
-
 const vec2& Mouse::getMove() const
 {
     return (m_Position - m_PrevPosition);
+}
+
+void Mouse::addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const
+{
+    Mouse* _this = const_cast<Mouse*>(this);
+    _this->m_OnButtonPressedListeners += callback;
+}
+eventExt<void, MouseButton>& Mouse::getOnButtonPressedListeners()
+{
+    return m_OnButtonPressedListeners;
+}
+void Mouse::addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const
+{
+    Mouse* _this = const_cast<Mouse*>(this);
+    _this->m_OnButtonReleasedListeners += callback;
+}
+eventExt<void, MouseButton>& Mouse::getOnButtonReleasedListeners()
+{
+    return m_OnButtonReleasedListeners;
+}
+void Mouse::addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const
+{
+    Mouse* _this = const_cast<Mouse*>(this);
+    _this->m_OnMouseMovedListeners += callback;
+}
+eventExt<void, const vec2&>& Mouse::getOnMouseMovedListeners()
+{
+    return m_OnMouseMovedListeners;
+}
+void Mouse::addOnMouseWheelMovedListener(boost::function<void(int)> callback) const
+{
+    Mouse* _this = const_cast<Mouse*>(this);
+    _this->m_OnMouseWheelMovedListeners += callback;
+}
+eventExt<void, int>& Mouse::getOnMouseWheelMovedListeners()
+{
+    return m_OnMouseWheelMovedListeners;
 }
 
 } } //end namespace

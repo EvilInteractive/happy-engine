@@ -41,10 +41,17 @@ public:
     virtual bool isButtonPressed(MouseButton button) const;  //true when it goes from up to down
 
     virtual int getScroll() const;
-
     virtual const vec2& getPosition() const;
-
     virtual const vec2& getMove() const;
+
+    virtual void addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const;
+    virtual eventExt<void, MouseButton>& getOnButtonPressedListeners();
+    virtual void addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const;
+    virtual eventExt<void, MouseButton>& getOnButtonReleasedListeners();
+    virtual void addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const;
+    virtual eventExt<void, const vec2&>& getOnMouseMovedListeners();
+    virtual void addOnMouseWheelMovedListener(boost::function<void(int)> callback) const;
+    virtual eventExt<void, int>& getOnMouseWheelMovedListeners();
 
 private:
 
@@ -55,6 +62,11 @@ private:
     byte* m_PrevButtonState;
 
     int m_Scroll;
+
+    eventExt<void,MouseButton> m_OnButtonPressedListeners;
+    eventExt<void,MouseButton> m_OnButtonReleasedListeners;
+    eventExt<void,const vec2&> m_OnMouseMovedListeners;
+    eventExt<void,int> m_OnMouseWheelMovedListeners;
 
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);

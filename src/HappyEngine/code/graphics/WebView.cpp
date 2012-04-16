@@ -25,8 +25,9 @@
 namespace he {
 namespace gfx {
 
-WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput) :    m_pWebView(pView),
-                                                                        m_bInputEnabled(bEnableUserInput)
+WebView::WebView(Awesomium::WebView* pView, uint id, bool bEnableUserInput) :   m_pWebView(pView),
+                                                                                m_bInputEnabled(bEnableUserInput),
+                                                                                m_Id(id)
 {
 }
 
@@ -40,6 +41,12 @@ void WebView::loadUrl(const std::string& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
     m_pWebView->LoadURL(webUrl);
+}
+
+void WebView::excecuteJavaScript(const std::string& script)
+{
+    //Awesomium::WebString string(script.c_str());
+    //m_pWebView->ExecuteJavascriptWithResult(string);
 }
 
 void WebView::focus()
@@ -61,6 +68,11 @@ Awesomium::WebView* WebView::getAWEView() const
 bool WebView::inputEnabled() const
 {
     return m_bInputEnabled;
+}
+
+uint WebView::getId() const
+{
+    return m_Id;
 }
 
 }} //end namespace

@@ -32,23 +32,26 @@ class WebView
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebView(Awesomium::WebView* pView, bool bEnableUserInput);
+    WebView(Awesomium::WebView* pView, uint id, bool bEnableUserInput);
     virtual ~WebView();
 
     /* GENERAL */
     void loadUrl(const std::string& url);
+    void excecuteJavaScript(const std::string& script);
     void focus();
     void unfocus();
 
     /* GETTERS */
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
+    uint getId() const;
 
 private:
 
     /* DATAMEMBERS */
     Awesomium::WebView* m_pWebView;
     bool m_bInputEnabled;
+    uint m_Id;
 
     /* DEFAULT COPY & ASSIGNMENT */
     WebView(const WebView&);

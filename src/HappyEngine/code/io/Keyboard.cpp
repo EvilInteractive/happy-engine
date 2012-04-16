@@ -79,7 +79,7 @@ bool Keyboard::isKeyReleased(KeyScanCode code) const
 void Keyboard::addOnKeyPressedListener(boost::function<void(Key)> callback) const
 {
     Keyboard* _this = const_cast<Keyboard*>(this);
-    _this->m_OnKeyPressedListeners+= callback;
+    _this->m_OnKeyPressedListeners += callback;
 }
 
 eventExt<void, Key>& Keyboard::getOnKeyPressedListeners()
@@ -90,7 +90,7 @@ eventExt<void, Key>& Keyboard::getOnKeyPressedListeners()
 void Keyboard::addOnKeyReleasedListener(boost::function<void(Key)> callback) const
 {
     Keyboard* _this = const_cast<Keyboard*>(this);
-    _this->m_OnKeyReleasedListeners+= callback;
+    _this->m_OnKeyReleasedListeners += callback;
 }
 eventExt<void, Key>& Keyboard::getOnKeyReleasedListeners()
 {

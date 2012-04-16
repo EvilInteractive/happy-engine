@@ -56,9 +56,8 @@ void MainGame::load()
     CAMERAMANAGER->setActiveCamera("default");
 
     m_pWebView = GUI_NEW->createWebView(true);
-    m_pWebView->focus();
-    //m_pWebView->loadUrl("http://www.google.be");
-    m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
+    m_pWebView->loadUrl("http://www.google.be");
+    //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_pWebView->loadUrl("http://www.youtube.be");
 }
 

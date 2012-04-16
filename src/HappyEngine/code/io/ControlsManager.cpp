@@ -66,17 +66,21 @@ void ControlsManager::tick()
                 m_pKeys[ev.key.code] = FALSE;
                 break;
             case sf::Event::MouseButtonPressed:
+                m_pMouse->getOnButtonPressedListeners()((MouseButton)ev.mouseButton.button);
                 m_pButtons[ev.mouseButton.button] = TRUE;
                 break;
             case sf::Event::MouseButtonReleased:
+                m_pMouse->getOnButtonReleasedListeners()((MouseButton)ev.mouseButton.button);
                 m_pButtons[ev.mouseButton.button] = FALSE;
                 break;
             case sf::Event::MouseWheelMoved:
+                m_pMouse->getOnMouseWheelMovedListeners()(ev.mouseWheel.delta);
                 scrollState = ev.mouseWheel.delta;
                 break;
             case sf::Event::MouseMoved:
                 mousePos.x = static_cast<float>(ev.mouseMove.x);
                 mousePos.y = static_cast<float>(ev.mouseMove.y);
+                m_pMouse->getOnMouseMovedListeners()(mousePos);
                 break;
         }
     });

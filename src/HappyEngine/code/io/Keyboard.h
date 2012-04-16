@@ -25,7 +25,6 @@
 #include "HappyTypes.h"
 #include "Keys.h"
 #include "IKeyboard.h"
-#include "event.h"
 
 namespace he {
 namespace io {

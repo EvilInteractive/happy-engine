@@ -50,7 +50,6 @@ public:
 private:
 
     /* EXTRA */
-    void handleWebViewInput();
 
 	/* DATAMEMBERS */
     Awesomium::WebCore* m_pWebCore;

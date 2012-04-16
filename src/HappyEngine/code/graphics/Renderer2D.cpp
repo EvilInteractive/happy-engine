@@ -62,7 +62,7 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
 
     Awesomium::WebView* pView = m_pWebCore->CreateWebView(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
 
-    WebView* pWeb = NEW WebView(pView, bEnableUserInput);
+    WebView* pWeb = NEW WebView(pView, m_WebViews.size(), bEnableUserInput);
     m_WebViews.push_back(pWeb);
 
     Texture2D* pRenderTexture = CONTENT->makeEmptyTexture(vec2(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
@@ -70,10 +70,10 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
 
     if (bEnableUserInput)
     {
-        CONTROLS->getKeyboard()->addOnKeyPressedListener([&](io::Key key)
-        {
-            WebView* pW = m_WebViews[m_WebViews.size() - 1];
+        Awesomium::WebView* pW = pWeb->getAWEView();
 
+        CONTROLS->getKeyboard()->addOnKeyPressedListener([&, pW](io::Key key)
+        {
             if (pW != nullptr)
             {
                 Awesomium::WebKeyboardEvent keyEvent;
@@ -92,7 +92,7 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
                 keyEvent.native_key_code = 0;
                 keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
 
-                pW->getAWEView()->InjectKeyboardEvent(keyEvent);
+                pW->InjectKeyboardEvent(keyEvent);
 
                 // if it is an ASCII char
                 if (chr >= 32 && chr <= 126)
@@ -112,15 +112,13 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
                     keyEvent.unmodified_text[0] = chr;
                     keyEvent.native_key_code = chr;
 
-                    pW->getAWEView()->InjectKeyboardEvent(keyEvent);
+                    pW->InjectKeyboardEvent(keyEvent);
                 }
             }
         });
 
-        CONTROLS->getKeyboard()->addOnKeyReleasedListener([&](io::Key key)
+        CONTROLS->getKeyboard()->addOnKeyReleasedListener([&, pW](io::Key key)
         {
-            WebView* pW = m_WebViews[m_WebViews.size() - 1];
-
             if (pW != nullptr)
             {
                 Awesomium::WebKeyboardEvent keyEvent;
@@ -137,7 +135,49 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
                 keyEvent.native_key_code = 0;
                 keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyUp;
 
-                pW->getAWEView()->InjectKeyboardEvent(keyEvent);
+                pW->InjectKeyboardEvent(keyEvent);
+            }
+        });
+
+        CONTROLS->getMouse()->addOnButtonPressedListener([&, pW](io::MouseButton but)
+        {
+            if (pW != nullptr)
+            {
+                if (but == io::MouseButton_Left)
+                    pW->InjectMouseDown(Awesomium::kLeftMouseButton);
+                else if (but == io::MouseButton_Right)
+                    pW->InjectMouseDown(Awesomium::kRightMouseButton);
+                else if (but == io::MouseButton_Middle)
+                    pW->InjectMouseDown(Awesomium::kMiddleMouseButton);
+            }
+        });
+
+        CONTROLS->getMouse()->addOnButtonReleasedListener([&, pW](io::MouseButton but)
+        {
+            if (pW != nullptr)
+            {
+                if (but == io::MouseButton_Left)
+                    pW->InjectMouseUp(Awesomium::kLeftMouseButton);
+                else if (but == io::MouseButton_Right)
+                    pW->InjectMouseUp(Awesomium::kRightMouseButton);
+                else if (but == io::MouseButton_Middle)
+                    pW->InjectMouseUp(Awesomium::kMiddleMouseButton);
+            }
+        });
+
+        CONTROLS->getMouse()->addOnMouseMovedListener([&, pW](const vec2& pos)
+        {
+            if (pW != nullptr)
+            {
+                pW->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
+            }
+        });
+
+        CONTROLS->getMouse()->addOnMouseWheelMovedListener([&, pW](int move)
+        {
+            if (pW != nullptr)
+            {
+                pW->InjectMouseWheel(move * 30, 0);
             }
         });
     }
@@ -151,42 +191,6 @@ void Renderer2D::tick()
     {
         m_pWebCore->Update();
     }
-
-    handleWebViewInput();
-}
-
-void Renderer2D::handleWebViewInput()
-{
-    std::for_each(m_WebViews.begin(), m_WebViews.end(), [&](WebView* pView)
-    {
-        if (pView->inputEnabled())
-        {
-            Awesomium::WebView* pWeb = pView->getAWEView();
-
-            if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
-            {
-                pWeb->InjectMouseDown(Awesomium::kLeftMouseButton);
-            }
-            else if (CONTROLS->getMouse()->isButtonReleased(io::MouseButton_Left))
-            {
-                pWeb->InjectMouseUp(Awesomium::kLeftMouseButton);
-            }
-
-            if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right))
-            {
-                pWeb->InjectMouseDown(Awesomium::kRightMouseButton);
-            }
-            else if (CONTROLS->getMouse()->isButtonReleased(io::MouseButton_Right))
-            {
-                pWeb->InjectMouseUp(Awesomium::kRightMouseButton);
-            }
-
-            vec2 mouseMove = CONTROLS->getMouse()->getPosition();
-            pWeb->InjectMouseMove(static_cast<int>(mouseMove.x), static_cast<int>(mouseMove.y));
-
-            pWeb->InjectMouseWheel(CONTROLS->getMouse()->getScroll() * 10,0);
-        }
-    });
 }
 
 void Renderer2D::draw()
