@@ -249,19 +249,12 @@ float Happy2DRenderer::getDepth()
 
 void Happy2DRenderer::resize()
 {
-
-    uint renderTexture;
-    glGenTextures(1, &renderTexture);
-
-    GL::heBindTexture2D(0, renderTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ViewPortSize.x), static_cast<GLsizei>(m_ViewPortSize.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
-    m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), GL_RGBA8);
+    m_pRenderTexture->setData(static_cast<uint>(m_ViewPortSize.x), static_cast<uint>(m_ViewPortSize.y), 
+        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Linear, false, false );
     m_pRenderTexture->setName("Happy2DRenderer::m_pRenderTexture");
 
     if (m_DepthRenderTarget != UINT_MAX)
@@ -276,7 +269,7 @@ void Happy2DRenderer::resize()
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pRenderTexture->getID(), 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderTarget);
 
     m_matOrthoGraphic = mat44::createOrthoLH(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y, 0.0f, 100.0f);

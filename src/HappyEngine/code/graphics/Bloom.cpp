@@ -124,21 +124,15 @@ void Bloom::resize()
         downSampleTextureId[pass].resize(m_DownSamples);
         m_Texture[pass].resize(m_DownSamples);
 
-        glGenTextures(m_DownSamples, &downSampleTextureId[pass][0]);
         for (int i = 0; i < m_DownSamples; ++i)
         {
-            GL::heBindTexture2D(0, downSampleTextureId[pass][i]);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 
-                GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
-                0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
             ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
             m_Texture[pass][i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
             m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
-            m_Texture[pass][i]->init(downSampleTextureId[pass][i], GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), GL_RGBA16F);
+            m_Texture[pass][i]->setData(GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
+                gfx::Texture2D::TextureFormat_RGBA16F, 0, 
+                gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float,
+                gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, false, false );
         }
 
         //////////////////////////////////////////////////////////////////////////

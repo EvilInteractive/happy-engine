@@ -135,16 +135,11 @@ void ExtraForward3DRenderer::end()
 
 void ExtraForward3DRenderer::resize()
 {
-    uint renderTexture;
-    glGenTextures(1, &renderTexture);
-
-    GL::heBindTexture2D(0, renderTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_ScreenDimensions.x), static_cast<GLsizei>(m_ScreenDimensions.y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pRenderTexture->init(renderTexture, static_cast<uint>(m_ScreenDimensions.x), static_cast<uint>(m_ScreenDimensions.y), GL_RGBA8);
+    m_pRenderTexture->setData(
+        static_cast<uint>(m_ScreenDimensions.x), static_cast<uint>(m_ScreenDimensions.y), 
+        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
 
     if (m_RenderFboID != UINT_MAX)
         glDeleteFramebuffers(1, &m_RenderFboID);
@@ -152,7 +147,7 @@ void ExtraForward3DRenderer::resize()
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pRenderTexture->getID(), 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GRAPHICS->getDrawManager()->getDepthID(), 0);
 }
 

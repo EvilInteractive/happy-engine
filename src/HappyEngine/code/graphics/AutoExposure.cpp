@@ -62,20 +62,11 @@ void AutoExposure::init(const RenderSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
     //////////////////////////////////////////////////////////////////////////
-    uint lumTexId[2];
-    glGenTextures(2, lumTexId);
-
     for (int i = 0; i < 2; ++i)
     {
-        GL::heBindTexture2D(0, lumTexId[i]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, 
-            1, 1,
-            0, GL_RED, GL_FLOAT, 0);
-        m_pLumTexture[i]->init(lumTexId[i], 1, 1, GL_R16F);
+        m_pLumTexture[i]->setData(1, 1, gfx::Texture2D::TextureFormat_R16F, 0, 
+            gfx::Texture2D::BufferLayout_R, gfx::Texture2D::BufferType_Float,
+            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
     }
 
     //////////////////////////////////////////////////////////////////////////

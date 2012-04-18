@@ -106,7 +106,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
         data.pData = 0;
         data.width = 0;
         data.height = 0;
-        data.format = 0;
+        data.format = gfx::Texture2D::BufferLayout_BGRA;
         data.color = color;
         data.tex = handle;
 
@@ -137,7 +137,7 @@ const gfx::Texture2D* TextureLoader::asyncLoadTexture(const std::string& path, b
         data.pData = 0;
         data.width = 0;
         data.height = 0;
-        data.format = 0;
+        data.format = gfx::Texture2D::BufferLayout_BGRA;
         data.tex = handle;
         data.storePixels = storePixelsInTexture;
 
@@ -169,7 +169,7 @@ const gfx::Texture2D* TextureLoader::loadTexture(const std::string& path, bool s
         data.pData = 0;
         data.width = 0;
         data.height = 0;
-        data.format = 0;
+        data.format = gfx::Texture2D::BufferLayout_BGRA;
         data.tex = handle;
         data.storePixels = storePixelsInTexture;
 
@@ -200,7 +200,7 @@ const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
         TextureLoadData data;
         data.path = stream.str();
         data.id = 0;
-        data.format = 0;
+        data.format = gfx::Texture2D::BufferLayout_BGRA;
         data.color = color;
         data.tex = handle;
 
@@ -214,38 +214,20 @@ const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
 
 gfx::Texture2D* TextureLoader::makeEmptyTexture(const vec2& size)
 {
-    GLuint texID;
-    glGenTextures(1, &texID);
-    GL::heBindTexture2D(0, texID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
     ObjectHandle handle(FACTORY->create());
 
-    FACTORY->get(handle)->init(texID, size.x, size.y, GL_BGRA);
+    FACTORY->get(handle)->setData(static_cast<uint>(size.x), static_cast<uint>(size.y), gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Clamp,    gfx::Texture2D::FilterType_Linear, false, false );
 
     return FACTORY->get(handle);
 }
 
 bool TextureLoader::createTexture( const TextureLoadData& data )
 {
-    GLuint texID;
-    glGenTextures(1, &texID);
-    GL::heBindTexture2D(0, texID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, data.width, data.height, 0, data.format, GL_UNSIGNED_BYTE, data.pData);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    if (data.storePixels)
-        FACTORY->get(data.tex)->init(texID, data.width, data.height, data.format, data.pData, 4 * data.width * data.height);
-    else
-        FACTORY->get(data.tex)->init(texID, data.width, data.height, data.format);
+    FACTORY->get(data.tex)->setData(data.width, data.height, gfx::Texture2D::TextureFormat_Compressed_RGBA8, data.pData, 
+        data.format, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Repeat,   gfx::Texture2D::FilterType_Anisotropic_16x, true, data.storePixels );
 
     FACTORY->get(data.tex)->setName(data.path);
 
@@ -271,7 +253,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
             data.id = id;
             data.width = ilGetInteger(IL_IMAGE_WIDTH);
             data.height = ilGetInteger(IL_IMAGE_HEIGHT);
-            data.format = ilGetInteger(IL_IMAGE_FORMAT);
+            data.format = gfx::Texture2D::BufferLayout_BGRA;
             data.pData = ilGetData();
 
             HE_INFO("Texture load completed: %s", data.path.c_str());
@@ -295,7 +277,7 @@ bool TextureLoader::makeData( TextureLoadData& data )
     data.id = 0;
     data.width = 8;
     data.height = 8;
-    data.format = GL_BGRA;
+    data.format = gfx::Texture2D::BufferLayout_BGRA;
     data.pData = NEW byte[8*8*4];
     for (uint i = 0; i < 64*4; i += 4)
     {

@@ -94,7 +94,7 @@ void FxParticleSystem::start()
     if (pTexture != nullptr)
     {
         boost::weak_ptr<ShaderUserVar<Texture2D*>> weakTex(pTexture);
-        pTexture->getData()->callbackIfLoaded([&, weakTex]()
+        pTexture->getData()->callbackOnceIfLoaded([&, weakTex]()
         {
             if (m_Stopped == false)
             {

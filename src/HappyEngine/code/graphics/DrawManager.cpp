@@ -243,39 +243,22 @@ void DrawManager::initSharedTextures()
          height(GRAPHICS->getScreenHeight());
 
     //Color
-    uint renderTextureId;
-    glGenTextures(1, &renderTextureId);
-    GL::heBindTexture2D(0, renderTextureId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, m_RenderSettings.enableHDR?GL_RGBA16F:GL_RGBA8, 
-        width, height,
-        0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pColorRenderMap->init(renderTextureId, width, height, m_RenderSettings.enableHDR?GL_RGBA16F:GL_RGBA8);
+    m_pColorRenderMap->setData(width, height, 
+        m_RenderSettings.enableHDR?gfx::Texture2D::TextureFormat_RGBA16F:gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
 
     //Normal
-    uint normalId;
-    glGenTextures(1, &normalId);
-    GL::heBindTexture2D(0, normalId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, width, height, 0, GL_RG, GL_FLOAT, 0);
-    m_pNormalRenderMap->init(normalId, width, height, GL_RG16F);
+    m_pNormalRenderMap->setData(width, height, 
+        gfx::Texture2D::TextureFormat_RG16F, 0, 
+        gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
 
     //Depth
-    uint depthId;
-    glGenTextures(1, &depthId);
-    GL::heBindTexture2D(0, depthId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-    m_pDepthRenderMap->init(depthId, width, height, GL_DEPTH_COMPONENT32);
+    m_pDepthRenderMap->setData(width, height, 
+        gfx::Texture2D::TextureFormat_Depth32, 0, 
+        gfx::Texture2D::BufferLayout_Depth, gfx::Texture2D::BufferType_Float,
+        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
 }
 
 uint DrawManager::getDepthID() const

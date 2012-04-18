@@ -42,7 +42,7 @@ public:
 
     virtual int getScroll() const;
     virtual const vec2& getPosition() const;
-    virtual const vec2& getMove() const;
+    virtual vec2 getMove() const;
 
     virtual void addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const;
     virtual eventExt<void, MouseButton>& getOnButtonPressedListeners();

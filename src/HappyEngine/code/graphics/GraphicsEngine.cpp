@@ -76,6 +76,8 @@ void GraphicsEngine::init()
     glewExperimental = true;
     glHandleError(glewInit());
 
+    GL::init();
+
     HE_INFO((char*)glGetString(GL_VENDOR));
     HE_INFO((char*)glGetString(GL_RENDERER));
     HE_INFO((char*)glGetString(GL_VERSION));
@@ -97,6 +99,8 @@ void GraphicsEngine::init()
     HE_INFO("Max texture size: %d", maxTexSize);
     HE_INFO("Max render size: %d", maxRenderSize);
     HE_INFO("Max rect tex size: %d", maxRectSize);
+
+    HE_INFO("Max anisotropicfiltering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
 
     setVSync(m_VSyncEnabled);
     setViewport(m_Viewport);

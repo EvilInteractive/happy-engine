@@ -64,17 +64,10 @@ void Picker::initialize()
     int width = GRAPHICS->getScreenWidth(), 
         height = GRAPHICS->getScreenHeight();
 
-    uint renderTexture;
-    glGenTextures(1, &renderTexture);
-
-    GL::heBindTexture2D(0, renderTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pIDTexture->init(renderTexture, width, height, GL_RGBA8);
+    m_pIDTexture->setData(width, height, 
+        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
 
     glGenRenderbuffers(1, &m_DepthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderBuffer);
@@ -83,7 +76,7 @@ void Picker::initialize()
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pIDTexture->getID(), 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderBuffer);
     err::checkFboStatus("picker");
 

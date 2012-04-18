@@ -204,22 +204,16 @@ void Renderer2D::draw()
 
             if (pSurface->Dirty())
             {
-                /*glDrawPixels(   GRAPHICS->getScreenWidth(),
-                                GRAPHICS->getScreenHeight(),
-                                GL_BGRA,
-                                GL_UNSIGNED_BYTE,
-                                pSurface->buffer());*/
-
-                unsigned char* buffer = NEW unsigned char[pSurface->width() * 4 * pSurface->height()];
+                byte* buffer = NEW byte[pSurface->width() * 4 * pSurface->height()];
 
                 pSurface->CopyTo(buffer, pSurface->width() * 4, 4, false, true);
 
-                m_WebViewRenderTextures[i]->resize(vec2(pSurface->width(), pSurface->height()));
-                m_WebViewRenderTextures[i]->setPixelData(buffer, false);
+                m_WebViewRenderTextures[i]->setData(
+                    pSurface->width(), pSurface->height(), 
+                    gfx::Texture2D::TextureFormat_RGBA8, buffer, 
+                    gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, false);
 
                 delete[] buffer;
-
-                //pSurface->SetDirty(false); 
             } 
         }
 

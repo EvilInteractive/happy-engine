@@ -81,7 +81,7 @@ int Mouse::getScroll() const
 {
     return m_Scroll;
 }
-const vec2& Mouse::getMove() const
+vec2 Mouse::getMove() const
 {
     return (m_Position - m_PrevPosition);
 }

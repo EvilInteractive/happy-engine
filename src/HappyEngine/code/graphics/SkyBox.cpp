@@ -64,19 +64,19 @@ void SkyBox::load( const std::string& asset )
     std::string ext(asset.substr(extPos));
 
     m_CubeFaces[Cube_Back] = CONTENT->asyncLoadTexture(name + "_back" + ext, true);
-    m_CubeFaces[Cube_Back]->callbackIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    m_CubeFaces[Cube_Back]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
     m_CubeFaces[Cube_Front] = CONTENT->asyncLoadTexture(name + "_front" + ext, true);
-    m_CubeFaces[Cube_Front]->callbackIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    m_CubeFaces[Cube_Front]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
 
     m_CubeFaces[Cube_Bottom] = CONTENT->asyncLoadTexture(name + "_bottom" + ext, true);
-    m_CubeFaces[Cube_Bottom]->callbackIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    m_CubeFaces[Cube_Bottom]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
     m_CubeFaces[Cube_Top] = CONTENT->asyncLoadTexture(name + "_top" + ext, true);
-    m_CubeFaces[Cube_Top]->callbackIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    m_CubeFaces[Cube_Top]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
 
     m_CubeFaces[Cube_Left] = CONTENT->asyncLoadTexture(name + "_left" + ext, true);
-    m_CubeFaces[Cube_Left]->callbackIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    m_CubeFaces[Cube_Left]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
     m_CubeFaces[Cube_Right] = CONTENT->asyncLoadTexture(name + "_right" + ext, true);
-    m_CubeFaces[Cube_Right]->callbackIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    m_CubeFaces[Cube_Right]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
 
 
 

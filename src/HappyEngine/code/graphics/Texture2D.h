@@ -24,56 +24,121 @@
 #define _HE_TEXTURE2D_H_
 #pragma once
 
-#include "HeAssert.h"
-#undef assert
-#define assert HE_ASSERT
-
-#include "HappyTypes.h"
-
-#include "boost/function.hpp"
-#include "boost/thread/mutex.hpp"
-
-#include "event.h"
-
 #include "Resource.h"
 
 namespace he {
 namespace gfx {
-    
+   
 class Texture2D : public Resource<Texture2D>
 {
 public:
+    enum TextureFormat
+    {
+        TextureFormat_RGBA8,
+        TextureFormat_RGB8,
+        TextureFormat_RG8,
+        TextureFormat_R8,
+
+        TextureFormat_Compressed_RGBA8,
+        TextureFormat_Compressed_RGB8,
+        TextureFormat_Compressed_RG8,
+        TextureFormat_Compressed_R8,
+
+        TextureFormat_RGBA16F,
+        TextureFormat_RGB16F,
+        TextureFormat_RG16F,
+        TextureFormat_R16F,
+
+        TextureFormat_RGBA16,
+        TextureFormat_RGB16,
+        TextureFormat_RG16,
+        TextureFormat_R16,
+
+        TextureFormat_Depth32,
+        TextureFormat_Depth24_Stencil8,
+
+    };
+    enum BufferLayout
+    {
+        BufferLayout_R,
+        BufferLayout_RG,
+        BufferLayout_RGB,
+        BufferLayout_RGBA,
+        BufferLayout_BGR,
+        BufferLayout_BGRA,
+        BufferLayout_Depth
+    };
+    enum BufferType
+    {
+        BufferType_Byte,
+        BufferType_Float
+    };
+    enum WrapType
+    {
+        WrapType_Clamp,
+        WrapType_Mirror,
+        WrapType_Repeat
+    };
+    enum FilterType
+    {
+        FilterType_Nearest = 0,
+        FilterType_Linear = 1,
+        FilterType_Anisotropic_2x = 2,
+        FilterType_Anisotropic_4x = 4,
+        FilterType_Anisotropic_8x = 8,
+        FilterType_Anisotropic_16x = 16
+    };
+
     Texture2D();
     virtual ~Texture2D();
 
-    void init(uint tex, uint width, uint height, uint format, void* pixels = nullptr, uint bufferSize = 0);
+    void setData(uint width, uint height, TextureFormat textureFormat, 
+        const void* pData, BufferLayout bufferLayout, BufferType bufferType,
+        WrapType wrapType, FilterType filter,
+        bool generateMips = true, bool storePixels = false);
+    void setData(uint width, uint height, TextureFormat textureFormat, 
+        const void* pData, BufferLayout bufferLayout, BufferType bufferType);
+    void setData(uint width, uint height, TextureFormat textureFormat, 
+        const void* pData, BufferLayout bufferLayout, BufferType bufferType,
+        bool generateMips, bool storePixels = false);
     
     bool isInitialized() const;
 
     uint getID() const;
     uint getWidth() const;
     uint getHeight() const;
-    uint getFormat() const;
+    TextureFormat getTextureFormat() const;
+    BufferLayout getBufferLayout() const;
+    BufferType getBufferType() const;
+    WrapType getWrapType() const;
+    FilterType getFilterType() const;
+    bool HasMipMaps() const;
 
-    void setPixelData(const void* pData, bool bCompressed = false);
     void* getPixelsIfAvailable() const;
+    
+    void callbackOnceIfLoaded(const boost::function<void()>& callback) const;
 
-    void resize(const vec2& size);
-
-    void callbackIfLoaded(const boost::function<void()>& callback) const;
-
-    static uint getTextureCount();
+    // Static
+    static uint calculatePixelSize(BufferLayout bufferLayout, BufferType bufferType);
 
 private:
+    GLenum getInternalFormat(TextureFormat format);
+    GLenum getInternalBufferLayout(BufferLayout format);
+    GLenum getInternalBufferType(BufferType type);
+    GLenum getInternalWrapType(WrapType type);
+
     boost::mutex m_CallbackMutex;
     event<void> Loaded;
 
     uint m_Width, m_Height;
-    uint m_Format;
+    TextureFormat m_TextureFormat;
+    BufferLayout m_BufferLayout;
+    BufferType m_BufferType;
+    bool m_HasMipMaps;
+    WrapType m_WrapType;
+    FilterType m_FilterType;
 
     uint m_Id;
-
-    static uint s_Count;
 
     void* m_pPixels;
 

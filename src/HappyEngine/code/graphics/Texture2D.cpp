@@ -20,41 +20,132 @@
 #include "HappyPCH.h" 
 
 #include "Texture2D.h"
-#include "GL/glew.h"
 
 namespace he {
 namespace gfx {
-
-uint Texture2D::s_Count = 0;
-
-Texture2D::Texture2D(): m_Id(UINT_MAX), m_Width(0), m_Height(0), m_Format(0), m_isInitialized(false), m_pPixels(nullptr)
+    
+Texture2D::Texture2D(): 
+    m_Id(UINT_MAX), 
+    m_Width(0), 
+    m_Height(0), 
+    m_isInitialized(false), 
+    m_pPixels(nullptr),
+    m_WrapType(WrapType_Repeat), 
+    m_FilterType(FilterType_Linear),
+    m_HasMipMaps(false)
 {
-    ++s_Count;
 }
 
-void Texture2D::init(uint tex, uint width, uint height, uint format, void* pixels, uint bufferSize)
+void Texture2D::setData( uint width, uint height, TextureFormat textureFormat, 
+    const void* pData, BufferLayout bufferLayout, BufferType bufferType, 
+    WrapType wrapType, FilterType filterType,
+    bool generateMips, bool storePixels )
 {
-    HE_ASSERT(width != 0 && height != 0, "Loaded texture with width = 0 or height = 0 !");
-
-    if (m_Id != UINT_MAX)
-    {
-        glDeleteTextures(1, &m_Id);
-    }
+    // Clean
     he_free(m_pPixels);
     m_pPixels = nullptr;
-    if (bufferSize > 0)
+
+    // Store
+    if (storePixels == true && pData != nullptr)
     {
+        uint bufferSize(calculatePixelSize(bufferLayout, bufferType) * width * height);
         m_pPixels = he_malloc(bufferSize);
-        he_memcpy(m_pPixels, pixels, bufferSize);
+        he_memcpy(m_pPixels, pData, bufferSize);
     }
-    m_Id = tex;
+
+    bool isFirstInit(false);
+    if (m_Id == UINT_MAX)
+    {
+        glGenTextures(1, &m_Id);
+        isFirstInit = true;
+    }
+    HE_ASSERT(m_Id != UINT_MAX, "Texture create failed");
     m_Width = width;
     m_Height = height;
-    m_Format = format;
-    m_CallbackMutex.lock();
-    m_isInitialized = true;
-    Loaded();
-    m_CallbackMutex.unlock();
+    m_TextureFormat = textureFormat;
+    m_BufferLayout = bufferLayout;
+    m_BufferType = bufferType;
+    m_HasMipMaps = generateMips;
+
+    // Create
+    GL::heBindTexture2D(0, m_Id);
+
+    //Filter
+#pragma region Filter
+    if (m_FilterType != filterType || isFirstInit)
+    {
+        m_FilterType = filterType;
+        if (m_FilterType >= FilterType_Anisotropic_2x && GL::getMaxAnisotropicFilteringSupport() > FLT_EPSILON)
+        {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            if (m_FilterType > GL::getMaxAnisotropicFilteringSupport())
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, GL::getMaxAnisotropicFilteringSupport());
+            else
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, static_cast<float>(m_FilterType));
+        }
+        else
+        {
+            if (m_FilterType >= FilterType_Anisotropic_2x)
+                m_FilterType = FilterType_Linear;
+            if (m_FilterType == FilterType_Nearest)
+            {     
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                if (m_HasMipMaps)
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+                else
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            }
+            else
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                if (m_HasMipMaps)
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                else
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            }
+        }
+    }
+#pragma endregion
+
+    //Wrap
+    if (m_WrapType != wrapType || isFirstInit)
+    {
+        m_WrapType = wrapType;
+        GLenum wrap(getInternalWrapType(m_WrapType));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+    }
+
+    //Data
+    glTexImage2D(GL_TEXTURE_2D, 0, getInternalFormat(m_TextureFormat), m_Width, m_Height, 
+                                0, getInternalBufferLayout(m_BufferLayout), getInternalBufferType(m_BufferType), 
+                                pData);
+    if (generateMips)
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Done
+    if (m_isInitialized == false)
+    {
+        m_CallbackMutex.lock();
+        m_isInitialized = true;
+        Loaded();
+        Loaded.clear();
+        m_CallbackMutex.unlock();
+    }
+}
+
+void Texture2D::setData(uint width, uint height, TextureFormat textureFormat, 
+    const void* pData, BufferLayout bufferLayout, BufferType bufferType)
+{
+    setData(width, height, textureFormat, pData, bufferLayout, bufferType, m_WrapType, m_FilterType, m_HasMipMaps, false);
+}
+
+void Texture2D::setData(uint width, uint height, TextureFormat textureFormat, 
+    const void* pData, BufferLayout bufferLayout, BufferType bufferType,
+    bool generateMips, bool storePixels)
+{
+    setData(width, height, textureFormat, pData, bufferLayout, bufferType, m_WrapType, m_FilterType, generateMips, storePixels);
 }
 
 bool Texture2D::isInitialized() const
@@ -69,14 +160,7 @@ Texture2D::~Texture2D()
     {
         glDeleteTextures(1, &m_Id);
     }
-    --s_Count;
 }
-
-uint Texture2D::getTextureCount()
-{
-    return s_Count;
-}
-
 
 uint Texture2D::getID() const
 {
@@ -92,7 +176,7 @@ uint Texture2D::getHeight() const
     return m_Height;
 }
 
-void Texture2D::callbackIfLoaded( const boost::function<void()>& callback ) const
+void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
 {
     Texture2D* _this(const_cast<Texture2D*>(this));
     _this->m_CallbackMutex.lock();
@@ -108,38 +192,136 @@ void Texture2D::callbackIfLoaded( const boost::function<void()>& callback ) cons
     }
 }
 
-uint Texture2D::getFormat() const
-{
-    return m_Format;
-}
-
 void* Texture2D::getPixelsIfAvailable() const
 {
     return m_pPixels;
 }
 
-void Texture2D::setPixelData(const void* pData, bool bCompressed)
+GLenum Texture2D::getInternalFormat( TextureFormat format )
 {
-    if (m_Id != UINT_MAX)
+    switch (format)
     {
-        GL::heBindTexture2D(m_Id);
-
-        if (bCompressed)
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, m_Width, m_Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData);
-        else
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData);
+    case TextureFormat_R8: return GL_RED;
+    case TextureFormat_RG8: return GL_RG;
+    case TextureFormat_RGB8: return GL_RGB;
+    case TextureFormat_RGBA8: return GL_RGBA;
+    case TextureFormat_Compressed_R8: return GL_COMPRESSED_RED;
+    case TextureFormat_Compressed_RG8: return GL_COMPRESSED_RG;
+    case TextureFormat_Compressed_RGB8: return GL_COMPRESSED_RGB;
+    case TextureFormat_Compressed_RGBA8: return GL_COMPRESSED_RGBA;
+    case TextureFormat_RGBA16: return GL_RGBA16;
+    case TextureFormat_RGB16: return GL_RGB16;
+    case TextureFormat_RG16: return GL_RG16;
+    case TextureFormat_R16: return GL_R16;
+    case TextureFormat_RGBA16F: return GL_RGBA16F;
+    case TextureFormat_RGB16F: return GL_RGB16F;
+    case TextureFormat_RG16F: return GL_RG16F;
+    case TextureFormat_R16F: return GL_R16F;
+    case TextureFormat_Depth32: return GL_DEPTH_COMPONENT32;
+    case TextureFormat_Depth24_Stencil8: return GL_DEPTH24_STENCIL8;
+    default: HE_ERROR("Unknown Texture2D::TextureFormat"); return GL_RGBA;
+    }
+}
+GLenum Texture2D::getInternalBufferLayout( BufferLayout layout )
+{
+    switch (layout)
+    {
+    case BufferLayout_RGBA: return GL_RGBA;
+    case BufferLayout_BGRA: return GL_BGRA;
+    case BufferLayout_RGB:  return GL_RGB;
+    case BufferLayout_BGR:  return GL_BGR;
+    case BufferLayout_RG:   return GL_RG;
+    case BufferLayout_R:    return GL_RED;
+    case BufferLayout_Depth:return GL_DEPTH_COMPONENT;
+    default:
+        HE_ERROR("Unkown Texture2D::BufferLayout");
+        return GL_BGRA;
+    }
+}
+GLenum Texture2D::getInternalBufferType( BufferType bufferType )
+{
+    switch (bufferType)
+    {
+    case BufferType_Byte: return GL_UNSIGNED_BYTE;
+    case BufferType_Float: return GL_FLOAT;
+    default: HE_ERROR("Unknown Texture2D::Buffertype"); return GL_UNSIGNED_BYTE;
     }
 }
 
-void Texture2D::resize(const vec2& size)
-{
-    vec2 dimensions(m_Width, m_Height);
 
-    if (size != dimensions)
+he::uint Texture2D::calculatePixelSize( BufferLayout bufferLayout, BufferType bufferType )
+{
+    uint size(0);
+    switch (bufferType)
     {
-        m_Width = static_cast<uint>(size.x);
-        m_Height = static_cast<uint>(size.y);
+    case BufferType_Byte:
+        size = sizeof(byte); break;
+    case BufferType_Float: 
+        size = sizeof(float); break;
+    default:
+        HE_ERROR("Unknown Texture2D::Buffertype"); break;
+    }
+    switch (bufferLayout)
+    {
+    case BufferLayout_RGBA:
+    case BufferLayout_BGRA:
+        size *= 4; break;
+    case BufferLayout_RGB:
+    case BufferLayout_BGR:
+        size *= 3; break;
+    case BufferLayout_RG:
+        size *= 2; break;
+    case BufferLayout_Depth:
+    case BufferLayout_R:
+        size *= 1; break;
+    default:
+        HE_ERROR("Unknown Texture2D::BufferLayout");
+    }
+
+    return size;
+}
+
+GLenum Texture2D::getInternalWrapType( WrapType type )
+{
+    switch (type)
+    {
+    case WrapType_Clamp: return GL_CLAMP_TO_EDGE;
+    case WrapType_Mirror: return GL_MIRRORED_REPEAT;
+    case WrapType_Repeat: return GL_REPEAT;
+    default: HE_ERROR("Unknown Texture2D::WrapType"); return GL_REPEAT;
     }
 }
+
+Texture2D::TextureFormat Texture2D::getTextureFormat() const
+{
+    return m_TextureFormat;
+}
+
+Texture2D::BufferLayout Texture2D::getBufferLayout() const
+{
+    return m_BufferLayout;
+}
+
+Texture2D::BufferType Texture2D::getBufferType() const
+{
+    return m_BufferType;
+}
+
+Texture2D::WrapType Texture2D::getWrapType() const
+{
+    return m_WrapType;
+}
+
+Texture2D::FilterType Texture2D::getFilterType() const
+{
+    return m_FilterType;
+}
+
+bool Texture2D::HasMipMaps() const
+{
+    return m_HasMipMaps;
+}
+
+
 
 } } //end namespace

@@ -226,26 +226,14 @@ void Deferred3DRenderer::onScreenResized()
     //Collection Textures - just SGI and color others are shared
 
     // Color
-    uint colorId;
-    glGenTextures(1, &colorId);
-    GL::heBindTexture2D(0, colorId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pColorIllTexture->init(colorId, width, height, GL_RGBA8);
+    m_pColorIllTexture->setData(width, height, Texture2D::TextureFormat_RGBA8, 0, 
+        Texture2D::BufferLayout_BGRA, Texture2D::BufferType_Byte,
+        Texture2D::WrapType_Clamp, Texture2D::FilterType_Nearest, false, false );
 
     // SG
-    uint sgId;
-    glGenTextures(1, &sgId);
-    GL::heBindTexture2D(0, sgId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-    m_pSGTexture->init(sgId, width, height, GL_RGBA8);
+    m_pSGTexture->setData(width, height, Texture2D::TextureFormat_RGBA8, 0, 
+        Texture2D::BufferLayout_BGRA, Texture2D::BufferType_Byte,
+        Texture2D::WrapType_Clamp, Texture2D::FilterType_Nearest, false, false );
 
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///

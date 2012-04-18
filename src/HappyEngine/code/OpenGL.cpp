@@ -53,6 +53,9 @@ RectI GL::m_ScissorRect = RectI(0, 0, 0, 0);
 //Line Smoothing
 bool GL::m_LineSmoothEnabled = false;
 
+//Filtering
+float GL::m_MaxAnisotropicFilteringSupport = 0.0f;
+
 //Clear
 void GL::heClearColor(const Color& color)
 {
@@ -241,6 +244,15 @@ void GL::init()
     {
         m_BoundUbo[i] = UINT_MAX;
     }
+
+    if (GLEW_EXT_texture_filter_anisotropic)
+    {
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_MaxAnisotropicFilteringSupport);
+    }
+    else
+    {
+        m_MaxAnisotropicFilteringSupport = 0.0f;
+    }
 }
 void GL::reset()
 {
@@ -261,6 +273,11 @@ void GL::reset()
 
 
     m_ActiveTex = UINT_MAX;;
+}
+
+float GL::getMaxAnisotropicFilteringSupport()
+{
+    return m_MaxAnisotropicFilteringSupport;
 }
 
 

@@ -112,22 +112,17 @@ void Forward3DRenderer::initFbo()
     HE_ASSERT(m_pOutDepthTexture != nullptr, "Please supply a valid depthBuffer");
     if (m_OwnsColorBuffer)
     {
-        uint colorId;
-        glGenTextures(1, &colorId);
-        GL::heBindTexture2D(0, colorId);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
         if (m_pOutColorTexture == nullptr)
         {
             ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
             m_pOutColorTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
             ResourceFactory<Texture2D>::getInstance()->get(handle)->setName("Forward3DRenderer::m_pOutColorTexture");
         }
-        ResourceFactory<Texture2D>::getInstance()->get(m_pOutColorTexture->getHandle())->init(
-            colorId, m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), GL_RGBA8);
+        ResourceFactory<Texture2D>::getInstance()->get(m_pOutColorTexture->getHandle())->setData(
+            m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), 
+            gfx::Texture2D::TextureFormat_RGBA8, 0, 
+            gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
+            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
     }
 
     if ((m_FboId == 0 || m_FboId == UINT_MAX) == false)

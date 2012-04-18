@@ -116,6 +116,9 @@ public:
     //line smoothing
     static void heLineSmoothEnabled(bool enabled);
 
+    //filtering
+    static float getMaxAnisotropicFilteringSupport();
+
 
 private:
     //Clear
@@ -150,6 +153,10 @@ private:
     //Line smoothing
     static bool m_LineSmoothEnabled;
 
+    //Filtering
+    static float m_MaxAnisotropicFilteringSupport;
+
+    GL() {}
 };
 
 } //end namespace

@@ -25,11 +25,9 @@
 #pragma once
 
 #include "AssetContainer.h"
+#include "Texture2D.h"
 
 namespace he {
-namespace gfx {
-    class Texture2D;
-}
 namespace ct {
 
 class TextureLoader
@@ -62,7 +60,7 @@ private:
         byte* pData;
         uint width;
         uint height;
-        uint format;
+        gfx::Texture2D::BufferLayout format;
         uint id;
         bool storePixels;
         Color color;

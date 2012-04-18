@@ -62,25 +62,17 @@ void ShadowCaster::init(const RenderSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                             Textures                               ///
     //////////////////////////////////////////////////////////////////////////
-    uint texId[COUNT];
-    glGenTextures(COUNT, texId);
-
     for (int i = 0; i < COUNT; ++i)
     {
-        GL::heBindTexture2D(0, texId[i]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 
-            m_ShadowSize, m_ShadowSize, 
-            0, GL_RG, GL_FLOAT, 0);
         if (m_pShadowTexture[i] != nullptr)
             m_pShadowTexture[i]->release();
         ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
         m_pShadowTexture[i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
         m_pShadowTexture[i]->setName("ShadowCaster::m_pShadowTexture[i]");
-        m_pShadowTexture[i]->init(texId[i], m_ShadowSize, m_ShadowSize, GL_RG16F);
+        m_pShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 
+            gfx::Texture2D::TextureFormat_RG16, 0, 
+            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float,
+            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, false, false );
     }
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
@@ -91,7 +83,7 @@ void ShadowCaster::init(const RenderSettings& settings)
 
     glGenFramebuffers(1, &m_FboId);
     GL::heBindFbo(m_FboId);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId[0], 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[0]->getID(), 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderbuff);
     err::checkFboStatus("shadow");
 
