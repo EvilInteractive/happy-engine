@@ -45,7 +45,6 @@ class LineLoader;
 class FontLoader;
 class ShaderLoader;
 class MaterialLoader;
-class FxLoader;
 
 class ContentManager
 {
@@ -81,8 +80,6 @@ public:
    
     gfx::Material loadMaterial(const std::string& path);
 
-    uint loadFx(const std::string& path);
-
     void setRootDir(const std::string& root);
     void setTextureFolder(const std::string& folder);
     void setModelFolder(const std::string& folder);
@@ -117,7 +114,6 @@ private:
     FontLoader* m_pFontLoader;
     ShaderLoader* m_pShaderLoader;
     MaterialLoader* m_pMaterialLoader;
-    FxLoader* m_pFxLoader;
 
     std::string m_ContentRootDir;   //include trailing /
     std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /

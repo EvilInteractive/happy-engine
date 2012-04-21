@@ -41,6 +41,7 @@ struct SSAOSettings
 struct RenderSettings
 {
 public:
+    bool isFullscreen;
     bool enableDeferred;
 
     bool enableHDR;

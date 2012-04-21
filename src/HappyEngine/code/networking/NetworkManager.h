@@ -22,35 +22,17 @@
 #define _HE_NETWORK_MANAGER_H_
 #pragma once
 
-#include "HeAssert.h"
-#undef assert
-#include "boost/asio.hpp"
-#undef assert
-#define assert HE_ASSERT
-#include "boost/thread.hpp"
-
 namespace he {
 namespace net {
 
 class NetworkManager
 {
 public:
-	NetworkManager();
+    NetworkManager();
     virtual ~NetworkManager();
-
-    void start();
-    void stop();
-
-    boost::asio::io_service& getIoService();
 
 private:
 
-    void asioThread();
-
-    boost::asio::io_service m_IoService;
-    boost::thread m_AsioThread;
-
-    bool m_AsioIsAlive;
 
     //Disable default copy constructor and default assignment operator
     NetworkManager(const NetworkManager&);

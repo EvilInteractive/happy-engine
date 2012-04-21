@@ -25,7 +25,6 @@ namespace gfx {
     class Happy2DRenderer;
     class HappyQtWidget;
     class ExtraForward3DRenderer;
-    class FxManager;
     class Renderer2D;
 }
 namespace io {
@@ -66,7 +65,6 @@ namespace game {
 #define GAME HAPPYENGINE->getGame()
 #define CAMERAMANAGER HAPPYENGINE->getCameraManager()
 #define HE3DX HAPPYENGINE->get3DRenderer()
-#define FX HAPPYENGINE->getFxManager()
 
 namespace he {
 enum SubEngine
@@ -113,7 +111,6 @@ public:
     game::Game* getGame() const;
     game::CameraManager* getCameraManager() const;
     gfx::ExtraForward3DRenderer* get3DRenderer() const;
-    gfx::FxManager* getFxManager() const;
 
 private:
     // Singleton design pattern
@@ -132,7 +129,6 @@ private:
     gfx::Happy2DRenderer* m_p2DRenderer;
     gfx::Renderer2D* m_pRenderer2D;
     gfx::ExtraForward3DRenderer* m_p3DRenderer;
-    gfx::FxManager* m_pFxManager;
 
     io::ControlsManager* m_pControlsManager;
     px::PhysicsEngine* m_pPhysicsEngine;

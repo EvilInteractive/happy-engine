@@ -38,7 +38,6 @@
 #include "Console.h"
 #include "SoundEngine.h"
 #include "ExtraForward3DRenderer.h"
-#include "fx/FxManager.h"
 #include "LoadingScreen.h"
 #include "StaticDataManager.h"
 
@@ -87,8 +86,6 @@ void HappyEngine::cleanup()
     m_pRenderer2D = nullptr;
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
-    delete m_pFxManager;
-    m_pFxManager = nullptr;
     delete m_pContentManager;
     m_pContentManager = nullptr;
     delete m_pSoundEngine;
@@ -163,8 +160,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     }
 
     m_pConsole->load();
-
-    m_pFxManager = NEW gfx::FxManager();
 }
 
 void HappyEngine::start(game::Game* pGame)
@@ -266,10 +261,6 @@ void HappyEngine::updateLoop(float dTime)
     PROFILER_BEGIN("Physx");
     if (m_SubEngines & SubEngine_Physics)
         m_pPhysicsEngine->tick(dTime);
-    PROFILER_END();
-
-    PROFILER_BEGIN("Fx man");
-    m_pFxManager->tick(dTime);
     PROFILER_END();
 
     PROFILER_BEGIN("Game");
@@ -402,11 +393,6 @@ game::Game* HappyEngine::getGame() const
 gfx::ExtraForward3DRenderer* HappyEngine::get3DRenderer() const
 {
     return m_p3DRenderer;
-}
-
-gfx::FxManager* HappyEngine::getFxManager() const
-{
-    return m_pFxManager;
 }
 
 game::CameraManager* HappyEngine::getCameraManager() const

@@ -85,7 +85,7 @@ void MainGame::load()
 
     #pragma region lights
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.8f, 0.4f, 1.0f, 1.0f), 0.2f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, 1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 0.5f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-1.0f, 1.0f, 1.0f)), Color(1.0f, 1.0f, 0.9f, 1.0f), 1.0f);
 
     game::PointLightComponent* pTempPointLightComp(NEW game::PointLightComponent());
     scene->addComponent(pTempPointLightComp);

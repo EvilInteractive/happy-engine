@@ -46,7 +46,6 @@ namespace gfx {
 GraphicsEngine::GraphicsEngine(): m_pMainWindow(nullptr), 
                                   m_ScreenRect(-1, -1, 1280, 720),
                                   m_Viewport(0, 0, 1280, 720),
-                                  m_IsFullScreen(false),
                                   m_WindowTitle("HappyEngine"),
                                   m_VSyncEnabled(true),
                                   m_pDrawManager(nullptr),
@@ -71,51 +70,7 @@ void GraphicsEngine::init()
 {
     using namespace err;
 
-    initWindow();
-
-    glewExperimental = true;
-    glHandleError(glewInit());
-
-    GL::init();
-
-    HE_INFO((char*)glGetString(GL_VENDOR));
-    HE_INFO((char*)glGetString(GL_RENDERER));
-    HE_INFO((char*)glGetString(GL_VERSION));
-    HE_INFO((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-
-    int major, minor;
-    glGetIntegerv(GL_MAJOR_VERSION, &major);
-    glGetIntegerv(GL_MINOR_VERSION, &minor);
-    HE_INFO("GL version %d.%d", major, minor);
-
-    int doubleBuff;
-    glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
-    HE_INFO("Doubly buffered: %s", (doubleBuff == GL_TRUE)?"TRUE":"FALSE");
-
-    int maxTexSize, maxRenderSize, maxRectSize;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
-    glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
-    HE_INFO("Max texture size: %d", maxTexSize);
-    HE_INFO("Max render size: %d", maxRenderSize);
-    HE_INFO("Max rect tex size: %d", maxRectSize);
-
-    HE_INFO("Max anisotropicfiltering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
-
-    setVSync(m_VSyncEnabled);
-    setViewport(m_Viewport);
-
-    setBackgroundColor(m_ClearColor);
-    glClearDepth(1.0f);
-
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetWindingFrontFace(true);
-    GL::heSetCullFace(false);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
+#pragma region read settings
     io::IniReader reader;
     if (reader.open("settings.ini") == false)
     { 
@@ -124,6 +79,7 @@ void GraphicsEngine::init()
 
     if (reader.isOpen())
     {
+        m_Settings.isFullscreen = reader.readBool(L"GFX", L"fullscreen", false);
         m_Settings.enableBloom = reader.readBool(L"GFX", L"bloom", false);
         m_Settings.enableSSAO = reader.readBool(L"GFX", L"ssao", false);
         m_Settings.shadowMult = static_cast<byte>(clamp(reader.readInt(L"GFX", L"shadowQuality", 2), 0, 3));
@@ -178,6 +134,53 @@ void GraphicsEngine::init()
     m_Settings.ssaoSettings.minIterations = 4;
     m_Settings.ssaoSettings.maxIterations = 8;
     m_Settings.ssaoSettings.passes = 1;
+#pragma endregion
+
+    m_pMainWindow = NEW sf::Window();
+    initWindow();
+
+    glewExperimental = true;
+    glHandleError(glewInit());
+
+    GL::init();
+
+    HE_INFO((char*)glGetString(GL_VENDOR));
+    HE_INFO((char*)glGetString(GL_RENDERER));
+    HE_INFO((char*)glGetString(GL_VERSION));
+    HE_INFO((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    int major, minor;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    HE_INFO("GL version %d.%d", major, minor);
+
+    int doubleBuff;
+    glGetIntegerv(GL_DOUBLEBUFFER, &doubleBuff);
+    HE_INFO("Doubly buffered: %s", (doubleBuff == GL_TRUE)?"TRUE":"FALSE");
+
+    int maxTexSize, maxRenderSize, maxRectSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderSize);
+    glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectSize);
+    HE_INFO("Max texture size: %d", maxTexSize);
+    HE_INFO("Max render size: %d", maxRenderSize);
+    HE_INFO("Max rect tex size: %d", maxRectSize);
+
+    HE_INFO("Max anisotropicfiltering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
+
+    setVSync(m_VSyncEnabled);
+    setViewport(m_Viewport);
+
+    setBackgroundColor(m_ClearColor);
+    glClearDepth(1.0f);
+
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetWindingFrontFace(true);
+    GL::heSetCullFace(false);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     CONTENT->setRenderSettings(m_Settings);
 
@@ -192,23 +195,10 @@ void GraphicsEngine::initWindow()
     settings.antialiasingLevel = 0;
     settings.majorVersion = 3;
     settings.minorVersion = 2;
-
-    m_pMainWindow = NEW sf::Window(sf::VideoMode(m_ScreenRect.width, m_ScreenRect.height, 32), m_WindowTitle, sf::Style::Close, settings);
+    m_pMainWindow->create(sf::VideoMode(m_ScreenRect.width, m_ScreenRect.height, 32), m_WindowTitle, 
+        m_Settings.isFullscreen? sf::Style::Fullscreen : sf::Style::Close, settings);
     m_pMainWindow->setKeyRepeatEnabled(false);
     m_pMainWindow->setFramerateLimit(0);
-
-    /*int x, y;
-    SDL_GetWindowPosition(m_pMainWindow, &x, &y);
-    if (m_ScreenRect.x == -1)
-        m_ScreenRect.x = x;
-    if (m_ScreenRect.y == -1)
-        m_ScreenRect.y = y;
-
-    SDL_SetWindowPosition(m_pMainWindow, m_ScreenRect.x, m_ScreenRect.y);
-    SDL_SetWindowFullscreen(m_pMainWindow, static_cast<SDL_bool>(m_IsFullScreen));
-
-    m_GLContext = SDL_GL_CreateContext(m_pMainWindow);
-    err::sdlHandleError(SDL_GL_MakeCurrent(m_pMainWindow, m_GLContext));*/
 }
 
 void GraphicsEngine::setScreenPosition(int x, int y)
@@ -245,12 +235,6 @@ uint GraphicsEngine::getScreenHeight() const
     return m_ScreenRect.height;
 }
 
-void GraphicsEngine::toggleFullscreen(bool isFullscreen)
-{
-    /*m_IsFullScreen = isFullscreen;
-    if (m_pMainWindow != nullptr)
-        m_pMainWindow->, static_cast<SDL_bool>(isFullscreen));*/
-}
 void GraphicsEngine::setWindowTitle(const std::string& title)
 {
     m_WindowTitle = title;

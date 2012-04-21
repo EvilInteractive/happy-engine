@@ -89,9 +89,6 @@
     <Filter Include="happyengine\graphics\picking">
       <UniqueIdentifier>{7c69c16e-994c-4601-a223-0cc809fdbe73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\fx">
-      <UniqueIdentifier>{0fd9a8e5-5653-4ac1-94d9-24e267087dde}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\graphics\rendering\instancing">
       <UniqueIdentifier>{fd11c0a3-3308-4ec7-a8eb-0a6c980b73b3}</UniqueIdentifier>
     </Filter>
@@ -106,18 +103,6 @@
     </Filter>
     <Filter Include="happyengine\graphics\rendering\shadow">
       <UniqueIdentifier>{86370e63-708d-4f2b-b468-9f985d59e357}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="happyengine\graphics\fx\var">
-      <UniqueIdentifier>{3e8e208e-d7ae-4166-9a60-17201943cc22}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="happyengine\graphics\fx\components">
-      <UniqueIdentifier>{469e912e-112f-4dbe-af49-2dd7b12cdc4b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="happyengine\graphics\fx\components\particles">
-      <UniqueIdentifier>{4b68c49d-a081-42e4-a0b8-0083688ae945}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="happyengine\graphics\fx\components\particles\components">
-      <UniqueIdentifier>{3a31b99f-382c-4d52-9130-003dfe051953}</UniqueIdentifier>
     </Filter>
     <Filter Include="happyengine\containers">
       <UniqueIdentifier>{2e6010a7-4297-4365-b81d-95b19339037c}</UniqueIdentifier>
@@ -214,16 +199,7 @@
     <ClCompile Include="..\..\code\math\vec4.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\networking\Client.cpp">
-      <Filter>happyengine\networking</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\networking\Message.cpp">
-      <Filter>happyengine\networking</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\networking\NetworkManager.cpp">
-      <Filter>happyengine\networking</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\networking\Server.cpp">
       <Filter>happyengine\networking</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\HappyEngine.cpp">
@@ -436,12 +412,6 @@
     <ClCompile Include="..\..\code\tools\Profiler.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\tools\HappyFxEditorBinding.cpp">
-      <Filter>happyengine\tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\networking\TcpServer.cpp">
-      <Filter>happyengine\networking</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\HappyPCH.cpp">
       <Filter>happyengine</Filter>
     </ClCompile>
@@ -493,36 +463,6 @@
     <ClCompile Include="..\..\code\graphics\DefaultSkinnedDrawable.cpp">
       <Filter>happyengine\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxTimeLine.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxTimeLineTrack.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleContainer.cpp">
-      <Filter>happyengine\graphics\fx\components\particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleSystem.cpp">
-      <Filter>happyengine\graphics\fx\components\particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxRandom.cpp">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxCameraEffect.cpp">
-      <Filter>happyengine\graphics\fx\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleForce.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleRotation.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleScale.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleSpeed.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\graphics\DynamicBuffer.cpp">
       <Filter>happyengine\graphics\rendering</Filter>
     </ClCompile>
@@ -534,15 +474,6 @@
     </ClCompile>
     <ClCompile Include="..\..\code\tools\LoadingScreen.cpp">
       <Filter>happyengine\tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\game\FxComponent.cpp">
-      <Filter>happyengine\game\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleLocation.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleRotationRate.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\graphics\ExtraForward3DRenderer.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
@@ -556,23 +487,11 @@
     <ClCompile Include="..\..\code\game\LightComponent.cpp">
       <Filter>happyengine\game\components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\content\FxLoader.cpp">
-      <Filter>happyengine\content</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxManager.cpp">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleLife.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\physics\PhysicsRagdoll.cpp">
       <Filter>happyengine\physics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\physics\PhysicsCapsuleShape.cpp">
       <Filter>happyengine\physics\shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\fx\FxParticleColor.cpp">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\physics\PhysicsTrigger.cpp">
       <Filter>happyengine\physics</Filter>
@@ -705,16 +624,7 @@
     <ClInclude Include="..\..\code\math\vec4.h">
       <Filter>happyengine\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\networking\Client.h">
-      <Filter>happyengine\networking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\networking\Message.h">
-      <Filter>happyengine\networking</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\networking\NetworkManager.h">
-      <Filter>happyengine\networking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\networking\Server.h">
       <Filter>happyengine\networking</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\HappyEngine.h">
@@ -996,12 +906,6 @@
     <ClInclude Include="..\..\code\tools\Profiler.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\tools\HappyFxEditorBinding.h">
-      <Filter>happyengine\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\networking\TcpServer.h">
-      <Filter>happyengine\networking</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\event.h">
       <Filter>happyengine</Filter>
     </ClInclude>
@@ -1077,57 +981,6 @@
     <ClInclude Include="..\..\code\graphics\DefaultSkinnedDrawable.h">
       <Filter>happyengine\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxManager.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxTimeLine.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxTimeLineTrack.h">
-      <Filter>happyengine\graphics\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxConstant.h">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticle.h">
-      <Filter>happyengine\graphics\fx\components\particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleContainer.h">
-      <Filter>happyengine\graphics\fx\components\particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleSystem.h">
-      <Filter>happyengine\graphics\fx\components\particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxRandom.h">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxCameraEffect.h">
-      <Filter>happyengine\graphics\fx\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\IFxVariable.h">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\IFxParticleModifyComponent.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\IFxParticleInitComponent.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleSpeed.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleColor.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleForce.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleRotation.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleScale.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\graphics\DynamicBuffer.h">
       <Filter>happyengine\graphics\rendering</Filter>
     </ClInclude>
@@ -1146,21 +999,6 @@
     <ClInclude Include="..\..\code\graphics\Shape2D.h">
       <Filter>happyengine\graphics\model\2d</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\game\FxComponent.h">
-      <Filter>happyengine\game\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\IFxTimeLineTrackComponent.h">
-      <Filter>happyengine\graphics\fx\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleLocation.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxCurve.h">
-      <Filter>happyengine\graphics\fx\var</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleRotationRate.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\HappyMemory.h">
       <Filter>happyengine</Filter>
     </ClInclude>
@@ -1175,12 +1013,6 @@
     </ClInclude>
     <ClInclude Include="..\..\code\game\LightComponent.h">
       <Filter>happyengine\game\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\content\FxLoader.h">
-      <Filter>happyengine\content</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\fx\FxParticleLife.h">
-      <Filter>happyengine\graphics\fx\components\particles\components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\physics\PhysicsRagdoll.h">
       <Filter>happyengine\physics</Filter>

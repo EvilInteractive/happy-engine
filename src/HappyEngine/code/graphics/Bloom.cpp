@@ -120,8 +120,6 @@ void Bloom::resize()
         //////////////////////////////////////////////////////////////////////////
         ///                             Textures                               ///
         //////////////////////////////////////////////////////////////////////////
-        std::vector<uint> downSampleTextureId[2];
-        downSampleTextureId[pass].resize(m_DownSamples);
         m_Texture[pass].resize(m_DownSamples);
 
         for (int i = 0; i < m_DownSamples; ++i)
@@ -146,7 +144,7 @@ void Bloom::resize()
         for (int i = 0; i < m_DownSamples; ++i)
         {
             GL::heBindFbo(m_FboId[pass][i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, downSampleTextureId[pass][i], 0);       
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture[pass][i]->getID(), 0);       
         }
     }
 }

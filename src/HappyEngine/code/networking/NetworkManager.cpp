@@ -20,53 +20,17 @@
 #include "HappyPCH.h" 
 
 #include "NetworkManager.h"
-#include "HappyNew.h"
-#include <iostream>
 
 namespace he {
 namespace net {
 
-NetworkManager::NetworkManager(): m_IoService(), m_AsioIsAlive(false)
+NetworkManager::NetworkManager()
 {
 }
 
 
 NetworkManager::~NetworkManager()
 {
-    if (m_AsioIsAlive)
-        stop();
-}
-
-void NetworkManager::start()
-{
-    m_AsioIsAlive = true;
-    m_AsioThread = boost::thread(boost::bind(&NetworkManager::asioThread, this));
-}
-void NetworkManager::asioThread()
-{
-    HE_INFO("Asio Started");
-    try 
-    {
-        m_IoService.run();
-    }
-    catch (std::exception& e)
-    {
-        HE_INFO("Unhandled exception (AsioThread):");
-        HE_INFO("  %s", e.what());
-    }
-    m_AsioIsAlive = false;
-    HE_INFO("Asio Ended");
-}
-
-void NetworkManager::stop()
-{
-    m_IoService.stop();
-    m_AsioThread.join();
-}
-
-boost::asio::io_service& NetworkManager::getIoService()
-{
-    return m_IoService;
 }
 
 } } //end namespace

@@ -59,9 +59,7 @@ public:
 
     void drawScene();
     void present() const;
-
-    void toggleFullscreen(bool isFullscreen);
-
+    
     uint pick(const vec2& screenPoint);
     uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
 
@@ -85,7 +83,6 @@ public:
     sf::Window* getWindow() const;
 
 private:
-
     void initWindow();
 
     /* DATAMEMBERS */
@@ -95,7 +92,6 @@ private:
     RectI m_Viewport;
     RectI m_ScreenRect;
 
-    bool m_IsFullScreen;
     bool m_VSyncEnabled;
     std::string m_WindowTitle;
 

@@ -28,7 +28,6 @@
 #include "PhysicsShapeLoader.h"
 #include "MaterialLoader.h"
 #include "LineLoader.h"
-#include "FxLoader.h"
 #include "FontLoader.h"
 #include "ShaderLoader.h"
 
@@ -43,7 +42,6 @@ ContentManager::ContentManager():
     m_pFontLoader(NEW FontLoader()),
     m_pShaderLoader(NEW ShaderLoader()), 
     m_pMaterialLoader(NEW MaterialLoader()), 
-    m_pFxLoader(NEW FxLoader()),
 
     m_ContentRootDir("../data/"),
     m_TextureFolder("textures/"), 
@@ -69,7 +67,6 @@ ContentManager::~ContentManager()
     delete m_pFontLoader;
     delete m_pShaderLoader;
     delete m_pMaterialLoader;
-    delete m_pFxLoader;
 
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();
@@ -177,12 +174,6 @@ gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, cons
 gfx::Material ContentManager::loadMaterial(const std::string& asset)
 {
     return m_pMaterialLoader->load(m_ContentRootDir + m_MaterialFolder + asset);
-}
-
-//////////////////////////////////////////////////////////////////////////
-uint ContentManager::loadFx( const std::string& path )
-{
-    return m_pFxLoader->load(m_ContentRootDir + m_FxFolder + path);
 }
 
 //////////////////////////////////////////////////////////////////////////
