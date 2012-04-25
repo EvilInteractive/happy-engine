@@ -1,5 +1,3 @@
-
-@rem @if exist "HappyCooker\HappyCookerGUIv2\HappyCookerGUIv2\bin\Release\HappyCookerGUIv2.exe" goto end
 @call :GetVSInstallDir
 @call :build
 @goto end
