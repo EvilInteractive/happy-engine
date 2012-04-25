@@ -21,11 +21,14 @@
 
 #include "NetworkManager.h"
 
+#include "RakPeer.h"
+
 namespace he {
 namespace net {
 
 NetworkManager::NetworkManager()
 {
+
 }
 
 

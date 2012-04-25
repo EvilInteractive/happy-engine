@@ -36,10 +36,9 @@ int main( int argc, char** args )
 
         HAPPYENGINE->init(he::SubEngine_All);
 
-        std::string workDir(args[0]);
-        std::string contentDir(
-            workDir.substr(0, workDir.rfind("bin")) + "data/");
-        CONTENT->setRootDir(contentDir);
+        he::Path workDir(args[0]);
+        HAPPYENGINE->setRootDir(workDir.getRelativePath(he::Path("../")));
+        CONTENT->setContentDir(HAPPYENGINE->getRootDir().getRelativePath(he::Path("../data")));
         std::string file(args[1]);
 
         he::game::Game* game(NEW hmv::MainGame(file));

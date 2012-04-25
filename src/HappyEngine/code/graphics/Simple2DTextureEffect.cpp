@@ -47,7 +47,7 @@ void Simple2DTextureEffect::load()
     m_pShader = NEW Shader();
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool compiled = m_pShader->initFromFile(folder + "2D/simple2DTextureShader.vert", 
                                             folder + "2D/simple2DTextureShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, "");

@@ -51,7 +51,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pNetworkManager(nullptr), m_p2DRenderer(nullptr), m_pRenderer2D(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
                             m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
-                            m_pMainWindow(nullptr)
+                            m_pMainWindow(nullptr), m_RootDir("./")
 {
 }
 HappyEngine::~HappyEngine()
@@ -398,6 +398,16 @@ gfx::ExtraForward3DRenderer* HappyEngine::get3DRenderer() const
 game::CameraManager* HappyEngine::getCameraManager() const
 {
     return m_pCameraManager;
+}
+
+void HappyEngine::setRootDir( const Path& rootDir )
+{
+    m_RootDir = rootDir;
+}
+
+const Path& HappyEngine::getRootDir() const
+{
+    return m_RootDir;
 }
 
 } //end namespace

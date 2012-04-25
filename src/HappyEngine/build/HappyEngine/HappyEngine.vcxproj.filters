@@ -517,6 +517,9 @@
     <ClCompile Include="..\..\code\io\Keys.cpp">
       <Filter>happyengine\io\keyboard</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\tools\Path.cpp">
+      <Filter>happyengine\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\content\BinObjLineLoader.h">
@@ -1055,6 +1058,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\graphics\WebView.h">
       <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\tools\Path.h">
+      <Filter>happyengine\tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

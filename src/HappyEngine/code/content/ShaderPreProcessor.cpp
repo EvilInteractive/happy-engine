@@ -88,7 +88,7 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
             {
                 if (line.find("#include ") != std::string::npos)
                 {
-                    std::string includeRelativePath(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+                    const std::string& includeRelativePath(CONTENT->getShaderFolderPath().str());
                     HE_ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
                     std::string fName(line.substr(10, line.length() - 11));
 

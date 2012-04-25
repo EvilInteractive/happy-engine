@@ -157,7 +157,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                 }
 
                 io::IniReader shaderReader;
-                if (shaderReader.open(CONTENT->getRootDir() + CONTENT->getShaderFolder() + file) == false)
+                if (shaderReader.open(CONTENT->getShaderFolderPath().str() + file) == false)
                 { 
                     HE_ERROR("Error loading material shader: %s", path.c_str());
                     return material;
@@ -239,7 +239,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                     }
                     else
                     {
-                        HE_ERROR("Material: unkown attribute %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
+                        HE_ERROR("Material: unknown attribute %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
                     } 
                     shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));
                 }); 
@@ -492,7 +492,7 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         }
                         else
                         {
-                            HE_ERROR("Material: unkown semantic %s", std::string(node.second.cbegin(), node.second.cend()).c_str());
+                            HE_ERROR("Material: unknown semantic %s", std::string(node.second.cbegin(), node.second.cend()).c_str());
                         }
                     });
                 }

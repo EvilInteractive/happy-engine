@@ -43,7 +43,6 @@ ContentManager::ContentManager():
     m_pShaderLoader(NEW ShaderLoader()), 
     m_pMaterialLoader(NEW MaterialLoader()), 
 
-    m_ContentRootDir("../data/"),
     m_TextureFolder("textures/"), 
     m_ModelFolder("models/"), 
     m_LineFolder("lines/"), 
@@ -53,9 +52,20 @@ ContentManager::ContentManager():
     m_MaterialFolder("materials/"),
     m_FxFolder("fx/"),
 
+    m_ContentRootDir(""),
+    m_TexturePath(""), 
+    m_ModelPath(""), 
+    m_LinePath(""), 
+    m_PhysicsPath(""), 
+    m_FontPath(""),
+    m_ShaderPath(""), 
+    m_MaterialPath(""),
+    m_FxPath(""),
+
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
 {
+    setContentDir(HAPPYENGINE->getRootDir().getRelativePath(Path("../data/")));
 }
 
 ContentManager::~ContentManager()
@@ -94,25 +104,25 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 //////////////////////////////////////////////////////////////////////////
 gfx::Model* ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->asyncLoadModel(m_ContentRootDir + m_ModelFolder + asset, vertexLayout);
+    return m_pModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout);
 }
 gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
 {
-    return m_pModelLoader->asyncLoadModelMesh(m_ContentRootDir + m_ModelFolder + asset, meshName, vertexLayout);
+    return m_pModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
 }
-gfx::Model* ContentManager::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::loadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->loadModel(m_ContentRootDir + m_ModelFolder + path, vertexLayout);
+    return m_pModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout);
 }
-gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->loadModelMesh(m_ContentRootDir + m_ModelFolder + path, meshName, vertexLayout);
+    return m_pModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
 }
 
 //////////////////////////////////////////////////////////////////////////
 const gfx::Texture2D* ContentManager::asyncLoadTexture(const std::string& asset, bool storePixelsInTexture)
 {
-    return m_pTextureLoader->asyncLoadTexture(m_ContentRootDir + m_TextureFolder + asset, storePixelsInTexture);
+    return m_pTextureLoader->asyncLoadTexture(m_TexturePath.str() + asset, storePixelsInTexture);
 }
 const gfx::Texture2D* ContentManager::asyncMakeTexture(const Color& color)
 {
@@ -120,7 +130,7 @@ const gfx::Texture2D* ContentManager::asyncMakeTexture(const Color& color)
 }
 const gfx::Texture2D* ContentManager::loadTexture(const std::string& path)
 {
-    return m_pTextureLoader->loadTexture(m_ContentRootDir + m_TextureFolder + path);
+    return m_pTextureLoader->loadTexture(m_TexturePath.str()  + path);
 }
 const gfx::Texture2D* ContentManager::makeTexture(const Color& color)
 {
@@ -135,24 +145,24 @@ gfx::Texture2D* ContentManager::makeEmptyTexture(const vec2& size)
 //////////////////////////////////////////////////////////////////////////
 gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
 {
-    return m_pLineLoader->loadLine(m_ContentRootDir + m_LineFolder + asset);
+    return m_pLineLoader->loadLine(m_LinePath.str()  + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
 const std::vector<px::PhysicsConvexMesh::pointer>& ContentManager::loadPhysicsConvex(const std::string& asset)
 {
-    return m_pPhysicsShapeLoader->loadConvex(m_ContentRootDir + m_PhysicsFolder + asset);
+    return m_pPhysicsShapeLoader->loadConvex(m_PhysicsPath.str()  + asset);
 }
 const std::vector<px::PhysicsConcaveMesh::pointer>& ContentManager::loadPhysicsConcave(const std::string& asset)
 {
-    return m_pPhysicsShapeLoader->loadConcave(m_ContentRootDir + m_PhysicsFolder + asset);
+    return m_pPhysicsShapeLoader->loadConcave(m_PhysicsPath.str() + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
 gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
 {
     gfx::Font::pointer p;
-    m_pFontLoader->load(m_ContentRootDir + m_FontFolder + asset, size, bold, italic, p);
+    m_pFontLoader->load(m_FontPath.str() + asset, size, bold, italic, p);
     return p;
 }
 
@@ -167,53 +177,69 @@ const gfx::Font::pointer& ContentManager::getDefaultFont(ushort size)
 //////////////////////////////////////////////////////////////////////////
 gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
-    return m_pShaderLoader->load(m_ContentRootDir + m_ShaderFolder + vsAsset, m_ContentRootDir + m_ShaderFolder + fsAsset, shaderLayout, outputs);
+    return m_pShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
 }
 
 //////////////////////////////////////////////////////////////////////////
 gfx::Material ContentManager::loadMaterial(const std::string& asset)
 {
-    return m_pMaterialLoader->load(m_ContentRootDir + m_MaterialFolder + asset);
+    return m_pMaterialLoader->load(m_MaterialPath.str() + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
-void ContentManager::setRootDir(const std::string& root)
+void ContentManager::setContentDir(const Path& path)
 {
-    m_ContentRootDir = root;
+    m_ContentRootDir = path;
+    setFontFolder(getFontFolder());
+    setFxFolder(getFxFolder());
+    setLineFolder(getLineFolder());
+    setMaterialFolder(getMaterialFolder());
+    setModelFolder(getModelFolder());
+    setPhysicsFolder(getPhysicsFolder());
+    setShaderFolder(getShaderFolder());
+    setTextureFolder(getTextureFolder());
 }
 void ContentManager::setTextureFolder(const std::string& folder)
 {
     m_TextureFolder = folder;
+    m_TexturePath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setModelFolder(const std::string& folder)
 {
     m_ModelFolder = folder;
+    m_ModelPath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setLineFolder(const std::string& folder)
 {
     m_LineFolder = folder;
+    m_LinePath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setPhysicsFolder(const std::string& folder)
 {
     m_PhysicsFolder = folder;
+    m_PhysicsPath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setFontFolder(const std::string& folder)
 {
     m_FontFolder = folder;
+    m_FontPath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setShaderFolder(const std::string& folder)
 {
     m_ShaderFolder = folder;
+    m_ShaderPath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setMaterialFolder(const std::string& folder)
 {
     m_MaterialFolder = folder;
+    m_MaterialPath = m_ContentRootDir.getRelativePath(folder);
 }
 void ContentManager::setFxFolder( const std::string& folder )
 {
     m_FxFolder = folder;
+    m_FxPath = m_ContentRootDir.getRelativePath(folder);
 }
-const std::string& ContentManager::getRootDir() const
+const Path& ContentManager::getContentDir() const
 {
     return m_ContentRootDir;
 }
@@ -248,6 +274,38 @@ const std::string& ContentManager::getMaterialFolder() const
 const std::string& ContentManager::getFxFolder() const
 {
     return m_FxFolder;
+}
+const Path& ContentManager::getTextureFolderPath() const
+{
+    return m_TexturePath;
+}
+const Path& ContentManager::getModelFolderPath() const
+{
+    return m_ModelPath;
+}
+const Path& ContentManager::getLineFolderPath() const
+{
+    return m_LinePath;
+}
+const Path& ContentManager::getPhysicsFolderPath() const
+{
+    return m_PhysicsPath;
+}
+const Path& ContentManager::getFontFolderPath() const
+{
+    return m_FontPath;
+}
+const Path& ContentManager::getShaderFolderPath() const
+{
+    return m_ShaderPath;
+}
+const Path& ContentManager::getMaterialFolderPath() const
+{
+    return m_MaterialPath;
+}
+const Path& ContentManager::getFxFolderPath() const
+{
+    return m_FxPath;
 }
 
 //////////////////////////////////////////////////////////////////////////

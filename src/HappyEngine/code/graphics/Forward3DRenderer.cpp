@@ -81,7 +81,7 @@ Forward3DRenderer::~Forward3DRenderer()
         m_pOutDepthTexture->release();
     if (m_pQuad != nullptr)
         m_pQuad->release();
-    if (m_FboId != 0 || m_FboId != UINT_MAX)
+    if (m_FboId != 0 && m_FboId != UINT_MAX)
         glDeleteFramebuffers(1, &m_FboId);
     delete m_pQuadShader;
 }

@@ -128,7 +128,7 @@ void Deferred3DRenderer::compileShaders()
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///
     //////////////////////////////////////////////////////////////////////////
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     std::set<std::string> shaderDefines;
     if (m_RenderSettings.enableSpecular)
         shaderDefines.insert("SPECULAR");

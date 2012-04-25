@@ -52,11 +52,8 @@ void PickEffect::load()
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     Shader::pointer pShader(NEW Shader());
-
-    //std::vector<std::string> shaderOutputs;
-    ////shaderOutputs.push_back("outId");
-
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool shaderInit(pShader->initFromFile(folder + "2D/pickingShader.vert", 
                                           folder + "2D/pickingShader.frag", layout));
     HE_ASSERT(shaderInit == true);
