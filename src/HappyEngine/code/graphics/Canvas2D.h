@@ -27,6 +27,8 @@
 #include "Text.h"
 #include "mat33.h"
 #include "HappyTypes.h"
+#include "Mesh2D.h"
+#include "Simple2DEffect.h"
 
 #include <stack>
 
@@ -37,8 +39,25 @@ class Canvas2D
 {
 public:
 
+    struct Data
+    {
+        Data() : resolvedFbufferID(UINT_MAX),
+                 resolvedRbufferID(UINT_MAX),
+                 fbufferID(UINT_MAX),
+                 colorRbufferID(UINT_MAX),
+                 depthRbufferID(UINT_MAX)
+        {}
+
+        ObjectHandle renderTextureHnd;
+        uint resolvedFbufferID;
+        uint resolvedRbufferID;
+        uint fbufferID;
+        uint colorRbufferID;
+        uint depthRbufferID;
+    };
+
     /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2D(void* pRenderer);
+    Canvas2D(Data* pData);
     virtual ~Canvas2D();
 
     /* GENERAL */
@@ -49,6 +68,9 @@ public:
     void save();
     void restore();
 
+    /* GETTERS */
+    Data* getData() const;
+
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
     void setFillColor(const Color& newColor);
@@ -58,6 +80,8 @@ public:
     void setGlobalAlpha(float alpha);
     
     /* DRAW METHODS */
+    void draw();
+
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
 
@@ -82,15 +106,28 @@ public:
 
 private:
 
+    /* EXTRA */
+    void init();
+
     /* DATAMEMBERS */
     std::stack<mat33> m_TransformationStack;
     ushort m_StackDepth;
+
+    mat44 m_OrthographicMatrix;
 
     Color m_StrokeColor;
     Color m_FillColor;
 
     float m_LineWidth;
     float m_GlobalAlpha;
+
+    Data* m_pBufferData;
+
+    Mesh2D* m_pBufferMesh;
+
+    Simple2DEffect* m_pColorEffect;
+
+    Texture2D* m_pRenderTexture;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

@@ -21,139 +21,197 @@
 #include "HappyPCH.h" 
 
 #include "Canvas2D.h"
+#include "GraphicsEngine.h"
+#include "Happy2DRenderer.h"
 
 namespace he {
 namespace gfx {
 
-Canvas2D::Canvas2D(void* pRenderer)
+Canvas2D::Canvas2D(Data* pData) :   m_pBufferData(pData),
+                                    m_pBufferMesh(NEW Mesh2D()),
+                                    m_pColorEffect(NEW Simple2DEffect()),
+                                    m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd))
 {
+    init();
 }
 
 Canvas2D::~Canvas2D()
 {
+    delete m_pBufferData;
+    delete m_pColorEffect;
+    delete m_pBufferMesh;
+
+    m_pRenderTexture->release();
+}
+
+/* EXTRA */
+void Canvas2D::init()
+{
+    m_pColorEffect->load();
+
+    m_OrthographicMatrix = mat44::createOrthoLH(0.0f, (float)GRAPHICS->getScreenWidth(), 0.0f, (float)GRAPHICS->getScreenHeight(), 0.0f, 100.0f);
 }
 
 /* GENERAL */
-void translate(const vec2& translation)
+void Canvas2D::translate(const vec2& translation)
 {
 
 }
 
-void rotate(float rotation)
+void Canvas2D::rotate(float rotation)
 {
 
 }
 
-void scale(const vec2& scale)
+void Canvas2D::scale(const vec2& scale)
 {
 
 }
 
-void save()
+void Canvas2D::save()
 {
 
 }
 
-void restore()
+void Canvas2D::restore()
 {
 
+}
+
+/* GETTERS */
+Canvas2D::Data* Canvas2D::getData() const
+{
+    return m_pBufferData;
 }
 
 /* SETTERS */
-void setStrokeColor(const Color& newColor)
+void Canvas2D::setStrokeColor(const Color& newColor)
 {
 
 }
 
-void setFillColor(const Color& newColor)
+void Canvas2D::setFillColor(const Color& newColor)
+{
+    m_FillColor = newColor;
+}
+
+void Canvas2D::setLineWidth(float width)
 {
 
 }
 
-void setLineWidth(float width)
-{
-
-}
-
-void setGlobalAlpha(float alpha)
+void Canvas2D::setGlobalAlpha(float alpha)
 {
 
 }
 
 /* DRAW METHODS */
-void strokeRect(const vec2& pos, const vec2& size)
+void Canvas2D::draw()
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pBufferData->fbufferID);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBufferData->resolvedFbufferID);
+
+    glBlitFramebuffer(  0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight(),
+                        0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight(),
+                        GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    GUI->drawTexture2D(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd), vec2(0,0));
+}
+
+void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 {
 
 }
 
-void fillRect(const vec2& pos, const vec2& size)
+void Canvas2D::fillRect(const vec2& pos, const vec2& size)
+{
+    /************************************************************************/
+    /* TEMP TEST STUFF                                                      */
+    /************************************************************************/
+
+    GL::heBindFbo(m_pBufferData->fbufferID);
+
+    m_OrthographicMatrix = mat44::createOrthoLH(0.0f, (float)GRAPHICS->getScreenWidth(), 0.0f, (float)GRAPHICS->getScreenHeight(), 0.0f, 100.0f);
+
+    m_pBufferMesh->clear();
+    m_pBufferMesh->addVertex(pos);
+    m_pBufferMesh->addVertex(pos + vec2(size.x, size.y / 20));
+    m_pBufferMesh->addVertex(pos + size - vec2(20,50));
+    m_pBufferMesh->addVertex(pos + vec2(0, size.y));
+    m_pBufferMesh->createBuffer();
+
+    m_pColorEffect->begin();
+    m_pColorEffect->setColor(m_FillColor);
+    m_pColorEffect->setWorldMatrix(m_OrthographicMatrix);
+    //m_pColorEffect->setDepth(0.5f);
+
+    GL::heBindVao(m_pBufferMesh->getBufferID());
+    glDrawElements(GL_TRIANGLES, m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
+}
+
+void Canvas2D::strokeArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise)
 {
 
 }
 
-void strokeArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise)
+void Canvas2D::fillArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise)
 {
 
 }
 
-void fillArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise)
+void Canvas2D::beginPath()
 {
 
 }
 
-void beginPath()
+void Canvas2D::closePath()
 {
 
 }
 
-void closePath()
+void Canvas2D::moveTo(const vec2& pos)
 {
 
 }
 
-void moveTo(const vec2& pos)
+void Canvas2D::lineTo(const vec2& pos)
 {
 
 }
 
-void lineTo(const vec2& pos)
+void Canvas2D::arcTo(float radius, float startAngle, float endAngle, bool antiClockwise)
 {
 
 }
 
-void arcTo(float radius, float startAngle, float endAngle, bool antiClockwise)
+void Canvas2D::quadraticCurveTo(const vec2& cp, const vec2& pos)
 {
 
 }
 
-void quadraticCurveTo(const vec2& cp, const vec2& pos)
+void Canvas2D::bezierCurveTo(const vec2& cp1, const vec2& cp2, const vec2& pos)
 {
 
 }
 
-void bezierCurveTo(const vec2& cp1, const vec2& cp2, const vec2& pos)
+void Canvas2D::fill()
 {
 
 }
 
-void fill()
+void Canvas2D::stroke()
 {
 
 }
 
-void stroke()
+void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 {
 
 }
 
-void fillText(const gui::Text& txt, const vec2& pos)
-{
-
-}
-
-void drawImage(	const Texture2D* tex2D, const vec2& pos,
-				const vec2& newDimensions = vec2(0.0f,0.0f),
-				const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f))
+void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
+				            const vec2& newDimensions,
+				            const RectF& regionToDraw)
 {
 
 }

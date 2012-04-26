@@ -29,10 +29,11 @@
 #include "FPSGraph.h"
 #include "WebView.h"
 #include "Renderer2D.h"
+#include "Canvas2D.h"
 
 namespace ht {
 
-MainGame::MainGame(): m_pFPSGraph(nullptr), m_pWebView(nullptr)
+MainGame::MainGame(): m_pFPSGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullptr)
 {
 }
 
@@ -41,6 +42,7 @@ MainGame::~MainGame()
 {
     CAMERAMANAGER->deleteAllCameras();
     delete m_pWebView;
+    delete m_pCanvas;
 }
 
 void MainGame::init()
@@ -55,10 +57,12 @@ void MainGame::load()
     CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
 
-    m_pWebView = GUI_NEW->createWebView(true);
-    m_pWebView->loadUrl("http://www.google.be");
+    //m_pWebView = GUI_NEW->createWebView(true);
+    //m_pWebView->loadUrl("http://www.google.be");
     //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_pWebView->loadUrl("http://www.youtube.be");
+
+    m_pCanvas = GUI_NEW->createCanvas();
 }
 
 void MainGame::tick( float dTime )
@@ -68,7 +72,9 @@ void MainGame::tick( float dTime )
 
 void MainGame::drawGui()
 {
-
+    m_pCanvas->setFillColor(he::Color(1.0f,0.0f,1.0f));
+    m_pCanvas->fillRect(he::vec2(20,20), he::vec2(300,300));
+    m_pCanvas->draw();
 }
 
 } //end namespace

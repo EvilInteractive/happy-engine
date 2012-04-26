@@ -27,7 +27,7 @@ namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Polygon2D::Polygon2D() :	Shape2D()
+Polygon2D::Polygon2D() : Shape2D()
 {
 }
 

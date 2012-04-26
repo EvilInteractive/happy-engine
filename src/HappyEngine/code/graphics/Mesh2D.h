@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -16,49 +16,53 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 14/04/2012
+//Created: 25/04/2012
 
-#ifndef _HT_MainGame_H_
-#define _HT_MainGame_H_
+#ifndef _HE_MESH2D_H_
+#define _HE_MESH2D_H_
 #pragma once
 
-#include "Game.h"
+#include "Polygon.h"
 
 namespace he {
-    namespace tools {
-        class FPSGraph;
-    }
-    namespace gfx {
-        class WebView;
-        class Canvas2D;
-    }
-}
 
-namespace ht {
-
-class MainGame : public he::game::Game
+class Mesh2D
 {
 public:
-    MainGame();
-    virtual ~MainGame();
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void drawGui();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Mesh2D();
+    virtual ~Mesh2D();
+
+    /* GENERAL */
+    void addVertex(const vec2& point);
+    void clear();
+
+    bool triangulate();
+
+    void createBuffer();
+
+    /* GETTERS */
+    uint getBufferID() const;
+    const mat44& getWorldMatrix() const;
+    const std::vector<vec2>& getVertices() const;
+    const std::vector<uint>& getIndices() const;
+
+    /* SETTERS */
+    void setWorldMatrix(const mat44& mat);
 
 private:
 
     /* DATAMEMBERS */
-    he::tools::FPSGraph* m_pFPSGraph;
-
-    he::gfx::WebView* m_pWebView;
-
-    he::gfx::Canvas2D* m_pCanvas;
+    Polygon* m_pPolygon;
+    mat44 m_WorldMatrix;
+    uint m_VBOID;
+    uint m_IBOID;
+    uint m_VAOID;
 
     /* DEFAULT COPY & ASSIGNMENT */
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    Mesh2D(const Mesh2D&);
+    Mesh2D& operator=(const Mesh2D&);
 };
 
 } //end namespace

@@ -79,6 +79,7 @@
     <ClCompile Include="..\..\code\graphics\Line.cpp" />
     <ClCompile Include="..\..\code\graphics\Line2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Material.cpp" />
+    <ClCompile Include="..\..\code\graphics\Mesh2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Model.cpp" />
     <ClCompile Include="..\..\code\graphics\ModelMesh.cpp" />
     <ClCompile Include="..\..\code\graphics\PickEffect.cpp">
@@ -91,7 +92,6 @@
     <ClCompile Include="..\..\code\graphics\PostProcesser.cpp" />
     <ClCompile Include="..\..\code\graphics\Rectangle2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Renderer2D.cpp" />
-    <ClCompile Include="..\..\code\graphics\RoundedRectangle2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Scrollbar.cpp" />
     <ClCompile Include="..\..\code\graphics\Shader.cpp" />
     <ClCompile Include="..\..\code\graphics\ShaderLayout.cpp" />
@@ -243,6 +243,7 @@
     <ClInclude Include="..\..\code\graphics\Line.h" />
     <ClInclude Include="..\..\code\graphics\Line2D.h" />
     <ClInclude Include="..\..\code\graphics\Material.h" />
+    <ClInclude Include="..\..\code\graphics\Mesh2D.h" />
     <ClInclude Include="..\..\code\graphics\Model.h" />
     <ClInclude Include="..\..\code\graphics\ModelMesh.h" />
     <ClInclude Include="..\..\code\graphics\PickEffect.h" />
@@ -253,7 +254,6 @@
     <ClInclude Include="..\..\code\graphics\Rectangle2D.h" />
     <ClInclude Include="..\..\code\graphics\Renderer2D.h" />
     <ClInclude Include="..\..\code\graphics\RenderSettings.h" />
-    <ClInclude Include="..\..\code\graphics\RoundedRectangle2D.h" />
     <ClInclude Include="..\..\code\graphics\Scrollbar.h" />
     <ClInclude Include="..\..\code\graphics\Shader.h" />
     <ClInclude Include="..\..\code\graphics\ShaderLayout.h" />

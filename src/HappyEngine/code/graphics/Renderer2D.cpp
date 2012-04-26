@@ -50,7 +50,50 @@ Renderer2D::~Renderer2D()
 /* GENERAL */
 Canvas2D* Renderer2D::createCanvas()
 {
-    return nullptr;
+    Canvas2D::Data* pData = NEW Canvas2D::Data();
+
+    pData->renderTextureHnd = ResourceFactory<Texture2D>::getInstance()->create();
+    Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
+
+    pTexture->setData(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight(), 
+        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Linear, false, false);
+    
+    // create final FBO & RB
+    glGenFramebuffers(1, &pData->resolvedFbufferID);
+    GL::heBindFbo(pData->resolvedFbufferID);
+    glGenRenderbuffers(1, &pData->resolvedRbufferID);
+    glBindRenderbuffer(GL_RENDERBUFFER, pData->resolvedRbufferID);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pTexture->getID(), 0);
+
+    // create intermediate FBO & RB, MultiSampling
+    glGenFramebuffers(1, &pData->fbufferID);
+    GL::heBindFbo(pData->fbufferID);
+
+    uint MSSamples = 8;
+
+    glGenRenderbuffers(1, &pData->colorRbufferID);
+    glBindRenderbuffer(GL_RENDERBUFFER, pData->colorRbufferID);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, MSSamples, GL_RGBA8, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pData->colorRbufferID);
+
+    glGenRenderbuffers(1, &pData->depthRbufferID);
+    glBindRenderbuffer(GL_RENDERBUFFER, pData->depthRbufferID);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, MSSamples, GL_DEPTH_COMPONENT16, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pData->depthRbufferID);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        he::HE_ERROR("Failed to create FrameBuffer Canvas2D!");
+
+        delete pData;
+        return nullptr;
+    }
+
+    return NEW Canvas2D(pData);
 }
 
 WebView* Renderer2D::createWebView(bool bEnableUserInput)
