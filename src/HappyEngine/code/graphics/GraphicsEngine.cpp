@@ -72,7 +72,7 @@ void GraphicsEngine::init()
 
 #pragma region read settings
     io::IniReader reader;
-    if (reader.open("settings.ini") == false)
+    if (reader.open(HAPPYENGINE->getRootDir().str() + "settings.ini") == false)
     { 
         HE_WARNING("settings.ini not found!, using defaults"); 
     }

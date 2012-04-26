@@ -80,7 +80,7 @@ public:
    
     gfx::Material loadMaterial(const std::string& path);
 
-    void setRootDir(const std::string& root);
+    void setContentDir(const Path& path);
     void setTextureFolder(const std::string& folder);
     void setModelFolder(const std::string& folder);
     void setLineFolder(const std::string& folder);
@@ -89,9 +89,18 @@ public:
     void setShaderFolder(const std::string& folder);
     void setMaterialFolder(const std::string& folder);
     void setFxFolder(const std::string& folder);
-    //void setFolder(const std::string& folder);
 
-    const std::string& getRootDir() const;
+    const Path& getContentDir() const;
+
+    const Path& getTextureFolderPath() const;
+    const Path& getModelFolderPath() const;
+    const Path& getLineFolderPath() const;
+    const Path& getPhysicsFolderPath() const;
+    const Path& getFontFolderPath() const;
+    const Path& getShaderFolderPath() const;
+    const Path& getMaterialFolderPath() const;
+    const Path& getFxFolderPath() const;
+
     const std::string& getTextureFolder() const;
     const std::string& getModelFolder() const;
     const std::string& getLineFolder() const;
@@ -115,9 +124,11 @@ private:
     ShaderLoader* m_pShaderLoader;
     MaterialLoader* m_pMaterialLoader;
 
-    std::string m_ContentRootDir;   //include trailing /
-    std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder, //include trailing /
+    Path m_ContentRootDir;
+    std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder,
                 m_ShaderFolder, m_MaterialFolder, m_FxFolder;
+    Path m_TexturePath, m_ModelPath, m_LinePath, m_PhysicsPath, m_FontPath,
+                m_ShaderPath, m_MaterialPath, m_FxPath;
 
     gfx::Font::pointer m_pDefaultFont;
 

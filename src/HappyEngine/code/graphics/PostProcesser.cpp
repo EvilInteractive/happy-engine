@@ -95,7 +95,7 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
 
     m_pPostShader->initFromFile(folder + "shared/postShaderQuad.vert", 
                                 folder + "post/postEffects.frag", 

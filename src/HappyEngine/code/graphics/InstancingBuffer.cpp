@@ -42,9 +42,13 @@ void InstancingBuffer::resize( uint newSize )
 {
     if (m_Size != newSize)
     {
-        m_Size = newSize;
-        m_Buffer = static_cast<char*>(he_realloc(m_Buffer, newSize));
-        HE_ASSERT(m_Buffer != nullptr, "realloc failed - out of memory?");
+        char* newBuffer(static_cast<char*>(he_realloc(m_Buffer, newSize)));
+        HE_ASSERT(newBuffer != nullptr, "realloc failed - out of memory?");
+        if (newBuffer != nullptr)
+        {
+            m_Buffer = newBuffer;
+            m_Size = newSize;
+        }
         reset();
     }
 }

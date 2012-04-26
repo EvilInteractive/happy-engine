@@ -121,7 +121,7 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
     }
     else
     {
-        HE_ERROR("Error reading: %s", vsPath);
+        HE_ERROR("Error reading: %s", vsPath.c_str());
         return false;
     }
     if (reader.open(fsPath, io::FileReader::OpenType_ASCII))
@@ -131,7 +131,7 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
     }
     else
     {
-        HE_ERROR("Error reading: %s", fsPath);
+        HE_ERROR("Error reading: %s", fsPath.c_str());
         return false;
     }
     // <-----------------------------------------------

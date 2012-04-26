@@ -66,7 +66,7 @@ void Bloom::init(bool hdr)
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
 
     std::set<std::string> defineBrightPass;
     defineBrightPass.insert("BRIGHTPASS");

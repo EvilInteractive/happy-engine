@@ -64,6 +64,7 @@
 #include "Profiler.h"
 
 #include "event.h"
+#include "Path.h"
 
 #include "Keys.h"
 

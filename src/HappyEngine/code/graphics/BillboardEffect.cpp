@@ -49,7 +49,7 @@ void BillboardEffect::load()
     m_pShader = NEW Shader();
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool compiled = m_pShader->initFromFile(folder + "2D/billboardShader.vert", 
                                             folder + "2D/billboardShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, "");

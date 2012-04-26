@@ -48,7 +48,7 @@ MainGame::~MainGame()
 void MainGame::init()
 {
     GRAPHICS->setVSync(false);
-    GRAPHICS->setScreenDimension(1280, 720);
+    GRAPHICS->setScreenDimension(1920, 1080);
     GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
 }
 

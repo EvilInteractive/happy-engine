@@ -52,7 +52,7 @@ void SimpleColorEffect::load()
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
 
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool shaderInit(m_pShader->initFromFile(folder + "2D/simpleShader.vert", 
                                             folder + "2D/simpleShader.frag", layout, shaderOutputs));
     HE_ASSERT(shaderInit == true);

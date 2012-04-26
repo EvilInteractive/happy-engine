@@ -47,7 +47,7 @@ void Simple2DEffect::load()
     m_pShader = NEW Shader();
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool shaderInited(m_pShader->initFromFile(folder + "2D/simple2DShader.vert", 
                                               folder + "2D/simple2DShader.frag", layout, shaderOutputs));
     HE_ASSERT(shaderInited == true);

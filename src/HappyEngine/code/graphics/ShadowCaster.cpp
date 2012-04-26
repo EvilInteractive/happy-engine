@@ -105,7 +105,7 @@ void ShadowCaster::init(const RenderSettings& settings)
     vertexSingleLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
     std::vector<std::string> outputs;
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     pShadowShaderSingle->initFromFile(folder + "shadow/preShadowShader.vert", 
                                       folder + "shadow/preShadowShader.frag", 
                                       shaderSingleLayout, outputs);

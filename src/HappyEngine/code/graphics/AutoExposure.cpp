@@ -83,7 +83,7 @@ void AutoExposure::init(const RenderSettings& settings)
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    std::string folder(CONTENT->getRootDir() + CONTENT->getShaderFolder());
+    const std::string& folder(CONTENT->getShaderFolderPath().str());
     m_pLumShader->initFromFile(folder + "shared/postShaderQuad.vert", 
                                folder + "post/autoLum.frag", shaderLayout);
     m_HDRmapPos = m_pLumShader->getShaderSamplerId("hdrMap");

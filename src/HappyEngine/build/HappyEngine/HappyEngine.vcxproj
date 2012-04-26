@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\code\tools\FPSGraph.cpp" />
     <ClCompile Include="..\..\code\tools\Grid.cpp" />
     <ClCompile Include="..\..\code\tools\LoadingScreen.cpp" />
+    <ClCompile Include="..\..\code\tools\Path.cpp" />
     <ClCompile Include="..\..\code\tools\Profiler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +339,7 @@
     <ClInclude Include="..\..\code\tools\IntTypeHandler.h" />
     <ClInclude Include="..\..\code\tools\ITypeHandler.h" />
     <ClInclude Include="..\..\code\tools\LoadingScreen.h" />
+    <ClInclude Include="..\..\code\tools\Path.h" />
     <ClInclude Include="..\..\code\tools\Profiler.h" />
     <ClInclude Include="..\..\code\tools\StringTypeHandler.h" />
     <ClInclude Include="..\..\code\tools\UIntTypeHandler.h" />
@@ -354,7 +356,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -365,7 +367,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -398,6 +400,7 @@
     <OutDir>$(SolutionDir)bin\$(Platform)\</OutDir>
     <IncludePath>$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

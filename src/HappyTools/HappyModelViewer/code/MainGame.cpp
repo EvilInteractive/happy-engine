@@ -40,8 +40,7 @@ MainGame::MainGame(const std::string& file): m_pFPSGraph(nullptr)
     stream << "copy /Y \"";
     stream << file;
     stream << "\" \"";
-    stream << CONTENT->getRootDir();
-    stream << CONTENT->getModelFolder();
+    stream << CONTENT->getModelFolderPath().str();
     stream << "temp.binobj\"";
     system(stream.str().c_str());
 }

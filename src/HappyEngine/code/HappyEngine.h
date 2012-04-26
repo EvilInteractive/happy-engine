@@ -98,6 +98,10 @@ public:
 
     void audioLoop();
 
+    //root dir
+    void setRootDir(const Path& rootDir);
+    const Path& getRootDir() const; //includes trailing slash
+
     //subengines
     gfx::GraphicsEngine* getGraphicsEngine() const;
     const io::ControlsManager* getControls() const;
@@ -136,6 +140,8 @@ private:
     net::NetworkManager* m_pNetworkManager;
     tools::Console* m_pConsole;
     sfx::SoundEngine* m_pSoundEngine;
+
+    Path m_RootDir;
 
     bool m_Quit;
     bool m_bShowProfiler;
