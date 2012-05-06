@@ -45,6 +45,8 @@ private:
     vec3 m_Color;
     vec3 m_Direction;
 
+    vec3 m_ShadowPosition;
+    vec2 m_ShadowNearFar;
     mat44 m_ShadowMatrix[CASCADES];
     const Texture2D* m_pShadowMap[CASCADES];
     
@@ -58,6 +60,9 @@ public:
     void setColor(const vec3& color);
     void setColor(const Color& color);
     void setDirection(const vec3& direction);
+
+    void setShadowPosition(const vec3& position);
+    void setShadowNearFar(float near, float far);
     void setShadowMap(int index, const Texture2D* map);
     void setShadowMatrix(int index, const mat44& mtx);
     
@@ -67,6 +72,8 @@ public:
 
     const mat44& getShadowMatrix(int index) const;
     const Texture2D* getShadowMap(int index) const;
+    const vec3& getShadowPosition() const;
+    const vec2& getShadowNearFar() const;
 
     typedef boost::shared_ptr<DirectionalLight> pointer;
 };

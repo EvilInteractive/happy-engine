@@ -32,9 +32,9 @@ namespace err {
 namespace details {
 
 #if _DEBUG || TEST
-void happyAssert(bool isOk, const char* file, int line, const char* message, va_list args);
-void happyAssert(int isOk, const char* file, int line); //for boost
-void happyAssert(void* isOk, const char* file, int line); //for boost
+void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, va_list args);
+void happyAssert(int isOk, const char* file, const char* func, int line); //for boost
+void happyAssert(void* isOk, const char* file, const char* func, int line); //for boost
 #endif
 
 static int s_scope = 0;
@@ -52,20 +52,24 @@ else \
         { \
             return line; \
         } \
+        static const char* getFunc(const char* func = __HE_FUNCTION__) \
+        { \
+            return func; \
+        } \
         explicit HappyAssert(bool isOk, const char* message = "", ...) \
         { \
             va_list arg_list;\
             va_start(arg_list, message);\
-            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getLine(), message, arg_list); \
+            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getFunc(), HappyAssert::getLine(), message, arg_list); \
             va_end(arg_list);\
         } \
         explicit HappyAssert(void* isOk) \
         { \
-            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getLine()); \
+            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getFunc(), HappyAssert::getLine()); \
         } \
         explicit HappyAssert(int isOk) \
         { \
-            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getLine()); \
+            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getFunc(), HappyAssert::getLine()); \
         } \
     } myAssert = HappyAssert
 #else

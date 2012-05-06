@@ -69,7 +69,7 @@ void FPSGraph::tick(float dTime, float interval)
         m_CurrentFPS = fps;
         m_CurrentDTime = dTime;
 
-        //HE_INFO("Fps: %d", (int)m_CurrentFPS);
+        HE_INFO("Fps: %d", (int)m_CurrentFPS);
 
         m_FpsHistory.push_back(fps);
     }

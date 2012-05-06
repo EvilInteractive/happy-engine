@@ -52,6 +52,8 @@ public:
 private:
     he::tools::FPSGraph* m_pFPSGraph;
 
+    bool m_SpinShadows;
+
     std::vector<he::game::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
 

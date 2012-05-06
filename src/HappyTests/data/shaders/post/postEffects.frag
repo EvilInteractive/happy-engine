@@ -141,6 +141,8 @@ float renderAO()
                            vec2(0.66,-0.33), vec2(-0.66,-0.33));
 
     vec3 p = getPos(tc);
+    if (p.z > 50)
+        return 0.0f;
     vec3 n = getNorm(tc);
     vec2 rand = getRandom(tc);
 
@@ -156,11 +158,11 @@ float renderAO()
 
     //float iterations = mix(maxIt, minIterations, weight); // LOD
 
-    for (int i = 1; i <= 2; ++i)
+    for (int i = 0; i < 1; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < 8; ++j)
         {
-            vec2 coord1 = reflect(vec[j], rand).xy * (rad / (i * 2));
+            vec2 coord1 = reflect(vec[j], rand).xy * rad;
             vec2 coord2 = vec2( coord1.x * 0.707f - coord1.y * 0.707f,
                                 coord1.x * 0.707f + coord1.y * 0.707f );
   
@@ -173,7 +175,7 @@ float renderAO()
 
 
 
-    ao /= 4 * 4.0f * 2;
+    ao /= 2 * 4 * 4;
 
     return ao;
 }

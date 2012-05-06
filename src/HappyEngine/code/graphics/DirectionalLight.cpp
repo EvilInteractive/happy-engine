@@ -101,4 +101,25 @@ const mat44& DirectionalLight::getShadowMatrix(int index) const
     return m_ShadowMatrix[index];
 }
 
+void DirectionalLight::setShadowPosition( const vec3& position )
+{
+    m_ShadowPosition = position;
+}
+
+void DirectionalLight::setShadowNearFar( float near, float far )
+{
+    m_ShadowNearFar.x = near;
+    m_ShadowNearFar.y = far;
+}
+
+const vec3& DirectionalLight::getShadowPosition() const
+{
+    return m_ShadowPosition;
+}
+
+const vec2& DirectionalLight::getShadowNearFar() const
+{
+    return m_ShadowNearFar;
+}
+
 } } //end namespace

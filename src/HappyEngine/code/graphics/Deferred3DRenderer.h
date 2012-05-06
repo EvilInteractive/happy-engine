@@ -85,6 +85,8 @@ private:
         ShaderVariable<vec4> ambColor;
         ShaderVariable<vec4> dirColor;
         ShaderVariable<vec3> dirDirection;
+        ShaderVariable<vec3> dirPosition;
+        ShaderVariable<vec2> dirNearFar;
 
         //PerFrameBuffer
         ShaderVariable<mat44> mtxDirLight0;

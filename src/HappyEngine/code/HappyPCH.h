@@ -23,6 +23,8 @@
 #pragma message("HappyEngine: Compiling precompiled headers.")
 #pragma message("-------------------------------------------\n")
 
+#define __HE_FUNCTION__ __FUNCTION__
+
 #include <cstdlib>
 #include <string>
 #include <vector>

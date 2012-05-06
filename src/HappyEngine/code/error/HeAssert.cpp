@@ -26,13 +26,14 @@
 namespace he {
 namespace err {
 namespace details {
-void happyAssert(bool isOk, const char* file, int line, const char* message, va_list args)
+void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, va_list args)
 {
     if (isOk == true)
         return;
     
     HE_ERROR("**ASSERTION FAILURE!**");
-    HE_ERROR("in file %s (%d)", file, line);
+    HE_ERROR("assert in function %s", func);
+    HE_ERROR("from file %s on line %d", file, line);
     he::details::HE_ERROR(message, args);
     
     // TODO : Messagebox
@@ -43,41 +44,15 @@ void happyAssert(bool isOk, const char* file, int line, const char* message, va_
     #endif
     
 }
-//void happyAssert(bool isOk, const char* file, int line)
-//{
-//    if (!isOk)
-//    {
-//        char sline[5];
-//        sprintf(sline, "%d", line);
-//        HE_ERROR("**ASSERTION FAILURE!**");
-//        HE_ERROR("*in file " + std::string(file) + "(" + std::string(sline) + ")");
-//        #ifndef GCC
-//        __debugbreak();
-//        #else
-//        __builtin_trap();
-//        #endif
-//    }
-//}
-void happyAssert(int isOk, const char* file, int line)
+
+void happyAssert(int isOk, const char* file, const char* func, int line)
 {
-    happyAssert(isOk != 0, file, line, "", 0);
+    happyAssert(isOk != 0, file, func, line, "", 0);
 }
-void happyAssert(void* isOk, const char* file, int line)
+void happyAssert(void* isOk, const char* file, const char* func, int line)
 {
-    happyAssert(isOk != nullptr, file, line, "", 0);
+    happyAssert(isOk != nullptr, file, func, line, "", 0);
 }
-//void happyAssert(const std::string& message, const char* file, int line)
-//{
-//    char sline[5];
-//    sprintf(sline, "%d", line);
-//    HE_ERROR("**ASSERTION FAILURE!**");
-//    HE_ERROR("*err in file " + std::string(file) + "(" + std::string(sline) + ")");
-//    HE_ERROR("*" + message);
-//    #ifndef GCC
-//    __debugbreak();
-//    #else
-//    __builtin_trap();
-//    #endif
-//}
+
 } } } //end namespace
 #pragma warning(default:4127)

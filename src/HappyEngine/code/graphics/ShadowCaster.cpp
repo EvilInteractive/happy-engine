@@ -71,8 +71,8 @@ void ShadowCaster::init(const RenderSettings& settings)
         m_pShadowTexture[i]->setName("ShadowCaster::m_pShadowTexture[i]");
         m_pShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 
             gfx::Texture2D::TextureFormat_RG16, 0, 
-            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float,
-            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, false, false );
+            gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float,
+            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Anisotropic_16x, true, false );
     }
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
@@ -156,13 +156,19 @@ void ShadowCaster::init(const RenderSettings& settings)
     ///                             Materials                              ///
     //////////////////////////////////////////////////////////////////////////
     m_MatSingle.setShader(pShadowShaderSingle, vertexSingleLayout, noInstancingLayout);
+    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderUserVar<vec2>(pShadowShaderSingle->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500))));
+    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWV"), "matWV", ShaderVarType_WorldView)));
     m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection)));
     
     m_MatSkinned.setShader(pShadowShaderSkinned, vertexSkinnedLayout, noInstancingLayout);
+    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderUserVar<vec2>(pShadowShaderSkinned->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500))));
+    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWV"), "matWV", ShaderVarType_WorldView)));
     m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection)));
     m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), "matBones", ShaderVarType_BoneTransforms)));
     
     m_MatInstanced.setShader(pShadowShaderInstanced, vertexSingleLayout, instancingLayout);
+    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderUserVar<vec2>(pShadowShaderInstanced->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500))));
+    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matV"), "matV", ShaderVarType_View)));
     m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection)));
 
     m_pQuad = CONTENT->getFullscreenQuad();
@@ -189,9 +195,9 @@ mat44 getProjection(const mat44& mtxShadowView, float nearClip, float farClip)
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
 
     float wFar = farClip * tan(camera.getFov()),          //half width
-          hFar = wFar / camera.getAspectRatio();          //half height
+          hFar = wFar * camera.getAspectRatio();          //half height
     float wNear = nearClip * tan(camera.getFov()),        //half width
-          hNear = wNear / camera.getAspectRatio();        //half height
+          hNear = wNear * camera.getAspectRatio();        //half height
 
     std::vector<vec3> frustumPoints;
     frustumPoints.reserve(8);
@@ -213,7 +219,8 @@ mat44 getProjection(const mat44& mtxShadowView, float nearClip, float farClip)
         minP = minPerComponent(minP, p);
         maxP = maxPerComponent(maxP, p);
     });
-    return mat44::createOrthoLH(minP.x, maxP.x, maxP.y, minP.y, min<float>(minP.z, 10), maxP.z);
+    float res(max(maxP.x - minP.x, maxP.y - minP.y));
+    return mat44::createOrthoLH(minP.x, minP.x + res, minP.y + res, minP.y, 1, 500);
 }
 struct ShadowCam : public ICamera
 {
@@ -247,12 +254,12 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
 
-    mat44 mtxShadowView(mat44::createLookAtLH(camera.getPosition() - shadowLook, camera.getPosition(), up));
+    mat44 mtxShadowView(mat44::createLookAtLH(camera.getPosition() - shadowLook*250, camera.getPosition(), up));
     mat44 mtxShadowProjection[COUNT-1];
-    mtxShadowProjection[0] = getProjection(mtxShadowView, camera.getNearClip(), 30);//25
-    mtxShadowProjection[1] = getProjection(mtxShadowView, 20, 80);//75
-    mtxShadowProjection[2] = getProjection(mtxShadowView, 70, 155);//150
-    mtxShadowProjection[3] = getProjection(mtxShadowView, 145, camera.getFarClip());
+    mtxShadowProjection[0] = getProjection(mtxShadowView, 1, 20);
+    mtxShadowProjection[1] = getProjection(mtxShadowView, 1, 40); 
+    mtxShadowProjection[2] = getProjection(mtxShadowView, 20, 60);
+    mtxShadowProjection[3] = getProjection(mtxShadowView, 40, 80);
     
 
     //Begin drawing
@@ -280,8 +287,9 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
         shadowCam.view = mtxShadowView;
         shadowCam.viewProjection = shadowCam.projection * shadowCam.view;
         shadowCam.look = shadowLook;
-        shadowCam.position = camera.getPosition() - shadowLook * 500;       // HACK: hard coded values  TODO !!
-        shadowCam.farClip = 1000;
+        shadowCam.position = camera.getPosition() - shadowLook * 250;       // HACK: hard coded values  TODO !!
+        shadowCam.farClip = 500;
+        shadowCam.nearClip = 1;
         
         //////////////////////////////////////////////////////////////////////////
         ///                          Build DrawLists                           ///
@@ -341,7 +349,8 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
         pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
-
+    pDirectionalLight->setShadowPosition(camera.getPosition() - shadowLook*250);
+    pDirectionalLight->setShadowNearFar(1, 500);
     //////////////////////////////////////////////////////////////////////////
     //                                 Blur                                 //
     //////////////////////////////////////////////////////////////////////////

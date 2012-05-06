@@ -35,6 +35,8 @@ struct DirectionalLight
 {
     vec4 color;
     vec3 direction;
+    vec3 position; //for shadows
+    vec2 nearFar;
 };
 
 
@@ -89,7 +91,7 @@ vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
     return color / 9.0f;
 }
 
-float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
+float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix, float bias)
 {
     vec4 coord = lightMatrix * vec4(position, 1.0f);
 
@@ -100,27 +102,24 @@ float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix)
     //NDC -> texturespace
     coord.x = coord.x * 0.5f + 0.5f;
     coord.y = coord.y * 0.5f + 0.5f;
-    //coord.z = coord.y * 0.5f + 0.5f;
     
-    //float bias = 0.001f;
-
-    //vec2 map = PCF9(sampler, coord.xy);
-    vec2 map = texture(sampler, coord.xy).rg;
-
-
+    float depth = (length(position - dirLight.position) - dirLight.nearFar.x) / dirLight.nearFar.y;
+    
+    //vec2 map = recombinePrecision(texture(sampler, coord.xy));
+    vec2 map = texture(sampler, coord.xy).xy;
+    
     float fAvgZ = map.x;
     float fAvgZ2 = map.y;
 
-    if (coord.z <= fAvgZ) return 1.0f;
-    if (coord.z >= 1.0f) return 0.0f;
+    float p = depth <= fAvgZ? 1.0f : 0.0f;
 
     float variance = fAvgZ2 - (fAvgZ * fAvgZ);
-    variance = min(max(variance, 0.0f) + 0.001f, 1.0f);
+    variance = max(variance, bias);
 
-    float mean = fAvgZ;
-    float d = coord.z - mean;
+    float d = depth - fAvgZ;
+    float p_max = pow(variance / (variance + d*d), 50);
     
-    return pow(variance / (variance + d*d), 50);
+    return max(p, p_max);
 }
 
 void main()
@@ -153,15 +152,44 @@ void main()
     
     //Shadow
     float shadow = 1;
+    //vec3 cascade = vec3(0, 0, 0);
 #if SHADOWS
-    if (position.z < 30)
-        shadow *= shadowCheck(position, shadowMap0, mtxDirLight0);
-    if (position.z > 20 && position.z < 80)
-        shadow *= shadowCheck(position, shadowMap1, mtxDirLight1);
-    if (position.z > 70 && position.z < 155)
-        shadow *= shadowCheck(position, shadowMap2, mtxDirLight2);
-    if (position.z > 145)
-        shadow *= shadowCheck(position, shadowMap3, mtxDirLight3);
+    if (position.z < 20)
+    {
+        shadow = mix(shadowCheck(position, shadowMap0, mtxDirLight0, 0.0001f),
+                     shadowCheck(position, shadowMap1, mtxDirLight1, 0.001f),
+                     (position.z - 1.0f) / 20.0f);
+        //cascade = mix(vec3(1, 0, 0),
+        //              vec3(0, 1, 0),
+        //              (position.z - 1.0f) / 20.0f);
+    }
+    else if (position.z < 40)
+    {
+        shadow = mix(shadowCheck(position, shadowMap1, mtxDirLight1, 0.001f),
+                     shadowCheck(position, shadowMap2, mtxDirLight2, 0.01f),
+                     (position.z - 20.0f) / 20.0f);
+        //cascade = mix(vec3(0, 1, 0),
+        //              vec3(0, 0, 1),
+        //              (position.z - 20.0f) / 20.0f);
+    }
+    else if (position.z < 60)
+    {
+        shadow = mix(shadowCheck(position, shadowMap2, mtxDirLight2, 0.01f),
+                     shadowCheck(position, shadowMap3, mtxDirLight3, 0.01f),
+                     (position.z - 40.0f) / 20.0f);
+        //cascade = mix(vec3(0, 0, 1),
+        //              vec3(1, 0, 0),
+        //              (position.z - 40.0f) / 20.0f);
+    }
+    else if (position.z < 80)
+    {
+        shadow = mix(shadowCheck(position, shadowMap3, mtxDirLight3, 0.01f),
+                     1.0f,
+                     (position.z - 60.0f) / 20.0f);
+        //cascade = mix(vec3(1, 0, 0),
+        //              vec3(0, 1, 0),
+        //              (position.z - 60.0f) / 20.0f);
+    }
 #endif
 
     //Specular
@@ -180,4 +208,5 @@ void main()
     //Out         
     outColor = vec4(((diffuseLight + spec) * shadow + ambientLight + vec3(color.a, color.a, color.a) * 100) * color.rgb
                         , 1.0f);		
+    //outColor *= vec4(cascade, 1);
 }

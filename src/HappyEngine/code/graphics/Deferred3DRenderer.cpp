@@ -183,7 +183,8 @@ void Deferred3DRenderer::compileShaders()
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("ambLight.color", m_AmbDirIllLightData.ambColor);
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.color", m_AmbDirIllLightData.dirColor);
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.direction", m_AmbDirIllLightData.dirDirection);
-    
+    m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.position", m_AmbDirIllLightData.dirPosition);
+    m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.nearFar", m_AmbDirIllLightData.dirNearFar);
     if (m_RenderSettings.enableShadows)
     {
         m_AmbDirIllLightData.pPerFrameBuffer->getShaderVar("mtxDirLight0", m_AmbDirIllLightData.mtxDirLight0);
@@ -397,10 +398,14 @@ void Deferred3DRenderer::postAmbDirIllLight()
     m_AmbDirIllLightData.ambColor = vec4(pAmbLight->color, pAmbLight->multiplier);
     m_AmbDirIllLightData.dirColor = vec4(pDirLight->getColor(), pDirLight->getMultiplier());
     m_AmbDirIllLightData.dirDirection = normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz());
+    m_AmbDirIllLightData.dirPosition = (CAMERAMANAGER->getActiveCamera()->getView() * vec4(pDirLight->getShadowPosition(), 1.0f)).xyz();
+    m_AmbDirIllLightData.dirNearFar = pDirLight->getShadowNearFar();
 
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.ambColor);
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirColor);
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirDirection);
+    m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirPosition);
+    m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirNearFar);
 
     m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_pColorIllTexture);
     if (m_RenderSettings.enableSpecular)
