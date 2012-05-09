@@ -55,7 +55,7 @@ const std::string& Path::str() const
     return m_Path;
 }
 
-Path Path::getRelativePath( const Path& relativePath ) const
+Path Path::getAbsolutePath( const Path& relativePath ) const
 {
     std::string path(relativePath.str());
     std::string::size_type newLength(m_Path.size() - 2); // -2 : skip trailing slash

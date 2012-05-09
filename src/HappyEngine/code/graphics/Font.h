@@ -23,6 +23,9 @@
 #define _HE_FONT_H_
 #pragma once
 
+#include "ft2build.h"
+#include FT_FREETYPE_H
+
 namespace he {
 
 namespace gui {
@@ -30,53 +33,35 @@ namespace gui {
 }
 
 namespace gfx {
-
 class Texture2D;
 
 class Font
 {
 public:
 
-    enum HAlignment
-    {
-        HAlignment_Left, 
-        HAlignment_Center, 
-        HAlignment_Right
-    };
-    enum VAlignment
-    {
-        VAlignment_Top, 
-        VAlignment_Center, 
-        VAlignment_Bottom
-    };
-
-    typedef boost::shared_ptr<Font> pointer;
-
     /* CONSTRUCTOR - DESTRUCTOR */
-    explicit Font(void* pFont);
+    Font(FT_Library* pLib, FT_Face* pFace, ushort size);
     virtual ~Font();
     
     /* GETTERS */
-    const Texture2D* createTextureText(const std::string& text, const Color& color,
-                                       bool bAntiAliased = true, vec2* sizeText = nullptr);
-    const Texture2D* createTextureText(const gui::Text& text, const Color& color,
-                                       bool bAntiAliased = true);
-
-    const std::string& getPath() const;
+    void renderText(const std::string& text, const Color& color, Texture2D* tex);
 
     uint getFontPixelHeight() const;
     uint getFontLineSpacing() const;
     uint getStringWidth(const std::string& string) const;
 
     /* SETTERS */
-    void setPath(const std::string& path);
 
 private:
 
-    /* DATAMEMBERS */
-    void* m_pFont;
+    /* EXTRA */
+    inline int nextP2(int a);
 
-    std::string m_Path;
+    /* DATAMEMBERS */
+    FT_Library* m_pFTLibrary;
+    FT_Face* m_pFace;
+
+    ushort m_CharSize;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Font(const Font&);

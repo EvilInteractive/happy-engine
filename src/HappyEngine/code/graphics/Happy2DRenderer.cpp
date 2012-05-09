@@ -464,11 +464,11 @@ void Happy2DRenderer::createLayer(const std::string& name, byte depth)
 
     std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p)
     {
-        HE_ASSERT(p.first != name, error.c_str());
+        //HE_ASSERT(p.first != name, error.c_str());
 
         std::for_each(m_Layers.cbegin(), m_Layers.cend(), [&](std::pair<std::string, float> p2)
         {
-            HE_ASSERT((p.second != p2.second) || (p.first == p2.first), "Layer depth already assigned!");
+            //HE_ASSERT((p.second != p2.second) || (p.first == p2.first), "Layer depth already assigned!");
         });
     });
     #endif

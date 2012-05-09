@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Awesomium/WebCore.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
@@ -32,10 +33,11 @@ class WebView
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebView(Awesomium::WebView* pView, uint id, bool bEnableUserInput);
+    WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscreen);
     virtual ~WebView();
 
     /* GENERAL */
+    void draw(const vec2& pos = vec2());
     void loadUrl(const std::string& url);
     void excecuteJavaScript(const std::string& script);
     void focus();
@@ -44,14 +46,16 @@ public:
     /* GETTERS */
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
-    uint getId() const;
 
 private:
 
     /* DATAMEMBERS */
     Awesomium::WebView* m_pWebView;
+
     bool m_bInputEnabled;
-    uint m_Id;
+    bool m_FullScreen;
+    
+    Texture2D* m_pRenderTexture;
 
     /* DEFAULT COPY & ASSIGNMENT */
     WebView(const WebView&);

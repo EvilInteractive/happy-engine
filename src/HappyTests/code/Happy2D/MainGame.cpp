@@ -48,7 +48,7 @@ MainGame::~MainGame()
 void MainGame::init()
 {
     GRAPHICS->setVSync(false);
-    GRAPHICS->setScreenDimension(1920, 1080);
+    GRAPHICS->setScreenDimension(1280, 720);
     GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
 }
 
@@ -57,8 +57,8 @@ void MainGame::load()
     CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
 
-    //m_pWebView = GUI_NEW->createWebView(true);
-    //m_pWebView->loadUrl("http://www.google.be");
+    m_pWebView = GUI_NEW->createWebView(true);
+    m_pWebView->loadUrl("http://www.google.be");
     //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_pWebView->loadUrl("http://www.youtube.be");
 
@@ -72,9 +72,11 @@ void MainGame::tick( float dTime )
 
 void MainGame::drawGui()
 {
-    m_pCanvas->setFillColor(he::Color(1.0f,0.0f,1.0f));
+    m_pWebView->draw();
+
+    m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
     m_pCanvas->fillRect(he::vec2(20,20), he::vec2(300,300));
-    m_pCanvas->draw();
+    //m_pCanvas->draw();
 }
 
 } //end namespace

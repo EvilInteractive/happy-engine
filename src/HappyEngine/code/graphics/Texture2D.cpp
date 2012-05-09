@@ -233,6 +233,7 @@ GLenum Texture2D::getInternalBufferLayout( BufferLayout layout )
     case BufferLayout_RG:   return GL_RG;
     case BufferLayout_R:    return GL_RED;
     case BufferLayout_Depth:return GL_DEPTH_COMPONENT;
+    case BufferLayout_LA:   return GL_LUMINANCE_ALPHA;
     default:
         HE_ERROR("Unkown Texture2D::BufferLayout");
         return GL_BGRA;

@@ -72,7 +72,7 @@ private:
 	/* DATAMEMBERS */
 	RectF m_Rect;
 
-	gfx::Font::pointer m_pFont;
+	gfx::Font* m_pFont;
 
 	std::string m_DefaultString;
 	std::string m_String;

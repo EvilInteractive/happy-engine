@@ -65,7 +65,7 @@ ContentManager::ContentManager():
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
 {
-    setContentDir(HAPPYENGINE->getRootDir().getRelativePath(Path("../data/")));
+    setContentDir(HAPPYENGINE->getRootDir().getAbsolutePath(Path("../data/")));
 }
 
 ContentManager::~ContentManager()
@@ -159,14 +159,14 @@ const std::vector<px::PhysicsConcaveMesh::pointer>& ContentManager::loadPhysicsC
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Font::pointer ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
+gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
 {
-    gfx::Font::pointer p;
-    m_pFontLoader->load(m_FontPath.str() + asset, size, bold, italic, p);
+    gfx::Font* p;
+    //m_pFontLoader->load(m_FontPath.str() + asset, size, bold, italic, p);
     return p;
 }
 
-const gfx::Font::pointer& ContentManager::getDefaultFont(ushort size)
+gfx::Font* ContentManager::getDefaultFont(ushort size)
 {
     /*if (m_pDefaultFont == nullptr)
     {*/
@@ -202,42 +202,42 @@ void ContentManager::setContentDir(const Path& path)
 void ContentManager::setTextureFolder(const std::string& folder)
 {
     m_TextureFolder = folder;
-    m_TexturePath = m_ContentRootDir.getRelativePath(folder);
+    m_TexturePath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setModelFolder(const std::string& folder)
 {
     m_ModelFolder = folder;
-    m_ModelPath = m_ContentRootDir.getRelativePath(folder);
+    m_ModelPath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setLineFolder(const std::string& folder)
 {
     m_LineFolder = folder;
-    m_LinePath = m_ContentRootDir.getRelativePath(folder);
+    m_LinePath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setPhysicsFolder(const std::string& folder)
 {
     m_PhysicsFolder = folder;
-    m_PhysicsPath = m_ContentRootDir.getRelativePath(folder);
+    m_PhysicsPath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setFontFolder(const std::string& folder)
 {
     m_FontFolder = folder;
-    m_FontPath = m_ContentRootDir.getRelativePath(folder);
+    m_FontPath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setShaderFolder(const std::string& folder)
 {
     m_ShaderFolder = folder;
-    m_ShaderPath = m_ContentRootDir.getRelativePath(folder);
+    m_ShaderPath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setMaterialFolder(const std::string& folder)
 {
     m_MaterialFolder = folder;
-    m_MaterialPath = m_ContentRootDir.getRelativePath(folder);
+    m_MaterialPath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setFxFolder( const std::string& folder )
 {
     m_FxFolder = folder;
-    m_FxPath = m_ContentRootDir.getRelativePath(folder);
+    m_FxPath = m_ContentRootDir.getAbsolutePath(folder);
 }
 const Path& ContentManager::getContentDir() const
 {

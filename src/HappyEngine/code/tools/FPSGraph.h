@@ -68,7 +68,7 @@ private:
 
     ushort m_CurrentFPS;
     
-    gfx::Font::pointer m_pFont;
+    gfx::Font* m_pFont;
 
     int m_FPSGraphState;
 

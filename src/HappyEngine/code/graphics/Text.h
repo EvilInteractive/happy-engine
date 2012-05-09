@@ -54,10 +54,10 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Text(	gfx::Font::pointer font,
+    Text(	gfx::Font* font,
             OverFlowType overflow = OverFlowType_Clip);
     Text(	const std::string& text,
-            gfx::Font::pointer font,
+            gfx::Font* font,
             OverFlowType overflow = OverFlowType_Clip);
     Text(	OverFlowType overflow = OverFlowType_Clip);
     Text(	const std::string& text,
@@ -84,7 +84,7 @@ public:
     HAlignment getHorizontalAlignment() const;
     VAlignment getVerticalAlignment() const;
 
-    const gfx::Font::pointer& getFont() const;
+    gfx::Font* getFont() const;
 
 private:
 
@@ -96,7 +96,7 @@ private:
     HAlignment m_HAlignment;
     VAlignment m_VAlignment;
 
-    gfx::Font::pointer m_pFont;
+    gfx::Font* m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Text(const Text&);

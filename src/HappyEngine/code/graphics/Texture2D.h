@@ -66,7 +66,8 @@ public:
         BufferLayout_RGBA,
         BufferLayout_BGR,
         BufferLayout_BGRA,
-        BufferLayout_Depth
+        BufferLayout_Depth,
+        BufferLayout_LA
     };
     enum BufferType
     {

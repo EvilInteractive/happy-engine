@@ -133,7 +133,7 @@ private:
 
     std::string m_HelpCommand;
 
-    gfx::Font::pointer m_pFont;
+    gfx::Font* m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

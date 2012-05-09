@@ -60,7 +60,7 @@ private:
 
     ProfileTreeNode* m_CurrentNode;
 
-    gfx::Font::pointer m_pFont;
+    gfx::Font* m_pFont;
 
     //Disable default copy constructor and default assignment operator
     Profiler(const Profiler&);

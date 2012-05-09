@@ -37,8 +37,8 @@ public:
     //ex:
     //Root = C:/Test/
     //relativePath = ../data/test.png
-    //return = C:/data/test.png
-    Path getRelativePath(const Path& relativePath) const; 
+    //return = C:/data/test.png => absolute
+    Path getAbsolutePath(const Path& relativePath) const; 
 
 
 private:

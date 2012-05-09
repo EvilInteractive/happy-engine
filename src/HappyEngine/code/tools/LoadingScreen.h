@@ -55,8 +55,8 @@ private:
     /* DATAMEMBERS */
     std::vector<SnowFlake> m_SnowFlakes;
 
-    gfx::Font::pointer m_pFontLoading;
-    gfx::Font::pointer m_pFontMessage;
+    gfx::Font* m_pFontLoading;
+    gfx::Font* m_pFontMessage;
 
     const gfx::Texture2D* m_pLogo;
 

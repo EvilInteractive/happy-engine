@@ -52,6 +52,7 @@ void ControlsManager::tick()
 {
     int scrollState(0);
     vec2 mousePos(-1.0f,-1.0f);
+    std::vector<char> chars;
 
     std::for_each(HAPPYENGINE->getEvents().cbegin(), HAPPYENGINE->getEvents().cend(), [&](sf::Event ev)
     {
@@ -82,10 +83,17 @@ void ControlsManager::tick()
                 mousePos.y = static_cast<float>(ev.mouseMove.y);
                 m_pMouse->getOnMouseMovedListeners()(mousePos);
                 break;
+            case sf::Event::TextEntered:
+                // ASCII only
+                if (ev.text.unicode < 128)
+                {
+                    chars.push_back((char)ev.text.unicode);
+                }
+                break;
         }
     });
 
-    m_pKeyboard->tick(m_pKeys);
+    m_pKeyboard->tick(m_pKeys, chars);
     m_pMouse->tick(m_pButtons, scrollState, mousePos);
 }
 

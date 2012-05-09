@@ -288,7 +288,7 @@ void HappyEngine::drawLoop()
     else
         m_pGame->drawGui();
 
-    GUI_NEW->draw();
+    //GUI_NEW->draw();
 
     // draw profiler if needed
     if (m_bShowProfiler)

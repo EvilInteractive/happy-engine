@@ -17,6 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 12/08/2011
+//Extended: Sebastiaan Sprengers
 
 #ifndef _HE_FONT_LOADER_H_
 #define _HE_FONT_LOADER_H_
@@ -25,7 +26,8 @@
 #include "Font.h"
 #include "AssetContainer.h"
 
-#include <string>
+#include "ft2build.h"
+#include FT_FREETYPE_H
 
 namespace he {
 namespace ct {
@@ -36,11 +38,14 @@ public:
 	FontLoader();
     virtual ~FontLoader();
 
-    bool load(const std::string& path, ushort size, bool bold, bool italic, gfx::Font::pointer& pOutFont);
+    bool load(const std::string& path, ushort size, gfx::Font* pOutFont);
 
 private:
 
-    AssetContainer<gfx::Font::pointer>* m_pAssetContainer;
+    /* DATAMEMBERS */
+    AssetContainer<gfx::Font*>* m_pAssetContainer;
+
+    FT_Library* m_pFTLibrary;
 
     //Disable default copy constructor and default assignment operator
     FontLoader(const FontLoader&);

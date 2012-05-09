@@ -35,7 +35,7 @@ public:
     Keyboard();
     virtual ~Keyboard();
 
-    virtual void tick(byte* pKeyState);
+    virtual void tick(byte* pKeyState, const std::vector<char>& chars);
 
     virtual bool isKeyUp(Key key) const;
     virtual bool isKeyDown(Key key) const;
@@ -50,12 +50,16 @@ public:
     virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const;
     virtual eventExt<void, Key>& getOnKeyReleasedListeners();
 
+    virtual const std::vector<char>& getTextEntered() const;
+
 private:
     byte* m_CurrentKeyState;
     byte* m_PrevKeyState;
 
     eventExt<void, Key> m_OnKeyPressedListeners;
     eventExt<void, Key> m_OnKeyReleasedListeners;
+
+    std::vector<char> m_TextEntered;
 
     //Disable default copy constructor and default assignment operator
     Keyboard(const Keyboard&);

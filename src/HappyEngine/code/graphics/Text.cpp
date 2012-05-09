@@ -26,7 +26,7 @@ namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Text::Text(	gfx::Font::pointer font,
+Text::Text(	gfx::Font* font,
 			OverFlowType overflow) :	m_pFont(font),
 										m_OverFlowType(overflow),
 										m_HAlignment(HAlignment_Left),
@@ -34,7 +34,7 @@ Text::Text(	gfx::Font::pointer font,
 {
 }
 Text::Text(	const std::string& text,
-			gfx::Font::pointer font,
+			gfx::Font* font,
 			OverFlowType overflow) :	m_pFont(font),
 										m_OverFlowType(overflow),
 										m_HAlignment(HAlignment_Left),
@@ -124,7 +124,7 @@ Text::VAlignment Text::getVerticalAlignment() const
 	return m_VAlignment;
 }
 
-const gfx::Font::pointer& Text::getFont() const
+gfx::Font* Text::getFont() const
 {
 	return m_pFont;
 }

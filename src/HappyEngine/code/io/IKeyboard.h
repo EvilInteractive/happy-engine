@@ -32,7 +32,7 @@ class IKeyboard
 public:
     virtual ~IKeyboard() {}
 
-    virtual void tick(byte* pKeyState) = 0;
+    virtual void tick(byte* pKeyState, const std::vector<char>& chars) = 0;
 
     virtual bool isKeyUp(Key key) const = 0;
     virtual bool isKeyDown(Key key) const = 0;
@@ -46,6 +46,8 @@ public:
     virtual eventExt<void, Key>& getOnKeyPressedListeners() = 0;
     virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const = 0;
     virtual eventExt<void, Key>& getOnKeyReleasedListeners() = 0;
+
+    virtual const std::vector<char>& getTextEntered() const = 0;
 };
 
 } } //end namespace

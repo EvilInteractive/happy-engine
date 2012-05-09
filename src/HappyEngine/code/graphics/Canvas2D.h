@@ -30,8 +30,6 @@
 #include "Mesh2D.h"
 #include "Simple2DEffect.h"
 
-#include <stack>
-
 namespace he {
 namespace gfx {
 
@@ -56,8 +54,20 @@ public:
         uint depthRbufferID;
     };
 
+    struct DrawingState
+    {
+        Color fillColor;
+        Color strokeColor;
+        Font* font;
+        float globalAlpha;
+        float lineWidth;
+    };
+
+    /* STATIC */
+    static Data* create(const vec2& size);
+
     /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2D(Data* pData);
+    Canvas2D(Data* pData, const vec2& size);
     virtual ~Canvas2D();
 
     /* GENERAL */
@@ -80,7 +90,7 @@ public:
     void setGlobalAlpha(float alpha);
     
     /* DRAW METHODS */
-    void draw();
+    void draw(const vec2& pos = vec2(0,0));
 
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
@@ -106,11 +116,16 @@ public:
 
 private:
 
+    /* CONSTANT */
+    static const int STACK_DEPTH_LIMIT = 16;
+
     /* EXTRA */
     void init();
+    void cleanup();
+    mat44 getTransformation();
 
     /* DATAMEMBERS */
-    std::stack<mat33> m_TransformationStack;
+    std::vector<mat33> m_TransformationStack;
     ushort m_StackDepth;
 
     mat44 m_OrthographicMatrix;
@@ -128,6 +143,9 @@ private:
     Simple2DEffect* m_pColorEffect;
 
     Texture2D* m_pRenderTexture;
+
+    vec2 m_CanvasSize;
+    bool m_FullScreen;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

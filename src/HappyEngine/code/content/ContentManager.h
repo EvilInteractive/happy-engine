@@ -73,8 +73,8 @@ public:
     const std::vector<px::PhysicsConvexMesh::pointer>& loadPhysicsConvex(const std::string& path);
     const std::vector<px::PhysicsConcaveMesh::pointer>& loadPhysicsConcave(const std::string& path);
 
-    gfx::Font::pointer loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
-    const gfx::Font::pointer& getDefaultFont(ushort size = 12);
+    gfx::Font* loadFont(const std::string& path, ushort size, bool bold = false, bool italic = false);
+    gfx::Font* getDefaultFont(ushort size = 12);
 
     gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    
@@ -130,7 +130,7 @@ private:
     Path m_TexturePath, m_ModelPath, m_LinePath, m_PhysicsPath, m_FontPath,
                 m_ShaderPath, m_MaterialPath, m_FxPath;
 
-    gfx::Font::pointer m_pDefaultFont;
+    gfx::Font* m_pDefaultFont;
 
     gfx::ModelMesh* m_ParticleQuad;
     gfx::ModelMesh* m_FullscreenQuad;

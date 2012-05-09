@@ -52,6 +52,7 @@ public:
 
 	/* GETTERS */
 	vec2 getTranslation() const;
+    mat44 getMat44() const;
 
 	/* STATIC */
 	static const mat33 Identity;

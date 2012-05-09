@@ -21,22 +21,63 @@
 #include "HappyPCH.h" 
 
 #include "WebView.h"
+#include "Awesomium/BitmapSurface.h"
+#include "Happy2DRenderer.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {
 
-WebView::WebView(Awesomium::WebView* pView, uint id, bool bEnableUserInput) :   m_pWebView(pView),
-                                                                                m_bInputEnabled(bEnableUserInput),
-                                                                                m_Id(id)
+WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscreen) :   m_pWebView(pView),
+                                                                                        m_bInputEnabled(bEnableUserInput),
+                                                                                        m_FullScreen(fullscreen)
 {
+    ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
+    m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(hnd);
 }
 
 WebView::~WebView()
 {
     m_pWebView->Destroy();
+    m_pRenderTexture->release();
 }
 
 /* GENERAL */
+void WebView::draw(const vec2& pos)
+{
+    if (m_pWebView->surface())
+    {
+        Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(m_pWebView->surface());
+
+        if (pSurface->Dirty())
+        {
+            byte* buffer = NEW byte[pSurface->width() * 4 * pSurface->height()];
+
+            pSurface->CopyTo(buffer, pSurface->width() * 4, 4, false, true);
+
+            m_pRenderTexture->setData(
+                pSurface->width(), pSurface->height(), 
+                gfx::Texture2D::TextureFormat_RGBA8, buffer, 
+                gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, false);
+
+            delete[] buffer;
+        }
+
+        if (m_FullScreen)
+        {
+            vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
+            vec2 dim2((float)pSurface->width(), (float)pSurface->height());
+
+            if (dim != dim2)
+            {
+                m_pWebView->Resize((int)dim.x,(int)dim.y);
+            }
+        }
+    }
+
+    GUI->drawTexture2D(m_pRenderTexture, pos);
+}
+
 void WebView::loadUrl(const std::string& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
@@ -68,11 +109,6 @@ Awesomium::WebView* WebView::getAWEView() const
 bool WebView::inputEnabled() const
 {
     return m_bInputEnabled;
-}
-
-uint WebView::getId() const
-{
-    return m_Id;
 }
 
 }} //end namespace

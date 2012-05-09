@@ -110,7 +110,7 @@ protected:
     Hitregion* m_pHitregion;
 
     std::string m_Text;
-    gfx::Font::pointer m_pFont;
+    gfx::Font* m_pFont;
 
     event<void> m_OnClickEvent;
 

@@ -42,10 +42,12 @@ Keyboard::~Keyboard()
     he_free(m_PrevKeyState);
     he_free(m_CurrentKeyState);
 }
-void Keyboard::tick(byte* pKeyState)
+void Keyboard::tick(byte* pKeyState, const std::vector<char>& chars)
 {
     std::swap(m_PrevKeyState, m_CurrentKeyState); 
     he_memcpy(m_CurrentKeyState, pKeyState, KEYBOARD_ARRAY_SIZE);
+
+    m_TextEntered = chars;
 }
 
 bool Keyboard::isKeyUp(Key key) const
@@ -95,6 +97,11 @@ void Keyboard::addOnKeyReleasedListener(boost::function<void(Key)> callback) con
 eventExt<void, Key>& Keyboard::getOnKeyReleasedListeners()
 {
     return m_OnKeyReleasedListeners;
+}
+
+const std::vector<char>& Keyboard::getTextEntered() const
+{
+    return m_TextEntered;
 }
 
 } } //end namespace

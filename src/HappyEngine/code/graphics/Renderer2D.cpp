@@ -22,7 +22,6 @@
 
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
-#include "Awesomium/BitmapSurface.h"
 #include "ContentManager.h"
 #include "Happy2DRenderer.h"
 #include "ControlsManager.h"
@@ -40,76 +39,52 @@ Renderer2D::~Renderer2D()
     {
         Awesomium::WebCore::Shutdown();
     }
-
-    std::for_each(m_WebViewRenderTextures.begin(), m_WebViewRenderTextures.end(), [](Texture2D* pTex2D)
-    {
-        pTex2D->release();
-    });
 }
 
 /* GENERAL */
-Canvas2D* Renderer2D::createCanvas()
+Canvas2D* Renderer2D::createCanvas(const vec2& size)
 {
-    Canvas2D::Data* pData = NEW Canvas2D::Data();
+    vec2 dim = size;;
 
-    pData->renderTextureHnd = ResourceFactory<Texture2D>::getInstance()->create();
-    Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
-
-    pTexture->setData(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight(), 
-        gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Linear, false, false);
-    
-    // create final FBO & RB
-    glGenFramebuffers(1, &pData->resolvedFbufferID);
-    GL::heBindFbo(pData->resolvedFbufferID);
-    glGenRenderbuffers(1, &pData->resolvedRbufferID);
-    glBindRenderbuffer(GL_RENDERBUFFER, pData->resolvedRbufferID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pTexture->getID(), 0);
-
-    // create intermediate FBO & RB, MultiSampling
-    glGenFramebuffers(1, &pData->fbufferID);
-    GL::heBindFbo(pData->fbufferID);
-
-    uint MSSamples = 8;
-
-    glGenRenderbuffers(1, &pData->colorRbufferID);
-    glBindRenderbuffer(GL_RENDERBUFFER, pData->colorRbufferID);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, MSSamples, GL_RGBA8, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pData->colorRbufferID);
-
-    glGenRenderbuffers(1, &pData->depthRbufferID);
-    glBindRenderbuffer(GL_RENDERBUFFER, pData->depthRbufferID);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, MSSamples, GL_DEPTH_COMPONENT16, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pData->depthRbufferID);
-
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-    if (status != GL_FRAMEBUFFER_COMPLETE)
+    if (size.x <= 0 || size.y <= 0)
     {
-        he::HE_ERROR("Failed to create FrameBuffer Canvas2D!");
+        dim.x = (float)GRAPHICS->getScreenWidth();
+        dim.y = (float)GRAPHICS->getScreenHeight();
+    }
 
-        delete pData;
+    Canvas2D::Data* pData = Canvas2D::create(dim);
+
+    if (pData == nullptr)
+    {
+        HE_ERROR("Failed to create Canvas2D!");
         return nullptr;
     }
 
-    return NEW Canvas2D(pData);
+    return NEW Canvas2D(pData, dim);
 }
 
-WebView* Renderer2D::createWebView(bool bEnableUserInput)
+WebView* Renderer2D::createWebView(bool bEnableUserInput, const vec2& size)
 {
     if (m_pWebCore == nullptr)
     {
         m_pWebCore = Awesomium::WebCore::Initialize(Awesomium::Config());
     }
 
-    Awesomium::WebView* pView = m_pWebCore->CreateWebView(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight());
+    vec2 dim = size;
+    bool f = false;
 
-    WebView* pWeb = NEW WebView(pView, m_WebViews.size(), bEnableUserInput);
+    if (size == vec2(0,0))
+    {
+        dim.x = (float)GRAPHICS->getScreenWidth();
+        dim.y = (float)GRAPHICS->getScreenHeight();
+
+        f = true;
+    }
+
+    Awesomium::WebView* pView = m_pWebCore->CreateWebView(dim.x, dim.y);
+
+    WebView* pWeb = NEW WebView(pView, bEnableUserInput, f);
     m_WebViews.push_back(pWeb);
-
-    Texture2D* pRenderTexture = CONTENT->makeEmptyTexture(vec2(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    m_WebViewRenderTextures.push_back(pRenderTexture);
 
     if (bEnableUserInput)
     {
@@ -138,7 +113,7 @@ WebView* Renderer2D::createWebView(bool bEnableUserInput)
                 pW->InjectKeyboardEvent(keyEvent);
 
                 // if it is an ASCII char
-                if (chr >= 32 && chr <= 126)
+                if (chr < 128)
                 {
                     // if letter
                     if (chr >= 65 && chr <= 90)
@@ -238,35 +213,6 @@ void Renderer2D::tick()
 
 void Renderer2D::draw()
 {
-    uint i(0);
-    std::for_each(m_WebViews.begin(), m_WebViews.end(), [&](WebView* pView)
-    {
-        if (pView->getAWEView()->surface())
-        {
-            Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(pView->getAWEView()->surface());
-
-            if (pSurface->Dirty())
-            {
-                byte* buffer = NEW byte[pSurface->width() * 4 * pSurface->height()];
-
-                pSurface->CopyTo(buffer, pSurface->width() * 4, 4, false, true);
-
-                m_WebViewRenderTextures[i]->setData(
-                    pSurface->width(), pSurface->height(), 
-                    gfx::Texture2D::TextureFormat_RGBA8, buffer, 
-                    gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, false);
-
-                delete[] buffer;
-            } 
-        }
-
-        ++i;
-    });
-
-    std::for_each(m_WebViewRenderTextures.begin(), m_WebViewRenderTextures.end(), [](Texture2D* pTex2D)
-    {
-        GUI->drawTexture2D(pTex2D, vec2(0,0));
-    });
 }
 
 void Renderer2D::init()

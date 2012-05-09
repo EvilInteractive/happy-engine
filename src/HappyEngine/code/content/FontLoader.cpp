@@ -30,49 +30,42 @@
 namespace he {
 namespace ct {
 
-FontLoader::FontLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Font::pointer>())
+FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<gfx::Font*>()),
+                            m_pFTLibrary(NEW FT_Library())
 {
-   // TTF_Init();
+    bool error(FT_Init_FreeType(m_pFTLibrary));
+    HE_ASSERT(error == false,"Error creating freetype library!");
 }
 
 
 FontLoader::~FontLoader()
 {
+    FT_Done_FreeType(*m_pFTLibrary);
     delete m_pAssetContainer;
 }
 
-bool FontLoader::load(const std::string& path, ushort size, bool bold, bool italic, gfx::Font::pointer& pOutFont)
+bool FontLoader::load(const std::string& path, ushort size, gfx::Font* pOutFont)
 {
     std::stringstream stream;
     stream << path << size;
 
-    /*if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
+    if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
     {
-        TTF_Font* pFont(TTF_OpenFont(path.c_str(), size));
-        if (pFont == nullptr)
-        {
-            HE_ERROR("Font error: %s", TTF_GetError());
+        FT_Face* pFace(nullptr);
+        bool error(FT_New_Face(*m_pFTLibrary, path.c_str(), 0, pFace));
 
+        if (error == true)
+        {
+            HE_ERROR("Error loading font: %s", path);
             HE_ASSERT(false, "Error loading font!");
 
             return false;
         }
         else
         {
-            if (bold && italic)
-            {
-                TTF_SetFontStyle(pFont, TTF_STYLE_BOLD | TTF_STYLE_ITALIC);
-            }
-            else if (bold && !italic)
-            {
-                TTF_SetFontStyle(pFont, TTF_STYLE_BOLD);
-            }
-            else if (!bold && italic)
-            {
-                TTF_SetFontStyle(pFont, TTF_STYLE_ITALIC);
-            }
+            FT_Set_Char_Size(*pFace, size << 6, size << 6, 96, 96); // font size in 1/64 pixel
 
-            pOutFont = gfx::Font::pointer(NEW gfx::Font(pFont));
+            pOutFont = NEW gfx::Font(m_pFTLibrary, pFace, size);
             m_pAssetContainer->addAsset(stream.str(), pOutFont);
             return true;
         }
@@ -81,11 +74,7 @@ bool FontLoader::load(const std::string& path, ushort size, bool bold, bool ital
     {
         pOutFont = m_pAssetContainer->getAsset(stream.str());
         return true;
-    }*/
-
-    pOutFont = gfx::Font::pointer(NEW gfx::Font(nullptr));
-
-    return true;
+    }
 }
 
 } } //end namespace

@@ -39,8 +39,8 @@ public:
     virtual ~Renderer2D();
 
 	/* GENERAL */
-    Canvas2D* createCanvas();
-    WebView* createWebView(bool bEnableUserInput = false);
+    Canvas2D* createCanvas(const vec2& size = vec2());
+    WebView* createWebView(bool bEnableUserInput = false, const vec2& size = vec2());
 
     void tick();
     void draw();
@@ -56,8 +56,6 @@ private:
 
     std::vector<WebView*> m_WebViews;
     std::vector<Canvas2D*> m_Canvas2Ds;
-
-    std::vector<Texture2D*> m_WebViewRenderTextures;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

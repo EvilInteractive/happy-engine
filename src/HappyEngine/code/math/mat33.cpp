@@ -85,6 +85,14 @@ vec2 mat33::getTranslation() const
 	return vec2(m_Matrix.column2.x, m_Matrix.column2.y);
 }
 
+mat44 mat33::getMat44() const
+{
+    return mat44(   m_Matrix.column0.x, m_Matrix.column0.y, m_Matrix.column0.z, 0,
+                    m_Matrix.column1.x, m_Matrix.column1.y, m_Matrix.column1.z, 0,
+                    m_Matrix.column2.x, m_Matrix.column2.y, m_Matrix.column2.z, 0,
+                    0, 0, 0, 1);
+}
+
 /* STATIC */
 const mat33 mat33::Identity = mat33(1.0f, 0.0f, 0.0f,
 											 0.0f, 1.0f, 0.0f,
