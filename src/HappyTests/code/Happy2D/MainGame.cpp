@@ -24,16 +24,18 @@
 
 #include "GraphicsEngine.h"
 #include "CameraManager.h"
+#include "ContentManager.h"
 
 #include "Camera.h"
 #include "FPSGraph.h"
 #include "WebView.h"
 #include "Renderer2D.h"
 #include "Canvas2D.h"
+#include "Font.h"
 
 namespace ht {
 
-MainGame::MainGame(): m_pFPSGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullptr)
+MainGame::MainGame(): m_pFPSGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullptr), m_pFont(nullptr)
 {
 }
 
@@ -62,21 +64,32 @@ void MainGame::load()
     //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_pWebView->loadUrl("http://www.youtube.be");
 
+    m_pFPSGraph = NEW he::tools::FPSGraph();
+    m_pFPSGraph->setType(1);
+
+    m_pFont = CONTENT->loadFont("Ubuntu-Bold.ttf", 24);
+
     m_pCanvas = GUI_NEW->createCanvas();
 }
 
 void MainGame::tick( float dTime )
 {
     he::game::Game::tick(dTime);
+    m_pFPSGraph->tick(dTime);
 }
 
 void MainGame::drawGui()
 {
-    m_pWebView->draw();
+    //m_pWebView->draw();
 
     m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
     m_pCanvas->fillRect(he::vec2(20,20), he::vec2(300,300));
-    //m_pCanvas->draw();
+
+    m_pCanvas->fillText(he::gui::Text("Testing", m_pFont), he::vec2(500,300));
+
+    m_pCanvas->draw();
+
+    m_pFPSGraph->draw();
 }
 
 } //end namespace

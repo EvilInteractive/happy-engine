@@ -105,7 +105,7 @@ void Console::load()
 
     m_pScrollBar->setBarPos(1.0f);
 
-    m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getFontLineSpacing());
+    m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getLineSpacing());
 }
 
 Console::~Console()
@@ -382,7 +382,7 @@ void Console::draw()
 
             GUI->drawText(	text, RectF(5,5,
                             static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-                            190.0f - (k * m_pFont->getFontLineSpacing())));
+                            190.0f - (k * m_pFont->getLineSpacing())));
 
             ++k;
         });

@@ -40,14 +40,14 @@ class Font
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Font(FT_Library* pLib, FT_Face* pFace, ushort size);
+    Font(FT_Library lib, FT_Face face, ushort size);
     virtual ~Font();
     
     /* GETTERS */
     void renderText(const std::string& text, const Color& color, Texture2D* tex);
 
-    uint getFontPixelHeight() const;
-    uint getFontLineSpacing() const;
+    uint getPixelHeight() const;
+    uint getLineSpacing() const;
     uint getStringWidth(const std::string& string) const;
 
     /* SETTERS */
@@ -55,11 +55,11 @@ public:
 private:
 
     /* EXTRA */
-    inline int nextP2(int a);
+    inline int nextP2(int a) const;
 
     /* DATAMEMBERS */
-    FT_Library* m_pFTLibrary;
-    FT_Face* m_pFace;
+    FT_Library m_FTLibrary;
+    FT_Face m_Face;
 
     ushort m_CharSize;
 

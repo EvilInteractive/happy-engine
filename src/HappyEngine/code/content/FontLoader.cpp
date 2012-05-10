@@ -30,50 +30,71 @@
 namespace he {
 namespace ct {
 
-FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<gfx::Font*>()),
-                            m_pFTLibrary(NEW FT_Library())
+FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<gfx::Font*>([](gfx::Font* pFont)
+                            {
+                                if (pFont)
+                                {
+                                    delete pFont;
+                                    pFont = nullptr;
+                                }
+                            }))
 {
-    bool error(FT_Init_FreeType(m_pFTLibrary));
+    bool error(FT_Init_FreeType(&m_FTLibrary));
     HE_ASSERT(error == false,"Error creating freetype library!");
 }
 
 
 FontLoader::~FontLoader()
 {
-    FT_Done_FreeType(*m_pFTLibrary);
     delete m_pAssetContainer;
+    FT_Done_FreeType(m_FTLibrary);
 }
 
-bool FontLoader::load(const std::string& path, ushort size, gfx::Font* pOutFont)
+gfx::Font* FontLoader::load(const std::string& path, ushort size)
 {
     std::stringstream stream;
     stream << path << size;
 
     if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
     {
-        FT_Face* pFace(nullptr);
-        bool error(FT_New_Face(*m_pFTLibrary, path.c_str(), 0, pFace));
+        FT_Face face;
+        FT_Error error(FT_New_Face(m_FTLibrary, path.c_str(), 0, &face));
 
-        if (error == true)
+        if (error != 0)
         {
-            HE_ERROR("Error loading font: %s", path);
+            HE_ERROR("Error loading font: %s", path.c_str());
             HE_ASSERT(false, "Error loading font!");
-
-            return false;
+            return nullptr;
         }
-        else
+
+        error = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+
+        if (error != 0)
         {
-            FT_Set_Char_Size(*pFace, size << 6, size << 6, 96, 96); // font size in 1/64 pixel
-
-            pOutFont = NEW gfx::Font(m_pFTLibrary, pFace, size);
-            m_pAssetContainer->addAsset(stream.str(), pOutFont);
-            return true;
+            HE_ERROR("Error loading font charmap: %s", path.c_str());
+            HE_ASSERT(false, "Error loading font!");
+            return nullptr;
         }
+
+        error = FT_Set_Char_Size(face, 0, size * 64, 96, 96); // font size in 1/64 pixel
+
+        if (error != 0)
+        {
+            HE_ERROR("Error setting font size: %s", path.c_str());
+            HE_ASSERT(false, "Error loading font!");
+            return nullptr;
+        }
+
+        gfx::Font* pFont(NEW gfx::Font(m_FTLibrary, face, size));
+        m_pAssetContainer->addAsset(stream.str(), pFont);
+
+        return pFont;
     }
     else
     {
-        pOutFont = m_pAssetContainer->getAsset(stream.str());
-        return true;
+        return m_pAssetContainer->getAsset(stream.str());
+        
+        //return nullptr;
     }
 }
 

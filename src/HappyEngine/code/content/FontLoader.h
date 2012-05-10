@@ -38,14 +38,14 @@ public:
 	FontLoader();
     virtual ~FontLoader();
 
-    bool load(const std::string& path, ushort size, gfx::Font* pOutFont);
+    gfx::Font* load(const std::string& path, ushort size);
 
 private:
 
     /* DATAMEMBERS */
     AssetContainer<gfx::Font*>* m_pAssetContainer;
 
-    FT_Library* m_pFTLibrary;
+    FT_Library m_FTLibrary;
 
     //Disable default copy constructor and default assignment operator
     FontLoader(const FontLoader&);

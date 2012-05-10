@@ -31,6 +31,7 @@ namespace he {
     namespace gfx {
         class WebView;
         class Canvas2D;
+        class Font;
     }
 }
 
@@ -51,10 +52,9 @@ private:
 
     /* DATAMEMBERS */
     he::tools::FPSGraph* m_pFPSGraph;
-
     he::gfx::WebView* m_pWebView;
-
     he::gfx::Canvas2D* m_pCanvas;
+    he::gfx::Font* m_pFont;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

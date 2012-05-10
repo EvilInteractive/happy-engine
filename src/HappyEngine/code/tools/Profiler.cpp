@@ -61,7 +61,7 @@ struct Profiler::ProfileTreeNode
 Profiler::Profiler(): m_CurrentNode(nullptr)
 {
     GUI->createLayer("profiler", 1);
-    m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11, false, false);
+    m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
 }
 
 

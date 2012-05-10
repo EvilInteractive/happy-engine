@@ -143,6 +143,7 @@ private:
     Simple2DEffect* m_pColorEffect;
 
     Texture2D* m_pRenderTexture;
+    Texture2D* m_pTextBuffer;
 
     vec2 m_CanvasSize;
     bool m_FullScreen;

@@ -112,6 +112,9 @@ void Canvas2D::init()
 {
     m_pColorEffect->load();
 
+    ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
+    m_pTextBuffer = ResourceFactory<Texture2D>::getInstance()->get(hnd);
+
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.0f, 100.0f);
     m_TransformationStack.push_back(mat33::Identity);
 }
@@ -125,6 +128,7 @@ void Canvas2D::cleanup()
     glDeleteRenderbuffers(1, &m_pBufferData->resolvedRbufferID);
 
     m_pRenderTexture->release();
+    m_pTextBuffer->release();
 }
 
 /* GENERAL */
@@ -208,6 +212,9 @@ void Canvas2D::setGlobalAlpha(float alpha)
 /* DRAW METHODS */
 void Canvas2D::draw(const vec2& pos)
 {
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEnabled(true);
+
     // blit MS FBO to normal FBO
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pBufferData->fbufferID);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBufferData->resolvedFbufferID);
@@ -246,7 +253,9 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     /* TEMP TEST STUFF                                                      */
     /************************************************************************/
 
-    glEnable(GL_MULTISAMPLE);
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEnabled(true);
+
     GL::heBindFbo(m_pBufferData->fbufferID);
 
     m_pBufferMesh->clear();
@@ -322,7 +331,9 @@ void Canvas2D::stroke()
 
 void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 {
+    txt.getFont()->renderText(txt.getText()[0], m_FillColor, m_pTextBuffer);
 
+    GUI->drawTexture2D(m_pTextBuffer, pos, vec2(static_cast<float>(m_pTextBuffer->getWidth()), -static_cast<float>(m_pTextBuffer->getHeight())));
 }
 
 void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,

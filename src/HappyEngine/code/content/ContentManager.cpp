@@ -159,11 +159,9 @@ const std::vector<px::PhysicsConcaveMesh::pointer>& ContentManager::loadPhysicsC
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size, bool bold, bool italic)
+gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size)
 {
-    gfx::Font* p;
-    //m_pFontLoader->load(m_FontPath.str() + asset, size, bold, italic, p);
-    return p;
+    return m_pFontLoader->load(m_FontPath.str() + asset, size);
 }
 
 gfx::Font* ContentManager::getDefaultFont(ushort size)

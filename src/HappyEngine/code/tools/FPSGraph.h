@@ -27,6 +27,7 @@
 #include <vector>
 #include "HappyTypes.h"
 #include "Font.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace tools {
@@ -73,6 +74,8 @@ private:
     int m_FPSGraphState;
 
     vec2 m_Pos;
+
+    gfx::Canvas2D* m_pCanvas2D;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);
