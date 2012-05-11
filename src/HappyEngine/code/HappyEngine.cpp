@@ -80,8 +80,8 @@ void HappyEngine::cleanup()
     m_pGame = nullptr;
     delete m_p3DRenderer;
     m_p3DRenderer = nullptr;
-    delete m_p2DRenderer;
-    m_p2DRenderer = nullptr;
+    //delete m_p2DRenderer;
+    //m_p2DRenderer = nullptr;
     delete m_pRenderer2D;
     m_pRenderer2D = nullptr;
     delete m_pGraphicsEngine;
@@ -149,7 +149,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     if (subengines & SubEngine_2DRenderer)
     {
-        m_p2DRenderer = NEW gfx::Happy2DRenderer();
+        //m_p2DRenderer = NEW gfx::Happy2DRenderer();
         m_pRenderer2D = NEW gfx::Renderer2D();
     }
 
@@ -191,7 +191,7 @@ void HappyEngine::start(game::Game* pGame)
         m_pRenderer2D->init();
     }
 
-    if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
+    //if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 
     m_pLoadingScreen = NEW tools::LoadingScreen();
 
@@ -298,7 +298,7 @@ void HappyEngine::drawLoop()
     CONSOLE->draw();
 
     // display 2D
-    GUI->draw();    
+    ////GUI->draw();    
     
     if (m_SubEngines & SubEngine_Graphics)
         m_pGraphicsEngine->present();
@@ -341,7 +341,7 @@ void HappyEngine::drawLoadingScreen()
 {
     m_pLoadingScreen->tick();
 
-    GUI->setDepth(1);
+    //GUI->setDepth(1);
 
     m_pLoadingScreen->draw();
 }

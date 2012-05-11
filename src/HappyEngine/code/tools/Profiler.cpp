@@ -60,7 +60,7 @@ struct Profiler::ProfileTreeNode
 
 Profiler::Profiler(): m_CurrentNode(nullptr)
 {
-    GUI->createLayer("profiler", 1);
+    //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
 }
 
@@ -135,7 +135,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
 void Profiler::draw() const
 {
     PROFILER_BEGIN("Profiler::draw");
-    GUI->setLayer("profiler");
+    //GUI->setLayer("profiler");
     gui::Text text(m_pFont);
     text.addLine("----PROFILER------------------------------");
     std::for_each(m_Data.cbegin(), m_Data.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
@@ -144,12 +144,12 @@ void Profiler::draw() const
     });
     text.addLine("------------------------------------------");
 
-    GUI->setColor(0.0f, 0.0f, 0.0f, 0.75f);
-    GUI->fillShape2D(gui::Rectangle2D(vec2(0, 0), vec2(386, 720)), true);
-    GUI->setColor(1.0f, 1.0f, 1.0f);
-    GUI->drawText(text, vec2(4, 4));
+    //GUI->setColor(0.0f, 0.0f, 0.0f, 0.75f);
+    //GUI->fillShape2D(gui::Rectangle2D(vec2(0, 0), vec2(386, 720)), true);
+    //GUI->setColor(1.0f, 1.0f, 1.0f);
+    //GUI->drawText(text, vec2(4, 4));
 
-    GUI->setLayer();  
+    //GUI->setLayer();  
     PROFILER_END();
 }
 

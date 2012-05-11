@@ -190,9 +190,9 @@ void DrawManager::draw()
 
     if (m_RenderDebugTextures)
     {
-        GUI->drawTexture2D(m_pColorRenderMap,  vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        GUI->drawTexture2D(m_pNormalRenderMap, vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        GUI->drawTexture2D(m_pDepthRenderMap,  vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pColorRenderMap,  vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pNormalRenderMap, vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pDepthRenderMap,  vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
     }
 
     PROFILER_END();

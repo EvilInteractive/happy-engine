@@ -47,6 +47,10 @@ public:
 
     void init();
 
+    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
+                                const vec2& newDimensions = vec2(0.0f,0.0f),
+                                const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+
 private:
 
     /* EXTRA */
@@ -56,6 +60,8 @@ private:
 
     std::vector<WebView*> m_WebViews;
     std::vector<Canvas2D*> m_Canvas2Ds;
+
+    Simple2DTextureEffect* m_pTextureEffect;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

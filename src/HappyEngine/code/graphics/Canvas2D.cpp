@@ -83,7 +83,13 @@ Canvas2D::Canvas2D(Data* pData, const vec2& size) :     m_pBufferData(pData),
                                                         m_pColorEffect(NEW Simple2DEffect()),
                                                         m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd)),
                                                         m_StackDepth(0),
-                                                        m_CanvasSize(size)
+                                                        m_CanvasSize(size),
+                                                        m_pTextureQuad(nullptr),
+                                                        m_pTextureEffect(NEW Simple2DTextureEffect()),
+                                                        m_GlobalAlpha(1.0f),
+                                                        m_pFontEffect(NEW Simple2DFontEffect()),
+                                                        m_FillColor(Color(1.0f,1.0f,1.0f)),
+                                                        m_StrokeColor(Color(1.0f,1.0f,1.0f))
 {
     init();
 
@@ -102,7 +108,9 @@ Canvas2D::~Canvas2D()
 {
     delete m_pBufferData;
     delete m_pColorEffect;
+    delete m_pTextureEffect;
     delete m_pBufferMesh;
+    delete m_pFontEffect;
 
     cleanup();
 }
@@ -111,12 +119,46 @@ Canvas2D::~Canvas2D()
 void Canvas2D::init()
 {
     m_pColorEffect->load();
+    m_pTextureEffect->load();
+    m_pFontEffect->load();
 
     ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
     m_pTextBuffer = ResourceFactory<Texture2D>::getInstance()->get(hnd);
 
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.0f, 100.0f);
     m_TransformationStack.push_back(mat33::Identity);
+
+    BufferLayout vLayout;
+    vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
+    vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
+
+    // model texturequad
+    m_pTextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
+    m_pTextureQuad->init();
+
+    std::vector<VertexPosTex2D> vertices;
+    vertices.push_back(
+        VertexPosTex2D(vec2(-0.5f, 0.5f),
+        vec2(0, 0)));
+
+    vertices.push_back(
+        VertexPosTex2D(vec2(0.5f, 0.5f),
+        vec2(1, 0)));
+
+    vertices.push_back(
+        VertexPosTex2D(vec2(-0.5f, -0.5f),
+        vec2(0, 1)));
+
+    vertices.push_back(
+        VertexPosTex2D(vec2(0.5f, -0.5f),
+        vec2(1, 1)));
+
+    std::vector<byte> indices;
+    indices.push_back(2); indices.push_back(1); indices.push_back(0);
+    indices.push_back(1); indices.push_back(2); indices.push_back(3);
+
+    m_pTextureQuad->setVertices(&vertices[0], 4, vLayout);
+    m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
 }
 
 void Canvas2D::cleanup()
@@ -129,6 +171,7 @@ void Canvas2D::cleanup()
 
     m_pRenderTexture->release();
     m_pTextBuffer->release();
+    m_pTextureQuad->release();
 }
 
 /* GENERAL */
@@ -223,7 +266,11 @@ void Canvas2D::draw(const vec2& pos)
                         0, 0, m_CanvasSize.x, m_CanvasSize.y,
                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-    GUI->drawTexture2D(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd), pos);
+    drawTexture2D(0, ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd), pos);
+
+    GL::heBindFbo(m_pBufferData->fbufferID);
+    GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (m_FullScreen)
     {
@@ -333,14 +380,93 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 {
     txt.getFont()->renderText(txt.getText()[0], m_FillColor, m_pTextBuffer);
 
-    GUI->drawTexture2D(m_pTextBuffer, pos, vec2(static_cast<float>(m_pTextBuffer->getWidth()), -static_cast<float>(m_pTextBuffer->getHeight())));
+    vec2 size;
+    size = vec2(static_cast<float>(m_pTextBuffer->getWidth()), static_cast<float>(m_pTextBuffer->getHeight()));
+
+    mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+
+    save();
+
+    //scale(vec2(size.x, size.y));
+    //translate(vec2(pos.x + size.x/2, pos.y + size.y/2));
+
+    m_pFontEffect->begin();
+    m_pFontEffect->setWorldMatrix(m_OrthographicMatrix * world);
+    m_pFontEffect->setDiffuseMap(m_pTextBuffer);
+    m_pFontEffect->setFontColor(m_FillColor);
+    m_pFontEffect->setDepth(0.5f);
+
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEnabled(true);
+
+    GL::heBindFbo(m_pBufferData->fbufferID);
+
+    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
+
+    restore();
 }
 
 void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
 				            const vec2& newDimensions,
 				            const RectF& regionToDraw)
 {
+    drawTexture2D(m_pBufferData->fbufferID, tex2D, pos, newDimensions, regionToDraw);
+}
 
+void Canvas2D::drawTexture2D(	uint fboID, const Texture2D* tex2D, const vec2& pos,
+                                const vec2& newDimensions,
+                                const RectF& regionToDraw)
+{
+    vec2 tcOffset(0.0f,0.0f);
+    vec2 tcScale(1.0f,1.0f);
+    vec2 size;
+
+    if (regionToDraw != RectF(vec2(0.0f,0.0f), vec2(0.0f,0.0f)))
+    {
+        tcScale.x = regionToDraw.width / tex2D->getWidth();
+        tcScale.y = regionToDraw.height / tex2D->getHeight();
+
+        tcOffset.x = regionToDraw.x / tex2D->getWidth();
+        tcOffset.y = 1 - (regionToDraw.y / tex2D->getHeight()) - tcScale.y;
+    }
+
+    if (newDimensions != vec2(0.0f,0.0f))
+    {
+        size = vec2(abs(newDimensions.x), abs(newDimensions.y));
+
+        if (newDimensions.x < 0) tcScale.x *= -1.0f;
+        if (newDimensions.y < 0) tcScale.y *= -1.0f;
+    }
+    else
+    {
+        size = vec2(static_cast<float>(tex2D->getWidth()), static_cast<float>(tex2D->getHeight()));
+    }
+
+    mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+
+    save();
+
+    //scale(vec2(size.x, size.y));
+    //translate(vec2(pos.x + size.x/2, pos.y + size.y/2));
+
+    m_pTextureEffect->begin();
+    m_pTextureEffect->setWorldMatrix(m_OrthographicMatrix * world);
+    m_pTextureEffect->setDiffuseMap(tex2D);
+    m_pTextureEffect->setAlpha(m_GlobalAlpha);
+    m_pTextureEffect->setTCOffset(tcOffset);
+    m_pTextureEffect->setTCScale(tcScale);
+    m_pTextureEffect->setDepth(0.5f);
+
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEnabled(true);
+
+    GL::heBindFbo(fboID);
+
+    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
+
+    restore();
 }
 
 } }//end namespace

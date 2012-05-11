@@ -378,10 +378,10 @@ void Deferred3DRenderer::drawDebugTextures() const
 {
     if (m_ShowDebugTextures)
     {
-        GUI->drawTexture2D(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        GUI->drawTexture2D(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        GUI->drawTexture2D(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
-        GUI->drawTexture2D(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+        //GUI->drawTexture2D(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
     }
 }
 

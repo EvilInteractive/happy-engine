@@ -45,6 +45,7 @@ MainGame::~MainGame()
     CAMERAMANAGER->deleteAllCameras();
     delete m_pWebView;
     delete m_pCanvas;
+    delete m_pFPSGraph;
 }
 
 void MainGame::init()
@@ -59,8 +60,8 @@ void MainGame::load()
     CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
 
-    m_pWebView = GUI_NEW->createWebView(true);
-    m_pWebView->loadUrl("http://www.google.be");
+    //m_pWebView = GUI_NEW->createWebView(true);
+    //m_pWebView->loadUrl("http://www.google.be");
     //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_pWebView->loadUrl("http://www.youtube.be");
 
@@ -83,10 +84,11 @@ void MainGame::drawGui()
     //m_pWebView->draw();
 
     m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
-    m_pCanvas->fillRect(he::vec2(20,20), he::vec2(300,300));
+    m_pCanvas->fillRect(he::vec2(20,20), he::vec2(300,300)); // TEST, NOT A RECT
 
-    m_pCanvas->fillText(he::gui::Text("Testing", m_pFont), he::vec2(500,300));
-
+    m_pCanvas->setFillColor(he::Color(0.2f,0.0f,0.8f));
+    m_pCanvas->fillText(he::gui::Text("Testing this new stuff....", m_pFont), he::vec2(500,300));
+    
     m_pCanvas->draw();
 
     m_pFPSGraph->draw();

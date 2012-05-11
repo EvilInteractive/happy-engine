@@ -85,7 +85,7 @@ void ExtraForward3DRenderer::createBillboardQuad()
 /* GENERAL */
 void ExtraForward3DRenderer::init()
 {
-    GUI->createLayer("forward", 99);
+    //GUI->createLayer("forward", 99);
 
     createBillboardQuad();
 
@@ -128,9 +128,9 @@ void ExtraForward3DRenderer::end()
 {
     GL::heBindFbo(0);
     GL::heBlendEnabled(false);
-    GUI->setLayer("forward");
-    GUI->drawTexture2D(m_pRenderTexture, vec2(0.0f,0.0f), vec2(-static_cast<float>(m_pRenderTexture->getWidth()), static_cast<float>(m_pRenderTexture->getHeight())));
-    GUI->setLayer();
+    //GUI->setLayer("forward");
+    //GUI->drawTexture2D(m_pRenderTexture, vec2(0.0f,0.0f), vec2(-static_cast<float>(m_pRenderTexture->getWidth()), static_cast<float>(m_pRenderTexture->getHeight())));
+    //GUI->setLayer();
 }
 
 void ExtraForward3DRenderer::resize()

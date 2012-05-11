@@ -80,7 +80,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
 }
 void Console::load()
 {
-    GUI->createLayer("console", 0);
+    //GUI->createLayer("console", 0);
     m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
     m_Help = new gui::Text(m_pFont);
@@ -320,17 +320,17 @@ void Console::draw()
 {
     if (m_bOpen)
     {
-        GUI->setLayer("console");
+        //GUI->setLayer("console");
 
-        GUI->setAntiAliasing(false);
+        //GUI->setAntiAliasing(false);
 
-        GUI->setColor(0.3f,0.3f,0.3f,0.9f);
-        GUI->fillShape2D(gui::Rectangle2D(vec2(0,0),
-                                        vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)), true);
+        //GUI->setColor(0.3f,0.3f,0.3f,0.9f);
+        //GUI->fillShape2D(gui::Rectangle2D(vec2(0,0),
+//                                        vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)), true);
 
-        GUI->setColor(0.19f,0.19f,0.19f);
-        GUI->drawShape2D(gui::Rectangle2D(vec2(0,0),
-                                        vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)), true);
+        //GUI->setColor(0.19f,0.19f,0.19f);
+        //GUI->drawShape2D(gui::Rectangle2D(vec2(0,0),
+ //                                       vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)), true);
 
         m_pTextBox->draw();
 
@@ -375,14 +375,14 @@ void Console::draw()
         uint k(0);
         std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
         {
-            GUI->setColor(m_MsgColors[p.first]);
+            //GUI->setColor(m_MsgColors[p.first]);
 
             text.clear();
             text.addLine(p.second);
 
-            GUI->drawText(	text, RectF(5,5,
-                            static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-                            190.0f - (k * m_pFont->getLineSpacing())));
+            //GUI->drawText(	text, RectF(5,5,
+ //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
+//                            190.0f - (k * m_pFont->getLineSpacing())));
 
             ++k;
         });

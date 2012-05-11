@@ -74,35 +74,35 @@ void LoadingScreen::tick()
 
 void LoadingScreen::draw()
 {
-    GUI->setColor(0.9f,0.9f,0.9f);
+    //GUI->setColor(0.9f,0.9f,0.9f);
 
-    GUI->fillShape2D(gui::Rectangle2D(vec2(0,0), vec2((float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight())), true);
+    //GUI->fillShape2D(gui::Rectangle2D(vec2(0,0), vec2((float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight())), true);
 
-    //GUI->setColor(1.0f,1.0f,1.0f);
+    ////GUI->setColor(1.0f,1.0f,1.0f);
 
     /*std::for_each(m_SnowFlakes.cbegin(), m_SnowFlakes.cend(), [](SnowFlake s)
     {
-        GUI->fillShape2D(gui::Ellipse2D(s.pos,vec2(s.size,s.size),8), true);
+        //GUI->fillShape2D(gui::Ellipse2D(s.pos,vec2(s.size,s.size),8), true);
     });*/
 
     /*gui::Text message("Happy Hollidays!", m_pFontMessage);
     message.setHorizontalAlignment(gui::Text::HAlignment_Center);
     message.setVerticalAlignment(gui::Text::VAlignment_Center);*/
 
-    //GUI->setColor(1.0f,0.1f,0.1f);
-    //GUI->drawText(message, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()),true);
+    ////GUI->setColor(1.0f,0.1f,0.1f);
+    ////GUI->drawText(message, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()),true);
 
-    GUI->drawTexture2D(m_pLogo, vec2(	GRAPHICS->getScreenWidth()/2.0f - m_pLogo->getWidth()/2.0f,
-                                        GRAPHICS->getScreenHeight()/2.0f - m_pLogo->getHeight()/2.0f));
+    //GUI->drawTexture2D(m_pLogo, vec2(	GRAPHICS->getScreenWidth()/2.0f - m_pLogo->getWidth()/2.0f,
+                                        //GRAPHICS->getScreenHeight()/2.0f - m_pLogo->getHeight()/2.0f));
 
     gui::Text loading("HAPPY ENGINE // LOADING", m_pFontLoading);
     loading.setHorizontalAlignment(gui::Text::HAlignment_Left);
     loading.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
-    GUI->setColor(0.3f,0.3f,0.3f);
-    GUI->drawText(loading, RectF(   10.0f, 0.0f,
-                                    GRAPHICS->getScreenWidth()*1.0f,
-                                    GRAPHICS->getScreenHeight() - 10.0f), true);
+    //GUI->setColor(0.3f,0.3f,0.3f);
+    //GUI->drawText(loading, RectF(   10.0f, 0.0f,
+                                    //GRAPHICS->getScreenWidth()*1.0f,
+                                    //GRAPHICS->getScreenHeight() - 10.0f), true);
 }
 
 }} //end namespace

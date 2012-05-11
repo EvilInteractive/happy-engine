@@ -383,14 +383,14 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
     if (m_ShowShadowDebug)
     {
-        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
-            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
+        /*if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
+            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
-            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
+            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
-            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
+            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
-            GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));
+            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));*/
     }
 }
 

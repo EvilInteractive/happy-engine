@@ -520,6 +520,9 @@
     <ClCompile Include="..\..\code\graphics\Mesh2D.cpp">
       <Filter>happyengine\graphics\model\2d</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\graphics\Simple2DFontEffect.cpp">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\content\BinObjLineLoader.h">
@@ -1061,6 +1064,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\graphics\Mesh2D.h">
       <Filter>happyengine\graphics\model\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\graphics\Simple2DFontEffect.h">
+      <Filter>happyengine\graphics\rendering\2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

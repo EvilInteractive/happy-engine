@@ -99,7 +99,7 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
     GL::heBindTexture2D(tex->getID());
     tex->setData((uint)texSize.x, (uint)texSize.y, 
         gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_LA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte,
         gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Linear, false, false);
    
     FT_Vector kerning;

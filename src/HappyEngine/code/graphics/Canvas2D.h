@@ -29,6 +29,9 @@
 #include "HappyTypes.h"
 #include "Mesh2D.h"
 #include "Simple2DEffect.h"
+#include "Simple2DTextureEffect.h"
+#include "Simple2DFontEffect.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
@@ -124,6 +127,10 @@ private:
     void cleanup();
     mat44 getTransformation();
 
+    void drawTexture2D(	uint fboID, const Texture2D* tex2D, const vec2& pos,
+                        const vec2& newDimensions = vec2(0.0f,0.0f),
+                        const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
     ushort m_StackDepth;
@@ -141,12 +148,16 @@ private:
     Mesh2D* m_pBufferMesh;
 
     Simple2DEffect* m_pColorEffect;
+    Simple2DTextureEffect* m_pTextureEffect;
+    Simple2DFontEffect* m_pFontEffect;
 
     Texture2D* m_pRenderTexture;
     Texture2D* m_pTextBuffer;
 
     vec2 m_CanvasSize;
     bool m_FullScreen;
+
+    ModelMesh* m_pTextureQuad;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

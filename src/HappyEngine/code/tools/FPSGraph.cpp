@@ -55,6 +55,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 
 FPSGraph::~FPSGraph()
 {
+    delete m_pCanvas2D;
 }
 
 /* GENERAL */
@@ -112,8 +113,10 @@ ushort FPSGraph::cap(float fps)
 
 void FPSGraph::drawTextOnly()
 {
-    GUI->setAntiAliasing(false);
-    GUI->setColor(1.0f,1.0f,1.0f);
+    //GUI->setAntiAliasing(false);
+    //GUI->setColor(1.0f,1.0f,1.0f);
+
+    m_pCanvas2D->setFillColor(Color(1.0f,1.0f,1.0f));
 
     // replaced stringstream by sprintf -> stringstream is very slow
     char buff[64];
@@ -132,10 +135,10 @@ void FPSGraph::drawFull()
     //if (m_FpsHistory.size() == 0)
     //    return;
 
-    //GUI->setAntiAliasing(false);
+    ////GUI->setAntiAliasing(false);
 
-    //GUI->setColor(0.8f,0.8f,0.8f);
-    //GUI->fillShape2D(gui::Rectangle2D(m_Pos, vec2(100, 40)), true);
+    ////GUI->setColor(0.8f,0.8f,0.8f);
+    ////GUI->fillShape2D(gui::Rectangle2D(m_Pos, vec2(100, 40)), true);
 
     //gui::Polygon2D poly;
     //gui::Polygon2D poly2;
@@ -168,7 +171,7 @@ void FPSGraph::drawFull()
     //    prevFPS = 80;*/
 
     //    poly.addPoint(vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (currentFPS / 2)));
-    //    /*GUI->drawShape2D(gui::Line2D(   vec2(m_Pos.x + 100.0f - ((k + 1) * 2), m_Pos.y + 40.0f - (currentFPS / 2)),
+    //    /*//GUI->drawShape2D(gui::Line2D(   vec2(m_Pos.x + 100.0f - ((k + 1) * 2), m_Pos.y + 40.0f - (currentFPS / 2)),
     //                                    vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (prevFPS / 2))));*/
 
     //    ++k;
@@ -213,7 +216,7 @@ void FPSGraph::drawFull()
     //    prevDTime = 80;*/
 
     //    poly2.addPoint(vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (currentDTime / 2)));
-    //    /*GUI->drawShape2D(gui::Line2D(   vec2(m_Pos.x + 100.0f - ((k + 1) * 2), m_Pos.y + 40.0f - (currentDTime / 2)),
+    //    /*//GUI->drawShape2D(gui::Line2D(   vec2(m_Pos.x + 100.0f - ((k + 1) * 2), m_Pos.y + 40.0f - (currentDTime / 2)),
     //                                    vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (prevDTime / 2))));*/
     //    ++k;
     //}
@@ -231,25 +234,25 @@ void FPSGraph::drawFull()
 
     //if (m_CurrentFPS >= static_cast<ushort>(m_CurrentDTime * 1000.0f))
     //{
-    //    GUI->setColor(1.0f,0.7f,0.7f);
-    //    GUI->fillShape2D(poly);
-    //    GUI->setColor(1.0f,0.0f,0.0f);
-    //    GUI->drawShape2D(poly);
-    //    GUI->setColor(1.0f,0.9f,0.6f);
-    //    GUI->fillShape2D(poly2);
-    //    GUI->setColor(1.0f,1.0f,0.0f);
-    //    GUI->drawShape2D(poly2);
+    //    //GUI->setColor(1.0f,0.7f,0.7f);
+    //    //GUI->fillShape2D(poly);
+    //    //GUI->setColor(1.0f,0.0f,0.0f);
+    //    //GUI->drawShape2D(poly);
+    //    //GUI->setColor(1.0f,0.9f,0.6f);
+    //    //GUI->fillShape2D(poly2);
+    //    //GUI->setColor(1.0f,1.0f,0.0f);
+    //    //GUI->drawShape2D(poly2);
     //}
     //else
     //{
-    //    GUI->setColor(1.0f,0.9f,0.6f);
-    //    GUI->fillShape2D(poly2);
-    //    GUI->setColor(1.0f,1.0f,0.0f);
-    //    GUI->drawShape2D(poly2);
-    //    GUI->setColor(1.0f,0.7f,0.7f);
-    //    GUI->fillShape2D(poly);
-    //    GUI->setColor(1.0f,0.0f,0.0f);
-    //    GUI->drawShape2D(poly);
+    //    //GUI->setColor(1.0f,0.9f,0.6f);
+    //    //GUI->fillShape2D(poly2);
+    //    //GUI->setColor(1.0f,1.0f,0.0f);
+    //    //GUI->drawShape2D(poly2);
+    //    //GUI->setColor(1.0f,0.7f,0.7f);
+    //    //GUI->fillShape2D(poly);
+    //    //GUI->setColor(1.0f,0.0f,0.0f);
+    //    //GUI->drawShape2D(poly);
     //}
 
     //ushort avFPS(getAverageFPS());
@@ -257,23 +260,23 @@ void FPSGraph::drawFull()
     //if (avFPS > 80)
     //    avFPS = 80;
 
-    //GUI->setColor(0.0f,0.47f,1.0f);
-    //GUI->fillShape2D(gui::Rectangle2D(  vec2(m_Pos.x, m_Pos.y + 39.0f - (avFPS / 2)),
+    ////GUI->setColor(0.0f,0.47f,1.0f);
+    ////GUI->fillShape2D(gui::Rectangle2D(  vec2(m_Pos.x, m_Pos.y + 39.0f - (avFPS / 2)),
     //                                    vec2(10.0f, 3.0f)));
 
-    //GUI->setColor(0.1f,0.1f,0.1f);
-    //GUI->drawShape2D(gui::Rectangle2D(m_Pos + vec2(0.0f, -1.0f), vec2(101, 41)), true);
+    ////GUI->setColor(0.1f,0.1f,0.1f);
+    ////GUI->drawShape2D(gui::Rectangle2D(m_Pos + vec2(0.0f, -1.0f), vec2(101, 41)), true);
 
-    //GUI->setColor(1.0f,1.0f,1.0f);
+    ////GUI->setColor(1.0f,1.0f,1.0f);
 
     //// replaced stringstream by sprintf -> stringstream is very slow
     //char buff[64];
 
     //sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    //GUI->drawText(gui::Text(std::string(buff), m_pFont), vec2(m_Pos.x, m_Pos.y + 43.0f));
+    ////GUI->drawText(gui::Text(std::string(buff), m_pFont), vec2(m_Pos.x, m_Pos.y + 43.0f));
 
     //sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    //GUI->drawText(gui::Text(std::string(buff), m_pFont), vec2(m_Pos.x, m_Pos.y + 56.0f));
+    ////GUI->drawText(gui::Text(std::string(buff), m_pFont), vec2(m_Pos.x, m_Pos.y + 56.0f));
 }
 
 /* GETTERS */

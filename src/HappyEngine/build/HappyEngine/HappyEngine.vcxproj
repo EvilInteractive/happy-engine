@@ -97,6 +97,7 @@
     <ClCompile Include="..\..\code\graphics\ShaderLayout.cpp" />
     <ClCompile Include="..\..\code\graphics\ShadowCaster.cpp" />
     <ClCompile Include="..\..\code\graphics\Simple2DEffect.cpp" />
+    <ClCompile Include="..\..\code\graphics\Simple2DFontEffect.cpp" />
     <ClCompile Include="..\..\code\graphics\Simple2DTextureEffect.cpp" />
     <ClCompile Include="..\..\code\graphics\SimpleColorEffect.cpp" />
     <ClCompile Include="..\..\code\graphics\ExtraForward3DRenderer.cpp" />
@@ -262,6 +263,7 @@
     <ClInclude Include="..\..\code\graphics\ShadowCaster.h" />
     <ClInclude Include="..\..\code\graphics\Shape2D.h" />
     <ClInclude Include="..\..\code\graphics\Simple2DEffect.h" />
+    <ClInclude Include="..\..\code\graphics\Simple2DFontEffect.h" />
     <ClInclude Include="..\..\code\graphics\Simple2DTextureEffect.h" />
     <ClInclude Include="..\..\code\graphics\SimpleColorEffect.h" />
     <ClInclude Include="..\..\code\graphics\ExtraForward3DRenderer.h" />

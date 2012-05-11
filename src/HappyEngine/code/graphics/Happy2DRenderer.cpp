@@ -351,7 +351,6 @@ void Happy2DRenderer::draw()
     //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     m_pTextureEffect->begin();
-    m_pTextureEffect->setBlending(m_bBlending);
 
     PROFILER_BEGIN("Happy2DRenderer::drawtextures");
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());

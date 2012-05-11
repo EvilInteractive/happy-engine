@@ -249,7 +249,7 @@ uint Picker::pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawLi
 
 void Picker::drawDebug() const
 {
-    GUI->drawTexture2D(m_pIDTexture, vec2(12, 12), vec2(640, 320));
+    //GUI->drawTexture2D(m_pIDTexture, vec2(12, 12), vec2(640, 320));
 }
 
 } } //end namespace

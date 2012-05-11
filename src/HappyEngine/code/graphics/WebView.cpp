@@ -75,7 +75,7 @@ void WebView::draw(const vec2& pos)
         }
     }
 
-    GUI->drawTexture2D(m_pRenderTexture, pos);
+    //GUI->drawTexture2D(m_pRenderTexture, pos);
 }
 
 void WebView::loadUrl(const std::string& url)

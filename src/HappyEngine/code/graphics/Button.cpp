@@ -200,46 +200,46 @@ void Button::drawColor()
     {
         case STATE_NORMAL:
         {
-            GUI->setColor(220.0f/255,220.0f/255,220.0f/255);
+            //GUI->setColor(220.0f/255,220.0f/255,220.0f/255);
 
             break;
         }
 
         case STATE_HOVER:
         {
-            GUI->setColor(180.0f/255,200.0f/255,220.0f/255);		
+            //GUI->setColor(180.0f/255,200.0f/255,220.0f/255);		
 
             break;
         }
 
         case STATE_DOWN:
         {
-            GUI->setColor(146.0f/255,162.0f/255,179.0f/255);
+            //GUI->setColor(146.0f/255,162.0f/255,179.0f/255);
 
             break;
         }
 
         case STATE_DISABLED:
         {
-            GUI->setColor(150.0f/255,150.0f/255,150.0f/255);
+            //GUI->setColor(150.0f/255,150.0f/255,150.0f/255);
 
             break;
         }
     }
 
-    GUI->fillShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
+    //GUI->fillShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
 
-    GUI->setColor(140.0f/255,140.0f/255,140.0f/255);
-    GUI->drawShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
+    //GUI->setColor(140.0f/255,140.0f/255,140.0f/255);
+    //GUI->drawShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
 
     if (m_pFont != nullptr)
     {
         gui::Text txt(m_Text, m_pFont);
 
-        GUI->setColor(0.25f,0.25f,0.25f);
+        //GUI->setColor(0.25f,0.25f,0.25f);
         txt.setHorizontalAlignment(gui::Text::HAlignment_Center);
         txt.setVerticalAlignment(gui::Text::VAlignment_Center);
-        GUI->drawText(txt, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
+        //GUI->drawText(txt, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
     }
 }
 
