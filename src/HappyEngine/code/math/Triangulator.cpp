@@ -151,6 +151,7 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
     int b(vertices.size() - 2);
 
     vec2 t1,t2,t3;
+    std::vector<vec2> tri;
 
     for (uint c(0); c < vertices.size(); ++c)
     {
@@ -158,7 +159,7 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
         t2 = vertices[b];
         t3 = vertices[c];
 
-        std::vector<vec2> tri;
+        tri.clear();
         tri.push_back(t1);
         tri.push_back(t2);
         tri.push_back(t3);

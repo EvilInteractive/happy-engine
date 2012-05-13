@@ -83,8 +83,12 @@ void MainGame::drawGui()
 {
     //m_pWebView->draw();
 
+    //m_pCanvas->save();
+    //m_pCanvas->scale(he::vec2(2,2));
+    //m_pCanvas->translate(he::vec2(500,200));
     m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
-    m_pCanvas->fillRect(he::vec2(20,20), he::vec2(300,300)); // TEST, NOT A RECT
+    m_pCanvas->fillRect(he::vec2(450,250), he::vec2(100,100));
+    //m_pCanvas->restore();
 
     m_pCanvas->setFillColor(he::Color(0.2f,0.0f,0.8f));
     m_pCanvas->fillText(he::gui::Text("Testing this new stuff....", m_pFont), he::vec2(500,300));

@@ -31,6 +31,12 @@ void main()
 {
 	vec2 tC = vec2(passTexCoord.x, passTexCoord.y * -1);
 	float lum = texture2D(diffuseMap, tC).r;
+	
+	if (lum > 0.0f)
+	{
+		lum = 1.0f;
+	}
+	
 	float alpha = texture2D(diffuseMap, tC).g;
-    outColor = vec4(lum * fontColor.x, lum * fontColor.y, lum * fontColor.z, lum * fontColor.w);
+    outColor = vec4(lum * fontColor.x, lum * fontColor.y, lum * fontColor.z, alpha * fontColor.w); // * 1.5); if blendmode = src-src_min_alpha multiply alpha 1.5
 }

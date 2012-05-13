@@ -131,7 +131,7 @@ uint Polygon::getIndexCount() const
 uint Polygon::getTriangleCount() const
 {
     if (isTriangulated())
-        return m_Vertices.size() / 3;
+        return m_Indices.size() / 3;
     else
         return 0;
 }

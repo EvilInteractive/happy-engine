@@ -127,10 +127,6 @@ private:
     void cleanup();
     mat44 getTransformation();
 
-    void drawTexture2D(	uint fboID, const Texture2D* tex2D, const vec2& pos,
-                        const vec2& newDimensions = vec2(0.0f,0.0f),
-                        const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
-
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
     ushort m_StackDepth;

@@ -23,6 +23,7 @@
 #include "Canvas2D.h"
 #include "GraphicsEngine.h"
 #include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace gfx {
@@ -266,9 +267,13 @@ void Canvas2D::draw(const vec2& pos)
                         0, 0, m_CanvasSize.x, m_CanvasSize.y,
                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-    drawTexture2D(0, ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd), pos);
+    GUI_NEW->drawTexture2DToScreen(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd), pos, true);
 
     GL::heBindFbo(m_pBufferData->fbufferID);
+    GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    GL::heBindFbo(m_pBufferData->resolvedFbufferID);
     GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -307,15 +312,15 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
 
     m_pBufferMesh->clear();
     m_pBufferMesh->addVertex(pos);
-    m_pBufferMesh->addVertex(pos + vec2(size.x, size.y / 20));
-    m_pBufferMesh->addVertex(pos + size - vec2(20,50));
+    m_pBufferMesh->addVertex(pos + vec2(size.x, 0));//size.y / 20));
+    m_pBufferMesh->addVertex(pos + size);// - vec2(20,50));
     m_pBufferMesh->addVertex(pos + vec2(0, size.y));
     m_pBufferMesh->createBuffer();
 
     m_pColorEffect->begin();
     m_pColorEffect->setColor(m_FillColor);
     m_pColorEffect->setWorldMatrix(m_OrthographicMatrix * getTransformation());
-    //m_pColorEffect->setDepth(0.5f);
+    //m_pColorEffect->setDepth(20.0f);
 
     GL::heBindVao(m_pBufferMesh->getBufferID());
     glDrawElements(GL_TRIANGLES, m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
@@ -378,45 +383,46 @@ void Canvas2D::stroke()
 
 void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 {
-    txt.getFont()->renderText(txt.getText()[0], m_FillColor, m_pTextBuffer);
+    vec2 linePos = pos;
 
-    vec2 size;
-    size = vec2(static_cast<float>(m_pTextBuffer->getWidth()), static_cast<float>(m_pTextBuffer->getHeight()));
+    for (uint i(0); i < txt.getText().size(); ++i)
+    {
+        txt.getFont()->renderText(txt.getText()[i], m_FillColor, m_pTextBuffer);
 
-    mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+        vec2 size;
+        size = vec2(static_cast<float>(m_pTextBuffer->getWidth()), static_cast<float>(m_pTextBuffer->getHeight()));
 
-    save();
+        mat44 world(mat44::createTranslation(vec3(linePos.x + size.x/2, linePos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
 
-    //scale(vec2(size.x, size.y));
-    //translate(vec2(pos.x + size.x/2, pos.y + size.y/2));
+        save();
 
-    m_pFontEffect->begin();
-    m_pFontEffect->setWorldMatrix(m_OrthographicMatrix * world);
-    m_pFontEffect->setDiffuseMap(m_pTextBuffer);
-    m_pFontEffect->setFontColor(m_FillColor);
-    m_pFontEffect->setDepth(0.5f);
+        
+        //translate(vec2(linePos.x + (size.x/2), linePos.y + (size.y/2)));
+        //scale(vec2(size.x / 2, size.y / 2));
 
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEnabled(true);
+        m_pFontEffect->begin();
+        m_pFontEffect->setWorldMatrix(m_OrthographicMatrix * world);
+        m_pFontEffect->setDiffuseMap(m_pTextBuffer);
+        m_pFontEffect->setFontColor(m_FillColor);
+        m_pFontEffect->setDepth(0.5f);
 
-    GL::heBindFbo(m_pBufferData->fbufferID);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendEnabled(true);
 
-    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
+        GL::heBindFbo(m_pBufferData->fbufferID);
 
-    restore();
+        GL::heBindVao(m_pTextureQuad->getVertexArraysID());
+        glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
+
+        restore();
+
+        linePos.y += txt.getFont()->getLineSpacing();
+    }
 }
 
 void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
 				            const vec2& newDimensions,
 				            const RectF& regionToDraw)
-{
-    drawTexture2D(m_pBufferData->fbufferID, tex2D, pos, newDimensions, regionToDraw);
-}
-
-void Canvas2D::drawTexture2D(	uint fboID, const Texture2D* tex2D, const vec2& pos,
-                                const vec2& newDimensions,
-                                const RectF& regionToDraw)
 {
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
@@ -461,7 +467,7 @@ void Canvas2D::drawTexture2D(	uint fboID, const Texture2D* tex2D, const vec2& po
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEnabled(true);
 
-    GL::heBindFbo(fboID);
+    GL::heBindFbo(m_pBufferData->fbufferID);
 
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);

@@ -22,11 +22,13 @@
 #include "Profiler.h"
 #include "HappyNew.h"
 #include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 
 #include "ContentManager.h"
 
 #include "boost/chrono.hpp"
 #include "Text.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace tools {
@@ -62,11 +64,13 @@ Profiler::Profiler(): m_CurrentNode(nullptr)
 {
     //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
+    m_pCanvas2D = GUI_NEW->createCanvas();
 }
 
 
 Profiler::~Profiler()
 {
+    delete m_pCanvas2D;
 }
 
 Profiler* Profiler::getInstance()
@@ -148,6 +152,14 @@ void Profiler::draw() const
     //GUI->fillShape2D(gui::Rectangle2D(vec2(0, 0), vec2(386, 720)), true);
     //GUI->setColor(1.0f, 1.0f, 1.0f);
     //GUI->drawText(text, vec2(4, 4));
+
+    m_pCanvas2D->setFillColor(Color(0.6f,0.6f,0.6f,0.5f));
+    m_pCanvas2D->fillRect(vec2(0,0), vec2(386,720));
+
+    m_pCanvas2D->setFillColor(Color(1.0f,1.0f,1.0f));
+    m_pCanvas2D->fillText(text, vec2(4,4));
+
+    m_pCanvas2D->draw();
 
     //GUI->setLayer();  
     PROFILER_END();

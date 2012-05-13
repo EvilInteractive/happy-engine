@@ -26,6 +26,8 @@
 #include "WebView.h"
 #include "Awesomium/WebCore.h"
 #include "Texture2D.h"
+#include "Simple2DTextureEffect.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
@@ -40,28 +42,29 @@ public:
 
 	/* GENERAL */
     Canvas2D* createCanvas(const vec2& size = vec2());
-    WebView* createWebView(bool bEnableUserInput = false, const vec2& size = vec2());
+    WebView* createWebView(bool enableUserInput = false, const vec2& size = vec2());
 
     void tick();
     void draw();
 
     void init();
 
-    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
-                                const vec2& newDimensions = vec2(0.0f,0.0f),
-                                const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos, bool useBlending = true,
+                                const vec2& newDimensions = vec2(),
+                                const RectF& regionToDraw = RectF());
 
 private:
 
     /* EXTRA */
 
 	/* DATAMEMBERS */
-    Awesomium::WebCore* m_pWebCore;
+    Awesomium::WebCore* m_WebCore;
 
     std::vector<WebView*> m_WebViews;
     std::vector<Canvas2D*> m_Canvas2Ds;
 
-    Simple2DTextureEffect* m_pTextureEffect;
+    Simple2DTextureEffect* m_TextureEffect;
+    ModelMesh* m_TextureQuad;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

@@ -87,7 +87,7 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
         {
             for (int h(0); h < width; ++h)
             {
-                glyphBuffers[i][2 * (h + (j * width))] = glyphBuffers[i][2 * (h + (j * width)) + 1] =
+                 glyphBuffers[i][2 * (h + (j * width))] = glyphBuffers[i][2 * (h + (j * width)) + 1] =
                     (h >= bmpGlyph->bitmap.width || j >= bmpGlyph->bitmap.rows) ?
                     0 : bmpGlyph->bitmap.buffer[h + (bmpGlyph->bitmap.width * j)];
             }
@@ -97,10 +97,11 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
     }
 
     GL::heBindTexture2D(tex->getID());
-    tex->setData((uint)texSize.x, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    tex->setData((uint)texSize.x * 2, (uint)texSize.y, 
+        gfx::Texture2D::TextureFormat_RG8, 0, 
         gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Linear, false, false);
+        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
    
     FT_Vector kerning;
     vec2 penPos;
@@ -109,7 +110,7 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
     {
         penPos.y = maxHeight - glyphAdvance[i].y;
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, penPos.x, penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, penPos.x, penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RG, GL_UNSIGNED_BYTE, glyphBuffers[i]);
 
         penPos.x += glyphAdvance[i].x;
 
