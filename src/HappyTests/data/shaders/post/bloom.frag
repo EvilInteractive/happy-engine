@@ -38,7 +38,7 @@ void main()
 #if BRIGHTPASS
     float ex = 0.9f;
 #if HDR
-    ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.001f, 1.0f) / 4.0f;
+    ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.01f, 1.0f) / 3.0f;
 #endif
     color *= ex;
     color -= vec3(1.0f, 1.0f, 1.0f);

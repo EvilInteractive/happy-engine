@@ -18,15 +18,10 @@
 
 #include "Shader.h"
 
-#include "HeAssert.h"
-
 #include "FileReader.h"
 #include "ShaderPreProcessor.h"
 
-#include <iostream>
-#include <algorithm>
-
-#include "OpenGL.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {

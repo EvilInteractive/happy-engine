@@ -295,7 +295,7 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffect->setAlpha(1.0f);
     m_TextureEffect->setTCOffset(tcOffset);
     m_TextureEffect->setTCScale(tcScale);
-    m_TextureEffect->setDepth(0.5f);
+    m_TextureEffect->setDepth(1.0f);
 
     if (useBlending == true)
     {

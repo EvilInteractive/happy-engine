@@ -18,6 +18,12 @@
 //Author: Bastian Damman
 
 #version 150 core
+#pragma optionNV(fastmath on)
+#pragma optionNV(fastprecision on)
+#pragma optionNV(ifcvt none)
+#pragma optionNV(inline all)
+#pragma optionNV(strict on)
+#pragma optionNV(unroll all)
 
 #include "packing/encode.frag"
 
@@ -55,12 +61,12 @@ void main()
     if (color.a < 0.5f)
         discard;
     
-    vec4 normal = texture(normalMap, passTexCoord);
+    vec3 normal = texture(normalMap, passTexCoord).rgb * 1;
     vec4 specGlossIll = texture(specGlossIllMap, passTexCoord);
     
     outColor = vec4(color.rgb, specGlossIll.b);
 
-    outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal.rgb));
+    outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal));
 
     outSGI = vec4(specGlossIll.rg, 0.0f, 1.0f);
 }

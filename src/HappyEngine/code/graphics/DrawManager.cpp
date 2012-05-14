@@ -33,7 +33,7 @@
 #include "Deferred3DRenderer.h"
 #include "Forward3DRenderer.h"
 #include "PostProcesser.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace gfx {
@@ -188,11 +188,11 @@ void DrawManager::draw()
     m_pAfterPostRenderer->draw(m_DrawList, m_AfterPostRenderFlags);
     PROFILER_END();
 
-    if (m_RenderDebugTextures)
+    //if (m_RenderDebugTextures)
     {
-        //GUI->drawTexture2D(m_pColorRenderMap,  vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pNormalRenderMap, vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pDepthRenderMap,  vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+        GUI_NEW->drawTexture2DToScreen(m_pColorRenderMap,  vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        GUI_NEW->drawTexture2DToScreen(m_pNormalRenderMap, vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        GUI_NEW->drawTexture2DToScreen(m_pDepthRenderMap,  vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
     }
 
     PROFILER_END();
@@ -250,7 +250,7 @@ void DrawManager::initSharedTextures()
 
     //Normal
     m_pNormalRenderMap->setData(width, height, 
-        gfx::Texture2D::TextureFormat_RG16F, 0, 
+        gfx::Texture2D::TextureFormat_RG16, 0, 
         gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte,
         gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
 

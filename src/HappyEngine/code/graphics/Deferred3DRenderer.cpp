@@ -22,7 +22,7 @@
 #include "HappyPCH.h" 
 
 #include "Deferred3DRenderer.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "BufferLayout.h"
 #include "Vertex.h"
 #include "Light.h"
@@ -96,7 +96,8 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_pOutTexture->release();
     m_pNormalTexture->release();
     m_pDepthTexture->release();
-    m_pColorRampTex->release();
+
+    //m_pColorRampTex->release();
 
     m_pQuad->release();
 
@@ -198,8 +199,8 @@ void Deferred3DRenderer::compileShaders()
         m_AmbDirIllLightData.sgMap  = m_pAmbDirIllShader->getShaderSamplerId("sgMap");
     m_AmbDirIllLightData.normalMap  = m_pAmbDirIllShader->getShaderSamplerId("normalMap");
     m_AmbDirIllLightData.depthMap  = m_pAmbDirIllShader->getShaderSamplerId("depthMap");
-    m_AmbDirIllLightData.colorRamp  = m_pAmbDirIllShader->getShaderSamplerId("colorRamp");
-    m_pColorRampTex = CONTENT->asyncLoadTexture("shadingRamp.png");
+    //m_AmbDirIllLightData.colorRamp  = m_pAmbDirIllShader->getShaderSamplerId("colorRamp");
+    //m_pColorRampTex = CONTENT->asyncLoadTexture("engine/shadingRamp.png");
     
     if (m_RenderSettings.enableShadows)
     {
@@ -287,8 +288,9 @@ void Deferred3DRenderer::clear( bool color, bool normal, bool depth )
         GL::heSetDepthWrite(true);
         flags |= GL_DEPTH_BUFFER_BIT;
     }
-
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+    
+    vec3 backgroundColor(GRAPHICS->getLightManager()->getDirectionalLight()->getColor() * GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier() * 2);
+    GL::heClearColor(Color(vec4(backgroundColor, 0.0f)));
     glClear(flags);
 
     if (color)
@@ -314,8 +316,8 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
 
     const static GLenum tempBuffer[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, tempBuffer);
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 1.0f));    
-    glClear(GL_COLOR_BUFFER_BIT);
+    //GL::heClearColor(Color(vec4(backgroundColor, 1.0f)));    
+    //glClear(GL_COLOR_BUFFER_BIT);
 
     const static GLenum collectBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, collectBuffers);
@@ -376,12 +378,12 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
 }
 void Deferred3DRenderer::drawDebugTextures() const
 {
-    if (m_ShowDebugTextures)
+    //if (m_ShowDebugTextures)
     {
-        //GUI->drawTexture2D(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
-        //GUI->drawTexture2D(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), vec2(256, 144));
+        //GUI_NEW->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        //GUI_NEW->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        //GUI_NEW->drawTexture2DToScreen(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        //GUI_NEW->drawTexture2DToScreen(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
     }
 }
 
@@ -412,7 +414,7 @@ void Deferred3DRenderer::postAmbDirIllLight()
         m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_pSGTexture);
     m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalMap,   m_pNormalTexture);
     m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.depthMap,    m_pDepthTexture);
-    m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorRamp,   m_pColorRampTex);
+    //m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorRamp,   m_pColorRampTex);
 
     if (m_RenderSettings.enableShadows)       
     {

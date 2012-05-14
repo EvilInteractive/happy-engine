@@ -80,19 +80,32 @@ void MainGame::load()
     game::ModelComponent* modelComp(NEW game::ModelComponent());
     modelComp->setMaterial(CONTENT->loadMaterial("testScene3.material"));
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial().getCompatibleVertexLayout()));
+    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
+    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout()));
+
     modelComp->setModelMesh(mesh->getHandle());
-    mesh->release();
+    //modelComp->setLocalTransform(he::mat44::createScale(100));
     scene->addComponent(modelComp);
+    mesh->release();
+
+    modelComp = NEW game::ModelComponent();
+    modelComp->setMaterial(CONTENT->loadMaterial("testScene4.material"));
+    mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout());
+    modelComp->setModelMesh(mesh->getHandle());
+    modelComp->setLocalTransform(he::mat44::createTranslation(he::vec3(1, 1, 1)) * he::mat44::createRotation(vec3(0, 1, 0), he::pi) * he::mat44::createScale(100));
+    scene->addComponent(modelComp);
+    mesh->release();
+
     m_EntityList.push_back(scene);
 
     #pragma region lights
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.6f, 1.0f, 1.0f, 1.0f), 2.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 20.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 2.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 10.0f);
 
     game::PointLightComponent* pTempPointLightComp(NEW game::PointLightComponent());
     scene->addComponent(pTempPointLightComp);
     pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
-    pTempPointLightComp->setMultiplier(5.0f);
+    pTempPointLightComp->setMultiplier(50.0f);
     pTempPointLightComp->setColor(Color((byte)126, 190, 255, 255));
     pTempPointLightComp->setAttenuation(0, 15);
 

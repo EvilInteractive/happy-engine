@@ -23,12 +23,11 @@
 #pragma once
 
 #include "Shader.h"
-#include "boost/shared_ptr.hpp"
-#include "HappyTypes.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
-
+    
 enum ShaderVarType
 {
     ShaderVarType_WorldViewProjection,

@@ -81,6 +81,7 @@ public:
     const RenderSettings& getSettings() const;
     const DrawManager* getDrawManager() const;
     sf::Window* getWindow() const;
+    const RenderSettings& getRenderSettings() const;
 
 private:
     void initWindow();

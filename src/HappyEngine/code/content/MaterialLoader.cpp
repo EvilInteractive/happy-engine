@@ -463,32 +463,43 @@ gfx::Material MaterialLoader::load(const std::string& path)
                         else if (node.second == L"FLOAT")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<float>(pShader->getShaderVarId(name), name, 0)));
+                                NEW gfx::ShaderUserVar<float>(pShader->getShaderVarId(name), name, 
+                                    reader.readFloat(L"FLOAT", node.first, 1.0f))));
                         }
                         else if (node.second == L"VEC2")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<vec2>(pShader->getShaderVarId(name), name, vec2(0, 0))));
+                                NEW gfx::ShaderUserVar<vec2>(pShader->getShaderVarId(name), name, 
+                                    reader.readVector2(L"VEC2", node.first, vec2(1.0f, 1.0f)))
+                                    ));
                         }
                         else if (node.second == L"VEC3")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<vec3>(pShader->getShaderVarId(name), name, vec3(0, 0, 0))));
+                                NEW gfx::ShaderUserVar<vec3>(pShader->getShaderVarId(name), name, 
+                                reader.readVector3(L"VEC3", node.first, vec3(1.0f, 1.0f, 1.0f)))
+                                ));
                         }
                         else if (node.second == L"VEC4")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<vec4>(pShader->getShaderVarId(name), name, vec4(0, 0, 0, 0))));
+                                NEW gfx::ShaderUserVar<vec4>(pShader->getShaderVarId(name), name, 
+                                reader.readVector4(L"VEC4", node.first, vec4(1.0f, 1.0f, 1.0f, 1.0f)))
+                                ));
                         }
                         else if (node.second == L"INT")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<int>(pShader->getShaderVarId(name), name, 0)));
+                                NEW gfx::ShaderUserVar<int>(pShader->getShaderVarId(name), name, 
+                                reader.readInt(L"INT", node.first, 0))
+                                ));
                         }
                         else if (node.second == L"UINT")
                         {
                             material.addVar(gfx::ShaderVar::pointer(
-                                NEW gfx::ShaderUserVar<uint>(pShader->getShaderVarId(name), name, 0)));
+                                NEW gfx::ShaderUserVar<uint>(pShader->getShaderVarId(name), name, 
+                                static_cast<uint>(reader.readInt(L"UINT", node.first, 0)))
+                                ));
                         }
                         else
                         {
