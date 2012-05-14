@@ -288,13 +288,14 @@ void Deferred3DRenderer::clear( bool color, bool normal, bool depth )
         GL::heSetDepthWrite(true);
         flags |= GL_DEPTH_BUFFER_BIT;
     }
-    
+
     vec3 backgroundColor(GRAPHICS->getLightManager()->getDirectionalLight()->getColor() * GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier() * 2);
-    GL::heClearColor(Color(vec4(backgroundColor, 0.0f)));
+    GL::heClearColor(Color(vec4(backgroundColor, 1.0f)));
     glClear(flags);
 
     if (color)
     {
+        GL::heClearColor(Color(vec4(0.0f, 0.0f, 0.0f, 0.0f)));
         GL::heBindFbo(m_RenderFboId);
         buffers[0] = GL_COLOR_ATTACHMENT0;
         glDrawBuffers(1, buffers);

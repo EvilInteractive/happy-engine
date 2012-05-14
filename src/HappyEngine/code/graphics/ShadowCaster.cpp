@@ -57,7 +57,7 @@ ShadowCaster::~ShadowCaster()
 
 void ShadowCaster::init(const RenderSettings& settings)
 {
-    m_ShadowSize = 512 * pow(2.0f, settings.shadowMult - 1.0f);
+    m_ShadowSize = static_cast<short>(512 * pow(2.0f, settings.shadowMult - 1.0f));
     HE_ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
     //////////////////////////////////////////////////////////////////////////
     ///                             Textures                               ///
@@ -272,6 +272,9 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
 
     GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));   
+    //GL::heBlendFunc(BlendFunc_Zero, BlendFunc_One);
+    //GL::heBlendEquation(BlendEquation_Add);
+    GL::heBlendEnabled(false);
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthWrite(true);

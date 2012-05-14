@@ -154,7 +154,7 @@ void main()
 
     //Light
     //vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f)) * dirLight.color.rgb * dirLight.color.a;
-    vec3 diffuseLight = pow(halfLambert, 1.0f) * dirLight.color.rgb * dirLight.color.a;
+    vec3 diffuseLight = pow(halfLambert, 0.3f) * dirLight.color.rgb * dirLight.color.a;
     vec3 ambientLight = (clamp(dot(vec3(0, 1, 0), normal), 0.0f, 1.0f) * ambLight.color.a + ambLight.color.a / 2.0f) * ambLight.color.rgb;
     
     //Shadow

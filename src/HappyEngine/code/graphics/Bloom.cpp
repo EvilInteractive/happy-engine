@@ -153,6 +153,14 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
 {
     HE_ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
 
+    //GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));   
+    //GL::heBlendFunc(BlendFunc_Zero, BlendFunc_One);
+    //GL::heBlendEquation(BlendEquation_Add);
+    GL::heBlendEnabled(false);
+    GL::heSetCullFace(false);
+    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(false);
+
     GL::heBindVao(m_pMesh->getVertexArraysID());
 
     //BrightPass

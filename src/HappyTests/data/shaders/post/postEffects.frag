@@ -221,7 +221,7 @@ void main()
 
 #if HDR  
     float ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.01f, 1.0f);
-    color *= ex / 3.0f;  //0 -> 20
+    color *= ex / 4.0f;  //0 -> 20
     color = pow(color, vec3(2.2f));
 #endif
  
