@@ -23,8 +23,11 @@
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "ControlsManager.h"
+#include "Vertex.h"
+
+#define COMMON_ASCII_CHAR 128
 
 namespace he {
 namespace gfx {
@@ -86,7 +89,7 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
         f = true;
     }
 
-    Awesomium::WebView* pView = m_WebCore->CreateWebView(dim.x, dim.y);
+    Awesomium::WebView* pView = m_WebCore->CreateWebView((int)dim.x, (int)dim.y);
 
     WebView* web = NEW WebView(pView, enableUserInput, f);
     m_WebViews.push_back(web);
@@ -118,9 +121,9 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
                 w->InjectKeyboardEvent(keyEvent);
 
                 // if it is an ASCII char
-                if (chr < 128)
+                if (chr < COMMON_ASCII_CHAR)
                 {
-                    // if letter
+                    // if it is a letter
                     if (chr >= 65 && chr <= 90)
                     {
                         if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
@@ -131,8 +134,8 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
                     }
 
                     keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
-                    keyEvent.text[0] = chr;
-                    keyEvent.unmodified_text[0] = chr;
+                    keyEvent.text[0] = (Awesomium::WebUChar)chr;
+                    keyEvent.unmodified_text[0] = (Awesomium::WebUChar)chr;
                     keyEvent.native_key_code = chr;
 
                     w->InjectKeyboardEvent(keyEvent);
@@ -295,11 +298,14 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffect->setAlpha(1.0f);
     m_TextureEffect->setTCOffset(tcOffset);
     m_TextureEffect->setTCScale(tcScale);
-    m_TextureEffect->setDepth(0.5f);
+    m_TextureEffect->setDepth(0.0f);
+
+    GL::heSetDepthFunc(DepthFunc_Always);
 
     if (useBlending == true)
     {
         GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendEquation(BlendEquation_Add);
         GL::heBlendEnabled(true);
     }
     else

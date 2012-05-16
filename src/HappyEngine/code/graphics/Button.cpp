@@ -25,7 +25,7 @@
 #include "ContentManager.h"
 #include "Rect.h"
 #include "ControlsManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace gui {

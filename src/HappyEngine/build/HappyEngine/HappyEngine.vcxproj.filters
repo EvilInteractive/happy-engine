@@ -83,9 +83,6 @@
     <Filter Include="happyengine\graphics\rendering\2d">
       <UniqueIdentifier>{02443ead-bb6c-4ba4-9dcc-bae0f067ae85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="happyengine\graphics\model\2d">
-      <UniqueIdentifier>{57adf67a-4713-451a-80c6-b59b352c7a7d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="happyengine\graphics\picking">
       <UniqueIdentifier>{7c69c16e-994c-4601-a223-0cc809fdbe73}</UniqueIdentifier>
     </Filter>
@@ -361,9 +358,6 @@
     <ClCompile Include="..\..\code\io\Keyboard.cpp">
       <Filter>happyengine\io\keyboard</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Happy2DRenderer.cpp">
-      <Filter>happyengine\graphics\rendering\2d</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\graphics\BillboardEffect.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
@@ -378,18 +372,6 @@
     </ClCompile>
     <ClCompile Include="..\..\code\graphics\Picker.cpp">
       <Filter>happyengine\graphics\picking</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Ellipse2D.cpp">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Line2D.cpp">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Polygon2D.cpp">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Rectangle2D.cpp">
-      <Filter>happyengine\graphics\model\2d</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\graphics\Simple2DEffect.cpp">
       <Filter>happyengine\graphics\rendering\2d</Filter>
@@ -517,11 +499,11 @@
     <ClCompile Include="..\..\code\tools\Path.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Mesh2D.cpp">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\graphics\Simple2DFontEffect.cpp">
       <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\graphics\Mesh2D.cpp">
+      <Filter>happyengine\graphics\model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -858,9 +840,6 @@
     <ClInclude Include="..\..\code\io\Keys.h">
       <Filter>happyengine\io\keyboard</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Happy2DRenderer.h">
-      <Filter>happyengine\graphics\rendering\2d</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\graphics\BillboardEffect.h">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClInclude>
@@ -878,18 +857,6 @@
     </ClInclude>
     <ClInclude Include="..\..\code\graphics\Camera.h">
       <Filter>happyengine\graphics\rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Ellipse2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Line2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Polygon2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Rectangle2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\graphics\Simple2DTextureEffect.h">
       <Filter>happyengine\graphics\rendering\2d</Filter>
@@ -999,9 +966,6 @@
     <ClInclude Include="..\..\code\tools\LoadingScreen.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Shape2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\HappyMemory.h">
       <Filter>happyengine</Filter>
     </ClInclude>
@@ -1062,11 +1026,11 @@
     <ClInclude Include="..\..\code\tools\Path.h">
       <Filter>happyengine\tools</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Mesh2D.h">
-      <Filter>happyengine\graphics\model\2d</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\graphics\Simple2DFontEffect.h">
       <Filter>happyengine\graphics\rendering\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\graphics\Mesh2D.h">
+      <Filter>happyengine\graphics\model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

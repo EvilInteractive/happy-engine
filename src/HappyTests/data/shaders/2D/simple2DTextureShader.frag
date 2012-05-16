@@ -30,7 +30,8 @@ uniform vec2 texCoordScale;
 
 void main()
 {
-    vec4 color = texture2D(diffuseMap, (passTexCoord * texCoordScale) + texCoordOffset);
+	vec2 tcScale = vec2(abs(texCoordScale.x), abs(texCoordScale.y));
+    vec4 color = texture2D(diffuseMap, (passTexCoord * tcScale) + texCoordOffset);
 
     float alpha = color.a - (1.0f - inAlpha);
 

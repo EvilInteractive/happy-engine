@@ -16,7 +16,7 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 26/08/2011
+//Created: 07/05/2012
 
 #ifndef _HE_SIMPLE_2D_FONT_EFFECT_H_
 #define _HE_SIMPLE_2D_FONT_EFFECT_H_
@@ -46,6 +46,8 @@ public:
     void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
     void setDepth(float depth) const;
     void setFontColor(const Color& col) const;
+    void setTCOffset(const vec2& offset) const;
+    void setTCScale(const vec2& scale) const;
 
 private:
     gfx::Shader* m_pShader;
@@ -54,6 +56,8 @@ private:
     uint m_ShaderDiffTexPos;
     uint m_ShaderDepthPos;
     uint m_ShaderFontColorPos;
+    uint m_ShaderTCOffsetPos;
+    uint m_ShaderTCScalePos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DFontEffect(const Simple2DFontEffect&);

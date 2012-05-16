@@ -24,7 +24,7 @@
 #include "GraphicsEngine.h"
 #include "InstancingManager.h"
 #include "ContentManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "CameraManager.h"
 #include "Camera.h"
 #include "LightManager.h"

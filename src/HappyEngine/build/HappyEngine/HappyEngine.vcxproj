@@ -65,11 +65,9 @@
     <ClCompile Include="..\..\code\graphics\DrawListContainer.cpp" />
     <ClCompile Include="..\..\code\graphics\DrawManager.cpp" />
     <ClCompile Include="..\..\code\graphics\DynamicBuffer.cpp" />
-    <ClCompile Include="..\..\code\graphics\Ellipse2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Font.cpp" />
     <ClCompile Include="..\..\code\graphics\Forward3DRenderer.cpp" />
     <ClCompile Include="..\..\code\graphics\GraphicsEngine.cpp" />
-    <ClCompile Include="..\..\code\graphics\Happy2DRenderer.cpp" />
     <ClCompile Include="..\..\code\graphics\Hitregion.cpp" />
     <ClCompile Include="..\..\code\graphics\InstancingBuffer.cpp" />
     <ClCompile Include="..\..\code\graphics\InstancingController.cpp" />
@@ -77,7 +75,6 @@
     <ClCompile Include="..\..\code\graphics\Light.cpp" />
     <ClCompile Include="..\..\code\graphics\LightManager.cpp" />
     <ClCompile Include="..\..\code\graphics\Line.cpp" />
-    <ClCompile Include="..\..\code\graphics\Line2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Material.cpp" />
     <ClCompile Include="..\..\code\graphics\Mesh2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Model.cpp" />
@@ -88,9 +85,7 @@
     </ClCompile>
     <ClCompile Include="..\..\code\graphics\Picker.cpp" />
     <ClCompile Include="..\..\code\graphics\PointLight.cpp" />
-    <ClCompile Include="..\..\code\graphics\Polygon2D.cpp" />
     <ClCompile Include="..\..\code\graphics\PostProcesser.cpp" />
-    <ClCompile Include="..\..\code\graphics\Rectangle2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Renderer2D.cpp" />
     <ClCompile Include="..\..\code\graphics\Scrollbar.cpp" />
     <ClCompile Include="..\..\code\graphics\Shader.cpp" />
@@ -224,13 +219,11 @@
     <ClInclude Include="..\..\code\graphics\DrawListContainer.h" />
     <ClInclude Include="..\..\code\graphics\DrawManager.h" />
     <ClInclude Include="..\..\code\graphics\DynamicBuffer.h" />
-    <ClInclude Include="..\..\code\graphics\Ellipse2D.h" />
     <ClInclude Include="..\..\code\graphics\Font.h" />
     <ClInclude Include="..\..\code\graphics\Forward3DRenderer.h" />
     <ClInclude Include="..\..\code\graphics\I3DObject.h" />
     <ClInclude Include="..\..\code\graphics\ICamera.h" />
     <ClInclude Include="..\..\code\graphics\GraphicsEngine.h" />
-    <ClInclude Include="..\..\code\graphics\Happy2DRenderer.h" />
     <ClInclude Include="..\..\code\graphics\Hitregion.h" />
     <ClInclude Include="..\..\code\graphics\IDrawable.h" />
     <ClInclude Include="..\..\code\graphics\IInstanceFiller.h" />
@@ -243,7 +236,6 @@
     <ClInclude Include="..\..\code\graphics\Light.h" />
     <ClInclude Include="..\..\code\graphics\LightManager.h" />
     <ClInclude Include="..\..\code\graphics\Line.h" />
-    <ClInclude Include="..\..\code\graphics\Line2D.h" />
     <ClInclude Include="..\..\code\graphics\Material.h" />
     <ClInclude Include="..\..\code\graphics\Mesh2D.h" />
     <ClInclude Include="..\..\code\graphics\Model.h" />
@@ -251,9 +243,7 @@
     <ClInclude Include="..\..\code\graphics\PickEffect.h" />
     <ClInclude Include="..\..\code\graphics\Picker.h" />
     <ClInclude Include="..\..\code\graphics\PointLight.h" />
-    <ClInclude Include="..\..\code\graphics\Polygon2D.h" />
     <ClInclude Include="..\..\code\graphics\PostProcesser.h" />
-    <ClInclude Include="..\..\code\graphics\Rectangle2D.h" />
     <ClInclude Include="..\..\code\graphics\Renderer2D.h" />
     <ClInclude Include="..\..\code\graphics\RenderSettings.h" />
     <ClInclude Include="..\..\code\graphics\Scrollbar.h" />
@@ -261,7 +251,6 @@
     <ClInclude Include="..\..\code\graphics\ShaderLayout.h" />
     <ClInclude Include="..\..\code\graphics\ShaderVar.h" />
     <ClInclude Include="..\..\code\graphics\ShadowCaster.h" />
-    <ClInclude Include="..\..\code\graphics\Shape2D.h" />
     <ClInclude Include="..\..\code\graphics\Simple2DEffect.h" />
     <ClInclude Include="..\..\code\graphics\Simple2DFontEffect.h" />
     <ClInclude Include="..\..\code\graphics\Simple2DTextureEffect.h" />

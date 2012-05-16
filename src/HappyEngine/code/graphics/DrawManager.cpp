@@ -33,7 +33,7 @@
 #include "Deferred3DRenderer.h"
 #include "Forward3DRenderer.h"
 #include "PostProcesser.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace gfx {

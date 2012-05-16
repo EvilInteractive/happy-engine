@@ -40,7 +40,7 @@ public:
 
     bool triangulate();
 
-    void createBuffer();
+    void createBuffer(bool outline = false);
 
     /* GETTERS */
     uint getBufferID() const;

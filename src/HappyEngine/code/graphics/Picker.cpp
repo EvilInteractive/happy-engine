@@ -25,7 +25,7 @@
 #include "HappyNew.h"
 
 #include "GraphicsEngine.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "OpenGL.h"
 #include "HappyEngine.h"
 #include "DrawManager.h"

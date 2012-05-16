@@ -31,7 +31,7 @@
 #include "PhysicsEngine.h"
 #include "ContentManager.h"
 #include "NetworkManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "Renderer2D.h"
 #include "Game.h"
 #include "CameraManager.h"
@@ -158,8 +158,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         m_pSoundEngine = NEW sfx::SoundEngine();
         m_pSoundEngine->initialize();
     }
-
-    m_pConsole->load();
 }
 
 void HappyEngine::start(game::Game* pGame)
@@ -174,8 +172,6 @@ void HappyEngine::start(game::Game* pGame)
 
     m_pGame = pGame;
 
-    CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
-
     //Init Game
     pGame->init();
     
@@ -189,6 +185,9 @@ void HappyEngine::start(game::Game* pGame)
         m_p3DRenderer->init();
         m_pCameraManager->init();
         m_pRenderer2D->init();
+
+        m_pConsole->load();
+        CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
     }
 
     //if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();

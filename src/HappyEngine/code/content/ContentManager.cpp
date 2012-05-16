@@ -82,6 +82,8 @@ ContentManager::~ContentManager()
         m_ParticleQuad->release();
     if (m_FullscreenQuad != nullptr)
         m_FullscreenQuad->release();
+
+    m_pDefaultFont->release();
 }
 
 

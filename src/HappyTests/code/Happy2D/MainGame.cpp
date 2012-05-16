@@ -43,6 +43,9 @@ MainGame::MainGame(): m_pFPSGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullp
 MainGame::~MainGame()
 {
     CAMERAMANAGER->deleteAllCameras();
+
+    m_pFont->release();
+
     delete m_pWebView;
     delete m_pCanvas;
     delete m_pFPSGraph;
@@ -66,9 +69,9 @@ void MainGame::load()
     //m_pWebView->loadUrl("http://www.youtube.be");
 
     m_pFPSGraph = NEW he::tools::FPSGraph();
-    m_pFPSGraph->setType(1);
+    //m_pFPSGraph->setType(1);
 
-    m_pFont = CONTENT->loadFont("Ubuntu-Bold.ttf", 24);
+    m_pFont = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
 
     m_pCanvas = GUI_NEW->createCanvas();
 }
@@ -86,13 +89,15 @@ void MainGame::drawGui()
     //m_pCanvas->save();
     //m_pCanvas->scale(he::vec2(2,2));
     //m_pCanvas->translate(he::vec2(500,200));
-    m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
-    m_pCanvas->fillRect(he::vec2(450,250), he::vec2(100,100));
+    //m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
+    //m_pCanvas->fillRect(he::vec2(450,250), he::vec2(100,100));
     //m_pCanvas->restore();
 
-    m_pCanvas->setFillColor(he::Color(0.2f,0.0f,0.8f));
-    m_pCanvas->fillText(he::gui::Text("Testing this new stuff....", m_pFont), he::vec2(500,300));
+    //m_pCanvas->setFillColor(he::Color(0.2f,0.5f,0.8f));
+    //m_pCanvas->fillText(he::gui::Text("Testing blie bloe bla Qede", m_pFont), he::vec2(250,300));
     
+    //m_pCanvas->drawImage(m_pFont->getTextureAtlas(), he::vec2(0,0));//, he::vec2(20,20), he::RectF(320,5,20,20));
+
     m_pCanvas->draw();
 
     m_pFPSGraph->draw();

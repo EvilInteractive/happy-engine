@@ -24,7 +24,7 @@
 #include <algorithm>
 #include "HappyEngine.h"
 #include "ContentManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "ControlsManager.h"
 
 namespace he {
@@ -62,6 +62,7 @@ TextBox::TextBox(RectF posSize,
 
 TextBox::~TextBox()
 {
+    m_pFont->release();
 	delete m_pHitrect;
 }
 
@@ -193,7 +194,7 @@ void TextBox::draw()
 
 				if (cursorText != "")
 				{
-					uint cursorX(m_pFont->getStringWidth(cursorText));
+					uint cursorX((uint)m_pFont->getStringWidth(cursorText));
 					cursorX -= 1;
 
 					cursorRect.x += cursorX;
@@ -267,7 +268,7 @@ void TextBox::setFocus(bool focus)
 void TextBox::setString(const std::string& string)
 {
 	m_String = string;
-	m_CursorPos = string.size();
+	m_CursorPos = (uint)string.size();
 }
 
 void TextBox::setColors(	const Color& backgroundColor,

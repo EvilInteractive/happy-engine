@@ -23,12 +23,13 @@
 #include "Forward3DRenderer.h"
 #include "GraphicsEngine.h"
 #include "Deferred3DRenderer.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "ContentManager.h"
 #include "Shader.h"
 #include "IDrawable.h"
 #include "CameraManager.h"
 #include "Camera.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace gfx {
@@ -205,7 +206,7 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
     // Render on back buffer
     if (m_OwnsColorBuffer)
     {
-        GL::heBindFbo(0);
+        /*GL::heBindFbo(0);
         GL::heSetDepthRead(false);
         GL::heSetDepthWrite(false);
         GL::heBlendEnabled(true);
@@ -218,7 +219,9 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
         m_pQuadShader->setShaderVar(m_QuadShaderTexPos, m_pOutColorTexture);
 
         GL::heBindVao(m_pQuad->getVertexArraysID());
-        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);*/
+
+        GUI_NEW->drawTexture2DToScreen(m_pOutColorTexture, vec2(), true, vec2((float)m_pOutColorTexture->getWidth() * -1.0f, (float)m_pOutColorTexture->getHeight()));
     }
 }
 

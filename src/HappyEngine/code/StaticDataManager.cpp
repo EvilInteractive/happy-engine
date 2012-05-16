@@ -24,6 +24,7 @@
 #include "Texture2D.h"
 #include "Model.h"
 #include "ModelMesh.h"
+#include "Font.h"
 
 namespace he {
 
@@ -32,10 +33,12 @@ void StaticDataManager::init()
     ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
+    ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
 }
 
 void StaticDataManager::destroy()
 {
+    ResourceFactory<gfx::Font>::destroy();
     ResourceFactory<gfx::Texture2D>::destroy();
     ResourceFactory<gfx::Model>::destroy();
     ResourceFactory<gfx::ModelMesh>::destroy();

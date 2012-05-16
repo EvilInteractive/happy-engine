@@ -15,8 +15,9 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 12/08/2011
+//Author:  Sebastiaan Sprengers
+//Created: 07/05/2012
+
 #include "HappyPCH.h" 
 
 #include "FontLoader.h"
@@ -26,23 +27,19 @@
 
 #include "HappyNew.h"
 #include "HeAssert.h"
+#include "ResourceFactory.h"
+
+#define FACTORY ResourceFactory<gfx::Font>::getInstance()
 
 namespace he {
 namespace ct {
 
-FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<gfx::Font*>([](gfx::Font* pFont)
-                            {
-                                if (pFont)
-                                {
-                                    delete pFont;
-                                    pFont = nullptr;
-                                }
-                            }))
+/* CONSTRUCTOR - DESTRUCTOR*/
+FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<ObjectHandle>())
 {
-    bool error(FT_Init_FreeType(&m_FTLibrary));
+    FT_Error error(FT_Init_FreeType(&m_FTLibrary));
     HE_ASSERT(error == false,"Error creating freetype library!");
 }
-
 
 FontLoader::~FontLoader()
 {
@@ -50,13 +47,22 @@ FontLoader::~FontLoader()
     FT_Done_FreeType(m_FTLibrary);
 }
 
+/* GENERAL */
 gfx::Font* FontLoader::load(const std::string& path, ushort size)
 {
     std::stringstream stream;
     stream << path << size;
 
-    if (m_pAssetContainer->isAssetPresent(stream.str()) == false)
+    if (m_pAssetContainer->isAssetPresent(stream.str()) && FACTORY->isAlive(m_pAssetContainer->getAsset(stream.str())))
     {
+        ObjectHandle handle(m_pAssetContainer->getAsset(stream.str()));
+        FACTORY->instantiate(handle);       
+        return FACTORY->get(handle);
+    }
+    else
+    {
+        ObjectHandle handle(FACTORY->create());
+
         FT_Face face;
         FT_Error error(FT_New_Face(m_FTLibrary, path.c_str(), 0, &face));
 
@@ -76,7 +82,9 @@ gfx::Font* FontLoader::load(const std::string& path, ushort size)
             return nullptr;
         }
 
-        error = FT_Set_Char_Size(face, 0, size * 64, 96, 96); // font size in 1/64 pixel
+        // font size in 1/64 pixel
+        // 96 DPI -> should change later to adapt to screen DPI
+        error = FT_Set_Char_Size(face, 0, size * 64, 96, 96);
 
         if (error != 0)
         {
@@ -85,16 +93,12 @@ gfx::Font* FontLoader::load(const std::string& path, ushort size)
             return nullptr;
         }
 
-        gfx::Font* pFont(NEW gfx::Font(m_FTLibrary, face, size));
-        m_pAssetContainer->addAsset(stream.str(), pFont);
+        gfx::Font* pFont = FACTORY->get(handle);
+        pFont->init(m_FTLibrary, face, size);
+
+        m_pAssetContainer->addAsset(stream.str(), handle);
 
         return pFont;
-    }
-    else
-    {
-        return m_pAssetContainer->getAsset(stream.str());
-        
-        //return nullptr;
     }
 }
 

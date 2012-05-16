@@ -22,7 +22,7 @@
 #include "HappyPCH.h" 
 
 #include "Deferred3DRenderer.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "BufferLayout.h"
 #include "Vertex.h"
 #include "Light.h"

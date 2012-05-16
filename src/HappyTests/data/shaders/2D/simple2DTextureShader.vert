@@ -26,9 +26,23 @@ out vec2 passTexCoord;
 
 uniform mat4 matWVP;
 uniform float depth;
+uniform vec2 texCoordScale;
 
 void main()
 {
 	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
-	passTexCoord = inTexCoord;
+	
+	vec2 tC = inTexCoord;
+	
+	if (texCoordScale.x < 0) // flip X
+	{
+		tC = vec2(1.0f - inTexCoord.x, inTexCoord.y);
+	}
+	
+	if (texCoordScale.y < 0) // flip Y
+	{
+		tC = vec2(inTexCoord.x, 1.0f - inTexCoord.y);
+	}
+	
+	passTexCoord = tC;
 }

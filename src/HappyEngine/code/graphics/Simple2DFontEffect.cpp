@@ -16,7 +16,8 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 26/08/2011
+//Created: 07/05/2012
+
 #include "HappyPCH.h" 
 
 #include "Simple2DFontEffect.h"
@@ -37,9 +38,6 @@ Simple2DFontEffect::~Simple2DFontEffect()
 
 void Simple2DFontEffect::load()
 {
-    using namespace he;
-    using namespace gfx;
-
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
@@ -56,6 +54,8 @@ void Simple2DFontEffect::load()
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");
     m_ShaderDepthPos = m_pShader->getShaderVarId("depth");
     m_ShaderFontColorPos = m_pShader->getShaderVarId("fontColor");
+    m_ShaderTCOffsetPos = m_pShader->getShaderVarId("texCoordOffset");
+    m_ShaderTCScalePos = m_pShader->getShaderVarId("texCoordScale");
 
     m_pShader->bind();
     mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
@@ -89,6 +89,16 @@ void Simple2DFontEffect::setDepth(float depth) const
 void Simple2DFontEffect::setFontColor(const Color& col) const
 {
     m_pShader->setShaderVar(m_ShaderFontColorPos, col.rgba());
+}
+
+void Simple2DFontEffect::setTCOffset(const vec2& offset) const
+{
+    m_pShader->setShaderVar(m_ShaderTCOffsetPos, offset);
+}
+
+void Simple2DFontEffect::setTCScale(const vec2& scale) const
+{
+    m_pShader->setShaderVar(m_ShaderTCScalePos, scale);
 }
 
 } } //end namespace
