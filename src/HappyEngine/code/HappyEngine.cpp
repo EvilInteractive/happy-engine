@@ -48,7 +48,7 @@ HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr), m_p2DRenderer(nullptr), m_pRenderer2D(nullptr),
+                            m_pNetworkManager(nullptr), m_pRenderer2D(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
                             m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
                             m_pMainWindow(nullptr), m_RootDir("./")
@@ -80,8 +80,6 @@ void HappyEngine::cleanup()
     m_pGame = nullptr;
     delete m_p3DRenderer;
     m_p3DRenderer = nullptr;
-    //delete m_p2DRenderer;
-    //m_p2DRenderer = nullptr;
     delete m_pRenderer2D;
     m_pRenderer2D = nullptr;
     delete m_pGraphicsEngine;
@@ -149,7 +147,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     if (subengines & SubEngine_2DRenderer)
     {
-        //m_p2DRenderer = NEW gfx::Happy2DRenderer();
         m_pRenderer2D = NEW gfx::Renderer2D();
     }
 
@@ -266,7 +263,7 @@ void HappyEngine::updateLoop(float dTime)
     m_pGame->tick(dTime);
     PROFILER_END();
 
-    GUI_NEW->tick();
+    GUI->tick();
 
     CONSOLE->tick();
 
@@ -287,7 +284,7 @@ void HappyEngine::drawLoop()
     else
         m_pGame->drawGui();
 
-    //GUI_NEW->draw();
+    //GUI->draw();
 
     // draw profiler if needed
     if (m_bShowProfiler)
@@ -365,10 +362,6 @@ ct::ContentManager* HappyEngine::getContentManager() const
 net::NetworkManager* HappyEngine::getNetworkManager() const
 {
     return m_pNetworkManager;
-}
-gfx::Happy2DRenderer* HappyEngine::get2DRenderer() const
-{
-    return m_p2DRenderer;
 }
 gfx::Renderer2D* HappyEngine::getRenderer2D() const
 {

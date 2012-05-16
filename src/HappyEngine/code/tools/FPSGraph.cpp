@@ -49,7 +49,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 
     m_FpsHistory.reserve(300);
 
-    m_pCanvas2D = GUI_NEW->createCanvas();
+    m_pCanvas2D = GUI->createCanvas();
 }
 
 

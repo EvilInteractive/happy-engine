@@ -290,7 +290,7 @@ void Canvas2D::draw(const vec2& pos)
                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     Texture2D* tex = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
-    GUI_NEW->drawTexture2DToScreen(tex, pos);
+    GUI->drawTexture2DToScreen(tex, pos);
 
     if (m_AutoClear)
     {

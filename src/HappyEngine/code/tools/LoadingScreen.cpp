@@ -92,7 +92,7 @@ void LoadingScreen::draw()
     ////GUI->setColor(1.0f,0.1f,0.1f);
     ////GUI->drawText(message, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()),true);
 
-    GUI_NEW->drawTexture2DToScreen(m_pLogo, vec2(	GRAPHICS->getScreenWidth()/2.0f - m_pLogo->getWidth()/2.0f,
+    GUI->drawTexture2DToScreen(m_pLogo, vec2(	GRAPHICS->getScreenWidth()/2.0f - m_pLogo->getWidth()/2.0f,
                                         GRAPHICS->getScreenHeight()/2.0f - m_pLogo->getHeight()/2.0f));
 
     gui::Text loading("HAPPY ENGINE // LOADING", m_pFontLoading);

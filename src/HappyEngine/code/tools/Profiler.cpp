@@ -65,7 +65,7 @@ Profiler::Profiler(): m_CurrentNode(nullptr)
     //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
 
-    m_pCanvas2D = GUI_NEW->createCanvas();
+    m_pCanvas2D = GUI->createCanvas();
 }
 
 

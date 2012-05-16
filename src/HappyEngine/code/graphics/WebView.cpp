@@ -75,7 +75,7 @@ void WebView::draw(const vec2& pos)
         }
     }
 
-    GUI_NEW->drawTexture2DToScreen(m_pRenderTexture, pos);
+    GUI->drawTexture2DToScreen(m_pRenderTexture, pos);
 }
 
 void WebView::loadUrl(const std::string& url)

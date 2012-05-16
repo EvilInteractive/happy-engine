@@ -73,7 +73,7 @@ void MainGame::load()
 
     m_pFont = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
 
-    m_pCanvas = GUI_NEW->createCanvas();
+    m_pCanvas = GUI->createCanvas();
 }
 
 void MainGame::tick( float dTime )

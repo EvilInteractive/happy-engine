@@ -206,7 +206,7 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
     // Render on back buffer
     if (m_OwnsColorBuffer)
     {
-        /*GL::heBindFbo(0);
+        GL::heBindFbo(0);
         GL::heSetDepthRead(false);
         GL::heSetDepthWrite(false);
         GL::heBlendEnabled(true);
@@ -219,9 +219,9 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
         m_pQuadShader->setShaderVar(m_QuadShaderTexPos, m_pOutColorTexture);
 
         GL::heBindVao(m_pQuad->getVertexArraysID());
-        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);*/
+        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
 
-        GUI_NEW->drawTexture2DToScreen(m_pOutColorTexture, vec2(), true, vec2((float)m_pOutColorTexture->getWidth() * -1.0f, (float)m_pOutColorTexture->getHeight()));
+        //GUI->drawTexture2DToScreen(m_pOutColorTexture, vec2(), true, vec2((float)m_pOutColorTexture->getWidth() * -1.0f, (float)m_pOutColorTexture->getHeight()));
     }
 }
 
