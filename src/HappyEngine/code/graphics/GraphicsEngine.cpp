@@ -30,6 +30,7 @@
 
 #include "IniReader.h"
 #include "Renderer2D.h"
+#include "IniWriter.h"
 #include "CameraManager.h"
 
 #include "Picker.h"
@@ -81,7 +82,7 @@ void GraphicsEngine::init()
     {
         m_Settings.isFullscreen = reader.readBool(L"GFX", L"fullscreen", false);
         m_Settings.enableBloom = reader.readBool(L"GFX", L"bloom", false);
-        m_Settings.enableSSAO = reader.readBool(L"GFX", L"ssao", false);
+        m_Settings.enableAO = reader.readBool(L"GFX", L"ao", false);
         m_Settings.shadowMult = static_cast<byte>(clamp(reader.readInt(L"GFX", L"shadowQuality", 2), 0, 3));
         if (m_Settings.shadowMult == 0)
             m_Settings.enableShadows = false;
@@ -104,9 +105,10 @@ void GraphicsEngine::init()
     }
     else
     {
-        m_Settings.enableBloom = false;
-        m_Settings.enableSSAO = false;
-        m_Settings.shadowMult = 1;
+        m_Settings.isFullscreen = false;
+        m_Settings.enableBloom = true;
+        m_Settings.enableAO = false;
+        m_Settings.shadowMult = 2;
         if (m_Settings.shadowMult == 0)
             m_Settings.enableShadows = false;
         else
@@ -126,14 +128,29 @@ void GraphicsEngine::init()
 
         m_Settings.exposureSpeed = 1.0f;
     }
+    m_Settings.aoSettings.radius = 0.279710f;
+    m_Settings.aoSettings.maxDistance = 10.639419f;
 
-    m_Settings.ssaoSettings.radius = 0.2f;
-    m_Settings.ssaoSettings.intensity = 4.0f;
-    m_Settings.ssaoSettings.scale = 2.0f;
-    m_Settings.ssaoSettings.bias = 0.05f;
-    m_Settings.ssaoSettings.minIterations = 4;
-    m_Settings.ssaoSettings.maxIterations = 8;
-    m_Settings.ssaoSettings.passes = 1;
+    io::IniWriter writer;
+    writer.open("settings.ini");
+    writer.writeBool(L"GFX", L"fullscreen", m_Settings.isFullscreen);
+    writer.writeBool(L"GFX", L"bloom", m_Settings.enableBloom);
+    writer.writeBool(L"GFX", L"ao", m_Settings.enableAO);
+    writer.writeInt(L"GFX", L"shadowQuality", m_Settings.shadowMult);
+
+    writer.writeBool(L"GFX", L"deferred", m_Settings.enableDeferred);
+    writer.writeBool(L"GFX", L"hdr", m_Settings.enableHDR);
+    writer.writeBool(L"GFX", L"lighting", m_Settings.enableLighting);
+    writer.writeBool(L"GFX", L"specular", m_Settings.enableSpecular);
+    writer.writeBool(L"GFX", L"normalMap", m_Settings.enableNormalMap);
+    writer.writeBool(L"GFX", L"normalEdge", m_Settings.enableNormalEdgeDetect);
+    writer.writeBool(L"GFX", L"depthEdge", m_Settings.enableDepthEdgeDetect);
+    writer.writeBool(L"GFX", L"vignette", m_Settings.enableVignette);
+    writer.writeBool(L"GFX", L"fog", m_Settings.enableFog);
+
+    writer.writeFloat(L"GFX", L"exposureSpeed", m_Settings.exposureSpeed);
+    writer.close();
+    
 #pragma endregion
 
     m_pMainWindow = NEW sf::Window();
@@ -166,7 +183,7 @@ void GraphicsEngine::init()
     HE_INFO("Max render size: %d", maxRenderSize);
     HE_INFO("Max rect tex size: %d", maxRectSize);
 
-    HE_INFO("Max anisotropicfiltering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
+    HE_INFO("Max anisotropic filtering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
 
     setVSync(m_VSyncEnabled);
     setViewport(m_Viewport);
@@ -340,6 +357,11 @@ const DrawManager* GraphicsEngine::getDrawManager() const
 sf::Window* GraphicsEngine::getWindow() const
 {
     return m_pMainWindow;
+}
+
+const RenderSettings& GraphicsEngine::getRenderSettings() const
+{
+    return m_Settings;
 }
 
 } } //end namespace

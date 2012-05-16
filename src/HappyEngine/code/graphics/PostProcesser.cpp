@@ -71,8 +71,8 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     if (m_Settings.enableBloom)
         postDefines.insert("BLOOM");
 
-    if (m_Settings.enableSSAO)
-        postDefines.insert("SSAO");
+    if (m_Settings.enableAO)
+        postDefines.insert("AO");
 
     if (m_Settings.enableDepthEdgeDetect)
         postDefines.insert("DEPTH_EDGE");
@@ -102,9 +102,9 @@ void PostProcesser::setSettings( const RenderSettings& settings )
                                 shaderLayout, postDefines);
 
     m_PostShaderVars[PV_ColorMap]  = m_pPostShader->getShaderSamplerId("colorMap"); 
-    if (m_Settings.enableSSAO || m_Settings.enableNormalEdgeDetect)
+    if (m_Settings.enableNormalEdgeDetect)
         m_PostShaderVars[PV_NormalMap] = m_pPostShader->getShaderSamplerId("normalMap");
-    if (m_Settings.enableFog || m_Settings.enableSSAO || m_Settings.enableDepthEdgeDetect)
+    if (m_Settings.enableFog || m_Settings.enableAO || m_Settings.enableDepthEdgeDetect)
         m_PostShaderVars[PV_DepthMap] = m_pPostShader->getShaderSamplerId("depthMap");
     if (m_Settings.enableHDR)
         m_PostShaderVars[PV_LumMap] = m_pPostShader->getShaderSamplerId("lumMap");
@@ -118,16 +118,16 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     }
     if (m_pRandomNormals != nullptr)
         m_pRandomNormals->release();
-    if (m_Settings.enableSSAO)
+    if (m_Settings.enableAO)
     {
-        m_pRandomNormals = CONTENT->asyncLoadTexture("engine/random_normals.png");
+        m_pRandomNormals = CONTENT->asyncLoadTexture("engine/noise.png");
 
-        m_PostShaderVars[PV_SSAORandomNormals] = m_pPostShader->getShaderSamplerId("randomNormals");
-        m_PostShaderVars[PV_SSAORadius] = m_pPostShader->getShaderVarId("radius");
-        m_PostShaderVars[PV_SSAOIntensity] = m_pPostShader->getShaderVarId("intensity");
-        m_PostShaderVars[PV_SSAOScale] = m_pPostShader->getShaderVarId("scale");
-        m_PostShaderVars[PV_SSAOBias] = m_pPostShader->getShaderVarId("bias");
-        m_PostShaderVars[PV_ProjParams] = m_pPostShader->getShaderVarId("projParams");
+        m_PostShaderVars[PV_SSAORandomNormals] = m_pPostShader->getShaderSamplerId("noiseMap");
+        //m_PostShaderVars[PV_SSAORadius] = m_pPostShader->getShaderVarId("radius");
+        //m_PostShaderVars[PV_SSAOIntensity] = m_pPostShader->getShaderVarId("intensity");
+        //m_PostShaderVars[PV_SSAOScale] = m_pPostShader->getShaderVarId("scale");
+        //m_PostShaderVars[PV_SSAOBias] = m_pPostShader->getShaderVarId("bias");
+        //m_PostShaderVars[PV_ProjParams] = m_pPostShader->getShaderVarId("projParams");
         m_PostShaderVars[PV_ViewPortSize] = m_pPostShader->getShaderVarId("viewPortSize");
     }
 
@@ -185,24 +185,24 @@ void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap
     if (m_Settings.enableHDR)
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_LumMap], m_pAutoExposure->getLuminanceMap());
 
-    if (m_Settings.enableSSAO || m_Settings.enableNormalEdgeDetect)
+    if (m_Settings.enableNormalEdgeDetect)
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_NormalMap], pNormalMap); 
-    if (m_Settings.enableFog || m_Settings.enableSSAO || m_Settings.enableDepthEdgeDetect)
+    if (m_Settings.enableFog || m_Settings.enableAO || m_Settings.enableDepthEdgeDetect)
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_DepthMap], pDepthMap);
 
-    if (m_Settings.enableSSAO)
+    if (m_Settings.enableAO)
     {
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAORandomNormals], m_pRandomNormals);
-        m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAORadius], m_Settings.ssaoSettings.radius);
-        m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOIntensity], m_Settings.ssaoSettings.intensity);
-        m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOScale], m_Settings.ssaoSettings.scale);
-        m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOBias], m_Settings.ssaoSettings.bias);
+        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAORadius], m_Settings.ssaoSettings.radius);
+        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOIntensity], m_Settings.ssaoSettings.intensity);
+        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOScale], m_Settings.ssaoSettings.scale);
+        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOBias], m_Settings.ssaoSettings.bias);
 
-        m_pPostShader->setShaderVar(m_PostShaderVars[PV_ProjParams], vec4(
+        /*m_pPostShader->setShaderVar(m_PostShaderVars[PV_ProjParams], vec4(
             CAMERAMANAGER->getActiveCamera()->getProjection()(0, 0),
             CAMERAMANAGER->getActiveCamera()->getProjection()(1, 1),
             CAMERAMANAGER->getActiveCamera()->getProjection()(2, 2),
-            CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3)));
+            CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3)));*/
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_ViewPortSize], 
             vec2((float)GRAPHICS->getViewport().width, (float)GRAPHICS->getViewport().height));
     }

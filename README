@@ -1,1 +1,3 @@
-For linking information: look in the doc/linking directory at the screenshots, it should be something like that
+- Create an environment variable HAPPYENGINE_DIR and set it to the fullpath of the src folder of the happyengine (ex: C:/Programming/happy-engine/src)
+- Run src\3thParty\INSTALL.exe
+- Build engine

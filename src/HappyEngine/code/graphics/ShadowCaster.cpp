@@ -57,7 +57,7 @@ ShadowCaster::~ShadowCaster()
 
 void ShadowCaster::init(const RenderSettings& settings)
 {
-    m_ShadowSize = 512 * settings.shadowMult;
+    m_ShadowSize = static_cast<short>(512 * pow(2.0f, settings.shadowMult - 1.0f));
     HE_ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
     //////////////////////////////////////////////////////////////////////////
     ///                             Textures                               ///
@@ -71,8 +71,8 @@ void ShadowCaster::init(const RenderSettings& settings)
         m_pShadowTexture[i]->setName("ShadowCaster::m_pShadowTexture[i]");
         m_pShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 
             gfx::Texture2D::TextureFormat_RG16, 0, 
-            gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float,
-            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Anisotropic_16x, true, false );
+            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float,
+            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, true, false );
     }
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
@@ -272,6 +272,9 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
 
     GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));   
+    //GL::heBlendFunc(BlendFunc_Zero, BlendFunc_One);
+    //GL::heBlendEquation(BlendEquation_Add);
+    GL::heBlendEnabled(false);
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthWrite(true);
@@ -381,16 +384,16 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
 
-    if (m_ShowShadowDebug)
+    //if (m_ShowShadowDebug)
     {
-        /*if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
-            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), vec2(256, 256));
+        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
+            GUI_NEW->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), false, vec2(256, 256));
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
-            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), vec2(256, 256));
+            GUI_NEW->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), false, vec2(256, 256));
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
-            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), vec2(256, 256));
+            GUI_NEW->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), false, vec2(256, 256));
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
-            //GUI->drawTexture2D(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), vec2(256, 256));*/
+            GUI_NEW->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), false, vec2(256, 256));
     }
 }
 

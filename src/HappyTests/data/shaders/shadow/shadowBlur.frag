@@ -19,6 +19,12 @@
 //Created: 20/11/2011
 
 #version 150 core
+#pragma optionNV(fastmath on)
+#pragma optionNV(fastprecision on)
+#pragma optionNV(ifcvt none)
+#pragma optionNV(inline all)
+#pragma optionNV(strict on)
+#pragma optionNV(unroll all)
 
 noperspective in vec2 texCoord;
 

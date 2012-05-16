@@ -21,31 +21,16 @@
 #define _HE_SHADER_H_
 #pragma once
 
-#include <string>
-#include <map>
-#include <vector>
-#include <set>
 #include "ShaderLayout.h"
 
-#include "mat44.h"
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
-#include "Texture2D.h"
 #include "TextureCube.h"
-#include "HappyTypes.h"
-
-#include "OpenGL.h"
-
-#include "boost/shared_ptr.hpp"
-
-#include "HappyMemory.h"
 
 namespace he {
 namespace gfx {
 
 class UniformBuffer;
 class Shader;
+class Texture2D;
 
 class ShaderVariableBase
 {

@@ -27,15 +27,10 @@
 namespace he {
 namespace gfx {
 
-struct SSAOSettings
+struct AOSettings
 {
     float radius;
-    float intensity;
-    float scale;
-    float bias;
-    uint minIterations;
-    uint maxIterations;
-    uint passes;
+    float maxDistance;
 };  
 
 struct RenderSettings
@@ -45,7 +40,7 @@ public:
     bool enableDeferred;
 
     bool enableHDR;
-    bool enableSSAO;
+    bool enableAO;
     bool enableBloom;
     bool enableShadows;
     
@@ -58,7 +53,7 @@ public:
     bool enableVignette;
     bool enableFog;
 
-    SSAOSettings ssaoSettings;
+    AOSettings aoSettings;
 
     byte shadowMult;
 

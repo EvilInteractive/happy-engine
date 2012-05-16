@@ -55,7 +55,7 @@ inline void handleILError(const std::string& file)
     while (err != IL_NO_ERROR)
     {
         const char* errorstr(iluErrorString(err));
-        HE_ERROR("%s: %s", errorstr, file);
+        HE_ERROR("%s: %s", errorstr, file.c_str());
         err = ilGetError();
     }
 }

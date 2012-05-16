@@ -19,6 +19,12 @@
 //Created: 18/08/2011
 
 #version 150 core
+#pragma optionNV(fastmath on)
+//#pragma optionNV(fastprecision on)
+#pragma optionNV(ifcvt none)
+#pragma optionNV(inline all)
+#pragma optionNV(strict on)
+#pragma optionNV(unroll all)
 
 #include "packing/decode.frag"
 
@@ -140,14 +146,15 @@ void main()
     float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
 
     //Ramp
-    vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
+    //vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
 
     //HalfLambert
     float halfLambert = dotLightNormal * 0.5f + 0.5f;
     halfLambert *= halfLambert;
 
     //Light
-    vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f, 0.3f, 0.3f)) * dirLight.color.rgb * dirLight.color.a;
+    //vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f)) * dirLight.color.rgb * dirLight.color.a;
+    vec3 diffuseLight = pow(halfLambert, 0.3f) * dirLight.color.rgb * dirLight.color.a;
     vec3 ambientLight = (clamp(dot(vec3(0, 1, 0), normal), 0.0f, 1.0f) * ambLight.color.a + ambLight.color.a / 2.0f) * ambLight.color.rgb;
     
     //Shadow

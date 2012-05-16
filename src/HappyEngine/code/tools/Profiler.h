@@ -22,8 +22,6 @@
 #define _HE_PROFILER_H_
 #pragma once
 
-#include <map>
-#include <deque>
 #include "Font.h"
 
 namespace he {
