@@ -49,13 +49,14 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_MsgHistory(0),
                         m_CmdHistoryPos(0),
                         m_pScrollBar(nullptr),
-                        m_Help(nullptr)
+                        m_Help(nullptr),
+                        m_Canvas2D(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
-    m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.8f,0.2f);
-    m_MsgColors[CMSG_TYPE_ERROR] = Color(1.0f,0.3f,0.3f);
-    m_MsgColors[CMSG_TYPE_ENGINE] = Color(0.2f,1.0f,0.2f);
-    m_MsgColors[CMSG_TYPE_COMMAND] = Color(0.2f,0.6f,1.0f);
+    m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
+    m_MsgColors[CMSG_TYPE_ERROR] = Color(1.0f,0.6f,0.6f);
+    m_MsgColors[CMSG_TYPE_ENGINE] = Color(0.6f,1.0f,0.6f);
+    m_MsgColors[CMSG_TYPE_COMMAND] = Color(0.6f,0.9f,1.0f);
 
     m_HelpCommand = "type 'help' to see available commands...";
 
@@ -80,7 +81,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
 }
 void Console::load()
 {
-    //GUI->createLayer("console", 0);
+    m_Canvas2D = GUI->createCanvas();
+
     m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
 
     m_Help = new gui::Text(m_pFont);
@@ -93,7 +95,8 @@ void Console::load()
         RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
         "Enter command...", 10, "Ubuntu-Medium.ttf");
 
-    m_pTextBox->setColors(	Color(0.3f,0.3f,0.3f,0.9f),
+    m_pTextBox->setColors(
+        Color(0.3f,0.3f,0.3f,0.9f),
         Color(1.0f,1.0f,1.0f),
         Color(0.4f,0.4f,0.4f),
         Color(0.19f,0.19f,0.19f));
@@ -123,6 +126,7 @@ Console::~Console()
     delete m_pTextBox;
     delete m_pScrollBar;
     delete m_Help;
+    delete m_Canvas2D;
 }
 
 void Console::processCommand(const std::string& command)
@@ -322,19 +326,13 @@ void Console::draw()
 {
     if (m_bOpen)
     {
-        //GUI->setLayer("console");
+        m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
+        m_Canvas2D->fillRect(vec2(0,0), vec2(vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
 
-        //GUI->setAntiAliasing(false);
+        m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
+        m_Canvas2D->strokeRect(vec2(0,0), vec2(vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
 
-        //GUI->setColor(0.3f,0.3f,0.3f,0.9f);
-        //GUI->fillShape2D(gui::Rectangle2D(vec2(0,0),
-//                                        vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)), true);
-
-        //GUI->setColor(0.19f,0.19f,0.19f);
-        //GUI->drawShape2D(gui::Rectangle2D(vec2(0,0),
- //                                       vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)), true);
-
-        m_pTextBox->draw();
+        m_pTextBox->draw(m_Canvas2D);
 
         std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
 
@@ -377,7 +375,7 @@ void Console::draw()
         uint k(0);
         std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
         {
-            //GUI->setColor(m_MsgColors[p.first]);
+            m_Canvas2D->setFillColor(m_MsgColors[p.first]);
 
             text.clear();
             text.addLine(p.second);
@@ -386,11 +384,15 @@ void Console::draw()
  //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
 //                            190.0f - (k * m_pFont->getLineSpacing())));
 
+            m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
+
             ++k;
         });
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
-            m_pScrollBar->draw();
+            m_pScrollBar->draw(m_Canvas2D);
+
+        m_Canvas2D->draw();
     }
 }
 

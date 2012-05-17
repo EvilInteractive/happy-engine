@@ -43,8 +43,8 @@ Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :
 		vec2(size.x - 2, heightScrollbar));
 
 	m_Colors["background"] = Color(0.6f,0.6f,0.6f);
-	m_Colors["scrollbar"] = Color(0.5f,0.5f,0.5f);
-	m_Colors["edge"] = Color(0.1f,0.1f,0.1f);
+	m_Colors["scrollbar"] = Color(0.4f,0.4f,0.4f);
+	m_Colors["edge"] = Color(0.2f,0.2f,0.2f);
 }
 
 Scrollbar::~Scrollbar()
@@ -95,22 +95,21 @@ void Scrollbar::tick()
 		m_BarPos = 1.0f;
 }
 
-void Scrollbar::draw()
+void Scrollbar::draw(gfx::Canvas2D* canvas)
 {
-	//GUI->setAntiAliasing(false);
+	canvas->setFillColor(m_Colors["background"]);
+	canvas->fillRect(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y));
 
-	//GUI->setColor(m_Colors["background"]);
-	//GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)), true);
-	//GUI->setColor(m_Colors["edge"]);
-	//GUI->drawShape2D(gui::Rectangle2D(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y)), true);
+    canvas->setStrokeColor(m_Colors["edge"]);
+    canvas->strokeRect(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y));
 
-	//GUI->setColor(m_Colors["scrollbar"]);
-	//GUI->fillShape2D(gui::Rectangle2D(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
-									  //vec2(m_Size.x - 2, m_ScrollbarHeight)));
+    canvas->setFillColor(m_Colors["scrollbar"]);
+	canvas->fillRect(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
+					vec2(m_Size.x - 2, m_ScrollbarHeight));
 
-	//GUI->setColor(m_Colors["edge"]);
-	//GUI->drawShape2D(gui::Rectangle2D(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
-									  //vec2(m_Size.x - 2, m_ScrollbarHeight)));
+    canvas->setStrokeColor(m_Colors["edge"]);
+    canvas->strokeRect(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
+						vec2(m_Size.x - 2, m_ScrollbarHeight));
 }
 
 /* SETTERS */

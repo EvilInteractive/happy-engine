@@ -57,9 +57,10 @@ public:
     /* GETTERS */
     uint getPixelHeight() const;
     uint getLineSpacing() const;
+    uint getLineHeight() const;
     float getStringWidth(const std::string& string) const;
 
-    int getKerning(char first, char second);
+    int getKerning(char first, char second) const;
 
     Texture2D* getTextureAtlas() const;
     const CharData* getCharTextureData(byte chr) const;
@@ -78,6 +79,7 @@ private:
     FT_Face m_Face;
 
     ushort m_CharSize;
+    uint m_LineHeight;
 
     bool m_Cached;
     bool m_ExtendedChars;

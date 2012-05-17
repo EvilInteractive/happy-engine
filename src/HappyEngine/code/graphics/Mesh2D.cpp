@@ -66,6 +66,13 @@ void Mesh2D::createBuffer(bool outline)
             HE_ERROR("Failed to triangulate Mesh2D!");
         }
     }
+    else
+    {
+        if (m_pPolygon->outline() == false)
+        {
+            HE_ERROR("Failed to outline Mesh2D!");
+        }
+    }
 
     GL::heBindVao(m_VAOID);
 
@@ -83,22 +90,11 @@ void Mesh2D::createBuffer(bool outline)
     indices[i] = m_pPolygon->getIndices()[i];
     }*/
 
-    std::vector<uint> indices;
-
-    if (outline)
-    {
-        for (uint i(0); i < m_pPolygon->getVertices().size(); ++i)
-        {
-            indices.push_back(i);
-        }
-    }
-
     glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
     glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * 2 * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint),
-        outline ? &indices[0] : &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint), &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);

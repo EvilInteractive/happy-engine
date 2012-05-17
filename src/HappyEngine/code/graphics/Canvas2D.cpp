@@ -314,29 +314,32 @@ void Canvas2D::draw(const vec2& pos)
     }
 }
 
-void Canvas2D::strokeRect(const vec2& /*pos*/, const vec2& /*size*/)
+void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 {
-    //GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    //GL::heBlendEquation(BlendEquation_Add);
-    //GL::heBlendEnabled(true);
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEquation(BlendEquation_Add);
+    GL::heBlendEnabled(true);
 
-    //GL::heBindFbo(m_pBufferData->fbufferID);
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
-    //m_pBufferMesh->clear();
-    //m_pBufferMesh->addVertex(pos);
-    //m_pBufferMesh->addVertex(pos + vec2(size.x, 0));//size.y / 20));
-    //m_pBufferMesh->addVertex(pos + size);// - vec2(20,50));
-    //m_pBufferMesh->addVertex(pos + vec2(0, size.y));
-    //m_pBufferMesh->createBuffer(true);
+    GL::heBindFbo(m_pBufferData->fbufferID);
 
-    //m_pColorEffect->begin();
-    //m_pColorEffect->setColor(m_StrokeColor);
-    //mat44 w = getTransformation();
-    //m_pColorEffect->setWorldMatrix(m_OrthographicMatrix * w);
-    ////m_pColorEffect->setDepth(20.0f);
+    m_pBufferMesh->clear();
+    m_pBufferMesh->addVertex(pos);
+    m_pBufferMesh->addVertex(pos + vec2(size.x, 0));
+    m_pBufferMesh->addVertex(pos + size);
+    m_pBufferMesh->addVertex(pos + vec2(0, size.y));
+    m_pBufferMesh->createBuffer(true);
 
-    //GL::heBindVao(m_pBufferMesh->getBufferID());
-    //glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
+    m_pColorEffect->begin();
+    m_pColorEffect->setColor(m_StrokeColor);
+    m_pColorEffect->setWorldMatrix(m_OrthographicMatrix * getTransformation());
+    m_pColorEffect->setDepth(getDepth());
+
+    GL::heBindVao(m_pBufferMesh->getBufferID());
+    glDrawElements(GL_LINE_LOOP, (GLsizei)m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
 }
 
 void Canvas2D::fillRect(const vec2& pos, const vec2& size)
@@ -344,6 +347,10 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(true);
+
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
     GL::heBindFbo(m_pBufferData->fbufferID);
 
@@ -420,7 +427,6 @@ void Canvas2D::stroke()
 
 void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 {
-
     PROFILER_BEGIN("Canvas2D::fillText");
 
     vec2 linePos = pos;
@@ -433,15 +439,59 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
         m_pFontEffect->setFontColor(m_FillColor);
         m_pFontEffect->setDepth(getDepth());
 
-        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
         GL::heBlendEnabled(true);
+
+        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+        GL::heSetDepthRead(true);
+        GL::heSetDepthWrite(true);
 
         GL::heBindFbo(m_pBufferData->fbufferID);
         GL::heBindVao(m_pTextureQuad->getVertexArraysID());
 
+        bool hasBounds(txt.hasBounds());
+
         for (uint i(0); i < txt.getText().size(); ++i)
         {
+            linePos.y = pos.y + (txt.getFont()->getLineSpacing() * i);
+
+            // If there is set a boundingbox for text
+            if (hasBounds)
+            {
+                vec2 offset;
+
+                gui::Text::HAlignment h = txt.getHorizontalAlignment();
+
+                switch (h)
+                {
+                    case gui::Text::HAlignment_Left:
+                        break;
+                    case gui::Text::HAlignment_Center:
+                        offset.x += (txt.getFont()->getStringWidth(txt.getText()[i]) / 2);
+                        break;
+                    case gui::Text::HAlignment_Right:
+                        offset.x += (txt.getBounds().x - txt.getFont()->getStringWidth(txt.getText()[i]));
+                        break;
+                }
+
+                gui::Text::VAlignment v = txt.getVerticalAlignment();
+
+                switch (v)
+                {
+                    case gui::Text::VAlignment_Top:
+                        break;
+                    case gui::Text::VAlignment_Center:
+                        offset.y += ((txt.getFont()->getLineSpacing() * (txt.getText().size() - 1)) / 2);
+                        break;
+                    case gui::Text::VAlignment_Bottom:
+                        offset.y += (txt.getBounds().y - (txt.getFont()->getLineSpacing() * txt.getText().size()));
+                        break;
+                }
+
+                linePos += offset;
+            }
+
             vec2 glyphPos = linePos;
 
             for (uint i2(0); i2 < txt.getText()[i].size(); ++i2)
@@ -483,8 +533,6 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
                 //restore();
             }
-
-            linePos.y += txt.getFont()->getLineSpacing();
         }
     }
     else
@@ -496,6 +544,10 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
         GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
         GL::heBlendEnabled(true);
+
+        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+        GL::heSetDepthRead(true);
+        GL::heSetDepthWrite(true);
 
         GL::heBindFbo(m_pBufferData->fbufferID);
         GL::heBindVao(m_pTextureQuad->getVertexArraysID());
@@ -578,6 +630,10 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(true);
+
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
     GL::heBindFbo(m_pBufferData->fbufferID);
 

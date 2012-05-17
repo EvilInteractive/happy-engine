@@ -30,7 +30,9 @@ Text::Text(	gfx::Font* font,
 			OverFlowType overflow) :	m_pFont(font),
 										m_OverFlowType(overflow),
 										m_HAlignment(HAlignment_Left),
-										m_VAlignment(VAlignment_Top)
+										m_VAlignment(VAlignment_Top),
+                                        m_Bounds(),
+                                        m_HasBounds(false)
 {
 }
 Text::Text(	const std::string& text,
@@ -38,14 +40,18 @@ Text::Text(	const std::string& text,
 			OverFlowType overflow) :	m_pFont(font),
 										m_OverFlowType(overflow),
 										m_HAlignment(HAlignment_Left),
-										m_VAlignment(VAlignment_Top)
+										m_VAlignment(VAlignment_Top),
+                                        m_Bounds(),
+                                        m_HasBounds(false)
 {
 	addLine(text);
 }
 
 Text::Text(OverFlowType overflow) :	m_OverFlowType(overflow),
 									m_HAlignment(HAlignment_Left),
-									m_VAlignment(VAlignment_Top)
+									m_VAlignment(VAlignment_Top),
+                                    m_Bounds(),
+                                        m_HasBounds(false)
 {
 	m_pFont = CONTENT->getDefaultFont();
 }
@@ -53,7 +59,9 @@ Text::Text(OverFlowType overflow) :	m_OverFlowType(overflow),
 Text::Text(	const std::string& text,
 			OverFlowType overflow) :	m_OverFlowType(overflow),
 										m_HAlignment(HAlignment_Left),
-										m_VAlignment(VAlignment_Top)
+										m_VAlignment(VAlignment_Top),
+                                        m_Bounds(),
+                                        m_HasBounds(false)
 {
 	addLine(text);
 	m_pFont = CONTENT->getDefaultFont();
@@ -93,6 +101,19 @@ void Text::setVerticalAlignment(VAlignment alignment)
 	m_VAlignment = alignment;
 }
 
+void Text::setBounds(const vec2& bounds)
+{
+    if (bounds != vec2())
+    {
+        m_Bounds = bounds;
+        m_HasBounds = true;
+    }
+    else
+    {
+        m_HasBounds = false;
+    }
+}
+
 /* GETTERS */
 const std::string& Text::getLine(uint lineNumber) const
 {
@@ -107,6 +128,11 @@ const std::vector<std::string>& Text::getText() const
 bool Text::isEmpty() const
 {
 	return m_Text.empty();
+}
+
+bool Text::hasBounds() const
+{
+    return m_HasBounds;
 }
 
 Text::OverFlowType Text::getOverFlowType() const
@@ -127,6 +153,11 @@ Text::VAlignment Text::getVerticalAlignment() const
 gfx::Font* Text::getFont() const
 {
 	return m_pFont;
+}
+
+const vec2& Text::getBounds() const
+{
+    return m_Bounds;
 }
 
 } } //end namespace

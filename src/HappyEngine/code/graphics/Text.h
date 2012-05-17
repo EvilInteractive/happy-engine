@@ -72,12 +72,14 @@ public:
     void setLine(const std::string& string, uint lineNumber);
     void setHorizontalAlignment(HAlignment alignment);
     void setVerticalAlignment(VAlignment alignment);
+    void setBounds(const vec2& bounds = vec2());
 
     /* GETTERS */
     const std::string& getLine(uint lineNumber) const;
     const std::vector<std::string>& getText() const;
 
     bool isEmpty() const;
+    bool hasBounds() const;
 
     OverFlowType getOverFlowType() const;
 
@@ -85,6 +87,8 @@ public:
     VAlignment getVerticalAlignment() const;
 
     gfx::Font* getFont() const;
+
+    const vec2& getBounds() const;
 
 private:
 
@@ -97,6 +101,9 @@ private:
     VAlignment m_VAlignment;
 
     gfx::Font* m_pFont;
+
+    vec2 m_Bounds;
+    bool m_HasBounds;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Text(const Text&);

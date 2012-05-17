@@ -59,10 +59,27 @@ void Polygon::addPoint(const vec2& p)
     m_Indices.clear();
 }
 
+bool Polygon::outline()
+{
+    if (m_Vertices.size() < 3)
+        return false;
+
+    m_Indices.clear();
+
+    for (uint i(0); i < m_Vertices.size(); ++i)
+    {
+        m_Indices.push_back(i);
+    }
+
+    return true;
+}
+
 bool Polygon::triangulate()
 {
     if (m_Vertices.size() < 3)
         return false;
+
+    m_Indices.clear();
 
     bool b(Triangulator::triangulatePolygon(m_Vertices, m_Indices));
 
