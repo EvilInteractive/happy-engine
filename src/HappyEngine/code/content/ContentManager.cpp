@@ -83,7 +83,7 @@ ContentManager::~ContentManager()
     if (m_FullscreenQuad != nullptr)
         m_FullscreenQuad->release();
 
-    m_pDefaultFont->release();
+    //m_pDefaultFont->release();
 }
 
 
@@ -168,10 +168,12 @@ gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size)
 
 gfx::Font* ContentManager::getDefaultFont(ushort size)
 {
-    /*if (m_pDefaultFont == nullptr)
-    {*/
-    return m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
-    //}
+    if (m_pDefaultFont == nullptr)
+    {
+        m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
+    }
+
+    return m_pDefaultFont;
 }
 
 //////////////////////////////////////////////////////////////////////////

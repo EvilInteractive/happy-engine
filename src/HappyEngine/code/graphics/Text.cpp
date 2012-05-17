@@ -47,24 +47,14 @@ Text::Text(	const std::string& text,
 	addLine(text);
 }
 
-Text::Text(OverFlowType overflow) :	m_OverFlowType(overflow),
-									m_HAlignment(HAlignment_Left),
-									m_VAlignment(VAlignment_Top),
-                                    m_Bounds(),
-                                        m_HasBounds(false)
+Text::Text() :	m_OverFlowType(OverFlowType_Clip),
+				m_HAlignment(HAlignment_Left),
+				m_VAlignment(VAlignment_Top),
+                m_Bounds(),
+                m_HasBounds(false),
+                m_pFont(nullptr)
 {
-	m_pFont = CONTENT->getDefaultFont();
-}
 
-Text::Text(	const std::string& text,
-			OverFlowType overflow) :	m_OverFlowType(overflow),
-										m_HAlignment(HAlignment_Left),
-										m_VAlignment(VAlignment_Top),
-                                        m_Bounds(),
-                                        m_HasBounds(false)
-{
-	addLine(text);
-	m_pFont = CONTENT->getDefaultFont();
 }
 
 Text::~Text()

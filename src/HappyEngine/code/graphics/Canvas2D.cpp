@@ -177,7 +177,7 @@ void Canvas2D::cleanup()
     m_pTextureQuad->release();
 }
 
-float Canvas2D::getDepth()
+float Canvas2D::getNewDepth()
 {
     m_PixelDepth -= 0.01f;
 
@@ -336,7 +336,7 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
     m_pColorEffect->begin();
     m_pColorEffect->setColor(m_StrokeColor);
     m_pColorEffect->setWorldMatrix(m_OrthographicMatrix * getTransformation());
-    m_pColorEffect->setDepth(getDepth());
+    m_pColorEffect->setDepth(getNewDepth());
 
     GL::heBindVao(m_pBufferMesh->getBufferID());
     glDrawElements(GL_LINE_LOOP, (GLsizei)m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
@@ -364,7 +364,7 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     m_pColorEffect->begin();
     m_pColorEffect->setColor(m_FillColor);
     m_pColorEffect->setWorldMatrix(m_OrthographicMatrix * getTransformation());
-    m_pColorEffect->setDepth(getDepth());
+    m_pColorEffect->setDepth(getNewDepth());
 
     GL::heBindVao(m_pBufferMesh->getBufferID());
     glDrawElements(GL_TRIANGLES, (GLsizei)m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
@@ -437,7 +437,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
         Texture2D* tex2D = txt.getFont()->getTextureAtlas();
         m_pFontEffect->setDiffuseMap(tex2D);
         m_pFontEffect->setFontColor(m_FillColor);
-        m_pFontEffect->setDepth(getDepth());
+        m_pFontEffect->setDepth(getNewDepth());
 
         GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
@@ -539,7 +539,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     {
         m_pFontEffect->begin();
         m_pFontEffect->setFontColor(m_FillColor);
-        m_pFontEffect->setDepth(getDepth());
+        m_pFontEffect->setDepth(getNewDepth());
 
         GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
@@ -625,7 +625,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     m_pTextureEffect->setAlpha(m_GlobalAlpha);
     m_pTextureEffect->setTCOffset(tcOffset);
     m_pTextureEffect->setTCScale(tcScale);
-    m_pTextureEffect->setDepth(getDepth());
+    m_pTextureEffect->setDepth(getNewDepth());
 
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
