@@ -83,7 +83,7 @@ void Console::load()
 {
     m_Canvas2D = GUI->createCanvas();
 
-    m_pFont = CONTENT->loadFont("Ubuntu-Medium.ttf", 10);
+    m_pFont = CONTENT->loadFont("Inconsolata.otf", 10);
 
     m_Help = new gui::Text(m_pFont);
     m_Help->addLine("******** HELP ********");
@@ -93,12 +93,12 @@ void Console::load()
 
     m_pTextBox = NEW gui::TextBox(
         RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
-        "Enter command...", 10, "Ubuntu-Medium.ttf");
+        "Enter command...", 10, "Inconsolata.otf");
 
     m_pTextBox->setColors(
         Color(0.3f,0.3f,0.3f,0.9f),
         Color(1.0f,1.0f,1.0f),
-        Color(0.4f,0.4f,0.4f),
+        Color(0.8f,0.8f,0.8f),
         Color(0.19f,0.19f,0.19f));
 
     m_CmdHistory.push_back("");

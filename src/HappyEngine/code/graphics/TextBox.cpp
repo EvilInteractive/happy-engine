@@ -43,7 +43,10 @@ TextBox::TextBox(RectF posSize,
 													m_CursorPos(0),
 													m_Cursor("|"),
 													m_bEntered(false),
-													m_bKeyDown(false)
+													m_bKeyDown(false),
+                                                    m_BackspaceDown(false),
+                                                    m_BackSpaceTimer(0),
+                                                    m_BackSpaceDelayTimer(0)
 {
 	m_pFont = CONTENT->loadFont(customFont, fontSize);
 
@@ -100,15 +103,20 @@ void TextBox::tick()
 			}
 		}
 		// check for backspace
-		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Backspace))
+		else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Backspace))
 		{
-			// remove char before cursor
-			if (m_String.size() > 0)
-			{
-				m_String.erase(m_CursorPos - 1, 1);
+            if (m_BackspaceDown == false)
+            {
+			    // remove char before cursor
+			    if (m_String.size() > 0)
+			    {
+				    m_String.erase(m_CursorPos - 1, 1);
 
-				--m_CursorPos;
-			}
+				    --m_CursorPos;
+			    }
+
+                m_BackspaceDown = true;
+            }
 		}
 		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Delete))
 		{
@@ -128,6 +136,22 @@ void TextBox::tick()
 			});
 		}
 
+        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_Backspace))
+        {
+            m_BackspaceDown = false;
+            m_BackSpaceTimer = (uint)(m_BlinkTimer.elapsed() * 10);
+            m_BackSpaceDelayTimer = 0;
+        }
+        else if ((uint)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer > 0 && m_BackSpaceDelayTimer >= 5)
+        {
+            m_BackSpaceTimer = (uint)(m_BlinkTimer.elapsed() * 10);
+            m_BackspaceDown = false;
+        }
+        else if (m_BackSpaceDelayTimer < 5)
+        {
+            m_BackSpaceDelayTimer = (uint)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
+        }
+
 		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return)/* ||
 			CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2)*/)
 		{
@@ -146,7 +170,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 	text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 	text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
-	RectF textRect(m_Rect.x + 4, m_Rect.y + 4, m_Rect.width - 8, m_Rect.height - 8);
+	RectF textRect(m_Rect.x + 4, m_Rect.y + 3, m_Rect.width - 8, m_Rect.height - 8);
 
 	if (m_bActive)
 	{
@@ -200,7 +224,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
 				text.clear();
 				text.addLine(m_Cursor);
-                canvas->fillText(text, vec2(cursorRect.x, cursorRect.y));
+                canvas->fillText(text, vec2(cursorRect.x, cursorRect.y - 1));
 			}
 		}
 	}
