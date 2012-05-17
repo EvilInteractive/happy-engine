@@ -59,9 +59,7 @@ public:
     Text(	const std::string& text,
             gfx::Font* font,
             OverFlowType overflow = OverFlowType_Clip);
-    Text(	OverFlowType overflow = OverFlowType_Clip);
-    Text(	const std::string& text,
-            OverFlowType overflow = OverFlowType_Clip);
+    Text();
     virtual ~Text();
 
     /* GENERAL */
