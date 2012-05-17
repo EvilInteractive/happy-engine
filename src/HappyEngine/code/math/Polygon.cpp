@@ -120,18 +120,18 @@ float Polygon::getArea() const
 
 uint Polygon::getVertexCount() const
 {
-    return m_Vertices.size();
+    return (uint)m_Vertices.size();
 }
 
 uint Polygon::getIndexCount() const
 {
-    return m_Indices.size();
+    return (uint)m_Indices.size();
 }
 
 uint Polygon::getTriangleCount() const
 {
     if (isTriangulated())
-        return m_Indices.size() / 3;
+        return (uint)m_Indices.size() / 3;
     else
         return 0;
 }

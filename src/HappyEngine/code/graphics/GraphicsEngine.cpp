@@ -29,8 +29,8 @@
 #include "HappyNew.h"
 
 #include "IniReader.h"
+#include "Renderer2D.h"
 #include "IniWriter.h"
-#include "Happy2DRenderer.h"
 #include "CameraManager.h"
 
 #include "Picker.h"

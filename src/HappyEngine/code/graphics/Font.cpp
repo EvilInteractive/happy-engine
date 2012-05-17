@@ -15,9 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 12/08/2011
-//Extended:Sebastiaan Sprengers
+//Author:  Sebastiaan Sprengers
+//Created: 07/05/2012
 
 #include "HappyPCH.h" 
 
@@ -27,24 +26,176 @@
 #include "Texture2D.h"
 
 #include FT_GLYPH_H
+#include FT_BITMAP_H
 
 namespace he {
 namespace gfx {
 
-Font::Font(FT_Library lib, FT_Face face, ushort size) :   m_FTLibrary(lib),
-                                                          m_Face(face),
-                                                          m_CharSize(size)
+Font::Font() :  m_FTLibrary(nullptr),
+                m_Face(nullptr),
+                m_CharSize(0),
+                m_ExtendedChars(false),
+                m_Cached(false),
+                m_Init(false)
 {
-
+    
 }
 
 Font::~Font()
 {
-    FT_Done_Face(m_Face);
+    /*if (m_Face != 0)
+    {
+        FT_Done_Face(m_Face);
+    }*/
+
+    m_TextureAtlas->release();
 }
 
-void Font::renderText(const std::string& text, const Color& color, Texture2D* tex)
+/* GENERAL */
+void Font::init(FT_Library lib, FT_Face face, ushort size)
 {
+    m_FTLibrary = lib;
+    m_Face = face;
+    m_CharSize = size;
+
+    ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
+    m_TextureAtlas = ResourceFactory<Texture2D>::getInstance()->get(hnd);
+
+    m_Init = true;
+
+    /* Precache (create texture atlas) automatically.
+    No reason not to, huge performance improvement */
+    preCache();
+}
+
+void Font::preCache(bool extendedCharacters)
+{
+    HE_ASSERT(m_Init, "Init Font before using!");
+
+    if (m_Cached)
+        return;
+
+    m_ExtendedChars = extendedCharacters;
+
+    // normal chars -> ABC def 012 %=- (first 127 ASCII) or with extended chars -> ιθη§ (256 ASCII)
+    byte nrChars = (extendedCharacters == true) ? (byte)255 : (byte)128;
+    vec2 texSize;
+
+    std::vector<byte*> glyphBuffers;
+    std::vector<vec2> glyphSizes;
+    std::vector<float> glyphTop;
+    //std::vector<int> glyphPitch;
+
+    glyphBuffers.resize(nrChars);
+    glyphSizes.resize(nrChars);
+    glyphTop.resize(nrChars);
+    //glyphPitch.resize(nrChars);
+    m_CharTextureData.resize(nrChars);
+
+    int maxHeight(0), maxTop(0);
+    int width(0), height(0);
+
+    // render each char to buffers
+    // note: first 32 chars are not significant
+    for (byte chr(32); chr < nrChars; ++chr)
+    {
+        // load character glyphs
+        FT_ULong c(chr);
+        FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
+
+        // render glyph
+        FT_Glyph glyph;
+        FT_Get_Glyph(m_Face->glyph, &glyph);
+
+        // normal -> 256 gray -> AA
+        FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
+        FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
+
+        if (bmpGlyph->bitmap.rows > maxHeight)
+            maxHeight = bmpGlyph->bitmap.rows;
+
+        if (bmpGlyph->top > maxTop)
+            maxTop = bmpGlyph->top;
+
+        width = bmpGlyph->bitmap.width;
+        height = bmpGlyph->bitmap.rows;
+        //glyphPitch[chr] = bmpGlyph->bitmap.pitch;
+
+        texSize.x += (float)width;
+        glyphSizes[chr] = vec2((float)width, (float)height);
+
+        // 1 / 64
+        m_CharTextureData[chr].advance = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); 
+        glyphTop[chr] = (float)(height - bmpGlyph->top);
+
+        glyphBuffers[chr] = NEW byte[width * height];
+
+        for (int h(0); h < height; ++h)
+        {
+            for (int w(0); w < width; ++w)
+            {
+                glyphBuffers[chr][(w + (h * width))] =
+                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - h - 1))];
+            }
+        }
+
+        FT_Done_Glyph(glyph);
+    }
+
+    texSize.x = (float)nextP2((int)texSize.x);
+    texSize.y = (float)nextP2(maxHeight) * 2;
+
+    GL::heBindTexture2D(m_TextureAtlas->getID());
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    m_TextureAtlas->setData((uint)texSize.x, (uint)texSize.y, 
+        gfx::Texture2D::TextureFormat_R8, 0, 
+        gfx::Texture2D::BufferLayout_R, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
+
+    vec2 penPos;
+
+    /*byte* texBuffer = NEW byte[(uint)texSize.x * (uint)texSize.y];
+
+    for (uint i(0); i < (uint)texSize.x * (uint)texSize.y; ++i)
+        texBuffer[i] = 0;*/
+
+    for (byte i(32); i < nrChars; ++i)
+    {
+        penPos.y = texSize.y - maxHeight - glyphTop[i];//(maxTop - glyphTop[i]);
+
+        // MANUAL COPYING INTO 1 BUFFER
+        /*for (int i2 = 0; i2 < (int)glyphSizes[i].y; ++i2)
+        {
+            memcpy( texBuffer + (((int)penPos.y + i2) * (int)texSize.x + (int)penPos.x) * sizeof(byte), 
+                    glyphBuffers[i] + (i2 * glyphPitch[i]) * sizeof(byte), (int)glyphSizes[i].x * sizeof(byte));
+        }*/
+
+        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RED, GL_UNSIGNED_BYTE, glyphBuffers[i]);
+
+        m_CharTextureData[i].textureRegion = RectF(penPos.x, 0, glyphSizes[i].x, texSize.y);
+        //m_CharTextureData[i].advance.y = penPos.y;
+
+        penPos.x += glyphSizes[i].x;
+    }
+
+    //delete texBuffer;
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+    std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
+    {
+        delete pBuffer;
+        pBuffer = nullptr;
+    });
+
+    m_Cached = true;
+}
+
+void Font::renderText(const std::string& text, Texture2D* tex)
+{
+    HE_ASSERT(m_Init, "Init Font before using!");
+
     vec2 texSize;
 
     std::vector<byte*> glyphBuffers;
@@ -56,6 +207,7 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
     glyphAdvance.resize(text.size());
 
     int maxHeight(0);
+    int width(0), height(0);
 
     for (uint i(0); i < text.size(); ++i)
     {
@@ -66,51 +218,54 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
         // render glyph
         FT_Glyph glyph;
         FT_Get_Glyph(m_Face->glyph, &glyph);
-        //FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL); // normal -> 256 gray -> AA
+
+        // normal -> 256 gray -> AA
         FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
         FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
 
         if (bmpGlyph->bitmap.rows > maxHeight)
             maxHeight = bmpGlyph->bitmap.rows;
 
-        int width = nextP2(bmpGlyph->bitmap.width);
-        int height = nextP2(bmpGlyph->bitmap.rows);
+        width = bmpGlyph->bitmap.width;
+        height = bmpGlyph->bitmap.rows;
 
-        texSize += vec2((float)width, (float)height);
+        texSize.x += (float)width;
         glyphSizes[i] = vec2((float)width, (float)height);
 
-        glyphAdvance[i] = vec2(glyph->advance.x >> 16, bmpGlyph->top); // 1 / 64
+        glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)(height - bmpGlyph->top)); // 1 / 64
 
-        glyphBuffers[i] = NEW byte[2 * width * height];
+        glyphBuffers[i] = NEW byte[width * height];
 
-        for (int j(0); j < height; ++j)
+        for (int h(0); h < height; ++h)
         {
-            for (int h(0); h < width; ++h)
+            for (int w(0); w < width; ++w)
             {
-                 glyphBuffers[i][2 * (h + (j * width))] = glyphBuffers[i][2 * (h + (j * width)) + 1] =
-                    (h >= bmpGlyph->bitmap.width || j >= bmpGlyph->bitmap.rows) ?
-                    0 : bmpGlyph->bitmap.buffer[h + (bmpGlyph->bitmap.width * j)];
+                 glyphBuffers[i][(w + (h * width))] =
+                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - 1 - h))];
             }
         }
 
         FT_Done_Glyph(glyph);
     }
 
+    texSize.x = (float)nextP2((int)texSize.x) * 2;
+    texSize.y = (float)nextP2(maxHeight) * 2;
+
     GL::heBindTexture2D(tex->getID());
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    tex->setData((uint)texSize.x * 2, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_RG8, 0, 
-        gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
+    tex->setData((uint)texSize.x, (uint)texSize.y, 
+        gfx::Texture2D::TextureFormat_R8, 0, 
+        gfx::Texture2D::BufferLayout_R, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false);
    
     FT_Vector kerning;
     vec2 penPos;
 
     for (uint i(0); i < text.size(); ++i)
     {
-        penPos.y = maxHeight - glyphAdvance[i].y;
+        penPos.y = texSize.y - maxHeight - glyphAdvance[i].y;
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, penPos.x, penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RG, GL_UNSIGNED_BYTE, glyphBuffers[i]);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RED, GL_UNSIGNED_BYTE, glyphBuffers[i]);
 
         penPos.x += glyphAdvance[i].x;
 
@@ -125,6 +280,8 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
         }
     }
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
     std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
     {
         delete pBuffer;
@@ -134,17 +291,22 @@ void Font::renderText(const std::string& text, const Color& color, Texture2D* te
 
 uint Font::getPixelHeight() const
 {
+    HE_ASSERT(m_Init, "Init Font before using!");
+
     return m_CharSize;
 }
 
 uint Font::getLineSpacing() const
 {
-    //return 1;
+    HE_ASSERT(m_Init, "Init Font before using!");
+
     return m_Face->size->metrics.height >> 6;
 }
 
-uint Font::getStringWidth(const std::string& string) const
+float Font::getStringWidth(const std::string& string) const
 {
+    HE_ASSERT(m_Init, "Init Font before using!");
+
     std::vector<vec2> glyphSizes;
     std::vector<vec2> glyphAdvance;
 
@@ -162,16 +324,17 @@ uint Font::getStringWidth(const std::string& string) const
         // render glyph
         FT_Glyph glyph;
         FT_Get_Glyph(m_Face->glyph, &glyph);
-        //FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL); // normal -> 256 gray -> AA
+
+        // normal -> 256 gray -> AA
         FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
         FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
 
         if (bmpGlyph->bitmap.rows > maxHeight)
             maxHeight = bmpGlyph->bitmap.rows;
 
-        glyphSizes[i] = vec2(bmpGlyph->bitmap.width, bmpGlyph->bitmap.rows);
+        glyphSizes[i] = vec2((float)bmpGlyph->bitmap.width, (float)bmpGlyph->bitmap.rows);
 
-        glyphAdvance[i] = vec2(glyph->advance.x >> 16, bmpGlyph->top); // 1 / 64
+        glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); // 1 / 64
 
         FT_Done_Glyph(glyph);
     }
@@ -198,9 +361,58 @@ uint Font::getStringWidth(const std::string& string) const
     return penPos.x;
 }
 
+int Font::getKerning(char first, char second)
+{
+    HE_ASSERT(m_Init, "Init Font before using!");
+
+    FT_Vector kerning;
+
+    if (FT_HAS_KERNING(m_Face))
+    {
+        FT_UInt index1(FT_Get_Char_Index(m_Face, first));
+        FT_UInt index2(FT_Get_Char_Index(m_Face, second));
+
+        FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
+
+        return (kerning.x / 64); // 1 / 64
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+Texture2D* Font::getTextureAtlas() const
+{
+    HE_ASSERT(m_Init, "Init Font before using!");
+    HE_ASSERT(m_Cached, "Precache Font before using!");
+
+    return m_TextureAtlas;
+}
+
+const Font::CharData* Font::getCharTextureData(byte chr) const
+{
+    HE_ASSERT(m_Init, "Init Font before using!");
+    HE_ASSERT(m_Cached, "Precache Font before using!");
+
+    if (m_ExtendedChars && chr > 127)
+    {
+        return nullptr;
+    }
+
+    return &m_CharTextureData[chr];
+}
+
+bool Font::isPreCached() const
+{
+    return m_Cached;
+}
+
 /* EXTRA */
 inline int Font::nextP2(int a) const
 {
+    HE_ASSERT(m_Init, "Init Font before using!");
+
     int rval = 1;
 
     while (rval < a)

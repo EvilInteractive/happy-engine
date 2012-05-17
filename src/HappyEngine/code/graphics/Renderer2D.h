@@ -49,7 +49,8 @@ public:
 
     void init();
 
-    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos, bool useBlending = true,
+    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos = vec2(),
+                                bool useBlending = true,
                                 const vec2& newDimensions = vec2(),
                                 const RectF& regionToDraw = RectF());
 

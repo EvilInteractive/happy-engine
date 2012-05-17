@@ -24,7 +24,7 @@
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "ControlsManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 
 #include "BoolTypeHandler.h"
 #include "FloatTypeHandler.h"
@@ -117,6 +117,8 @@ Console::~Console()
     });
 
     m_TypeHandlers.clear();
+
+    m_pFont->release();
 
     delete m_pTextBox;
     delete m_pScrollBar;
@@ -282,7 +284,7 @@ void Console::tick()
             }
             else
             {
-                m_CmdHistoryPos = m_CmdHistory.size() - 1;
+                m_CmdHistoryPos = (uint)m_CmdHistory.size() - 1;
             }
         }
         else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Up))
@@ -306,7 +308,7 @@ void Console::tick()
             if (m_CmdHistory[m_CmdHistory.size() - 1] != m_pTextBox->getString())
             {
                 m_CmdHistory.push_back(m_pTextBox->getString());
-                m_CmdHistoryPos = m_CmdHistory.size() - 1;
+                m_CmdHistoryPos = (uint)m_CmdHistory.size() - 1;
             }
 
             m_pTextBox->resetText();

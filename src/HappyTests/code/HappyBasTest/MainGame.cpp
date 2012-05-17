@@ -74,7 +74,7 @@ void MainGame::load()
     CAMERAMANAGER->getActiveCamera()->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
 
     m_pFPSGraph = NEW tools::FPSGraph();
-    m_pFPSGraph->setType(1);
+    //m_pFPSGraph->setType(1);
 
     game::Entity* scene(NEW game::Entity());
     game::ModelComponent* modelComp(NEW game::ModelComponent());

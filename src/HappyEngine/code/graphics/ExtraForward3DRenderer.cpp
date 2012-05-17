@@ -24,7 +24,8 @@
 
 #include "GraphicsEngine.h"
 #include "DrawManager.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
+#include "Vertex.h"
 
 namespace he {
 namespace gfx {

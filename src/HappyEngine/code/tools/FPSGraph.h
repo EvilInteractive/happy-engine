@@ -56,6 +56,7 @@ public:
 private:
 
     ushort cap(float fps);
+    void drawToConsole();
     void drawTextOnly();
     void drawFull();
 

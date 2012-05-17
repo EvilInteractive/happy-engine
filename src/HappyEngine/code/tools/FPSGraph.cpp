@@ -24,7 +24,7 @@
 #include "vec2.h"
 #include "ContentManager.h"
 #include "Console.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "Renderer2D.h"
 
@@ -40,21 +40,22 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(0.5f),
-                        m_pFont(CONTENT->loadFont("Ubuntu-Bold.ttf", 10)),
+                        m_pFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 10)),
                         m_FPSGraphState(2)
 {
     CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
 
-    setPos(vec2(GRAPHICS->getViewport().width - 105.0f, 5.0f));
+    setPos(vec2(GRAPHICS->getViewport().width - 115.0f, 5.0f));
 
     m_FpsHistory.reserve(300);
 
-    m_pCanvas2D = GUI_NEW->createCanvas();
+    m_pCanvas2D = GUI->createCanvas();
 }
 
 
 FPSGraph::~FPSGraph()
 {
+    m_pFont->release();
     delete m_pCanvas2D;
 }
 
@@ -88,11 +89,14 @@ void FPSGraph::draw()
                 break;
             }
             case 1:
+                drawToConsole();
+                break;
+            case 2:
             {
                 drawTextOnly();
                 break;
             }
-            case 2:
+            case 3:
             {
                 drawFull();
                 break;
@@ -109,6 +113,14 @@ ushort FPSGraph::cap(float fps)
         return static_cast<ushort>(fps);
 }
 
+void FPSGraph::drawToConsole()
+{
+    if ((m_GameTime - m_TBase) >= m_Interval)
+    {
+        HE_INFO("Fps: %d", (int)m_CurrentFPS);
+    }
+}
+
 void FPSGraph::drawTextOnly()
 {
     //GUI->setAntiAliasing(false);
@@ -117,13 +129,16 @@ void FPSGraph::drawTextOnly()
     m_pCanvas2D->setFillColor(Color(1.0f,1.0f,1.0f));
 
     // replaced stringstream by sprintf -> stringstream is very slow
-    char buff[64];
+    gui::Text txt(m_pFont);
 
+    char buff[64];
     sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    m_pCanvas2D->fillText(gui::Text(std::string(buff), m_pFont), m_Pos);
+    txt.addLine(std::string(buff));
 
     sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    m_pCanvas2D->fillText(gui::Text(std::string(buff), m_pFont), m_Pos + vec2(0.0f, 13.0f));
+    txt.addLine(std::string(buff));
+    
+    m_pCanvas2D->fillText(txt, m_Pos);
 
     m_pCanvas2D->draw();
 }
@@ -314,7 +329,7 @@ ushort FPSGraph::getAverageFPS() const
         i = static_cast<uint>(m_FpsHistory.size() - (60 / m_Interval));
     }
 
-    uint j(m_FpsHistory.size());
+    uint j((uint)m_FpsHistory.size());
 
     uint avFPS(0);
 
@@ -329,7 +344,7 @@ ushort FPSGraph::getAverageFPS() const
     }
     else
     {
-        avFPS /= m_FpsHistory.size();
+        avFPS /= (uint)m_FpsHistory.size();
     }
 
     return (ushort)avFPS;

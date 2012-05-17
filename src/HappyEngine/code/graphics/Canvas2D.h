@@ -91,8 +91,11 @@ public:
     void setLineWidth(float width);
 
     void setGlobalAlpha(float alpha);
+
+    void setAutoClearing(bool clearAfterDraw);
     
     /* DRAW METHODS */
+    void clear();
     void draw(const vec2& pos = vec2(0,0));
 
     void strokeRect(const vec2& pos, const vec2& size);
@@ -126,6 +129,7 @@ private:
     void init();
     void cleanup();
     mat44 getTransformation();
+    float getDepth();
 
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
@@ -154,6 +158,10 @@ private:
     bool m_FullScreen;
 
     ModelMesh* m_pTextureQuad;
+
+    float m_PixelDepth;
+
+    bool m_AutoClear;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

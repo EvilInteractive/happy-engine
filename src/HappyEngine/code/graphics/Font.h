@@ -15,14 +15,14 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 12/08/2011
-//Extended:Sebastiaan Sprengers
+//Author:  Sebastiaan Sprengers
+//Created: 07/05/2012
 
 #ifndef _HE_FONT_H_
 #define _HE_FONT_H_
 #pragma once
 
+#include "Resource.h"
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
@@ -33,22 +33,38 @@ namespace gui {
 }
 
 namespace gfx {
-class Texture2D;
+    class Texture2D;
 
-class Font
+class Font : public Resource<Font>
 {
 public:
 
+    struct CharData
+    {
+        RectF textureRegion;
+        vec2 advance;
+    };
+
     /* CONSTRUCTOR - DESTRUCTOR */
-    Font(FT_Library lib, FT_Face face, ushort size);
+    Font();
     virtual ~Font();
     
-    /* GETTERS */
-    void renderText(const std::string& text, const Color& color, Texture2D* tex);
+    /* GENERAL */
+    void init(FT_Library lib, FT_Face face, ushort size);
+    void preCache(bool extendedCharacters = false);
+    void renderText(const std::string& text, Texture2D* tex);
 
+    /* GETTERS */
     uint getPixelHeight() const;
     uint getLineSpacing() const;
-    uint getStringWidth(const std::string& string) const;
+    float getStringWidth(const std::string& string) const;
+
+    int getKerning(char first, char second);
+
+    Texture2D* getTextureAtlas() const;
+    const CharData* getCharTextureData(byte chr) const;
+
+    bool isPreCached() const;
 
     /* SETTERS */
 
@@ -62,6 +78,13 @@ private:
     FT_Face m_Face;
 
     ushort m_CharSize;
+
+    bool m_Cached;
+    bool m_ExtendedChars;
+    Texture2D* m_TextureAtlas;
+    std::vector<CharData> m_CharTextureData;
+
+    bool m_Init;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Font(const Font&);

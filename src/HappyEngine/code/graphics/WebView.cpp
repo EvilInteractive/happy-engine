@@ -22,7 +22,7 @@
 
 #include "WebView.h"
 #include "Awesomium/BitmapSurface.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "GraphicsEngine.h"
 
 namespace he {
@@ -75,7 +75,7 @@ void WebView::draw(const vec2& pos)
         }
     }
 
-    //GUI->drawTexture2D(m_pRenderTexture, pos);
+    GUI->drawTexture2DToScreen(m_pRenderTexture, pos);
 }
 
 void WebView::loadUrl(const std::string& url)
@@ -84,7 +84,7 @@ void WebView::loadUrl(const std::string& url)
     m_pWebView->LoadURL(webUrl);
 }
 
-void WebView::excecuteJavaScript(const std::string& script)
+void WebView::excecuteJavaScript(const std::string& /*script*/)
 {
     //Awesomium::WebString string(script.c_str());
     //m_pWebView->ExecuteJavascriptWithResult(string);

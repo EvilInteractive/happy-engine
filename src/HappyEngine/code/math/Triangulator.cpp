@@ -25,13 +25,11 @@
 #include "HappyTypes.h"
 #include <algorithm>
 
-static const float EPSILON = 0.0000000001f;
-
 namespace he {
 
 bool Triangulator::triangulatePolygon(const std::vector<vec2>& vertices, std::vector<uint>& indices)
 {
-    int n = vertices.size();
+    int n = (int)vertices.size();
     if ( n < 3 ) return false;
 
     if (isConvex(vertices))
@@ -58,7 +56,7 @@ void Triangulator::triangulateConvex(const std::vector<vec2>& vertices, std::vec
 
 bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint>& indices)
 {
-    int n = vertices.size();
+    int n = (int)vertices.size();
     int* V = NEW int[n];
 
     if ( 0.0f < calculateArea(vertices) )
@@ -107,7 +105,7 @@ bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::ve
 
 float Triangulator::calculateArea(const std::vector<vec2>& vertices)
 {
-    int n(vertices.size());
+    int n((int)vertices.size());
     float A(0.0f);
 
     for (int p(n - 1), q(0); q < n; p = q++)
@@ -147,8 +145,8 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
 
     int winding(sign(calculateArea(vertices)));
 
-    int a(vertices.size() - 4);
-    int b(vertices.size() - 2);
+    int a((int)vertices.size() - 4);
+    int b((int)vertices.size() - 2);
 
     vec2 t1,t2,t3;
     std::vector<vec2> tri;
@@ -182,7 +180,7 @@ bool Triangulator::snip(const std::vector<vec2>& vertices, int u, int v, int w, 
     b = vertices[V[v]];
     c = vertices[V[w]];
 
-    if ( EPSILON > (((b.x - a.x) * (c.y - a.y)) - ((b.y - a.y) * (c.x - a.x))) )
+    if ( FLT_EPSILON > (((b.x - a.x) * (c.y - a.y)) - ((b.y - a.y) * (c.x - a.x))) )
         return false;
 
     for (int i(0); i < n; ++i)

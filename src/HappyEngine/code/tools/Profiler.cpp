@@ -21,7 +21,7 @@
 
 #include "Profiler.h"
 #include "HappyNew.h"
-#include "Happy2DRenderer.h"
+#include "Renderer2D.h"
 #include "Renderer2D.h"
 
 #include "ContentManager.h"
@@ -64,12 +64,14 @@ Profiler::Profiler(): m_CurrentNode(nullptr)
 {
     //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
-    m_pCanvas2D = GUI_NEW->createCanvas();
+
+    m_pCanvas2D = GUI->createCanvas();
 }
 
 
 Profiler::~Profiler()
 {
+    m_pFont->release();
     delete m_pCanvas2D;
 }
 
@@ -152,7 +154,7 @@ void Profiler::draw() const
     //GUI->fillShape2D(gui::Rectangle2D(vec2(0, 0), vec2(386, 720)), true);
     //GUI->setColor(1.0f, 1.0f, 1.0f);
     //GUI->drawText(text, vec2(4, 4));
-
+    PROFILER_BEGIN("Profiler::draw2");
     m_pCanvas2D->setFillColor(Color(0.6f,0.6f,0.6f,0.5f));
     m_pCanvas2D->fillRect(vec2(0,0), vec2(386,720));
 
@@ -160,6 +162,7 @@ void Profiler::draw() const
     m_pCanvas2D->fillText(text, vec2(4,4));
 
     m_pCanvas2D->draw();
+    PROFILER_END();
 
     //GUI->setLayer();  
     PROFILER_END();

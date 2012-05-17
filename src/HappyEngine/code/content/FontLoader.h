@@ -15,9 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 12/08/2011
-//Extended: Sebastiaan Sprengers
+//Author:  Sebastiaan Sprengers
+//Created: 07/05/2012
 
 #ifndef _HE_FONT_LOADER_H_
 #define _HE_FONT_LOADER_H_
@@ -35,19 +34,22 @@ namespace ct {
 class FontLoader
 {
 public:
+
+    /* CONSTRUCTOR - DESTRUCTOR*/
 	FontLoader();
     virtual ~FontLoader();
 
+    /* GENERAL */
     gfx::Font* load(const std::string& path, ushort size);
 
 private:
 
     /* DATAMEMBERS */
-    AssetContainer<gfx::Font*>* m_pAssetContainer;
+    AssetContainer<ObjectHandle>* m_pAssetContainer;
 
     FT_Library m_FTLibrary;
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT */
     FontLoader(const FontLoader&);
     FontLoader& operator=(const FontLoader&);
 };

@@ -103,7 +103,7 @@ bool SoundEngine::streamSound(SoundFile& stream, ALuint buffer, bool toMono)
         convertToMono(data, dataMono);
 
         // fill buffer with new read data
-        alBufferData(buffer, getALFormatFromChannels(1), &dataMono[0], dataMono.size() * sizeof(short), props.samplerate);
+        alBufferData(buffer, getALFormatFromChannels(1), &dataMono[0], (ALsizei)dataMono.size() * sizeof(short), props.samplerate);
     }
     else
     {
@@ -283,7 +283,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
         m_SoundBuffers.push_back(buffers);
 
         // create sound
-        pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
+        pSound = NEW Sound2D((uint)m_SoundSources.size() - 1, (uint)m_SoundBuffers.size() - 1, (uint)m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
 
         // put sound in soundbank
         m_SoundBank.push_back(pSound);
@@ -321,7 +321,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
         alSourceQueueBuffers(source, 1, &buffer[0]);
 
         // create sound
-        pSound = NEW Sound2D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
+        pSound = NEW Sound2D((uint)m_SoundSources.size() - 1, (uint)m_SoundBuffers.size() - 1, (uint)m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
 
         // put sound in soundbank
         m_SoundBank.push_back(pSound);
@@ -376,7 +376,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
         m_SoundBuffers.push_back(buffers);
 
         // create sound
-        pSound = NEW Sound3D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
+        pSound = NEW Sound3D((uint)m_SoundSources.size() - 1, (uint)m_SoundBuffers.size() - 1, (uint)m_SoundFiles.size() - 1, SOUND_TYPE_STREAM);
 
         // put sound in soundbank
         m_SoundBank.push_back(pSound);
@@ -414,8 +414,8 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
                 buffer[0],
                 getALFormatFromChannels(1),
                 &dataMono[0],
-                dataMono.size() * sizeof(short),
-                props.samplerate );
+                (ALsizei)dataMono.size() * sizeof(short),
+                props.samplerate);
         }
         else
         {
@@ -433,7 +433,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
         alSourceQueueBuffers(source, 1, &buffer[0]);
 
         // create sound
-        pSound = NEW Sound3D(m_SoundSources.size() - 1, m_SoundBuffers.size() - 1, m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
+        pSound = NEW Sound3D((uint)m_SoundSources.size() - 1, (uint)m_SoundBuffers.size() - 1, (uint)m_SoundFiles.size() - 1, SOUND_TYPE_STATIC);
 
         // put sound in soundbank
         m_SoundBank.push_back(pSound);
