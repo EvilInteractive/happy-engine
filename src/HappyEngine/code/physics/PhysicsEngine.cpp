@@ -17,13 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 19/08/2011
+//Updated to physx 3.2: 16/05/2012
 #include "HappyPCH.h" 
 
 #include "PhysicsEngine.h"
-#include "PxCudaContextManager.h"
-#include "PxProfileZoneManager.h"
 #include "PhysicsCarManager.h"
 #include "PhysicsTrigger.h"
+#include "extensions/PxVisualDebuggerExt.h"
 
 namespace he {
 namespace px {
@@ -32,29 +32,44 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
                             m_pCpuDispatcher(nullptr), m_pCudaContextManager(nullptr), 
                             m_pAllocator(NEW HappyPhysicsAllocator()), m_pErrorCallback(NEW err::HappyPhysicsErrorCallback()),
                             m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>()),
-                            m_pCarManager(NEW PhysicsCarManager())
+                           /* m_pCarManager(NEW PhysicsCarManager()),*/ m_pPhysXFoundation(nullptr), m_pVisualDebuggerConnection(nullptr)
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
         memDebug = true;
     #endif
     
-    m_pPhysXSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pAllocator, *m_pErrorCallback, 
-                                    physx::PxTolerancesScale(), memDebug);
-    
+    m_pPhysXFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *m_pAllocator, *m_pErrorCallback);
+    HE_ASSERT(m_pPhysXFoundation != nullptr, "Loading physx foundation unsuccessful");
+
+    physx::PxProfileZoneManager* profileZoneManager(nullptr);
+    #if DEBUG || _DEBUG
+    profileZoneManager = &physx::PxProfileZoneManager::createProfileZoneManager(m_pPhysXFoundation);
+    HE_ASSERT(profileZoneManager != nullptr, "Loading physx profileZoneManager unsuccessful");
+    #endif
+
+    m_pPhysXSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pPhysXFoundation,
+                                    physx::PxTolerancesScale(), memDebug, profileZoneManager);   
     HE_ASSERT(m_pPhysXSDK != nullptr, "init of physX failed");
    
     if (!PxInitExtensions(*m_pPhysXSDK))
-        HE_ASSERT("PxInitExtensions failed!");
+    {
+        HE_ASSERT(false, "PxInitExtensions failed!");
+    }
 
-//#if _DEBUG || DEBUG
-    HE_INFO("connecting to PVD");
-    PVD::PvdConnection* pConnection(physx::PxExtensionVisualDebugger::connect(m_pPhysXSDK->getPvdConnectionManager(), "localhost", 5425, 100, true));
-    if (pConnection == nullptr)
-        HE_INFO("    NOT CONNECTED!");
-    else
-        HE_INFO("    CONNECTED!");
-//#endif
+    if (m_pPhysXSDK->getPvdConnectionManager() != nullptr)
+    {
+        //#if _DEBUG || DEBUG
+        HE_INFO("connecting to PVD");
+        physx::PxVisualDebuggerConnectionFlags connectionFlags(physx::PxVisualDebuggerExt::getAllConnectionFlags());
+        m_pVisualDebuggerConnection = physx::PxVisualDebuggerExt::createConnection(m_pPhysXSDK->getPvdConnectionManager(), 
+            "localhost", 5425, 100, connectionFlags);
+        if (m_pVisualDebuggerConnection == nullptr)
+            HE_INFO("    NOT CONNECTED!");
+        else
+            HE_INFO("    CONNECTED!");
+        //#endif
+    }
 
     createScene();
 
@@ -80,9 +95,8 @@ void PhysicsEngine::createScene()
         sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 
     #ifdef PX_WINDOWS
-    #ifndef _DEBUG
     physx::pxtask::CudaContextManagerDesc cudaDesc;
-    m_pCudaContextManager = physx::pxtask::createCudaContextManager(cudaDesc, &m_pPhysXSDK->getProfileZoneManager());
+    m_pCudaContextManager = physx::pxtask::createCudaContextManager(*m_pPhysXFoundation, cudaDesc, m_pPhysXSDK->getProfileZoneManager());
     if(!sceneDesc.gpuDispatcher && m_pCudaContextManager != nullptr)
     {
         HE_INFO("PhysX using Gpu - %s, %d cores @%d", m_pCudaContextManager->getDeviceName(), 
@@ -91,19 +105,11 @@ void PhysicsEngine::createScene()
         sceneDesc.gpuDispatcher = m_pCudaContextManager->getGpuDispatcher();
     }
     #endif
-    #endif
 
     m_pScene = m_pPhysXSDK->createScene(sceneDesc);
     HE_ASSERT(m_pScene != nullptr, "createScene failed!");
 
     m_pScene->setSimulationEventCallback(this);
-
-    /*physx::PxRigidStatic* plane = m_pPhysXSDK->createRigidStatic(physx::PxTransform(physx::PxVec3(0, -20, 0), physx::PxQuat(piOverTwo, physx::PxVec3(0, 0, 1))));
-    HE_ASSERT(plane != nullptr, "");
-    physx::PxShape* pShape = plane->createShape(physx::PxPlaneGeometry(), *m_pPhysXSDK->createMaterial(0.3f, 0.6f, 0.2f) );
-    HE_ASSERT(pShape != nullptr, "");
-    m_pScene->addActor(*plane);*/
-
 }
 
 
@@ -116,11 +122,16 @@ PhysicsEngine::~PhysicsEngine()
     m_pScene->release();
     delete m_pMaterials;
 
+    if (m_pVisualDebuggerConnection != nullptr)
+        m_pVisualDebuggerConnection->release();
+
     m_pCpuDispatcher->release();
     if (m_pCudaContextManager != nullptr)
         m_pCudaContextManager->release();
+
     m_pPhysXSDK->release();
-    delete m_pCarManager;
+    m_pPhysXFoundation->release();
+    //delete m_pCarManager;
     delete m_pAllocator;
     delete m_pErrorCallback;
 }
@@ -152,7 +163,7 @@ void PhysicsEngine::physXThread()
         m_PhysXMutex.lock(); //only locked when creating shapes etc..
             m_pScene->fetchResults(true);
             m_pScene->simulate(fixedStep);
-            m_pCarManager->tick(fixedStep);
+           // m_pCarManager->tick(fixedStep);
         m_PhysXMutex.unlock();
         boost::this_thread::sleep(boost::posix_time::milliseconds(static_cast<int64_t>((fixedStep - (dTime - fixedStep))*boost::milli::den)));
     }
@@ -188,15 +199,15 @@ physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dy
     }
 }
 
-PhysicsCarManager* PhysicsEngine::getCarManager() const
-{
-    return m_pCarManager;
-}
-
-const px::PhysicsMaterial& PhysicsEngine::getDriveableMaterial( byte id )
-{
-    return m_pCarManager->getFrictionTable()->getMaterial(id);
-}
+//PhysicsCarManager* PhysicsEngine::getCarManager() const
+//{
+//    return m_pCarManager;
+//}
+//
+//const px::PhysicsMaterial& PhysicsEngine::getDriveableMaterial( byte id )
+//{
+//    return m_pCarManager->getFrictionTable()->getMaterial(id);
+//}
 
 void PhysicsEngine::lock()
 {
@@ -208,6 +219,27 @@ void PhysicsEngine::unlock()
     m_PhysXMutex.unlock();
 }
 
+
+void PhysicsEngine::onConstraintBreak( physx::PxConstraintInfo* /*constraints*/, physx::PxU32 /*count*/ )
+{
+
+}
+
+void PhysicsEngine::onWake( physx::PxActor** /*actors*/, physx::PxU32 /*count*/ )
+{
+
+}
+
+void PhysicsEngine::onSleep( physx::PxActor** /*actors*/, physx::PxU32 /*count*/ )
+{
+
+}
+
+void PhysicsEngine::onContact( const physx::PxContactPairHeader& /*pairHeader*/, const physx::PxContactPair* /*pairs*/, physx::PxU32 /*nbPairs*/ )
+{
+
+}
+
 void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*/)
 {
     if (pairs->triggerShape->userData == nullptr)
@@ -217,14 +249,14 @@ void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*
 
     switch (pairs->status)
     {
-        case physx::PxPairFlag::eNOTIFY_TOUCH_FOUND:
+    case physx::PxPairFlag::eNOTIFY_TOUCH_FOUND:
         {
             pTrigger->onTriggerEnter(pairs->otherShape);
-            
+
             break;
         }
 
-        case physx::PxPairFlag::eNOTIFY_TOUCH_LOST:
+    case physx::PxPairFlag::eNOTIFY_TOUCH_LOST:
         {
             pTrigger->onTriggerLeave(pairs->otherShape);
 

@@ -20,9 +20,7 @@
 #pragma once
 
 namespace physx {
-    namespace pubfnd3 {
-        class PxVec2;
-    }
+    class PxVec2;
 }
 
 namespace he {
@@ -33,7 +31,7 @@ public:
     float x, y;
 
     vec2();
-    explicit vec2(const physx::pubfnd3::PxVec2& vec);
+    explicit vec2(const physx::PxVec2& vec);
     vec2(float x, float y);
     ~vec2();
 

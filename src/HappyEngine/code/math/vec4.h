@@ -23,13 +23,10 @@
 #pragma once
 
 namespace physx {
-    namespace pubfnd3 {
-        class PxVec4;
-    }
+    class PxVec4;
 }
 
 namespace he {
-
 
 struct vec3;
 
@@ -39,7 +36,7 @@ public:
     float x, y, z, w;
 
     vec4();
-    explicit vec4(const physx::pubfnd3::PxVec4& vec);
+    explicit vec4(const physx::PxVec4& vec);
     vec4(const vec3& vec, float w);
     vec4(float x, float y, float z, float w);
     ~vec4();

@@ -51,10 +51,14 @@
 #include "GL/glew.h"
 #include "OpenGL.h"
 
+#include "PxPhysicsAPI.h"
+
 #include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
+#include "mat44.h"
+#include "mat33.h"
 #include "Color.h"
 
 #include "HeAssert.h"

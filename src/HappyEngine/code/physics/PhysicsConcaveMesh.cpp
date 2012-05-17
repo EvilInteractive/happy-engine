@@ -31,7 +31,7 @@ namespace px {
 PhysicsConcaveMesh::PhysicsConcaveMesh(const io::BinaryStream& stream)
 {
     m_Name = stream.readString();
-    m_pInternalMesh = PHYSICS->getSDK()->createTriangleMesh(stream);
+    m_pInternalMesh = PHYSICS->getSDK()->createTriangleMesh(const_cast<io::BinaryStream&>(stream)); // sorry for the const_cast
 }
 
 

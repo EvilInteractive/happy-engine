@@ -367,9 +367,6 @@
     <ClCompile Include="..\..\code\graphics\BillboardEffect.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\physics\PhysicsCar.cpp">
-      <Filter>happyengine\physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\graphics\SimpleColorEffect.cpp">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClCompile>
@@ -402,9 +399,6 @@
     </ClCompile>
     <ClCompile Include="..\..\code\math\Triangulator.cpp">
       <Filter>happyengine\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\physics\PhysicsCarManager.cpp">
-      <Filter>happyengine\physics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\tools\Profiler.cpp">
       <Filter>happyengine\tools</Filter>
@@ -864,9 +858,6 @@
     <ClInclude Include="..\..\code\graphics\BillboardEffect.h">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\physics\PhysicsCar.h">
-      <Filter>happyengine\physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\graphics\SimpleColorEffect.h">
       <Filter>happyengine\graphics\rendering\forward</Filter>
     </ClInclude>
@@ -902,9 +893,6 @@
     </ClInclude>
     <ClInclude Include="..\..\code\math\Triangulator.h">
       <Filter>happyengine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\physics\PhysicsCarManager.h">
-      <Filter>happyengine\physics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\tools\Profiler.h">
       <Filter>happyengine\tools</Filter>

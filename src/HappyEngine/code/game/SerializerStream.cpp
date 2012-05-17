@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "SerializerStream.h"
-#include "HappyNew.h"
 
 namespace he {
 namespace game {
@@ -103,65 +102,65 @@ const SerializerStream& SerializerStream::operator>>(std::wstring& str) const
 
 SerializerStream& SerializerStream::operator<<(bool b)
 {
-    m_Stream.storeByte(b?1:0);
+    m_Stream.writeByte(b?1:0);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(byte b)
 {
-    m_Stream.storeByte(b);
+    m_Stream.writeByte(b);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(ushort us)
 {
-    m_Stream.storeWord(us);
+    m_Stream.writeWord(us);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(uint ui)
 {
-    m_Stream.storeDword(ui);
+    m_Stream.writeDword(ui);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(float f)
 {
-    m_Stream.storeFloat(f);
+    m_Stream.writeFloat(f);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(double d)
 {
-    m_Stream.storeDouble(d);
+    m_Stream.writeDouble(d);
     return *this;
 }
 
 SerializerStream& SerializerStream::operator<<(const vec2& v)
 {
-    m_Stream.storeVector2(v);
+    m_Stream.writeVector2(v);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(const vec3& v)
 {
-    m_Stream.storeVector3(v);
+    m_Stream.writeVector3(v);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(const vec4& v)
 {
-    m_Stream.storeVector4(v);
+    m_Stream.writeVector4(v);
     return *this;
 }
 
 SerializerStream& SerializerStream::operator<<(const mat44& mat)
 {
-    m_Stream.storeMatrix(mat);
+    m_Stream.writeMatrix(mat);
     return *this;
 }
 
 SerializerStream& SerializerStream::operator<<(const std::string& str)
 {
-    m_Stream.storeString(str);
+    m_Stream.writeString(str);
     return *this;
 }
 SerializerStream& SerializerStream::operator<<(const std::wstring& str)
 {
-    m_Stream.storeWString(str);
+    m_Stream.writeWString(str);
     return *this;
 }
 

@@ -61,7 +61,7 @@ public:
     virtual void draw();
     virtual void drawShadow() {}
 
-    virtual mat44 getWorldMatrix() const { return mat44::Identity; }
+    virtual mat44 getWorldMatrix() const;
 
 private:
 

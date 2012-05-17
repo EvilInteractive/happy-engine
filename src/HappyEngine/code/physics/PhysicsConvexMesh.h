@@ -22,11 +22,12 @@
 #define _HE_PHYSICS_CONVEX_MESH_H_
 #pragma once
 
-#include "boost/shared_ptr.hpp"
 #include "geometry/PxConvexMesh.h"
-#include "BinaryStream.h"
 
 namespace he {
+namespace io {
+    class BinaryStream;
+}
 namespace px {
 
 class PhysicsConvexMesh

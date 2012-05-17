@@ -19,12 +19,9 @@
 #define _HE_MATHFUNCTIONS_H_
 #pragma once
 
-#include "vec3.h"
 #include "vec2.h"
+#include "vec3.h"
 #include "vec4.h"
-#include "PxMat44.h"
-#include "mat44.h"
-#include "MathConstants.h"
 
 namespace he {
 

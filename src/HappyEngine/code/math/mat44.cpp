@@ -17,33 +17,32 @@
 #include "HappyPCH.h" 
 
 #include "mat44.h"
-#include "MathFunctions.h"
 
 #include "ICamera.h"
 
 namespace he {
 
-mat44::mat44(): m_Matrix(physx::pubfnd3::PxVec4(1.0f, 1.0f, 1.0f, 1.0f))
+mat44::mat44(): m_Matrix(physx::PxVec4(1.0f, 1.0f, 1.0f, 1.0f))
 {
 }
-mat44::mat44(physx::pubfnd3::PxMat44 mat): m_Matrix(mat)
+mat44::mat44(const physx::PxMat44& mat): m_Matrix(mat)
 {
 }
 mat44::mat44(const vec4& col0, const vec4& col1, const vec4& col2, const vec4& col3):
-    m_Matrix(physx::pubfnd3::PxVec4(col0.x, col0.y, col0.z, col0.w),
-             physx::pubfnd3::PxVec4(col1.x, col1.y, col1.z, col1.w),
-             physx::pubfnd3::PxVec4(col2.x, col2.y, col2.z, col2.w),
-             physx::pubfnd3::PxVec4(col3.x, col3.y, col3.z, col3.w))
+    m_Matrix(physx::PxVec4(col0.x, col0.y, col0.z, col0.w),
+             physx::PxVec4(col1.x, col1.y, col1.z, col1.w),
+             physx::PxVec4(col2.x, col2.y, col2.z, col2.w),
+             physx::PxVec4(col3.x, col3.y, col3.z, col3.w))
 {
 }
 mat44::mat44( float _00, float _01, float _02, float _03,
               float _10, float _11, float _12, float _13,
               float _20, float _21, float _22, float _23,
               float _30, float _31, float _32, float _33 ) : 
-m_Matrix(physx::pubfnd3::PxVec4(_00, _10, _20, _30),
-         physx::pubfnd3::PxVec4(_01, _11, _21, _31),
-         physx::pubfnd3::PxVec4(_02, _12, _22, _32),
-         physx::pubfnd3::PxVec4(_03, _13, _23, _33))
+m_Matrix(physx::PxVec4(_00, _10, _20, _30),
+         physx::PxVec4(_01, _11, _21, _31),
+         physx::PxVec4(_02, _12, _22, _32),
+         physx::PxVec4(_03, _13, _23, _33))
 {
 }
 mat44::~mat44()
@@ -189,11 +188,11 @@ mat44& mat44::operator*=( const mat44& mat )
 
 vec3 mat44::operator*(const vec3& vec) const
 {
-    return vec3(m_Matrix.transform(physx::pubfnd3::PxVec3(vec.x, vec.y, vec.z)));
+    return vec3(m_Matrix.transform(physx::PxVec3(vec.x, vec.y, vec.z)));
 }
 vec4 mat44::operator*(const vec4& vec) const
 {
-    return vec4(m_Matrix.transform(physx::pubfnd3::PxVec4(vec.x, vec.y, vec.z, vec.w)));
+    return vec4(m_Matrix.transform(physx::PxVec4(vec.x, vec.y, vec.z, vec.w)));
 }
 
 const float* mat44::toFloatArray() const
@@ -205,7 +204,7 @@ vec3 mat44::getTranslation() const
 {
     return vec3(m_Matrix.column3.x, m_Matrix.column3.y, m_Matrix.column3.z);
 }
-const physx::pubfnd3::PxMat44& mat44::getPhyicsMatrix() const
+const physx::PxMat44& mat44::getPhyicsMatrix() const
 {
     return m_Matrix;
 }

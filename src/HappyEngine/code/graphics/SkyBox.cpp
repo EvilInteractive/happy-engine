@@ -214,4 +214,9 @@ bool SkyBox::isInCamera( const ICamera* /*pCamera*/ ) const
     return m_IsVisible;
 }
 
+he::mat44 SkyBox::getWorldMatrix() const
+{
+    return mat44::Identity;
+}
+
 } } //end namespace

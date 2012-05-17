@@ -22,21 +22,19 @@
 #define _HE_BINARY_STREAM_H_
 #pragma once
 
-#include "common/PxStream.h"
 #include "HappyTypes.h"
-
-#include <string>
-#include <iostream>
 
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
 #include "mat44.h"
+#include "common/PxIO.h"
+
 
 namespace he {
 namespace io {
 
-class BinaryStream : public physx::PxStream
+class BinaryStream : public physx::PxOutputStream, public physx::PxInputStream
 {
 public:
     enum OpenType
@@ -64,23 +62,26 @@ public:
     virtual     std::string     readString()                            const;
     virtual     std::wstring    readWString()                           const;
 
-    virtual		void			readBuffer(void* buffer, physx::PxU32 size)	const;
+    virtual		physx::PxU32	read(void* buffer, physx::PxU32 size)	const;
+    virtual		physx::PxU32	read(void* buffer, physx::PxU32 size);
 
-    virtual		physx::PxStream&		storeByte(byte b);
-    virtual		physx::PxStream&		storeWord(ushort w);
-    virtual		physx::PxStream&		storeDword(uint d);
-    virtual		physx::PxStream&		storeFloat(float f);
-    virtual		physx::PxStream&		storeDouble(double d);
+    ////////////////////////////////////////////////////////////////////////////////
 
-    virtual     physx::PxStream&        storeVector2(const vec2& v);
-    virtual     physx::PxStream&        storeVector3(const vec3& v);
-    virtual     physx::PxStream&        storeVector4(const vec4& v);
-    virtual     physx::PxStream&        storeMatrix(const mat44& m);
+    virtual		void		    writeByte(byte b);
+    virtual		void		    writeWord(ushort w);
+    virtual		void		    writeDword(uint d);
+    virtual		void		    writeFloat(float f);
+    virtual		void		    writeDouble(double d);
 
-    virtual     physx::PxStream&        storeString(const std::string& s);
-    virtual     physx::PxStream&        storeWString(const std::wstring& s);
+    virtual     void            writeVector2(const vec2& v);
+    virtual     void            writeVector3(const vec3& v);
+    virtual     void            writeVector4(const vec4& v);
+    virtual     void            writeMatrix(const mat44& m);
 
-    virtual		physx::PxStream&		storeBuffer(const void* buffer, physx::PxU32 size);
+    virtual     void            writeString(const std::string& s);
+    virtual     void            writeWString(const std::wstring& s);
+
+    virtual     physx::PxU32    write(const void* buffer, physx::PxU32 count);
 
 private:
     FILE* m_pFile;

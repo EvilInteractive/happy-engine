@@ -26,6 +26,7 @@
 #include "TextureCube.h"
 
 namespace he {
+class mat44;
 namespace gfx {
 
 class UniformBuffer;

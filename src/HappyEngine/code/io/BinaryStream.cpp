@@ -20,7 +20,6 @@
 #include "HappyPCH.h"
 
 #include "BinaryStream.h"
-#include "HeAssert.h"
 
 namespace he {
 namespace io {
@@ -110,25 +109,25 @@ double BinaryStream::readDouble() const
 vec2 BinaryStream::readVector2() const
 {
     vec2 v;
-    readBuffer(&v, sizeof(vec2));
+    read(&v, sizeof(vec2));
     return v;
 }
 vec3 BinaryStream::readVector3() const
 {
     vec3 v;
-    readBuffer(&v, sizeof(vec3));
+    read(&v, sizeof(vec3));
     return v;
 }
 vec4 BinaryStream::readVector4() const
 {
     vec4 v;
-    readBuffer(&v, sizeof(vec4));
+    read(&v, sizeof(vec4));
     return v;
 }
 mat44 BinaryStream::readMatrix() const
 {
     mat44 m;
-    readBuffer(&m, sizeof(mat44));
+    read(&m, sizeof(mat44));
     return m;
 }
 
@@ -137,7 +136,7 @@ std::string BinaryStream::readString() const
     uint header(readDword());
     std::string s;
     s.resize(header);
-    readBuffer(&s[0], sizeof(char) * header);
+    read(&s[0], sizeof(char) * header);
     return s;
 }
 std::wstring BinaryStream::readWString() const
@@ -145,92 +144,92 @@ std::wstring BinaryStream::readWString() const
     uint header(readDword());
     std::wstring s;
     s.resize(header);
-    readBuffer(&s[0], sizeof(wchar_t) * header);
+    read(&s[0], sizeof(wchar_t) * header);
     return s;
 }
 
-void BinaryStream::readBuffer(void* buffer, physx::PxU32 size)	const
+physx::PxU32 BinaryStream::read(void* buffer, physx::PxU32 size)	const
 {
     if (size > 0)
     {
         size_t count(fread(buffer, size, 1, m_pFile));
-        HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+        HE_ASSERT(count == 1, "unsuccessful read operation in file: %s", m_FileName.c_str());
     }
+    return size;
 }
 
-physx::PxStream& BinaryStream::storeByte(byte b)
+physx::PxU32 BinaryStream::read( void* buffer, physx::PxU32 size )
+{
+    if (size > 0)
+    {
+        size_t count(fread(buffer, size, 1, m_pFile));
+        HE_ASSERT(count == 1, "unsuccessful read operation in file: %s", m_FileName.c_str());
+    }
+    return size;
+}
+
+void BinaryStream::writeByte(byte b)
 {
     size_t count(fwrite(&b, sizeof(byte), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull write operation in file: %s", m_FileName.c_str());
-    return *this;
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
 }
-physx::PxStream& BinaryStream::storeWord(ushort w)
+void BinaryStream::writeWord(ushort w)
 {
     size_t count(fwrite(&w, sizeof(uint16), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull write operation in file: %s", m_FileName.c_str());
-    return *this;
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
 }
-physx::PxStream& BinaryStream::storeDword(uint d)
+void BinaryStream::writeDword(uint d)
 {
     size_t count(fwrite(&d, sizeof(uint32), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull write operation in file: %s", m_FileName.c_str());
-    return *this;
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
 }
-physx::PxStream& BinaryStream::storeFloat(float f)
+void BinaryStream::writeFloat(float f)
 {
     size_t count(fwrite(&f, sizeof(float), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull write operation in file: %s", m_FileName.c_str());
-    return *this;
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
 }
-physx::PxStream& BinaryStream::storeDouble(double d)
+void BinaryStream::writeDouble(double d)
 {
     size_t count(fwrite(&d, sizeof(double), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull write operation in file: %s", m_FileName.c_str());
-    return *this;
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
 }
 
-physx::PxStream& BinaryStream::storeVector2(const vec2& v)
+void BinaryStream::writeVector2(const vec2& v)
 {
-    storeBuffer(&v, sizeof(vec2));
-    return *this;
+    write(&v, sizeof(vec2));
 }
-physx::PxStream& BinaryStream::storeVector3(const vec3& v)
+void BinaryStream::writeVector3(const vec3& v)
 {
-    storeBuffer(&v, sizeof(vec3));
-    return *this;
+    write(&v, sizeof(vec3));
 }
-physx::PxStream& BinaryStream::storeVector4(const vec4& v)
+void BinaryStream::writeVector4(const vec4& v)
 {
-    storeBuffer(&v, sizeof(vec4));
-    return *this;
+    write(&v, sizeof(vec4));
 }
-physx::PxStream& BinaryStream::storeMatrix(const mat44& m)
+void BinaryStream::writeMatrix(const mat44& m)
 {
-    storeBuffer(&m, sizeof(mat44));
-    return *this;
+    write(&m, sizeof(mat44));
 }
 
-physx::PxStream& BinaryStream::storeString(const std::string& s)
+void BinaryStream::writeString(const std::string& s)
 {
-    storeDword(s.size());
-    storeBuffer(s.c_str(), sizeof(char) * s.size());
-    return *this;
+    writeDword(s.size());
+    write(s.c_str(), sizeof(char) * s.size());
 }
-physx::PxStream& BinaryStream::storeWString(const std::wstring& s)
+void BinaryStream::writeWString(const std::wstring& s)
 {
-    storeDword(s.size());
-    storeBuffer(s.c_str(), sizeof(wchar_t) * s.size());
-    return *this;
+    writeDword(s.size());
+    write(s.c_str(), sizeof(wchar_t) * s.size());
 }
 
-physx::PxStream& BinaryStream::storeBuffer(const void* buffer, physx::PxU32 size)
+physx::PxU32 BinaryStream::write(const void* buffer, physx::PxU32 size)
 {
     if (size > 0)
     {
         size_t count(fwrite(buffer, size, 1, m_pFile));
-        HE_ASSERT(count == 1, "unsuccesfull write operation in file: %s", m_FileName.c_str());
+        HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
     }
-    return *this;
+    return size;
 }
 
 

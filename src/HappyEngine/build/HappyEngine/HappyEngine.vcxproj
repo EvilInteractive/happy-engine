@@ -135,8 +135,6 @@
     <ClCompile Include="..\..\code\OpenGL.cpp" />
     <ClCompile Include="..\..\code\physics\PhysicsBoxShape.cpp" />
     <ClCompile Include="..\..\code\physics\PhysicsCapsuleShape.cpp" />
-    <ClCompile Include="..\..\code\physics\PhysicsCar.cpp" />
-    <ClCompile Include="..\..\code\physics\PhysicsCarManager.cpp" />
     <ClCompile Include="..\..\code\physics\PhysicsConcaveMesh.cpp" />
     <ClCompile Include="..\..\code\physics\PhysicsConcaveShape.cpp" />
     <ClCompile Include="..\..\code\physics\PhysicsConvexMesh.cpp" />
@@ -314,8 +312,6 @@
     <ClInclude Include="..\..\code\physics\IPhysicsShape.h" />
     <ClInclude Include="..\..\code\physics\PhysicsBoxShape.h" />
     <ClInclude Include="..\..\code\physics\PhysicsCapsuleShape.h" />
-    <ClInclude Include="..\..\code\physics\PhysicsCar.h" />
-    <ClInclude Include="..\..\code\physics\PhysicsCarManager.h" />
     <ClInclude Include="..\..\code\physics\PhysicsConcaveMesh.h" />
     <ClInclude Include="..\..\code\physics\PhysicsConcaveShape.h" />
     <ClInclude Include="..\..\code\physics\PhysicsConvexMesh.h" />

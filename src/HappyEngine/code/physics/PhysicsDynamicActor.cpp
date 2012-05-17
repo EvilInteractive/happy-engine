@@ -31,8 +31,6 @@
 #include "PhysicsCapsuleShape.h"
 #include "geometry/PxCapsuleGeometry.h"
 
-#include "vehicle/PxVehicleUtils.h"
-
 namespace he {
 namespace px {
 
@@ -122,7 +120,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     sFilter.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
 
     physx::PxFilterData qFilter;
-    physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
+    //physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
 
     pPxShape->setQueryFilterData(qFilter);
     pPxShape->setSimulationFilterData(sFilter);
@@ -151,30 +149,30 @@ mat44 PhysicsDynamicActor::getPose() const
 
 void PhysicsDynamicActor::setVelocity(const vec3& velocity)
 {
-    m_pActor->setLinearVelocity(physx::pubfnd3::PxVec3(velocity.x, velocity.y, velocity.z));
+    m_pActor->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
 }
 void PhysicsDynamicActor::addVelocity(const vec3& velocity)
 {
-    m_pActor->addForce(physx::pubfnd3::PxVec3(velocity.x, velocity.y, velocity.z), physx::PxForceMode::eVELOCITY_CHANGE);
+    m_pActor->addForce(physx::PxVec3(velocity.x, velocity.y, velocity.z), physx::PxForceMode::eVELOCITY_CHANGE);
 }
 void PhysicsDynamicActor::addForce(const vec3& force)
 {
-    m_pActor->addForce(physx::pubfnd3::PxVec3(force.x, force.y, force.z), physx::PxForceMode::eFORCE);
+    m_pActor->addForce(physx::PxVec3(force.x, force.y, force.z), physx::PxForceMode::eFORCE);
 }
 
 void PhysicsDynamicActor::setKeyframed(bool keyframed)
 {
     m_pActor->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, keyframed);
 }
-void PhysicsDynamicActor::keyframedSetPose(const vec3& move, const vec3& axis, float angle)
+void PhysicsDynamicActor::keyframedSetPose(const vec3& position, const vec3& axis, float angle)
 {
-    m_pActor->moveKinematic(physx::PxTransform(physx::PxVec3(move.x, move.y, move.z),
+    m_pActor->setKinematicTarget(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
         physx::PxQuat(angle, physx::PxVec3(axis.x, axis.y, axis.z))));
 }
 
 void PhysicsDynamicActor::keyframedSetPose(const mat44& pose)
 {
-    m_pActor->moveKinematic(physx::PxTransform(pose.getPhyicsMatrix()));
+    m_pActor->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
 physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const

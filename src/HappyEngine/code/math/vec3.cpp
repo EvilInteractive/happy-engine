@@ -17,11 +17,10 @@
 #include "HappyPCH.h" 
 
 #include "vec3.h"
-#include "PxVec3.h"
+#include "foundation/PxVec3.h"
 #include "MathFunctions.h"
 
 namespace he {
-
 
 const vec3 vec3::up(0, 1, 0);
 const vec3 vec3::forward(0, 0, 1);
@@ -35,7 +34,7 @@ vec3::vec3(): x(0), y(0), z(0)
 vec3::vec3(float x_, float y_, float z_): x(x_), y(y_), z(z_)
 {
 }
-vec3::vec3(const physx::pubfnd3::PxVec3& vec) : x(vec.x), y(vec.y), z(vec.z)
+vec3::vec3(const physx::PxVec3& vec) : x(vec.x), y(vec.y), z(vec.z)
 {
 }
 vec3::~vec3()
@@ -132,7 +131,7 @@ bool vec3::operator!=(const vec3& v) const
     return x != v.x || y != v.y || z != v.z;
 }
 
-bool vec3::operator<(const vec3& v) const //FOR std::MAP doesn't make any sense else
+bool vec3::operator<(const vec3& v) const //FOR std::MAP, it doesn't make any sense else.
 {
     if (x < v.x)
         return true;
@@ -148,6 +147,17 @@ bool vec3::operator<(const vec3& v) const //FOR std::MAP doesn't make any sense 
     }
     return false;
 }
+
+he::vec2 vec3::xz() const
+{
+    return vec2(x, z);
+}
+
+he::vec2 vec3::xy() const
+{
+    return vec2(x, y);
+}
+
 //<----------------------------------------<
 
 } //end namespace

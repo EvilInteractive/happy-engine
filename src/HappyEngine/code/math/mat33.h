@@ -18,49 +18,50 @@
 //Author:  Sebastiaan Sprengers
 //Created: 10/09/2011
 
-#ifndef _HE_MATRIX_2D_H_
-#define _HE_MATRIX_2D_H_
+#ifndef _HE_MATRIX33_H_
+#define _HE_MATRIX33_H_
 #pragma once
 
-#include "PxMat33.h"
+#include "foundation/PxMat33.h"
 #include "vec2.h"
 
 namespace he {
+class mat44;
 
 class mat33
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	mat33();
-	mat33(physx::pubfnd3::PxMat33 mat);
-	mat33( float _00, float _01, float _02,
-			  float _10, float _11, float _12,
-			  float _20, float _21, float _22 );
+    /* CONSTRUCTOR - DESTRUCTOR */
+    mat33();
+    mat33(const physx::PxMat33& mat);
+    mat33( float _00, float _01, float _02,
+              float _10, float _11, float _12,
+              float _20, float _21, float _22 );
     ~mat33();
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
 
-	/* STATIC CONSTRUCTORS */
-	static mat33 createTranslaton(const vec2& translation);
-	static mat33 createRotation(const float radians);
-	static mat33 createScale(const vec2& scale);
+    /* STATIC CONSTRUCTORS */
+    static mat33 createTranslaton(const vec2& translation);
+    static mat33 createRotation(const float radians);
+    static mat33 createScale(const vec2& scale);
 
-	/* OPERATORS */
+    /* OPERATORS */
     mat33 operator*(const mat33& mat);
     vec2 operator*(const vec2& vec);
 
-	/* GETTERS */
-	vec2 getTranslation() const;
+    /* GETTERS */
+    vec2 getTranslation() const;
     mat44 getMat44() const;
 
-	/* STATIC */
-	static const mat33 Identity;
+    /* STATIC */
+    static const mat33 Identity;
 
 private:
 
     /* DATAMEMBERS */
-	physx::pubfnd3::PxMat33 m_Matrix;
+    physx::PxMat33 m_Matrix;
 };
 
 } //end namespace

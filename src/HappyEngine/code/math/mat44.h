@@ -15,15 +15,15 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _HE_MATRIX_H_
-#define _HE_MATRIX_H_
+#ifndef _HE_MAT44_H_
+#define _HE_MAT44_H_
 #pragma once
 
-#include "PxMat44.h"
-#include "vec3.h"
-#include "vec4.h"
+#include "foundation/PxMat44.h"
 
 namespace he {
+struct vec3;
+struct vec2;
 
 namespace gfx {
 class ICamera;
@@ -32,11 +32,11 @@ class ICamera;
 class mat44
 {
 private:
-    physx::pubfnd3::PxMat44 m_Matrix;
+    physx::PxMat44 m_Matrix;
 
 public:
     mat44();
-    explicit mat44(physx::pubfnd3::PxMat44 mat);
+    explicit mat44(const physx::PxMat44& mat);
     mat44(const vec4& col0, const vec4& col1, const vec4& col2, const vec4& col3);
     mat44( float _00, float _01, float _02, float _03,
             float _10, float _11, float _12, float _13,
@@ -75,7 +75,7 @@ public:
     //getters
     const float* toFloatArray() const;
     vec3 getTranslation() const;
-    const physx::pubfnd3::PxMat44& getPhyicsMatrix() const;
+    const physx::PxMat44& getPhyicsMatrix() const;
     mat44 inverse() const;
     float getDeterminant() const;
     

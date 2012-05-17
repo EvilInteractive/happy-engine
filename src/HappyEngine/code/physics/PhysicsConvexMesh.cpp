@@ -20,10 +20,11 @@
 #include "HappyPCH.h" 
 
 #include "PhysicsConvexMesh.h"
-#include "HappyNew.h"
+#include "BinaryStream.h"
 
 #include "HappyEngine.h"
 #include "PhysicsEngine.h"
+
 
 namespace he {
 namespace px {
@@ -31,7 +32,7 @@ namespace px {
 PhysicsConvexMesh::PhysicsConvexMesh(const io::BinaryStream& stream)
 {
     m_Name = stream.readString();
-    m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(stream);
+    m_pInternalMesh = PHYSICS->getSDK()->createConvexMesh(const_cast<io::BinaryStream&>(stream)); // sorry for the const_cast
 }
 
 

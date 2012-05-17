@@ -59,10 +59,10 @@ bool BinObjLineLoader::read(const std::string& path)
         return false;
     
     m_PointData.resize(stream.readDword());
-    stream.readBuffer(&m_PointData[0], m_PointData.size() * sizeof(vec3));
+    stream.read(&m_PointData[0], m_PointData.size() * sizeof(vec3));
 
     m_Indices.resize(stream.readDword());
-    stream.readBuffer(&m_Indices[0], m_Indices.size() * sizeof(ushort));
+    stream.read(&m_Indices[0], m_Indices.size() * sizeof(ushort));
 
     return true;
 }

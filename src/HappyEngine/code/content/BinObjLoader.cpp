@@ -146,7 +146,7 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
         //////////////////////////////////////////////////////////////////////////
         uint numVertices(stream.readDword());
         m_VertexData.push_back(std::vector<InternalVertex>(numVertices));
-        stream.readBuffer(&m_VertexData.back()[0], numVertices * sizeof(InternalVertex));
+        stream.read(&m_VertexData.back()[0], numVertices * sizeof(InternalVertex));
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Indices                                ///
@@ -160,7 +160,7 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
         
         void* pInd = he_malloc(stride * m_NumIndices.back());
         HE_ASSERT(pInd != nullptr, "not enough memory!");
-        stream.readBuffer(pInd, stride * m_NumIndices.back());
+        stream.read(pInd, stride * m_NumIndices.back());
         m_Indices.push_back(pInd);
     }
     return true;

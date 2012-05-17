@@ -20,12 +20,11 @@
 #pragma once
 
 namespace physx {
-    namespace pubfnd3 {
-        class PxVec3;
-    }
+    class PxVec3;
 }
 
 namespace he {
+struct vec2;
 
 struct vec3
 {
@@ -39,12 +38,17 @@ public:
     const static vec3 zero;
 
     vec3();
-    explicit vec3(const physx::pubfnd3::PxVec3& vec);
+    explicit vec3(const physx::PxVec3& vec);
     vec3(float x, float y, float z);
     ~vec3();
 
     vec3(const vec3& other);
     vec3& operator=(const vec3& other);
+
+    //>---------Getters----------------------->
+    vec2 xz() const;
+    vec2 xy() const;
+    //<---------------------------------------<
 
     //>---------Operators--------------------->
     vec3 operator-() const;

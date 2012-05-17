@@ -30,7 +30,7 @@ namespace game {
 class SerializerStream
 {
 public:
-	SerializerStream(const std::string& path, bool save);
+    SerializerStream(const std::string& path, bool save);
     virtual ~SerializerStream();
 
     const SerializerStream& operator>>(bool& b) const;

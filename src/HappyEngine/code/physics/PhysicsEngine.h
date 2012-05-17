@@ -22,34 +22,23 @@
 #define _HE_PHYSICS_ENGINE_H_
 #pragma once
 
-#include "PxPhysics.h"
-#include "vehicle/PxVehicle.h"
 #include "PhysicsMaterial.h"
-#include "extensions/PxExtensionsAPI.h"
-#include "PxCudaContextManager.h"
-#include "ExternalError.h"
-#include "PxSimulationEventCallback.h"
-
-#pragma warning(disable:4244)
-#include "boost/thread.hpp"
-#pragma warning(default:4244)
 
 #include "AssetContainer.h"
 
-#include "PxPreprocessor.h"
-
-#include "boost/thread/mutex.hpp"
-
-#include "HappyMemory.h"
 
 namespace he {
 namespace px {
 
 class HappyPhysicsAllocator : public physx::PxAllocatorCallback
 {
-    void* allocate(size_t size, const char*, const char*, int)
+    void* allocate(size_t size, const char*, const char* file, int line)
     {
+        #if !GCC && (DEBUG || _DEBUG)
+        return _aligned_malloc_dbg(size, 16, file, line);
+        #else
         return he_aligned_malloc(size, 16);
+        #endif
     }
 
     void deallocate(void* ptr)
@@ -91,16 +80,21 @@ public:
 
     physx::PxPhysics* getSDK() const;
     physx::PxScene* getScene() const;
-    PhysicsCarManager* getCarManager() const;
+    //PhysicsCarManager* getCarManager() const;
 
     physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
-    const px::PhysicsMaterial& getDriveableMaterial( byte id );
+   // const px::PhysicsMaterial& getDriveableMaterial( byte id );
 
-    virtual PX_INLINE void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
+    virtual void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count);
+    virtual void onWake(physx::PxActor** actors, physx::PxU32 count);
+    virtual void onSleep(physx::PxActor** actors, physx::PxU32 count);
+    virtual void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
+    virtual void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
 
 private:
 
     physx::PxPhysics* m_pPhysXSDK;
+    physx::PxFoundation* m_pPhysXFoundation;
     physx::PxScene* m_pScene;
 
     physx::PxErrorCallback* m_pErrorCallback;
@@ -109,7 +103,9 @@ private:
     physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
     physx::pxtask::CudaContextManager* m_pCudaContextManager;
 
-    PhysicsCarManager* m_pCarManager;
+    PVD::PvdConnection* m_pVisualDebuggerConnection;
+
+    //PhysicsCarManager* m_pCarManager;
 
     ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
 

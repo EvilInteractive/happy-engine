@@ -52,7 +52,7 @@ public:
     void addForce(const vec3& force);
 
     void setKeyframed(bool keyframed);
-    void keyframedSetPose(const vec3& move, const vec3& axis, float angle);
+    void keyframedSetPose(const vec3& position, const vec3& axis = vec3::up, float angle = 0.0f);
     void keyframedSetPose(const mat44& pose);
 
 private:

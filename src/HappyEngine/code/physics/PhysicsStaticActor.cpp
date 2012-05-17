@@ -31,9 +31,6 @@
 #include "PhysicsCapsuleShape.h"
 #include "geometry/PxCapsuleGeometry.h"
 
-#include "vehicle/PxVehicle.h"
-#include "vehicle/PxVehicleUtils.h"
-
 namespace he {
 namespace px {
 
@@ -56,8 +53,8 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* p
 PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
 {  
     PHYSICS->lock();
-    m_pActor = PHYSICS->getSDK()->createRigidStatic(physx::pubfnd3::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
-        physx::pubfnd3::PxQuat(physx::pubfnd3::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
+    m_pActor = PHYSICS->getSDK()->createRigidStatic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+        physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
     PHYSICS->unlock();
@@ -103,7 +100,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             const PhysicsConvexShape* pConvexShape(static_cast<const PhysicsConvexShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
-                physx::PxMeshScale(physx::pubfnd3::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
+                physx::PxMeshScale(physx::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
                 *material.getInternalMaterial());
             break;
         }
@@ -112,7 +109,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             const PhysicsConcaveShape* pConcaveShape(static_cast<const PhysicsConcaveShape*>(pShape));
             pPxShape = m_pActor->createShape(
                 physx::PxTriangleMeshGeometry(pConcaveShape->getInternalMesh(), 
-                physx::PxMeshScale(physx::pubfnd3::PxVec3(pConcaveShape->getScale().x, pConcaveShape->getScale().y, pConcaveShape->getScale().z), physx::PxQuat::createIdentity())),
+                physx::PxMeshScale(physx::PxVec3(pConcaveShape->getScale().x, pConcaveShape->getScale().y, pConcaveShape->getScale().z), physx::PxQuat::createIdentity())),
                 *material.getInternalMaterial());
             break;
         }
@@ -127,7 +124,7 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
     sFilter.word0 = COLLISION_FLAG_GROUND;
     sFilter.word1 = COLLISION_FLAG_GROUND_AGAINST;
     physx::PxFilterData qFilter;
-    physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
+    //physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
 
     pPxShape->setQueryFilterData(qFilter);
     pPxShape->setSimulationFilterData(sFilter);
