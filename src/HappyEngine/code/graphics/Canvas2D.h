@@ -129,7 +129,7 @@ private:
     void init();
     void cleanup();
     mat44 getTransformation();
-    float getDepth();
+    float getNewDepth();
 
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
