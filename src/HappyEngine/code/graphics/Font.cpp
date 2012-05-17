@@ -36,7 +36,8 @@ Font::Font() :  m_FTLibrary(nullptr),
                 m_CharSize(0),
                 m_ExtendedChars(false),
                 m_Cached(false),
-                m_Init(false)
+                m_Init(false),
+                m_LineHeight(0)
 {
     
 }
@@ -141,6 +142,8 @@ void Font::preCache(bool extendedCharacters)
 
         FT_Done_Glyph(glyph);
     }
+
+    m_LineHeight = maxHeight;
 
     texSize.x = (float)nextP2((int)texSize.x);
     texSize.y = (float)nextP2(maxHeight) * 2;
@@ -303,65 +306,86 @@ uint Font::getLineSpacing() const
     return m_Face->size->metrics.height >> 6;
 }
 
+uint Font::getLineHeight() const
+{
+    return m_LineHeight;
+}
+
 float Font::getStringWidth(const std::string& string) const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
 
-    std::vector<vec2> glyphSizes;
-    std::vector<vec2> glyphAdvance;
-
-    glyphSizes.resize(string.size());
-    glyphAdvance.resize(string.size());
-
-    int maxHeight(0);
-
-    for (uint i(0); i < string.size(); ++i)
-    {
-        // load character glyphs
-        FT_ULong c(string[i]);
-        FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
-
-        // render glyph
-        FT_Glyph glyph;
-        FT_Get_Glyph(m_Face->glyph, &glyph);
-
-        // normal -> 256 gray -> AA
-        FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-        FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
-
-        if (bmpGlyph->bitmap.rows > maxHeight)
-            maxHeight = bmpGlyph->bitmap.rows;
-
-        glyphSizes[i] = vec2((float)bmpGlyph->bitmap.width, (float)bmpGlyph->bitmap.rows);
-
-        glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); // 1 / 64
-
-        FT_Done_Glyph(glyph);
-    }
-
-    FT_Vector kerning;
     vec2 penPos;
 
-    for (uint i(0); i < string.size(); ++i)
+    if (m_Cached)
     {
-        penPos.y = maxHeight - glyphAdvance[i].y;
-        penPos.x += glyphAdvance[i].x;
-
-        if (FT_HAS_KERNING(m_Face) && i < string.size() - 1)
+        for (uint i(0); i < string.size(); ++i)
         {
-            FT_UInt index1(FT_Get_Char_Index(m_Face, string[i]));
-            FT_UInt index2(FT_Get_Char_Index(m_Face, string[i + 1]));
+            penPos.x += m_CharTextureData[string[i]].advance.x;
 
-            FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
+            if (i < (string.size() - 1))
+            {
+                penPos.x += getKerning(string[i], string[i] + 1);
+            }
+        }
+    }
+    else
+    {
+        std::vector<vec2> glyphSizes;
+        std::vector<vec2> glyphAdvance;
 
-            penPos.x += (kerning.x >> 6); // 1 / 64
+        glyphSizes.resize(string.size());
+        glyphAdvance.resize(string.size());
+
+        int maxHeight(0);
+
+        for (uint i(0); i < string.size(); ++i)
+        {
+            // load character glyphs
+            FT_ULong c(string[i]);
+            FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
+
+            // render glyph
+            FT_Glyph glyph;
+            FT_Get_Glyph(m_Face->glyph, &glyph);
+
+            // normal -> 256 gray -> AA
+            FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
+            FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
+
+            if (bmpGlyph->bitmap.rows > maxHeight)
+                maxHeight = bmpGlyph->bitmap.rows;
+
+            glyphSizes[i] = vec2((float)bmpGlyph->bitmap.width, (float)bmpGlyph->bitmap.rows);
+
+            glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); // 1 / 64
+
+            FT_Done_Glyph(glyph);
+        }
+
+        FT_Vector kerning;
+
+        for (uint i(0); i < string.size(); ++i)
+        {
+            penPos.y = maxHeight - glyphAdvance[i].y;
+            penPos.x += glyphAdvance[i].x;
+
+            if (FT_HAS_KERNING(m_Face) && i < string.size() - 1)
+            {
+                FT_UInt index1(FT_Get_Char_Index(m_Face, string[i]));
+                FT_UInt index2(FT_Get_Char_Index(m_Face, string[i + 1]));
+
+                FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
+
+                penPos.x += (kerning.x >> 6); // 1 / 64
+            }
         }
     }
 
     return penPos.x;
 }
 
-int Font::getKerning(char first, char second)
+int Font::getKerning(char first, char second) const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
 

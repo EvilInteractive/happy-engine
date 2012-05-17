@@ -290,7 +290,7 @@ void Deferred3DRenderer::clear( bool color, bool normal, bool depth )
     }
 
     vec3 backgroundColor(GRAPHICS->getLightManager()->getDirectionalLight()->getColor() * GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier() * 2);
-    GL::heClearColor(Color(vec4(backgroundColor, 1.0f)));
+    GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
     glClear(flags);
 
     if (color)

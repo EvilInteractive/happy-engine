@@ -26,6 +26,7 @@
 #include <map>
 #include "Hitregion.h"
 #include "Color.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace gui {
@@ -40,12 +41,12 @@ public:
 
 	/* GENERAL */
 	void tick();
-	void draw();
+	void draw(gfx::Canvas2D* canvas);
 
 	/* SETTERS */
 	void setBarPos(float barPos);
 	void setColors(	const Color& backgroundColor = Color(0.6f,0.6f,0.6f),
-					const Color& scrollbarColor = Color(0.7f,0.7f,0.7f),
+					const Color& scrollbarColor = Color(0.6f,0.6f,0.8f),
 					const Color& edgeColor = Color(0.1f,0.1f,0.1f));
 
 	/* GETTERS */

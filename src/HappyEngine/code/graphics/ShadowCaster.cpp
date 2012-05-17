@@ -384,7 +384,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
 
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
 
-    //if (m_ShowShadowDebug)
+    if (m_ShowShadowDebug)
     {
         if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
             GUI->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), false, vec2(256, 256));

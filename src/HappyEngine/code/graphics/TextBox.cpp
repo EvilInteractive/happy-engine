@@ -43,7 +43,10 @@ TextBox::TextBox(RectF posSize,
 													m_CursorPos(0),
 													m_Cursor("|"),
 													m_bEntered(false),
-													m_bKeyDown(false)
+													m_bKeyDown(false),
+                                                    m_BackspaceDown(false),
+                                                    m_BackSpaceTimer(0),
+                                                    m_BackSpaceDelayTimer(0)
 {
 	m_pFont = CONTENT->loadFont(customFont, fontSize);
 
@@ -75,13 +78,11 @@ void TextBox::tick()
 		{
 			m_bHasFocus = true;
             CONTROLS->getFocus(this);
-			//SDL_StartTextInput();
 		}
 		else
 		{
             CONTROLS->returnFocus(this);
 			m_bHasFocus = false;
-			//SDL_StopTextInput();
 		}
 	}
 
@@ -102,15 +103,20 @@ void TextBox::tick()
 			}
 		}
 		// check for backspace
-		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Backspace))
+		else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Backspace))
 		{
-			// remove char before cursor
-			if (m_String.size() > 0)
-			{
-				m_String.erase(m_CursorPos - 1, 1);
+            if (m_BackspaceDown == false)
+            {
+			    // remove char before cursor
+			    if (m_String.size() > 0)
+			    {
+				    m_String.erase(m_CursorPos - 1, 1);
 
-				--m_CursorPos;
-			}
+				    --m_CursorPos;
+			    }
+
+                m_BackspaceDown = true;
+            }
 		}
 		else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Delete))
 		{
@@ -122,16 +128,29 @@ void TextBox::tick()
 		}
 		else
 		{
-			/*std::for_each(HAPPYENGINE->getSDLEvents().cbegin(), HAPPYENGINE->getSDLEvents().cend(), [&](SDL_Event sdlEvent)
+			std::for_each(CONTROLS->getKeyboard()->getTextEntered().cbegin(), CONTROLS->getKeyboard()->getTextEntered().cend(), [&](char c)
 			{
-				if (sdlEvent.type == SDL_TEXTINPUT)
-				{
-					m_String.insert(m_CursorPos, sdlEvent.text.text);
+				m_String.insert(m_CursorPos, &c);
 
-					++m_CursorPos;
-				}
-			});*/
+				++m_CursorPos;
+			});
 		}
+
+        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_Backspace))
+        {
+            m_BackspaceDown = false;
+            m_BackSpaceTimer = (uint)(m_BlinkTimer.elapsed() * 10);
+            m_BackSpaceDelayTimer = 0;
+        }
+        else if ((uint)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer > 0 && m_BackSpaceDelayTimer >= 5)
+        {
+            m_BackSpaceTimer = (uint)(m_BlinkTimer.elapsed() * 10);
+            m_BackspaceDown = false;
+        }
+        else if (m_BackSpaceDelayTimer < 5)
+        {
+            m_BackSpaceDelayTimer = (uint)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
+        }
 
 		if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return)/* ||
 			CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2)*/)
@@ -145,43 +164,46 @@ void TextBox::tick()
 	}
 }
 
-void TextBox::draw()
+void TextBox::draw(gfx::Canvas2D* canvas)
 {
 	gui::Text text(m_pFont);
 	text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 	text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
-	RectF textRect(m_Rect.x + 4, m_Rect.y + 4, m_Rect.width - 8, m_Rect.height - 8);
+	RectF textRect(m_Rect.x + 4, m_Rect.y + 3, m_Rect.width - 8, m_Rect.height - 8);
 
 	if (m_bActive)
 	{
-		//GUI->setColor(m_Colors["background"]);
-		//GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
-			
-		//GUI->setColor(m_Colors["edge"]);
-		//GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
+        canvas->setFillColor(m_Colors["background"]);
+        canvas->fillRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
+
+        canvas->setStrokeColor(m_Colors["edge"]);
+        canvas->strokeRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
 		if (m_bHasFocus)
 		{
-			//GUI->setColor(m_Colors["focus"]);
-			//GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x + 1 , m_Rect.y + 1),
-//											vec2(m_Rect.width - 2, m_Rect.height - 2)), true);
+            canvas->setStrokeColor(m_Colors["focus"]);
+            canvas->strokeRect(vec2(m_Rect.x + 1 , m_Rect.y + 1), vec2(m_Rect.width - 2, m_Rect.height - 2));
 		}
 
-		//GUI->setColor(m_Colors["text"]);
+        canvas->setFillColor(m_Colors["text"]);
 
 		if (m_String == "")
 		{
 			if (!m_bHasFocus)
 			{
+                text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+
 				text.addLine(m_DefaultString);
-				//GUI->drawText(text, textRect);
+                canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
 			}
 		}
 		else
 		{
+            text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+
 			text.addLine(m_String);
-			//GUI->drawText(text, textRect);
+			canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
 		}
 
 		if (m_bHasFocus)
@@ -202,32 +224,36 @@ void TextBox::draw()
 
 				text.clear();
 				text.addLine(m_Cursor);
-				//GUI->drawText(text, cursorRect);
+                canvas->fillText(text, vec2(cursorRect.x, cursorRect.y - 1));
 			}
 		}
 	}
 	else
 	{
-		//GUI->setColor(Color(0.3f,0.3f,0.3f));
-		//GUI->fillShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
+        canvas->setFillColor(Color(0.3f,0.3f,0.3f));
+        canvas->fillRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
-		//GUI->setColor(Color(0.1f,0.1f,0.1f));
-		//GUI->drawShape2D(gui::Rectangle2D(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height)), true);
+        canvas->setStrokeColor(Color(0.1f,0.1f,0.1f));
+        canvas->strokeRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
-		//GUI->setColor(Color(0.5f,0.5f,0.5f));
+        canvas->setFillColor(Color(0.5f,0.5f,0.5f));
 		
 		if (m_String == "")
 		{
 			if (!m_bHasFocus)
 			{
+				text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+
 				text.addLine(m_DefaultString);
-				//GUI->drawText(text, textRect);
+                canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
 			}
 		}
 		else
 		{
+			text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+
 			text.addLine(m_String);
-			//GUI->drawText(text, textRect);
+			canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
 		}
 	}
 }

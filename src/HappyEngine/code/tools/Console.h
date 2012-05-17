@@ -42,6 +42,10 @@ namespace gui {
     class Scrollbar;
 }
 
+namespace gfx {
+    class Canvas2D;
+}
+
 namespace tools {
 class ITypeHandler;
 class Console
@@ -134,6 +138,8 @@ private:
     std::string m_HelpCommand;
 
     gfx::Font* m_pFont;
+
+    gfx::Canvas2D* m_Canvas2D;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

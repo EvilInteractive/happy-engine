@@ -32,6 +32,7 @@
 #include "boost/timer.hpp"
 #include <vector>
 #include "Keyboard.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace gui {
@@ -49,7 +50,7 @@ public:
 
 	/* GENERAL */
 	void tick();
-	void draw();
+	void draw(gfx::Canvas2D* canvas);
 
 	void resetText();
 
@@ -83,6 +84,8 @@ private:
 	bool m_bEntered;
 	bool m_bKeyDown;
 
+    bool m_BackspaceDown;
+
 	gui::Hitregion* m_pHitrect;
 
 	std::map<std::string, Color> m_Colors;
@@ -90,6 +93,8 @@ private:
 	uint m_CursorPos;
 
 	boost::timer m_BlinkTimer;
+    uint m_BackSpaceTimer;
+    uint m_BackSpaceDelayTimer;
 
 	std::vector<io::Key> m_CharacterKeyCodes;
 

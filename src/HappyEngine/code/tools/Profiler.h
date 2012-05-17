@@ -64,6 +64,8 @@ private:
     gfx::Font* m_pFont;
     gfx::Canvas2D* m_pCanvas2D;
 
+    uint m_Width;
+
     //Disable default copy constructor and default assignment operator
     Profiler(const Profiler&);
     Profiler& operator=(const Profiler&);

@@ -38,6 +38,7 @@ public:
 
     /* GENERAL */
     void addPoint(const vec2& p);
+    bool outline();
     bool triangulate();
     void clear();
 
