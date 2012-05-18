@@ -507,7 +507,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
                 tcScale.y = regionToDraw.height / tex2D->getHeight();
 
                 tcOffset.x = regionToDraw.x / tex2D->getWidth();
-                tcOffset.y = 1 - ((tex2D->getHeight() - regionToDraw.y) / tex2D->getHeight()) - tcScale.y;
+                tcOffset.y = ((tex2D->getHeight() - regionToDraw.y) / tex2D->getHeight()) - tcScale.y;
 
                 size = vec2(regionToDraw.width, regionToDraw.height);
 
