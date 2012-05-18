@@ -259,7 +259,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
     mtxShadowProjection[0] = getProjection(mtxShadowView, 1, 20);
     mtxShadowProjection[1] = getProjection(mtxShadowView, 1, 40); 
     mtxShadowProjection[2] = getProjection(mtxShadowView, 20, 60);
-    mtxShadowProjection[3] = getProjection(mtxShadowView, 40, 80);
+    mtxShadowProjection[3] = getProjection(mtxShadowView, 40, camera.getFarClip());
     
 
     //Begin drawing

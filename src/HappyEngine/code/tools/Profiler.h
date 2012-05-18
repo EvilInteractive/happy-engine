@@ -44,7 +44,7 @@ public:
     void begin(const std::string& name);
     void end();
 
-    void draw() const;
+    void draw();
     
 private:
     struct ProfileTreeNode;
@@ -57,7 +57,7 @@ private:
     static const int MAX_DATA = 50;
     std::map<std::string, ProfileTreeNode> m_Data;
 
-    void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth) const;
+    void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth);
 
     ProfileTreeNode* m_CurrentNode;
 

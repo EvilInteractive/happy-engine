@@ -127,7 +127,7 @@ void Bloom::resize()
             ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
             m_Texture[pass][i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
             m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
-            m_Texture[pass][i]->setData(GRAPHICS->getScreenWidth() / ((i+1) * 2), GRAPHICS->getScreenHeight() / ((i+1) * 2), 
+            m_Texture[pass][i]->setData(GRAPHICS->getScreenWidth() / ((i+2) * 2), GRAPHICS->getScreenHeight() / ((i+2) * 2), 
                 gfx::Texture2D::TextureFormat_RGBA16F, 0, 
                 gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float,
                 gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, false, false );

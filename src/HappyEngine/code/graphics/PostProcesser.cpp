@@ -27,6 +27,7 @@
 #include "ContentManager.h"
 #include "CameraManager.h"
 #include "Camera.h"
+#include "Renderer2D.h"
 
 #include "ModelMesh.h"
 
@@ -38,7 +39,8 @@ PostProcesser::PostProcesser():
     m_pBloom(nullptr), 
     m_pAutoExposure(nullptr), 
     m_pRandomNormals(nullptr),
-    m_pQuad(nullptr)
+    m_pQuad(nullptr),
+    m_ShowDebugTextures(false)
 {
 }
 
@@ -61,6 +63,7 @@ void PostProcesser::init( const RenderSettings& settings )
 {
     m_pQuad = CONTENT->getFullscreenQuad();
     setSettings(settings);
+    CONSOLE->registerVar(&m_ShowDebugTextures, "debugPostTex");
 }
 
 void PostProcesser::setSettings( const RenderSettings& settings )
@@ -209,12 +212,25 @@ void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap
 
     GL::heBindVao(m_pQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+
+    drawDebugTextures();
 }
 
 void PostProcesser::onScreenResized()
 {
     if (m_pBloom != nullptr)
         m_pBloom->resize();
+}
+
+void PostProcesser::drawDebugTextures() const
+{
+    if (m_ShowDebugTextures)
+    {
+        GUI->drawTexture2DToScreen(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+    }
 }
 
 

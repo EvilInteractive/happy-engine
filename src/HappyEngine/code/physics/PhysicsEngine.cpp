@@ -32,7 +32,8 @@ PhysicsEngine::PhysicsEngine(): m_pPhysXSDK(nullptr), m_pScene(nullptr),
                             m_pCpuDispatcher(nullptr), m_pCudaContextManager(nullptr), 
                             m_pAllocator(NEW HappyPhysicsAllocator()), m_pErrorCallback(NEW err::HappyPhysicsErrorCallback()),
                             m_Simulate(false), m_pMaterials(NEW ct::AssetContainer<physx::PxMaterial*>()),
-                           /* m_pCarManager(NEW PhysicsCarManager()),*/ m_pPhysXFoundation(nullptr), m_pVisualDebuggerConnection(nullptr)
+                           /* m_pCarManager(NEW PhysicsCarManager()),*/ m_pPhysXFoundation(nullptr), m_pVisualDebuggerConnection(nullptr),
+                           m_Timer(0.0f)
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -83,8 +84,9 @@ void PhysicsEngine::createScene()
 
     if(!sceneDesc.cpuDispatcher)
     {
-        //HE_INFO("PhysX using Cpu - %d cores", (int)sf::());
-        m_pCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+        uint useThreads(he::max<uint>(1, boost::thread::hardware_concurrency() - 1));
+        HE_INFO("PhysX using Cpu - %d threads", useThreads);
+        m_pCpuDispatcher = physx::PxDefaultCpuDispatcherCreate(useThreads);
 
         HE_ASSERT(m_pCpuDispatcher != nullptr, "PxDefaultCpuDispatcherCreate failed!");
 
@@ -140,20 +142,31 @@ void PhysicsEngine::startSimulation()
 {
     m_Timer = 0.0f;
     m_Simulate = true;
-    m_PhysXThread = boost::thread(boost::bind(&PhysicsEngine::physXThread, this));
+    //m_PhysXThread = boost::thread(boost::bind(&PhysicsEngine::physXThread, this));
 }
 void PhysicsEngine::stopSimulation()
 {
     m_Simulate = false;
-    m_PhysXThread.join();
+    m_pScene->fetchResults(true);
+    //m_PhysXThread.join();
 }
-void PhysicsEngine::tick(float /*dTime*/)
+void PhysicsEngine::tick(float dTime)
 {
-
+    if (m_Simulate)
+    {
+        m_Timer += dTime;
+        static const physx::PxReal fixedStep(1.0f / 60.0f);
+        while (m_Timer >= fixedStep)
+        {
+            m_Timer -= fixedStep;
+            m_pScene->fetchResults(true);
+            m_pScene->simulate(fixedStep);
+        }
+    }
 }
 void PhysicsEngine::physXThread()
 {
-    const physx::PxReal fixedStep(1.0f / 120.0f);
+    const physx::PxReal fixedStep(1.0f / 60.0f);
     boost::chrono::high_resolution_clock::time_point m_PrevTime(boost::chrono::high_resolution_clock::now());
     while (m_Simulate)
     {

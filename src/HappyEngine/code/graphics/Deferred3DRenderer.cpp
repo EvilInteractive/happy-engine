@@ -62,7 +62,7 @@ void Deferred3DRenderer::init( const RenderSettings& settings,
             const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget )
 {
     m_RenderSettings = settings;
-    CONSOLE->registerVar(&m_ShowDebugTextures, "debugTex");
+    CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
 
     ResourceFactory<Texture2D>::getInstance()->instantiate(pOutTarget->getHandle());
     ResourceFactory<Texture2D>::getInstance()->instantiate(pOutNormalTarget->getHandle());
@@ -289,7 +289,8 @@ void Deferred3DRenderer::clear( bool color, bool normal, bool depth )
         flags |= GL_DEPTH_BUFFER_BIT;
     }
 
-    vec3 backgroundColor(GRAPHICS->getLightManager()->getDirectionalLight()->getColor() * GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier() * 2);
+    //vec3 backgroundColor(GRAPHICS->getLightManager()->getDirectionalLight()->getColor() * GRAPHICS->getLightManager()->getDirectionalLight()->getMultiplier() * 2);
+    //GL::heClearColor(he::Color(he::vec4(backgroundColor, 1.0f)));
     GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
     glClear(flags);
 
@@ -379,12 +380,12 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
 }
 void Deferred3DRenderer::drawDebugTextures() const
 {
-    //if (m_ShowDebugTextures)
+    if (m_ShowDebugTextures)
     {
-        //GUI->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
-        //GUI->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        //GUI->drawTexture2DToScreen(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        //GUI->drawTexture2DToScreen(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        GUI->drawTexture2DToScreen(m_pDepthTexture,    vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
     }
 }
 

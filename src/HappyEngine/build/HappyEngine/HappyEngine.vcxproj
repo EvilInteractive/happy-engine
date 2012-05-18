@@ -415,7 +415,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPPYENGINE_EXPORTS;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PX_PHYSX_CHARACTER_STATIC_LIB;PHYSX_PROFILE_SDK;PX_CHECKED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>HappyPCH.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)HappyPCH.pch</PrecompiledHeaderOutputFile>
-      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalIncludeDirectories>../../code/physics;../../code/template;../../code/tools;../../code/networking;../../code/math;../../code/io;../../code/graphics;../../code/game;../../code/error;../../code/content;../../code/audio;../../code;../../code/containers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

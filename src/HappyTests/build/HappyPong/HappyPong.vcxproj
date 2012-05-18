@@ -126,7 +126,7 @@
     </Link>
     <PostBuildEvent>
       <Command>del "$(OutDir)*dll"
-$(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
+$(SolutionDir)CopyDlls.bat "$(OutDir)" "$(Configuration)\$(Platform)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -160,7 +160,7 @@ $(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
     </Link>
     <PostBuildEvent>
       <Command>del "$(OutDir)*dll"
-$(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
+$(SolutionDir)CopyDlls.bat "$(OutDir)" "$(Configuration)\$(Platform)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -201,7 +201,7 @@ $(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
     </Link>
     <PostBuildEvent>
       <Command>del "$(OutDir)*dll"
-$(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
+$(SolutionDir)CopyDlls.bat "$(OutDir)" "$(Configuration)\$(Platform)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -242,7 +242,7 @@ $(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
     </Link>
     <PostBuildEvent>
       <Command>del "$(OutDir)*dll"
-$(SolutionDir)CopyDlls.bat "$(OutDir)" $(Platform)</Command>
+$(SolutionDir)CopyDlls.bat "$(OutDir)" "$(Configuration)\$(Platform)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

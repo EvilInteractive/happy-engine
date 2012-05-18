@@ -113,10 +113,8 @@ void Profiler::end()
     m_CurrentNode->m_Data.back().endTime = boost::chrono::high_resolution_clock::now();
     m_CurrentNode = m_CurrentNode->m_Parent;
 }
-void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth) const
+void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth)
 {
-    uint* width(const_cast<uint*>(&m_Width));
-
     double avgTime(0.0);
     std::for_each(node.m_Data.cbegin(), node.m_Data.cend()-1, [&](const ProfileData& data)
     {
@@ -136,22 +134,20 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
     stream << "+ " + node.m_Name << buff;
     text.addLine(stream.str());
 
-    uint textWidth(m_pFont->getStringWidth(stream.str()));
+    uint textWidth(static_cast<uint>(m_pFont->getStringWidth(stream.str())));
     if (textWidth > m_Width)
-        *width = textWidth;
+        m_Width = textWidth;
 
     std::for_each(node.m_Nodes.cbegin(), node.m_Nodes.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
     {       
         drawProfileNode(treeNodePair.second, text, treeDepth + 1);
     });
 }
-void Profiler::draw() const
+void Profiler::draw()
 {
     PROFILER_BEGIN("Profiler::draw");
-
-    uint* width(const_cast<uint*>(&m_Width));
-    *width = 0;
-
+    m_Width = 0;
+    
     gui::Text text(m_pFont);
     text.addLine("----PROFILER------------------------------");
     std::for_each(m_Data.cbegin(), m_Data.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
@@ -160,13 +156,13 @@ void Profiler::draw() const
     });
     text.addLine("------------------------------------------");
 
-    float y(text.getText().size() * m_pFont->getLineSpacing());
+    float y((float)(text.getText().size() * m_pFont->getLineSpacing()));
 
-    m_pCanvas2D->setFillColor(Color(0.3f,0.3f,0.3f,0.8f));
-    m_pCanvas2D->fillRect(vec2(0,0), vec2(m_Width + 5, y + 5));
+    m_pCanvas2D->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
+    m_pCanvas2D->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
-    m_pCanvas2D->setFillColor(Color(1.0f,1.0f,1.0f));
-    m_pCanvas2D->fillText(text, vec2(4,4));
+    m_pCanvas2D->setFillColor(Color(1.0f, 1.0f, 1.0f));
+    m_pCanvas2D->fillText(text, vec2(4, 4));
 
     m_pCanvas2D->draw();
 

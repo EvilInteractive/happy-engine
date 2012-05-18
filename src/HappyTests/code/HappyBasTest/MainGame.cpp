@@ -82,6 +82,7 @@ void MainGame::load()
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial().getCompatibleVertexLayout()));
     //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
     //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout()));
+    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene5.binobj", "M_Terrain", modelComp->getMaterial().getCompatibleVertexLayout()));
 
     modelComp->setModelMesh(mesh->getHandle());
     //modelComp->setLocalTransform(he::mat44::createScale(100));
@@ -99,8 +100,8 @@ void MainGame::load()
     m_EntityList.push_back(scene);
 
     #pragma region lights
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 2.0f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 10.0f);
+    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
+    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
 
     game::PointLightComponent* pTempPointLightComp(NEW game::PointLightComponent());
     scene->addComponent(pTempPointLightComp);

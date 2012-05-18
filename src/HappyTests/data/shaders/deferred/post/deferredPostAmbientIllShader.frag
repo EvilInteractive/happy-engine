@@ -97,9 +97,22 @@ vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
     return color / 9.0f;
 }
 
-float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix, float bias)
+float shadowCheck(in vec3 position, in vec3 lightDir, in vec3 normal, in sampler2D sampler, in mat4 lightMatrix, in float bias)
 {
-    vec4 coord = lightMatrix * vec4(position, 1.0f);
+    float cosLightAngle = dot(lightDir, normal);
+    float normalOffsetScale = clamp(cosLightAngle, 0, 1);
+    
+    const float shadowTexelSize = 2.0f / 1024.0f;
+    const float shadowNormalOffset = 3.0f;
+    
+    normalOffsetScale *= shadowNormalOffset * shadowTexelSize * length(position - dirLight.position);
+    
+    vec3 shadowOffset = normal * normalOffsetScale;
+
+    vec3 shadowPosition = position + shadowOffset;
+    //vec3 shadowPosition = position;
+
+    vec4 coord = lightMatrix * vec4(shadowPosition, 1.0f);
 
     coord.xyz /= coord.w;
     if (coord.x < -1 || coord.y < -1 || coord.x > 1 || coord.y > 1)
@@ -108,24 +121,26 @@ float shadowCheck(in vec3 position, in sampler2D sampler, in mat4 lightMatrix, f
     //NDC -> texturespace
     coord.x = coord.x * 0.5f + 0.5f;
     coord.y = coord.y * 0.5f + 0.5f;
-    
-    float depth = (length(position - dirLight.position) - dirLight.nearFar.x) / dirLight.nearFar.y;
-    
+        
     //vec2 map = recombinePrecision(texture(sampler, coord.xy));
-    vec2 map = texture(sampler, coord.xy).xy;
-    
-    float fAvgZ = map.x;
-    float fAvgZ2 = map.y;
+    vec2 moments = texture(sampler, coord.xy).xy;
+    float depth = (length(shadowPosition - dirLight.position) - dirLight.nearFar.x) / dirLight.nearFar.y;
 
-    float p = depth <= fAvgZ? 1.0f : 0.0f;
+    float p = depth <= moments.x? 1.0f : 0.0f;
 
-    float variance = fAvgZ2 - (fAvgZ * fAvgZ);
+    float variance = moments.y - (moments.x * moments.x);
     variance = max(variance, bias);
 
-    float d = depth - fAvgZ;
+    float d = depth - moments.x;
     float p_max = pow(variance / (variance + d*d), 50);
+    //float p_max = variance / (variance + d*d);
+
+
+    p_max = max(p, p_max);
+    //p_max = clamp((p_max - 0.5f) / (1.0 - 0.5f), 0.0, 1.0);
     
-    return max(p, p_max);
+    //return 1 - (min((1 - p_max) * 5, 1));
+    return p_max;
 }
 
 void main()
@@ -133,7 +148,7 @@ void main()
     vec2 ndc = texCoord * 2.0f - 1.0f;
     vec4 sg = texture(sgMap, texCoord);
     
-    if (sg.a < 0.01f)
+    if (sg.a < 0.000001f)
         discard;
         
     vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
@@ -144,18 +159,12 @@ void main()
     
     //Lambert
     float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
-
-    //Ramp
-    //vec3 lambertRamp = texture(colorRamp, vec2(dotLightNormal, 0.0f)).rgb;
-
-    //HalfLambert
     float halfLambert = dotLightNormal * 0.5f + 0.5f;
-    halfLambert *= halfLambert;
-
+    
     //Light
     //vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f)) * dirLight.color.rgb * dirLight.color.a;
-    vec3 diffuseLight = pow(halfLambert, 0.3f) * dirLight.color.rgb * dirLight.color.a;
-    vec3 ambientLight = (clamp(dot(vec3(0, 1, 0), normal), 0.0f, 1.0f) * ambLight.color.a + ambLight.color.a / 2.0f) * ambLight.color.rgb;
+    vec3 diffuseLight = dotLightNormal * dirLight.color.rgb * dirLight.color.a;
+    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb; 
     
     //Shadow
     float shadow = 1;
@@ -163,8 +172,8 @@ void main()
 #if SHADOWS
     if (position.z < 20)
     {
-        shadow = mix(shadowCheck(position, shadowMap0, mtxDirLight0, 0.0001f),
-                     shadowCheck(position, shadowMap1, mtxDirLight1, 0.001f),
+        shadow = mix(shadowCheck(position, lightDir, normal, shadowMap0, mtxDirLight0, 0.00001f),
+                     shadowCheck(position, lightDir, normal, shadowMap1, mtxDirLight1, 0.0001f),
                      (position.z - 1.0f) / 20.0f);
         //cascade = mix(vec3(1, 0, 0),
         //              vec3(0, 1, 0),
@@ -172,8 +181,8 @@ void main()
     }
     else if (position.z < 40)
     {
-        shadow = mix(shadowCheck(position, shadowMap1, mtxDirLight1, 0.001f),
-                     shadowCheck(position, shadowMap2, mtxDirLight2, 0.01f),
+        shadow = mix(shadowCheck(position, lightDir, normal, shadowMap1, mtxDirLight1, 0.0001f),
+                     shadowCheck(position, lightDir, normal, shadowMap2, mtxDirLight2, 0.01f),
                      (position.z - 20.0f) / 20.0f);
         //cascade = mix(vec3(0, 1, 0),
         //              vec3(0, 0, 1),
@@ -181,18 +190,16 @@ void main()
     }
     else if (position.z < 60)
     {
-        shadow = mix(shadowCheck(position, shadowMap2, mtxDirLight2, 0.01f),
-                     shadowCheck(position, shadowMap3, mtxDirLight3, 0.01f),
+        shadow = mix(shadowCheck(position, lightDir, normal, shadowMap2, mtxDirLight2, 0.01f),
+                     shadowCheck(position, lightDir, normal, shadowMap3, mtxDirLight3, 0.1f),
                      (position.z - 40.0f) / 20.0f);
         //cascade = mix(vec3(0, 0, 1),
         //              vec3(1, 0, 0),
         //              (position.z - 40.0f) / 20.0f);
     }
-    else if (position.z < 80)
+    else
     {
-        shadow = mix(shadowCheck(position, shadowMap3, mtxDirLight3, 0.01f),
-                     1.0f,
-                     (position.z - 60.0f) / 20.0f);
+        shadow = shadowCheck(position, lightDir, normal, shadowMap3, mtxDirLight3, 0.1f);
         //cascade = mix(vec3(1, 0, 0),
         //              vec3(0, 1, 0),
         //              (position.z - 60.0f) / 20.0f);
@@ -202,7 +209,7 @@ void main()
     //Specular
     vec3 spec = vec3(0, 0, 0);
 #if SPECULAR
-    if (shadow > 0.001f)
+    if (shadow > 0.1f)
     {
         vec3 vCamDir = normalize(-position);
         spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r) * 5.0f * dirLight.color.a * dirLight.color.rgb;

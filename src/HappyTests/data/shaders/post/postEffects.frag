@@ -28,6 +28,7 @@
 #pragma optionNV(unroll all)
 
 #include "packing/decode.frag"
+#include "shared/tonemap.frag"
 
 noperspective in vec2 texCoord;
 
@@ -216,13 +217,11 @@ void main()
     float ao;
     vec3 gi; 
     getAoAndGi(tex, ao, gi);
-    color = color + gi * 5;
+    //color = color + gi * 5;
 #endif
 
 #if HDR  
-    float ex = clamp(1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f), 0.01f, 1.0f);
-    color *= ex / 4.0f;  //0 -> 20
-    color = pow(color, vec3(2.2f));
+    color = tonemap(color, getExposure(lumMap));
 #endif
  
 #if VIGNETTE   

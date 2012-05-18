@@ -45,6 +45,7 @@ public:
     void onScreenResized();
 
     void draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap);
+    void drawDebugTextures() const;
 
 private:
 
@@ -81,6 +82,8 @@ private:
     uint m_PostShaderVars[MAX_POST_SHADER_VARS];
 
     const Texture2D* m_pRandomNormals;
+
+    bool m_ShowDebugTextures;
 
     ModelMesh* m_pQuad;
 
