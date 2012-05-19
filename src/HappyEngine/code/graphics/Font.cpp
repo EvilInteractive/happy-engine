@@ -129,13 +129,14 @@ void Font::preCache(bool extendedCharacters)
         m_CharTextureData[chr].advance = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); 
         glyphTop[chr] = (float)(height - bmpGlyph->top);
 
-        glyphBuffers[chr] = NEW byte[width * height];
+        glyphBuffers[chr] = NEW byte[width * height * 4];
 
         for (int h(0); h < height; ++h)
         {
             for (int w(0); w < width; ++w)
             {
-                glyphBuffers[chr][(w + (h * width))] =
+                glyphBuffers[chr][4 * (w + (h * width))] = glyphBuffers[chr][(4 * (w + (h * width))) + 1] =
+                glyphBuffers[chr][(4 * (w + (h * width))) + 2] = glyphBuffers[chr][(4 * (w + (h * width))) + 3] =
                     bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - h - 1))];
             }
         }
@@ -149,11 +150,11 @@ void Font::preCache(bool extendedCharacters)
     texSize.y = (float)nextP2(maxHeight) * 2;
 
     GL::heBindTexture2D(m_TextureAtlas->getID());
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     m_TextureAtlas->setData((uint)texSize.x, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_R8, 0, 
-        gfx::Texture2D::BufferLayout_R, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
         gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
 
     vec2 penPos;
@@ -174,7 +175,7 @@ void Font::preCache(bool extendedCharacters)
                     glyphBuffers[i] + (i2 * glyphPitch[i]) * sizeof(byte), (int)glyphSizes[i].x * sizeof(byte));
         }*/
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RED, GL_UNSIGNED_BYTE, glyphBuffers[i]);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RGBA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
 
         m_CharTextureData[i].textureRegion = RectF(penPos.x, 0, glyphSizes[i].x, texSize.y);
         //m_CharTextureData[i].advance.y = penPos.y;
@@ -184,7 +185,7 @@ void Font::preCache(bool extendedCharacters)
 
     //delete texBuffer;
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    //glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
     {
@@ -237,14 +238,15 @@ void Font::renderText(const std::string& text, Texture2D* tex)
 
         glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)(height - bmpGlyph->top)); // 1 / 64
 
-        glyphBuffers[i] = NEW byte[width * height];
+        glyphBuffers[i] = NEW byte[width * height * 4];
 
         for (int h(0); h < height; ++h)
         {
             for (int w(0); w < width; ++w)
             {
-                 glyphBuffers[i][(w + (h * width))] =
-                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - 1 - h))];
+                glyphBuffers[i][4 * (w + (h * width))] = glyphBuffers[i][(4 * (w + (h * width))) + 1] =
+                glyphBuffers[i][(4 * (w + (h * width))) + 2] = glyphBuffers[i][(4 * (w + (h * width))) + 3] =
+                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - h - 1))];
             }
         }
 
@@ -255,10 +257,10 @@ void Font::renderText(const std::string& text, Texture2D* tex)
     texSize.y = (float)nextP2(maxHeight) * 2;
 
     GL::heBindTexture2D(tex->getID());
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     tex->setData((uint)texSize.x, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_R8, 0, 
-        gfx::Texture2D::BufferLayout_R, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::TextureFormat_RGBA8, 0, 
+        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
         gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false);
    
     FT_Vector kerning;
@@ -268,7 +270,7 @@ void Font::renderText(const std::string& text, Texture2D* tex)
     {
         penPos.y = texSize.y - maxHeight - glyphAdvance[i].y;
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RED, GL_UNSIGNED_BYTE, glyphBuffers[i]);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RGBA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
 
         penPos.x += glyphAdvance[i].x;
 
@@ -283,7 +285,7 @@ void Font::renderText(const std::string& text, Texture2D* tex)
         }
     }
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    //glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
     {
