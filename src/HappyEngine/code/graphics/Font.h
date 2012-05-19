@@ -52,7 +52,6 @@ public:
     /* GENERAL */
     void init(FT_Library lib, FT_Face face, ushort size);
     void preCache(bool extendedCharacters = false);
-    void renderText(const std::string& text, Texture2D* tex);
 
     /* GETTERS */
     uint getPixelHeight() const;

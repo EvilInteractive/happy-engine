@@ -431,152 +431,107 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     vec2 linePos = pos;
 
-    if (txt.getFont()->isPreCached() == true)
+    HE_ASSERT(txt.getFont()->isPreCached() == true, "Font needs to be precached!");
+
+    m_pFontEffect->begin();
+    Texture2D* tex2D = txt.getFont()->getTextureAtlas();
+    m_pFontEffect->setDiffuseMap(tex2D);
+    m_pFontEffect->setFontColor(m_FillColor);
+    m_pFontEffect->setDepth(getNewDepth());
+
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    GL::heBlendEquation(BlendEquation_Add);
+    GL::heBlendEnabled(true);
+
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
+
+    GL::heBindFbo(m_pBufferData->fbufferID);
+    GL::heBindVao(m_pTextureQuad->getVertexArraysID());
+
+    bool hasBounds(txt.hasBounds());
+
+    for (uint i(0); i < txt.getText().size(); ++i)
     {
-        m_pFontEffect->begin();
-        Texture2D* tex2D = txt.getFont()->getTextureAtlas();
-        m_pFontEffect->setDiffuseMap(tex2D);
-        m_pFontEffect->setFontColor(m_FillColor);
-        m_pFontEffect->setDepth(getNewDepth());
+        linePos.y = pos.y + (txt.getFont()->getLineSpacing() * i);
 
-        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-        GL::heBlendEquation(BlendEquation_Add);
-        GL::heBlendEnabled(true);
-
-        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-        GL::heSetDepthRead(true);
-        GL::heSetDepthWrite(true);
-
-        GL::heBindFbo(m_pBufferData->fbufferID);
-        GL::heBindVao(m_pTextureQuad->getVertexArraysID());
-
-        bool hasBounds(txt.hasBounds());
-
-        for (uint i(0); i < txt.getText().size(); ++i)
+        // If there is set a boundingbox for text
+        if (hasBounds)
         {
-            linePos.y = pos.y + (txt.getFont()->getLineSpacing() * i);
+            vec2 offset;
 
-            // If there is set a boundingbox for text
-            if (hasBounds)
+            gui::Text::HAlignment h = txt.getHorizontalAlignment();
+
+            switch (h)
             {
-                vec2 offset;
-
-                gui::Text::HAlignment h = txt.getHorizontalAlignment();
-
-                switch (h)
-                {
-                    case gui::Text::HAlignment_Left:
-                        break;
-                    case gui::Text::HAlignment_Center:
-                        offset.x += (txt.getFont()->getStringWidth(txt.getText()[i]) / 2);
-                        break;
-                    case gui::Text::HAlignment_Right:
-                        offset.x += (txt.getBounds().x - txt.getFont()->getStringWidth(txt.getText()[i]));
-                        break;
-                }
-
-                gui::Text::VAlignment v = txt.getVerticalAlignment();
-
-                switch (v)
-                {
-                    case gui::Text::VAlignment_Top:
-                        break;
-                    case gui::Text::VAlignment_Center:
-                        offset.y += ((txt.getFont()->getLineSpacing() * (txt.getText().size() - 1)) / 2);
-                        break;
-                    case gui::Text::VAlignment_Bottom:
-                        offset.y += (txt.getBounds().y - (txt.getFont()->getLineSpacing() * txt.getText().size()));
-                        break;
-                }
-
-                linePos += offset;
+                case gui::Text::HAlignment_Left:
+                    break;
+                case gui::Text::HAlignment_Center:
+                    offset.x += (txt.getFont()->getStringWidth(txt.getText()[i]) / 2);
+                    break;
+                case gui::Text::HAlignment_Right:
+                    offset.x += (txt.getBounds().x - txt.getFont()->getStringWidth(txt.getText()[i]));
+                    break;
             }
 
-            vec2 glyphPos = linePos;
+            gui::Text::VAlignment v = txt.getVerticalAlignment();
 
-            for (uint i2(0); i2 < txt.getText()[i].size(); ++i2)
+            switch (v)
             {
-                vec2 tcOffset(0.0f,0.0f);
-                vec2 tcScale(1.0f,1.0f);
-                vec2 size;
-
-                const Font::CharData* cData = txt.getFont()->getCharTextureData(txt.getText()[i][i2]);
-                const RectF& regionToDraw = cData->textureRegion;
-
-                tcScale.x = regionToDraw.width / tex2D->getWidth();
-                tcScale.y = regionToDraw.height / tex2D->getHeight();
-
-                tcOffset.x = regionToDraw.x / tex2D->getWidth();
-                tcOffset.y = ((tex2D->getHeight() - regionToDraw.y) / tex2D->getHeight()) - tcScale.y;
-
-                size = vec2(regionToDraw.width, regionToDraw.height);
-
-                mat44 world(mat44::createTranslation(vec3(glyphPos.x + size.x/2, glyphPos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
-
-                glyphPos.x += cData->advance.x;
-
-                if (i2 < txt.getText()[i].size() - 1)
-                {
-                    glyphPos.x += txt.getFont()->getKerning(txt.getText()[i][i2], txt.getText()[i][i2 + 1]);
-                }
-
-                //save();
-
-                ////translate(vec2(linePos.x + (size.x/2), linePos.y + (size.y/2)));
-                ////scale(vec2(size.x / 2, size.y / 2));
-  
-                m_pFontEffect->setWorldMatrix(m_OrthographicMatrix * world);
-                m_pFontEffect->setTCOffset(tcOffset);
-                m_pFontEffect->setTCScale(tcScale);
-
-                glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
-
-                //restore();
+                case gui::Text::VAlignment_Top:
+                    break;
+                case gui::Text::VAlignment_Center:
+                    offset.y += ((txt.getFont()->getLineSpacing() * (txt.getText().size() - 1)) / 2);
+                    break;
+                case gui::Text::VAlignment_Bottom:
+                    offset.y += (txt.getBounds().y - (txt.getFont()->getLineSpacing() * txt.getText().size()));
+                    break;
             }
+
+            linePos += offset;
         }
-    }
-    else
-    {
-        m_pFontEffect->begin();
-        m_pFontEffect->setFontColor(m_FillColor);
-        m_pFontEffect->setDepth(getNewDepth());
 
-        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-        GL::heBlendEquation(BlendEquation_Add);
-        GL::heBlendEnabled(true);
+        vec2 glyphPos = linePos;
 
-        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-        GL::heSetDepthRead(true);
-        GL::heSetDepthWrite(true);
-
-        GL::heBindFbo(m_pBufferData->fbufferID);
-        GL::heBindVao(m_pTextureQuad->getVertexArraysID());
-
-        m_pFontEffect->setTCOffset(vec2(0,0));
-        m_pFontEffect->setTCScale(vec2(1.0f,1.0f));
-
-        for (uint i(0); i < txt.getText().size(); ++i)
+        for (uint i2(0); i2 < txt.getText()[i].size(); ++i2)
         {
-            txt.getFont()->renderText(txt.getText()[i], m_pTextBuffer);            
-
+            vec2 tcOffset(0.0f,0.0f);
+            vec2 tcScale(1.0f,1.0f);
             vec2 size;
-            size = vec2(static_cast<float>(m_pTextBuffer->getWidth()), static_cast<float>(m_pTextBuffer->getHeight()));
 
-            mat44 world(mat44::createTranslation(vec3(linePos.x + size.x/2, linePos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+            const Font::CharData* cData = txt.getFont()->getCharTextureData(txt.getText()[i][i2]);
+            const RectF& regionToDraw = cData->textureRegion;
 
-            save();
+            tcScale.x = regionToDraw.width / tex2D->getWidth();
+            tcScale.y = regionToDraw.height / tex2D->getHeight();
 
-            //translate(vec2(linePos.x + (size.x/2), linePos.y + (size.y/2)));
-            //scale(vec2(size.x / 2, size.y / 2));
+            tcOffset.x = regionToDraw.x / tex2D->getWidth();
+            tcOffset.y = ((tex2D->getHeight() - regionToDraw.y) / tex2D->getHeight()) - tcScale.y;
 
+            size = vec2(regionToDraw.width, regionToDraw.height);
+
+            mat44 world(mat44::createTranslation(vec3(glyphPos.x + size.x/2, glyphPos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+
+            glyphPos.x += cData->advance.x;
+
+            if (i2 < txt.getText()[i].size() - 1)
+            {
+                glyphPos.x += txt.getFont()->getKerning(txt.getText()[i][i2], txt.getText()[i][i2 + 1]);
+            }
+
+            //save();
+
+            ////translate(vec2(linePos.x + (size.x/2), linePos.y + (size.y/2)));
+            ////scale(vec2(size.x / 2, size.y / 2));
+  
             m_pFontEffect->setWorldMatrix(m_OrthographicMatrix * world);
-            m_pFontEffect->setDiffuseMap(m_pTextBuffer);
+            m_pFontEffect->setTCOffset(tcOffset);
+            m_pFontEffect->setTCScale(tcScale);
 
             glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
 
-            restore();
-
-            linePos.y += txt.getFont()->getLineSpacing();
+            //restore();
         }
     }
 

@@ -78,19 +78,18 @@ void Font::preCache(bool extendedCharacters)
 
     m_ExtendedChars = extendedCharacters;
 
-    // normal chars -> ABC def 012 %=- (first 127 ASCII) or with extended chars -> ιθη§ (256 ASCII)
+    // normal chars -> ABC def 012 %=- (first 127 ASCII)
+    // or with extended chars -> ιθη§ (256 ASCII)
     byte nrChars = (extendedCharacters == true) ? (byte)255 : (byte)128;
     vec2 texSize;
 
     std::vector<byte*> glyphBuffers;
     std::vector<vec2> glyphSizes;
     std::vector<float> glyphTop;
-    //std::vector<int> glyphPitch;
 
     glyphBuffers.resize(nrChars);
     glyphSizes.resize(nrChars);
     glyphTop.resize(nrChars);
-    //glyphPitch.resize(nrChars);
     m_CharTextureData.resize(nrChars);
 
     int maxHeight(0), maxTop(0);
@@ -120,15 +119,16 @@ void Font::preCache(bool extendedCharacters)
 
         width = bmpGlyph->bitmap.width;
         height = bmpGlyph->bitmap.rows;
-        //glyphPitch[chr] = bmpGlyph->bitmap.pitch;
 
         texSize.x += (float)width;
         glyphSizes[chr] = vec2((float)width, (float)height);
 
-        // 1 / 64
+        // 1 / 64 pixel -> weird format of freetype
         m_CharTextureData[chr].advance = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); 
         glyphTop[chr] = (float)(height - bmpGlyph->top);
 
+        // use RGBA instead of R (1 channel)
+        // gpu's like 4 byte packing better
         glyphBuffers[chr] = NEW byte[width * height * 4];
 
         for (int h(0); h < height; ++h)
@@ -146,46 +146,48 @@ void Font::preCache(bool extendedCharacters)
 
     m_LineHeight = maxHeight;
 
+    // power of 2 textures always work better
     texSize.x = (float)nextP2((int)texSize.x);
     texSize.y = (float)nextP2(maxHeight) * 2;
 
-    GL::heBindTexture2D(m_TextureAtlas->getID());
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    m_TextureAtlas->setData((uint)texSize.x, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
-
     vec2 penPos;
 
-    /*byte* texBuffer = NEW byte[(uint)texSize.x * (uint)texSize.y];
+    // create final buffer for texture atlas
+    byte* texBuffer = NEW byte[(uint)texSize.x * (uint)texSize.y * 4];
 
-    for (uint i(0); i < (uint)texSize.x * (uint)texSize.y; ++i)
-        texBuffer[i] = 0;*/
+    // fill with 0
+    for (uint i(0); i < (uint)texSize.x * (uint)texSize.y * 4; ++i)
+        texBuffer[i] = 0;
 
+    // put each glyph into buffer
     for (byte i(32); i < nrChars; ++i)
     {
-        penPos.y = texSize.y - maxHeight - glyphTop[i];//(maxTop - glyphTop[i]);
+        penPos.y = texSize.y - maxHeight - glyphTop[i];
 
         // MANUAL COPYING INTO 1 BUFFER
-        /*for (int i2 = 0; i2 < (int)glyphSizes[i].y; ++i2)
+        for (int i2 = 0; i2 < (int)glyphSizes[i].y; ++i2)
         {
-            memcpy( texBuffer + (((int)penPos.y + i2) * (int)texSize.x + (int)penPos.x) * sizeof(byte), 
-                    glyphBuffers[i] + (i2 * glyphPitch[i]) * sizeof(byte), (int)glyphSizes[i].x * sizeof(byte));
-        }*/
+            // use the awesome he_memcpy for copying
+            he_memcpy( texBuffer + (((int)penPos.y + i2) * (int)texSize.x + (int)penPos.x) * sizeof(byte) * 4, 
+                       glyphBuffers[i] + (i2 * (int)glyphSizes[i].x) * sizeof(byte) * 4, (int)glyphSizes[i].x * sizeof(byte) * 4);
+        }
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RGBA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
+        //glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RGBA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
 
         m_CharTextureData[i].textureRegion = RectF(penPos.x, 0, glyphSizes[i].x, texSize.y);
-        //m_CharTextureData[i].advance.y = penPos.y;
 
         penPos.x += glyphSizes[i].x;
     }
 
-    //delete texBuffer;
+    // upload data to texture with compression, no noticeable quality difference
+    GL::heBindTexture2D(m_TextureAtlas->getID());
+    m_TextureAtlas->setData((uint)texSize.x, (uint)texSize.y, 
+        gfx::Texture2D::TextureFormat_Compressed_RGBA8, texBuffer, 
+        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
+        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
 
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    // delete CPU buffer, data is on GPU now
+    delete texBuffer;
 
     std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
     {
@@ -194,104 +196,6 @@ void Font::preCache(bool extendedCharacters)
     });
 
     m_Cached = true;
-}
-
-void Font::renderText(const std::string& text, Texture2D* tex)
-{
-    HE_ASSERT(m_Init, "Init Font before using!");
-
-    vec2 texSize;
-
-    std::vector<byte*> glyphBuffers;
-    std::vector<vec2> glyphSizes;
-    std::vector<vec2> glyphAdvance;
-
-    glyphBuffers.resize(text.size());
-    glyphSizes.resize(text.size());
-    glyphAdvance.resize(text.size());
-
-    int maxHeight(0);
-    int width(0), height(0);
-
-    for (uint i(0); i < text.size(); ++i)
-    {
-        // load character glyphs
-        FT_ULong c(text[i]);
-        FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
-
-        // render glyph
-        FT_Glyph glyph;
-        FT_Get_Glyph(m_Face->glyph, &glyph);
-
-        // normal -> 256 gray -> AA
-        FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-        FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
-
-        if (bmpGlyph->bitmap.rows > maxHeight)
-            maxHeight = bmpGlyph->bitmap.rows;
-
-        width = bmpGlyph->bitmap.width;
-        height = bmpGlyph->bitmap.rows;
-
-        texSize.x += (float)width;
-        glyphSizes[i] = vec2((float)width, (float)height);
-
-        glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)(height - bmpGlyph->top)); // 1 / 64
-
-        glyphBuffers[i] = NEW byte[width * height * 4];
-
-        for (int h(0); h < height; ++h)
-        {
-            for (int w(0); w < width; ++w)
-            {
-                glyphBuffers[i][4 * (w + (h * width))] = glyphBuffers[i][(4 * (w + (h * width))) + 1] =
-                glyphBuffers[i][(4 * (w + (h * width))) + 2] = glyphBuffers[i][(4 * (w + (h * width))) + 3] =
-                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - h - 1))];
-            }
-        }
-
-        FT_Done_Glyph(glyph);
-    }
-
-    texSize.x = (float)nextP2((int)texSize.x) * 2;
-    texSize.y = (float)nextP2(maxHeight) * 2;
-
-    GL::heBindTexture2D(tex->getID());
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    tex->setData((uint)texSize.x, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false);
-   
-    FT_Vector kerning;
-    vec2 penPos;
-
-    for (uint i(0); i < text.size(); ++i)
-    {
-        penPos.y = texSize.y - maxHeight - glyphAdvance[i].y;
-
-        glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RGBA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
-
-        penPos.x += glyphAdvance[i].x;
-
-        if (FT_HAS_KERNING(m_Face) && i < text.size() - 1)
-        {
-            FT_UInt index1(FT_Get_Char_Index(m_Face,text[i]));
-            FT_UInt index2(FT_Get_Char_Index(m_Face,text[i + 1]));
-
-            FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
-
-            penPos.x += (kerning.x >> 6); // 1 / 64
-        }
-    }
-
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-    std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
-    {
-        delete pBuffer;
-        pBuffer = nullptr;
-    });
 }
 
 uint Font::getPixelHeight() const
@@ -305,6 +209,7 @@ uint Font::getLineSpacing() const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
 
+    // 1 / 64 pixel -> weird format of freetype
     return m_Face->size->metrics.height >> 6;
 }
 
