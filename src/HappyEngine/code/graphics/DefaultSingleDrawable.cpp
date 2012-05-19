@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable()
+DefaultSingleDrawable::DefaultSingleDrawable(): m_isVisible(true), m_castsShadow(true)
 {
 }
 
