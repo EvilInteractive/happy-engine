@@ -38,18 +38,16 @@ Ray::Ray( const gfx::ICamera* camera, const vec2& screenCoord, float maxDist /*=
 {
     vec2 ndc((screenCoord.x / GRAPHICS->getScreenWidth()) * 2.0f - 1.0f,
              (screenCoord.y / GRAPHICS->getScreenHeight()) * 2.0f - 1.0f);
-    vec4 nearPoint(ndc, 0.0f, 1.0f);
-    vec4  farPoint(ndc, 1.0f, 1.0f);
+    vec4 nearPoint(-ndc, 0.0f, 1.0f);
+    vec4  farPoint(-ndc, 1.0f, 1.0f);
 
-    mat44 invProjection(camera->getProjection().inverse()), 
-                invView(camera->getView().inverse());
-    mat44 unproject(invView * invProjection);
+    mat44 unproject(camera->getViewProjection().inverse());
 
     nearPoint = unproject * nearPoint;
     farPoint = unproject * farPoint;
 
-    m_Origin = nearPoint.xyz();
-    m_Direction = normalize(farPoint.xyz() - m_Origin);
+    m_Origin = nearPoint.xyz() / nearPoint.w;
+    m_Direction = normalize(farPoint.xyz() / farPoint.w - m_Origin);
     m_MaxDistance = maxDist;
 }
 

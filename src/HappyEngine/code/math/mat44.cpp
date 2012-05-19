@@ -165,6 +165,21 @@ mat44 mat44::createBillboard( const gfx::ICamera* pCam )
                     0.0f,     0.0f,     0.0f,  1.0f);
 }
 
+he::mat44 mat44::createWorld( const vec3& position, const vec3& forward, const vec3& up )
+{ 
+    vec3 xaxis(normalize(cross(up, forward)));
+
+    //return mat44(
+    //    xaxis.x,        xaxis.y,        xaxis.z,        0,
+    //    up.x,           up.y,           up.z,           0,
+    //    forward.x,      forward.y,      forward.z,      0,
+    //    position.x,     position.y,     position.z,     1.0f); 
+    return mat44(
+        xaxis.x,        up.x,           forward.x,      position.x,
+        xaxis.y,        up.y,           forward.y,      position.y,
+        xaxis.z,        up.z,           forward.z,      position.z,
+        0,                 0,                   0,      1.0f);
+}
 
 mat44 mat44::operator*(const mat44& mat) const
 {
@@ -308,6 +323,7 @@ bool mat44::operator!=(const mat44& other) const
 {
     return !operator==(other);
 }
+
 
 //Static
 const mat44 mat44::Identity = mat44(1, 0, 0, 0,

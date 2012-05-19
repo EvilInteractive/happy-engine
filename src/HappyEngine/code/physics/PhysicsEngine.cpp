@@ -125,6 +125,8 @@ PhysicsEngine::~PhysicsEngine()
     m_pScene->fetchResults(true);
     m_pScene->release();
     delete m_pMaterials;
+    
+    PxCloseExtensions();
 
     if (m_pVisualDebuggerConnection != nullptr)
         m_pVisualDebuggerConnection->release();

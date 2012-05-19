@@ -59,6 +59,7 @@ public:
     static mat44 createScale(float xScale, float yScale, float zScale);
     static mat44 createScale(float scale);
     static mat44 createBillboard(const gfx::ICamera* pCam);
+    static mat44 createWorld(const vec3& position, const vec3& forward, const vec3& up);
 
     //operators
     mat44 operator*(const mat44& mat) const;
