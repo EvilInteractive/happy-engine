@@ -25,7 +25,7 @@
 #include "BinaryStream.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 class SerializerStream
 {

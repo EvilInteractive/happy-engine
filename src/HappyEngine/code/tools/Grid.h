@@ -30,7 +30,7 @@ namespace gfx {
 }
 namespace tools {
 
-class Grid : public he::game::Entity
+class Grid : public he::ge::Entity
 {
 public:
 

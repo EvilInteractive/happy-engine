@@ -29,7 +29,7 @@
 #include "DynamicBuffer.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 InstancedModelComponent::InstancedModelComponent(): m_InstanceId(0), m_ControllerKey("")
 {

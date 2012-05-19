@@ -26,7 +26,7 @@
 
 namespace ht {
 
-class Obstacle : public he::game::Entity
+class Obstacle : public he::ge::Entity
 {
 public:
     Obstacle();

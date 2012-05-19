@@ -25,7 +25,7 @@
 #include "ModelMesh.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr)
 {

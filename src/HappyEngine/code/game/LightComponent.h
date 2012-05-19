@@ -31,7 +31,7 @@
 #include "Random.h"
 
 namespace he {
-namespace game {
+namespace ge {
     
 class PointLightComponent : public IComponent, public ITickable
 {

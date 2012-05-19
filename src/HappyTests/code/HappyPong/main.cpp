@@ -33,9 +33,9 @@ int main( int /*argc*/, char** /*args[]*/ )
 
     HAPPYENGINE->init(he::SubEngine_Graphics | he::SubEngine_Content | he::SubEngine_2DRenderer | he::SubEngine_Controls | he::SubEngine_Audio);
 
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
+    he::ge::Game* ge(NEW ht::MainGame());
+    HAPPYENGINE->start(ge);
+    delete ge;
 
     HAPPYENGINE->dispose();
 

@@ -26,7 +26,7 @@
 #include "Game.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 TriggerComponent::TriggerComponent() :  m_pTrigger(nullptr),

@@ -25,7 +25,7 @@
 #include "SerializerStream.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 class Entity;
 

@@ -38,7 +38,7 @@ LightFlashComponent::~LightFlashComponent()
 
 void LightFlashComponent::tick( float dTime )
 {
-    he::game::PointLightComponent::tick(dTime);
+    he::ge::PointLightComponent::tick(dTime);
 
     setMultiplier(he::lerp(m_LightNormalMult, m_LightFlashMult, m_LightAnim));
     if (m_LightAnim > 0.0f)

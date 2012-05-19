@@ -42,95 +42,20 @@ vec3::~vec3()
 }
 
 vec3::vec3(const vec3& other)
+: x(other.x)
+, y(other.y)
+, z(other.z)
 {
-    x = other.x;
-    y = other.y;
-    z = other.z;
 }
-vec3& vec3::operator=(const vec3& other)
+
+vec3::vec3( const vec2& p_xy, float p_z )
+: x(p_xy.x)
+, y(p_xy.y)
+, z(p_z)
 {
-    x = other.x;
-    y = other.y;
-    z = other.z;
-    return *this;
 }
 
 //>---------Operators--------------------->
-vec3 vec3::operator-() const
-{
-    return vec3(-x, -y, -z);
-}
-
-vec3 vec3::operator*(float a) const
-{
-    return vec3(x*a, y*a, z*a);
-}
-vec3 vec3::operator/(float a) const
-{
-    return vec3(x/a, y/a, z/a);
-}
-
-vec3 vec3::operator+(const vec3& v) const
-{
-    return vec3(x + v.x, y + v.y, z + v.z);
-}
-vec3 vec3::operator-(const vec3& v) const
-{
-    return vec3(x - v.x, y - v.y, z - v.z);
-}
-
-vec3& vec3::operator+=(const vec3& v)
-{
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    return *this;
-}
-vec3& vec3::operator-=(const vec3& v)
-{
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-    return *this;
-}
-vec3& vec3::operator*=(float a)
-{
-    x *= a;
-    y *= a;
-    z *= a;
-    return *this;
-}
-vec3& vec3::operator/=(float a)
-{
-    x /= a;
-    y /= a;
-    z /= a;
-    return *this;
-}
-vec3& vec3::operator*=(const vec3& v)
-{
-    x *= v.x;
-    y *= v.y;
-    z *= v.z;
-    return *this;
-}
-vec3& vec3::operator/=(const vec3& v)
-{
-    x /= v.x;
-    y /= v.y;
-    z /= v.z;
-    return *this;
-}
-
-bool vec3::operator==(const vec3& v) const
-{
-    return x == v.x && y == v.y && z == v.z;
-}
-bool vec3::operator!=(const vec3& v) const
-{
-    return x != v.x || y != v.y || z != v.z;
-}
-
 bool vec3::operator<(const vec3& v) const //FOR std::MAP, it doesn't make any sense else.
 {
     if (x < v.x)
@@ -156,6 +81,12 @@ he::vec2 vec3::xz() const
 he::vec2 vec3::xy() const
 {
     return vec2(x, y);
+}
+
+void vec3::toPxVec3( physx::PxVec3* outVec ) const
+{
+    HE_ASSERT(sizeof(physx::PxVec3) == sizeof(vec3), "memcpy will fail, classes have different size");
+    he_memcpy(outVec, this, sizeof(vec3));
 }
 
 //<----------------------------------------<

@@ -29,6 +29,7 @@ namespace physx {
 namespace he {
 
 struct vec3;
+struct vec2;
 
 struct vec4
 {
@@ -38,6 +39,7 @@ public:
     vec4();
     explicit vec4(const physx::PxVec4& vec);
     vec4(const vec3& vec, float w);
+    vec4(const vec2& xy, float z, float w);
     vec4(float x, float y, float z, float w);
     ~vec4();
 

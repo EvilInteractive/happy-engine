@@ -15,51 +15,47 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 19/05/2012
 
-#ifndef _HT_MainGame_H_
-#define _HT_MainGame_H_
+#ifndef _HE_Ray_H_
+#define _HE_Ray_H_
 #pragma once
 
-#include "Game.h"
-
 namespace he {
-    namespace tools {
-        class FPSGraph;
-    }
-    namespace ge {
-        class Entity;
-    }
-    namespace gfx {
-        class SkyBox;
-    }
+namespace gfx {
+    class ICamera;
 }
 
-namespace ht {
+struct RayCastResult
+{
+    bool hit;
+    vec3 hitPosition;
+    vec3 hitNormal;
+    float hitDistance;
+};
 
-class MainGame : public he::ge::Game
+class Ray
 {
 public:
-    MainGame();
-    virtual ~MainGame();
+    Ray(const vec3& position, const vec3& direction, float maxDist = FLT_MAX);
+    Ray(const gfx::ICamera* camera, const vec2& screenCoord, float maxDist = FLT_MAX);
+    virtual ~Ray();
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void drawGui();
+    const vec3& getOrigin() const;
+    const vec3& getDirection() const;
+    float getMaxDistance() const;
 
 private:
-    he::tools::FPSGraph* m_pFPSGraph;
 
-    bool m_SpinShadows;
+    vec3 m_Origin;
+    vec3 m_Direction;
+    float m_MaxDistance;
 
-    std::vector<he::ge::Entity*> m_EntityList;
-    he::gfx::SkyBox* m_pSkyBox;
 
     //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    Ray(const Ray&);
+    Ray& operator=(const Ray&);
 };
 
 } //end namespace

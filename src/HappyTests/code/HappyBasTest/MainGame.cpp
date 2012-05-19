@@ -49,7 +49,7 @@ MainGame::MainGame(): m_pFPSGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(fa
 MainGame::~MainGame()
 {
     delete m_pSkyBox;
-    std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::game::Entity* entity)
+    std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
         delete entity;     
     });
@@ -76,8 +76,8 @@ void MainGame::load()
     m_pFPSGraph = NEW tools::FPSGraph();
     //m_pFPSGraph->setType(1);
 
-    game::Entity* scene(NEW game::Entity());
-    game::ModelComponent* modelComp(NEW game::ModelComponent());
+    ge::Entity* scene(NEW ge::Entity());
+    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
     modelComp->setMaterial(CONTENT->loadMaterial("testScene3.material"));
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial().getCompatibleVertexLayout()));
     //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
@@ -89,7 +89,7 @@ void MainGame::load()
     scene->addComponent(modelComp);
     mesh->release();
 
-    modelComp = NEW game::ModelComponent();
+    modelComp = NEW ge::ModelComponent();
     modelComp->setMaterial(CONTENT->loadMaterial("testScene4.material"));
     mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout());
     modelComp->setModelMesh(mesh->getHandle());
@@ -103,7 +103,7 @@ void MainGame::load()
     GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
     GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
 
-    game::PointLightComponent* pTempPointLightComp(NEW game::PointLightComponent());
+    ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
     scene->addComponent(pTempPointLightComp);
     pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
     pTempPointLightComp->setMultiplier(50.0f);
@@ -119,7 +119,7 @@ void MainGame::load()
 
 void MainGame::tick( float dTime )
 {
-    he::game::Game::tick(dTime);
+    he::ge::Game::tick(dTime);
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;

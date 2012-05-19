@@ -31,7 +31,7 @@ namespace gfx {
 class Texture2D;
 class ModelMesh;
 
-class AutoExposure : public game::ITickable
+class AutoExposure : public ge::ITickable
 {
 public:
     AutoExposure();

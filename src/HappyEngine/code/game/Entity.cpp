@@ -21,11 +21,9 @@
 #include "HappyPCH.h" 
 
 #include "Entity.h"
-#include "HappyNew.h"
-#include <algorithm>
 
 namespace he {
-namespace game {
+namespace ge {
 
 Entity::Entity()
 {

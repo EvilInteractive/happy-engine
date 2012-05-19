@@ -28,6 +28,8 @@
 
 
 namespace he {
+    class Ray;
+    struct RayCastResult;
 namespace px {
 
 class HappyPhysicsAllocator : public physx::PxAllocatorCallback
@@ -81,6 +83,8 @@ public:
     physx::PxPhysics* getSDK() const;
     physx::PxScene* getScene() const;
     //PhysicsCarManager* getCarManager() const;
+
+    RayCastResult raycast(const Ray& ray) const;
 
     physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
    // const px::PhysicsMaterial& getDriveableMaterial( byte id );

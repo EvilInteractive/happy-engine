@@ -26,7 +26,7 @@
 #include "DefaultSkinnedDrawable.h"
 
 namespace he {
-namespace game {
+namespace ge {
     
 class RiggedModelComponent : public gfx::DefaultSkinnedDrawable, public IComponent
 {

@@ -28,7 +28,7 @@
 #include "Game.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 Random PointLightComponent::s_Random;
 
@@ -156,7 +156,7 @@ const vec3& PointLightComponent::getColor() const
     return m_OriginalPointLight.getColor();
 }
 
-void he::game::PointLightComponent::setBroken( bool broken )
+void he::ge::PointLightComponent::setBroken( bool broken )
 {
     m_Broken = broken;
 }

@@ -37,7 +37,7 @@ namespace he {
 
 namespace ht {
 
-class MainGame : public he::game::Game
+class MainGame : public he::ge::Game
 {
 public:
     MainGame();

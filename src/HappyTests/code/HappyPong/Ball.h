@@ -30,7 +30,7 @@
 namespace ht {
 class MainGame;
 class LightFlashComponent;
-class Ball : public he::game::Entity, public he::game::ITickable
+class Ball : public he::ge::Entity, public he::ge::ITickable
 {
 public:
     Ball(MainGame* mainGame);

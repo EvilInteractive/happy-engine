@@ -29,7 +29,7 @@
 #include "PhysicsStaticActor.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 class StaticPhysicsComponent : public IComponent
 {

@@ -27,7 +27,7 @@
 #include "IPickable.h"
 
 namespace he {
-namespace game {
+namespace ge {
     
 class ModelComponent : public gfx::DefaultSingleDrawable, public IComponent
 {

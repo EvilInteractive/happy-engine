@@ -36,11 +36,11 @@
 
 namespace ht {
 
-Palet::Palet(const MainGame* game, he::byte player, bool ai): 
+Palet::Palet(const MainGame* ge, he::byte player, bool ai): 
     m_Speed(50.0f), 
     m_PaletDim(1.0f, 5.0f),
     m_Player(player),
-    m_Game(game),
+    m_Game(ge),
     m_Ai(ai)
 {
     if (m_Player == 0)
@@ -48,7 +48,7 @@ Palet::Palet(const MainGame* game, he::byte player, bool ai):
     else
         m_Position = he::vec3(-40, 0, 0);
 
-    he::game::ModelComponent* model(NEW he::game::ModelComponent());
+    he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
     model->setMaterial(CONTENT->loadMaterial("pong/palet.material"));
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/palet.binobj", "M_Palet", model->getMaterial().getCompatibleVertexLayout()));
     model->setModelMesh(mesh->getHandle());

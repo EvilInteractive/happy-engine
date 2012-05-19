@@ -22,7 +22,7 @@
 #include "SerializerStream.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 SerializerStream::SerializerStream(const std::string& path, bool save)
 {

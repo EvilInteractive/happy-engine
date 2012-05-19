@@ -25,7 +25,7 @@
 #include "Game.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 CameraManager::CameraManager(): m_pActiveCamera(nullptr)
 {
@@ -47,25 +47,25 @@ void CameraManager::init()
     GAME->addToTickList(this);
 }
 
-gfx::Camera* game::CameraManager::getActiveCamera() const
+gfx::Camera* ge::CameraManager::getActiveCamera() const
 {
     return m_pActiveCamera;
 }
 
-void game::CameraManager::addCamera( const std::string& id, gfx::Camera* pCamera )
+void ge::CameraManager::addCamera( const std::string& id, gfx::Camera* pCamera )
 {
     HE_ASSERT(m_Cameras.find(id) == m_Cameras.cend(), "Adding camera to existing ID, memleak will occure");
     m_Cameras[id] = pCamera;
 }
 
-void game::CameraManager::deleteCamera( const std::string& id )
+void ge::CameraManager::deleteCamera( const std::string& id )
 {
     HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Deleting non existing camera");
     delete m_Cameras[id];
     m_Cameras.erase(id);
 }
 
-void game::CameraManager::deleteAllCameras()
+void ge::CameraManager::deleteAllCameras()
 {
     std::for_each(m_Cameras.cbegin(), m_Cameras.cend(), [](const std::pair<std::string, gfx::Camera*>& pr)
     {
@@ -74,7 +74,7 @@ void game::CameraManager::deleteAllCameras()
     m_Cameras.clear();
 }
 
-void game::CameraManager::setActiveCamera( const std::string& id )
+void ge::CameraManager::setActiveCamera( const std::string& id )
 {
     HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Selected Camera does not exist");
     m_pActiveCamera = m_Cameras.find(id)->second;

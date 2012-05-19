@@ -29,7 +29,7 @@ namespace gfx {
     class Camera;
 }
 
-namespace game {
+namespace ge {
 
 class Game
 {

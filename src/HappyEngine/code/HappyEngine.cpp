@@ -119,7 +119,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     {
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
         m_p3DRenderer = NEW gfx::ExtraForward3DRenderer();
-        m_pCameraManager = NEW game::CameraManager();
+        m_pCameraManager = NEW ge::CameraManager();
     }
 
     if (subengines & SubEngine_Content)
@@ -157,7 +157,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     }
 }
 
-void HappyEngine::start(game::Game* pGame)
+void HappyEngine::start(ge::Game* pGame)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -377,7 +377,7 @@ sfx::SoundEngine* HappyEngine::getSoundEngine() const
     return m_pSoundEngine;
 }
 
-game::Game* HappyEngine::getGame() const
+ge::Game* HappyEngine::getGame() const
 {
     return m_pGame;
 }
@@ -387,7 +387,7 @@ gfx::ExtraForward3DRenderer* HappyEngine::get3DRenderer() const
     return m_p3DRenderer;
 }
 
-game::CameraManager* HappyEngine::getCameraManager() const
+ge::CameraManager* HappyEngine::getCameraManager() const
 {
     return m_pCameraManager;
 }

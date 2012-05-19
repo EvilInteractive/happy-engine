@@ -45,7 +45,7 @@ namespace tools {
 namespace sfx {
     class SoundEngine;
 }
-namespace game {
+namespace ge {
     class Game;
     class CameraManager;
 }
@@ -84,7 +84,7 @@ public:
     virtual ~HappyEngine();
 
     static void init(int subengines);
-    void start(game::Game* pGame);
+    void start(ge::Game* pGame);
 
     static void dispose();
 
@@ -109,8 +109,8 @@ public:
     gfx::Renderer2D* getRenderer2D() const;
     tools::Console* getConsole() const;
     sfx::SoundEngine* getSoundEngine() const;
-    game::Game* getGame() const;
-    game::CameraManager* getCameraManager() const;
+    ge::Game* getGame() const;
+    ge::CameraManager* getCameraManager() const;
     gfx::ExtraForward3DRenderer* get3DRenderer() const;
 
 private:
@@ -123,8 +123,8 @@ private:
 
     tools::LoadingScreen* m_pLoadingScreen;
 
-    game::Game* m_pGame;
-    game::CameraManager* m_pCameraManager;
+    ge::Game* m_pGame;
+    ge::CameraManager* m_pCameraManager;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
     gfx::Renderer2D* m_pRenderer2D;

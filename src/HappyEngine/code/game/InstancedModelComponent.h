@@ -28,7 +28,7 @@
 #include "IInstancible.h"
 
 namespace he {
-namespace game {
+namespace ge {
     
 class InstancedModelComponent : public IComponent, public gfx::IInstancible, public gfx::I3DObject
 {

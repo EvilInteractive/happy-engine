@@ -28,7 +28,7 @@ namespace he {
     namespace tools {
         class FPSGraph;
     }
-    namespace game {
+    namespace ge {
         class Entity;
     }
 }
@@ -37,7 +37,7 @@ namespace ht {
 class Palet;
 class Obstacle;
 class Ball;
-class MainGame : public he::game::Game
+class MainGame : public he::ge::Game
 {
 public:
     MainGame();
@@ -68,7 +68,7 @@ private:
     Ball* m_Ball;
 
 
-    std::vector<he::game::Entity*> m_EntityList;
+    std::vector<he::ge::Entity*> m_EntityList;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

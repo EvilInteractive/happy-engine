@@ -29,7 +29,7 @@
 #include "PhysicsDynamicActor.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 class DynamicPhysicsComponent : public IComponent, public ITickable
 {

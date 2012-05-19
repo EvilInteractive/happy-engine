@@ -21,6 +21,7 @@
 
 #include "vec4.h"
 #include "vec3.h"
+#include "vec2.h"
 #include "foundation/PxVec4.h"
 
 namespace he {
@@ -35,6 +36,11 @@ vec4::vec4(const physx::PxVec4& vec) : x(vec.x), y(vec.y), z(vec.z), w(vec.w)
 vec4::vec4(const vec3& vec, float w_): x(vec.x), y(vec.y), z(vec.z), w(w_)
 {
 }
+vec4::vec4( const vec2& xy, float z_, float w_ ): x(xy.x), y(xy.y), z(z_), w(w_)
+{
+
+}
+
 vec4::vec4(float x_, float y_, float z_, float w_): x(x_), y(y_), z(z_), w(w_)
 {
 }

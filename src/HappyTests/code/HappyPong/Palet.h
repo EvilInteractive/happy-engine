@@ -28,14 +28,14 @@
 namespace ht {
 class LightFlashComponent;
 class MainGame;
-class Palet : public he::game::Entity, public he::game::ITickable
+class Palet : public he::ge::Entity, public he::ge::ITickable
 {
 public:
-    Palet(const MainGame* game, he::byte player, bool ai);
+    Palet(const MainGame* ge, he::byte player, bool ai);
     virtual ~Palet();
 
     //////////////////////////////////////////////////////////////////////////
-    // he::game::ITickable
+    // he::ge::ITickable
     //////////////////////////////////////////////////////////////////////////
     virtual void tick(float dTime);
 

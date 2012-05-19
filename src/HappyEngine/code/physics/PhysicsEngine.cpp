@@ -25,6 +25,8 @@
 #include "PhysicsTrigger.h"
 #include "extensions/PxVisualDebuggerExt.h"
 
+#include "Ray.h"
+
 namespace he {
 namespace px {
 
@@ -276,6 +278,31 @@ void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*
             break;
         }
     }
+}
+
+RayCastResult PhysicsEngine::raycast( const Ray& ray ) const
+{
+    physx::PxRaycastHit hit;
+    const physx::PxSceneQueryFlags outputFlags =    physx::PxSceneQueryFlag::eDISTANCE | 
+                                                    physx::PxSceneQueryFlag::eIMPACT | 
+                                                    physx::PxSceneQueryFlag::eNORMAL;
+
+    physx::PxVec3 origin, direction;
+    ray.getOrigin().toPxVec3(&origin);
+    ray.getDirection().toPxVec3(&direction);
+    RayCastResult result;
+    if (m_pScene->raycastSingle(origin, direction, ray.getMaxDistance(), outputFlags, hit))
+    {
+        result.hit = true;
+        result.hitDistance = hit.distance;
+        result.hitPosition = vec3(hit.impact);
+        result.hitNormal = vec3(hit.normal);
+    }
+    else
+    {
+        result.hit = false;
+    }
+    return result;
 }
 
 } } //end namespace

@@ -28,7 +28,7 @@
 #include "PhysicsTrigger.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 class TriggerComponent : public IComponent, public ITickable
 {

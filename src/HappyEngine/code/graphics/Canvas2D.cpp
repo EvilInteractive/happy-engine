@@ -541,7 +541,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
         m_pFontEffect->setFontColor(m_FillColor);
         m_pFontEffect->setDepth(getNewDepth());
 
-        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
         GL::heBlendEnabled(true);
 

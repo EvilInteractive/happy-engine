@@ -36,7 +36,7 @@ Obstacle::Obstacle():
     m_Position(0, 0, 0), 
     m_Radius(8.0f)
 {
-    he::game::ModelComponent* model(NEW he::game::ModelComponent());
+    he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
     model->setMaterial(CONTENT->loadMaterial("pong/obstacle.material"));
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/obstacles.binobj", "M_Torus", model->getMaterial().getCompatibleVertexLayout()));
     model->setModelMesh(mesh->getHandle());

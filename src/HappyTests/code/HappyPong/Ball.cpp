@@ -41,7 +41,7 @@ Ball::Ball(MainGame* mainGame):
 {
     reset();
 
-    he::game::ModelComponent* model(NEW he::game::ModelComponent());
+    he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
     model->setMaterial(CONTENT->loadMaterial("pong/ball.material"));
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/ball.binobj", "M_Bal", model->getMaterial().getCompatibleVertexLayout()));
     model->setModelMesh(mesh->getHandle());
@@ -59,7 +59,7 @@ Ball::Ball(MainGame* mainGame):
     m_LightFlashComponent->setNormalMultiplier(0);
     m_LightFlashComponent->setFlashDuration(0.25f);
 
-    he::game::PointLightComponent* redLight(NEW he::game::PointLightComponent());
+    he::ge::PointLightComponent* redLight(NEW he::ge::PointLightComponent());
     addComponent(redLight);
     redLight->setAttenuation(1.0f, 50);
     redLight->setMultiplier(10);

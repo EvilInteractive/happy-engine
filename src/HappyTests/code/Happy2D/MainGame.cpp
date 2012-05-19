@@ -78,7 +78,7 @@ void MainGame::load()
 
 void MainGame::tick( float dTime )
 {
-    he::game::Game::tick(dTime);
+    he::ge::Game::tick(dTime);
     m_pFPSGraph->tick(dTime);
 }
 
@@ -97,6 +97,7 @@ void MainGame::drawGui()
     //m_pCanvas->fillText(he::gui::Text("Testing blie bloe bla Qede", m_pFont), he::vec2(250,300));
     
     //m_pCanvas->drawImage(m_pFont->getTextureAtlas(), he::vec2(0,0));//, he::vec2(20,20), he::RectF(320,5,20,20));
+    m_pCanvas->drawImage(m_pFont->getTextureAtlas(), he::vec2(20, 20));
 
     m_pCanvas->draw();
 

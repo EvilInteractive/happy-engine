@@ -22,7 +22,7 @@
 #pragma once
 
 namespace he {
-namespace game {
+namespace ge {
 
 class ITickable
 {

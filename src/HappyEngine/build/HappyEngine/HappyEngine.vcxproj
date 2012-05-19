@@ -120,6 +120,7 @@
     <ClCompile Include="..\..\code\math\mat44.cpp" />
     <ClCompile Include="..\..\code\math\Polygon.cpp" />
     <ClCompile Include="..\..\code\math\Random.cpp" />
+    <ClCompile Include="..\..\code\math\Ray.cpp" />
     <ClCompile Include="..\..\code\math\Rect.cpp" />
     <ClCompile Include="..\..\code\math\Sphere.cpp" />
     <ClCompile Include="..\..\code\math\Triangulator.cpp" />
@@ -288,6 +289,7 @@
     <ClInclude Include="..\..\code\math\MathFunctions.h" />
     <ClInclude Include="..\..\code\math\Polygon.h" />
     <ClInclude Include="..\..\code\math\Random.h" />
+    <ClInclude Include="..\..\code\math\Ray.h" />
     <ClInclude Include="..\..\code\math\Rect.h" />
     <ClInclude Include="..\..\code\math\Sphere.h" />
     <ClInclude Include="..\..\code\math\Triangulator.h" />

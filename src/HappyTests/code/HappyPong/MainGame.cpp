@@ -46,7 +46,7 @@ MainGame::MainGame(): m_pFPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(
 
 MainGame::~MainGame()
 {
-    std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::game::Entity* entity)
+    std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
         delete entity;     
     });
@@ -89,8 +89,8 @@ void MainGame::load()
 
     m_BoardDimension = he::vec2(85, 47);
 
-    he::game::Entity* board(NEW he::game::Entity());
-    he::game::ModelComponent* boardModel(NEW he::game::ModelComponent());
+    he::ge::Entity* board(NEW he::ge::Entity());
+    he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
     boardModel->setMaterial(CONTENT->loadMaterial("pong/board.material"));
     he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial().getCompatibleVertexLayout()));
     boardModel->setModelMesh(mesh->getHandle());
@@ -110,7 +110,7 @@ void MainGame::load()
 
 void MainGame::tick( float dTime )
 {
-    he::game::Game::tick(dTime);
+    he::ge::Game::tick(dTime);
 
 
     PROFILER_BEGIN("Fps graph");

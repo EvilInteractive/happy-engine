@@ -28,7 +28,7 @@
 #include "Game.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
 {

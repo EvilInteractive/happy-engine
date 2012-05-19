@@ -26,7 +26,7 @@
 
 namespace ht {
 
-class LightFlashComponent : public he::game::PointLightComponent
+class LightFlashComponent : public he::ge::PointLightComponent
 {
 public:
     LightFlashComponent();

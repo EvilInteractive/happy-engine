@@ -40,37 +40,102 @@ public:
     vec3();
     explicit vec3(const physx::PxVec3& vec);
     vec3(float x, float y, float z);
+    vec3(const vec2& xy, float z);
     ~vec3();
 
     vec3(const vec3& other);
-    vec3& operator=(const vec3& other);
+    inline vec3& operator=(const vec3& other)
+    {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+        return *this;
+    }
 
     //>---------Getters----------------------->
     vec2 xz() const;
     vec2 xy() const;
+    void toPxVec3(physx::PxVec3* outVec) const;
     //<---------------------------------------<
 
     //>---------Operators--------------------->
-    vec3 operator-() const;
+    inline vec3 operator-() const
+    {
+        return vec3(-x, -y, -z);
+    }
 
-    vec3 operator*(float a) const;
-    vec3 operator/(float a) const;
+    inline vec3 operator*(float a) const
+    {
+        return vec3(x * a, y * a, z * a);
+    }
+    inline vec3 operator/(float a) const
+    {
+        return vec3(x / a, y / a, z / a);
+    }
 
-    vec3 operator+(const vec3& v) const;
-    vec3 operator-(const vec3& v) const;
+    inline vec3 operator+(const vec3& v) const
+    {
+        return vec3(x + v.x, y + v.y, z + v.z);
+    }
+    inline vec3 operator-(const vec3& v) const
+    {
+        return vec3(x - v.x, y - v.y, z - v.z);
+    }
 
-    vec3& operator+=(const vec3& v);
-    vec3& operator-=(const vec3& v);
-    vec3& operator*=(float a);
-    vec3& operator/=(float a);
+    inline vec3& operator+=(const vec3& v)
+    {
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        return *this;
+    }
+    inline vec3& operator-=(const vec3& v)
+    {
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        return *this;
+    }
+    inline vec3& operator*=(float a)
+    {
+        x *= a;
+        y *= a;
+        z *= a;
+        return *this;
+    }
+    inline vec3& operator/=(float a)
+    {
+        x /= a;
+        y /= a;
+        z /= a;
+        return *this;
+    }
 
-    vec3& operator*=(const vec3& v); //component wise mult
-    vec3& operator/=(const vec3& v);
+    inline vec3& operator*=(const vec3& v) //component wise mult
+    {
+        x *= v.x;
+        y *= v.y;
+        z *= v.z;
+        return *this;
+    }
+    inline vec3& operator/=(const vec3& v)
+    {
+        x /= v.x;
+        y /= v.y;
+        z /= v.z;
+        return *this;
+    }
 
-    bool operator==(const vec3& v) const;
-    bool operator!=(const vec3& v) const;
+    inline bool operator==(const vec3& v) const
+    {
+        return x == v.x && y == v.y && z == v.z;
+    }
+    inline bool operator!=(const vec3& v) const
+    {
+        return x != v.x || y != v.y || z != v.z;
+    }
 
-    bool operator<(const vec3& v) const; //FOR std::MAP doesn't make any sense else
+    bool operator<(const vec3& v) const; //for std::map/sorting purposes, it doesn't make any sense else, compares first x than y than z
     //<----------------------------------------<
 };
 

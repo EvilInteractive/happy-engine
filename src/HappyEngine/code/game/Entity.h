@@ -29,7 +29,7 @@
 #include "I3DObject.h"
 
 namespace he {
-namespace game {
+namespace ge {
 
 class Entity : public gfx::I3DObject
 {
