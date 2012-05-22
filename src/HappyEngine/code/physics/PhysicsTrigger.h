@@ -37,22 +37,23 @@ public:
     virtual ~PhysicsTrigger();
 
     /* GENERAL */
-    void addTriggerShape(const IPhysicsShape* pShape, const mat44& localPose = mat44::Identity);
+    void addTriggerShape(const IPhysicsShape* shape, const mat44& localPose = mat44::Identity);
 
     /* SETTERS */
     void setPose(const vec3& move, const vec3& axis, float angle);
     void setPose(const mat44& pose);
 
     /* CALLBACKS */
-    void onTriggerEnter(physx::PxShape* pShape);
-    void onTriggerLeave(physx::PxShape* pShape);
-    void addOnTriggerEnterCallBack(boost::function<void()> callback);
-    void addOnTriggerLeaveCallBack(boost::function<void()> callback);
+    void onTriggerEnter(physx::PxShape* shape);
+    void onTriggerLeave(physx::PxShape* shape);
+    void addOnTriggerEnterCallBack(const boost::function<void()>& callback);
+    void addOnTriggerLeaveCallBack(const boost::function<void()>& callback);
 
 private:
+    void addShape(physx::PxShape* shape);
 
     /* DATAMEMBERS */
-    PhysicsDynamicActor* m_pActor;
+    PhysicsDynamicActor* m_Actor;
 
     event<void> m_OnTriggerEnterEvent;
     event<void> m_OnTriggerLeaveEvent;

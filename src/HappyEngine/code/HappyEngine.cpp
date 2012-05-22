@@ -56,7 +56,6 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
 }
 HappyEngine::~HappyEngine()
 {
-    tools::Profiler::dispose();
 }
 
 void HappyEngine::quit()
@@ -68,12 +67,17 @@ void HappyEngine::dispose()
     HE_INFO("");
     HE_INFO("--Thank you for using HappyEngine--");
     HAPPYENGINE->cleanup();
+
+    StaticDataManager::destroy();
+    delete HAPPYENGINE->m_pPhysicsEngine;
+
     delete s_pHappyEngine;
     s_pHappyEngine = nullptr;
-    StaticDataManager::destroy();
 }
 void HappyEngine::cleanup()
 {  
+    tools::Profiler::dispose();
+
     m_AudioThread.join(); // wait for audiothread to finish
 
     //dispose/delete all sub engines here
@@ -90,8 +94,6 @@ void HappyEngine::cleanup()
     m_pSoundEngine = nullptr;
     delete m_pControlsManager;
     m_pControlsManager = nullptr;
-    delete m_pPhysicsEngine;
-    m_pPhysicsEngine = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
     delete m_pCameraManager;

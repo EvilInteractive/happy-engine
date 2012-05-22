@@ -24,9 +24,6 @@
 
 #include "RenderSettings.h"
 
-#include "PhysicsConcaveMesh.h"
-#include "PhysicsConvexMesh.h"
-
 #include "Shader.h"
 #include "Material.h"
 
@@ -70,8 +67,8 @@ public:
 
     gfx::Line::pointer loadLine(const std::string& path);
 
-    const std::vector<px::PhysicsConvexMesh::pointer>& loadPhysicsConvex(const std::string& path);
-    const std::vector<px::PhysicsConcaveMesh::pointer>& loadPhysicsConcave(const std::string& path);
+    ObjectHandle loadPhysicsConvex(const std::string& path);
+    ObjectHandle loadPhysicsConcave(const std::string& path);
 
     gfx::Font* loadFont(const std::string& path, ushort size);
     gfx::Font* getDefaultFont(ushort size = 12);

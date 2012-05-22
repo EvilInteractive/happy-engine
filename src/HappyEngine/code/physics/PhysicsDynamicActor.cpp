@@ -21,15 +21,16 @@
 #include "HappyPCH.h" 
 
 #include "PhysicsDynamicActor.h"
-#include "HappyEngine.h"
-#include "HeAssert.h"
+
 #include "PhysicsEngine.h"
 
 #include "PhysicsBoxShape.h"
 #include "PhysicsSphereShape.h"
 #include "PhysicsConvexShape.h"
 #include "PhysicsCapsuleShape.h"
-#include "geometry/PxCapsuleGeometry.h"
+
+#include "PhysicsConvexMesh.h"
+#include "ResourceFactory.h"
 
 namespace he {
 namespace px {
@@ -68,49 +69,71 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose )
 {
     PHYSICS->lock();
-    physx::PxShape* pPxShape(nullptr);
     switch (pShape->getType())
     {
     case PhysicsShapeType_Box:
         {
             const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(pShape));
-            pPxShape = m_pActor->createShape(
+            physx::PxShape* pxShape(m_pActor->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape, mass);
             break;
         }
     case PhysicsShapeType_Sphere:
         {
             const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(pShape));
-            pPxShape = m_pActor->createShape(
+            physx::PxShape* pxShape(m_pActor->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape, mass);
             break;
         }
     case PhysicsShapeType_Capsule:
         {
             const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
-            pPxShape = m_pActor->createShape(
+            physx::PxShape* pxShape(m_pActor->createShape(
                 physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape, mass);
             break;
         }
     case PhysicsShapeType_Convex:
         {
-            const PhysicsConvexShape* pConvexShape(static_cast<const PhysicsConvexShape*>(pShape));
-            pPxShape = m_pActor->createShape(
-                physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
-                    physx::PxMeshScale(physx::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
-                    *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+            const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(pShape));
+            if (convexShape->getConvexMesh() != ObjectHandle::unassigned) // load failed
+            {
+                const std::vector<physx::PxConvexMesh*>& meshes(
+                    ResourceFactory<PhysicsConvexMesh>::getInstance()->get(
+                    convexShape->getConvexMesh())->getInternalMeshes());
+
+                std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxConvexMesh* mesh)
+                {
+                    physx::PxVec3 scale;
+                    convexShape->getScale().toPxVec3(&scale);
+
+                    physx::PxShape* pxShape(m_pActor->createShape(
+                        physx::PxConvexMeshGeometry(mesh, 
+                            physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
+                            *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+                    addShape(pxShape, mass);
+                });
+            }
             break;
         }
 
-    default: HE_ASSERT(false, "Type not supported with dynamic actors");
+    default: 
+        HE_ASSERT(false, "Type not supported with dynamic actors");
         break;
     }
-    HE_ASSERT(pPxShape != nullptr, "Shape creation failed");
+    PHYSICS->unlock();
+}
 
-    pPxShape->userData = static_cast<IPhysicsActor*>(this);
+void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass )
+{
+    HE_ASSERT(shape != nullptr, "Shape creation failed");
+
+    shape->userData = static_cast<IPhysicsActor*>(this);
 
     physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
     //physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
@@ -122,9 +145,8 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     physx::PxFilterData qFilter;
     //physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
 
-    pPxShape->setQueryFilterData(qFilter);
-    pPxShape->setSimulationFilterData(sFilter);
-    PHYSICS->unlock();
+    shape->setQueryFilterData(qFilter);
+    shape->setSimulationFilterData(sFilter);
 }
 
 PhysicsDynamicActor::~PhysicsDynamicActor()

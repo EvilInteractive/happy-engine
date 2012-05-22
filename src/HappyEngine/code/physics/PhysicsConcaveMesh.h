@@ -22,8 +22,10 @@
 #define _HE_PHYSICS_CONCAVE_MESH_H_
 #pragma once
 
+#include "Resource.h"
+
 namespace physx {
-class PxTriangleMesh;
+    class PxTriangleMesh;
 }
 
 namespace he {
@@ -33,19 +35,19 @@ class BinaryStream;
 
 namespace px {
 
-class PhysicsConcaveMesh
+class PhysicsConcaveMesh : public Resource<PhysicsConcaveMesh>
 {
 public:
-    PhysicsConcaveMesh(const io::BinaryStream& stream);
+    PhysicsConcaveMesh();
     virtual ~PhysicsConcaveMesh();
 
-    physx::PxTriangleMesh* getInternalMesh() const;
-    const std::string& getName() const;
+    void load(const io::BinaryStream& stream);
+
+    const std::vector<physx::PxTriangleMesh*>& getInternalMeshes() const;
 
 private:
 
-    physx::PxTriangleMesh* m_pInternalMesh;
-    std::string m_Name;
+    std::vector<physx::PxTriangleMesh*> m_InternalMeshes;
 
     //Disable default copy constructor and default assignment operator
     PhysicsConcaveMesh(const PhysicsConcaveMesh&);

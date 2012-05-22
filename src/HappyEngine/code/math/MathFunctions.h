@@ -103,9 +103,13 @@ inline vec2 abs(const vec2& vector)
 {
     return vec2(::abs(vector.x), ::abs(vector.y));
 }
+inline float dot(const vec2& vector1, const vec2& vector2)
+{
+    return vector1.x * vector2.x + vector1.y * vector2.y;
+}
 inline float lengthSqr(const vec2& vector)
 {
-    return sqr(vector.x) + sqr(vector.y);
+    return dot(vector, vector);
 }
 inline float length(const vec2& vector)
 {
@@ -113,14 +117,11 @@ inline float length(const vec2& vector)
 }
 inline vec2 normalize(const vec2& vector)
 {
-    if (vector != vec2(0, 0))
-        return vector / length(vector);
+    float len(length(vector));
+    if (len > FLT_EPSILON)
+        return vector / len;
     else
         return vector;
-}
-inline float dot(const vec2& vector1, const vec2& vector2)
-{
-    return vector1.x * vector2.x + vector1.y * vector2.y;
 }
 inline const vec2& min(const vec2& a, const vec2& b)
 {
@@ -136,9 +137,13 @@ inline vec3 abs(const vec3& vector)
 {
     return vec3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
 }
+inline float dot(const vec3& vector1, const vec3& vector2)
+{
+    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+}
 inline float lengthSqr(const vec3& vector)
 {
-    return sqr(vector.x) + sqr(vector.y) + sqr(vector.z);
+    return dot(vector, vector);
 }
 inline float length(const vec3& vector)
 {
@@ -146,14 +151,11 @@ inline float length(const vec3& vector)
 }
 inline vec3 normalize(const vec3& vector)
 {
-    if (vector != vec3(0,0,0))
-        return vector / length(vector);
+    float len(length(vector));
+    if (len > FLT_EPSILON)
+        return vector / len;
     else
         return vector;
-}
-inline float dot(const vec3& vector1, const vec3& vector2)
-{
-    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
 }
 inline vec3 cross(const vec3& vector1, const vec3& vector2)
 {
@@ -194,9 +196,13 @@ inline vec3 maxPerComponent(const vec3& a, const vec3& b)
 }
 
 //vec4
+inline float dot(const vec4& vector1, const vec4& vector2)
+{
+    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z + vector1.w * vector2.w;
+}
 inline float lengthSqr(const vec4& vector)
 {
-    return sqr(vector.x) + sqr(vector.y) + sqr(vector.z) + sqr(vector.w);
+    return dot(vector, vector);
 }
 inline float length(const vec4& vector)
 {
@@ -204,8 +210,9 @@ inline float length(const vec4& vector)
 }
 inline vec4 normalize(const vec4& vector)
 {
-    if (vector != vec4(0,0,0,0))
-        return vector / length(vector);
+    float len(length(vector));
+    if (len > FLT_EPSILON)
+        return vector / len;
     else
         return vector;
 }

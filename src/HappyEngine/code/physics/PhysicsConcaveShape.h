@@ -24,8 +24,6 @@
 #pragma once
 
 #include "IPhysicsShape.h"
-#include "PhysicsConcaveMesh.h"
-#include "vec3.h"
 
 namespace he {
 namespace px {
@@ -34,18 +32,19 @@ class PhysicsConcaveShape : public IPhysicsShape
 {
 public:
     PhysicsConcaveShape();
-    explicit PhysicsConcaveShape(const PhysicsConcaveMesh::pointer& mesh, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
+    explicit PhysicsConcaveShape(const ObjectHandle& concaveMesh, const vec3& scale = vec3::one);
     virtual ~PhysicsConcaveShape();
-    //copy OK
+    PhysicsConcaveShape(const PhysicsConcaveShape& other);
+    PhysicsConcaveShape& operator=(const PhysicsConcaveShape& other);
 
     virtual PhysicsShapeType getType() const { return PhysicsShapeType_Concave; }
 
-    physx::PxTriangleMesh* getInternalMesh() const;
-    const vec3 getScale() const;
+    const ObjectHandle& getConcaveMesh() const;
+    const vec3& getScale() const;
 
 private:
 
-    physx::PxTriangleMesh* m_pInternalMesh;
+    ObjectHandle m_ConcaveMesh;
     vec3 m_Scale;
 };
 

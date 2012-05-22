@@ -35,7 +35,7 @@ PhysicsBoxShape::~PhysicsBoxShape()
 
 
 
-const vec3 PhysicsBoxShape::getDimension() const
+const vec3& PhysicsBoxShape::getDimension() const
 {
     return m_Dimension;
 }

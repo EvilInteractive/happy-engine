@@ -23,16 +23,17 @@
 #define _HE_PHYSICS_DYNAMIC_ACTOR_H_
 #pragma once
 
-#include "PxRigidDynamic.h"
-#include "vec3.h"
-#include "mat44.h"
-#include "IPhysicsShape.h"
-#include "PhysicsMaterial.h"
-#include <vector>
 #include "IPhysicsActor.h"
+
+namespace physx {
+    class PxShape;
+    class PxRigidDynamic;
+}
 
 namespace he {
 namespace px {
+class IPhysicsShape;
+class PhysicsMaterial;
 
 class PhysicsDynamicActor : public IPhysicsActor
 {
@@ -56,6 +57,7 @@ public:
     void keyframedSetPose(const mat44& pose);
 
 private:
+    void addShape(physx::PxShape* shape, float mass);
 
     physx::PxRigidDynamic* m_pActor;
 

@@ -25,6 +25,8 @@
 #include "Model.h"
 #include "ModelMesh.h"
 #include "Font.h"
+#include "PhysicsConcaveMesh.h"
+#include "PhysicsConvexMesh.h"
 
 namespace he {
 
@@ -34,6 +36,8 @@ void StaticDataManager::init()
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
     ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
+    ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
+    ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
 }
 
 void StaticDataManager::destroy()
@@ -42,6 +46,8 @@ void StaticDataManager::destroy()
     ResourceFactory<gfx::Texture2D>::destroy();
     ResourceFactory<gfx::Model>::destroy();
     ResourceFactory<gfx::ModelMesh>::destroy();
+    ResourceFactory<px::PhysicsConvexMesh>::destroy();
+    ResourceFactory<px::PhysicsConcaveMesh>::destroy();
 }
 
 } //end namespace

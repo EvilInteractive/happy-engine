@@ -83,7 +83,7 @@ private:
 
     boost::thread m_TextureLoadThread;
 
-    AssetContainer<ObjectHandle>* m_pAssetContainer;
+    AssetContainer<ObjectHandle> m_AssetContainer;
 
     /* DEFAULT COPY & ASSIGNMENT */
     TextureLoader(const TextureLoader&);

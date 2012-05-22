@@ -151,11 +151,11 @@ gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
 }
 
 //////////////////////////////////////////////////////////////////////////
-const std::vector<px::PhysicsConvexMesh::pointer>& ContentManager::loadPhysicsConvex(const std::string& asset)
+ObjectHandle ContentManager::loadPhysicsConvex(const std::string& asset)
 {
     return m_pPhysicsShapeLoader->loadConvex(m_PhysicsPath.str()  + asset);
 }
-const std::vector<px::PhysicsConcaveMesh::pointer>& ContentManager::loadPhysicsConcave(const std::string& asset)
+ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
 {
     return m_pPhysicsShapeLoader->loadConcave(m_PhysicsPath.str() + asset);
 }

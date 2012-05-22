@@ -28,93 +28,110 @@
 #include "PhysicsSphereShape.h"
 #include "PhysicsConvexShape.h"
 #include "PhysicsCapsuleShape.h"
-#include "geometry/PxCapsuleGeometry.h"
+
+#include "ResourceFactory.h"
+#include "PhysicsConvexMesh.h"
 
 namespace he {
 namespace px {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-PhysicsTrigger::PhysicsTrigger(const mat44& pose) : m_pActor(NEW PhysicsDynamicActor(pose))
+PhysicsTrigger::PhysicsTrigger(const mat44& pose) : m_Actor(NEW PhysicsDynamicActor(pose))
 {
-    m_pActor->setKeyframed(true);
+    m_Actor->setKeyframed(true);
 }
 
 PhysicsTrigger::~PhysicsTrigger()
 {
-    delete m_pActor;
+    delete m_Actor;
 }
 
 /* GENERAL */
-void PhysicsTrigger::addTriggerShape(const IPhysicsShape* pShape, const mat44& localPose)
+void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, const mat44& localPose)
 {
     PHYSICS->lock();
-    physx::PxShape* pPxShape(nullptr);
-    switch (pShape->getType())
+    switch (shape->getType())
     {
     case PhysicsShapeType_Box:
         {
-            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(pShape));
-            pPxShape = m_pActor->getInternalActor()->createShape(
+            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(shape));
+            physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
-                *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+                *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape);
             break;
         }
     case PhysicsShapeType_Sphere:
         {
-            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(pShape));
-            pPxShape = m_pActor->getInternalActor()->createShape(
+            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(shape));
+            physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
-                *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+                *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape);
             break;
         }
     case PhysicsShapeType_Capsule:
         {
-            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
-            pPxShape = m_pActor->getInternalActor()->createShape(
+            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(shape));
+            physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
                 physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
-                *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+                *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape);
             break;
         }
     case PhysicsShapeType_Convex:
         {
-            const PhysicsConvexShape* pConvexShape(static_cast<const PhysicsConvexShape*>(pShape));
-            pPxShape = m_pActor->getInternalActor()->createShape(
-                physx::PxConvexMeshGeometry(pConvexShape->getInternalMesh(), 
-                physx::PxMeshScale(physx::PxVec3(pConvexShape->getScale().x, pConvexShape->getScale().y, pConvexShape->getScale().z), physx::PxQuat::createIdentity())),
-                *px::PhysicsMaterial(0.0f, 0.0f, 0.0f).getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
+            const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(shape));
+            if (convexShape->getConvexMesh() != ObjectHandle::unassigned) // load failed
+            {
+                const std::vector<physx::PxConvexMesh*>& meshes(
+                    ResourceFactory<PhysicsConvexMesh>::getInstance()->get(
+                    convexShape->getConvexMesh())->getInternalMeshes());
+
+                std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxConvexMesh* mesh)
+                {
+                    physx::PxVec3 scale;
+                    convexShape->getScale().toPxVec3(&scale);
+
+                    physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
+                        physx::PxConvexMeshGeometry(mesh, 
+                        physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
+                        *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
+                    addShape(pxShape);
+                });
+            }
             break;
         }
-
     default: HE_ASSERT(false, "Type not supported with dynamic actors");
         break;
     }
-    HE_ASSERT(pPxShape != nullptr, "Trigger shape creation failed");
+    PHYSICS->unlock();
+}
+void PhysicsTrigger::addShape( physx::PxShape* shape )
+{
+    HE_ASSERT(shape != nullptr, "Trigger shape creation failed");
 
-    pPxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
-    pPxShape->userData = this;
+    shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
+    shape->userData = this;
 
     physx::PxFilterData sFilter;
     sFilter.word0 = COLLISION_FLAG_OBSTACLE;
     sFilter.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
 
-    //physx::PxFilterData qFilter;
-    //physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
-
-    //pPxShape->setQueryFilterData(qFilter);
-    pPxShape->setSimulationFilterData(sFilter);
-    PHYSICS->unlock();
+    shape->setSimulationFilterData(sFilter);
 }
+
 
 /* SETTERS */
 void PhysicsTrigger::setPose(const vec3& move, const vec3& axis, float angle)
 {
-    m_pActor->getInternalActor()->setKinematicTarget(physx::PxTransform(physx::PxVec3(move.x, move.y, move.z),
+    m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(physx::PxVec3(move.x, move.y, move.z),
         physx::PxQuat(angle, physx::PxVec3(axis.x, axis.y, axis.z))));
 }
 
 void PhysicsTrigger::setPose(const mat44& pose)
 {
-    m_pActor->getInternalActor()->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
+    m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
 /* CALLBACKS */
@@ -128,12 +145,12 @@ void PhysicsTrigger::onTriggerLeave(physx::PxShape* /*pShape*/)
     m_OnTriggerLeaveEvent();
 }
 
-void PhysicsTrigger::addOnTriggerEnterCallBack(boost::function<void()> callback)
+void PhysicsTrigger::addOnTriggerEnterCallBack(const boost::function<void()>& callback)
 {
     m_OnTriggerEnterEvent += callback;
 }
 
-void PhysicsTrigger::addOnTriggerLeaveCallBack(boost::function<void()> callback)
+void PhysicsTrigger::addOnTriggerLeaveCallBack(const boost::function<void()>& callback)
 {
     m_OnTriggerLeaveEvent += callback;
 }

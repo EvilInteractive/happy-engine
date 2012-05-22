@@ -20,34 +20,44 @@
 #include "HappyPCH.h" 
 
 #include "PhysicsConcaveMesh.h"
-#include "HappyNew.h"
 
-#include "HappyEngine.h"
 #include "PhysicsEngine.h"
+#include "BinaryStream.h"
 
 namespace he {
 namespace px {
 
-PhysicsConcaveMesh::PhysicsConcaveMesh(const io::BinaryStream& stream)
+PhysicsConcaveMesh::PhysicsConcaveMesh()
 {
-    m_Name = stream.readString();
-    m_pInternalMesh = PHYSICS->getSDK()->createTriangleMesh(const_cast<io::BinaryStream&>(stream)); // sorry for the const_cast
 }
 
 
 PhysicsConcaveMesh::~PhysicsConcaveMesh()
 {
-    m_pInternalMesh->release();
+    std::for_each(m_InternalMeshes.cbegin(), m_InternalMeshes.cend(), [](physx::PxTriangleMesh* mesh)
+    {
+        mesh->release();
+    });
 }
 
-physx::PxTriangleMesh* PhysicsConcaveMesh::getInternalMesh() const
+void PhysicsConcaveMesh::load( const io::BinaryStream& stream )
 {
-    return m_pInternalMesh;
+    HE_ASSERT(m_InternalMeshes.size() == 0, "PhysicsConcaveMesh %s already loaded!", getName().c_str());
+
+    byte numConcave(stream.readByte());
+
+    for (byte i(0); i < numConcave; ++i)
+    {
+        stream.readString(); // Name not used..
+        m_InternalMeshes.push_back(
+            PHYSICS->getSDK()->createTriangleMesh(const_cast<io::BinaryStream&>(stream))
+        );
+    }
 }
 
-const std::string& PhysicsConcaveMesh::getName() const
+const std::vector<physx::PxTriangleMesh*>& PhysicsConcaveMesh::getInternalMeshes() const
 {
-    return m_Name;
+    return m_InternalMeshes;
 }
 
 } } //end namespace

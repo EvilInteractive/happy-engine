@@ -19,35 +19,54 @@
 //Created: 08/11/2011
 #include "HappyPCH.h" 
 
+#include "ResourceFactory.h"
+
 #include "PhysicsConcaveShape.h"
-#include "HappyEngine.h"
-#include "PhysicsEngine.h"
+#include "PhysicsConcaveMesh.h"
 
 namespace he {
 namespace px {
 
-PhysicsConcaveShape::PhysicsConcaveShape(const PhysicsConcaveMesh::pointer& mesh, const vec3& scale): 
-        m_pInternalMesh(mesh->getInternalMesh()), m_Scale(scale)
+PhysicsConcaveShape::PhysicsConcaveShape(const ObjectHandle& concaveMesh, const vec3& scale): 
+        m_ConcaveMesh(concaveMesh), m_Scale(scale)
 { 
+    ResourceFactory<PhysicsConcaveMesh>::getInstance()->instantiate(m_ConcaveMesh);
 }
 
 PhysicsConcaveShape::PhysicsConcaveShape(): 
-        m_pInternalMesh(nullptr), m_Scale(vec3::one)
+        m_ConcaveMesh(ObjectHandle::unassigned), m_Scale(vec3::one)
 {
 
 }
+
+PhysicsConcaveShape::PhysicsConcaveShape( const PhysicsConcaveShape& other ): 
+        m_ConcaveMesh(other.m_ConcaveMesh), m_Scale(other.m_Scale)
+{
+    ResourceFactory<PhysicsConcaveMesh>::getInstance()->instantiate(m_ConcaveMesh);
+}
+
+PhysicsConcaveShape& PhysicsConcaveShape::operator=( const PhysicsConcaveShape& other )
+{
+    ResourceFactory<PhysicsConcaveMesh>::getInstance()->release(m_ConcaveMesh);
+    m_ConcaveMesh = other.m_ConcaveMesh;
+    m_Scale = other.m_Scale;
+    ResourceFactory<PhysicsConcaveMesh>::getInstance()->instantiate(m_ConcaveMesh);
+    return *this;
+}
+
 
 
 PhysicsConcaveShape::~PhysicsConcaveShape()
 {
+    ResourceFactory<PhysicsConcaveMesh>::getInstance()->release(m_ConcaveMesh);
 }
 
-physx::PxTriangleMesh* PhysicsConcaveShape::getInternalMesh() const
+const ObjectHandle& PhysicsConcaveShape::getConcaveMesh() const
 {
-    return m_pInternalMesh;
+    return m_ConcaveMesh;
 }
 
-const vec3 PhysicsConcaveShape::getScale() const
+const vec3& PhysicsConcaveShape::getScale() const
 {
     return m_Scale;
 }

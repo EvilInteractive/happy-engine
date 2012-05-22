@@ -20,33 +20,52 @@
 #include "HappyPCH.h" 
 
 #include "PhysicsConvexShape.h"
-#include "HappyEngine.h"
-#include "PhysicsEngine.h"
+
+#include "ResourceFactory.h"
+#include "PhysicsConvexMesh.h"
 
 namespace he {
 namespace px {
 
-PhysicsConvexShape::PhysicsConvexShape(const PhysicsConvexMesh::pointer& mesh, const vec3& scale): 
-        m_pInternalMesh(mesh->getInternalMesh()), m_Scale(scale)
+PhysicsConvexShape::PhysicsConvexShape(const ObjectHandle& convexMesh, const vec3& scale): 
+        m_ConvexMesh(convexMesh), m_Scale(scale)
 { 
+    ResourceFactory<PhysicsConvexMesh>::getInstance()->instantiate(m_ConvexMesh);
 }
 
-PhysicsConvexShape::PhysicsConvexShape(): m_pInternalMesh(nullptr), m_Scale()
+PhysicsConvexShape::PhysicsConvexShape(): m_ConvexMesh(ObjectHandle::unassigned), m_Scale()
 {
-
 }
+
+PhysicsConvexShape::PhysicsConvexShape( const PhysicsConvexShape& other ): 
+        m_ConvexMesh(other.m_ConvexMesh), m_Scale(other.m_Scale)
+{
+    ResourceFactory<PhysicsConvexMesh>::getInstance()->instantiate(m_ConvexMesh);
+}
+PhysicsConvexShape& PhysicsConvexShape::operator=( const PhysicsConvexShape& other )
+{
+    if (m_ConvexMesh != ObjectHandle::unassigned)
+        ResourceFactory<PhysicsConvexMesh>::getInstance()->release(m_ConvexMesh);
+    m_ConvexMesh = other.m_ConvexMesh;
+    m_Scale = other.m_Scale;
+    ResourceFactory<PhysicsConvexMesh>::getInstance()->instantiate(m_ConvexMesh);
+    return *this;
+}
+
 
 
 PhysicsConvexShape::~PhysicsConvexShape()
 {
+    if (m_ConvexMesh != ObjectHandle::unassigned)
+        ResourceFactory<PhysicsConvexMesh>::getInstance()->release(m_ConvexMesh);
 }
 
-physx::PxConvexMesh* PhysicsConvexShape::getInternalMesh() const
+const ObjectHandle& PhysicsConvexShape::getConvexMesh() const
 {
-    return m_pInternalMesh;
+    return m_ConvexMesh;
 }
 
-const vec3 PhysicsConvexShape::getScale() const
+const vec3& PhysicsConvexShape::getScale() const
 {
     return m_Scale;
 }

@@ -22,14 +22,13 @@
 #define _HE_PHYSICS_SHAPE_LOADER_H_
 #pragma once
 
-#include "PhysicsConvexMesh.h"
-#include "PhysicsConcaveMesh.h"
 #include "AssetContainer.h"
 
-#include <vector>
-#include <string>
-
 namespace he {
+namespace px {
+    class PhysicsConvexMesh;
+    class PhysicsConcaveMesh;
+}
 namespace ct {
 
 class PhysicsShapeLoader
@@ -38,12 +37,12 @@ public:
     PhysicsShapeLoader();
     virtual ~PhysicsShapeLoader();
 
-    const std::vector<px::PhysicsConvexMesh::pointer>& loadConvex(const std::string& path);
-    const std::vector<px::PhysicsConcaveMesh::pointer>& loadConcave(const std::string& path);
+    ObjectHandle loadConvex(const std::string& path);
+    ObjectHandle loadConcave(const std::string& path);
 
 private:
-    AssetContainer<std::vector<px::PhysicsConvexMesh::pointer>>* m_pConvexAssetContainer;
-    AssetContainer<std::vector<px::PhysicsConcaveMesh::pointer>>* m_pConcaveAssetContainer;
+    AssetContainer<ObjectHandle> m_ConvexAssetContainer;
+    AssetContainer<ObjectHandle> m_ConcaveAssetContainer;
 
     //Disable default copy constructor and default assignment operator
     PhysicsShapeLoader(const PhysicsShapeLoader&);

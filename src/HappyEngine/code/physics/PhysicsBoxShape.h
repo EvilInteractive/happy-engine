@@ -38,7 +38,7 @@ public:
 
     virtual PhysicsShapeType getType() const { return PhysicsShapeType_Box; }
 
-    const vec3 getDimension() const;
+    const vec3& getDimension() const;
 
 private:
     vec3 m_Dimension;

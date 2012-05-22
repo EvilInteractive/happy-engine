@@ -22,7 +22,11 @@
 #define _HE_PHYSICS_CONVEX_MESH_H_
 #pragma once
 
-#include "geometry/PxConvexMesh.h"
+#include "Resource.h"
+
+namespace physx {
+    class PxConvexMesh;
+}
 
 namespace he {
 namespace io {
@@ -30,19 +34,19 @@ namespace io {
 }
 namespace px {
 
-class PhysicsConvexMesh
+class PhysicsConvexMesh : public Resource<PhysicsConvexMesh>
 {
 public:
-    PhysicsConvexMesh(const io::BinaryStream& stream);
+    PhysicsConvexMesh();
     virtual ~PhysicsConvexMesh();
 
-    physx::PxConvexMesh* getInternalMesh() const;
-    const std::string& getName() const;
+    void load(const io::BinaryStream& stream);
+
+    const std::vector<physx::PxConvexMesh*>& getInternalMeshes() const;
 
 private:
 
-    physx::PxConvexMesh* m_pInternalMesh;
-    std::string m_Name;
+    std::vector<physx::PxConvexMesh*> m_InternalMeshes;
 
     //Disable default copy constructor and default assignment operator
     PhysicsConvexMesh(const PhysicsConvexMesh&);

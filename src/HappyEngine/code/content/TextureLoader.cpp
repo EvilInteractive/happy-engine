@@ -37,15 +37,13 @@
 namespace he {
 namespace ct {
 
-TextureLoader::TextureLoader(): m_isLoadThreadRunning(false),
-                                m_pAssetContainer(NEW AssetContainer<ObjectHandle>())
+TextureLoader::TextureLoader(): m_isLoadThreadRunning(false)
 {
 }
 
 
 TextureLoader::~TextureLoader()
 {
-    delete m_pAssetContainer;
 }
 
 
@@ -91,9 +89,9 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_pAssetContainer->isAssetPresent(stream.str()) && FACTORY->isAlive(m_pAssetContainer->getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_pAssetContainer->getAsset(stream.str()));
+        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
         FACTORY->instantiate(handle);       
         return FACTORY->get(handle);
     }
@@ -115,16 +113,16 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
-        m_pAssetContainer->addAsset(stream.str(), handle);
+        m_AssetContainer.addAsset(stream.str(), handle);
 
         return FACTORY->get(handle);
     }
 }
 const gfx::Texture2D* TextureLoader::asyncLoadTexture(const std::string& path, bool storePixelsInTexture)
 {
-    if (m_pAssetContainer->isAssetPresent(path) && FACTORY->isAlive(m_pAssetContainer->getAsset(path)))
+    if (m_AssetContainer.isAssetPresent(path) && FACTORY->isAlive(m_AssetContainer.getAsset(path)))
     {
-        ObjectHandle handle(m_pAssetContainer->getAsset(path));
+        ObjectHandle handle(m_AssetContainer.getAsset(path));
         FACTORY->instantiate(handle); 
         return FACTORY->get(handle);
     }
@@ -146,23 +144,23 @@ const gfx::Texture2D* TextureLoader::asyncLoadTexture(const std::string& path, b
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
-        m_pAssetContainer->addAsset(path, handle);
+        m_AssetContainer.addAsset(path, handle);
 
         return FACTORY->get(handle);
     }
 }
 const gfx::Texture2D* TextureLoader::loadTexture(const std::string& path, bool storePixelsInTexture)
 {
-    if (m_pAssetContainer->isAssetPresent(path) && FACTORY->isAlive(m_pAssetContainer->getAsset(path)))
+    if (m_AssetContainer.isAssetPresent(path) && FACTORY->isAlive(m_AssetContainer.getAsset(path)))
     {
-        ObjectHandle handle(m_pAssetContainer->getAsset(path));
+        ObjectHandle handle(m_AssetContainer.getAsset(path));
         FACTORY->instantiate(handle); 
         return FACTORY->get(handle);
     }
     else
     {
         ObjectHandle handle(FACTORY->create());
-        m_pAssetContainer->addAsset(path, handle);
+        m_AssetContainer.addAsset(path, handle);
 
         TextureLoadData data;
         data.path = path;
@@ -187,16 +185,16 @@ const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_pAssetContainer->isAssetPresent(stream.str()) && FACTORY->isAlive(m_pAssetContainer->getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_pAssetContainer->getAsset(stream.str()));
+        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
         FACTORY->instantiate(handle); 
         return FACTORY->get(handle);
     }
     else
     {
         ObjectHandle handle(FACTORY->create());
-        m_pAssetContainer->addAsset(stream.str(), handle);
+        m_AssetContainer.addAsset(stream.str(), handle);
 
         TextureLoadData data;
         data.path = stream.str();
