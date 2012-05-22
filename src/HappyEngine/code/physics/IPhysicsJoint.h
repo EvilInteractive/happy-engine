@@ -23,6 +23,7 @@
 #pragma once
 
 namespace he {
+namespace px {
 
 class IPhysicsJoint
 {
@@ -30,6 +31,6 @@ public:
     virtual ~IPhysicsJoint() {}
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

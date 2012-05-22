@@ -65,7 +65,7 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
     PHYSICS->getScene()->addActor(*m_pActor);
     PHYSICS->unlock();
 }
-void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose ) const
+void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose )
 {
     PHYSICS->lock();
     physx::PxShape* pPxShape(nullptr);
@@ -110,7 +110,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     }
     HE_ASSERT(pPxShape != nullptr, "Shape creation failed");
 
-    pPxShape->userData = nullptr;
+    pPxShape->userData = static_cast<IPhysicsActor*>(this);
 
     physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
     //physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);

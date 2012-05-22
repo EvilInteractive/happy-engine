@@ -65,11 +65,13 @@ public:
 
     void instantiate(const ObjectHandle& handle)
     {
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", m_DisplayName.c_str());
         HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", m_DisplayName.c_str());
         ++m_RefCounter[handle.index];
     }
     void release(const ObjectHandle& handle)
     {
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): releasing unassigned handle", m_DisplayName.c_str());
         HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", m_DisplayName.c_str(), get(handle)->getName().c_str());
         --m_RefCounter[handle.index];
     }

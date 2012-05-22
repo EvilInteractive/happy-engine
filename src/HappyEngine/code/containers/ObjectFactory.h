@@ -70,6 +70,7 @@ public:
     }
     virtual void destroyObject(const ObjectHandle& handle)
     {
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): destroying unassigned handle", m_DisplayName.c_str());
         if (m_Salt[handle.index] != handle.salt)
         {
             HE_ERROR("ObjectFactory (%s): salt mismatch when destroying object", m_DisplayName.c_str());
@@ -91,6 +92,7 @@ public:
 
     virtual T* get(const ObjectHandle& handle)
     {
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): getting unassigned handle", m_DisplayName.c_str());
         HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
         return m_Pool[handle.index];
     }

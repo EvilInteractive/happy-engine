@@ -55,6 +55,7 @@ public:
     void clearDepth() const;
 
     void addToDrawList(IDrawable* pDrawable);
+    void removeFromDrawList(IDrawable* pDrawable);
     InstancingManager* getInstancingManager() const;
 
     void drawScene();

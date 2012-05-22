@@ -27,7 +27,7 @@
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr)
+ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_AttachedToScene(false)
 {
 }
 
@@ -36,13 +36,19 @@ ModelComponent::~ModelComponent()
 {
     if (m_pModel != nullptr)
         m_pModel->release();
+    if (m_AttachedToScene)
+        GRAPHICS->removeFromDrawList(this);
 }
 
 void ModelComponent::init(Entity* pParent)
 {
     m_pParent = pParent;
 
-    GRAPHICS->addToDrawList(this);
+    if (m_pModel != nullptr && m_AttachedToScene == false)
+    {
+        GRAPHICS->addToDrawList(this);
+        m_AttachedToScene = true;
+    }
 }
 
 void ModelComponent::serialize(SerializerStream& stream)
@@ -83,10 +89,17 @@ const mat44& ModelComponent::getLocalTransform() const
 void ModelComponent::setModelMesh( const ObjectHandle& modelHandle, bool isPickable )
 {
     if (m_pModel != nullptr)
+    {
         m_pModel->release();
+    }
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
     m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     setPickable(isPickable);
+    if (m_AttachedToScene == false && m_pParent != nullptr)
+    {
+        GRAPHICS->addToDrawList(this);
+        m_AttachedToScene = true;
+    }
 }
 
 void ModelComponent::setMaterial( const gfx::Material& material )

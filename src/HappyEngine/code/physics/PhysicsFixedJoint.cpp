@@ -27,14 +27,18 @@
 namespace he {
 namespace px {
 
-PhysicsFixedJoint::PhysicsFixedJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
-                                     const IPhysicsActor* pActor1, const vec3& localAttach1)
+PhysicsFixedJoint::PhysicsFixedJoint(const IPhysicsActor* pActor0, const mat44& localAttach0,
+                                     const IPhysicsActor* pActor1, const mat44& localAttach1)
 {
     PHYSICS->lock();
     m_pJoint = physx::PxFixedJointCreate(*PHYSICS->getSDK(), 
-        pActor0 != nullptr ? pActor0->getInternalActor() : nullptr, physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
-        pActor1 != nullptr ? pActor1->getInternalActor() : nullptr, physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
+        pActor0 != nullptr ? pActor0->getInternalActor() : nullptr, physx::PxTransform(localAttach0.getPhyicsMatrix()),
+        pActor1 != nullptr ? pActor1->getInternalActor() : nullptr, physx::PxTransform(localAttach1.getPhyicsMatrix()));
     PHYSICS->unlock();
+
+#if DEBUG || _DEBUG
+    m_pJoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
+#endif
 }
 
 

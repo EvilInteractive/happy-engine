@@ -35,6 +35,10 @@ PhysicsSphericalJoint::PhysicsSphericalJoint(const IPhysicsActor* pActor0, const
         pActor0->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
         pActor1->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
     PHYSICS->unlock();
+
+#if DEBUG || _DEBUG
+    m_pJoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
+#endif
 }
 
 PhysicsSphericalJoint::PhysicsSphericalJoint( const IPhysicsActor* pActor0, const mat44& localAttach0, const IPhysicsActor* pActor1, const mat44& localAttach1 )

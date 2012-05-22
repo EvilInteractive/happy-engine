@@ -63,7 +63,7 @@ uint Model::getNumMeshes() const
 }
 ModelMesh* Model::instantiateMesh(uint index) const
 {
-    HE_ASSERT(index >= m_Meshes.size(), "Model::instantiateMesh: index out of range");
+    HE_ASSERT(index < m_Meshes.size(), "Model::instantiateMesh: index out of range: %d", index);
     ModelMesh* mesh(m_Meshes[index]);
     ResourceFactory<ModelMesh>::getInstance()->instantiate(mesh->getHandle());
     return mesh;

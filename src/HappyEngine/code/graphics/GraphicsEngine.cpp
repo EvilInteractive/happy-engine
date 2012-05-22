@@ -329,6 +329,10 @@ void GraphicsEngine::addToDrawList( IDrawable* pDrawable )
 {
     m_pDrawManager->addDrawable(pDrawable);
 }
+void GraphicsEngine::removeFromDrawList( IDrawable* pDrawable )
+{
+    m_pDrawManager->removeDrawable(pDrawable);
+}
 
 void GraphicsEngine::initPicking()
 {

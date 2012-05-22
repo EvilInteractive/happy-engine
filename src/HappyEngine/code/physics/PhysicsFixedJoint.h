@@ -36,8 +36,8 @@ class IPhysicsActor;
 class PhysicsFixedJoint : public IPhysicsJoint
 {
 public:
-    PhysicsFixedJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
-                      const IPhysicsActor* pActor1, const vec3& localAttach1);
+    PhysicsFixedJoint(const IPhysicsActor* pActor0, const mat44& localAttach0,
+                      const IPhysicsActor* pActor1, const mat44& localAttach1);
     virtual ~PhysicsFixedJoint();
 
     void setBreakForce( float force, float torque );

@@ -113,6 +113,11 @@ void PhysicsEngine::createScene()
     m_pScene = m_pPhysXSDK->createScene(sceneDesc);
     HE_ASSERT(m_pScene != nullptr, "createScene failed!");
 
+#if DEBUG || _DEBUG
+    m_pScene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
+    m_pScene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
+#endif
+
     m_pScene->setSimulationEventCallback(this);
 }
 
@@ -299,10 +304,12 @@ RayCastResult PhysicsEngine::raycast( const Ray& ray ) const
         result.hitDistance = hit.distance;
         result.hitPosition = vec3(hit.impact);
         result.hitNormal = vec3(hit.normal);
+        result.actorHit = static_cast<IPhysicsActor*>(hit.shape->userData);
     }
     else
     {
         result.hit = false;
+        result.actorHit = nullptr;
     }
     return result;
 }

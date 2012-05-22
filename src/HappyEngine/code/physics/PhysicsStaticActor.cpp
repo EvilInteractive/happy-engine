@@ -64,7 +64,7 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
     PHYSICS->getScene()->addActor(*m_pActor);
     PHYSICS->unlock();
 }
-void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material) const
+void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material)
 {
     PHYSICS->lock();
     physx::PxShape* pPxShape(nullptr);
@@ -119,6 +119,8 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
         break;
     }
     HE_ASSERT(pPxShape != nullptr, "Shape creation failed");
+
+    pPxShape->userData = static_cast<IPhysicsActor*>(this);
 
     physx::PxFilterData sFilter;
     sFilter.word0 = COLLISION_FLAG_GROUND;

@@ -43,7 +43,7 @@ public:
     virtual mat44 getPose() const;
     virtual physx::PxRigidActor* getInternalActor() const;
 
-    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material) const;
+    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material);
 
 private:
 

@@ -52,6 +52,19 @@ struct ObjectHandle
     typedef ushort Type;
     Type index;
     Type salt;
+
+    ObjectHandle(): index(0xffff), salt(0xffff) {}
+
+    bool operator==(const ObjectHandle& other) const
+    {
+        return index == other.index && salt == other.salt;
+    }
+    bool operator!=(const ObjectHandle& other) const
+    {
+        return index != other.index || salt != other.salt;
+    }
+
+    const static ObjectHandle unassigned;
 };
 
 } //end namespace

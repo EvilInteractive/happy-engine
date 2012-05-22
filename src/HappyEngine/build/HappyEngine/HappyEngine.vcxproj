@@ -106,6 +106,7 @@
     <ClCompile Include="..\..\code\graphics\BufferLayout.cpp" />
     <ClCompile Include="..\..\code\graphics\WebView.cpp" />
     <ClCompile Include="..\..\code\HappyEngine.cpp" />
+    <ClCompile Include="..\..\code\HappyTypes.cpp" />
     <ClCompile Include="..\..\code\io\BinaryStream.cpp" />
     <ClCompile Include="..\..\code\io\ControlsManager.cpp" />
     <ClCompile Include="..\..\code\io\FileReader.cpp" />

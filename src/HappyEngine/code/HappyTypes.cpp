@@ -16,52 +16,13 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 19/05/2012
+//Created: 20/05/2012
+#include "HappyPCH.h" 
 
-#ifndef _HE_Ray_H_
-#define _HE_Ray_H_
-#pragma once
+#include "HappyTypes.h"
 
 namespace he {
-namespace px {
-    class IPhysicsActor;
-}
-namespace gfx {
-    class ICamera;
-}
 
-struct RayCastResult
-{
-    bool hit;
-    vec3 hitPosition;
-    vec3 hitNormal;
-    float hitDistance;
-    px::IPhysicsActor* actorHit;
-};
-
-class Ray
-{
-public:
-    Ray(const vec3& position, const vec3& direction, float maxDist = FLT_MAX);
-    Ray(const gfx::ICamera* camera, const vec2& screenCoord, float maxDist = FLT_MAX);
-    virtual ~Ray();
-
-    const vec3& getOrigin() const;
-    const vec3& getDirection() const;
-    float getMaxDistance() const;
-
-private:
-
-    vec3 m_Origin;
-    vec3 m_Direction;
-    float m_MaxDistance;
-
-
-    //Disable default copy constructor and default assignment operator
-    Ray(const Ray&);
-    Ray& operator=(const Ray&);
-};
+const ObjectHandle ObjectHandle::unassigned;
 
 } //end namespace
-
-#endif

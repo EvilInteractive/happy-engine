@@ -45,7 +45,7 @@ public:
     virtual mat44 getPose() const;
     virtual physx::PxRigidDynamic* getInternalActor() const;
 
-    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose = mat44::Identity) const;
+    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose = mat44::Identity);
 
     void setVelocity(const vec3& velocity);
     void addVelocity(const vec3& velocity);

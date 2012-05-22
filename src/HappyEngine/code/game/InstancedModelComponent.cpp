@@ -80,7 +80,7 @@ void InstancedModelComponent::setController( const std::string& key )
     {
         GRAPHICS->getInstancingManager()->getController(m_ControllerKey)->removeInstance(m_InstanceId);
     }
-    else
+    if (key != "")
     {
         m_ControllerKey = key;
         m_InstanceId = GRAPHICS->getInstancingManager()->getController(m_ControllerKey)->addInstance(this);

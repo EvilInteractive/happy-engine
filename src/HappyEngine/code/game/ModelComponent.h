@@ -67,6 +67,8 @@ private:
     mat44 m_mtxLocalTransform;
     
     Entity* m_pParent;
+
+    bool m_AttachedToScene;
     
 
     //Disable default copy constructor and default assignment operator

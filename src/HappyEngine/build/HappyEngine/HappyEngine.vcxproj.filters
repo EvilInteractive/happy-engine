@@ -502,6 +502,9 @@
     <ClCompile Include="..\..\code\math\Ray.cpp">
       <Filter>happyengine\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\HappyTypes.cpp">
+      <Filter>happyengine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\content\BinObjLineLoader.h">

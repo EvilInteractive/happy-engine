@@ -22,11 +22,15 @@
 #define _HE_PHYSICS_CONCAVE_MESH_H_
 #pragma once
 
-#include "boost/shared_ptr.hpp"
-#include "geometry/PxTriangleMesh.h"
-#include "BinaryStream.h"
+namespace physx {
+class PxTriangleMesh;
+}
 
 namespace he {
+namespace io {
+class BinaryStream;
+}
+
 namespace px {
 
 class PhysicsConcaveMesh
@@ -37,8 +41,6 @@ public:
 
     physx::PxTriangleMesh* getInternalMesh() const;
     const std::string& getName() const;
-
-    typedef boost::shared_ptr<PhysicsConcaveMesh> pointer;
 
 private:
 

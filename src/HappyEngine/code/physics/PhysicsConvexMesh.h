@@ -39,8 +39,6 @@ public:
     physx::PxConvexMesh* getInternalMesh() const;
     const std::string& getName() const;
 
-    typedef boost::shared_ptr<PhysicsConvexMesh> pointer;
-
 private:
 
     physx::PxConvexMesh* m_pInternalMesh;
