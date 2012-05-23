@@ -97,21 +97,22 @@ public:
 
 private:
 
-    physx::PxPhysics* m_pPhysXSDK;
-    physx::PxFoundation* m_pPhysXFoundation;
-    physx::PxScene* m_pScene;
+    physx::PxPhysics* m_PhysXSDK;
+    physx::PxFoundation* m_PhysXFoundation;
+    physx::PxScene* m_Scene;
+    physx::PxProfileZoneManager* m_PxProfileZoneManager;
 
-    physx::PxErrorCallback* m_pErrorCallback;
-    physx::PxAllocatorCallback* m_pAllocator;
+    physx::PxErrorCallback* m_ErrorCallback;
+    physx::PxAllocatorCallback* m_Allocator;
 
-    physx::PxDefaultCpuDispatcher* m_pCpuDispatcher;
-    physx::pxtask::CudaContextManager* m_pCudaContextManager;
+    physx::PxDefaultCpuDispatcher* m_CpuDispatcher;
+    physx::pxtask::CudaContextManager* m_CudaContextManager;
 
-    PVD::PvdConnection* m_pVisualDebuggerConnection;
+    PVD::PvdConnection* m_VisualDebuggerConnection;
 
     //PhysicsCarManager* m_pCarManager;
 
-    ct::AssetContainer<physx::PxMaterial*>* m_pMaterials;
+    ct::AssetContainer<physx::PxMaterial*> m_Materials;
 
     void createScene();
     
