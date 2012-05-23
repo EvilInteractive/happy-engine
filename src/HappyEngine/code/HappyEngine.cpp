@@ -207,7 +207,7 @@ void HappyEngine::start(ge::Game* pGame)
 }
 void HappyEngine::loop()
 {
-    PROFILER_BEGIN("Main Loop");
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
     boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
     m_PrevTime = boost::chrono::high_resolution_clock::now();
@@ -220,13 +220,12 @@ void HappyEngine::loop()
     {
         drawLoop();
     }
-
-    PROFILER_END();
 }
 void HappyEngine::updateLoop(float dTime)
 {
-    PROFILER_BEGIN("Update Loop");
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     
+    PROFILER_BEGIN("SFML poll events");
     sf::Event event;
     m_Events.clear();
 
@@ -242,28 +241,21 @@ void HappyEngine::updateLoop(float dTime)
         // needed for checking events in other places in program
         m_Events.push_back(event);
     }
-
-    PROFILER_BEGIN("Controls");
-    if (m_SubEngines & SubEngine_Controls)
-        m_pControlsManager->tick();
     PROFILER_END();
 
-    PROFILER_BEGIN("Content");
+    if (m_SubEngines & SubEngine_Controls)
+        m_pControlsManager->tick();
+
     if (m_SubEngines & SubEngine_Content)
     {
         m_pContentManager->tick(dTime);
         m_pContentManager->glThreadInvoke();
     }
-    PROFILER_END();
 
-    PROFILER_BEGIN("Physx");
     if (m_SubEngines & SubEngine_Physics)
         m_pPhysicsEngine->tick(dTime);
-    PROFILER_END();
 
-    PROFILER_BEGIN("Game");
     m_pGame->tick(dTime);
-    PROFILER_END();
 
     GUI->tick();
 
@@ -271,12 +263,10 @@ void HappyEngine::updateLoop(float dTime)
 
     if (CONTENT->isLoading() == false && m_bGameLoading == true)
         m_bGameLoading = false;
-
-    PROFILER_END();
 }
 void HappyEngine::drawLoop()
 {
-    PROFILER_BEGIN("Draw Loop");
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     // display 3D scene
     GRAPHICS->drawScene();
 
@@ -300,7 +290,6 @@ void HappyEngine::drawLoop()
     
     if (m_SubEngines & SubEngine_Graphics)
         m_pGraphicsEngine->present();
-    PROFILER_END();
 }
 
 HappyEngine* HappyEngine::getPointer()

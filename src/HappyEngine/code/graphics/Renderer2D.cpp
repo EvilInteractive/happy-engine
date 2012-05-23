@@ -213,6 +213,7 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
 
 void Renderer2D::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_WebCore != nullptr)
     {
         m_WebCore->Update();

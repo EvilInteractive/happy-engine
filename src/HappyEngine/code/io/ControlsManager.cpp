@@ -50,6 +50,7 @@ ControlsManager::~ControlsManager()
 
 void ControlsManager::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     int scrollState(0);
     vec2 mousePos(-1.0f,-1.0f);
     std::vector<char> chars;

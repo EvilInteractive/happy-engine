@@ -260,6 +260,7 @@ void Console::displayCmds()
 /* GENERAL */
 void Console::tick()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_pTextBox->hasFocus())
     {
         m_bOpen =! m_bOpen;

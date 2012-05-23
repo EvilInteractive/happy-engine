@@ -156,7 +156,7 @@ void DrawManager::init(const RenderSettings& settings)
 
 void DrawManager::draw()
 {
-    PROFILER_BEGIN("DrawManager::draw");
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
     HE_ASSERT(CAMERAMANAGER->getActiveCamera() != nullptr, "Please set an active camera.");
 
@@ -194,8 +194,6 @@ void DrawManager::draw()
         GUI->drawTexture2DToScreen(m_pNormalRenderMap, vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
         GUI->drawTexture2DToScreen(m_pDepthRenderMap,  vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
     }
-
-    PROFILER_END();
 }
 
 void DrawManager::renderShadow()

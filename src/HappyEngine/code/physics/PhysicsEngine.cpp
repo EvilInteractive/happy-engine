@@ -161,6 +161,7 @@ void PhysicsEngine::stopSimulation()
 }
 void PhysicsEngine::tick(float dTime)
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_Simulate)
     {
         m_Timer += dTime;
@@ -173,24 +174,6 @@ void PhysicsEngine::tick(float dTime)
         }
     }
 }
-void PhysicsEngine::physXThread()
-{
-    const physx::PxReal fixedStep(1.0f / 60.0f);
-    boost::chrono::high_resolution_clock::time_point m_PrevTime(boost::chrono::high_resolution_clock::now());
-    while (m_Simulate)
-    {
-        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
-        m_PrevTime = boost::chrono::high_resolution_clock::now();
-        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
-        m_PhysXMutex.lock(); //only locked when creating shapes etc..
-            m_pScene->fetchResults(true);
-            m_pScene->simulate(fixedStep);
-           // m_pCarManager->tick(fixedStep);
-        m_PhysXMutex.unlock();
-        boost::this_thread::sleep(boost::posix_time::milliseconds(static_cast<int64_t>((fixedStep - (dTime - fixedStep))*boost::milli::den)));
-    }
-}
-
 
 physx::PxPhysics* PhysicsEngine::getSDK() const
 {

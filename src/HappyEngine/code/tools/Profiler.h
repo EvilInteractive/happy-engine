@@ -33,6 +33,17 @@ namespace he {
     }
 namespace tools {
 
+class HierarchicalProfile
+{
+public:
+    HierarchicalProfile(const char* name);
+    ~HierarchicalProfile();
+private:
+    //Disable default copy constructor and default assignment operator
+    HierarchicalProfile(const HierarchicalProfile&);
+    HierarchicalProfile& operator=(const HierarchicalProfile&);
+};
+
 struct ProfileData;
 
 class Profiler
@@ -74,6 +85,7 @@ private:
 
 #define PROFILER_BEGIN(name) PROFILER->begin(name)
 #define PROFILER_END PROFILER->end
+#define HIERARCHICAL_PROFILE(name) he::tools::HierarchicalProfile __hierarchical_profile(name);
 
 } } //end namespace
 

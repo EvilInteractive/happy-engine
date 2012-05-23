@@ -40,6 +40,7 @@ ShaderLoader::~ShaderLoader()
 
 gfx::Shader::pointer ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     std::string key(vsPath+fsPath);
     if (m_pAssetContainer->isAssetPresent(key))
     {

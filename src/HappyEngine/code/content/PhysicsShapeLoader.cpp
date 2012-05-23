@@ -42,6 +42,7 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
 
 ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_ConvexAssetContainer.isAssetPresent(path) && CV_FACTORY->isAlive(m_ConvexAssetContainer.getAsset(path)))
     {
         ObjectHandle handle(m_ConvexAssetContainer.getAsset(path));
@@ -76,6 +77,7 @@ ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
 }
 ObjectHandle PhysicsShapeLoader::loadConcave(const std::string& path)
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_ConcaveAssetContainer.isAssetPresent(path) && CC_FACTORY->isAlive(m_ConcaveAssetContainer.getAsset(path)))
     {
         ObjectHandle handle(m_ConcaveAssetContainer.getAsset(path));

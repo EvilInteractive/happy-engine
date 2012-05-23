@@ -20,8 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "Profiler.h"
-#include "HappyNew.h"
-#include "Renderer2D.h"
 #include "Renderer2D.h"
 
 #include "ContentManager.h"
@@ -34,6 +32,15 @@ namespace he {
 namespace tools {
 
 Profiler* Profiler::s_Profiler = nullptr;
+
+HierarchicalProfile::HierarchicalProfile(const char* name)
+{
+    PROFILER_BEGIN(name);
+}
+HierarchicalProfile::~HierarchicalProfile()
+{
+    PROFILER_END();
+}
 
 struct ProfileData
 {
@@ -145,7 +152,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
 }
 void Profiler::draw()
 {
-    PROFILER_BEGIN("Profiler::draw");
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Width = 0;
     
     gui::Text text(m_pFont);
@@ -165,9 +172,6 @@ void Profiler::draw()
     m_pCanvas2D->fillText(text, vec2(4, 4));
 
     m_pCanvas2D->draw();
-
-    //GUI->setLayer();  
-    PROFILER_END();
 }
 
 } } //end namespace
