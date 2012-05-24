@@ -66,10 +66,11 @@ void DynamicPhysicsComponent::tick( float /*dTime*/ )
 }
 
 
-void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass )
+void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass, 
+    uint32 collisionGroup, uint32 collisionGroupAgainst, const mat44& localPose )
 {
     HE_ASSERT(m_pDynamicActor != nullptr, "attach component first to entity");
-    m_pDynamicActor->addShape(pShape, material, mass);
+    m_pDynamicActor->addShape(pShape, material, mass, collisionGroup, collisionGroupAgainst, localPose);
 }
 
 px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const

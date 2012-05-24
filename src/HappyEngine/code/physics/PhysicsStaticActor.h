@@ -43,10 +43,12 @@ public:
     virtual mat44 getPose() const;
     virtual physx::PxRigidActor* getInternalActor() const;
 
-    void addShape(const IPhysicsShape* shape, const PhysicsMaterial& material);
+    void addShape(const IPhysicsShape* shape, const PhysicsMaterial& material, 
+                uint32 collisionGroup = 0xffffffff, 
+                const mat44& localPose = mat44::Identity);
 
 private:
-    void addShape(physx::PxShape* shape);
+    void addShape(physx::PxShape* shape, uint32 collisionGroup);
 
     physx::PxRigidStatic* m_Actor;
 

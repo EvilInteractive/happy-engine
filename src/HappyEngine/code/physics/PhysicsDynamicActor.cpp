@@ -35,23 +35,6 @@
 namespace he {
 namespace px {
 
-PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass)
-{
-    PHYSICS->lock();
-    m_pActor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
-        physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
-        pose.getPhyicsMatrix().column1.getXYZ(), 
-        pose.getPhyicsMatrix().column2.getXYZ()))));
-    PHYSICS->unlock();
-    HE_ASSERT(m_pActor != nullptr, "Actor creation failed");
-
-    addShape(pShape, material, mass);
-
-    PHYSICS->lock();
-    PHYSICS->getScene()->addActor(*m_pActor);
-    PHYSICS->unlock();
-
-}
 PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 {  
     PHYSICS->lock();
@@ -66,7 +49,8 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
     PHYSICS->getScene()->addActor(*m_pActor);
     PHYSICS->unlock();
 }
-void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose )
+void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
+    uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose/* = mat44::Identity*/ )
 {
     PHYSICS->lock();
     switch (pShape->getType())
@@ -77,7 +61,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             physx::PxShape* pxShape(m_pActor->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
                 *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass);
+            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
             break;
         }
     case PhysicsShapeType_Sphere:
@@ -86,7 +70,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             physx::PxShape* pxShape(m_pActor->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
                 *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass);
+            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
             break;
         }
     case PhysicsShapeType_Capsule:
@@ -95,7 +79,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
             physx::PxShape* pxShape(m_pActor->createShape(
                 physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
                 *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass);
+            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
             break;
         }
     case PhysicsShapeType_Convex:
@@ -116,7 +100,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
                         physx::PxConvexMeshGeometry(mesh, 
                             physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
                             *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-                    addShape(pxShape, mass);
+                    addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
                 });
             }
             break;
@@ -129,7 +113,7 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMa
     PHYSICS->unlock();
 }
 
-void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass )
+void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup )
 {
     HE_ASSERT(shape != nullptr, "Shape creation failed");
 
@@ -138,15 +122,12 @@ void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass )
     physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
     //physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
 
-    physx::PxFilterData sFilter;
-    sFilter.word0 = COLLISION_FLAG_OBSTACLE;
-    sFilter.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+    physx::PxFilterData filter;
+    filter.word0 = collisionGroup;
+    filter.word1 = collisionAgainstGroup;
 
-    physx::PxFilterData qFilter;
-    //physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
-
-    shape->setQueryFilterData(qFilter);
-    shape->setSimulationFilterData(sFilter);
+    shape->setQueryFilterData(filter);
+    shape->setSimulationFilterData(filter);
 }
 
 PhysicsDynamicActor::~PhysicsDynamicActor()

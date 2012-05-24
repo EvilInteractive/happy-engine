@@ -84,7 +84,7 @@ public:
     physx::PxScene* getScene() const;
     //PhysicsCarManager* getCarManager() const;
 
-    RayCastResult raycast(const Ray& ray) const;
+    RayCastResult raycast(const Ray& ray, uint32 collisionGroup = 0xffffffff) const;
 
     physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
    // const px::PhysicsMaterial& getDriveableMaterial( byte id );

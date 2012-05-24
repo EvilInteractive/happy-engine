@@ -83,7 +83,8 @@ public:
     PhysicsRagdoll();
     virtual ~PhysicsRagdoll();
 
-    void initProperties(const vec3& position, const RagdollDesc& desc, const PhysicsMaterial& material);
+    void initProperties(const vec3& position, const RagdollDesc& desc, const PhysicsMaterial& material, 
+        uint32 collisionGroup = 0xffffffff, uint32 collisionGroupAgainst = 0xffffffff);
 
     PhysicsDynamicActor* getArmL1() const;
     PhysicsDynamicActor* getArmL2() const;
@@ -168,7 +169,8 @@ private:
 
     physx::PxAggregate* m_pAggregate;
 
-    void addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material);
+    void addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material, 
+        uint32 collisionGroup = 0xffffffff, uint32 collisionGroupAgainst = 0xffffffff);
 
     //Disable default copy constructor and default assignment operator
     PhysicsRagdoll(const PhysicsRagdoll&);

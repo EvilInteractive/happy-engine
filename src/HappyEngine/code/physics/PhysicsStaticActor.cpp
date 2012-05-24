@@ -67,7 +67,8 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
     PHYSICS->getScene()->addActor(*m_Actor);
     PHYSICS->unlock();
 }
-void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material)
+void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, 
+                                   uint32 collisionGroup, const mat44& localPose)
 {
     PHYSICS->lock();
     switch (pShape->getType())
@@ -77,8 +78,8 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             const PhysicsBoxShape* boxShape(static_cast<const PhysicsBoxShape*>(pShape));
             physx::PxShape* pxShape(m_Actor->createShape(
                 physx::PxBoxGeometry(boxShape->getDimension().x / 2.0f, boxShape->getDimension().y / 2.0f, boxShape->getDimension().z / 2.0f), 
-                *material.getInternalMaterial()));
-            addShape(pxShape);
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape, collisionGroup);
             break;
         }
     case PhysicsShapeType_Sphere:
@@ -86,8 +87,8 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             const PhysicsSphereShape* sphereShape(static_cast<const PhysicsSphereShape*>(pShape));
             physx::PxShape* pxShape(m_Actor->createShape(
                 physx::PxSphereGeometry(sphereShape->getRadius()), 
-                *material.getInternalMaterial()));
-            addShape(pxShape);
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape, collisionGroup);
             break;
         }
     case PhysicsShapeType_Capsule:
@@ -95,8 +96,8 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
             const PhysicsCapsuleShape* capsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
             physx::PxShape* pxShape(m_Actor->createShape(
                 physx::PxCapsuleGeometry(capsuleShape->getRadius(), capsuleShape->getHeight() / 2.0f), 
-                *material.getInternalMaterial()));
-            addShape(pxShape);
+                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+            addShape(pxShape, collisionGroup);
             break;
         }
         break;
@@ -117,8 +118,8 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
                     physx::PxShape* pxShape(m_Actor->createShape(
                         physx::PxConvexMeshGeometry(mesh, 
                         physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
-                        *material.getInternalMaterial()));
-                    addShape(pxShape);
+                        *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+                    addShape(pxShape, collisionGroup);
                 });
             }
             break;
@@ -140,8 +141,8 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
                     physx::PxShape* pxShape(m_Actor->createShape(
                         physx::PxTriangleMeshGeometry(mesh, 
                         physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
-                        *material.getInternalMaterial()));
-                    addShape(pxShape);
+                        *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
+                    addShape(pxShape, collisionGroup);
                 });
             }
             break;
@@ -154,20 +155,18 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* pShape, const PhysicsMat
     PHYSICS->unlock();
 }
 
-void PhysicsStaticActor::addShape( physx::PxShape* shape )
+void PhysicsStaticActor::addShape( physx::PxShape* shape, uint32 collisionGroup )
 {
     HE_ASSERT(shape != nullptr, "Shape creation failed");
 
     shape->userData = static_cast<IPhysicsActor*>(this);
 
-    physx::PxFilterData sFilter;
-    sFilter.word0 = COLLISION_FLAG_GROUND;
-    sFilter.word1 = COLLISION_FLAG_GROUND_AGAINST;
-    physx::PxFilterData qFilter;
-    //physx::PxSetupDrivableShapeQueryFilterData(&qFilter);
+    physx::PxFilterData filter;
+    filter.word0 = collisionGroup;
+    filter.word1 = 0xffffffff;
 
-    shape->setQueryFilterData(qFilter);
-    shape->setSimulationFilterData(sFilter);
+    shape->setQueryFilterData(filter);
+    shape->setSimulationFilterData(filter);
 }
 
 PhysicsStaticActor::~PhysicsStaticActor()

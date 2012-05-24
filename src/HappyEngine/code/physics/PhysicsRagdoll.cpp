@@ -101,14 +101,15 @@ PhysicsRagdoll::~PhysicsRagdoll()
     m_pAggregate->release();
 }
 
-void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material)
+void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material, 
+                                uint32 collisionGroup, uint32 collisionGroupAgainst)
 {
     (*ppActor) = new PhysicsDynamicActor(mat44::createTranslation(m_StartPosition) * part.bonePose);
     PHYSICS->getScene()->removeActor(*(*ppActor)->getInternalActor());
     m_pAggregate->addActor(*(*ppActor)->getInternalActor());
     (*ppActor)->getInternalActor()->setSolverIterationCounts(8, 2);
     PhysicsCapsuleShape pelvisShape(part.radius / 2.0f, part.length);
-    (*ppActor)->addShape(&pelvisShape, material, part.mass, part.capsulePose);
+    (*ppActor)->addShape(&pelvisShape, material, part.mass, collisionGroup, collisionGroupAgainst, part.capsulePose);
 }
 
 void addJoint(physx::PxD6Joint** ppJoint, 
@@ -137,7 +138,8 @@ void addJoint(physx::PxD6Joint** ppJoint,
         (*ppJoint)->setTwistLimit(physx::PxJointLimitPair(twistLimitMin, twistLimitMax, 0.01f));
 }
 
-void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& desc, const PhysicsMaterial& material )
+void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& desc, const PhysicsMaterial& material, 
+                                    uint32 collisionGroup, uint32 collisionGroupAgainst )
 {
     m_StartPosition = position;
 
@@ -146,32 +148,32 @@ void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& des
     m_pAggregate = PHYSICS->getSDK()->createAggregate(20, false);
     PHYSICS->unlock();
 
-    addBodyPart(&m_pArmL1, desc.armL1, material);
-    addBodyPart(&m_pArmL2, desc.armL2, material);
-    addBodyPart(&m_pHandL, desc.handL, material);
+    addBodyPart(&m_pArmL1, desc.armL1, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pArmL2, desc.armL2, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pHandL, desc.handL, material, collisionGroup, collisionGroupAgainst);
 
-    addBodyPart(&m_pArmR1, desc.armR1, material);
-    addBodyPart(&m_pArmR2, desc.armR2, material);
-    addBodyPart(&m_pHandR, desc.handR, material);
+    addBodyPart(&m_pArmR1, desc.armR1, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pArmR2, desc.armR2, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pHandR, desc.handR, material, collisionGroup, collisionGroupAgainst);
 
-    addBodyPart(&m_pHead, desc.head, material);
-    addBodyPart(&m_pNeck, desc.neck, material);
+    addBodyPart(&m_pHead, desc.head, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pNeck, desc.neck, material, collisionGroup, collisionGroupAgainst);
 
-    addBodyPart(&m_pShoulderL, desc.shoulderL, material);
-    addBodyPart(&m_pShoulderR, desc.shoulderR, material);
+    addBodyPart(&m_pShoulderL, desc.shoulderL, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pShoulderR, desc.shoulderR, material, collisionGroup, collisionGroupAgainst);
 
-    addBodyPart(&m_pSpine1, desc.spine1, material);
-    addBodyPart(&m_pSpine2, desc.spine2, material);
-    addBodyPart(&m_pSpine3, desc.spine3, material);
-    addBodyPart(&m_pPelvis, desc.pelvis, material);
+    addBodyPart(&m_pSpine1, desc.spine1, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pSpine2, desc.spine2, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pSpine3, desc.spine3, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pPelvis, desc.pelvis, material, collisionGroup, collisionGroupAgainst);
 
-    addBodyPart(&m_pLegL1, desc.legL1, material);
-    addBodyPart(&m_pLegL2, desc.legL2, material);
-    addBodyPart(&m_pFootL, desc.footL, material);
+    addBodyPart(&m_pLegL1, desc.legL1, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pLegL2, desc.legL2, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pFootL, desc.footL, material, collisionGroup, collisionGroupAgainst);
 
-    addBodyPart(&m_pLegR1, desc.legR1, material);
-    addBodyPart(&m_pLegR2, desc.legR2, material);
-    addBodyPart(&m_pFootR, desc.footR, material);
+    addBodyPart(&m_pLegR1, desc.legR1, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pLegR2, desc.legR2, material, collisionGroup, collisionGroupAgainst);
+    addBodyPart(&m_pFootR, desc.footR, material, collisionGroup, collisionGroupAgainst);
 
 
     //Spine

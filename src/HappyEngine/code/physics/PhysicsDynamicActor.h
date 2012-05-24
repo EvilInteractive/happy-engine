@@ -38,7 +38,6 @@ class PhysicsMaterial;
 class PhysicsDynamicActor : public IPhysicsActor
 {
 public:
-    PhysicsDynamicActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass);
     PhysicsDynamicActor(const mat44& pose);
     virtual ~PhysicsDynamicActor();
 
@@ -46,7 +45,9 @@ public:
     virtual mat44 getPose() const;
     virtual physx::PxRigidDynamic* getInternalActor() const;
 
-    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, const mat44& localPose = mat44::Identity);
+    void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
+                  uint32 collisionGroup = 0xffffffff, uint32 collisionAgainstGroup = 0xffffffff, 
+                  const mat44& localPose = mat44::Identity);
 
     void setVelocity(const vec3& velocity);
     void addVelocity(const vec3& velocity);
@@ -57,7 +58,7 @@ public:
     void keyframedSetPose(const mat44& pose);
 
 private:
-    void addShape(physx::PxShape* shape, float mass);
+    void addShape(physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup);
 
     physx::PxRigidDynamic* m_pActor;
 

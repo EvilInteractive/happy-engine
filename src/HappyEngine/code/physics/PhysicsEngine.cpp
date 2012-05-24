@@ -76,6 +76,30 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
     createScene();
 
 }
+
+physx::PxFilterFlags collisionFilter(
+    physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+    physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+    physx::PxPairFlags& pairFlags, const void* /*constantBlock*/, physx::PxU32 /*constantBlockSize*/)
+{
+    // let triggers through
+    if(physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+    {
+        pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+        return physx::PxFilterFlag::eDEFAULT;
+    }
+
+    // generate contacts for all that were not filtered above
+    pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+
+    // trigger the contact callback for pairs (A,B) where
+    // the filtermask of A contains the ID of B and vice versa.
+    if((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+        pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND;
+
+    return physx::PxFilterFlag::eDEFAULT;
+}
+
 void PhysicsEngine::createScene()
 {
     HE_ASSERT(m_PhysXSDK != nullptr, "m_pPhysXSDK == null");
@@ -94,8 +118,7 @@ void PhysicsEngine::createScene()
         sceneDesc.cpuDispatcher = m_CpuDispatcher;
     }
 
-    if(!sceneDesc.filterShader)
-        sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+    sceneDesc.filterShader = collisionFilter;
 
     #ifdef PX_WINDOWS
     physx::pxtask::CudaContextManagerDesc cudaDesc;
@@ -108,6 +131,8 @@ void PhysicsEngine::createScene()
         sceneDesc.gpuDispatcher = m_CudaContextManager->getGpuDispatcher();
     }
     #endif
+
+    //sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 
     m_Scene = m_PhysXSDK->createScene(sceneDesc);
     HE_ASSERT(m_Scene != nullptr, "createScene failed!");
@@ -276,7 +301,7 @@ void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*
     }
 }
 
-RayCastResult PhysicsEngine::raycast( const Ray& ray ) const
+RayCastResult PhysicsEngine::raycast( const Ray& ray, uint32 collisionGroup ) const
 {
     physx::PxRaycastHit hit;
     const physx::PxSceneQueryFlags outputFlags =    physx::PxSceneQueryFlag::eDISTANCE | 
@@ -287,7 +312,10 @@ RayCastResult PhysicsEngine::raycast( const Ray& ray ) const
     ray.getOrigin().toPxVec3(&origin);
     ray.getDirection().toPxVec3(&direction);
     RayCastResult result;
-    if (m_Scene->raycastSingle(origin, direction, ray.getMaxDistance(), outputFlags, hit))
+    physx::PxSceneQueryFilterData filter;
+    filter.data.word0 = collisionGroup;
+    filter.data.word1 = 0;
+    if (m_Scene->raycastSingle(origin, direction, ray.getMaxDistance(), outputFlags, hit, filter))
     {
         result.hit = true;
         result.hitDistance = hit.distance;

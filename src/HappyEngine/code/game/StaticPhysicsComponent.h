@@ -46,7 +46,7 @@ public:
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
          
-    void addShape( const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material );
+    void addShape( const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, uint32 collisionGroup = 0xffffffff, const mat44& localPose = mat44::Identity );
 
     px::PhysicsStaticActor* getStaticActor() const;
 

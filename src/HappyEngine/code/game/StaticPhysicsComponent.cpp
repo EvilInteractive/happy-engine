@@ -59,10 +59,10 @@ void StaticPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 }
 
-void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material )
+void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, uint32 collisionGroup, const mat44& localPose )
 {
     HE_ASSERT(m_pStaticActor != nullptr, "attach component first to entity");
-    m_pStaticActor->addShape(pShape, material);
+    m_pStaticActor->addShape(pShape, material, collisionGroup, localPose);
 }
 
 px::PhysicsStaticActor* StaticPhysicsComponent::getStaticActor() const
