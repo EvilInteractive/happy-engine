@@ -35,10 +35,10 @@ namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
-InstancingController::InstancingController(bool dynamic, const ObjectHandle& modelHandle, const Material& material):
+InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const Material& material):
     m_Dynamic(dynamic), m_pModelMesh(nullptr), m_Material(material), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_InstancingLayout(material.getCompatibleInstancingLayout()), m_CpuBuffer(material.getCompatibleInstancingLayout().getSize(), 32),
-    m_ManualMode(false)
+    m_ManualMode(false), m_Name(name)
 {
     ResourceFactory<ModelMesh>::getInstance()->instantiate(modelHandle);
     m_pModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
@@ -187,7 +187,7 @@ void InstancingController::updateBuffer()
             m_CpuBuffer.resize(m_BufferCapacity * m_InstancingLayout.getSize());
             glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
-            HE_INFO("Increasing instancing controller's capacity to %d", (int)m_BufferCapacity);
+            HE_INFO("Increasing instancing controller's (%s) capacity to %d", m_Name.c_str(), (int)m_BufferCapacity);
         }
 
         m_CpuBuffer.reset();

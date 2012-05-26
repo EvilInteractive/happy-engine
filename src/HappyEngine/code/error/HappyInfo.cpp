@@ -20,63 +20,31 @@
 #include "HappyPCH.h"
 
 #include "HappyInfo.h"
+#include "Logger.h"
 
 #pragma warning(disable:4996) // use _s version instead
 
 namespace he {
 
-namespace details {
-void HE_INFO( const char* msg, va_list args )
-{
-    char buff[500];
-    he_memset(buff, 0, 500);
-    vsnprintf(buff, 500, msg, args);
-
-    std::cout << "Info: " << buff << "\n";
-    if (HAPPYENGINE != nullptr) 
-        CONSOLE->addMessage(buff, CMSG_TYPE_ENGINE);
-}
-void HE_ERROR( const char* msg, va_list args )
-{
-    char buff[500];
-    he_memset(buff, 0, 500);
-    vsnprintf(buff, 500, msg, args);
-
-    std::cout << "Error: " << buff << "\n";
-    if (HAPPYENGINE != nullptr) 
-        CONSOLE->addMessage(buff, CMSG_TYPE_ERROR);
-}
-void HE_WARNING( const char* msg, va_list args )
-{
-    char buff[500];
-    he_memset(buff, 0, 500);
-    vsnprintf(buff, 500, msg, args);
-
-    std::cout << "Warning: " << buff << "\n";
-    if (HAPPYENGINE != nullptr) 
-        CONSOLE->addMessage(buff, CMSG_TYPE_WARNING);
-}
-} // end namespace details
-
 void HE_INFO( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
-    details::HE_INFO(msg, arg_list);
+    LOG(he::tools::LogType_Info, msg, arg_list);
     va_end(arg_list);
 }
 void HE_ERROR( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
-    details::HE_ERROR(msg, arg_list);
+    LOG(he::tools::LogType_Error, msg, arg_list);
     va_end(arg_list);
 }
 void HE_WARNING( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
-    details::HE_WARNING(msg, arg_list);
+    LOG(he::tools::LogType_Warning, msg, arg_list);
     va_end(arg_list);
 }
 

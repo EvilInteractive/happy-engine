@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\code\tools\FPSGraph.cpp" />
     <ClCompile Include="..\..\code\tools\Grid.cpp" />
     <ClCompile Include="..\..\code\tools\LoadingScreen.cpp" />
+    <ClCompile Include="..\..\code\tools\Logger.cpp" />
     <ClCompile Include="..\..\code\tools\Path.cpp" />
     <ClCompile Include="..\..\code\tools\Profiler.cpp" />
   </ItemGroup>
@@ -329,6 +330,7 @@
     <ClInclude Include="..\..\code\tools\IntTypeHandler.h" />
     <ClInclude Include="..\..\code\tools\ITypeHandler.h" />
     <ClInclude Include="..\..\code\tools\LoadingScreen.h" />
+    <ClInclude Include="..\..\code\tools\Logger.h" />
     <ClInclude Include="..\..\code\tools\Path.h" />
     <ClInclude Include="..\..\code\tools\Profiler.h" />
     <ClInclude Include="..\..\code\tools\StringTypeHandler.h" />

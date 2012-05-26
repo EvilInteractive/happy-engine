@@ -24,12 +24,6 @@
 
 namespace he {
 
-namespace details {
-void HE_INFO(const char* msg, va_list args);
-void HE_ERROR(const char* msg, va_list args);
-void HE_WARNING(const char* msg, va_list args);
-}
-
 void HE_INFO(const char* msg, ...);
 void HE_ERROR(const char* msg, ...);
 void HE_WARNING(const char* msg, ...);

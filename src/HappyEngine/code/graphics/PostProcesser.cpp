@@ -40,7 +40,8 @@ PostProcesser::PostProcesser():
     m_pAutoExposure(nullptr), 
     m_pRandomNormals(nullptr),
     m_pQuad(nullptr),
-    m_ShowDebugTextures(false)
+    m_ShowDebugTextures(false),
+    m_FogColor(0.2f, 0.4f, 0.6f)
 {
 }
 
@@ -107,6 +108,8 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     m_PostShaderVars[PV_ColorMap]  = m_pPostShader->getShaderSamplerId("colorMap"); 
     if (m_Settings.enableNormalEdgeDetect)
         m_PostShaderVars[PV_NormalMap] = m_pPostShader->getShaderSamplerId("normalMap");
+    if (m_Settings.enableFog)
+        m_PostShaderVars[PV_FogColor] = m_pPostShader->getShaderVarId("fogColor");
     if (m_Settings.enableFog || m_Settings.enableAO || m_Settings.enableDepthEdgeDetect)
         m_PostShaderVars[PV_DepthMap] = m_pPostShader->getShaderSamplerId("depthMap");
     if (m_Settings.enableHDR)
@@ -190,6 +193,8 @@ void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap
 
     if (m_Settings.enableNormalEdgeDetect)
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_NormalMap], pNormalMap); 
+    if (m_Settings.enableFog)
+        m_pPostShader->setShaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
     if (m_Settings.enableFog || m_Settings.enableAO || m_Settings.enableDepthEdgeDetect)
         m_pPostShader->setShaderVar(m_PostShaderVars[PV_DepthMap], pDepthMap);
 
@@ -231,6 +236,11 @@ void PostProcesser::drawDebugTextures() const
         GUI->drawTexture2DToScreen(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
         GUI->drawTexture2DToScreen(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
     }
+}
+
+void PostProcesser::setFogColor( const he::vec3& color )
+{
+    m_FogColor = color;
 }
 
 

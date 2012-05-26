@@ -32,6 +32,7 @@ namespace he {
 
 void StaticDataManager::init()
 {
+    tools::Logger::sdmInit();
     ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
@@ -48,6 +49,7 @@ void StaticDataManager::destroy()
     ResourceFactory<gfx::ModelMesh>::destroy();
     ResourceFactory<px::PhysicsConvexMesh>::destroy();
     ResourceFactory<px::PhysicsConcaveMesh>::destroy();
+    tools::Logger::sdmDestroy();
 }
 
 } //end namespace

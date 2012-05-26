@@ -42,6 +42,8 @@ public:
     void init(const RenderSettings& settings);
     void setSettings(const RenderSettings& settings);
 
+    void setFogColor(const he::vec3& color);
+
     void onScreenResized();
 
     void draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap);
@@ -70,6 +72,8 @@ private:
         PV_DepthMap,
         PV_ColorMap,
 
+        PV_FogColor,
+
         MAX_POST_SHADER_VARS
     };
 
@@ -86,6 +90,8 @@ private:
     bool m_ShowDebugTextures;
 
     ModelMesh* m_pQuad;
+
+    vec3 m_FogColor;
 
     //Disable default copy constructor and default assignment operator
     PostProcesser(const PostProcesser&);

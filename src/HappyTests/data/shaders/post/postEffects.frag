@@ -63,6 +63,8 @@ uniform sampler2D lumMap;
 uniform sampler2D normalMap;
 uniform sampler2D depthMap;
 
+uniform vec3 fogColor;
+
 float edgeMult1 = 5.0f;
 float edgeMult2 = 10.0f;
 
@@ -207,17 +209,17 @@ void main()
     vec3 color = sampleColor.rgb;
     
 #if BLOOM
-    color += texture(blur0, tex).rgb * 0.5f;  
-    color += texture(blur1, tex).rgb * 0.5f;  
-    color += texture(blur2, tex).rgb * 1.0f;  
-    color += texture(blur3, tex).rgb * 1.0f;  
+    color += texture(blur0, tex).rgb * 0.25f;  
+    color += texture(blur1, tex).rgb * 0.25f;  
+    color += texture(blur2, tex).rgb * 0.25f;  
+    color += texture(blur3, tex).rgb * 0.25f;  
 #endif
 
 #if AO
     float ao;
     vec3 gi; 
     getAoAndGi(tex, ao, gi);
-    //color = color + gi * 5;
+    color = color + gi * 5;
 #endif
 
 #if HDR  
@@ -233,18 +235,19 @@ void main()
 #endif
 
 #if DEPTH_EDGE
-    color *= getEdge(depthMap, tex);
+    //color *= getEdge(depthMap, tex);
+    color += 1-getEdge(depthMap, tex);
 #endif
 
 #if FOG
     float beginFog = 0.997f;
     float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));
 
-    color = color * (1 - fog) + vec3(0.2f, 0.4f, 0.6f) * (fog);
+    color = color * (1 - fog) + fogColor * (fog);
 #endif
 
 #if AO
-    color *= ao * ao;
+    color *= ao;
 #endif
     
     //color = color - gi;

@@ -264,4 +264,9 @@ uint DrawManager::getDepthID() const
     return m_pDepthRenderMap->getID();
 }
 
+PostProcesser* DrawManager::getPostProcesser() const
+{
+    return m_pPostProcesser;
+}
+
 } } //end namespace

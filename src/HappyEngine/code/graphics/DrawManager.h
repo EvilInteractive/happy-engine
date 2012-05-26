@@ -58,6 +58,7 @@ public:
 
     /* GETTERS */
     const DrawListContainer& getDrawList() const;
+    PostProcesser* getPostProcesser() const;
 
     uint getDepthID() const;
 

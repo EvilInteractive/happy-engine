@@ -32,7 +32,7 @@ namespace err {
 namespace details {
 
 #if _DEBUG || TEST
-void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, va_list args);
+void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, const va_list& args);
 void happyAssert(int isOk, const char* file, const char* func, int line); //for boost
 void happyAssert(void* isOk, const char* file, const char* func, int line); //for boost
 #endif

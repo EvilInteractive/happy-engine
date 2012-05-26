@@ -39,7 +39,7 @@ class ModelMesh;
 class InstancingController : public IInstancedDrawable
 {
 public:
-    InstancingController(bool dynamic, const ObjectHandle& modelHandle, const Material& material);
+    InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const Material& material);
     virtual ~InstancingController();
 
     uint addInstance(const IInstancible* pObj); //return id
@@ -75,6 +75,8 @@ private:
     void updateBuffer();
 
     bool m_Dynamic, m_NeedsUpdate, m_ManualMode;
+
+    std::string m_Name;
 
     details::InstancingBuffer m_CpuBuffer;
     uint  m_GpuBuffer;

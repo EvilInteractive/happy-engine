@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <utility>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <cstdarg>
 
@@ -45,6 +46,7 @@
 #include "boost/chrono.hpp"
 #include "boost/any.hpp"
 #include "boost/function.hpp"
+#include "boost/date_time.hpp"
 
 #include "SFML/Window.hpp"
 
@@ -78,6 +80,7 @@
 #include "HappyEngine.h"
 #include "Console.h"
 
+#include "Logger.h"
 #include "HappyInfo.h"
 
 #endif

@@ -26,15 +26,15 @@
 namespace he {
 namespace err {
 namespace details {
-void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, va_list args)
+void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, const va_list& args)
 {
     if (isOk == true)
         return;
     
-    HE_ERROR("**ASSERTION FAILURE!**");
-    HE_ERROR("assert in function %s", func);
-    HE_ERROR("from file %s on line %d", file, line);
-    he::details::HE_ERROR(message, args);
+    LOG(tools::LogType_ProgrammerAssert, "**ASSERTION FAILURE!**");
+    LOG(tools::LogType_ProgrammerAssert, "assert in function %s", func);
+    LOG(tools::LogType_ProgrammerAssert, "from file %s on line %d", file, line);
+    LOG(tools::LogType_ProgrammerAssert, message, args);
     
     // TODO : Messagebox
     #ifndef GCC
