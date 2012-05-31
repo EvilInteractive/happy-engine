@@ -22,13 +22,6 @@
 #define _HE_IPHYSICS_SHAPE_H_
 #pragma once
 
-#include "HeAssert.h"
-#undef assert
-#define assert HE_ASSERT
-
-#include "PxShape.h"
-#include "boost/shared_ptr.hpp"
-
 namespace he {
 namespace px {
 

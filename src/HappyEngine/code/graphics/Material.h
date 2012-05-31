@@ -23,8 +23,6 @@
 #pragma once
 
 #include "Shader.h"
-#include "HappyTypes.h"
-#include "boost/shared_ptr.hpp"
 #include "ShaderVar.h"
 #include "BufferLayout.h"
 

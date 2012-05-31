@@ -22,18 +22,6 @@
 #define _HE_BINOBJLINE_LOADER_H_
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map>
-
-#include "BufferLayout.h"
-#include "boost/shared_ptr.hpp"
-#include "vec3.h"
-#include "vec2.h"
-#include "Model.h"
-#include "HappyTypes.h"
-#include "IModelLoader.h"
-
 namespace he {
 namespace ct {
 namespace lines {

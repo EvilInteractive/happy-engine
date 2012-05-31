@@ -21,15 +21,9 @@
 
 #include "BinObjLoader.h"
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-
 #include "BinaryStream.h"
 #include "BufferLayout.h"
-#include "boost/shared_ptr.hpp"
 #include "Model.h"
-#include "HappyTypes.h"
 #include "Bone.h"
 
 namespace he {

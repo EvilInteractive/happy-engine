@@ -22,8 +22,9 @@
 #define _HE_PHYSICS_MATERIAL_H_
 #pragma once
 
-#include "PxMaterial.h"
-#include "boost/shared_ptr.hpp"
+namespace physx {
+    class PxMaterial;
+}
 
 namespace he {
 namespace px {

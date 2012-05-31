@@ -21,14 +21,10 @@
 
 #include "ObjLoader.h"
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-
 #include "FileReader.h"
 
-#include "HeAssert.h"
 #include "ModelLoaderFunctions.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace ct {

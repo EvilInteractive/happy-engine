@@ -22,12 +22,11 @@
 #define _HE_TEXT_H_
 #pragma once
 
-#include "Font.h"
-#include <string>
-#include <vector>
-#include "boost/shared_ptr.hpp"
-
 namespace he {
+namespace gfx {
+    class Font;
+}
+
 namespace gui {
 
 class Text

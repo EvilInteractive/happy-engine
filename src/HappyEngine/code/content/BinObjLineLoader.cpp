@@ -21,13 +21,7 @@
 
 #include "BinObjLineLoader.h"
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-
 #include "BinaryStream.h"
-
-#include "HeAssert.h"
 
 namespace he {
 namespace ct {
