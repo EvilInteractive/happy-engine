@@ -22,19 +22,15 @@
 #define _HE_PointLight_H_
 #pragma once
 
-#include "vec3.h"
-#include "mat44.h"
-#include "Color.h"
-#include "ModelMesh.h"
-
-#include "boost/shared_ptr.hpp"
-
 #include "DefaultSingleDrawable.h"
+#include "ILight.h"
 
 namespace he {
 namespace gfx {
 
-class PointLight : public DefaultSingleDrawable
+class ModelMesh;
+
+class PointLight : public DefaultSingleDrawable, public ILight
 {
 private:
     vec3 m_Position;
@@ -46,14 +42,15 @@ private:
     mat44 m_mtxWorld;
     void calculateWorld();
 
-    ModelMesh* m_pLightVolume;
-    ModelMesh* m_pModel;
+    ModelMesh* m_LightVolume;
+    ModelMesh* m_Model;
     Material m_Material;
 
 public:
     PointLight();
     virtual ~PointLight();
-    //default copy constructor and assignment operator are fine
+    PointLight(const PointLight& other);
+    PointLight& operator=(const PointLight& other);
 
     void setPosition(const vec3& position);
     void setMultiplier(float multiplier);
@@ -75,7 +72,7 @@ public:
     virtual const Material& getMaterial() const;
     virtual const ModelMesh* getModelMesh() const;
 
-    typedef boost::shared_ptr<PointLight> pointer;
+    virtual LightType getType() const { return LightType_Point; }
 };
 
 } } //end namespace

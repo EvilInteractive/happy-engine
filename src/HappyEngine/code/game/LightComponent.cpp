@@ -20,12 +20,14 @@
 #include "HappyPCH.h" 
 
 #include "LightComponent.h"
-#include "HappyNew.h"
 #include "Entity.h"
-#include "HappyEngine.h"
 #include "GraphicsEngine.h"
-#include "LightManager.h"
 #include "Game.h"
+
+#include "LightFactory.h"
+#include "LightManager.h"
+#include "SpotLight.h"
+#include "PointLight.h"
 
 namespace he {
 namespace ge {
@@ -33,24 +35,24 @@ namespace ge {
 Random PointLightComponent::s_Random;
 
 #pragma region Pointlight
-PointLightComponent::PointLightComponent(): m_Broken(false), m_IsOn(true), m_BrokenCounter(0)
+PointLightComponent::PointLightComponent(): m_PointLight(ObjectHandle::unassigned)
 {
 }
 
 PointLightComponent::~PointLightComponent()
 {
-    GRAPHICS->getLightManager()->remove(m_pPointLight);
+    GRAPHICS->getLightManager()->remove(m_PointLight);
     GAME->removeFromTickList(this);
 }
 
 void PointLightComponent::init(Entity* pParent)
 {
-    m_pParent = pParent;
-    m_pPointLight = GRAPHICS->getLightManager()->addPointLight(m_OriginalPointLight.getPosition(),
-                                                               Color(vec4(m_OriginalPointLight.getColor(), 1.0f)),
-                                                               m_OriginalPointLight.getMultiplier(),
-                                                               m_OriginalPointLight.getBeginAttenuation(),
-                                                               m_OriginalPointLight.getEndAttenuation());
+    m_Parent = pParent;
+    m_PointLight = GRAPHICS->getLightManager()->addPointLight(m_Offset,
+                                                               Color(1.0f, 1.0f, 1.0f),
+                                                               1.0f,
+                                                               0.0f,
+                                                               5.0f);
     GAME->addToTickList(this);
 }
 
@@ -72,23 +74,13 @@ void PointLightComponent::deserialize(const SerializerStream& stream)
     setAttenuation(beginAtt, endAtt);
 }
 
-void PointLightComponent::tick( float dTime )
+void PointLightComponent::tick( float /*dTime*/ )
 {
-    mat44 parentWorld(mat44::Identity);
-    if (m_pParent != nullptr)
+    if (m_Parent != nullptr)
     {
-        parentWorld = m_pParent->getWorldMatrix();
-    }
-    m_pPointLight->setPosition(parentWorld * m_mtxLocalTransform * m_OriginalPointLight.getPosition());
-    if (m_Broken)
-    {
-        m_BrokenCounter -= dTime;
-        if (m_BrokenCounter <= 0)
-        {
-            m_IsOn = !m_IsOn;
-            m_pPointLight->setMultiplier(m_IsOn? m_OriginalPointLight.getMultiplier() : 0);
-            m_BrokenCounter = s_Random.nextFloat(0, 1);
-        }
+        gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+        mat44 parentWorld(m_Parent->getWorldMatrix());
+        light->setPosition(parentWorld * m_mtxLocalTransform * m_Offset);
     }
 }
 
@@ -102,90 +94,108 @@ const mat44& PointLightComponent::getLocalTransform() const
     return m_mtxLocalTransform;
 }
 
-void PointLightComponent::setOffset( const vec3& position )
+void PointLightComponent::setOffset( const vec3& offset )
 {
-    m_OriginalPointLight.setPosition(position);
+    m_Offset = offset;
+    if (m_Parent == nullptr)
+    {
+        HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+        gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+        light->setPosition(m_Offset);
+    }
 }
 
 void PointLightComponent::setMultiplier( float multiplier )
 {
-    m_OriginalPointLight.setMultiplier(multiplier);
-    m_pPointLight->setMultiplier(multiplier);
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    light->setMultiplier(multiplier);
 }
 
 void PointLightComponent::setAttenuation( float begin, float end )
 {
-    m_OriginalPointLight.setAttenuation(begin, end);
-    m_pPointLight->setAttenuation(begin, end);
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    light->setAttenuation(begin, end);
 }
 
 void PointLightComponent::setColor( const vec3& color )
 {
-    m_OriginalPointLight.setColor(color);
-    m_pPointLight->setColor(color);
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    light->setColor(color);
 }
 
 void PointLightComponent::setColor( const Color& color )
 {
-    m_OriginalPointLight.setColor(color);
-    m_pPointLight->setColor(color);
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    light->setColor(color);
 }
 
 const vec3& PointLightComponent::getOffset() const
 {
-    return m_OriginalPointLight.getPosition();
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    return light->getPosition();
 }
 
 float PointLightComponent::getMultiplier() const
 {
-    return m_OriginalPointLight.getMultiplier();
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    return light->getMultiplier();
 }
 
 float PointLightComponent::getBeginAttenuation() const
 {
-    return m_OriginalPointLight.getBeginAttenuation();
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    return light->getBeginAttenuation();
 }
 
 float PointLightComponent::getEndAttenuation() const
 {
-    return m_OriginalPointLight.getEndAttenuation();
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    return light->getEndAttenuation();
 }
 
 const vec3& PointLightComponent::getColor() const
 {
-    return m_OriginalPointLight.getColor();
-}
-
-void he::ge::PointLightComponent::setBroken( bool broken )
-{
-    m_Broken = broken;
+    HE_ASSERT(m_PointLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::PointLight* light(gfx::LightFactory::getInstance()->getPointLight(m_PointLight));
+    return light->getColor();
 }
 
 #pragma endregion
 
 #pragma region SpotLight
-SpotLightComponent::SpotLightComponent()
+SpotLightComponent::SpotLightComponent(): m_SpotLight(ObjectHandle::unassigned)
 {
 
 }
 
 SpotLightComponent::~SpotLightComponent()
 {
-    GRAPHICS->getLightManager()->remove(m_pSpotLight);
-    GAME->removeFromTickList(this);
+    if (m_SpotLight != ObjectHandle::unassigned)
+    {
+        GRAPHICS->getLightManager()->remove(m_SpotLight);
+        GAME->removeFromTickList(this);
+    }
 }
 
-void SpotLightComponent::init( Entity* pParent )
+void SpotLightComponent::init( Entity* parent )
 {
-    m_pParent = pParent;
-    m_pSpotLight = GRAPHICS->getLightManager()->addSpotLight(
-        m_OriginalSpotLight.getPosition(),
-        m_OriginalSpotLight.getDirection(),
-        Color(vec4(m_OriginalSpotLight.getColor(), 1.0f)),
-        m_OriginalSpotLight.getMultiplier(),
-        m_OriginalSpotLight.getFov(),
-        m_OriginalSpotLight.getBeginAttenuation(),
-        m_OriginalSpotLight.getEndAttenuation());
+    m_Parent = parent;
+    m_SpotLight = GRAPHICS->getLightManager()->addSpotLight(
+        m_Offset,
+        m_Direction,
+        Color(1.0f, 1.0f, 1.0f),
+        1.0f,
+        piOverFour,
+        0,
+        5.0f);
 
     GAME->addToTickList(this);
 }
@@ -214,15 +224,13 @@ void SpotLightComponent::deserialize( const SerializerStream& stream )
 
 void SpotLightComponent::tick( float /*dTime*/ )
 {
-    mat44 parentWorld(mat44::Identity);
-    if (m_pParent != nullptr)
+    if (m_Parent != nullptr)
     {
-        parentWorld = m_pParent->getWorldMatrix();
+        mat44 parentWorld(m_Parent->getWorldMatrix());
+        gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+        light->setPosition(parentWorld * m_mtxLocalTransform * m_Offset);
+        light->setDirection((parentWorld * m_mtxLocalTransform * vec4(m_Direction, 0.0f)).xyz());
     }
-
-    m_pSpotLight->setPosition(parentWorld * m_mtxLocalTransform * m_OriginalSpotLight.getPosition());
-    m_pSpotLight->setDirection((parentWorld * m_mtxLocalTransform * vec4(m_OriginalSpotLight.getDirection(), 0.0f)).xyz());
-
 }
 
 void SpotLightComponent::setLocalTransform( const mat44& mtxWorld )
@@ -237,82 +245,109 @@ const mat44& SpotLightComponent::getLocalTransform() const
 
 void SpotLightComponent::setOffset( const vec3& position )
 {
-    m_OriginalSpotLight.setPosition(position);
+    m_Offset = position;
+    if (m_Parent == nullptr)
+    {
+        gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+        light->setPosition(position);
+    }
 }
 
 void SpotLightComponent::setMultiplier( float multiplier )
 {
-    m_OriginalSpotLight.setMultiplier(multiplier);
-    m_pSpotLight->setMultiplier(multiplier);
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    light->setMultiplier(multiplier);
 }
 
 void SpotLightComponent::setDirection( const vec3& direction )
 {
-    m_OriginalSpotLight.setDirection(direction);
+    m_Direction = direction;
+    if (m_Parent == nullptr)
+    {
+        gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+        light->setDirection(direction);
+    }
 }
 
 void SpotLightComponent::setAttenuation( float begin, float end )
 {
-    m_OriginalSpotLight.setAttenuation(begin, end);
-    m_pSpotLight->setAttenuation(begin, end);
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    light->setAttenuation(begin, end);
 }
 
 void SpotLightComponent::setColor( const vec3& color )
 {
-    m_OriginalSpotLight.setColor(color);
-    m_pSpotLight->setColor(color);    
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    light->setColor(color);  
 }
 
 void SpotLightComponent::setColor( const Color& color )
 {
-    m_OriginalSpotLight.setColor(color);
-    m_pSpotLight->setColor(color);  
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    light->setColor(color);
 }
 
 void SpotLightComponent::setFov( float angle )
 {
-    m_OriginalSpotLight.setFov(angle);
-    m_pSpotLight->setFov(angle);  
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    light->setFov(angle);
 }
 
 const vec3& SpotLightComponent::getOffset() const
 {
-    return m_OriginalSpotLight.getPosition();
+    return m_Offset;
 }
 
 float SpotLightComponent::getMultiplier() const
 {
-    return m_OriginalSpotLight.getMultiplier();
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    return light->getMultiplier();
 }
 
 const vec3& SpotLightComponent::getDirection() const
 {
-    return m_OriginalSpotLight.getDirection();
+    return m_Direction;
 }
 
 float SpotLightComponent::getBeginAttenuation() const
 {
-    return m_OriginalSpotLight.getBeginAttenuation();
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    return light->getBeginAttenuation();
 }
 
 float SpotLightComponent::getEndAttenuation() const
 {
-    return m_OriginalSpotLight.getEndAttenuation();
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    return light->getEndAttenuation();
 }
 
 const vec3& SpotLightComponent::getColor() const
 {
-    return m_OriginalSpotLight.getColor();
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    return light->getColor();
 }
 
 float SpotLightComponent::getCosCutoff() const
 {
-    return m_OriginalSpotLight.getCosCutoff();
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    return light->getCosCutoff();
 }
 
 float SpotLightComponent::getFov() const
 {
-    return m_OriginalSpotLight.getFov();
+    HE_ASSERT(m_SpotLight != ObjectHandle::unassigned, "Attach light component first!");
+    gfx::SpotLight* light(gfx::LightFactory::getInstance()->getSpotLight(m_SpotLight));
+    return light->getFov();
 }
 
 #pragma endregion

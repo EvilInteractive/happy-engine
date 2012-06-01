@@ -36,9 +36,66 @@ SpotLight::SpotLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_Direction(0, 
     BufferLayout vertexLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
     //m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight", vertexLayout); //HACK: wrong volume
-    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight", vertexLayout); //HACK: wrong volume
-    m_pModel = m_pLightVolume;
+    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight", vertexLayout); //HACK: wrong volume
+
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+    m_Model = m_LightVolume;
 }
+
+SpotLight::SpotLight( const SpotLight& other )
+    : m_Position(other.m_Position)
+    , m_Multiplier(other.m_Multiplier)
+    , m_Direction(other.m_Direction)
+    , m_BeginAttenuation(other.m_BeginAttenuation)
+    , m_Color(other.m_Color)
+    , m_EndAttenuation(other.m_EndAttenuation)
+    , m_CosCutoff(other.m_CosCutoff)
+
+    , m_mtxWorld(other.m_mtxWorld)
+
+    , m_Material(other.m_Material)
+
+    , m_LightVolume(other.m_LightVolume)
+    , m_Model(other.m_Model)
+{
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
+}
+SpotLight& SpotLight::operator=( const SpotLight& other )
+{
+    m_Position = other.m_Position;
+    m_Multiplier = other.m_Multiplier;
+    m_Direction = other.m_Direction;
+    m_BeginAttenuation = other.m_BeginAttenuation;
+    m_Color = other.m_Color;
+    m_EndAttenuation = other.m_EndAttenuation;
+    m_CosCutoff = other.m_CosCutoff;
+
+    m_mtxWorld = other.m_mtxWorld;
+
+    m_Material = other.m_Material;
+
+
+    if (m_Model != nullptr)
+        m_Model->release();
+    if (m_LightVolume != nullptr)
+        m_LightVolume->release();
+
+    m_LightVolume = other.m_LightVolume;
+    m_Model = other.m_Model;
+
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
+
+    return *this;
+}
+
+SpotLight::~SpotLight()
+{   
+    m_Model->release();
+    m_LightVolume->release();
+}
+
 void SpotLight::calculateWorld()
 {
     float rangeScale = (sqrtf(1 - sqr(m_CosCutoff)) / m_CosCutoff) * m_EndAttenuation;
@@ -46,12 +103,6 @@ void SpotLight::calculateWorld()
         mat44::createRotation(vec3::up, -atan2f(m_Direction.z, m_Direction.x)) *
         mat44::createRotation(vec3::right, -atan2f(m_Direction.y, m_Direction.z)) *   
         mat44::createScale(rangeScale, rangeScale, m_EndAttenuation);
-}
-
-SpotLight::~SpotLight()
-{   
-    //m_pModel->release();
-    m_pLightVolume->release();
 }
 
 void SpotLight::setPosition(const vec3& position)
@@ -123,7 +174,7 @@ mat44 SpotLight::getWorldMatrix() const
 }
 const ModelMesh* SpotLight::getLightVolume() const
 {
-    return m_pLightVolume;
+    return m_LightVolume;
 }
 const Material& SpotLight::getMaterial() const
 {
@@ -131,7 +182,7 @@ const Material& SpotLight::getMaterial() const
 }
 const ModelMesh* SpotLight::getModelMesh() const
 {
-    return m_pModel;
+    return m_Model;
 }
 
 float SpotLight::getFov() const

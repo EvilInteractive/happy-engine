@@ -49,7 +49,7 @@ std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
     else if (indexStride == gfx::IndexStride_UInt)
         pIndicesUInt = static_cast<const uint*>(pIndices);
     else
-        HE_ASSERT("unkown index stride");
+        HE_ASSERT(false, "unkown index stride: %d", indexStride);
     
     for (uint i = 0; i < numIndices; i += 3) //per triangle
     {

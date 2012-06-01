@@ -53,13 +53,11 @@ public:
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
     
-    void setOffset(const vec3& position);
+    void setOffset(const vec3& offset);
     void setMultiplier(float multiplier);
     void setAttenuation(float begin, float end);
     void setColor(const vec3& color);
     void setColor(const Color& color);
-
-    void setBroken(bool broken);
 
     const vec3& getOffset() const;
     float getMultiplier() const;
@@ -70,15 +68,11 @@ public:
 
 private:
     mat44 m_mtxLocalTransform;
-
-    bool m_Broken;
-    bool m_IsOn;
-    float m_BrokenCounter;
+    vec3 m_Offset;
     
-    Entity* m_pParent;
+    Entity* m_Parent;
     
-    gfx::PointLight m_OriginalPointLight;
-    gfx::PointLight::pointer m_pPointLight;
+    ObjectHandle m_PointLight;
 
     static Random s_Random;
 
@@ -128,10 +122,12 @@ public:
 private:
     mat44 m_mtxLocalTransform;
 
-    Entity* m_pParent;
+    Entity* m_Parent;
 
-    gfx::SpotLight m_OriginalSpotLight;
-    gfx::SpotLight::pointer m_pSpotLight;
+    vec3 m_Offset;
+    vec3 m_Direction;
+
+    ObjectHandle m_SpotLight;
 
     //Disable default copy constructor and default assignment operator
     SpotLightComponent(const SpotLightComponent&);

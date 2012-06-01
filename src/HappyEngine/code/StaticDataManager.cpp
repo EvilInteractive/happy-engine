@@ -27,6 +27,7 @@
 #include "Font.h"
 #include "PhysicsConcaveMesh.h"
 #include "PhysicsConvexMesh.h"
+#include "LightFactory.h"
 
 namespace he {
 
@@ -39,10 +40,12 @@ void StaticDataManager::init()
     ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
     ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
+    gfx::LightFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    gfx::LightFactory::sdmDestroy();
     ResourceFactory<gfx::Font>::destroy();
     ResourceFactory<gfx::Texture2D>::destroy();
     ResourceFactory<gfx::Model>::destroy();

@@ -92,7 +92,7 @@ void Logger::log( LogType type, const std::string& str, const va_list& argList )
     output.close();
 
     std::cout << typeString << ": " << buff << "\n";
-    if (HAPPYENGINE != nullptr) 
+    if (HAPPYENGINE != nullptr && CONSOLE != nullptr) 
     {
         CONSOLE->addMessage(buff, consoleType);
     }

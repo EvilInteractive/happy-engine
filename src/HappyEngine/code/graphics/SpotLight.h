@@ -23,11 +23,12 @@
 #pragma once
 
 #include "DefaultSingleDrawable.h"
+#include "ILight.h"
 
 namespace he {
 namespace gfx {
 
-class SpotLight : public DefaultSingleDrawable
+class SpotLight : public DefaultSingleDrawable, public ILight
 {
 private:
     vec3 m_Position;
@@ -41,14 +42,15 @@ private:
     mat44 m_mtxWorld;
     void calculateWorld();
 
-    ModelMesh* m_pLightVolume;
-    ModelMesh* m_pModel;
+    ModelMesh* m_LightVolume;
+    ModelMesh* m_Model;
     Material m_Material;
 
 public:
     SpotLight();
     virtual ~SpotLight();
-    //default copy constructor and assignment operator are fine
+    SpotLight(const SpotLight& other);
+    SpotLight& operator=(const SpotLight& other);
 
     void setPosition(const vec3& position);
     void setMultiplier(float multiplier);
@@ -74,8 +76,8 @@ public:
     
     virtual const Material& getMaterial() const;
     virtual const ModelMesh* getModelMesh() const;
-    
-    typedef boost::shared_ptr<SpotLight> pointer;
+
+    virtual LightType getType() const { return LightType_Spot; }
 };
 
 } } //end namespace

@@ -50,6 +50,7 @@
     <ClCompile Include="..\..\code\game\SerializerStream.cpp" />
     <ClCompile Include="..\..\code\game\StaticPhysicsComponent.cpp" />
     <ClCompile Include="..\..\code\game\TriggerComponent.cpp" />
+    <ClCompile Include="..\..\code\graphics\AmbientLight.cpp" />
     <ClCompile Include="..\..\code\graphics\AutoExposure.cpp" />
     <ClCompile Include="..\..\code\graphics\BillboardEffect.cpp" />
     <ClCompile Include="..\..\code\graphics\Bloom.cpp" />
@@ -72,7 +73,7 @@
     <ClCompile Include="..\..\code\graphics\InstancingBuffer.cpp" />
     <ClCompile Include="..\..\code\graphics\InstancingController.cpp" />
     <ClCompile Include="..\..\code\graphics\InstancingManager.cpp" />
-    <ClCompile Include="..\..\code\graphics\Light.cpp" />
+    <ClCompile Include="..\..\code\graphics\LightFactory.cpp" />
     <ClCompile Include="..\..\code\graphics\LightManager.cpp" />
     <ClCompile Include="..\..\code\graphics\Line.cpp" />
     <ClCompile Include="..\..\code\graphics\Material.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="..\..\code\game\SerializerStream.h" />
     <ClInclude Include="..\..\code\game\StaticPhysicsComponent.h" />
     <ClInclude Include="..\..\code\game\TriggerComponent.h" />
+    <ClInclude Include="..\..\code\graphics\AmbientLight.h" />
     <ClInclude Include="..\..\code\graphics\AutoExposure.h" />
     <ClInclude Include="..\..\code\graphics\BillboardEffect.h" />
     <ClInclude Include="..\..\code\graphics\Bloom.h" />
@@ -229,12 +231,13 @@
     <ClInclude Include="..\..\code\graphics\IDrawable.h" />
     <ClInclude Include="..\..\code\graphics\IInstanceFiller.h" />
     <ClInclude Include="..\..\code\graphics\IInstancible.h" />
+    <ClInclude Include="..\..\code\graphics\ILight.h" />
     <ClInclude Include="..\..\code\graphics\InstancingBuffer.h" />
     <ClInclude Include="..\..\code\graphics\InstancingController.h" />
     <ClInclude Include="..\..\code\graphics\InstancingManager.h" />
     <ClInclude Include="..\..\code\graphics\IPickable.h" />
     <ClInclude Include="..\..\code\graphics\IRenderer.h" />
-    <ClInclude Include="..\..\code\graphics\Light.h" />
+    <ClInclude Include="..\..\code\graphics\LightFactory.h" />
     <ClInclude Include="..\..\code\graphics\LightManager.h" />
     <ClInclude Include="..\..\code\graphics\Line.h" />
     <ClInclude Include="..\..\code\graphics\Material.h" />
@@ -320,6 +323,7 @@
     <ClInclude Include="..\..\code\physics\PhysicsStaticActor.h" />
     <ClInclude Include="..\..\code\physics\PhysicsTrigger.h" />
     <ClInclude Include="..\..\code\HappyPCH.h" />
+    <ClInclude Include="..\..\code\Singleton.h" />
     <ClInclude Include="..\..\code\StaticDataManager.h" />
     <ClInclude Include="..\..\code\template\X.h" />
     <ClInclude Include="..\..\code\tools\BoolTypeHandler.h" />

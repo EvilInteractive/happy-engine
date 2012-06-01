@@ -153,15 +153,15 @@ private:
     PostSharedData m_SharedShaderData;
 
     //Point light
-    Shader* m_pPointLightShader;
+    Shader* m_PointLightShader;
     PostPointLightData m_PointLightData;
 
     //Spot light
-    Shader* m_pSpotLightShader;
+    Shader* m_SpotLightShader;
     PostSpotLightData m_SpotLightData;
 
     //Amb&Dir&Ill light
-    Shader* m_pAmbDirIllShader;
+    Shader* m_AmbDirIllShader;
     PostAmbDirIllLightData m_AmbDirIllLightData;
 
     //////////////////////////////////////////////////////////////////////////

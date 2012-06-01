@@ -177,7 +177,7 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
         case IndexStride_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
         case IndexStride_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
         case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
-        default: HE_ASSERT("unkown type"); break;
+        default: HE_ASSERT(false, "unknown type: %d", type); break;
     }
 
     if (m_NumVertices > 0)

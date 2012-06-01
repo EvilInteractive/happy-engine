@@ -25,29 +25,32 @@
 #include "Renderer2D.h"
 #include "BufferLayout.h"
 #include "Vertex.h"
-#include "Light.h"
+
+#include "LightManager.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "DirectionalLight.h"
+#include "AmbientLight.h"
+
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 
-#include "LightManager.h"
 #include "CameraManager.h"
 #include "Camera.h"
 #include "DrawManager.h"
+#include "LightFactory.h"
 
 namespace he {
 namespace gfx {
 
-//const int Deferred3DRenderer::TEXTURE_FORMAT[TEXTURES] = { GL_BGRA, GL_BGRA, GL_RG, GL_DEPTH_COMPONENT };
-//const int Deferred3DRenderer::TEXTURE_INTERNALFORMAT[TEXTURES] = {GL_RGBA8, GL_RGBA8, GL_RG16F, GL_DEPTH_COMPONENT32F };
-//const int Deferred3DRenderer::TEXTURE_ATTACHMENT[TEXTURES] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_DEPTH_ATTACHMENT};
 BufferLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = BufferLayout();
 
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_pQuad(nullptr), 
             m_ShowDebugTextures(false),
-            m_pPointLightShader(nullptr),
-            m_pSpotLightShader(nullptr),
-            m_pAmbDirIllShader(nullptr),
+            m_PointLightShader(nullptr),
+            m_SpotLightShader(nullptr),
+            m_AmbDirIllShader(nullptr),
             m_CollectionFboId(UINT_MAX),
             m_RenderFboId(UINT_MAX)
 {
@@ -104,22 +107,22 @@ Deferred3DRenderer::~Deferred3DRenderer()
     glDeleteFramebuffers(1, &m_CollectionFboId);
     glDeleteFramebuffers(1, &m_RenderFboId);
 
-    delete m_pPointLightShader;
-    delete m_pSpotLightShader;
-    delete m_pAmbDirIllShader;
+    delete m_PointLightShader;
+    delete m_SpotLightShader;
+    delete m_AmbDirIllShader;
 }
 void Deferred3DRenderer::compileShaders()
 {
     //////////////////////////////////////////////////////////////////////////
     ///                                 CLEAN                              ///
     //////////////////////////////////////////////////////////////////////////
-    delete m_pPointLightShader;
-    delete m_pSpotLightShader;
-    delete m_pAmbDirIllShader;
+    delete m_PointLightShader;
+    delete m_SpotLightShader;
+    delete m_AmbDirIllShader;
 
-    m_pPointLightShader = NEW Shader();
-    m_pSpotLightShader = NEW Shader();
-    m_pAmbDirIllShader = NEW Shader();
+    m_PointLightShader = NEW Shader();
+    m_SpotLightShader = NEW Shader();
+    m_AmbDirIllShader = NEW Shader();
 
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
@@ -135,23 +138,23 @@ void Deferred3DRenderer::compileShaders()
         shaderDefines.insert("SPECULAR");
     if (m_RenderSettings.enableShadows)
         shaderDefines.insert("SHADOWS");
-    m_pPointLightShader->initFromFile(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostPLShader.frag", shaderLayout, shaderDefines);
-    m_pSpotLightShader->initFromFile(folder  + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout, shaderDefines);
-    m_pAmbDirIllShader->initFromFile(folder  + "shared/postShaderQuad.vert", folder + "deferred/post/deferredPostAmbientIllShader.frag", shaderLayout, shaderDefines);
+    m_PointLightShader->initFromFile(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostPLShader.frag", shaderLayout, shaderDefines);
+    m_SpotLightShader->initFromFile(folder  + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout, shaderDefines);
+    m_AmbDirIllShader->initFromFile(folder  + "shared/postShaderQuad.vert", folder + "deferred/post/deferredPostAmbientIllShader.frag", shaderLayout, shaderDefines);
 
     //SharedBuffer
-    m_SharedShaderData.pSharedBuffer = m_pPointLightShader->setBuffer(m_pPointLightShader->getBufferId("SharedBuffer"));
-    m_pSpotLightShader->setBuffer(m_pSpotLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
-    m_pAmbDirIllShader->setBuffer(m_pAmbDirIllShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
+    m_SharedShaderData.pSharedBuffer = m_PointLightShader->setBuffer(m_PointLightShader->getBufferId("SharedBuffer"));
+    m_SpotLightShader->setBuffer(m_SpotLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
+    m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
 
     m_SharedShaderData.pSharedBuffer->getShaderVar("projParams", m_SharedShaderData.projParams);
 
     //LightBuffer
-    m_PointLightData.pLightBuffer = m_pPointLightShader->setBuffer(m_pPointLightShader->getBufferId("LightBuffer"));
-    m_SpotLightData.pLightBuffer = m_pSpotLightShader->setBuffer(m_pSpotLightShader->getBufferId("LightBuffer"));
-    m_AmbDirIllLightData.pLightBuffer = m_pAmbDirIllShader->setBuffer(m_pAmbDirIllShader->getBufferId("LightBuffer"));
+    m_PointLightData.pLightBuffer = m_PointLightShader->setBuffer(m_PointLightShader->getBufferId("LightBuffer"));
+    m_SpotLightData.pLightBuffer = m_SpotLightShader->setBuffer(m_SpotLightShader->getBufferId("LightBuffer"));
+    m_AmbDirIllLightData.pLightBuffer = m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("LightBuffer"));
     if (m_RenderSettings.enableShadows)
-        m_AmbDirIllLightData.pPerFrameBuffer = m_pAmbDirIllShader->setBuffer(m_pAmbDirIllShader->getBufferId("PerFrameBuffer"));
+        m_AmbDirIllLightData.pPerFrameBuffer = m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("PerFrameBuffer"));
 
     //----PL----------------------------------------------------------------------
     m_PointLightData.pLightBuffer->getShaderVar("light.position", m_PointLightData.position);
@@ -159,12 +162,12 @@ void Deferred3DRenderer::compileShaders()
     m_PointLightData.pLightBuffer->getShaderVar("light.color", m_PointLightData.color);
     m_PointLightData.pLightBuffer->getShaderVar("light.beginAttenuation", m_PointLightData.beginAttenuation);
     m_PointLightData.pLightBuffer->getShaderVar("light.endAttenuation", m_PointLightData.endAttenuation);
-    m_PointLightData.colorIllMap = m_pPointLightShader->getShaderSamplerId("colorIllMap");
-    m_PointLightData.normalMap = m_pPointLightShader->getShaderSamplerId("normalMap");
+    m_PointLightData.colorIllMap = m_PointLightShader->getShaderSamplerId("colorIllMap");
+    m_PointLightData.normalMap = m_PointLightShader->getShaderSamplerId("normalMap");
     if (m_RenderSettings.enableSpecular)
-        m_PointLightData.sgMap = m_pPointLightShader->getShaderSamplerId("sgMap");
-    m_PointLightData.depthMap = m_pPointLightShader->getShaderSamplerId("depthMap");
-    m_PointLightData.wvp = m_pPointLightShader->getShaderVarId("mtxWVP");
+        m_PointLightData.sgMap = m_PointLightShader->getShaderSamplerId("sgMap");
+    m_PointLightData.depthMap = m_PointLightShader->getShaderSamplerId("depthMap");
+    m_PointLightData.wvp = m_PointLightShader->getShaderVarId("mtxWVP");
     //----SL----------------------------------------------------------------------
     m_SpotLightData.pLightBuffer->getShaderVar("light.position", m_SpotLightData.position);
     m_SpotLightData.pLightBuffer->getShaderVar("light.multiplier", m_SpotLightData.multiplier);
@@ -173,12 +176,12 @@ void Deferred3DRenderer::compileShaders()
     m_SpotLightData.pLightBuffer->getShaderVar("light.color", m_SpotLightData.color);
     m_SpotLightData.pLightBuffer->getShaderVar("light.endAttenuation", m_SpotLightData.endAttenuation);
     m_SpotLightData.pLightBuffer->getShaderVar("light.cosCutoff", m_SpotLightData.cosCutOff);
-    m_SpotLightData.colorIllMap = m_pSpotLightShader->getShaderSamplerId("colorIllMap");
-    m_SpotLightData.normalMap = m_pSpotLightShader->getShaderSamplerId("normalMap");
+    m_SpotLightData.colorIllMap = m_SpotLightShader->getShaderSamplerId("colorIllMap");
+    m_SpotLightData.normalMap = m_SpotLightShader->getShaderSamplerId("normalMap");
     if (m_RenderSettings.enableSpecular)
-        m_SpotLightData.sgMap = m_pSpotLightShader->getShaderSamplerId("sgMap");
-    m_SpotLightData.depthMap = m_pSpotLightShader->getShaderSamplerId("depthMap");
-    m_SpotLightData.wvp = m_pSpotLightShader->getShaderVarId("mtxWVP");
+        m_SpotLightData.sgMap = m_SpotLightShader->getShaderSamplerId("sgMap");
+    m_SpotLightData.depthMap = m_SpotLightShader->getShaderSamplerId("depthMap");
+    m_SpotLightData.wvp = m_SpotLightShader->getShaderVarId("mtxWVP");
 
     //----AL----------------------------------------------------------------------   
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("ambLight.color", m_AmbDirIllLightData.ambColor);
@@ -194,20 +197,18 @@ void Deferred3DRenderer::compileShaders()
         m_AmbDirIllLightData.pPerFrameBuffer->getShaderVar("mtxDirLight3", m_AmbDirIllLightData.mtxDirLight3);
     }
 
-    m_AmbDirIllLightData.colorIllMap  = m_pAmbDirIllShader->getShaderSamplerId("colorIllMap");
+    m_AmbDirIllLightData.colorIllMap  = m_AmbDirIllShader->getShaderSamplerId("colorIllMap");
     if (m_RenderSettings.enableSpecular)
-        m_AmbDirIllLightData.sgMap  = m_pAmbDirIllShader->getShaderSamplerId("sgMap");
-    m_AmbDirIllLightData.normalMap  = m_pAmbDirIllShader->getShaderSamplerId("normalMap");
-    m_AmbDirIllLightData.depthMap  = m_pAmbDirIllShader->getShaderSamplerId("depthMap");
-    //m_AmbDirIllLightData.colorRamp  = m_pAmbDirIllShader->getShaderSamplerId("colorRamp");
-    //m_pColorRampTex = CONTENT->asyncLoadTexture("engine/shadingRamp.png");
+        m_AmbDirIllLightData.sgMap  = m_AmbDirIllShader->getShaderSamplerId("sgMap");
+    m_AmbDirIllLightData.normalMap  = m_AmbDirIllShader->getShaderSamplerId("normalMap");
+    m_AmbDirIllLightData.depthMap  = m_AmbDirIllShader->getShaderSamplerId("depthMap");
     
     if (m_RenderSettings.enableShadows)
     {
-        m_AmbDirIllLightData.shadowMap0 = m_pAmbDirIllShader->getShaderSamplerId("shadowMap0");
-        m_AmbDirIllLightData.shadowMap1 = m_pAmbDirIllShader->getShaderSamplerId("shadowMap1");
-        m_AmbDirIllLightData.shadowMap2 = m_pAmbDirIllShader->getShaderSamplerId("shadowMap2");
-        m_AmbDirIllLightData.shadowMap3 = m_pAmbDirIllShader->getShaderSamplerId("shadowMap3");
+        m_AmbDirIllLightData.shadowMap0 = m_AmbDirIllShader->getShaderSamplerId("shadowMap0");
+        m_AmbDirIllLightData.shadowMap1 = m_AmbDirIllShader->getShaderSamplerId("shadowMap1");
+        m_AmbDirIllLightData.shadowMap2 = m_AmbDirIllShader->getShaderSamplerId("shadowMap2");
+        m_AmbDirIllLightData.shadowMap3 = m_AmbDirIllShader->getShaderSamplerId("shadowMap3");
     }
 }
 
@@ -357,13 +358,13 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
     m_SharedShaderData.pSharedBuffer->setShaderVar(m_SharedShaderData.projParams);
 
 
-    m_pPointLightShader->bind();
+    m_PointLightShader->bind();
     postPointLights();           
 
-    m_pSpotLightShader->bind();
+    m_SpotLightShader->bind();
     postSpotLights();
 
-    m_pAmbDirIllShader->bind();
+    m_AmbDirIllShader->bind();
     postAmbDirIllLight();
 
     GL::heSetCullFace(false);
@@ -394,16 +395,16 @@ void Deferred3DRenderer::postAmbDirIllLight()
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    LightManager* pLightManager(GRAPHICS->getLightManager());
+    LightManager* lightManager(GRAPHICS->getLightManager());
 
-    const AmbientLight::pointer& pAmbLight(pLightManager->getAmbientLight());
-    const DirectionalLight::pointer& pDirLight(pLightManager->getDirectionalLight());
+    const AmbientLight* ambLight(lightManager->getAmbientLight());
+    const DirectionalLight* dirLight(lightManager->getDirectionalLight());
 
-    m_AmbDirIllLightData.ambColor = vec4(pAmbLight->color, pAmbLight->multiplier);
-    m_AmbDirIllLightData.dirColor = vec4(pDirLight->getColor(), pDirLight->getMultiplier());
-    m_AmbDirIllLightData.dirDirection = normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(pDirLight->getDirection(), 0.0f)).xyz());
-    m_AmbDirIllLightData.dirPosition = (CAMERAMANAGER->getActiveCamera()->getView() * vec4(pDirLight->getShadowPosition(), 1.0f)).xyz();
-    m_AmbDirIllLightData.dirNearFar = pDirLight->getShadowNearFar();
+    m_AmbDirIllLightData.ambColor = vec4(ambLight->color, ambLight->multiplier);
+    m_AmbDirIllLightData.dirColor = vec4(dirLight->getColor(), dirLight->getMultiplier());
+    m_AmbDirIllLightData.dirDirection = normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz());
+    m_AmbDirIllLightData.dirPosition = (CAMERAMANAGER->getActiveCamera()->getView() * vec4(dirLight->getShadowPosition(), 1.0f)).xyz();
+    m_AmbDirIllLightData.dirNearFar = dirLight->getShadowNearFar();
 
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.ambColor);
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirColor);
@@ -411,29 +412,28 @@ void Deferred3DRenderer::postAmbDirIllLight()
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirPosition);
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirNearFar);
 
-    m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_pColorIllTexture);
+    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_pColorIllTexture);
     if (m_RenderSettings.enableSpecular)
-        m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_pSGTexture);
-    m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalMap,   m_pNormalTexture);
-    m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.depthMap,    m_pDepthTexture);
-    //m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorRamp,   m_pColorRampTex);
+        m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_pSGTexture);
+    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalMap,   m_pNormalTexture);
+    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.depthMap,    m_pDepthTexture);
 
     if (m_RenderSettings.enableShadows)       
     {
-        m_AmbDirIllLightData.mtxDirLight0 = pLightManager->getDirectionalLight()->getShadowMatrix(0);
-        m_AmbDirIllLightData.mtxDirLight1 = pLightManager->getDirectionalLight()->getShadowMatrix(1);
-        m_AmbDirIllLightData.mtxDirLight2 = pLightManager->getDirectionalLight()->getShadowMatrix(2);
-        m_AmbDirIllLightData.mtxDirLight3 = pLightManager->getDirectionalLight()->getShadowMatrix(3);
+        m_AmbDirIllLightData.mtxDirLight0 = lightManager->getDirectionalLight()->getShadowMatrix(0);
+        m_AmbDirIllLightData.mtxDirLight1 = lightManager->getDirectionalLight()->getShadowMatrix(1);
+        m_AmbDirIllLightData.mtxDirLight2 = lightManager->getDirectionalLight()->getShadowMatrix(2);
+        m_AmbDirIllLightData.mtxDirLight3 = lightManager->getDirectionalLight()->getShadowMatrix(3);
 
         m_AmbDirIllLightData.pPerFrameBuffer->setShaderVar(m_AmbDirIllLightData.mtxDirLight0);
         m_AmbDirIllLightData.pPerFrameBuffer->setShaderVar(m_AmbDirIllLightData.mtxDirLight1);
         m_AmbDirIllLightData.pPerFrameBuffer->setShaderVar(m_AmbDirIllLightData.mtxDirLight2);
         m_AmbDirIllLightData.pPerFrameBuffer->setShaderVar(m_AmbDirIllLightData.mtxDirLight3);
 
-        m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap0, pLightManager->getDirectionalLight()->getShadowMap(0));
-        m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap1, pLightManager->getDirectionalLight()->getShadowMap(1));
-        m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap2, pLightManager->getDirectionalLight()->getShadowMap(2));
-        m_pAmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap3, pLightManager->getDirectionalLight()->getShadowMap(3));
+        m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap0, lightManager->getDirectionalLight()->getShadowMap(0));
+        m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap1, lightManager->getDirectionalLight()->getShadowMap(1));
+        m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap2, lightManager->getDirectionalLight()->getShadowMap(2));
+        m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap3, lightManager->getDirectionalLight()->getShadowMap(3));
     }
 
     GL::heBindVao(m_pQuad->getVertexArraysID());
@@ -441,26 +441,30 @@ void Deferred3DRenderer::postAmbDirIllLight()
 }
 void Deferred3DRenderer::postPointLights()
 {
-    LightManager* pLightManager(GRAPHICS->getLightManager());
-    const std::vector<PointLight::pointer>& lights(pLightManager->getPointLights());
+    LightManager* lightManager(GRAPHICS->getLightManager());
+    const std::vector<ObjectHandle>& lights(lightManager->getPointLights());
 
-    if (lights.size() == 0 || lights.back()->getLightVolume()->isLoaded() == false)
+    const LightFactory* lightFactory(LightFactory::getInstance());
+
+    if (lights.size() == 0 || lightFactory->getPointLight(lights.back())->getLightVolume()->isLoaded() == false)
         return;
 
-    m_pPointLightShader->setShaderVar(m_PointLightData.colorIllMap, m_pColorIllTexture);
+    m_PointLightShader->setShaderVar(m_PointLightData.colorIllMap, m_pColorIllTexture);
     if (m_RenderSettings.enableSpecular)
-        m_pPointLightShader->setShaderVar(m_PointLightData.sgMap,   m_pSGTexture);
-    m_pPointLightShader->setShaderVar(m_PointLightData.normalMap,   m_pNormalTexture);
-    m_pPointLightShader->setShaderVar(m_PointLightData.depthMap,    m_pDepthTexture);
+        m_PointLightShader->setShaderVar(m_PointLightData.sgMap,   m_pSGTexture);
+    m_PointLightShader->setShaderVar(m_PointLightData.normalMap,   m_pNormalTexture);
+    m_PointLightShader->setShaderVar(m_PointLightData.depthMap,    m_pDepthTexture);
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
-    std::for_each(lights.cbegin(), lights.cend(), [&](const PointLight::pointer& pLight)
+    std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
-        shapes::Sphere bsphere(pLight->getPosition(), pLight->getEndAttenuation());
+        PointLight* light(lightFactory->getPointLight(lightHandle));
+
+        shapes::Sphere bsphere(light->getPosition(), light->getEndAttenuation());
         if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false)  
         {
-            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
+            if (lengthSqr(light->getPosition() - camera.getPosition()) < sqr(light->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -471,11 +475,11 @@ void Deferred3DRenderer::postPointLights()
                 GL::heSetDepthFunc(DepthFunc_LessOrEqual);
             }
 
-            m_PointLightData.position = camera.getView() * pLight->getPosition();
-            m_PointLightData.multiplier = pLight->getMultiplier();
-            m_PointLightData.color = pLight->getColor();
-            m_PointLightData.beginAttenuation = pLight->getBeginAttenuation();
-            m_PointLightData.endAttenuation = pLight->getEndAttenuation();
+            m_PointLightData.position = camera.getView() * light->getPosition();
+            m_PointLightData.multiplier = light->getMultiplier();
+            m_PointLightData.color = light->getColor();
+            m_PointLightData.beginAttenuation = light->getBeginAttenuation();
+            m_PointLightData.endAttenuation = light->getEndAttenuation();
 
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.position);
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.multiplier);
@@ -483,10 +487,10 @@ void Deferred3DRenderer::postPointLights()
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.beginAttenuation);
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.endAttenuation);
 
-            m_pPointLightShader->setShaderVar(m_PointLightData.wvp, camera.getViewProjection() * pLight->getWorldMatrix());
+            m_PointLightShader->setShaderVar(m_PointLightData.wvp, camera.getViewProjection() * light->getWorldMatrix());
 
-            GL::heBindVao(pLight->getLightVolume()->getVertexArraysID());
-            glDrawElements(GL_TRIANGLES, pLight->getLightVolume()->getNumIndices(), pLight->getLightVolume()->getIndexType(), 0);
+            GL::heBindVao(light->getLightVolume()->getVertexArraysID());
+            glDrawElements(GL_TRIANGLES, light->getLightVolume()->getNumIndices(), light->getLightVolume()->getIndexType(), 0);
         }
     });
     GL::heSetCullFace(false);
@@ -494,25 +498,30 @@ void Deferred3DRenderer::postPointLights()
 void Deferred3DRenderer::postSpotLights()
 {
     LightManager* pLightManager(GRAPHICS->getLightManager());
-    const std::vector<SpotLight::pointer>& lights(pLightManager->getSpotLights());
-    if (lights.size() == 0 || lights.back()->getLightVolume()->isLoaded() == false)
+    const std::vector<ObjectHandle>& lights(pLightManager->getSpotLights());
+
+    const LightFactory* lightFactory(LightFactory::getInstance());
+
+    if (lights.size() == 0 || lightFactory->getSpotLight(lights.back())->getLightVolume()->isLoaded() == false)
         return;
 
-    m_pSpotLightShader->setShaderVar(m_SpotLightData.colorIllMap, m_pColorIllTexture);
+    m_SpotLightShader->setShaderVar(m_SpotLightData.colorIllMap, m_pColorIllTexture);
     if (m_RenderSettings.enableSpecular)
-        m_pSpotLightShader->setShaderVar(m_SpotLightData.sgMap,   m_pSGTexture);
-    m_pSpotLightShader->setShaderVar(m_SpotLightData.normalMap,   m_pNormalTexture);
-    m_pSpotLightShader->setShaderVar(m_SpotLightData.depthMap,    m_pDepthTexture);
+        m_SpotLightShader->setShaderVar(m_SpotLightData.sgMap,   m_pSGTexture);
+    m_SpotLightShader->setShaderVar(m_SpotLightData.normalMap,   m_pNormalTexture);
+    m_SpotLightShader->setShaderVar(m_SpotLightData.depthMap,    m_pDepthTexture);
 
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
-    std::for_each(lights.cbegin(), lights.cend(), [&](const SpotLight::pointer& pLight)
+    std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
-        shapes::Sphere bsphere(pLight->getPosition(), pLight->getEndAttenuation());
+        SpotLight* light(lightFactory->getSpotLight(lightHandle));
+
+        shapes::Sphere bsphere(light->getPosition(), light->getEndAttenuation());
         if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false) 
         {
-            if (lengthSqr(pLight->getPosition() - camera.getPosition()) < sqr(pLight->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
+            if (lengthSqr(light->getPosition() - camera.getPosition()) < sqr(light->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -522,13 +531,13 @@ void Deferred3DRenderer::postSpotLights()
                 GL::heSetCullFace(false);
                 GL::heSetDepthFunc(DepthFunc_LessOrEqual);
             }
-            m_SpotLightData.position = camera.getView() * pLight->getPosition();
-            m_SpotLightData.multiplier = pLight->getMultiplier();
-            m_SpotLightData.direction = normalize((camera.getView() * vec4(pLight->getDirection(), 0)).xyz());
-            m_SpotLightData.beginAttenuation = pLight->getBeginAttenuation();
-            m_SpotLightData.color = pLight->getColor();
-            m_SpotLightData.endAttenuation = pLight->getEndAttenuation();
-            m_SpotLightData.cosCutOff = pLight->getCosCutoff();
+            m_SpotLightData.position = camera.getView() * light->getPosition();
+            m_SpotLightData.multiplier = light->getMultiplier();
+            m_SpotLightData.direction = normalize((camera.getView() * vec4(light->getDirection(), 0)).xyz());
+            m_SpotLightData.beginAttenuation = light->getBeginAttenuation();
+            m_SpotLightData.color = light->getColor();
+            m_SpotLightData.endAttenuation = light->getEndAttenuation();
+            m_SpotLightData.cosCutOff = light->getCosCutoff();
 
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.position);
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.multiplier);
@@ -538,10 +547,10 @@ void Deferred3DRenderer::postSpotLights()
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.endAttenuation);
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.cosCutOff);
 
-            m_pSpotLightShader->setShaderVar(m_SpotLightData.wvp, camera.getViewProjection() * pLight->getWorldMatrix());
+            m_SpotLightShader->setShaderVar(m_SpotLightData.wvp, camera.getViewProjection() * light->getWorldMatrix());
 
-            GL::heBindVao(pLight->getLightVolume()->getVertexArraysID());
-            glDrawElements(GL_TRIANGLES, pLight->getLightVolume()->getNumIndices(), pLight->getLightVolume()->getIndexType(), 0);
+            GL::heBindVao(light->getLightVolume()->getVertexArraysID());
+            glDrawElements(GL_TRIANGLES, light->getLightVolume()->getNumIndices(), light->getLightVolume()->getIndexType(), 0);
         }
     });
     GL::heSetCullFace(false);

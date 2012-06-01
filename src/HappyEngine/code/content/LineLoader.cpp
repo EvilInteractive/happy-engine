@@ -78,7 +78,7 @@ gfx::Line::pointer LineLoader::loadLine(const std::string& path)
         }
         else
         {
-            HE_ASSERT("unkown model extension");
+            HE_ASSERT(false, "unkown model extension: %s", path);
             gfx::Line::pointer pLine(NEW gfx::Line());
             return pLine;
         }

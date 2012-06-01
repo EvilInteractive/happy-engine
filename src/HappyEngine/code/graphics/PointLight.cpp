@@ -22,6 +22,7 @@
 #include "PointLight.h"
 
 #include "ContentManager.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
@@ -33,20 +34,64 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
     m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
     BufferLayout vertexLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
-    m_pModel = m_pLightVolume;
+    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
+
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+    m_Model = m_LightVolume;
 }
+
+PointLight::PointLight( const PointLight& other )
+: m_Position(other.m_Position)
+, m_Multiplier(other.m_Multiplier)
+, m_Color(other.m_Color)
+, m_BeginAttenuation(other.m_BeginAttenuation)
+, m_EndAttenuation(other.m_EndAttenuation)
+, m_mtxWorld(other.m_mtxWorld)
+, m_Material(other.m_Material)
+, m_Model(other.m_Model)
+, m_LightVolume(other.m_LightVolume)
+{
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+}
+
+PointLight& PointLight::operator=( const PointLight& other )
+{
+    m_Position = other.m_Position;
+    m_Multiplier = other.m_Multiplier;
+    m_Color = other.m_Color;
+    m_BeginAttenuation = other.m_BeginAttenuation;
+    m_EndAttenuation = other.m_EndAttenuation;
+
+    m_mtxWorld = other.m_mtxWorld;
+
+    m_Material = other.m_Material;
+
+    if (m_Model != nullptr)
+        m_Model->release();
+    if (m_LightVolume != nullptr)
+        m_LightVolume->release();
+    m_Model = other.m_Model;
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
+    m_LightVolume = other.m_LightVolume;
+    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+
+    return *this;
+}
+
+PointLight::~PointLight()
+{
+    m_Model->release();
+    m_LightVolume->release();
+}
+
+
 void PointLight::calculateWorld()
 {
     m_mtxWorld = mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation + 1);
 }
 
 
-PointLight::~PointLight()
-{
-    //m_pModel->release();
-    m_pLightVolume->release();
-}
 
 void PointLight::setPosition(const vec3& position)
 {
@@ -105,7 +150,7 @@ mat44 PointLight::getWorldMatrix() const
 }
 const ModelMesh* PointLight::getLightVolume() const
 {
-    return m_pLightVolume;
+    return m_LightVolume;
 }
 const Material& PointLight::getMaterial() const
 {
@@ -113,7 +158,7 @@ const Material& PointLight::getMaterial() const
 }
 const ModelMesh* PointLight::getModelMesh() const
 {
-    return m_pModel;
+    return m_Model;
 }
 
 } } //end namespace

@@ -22,10 +22,10 @@
 #define _HE_SHADOW_CASTER_H_
 #pragma once
 
-#include "Light.h"
 #include "RenderSettings.h"
 #include "DrawListContainer.h"
 #include "Material.h"
+#include "DirectionalLight.h"
 
 namespace he {
 namespace gfx {
@@ -43,7 +43,7 @@ public:
     void init(const RenderSettings& settings);
     void setSettings(const RenderSettings& settings);
     
-    void render(const DrawListContainer& elements, const DirectionalLight::pointer& pDirectionalLight);
+    void render(const DrawListContainer& elements, DirectionalLight* directionalLight);
 
 private:
 

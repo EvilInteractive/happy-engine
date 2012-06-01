@@ -26,15 +26,20 @@
 namespace he {
 namespace err {
 namespace details {
-void happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, const va_list& args)
+bool happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, ...)
 {
     if (isOk == true)
-        return;
+        return true;
     
     LOG(tools::LogType_ProgrammerAssert, "**ASSERTION FAILURE!**");
     LOG(tools::LogType_ProgrammerAssert, "assert in function %s", func);
     LOG(tools::LogType_ProgrammerAssert, "from file %s on line %d", file, line);
-    LOG(tools::LogType_ProgrammerAssert, message, args);
+
+
+    va_list arg_list;
+    va_start(arg_list, message);
+    LOG(tools::LogType_ProgrammerAssert, message, arg_list);
+    va_end(arg_list);
     
     // TODO : Messagebox
     #ifndef GCC
@@ -43,15 +48,7 @@ void happyAssert(bool isOk, const char* file, const char* func, int line, const 
     __builtin_trap();
     #endif
     
-}
-
-void happyAssert(int isOk, const char* file, const char* func, int line)
-{
-    happyAssert(isOk != 0, file, func, line, "", 0);
-}
-void happyAssert(void* isOk, const char* file, const char* func, int line)
-{
-    happyAssert(isOk != nullptr, file, func, line, "", 0);
+    return false;
 }
 
 } } } //end namespace

@@ -90,22 +90,22 @@ public:
         HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
     }
 
-    virtual T* get(const ObjectHandle& handle)
+    virtual T* get(const ObjectHandle& handle) const
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): getting unassigned handle", m_DisplayName.c_str());
         HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
         return m_Pool[handle.index];
     }
-    virtual T* getAt(ObjectHandle::Type index)
+    virtual T* getAt(ObjectHandle::Type index) const
     {
         return m_Pool[index];
     }
 
-    virtual bool isAlive(const ObjectHandle& handle)
+    virtual bool isAlive(const ObjectHandle& handle) const
     {
         return m_Salt[handle.index] == handle.salt;
     }
-    virtual bool isAliveAt(size_t index)
+    virtual bool isAliveAt(size_t index) const
     {
         return m_Pool[index] != nullptr;
     }

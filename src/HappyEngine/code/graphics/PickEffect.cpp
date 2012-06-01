@@ -56,7 +56,7 @@ void PickEffect::load()
     const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool shaderInit(pShader->initFromFile(folder + "2D/pickingShader.vert", 
                                           folder + "2D/pickingShader.frag", layout));
-    HE_ASSERT(shaderInit == true);
+    HE_ASSERT(shaderInit == true, "picking shader init failed");
 
     m_PickMaterial.setShader(pShader, vertexLayout, instancingLayout);
 

@@ -243,9 +243,9 @@ struct ShadowCam : public ICamera
     virtual vec3 getPosition() const { return position; };
     virtual const vec3& getLook() const { return look; };
 };
-void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalLight::pointer& pDirectionalLight )
+void ShadowCaster::render(const DrawListContainer& drawables, DirectionalLight* directionalLight )
 {
-    vec3 shadowLook(-normalize(pDirectionalLight->getDirection()));
+    vec3 shadowLook(-normalize(directionalLight->getDirection()));
     vec3 up(vec3::up);
     if (dot(up, shadowLook) > 0.99f)
         up = vec3::forward;
@@ -350,10 +350,10 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
             }
         });
 
-        pDirectionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
+        directionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
-    pDirectionalLight->setShadowPosition(camera.getPosition() - shadowLook*250);
-    pDirectionalLight->setShadowNearFar(1, 500);
+    directionalLight->setShadowPosition(camera.getPosition() - shadowLook*250);
+    directionalLight->setShadowNearFar(1, 500);
     //////////////////////////////////////////////////////////////////////////
     //                                 Blur                                 //
     //////////////////////////////////////////////////////////////////////////
@@ -379,7 +379,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, const DirectionalL
     {
         GL::heBindTexture2D(0, m_pShadowTexture[i+1]->getID());
         glGenerateMipmap(GL_TEXTURE_2D);
-        pDirectionalLight->setShadowMap(i, m_pShadowTexture[i+1]);
+        directionalLight->setShadowMap(i, m_pShadowTexture[i+1]);
     }
 
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));

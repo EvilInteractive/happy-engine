@@ -22,10 +22,12 @@
 #define _HE_LIGHT_MANAGER_H_
 #pragma once
 
-#include "Light.h"
-
 namespace he {
 namespace gfx {
+
+class AmbientLight;
+class DirectionalLight;
+class BufferLayout;
 
 class LightManager
 {
@@ -33,45 +35,44 @@ public:
     LightManager();
     virtual ~LightManager();
 
-    const AmbientLight::pointer& setAmbientLight(const Color&         color, 
-                                                 float                multiplier);
+    AmbientLight* setAmbientLight(const Color&    color, 
+                                  float           multiplier);
 
-    PointLight::pointer addPointLight(const vec3&  pos, 
-                                      const Color&          color, 
-                                      float                 multiplier, 
-                                      float                 beginAttenuation, 
-                                      float                 endAttentuation);
+    ObjectHandle addPointLight(const vec3&   pos, 
+                              const Color&  color, 
+                              float         multiplier, 
+                              float         beginAttenuation, 
+                              float         endAttentuation);
 
-    SpotLight::pointer addSpotLight(const vec3&    pos, 
-                                    const vec3&    direction, 
-                                    const Color&            color, 
-                                    float                   multiplier,
-                                    float                   fov, //0 -> piOver2
-                                    float                   beginAttenuation, 
-                                    float                   endAttentuation);
+    ObjectHandle addSpotLight(const vec3&    pos, 
+                            const vec3&    direction, 
+                            const Color&   color, 
+                            float          multiplier,
+                            float          fov, //0 -> piOver2
+                            float          beginAttenuation, 
+                            float          endAttentuation);
 
-    DirectionalLight::pointer setDirectionalLight(const vec3&  direction, 
-                                                  const Color&          color, 
-                                                  float                 multiplier);
+    DirectionalLight* setDirectionalLight(const vec3&   direction, 
+                                          const Color&  color, 
+                                          float         multiplier);
 
-    const AmbientLight::pointer& getAmbientLight() const;
-    const DirectionalLight::pointer& getDirectionalLight() const;
-    const std::vector<PointLight::pointer>& getPointLights() const;
-    const std::vector<SpotLight::pointer>& getSpotLights() const;
+    AmbientLight* getAmbientLight() const;
+    DirectionalLight* getDirectionalLight() const;
+    const std::vector<ObjectHandle>& getPointLights() const;
+    const std::vector<ObjectHandle>& getSpotLights() const;
 
     void removeAllLights();
-    void remove(const PointLight::pointer& pLight);
-    void remove(const SpotLight::pointer& pLight);
+    void remove(const ObjectHandle& light);
 
     static const BufferLayout& getVertexLayoutLightVolume();
 
 private:
 
-    AmbientLight::pointer m_pAmbientLight;
-    DirectionalLight::pointer m_pDirectionalLight;
+    AmbientLight* m_AmbientLight;
+    DirectionalLight* m_DirectionalLight;
 
-    std::vector<PointLight::pointer> m_PointLightVector;
-    std::vector<SpotLight::pointer> m_SpotLightVector;
+    std::vector<ObjectHandle> m_PointLightVector;
+    std::vector<ObjectHandle> m_SpotLightVector;
 
     //Disable default copy constructor and default assignment operator
     LightManager(const LightManager&);

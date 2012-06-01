@@ -158,7 +158,7 @@ void ObjLoader::flushCreateGroup(uint group)
         case gfx::IndexStride_Byte:   r.end = m_IndicesByte.size(); break;
         case gfx::IndexStride_UShort: r.end = m_IndicesUShort.size(); break;
         case gfx::IndexStride_UInt:   r.end = m_IndicesUInt.size(); break;
-        default: HE_ASSERT("unkown type"); r.end = 0; break;
+        default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[group]); r.end = 0; break;
     }
     r.begin = r.end - m_NumIndices[group];
     //std::cout << "begin: " << r.begin << ", end: " << r.end << ", num: " << m_NumIndices[group] << ", group: " << group << ", stride: " << m_IndexStride[group] << "\n";
@@ -272,7 +272,7 @@ void ObjLoader::addIndex(uint index, uint group)
         case gfx::IndexStride_Byte:   m_IndicesByte.push_back(static_cast<byte>(index)); break;
         case gfx::IndexStride_UShort: m_IndicesUShort.push_back(static_cast<ushort>(index)); break;
         case gfx::IndexStride_UInt:   m_IndicesUInt.push_back(index); break;
-        default: HE_ASSERT("unkown type"); break;
+        default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[group]); break;
     }
 }
 void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) const
@@ -368,7 +368,7 @@ const void* ObjLoader::getIndices(uint mesh) const
         case gfx::IndexStride_Byte:   return &m_IndicesByte[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UShort: return &m_IndicesUShort[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UInt:   return &m_IndicesUInt[m_IndexMeshRange[mesh].begin];
-        default: HE_ASSERT("unkown type");  return 0;
+        default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[mesh]);  return 0;
     }
 }
 gfx::IndexStride ObjLoader::getIndexStride(uint mesh) const

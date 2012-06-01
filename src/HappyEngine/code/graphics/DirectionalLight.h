@@ -22,13 +22,6 @@
 #define _HE_DIRECTIONAL_LIGHT_H_
 #pragma once
 
-#include "vec3.h"
-#include "mat44.h"
-#include "Color.h"
-#include "Model.h"
-
-#include "boost/shared_ptr.hpp"
-
 #include "IDrawable.h"
 
 namespace he {
@@ -75,7 +68,9 @@ public:
     const vec3& getShadowPosition() const;
     const vec2& getShadowNearFar() const;
 
-    typedef boost::shared_ptr<DirectionalLight> pointer;
+private:
+    DirectionalLight(const DirectionalLight&);
+    DirectionalLight& operator=(const DirectionalLight&);
 };
 
 } } //end namespace

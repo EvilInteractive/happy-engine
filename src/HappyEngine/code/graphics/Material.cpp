@@ -26,7 +26,8 @@
 #include "HappyEngine.h"
 #include "GraphicsEngine.h"
 #include "LightManager.h"
-#include "Light.h"
+#include "AmbientLight.h"
+#include "DirectionalLight.h"
 
 #include "ICamera.h"
 

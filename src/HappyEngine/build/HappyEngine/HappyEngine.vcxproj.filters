@@ -223,9 +223,6 @@
     <ClCompile Include="..\..\code\graphics\PointLight.cpp">
       <Filter>happyengine\graphics\light</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\graphics\Light.cpp">
-      <Filter>happyengine\graphics\light</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\graphics\LightManager.cpp">
       <Filter>happyengine\graphics\light</Filter>
     </ClCompile>
@@ -508,6 +505,12 @@
     <ClCompile Include="..\..\code\tools\Logger.cpp">
       <Filter>happyengine\tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\graphics\LightFactory.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\graphics\AmbientLight.cpp">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\content\BinObjLineLoader.h">
@@ -649,9 +652,6 @@
       <Filter>happyengine\graphics\light</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\graphics\PointLight.h">
-      <Filter>happyengine\graphics\light</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\graphics\Light.h">
       <Filter>happyengine\graphics\light</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\graphics\LightManager.h">
@@ -1034,6 +1034,18 @@
     </ClInclude>
     <ClInclude Include="..\..\code\tools\Logger.h">
       <Filter>happyengine\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\graphics\LightFactory.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\graphics\ILight.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\graphics\AmbientLight.h">
+      <Filter>happyengine\graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Singleton.h">
+      <Filter>happyengine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

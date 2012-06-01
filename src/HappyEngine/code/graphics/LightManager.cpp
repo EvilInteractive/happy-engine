@@ -20,105 +20,129 @@
 #include "HappyPCH.h"
 
 #include "LightManager.h"
-#include "HappyNew.h"
+#include "LightFactory.h"
+
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "AmbientLight.h"
+#include "DirectionalLight.h"
+#include "ILight.h"
 
 namespace he {
 namespace gfx {
 
-LightManager::LightManager(): m_pAmbientLight(NEW AmbientLight()), m_pDirectionalLight(NEW DirectionalLight())
+LightManager::LightManager(): m_AmbientLight(NEW AmbientLight()), m_DirectionalLight(NEW DirectionalLight())
 {
 }
 
 
 LightManager::~LightManager()
 {
+    delete m_AmbientLight;
+    delete m_DirectionalLight;
+    removeAllLights();
 }
 
-const AmbientLight::pointer& LightManager::setAmbientLight(const Color&         color,
-                                                    float                multiplier)
+AmbientLight* LightManager::setAmbientLight(const Color& color,
+                                            float        multiplier)
 {
-    m_pAmbientLight->color = color.rgb();
-    m_pAmbientLight->multiplier = multiplier;
+    m_AmbientLight->color = color.rgb();
+    m_AmbientLight->multiplier = multiplier;
 
-    return m_pAmbientLight;
+    return m_AmbientLight;
 }
-PointLight::pointer LightManager::addPointLight(const vec3&  pos,
-                                                const Color&          color,
-                                                float                 multiplier,
-                                                float                 beginAttenuation,
-                                                float                 endAttentuation)
+ObjectHandle LightManager::addPointLight(const vec3&  pos,
+                                        const Color&  color,
+                                        float         multiplier,
+                                        float         beginAttenuation,
+                                        float         endAttentuation)
 {
-    PointLight::pointer pLight(NEW PointLight());
-    m_PointLightVector.push_back(pLight);
+    ObjectHandle lightHandle(LightFactory::getInstance()->createPointLight());
+    PointLight* light(LightFactory::getInstance()->getPointLight(lightHandle));
+    m_PointLightVector.push_back(lightHandle);
 
-    pLight->setPosition(pos);
-    pLight->setColor(color);
-    pLight->setMultiplier(multiplier);
-    pLight->setAttenuation(beginAttenuation, endAttentuation);
+    light->setPosition(pos);
+    light->setColor(color);
+    light->setMultiplier(multiplier);
+    light->setAttenuation(beginAttenuation, endAttentuation);
 
-    return pLight;
+    return lightHandle;
 }
-SpotLight::pointer LightManager::addSpotLight(const vec3&    pos,
-                                              const vec3&    direction,
-                                              const Color&            color,
-                                              float                   multiplier,
-                                              float                   fov,
-                                              float                   beginAttenuation,
-                                              float                   endAttentuation)
+ObjectHandle LightManager::addSpotLight(const vec3&    pos,
+                                      const vec3&    direction,
+                                      const Color&   color,
+                                      float          multiplier,
+                                      float          fov,
+                                      float          beginAttenuation,
+                                      float          endAttentuation)
 {
-    SpotLight::pointer pLight(NEW SpotLight());
-    m_SpotLightVector.push_back(pLight);
+    ObjectHandle lightHandle(LightFactory::getInstance()->createSpotLight());
+    SpotLight* light(LightFactory::getInstance()->getSpotLight(lightHandle));
+    m_SpotLightVector.push_back(lightHandle);
 
-    pLight->setPosition(pos);
-    pLight->setColor(color);
-    pLight->setMultiplier(multiplier);
-    pLight->setDirection(-direction);
-    pLight->setFov(fov);
-    pLight->setAttenuation(beginAttenuation, endAttentuation);
+    light->setPosition(pos);
+    light->setColor(color);
+    light->setMultiplier(multiplier);
+    light->setDirection(-direction);
+    light->setFov(fov);
+    light->setAttenuation(beginAttenuation, endAttentuation);
 
-    return pLight;
+    return lightHandle;
 }
-DirectionalLight::pointer LightManager::setDirectionalLight(const vec3&  direction,
-                                                            const Color& color,
-                                                            float multiplier)
+DirectionalLight* LightManager::setDirectionalLight(const vec3&  direction,
+                                               const Color& color,
+                                               float multiplier)
 {
-    m_pDirectionalLight->setDirection(direction);
-    m_pDirectionalLight->setColor(color);
-    m_pDirectionalLight->setMultiplier(multiplier);
+    m_DirectionalLight->setDirection(direction);
+    m_DirectionalLight->setColor(color);
+    m_DirectionalLight->setMultiplier(multiplier);
 
-    return m_pDirectionalLight;
+    return m_DirectionalLight;
 }
 
-const AmbientLight::pointer& LightManager::getAmbientLight() const
+AmbientLight* LightManager::getAmbientLight() const
 {
-    return m_pAmbientLight;
+    return m_AmbientLight;
 }
-const std::vector<PointLight::pointer>& LightManager::getPointLights() const
+const std::vector<ObjectHandle>& LightManager::getPointLights() const
 {
     return m_PointLightVector;
 }
-const std::vector<SpotLight::pointer>& LightManager::getSpotLights() const
+const std::vector<ObjectHandle>& LightManager::getSpotLights() const
 {
     return m_SpotLightVector;
 }
-const DirectionalLight::pointer& LightManager::getDirectionalLight() const
+DirectionalLight* LightManager::getDirectionalLight() const
 {
-    return m_pDirectionalLight;
+    return m_DirectionalLight;
 }
 
 void LightManager::removeAllLights()
 {
+    LightFactory* lightFactory(LightFactory::getInstance());
+    std::for_each(m_PointLightVector.cbegin(), m_PointLightVector.cend(), [&lightFactory](const ObjectHandle& handle)
+    {
+        lightFactory->destroyLight(handle);
+    });
+    std::for_each(m_SpotLightVector.cbegin(), m_SpotLightVector.cend(), [&lightFactory](const ObjectHandle& handle)
+    {
+        lightFactory->destroyLight(handle);
+    });
     m_PointLightVector.clear();
     m_SpotLightVector.clear();
-    //m_DirectionalLightVector.clear();
 }
-void LightManager::remove(const PointLight::pointer& pLight)
+void LightManager::remove(const ObjectHandle& lightHandle)
 {
-    m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), pLight), m_PointLightVector.end());
-}
-void LightManager::remove(const SpotLight::pointer& pLight)
-{
-    m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), pLight), m_SpotLightVector.end());
+    ILight* light(LightFactory::getInstance()->get(lightHandle));
+    if (light->getType() == LightType_Point)
+    {
+        m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), lightHandle), m_PointLightVector.end());
+    }
+    else
+    {
+        m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), lightHandle), m_SpotLightVector.end());
+    }
+    LightFactory::getInstance()->destroyLight(lightHandle);
 }
 
 } } //end namespace
