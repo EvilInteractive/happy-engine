@@ -38,6 +38,7 @@ public:
     virtual ~Entity();
     
     void addComponent(IComponent* pComponent); //will clean up pComponent
+    void deleteComponent(IComponent* pComponent);
 
     virtual mat44 getWorldMatrix() const;
     void setWorldMatrix(const mat44& mtxWorld);

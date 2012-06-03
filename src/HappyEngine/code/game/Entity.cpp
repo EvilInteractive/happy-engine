@@ -54,4 +54,10 @@ void Entity::addComponent( IComponent* pComponent )
     pComponent->init(this);
 }
 
+void Entity::deleteComponent( IComponent* pComponent )
+{
+    m_Components.erase(std::remove(m_Components.begin(), m_Components.end(), pComponent), m_Components.end());
+    delete pComponent;
+}
+
 } } //end namespace
