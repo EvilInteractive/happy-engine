@@ -23,10 +23,13 @@
 #pragma once
 
 #include "AssetContainer.h"
-#include "Shader.h"
 #include "RenderSettings.h"
 
 namespace he {
+namespace gfx {
+    class ShaderLayout;
+}
+
 namespace ct {
 
 class ShaderLoader
@@ -35,12 +38,12 @@ public:
     ShaderLoader();
     virtual ~ShaderLoader();
     
-    gfx::Shader::pointer load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    ObjectHandle load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
 
     void setRenderSettings(const gfx::RenderSettings& settings);
 
 private:
-    AssetContainer<gfx::Shader::pointer>* m_pAssetContainer;
+    AssetContainer<ObjectHandle> m_AssetContainer;
 
     gfx::RenderSettings m_RenderSettings;
 

@@ -21,25 +21,25 @@
 #include "HappyPCH.h" 
 
 #include "PickEffect.h"
-#include "HappyNew.h"
 
+#include "ShaderVar.h"
 #include "Shader.h"
+#include "Material.h"
 
 #include "ContentManager.h"
-
-#include <vector>
-#include <string>
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-PickEffect::PickEffect()
+PickEffect::PickEffect(): m_PickMaterial(nullptr)
 {
 }
 
 PickEffect::~PickEffect()
 {
+    if (m_PickMaterial != nullptr)
+        m_PickMaterial->release();
 }
 
 /* GENERAL */
@@ -51,29 +51,32 @@ void PickEffect::load()
     BufferLayout vertexLayout, instancingLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
-    Shader::pointer pShader(NEW Shader());
+    Shader* shader(ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create()));
     
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    bool shaderInit(pShader->initFromFile(folder + "2D/pickingShader.vert", 
-                                          folder + "2D/pickingShader.frag", layout));
+    bool shaderInit(shader->initFromFile(folder + "2D/pickingShader.vert", 
+                                         folder + "2D/pickingShader.frag", layout));
     HE_ASSERT(shaderInit == true, "picking shader init failed");
 
-    m_PickMaterial.setShader(pShader, vertexLayout, instancingLayout);
+    m_PickMaterial = ResourceFactory<Material>::getInstance()->get(ResourceFactory<Material>::getInstance()->create());
+    m_PickMaterial->setShader(shader->getHandle(), vertexLayout, instancingLayout);
 
-    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection)));
-    m_PickMaterial.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShader->getShaderVarId("matW"), "matW", ShaderVarType_World)));
+    m_PickMaterial->registerVar(NEW ShaderGlobalVar(shader->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection));
+    m_PickMaterial->registerVar(NEW ShaderGlobalVar(shader->getShaderVarId("matW"), "matW", ShaderVarType_World));
 
-    m_IdVar = ShaderUserVar<vec4>::pointer(NEW ShaderUserVar<vec4>(pShader->getShaderVarId("id"), "id", vec4(0, 0, 0, 0)));
-    m_PickMaterial.addVar(m_IdVar);
+    m_IdVar = NEW ShaderUserVar<vec4>(shader->getShaderVarId("id"), "id", vec4(0, 0, 0, 0));
+    m_PickMaterial->registerVar(m_IdVar);
+
+    shader->release();
 }
 
 /* SETTERS */
 void PickEffect::setID(const vec4& id)
 {
-    static_cast<ShaderUserVar<vec4>*>(m_IdVar.get())->setData(id); // TODO: change this ugly line
+    m_IdVar->setData(id);
 }
 
-const Material& PickEffect::getMaterial() const
+const Material* PickEffect::getMaterial() const
 {
     return m_PickMaterial;
 }

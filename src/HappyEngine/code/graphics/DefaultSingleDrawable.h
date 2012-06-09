@@ -33,9 +33,9 @@ public:
     DefaultSingleDrawable();
     virtual ~DefaultSingleDrawable();
 
-    virtual const Material& getMaterial() const = 0;
+    virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const; 
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
 
     virtual const ModelMesh* getModelMesh() const = 0;
     virtual mat44 getWorldMatrix() const = 0;

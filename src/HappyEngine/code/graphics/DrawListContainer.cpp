@@ -21,6 +21,7 @@
 
 #include "DrawListContainer.h"
 #include "IDrawable.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
@@ -35,37 +36,36 @@ DrawListContainer::~DrawListContainer()
 }
 
 
-void gfx::DrawListContainer::insert( IDrawable* pDrawable )
+void DrawListContainer::getContainerIndex(const IDrawable* drawable, uint& i0, uint& i1, uint& i2)
 {
-    #if !GCC
-    uint i0(pDrawable->getMaterial().noPost()?(pDrawable->getMaterial().isBackground()?BACKGROUND_INDEX:AFTERPOST_INDEX):BEFOREPOST_INDEX);
-    uint i1(pDrawable->getMaterial().isBlended()?BLENDING_INDEX:OPAC_INDEX);
-    uint i2(pDrawable->isInstanced()?INSTANCE_INDEX:(pDrawable->isSkinned()?SKINNED_INDEX:SINGLE_INDEX));
-    #else
-    uint i0(0);
-    uint i1(0);
-    uint i2(0);
-
-    if (pDrawable->getMaterial().noPost())
-        if (pDrawable->getMaterial().isBackground())
-            i0 = BACKGROUND_INDEX;
+    const gfx::Material* material(drawable->getMaterial());
+    HE_IF_ASSERT(material != nullptr, "Material is nullptr!")
+    {
+        if (material->noPost())
+            if (material->isBackground())
+                i0 = BACKGROUND_INDEX;
+            else
+                i0 = AFTERPOST_INDEX;
         else
-            i0 = AFTERPOST_INDEX;
-    else
-        i0 = BEFOREPOST_INDEX;
+            i0 = BEFOREPOST_INDEX;
 
-    if (pDrawable->getMaterial().isBlended())
-        i1 = BLENDING_INDEX;
-    else
-        i1 = OPAC_INDEX;
+        if (material->isBlended())
+            i1 = BLENDING_INDEX;
+        else
+            i1 = OPAC_INDEX;
 
-    if (pDrawable->isInstanced())
-        i2 = INSTANCE_INDEX;
-    else if (pDrawable->isSkinned())
-        i2 = SKINNED_INDEX;
-    else
-        i2 = SINGLE_INDEX;
-    #endif
+        if (drawable->isInstanced())
+            i2 = INSTANCE_INDEX;
+        else if (drawable->isSkinned())
+            i2 = SKINNED_INDEX;
+        else
+            i2 = SINGLE_INDEX;
+    }
+}
+void DrawListContainer::insert( IDrawable* pDrawable )
+{
+    uint i0(0), i1(0), i2(0);
+    getContainerIndex(pDrawable, i0, i1, i2);
     m_DrawList[i0][i1][i2].push_back(pDrawable);
 }
 void removeFromVector( DrawListContainer::Container& vec, const IDrawable* pDrawable )
@@ -81,41 +81,14 @@ void removeFromVector( DrawListContainer::Container& vec, const IDrawable* pDraw
     vec.pop_back();
 }
 
-void gfx::DrawListContainer::remove( const IDrawable* pDrawable )
+void DrawListContainer::remove( const IDrawable* pDrawable )
 {
-    #if !GCC
-    uint i0(pDrawable->getMaterial().noPost()?(pDrawable->getMaterial().isBackground()?BACKGROUND_INDEX:AFTERPOST_INDEX):BEFOREPOST_INDEX);
-    uint i1(pDrawable->getMaterial().isBlended()?BLENDING_INDEX:OPAC_INDEX);
-    uint i2(pDrawable->isInstanced()?INSTANCE_INDEX:(pDrawable->isSkinned()?SKINNED_INDEX:SINGLE_INDEX));
-    #else
-    uint i0(0);
-    uint i1(0);
-    uint i2(0);
-
-    if (pDrawable->getMaterial().noPost())
-        if (pDrawable->getMaterial().isBackground())
-            i0 = BACKGROUND_INDEX;
-        else
-            i0 = AFTERPOST_INDEX;
-    else
-        i0 = BEFOREPOST_INDEX;
-
-    if (pDrawable->getMaterial().isBlended())
-        i1 = BLENDING_INDEX;
-    else
-        i1 = OPAC_INDEX;
-
-    if (pDrawable->isInstanced())
-        i2 = INSTANCE_INDEX;
-    else if (pDrawable->isSkinned())
-        i2 = SKINNED_INDEX;
-    else
-        i2 = SINGLE_INDEX;
-    #endif
+    uint i0(0), i1(0), i2(0);
+    getContainerIndex(pDrawable, i0, i1, i2);
     removeFromVector(m_DrawList[i0][i1][i2], pDrawable);
 }
 
-void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(IDrawable*)>& f ) const
+void DrawListContainer::for_each( uint filter, const boost::function<void(IDrawable*)>& f ) const
 {
     #pragma region ASSERTS
     HE_ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost || filter & F_Loc_Background,
@@ -126,22 +99,22 @@ void gfx::DrawListContainer::for_each( uint filter, const boost::function<void(I
 
     for (int i0(0); i0 < MAX_I0; ++i0)
     {
-        if ((filter & F_Loc_BeforePost && BEFOREPOST_INDEX == i0 ||
-             filter & F_Loc_AfterPost  && AFTERPOST_INDEX  == i0 || 
-             filter & F_Loc_Background && BACKGROUND_INDEX == i0) == false)
+        if (( (filter & F_Loc_BeforePost) && (BEFOREPOST_INDEX == i0) ||
+              (filter & F_Loc_AfterPost)  && (AFTERPOST_INDEX  == i0) || 
+              (filter & F_Loc_Background) && (BACKGROUND_INDEX == i0) ) == false)
             continue;
 
         for (int i1(0); i1 < MAX_I1; ++i1)
         {
-            if ((filter & F_Main_Opac        && OPAC_INDEX      == i1 ||
-                 filter & F_Main_Blended     && BLENDING_INDEX  == i1) == false)
+            if (( (filter & F_Main_Opac)        && (OPAC_INDEX      == i1) ||
+                  (filter & F_Main_Blended)     && (BLENDING_INDEX  == i1) ) == false)
                 continue;
 
             for (int i2(0); i2 < MAX_I2; ++i2)
             {
-                if ((filter & F_Sub_Single    && SINGLE_INDEX   == i2 ||
-                     filter & F_Sub_Skinned   && SKINNED_INDEX  == i2 ||
-                     filter & F_Sub_Instanced && INSTANCE_INDEX == i2) == false)
+                if (((filter & F_Sub_Single)    && (SINGLE_INDEX   == i2) ||
+                     (filter & F_Sub_Skinned)   && (SKINNED_INDEX  == i2) ||
+                     (filter & F_Sub_Instanced) && (INSTANCE_INDEX == i2) ) == false)
                     continue;
 
                 std::for_each(m_DrawList[i0][i1][i2].cbegin(), m_DrawList[i0][i1][i2].cend(), f);

@@ -28,11 +28,11 @@ namespace he {
 namespace gfx {
 
 SpotLight::SpotLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_Direction(0, -1, 0), m_BeginAttenuation(0.0f),
-    m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f), m_CosCutoff(0.5f)
+    m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f), m_CosCutoff(0.5f), m_Material(nullptr), m_Model(nullptr), m_LightVolume(nullptr)
 {
     calculateWorld();
 
-    m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
+    m_Material = ResourceFactory<Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
     BufferLayout vertexLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
     //m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight", vertexLayout); //HACK: wrong volume
@@ -60,6 +60,7 @@ SpotLight::SpotLight( const SpotLight& other )
 {
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
+    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
 }
 SpotLight& SpotLight::operator=( const SpotLight& other )
 {
@@ -73,27 +74,34 @@ SpotLight& SpotLight::operator=( const SpotLight& other )
 
     m_mtxWorld = other.m_mtxWorld;
 
-    m_Material = other.m_Material;
 
 
     if (m_Model != nullptr)
         m_Model->release();
     if (m_LightVolume != nullptr)
         m_LightVolume->release();
+    if (m_Material != nullptr)
+        m_Material->release();
 
     m_LightVolume = other.m_LightVolume;
     m_Model = other.m_Model;
+    m_Material = other.m_Material;
 
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
+    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
 
     return *this;
 }
 
 SpotLight::~SpotLight()
 {   
-    m_Model->release();
-    m_LightVolume->release();
+    if (m_Model != nullptr)
+        m_Model->release();
+    if (m_LightVolume != nullptr)
+        m_LightVolume->release();
+    if (m_Material != nullptr)
+        m_Material->release();
 }
 
 void SpotLight::calculateWorld()
@@ -176,7 +184,7 @@ const ModelMesh* SpotLight::getLightVolume() const
 {
     return m_LightVolume;
 }
-const Material& SpotLight::getMaterial() const
+const Material* SpotLight::getMaterial() const
 {
     return m_Material;
 }

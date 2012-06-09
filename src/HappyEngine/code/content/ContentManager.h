@@ -24,7 +24,6 @@
 
 #include "RenderSettings.h"
 
-#include "Shader.h"
 #include "Material.h"
 
 namespace he {
@@ -32,6 +31,7 @@ namespace gfx {
     class Model;
     class ModelMesh;
     class Texture2D;
+    class ShaderLayout;
 }
 
 namespace ct {
@@ -73,9 +73,9 @@ public:
     gfx::Font* loadFont(const std::string& path, ushort size);
     gfx::Font* getDefaultFont(ushort size = 12);
 
-    gfx::Shader::pointer loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    ObjectHandle loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
    
-    gfx::Material loadMaterial(const std::string& path);
+    ObjectHandle loadMaterial(const std::string& path);
 
     void setContentDir(const Path& path);
     void setTextureFolder(const std::string& folder);

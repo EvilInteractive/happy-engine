@@ -24,31 +24,36 @@
 #include "IniReader.h"
 #include "HappyEngine.h"
 #include "BufferLayout.h"
+#include "Shader.h"
 
 namespace he {
 namespace ct {
 
-ShaderLoader::ShaderLoader(): m_pAssetContainer(NEW AssetContainer<gfx::Shader::pointer>())
+ShaderLoader::ShaderLoader()
 {
 }
 
 
 ShaderLoader::~ShaderLoader()
 {
-    delete m_pAssetContainer;
 }
 
-gfx::Shader::pointer ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+ObjectHandle ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    std::string key(vsPath+fsPath);
-    if (m_pAssetContainer->isAssetPresent(key))
+
+    ResourceFactory<gfx::Shader>* factory(ResourceFactory<gfx::Shader>::getInstance());
+
+    std::string key(vsPath + fsPath);
+    if (m_AssetContainer.isAssetPresent(key) && factory->isAlive(m_AssetContainer.getAsset(key)))
     {
-        return m_pAssetContainer->getAsset(key);
+        ObjectHandle shader(m_AssetContainer.getAsset(key));
+        factory->instantiate(shader);
+        return shader;
     }
     else
     {
-        gfx::Shader::pointer pShader(NEW gfx::Shader());
+        gfx::Shader* shader(factory->get(factory->create()));
         std::set<std::string> defines;
         if (m_RenderSettings.enableShadows)
             defines.insert("SHADOWS");
@@ -57,9 +62,9 @@ gfx::Shader::pointer ShaderLoader::load(const std::string& vsPath, const std::st
         if (m_RenderSettings.enableNormalMap)
             defines.insert("NORMALMAP");
 
-        pShader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
-        m_pAssetContainer->addAsset(key, pShader);
-        return pShader;
+        shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);
+        m_AssetContainer.addAsset(key, shader->getHandle());
+        return shader->getHandle();
     }
 }
 

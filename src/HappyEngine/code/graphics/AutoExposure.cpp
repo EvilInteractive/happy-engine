@@ -26,12 +26,13 @@
 #include "GraphicsEngine.h"
 #include "Game.h"
 #include "ModelMesh.h"
+#include "Texture2D.h"
 
 namespace he {
     namespace gfx {
 
 AutoExposure::AutoExposure():
-    m_pLumShader(NEW Shader()), 
+    m_LumShader(ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create())), 
     m_FirstBuffer(true),
     m_DTime(0), 
     m_ExposureSpeed(1.0f), 
@@ -55,6 +56,7 @@ AutoExposure::~AutoExposure()
         GAME->removeFromTickList(this);
     if (m_pQuad != nullptr)
         m_pQuad->release();
+    m_LumShader->release();
 }
 
 void AutoExposure::init(const RenderSettings& settings)
@@ -84,11 +86,11 @@ void AutoExposure::init(const RenderSettings& settings)
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    m_pLumShader->initFromFile(folder + "shared/postShaderQuad.vert", 
+    m_LumShader->initFromFile(folder + "shared/postShaderQuad.vert", 
                                folder + "post/autoLum.frag", shaderLayout);
-    m_HDRmapPos = m_pLumShader->getShaderSamplerId("hdrMap");
-    m_PrevLumMapPos = m_pLumShader->getShaderSamplerId("prevLumMap");
-    m_DTimePos = m_pLumShader->getShaderVarId("dTime");
+    m_HDRmapPos = m_LumShader->getShaderSamplerId("hdrMap");
+    m_PrevLumMapPos = m_LumShader->getShaderSamplerId("prevLumMap");
+    m_DTimePos = m_LumShader->getShaderVarId("dTime");
 
     m_ExposureSpeed = settings.exposureSpeed;
 
@@ -106,11 +108,11 @@ void AutoExposure::calculate( const Texture2D* pHdrMap)
 
     GL::heBlendEnabled(false);
     GL::heBindFbo(m_FboID);
-    m_pLumShader->bind();
+    m_LumShader->bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pLumTexture[m_FirstBuffer? 0 : 1]->getID(), 0);
-    m_pLumShader->setShaderVar(m_HDRmapPos, pHdrMap);
-    m_pLumShader->setShaderVar(m_PrevLumMapPos, m_pLumTexture[m_FirstBuffer? 1 : 0]);
-    m_pLumShader->setShaderVar(m_DTimePos, m_DTime);
+    m_LumShader->setShaderVar(m_HDRmapPos, pHdrMap);
+    m_LumShader->setShaderVar(m_PrevLumMapPos, m_pLumTexture[m_FirstBuffer? 1 : 0]);
+    m_LumShader->setShaderVar(m_DTimePos, m_DTime);
     GL::heBindVao(m_pQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
 }

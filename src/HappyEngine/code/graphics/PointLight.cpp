@@ -28,10 +28,10 @@ namespace he {
 namespace gfx {
 
 PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenuation(0.0f),
-    m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f)
+    m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f), m_Material(nullptr)
 {
     calculateWorld();
-    m_Material = CONTENT->loadMaterial("engine/light/debuglight.material");
+    m_Material = ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
     BufferLayout vertexLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
     m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
@@ -53,6 +53,7 @@ PointLight::PointLight( const PointLight& other )
 {
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
 }
 
 PointLight& PointLight::operator=( const PointLight& other )
@@ -64,25 +65,31 @@ PointLight& PointLight::operator=( const PointLight& other )
     m_EndAttenuation = other.m_EndAttenuation;
 
     m_mtxWorld = other.m_mtxWorld;
-
-    m_Material = other.m_Material;
-
+    
     if (m_Model != nullptr)
         m_Model->release();
     if (m_LightVolume != nullptr)
         m_LightVolume->release();
+    if (m_Material != nullptr)
+        m_Material->release();
     m_Model = other.m_Model;
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
     m_LightVolume = other.m_LightVolume;
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
+    m_Material = other.m_Material;
+    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
 
     return *this;
 }
 
 PointLight::~PointLight()
 {
-    m_Model->release();
-    m_LightVolume->release();
+    if (m_Material != nullptr)
+        m_Model->release();
+    if (m_Material != nullptr)
+        m_LightVolume->release();
+    if (m_Material != nullptr)
+        m_Material->release();
 }
 
 
@@ -152,7 +159,7 @@ const ModelMesh* PointLight::getLightVolume() const
 {
     return m_LightVolume;
 }
-const Material& PointLight::getMaterial() const
+const Material* PointLight::getMaterial() const
 {
     return m_Material;
 }

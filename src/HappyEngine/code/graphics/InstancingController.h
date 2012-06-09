@@ -23,7 +23,6 @@
 #pragma once
 
 #include "SlotPContainer.h"
-#include "Material.h"
 
 #include "IDrawable.h"
 #include "BufferLayout.h"
@@ -35,20 +34,21 @@ namespace gfx {
 class IInstancible;
 class IInstanceFiller;
 class ModelMesh;
+class Material;
 
 class InstancingController : public IInstancedDrawable
 {
 public:
-    InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const Material& material);
+    InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
     virtual ~InstancingController();
 
     uint addInstance(const IInstancible* pObj); //return id
     uint addInstance(); //return id // only for manual mode
     void removeInstance(uint id);
     
-    virtual const Material& getMaterial() const;
+    virtual const Material* getMaterial() const;
     virtual void applyMaterial(const ICamera* pCamera) const;
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
 
     virtual const ModelMesh* getModelMesh() const;
 
@@ -87,7 +87,7 @@ private:
 
     BufferLayout m_InstancingLayout;
     const ModelMesh* m_pModelMesh;
-    Material m_Material;
+    Material* m_Material;
 
     bool m_CastShadows;
     bool m_IsVisible;

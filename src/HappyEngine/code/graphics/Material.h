@@ -22,8 +22,6 @@
 #define _HE_MATERIAL_H_
 #pragma once
 
-#include "Shader.h"
-#include "ShaderVar.h"
 #include "BufferLayout.h"
 
 namespace he {
@@ -33,17 +31,17 @@ class IInstancedDrawable;
 class ISingleDrawable;
 class ISkinnedDrawable;
 class ICamera;
+class ShaderVar;
 
-class Material
+class Material : public Resource<Material>
 {
 public:
     Material();
     virtual ~Material();
-    // default copy constructor and default assignment operator are OK
-
-    void addVar(const ShaderVar::pointer& var);
-    const ShaderVar::pointer& getVar(const std::string& var);
-    void setShader(const Shader::pointer& pShader, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout);
+    
+    void registerVar(ShaderVar* var);
+    ShaderVar* getVar(const std::string& var);
+    void setShader(const ObjectHandle& shaderHandle, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout);
 
     const BufferLayout& getCompatibleVertexLayout() const;
     const BufferLayout& getCompatibleInstancingLayout() const;
@@ -75,13 +73,17 @@ private:
     BlendFunc m_SourceBlend, m_DestBlend;
     bool m_IsBlended, m_UsedForInstancing, m_NoPost, m_IsBackground;
 
-    Shader::pointer m_pShader;
-    std::vector<ShaderVar::pointer> m_ShaderVar;
+    ObjectHandle m_ShaderHandle;
+    std::vector<ShaderVar*> m_ShaderVar;
 
     bool m_DepthRead, m_DepthWrite;
 
     BufferLayout m_CompatibleVL;
     BufferLayout m_CompatibleIL;
+
+    // Disabled
+    Material(const Material* other);
+    Material* operator=(const Material* other);
 };
 
 } } //end namespace

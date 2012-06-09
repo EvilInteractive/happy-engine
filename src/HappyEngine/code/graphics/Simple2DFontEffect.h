@@ -22,15 +22,10 @@
 #define _HE_SIMPLE_2D_FONT_EFFECT_H_
 #pragma once
 
-#include "HappyTypes.h"
-#include "Shader.h"
-#include "mat44.h"
-#include "vec2.h"
-#include "vec3.h"
-#include "Texture2D.h"
-
 namespace he {
 namespace gfx {
+class Texture2D;
+class Shader;
 
 class Simple2DFontEffect
 {
@@ -50,7 +45,7 @@ public:
     void setTCScale(const vec2& scale) const;
 
 private:
-    gfx::Shader* m_pShader;
+    gfx::Shader* m_Shader;
 
     uint m_ShaderWVPPos;
     uint m_ShaderDiffTexPos;

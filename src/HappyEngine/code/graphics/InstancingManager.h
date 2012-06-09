@@ -23,7 +23,6 @@
 #pragma once
 
 #include "ModelMesh.h"
-#include "Material.h"
 #include "BufferLayout.h"
 
 namespace he {
@@ -37,7 +36,7 @@ public:
     InstancingManager();
     virtual ~InstancingManager();
 
-    void createController(const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const Material& material);
+    void createController(const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
     InstancingController* getController(const std::string& id);
 
 private:

@@ -66,7 +66,7 @@ const char* fragQuadShader =
 
 /* CONSTRUCTOR - DESCTRUCTOR */
 Forward3DRenderer::Forward3DRenderer():
-    m_FboId(UINT_MAX), m_pQuadShader(nullptr),
+    m_FboId(UINT_MAX), m_QuadShader(nullptr),
     m_pOutColorTexture(nullptr), m_pOutDepthTexture(nullptr), m_pOutNormalTexture(nullptr),
     m_pQuad(nullptr)
 {
@@ -84,7 +84,8 @@ Forward3DRenderer::~Forward3DRenderer()
         m_pQuad->release();
     if (m_FboId != 0 && m_FboId != UINT_MAX)
         glDeleteFramebuffers(1, &m_FboId);
-    delete m_pQuadShader;
+    if (m_QuadShader != nullptr)
+        m_QuadShader->release();
 }
 
 void Forward3DRenderer::init( const RenderSettings& settings, 
@@ -143,16 +144,19 @@ void Forward3DRenderer::initFbo()
 }
 void Forward3DRenderer::compileShaders()
 {
-    delete m_pQuadShader;
-    m_pQuadShader = nullptr;
+    if (m_QuadShader != nullptr)
+    {
+        m_QuadShader->release();
+        m_QuadShader = nullptr;
+    }
     if (m_OwnsColorBuffer)
     {
         ShaderLayout layout;
         layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-        m_pQuadShader = NEW Shader();
-        m_pQuadShader->initFromMem(vertQuadShader, fragQuadShader, layout, "Forward3DRenderer.cpp-QuadShaderVert", "Forward3DRenderer.cpp-QuadShaderFrag");
-        m_QuadShaderTexPos = m_pQuadShader->getShaderSamplerId("colorTex");
+        m_QuadShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
+        m_QuadShader->initFromMem(vertQuadShader, fragQuadShader, layout, "Forward3DRenderer.cpp-QuadShaderVert", "Forward3DRenderer.cpp-QuadShaderFrag");
+        m_QuadShaderTexPos = m_QuadShader->getShaderSamplerId("colorTex");
     }
 }
 
@@ -215,8 +219,8 @@ void Forward3DRenderer::draw( const DrawListContainer& drawList, uint renderFlag
         const static GLenum buffers[1] = { GL_BACK_LEFT };
         glDrawBuffers(1, buffers);
 
-        m_pQuadShader->bind();
-        m_pQuadShader->setShaderVar(m_QuadShaderTexPos, m_pOutColorTexture);
+        m_QuadShader->bind();
+        m_QuadShader->setShaderVar(m_QuadShaderTexPos, m_pOutColorTexture);
 
         GL::heBindVao(m_pQuad->getVertexArraysID());
         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);

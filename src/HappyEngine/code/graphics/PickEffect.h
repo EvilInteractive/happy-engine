@@ -22,14 +22,14 @@
 #define _HE_PICK_EFFECT_H_
 #pragma once
 
-#include "mat44.h"
-#include "HappyTypes.h"
-#include "Material.h"
-
-#include "ShaderVar.h"
 
 namespace he {
 namespace gfx {
+
+template<typename T>
+class ShaderUserVar;
+
+class Material;
 
 class PickEffect
 {
@@ -42,7 +42,7 @@ public:
     /* GENERAL */
     void load();
 
-    const Material& getMaterial() const;
+    const Material* getMaterial() const;
 
     /* SETTERS */
     void setViewProjection(const mat44& mat);
@@ -52,9 +52,9 @@ public:
 private:
 
     /* DATAMEMBERS */
-    Material m_PickMaterial;
+    Material* m_PickMaterial;
 
-    ShaderUserVar<vec4>::pointer m_IdVar;
+    ShaderUserVar<vec4>* m_IdVar;
 
     /* DEFAULT COPY & ASSIGNMENT */
     PickEffect(const PickEffect&);

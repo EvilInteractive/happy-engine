@@ -23,6 +23,7 @@
 #include "DrawManager.h"
 #include "ICamera.h"
 #include "ModelMesh.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
@@ -38,12 +39,12 @@ DefaultSkinnedDrawable::~DefaultSkinnedDrawable()
 
 void DefaultSkinnedDrawable::applyMaterial( const ICamera* pCamera ) const
 {
-    getMaterial().apply(this, pCamera);
+    getMaterial()->apply(this, pCamera);
 }
 
-void DefaultSkinnedDrawable::applyMaterial( const Material& customMaterial, const ICamera* pCamera ) const
+void DefaultSkinnedDrawable::applyMaterial( const Material* customMaterial, const ICamera* pCamera ) const
 {
-    customMaterial.apply(this, pCamera);
+    customMaterial->apply(this, pCamera);
 }
 
 bool DefaultSkinnedDrawable::getCastsShadow() const

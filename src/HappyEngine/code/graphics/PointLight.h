@@ -29,6 +29,7 @@ namespace he {
 namespace gfx {
 
 class ModelMesh;
+class Material;
 
 class PointLight : public DefaultSingleDrawable, public ILight
 {
@@ -44,7 +45,7 @@ private:
 
     ModelMesh* m_LightVolume;
     ModelMesh* m_Model;
-    Material m_Material;
+    Material* m_Material;
 
 public:
     PointLight();
@@ -69,7 +70,7 @@ public:
     
     virtual bool getCastsShadow() const { return false; }
 
-    virtual const Material& getMaterial() const;
+    virtual const Material* getMaterial() const;
     virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Point; }

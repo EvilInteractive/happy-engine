@@ -99,30 +99,34 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_pOutTexture->release();
     m_pNormalTexture->release();
     m_pDepthTexture->release();
-
-    //m_pColorRampTex->release();
-
+    
     m_pQuad->release();
 
     glDeleteFramebuffers(1, &m_CollectionFboId);
     glDeleteFramebuffers(1, &m_RenderFboId);
 
-    delete m_PointLightShader;
-    delete m_SpotLightShader;
-    delete m_AmbDirIllShader;
+    if (m_PointLightShader != nullptr)
+        m_PointLightShader->release();    
+    if (m_SpotLightShader != nullptr)
+        m_SpotLightShader->release();
+    if (m_AmbDirIllShader != nullptr)
+        m_AmbDirIllShader->release();
 }
 void Deferred3DRenderer::compileShaders()
 {
     //////////////////////////////////////////////////////////////////////////
     ///                                 CLEAN                              ///
     //////////////////////////////////////////////////////////////////////////
-    delete m_PointLightShader;
-    delete m_SpotLightShader;
-    delete m_AmbDirIllShader;
+    if (m_PointLightShader != nullptr)
+        m_PointLightShader->release();    
+    if (m_SpotLightShader != nullptr)
+        m_SpotLightShader->release();
+    if (m_AmbDirIllShader != nullptr)
+        m_AmbDirIllShader->release();
 
-    m_PointLightShader = NEW Shader();
-    m_SpotLightShader = NEW Shader();
-    m_AmbDirIllShader = NEW Shader();
+    m_PointLightShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
+    m_SpotLightShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
+    m_AmbDirIllShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
 
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
@@ -350,11 +354,11 @@ void Deferred3DRenderer::draw(const DrawListContainer& drawList, uint renderFlag
     GL::heBlendEquation(BlendEquation_Add);
     GL::heSetDepthRead(false);
 
-    m_SharedShaderData.projParams = vec4(
+    m_SharedShaderData.projParams.set(vec4(
         CAMERAMANAGER->getActiveCamera()->getProjection()(0, 0),
         CAMERAMANAGER->getActiveCamera()->getProjection()(1, 1),
         CAMERAMANAGER->getActiveCamera()->getProjection()(2, 2),
-        CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3));
+        CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3)));
     m_SharedShaderData.pSharedBuffer->setShaderVar(m_SharedShaderData.projParams);
 
 
@@ -400,11 +404,11 @@ void Deferred3DRenderer::postAmbDirIllLight()
     const AmbientLight* ambLight(lightManager->getAmbientLight());
     const DirectionalLight* dirLight(lightManager->getDirectionalLight());
 
-    m_AmbDirIllLightData.ambColor = vec4(ambLight->color, ambLight->multiplier);
-    m_AmbDirIllLightData.dirColor = vec4(dirLight->getColor(), dirLight->getMultiplier());
-    m_AmbDirIllLightData.dirDirection = normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz());
-    m_AmbDirIllLightData.dirPosition = (CAMERAMANAGER->getActiveCamera()->getView() * vec4(dirLight->getShadowPosition(), 1.0f)).xyz();
-    m_AmbDirIllLightData.dirNearFar = dirLight->getShadowNearFar();
+    m_AmbDirIllLightData.ambColor.set(vec4(ambLight->color, ambLight->multiplier));
+    m_AmbDirIllLightData.dirColor.set(vec4(dirLight->getColor(), dirLight->getMultiplier()));
+    m_AmbDirIllLightData.dirDirection.set(normalize((CAMERAMANAGER->getActiveCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz()));
+    m_AmbDirIllLightData.dirPosition.set((CAMERAMANAGER->getActiveCamera()->getView() * vec4(dirLight->getShadowPosition(), 1.0f)).xyz());
+    m_AmbDirIllLightData.dirNearFar.set(dirLight->getShadowNearFar());
 
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.ambColor);
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirColor);
@@ -420,10 +424,10 @@ void Deferred3DRenderer::postAmbDirIllLight()
 
     if (m_RenderSettings.enableShadows)       
     {
-        m_AmbDirIllLightData.mtxDirLight0 = lightManager->getDirectionalLight()->getShadowMatrix(0);
-        m_AmbDirIllLightData.mtxDirLight1 = lightManager->getDirectionalLight()->getShadowMatrix(1);
-        m_AmbDirIllLightData.mtxDirLight2 = lightManager->getDirectionalLight()->getShadowMatrix(2);
-        m_AmbDirIllLightData.mtxDirLight3 = lightManager->getDirectionalLight()->getShadowMatrix(3);
+        m_AmbDirIllLightData.mtxDirLight0.set(lightManager->getDirectionalLight()->getShadowMatrix(0));
+        m_AmbDirIllLightData.mtxDirLight1.set(lightManager->getDirectionalLight()->getShadowMatrix(1));
+        m_AmbDirIllLightData.mtxDirLight2.set(lightManager->getDirectionalLight()->getShadowMatrix(2));
+        m_AmbDirIllLightData.mtxDirLight3.set(lightManager->getDirectionalLight()->getShadowMatrix(3));
 
         m_AmbDirIllLightData.pPerFrameBuffer->setShaderVar(m_AmbDirIllLightData.mtxDirLight0);
         m_AmbDirIllLightData.pPerFrameBuffer->setShaderVar(m_AmbDirIllLightData.mtxDirLight1);
@@ -475,11 +479,11 @@ void Deferred3DRenderer::postPointLights()
                 GL::heSetDepthFunc(DepthFunc_LessOrEqual);
             }
 
-            m_PointLightData.position = camera.getView() * light->getPosition();
-            m_PointLightData.multiplier = light->getMultiplier();
-            m_PointLightData.color = light->getColor();
-            m_PointLightData.beginAttenuation = light->getBeginAttenuation();
-            m_PointLightData.endAttenuation = light->getEndAttenuation();
+            m_PointLightData.position.set(camera.getView() * light->getPosition());
+            m_PointLightData.multiplier.set(light->getMultiplier());
+            m_PointLightData.color.set(light->getColor());
+            m_PointLightData.beginAttenuation.set(light->getBeginAttenuation());
+            m_PointLightData.endAttenuation.set(light->getEndAttenuation());
 
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.position);
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.multiplier);
@@ -531,13 +535,13 @@ void Deferred3DRenderer::postSpotLights()
                 GL::heSetCullFace(false);
                 GL::heSetDepthFunc(DepthFunc_LessOrEqual);
             }
-            m_SpotLightData.position = camera.getView() * light->getPosition();
-            m_SpotLightData.multiplier = light->getMultiplier();
-            m_SpotLightData.direction = normalize((camera.getView() * vec4(light->getDirection(), 0)).xyz());
-            m_SpotLightData.beginAttenuation = light->getBeginAttenuation();
-            m_SpotLightData.color = light->getColor();
-            m_SpotLightData.endAttenuation = light->getEndAttenuation();
-            m_SpotLightData.cosCutOff = light->getCosCutoff();
+            m_SpotLightData.position.set(camera.getView() * light->getPosition());
+            m_SpotLightData.multiplier.set(light->getMultiplier());
+            m_SpotLightData.direction.set(normalize((camera.getView() * vec4(light->getDirection(), 0)).xyz()));
+            m_SpotLightData.beginAttenuation.set(light->getBeginAttenuation());
+            m_SpotLightData.color.set(light->getColor());
+            m_SpotLightData.endAttenuation.set(light->getEndAttenuation());
+            m_SpotLightData.cosCutOff.set(light->getCosCutoff());
 
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.position);
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.multiplier);

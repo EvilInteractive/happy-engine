@@ -68,12 +68,6 @@ public:
         return m_Data;
     }
 
-    ShaderVariable& operator=(const T& data)
-    {
-        set(data);
-        return *this;
-    }
-
     virtual void* data()
     {
         return &m_Data;
@@ -94,7 +88,6 @@ class UniformBuffer
 {
 friend class Shader;
 public:
-    typedef boost::shared_ptr<UniformBuffer> pointer;
     ~UniformBuffer()
     {
         glDeleteBuffers(1, &m_GlBuffer);
@@ -142,7 +135,7 @@ private:
     uint m_BufferId;
 };
 
-class Shader
+class Shader : public Resource<Shader>
 {
 public:
     Shader();
@@ -163,8 +156,8 @@ public:
     uint getBufferVarId(uint bufferId, const std::string& name) const;
     uint getShaderSamplerId(const std::string& name);
 
-    UniformBuffer::pointer setBuffer(uint id); //create new buffer
-    void setBuffer(uint id, const UniformBuffer::pointer& pBuffer); //used to share buffer
+    UniformBuffer* setBuffer(uint id); //create new buffer
+    void setBuffer(uint id, UniformBuffer* pBuffer); //used to share buffer
 
     void setShaderVar(uint id, int value) const;
     void setShaderVar(uint id, uint value) const;
@@ -176,16 +169,14 @@ public:
     void setShaderVar(uint id, const std::vector<mat44>& matrixArray) const;
     void setShaderVar(uint id, const gfx::Texture2D* tex2D) const;
     void setShaderVar(uint id, const gfx::TextureCube::pointer& texCube) const;
-
-    typedef boost::shared_ptr<Shader> pointer;
-
+    
 private:
     uint m_Id;
     uint m_VsId;
     uint m_FsId;
 
     std::map<std::string, uint> m_SamplerLocationMap;
-    std::map<uint, UniformBuffer::pointer> m_UniformBufferMap;
+    std::map<uint, UniformBuffer*> m_UniformBufferMap;
 
     std::string m_FragShaderName;
     std::string m_VertShaderName;

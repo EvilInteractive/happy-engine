@@ -32,6 +32,27 @@ InstancingBuffer::InstancingBuffer(uint itemSize, uint maxItems):
     m_End = m_Buffer;
 }
 
+InstancingBuffer::InstancingBuffer(): 
+            m_Size(0), m_Count(0), m_ItemSize(0), m_Buffer(nullptr), m_End(nullptr)
+{
+
+}
+
+InstancingBuffer& InstancingBuffer::operator=( const InstancingBuffer& other )
+{
+    he_free(m_Buffer);
+
+    m_Size = other.m_Size;
+    m_ItemSize = other.m_ItemSize;
+    m_Count = other.m_Count;
+
+    m_Buffer = static_cast<char*>(he_malloc(m_Size));
+    m_End = m_Buffer;
+
+    return *this;
+}
+
+
 
 InstancingBuffer::~InstancingBuffer()
 {

@@ -91,8 +91,9 @@ void MainGame::load()
 
     he::ge::Entity* board(NEW he::ge::Entity());
     he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
-    boardModel->setMaterial(CONTENT->loadMaterial("pong/board.material"));
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial().getCompatibleVertexLayout()));
+    he::ObjectHandle boardMaterial(CONTENT->loadMaterial("pong/board.material"));
+    boardModel->setMaterial(boardMaterial);
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial()->getCompatibleVertexLayout()));
     boardModel->setModelMesh(mesh->getHandle());
     mesh->release();
     board->setWorldMatrix(he::mat44::createScale(100));
@@ -100,6 +101,7 @@ void MainGame::load()
     board->addComponent(boardModel);
     m_EntityList.push_back(board);
 
+    he::ResourceFactory<he::gfx::Material>::getInstance()->release(boardMaterial);
 
     m_Palets.push_back(NEW Palet(this, 0, false));
     m_Palets.push_back(NEW Palet(this, 1, true));

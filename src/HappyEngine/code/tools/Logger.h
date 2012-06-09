@@ -39,8 +39,8 @@ class Logger
 public:
     ~Logger();
 
-    void log(LogType type, const std::string& str, ...);
-    void log(LogType type, const std::string& str, const va_list& argList);
+    void log(LogType type, const char* str, ...);
+    void log(LogType type, const char* str, const va_list& argList);
 
     static Logger* getInstance();
     static void sdmInit();

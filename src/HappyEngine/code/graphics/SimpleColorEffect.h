@@ -22,13 +22,10 @@
 #define _HE_SIMPLE_COLOR_EFFECT_H_
 #pragma once
 
-#include "mat44.h"
-#include "Shader.h"
-#include "HappyTypes.h"
-#include "Color.h"
-
 namespace he {
 namespace gfx {
+
+class Shader;
 
 class SimpleColorEffect
 {
@@ -51,7 +48,7 @@ public:
 private:
 
 	/* DATAMEMBERS */
-	Shader* m_pShader;
+	Shader* m_Shader;
 
 	uint m_ShaderVPPos;
 	uint m_ShaderWPos;

@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "DirectionalLight.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {

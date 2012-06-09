@@ -24,7 +24,6 @@
 
 #include "RenderSettings.h"
 #include "DrawListContainer.h"
-#include "Material.h"
 #include "DirectionalLight.h"
 
 namespace he {
@@ -33,6 +32,7 @@ namespace gfx {
 class Shader;
 class Texture2D;
 class ModelMesh;
+class Material;
 
 class ShadowCaster
 {
@@ -53,12 +53,13 @@ private:
     Texture2D* m_pShadowTexture[COUNT]; //first = blur temp
     uint m_DepthRenderbuff;
     
-    Material m_MatSingle;
-    Material m_MatSkinned;
-    Material m_MatInstanced;
+    Material* m_MatSingle;
+    Material* m_MatSkinned;
+    Material* m_MatInstanced;
 
-    Shader::pointer m_pShadowBlurShaderPass[2];
-    uint m_BlurShaderTexPosPass[2];
+    const static int s_ShadowBlurPasses = 2;
+    Shader* m_pShadowBlurShaderPass[s_ShadowBlurPasses];
+    uint m_BlurShaderTexPosPass[s_ShadowBlurPasses];
 
     ModelMesh* m_pQuad;
 

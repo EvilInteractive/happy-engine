@@ -35,6 +35,11 @@ Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 
 Shader::~Shader()
 {
+    std::for_each(m_UniformBufferMap.cbegin(), m_UniformBufferMap.cend(), [](const std::pair<uint, UniformBuffer*>& p)
+    {
+        delete p.second;
+    });
+
     glDetachShader(m_Id, m_VsId);
     glDetachShader(m_Id, m_FsId);
 
@@ -145,6 +150,8 @@ bool Shader::initFromMem( const std::string& vs, const std::string& fs, const Sh
 bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
 {
     bool succes = true;
+
+    setName(debugFragName);
 
     m_VertShaderName = debugVertName;
     m_FragShaderName = debugFragName;
@@ -288,14 +295,14 @@ void Shader::setShaderVar( uint id, const gfx::TextureCube::pointer& texCube ) c
 }
 
 
-void Shader::setBuffer( uint id, const UniformBuffer::pointer& pBuffer )
+void Shader::setBuffer( uint id, UniformBuffer* buffer )
 {
-    glUniformBlockBinding(m_Id, id, pBuffer->m_BufferId);
+    glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
 }
 
-UniformBuffer::pointer Shader::setBuffer( uint id )
+UniformBuffer* Shader::setBuffer( uint id )
 {
-    UniformBuffer::pointer buffer(NEW UniformBuffer(m_Id, id));
+    UniformBuffer* buffer(NEW UniformBuffer(m_Id, id));
     glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
     m_UniformBufferMap[buffer->m_BufferId] = buffer;
     return buffer;

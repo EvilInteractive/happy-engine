@@ -30,6 +30,7 @@
 #include "LineLoader.h"
 #include "FontLoader.h"
 #include "ShaderLoader.h"
+#include "Shader.h"
 
 namespace he {
 namespace ct {
@@ -177,13 +178,13 @@ gfx::Font* ContentManager::getDefaultFont(ushort size)
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Shader::pointer ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+ObjectHandle ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
     return m_pShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Material ContentManager::loadMaterial(const std::string& asset)
+ObjectHandle ContentManager::loadMaterial(const std::string& asset)
 {
     return m_pMaterialLoader->load(m_MaterialPath.str() + asset);
 }

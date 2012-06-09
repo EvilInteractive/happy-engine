@@ -23,11 +23,16 @@
 #include "ContentManager.h"
 
 #include "ModelMesh.h"
+#include "Shader.h"
+#include "ShaderVar.h"
+#include "Texture2D.h"
+#include "Material.h"
+
 
 namespace he {
 namespace gfx {
 
-SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCube()), m_pCube(nullptr)
+SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCube()), m_pCube(nullptr), m_Material(nullptr)
 {
     for (int i(0); i < 6; ++i)
     {
@@ -50,6 +55,8 @@ void SkyBox::unload()
     }
     if (m_pCube != nullptr)
         m_pCube->release();
+    if (m_Material != nullptr)
+        m_Material->release();
 }
 
 void SkyBox::load( const std::string& asset )
@@ -126,23 +133,26 @@ void SkyBox::load( const std::string& asset )
     //////////////////////////////////////////////////////////////////////////
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
-    Shader::pointer pShader = CONTENT->loadShader("forward/skybox.vert", "forward/skybox.frag", shaderLayout, std::vector<std::string>());
+    Shader* pShader = ResourceFactory<Shader>::getInstance()->get(
+        CONTENT->loadShader("forward/skybox.vert", "forward/skybox.frag", shaderLayout, std::vector<std::string>()));
 
     //////////////////////////////////////////////////////////////////////////
     /// Load Material
     //////////////////////////////////////////////////////////////////////////
     BufferLayout instancingLayout;
-    m_Material.setShader(pShader, layout, instancingLayout);
-    m_Material.addVar(gfx::ShaderVar::pointer(
-        NEW gfx::ShaderGlobalVar(pShader->getShaderVarId("matVP"), "matVP", gfx::ShaderVarType_ViewProjection)));
-    m_Material.addVar(gfx::ShaderVar::pointer(
+    m_Material = ResourceFactory<Material>::getInstance()->get(ResourceFactory<Material>::getInstance()->create());
+    m_Material->setShader(pShader->getHandle(), layout, instancingLayout);
+    m_Material->registerVar(
+        NEW gfx::ShaderGlobalVar(pShader->getShaderVarId("matVP"), "matVP", gfx::ShaderVarType_ViewProjection));
+    m_Material->registerVar(
         NEW gfx::ShaderUserVar<gfx::TextureCube::pointer>(
-        pShader->getShaderSamplerId("cubeMap"), "cubeMap", m_pCubeMap)));
+        pShader->getShaderSamplerId("cubeMap"), "cubeMap", m_pCubeMap));
 
-    m_Material.setIsBlended(false);
-    m_Material.setNoPost(true);
-    m_Material.setIsBackground(true);
+    m_Material->setIsBlended(false);
+    m_Material->setNoPost(true);
+    m_Material->setIsBackground(true);
 
+    pShader->release();
 }
 void SkyBox::faceLoaded()
 {
@@ -179,15 +189,15 @@ const ModelMesh* SkyBox::getModelMesh() const
 
 void SkyBox::applyMaterial( const ICamera* pCamera ) const
 {
-    m_Material.apply(this, pCamera);
+    m_Material->apply(this, pCamera);
 }
 
-void SkyBox::applyMaterial( const Material& customMaterial, const ICamera* pCamera ) const
+void SkyBox::applyMaterial( const Material* customMaterial, const ICamera* pCamera ) const
 {
-    customMaterial.apply(this, pCamera);
+    customMaterial->apply(this, pCamera);
 }
 
-const Material& SkyBox::getMaterial() const
+const Material* SkyBox::getMaterial() const
 {
     return m_Material;
 }

@@ -28,16 +28,20 @@
 #include "PhysicsConcaveMesh.h"
 #include "PhysicsConvexMesh.h"
 #include "LightFactory.h"
+#include "Shader.h"
+#include "Material.h"
 
 namespace he {
 
 void StaticDataManager::init()
 {
     tools::Logger::sdmInit();
+    ResourceFactory<gfx::Material>::init(64, 64, "MaterialFactory");
     ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
     ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
+    ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
     ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
     gfx::LightFactory::sdmInit();
@@ -47,9 +51,11 @@ void StaticDataManager::destroy()
 {
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gfx::Font>::destroy();
+    ResourceFactory<gfx::Material>::destroy();
     ResourceFactory<gfx::Texture2D>::destroy();
     ResourceFactory<gfx::Model>::destroy();
     ResourceFactory<gfx::ModelMesh>::destroy();
+    ResourceFactory<gfx::Shader>::destroy();
     ResourceFactory<px::PhysicsConvexMesh>::destroy();
     ResourceFactory<px::PhysicsConcaveMesh>::destroy();
     tools::Logger::sdmDestroy();

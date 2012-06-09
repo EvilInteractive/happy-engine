@@ -29,17 +29,22 @@
 #include "IInstanceFiller.h"
 
 #include "ModelMesh.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
-InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const Material& material):
-    m_Dynamic(dynamic), m_pModelMesh(nullptr), m_Material(material), m_NeedsUpdate(false), m_BufferCapacity(32),
-    m_InstancingLayout(material.getCompatibleInstancingLayout()), m_CpuBuffer(material.getCompatibleInstancingLayout().getSize(), 32),
-    m_ManualMode(false), m_Name(name)
+InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
+    m_Dynamic(dynamic), m_pModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
+    m_ManualMode(false), m_Name(name), m_Material(nullptr)
 {
+    ResourceFactory<Material>::getInstance()->instantiate(material);
+    m_Material = ResourceFactory<Material>::getInstance()->get(material);
+    m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
+    m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
+
     ResourceFactory<ModelMesh>::getInstance()->instantiate(modelHandle);
     m_pModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
     ResourceFactory<ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&InstancingController::init, this));
@@ -51,6 +56,7 @@ InstancingController::~InstancingController()
     glDeleteVertexArrays(1, &m_Vao);
     glDeleteBuffers(1, &m_GpuBuffer);
     m_pModelMesh->release();
+    m_Material->release();
 }
 
 
@@ -252,7 +258,7 @@ void InstancingController::removeInstance( uint id )
     m_NeedsUpdate = true;
 }
 
-const Material& InstancingController::getMaterial() const
+const Material* InstancingController::getMaterial() const
 {
     return m_Material;
 }
@@ -263,11 +269,11 @@ const ModelMesh* InstancingController::getModelMesh() const
 
 void InstancingController::applyMaterial(const ICamera* pCamera) const
 {
-    m_Material.apply(this, pCamera);
+    m_Material->apply(this, pCamera);
 }
-void InstancingController::applyMaterial( const Material& customMaterial, const ICamera* pCamera ) const
+void InstancingController::applyMaterial( const Material* customMaterial, const ICamera* pCamera ) const
 {
-    customMaterial.apply(this, pCamera);
+    customMaterial->apply(this, pCamera);
 }
 
 bool InstancingController::getCastsShadow() const

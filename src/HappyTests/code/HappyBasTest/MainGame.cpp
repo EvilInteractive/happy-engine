@@ -36,6 +36,7 @@
 #include "SkyBox.h"
 
 #include "LightComponent.h"
+#include "DirectionalLight.h"
 #include "Random.h"
 
 
@@ -78,8 +79,9 @@ void MainGame::load()
 
     ge::Entity* scene(NEW ge::Entity());
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
-    modelComp->setMaterial(CONTENT->loadMaterial("testScene3.material"));
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial().getCompatibleVertexLayout()));
+    he::ObjectHandle sceneMaterial(CONTENT->loadMaterial("testScene3.material"));
+    modelComp->setMaterial(sceneMaterial);
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial()->getCompatibleVertexLayout()));
     //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
     //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout()));
     //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene5.binobj", "M_Terrain", modelComp->getMaterial().getCompatibleVertexLayout()));
@@ -90,12 +92,16 @@ void MainGame::load()
     mesh->release();
 
     modelComp = NEW ge::ModelComponent();
-    modelComp->setMaterial(CONTENT->loadMaterial("testScene4.material"));
-    mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout());
+    he::ObjectHandle sceneMaterial2(CONTENT->loadMaterial("testScene4.material"));
+    modelComp->setMaterial(sceneMaterial2);
+    mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial()->getCompatibleVertexLayout());
     modelComp->setModelMesh(mesh->getHandle());
     modelComp->setLocalTransform(he::mat44::createTranslation(he::vec3(1, 1, 1)) * he::mat44::createRotation(vec3(0, 1, 0), he::pi) * he::mat44::createScale(100));
     scene->addComponent(modelComp);
     mesh->release();
+
+    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial);
+    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial2);
 
     m_EntityList.push_back(scene);
 

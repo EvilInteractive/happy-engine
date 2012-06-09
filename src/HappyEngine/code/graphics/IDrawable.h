@@ -22,7 +22,6 @@
 #define _HE_IDRAWABLE_H_
 #pragma once
 
-#include "Material.h"
 #include "I3DObject.h"
 #include "IPickable.h"
 
@@ -31,15 +30,16 @@ namespace gfx {
 
 class ICamera;
 class ModelMesh;
+class Material;
 
 class IDrawable : public IPickable
 {
 public:
     virtual ~IDrawable() {}
 
-    virtual const Material& getMaterial() const = 0;
+    virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
 
     virtual const ModelMesh* getModelMesh() const = 0;
     
@@ -65,9 +65,9 @@ class ISingleDrawable : public I3DObject, public IDrawable
 public:
     virtual ~ISingleDrawable() {}
 
-    virtual const Material& getMaterial() const = 0;
+    virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0; 
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
 
     virtual const ModelMesh* getModelMesh() const = 0;
 
@@ -96,9 +96,9 @@ class IInstancedDrawable : public IDrawable
 public:
     virtual ~IInstancedDrawable() {}
 
-    virtual const Material& getMaterial() const = 0;
+    virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
 
     virtual const ModelMesh* getModelMesh() const = 0;
 
@@ -127,9 +127,9 @@ class ISkinnedDrawable : public I3DObject, public IDrawable
 public:
     virtual ~ISkinnedDrawable() {}
 
-    virtual const Material& getMaterial() const = 0;
+    virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const = 0;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
 
     virtual const ModelMesh* getModelMesh() const = 0;
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;

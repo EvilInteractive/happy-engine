@@ -28,16 +28,22 @@
 #include "CameraManager.h"
 #include "Camera.h"
 #include "LightManager.h"
+#include "ShaderVar.h"
 
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad(nullptr)
+ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad(nullptr),
+    m_MatInstanced(nullptr), m_MatSingle(nullptr), m_MatSkinned(nullptr)
 {
     CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
     for (int i = 0; i < COUNT; ++i)
     {
         m_pShadowTexture[i] = nullptr;
+    }
+    for (uint i(0); i < s_ShadowBlurPasses; ++i)
+    {
+    	m_pShadowBlurShaderPass[i] = nullptr;
     }
 }
 
@@ -51,6 +57,19 @@ ShadowCaster::~ShadowCaster()
     }
     if (m_pQuad != nullptr)
         m_pQuad->release();
+
+    for (uint i(0); i < s_ShadowBlurPasses; ++i)
+    {
+        if (m_pShadowBlurShaderPass[i] != nullptr)
+    	    m_pShadowBlurShaderPass[i]->release();
+    }
+    if (m_MatSingle != nullptr)
+        m_MatSingle->release();
+    if (m_MatSkinned != nullptr)
+        m_MatSkinned->release();
+    if (m_MatInstanced != nullptr)
+        m_MatInstanced->release();
+
     glDeleteRenderbuffers(1, &m_DepthRenderbuff);
     glDeleteFramebuffers(1, &m_FboId);
 }
@@ -93,9 +112,10 @@ void ShadowCaster::init(const RenderSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                             Shaders                                ///
     //////////////////////////////////////////////////////////////////////////
-    Shader::pointer pShadowShaderSingle(NEW Shader());
-    Shader::pointer pShadowShaderSkinned(NEW Shader());
-    Shader::pointer pShadowShaderInstanced(NEW Shader());
+    ResourceFactory<gfx::Shader>* shaderFactory(ResourceFactory<gfx::Shader>::getInstance());
+    Shader* pShadowShaderSingle(shaderFactory->get(shaderFactory->create()));
+    Shader* pShadowShaderSkinned(shaderFactory->get(shaderFactory->create()));
+    Shader* pShadowShaderInstanced(shaderFactory->get(shaderFactory->create()));
 
     // Single
     ShaderLayout shaderSingleLayout;
@@ -134,7 +154,7 @@ void ShadowCaster::init(const RenderSettings& settings)
     blurLayout.addElement(ShaderLayoutElement(0, "inPosition"));
     for (int pass(0); pass < 2; ++pass)
     {
-        m_pShadowBlurShaderPass[pass] = Shader::pointer(NEW Shader());
+        m_pShadowBlurShaderPass[pass] = shaderFactory->get(shaderFactory->create());
 
         std::set<std::string> definePass;
         if (pass == 0)
@@ -155,23 +175,37 @@ void ShadowCaster::init(const RenderSettings& settings)
     //////////////////////////////////////////////////////////////////////////
     ///                             Materials                              ///
     //////////////////////////////////////////////////////////////////////////
-    m_MatSingle.setShader(pShadowShaderSingle, vertexSingleLayout, noInstancingLayout);
-    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderUserVar<vec2>(pShadowShaderSingle->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500))));
-    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWV"), "matWV", ShaderVarType_WorldView)));
-    m_MatSingle.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection)));
-    
-    m_MatSkinned.setShader(pShadowShaderSkinned, vertexSkinnedLayout, noInstancingLayout);
-    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderUserVar<vec2>(pShadowShaderSkinned->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500))));
-    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWV"), "matWV", ShaderVarType_WorldView)));
-    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection)));
-    m_MatSkinned.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), "matBones", ShaderVarType_BoneTransforms)));
-    
-    m_MatInstanced.setShader(pShadowShaderInstanced, vertexSingleLayout, instancingLayout);
-    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderUserVar<vec2>(pShadowShaderInstanced->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500))));
-    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matV"), "matV", ShaderVarType_View)));
-    m_MatInstanced.addVar(ShaderVar::pointer(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection)));
+    if (m_MatSingle != nullptr)
+        m_MatSingle->release();
+    if (m_MatSkinned != nullptr)
+        m_MatSkinned->release();
+    if (m_MatInstanced != nullptr)
+        m_MatInstanced->release();
+    ResourceFactory<Material>* materialFactory(ResourceFactory<Material>::getInstance());
+    m_MatSingle = materialFactory->get(materialFactory->create());
+    m_MatSingle->setShader(pShadowShaderSingle->getHandle(), vertexSingleLayout, noInstancingLayout);
+    m_MatSingle->registerVar(NEW ShaderUserVar<vec2>(pShadowShaderSingle->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500)));
+    m_MatSingle->registerVar(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWV"), "matWV", ShaderVarType_WorldView));
+    m_MatSingle->registerVar(NEW ShaderGlobalVar(pShadowShaderSingle->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection));
+
+    m_MatSkinned = materialFactory->get(materialFactory->create());
+    m_MatSkinned->setShader(pShadowShaderSkinned->getHandle(), vertexSkinnedLayout, noInstancingLayout);
+    m_MatSkinned->registerVar(NEW ShaderUserVar<vec2>(pShadowShaderSkinned->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500)));
+    m_MatSkinned->registerVar(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWV"), "matWV", ShaderVarType_WorldView));
+    m_MatSkinned->registerVar(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matWVP"), "matWVP", ShaderVarType_WorldViewProjection));
+    m_MatSkinned->registerVar(NEW ShaderGlobalVar(pShadowShaderSkinned->getShaderVarId("matBones"), "matBones", ShaderVarType_BoneTransforms));
+
+    m_MatInstanced = materialFactory->get(materialFactory->create());
+    m_MatInstanced->setShader(pShadowShaderInstanced->getHandle(), vertexSingleLayout, instancingLayout);
+    m_MatInstanced->registerVar(NEW ShaderUserVar<vec2>(pShadowShaderInstanced->getShaderVarId("inLightNearFar"), "inLightNearFar", vec2(1, 500)));
+    m_MatInstanced->registerVar(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matV"), "matV", ShaderVarType_View));
+    m_MatInstanced->registerVar(NEW ShaderGlobalVar(pShadowShaderInstanced->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection));
 
     m_pQuad = CONTENT->getFullscreenQuad();
+
+    pShadowShaderSingle->release();
+    pShadowShaderSkinned->release();
+    pShadowShaderInstanced->release();
 }
 void ShadowCaster::setSettings( const RenderSettings& settings )
 {

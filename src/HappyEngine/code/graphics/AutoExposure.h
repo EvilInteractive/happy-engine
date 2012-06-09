@@ -46,7 +46,7 @@ public:
 
 private:
 
-    Shader::pointer m_pLumShader;
+    Shader* m_LumShader;
     uint m_HDRmapPos;
     uint m_PrevLumMapPos;
     uint m_DTimePos;

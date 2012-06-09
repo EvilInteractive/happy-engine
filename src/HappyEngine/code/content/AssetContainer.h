@@ -62,13 +62,15 @@ public:
     }
     void removeAllAssets()
     {
-        std::for_each(m_Map.cbegin(), m_Map.cend(), [&](const std::pair<U, T>& obj)
+        if (f_DestroyAction != nullptr)
         {
-            //CONSOLE->addMessage("releasing asset: " + obj.first, CMSG_TYPE_ENGINE);
+            std::for_each(m_Map.cbegin(), m_Map.cend(), [&](const std::pair<U, T>& obj)
+            {
+                //CONSOLE->addMessage("releasing asset: " + obj.first, CMSG_TYPE_ENGINE);
             
-            if (f_DestroyAction != nullptr)
                 f_DestroyAction(obj.second);
-        });
+            });
+        }
 
         m_Map.clear();
     }

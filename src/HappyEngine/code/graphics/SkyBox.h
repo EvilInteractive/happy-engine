@@ -23,7 +23,6 @@
 #pragma once
 
 #include "IDrawable.h"
-#include "Material.h"
 #include "TextureCube.h"
 
 namespace he {
@@ -31,6 +30,7 @@ namespace gfx {
 
 class Texture2D;
 class ModelMesh;
+class Material;
 
 class SkyBox : public ISingleDrawable
 {
@@ -43,9 +43,9 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// ISingleDrawable
     /////////////////////////////////////////////////////////////////////////
-    virtual const Material& getMaterial() const;
+    virtual const Material* getMaterial() const;
     virtual void applyMaterial(const ICamera* pCamera) const;
-    virtual void applyMaterial(const Material& customMaterial, const ICamera* pCamera) const;
+    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
 
     virtual const ModelMesh* getModelMesh() const;
 
@@ -84,7 +84,7 @@ private:
     ModelMesh* m_pCube;
     TextureCube::pointer m_pCubeMap;
     const Texture2D* m_CubeFaces[6];
-    Material m_Material;
+    Material* m_Material;
     
     bool m_IsVisible;
     byte m_LoadedCount;

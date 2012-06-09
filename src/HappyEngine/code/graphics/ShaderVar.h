@@ -58,14 +58,14 @@ class ShaderVar
 {
 public:
     ShaderVar(uint id, const std::string& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
+    virtual ~ShaderVar() {}
 
-    virtual void assignData(const Shader::pointer& pShader) = 0;
+    virtual void assignData(Shader* pShader) = 0;
+    virtual ShaderVar* copy() = 0;
 
     virtual ShaderVarType getType() { return m_Type; }
     uint getId() const { return m_Id; }
     const std::string& getName() const { return m_Name; }
-
-    typedef boost::shared_ptr<ShaderVar> pointer;
 
 protected:
     uint m_Id;
@@ -78,9 +78,15 @@ public:
     ShaderGlobalVar(uint id, const std::string& name, ShaderVarType type): ShaderVar(id ,name, type)
     {
     }
+    virtual ~ShaderGlobalVar() {}
 
-    virtual void assignData(const Shader::pointer& /*pShader*/)
+    virtual void assignData(Shader* /*pShader*/)
     {
+    }
+
+    virtual ShaderVar* copy()
+    {
+        return NEW ShaderGlobalVar(m_Id, m_Name, m_Type);
     }
 };
 template<typename T>
@@ -90,16 +96,21 @@ public:
     ShaderUserVar(uint id, const std::string& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
     }
+    virtual ~ShaderUserVar() {}
 
     const T& getData() const { return m_Data; }
     void setData(const T& data) { m_Data = data; }
 
-    virtual void assignData(const Shader::pointer& pShader)
+    virtual void assignData(Shader* shader)
     {
-        pShader->setShaderVar(m_Id, m_Data);
+        shader->setShaderVar(m_Id, m_Data);
     }
 
-    typedef boost::shared_ptr<ShaderUserVar<T>> pointer;
+    virtual ShaderVar* copy()
+    {
+        return NEW ShaderUserVar<T>(m_Id, m_Name, m_Data);
+    }
+
 private:
     T m_Data;
 };
@@ -124,12 +135,16 @@ public:
         ResourceFactory<Texture2D>::getInstance()->instantiate(m_Data->getHandle());
     }
 
-    virtual void assignData(const Shader::pointer& pShader)
+    virtual void assignData(Shader* shader)
     {
-        pShader->setShaderVar(m_Id, m_Data);
+        shader->setShaderVar(m_Id, m_Data);
     }
 
-    typedef boost::shared_ptr<ShaderUserVar<const Texture2D*>> pointer;
+    virtual ShaderVar* copy()
+    {
+        return NEW ShaderUserVar<const Texture2D*>(m_Id, m_Name, m_Data);
+    }
+
 private:
     const Texture2D* m_Data;
 };

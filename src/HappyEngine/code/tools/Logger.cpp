@@ -44,7 +44,7 @@ Logger::~Logger()
 {
 }
 
-void Logger::log(LogType type, const std::string& str, ... )
+void Logger::log(LogType type, const char* str, ... )
 {
     va_list argList;
     va_start(argList, str);
@@ -52,11 +52,11 @@ void Logger::log(LogType type, const std::string& str, ... )
     va_end(argList);
 }
 
-void Logger::log( LogType type, const std::string& str, const va_list& argList )
+void Logger::log( LogType type, const char* str, const va_list& argList )
 {
     char buff[1024];
     memset(buff, 0, 1024);
-    vsnprintf(buff, 1024, str.c_str(), argList);
+    vsnprintf(buff, 1024, str, argList);
 
     std::string typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);

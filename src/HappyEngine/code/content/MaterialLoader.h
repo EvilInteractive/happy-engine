@@ -23,7 +23,6 @@
 #pragma once
 
 #include "AssetContainer.h"
-#include "Material.h"
 #include "RenderSettings.h"
 
 namespace he {
@@ -35,12 +34,12 @@ public:
     MaterialLoader();
     virtual ~MaterialLoader();
     
-    gfx::Material load(const std::string& path);
+    ObjectHandle load(const std::string& path);
 
     void setRenderSettings(const gfx::RenderSettings& settings);
 
 private:
-    AssetContainer<gfx::Material>* m_pAssetContainer;
+    AssetContainer<ObjectHandle> m_AssetContainer;
 
     gfx::RenderSettings m_RenderSettings;
 

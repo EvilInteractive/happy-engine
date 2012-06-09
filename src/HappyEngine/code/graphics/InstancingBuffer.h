@@ -29,8 +29,10 @@ namespace details {
 class InstancingBuffer
 {
 public:
+    InstancingBuffer();
     InstancingBuffer(uint itemSize, uint maxItems);
     virtual ~InstancingBuffer();
+    InstancingBuffer& operator=(const InstancingBuffer&);
 
     void resize(uint newSize);
 
@@ -53,9 +55,8 @@ private:
     uint m_ItemSize;
     uint m_Count;
 
-    //Disable default copy constructor and default assignment operator
+    //Disable default copy constructor
     InstancingBuffer(const InstancingBuffer&);
-    InstancingBuffer& operator=(const InstancingBuffer&);
 };
 
 } } } //end namespace

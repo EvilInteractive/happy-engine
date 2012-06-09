@@ -21,24 +21,23 @@
 #include "HappyPCH.h" 
 
 #include "SimpleColorEffect.h"
-#include "HappyNew.h"
-
-#include <vector>
-#include <string>
 
 #include "ContentManager.h"
+
+#include "Shader.h"
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-SimpleColorEffect::SimpleColorEffect() :	m_pShader(nullptr)
+SimpleColorEffect::SimpleColorEffect() : m_Shader(nullptr)
 {
 }
 
 SimpleColorEffect::~SimpleColorEffect()
 {
-    delete m_pShader;
+    if (m_Shader != nullptr)
+        m_Shader->release();
 }
 
 /* GENERAL */
@@ -47,29 +46,29 @@ void SimpleColorEffect::load()
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    m_pShader = NEW Shader();
+    m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
 
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
 
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    bool shaderInit(m_pShader->initFromFile(folder + "2D/simpleShader.vert", 
+    bool shaderInit(m_Shader->initFromFile(folder + "2D/simpleShader.vert", 
                                             folder + "2D/simpleShader.frag", layout, shaderOutputs));
     HE_ASSERT(shaderInit == true, "simpleShader init failed");
 
-    m_ShaderVPPos = m_pShader->getShaderVarId("matVP");
-    m_ShaderWPos = m_pShader->getShaderVarId("matW");
-    m_ShaderColorPos = m_pShader->getShaderVarId("color");
+    m_ShaderVPPos = m_Shader->getShaderVarId("matVP");
+    m_ShaderWPos = m_Shader->getShaderVarId("matW");
+    m_ShaderColorPos = m_Shader->getShaderVarId("color");
 
-    m_pShader->bind();
-    m_pShader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
+    m_Shader->bind();
+    m_Shader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
     mat44 MatWVP;// = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    m_pShader->setShaderVar(m_ShaderVPPos, MatWVP);
+    m_Shader->setShaderVar(m_ShaderVPPos, MatWVP);
 }
 
 void SimpleColorEffect::begin() const
 {
-    m_pShader->bind();
+    m_Shader->bind();
 }
 
 void SimpleColorEffect::end() const
@@ -79,17 +78,17 @@ void SimpleColorEffect::end() const
 /* SETTERS */
 void SimpleColorEffect::setViewProjection(const mat44& mat)
 {
-    m_pShader->setShaderVar(m_ShaderVPPos, mat);
+    m_Shader->setShaderVar(m_ShaderVPPos, mat);
 }
 
 void SimpleColorEffect::setWorld(const mat44& mat)
 {
-    m_pShader->setShaderVar(m_ShaderWPos, mat);
+    m_Shader->setShaderVar(m_ShaderWPos, mat);
 }
 
 void SimpleColorEffect::setColor(const Color& color)
 {
-    m_pShader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
+    m_Shader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
 }
 
 } } //end namespace

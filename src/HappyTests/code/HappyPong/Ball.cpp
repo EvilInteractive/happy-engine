@@ -29,6 +29,7 @@
 #include "MainGame.h"
 #include "Palet.h"
 #include "Obstacle.h"
+#include "ModelMesh.h"
 
 namespace ht {
 
@@ -42,10 +43,12 @@ Ball::Ball(MainGame* mainGame):
     reset();
 
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
-    model->setMaterial(CONTENT->loadMaterial("pong/ball.material"));
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/ball.binobj", "M_Bal", model->getMaterial().getCompatibleVertexLayout()));
+    he::ObjectHandle ballMaterial(CONTENT->loadMaterial("pong/ball.material"));
+    model->setMaterial(ballMaterial);
+    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/ball.binobj", "M_Bal", model->getMaterial()->getCompatibleVertexLayout()));
     model->setModelMesh(mesh->getHandle());
     mesh->release();
+    he::ResourceFactory<he::gfx::Material>::getInstance()->release(ballMaterial);
     model->setLocalTransform(he::mat44::createScale(100));
     addComponent(model);
 

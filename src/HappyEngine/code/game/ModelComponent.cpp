@@ -23,11 +23,12 @@
 #include "Entity.h"
 #include "GraphicsEngine.h"
 #include "ModelMesh.h"
+#include "Material.h"
 
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_AttachedToScene(false)
+ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_AttachedToScene(false), m_Material(nullptr)
 {
 }
 
@@ -38,6 +39,8 @@ ModelComponent::~ModelComponent()
         m_pModel->release();
     if (m_AttachedToScene)
         GRAPHICS->removeFromDrawList(this);
+    if (m_Material != nullptr)
+        m_Material->release();
 }
 
 void ModelComponent::init(Entity* pParent)
@@ -61,7 +64,7 @@ void ModelComponent::deserialize(const SerializerStream& stream)
     stream >> m_mtxLocalTransform;
 }
 
-const gfx::Material& ModelComponent::getMaterial() const
+const gfx::Material* ModelComponent::getMaterial() const
 {
     return m_Material;
 }
@@ -102,9 +105,13 @@ void ModelComponent::setModelMesh( const ObjectHandle& modelHandle, bool isPicka
     }
 }
 
-void ModelComponent::setMaterial( const gfx::Material& material )
+void ModelComponent::setMaterial( const ObjectHandle& material )
 {
-    m_Material = material;
+    if (m_Material != nullptr)
+        m_Material->release();
+    m_Material = ResourceFactory<gfx::Material>::getInstance()->get(material);
+    if (m_Material != nullptr)
+        ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
 }
 
 } } //end namespace

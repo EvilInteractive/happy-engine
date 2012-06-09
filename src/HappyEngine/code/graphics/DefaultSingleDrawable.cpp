@@ -24,6 +24,7 @@
 #include "ICamera.h"
 
 #include "ModelMesh.h"
+#include "Material.h"
 
 namespace he {
 namespace gfx {
@@ -39,12 +40,12 @@ DefaultSingleDrawable::~DefaultSingleDrawable()
 
 void DefaultSingleDrawable::applyMaterial( const ICamera* pCamera ) const
 {
-    getMaterial().apply(this, pCamera);
+    getMaterial()->apply(this, pCamera);
 }
 
-void DefaultSingleDrawable::applyMaterial( const Material& customMaterial, const ICamera* pCamera ) const
+void DefaultSingleDrawable::applyMaterial( const Material* customMaterial, const ICamera* pCamera ) const
 {
-    customMaterial.apply(this, pCamera);
+    customMaterial->apply(this, pCamera);
 }
 
 bool DefaultSingleDrawable::getCastsShadow() const
@@ -77,7 +78,7 @@ bool DefaultSingleDrawable::isInCamera( const ICamera* pCamera ) const
 
     shapes::Sphere sphere(position, radius);
 
-    return !DrawManager::viewClip(pCamera, sphere);
+    return DrawManager::viewClip(pCamera, sphere) == false;
 }
 
 float DefaultSingleDrawable::getDrawPriority( const ICamera* pCamera ) const

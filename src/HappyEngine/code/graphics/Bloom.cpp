@@ -29,36 +29,87 @@
 
 #include "Texture2D.h"
 #include "ModelMesh.h"
+#include "Shader.h"
 
 namespace he {
 namespace gfx {
 
 Bloom::Bloom(): m_DownSamples(4),
-                m_pDownSampleShader(NEW Shader()), m_pDownSampleBrightPassShader(NEW Shader()),
-                m_pMesh(nullptr)
+                m_pDownSampleShader(nullptr), 
+                m_pDownSampleBrightPassShader(nullptr),
+                m_Mesh(nullptr), m_Hdr(true)
 {
+    for (uint i(0); i < s_BlurPasses; ++i)
+    {
+        m_pBlurShaderPass[i] = nullptr;	
+        std::for_each(m_FboId[i].begin(), m_FboId[i].end(), [](uint& id)
+        {
+            id = UINT_MAX;
+        });
+    }
 }
 
 
 Bloom::~Bloom()
 {
-    for (int pass = 0; pass < 2; ++pass)
+    cleanTextures();
+    cleanShaders();
+}
+void Bloom::cleanTextures()
+{
+    for (int pass(0); pass < s_BlurPasses; ++pass)
     {
-        for (int i(0); i < m_DownSamples; ++i)
+        for (uint i(0); i < m_Texture[pass].size(); ++i)
         {
-            m_Texture[pass][i]->release();
+            if ( m_Texture[pass][i] != nullptr)
+            {
+                m_Texture[pass][i]->release();
+                m_Texture[pass][i] = nullptr;
+            }
         }
-        std::for_each(m_FboId[pass].cbegin(), m_FboId[pass].cend(), [](const uint& id)
+        std::for_each(m_FboId[pass].begin(), m_FboId[pass].end(), [](uint& id)
         {
-            glDeleteFramebuffers(1, &id);
+            if (id != UINT_MAX)
+            {
+                glDeleteFramebuffers(1, &id);
+                id = UINT_MAX;
+            }
         });
     }
-    if (m_pMesh != nullptr)
-        m_pMesh->release();
 }
+void Bloom::cleanShaders()
+{
+    for (int pass(0); pass < s_BlurPasses; ++pass)
+    {
+        if (m_pBlurShaderPass[pass] != nullptr)
+        {
+            m_pBlurShaderPass[pass]->release();
+            m_pBlurShaderPass[pass] = nullptr;
+        }
+    }
+    if (m_pDownSampleShader != nullptr)
+    {
+        m_pDownSampleShader->release();
+        m_pDownSampleShader = nullptr;
+    }
+
+    if (m_pDownSampleBrightPassShader != nullptr)
+    {
+        m_pDownSampleBrightPassShader->release();
+        m_pDownSampleBrightPassShader = nullptr;
+    }
+    if (m_Mesh != nullptr)
+    {
+        m_Mesh->release();
+        m_Mesh = nullptr;
+    }
+}
+
 
 void Bloom::init(bool hdr)
 {
+    cleanShaders();
+
     m_Hdr = hdr;
     //////////////////////////////////////////////////////////////////////////
     ///                             Shaders                                ///
@@ -72,6 +123,7 @@ void Bloom::init(bool hdr)
     defineBrightPass.insert("BRIGHTPASS");
     if (hdr)
         defineBrightPass.insert("HDR");
+    m_pDownSampleBrightPassShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     m_pDownSampleBrightPassShader->initFromFile(folder + "shared/postShaderQuad.vert", 
                                                 folder + "post/bloom.frag", layout, defineBrightPass);
     m_DownSampleBrightPassMap = m_pDownSampleBrightPassShader->getShaderSamplerId("map");
@@ -79,13 +131,14 @@ void Bloom::init(bool hdr)
     if (hdr)
         m_DownSampleBrightPassLumMap = m_pDownSampleBrightPassShader->getShaderSamplerId("lumMap");
 
+    m_pDownSampleShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     m_pDownSampleShader->initFromFile(folder + "shared/postShaderQuad.vert", 
                                       folder + "post/bloom.frag", layout);
     m_DownSampleMap = m_pDownSampleShader->getShaderSamplerId("map");
 
     for (int pass = 0; pass < 2; ++pass)
     {
-        m_pBlurShaderPass[pass] = Shader::pointer(NEW Shader());
+        m_pBlurShaderPass[pass] = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
 
         std::set<std::string> definePass;
         if (pass == 0)
@@ -101,20 +154,14 @@ void Bloom::init(bool hdr)
     //////////////////////////////////////////////////////////////////////////
     ///                             Quad                                   ///
     //////////////////////////////////////////////////////////////////////////
-    m_pMesh = CONTENT->getFullscreenQuad();
+    m_Mesh = CONTENT->getFullscreenQuad();
 
     resize();
 }
 
 void Bloom::resize()
 {
-    for (int pass = 0; pass < 2; ++pass)
-    {
-        std::for_each(m_FboId[pass].cbegin(), m_FboId[pass].cend(), [](const uint& id)
-        {
-            glDeleteFramebuffers(1, &id);
-        });
-    }
+    cleanTextures();
     for (int pass = 0; pass < 2; ++pass)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -161,7 +208,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(false);
 
-    GL::heBindVao(m_pMesh->getVertexArraysID());
+    GL::heBindVao(m_Mesh->getVertexArraysID());
 
     //BrightPass
     GL::heBindFbo(m_FboId[0][0]);
@@ -170,7 +217,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
     if (m_Hdr)
         m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, pLumMap);
     GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
-    glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
+    glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
 
     //DownSample further
     m_pDownSampleShader->bind();
@@ -180,7 +227,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
         m_pDownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
         GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
 
-        glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
+        glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
     }
 
     //Blur
@@ -192,7 +239,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
             GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
             GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[pass == 0?1:0][fboId]->getWidth(), (int)m_Texture[pass == 0?1:0][fboId]->getHeight()));
-            glDrawElements(GL_TRIANGLES, m_pMesh->getNumIndices(), m_pMesh->getIndexType(), 0);
+            glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
         }
     }
     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));

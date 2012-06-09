@@ -34,7 +34,8 @@ BillboardEffect::BillboardEffect() : m_pShader(nullptr)
 
 BillboardEffect::~BillboardEffect()
 {
-    delete m_pShader;
+    if (m_pShader != nullptr)
+        m_pShader->release();
 }
 
 void BillboardEffect::load()
@@ -46,7 +47,7 @@ void BillboardEffect::load()
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
 
-    m_pShader = NEW Shader();
+    m_pShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
     const std::string& folder(CONTENT->getShaderFolderPath().str());

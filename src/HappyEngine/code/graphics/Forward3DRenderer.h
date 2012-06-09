@@ -66,7 +66,7 @@ private:
 
     ModelMesh* m_pQuad;
 
-    Shader* m_pQuadShader;
+    Shader* m_QuadShader;
     uint m_QuadShaderTexPos;
 
     RenderSettings m_Settings;

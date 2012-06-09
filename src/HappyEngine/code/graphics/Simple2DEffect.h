@@ -48,7 +48,7 @@ public:
 
 private:
 
-    Shader* m_pShader;
+    Shader* m_Shader;
 
     uint m_ShaderWVPPos;
     uint m_ShaderColorPos;

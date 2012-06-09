@@ -48,7 +48,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         IDrawable                                  ///
     //////////////////////////////////////////////////////////////////////////
-    virtual const gfx::Material& getMaterial() const;
+    virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const;   
     virtual mat44 getWorldMatrix() const;
     //////////////////////////////////////////////////////////////////////////
@@ -58,11 +58,11 @@ public:
    
     void setModelMesh(const ObjectHandle& modelHandle, bool isPickable = true);
 
-    void setMaterial(const gfx::Material& material);
+    void setMaterial(const ObjectHandle& material);
 
 private:
     const gfx::ModelMesh* m_pModel;
-    gfx::Material m_Material;
+    const gfx::Material* m_Material;
 
     mat44 m_mtxLocalTransform;
     

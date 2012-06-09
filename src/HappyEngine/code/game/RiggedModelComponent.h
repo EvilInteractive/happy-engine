@@ -54,7 +54,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         ISkinnedDrawable                           ///
     //////////////////////////////////////////////////////////////////////////
-    virtual const gfx::Material& getMaterial() const;
+    virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const; 
     virtual const std::vector<mat44>& getBoneTransforms() const;
     virtual mat44 getWorldMatrix() const;
@@ -65,7 +65,7 @@ public:
    
     void setModelMesh(const ObjectHandle& modelHandle);
 
-    void setMaterial(const gfx::Material& material);
+    void setMaterial(const ObjectHandle& material);
 
     BoneTransform getBone(const std::string& name) const;
 
@@ -76,7 +76,7 @@ private:
     void modelLoadedCallback();
 
     const gfx::ModelMesh* m_pModel;
-    gfx::Material m_Material;
+    const gfx::Material* m_Material;
 
     std::vector<mat44> m_BoneTransform;
     std::map<std::string, BoneTransform> m_Bones;

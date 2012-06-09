@@ -28,14 +28,14 @@
 namespace he {
 namespace gfx {
 
-Simple2DEffect::Simple2DEffect() : m_pShader(nullptr)
-{
+Simple2DEffect::Simple2DEffect() : m_Shader(nullptr)
+{ 
 }
 
 
 Simple2DEffect::~Simple2DEffect()
 {
-    delete m_pShader;
+    m_Shader->release();
 }
 
 void Simple2DEffect::load()
@@ -44,28 +44,28 @@ void Simple2DEffect::load()
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    m_pShader = NEW Shader();
+    m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     std::vector<std::string> shaderOutputs;
     shaderOutputs.push_back("outColor");
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    bool shaderInited(m_pShader->initFromFile(folder + "2D/simple2DShader.vert", 
+    bool shaderInited(m_Shader->initFromFile(folder + "2D/simple2DShader.vert", 
                                               folder + "2D/simple2DShader.frag", layout, shaderOutputs));
     HE_ASSERT(shaderInited == true, "simple2DShader init failed");
 
-    m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
-    m_ShaderColorPos = m_pShader->getShaderVarId("color");
-    m_ShaderDepthPos = m_pShader->getShaderVarId("depth");
-    m_ShaderBlendPos = m_pShader->getShaderVarId("blending");
+    m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
+    m_ShaderColorPos = m_Shader->getShaderVarId("color");
+    m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
+    m_ShaderBlendPos = m_Shader->getShaderVarId("blending");
 
-    m_pShader->bind();
+    m_Shader->bind();
     mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    m_pShader->setShaderVar(m_ShaderWVPPos, MatWVP);
-    m_pShader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
+    m_Shader->setShaderVar(m_ShaderWVPPos, MatWVP);
+    m_Shader->setShaderVar(m_ShaderColorPos, vec4(1.0f,1.0f,1.0f,1.0f));
 }
 
 void Simple2DEffect::begin() const
 {
-    m_pShader->bind();
+    m_Shader->bind();
 }
 
 void Simple2DEffect::end() const
@@ -74,22 +74,22 @@ void Simple2DEffect::end() const
 
 void Simple2DEffect::setColor(const Color& color) const
 {
-    m_pShader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
+    m_Shader->setShaderVar(m_ShaderColorPos, vec4(color.rgba()));
 }
 
 void Simple2DEffect::setWorldMatrix(const he::mat44 &mat) const
 {
-    m_pShader->setShaderVar(m_ShaderWVPPos, mat);
+    m_Shader->setShaderVar(m_ShaderWVPPos, mat);
 }
 
 void Simple2DEffect::setDepth(float depth) const
 {
-    m_pShader->setShaderVar(m_ShaderDepthPos, depth);
+    m_Shader->setShaderVar(m_ShaderDepthPos, depth);
 }
 
 void Simple2DEffect::setBlending(bool blend) const
 {
-    m_pShader->setShaderVar(m_ShaderBlendPos, blend);
+    m_Shader->setShaderVar(m_ShaderBlendPos, blend);
 }
 
 } } //end namespace

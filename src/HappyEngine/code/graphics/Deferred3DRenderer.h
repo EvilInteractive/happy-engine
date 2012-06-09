@@ -44,7 +44,7 @@ private:
     struct PostPointLightData
     {
         //Buffer
-        UniformBuffer::pointer pLightBuffer;
+        UniformBuffer* pLightBuffer;
 
         //LightBuffer
         ShaderVariable<vec3> position;
@@ -60,7 +60,7 @@ private:
     struct PostSpotLightData
     {
         //Buffer
-        UniformBuffer::pointer pLightBuffer;
+        UniformBuffer* pLightBuffer;
 
         //LightBuffer
         ShaderVariable<vec3> position;
@@ -78,8 +78,8 @@ private:
     struct PostAmbDirIllLightData
     {
         //Buffer
-        UniformBuffer::pointer pLightBuffer;
-        UniformBuffer::pointer pPerFrameBuffer;
+        UniformBuffer* pLightBuffer;
+        UniformBuffer* pPerFrameBuffer;
 
         //LightBuffer
         ShaderVariable<vec4> ambColor;
@@ -100,7 +100,7 @@ private:
     };
     struct PostSharedData
     {
-        UniformBuffer::pointer pSharedBuffer;
+        UniformBuffer* pSharedBuffer;
         // SharedBuffer
         ShaderVariable<vec4> projParams;
     };

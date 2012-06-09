@@ -22,13 +22,12 @@
 #define _HE_BLOOM_H_
 #pragma once
 
-#include "Shader.h"
-
 namespace he {
 namespace gfx {
 
 class Texture2D;
 class ModelMesh;
+class Shader;
 
 class Bloom
 {
@@ -44,26 +43,29 @@ public:
     void render( const Texture2D* pTexture, const Texture2D* pLumMap = nullptr );
 
 private:
-    
+    void cleanTextures();
+    void cleanShaders();
+
     std::vector<uint> m_FboId[2];
     std::vector<Texture2D*> m_Texture[2];
     
-    Shader::pointer m_pDownSampleBrightPassShader;
+    Shader* m_pDownSampleBrightPassShader;
     uint m_DownSampleBrightPassMap;
     uint m_DownSampleBrightPassLumMap;
 
-    Shader::pointer m_pDownSampleShader;
+    Shader* m_pDownSampleShader;
     uint m_DownSampleMap;
 
-    Shader::pointer m_pBlurShaderPass[2];
-    uint m_BlurMapPos[2];
-    uint m_BlurTexelSize[2];
+    const static int s_BlurPasses = 2;
+    Shader* m_pBlurShaderPass[s_BlurPasses];
+    uint m_BlurMapPos[s_BlurPasses];
+    uint m_BlurTexelSize[s_BlurPasses];
         
     const byte m_DownSamples;
 
     bool m_Hdr;
 
-    ModelMesh* m_pMesh;
+    ModelMesh* m_Mesh;
 
     //Disable default copy constructor and default assignment operator
     Bloom(const Bloom&);

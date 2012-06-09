@@ -98,6 +98,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
     else
     {
         ObjectHandle handle(FACTORY->create());
+        FACTORY->get(handle)->setName(stream.str());
 
         TextureLoadData data;
         data.path = "";
@@ -224,11 +225,14 @@ gfx::Texture2D* TextureLoader::makeEmptyTexture(const vec2& size)
 
 bool TextureLoader::createTexture( const TextureLoadData& data )
 {
-    FACTORY->get(data.tex)->setData(data.width, data.height, gfx::Texture2D::TextureFormat_Compressed_RGBA8, data.pData, 
+    gfx::Texture2D* tex2D(FACTORY->get(data.tex));
+
+    tex2D->setData(data.width, data.height, gfx::Texture2D::TextureFormat_Compressed_RGBA8, data.pData, 
         data.format, gfx::Texture2D::BufferType_Byte,
         gfx::Texture2D::WrapType_Repeat,   gfx::Texture2D::FilterType_Anisotropic_16x, true, data.storePixels );
 
-    FACTORY->get(data.tex)->setName(data.path);
+    if (tex2D->getName() == "")
+        tex2D->setName(data.path);
 
     if (data.path != "")
         ilDeleteImage(data.id);

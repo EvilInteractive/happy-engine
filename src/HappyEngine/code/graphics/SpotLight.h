@@ -44,7 +44,7 @@ private:
 
     ModelMesh* m_LightVolume;
     ModelMesh* m_Model;
-    Material m_Material;
+    Material* m_Material;
 
 public:
     SpotLight();
@@ -74,7 +74,7 @@ public:
 
     virtual bool getCastsShadow() const { return false; }
     
-    virtual const Material& getMaterial() const;
+    virtual const Material* getMaterial() const;
     virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Spot; }

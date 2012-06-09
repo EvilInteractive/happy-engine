@@ -23,13 +23,13 @@
 
 #include "Entity.h"
 #include "GraphicsEngine.h"
-#include "Console.h"
 #include "ModelMesh.h"
+#include "Material.h"
 
 namespace he {
 namespace ge {
 
-RiggedModelComponent::RiggedModelComponent(): m_pModel(nullptr), m_pParent(nullptr)
+RiggedModelComponent::RiggedModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_Material(nullptr)
 {
 }
 
@@ -38,6 +38,8 @@ RiggedModelComponent::~RiggedModelComponent()
 {
     if (m_pModel != nullptr)
         m_pModel->release();
+    if (m_Material != nullptr)
+        m_Material->release();
 }
 
 void RiggedModelComponent::init( Entity* pParent )
@@ -57,7 +59,7 @@ void RiggedModelComponent::deserialize(const SerializerStream& stream)
     stream >> m_mtxLocalTransform;
 }
 
-const gfx::Material& RiggedModelComponent::getMaterial() const
+const gfx::Material* RiggedModelComponent::getMaterial() const
 {
     return m_Material;
 }
@@ -121,9 +123,13 @@ void RiggedModelComponent::modelLoadedCallback()
 }
 
 
-void RiggedModelComponent::setMaterial( const gfx::Material& material )
+void RiggedModelComponent::setMaterial( const ObjectHandle& material )
 {
-    m_Material = material;
+    if (m_Material != nullptr)
+        m_Material->release();
+    m_Material = ResourceFactory<gfx::Material>::getInstance()->get(material);
+    if (m_Material != nullptr)
+        ResourceFactory<gfx::Material>::getInstance()->instantiate(material);
 }
 
 const std::vector<mat44>& RiggedModelComponent::getBoneTransforms() const

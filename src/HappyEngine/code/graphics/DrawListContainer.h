@@ -22,10 +22,6 @@
 #define _HE_DRAWLIST_CONTAINER_H_
 #pragma once
 
-#include "boost/function.hpp"
-#include <vector>
-#include "HappyTypes.h"
-
 namespace he {
 namespace gfx {
 
@@ -71,6 +67,8 @@ private:
     static const int SKINNED_INDEX = 1;
     static const int INSTANCE_INDEX = 2;
     static const int MAX_I2 = 3;
+
+    void getContainerIndex(const IDrawable* drawable, uint& i0, uint& i1, uint& i2);
 
     Container m_DrawList[MAX_I0][MAX_I1][MAX_I2]; //Loc - Main - Sub
 
