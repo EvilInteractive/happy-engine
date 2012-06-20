@@ -129,6 +129,9 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilInit();
         iluInit();
         iluSetLanguage(ILU_ENGLISH);
+        ilSetInteger(IL_KEEP_DXTC_DATA, IL_TRUE);
+        ilEnable(IL_ORIGIN_SET);
+        ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
         m_pContentManager = NEW ct::ContentManager();
     }
     

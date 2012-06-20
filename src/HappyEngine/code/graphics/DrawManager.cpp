@@ -94,6 +94,17 @@ bool DrawManager::viewClip(const vec3& camPos, const vec3& camLook, float camFar
 void DrawManager::init(const RenderSettings& settings)
 {
     m_RenderSettings = settings;
+
+    // Color
+    m_pColorRenderMap->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest,
+            m_RenderSettings.enableHDR ? gfx::Texture2D::TextureFormat_RGBA16F : gfx::Texture2D::TextureFormat_RGBA8, false);
+    // Normal
+    m_pNormalRenderMap->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest, 
+        gfx::Texture2D::TextureFormat_RG16, false);
+    // Depth
+    m_pDepthRenderMap->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest, 
+        gfx::Texture2D::TextureFormat_Depth32, false);
+
     initSharedTextures();
     if (settings.enableDeferred)
     {
@@ -241,22 +252,16 @@ void DrawManager::initSharedTextures()
          height(GRAPHICS->getScreenHeight());
 
     //Color
-    m_pColorRenderMap->setData(width, height, 
-        m_RenderSettings.enableHDR?gfx::Texture2D::TextureFormat_RGBA16F:gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
+    m_pColorRenderMap->setData(width, height, 0,
+        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
 
     //Normal
-    m_pNormalRenderMap->setData(width, height, 
-        gfx::Texture2D::TextureFormat_RG16, 0, 
-        gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
+    m_pNormalRenderMap->setData(width, height, 0, 
+        gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte, 0 );
 
     //Depth
-    m_pDepthRenderMap->setData(width, height, 
-        gfx::Texture2D::TextureFormat_Depth32, 0, 
-        gfx::Texture2D::BufferLayout_Depth, gfx::Texture2D::BufferType_Float,
-        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
+    m_pDepthRenderMap->setData(width, height, 0, 
+        gfx::Texture2D::BufferLayout_Depth, gfx::Texture2D::BufferType_Float, 0 );
 }
 
 uint DrawManager::getDepthID() const

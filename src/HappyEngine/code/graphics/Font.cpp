@@ -61,6 +61,8 @@ void Font::init(FT_Library lib, FT_Face face, ushort size)
 
     ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
     m_TextureAtlas = ResourceFactory<Texture2D>::getInstance()->get(hnd);
+    m_TextureAtlas->init(gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, 
+        gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT5, false);
 
     m_Init = true;
 
@@ -180,11 +182,9 @@ void Font::preCache(bool extendedCharacters)
     }
 
     // upload data to texture with compression, no noticeable quality difference
-    GL::heBindTexture2D(m_TextureAtlas->getID());
+    //GL::heBindTexture2D(m_TextureAtlas->getID());
     m_TextureAtlas->setData((uint)texSize.x, (uint)texSize.y, 
-        gfx::Texture2D::TextureFormat_Compressed_RGBA8, texBuffer, 
-        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, false, false);
+        texBuffer, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);
 
     // delete CPU buffer, data is on GPU now
     delete texBuffer;

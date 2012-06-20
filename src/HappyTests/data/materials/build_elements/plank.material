@@ -1,0 +1,15 @@
+[Deferred]
+shader = "defaultDeferredInstanced.shader"
+
+[Forward]
+shader = "defaultForwardInstanced.shader"
+
+[TEXTURE2D]
+diffuseMap = "build_elements/plankDiffuseMap.png"
+normalMap = "build_elements/plankNormalMap.png"
+specGlossIllMap = "build_elements/plankSgiMap.png"
+
+[info]
+blending = false
+post = true
+shadow = true

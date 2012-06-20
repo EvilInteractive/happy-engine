@@ -53,8 +53,9 @@ RectI GL::m_ScissorRect = RectI(0, 0, 0, 0);
 //Line Smoothing
 bool GL::m_LineSmoothEnabled = false;
 
-//Filtering
+// Texture
 float GL::m_MaxAnisotropicFilteringSupport = 0.0f;
+bool  GL::m_SupportTextureCompression = false;
 
 //Clear
 void GL::heClearColor(const Color& color)
@@ -133,8 +134,8 @@ void GL::heBindVao(uint vao)
 void GL::heBindTexture2D(uint samplerPos, uint tex)
 {
     HE_ASSERT(samplerPos < MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
-    //if (m_BoundTex2D[samplerPos] != tex)
-    //{
+    if (m_BoundTex2D[samplerPos] != tex)
+    {
         if (m_ActiveTex != samplerPos)
         {
             glActiveTexture(GL_TEXTURE0 + samplerPos);
@@ -142,7 +143,7 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
         }
         m_BoundTex2D[samplerPos] = tex;
         glBindTexture(GL_TEXTURE_2D, tex);
-   // }
+    }
 }
 void GL::heBindTexture2D(uint tex)
 {
@@ -253,6 +254,8 @@ void GL::init()
     {
         m_MaxAnisotropicFilteringSupport = 0.0f;
     }
+
+    m_SupportTextureCompression = GLEW_EXT_texture_compression_s3tc == GL_TRUE;
 }
 void GL::reset()
 {
@@ -273,11 +276,6 @@ void GL::reset()
 
 
     m_ActiveTex = UINT_MAX;;
-}
-
-float GL::getMaxAnisotropicFilteringSupport()
-{
-    return m_MaxAnisotropicFilteringSupport;
 }
 
 

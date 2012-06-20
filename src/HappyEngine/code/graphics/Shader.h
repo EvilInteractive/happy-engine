@@ -23,8 +23,6 @@
 
 #include "ShaderLayout.h"
 
-#include "TextureCube.h"
-
 namespace he {
 class mat44;
 namespace gfx {
@@ -32,6 +30,7 @@ namespace gfx {
 class UniformBuffer;
 class Shader;
 class Texture2D;
+class TextureCube;
 
 class ShaderVariableBase
 {
@@ -168,7 +167,7 @@ public:
     void setShaderVar(uint id, const mat44& matrix) const;
     void setShaderVar(uint id, const std::vector<mat44>& matrixArray) const;
     void setShaderVar(uint id, const gfx::Texture2D* tex2D) const;
-    void setShaderVar(uint id, const gfx::TextureCube::pointer& texCube) const;
+    void setShaderVar(uint id, const gfx::TextureCube* texCube) const;
     
 private:
     uint m_Id;

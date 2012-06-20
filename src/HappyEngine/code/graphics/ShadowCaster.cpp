@@ -88,10 +88,9 @@ void ShadowCaster::init(const RenderSettings& settings)
         ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
         m_pShadowTexture[i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
         m_pShadowTexture[i]->setName("ShadowCaster::m_pShadowTexture[i]");
-        m_pShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 
-            gfx::Texture2D::TextureFormat_RG16, 0, 
-            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float,
-            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, true, false );
+        m_pShadowTexture[i]->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RG16, true);
+        m_pShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 0, 
+            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float, 0 );
     }
     //////////////////////////////////////////////////////////////////////////
     ///                            LOAD FBO's                              ///
@@ -412,7 +411,7 @@ void ShadowCaster::render(const DrawListContainer& drawables, DirectionalLight* 
     for (int i(0); i < COUNT - 1; ++i)
     {
         GL::heBindTexture2D(0, m_pShadowTexture[i+1]->getID());
-        glGenerateMipmap(GL_TEXTURE_2D);
+        m_pShadowTexture[i+1]->generateMipMaps();
         directionalLight->setShadowMap(i, m_pShadowTexture[i+1]);
     }
 

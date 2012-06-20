@@ -104,7 +104,11 @@ void Forward3DRenderer::init( const RenderSettings& settings,
     if (m_pOutNormalTexture != nullptr)
         ResourceFactory<Texture2D>::getInstance()->instantiate(m_pOutNormalTexture->getHandle());
     if (m_pOutDepthTexture != nullptr)
+    {
         ResourceFactory<Texture2D>::getInstance()->instantiate(m_pOutDepthTexture->getHandle());
+    }
+
+
 
     initFbo();
     setRenderSettings(settings);
@@ -119,12 +123,13 @@ void Forward3DRenderer::initFbo()
             ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
             m_pOutColorTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
             ResourceFactory<Texture2D>::getInstance()->get(handle)->setName("Forward3DRenderer::m_pOutColorTexture");
+            ResourceFactory<Texture2D>::getInstance()->get(handle)->init(
+                gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, 
+                gfx::Texture2D::TextureFormat_RGBA8, false);
         }
         ResourceFactory<Texture2D>::getInstance()->get(m_pOutColorTexture->getHandle())->setData(
-            m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), 
-            gfx::Texture2D::TextureFormat_RGBA8, 0, 
-            gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
-            gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
+            m_pOutDepthTexture->getWidth(), m_pOutDepthTexture->getHeight(), 0, 
+            gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0);
     }
 
     if ((m_FboId == 0 || m_FboId == UINT_MAX) == false)

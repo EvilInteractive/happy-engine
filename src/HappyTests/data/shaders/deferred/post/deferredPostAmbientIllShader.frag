@@ -99,18 +99,18 @@ vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
 
 float shadowCheck(in vec3 position, in vec3 lightDir, in vec3 normal, in sampler2D sampler, in mat4 lightMatrix, in float bias)
 {
-    float cosLightAngle = dot(lightDir, normal);
-    float normalOffsetScale = clamp(cosLightAngle, 0, 1);
+    //float cosLightAngle = dot(lightDir, normal);
+    //float normalOffsetScale = clamp(cosLightAngle, 0, 1);
     
-    const float shadowTexelSize = 2.0f / 1024.0f;
-    const float shadowNormalOffset = 3.0f;
+    //const float shadowTexelSize = 2.0f / 1024.0f;
+    //const float shadowNormalOffset = 3.0f;
     
-    normalOffsetScale *= shadowNormalOffset * shadowTexelSize * length(position - dirLight.position);
+    //normalOffsetScale *= shadowNormalOffset * shadowTexelSize * length(position - dirLight.position);
     
-    vec3 shadowOffset = normal * normalOffsetScale;
+    //vec3 shadowOffset = normal * normalOffsetScale;
 
-    vec3 shadowPosition = position + shadowOffset;
-    //vec3 shadowPosition = position;
+    //vec3 shadowPosition = position + shadowOffset;
+    vec3 shadowPosition = position;
 
     vec4 coord = lightMatrix * vec4(shadowPosition, 1.0f);
 

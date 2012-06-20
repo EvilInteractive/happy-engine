@@ -29,6 +29,7 @@ namespace he {
 namespace gfx {
 
 class Texture2D;
+class TextureCube;
 class ModelMesh;
 class Material;
 
@@ -82,7 +83,7 @@ private:
     void unload();
 
     ModelMesh* m_pCube;
-    TextureCube::pointer m_pCubeMap;
+    TextureCube* m_pCubeMap;
     const Texture2D* m_CubeFaces[6];
     Material* m_Material;
     

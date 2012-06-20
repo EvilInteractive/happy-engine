@@ -1,0 +1,18 @@
+[Deferred]
+shader = "defaultDeferredTerrain.shader"
+
+[Forward]
+shader = "defaultForward.shader"
+
+[TEXTURE2D]
+diffuseMap = "terrain/Jungle_TT_1_DM.DDS"
+normalMap = "terrain/Jungle_TT_1_NM.DDS"
+specGlossIllMap = "terrain/Jungle_TT_1_SM.DDS"
+
+[VEC2]
+diffuseSpecTiling = 10, 10
+
+[info]
+blending = false
+post = true
+shadow = true

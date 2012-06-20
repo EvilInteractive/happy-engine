@@ -39,10 +39,10 @@ public:
         TextureFormat_RG8,
         TextureFormat_R8,
 
-        TextureFormat_Compressed_RGBA8,
-        TextureFormat_Compressed_RGB8,
-        TextureFormat_Compressed_RG8,
-        TextureFormat_Compressed_R8,
+        TextureFormat_Compressed_RGBA8_DXT1,
+        TextureFormat_Compressed_RGBA8_DXT3,
+        TextureFormat_Compressed_RGBA8_DXT5,
+        TextureFormat_Compressed_RGB8_DXT1,
 
         TextureFormat_RGBA16F,
         TextureFormat_RGB16F,
@@ -82,47 +82,47 @@ public:
     };
     enum FilterType
     {
-        FilterType_Nearest = 0,
-        FilterType_Linear = 1,
-        FilterType_Anisotropic_2x = 2,
-        FilterType_Anisotropic_4x = 4,
-        FilterType_Anisotropic_8x = 8,
-        FilterType_Anisotropic_16x = 16
+        FilterType_Nearest         = 0,
+        FilterType_Linear          = 1,
+        FilterType_Anisotropic_2x  = 2,
+        FilterType_Anisotropic_4x  = 4,
+        FilterType_Anisotropic_8x  = 8,
+        FilterType_Anisotropic_16x = 16,
+        FilterType_None
     };
 
     Texture2D();
     virtual ~Texture2D();
 
-    void setData(uint width, uint height, TextureFormat textureFormat, 
-        const void* pData, BufferLayout bufferLayout, BufferType bufferType,
-        WrapType wrapType, FilterType filter,
-        bool generateMips = true, bool storePixels = false);
-    void setData(uint width, uint height, TextureFormat textureFormat, 
-        const void* pData, BufferLayout bufferLayout, BufferType bufferType);
-    void setData(uint width, uint height, TextureFormat textureFormat, 
-        const void* pData, BufferLayout bufferLayout, BufferType bufferType,
-        bool generateMips, bool storePixels = false);
+    void init(WrapType wrapType, FilterType filter, TextureFormat textureFormat, bool willHaveMipMaps);
+
+    void setData(uint width, uint height, 
+        const void* pData, BufferLayout bufferLayout, BufferType bufferType, byte mipLevel = 0);
+
+    void setCompressedData(uint width, uint height, const void* data, uint imageSizeInBytes, byte mipLevel = 0);
     
+    void setLoadFinished();
+
     bool isInitialized() const;
+
+    void generateMipMaps() const;
 
     uint getID() const;
     uint getWidth() const;
     uint getHeight() const;
     TextureFormat getTextureFormat() const;
-    BufferLayout getBufferLayout() const;
-    BufferType getBufferType() const;
     WrapType getWrapType() const;
     FilterType getFilterType() const;
     bool HasMipMaps() const;
-
-    void* getPixelsIfAvailable() const;
-    
+        
     void callbackOnceIfLoaded(const boost::function<void()>& callback) const;
 
     // Static
     static uint calculatePixelSize(BufferLayout bufferLayout, BufferType bufferType);
 
 private:
+    void setFilter(FilterType filterType);
+
     GLenum getInternalFormat(TextureFormat format);
     GLenum getInternalBufferLayout(BufferLayout format);
     GLenum getInternalBufferType(BufferType type);
@@ -132,18 +132,16 @@ private:
     event<void> Loaded;
 
     uint m_Width, m_Height;
+
     TextureFormat m_TextureFormat;
-    BufferLayout m_BufferLayout;
-    BufferType m_BufferType;
-    bool m_HasMipMaps;
+    
     WrapType m_WrapType;
     FilterType m_FilterType;
+    bool m_HasMipMaps;
 
     uint m_Id;
-
-    void* m_pPixels;
-
-    bool m_isInitialized;
+    
+    bool m_IsLoadDone;
 
     //Disable default copy constructor and default assignment operator
     Texture2D(const Texture2D&);

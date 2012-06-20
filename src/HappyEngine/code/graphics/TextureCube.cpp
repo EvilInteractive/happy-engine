@@ -20,64 +20,63 @@
 #include "HappyPCH.h" 
 
 #include "TextureCube.h"
-#include "GL/glew.h"
 
 namespace he {
 namespace gfx {
-
-uint TextureCube::s_Count = 0;
-
-TextureCube::TextureCube(): m_Id(UINT_MAX), m_isInitialized(false)
-{
-    ++s_Count;
-}
-
-void TextureCube::init(uint tex)
-{
-    if (m_Id != UINT_MAX)
-        glDeleteTextures(1, &m_Id);
-    m_Id = tex;
-    m_CallbackMutex.lock();
-    m_isInitialized = true;
-    Loaded();
-    m_CallbackMutex.unlock();
-}
-
-bool TextureCube::isInitialized() const
-{
-    return m_isInitialized;
-}
-
-TextureCube::~TextureCube()
-{
-    glDeleteTextures(1, &m_Id);
-    --s_Count;
-}
-
-uint TextureCube::getTextureCount()
-{
-    return s_Count;
-}
-
-
+//
+//uint TextureCube::s_Count = 0;
+//
+//TextureCube::TextureCube(): m_Id(UINT_MAX), m_isInitialized(false)
+//{
+//    ++s_Count;
+//}
+//
+//void TextureCube::init(uint tex)
+//{
+//    if (m_Id != UINT_MAX)
+//        glDeleteTextures(1, &m_Id);
+//    m_Id = tex;
+//    m_CallbackMutex.lock();
+//    m_isInitialized = true;
+//    Loaded();
+//    m_CallbackMutex.unlock();
+//}
+//
+//bool TextureCube::isInitialized() const
+//{
+//    return m_isInitialized;
+//}
+//
+//TextureCube::~TextureCube()
+//{
+//    glDeleteTextures(1, &m_Id);
+//    --s_Count;
+//}
+//
+//uint TextureCube::getTextureCount()
+//{
+//    return s_Count;
+//}
+//
+//
 uint TextureCube::getID() const
 {
     return m_Id;
 }
-
-void TextureCube::callbackIfLoaded( const boost::function<void()>& callback )
-{
-    m_CallbackMutex.lock();
-    if (m_isInitialized)
-    {
-        m_CallbackMutex.unlock();
-        callback();
-    }
-    else
-    {
-        Loaded += callback;
-        m_CallbackMutex.unlock();
-    }
-}
-
+//
+//void TextureCube::callbackIfLoaded( const boost::function<void()>& callback )
+//{
+//    m_CallbackMutex.lock();
+//    if (m_isInitialized)
+//    {
+//        m_CallbackMutex.unlock();
+//        callback();
+//    }
+//    else
+//    {
+//        Loaded += callback;
+//        m_CallbackMutex.unlock();
+//    }
+//}
+//
 } } //end namespace

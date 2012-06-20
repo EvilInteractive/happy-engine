@@ -42,28 +42,41 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    const gfx::Texture2D* asyncLoadTexture(const std::string& path, bool storePixelsInTexture = false);
+    const gfx::Texture2D* asyncLoadTexture(const std::string& path);
     const gfx::Texture2D* asyncMakeTexture(const Color& color);
 
-    const gfx::Texture2D* loadTexture(const std::string& path, bool storePixelsInTexture = false);
+    const gfx::Texture2D* loadTexture(const std::string& path);
     const gfx::Texture2D* makeTexture(const Color& color);
-    gfx::Texture2D* makeEmptyTexture(const vec2& size);
 
     /* GETTERS */
     bool isLoading() const;
 
 private:
 
+    struct TextureLoadMipData
+    {
+        uint width;
+        uint height;
+        byte* data;
+        uint bufferSize;
+        byte mipLevel;
+        bool isDataDirty;
+        bool isCompressed;
+        gfx::Texture2D::BufferLayout format;
+        gfx::Texture2D::BufferType type;
+    };
     struct TextureLoadData
     {
         std::string path;
-        byte* pData;
-        uint width;
-        uint height;
-        gfx::Texture2D::BufferLayout format;
-        uint id;
-        bool storePixels;
+        std::vector<TextureLoadMipData> mipData;
+
+        gfx::Texture2D::TextureFormat textureFormat;
+
+        uint ilImageId;
+        bool isILimage;
+
         Color color;
+
         ObjectHandle tex;
     };
 

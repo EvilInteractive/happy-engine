@@ -36,10 +36,8 @@ Canvas2D::Data* Canvas2D::create(const vec2& size)
     pData->renderTextureHnd = ResourceFactory<Texture2D>::getInstance()->create();
     Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
 
-    pTexture->setData((uint)size.x, (uint)size.y, 
-        gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, false, false);
+    pTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RGBA8, false);
+    pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);
     
     // create final FBO & RB
     glGenFramebuffers(1, &pData->resolvedFbufferID);
@@ -70,7 +68,7 @@ Canvas2D::Data* Canvas2D::create(const vec2& size)
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
         he::HE_ERROR("Failed to create FrameBuffer Canvas2D!");
-
+        ResourceFactory<gfx::Texture2D>::getInstance()->release(pData->renderTextureHnd);
         delete pData;
         return nullptr;
     }
@@ -539,8 +537,8 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 }
 
 void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
-				            const vec2& newDimensions,
-				            const RectF& regionToDraw)
+                            const vec2& newDimensions,
+                            const RectF& regionToDraw)
 {
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);

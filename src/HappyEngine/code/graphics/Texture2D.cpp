@@ -28,51 +28,18 @@ Texture2D::Texture2D():
     m_Id(UINT_MAX), 
     m_Width(0), 
     m_Height(0), 
-    m_isInitialized(false), 
-    m_pPixels(nullptr),
+    m_IsLoadDone(false),
     m_WrapType(WrapType_Repeat), 
-    m_FilterType(FilterType_Linear),
+    m_FilterType(FilterType_None),
     m_HasMipMaps(false)
 {
 }
 
-void Texture2D::setData( uint width, uint height, TextureFormat textureFormat, 
-    const void* pData, BufferLayout bufferLayout, BufferType bufferType, 
-    WrapType wrapType, FilterType filterType,
-    bool generateMips, bool storePixels )
+
+void Texture2D::setFilter(FilterType filterType)
 {
-    // Clean
-    he_free(m_pPixels);
-    m_pPixels = nullptr;
-
-    // Store
-    if (storePixels == true && pData != nullptr)
-    {
-        uint bufferSize(calculatePixelSize(bufferLayout, bufferType) * width * height);
-        m_pPixels = he_malloc(bufferSize);
-        he_memcpy(m_pPixels, pData, bufferSize);
-    }
-
-    bool isFirstInit(false);
-    if (m_Id == UINT_MAX)
-    {
-        glGenTextures(1, &m_Id);
-        isFirstInit = true;
-    }
-    HE_ASSERT(m_Id != UINT_MAX, "Texture create failed");
-    m_Width = width;
-    m_Height = height;
-    m_TextureFormat = textureFormat;
-    m_BufferLayout = bufferLayout;
-    m_BufferType = bufferType;
-    m_HasMipMaps = generateMips;
-
-    // Create
-    GL::heBindTexture2D(0, m_Id);
-
-    //Filter
-#pragma region Filter
-    if (m_FilterType != filterType || isFirstInit)
+    HE_IF_ASSERT(filterType != FilterType_None, "filter type cannot be FilterType_None!")
+    if (m_FilterType != filterType)
     {
         m_FilterType = filterType;
         if (m_FilterType >= FilterType_Anisotropic_2x && GL::getMaxAnisotropicFilteringSupport() > FLT_EPSILON)
@@ -106,56 +73,106 @@ void Texture2D::setData( uint width, uint height, TextureFormat textureFormat,
             }
         }
     }
-#pragma endregion
+}
 
-    //Wrap
-    if (m_WrapType != wrapType || isFirstInit)
+void Texture2D::init( WrapType wrapType, FilterType filter, TextureFormat textureFormat, bool willHaveMipMaps )
+{
+    HE_IF_ASSERT(m_Id == UINT_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
     {
-        m_WrapType = wrapType;
-        GLenum wrap(getInternalWrapType(m_WrapType));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-    }
+        // Create
+        glGenTextures(1, &m_Id);
+        HE_ASSERT(m_Id != UINT_MAX, "Texture create failed");
 
-    //Data
-    glTexImage2D(GL_TEXTURE_2D, 0, getInternalFormat(m_TextureFormat), m_Width, m_Height, 
-                                0, getInternalBufferLayout(m_BufferLayout), getInternalBufferType(m_BufferType), 
-                                pData);
-    if (generateMips)
+        m_TextureFormat = textureFormat;
+        m_HasMipMaps = willHaveMipMaps;
+
+        // Bind
+        GL::heBindTexture2D(0, m_Id);
+
+        //Filter
+        setFilter(filter);
+
+        // Wrap
+        if (m_WrapType != wrapType)
+        {
+            m_WrapType = wrapType;
+            GLenum wrap(getInternalWrapType(m_WrapType));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+        }
+    }
+}
+
+void Texture2D::setData( uint width, uint height, 
+    const void* pData, BufferLayout bufferLayout, BufferType bufferType, byte mipLevel)
+{
+    HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    {
+        if (mipLevel == 0)
+        {
+            m_Width = width;
+            m_Height = height;
+        }
+
+        // Bind
+        GL::heBindTexture2D(0, m_Id);
+
+        //Data
+        glTexImage2D(GL_TEXTURE_2D, mipLevel, getInternalFormat(m_TextureFormat), width, height, 
+                                    0, getInternalBufferLayout(bufferLayout), getInternalBufferType(bufferType), 
+                                    pData);
+    }
+}
+
+void Texture2D::setCompressedData(uint width, uint height, const void* data, uint imageSizeInBytes, byte mipLevel)
+{
+    HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    {
+        if (mipLevel == 0)
+        {
+            m_Width = width;
+            m_Height = height;
+        }
+
+        // Bind
+        GL::heBindTexture2D(0, m_Id);
+
+        //Data
+        glCompressedTexImage2D(GL_TEXTURE_2D, mipLevel, getInternalFormat(m_TextureFormat), width, height, 
+            0, imageSizeInBytes, data);
+#if _DEBUG
+        err::glCheckForErrors(true);
+#endif
+    }
+}
+
+void Texture2D::setLoadFinished()
+{
+    m_CallbackMutex.lock();
+    m_IsLoadDone = true;
+    Loaded();
+    Loaded.clear();
+    m_CallbackMutex.unlock();
+}
+
+void Texture2D::generateMipMaps() const
+{
+    HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(m_HasMipMaps == true, "Texture2D has not been initialized with the has mipmap flag!: %s", getName().c_str())
+    {
+        GL::heBindTexture2D(m_Id);
         glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Done
-    if (m_isInitialized == false)
-    {
-        m_CallbackMutex.lock();
-        m_isInitialized = true;
-        Loaded();
-        Loaded.clear();
-        m_CallbackMutex.unlock();
     }
 }
 
-void Texture2D::setData(uint width, uint height, TextureFormat textureFormat, 
-    const void* pData, BufferLayout bufferLayout, BufferType bufferType)
-{
-    setData(width, height, textureFormat, pData, bufferLayout, bufferType, m_WrapType, m_FilterType, m_HasMipMaps, false);
-}
-
-void Texture2D::setData(uint width, uint height, TextureFormat textureFormat, 
-    const void* pData, BufferLayout bufferLayout, BufferType bufferType,
-    bool generateMips, bool storePixels)
-{
-    setData(width, height, textureFormat, pData, bufferLayout, bufferType, m_WrapType, m_FilterType, generateMips, storePixels);
-}
 
 bool Texture2D::isInitialized() const
 {
-    return m_isInitialized;
+    return m_IsLoadDone;
 }
 
 Texture2D::~Texture2D()
 {
-    he_free(m_pPixels);
     if (m_Id != UINT_MAX)
     {
         glDeleteTextures(1, &m_Id);
@@ -180,7 +197,7 @@ void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) 
 {
     Texture2D* _this(const_cast<Texture2D*>(this));
     _this->m_CallbackMutex.lock();
-    if (m_isInitialized)
+    if (m_IsLoadDone)
     {
         _this->m_CallbackMutex.unlock();
         callback();
@@ -192,11 +209,6 @@ void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) 
     }
 }
 
-void* Texture2D::getPixelsIfAvailable() const
-{
-    return m_pPixels;
-}
-
 GLenum Texture2D::getInternalFormat( TextureFormat format )
 {
     switch (format)
@@ -205,10 +217,10 @@ GLenum Texture2D::getInternalFormat( TextureFormat format )
     case TextureFormat_RG8: return GL_RG;
     case TextureFormat_RGB8: return GL_RGB;
     case TextureFormat_RGBA8: return GL_RGBA;
-    case TextureFormat_Compressed_R8: return GL_COMPRESSED_RED;
-    case TextureFormat_Compressed_RG8: return GL_COMPRESSED_RG;
-    case TextureFormat_Compressed_RGB8: return GL_COMPRESSED_RGB;
-    case TextureFormat_Compressed_RGBA8: return GL_COMPRESSED_RGBA;
+    case TextureFormat_Compressed_RGB8_DXT1:  return GL::getSupportTextureCompression()? GL_COMPRESSED_RGB_S3TC_DXT1_EXT  : GL_RGB;
+    case TextureFormat_Compressed_RGBA8_DXT1: return GL::getSupportTextureCompression()? GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_RGBA;
+    case TextureFormat_Compressed_RGBA8_DXT3: return GL::getSupportTextureCompression()? GL_COMPRESSED_RGBA_S3TC_DXT3_EXT : GL_RGBA;
+    case TextureFormat_Compressed_RGBA8_DXT5: return GL::getSupportTextureCompression()? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
     case TextureFormat_RGBA16: return GL_RGBA16;
     case TextureFormat_RGB16: return GL_RGB16;
     case TextureFormat_RG16: return GL_RG16;
@@ -298,16 +310,6 @@ Texture2D::TextureFormat Texture2D::getTextureFormat() const
     return m_TextureFormat;
 }
 
-Texture2D::BufferLayout Texture2D::getBufferLayout() const
-{
-    return m_BufferLayout;
-}
-
-Texture2D::BufferType Texture2D::getBufferType() const
-{
-    return m_BufferType;
-}
-
 Texture2D::WrapType Texture2D::getWrapType() const
 {
     return m_WrapType;
@@ -316,11 +318,6 @@ Texture2D::WrapType Texture2D::getWrapType() const
 Texture2D::FilterType Texture2D::getFilterType() const
 {
     return m_FilterType;
-}
-
-bool Texture2D::HasMipMaps() const
-{
-    return m_HasMipMaps;
 }
 
 

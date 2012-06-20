@@ -123,9 +123,9 @@ gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& asset, const st
 }
 
 //////////////////////////////////////////////////////////////////////////
-const gfx::Texture2D* ContentManager::asyncLoadTexture(const std::string& asset, bool storePixelsInTexture)
+const gfx::Texture2D* ContentManager::asyncLoadTexture(const std::string& asset)
 {
-    return m_pTextureLoader->asyncLoadTexture(m_TexturePath.str() + asset, storePixelsInTexture);
+    return m_pTextureLoader->asyncLoadTexture(m_TexturePath.str() + asset);
 }
 const gfx::Texture2D* ContentManager::asyncMakeTexture(const Color& color)
 {
@@ -138,11 +138,6 @@ const gfx::Texture2D* ContentManager::loadTexture(const std::string& path)
 const gfx::Texture2D* ContentManager::makeTexture(const Color& color)
 {
     return m_pTextureLoader->makeTexture(color);
-}
-
-gfx::Texture2D* ContentManager::makeEmptyTexture(const vec2& size)
-{
-    return m_pTextureLoader->makeEmptyTexture(size);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -34,6 +34,8 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
 {
     ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(hnd);
+    m_pRenderTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest,
+                           gfx::Texture2D::TextureFormat_RGBA8, false);
 }
 
 WebView::~WebView()
@@ -57,8 +59,8 @@ void WebView::draw(const vec2& pos)
 
             m_pRenderTexture->setData(
                 pSurface->width(), pSurface->height(), 
-                gfx::Texture2D::TextureFormat_RGBA8, buffer, 
-                gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, false);
+                buffer, 
+                gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0);
 
             delete[] buffer;
         }

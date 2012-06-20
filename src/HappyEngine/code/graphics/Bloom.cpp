@@ -173,11 +173,11 @@ void Bloom::resize()
         {
             ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
             m_Texture[pass][i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
+            m_Texture[pass][i]->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, 
+                gfx::Texture2D::TextureFormat_RGBA16F, false);
             m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
             m_Texture[pass][i]->setData(GRAPHICS->getScreenWidth() / ((i+2) * 2), GRAPHICS->getScreenHeight() / ((i+2) * 2), 
-                gfx::Texture2D::TextureFormat_RGBA16F, 0, 
-                gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float,
-                gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, false, false );
+                0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float, 0 );
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ void Bloom::resize()
         m_FboId[pass].resize(m_DownSamples);
         glGenFramebuffers(m_DownSamples, &m_FboId[pass][0]);
 
-        for (int i = 0; i < m_DownSamples; ++i)
+        for (int i(0); i < m_DownSamples; ++i)
         {
             GL::heBindFbo(m_FboId[pass][i]);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture[pass][i]->getID(), 0);       

@@ -116,8 +116,9 @@ public:
     //line smoothing
     static void heLineSmoothEnabled(bool enabled);
 
-    //filtering
-    static float getMaxAnisotropicFilteringSupport();
+    // Texture
+    static float getMaxAnisotropicFilteringSupport() { return m_MaxAnisotropicFilteringSupport; }
+    static bool  getSupportTextureCompression() { return m_SupportTextureCompression; }
 
 
 private:
@@ -153,8 +154,9 @@ private:
     //Line smoothing
     static bool m_LineSmoothEnabled;
 
-    //Filtering
+    // Texture
     static float m_MaxAnisotropicFilteringSupport;
+    static bool  m_SupportTextureCompression;
 
     GL() {}
 };

@@ -22,6 +22,7 @@
 #include "ShaderPreProcessor.h"
 
 #include "Texture2D.h"
+#include "TextureCube.h"
 
 namespace he {
 namespace gfx {
@@ -288,7 +289,7 @@ void Shader::setShaderVar(uint id, const gfx::Texture2D* tex2D) const
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, tex2D->getID());
 }
-void Shader::setShaderVar( uint id, const gfx::TextureCube::pointer& texCube ) const
+void Shader::setShaderVar( uint id, const gfx::TextureCube* texCube ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTextureCube(id, texCube->getID());

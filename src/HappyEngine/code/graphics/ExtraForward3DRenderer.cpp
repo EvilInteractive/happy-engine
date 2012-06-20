@@ -90,6 +90,9 @@ void ExtraForward3DRenderer::init()
 
     createBillboardQuad();
 
+    m_pRenderTexture->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, 
+        gfx::Texture2D::TextureFormat_RGBA8, false);
+
     m_pColorEffect->load();
     m_pBillboardEffect->load();
 
@@ -137,10 +140,8 @@ void ExtraForward3DRenderer::end()
 void ExtraForward3DRenderer::resize()
 {
     m_pRenderTexture->setData(
-        static_cast<uint>(m_ScreenDimensions.x), static_cast<uint>(m_ScreenDimensions.y), 
-        gfx::Texture2D::TextureFormat_RGBA8, 0, 
-        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte,
-        gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, false, false );
+        static_cast<uint>(m_ScreenDimensions.x), static_cast<uint>(m_ScreenDimensions.y), nullptr, 
+        gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
 
     if (m_RenderFboID != UINT_MAX)
         glDeleteFramebuffers(1, &m_RenderFboID);
