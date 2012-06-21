@@ -17,33 +17,6 @@
 //
 //Author:  Bastian Damman
 //Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+#include "Happy2DPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
 
-#include "MainGame.h"
-
-int main( int /*argc*/, char** /*args[]*/ )
-{
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_All);
-
-    he::game::Game* game(NEW ht::MainGame());
-    HAPPYENGINE->start(game);
-    delete game;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\nallocated textures:    " << he::gfx::Texture2D::getTextureCount();
-    std::cout << "\nallocated modelMeshes: " << he::gfx::ModelMesh::getAllocatedModelMeshCount() << "\n";
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
-}

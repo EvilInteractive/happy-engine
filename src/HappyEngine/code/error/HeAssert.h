@@ -78,8 +78,8 @@ static int s_scope = 0;
 #define HE_IF_ASSERT(isOk, message, ...) if (he::err::details::happyAssert(isOk, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__) == true)
 #else
 #define HE_ASSERT(isOk, message, ...) {}
-#define HE_IF_ASSERT(isOk, message, ...) {}            // faster version
-//#define HE_IF_ASSERT(isOk, message, args) if (isOk)  // safe version
+//#define HE_IF_ASSERT(isOk, message, ...) {}            // faster version
+#define HE_IF_ASSERT(isOk, message, args) if (isOk)  // safe version
 #endif
 
 #pragma warning(default:4127)

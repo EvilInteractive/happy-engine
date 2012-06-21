@@ -17,32 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 20/03/2012
-#include "HappyPongPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
-#include "ContentManager.h" 
+#ifndef _HT_HappyTestsPCH_H_
+#define _HT_HappyTestsPCH_H_
+#pragma once
 
-#include "MainGame.h"
+#pragma message("HappyTests: Compiling precompiled headers.")
 
-int main( int /*argc*/, char** /*args[]*/ )
-{
+#include "HappyPCH.h"
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
-    HAPPYENGINE->init(he::SubEngine_Graphics | he::SubEngine_Content | he::SubEngine_2DRenderer | he::SubEngine_Controls | he::SubEngine_Audio);
-    CONTENT->setContentDir(he::Path("../../data"));
-
-    he::ge::Game* ge(NEW ht::MainGame());
-    HAPPYENGINE->start(ge);
-    delete ge;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
-}

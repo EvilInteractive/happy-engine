@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/03/2012
-#include "HappyTestsPCH.h" 
+#include "HappyPongPCH.h" 
 
 #include "Obstacle.h"
 

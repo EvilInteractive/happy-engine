@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 20/03/2012
-#include "HappyTestsPCH.h" 
+#include "XPCH.h" 
 
 #include "Texture2D.h"
 #include "ModelMesh.h"

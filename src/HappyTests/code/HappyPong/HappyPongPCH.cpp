@@ -15,42 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 20/03/2012
+#include "HappyPongPCH.h" 
 
-#ifndef _HT_MainGame_H_
-#define _HT_MainGame_H_
-#pragma once
 
-#include "Game.h"
-
-namespace he {
-    namespace tools {
-        class FPSGraph;
-    }
-}
-
-namespace ht {
-
-class MainGame : public he::game::Game
-{
-public:
-    MainGame();
-    virtual ~MainGame();
-
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
-    virtual void drawGui();
-
-private:
-    he::tools::FPSGraph* m_pFPSGraph;
-
-    //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
-};
-
-} //end namespace
-
-#endif

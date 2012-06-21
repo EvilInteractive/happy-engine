@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<CodeBlocks_workspace_file>
-	<Workspace title="EvilInteractive">
-		<Project filename="HappyEngine/HappyEngine.cbp" />
-		<Project filename="HappyTest/HappyTest.cbp" active="1" />
-	</Workspace>
-</CodeBlocks_workspace_file>

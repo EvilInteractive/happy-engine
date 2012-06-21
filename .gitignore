@@ -16,3 +16,4 @@ src/HappyTools/*/build/*/*
 *.ipch
 src/3thParty/*/*/*
 src/3thParty/lib/*
+src/build_install/*

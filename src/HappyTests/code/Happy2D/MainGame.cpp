@@ -18,7 +18,7 @@
 //Author:  Sebastiaan Sprengers
 //Created: 14/04/2012
 
-#include "HappyTestsPCH.h" 
+#include "Happy2DPCH.h" 
 
 #include "MainGame.h"
 

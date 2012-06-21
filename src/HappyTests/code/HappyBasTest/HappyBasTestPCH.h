@@ -17,6 +17,13 @@
 //
 //Author:  Bastian Damman
 //Created: 20/03/2012
-#include "HappyTestsPCH.h" 
 
+#ifndef _HT_HappyTestsPCH_H_
+#define _HT_HappyTestsPCH_H_
+#pragma once
 
+#pragma message("HappyTests: Compiling precompiled headers.")
+
+#include "HappyPCH.h"
+
+#endif

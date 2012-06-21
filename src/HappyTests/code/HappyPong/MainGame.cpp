@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/03/2012
-#include "HappyTestsPCH.h" 
+#include "HappyPongPCH.h" 
 
 #include "MainGame.h"
 
@@ -81,8 +81,8 @@ void MainGame::load()
     CAMERAMANAGER->addCamera("default", camera);
     CAMERAMANAGER->setActiveCamera("default");
 
-    GRAPHICS->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1, 1, 1), 10.0f);
-    GRAPHICS->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 5.0f);
+    GRAPHICS->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1, 1, 1), 0.75f);
+    GRAPHICS->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
     m_pFPSGraph = NEW he::tools::FPSGraph();
     m_pFPSGraph->setType(1);
@@ -113,7 +113,6 @@ void MainGame::load()
 void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
-
 
     PROFILER_BEGIN("Fps graph");
     m_pFPSGraph->tick(dTime);

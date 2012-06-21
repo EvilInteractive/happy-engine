@@ -18,10 +18,11 @@
 //Author:  Sebastiaan Sprengers
 //Created: 14/04/2012
 
-#include "HappyTestsPCH.h" 
+#include "Happy2DPCH.h" 
 
 #include "Texture2D.h"
 #include "ModelMesh.h"
+#include "ContentManager.h"
 
 #include "MainGame.h"
 
@@ -33,6 +34,7 @@ int main( int /*argc*/, char** /*args[]*/ )
 #endif
 
     HAPPYENGINE->init(he::SubEngine_All);
+    CONTENT->setContentDir(he::Path("../../data"));
 
     he::ge::Game* ge(NEW ht::MainGame());
     HAPPYENGINE->start(ge);

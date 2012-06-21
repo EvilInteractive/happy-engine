@@ -210,7 +210,7 @@ uint Shader::getBufferId( const std::string& name ) const
     if (loc == -1)
     {
         HE_ERROR("Uniform buffer: '%s' not found!", name.c_str());
-        HE_ERROR("In shader: %s", m_FragShaderName);
+        HE_ERROR("In shader: %s", m_FragShaderName.c_str());
     }
     return loc;
 }

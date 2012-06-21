@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/03/2012
-#include "HappyTestsPCH.h" 
+#include "HappyPongPCH.h" 
 
 #include "Ball.h"
 
@@ -55,17 +55,17 @@ Ball::Ball(MainGame* mainGame):
     m_LightFlashComponent = NEW LightFlashComponent();
     addComponent(m_LightFlashComponent);
     m_LightFlashComponent->setAttenuation(1.0f, 50);
-    m_LightFlashComponent->setMultiplier(50);
+    m_LightFlashComponent->setMultiplier(0.5f);
     m_LightFlashComponent->setColor(he::Color(1.0f, 1.0f, 0.5f));
     m_LightFlashComponent->setOffset(he::vec3(0.0f, 1.5f, 0));
-    m_LightFlashComponent->setFlashMultiplier(50);
+    m_LightFlashComponent->setFlashMultiplier(10);
     m_LightFlashComponent->setNormalMultiplier(0);
     m_LightFlashComponent->setFlashDuration(0.25f);
 
     he::ge::PointLightComponent* redLight(NEW he::ge::PointLightComponent());
     addComponent(redLight);
     redLight->setAttenuation(1.0f, 50);
-    redLight->setMultiplier(10);
+    redLight->setMultiplier(2.0f);
     redLight->setColor(he::Color(1.0f, 0.1f, 0.1f));
     redLight->setOffset(he::vec3(0.0f, 1.5f, 0));
 

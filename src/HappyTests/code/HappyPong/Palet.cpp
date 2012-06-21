@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/03/2012
-#include "HappyTestsPCH.h" 
+#include "HappyPongPCH.h" 
 
 #include "Palet.h"
 
@@ -66,8 +66,8 @@ Palet::Palet(const MainGame* ge, he::byte player, bool ai):
     else
         m_LightFlashComponent->setColor(he::Color(0.2f, 0.2f, 1.0f));
     m_LightFlashComponent->setOffset(he::vec3(0.0f, 1.5f, 0));
-    m_LightFlashComponent->setFlashMultiplier(50);
-    m_LightFlashComponent->setNormalMultiplier(10);
+    m_LightFlashComponent->setFlashMultiplier(5);
+    m_LightFlashComponent->setNormalMultiplier(2);
     m_LightFlashComponent->setFlashDuration(0.5f);
 
     m_LightFlashAddPointComponent = NEW LightFlashComponent();
@@ -83,7 +83,7 @@ Palet::Palet(const MainGame* ge, he::byte player, bool ai):
         m_LightFlashAddPointComponent->setOffset(he::vec3(m_Game->getBoardDimension().x/2, 0.5f, 0));
         m_LightFlashAddPointComponent->setColor(he::Color(0.2f, 0.2f, 1.0f));
     }
-    m_LightFlashAddPointComponent->setFlashMultiplier(200);
+    m_LightFlashAddPointComponent->setFlashMultiplier(50);
     m_LightFlashAddPointComponent->setNormalMultiplier(0);
     m_LightFlashAddPointComponent->setFlashDuration(1.0f);
 
