@@ -19,6 +19,7 @@ set (CODE_FILES     event.h
                     HappyNew.h
                     HappyPCH.h              HappyPCH.cpp
                     HappyTypes.h            HappyTypes.cpp
+                    MessageBox.h            MessageBox.cpp
                     OpenGL.h                OpenGL.cpp
                     Singleton.h             Singleton.cpp
                     StaticDataManager.h     StaticDataManager.cpp)

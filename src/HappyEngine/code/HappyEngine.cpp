@@ -172,6 +172,22 @@ void HappyEngine::start(ge::Game* pGame)
     cout << "       ******************************       \n";
     //cout << "os: " << SDL_GetPlatform() << "\n\n";
 
+    int sse(0x01 << 25);
+    int sse2(0x01 << 26);
+    int sse3(0x01);
+    int sse4(0x01 << 19);
+    __asm
+    {
+        // get information to see if it supports XMM register
+        mov eax, 01h 
+        cpuid
+        and sse, edx
+        and sse2, edx
+        and sse3, ecx
+        and sse4, ecx
+    } 
+    HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
+
     m_pGame = pGame;
 
     //Init Game
@@ -245,6 +261,9 @@ void HappyEngine::updateLoop(float dTime)
         m_Events.push_back(event);
     }
     PROFILER_END();
+
+    if (m_SubEngines & SubEngine_Networking)
+        m_pNetworkManager->tick(dTime);
 
     if (m_SubEngines & SubEngine_Controls)
         m_pControlsManager->tick();

@@ -38,7 +38,7 @@ public:
         vec2 tex;
         vec3 norm;
 
-        InternalVertex(vec3 p, vec2 t, vec3 n):
+        InternalVertex(const vec3& p, const vec2& t, const vec3& n):
                             pos(p), tex(t), norm(n)
         {}       
     };

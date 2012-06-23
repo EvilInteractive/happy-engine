@@ -75,7 +75,7 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
 {
     if (m_WebCore == nullptr)
     {
-        m_WebCore = Awesomium::WebCore::Initialize(Awesomium::Config());
+        m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
     }
 
     vec2 dim = size;
@@ -134,8 +134,8 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
                     }
 
                     keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
-                    keyEvent.text[0] = (Awesomium::WebUChar)chr;
-                    keyEvent.unmodified_text[0] = (Awesomium::WebUChar)chr;
+                    keyEvent.text[0] = (wchar16)chr;
+                    keyEvent.unmodified_text[0] = (wchar16)chr;
                     keyEvent.native_key_code = chr;
 
                     w->InjectKeyboardEvent(keyEvent);
@@ -170,11 +170,11 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
             if (w != nullptr)
             {
                 if (but == io::MouseButton_Left)
-                    w->InjectMouseDown(Awesomium::kLeftMouseButton);
+                    w->InjectMouseDown(Awesomium::kMouseButton_Left);
                 else if (but == io::MouseButton_Right)
-                    w->InjectMouseDown(Awesomium::kRightMouseButton);
+                    w->InjectMouseDown(Awesomium::kMouseButton_Right);
                 else if (but == io::MouseButton_Middle)
-                    w->InjectMouseDown(Awesomium::kMiddleMouseButton);
+                    w->InjectMouseDown(Awesomium::kMouseButton_Middle);
             }
         });
 
@@ -183,11 +183,11 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
             if (w != nullptr)
             {
                 if (but == io::MouseButton_Left)
-                    w->InjectMouseUp(Awesomium::kLeftMouseButton);
+                    w->InjectMouseUp(Awesomium::kMouseButton_Left);
                 else if (but == io::MouseButton_Right)
-                    w->InjectMouseUp(Awesomium::kRightMouseButton);
+                    w->InjectMouseUp(Awesomium::kMouseButton_Right);
                 else if (but == io::MouseButton_Middle)
-                    w->InjectMouseUp(Awesomium::kMiddleMouseButton);
+                    w->InjectMouseUp(Awesomium::kMouseButton_Middle);
             }
         });
 

@@ -34,7 +34,7 @@ enum Key
 {
     Key_Return = sf::Keyboard::Return,
     Key_Escape = sf::Keyboard::Escape,
-    Key_Backspace = sf::Keyboard::Back,
+    Key_Backspace = sf::Keyboard::BackSpace,
     Key_Tab = sf::Keyboard::Tab,
     Key_Space = sf::Keyboard::Space,
     //Key_Exclaim = sf::Keyboard::E,

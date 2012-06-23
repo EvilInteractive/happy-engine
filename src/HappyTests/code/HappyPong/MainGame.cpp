@@ -23,6 +23,7 @@
 
 #include "GraphicsEngine.h"
 #include "CameraManager.h"
+#include "NetworkManager.h"
 
 #include "Camera.h"
 #include "FPSGraph.h"
@@ -36,6 +37,7 @@
 #include "Palet.h"
 #include "Ball.h"
 #include "Obstacle.h"
+#include "MessageBox.h"
 
 namespace ht {
 
@@ -46,6 +48,8 @@ MainGame::MainGame(): m_pFPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(
 
 MainGame::~MainGame()
 {
+    NETWORK->disconnect();
+
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
         delete entity;     
@@ -108,6 +112,14 @@ void MainGame::load()
     m_Ball = NEW Ball(this);
     m_Obstacles.push_back(NEW Obstacle());
 
+    if (he::MessageBox::show("Connecting..", "Do you want to host or join a game", "Host", "Join") == he::MessageBoxButton_Button1)
+    {
+        NETWORK->host();
+    }
+    else
+    {
+        NETWORK->join();
+    }
 }
 
 void MainGame::tick( float dTime )

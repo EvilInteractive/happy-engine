@@ -51,7 +51,7 @@ void WebView::draw(const vec2& pos)
     {
         Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(m_pWebView->surface());
 
-        if (pSurface->Dirty())
+        if (pSurface->is_dirty())
         {
             byte* buffer = NEW byte[pSurface->width() * 4 * pSurface->height()];
 

@@ -16,23 +16,53 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 25/08/2011
+//Created: 23/06/2012
 
 #ifndef _HE_NETWORK_MANAGER_H_
 #define _HE_NETWORK_MANAGER_H_
 #pragma once
 
+#include "ReplicaManager3.h"
+
+namespace RakNet {
+    class RakPeerInterface;
+}
+
 namespace he {
 namespace net {
+class NetworkObjectFactory;
+class NetworkObjectFactoryManager;
 
-class NetworkManager
+enum ConnectionType 
+{
+    ConnectionType_Host,
+    ConnectionType_Client
+};
+
+class NetworkManager : public RakNet::ReplicaManager3
 {
 public:
     NetworkManager();
     virtual ~NetworkManager();
 
-private:
+    void host();
+    void join();
+    void disconnect();
+    void tick(float dTime);
+    bool isConnected() const;
 
+    NetworkObjectFactoryManager* getNetworkObjectFactoryManager() const;
+
+    // Internal
+    void registerFactory( NetworkObjectFactory* factory );
+    virtual RakNet::Connection_RM3* AllocConnection(const RakNet::SystemAddress &systemAddress, RakNet::RakNetGUID rakNetGUID) const;
+    virtual void DeallocConnection(RakNet::Connection_RM3 *connection) const;
+
+private:
+    float m_Sleep;
+
+    ConnectionType m_ConnectionType;
+    RakNet::RakPeerInterface* m_RakPeer;
 
     //Disable default copy constructor and default assignment operator
     NetworkManager(const NetworkManager&);

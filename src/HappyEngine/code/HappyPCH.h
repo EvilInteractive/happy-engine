@@ -24,7 +24,6 @@
 #pragma message("-------------------------------------------\n")
 
 #define __HE_FUNCTION__ __FUNCTION__
-
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -49,6 +48,10 @@
 #include "boost/date_time.hpp"
 
 #include "SFML/Window.hpp"
+#include "SFML/Graphics.hpp"
+
+#undef MessageBox
+
 
 #include "GL/glew.h"
 #include "OpenGL.h"

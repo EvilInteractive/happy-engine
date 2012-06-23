@@ -12,9 +12,11 @@ set (CODE_GAME_COMPONENT_FILTER
                         InstancedModelComponent.cpp             InstancedModelComponent.h
                         LightComponent.cpp                      LightComponent.h
                         ModelComponent.cpp                      ModelComponent.h
+                        NetworkObjectComponent.cpp              NetworkObjectComponent.h
                         RiggedModelComponent.cpp                RiggedModelComponent.h
                         StaticPhysicsComponent.cpp              StaticPhysicsComponent.h
-                        TriggerComponent.cpp                    TriggerComponent.h)
+                        TriggerComponent.cpp                    TriggerComponent.h
+                        )
 
 foreach(f ${CODE_GAME_NO_FILTER}) 
     LIST(APPEND GAME_COMPONENT_NO_FILTER_SRCS code/game/${f})

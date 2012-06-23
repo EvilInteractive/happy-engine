@@ -52,7 +52,7 @@ float Sphere::getRadius() const
 Sphere Sphere::getBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset)
 {
     vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
-         max(FLT_MIN, FLT_MIN, FLT_MIN);
+         max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
     const char* charPointCloud = static_cast<const char*>(pointCloud);
     for(uint i = 0; i < num; ++i)
     {
