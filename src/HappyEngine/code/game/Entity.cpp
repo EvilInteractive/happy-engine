@@ -25,7 +25,7 @@
 namespace he {
 namespace ge {
 
-Entity::Entity()
+Entity::Entity(): m_IsSerializeDataDirty(false)
 {
 }
 
@@ -58,6 +58,73 @@ void Entity::deleteComponent( IComponent* pComponent )
 {
     m_Components.erase(std::remove(m_Components.begin(), m_Components.end(), pComponent), m_Components.end());
     delete pComponent;
+}
+
+void Entity::serializeCreate( NetworkStream* stream ) const
+{
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [&stream](IComponent* component)
+    {
+        component->serializeCreate(stream);
+    });
+}
+
+bool Entity::deserializeCreate( NetworkStream* stream )
+{
+    bool keep(true);
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [&keep,&stream](IComponent* component)
+    {
+        keep &= component->deserializeCreate(stream);
+    });
+    return keep;
+}
+
+void Entity::serializeRemove( NetworkStream* stream ) const
+{
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [&stream](IComponent* component)
+    {
+        component->serializeRemove(stream);
+    });
+}
+
+bool Entity::deserializeRemove( NetworkStream* stream )
+{
+    bool remove(true);
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [&remove,&stream](IComponent* component)
+    {
+        remove &= component->deserializeRemove(stream);
+    });
+    return remove;
+}
+
+bool Entity::isSerializeDataDirty() const
+{
+    if (m_IsSerializeDataDirty)
+        return true;
+
+    std::vector<IComponent*>::const_iterator it(m_Components.cbegin());
+    for (; it != m_Components.cend(); ++it)
+    {
+        if ((*it)->isSerializeDataDirty())
+            return true;
+    }
+    return false;
+}
+
+void Entity::serialize( net::NetworkSerializer& serializer )
+{
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [&serializer](IComponent* component)
+    {
+        component->serialize(serializer);
+    });
+    m_IsSerializeDataDirty = false;
+}
+
+void Entity::deserialize( net::NetworkDeserializer& serializer )
+{
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [&serializer](IComponent* component)
+    {
+        component->deserialize(serializer);
+    });
 }
 
 } } //end namespace

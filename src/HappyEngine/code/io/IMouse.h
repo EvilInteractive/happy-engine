@@ -54,13 +54,13 @@ public:
     virtual vec2 getMove() const = 0;
 
     virtual void addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const = 0;
-    virtual eventExt<void, MouseButton>& getOnButtonPressedListeners() = 0;
+    virtual event1<void, MouseButton>& getOnButtonPressedListeners() = 0;
     virtual void addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const = 0;
-    virtual eventExt<void, MouseButton>& getOnButtonReleasedListeners() = 0;
+    virtual event1<void, MouseButton>& getOnButtonReleasedListeners() = 0;
     virtual void addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const = 0;
-    virtual eventExt<void, const vec2&>& getOnMouseMovedListeners() = 0;
+    virtual event1<void, const vec2&>& getOnMouseMovedListeners() = 0;
     virtual void addOnMouseWheelMovedListener(boost::function<void(int)> callback) const = 0;
-    virtual eventExt<void, int>& getOnMouseWheelMovedListeners() = 0;
+    virtual event1<void, int>& getOnMouseWheelMovedListeners() = 0;
 };
 
 } } //end namespace

@@ -50,7 +50,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_CmdHistoryPos(0),
                         m_pScrollBar(nullptr),
                         m_Help(nullptr),
-                        m_Canvas2D(nullptr)
+                        m_Canvas2D(nullptr),
+                        m_pFont(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -121,7 +122,8 @@ Console::~Console()
 
     m_TypeHandlers.clear();
 
-    m_pFont->release();
+    if (m_pFont != nullptr)
+        m_pFont->release();
 
     delete m_pTextBox;
     delete m_pScrollBar;

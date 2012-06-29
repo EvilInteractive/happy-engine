@@ -23,6 +23,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "BitStream.h"
 
 namespace he {
 
@@ -41,7 +42,28 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
-typedef uint16 NetworkObjectID;
+typedef RakNet::BitStream NetworkStream;
+typedef RakNet::RakNetGUID NetworkID;
+#define UNASSIGNED_NETWORKID RakNet::UNASSIGNED_RAKNET_GUID
+
+struct NetworkObjectID
+{
+    uint16 id;
+
+    NetworkObjectID(): id(0xffff) {}
+    NetworkObjectID(uint16 _id): id(_id) {}
+
+    bool operator==(const NetworkObjectID& other) const
+    {
+        return id == other.id;
+    }
+    bool operator!=(const NetworkObjectID& other) const
+    {
+        return id != other.id;
+    }
+
+    const static NetworkObjectID unassigned;
+};
 
 #undef TRUE
 #undef FALSE

@@ -91,7 +91,7 @@ void Mouse::addOnButtonPressedListener(boost::function<void(MouseButton)> callba
     Mouse* _this = const_cast<Mouse*>(this);
     _this->m_OnButtonPressedListeners += callback;
 }
-eventExt<void, MouseButton>& Mouse::getOnButtonPressedListeners()
+event1<void, MouseButton>& Mouse::getOnButtonPressedListeners()
 {
     return m_OnButtonPressedListeners;
 }
@@ -100,7 +100,7 @@ void Mouse::addOnButtonReleasedListener(boost::function<void(MouseButton)> callb
     Mouse* _this = const_cast<Mouse*>(this);
     _this->m_OnButtonReleasedListeners += callback;
 }
-eventExt<void, MouseButton>& Mouse::getOnButtonReleasedListeners()
+event1<void, MouseButton>& Mouse::getOnButtonReleasedListeners()
 {
     return m_OnButtonReleasedListeners;
 }
@@ -109,7 +109,7 @@ void Mouse::addOnMouseMovedListener(boost::function<void(const vec2&)> callback)
     Mouse* _this = const_cast<Mouse*>(this);
     _this->m_OnMouseMovedListeners += callback;
 }
-eventExt<void, const vec2&>& Mouse::getOnMouseMovedListeners()
+event1<void, const vec2&>& Mouse::getOnMouseMovedListeners()
 {
     return m_OnMouseMovedListeners;
 }
@@ -118,7 +118,7 @@ void Mouse::addOnMouseWheelMovedListener(boost::function<void(int)> callback) co
     Mouse* _this = const_cast<Mouse*>(this);
     _this->m_OnMouseWheelMovedListeners += callback;
 }
-eventExt<void, int>& Mouse::getOnMouseWheelMovedListeners()
+event1<void, int>& Mouse::getOnMouseWheelMovedListeners()
 {
     return m_OnMouseWheelMovedListeners;
 }

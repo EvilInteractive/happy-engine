@@ -34,6 +34,8 @@ CameraManager::CameraManager(): m_pActiveCamera(nullptr)
 
 CameraManager::~CameraManager()
 {
+    if (GAME != nullptr)
+        GAME->removeFromTickList(this);
 }
 
 void CameraManager::tick(float dTime)

@@ -48,11 +48,8 @@ public:
         {
             if (m_Pool[i] != nullptr)
             {
-                delete m_Pool[i];
-                m_FreeHandles.push(i);
+                destroyAt(i);
             }
-            ++m_Salt[i];
-            HE_ASSERT(m_Salt[i] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
         }
     }
 
@@ -62,7 +59,7 @@ public:
         m_Pool[handle.index] = NEW T();
         return handle;
     }
-    virtual ObjectHandle create(T* obj)
+    virtual ObjectHandle registerObject(T* obj)
     {
         ObjectHandle handle(getFreeHandle());
         m_Pool[handle.index] = obj;
@@ -82,11 +79,13 @@ public:
     }
     virtual void destroyAt(ObjectHandle::Type index)
     {
-        HE_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str());
-        m_FreeHandles.push(index);
-        delete m_Pool[index];
-        m_Pool[index] = nullptr;
-        ++m_Salt[index];
+        HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str())
+        {
+            m_FreeHandles.push(index);
+            delete m_Pool[index];
+            m_Pool[index] = nullptr;
+            ++m_Salt[index];
+        }
         HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
     }
 

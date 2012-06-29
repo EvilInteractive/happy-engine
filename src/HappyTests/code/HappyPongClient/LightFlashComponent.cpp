@@ -17,11 +17,11 @@
 //
 //Author:  Bastian Damman
 //Created: 31/03/2012
-#include "HappyPongPCH.h" 
+#include "HappyPongClientPCH.h" 
 
 #include "LightFlashComponent.h"
 
-namespace ht {
+namespace hpc {
 
 LightFlashComponent::LightFlashComponent():
     m_LightFlashMult(50),

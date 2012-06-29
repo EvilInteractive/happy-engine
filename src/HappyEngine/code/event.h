@@ -23,20 +23,17 @@
 #define _HE_EVENT_H_
 #pragma once
 
-#include "boost/function.hpp"
-#include <vector>
-
 namespace he {
 
 template<typename returnType>
-class event
+class event0
 {
 private: 
-    typedef boost::function<returnType()> function;
+    typedef boost::function0<returnType> function;
 
 public:
-    event() {}
-    ~event() {}
+    event0() {}
+    ~event0() {}
 
     void operator+=(const function& func)
     {
@@ -59,19 +56,19 @@ private:
     std::vector<function> m_FuncList;
 
     //Disable default copy constructor and default assignment operator
-    event(const event&);
-    event& operator=(const event&);
+    event0(const event0&);
+    event0& operator=(const event0&);
 };
 
 template<typename returnType, typename parameterType>
-class eventExt
+class event1
 {
 private: 
-    typedef boost::function<returnType(parameterType)> function;
+    typedef boost::function1<returnType, parameterType> function;
 
 public:
-    eventExt() {}
-    ~eventExt() {}
+    event1() {}
+    ~event1() {}
 
     void operator+=(const function& func)
     {
@@ -94,8 +91,43 @@ private:
     std::vector<function> m_FuncList;
 
     //Disable default copy constructor and default assignment operator
-    eventExt(const eventExt&);
-    eventExt& operator=(const eventExt&);
+    event1(const event1&);
+    event1& operator=(const event1&);
+};
+
+template<typename returnType, typename parameterType1, typename parameterType2>
+class event2
+{
+private: 
+    typedef boost::function2<returnType, parameterType1, parameterType2> function;
+
+public:
+    event2() {}
+    ~event2() {}
+
+    void operator+=(const function& func)
+    {
+        m_FuncList.push_back(func);
+    }
+    returnType operator()(parameterType1 par, parameterType2 par2)
+    {
+        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [&](const function& func)
+        {
+            func(par, par2);
+        });
+    }
+
+    void clear()
+    {
+        m_FuncList.clear();
+    }
+
+private:
+    std::vector<function> m_FuncList;
+
+    //Disable default copy constructor and default assignment operator
+    event2(const event2&);
+    event2& operator=(const event2&);
 };
 
 } //end namespace

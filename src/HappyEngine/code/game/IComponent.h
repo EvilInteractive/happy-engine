@@ -23,6 +23,7 @@
 #pragma once
 
 #include "SerializerStream.h"
+#include "INetworkSerializable.h"
 
 namespace he {
 namespace ge {
@@ -38,6 +39,19 @@ public:
 
     virtual void serialize(SerializerStream& stream) = 0;
     virtual void deserialize(const SerializerStream& stream) = 0;
+
+    //////////////////////////////////////////////////////////////////////////
+    /// INetworkSerializable
+    //////////////////////////////////////////////////////////////////////////
+    virtual void serializeCreate(NetworkStream* /*stream*/) const {}
+    virtual bool deserializeCreate(NetworkStream* /*stream*/) { return true; }
+    virtual void serializeRemove(NetworkStream* /*stream*/) const {}
+    virtual bool deserializeRemove(NetworkStream* /*stream*/) { return true; }
+
+    virtual bool isSerializeDataDirty() const { return false; }
+    virtual void serialize(const net::NetworkSerializer& /*serializer*/) {}
+    virtual void deserialize(const net::NetworkDeserializer& /*serializer*/) const {}
+    //////////////////////////////////////////////////////////////////////////
 };
 
 } } //end namespace

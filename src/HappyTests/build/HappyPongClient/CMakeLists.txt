@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 2.8) 
 
 # include source files
-include (${HappyEngine_SOURCE_DIR}/HappyTests/code/HappyPong/CMakeLists.cmake)
-include_directories (${HappyEngine_SOURCE_DIR}/HappyTests/code/HappyPong)
-set (HAPPYPONG_SRCS ${HAPPYPONG_CODE_SRCS})
+include (${HappyEngine_SOURCE_DIR}/HappyTests/code/HappyPongClient/CMakeLists.cmake)
+include_directories (${HappyEngine_SOURCE_DIR}/HappyTests/code/HappyPongClient)
+set (HAPPYPONGCLIENT_SRCS ${HAPPYPONGCLIENT_CODE_SRCS})
 
 # set compiler options
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
@@ -17,22 +17,22 @@ link_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
 IncludeThirdParty()
 
-# add HappyPong executable
-add_executable (HappyPong ${HAPPYPONG_SRCS})
+# add HappyPongClient executable
+add_executable (HappyPongClient ${HAPPYPONGCLIENT_SRCS})
 
 # link thirdparty
-LinkThirdParty(HappyPong)
+LinkThirdParty(HappyPongClient)
 
 # Copy thirdparty dll's
 CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTests/bin)
 
 # link HappyEngine
-target_link_libraries(HappyPong HappyEngine)
+target_link_libraries(HappyPongClient HappyEngine)
 
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(HappyPong HappyPongPCH.h ../../code/HappyPong/HappyPongPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(HappyPongClient HappyPongClientPCH.h ../../code/HappyPongClient/HappyPongClientPCH.cpp)
 
 # set output dir
-SET_TARGET_PROPERTIES(HappyPong PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)
+SET_TARGET_PROPERTIES(HappyPongClient PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)

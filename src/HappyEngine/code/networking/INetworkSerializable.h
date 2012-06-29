@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -16,38 +16,30 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 30/03/2012
+//Created: 25/06/2012
 
-#ifndef _HT_Obstacle_H_
-#define _HT_Obstacle_H_
+#ifndef _HE_INetworkSerializable_H_
+#define _HE_INetworkSerializable_H_
 #pragma once
 
-#include "Entity.h"
+namespace he {
+namespace net {
+class NetworkSerializer;
+class NetworkDeserializer;
 
-namespace ht {
-
-class Obstacle : public he::ge::Entity
+class INetworkSerializable
 {
 public:
-    Obstacle();
-    virtual ~Obstacle();
-    
-    //////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////
-    float getRadius() const;
-    const he::vec3& getPosition() const;
+    virtual void serializeCreate(NetworkStream* stream) const = 0;
+    virtual bool deserializeCreate(NetworkStream* stream) = 0;
+    virtual void serializeRemove(NetworkStream* stream) const = 0;
+    virtual bool deserializeRemove(NetworkStream* stream) = 0;
 
-
-private:
-    he::vec3 m_Position;
-    float m_Radius;
-
-    //Disable default copy constructor and default assignment operator
-    Obstacle(const Obstacle&);
-    Obstacle& operator=(const Obstacle&);
+    virtual bool isSerializeDataDirty() const = 0;
+    virtual void serialize(NetworkSerializer& serializer) = 0;
+    virtual void deserialize(NetworkDeserializer& serializer) = 0;
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

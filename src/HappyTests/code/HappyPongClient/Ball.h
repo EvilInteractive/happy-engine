@@ -18,22 +18,23 @@
 //Author:  Bastian Damman
 //Created: 30/03/2012
 
-#ifndef _HT_BALL_H_
-#define _HT_BALL_H_
+#ifndef _HPC_BALL_H_
+#define _HPC_BALL_H_
 #pragma once
 
 #include "Entity.h"
 #include "ITickable.h"
 #include "Random.h"
+#include "NetworkObject.h"
 
 
-namespace ht {
+namespace hpc {
 class MainGame;
 class LightFlashComponent;
-class Ball : public he::ge::Entity, public he::ge::ITickable
+class Ball : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Ball>
 {
 public:
-    Ball(MainGame* mainGame);
+    Ball();
     virtual ~Ball();
 
     virtual void tick(float dTime);
@@ -43,10 +44,23 @@ public:
     const he::vec3& getVelocity() const;
     float getRadius() const;
 
+
+    //////////////////////////////////////////////////////////////////////////
+    /// INetworkSerializable
+    //////////////////////////////////////////////////////////////////////////
+    virtual void serializeCreate(he::NetworkStream* stream) const;
+    virtual bool deserializeCreate(he::NetworkStream* stream);
+    virtual void serializeRemove(he::NetworkStream* stream) const;
+    virtual bool deserializeRemove(he::NetworkStream* stream);
+
+    virtual void serialize(he::net::NetworkSerializer& serializer);
+    virtual void deserialize(he::net::NetworkDeserializer& serializer);
+    //////////////////////////////////////////////////////////////////////////
+
 private:
 
     he::vec3 m_Velocity;
-    he::vec3 m_Position;
+    he::vec3 m_Position, m_MoveTo;
 
     float m_Restitution;
 

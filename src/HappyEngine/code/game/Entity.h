@@ -18,20 +18,20 @@
 //Author:  Bastian Damman
 //Created: 30/09/2011
 //Changed: 04/11/2011
+//added networking: 26/06/2012
 
 #ifndef _HE_ENTITY_H_
 #define _HE_ENTITY_H_
 #pragma once
 
-#include "mat44.h"
 #include "IComponent.h"
-#include <vector>
 #include "I3DObject.h"
+#include "INetworkSerializable.h"
 
 namespace he {
 namespace ge {
 
-class Entity : public gfx::I3DObject
+class Entity : public gfx::I3DObject, public net::INetworkSerializable
 {
 public:
     Entity();
@@ -43,7 +43,21 @@ public:
     virtual mat44 getWorldMatrix() const;
     void setWorldMatrix(const mat44& mtxWorld);
 
+    //////////////////////////////////////////////////////////////////////////
+    /// INetworkSerializable
+    //////////////////////////////////////////////////////////////////////////
+    virtual void serializeCreate(NetworkStream* stream) const;
+    virtual bool deserializeCreate(NetworkStream* stream);
+    virtual void serializeRemove(NetworkStream* stream) const;
+    virtual bool deserializeRemove(NetworkStream* stream);
+
+    virtual bool isSerializeDataDirty() const;
+    virtual void serialize(net::NetworkSerializer& serializer);
+    virtual void deserialize(net::NetworkDeserializer& serializer);
+    //////////////////////////////////////////////////////////////////////////
+
 private:
+    bool m_IsSerializeDataDirty;
     mat44 m_mtxWorld;
     std::vector<IComponent*> m_Components;
 

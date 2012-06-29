@@ -24,9 +24,13 @@
 
 namespace he {
 
-void HE_INFO(const char* msg, ...);
-void HE_ERROR(const char* msg, ...);
-void HE_WARNING(const char* msg, ...);
+void heInfo(const char* msg, ...);
+void heError(const char* msg, ...);
+void heWarning(const char* msg, ...);
+
+#define HE_INFO he::heInfo
+#define HE_ERROR he::heError
+#define HE_WARNING he::heWarning
 
 } //end namespace
 

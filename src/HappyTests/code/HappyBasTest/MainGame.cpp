@@ -113,7 +113,7 @@ void MainGame::load()
     scene->addComponent(pTempPointLightComp);
     pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
     pTempPointLightComp->setMultiplier(50.0f);
-    pTempPointLightComp->setColor(Color((byte)126, 190, 255, 255));
+    pTempPointLightComp->setColor(Color((he::byte)126, 190, 255, 255));
     pTempPointLightComp->setAttenuation(0, 15);
 
     #pragma endregion

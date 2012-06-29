@@ -30,8 +30,4 @@
 #define NEW new
 #endif
 
-#include "HeAssert.h"
-#undef assert
-#define assert HE_ASSERT
-
 #endif

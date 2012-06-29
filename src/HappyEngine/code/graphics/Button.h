@@ -112,7 +112,7 @@ protected:
     std::string m_Text;
     gfx::Font* m_pFont;
 
-    event<void> m_OnClickEvent;
+    event0<void> m_OnClickEvent;
 
 private:
 

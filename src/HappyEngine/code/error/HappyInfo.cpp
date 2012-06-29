@@ -26,21 +26,21 @@
 
 namespace he {
 
-void HE_INFO( const char* msg, ...) 
+void heInfo( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
     LOG(he::tools::LogType_Info, msg, arg_list);
     va_end(arg_list);
 }
-void HE_ERROR( const char* msg, ...) 
+void heError( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
     LOG(he::tools::LogType_Error, msg, arg_list);
     va_end(arg_list);
 }
-void HE_WARNING( const char* msg, ...) 
+void heWarning( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);

@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/03/2012
-#include "HappyPongPCH.h" 
+#include "HappyPongClientPCH.h" 
 
 #include "Obstacle.h"
 
@@ -30,7 +30,7 @@
 #include "Material.h"
 #include "Game.h"
 
-namespace ht {
+namespace hpc {
 
 Obstacle::Obstacle(): 
     m_Position(0, 0, 0), 

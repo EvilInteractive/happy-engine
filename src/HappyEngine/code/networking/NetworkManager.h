@@ -23,6 +23,7 @@
 #pragma once
 
 #include "ReplicaManager3.h"
+#include "NetworkConnection.h"
 
 namespace RakNet {
     class RakPeerInterface;
@@ -30,7 +31,7 @@ namespace RakNet {
 
 namespace he {
 namespace net {
-class NetworkObjectFactory;
+class INetworkObjectFactory;
 class NetworkObjectFactoryManager;
 
 enum ConnectionType 
@@ -45,24 +46,51 @@ public:
     NetworkManager();
     virtual ~NetworkManager();
 
-    void host();
-    void join();
+    void setMaxConnections(uint8 count);
+
+    void host(ushort port = 30000);
+    void join(const std::string& ip = "localhost", ushort port = 30000);
     void disconnect();
     void tick(float dTime);
     bool isConnected() const;
 
-    NetworkObjectFactoryManager* getNetworkObjectFactoryManager() const;
+    bool IsHost() const;
+    NetworkID getNetworkId() const;
+
+    // Normal = 1 / 30s
+    // Fastplay = 1 / 60s
+    void setSyncTimeout(float seconds);
+
+    NetworkObjectFactoryManager* getNetworkObjectFactoryManager() const { return m_NetworkObjectFactoryManager; }
 
     // Internal
-    void registerFactory( NetworkObjectFactory* factory );
+    void registerFactory( INetworkObjectFactory* factory );
     virtual RakNet::Connection_RM3* AllocConnection(const RakNet::SystemAddress &systemAddress, RakNet::RakNetGUID rakNetGUID) const;
     virtual void DeallocConnection(RakNet::Connection_RM3 *connection) const;
 
+    he::event1<void, const NetworkID&> ClientConnected;
+    he::event1<void, const NetworkID&> ClientDisconnected;
+    he::event0<void> ConnectionSuccessful;
+    he::event0<void> ConnectionFailed;
+    he::event0<void> ConnectionLost;
+
 private:
-    float m_Sleep;
+    void clientConnected(const NetworkID& id, const std::string& adress);
+    void clientDisconnected(const NetworkID& id);
+
+
+    float m_Sleep, m_SleepTimout;
+
+    NetworkObjectFactoryManager* m_NetworkObjectFactoryManager;
 
     ConnectionType m_ConnectionType;
     RakNet::RakPeerInterface* m_RakPeer;
+    RakNet::NetworkIDManager* m_NetworkIdManager;
+
+    uint8 m_MaxConnections;
+
+    // Host
+    std::map<NetworkID, NetworkConnection> m_Connections;
 
     //Disable default copy constructor and default assignment operator
     NetworkManager(const NetworkManager&);

@@ -16,38 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyPongPCH.h" 
+//Created: 30/03/2012
+#include "HappyPongServerPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
-#include "ContentManager.h" 
+#include "Obstacle.h"
 
-#include "MainGame.h"
+#include "Material.h"
+#include "Game.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+namespace hps {
+
+Obstacle::Obstacle(): 
+    m_Position(0, 0, 0), 
+    m_Radius(8.0f)
 {
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    HAPPYENGINE->init(he::SubEngine_Graphics   | 
-                      he::SubEngine_Content    | 
-                      he::SubEngine_2DRenderer | 
-                      he::SubEngine_Controls   | 
-                      he::SubEngine_Networking |
-                      he::SubEngine_Audio      );
-    CONTENT->setContentDir(he::Path("../../data"));
-
-    he::ge::Game* ge(NEW ht::MainGame());
-    HAPPYENGINE->start(ge);
-    delete ge;
-
-    HAPPYENGINE->dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+    setWorldMatrix(he::mat44::createTranslation(m_Position));
 }
+
+
+Obstacle::~Obstacle()
+{
+}
+
+float Obstacle::getRadius() const
+{
+    return m_Radius;
+}
+
+const he::vec3& Obstacle::getPosition() const
+{
+    return m_Position;
+}
+
+} //end namespace

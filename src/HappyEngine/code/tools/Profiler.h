@@ -52,6 +52,8 @@ public:
     static Profiler* getInstance();
     static void dispose();
 
+    void load();
+
     void begin(const std::string& name);
     void end();
 

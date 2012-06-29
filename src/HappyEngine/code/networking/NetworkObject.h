@@ -22,17 +22,41 @@
 #define _HE_NETWORK_OBJECT_H_
 #pragma once
 
+#include "NetworkObjectBase.h"
+
 namespace he {
 namespace net {
+class NetworkSerializer;
+class NetworkDeserializer;
 
-class NetworkObject
+template<typename T>
+class NetworkObject : public details::NetworkObjectBase
 {
 public:
-    NetworkObject();
-    virtual ~NetworkObject();
+    NetworkObject() {}
+    virtual ~NetworkObject() {}
+
+    virtual void serializeCreate(NetworkStream* /*stream*/) const {}
+    virtual bool deserializeCreate(NetworkStream* /*stream*/)  { return true; }
+    virtual void serializeRemove(NetworkStream* /*stream*/) const {}
+    virtual bool deserializeRemove(NetworkStream* /*stream*/) { return true; }
+
+    virtual bool isSerializeDataDirty() const { return m_IsSerializeDataDirty; }
+    virtual void setSerializeDataDirty(bool dirty = true) { m_IsSerializeDataDirty = dirty; }
+    virtual void serialize(const NetworkSerializer& /*serializer*/) {};
+    virtual void deserialize(const NetworkDeserializer& /*serializer*/) const {};
+
+    virtual void destroyReplica()
+    {
+        NetworkObjectFactory<T>::getInstance()->destroyObject(getHandle()); // weird but raknets way of doing it
+    }
+    virtual void writeObjectID(NetworkStream* stream) const
+    {
+        stream->Write(NetworkObjectFactory<T>::getInstance()->getId());
+    }
 
 private:
-
+    bool m_IsSerializeDataDirty;
 
     //Disable default copy constructor and default assignment operator
     NetworkObject(const NetworkObject&);

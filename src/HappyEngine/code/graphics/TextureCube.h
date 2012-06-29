@@ -44,7 +44,7 @@ public:
 //
 //private:
 //    boost::mutex m_CallbackMutex;
-//    event<void> Loaded;
+//    event0<void> Loaded;
 //    
      uint m_Id;
 //

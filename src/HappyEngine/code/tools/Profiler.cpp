@@ -67,18 +67,22 @@ struct Profiler::ProfileTreeNode
     }
 };
 
-Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0)
+Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_pCanvas2D(nullptr)
+{
+}
+void Profiler::load()
 {
     //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
-
     m_pCanvas2D = GUI->createCanvas();
 }
 
 
+
 Profiler::~Profiler()
 {
-    m_pFont->release();
+    if (m_pFont != nullptr)
+        m_pFont->release();
     delete m_pCanvas2D;
 }
 

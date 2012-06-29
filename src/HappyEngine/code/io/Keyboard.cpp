@@ -84,7 +84,7 @@ void Keyboard::addOnKeyPressedListener(boost::function<void(Key)> callback) cons
     _this->m_OnKeyPressedListeners += callback;
 }
 
-eventExt<void, Key>& Keyboard::getOnKeyPressedListeners()
+event1<void, Key>& Keyboard::getOnKeyPressedListeners()
 {
     return m_OnKeyPressedListeners;
 }
@@ -94,7 +94,7 @@ void Keyboard::addOnKeyReleasedListener(boost::function<void(Key)> callback) con
     Keyboard* _this = const_cast<Keyboard*>(this);
     _this->m_OnKeyReleasedListeners += callback;
 }
-eventExt<void, Key>& Keyboard::getOnKeyReleasedListeners()
+event1<void, Key>& Keyboard::getOnKeyReleasedListeners()
 {
     return m_OnKeyReleasedListeners;
 }

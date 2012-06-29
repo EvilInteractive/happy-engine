@@ -78,7 +78,7 @@ private:
     };
 
 
-    event<void> Loaded;
+    event0<void> Loaded;
     void setLoaded();
     boost::mutex m_LoadMutex;
 

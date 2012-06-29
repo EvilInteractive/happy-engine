@@ -55,8 +55,8 @@ private:
     /* DATAMEMBERS */
     PhysicsDynamicActor* m_Actor;
 
-    event<void> m_OnTriggerEnterEvent;
-    event<void> m_OnTriggerLeaveEvent;
+    event0<void> m_OnTriggerEnterEvent;
+    event0<void> m_OnTriggerLeaveEvent;
 
     /* DEFAULT COPY & ASSIGNENT */
     PhysicsTrigger(const PhysicsTrigger&);

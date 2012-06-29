@@ -17,7 +17,7 @@
 //
 //Author:  Bastian Damman
 //Created: 30/03/2012
-#include "HappyPongPCH.h" 
+#include "HappyPongClientPCH.h" 
 
 #include "Ball.h"
 
@@ -30,13 +30,14 @@
 #include "Palet.h"
 #include "Obstacle.h"
 #include "ModelMesh.h"
+#include "NetworkSerializer.h"
 
-namespace ht {
+namespace hpc {
 
-Ball::Ball(MainGame* mainGame): 
+Ball::Ball(): 
     m_Position(0, 0, 0), 
     m_Velocity(0, 0, 0), 
-    m_MainGame(mainGame),
+    m_MainGame(static_cast<MainGame*>(GAME)),
     m_Radius(1.0f),
     m_Restitution(1.01f)
 {
@@ -88,32 +89,32 @@ Ball::~Ball()
 
 void Ball::tick( float dTime )
 {
-    m_Position += m_Velocity * dTime;
+    /*m_MoveTo += m_Velocity * dTime;
     he::vec3 normal(0, 0, 0);
     bool reflect(false);
     
-    if (m_Position.z - m_Radius < -m_MainGame->getBoardDimension().y / 2)
+    if (m_MoveTo.z - m_Radius < -m_MainGame->getBoardDimension().y / 2)
     {
-        m_Position.z = -m_MainGame->getBoardDimension().y / 2 + m_Radius;
+        m_MoveTo.z = -m_MainGame->getBoardDimension().y / 2 + m_Radius;
         normal += he::vec3(0, 0, 1);
         reflect = true;
     }
-    else if (m_Position.z + m_Radius > m_MainGame->getBoardDimension().y / 2)
+    else if (m_MoveTo.z + m_Radius > m_MainGame->getBoardDimension().y / 2)
     {
-        m_Position.z = m_MainGame->getBoardDimension().y / 2 - m_Radius;
+        m_MoveTo.z = m_MainGame->getBoardDimension().y / 2 - m_Radius;
         normal += he::vec3(0, 0, -1);
         reflect = true;
     }
 
     if (m_Dead == false)
     {
-        if (m_Position.x - m_Radius < -m_MainGame->getBoardDimension().x / 2)
+        if (m_MoveTo.x - m_Radius < -m_MainGame->getBoardDimension().x / 2)
         {
             m_MainGame->addPoint(0);
             m_MainGame->restart(true);
             m_Dead = true;
         }
-        else if (m_Position.x + m_Radius > m_MainGame->getBoardDimension().x / 2)
+        else if (m_MoveTo.x + m_Radius > m_MainGame->getBoardDimension().x / 2)
         {
             m_MainGame->addPoint(1);
             m_MainGame->restart(true);
@@ -124,20 +125,20 @@ void Ball::tick( float dTime )
 
     std::for_each(m_MainGame->getPalets().cbegin(), m_MainGame->getPalets().cend(), [&](Palet* palet)
     {
-        if (m_Position.z + m_Radius > palet->getPosition().z - palet->getDimension().y / 2 &&
-            m_Position.z - m_Radius < palet->getPosition().z + palet->getDimension().y / 2)
+        if (m_MoveTo.z + m_Radius > palet->getPosition().z - palet->getDimension().y / 2 &&
+            m_MoveTo.z - m_Radius < palet->getPosition().z + palet->getDimension().y / 2)
         {
-            if (m_Position.x + m_Radius > palet->getPosition().x - palet->getDimension().x / 2 && 
-                m_Position.x - m_Radius < palet->getPosition().x + palet->getDimension().x / 2)
+            if (m_MoveTo.x + m_Radius > palet->getPosition().x - palet->getDimension().x / 2 && 
+                m_MoveTo.x - m_Radius < palet->getPosition().x + palet->getDimension().x / 2)
             {
                 if (m_Velocity.x < 0)
                 {
-                    m_Position.x = palet->getPosition().x + palet->getDimension().x / 2 + m_Radius;
+                    m_MoveTo.x = palet->getPosition().x + palet->getDimension().x / 2 + m_Radius;
                     normal += he::vec3(1, 0, 0);
                 }
                 else
                 {
-                    m_Position.x = palet->getPosition().x - palet->getDimension().x / 2 - m_Radius;
+                    m_MoveTo.x = palet->getPosition().x - palet->getDimension().x / 2 - m_Radius;
                     normal += he::vec3(-1, 0, 0);
                 }
                 reflect = true;
@@ -148,11 +149,11 @@ void Ball::tick( float dTime )
 
     std::for_each(m_MainGame->getObstacles().cbegin(), m_MainGame->getObstacles().cend(), [&](const Obstacle* obstacle)
     {
-        if (he::lengthSqr(m_Position - obstacle->getPosition()) < he::sqr(m_Radius + obstacle->getRadius()))
+        if (he::lengthSqr(m_MoveTo - obstacle->getPosition()) < he::sqr(m_Radius + obstacle->getRadius()))
         {
             reflect = true;
-            normal += he::normalize(m_Position - obstacle->getPosition());
-            m_Position = obstacle->getPosition() + normal * (m_Radius + obstacle->getRadius());
+            normal += he::normalize(m_MoveTo - obstacle->getPosition());
+            m_MoveTo = obstacle->getPosition() + normal * (m_Radius + obstacle->getRadius());
         }
     });
 
@@ -161,9 +162,10 @@ void Ball::tick( float dTime )
     {
         m_Velocity = he::reflect(-m_Velocity, he::normalize(normal)) * m_Restitution;
         m_LightFlashComponent->flash();
-
-    }
-    setWorldMatrix(he::mat44::createTranslation(m_Position));
+        }*/
+    //float speed(length(m_Velocity));
+    m_MoveTo += m_Velocity * dTime;
+    setWorldMatrix(he::mat44::createTranslation(m_MoveTo));
 }
 
 const he::vec3& Ball::getPosition() const
@@ -179,6 +181,40 @@ const he::vec3& Ball::getVelocity() const
 float Ball::getRadius() const
 {
     return m_Radius;
+}
+
+void Ball::serializeCreate( he::NetworkStream* /*stream*/ ) const
+{
+    HE_ASSERT(false, "will never happen");
+}
+
+bool Ball::deserializeCreate( he::NetworkStream* stream )
+{
+    stream->Read(m_MoveTo);
+    stream->Read(m_Velocity);
+    m_Position = m_MoveTo;
+    return Entity::deserializeCreate(stream);
+}
+
+void Ball::serializeRemove( he::NetworkStream* /*stream*/ ) const
+{
+
+}
+
+bool Ball::deserializeRemove( he::NetworkStream* stream )
+{
+    return Entity::deserializeRemove(stream);
+}
+
+void Ball::serialize( he::net::NetworkSerializer& /*serializer*/ )
+{
+    HE_ASSERT(false, "will never happen");
+}
+
+void Ball::deserialize( he::net::NetworkDeserializer& serializer )
+{
+    serializer.deserializeVariable(m_MoveTo);
+    serializer.deserializeVariable(m_Velocity);
 }
 
 } //end namespace

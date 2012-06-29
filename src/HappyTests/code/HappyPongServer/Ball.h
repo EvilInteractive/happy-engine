@@ -18,53 +18,64 @@
 //Author:  Bastian Damman
 //Created: 30/03/2012
 
-#ifndef _HT_Palet_H_
-#define _HT_Palet_H_
+#ifndef _HPS_BALL_H_
+#define _HPS_BALL_H_
 #pragma once
 
 #include "Entity.h"
 #include "ITickable.h"
+#include "Random.h"
+#include "NetworkObject.h"
 
-namespace ht {
-class LightFlashComponent;
+
+namespace hps {
 class MainGame;
-class Palet : public he::ge::Entity, public he::ge::ITickable
+class LightFlashComponent;
+class Ball : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Ball>
 {
 public:
-    Palet(const MainGame* ge, he::byte player, bool ai);
-    virtual ~Palet();
+    Ball();
+    virtual ~Ball();
 
-    //////////////////////////////////////////////////////////////////////////
-    // he::ge::ITickable
-    //////////////////////////////////////////////////////////////////////////
     virtual void tick(float dTime);
 
-    //////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////
-    const he::vec2& getDimension() const;
+    void reset();
     const he::vec3& getPosition() const;
+    const he::vec3& getVelocity() const;
+    float getRadius() const;
 
-    void hitByBall();
-    void addPoint();
+    //////////////////////////////////////////////////////////////////////////
+    /// INetworkSerializable
+    //////////////////////////////////////////////////////////////////////////
+    virtual void serializeCreate(he::NetworkStream* stream) const;
+    virtual bool deserializeCreate(he::NetworkStream* stream);
+    virtual void serializeRemove(he::NetworkStream* stream) const;
+    virtual bool deserializeRemove(he::NetworkStream* stream);
+
+    virtual void serialize(he::net::NetworkSerializer& serializer);
+    virtual void deserialize(he::net::NetworkDeserializer& serializer);
+    //////////////////////////////////////////////////////////////////////////
 
 private:
-    he::vec3 m_Position;
-    float m_Speed;
 
-    const he::vec2 m_PaletDim;
+    he::vec3 m_Velocity;
+    he::vec3 m_Position;
+
+    float m_Restitution;
+
+    const float m_Radius;
+
+    MainGame* m_MainGame;
 
     LightFlashComponent* m_LightFlashComponent;
-    LightFlashComponent* m_LightFlashAddPointComponent;
 
-    he::byte m_Player;
-    bool m_Ai;
+    bool m_Dead;
 
-    const MainGame* m_Game;
+    he::Random m_Random;
 
     //Disable default copy constructor and default assignment operator
-    Palet(const Palet&);
-    Palet& operator=(const Palet&);
+    Ball(const Ball&);
+    Ball& operator=(const Ball&);
 };
 
 } //end namespace

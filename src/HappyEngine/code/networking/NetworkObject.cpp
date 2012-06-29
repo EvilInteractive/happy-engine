@@ -26,14 +26,5 @@
 namespace he {
 namespace net {
 
-NetworkObject::NetworkObject()
-{
-
-}
-
-
-NetworkObject::~NetworkObject()
-{
-}
 
 } } //end namespace

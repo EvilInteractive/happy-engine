@@ -125,32 +125,32 @@ MessageBoxButton MessageBox::show(const std::string& caption, const std::string&
     window.setActive();
     while (window.isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
+        sf::Event event0;
+        while (window.pollEvent(event0))
         {
-            if (event.type == sf::Event::Closed)
+            if (event0.type == sf::Event::Closed)
             {
                 window.close();
                 result = MessageBoxButton_Escape;
                 break;
             }
-            else if (event.type == sf::Event::KeyPressed)
+            else if (event0.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::Escape)
+                if (event0.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
                     result = MessageBoxButton_Escape;
                     break;
                 }
             }
-            else if (event.type == sf::Event::MouseButtonPressed)
+            else if (event0.type == sf::Event::MouseButtonPressed)
             {
-                if (event.key.code == sf::Mouse::Left)
+                if (event0.key.code == sf::Mouse::Left)
                 {
                     for (byte i(0); i < buttonCount; ++i)
                     {
-                        int x(event.mouseButton.x);
-                        int y(event.mouseButton.y);
+                        int x(event0.mouseButton.x);
+                        int y(event0.mouseButton.y);
                         sf::FloatRect rect(buttonRect[i].getGlobalBounds());
                         if (x > rect.left && x < rect.left + rect.width &&
                             y > rect.top && y < rect.top + rect.height)
@@ -167,12 +167,12 @@ MessageBoxButton MessageBox::show(const std::string& caption, const std::string&
                     }
                 }
             }
-            else if (event.type == sf::Event::MouseMoved)
+            else if (event0.type == sf::Event::MouseMoved)
             {
                 for (byte i(0); i < buttonCount; ++i)
                 {
-                    int x(event.mouseMove.x);
-                    int y(event.mouseMove.y);
+                    int x(event0.mouseMove.x);
+                    int y(event0.mouseMove.y);
                     sf::FloatRect rect(buttonRect[i].getGlobalBounds());
                     if (x > rect.left && x < rect.left + rect.width &&
                         y > rect.top && y < rect.top + rect.height)
@@ -196,7 +196,8 @@ MessageBoxButton MessageBox::show(const std::string& caption, const std::string&
         window.display();
     }
     window.setActive(false);
-    GRAPHICS->getWindow()->setActive(true);
+    if (GRAPHICS != nullptr && GRAPHICS->getWindow() != nullptr)
+        GRAPHICS->getWindow()->setActive(true);
 
     return result;
 }

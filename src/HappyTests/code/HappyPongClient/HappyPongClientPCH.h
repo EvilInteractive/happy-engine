@@ -16,42 +16,14 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 31/03/2012
+//Created: 20/03/2012
 
-#ifndef _HT_LightFlashComponent_H_
-#define _HT_LightFlashComponent_H_
+#ifndef _HPC_HappyTestsPCH_H_
+#define _HPC_HappyTestsPCH_H_
 #pragma once
 
-#include "LightComponent.h"
+#pragma message("HappyTests: Compiling precompiled headers.")
 
-namespace ht {
-
-class LightFlashComponent : public he::ge::PointLightComponent
-{
-public:
-    LightFlashComponent();
-    virtual ~LightFlashComponent();
-
-    virtual void tick(float dTime);
-
-    virtual void setFlashMultiplier(float mult);
-    virtual void setNormalMultiplier(float mult);
-    virtual void setFlashDuration(float duration);
-
-    virtual void flash();
-
-private:
-
-    float m_LightFlashMult;
-    float m_LightNormalMult;
-    float m_LightAnimSpeed;
-    float m_LightAnim;
-
-    //Disable default copy constructor and default assignment operator
-    LightFlashComponent(const LightFlashComponent&);
-    LightFlashComponent& operator=(const LightFlashComponent&);
-};
-
-} //end namespace
+#include "HappyPCH.h"
 
 #endif

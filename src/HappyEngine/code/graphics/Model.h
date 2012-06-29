@@ -62,7 +62,7 @@ public:
 
 private:
 
-    event<void> m_LoadedCallback;
+    event0<void> m_LoadedCallback;
     boost::mutex m_LoadedMutex;
 
     std::vector<ModelMesh*> m_Meshes;

@@ -37,6 +37,7 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
 
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
+    GAME->removeFromTickList(this);
     delete m_pDynamicActor;
 }
 

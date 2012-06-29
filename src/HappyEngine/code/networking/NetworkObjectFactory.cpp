@@ -21,20 +21,7 @@
 
 #include "NetworkObjectFactory.h"
 
-#include "RakPeer.h"
-
 namespace he {
 namespace net {
-
-NetworkObjectFactory::NetworkObjectFactory()
-{
-
-}
-
-
-NetworkObjectFactory::~NetworkObjectFactory()
-{
-}
-
 
 } } //end namespace

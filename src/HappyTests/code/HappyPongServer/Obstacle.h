@@ -16,14 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
+//Created: 30/03/2012
 
-#ifndef _HT_HappyTestsPCH_H_
-#define _HT_HappyTestsPCH_H_
+#ifndef _HPS_Obstacle_H_
+#define _HPS_Obstacle_H_
 #pragma once
 
-#pragma message("HappyTests: Compiling precompiled headers.")
+#include "Entity.h"
+#include "NetworkObject.h"
 
-#include "HappyPCH.h"
+namespace hps {
+
+class Obstacle : public he::ge::Entity//, public he::net::NetworkObject<Obstacle>
+{
+public:
+    Obstacle();
+    virtual ~Obstacle();
+    
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    float getRadius() const;
+    const he::vec3& getPosition() const;
+
+
+private:
+    he::vec3 m_Position;
+    float m_Radius;
+
+    //Disable default copy constructor and default assignment operator
+    Obstacle(const Obstacle&);
+    Obstacle& operator=(const Obstacle&);
+};
+
+} //end namespace
 
 #endif

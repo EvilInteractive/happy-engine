@@ -26,47 +26,53 @@
 #include "MessageIdentifiers.h"
 #include "NetworkObjectFactoryManager.h"
 #include "NetworkReplicaConnection.h"
-
-#define RAK_SLEEP 1 / 30.0f
-#define SERVER_PORT 30000
-#define SERVER_IP "localhost"
-#define MAX_CONNECTIONS 16
+#include "NetworkIdManager.h"
 
 namespace he {
 namespace net {
 
-NetworkManager::NetworkManager(): m_RakPeer(nullptr), m_Sleep(0.0f), m_ConnectionType(ConnectionType_Client)
+NetworkManager::NetworkManager()
+    : m_RakPeer(nullptr)
+    , m_Sleep(0.0f)
+    , m_ConnectionType(ConnectionType_Client)
+    , m_NetworkObjectFactoryManager(NEW NetworkObjectFactoryManager())
+    , m_MaxConnections(8)
+    , m_NetworkIdManager(NEW RakNet::NetworkIDManager())
+    , m_SleepTimout(1 / 30.0f)
 {
+    SetNetworkIDManager(m_NetworkIdManager);
 }
 
 
 NetworkManager::~NetworkManager()
 {
+    delete m_NetworkObjectFactoryManager;
+    delete m_NetworkIdManager;
     bool isConnected(isConnected());
-    HE_ASSERT(isConnected == false, "Net: Disconnect before quiting!");
     if (isConnected == true)
         disconnect();
 }
 
-void NetworkManager::host()
+void NetworkManager::host(ushort port)
 {
     HE_IF_ASSERT(m_RakPeer == nullptr, "Call host or join only once! Or call disconnect first!")
     {
         RakNet::SocketDescriptor sd;
         sd.socketFamily = AF_INET; //ipv4
-        sd.port = SERVER_PORT;
+        sd.port = port;
 
         m_RakPeer = RakNet::RakPeerInterface::GetInstance();
 
-        m_RakPeer->Startup(MAX_CONNECTIONS, &sd, 1);
-        m_RakPeer->SetMaximumIncomingConnections(32);
-        HE_INFO("Net: Starting server @ %s:%d...", SERVER_IP, SERVER_PORT);
+        m_RakPeer->Startup(m_MaxConnections, &sd, 1);
+        m_RakPeer->SetMaximumIncomingConnections(m_MaxConnections);
+        m_RakPeer->AttachPlugin(this);
+        HE_INFO("Net: Starting server @ %s:%d...", "localhost", port);
 
         m_ConnectionType = ConnectionType_Host;
     }
 }
 
-void NetworkManager::join()
+void NetworkManager::join(const std::string& ip, ushort port)
 {
     HE_IF_ASSERT(m_RakPeer == nullptr, "Call host or join only once! Or call disconnect first!")
     {
@@ -76,10 +82,11 @@ void NetworkManager::join()
 
         m_RakPeer = RakNet::RakPeerInterface::GetInstance();
 
-        m_RakPeer->Startup(MAX_CONNECTIONS, &sd, 1);
-        m_RakPeer->SetMaximumIncomingConnections(32);
-        m_RakPeer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
-        HE_INFO("Net: Connecting to %s:%d...", SERVER_IP, SERVER_PORT);
+        m_RakPeer->Startup(m_MaxConnections, &sd, 1);
+        m_RakPeer->SetMaximumIncomingConnections(m_MaxConnections);
+        m_RakPeer->Connect(ip.c_str(), port, 0, 0);
+        m_RakPeer->AttachPlugin(this);
+        HE_INFO("Net: Connecting to %s:%d...", ip.c_str(), port);
 
         m_ConnectionType = ConnectionType_Client;
     }
@@ -95,13 +102,26 @@ void NetworkManager::disconnect()
         HE_INFO("Net: disconnected");
     }
 }
+void NetworkManager::clientDisconnected( const NetworkID& id )
+{
+    m_Connections.erase(id);
+    ClientDisconnected(id);
+}
+void NetworkManager::clientConnected( const NetworkID& id, const std::string& adress )
+{
+    NetworkConnection connection;
+    connection.m_NetworkId = id;
+    connection.m_SystemAdress = adress;
+    m_Connections[id] = connection;
+    ClientConnected(id);
+}
 
 void NetworkManager::tick( float dTime )
 {
     if (m_RakPeer == nullptr)
         return;
     m_Sleep += dTime;
-    if (m_Sleep > RAK_SLEEP)
+    if (m_Sleep > m_SleepTimout)
     {
         m_Sleep = 0.0f; // don't care if m_Sleep is x * RAK_SLEEP
 
@@ -110,36 +130,43 @@ void NetworkManager::tick( float dTime )
         {
             switch (packet->data[0])
             {
-            case ID_CONNECTION_ATTEMPT_FAILED:
+            case ID_CONNECTION_ATTEMPT_FAILED: // client
                 HE_WARNING("Net: Connection attempt failed!");
                 disconnect();
+                ConnectionFailed();
                 return;
                 break;
-            case ID_NO_FREE_INCOMING_CONNECTIONS:
+            case ID_NO_FREE_INCOMING_CONNECTIONS: // client
                 HE_WARNING("Net: Connection failed, no free incoming connections!");
                 disconnect();
+                ConnectionFailed();
                 return;
                 break;
-            case ID_CONNECTION_REQUEST_ACCEPTED:
+            case ID_CONNECTION_REQUEST_ACCEPTED: // client
                 HE_INFO("Net: Connection accepted!");
+                ConnectionSuccessful();
                 break;
-            case ID_NEW_INCOMING_CONNECTION:
+            case ID_NEW_INCOMING_CONNECTION: // server
                 HE_INFO("Net: new connection from %s", packet->systemAddress.ToString());
+                clientConnected(packet->guid, packet->systemAddress.ToString());
                 break;
             case ID_DISCONNECTION_NOTIFICATION:
-                if (m_ConnectionType == ConnectionType_Host)
+                if (m_ConnectionType == ConnectionType_Host) // server
                 {
                     HE_INFO("Net: client disconnected: %s", packet->systemAddress.ToString());
+                    clientDisconnected(packet->guid);
                 }
-                else
+                else // client
                 {
                     HE_INFO("Net: Server has been shutdown");
                     disconnect();
+                    ConnectionLost();
                     return;
                 }
                 break;
-            case ID_CONNECTION_LOST:
+            case ID_CONNECTION_LOST: // server
                 HE_INFO("Net: client connection lost: %s", packet->systemAddress.ToString());
+                clientDisconnected(packet->guid);
                 break;
             case ID_ADVERTISE_SYSTEM:
                 if (m_RakPeer->GetSystemAddressFromGuid(packet->guid) == RakNet::UNASSIGNED_SYSTEM_ADDRESS && // Check if not already connected
@@ -182,6 +209,34 @@ RakNet::Connection_RM3* NetworkManager::AllocConnection( const RakNet::SystemAdd
 void NetworkManager::DeallocConnection( RakNet::Connection_RM3 *connection ) const
 {
     delete connection;
+}
+
+bool NetworkManager::IsHost() const
+{
+    return m_ConnectionType == ConnectionType_Host;
+}
+
+NetworkID NetworkManager::getNetworkId() const
+{
+    if (m_RakPeer != nullptr)
+        return m_RakPeer->GetMyGUID();
+    else
+        return UNASSIGNED_NETWORKID;
+}
+
+void NetworkManager::setMaxConnections( uint8 count )
+{
+    m_MaxConnections = count;
+}
+
+void NetworkManager::registerFactory( INetworkObjectFactory* factory )
+{
+    m_NetworkObjectFactoryManager->registerFactory(factory);
+}
+
+void NetworkManager::setSyncTimeout( float seconds )
+{
+    m_SleepTimout = seconds;
 }
 
 

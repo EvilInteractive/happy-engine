@@ -18,11 +18,12 @@
 //Author:  Bastian Damman
 //Created: 30/03/2012
 
-#ifndef _HT_MainGame_H_
-#define _HT_MainGame_H_
+#ifndef _HPC_MainGame_H_
+#define _HPC_MainGame_H_
 #pragma once
 
 #include "Game.h"
+#include "Singleton.h"
 
 namespace he {
     namespace tools {
@@ -33,11 +34,11 @@ namespace he {
     }
 }
 
-namespace ht {
+namespace hpc {
 class Palet;
 class Obstacle;
 class Ball;
-class MainGame : public he::ge::Game
+class MainGame : public he::ge::Game, public he::Singleton<MainGame>
 {
 public:
     MainGame();
@@ -57,6 +58,10 @@ public:
     void restart(bool timeout);
 
 private:
+    void connectionSuccessful();
+    void connectionFailed();
+    void connectionLost();
+
     float m_RestartTime;
     float m_RestartTimer;
 

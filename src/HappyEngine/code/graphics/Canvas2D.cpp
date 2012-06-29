@@ -67,7 +67,7 @@ Canvas2D::Data* Canvas2D::create(const vec2& size)
 
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        he::HE_ERROR("Failed to create FrameBuffer Canvas2D!");
+        HE_ERROR("Failed to create FrameBuffer Canvas2D!");
         ResourceFactory<gfx::Texture2D>::getInstance()->release(pData->renderTextureHnd);
         delete pData;
         return nullptr;

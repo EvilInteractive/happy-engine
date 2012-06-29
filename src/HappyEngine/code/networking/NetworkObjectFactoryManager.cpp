@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "NetworkObjectFactoryManager.h"
+#include "NetworkObjectFactory.h"
 
 namespace he {
 namespace net {
@@ -32,6 +33,24 @@ NetworkObjectFactoryManager::NetworkObjectFactoryManager()
 
 NetworkObjectFactoryManager::~NetworkObjectFactoryManager()
 {
+}
+
+void NetworkObjectFactoryManager::registerFactory( INetworkObjectFactory* factory )
+{
+    HE_IF_ASSERT(factory->getId() == NetworkObjectID::unassigned, "factory already registered!")
+    {
+        factory->setId(static_cast<uint16>(m_Factories.size()));
+        m_Factories.push_back(factory);
+    }
+}
+
+details::NetworkObjectBase* NetworkObjectFactoryManager::createObject( const NetworkObjectID& id )
+{
+    HE_IF_ASSERT(id.id < m_Factories.size(), "Invalid network ID!")
+    {
+        return m_Factories[id.id]->createReplica();
+    }
+    return nullptr;
 }
 
 

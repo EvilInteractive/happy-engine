@@ -66,6 +66,9 @@
 #include "mat33.h"
 #include "Color.h"
 
+#include "Logger.h"
+#include "HappyInfo.h"
+
 #include "HeAssert.h"
 #include "ExternalError.h"
 #include "HappyMemory.h"
@@ -83,7 +86,8 @@
 #include "HappyEngine.h"
 #include "Console.h"
 
-#include "Logger.h"
-#include "HappyInfo.h"
+
+#undef near
+#undef far
 
 #endif

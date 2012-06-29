@@ -43,9 +43,9 @@ public:
     virtual bool isKeyReleased(KeyScanCode code) const = 0;
 
     virtual void addOnKeyPressedListener(boost::function<void(Key)> callback) const = 0;
-    virtual eventExt<void, Key>& getOnKeyPressedListeners() = 0;
+    virtual event1<void, Key>& getOnKeyPressedListeners() = 0;
     virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const = 0;
-    virtual eventExt<void, Key>& getOnKeyReleasedListeners() = 0;
+    virtual event1<void, Key>& getOnKeyReleasedListeners() = 0;
 
     virtual const std::vector<char>& getTextEntered() const = 0;
 };

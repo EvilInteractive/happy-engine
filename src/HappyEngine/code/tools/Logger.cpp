@@ -88,8 +88,11 @@ void Logger::log( LogType type, const char* str, const va_list& argList )
 
     std::ofstream output;
     output.open("log.log", std::ios_base::app);
-    output << typeString << ": " << buff << "\n";
-    output.close();
+    if (output.is_open())
+    {
+        output << typeString << ": " << buff << "\n";
+        output.close();
+    }
 
     std::cout << typeString << ": " << buff << "\n";
     if (HAPPYENGINE != nullptr && CONSOLE != nullptr) 

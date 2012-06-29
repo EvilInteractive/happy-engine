@@ -134,6 +134,10 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
         m_pContentManager = NEW ct::ContentManager();
     }
+    else
+    {
+        m_bGameLoading = false;
+    }
     
     if (subengines & SubEngine_Controls)
     {
@@ -206,15 +210,21 @@ void HappyEngine::start(ge::Game* pGame)
 
         m_pConsole->load();
         CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
+
+        PROFILER->load();
+
+        m_pLoadingScreen = NEW tools::LoadingScreen();
     }
 
     //if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 
-    m_pLoadingScreen = NEW tools::LoadingScreen();
 
     m_pGame->load();
-
-    m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
+    
+    if (m_SubEngines & SubEngine_Audio)
+    {
+        m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
+    }
 
     //boost::timer t;
     m_PrevTime = boost::chrono::high_resolution_clock::now();
@@ -239,26 +249,33 @@ void HappyEngine::loop()
     {
         drawLoop();
     }
+    else
+    {
+        boost::this_thread::sleep(boost::posix_time::millisec(5));
+    }
 }
 void HappyEngine::updateLoop(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     
     PROFILER_BEGIN("SFML poll events");
-    sf::Event event;
+    sf::Event event0;
     m_Events.clear();
 
-    while (m_pMainWindow->pollEvent(event))
+    if (m_pMainWindow != nullptr)
     {
-        switch (event.type)
+        while (m_pMainWindow->pollEvent(event0))
         {
-            case sf::Event::Closed:
-                m_Quit = true;
-                break;
-        }
+            switch (event0.type)
+            {
+                case sf::Event::Closed:
+                    m_Quit = true;
+                    break;
+            }
 
-        // needed for checking events in other places in program
-        m_Events.push_back(event);
+            // needed for checking events in other places in program
+            m_Events.push_back(event0);
+    }
     }
     PROFILER_END();
 
@@ -279,12 +296,14 @@ void HappyEngine::updateLoop(float dTime)
 
     m_pGame->tick(dTime);
 
-    GUI->tick();
+    if (m_SubEngines & SubEngine_Graphics)
+    {
+        GUI->tick();
+        CONSOLE->tick();
+        if (CONTENT->isLoading() == false && m_bGameLoading == true)
+            m_bGameLoading = false;
+    }
 
-    CONSOLE->tick();
-
-    if (CONTENT->isLoading() == false && m_bGameLoading == true)
-        m_bGameLoading = false;
 }
 void HappyEngine::drawLoop()
 {

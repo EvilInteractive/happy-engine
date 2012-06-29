@@ -20,7 +20,7 @@
 #include "HappyPCH.h"
 
 #include "HeAssert.h"
-#include <iostream>
+#include "MessageBox.h"
 
 #pragma warning(disable:4127)
 namespace he {
@@ -33,20 +33,32 @@ bool happyAssert(bool isOk, const char* file, const char* func, int line, const 
     
     LOG(tools::LogType_ProgrammerAssert, "**ASSERTION FAILURE!**");
     LOG(tools::LogType_ProgrammerAssert, "assert in function %s", func);
-    LOG(tools::LogType_ProgrammerAssert, "from file %s on line %d", file, line);
+    LOG(tools::LogType_ProgrammerAssert, "", file, line);
 
 
-    va_list arg_list;
-    va_start(arg_list, message);
-    LOG(tools::LogType_ProgrammerAssert, message, arg_list);
-    va_end(arg_list);
+    va_list argList;
+    va_start(argList, message);
+    char buff[1024];
+    memset(buff, 0, 1024);
+    vsnprintf(buff, 1024, message, argList);
+    LOG(tools::LogType_ProgrammerAssert, message, argList);
+    va_end(argList);
+
+    char infoText[1000];
+    sprintf(infoText, "    **ASSERTION FAILURE!**\n"
+                      "assert in function %s\n"
+                      "in file %s on line %d\n", func, file, line);
     
-    // TODO : Messagebox
-    #ifndef GCC
-    __debugbreak();
-    #else
-    __builtin_trap();
-    #endif
+    if (MessageBox::show("Assert!", 
+        std::string(infoText) + buff, 
+        "-  Debug  -", "-  Skip  -") == MessageBoxButton_Button1)
+    {
+        #ifndef GCC
+        __debugbreak();
+        #else
+        __builtin_trap();
+        #endif
+    }
     
     return false;
 }

@@ -91,9 +91,9 @@ public:
         instantiate(handle);
         return handle;
     }
-    virtual ObjectHandle create(T* obj)
+    virtual ObjectHandle registerObject(T* obj)
     {
-        ObjectHandle handle(ObjectFactory<T>::create(obj));
+        ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
         get(handle)->setHandle(handle);
         instantiate(handle);
         return handle;

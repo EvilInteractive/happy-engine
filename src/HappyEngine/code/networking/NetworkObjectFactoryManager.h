@@ -22,10 +22,12 @@
 #define _HE_NETWORK_OBJECT_FACTORY_MANAGER_H_
 #pragma once
 
-#include "ReplicaManager3.h"
-
 namespace he {
 namespace net {
+namespace details {
+class NetworkObjectBase;
+}
+class INetworkObjectFactory;
 
 class NetworkObjectFactoryManager
 {
@@ -33,9 +35,11 @@ public:
     NetworkObjectFactoryManager();
     virtual ~NetworkObjectFactoryManager();
 
+    void registerFactory(INetworkObjectFactory* factory);
+    details::NetworkObjectBase* createObject(const NetworkObjectID& id);
 
 private:
-
+    std::vector<INetworkObjectFactory*> m_Factories;
 
     //Disable default copy constructor and default assignment operator
     NetworkObjectFactoryManager(const NetworkObjectFactoryManager&);

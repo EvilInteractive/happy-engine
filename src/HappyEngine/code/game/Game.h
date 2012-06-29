@@ -44,18 +44,6 @@ public:
 
     virtual void tick(float dTime)
     {
-        std::for_each(m_TickList.cbegin(), m_TickList.cend(), [&dTime](ITickable* pObj)
-        {
-            pObj->tick(dTime);
-        });
-        if (m_NewTickList.size() > 0)
-        {
-            std::for_each(m_NewTickList.cbegin(), m_NewTickList.cend(), [&](ITickable* pObj)
-            {
-                m_TickList.push_back(pObj);
-            });
-            m_NewTickList.clear();
-        }
         if (m_RemoveTickList.size() > 0)
         {
             std::for_each(m_RemoveTickList.cbegin(), m_RemoveTickList.cend(), [&](ITickable* pObj)
@@ -64,6 +52,18 @@ public:
             });
             m_RemoveTickList.clear();
         }
+        if (m_NewTickList.size() > 0)
+        {
+            std::for_each(m_NewTickList.cbegin(), m_NewTickList.cend(), [&](ITickable* pObj)
+            {
+                m_TickList.push_back(pObj);
+            });
+            m_NewTickList.clear();
+        }
+        std::for_each(m_TickList.cbegin(), m_TickList.cend(), [&dTime](ITickable* pObj)
+        {
+            pObj->tick(dTime);
+        });
     }
     virtual void addToTickList(ITickable* pObj)
     {

@@ -22,6 +22,7 @@
 #include "NetworkReplicaConnection.h"
 #include "NetworkManager.h"
 #include "NetworkObjectFactoryManager.h"
+#include "NetworkObjectBase.h"
 
 namespace he {
 namespace net {
@@ -41,8 +42,7 @@ RakNet::Replica3* NetworkReplicaConnection::AllocReplica( RakNet::BitStream* all
     NetworkObjectID id(0);
     allocationId->Read<NetworkObjectID>(id);
 
-    //return NETWORK->getNetworkObjectFactoryManager()->create(id);
-    return nullptr;
+    return NETWORK->getNetworkObjectFactoryManager()->createObject(id);
 }
 
 } } //end namespace

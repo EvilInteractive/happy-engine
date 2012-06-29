@@ -45,13 +45,13 @@ public:
     virtual vec2 getMove() const;
 
     virtual void addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const;
-    virtual eventExt<void, MouseButton>& getOnButtonPressedListeners();
+    virtual event1<void, MouseButton>& getOnButtonPressedListeners();
     virtual void addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const;
-    virtual eventExt<void, MouseButton>& getOnButtonReleasedListeners();
+    virtual event1<void, MouseButton>& getOnButtonReleasedListeners();
     virtual void addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const;
-    virtual eventExt<void, const vec2&>& getOnMouseMovedListeners();
+    virtual event1<void, const vec2&>& getOnMouseMovedListeners();
     virtual void addOnMouseWheelMovedListener(boost::function<void(int)> callback) const;
-    virtual eventExt<void, int>& getOnMouseWheelMovedListeners();
+    virtual event1<void, int>& getOnMouseWheelMovedListeners();
 
 private:
 
@@ -63,10 +63,10 @@ private:
 
     int m_Scroll;
 
-    eventExt<void,MouseButton> m_OnButtonPressedListeners;
-    eventExt<void,MouseButton> m_OnButtonReleasedListeners;
-    eventExt<void,const vec2&> m_OnMouseMovedListeners;
-    eventExt<void,int> m_OnMouseWheelMovedListeners;
+    event1<void,MouseButton> m_OnButtonPressedListeners;
+    event1<void,MouseButton> m_OnButtonReleasedListeners;
+    event1<void,const vec2&> m_OnMouseMovedListeners;
+    event1<void,int> m_OnMouseWheelMovedListeners;
 
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);

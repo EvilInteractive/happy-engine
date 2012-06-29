@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -16,7 +16,26 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 20/03/2012
-#include "HappyPongPCH.h" 
+//Created: 23/06/2012
 
+#ifndef _HE_NetworkConnection_H_
+#define _HE_NetworkConnection_H_
+#pragma once
 
+namespace he {
+namespace net {
+
+struct NetworkConnection
+{
+public:
+    NetworkConnection() {}
+    ~NetworkConnection() {}
+    // copy and assignment: OK
+
+    NetworkID m_NetworkId;
+    std::string m_SystemAdress;
+};
+
+} } //end namespace
+
+#endif

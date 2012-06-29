@@ -129,7 +129,7 @@ private:
     GLenum getInternalWrapType(WrapType type);
 
     boost::mutex m_CallbackMutex;
-    event<void> Loaded;
+    event0<void> Loaded;
 
     uint m_Width, m_Height;
 

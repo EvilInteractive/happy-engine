@@ -22,17 +22,87 @@
 #define _HE_NETWORK_OBJECT_FACTORY_H_
 #pragma once
 
+#include "ObjectFactory.h"
+#include "Singleton.h"
+#include "NetworkManager.h"
+#include "NetworkObjectBase.h"
+
 namespace he {
 namespace net {
+namespace details {
+class NetworkObjectBase;
+}
 
-class NetworkObjectFactory
+class INetworkObjectFactory
 {
 public:
-    NetworkObjectFactory();
-    virtual ~NetworkObjectFactory();
+    virtual ~INetworkObjectFactory() {}
 
+    virtual const NetworkObjectID& getId() const = 0;
+    virtual void setId(const NetworkObjectID& id) = 0;
+
+    // internal
+    virtual details::NetworkObjectBase* createReplica() = 0;
+};
+
+// T inherits NetworkObjectBase
+template<typename T>
+class NetworkObjectFactory : public ObjectFactory<T>, public INetworkObjectFactory, public Singleton<NetworkObjectFactory<T>>
+{
+public:
+    NetworkObjectFactory()
+    {
+        NETWORK->registerFactory(this);
+    }
+    virtual ~NetworkObjectFactory() {}
+
+    //////////////////////////////////////////////////////////////////////////
+    // ObjectFactory
+    //////////////////////////////////////////////////////////////////////////
+    virtual ObjectHandle create()
+    {
+        ObjectHandle handle(ObjectFactory<T>::create());
+        details::NetworkObjectBase* obj(get(handle));
+        obj->setHandle(handle);
+        obj->setOwner(NETWORK->getNetworkId());
+        NETWORK->Reference(obj);
+        return handle;
+    }
+    virtual ObjectHandle registerObject(T* obj)
+    {
+        ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
+        obj->setHandle(handle);
+        obj->setOwner(NETWORK->getNetworkId());
+        NETWORK->Reference(obj);
+        return handle;
+    }
+    virtual void destroyObject(const ObjectHandle& handle)
+    {
+        if (NETWORK->isConnected())
+            NETWORK->BroadcastDestruction(get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+        ObjectFactory<T>::destroyObject(handle);
+    }
+    virtual void destroyAt(ObjectHandle::Type index)
+    {
+        if (NETWORK->isConnected())
+            NETWORK->BroadcastDestruction(getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+        ObjectFactory<T>::destroyAt(index);
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+    virtual const NetworkObjectID& getId() const { return m_Id; }
+    virtual void setId(const NetworkObjectID& id) { m_Id = id; }
+
+    virtual details::NetworkObjectBase* createReplica() 
+    { 
+        ObjectHandle handle(ObjectFactory<T>::create());
+        details::NetworkObjectBase* obj(get(handle));
+        obj->setHandle(handle);
+        return get(handle); 
+    };
+    
 private:
-
+    NetworkObjectID m_Id;
 
     //Disable default copy constructor and default assignment operator
     NetworkObjectFactory(const NetworkObjectFactory&);

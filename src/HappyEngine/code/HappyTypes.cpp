@@ -24,5 +24,6 @@
 namespace he {
 
 const ObjectHandle ObjectHandle::unassigned;
+const NetworkObjectID NetworkObjectID::unassigned;
 
 } //end namespace
