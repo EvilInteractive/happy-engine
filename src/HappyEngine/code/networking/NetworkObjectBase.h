@@ -89,11 +89,12 @@ public:
     
     virtual ~NetworkObjectBase() {}
 protected:
-    NetworkObjectBase() {}
+    NetworkObjectBase(): m_Serialize(false) {}
 
 private:
     RakNet::VariableDeltaSerializer m_VariableDeltaSerializer;
     ObjectHandle m_Handle;
+    bool m_Serialize;
 };
 
 } } } //end namespace

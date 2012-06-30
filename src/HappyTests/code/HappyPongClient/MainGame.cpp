@@ -107,6 +107,7 @@ void MainGame::load()
         return;
     }
 
+    NETWORK->setSyncTimeout(1 / 60.0f);
     NETWORK->ConnectionSuccessful += boost::bind(&MainGame::connectionSuccessful, this);
     NETWORK->ConnectionFailed += boost::bind(&MainGame::connectionFailed, this);
     NETWORK->ConnectionLost += boost::bind(&MainGame::connectionLost, this);

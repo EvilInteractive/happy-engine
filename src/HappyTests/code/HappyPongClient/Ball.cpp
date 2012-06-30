@@ -165,7 +165,8 @@ void Ball::tick( float dTime )
         }*/
     //float speed(length(m_Velocity));
     m_MoveTo += m_Velocity * dTime;
-    setWorldMatrix(he::mat44::createTranslation(m_MoveTo));
+    m_Position = m_MoveTo;
+    setWorldMatrix(he::mat44::createTranslation(m_Position));
 }
 
 const he::vec3& Ball::getPosition() const

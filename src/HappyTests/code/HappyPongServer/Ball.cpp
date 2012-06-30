@@ -45,6 +45,7 @@ void Ball::reset()
     m_Position = he::vec3(0, 0, 0);
     m_Velocity = he::vec3((m_Random.nextInt(0, 2) % 2 == 0? 1 : -1) * 30.0f, 0, (m_Random.nextInt(0, 2) % 2 == 0? 1 : -1) * 30.0f);
     m_Dead = false;
+    setSerializeDataDirty();
 }
 
 
@@ -175,6 +176,7 @@ void Ball::serialize( he::net::NetworkSerializer& serializer )
 {
     serializer.serializeVariable(m_Position);
     serializer.serializeVariable(m_Velocity);
+    setSerializeDataDirty(false);
 }
 
 void Ball::deserialize( he::net::NetworkDeserializer& /*serializer*/ )

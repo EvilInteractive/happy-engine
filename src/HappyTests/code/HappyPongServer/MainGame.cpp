@@ -86,6 +86,7 @@ void MainGame::load()
         return;
     }
 
+    NETWORK->setSyncTimeout(1 / 60.0f);
     NETWORK->setMaxConnections(2);
     NETWORK->host(port);
     NETWORK->ClientConnected += boost::bind(&hps::MainGame::createNewPaddle, this, _1);

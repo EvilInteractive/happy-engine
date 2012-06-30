@@ -68,7 +68,7 @@ RakNet::RM3QuerySerializationResult NetworkObjectBase::QuerySerialization( RakNe
     RakNet::RM3QuerySerializationResult result(QuerySerialization_ClientSerializable(destinationConnection, NETWORK->IsHost()));
     if (result == RakNet::RM3QSR_CALL_SERIALIZE)
     {
-        if (isSerializeDataDirty())
+        if (m_Serialize)
             return RakNet::RM3QSR_CALL_SERIALIZE;
         else
             return RakNet::RM3QSR_DO_NOT_CALL_SERIALIZE;
@@ -132,6 +132,7 @@ void NetworkObjectBase::OnPoppedConnection( RakNet::Connection_RM3* droppedConne
 
 void NetworkObjectBase::OnUserReplicaPreSerializeTick( void )
 {
+    m_Serialize = isSerializeDataDirty();
     m_VariableDeltaSerializer.OnPreSerializeTick();
 }
 

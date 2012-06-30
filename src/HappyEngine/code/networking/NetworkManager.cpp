@@ -123,7 +123,7 @@ void NetworkManager::tick( float dTime )
     m_Sleep += dTime;
     if (m_Sleep > m_SleepTimout)
     {
-        m_Sleep = 0.0f; // don't care if m_Sleep is x * RAK_SLEEP
+        m_Sleep = 0.0f; // don't care if m_Sleep is x * m_SleepTimout
 
         for (RakNet::Packet* packet(m_RakPeer->Receive());   packet != nullptr; 
                 m_RakPeer->DeallocatePacket(packet), packet = m_RakPeer->Receive())
