@@ -59,17 +59,8 @@ MainGame::~MainGame()
     {
         delete entity;     
     });
-    /*std::for_each(getPalets().cbegin(), getPalets().cend(), [&](const Palet* palet)
-    {
-        delete palet;
-    });
-    std::for_each(getObstacles().cbegin(), getObstacles().cend(), [&](const Obstacle* obstacle)
-    {
-        delete obstacle;
-        });*/
     he::net::NetworkObjectFactory<Palet>::getInstance()->destroyAll();
-
-    delete m_Ball;
+    he::net::NetworkObjectFactory<Ball>::getInstance()->destroyAll();
 
     CAMERAMANAGER->deleteAllCameras();
     delete m_pFPSGraph;
@@ -225,5 +216,11 @@ void MainGame::connectionLost()
     he::MessageBox::show("Connection Lost", "Connection to the server lost", "-  Quit  -");
     HAPPYENGINE->quit();
 }
+
+void MainGame::setActiveBall( Ball* ball )
+{
+    m_Ball = ball;
+}
+
 
 } //end namespace

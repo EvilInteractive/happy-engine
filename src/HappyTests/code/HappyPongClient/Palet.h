@@ -74,6 +74,7 @@ private:
 
     he::byte m_Player;
     bool m_Ai;
+    float m_AiActionTime;
 
     bool m_GoUp, m_GoDown;
 
