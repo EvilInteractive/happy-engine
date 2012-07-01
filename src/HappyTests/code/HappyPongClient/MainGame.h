@@ -57,6 +57,8 @@ public:
     void addPoint(he::byte player);
     void restart(bool timeout);
 
+    void setActiveBall(Ball* ball);
+
 private:
     void connectionSuccessful();
     void connectionFailed();
