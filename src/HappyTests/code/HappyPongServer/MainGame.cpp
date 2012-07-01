@@ -56,8 +56,6 @@ MainGame::~MainGame()
     });
     he::net::NetworkObjectFactory<Palet>::getInstance()->destroyAll();
     he::net::NetworkObjectFactory<Ball>::getInstance()->destroyAll();
-
-    //delete m_Ball;
 }
 
 void MainGame::init()

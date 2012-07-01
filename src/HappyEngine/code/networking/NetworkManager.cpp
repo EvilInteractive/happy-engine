@@ -237,6 +237,7 @@ void NetworkManager::registerFactory( INetworkObjectFactory* factory )
 void NetworkManager::setSyncTimeout( float seconds )
 {
     m_SleepTimout = seconds;
+    SetAutoSerializeInterval(static_cast<RakNet::Time>(seconds * 1000 - 1));
 }
 
 
