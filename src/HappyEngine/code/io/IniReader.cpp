@@ -108,7 +108,11 @@ bool IniReader::open(const std::string& path)
             removeSpaces(line);
             if (line.size() != 0)
             {
-                if (line[0] == '[')
+                if (line[0] == '#')
+                {
+                    // comment - ignore
+                }
+                else if (line[0] == '[')
                 {
                     if (sub != L"")
                         m_Data.insert(make_pair(sub, subData));
