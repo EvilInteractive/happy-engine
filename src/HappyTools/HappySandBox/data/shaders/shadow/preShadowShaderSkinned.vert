@@ -23,6 +23,7 @@ in vec3 inPosition;
 in vec4 inBoneId;
 in vec4 inBoneWeight;
 
+uniform mat4 matWV;
 uniform mat4 matWVP;
 uniform mat4[32] matBones;
 
@@ -36,8 +37,8 @@ void main()
     position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
     position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
     position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
-    passPos = matWVP * vec4(position.xyz, 1.0f);
-    gl_Position = passPos;
+    passPos = matWV * vec4(position.xyz, 1.0f);
+    gl_Position = matWVP * vec4(position.xyz, 1.0f);
 }
 
 

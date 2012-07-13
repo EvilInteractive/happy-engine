@@ -74,6 +74,9 @@ private:
     std::vector<Obstacle*> m_Obstacles;
     Ball* m_Ball;
 
+    bool m_2D;
+
+    he::gfx::Canvas2D* m_Canvas;
 
     std::vector<he::ge::Entity*> m_EntityList;
 

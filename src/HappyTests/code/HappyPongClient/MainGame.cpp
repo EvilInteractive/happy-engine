@@ -43,9 +43,13 @@
 #include "IniWriter.h"
 #include "IniReader.h"
 
+#include "Canvas2D.h"
+#include "Renderer2D.h"
+
 namespace hpc {
 
-MainGame::MainGame(): m_pFPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(2.0f), m_Ball(nullptr)
+MainGame::MainGame(): m_pFPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(2.0f), m_Ball(nullptr),
+                      m_2D(true), m_Canvas(nullptr)
 {
 }
 
@@ -65,6 +69,7 @@ MainGame::~MainGame()
     CAMERAMANAGER->deleteAllCameras();
     delete m_pFPSGraph;
 
+    delete m_Canvas;
 }
 
 void MainGame::init()
@@ -119,18 +124,28 @@ void MainGame::load()
     m_BoardDimension = he::vec2(85, 47);
 
     he::ge::Entity* board(NEW he::ge::Entity());
-    he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
-    he::ObjectHandle boardMaterial(CONTENT->loadMaterial("pong/board.material"));
-    boardModel->setMaterial(boardMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial()->getCompatibleVertexLayout()));
-    boardModel->setModelMesh(mesh->getHandle());
-    mesh->release();
-    board->setWorldMatrix(he::mat44::createScale(100));
+    he::ObjectHandle boardMaterial;
 
-    board->addComponent(boardModel);
+    if (m_2D)
+    {
+        m_Canvas = GUI->createCanvas();
+    }
+    else
+    {
+        he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
+        boardMaterial = CONTENT->loadMaterial("pong/board.material");
+        boardModel->setMaterial(boardMaterial);
+        he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial()->getCompatibleVertexLayout()));
+        boardModel->setModelMesh(mesh->getHandle());
+        mesh->release();
+        board->setWorldMatrix(he::mat44::createScale(100));
+        board->addComponent(boardModel);
+    }
+
     m_EntityList.push_back(board);
 
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(boardMaterial);
+    if (!m_2D)
+        he::ResourceFactory<he::gfx::Material>::getInstance()->release(boardMaterial);
 
 }
 
@@ -156,8 +171,21 @@ void MainGame::drawGui()
 {
     m_pFPSGraph->draw();
 
-}
+    m_Canvas->setFillColor(he::Color(0,0,0,1.0f));
+    m_Canvas->fillRect(he::vec2(0,0), he::vec2(1280.0f,720.0f));
 
+    m_Canvas->setFillColor(he::Color(1.0f,1.0f,1.0f,1.0f));
+
+    std::for_each(getPalets().cbegin(), getPalets().cend(),[&](Palet* pal)
+    {
+        m_Canvas->fillRect(pal->getPosition().xy(), pal->getDimension());
+    });
+
+    if (m_Ball)
+        m_Canvas->fillRect(he::vec2((m_Ball->getPosition().x * 50) - (m_Ball->getRadius() * 50)/2, (m_Ball->getPosition().z * 50) - (m_Ball->getRadius() * 50)/2), he::vec2((m_Ball->getRadius() * 50),(m_Ball->getRadius() * 50)));
+
+    m_Canvas->draw();
+}
 const std::vector<Palet*>& MainGame::getPalets() const
 {
     return m_Palets;

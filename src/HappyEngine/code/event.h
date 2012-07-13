@@ -54,10 +54,6 @@ public:
 
 private:
     std::vector<function> m_FuncList;
-
-    //Disable default copy constructor and default assignment operator
-    event0(const event0&);
-    event0& operator=(const event0&);
 };
 
 template<typename returnType, typename parameterType>
@@ -89,10 +85,6 @@ public:
 
 private:
     std::vector<function> m_FuncList;
-
-    //Disable default copy constructor and default assignment operator
-    event1(const event1&);
-    event1& operator=(const event1&);
 };
 
 template<typename returnType, typename parameterType1, typename parameterType2>
@@ -124,10 +116,6 @@ public:
 
 private:
     std::vector<function> m_FuncList;
-
-    //Disable default copy constructor and default assignment operator
-    event2(const event2&);
-    event2& operator=(const event2&);
 };
 
 } //end namespace

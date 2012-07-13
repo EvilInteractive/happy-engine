@@ -12,6 +12,7 @@ inTangent = TANGENT
 inWorld = MAT44
 
 [uniform]
+matV = VIEW
 matVP = VIEWPROJECTION
 diffuseMap = TEXTURE2D
 normalMap = TEXTURE2D

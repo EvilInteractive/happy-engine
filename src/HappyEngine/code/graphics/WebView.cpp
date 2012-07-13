@@ -86,6 +86,11 @@ void WebView::loadUrl(const std::string& url)
     m_pWebView->LoadURL(webUrl);
 }
 
+void WebView::loadFile(const std::string& /*path*/)
+{
+    //m_pWebView->LoadURL()
+}
+
 void WebView::excecuteJavaScript(const std::string& /*script*/)
 {
     //Awesomium::WebString string(script.c_str());
@@ -100,6 +105,11 @@ void WebView::focus()
 void WebView::unfocus()
 {
     m_pWebView->Unfocus();
+}
+
+void WebView::setTransparent(bool transparent)
+{
+    m_pWebView->SetTransparent(transparent);
 }
 
 /* GETTERS */

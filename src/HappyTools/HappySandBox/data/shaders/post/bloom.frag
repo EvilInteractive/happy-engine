@@ -28,6 +28,7 @@ uniform sampler2D map;
 #if HDR
 #if BRIGHTPASS
 uniform sampler2D lumMap;
+#include "shared/tonemap.frag"
 #endif
 #endif
 
@@ -36,14 +37,14 @@ void main()
     vec3 color = texture(map, texCoord).rgb;
     
 #if BRIGHTPASS
-    float ex = 0.9f;
+    float ex = 0.1f;
 #if HDR
-    ex = (1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f)) / 4.0f;
+    ex = getExposure(lumMap);
 #endif
-    color *= ex;
+    color /= ex;
     color -= vec3(1.0f, 1.0f, 1.0f);
     color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
-    color /= ex;
+    color *= ex;
 #endif
 
     outColor = vec4(color, 1.0f);

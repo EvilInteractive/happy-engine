@@ -183,6 +183,7 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
 
     MainGame* game(MainGame::getInstance());
 
+    /*
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
     he::ObjectHandle paletMaterial(CONTENT->loadMaterial("pong/palet.material"));
     model->setMaterial(paletMaterial);
@@ -191,7 +192,7 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(paletMaterial);
     mesh->release();
     model->setLocalTransform(he::mat44::createScale(100));
-    addComponent(model);
+    addComponent(model);*/
 
     m_LightFlashComponent = NEW LightFlashComponent();
     addComponent(m_LightFlashComponent);

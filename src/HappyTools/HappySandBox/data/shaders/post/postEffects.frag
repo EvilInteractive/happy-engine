@@ -20,8 +20,15 @@
 //Name change: HDRtoLDR -> postEffects : 18/12/2011
 
 #version 150 core
+#pragma optionNV(fastmath on)
+#pragma optionNV(fastprecision on)
+#pragma optionNV(ifcvt none)
+#pragma optionNV(inline all)
+#pragma optionNV(strict on)
+#pragma optionNV(unroll all)
 
 #include "packing/decode.frag"
+#include "shared/tonemap.frag"
 
 noperspective in vec2 texCoord;
 
@@ -36,9 +43,9 @@ uniform sampler2D blur2;
 uniform sampler2D blur3;
 #endif
 
-///////// SSAO //////////
-#if SSAO
-uniform sampler2D randomNormals;
+///////// SSAO & GI //////////
+#if AO
+uniform sampler2D noiseMap;
 
 uniform float radius;
 uniform float intensity;
@@ -55,6 +62,8 @@ uniform sampler2D lumMap;
 
 uniform sampler2D normalMap;
 uniform sampler2D depthMap;
+
+uniform vec3 fogColor;
 
 float edgeMult1 = 5.0f;
 float edgeMult2 = 10.0f;
@@ -101,81 +110,88 @@ float getEdge(in sampler2D map, in vec2 texCoord)
 }
 
 /////////////////////////////* SSAO *///////////////////////////////
-#if SSAO
-vec2 getRandom(in vec2 tc)
-{
-    return normalize(texture(randomNormals, viewPortSize * tc / 64.0f).xy * 2.0f - 1.0f);
-}
+#if AO
 
-vec3 getPos(in vec2 tc)
-{
-    vec2 ndc = tc * 2.0f - 1.0f;
-    return getPosition(texture(depthMap, tc).x, ndc, projParams);
-}
+float readDepth(in vec2 coord)  
+{  
+    //if (coord.x < 0 || coord.y < 0) return 1.0f;
+    const float nearZ = 1.0f;
+    const float farZ = 250.0f;  
+    float posZ = textureLod(depthMap, coord, 0).x;
+    return (2.0f * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));  
+}   
 
-vec3 getNorm(in vec2 tc)
-{
-    return decodeNormal(texture(normalMap, tc).xy);
-}
+vec3 readColor(in vec2 coord)  
+{  
+    return texture2D(colorMap, coord).xyz;  
+} 
 
-float calculateAO(in vec2 tc1, in vec2 tc, in vec3 p, in vec3 cnorm)
-{
-    vec3 diff = getPos(tc1 + tc) - p;
-    vec3 v = normalize(diff);
-    float d = length(diff) * scale;
-    return max(0.0, dot(cnorm, v) - bias) * (1.0f / (1.0f + d)) * intensity;
-}
+float compareDepths(in float depth1, in float depth2)  
+{  
+    float gauss = 0.0f; 
+    float diff = (depth1 - depth2) * 100.0f; //depth difference (0-100)
+    float gdisplace = 0.2f; //gauss bell center
+    float garea = 3.0f; //gauss bell width
 
-float renderAO()
-{
-    vec2 tc = texCoord;
-    tc.x = 1.0f - tc.x;
+    //reduce left bell width to avoid self-shadowing
+    if (diff < gdisplace) garea = 0.2f; 
 
-    const vec2 vec[16] = vec2[16](vec2(1,0), vec2(-1,0),
-                           vec2(0,1), vec2(0,-1),
-                           vec2(0.66,0.66), vec2(-0.66,0.66),
-                           vec2(0.66,-0.66), vec2(-0.66,-0.66),
-                           vec2(0.33,0.66), vec2(-0.33,0.66),
-                           vec2(0.33,-0.66), vec2(-0.33,-0.66),
-                           vec2(0.66,0.33), vec2(-0.66,0.33),
-                           vec2(0.66,-0.33), vec2(-0.66,-0.33));
+    gauss = pow(2.7182f, -2.0f * (diff - gdisplace) * (diff - gdisplace) / (garea * garea));
 
-    vec3 p = getPos(tc);
-    vec3 n = getNorm(tc);
-    vec2 rand = getRandom(tc);
+    return max(0.2f, gauss);  
+}  
 
+vec3 calcAO(in vec2 tex, in float depth, in float dw, in float dh, inout float ao)  
+{  
+    float temp = 0;
+    vec3 bleed = vec3(0.0f, 0.0f, 0.0f);
+    float coordw = tex.x + dw / depth;
+    float coordh = tex.y + dh / depth;
+
+    //if (coordw < 1.0f && coordw > 0.0f && coordh < 1.0f && coordh > 0.0f)
+    //{
+        vec2 coord = vec2(coordw, coordh);
+        temp = compareDepths(depth, readDepth(coord)); 
+        bleed = readColor(coord); 
+    //}
+    ao += temp;
+    return temp * bleed;  
+}   
+     
+void getAoAndGi(in vec2 tex, out float out_ao, out vec3 out_gi)  
+{  
+    float pw = 1.0f / viewPortSize.x * 0.5f;
+    float ph = 1.0f / viewPortSize.y * 0.5f;
+
+    //randomization texture:
+    vec2 noiseTextureSize = vec2(64, 64);
+    vec3 random = textureLod(noiseMap, tex * viewPortSize.xy / noiseTextureSize, 0).xyz * 2.0f - 1.0f;
+
+    //initialize stuff:
+    float depth = readDepth(tex);
+    vec3 gi = vec3(0.0f, 0.0f, 0.0f);  
     float ao = 0.0f;
-    float rad = radius / p.z;
 
-    //uint maxIt = maxIterations;
-//
-    //if (maxIt > 16)
-        //maxIt = 16;
-//
-    //float weight = p.z / farZ;
+    for(int i = 0; i < 8; ++i) 
+    {  
+        //calculate color bleeding and ao:
+        gi += calcAO(tex, depth,  pw,  ph, ao);  
+        gi += calcAO(tex, depth,  pw, -ph, ao);  
+        gi += calcAO(tex, depth, -pw,  ph, ao);  
+        gi += calcAO(tex, depth, -pw, -ph, ao); 
+     
+        //sample jittering:
+        pw += random.x * 0.0005f;
+        ph += random.y * 0.0005f;
 
-    //float iterations = mix(maxIt, minIterations, weight); // LOD
+        //increase sampling area:
+        pw *= 1.4;  
+        ph *= 1.4;    
+    }         
 
-    for (int i = 1; i <= 2; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            vec2 coord1 = reflect(vec[j], rand).xy * (rad / (i * 2));
-            vec2 coord2 = vec2( coord1.x * 0.707f - coord1.y * 0.707f,
-                                coord1.x * 0.707f + coord1.y * 0.707f );
-  
-            ao += calculateAO(tc, coord1 * 0.25f, p, n);
-            ao += calculateAO(tc, coord2 * 0.5f, p, n);
-            ao += calculateAO(tc, coord1 * 0.75f, p, n);
-            ao += calculateAO(tc, coord2, p, n);
-        }
-    }
-
-
-
-    ao /= 4 * 4.0f * 2;
-
-    return ao;
+    //final values, some adjusting:
+    out_ao = 1.0f - (ao / 32.0f);
+    out_gi = (gi / 32.0f) * 0.6f;    
 }
 
 #endif
@@ -185,18 +201,29 @@ void main()
 {
     vec2 tex = vec2(1 - texCoord.x, texCoord.y);
 
-    vec3 color = textureLod(colorMap, tex, 0.0f).rgb;
+    vec4 sampleColor = textureLod(colorMap, tex, 0.0f);
+    
+    if (sampleColor.a < 0.01f)
+        discard;
+    
+    vec3 color = sampleColor.rgb;
     
 #if BLOOM
-    color += texture(blur0, tex).rgb * 0.5f;  
-    color += texture(blur1, tex).rgb * 0.5f;  
-    color += texture(blur2, tex).rgb * 1.0f;  
-    color += texture(blur3, tex).rgb * 1.0f;  
+    color += texture(blur0, tex).rgb * 0.25f;  
+    color += texture(blur1, tex).rgb * 0.25f;  
+    color += texture(blur2, tex).rgb * 0.25f;  
+    color += texture(blur3, tex).rgb * 0.25f;  
+#endif
+
+#if AO
+    float ao;
+    vec3 gi; 
+    getAoAndGi(tex, ao, gi);
+    color = color + gi * 5;
 #endif
 
 #if HDR  
-    float ex = 1.0f / (textureLod(lumMap, vec2(0.5f, 0.5f), 0).r + 0.001f);
-    color *= ex / 4.0f;  //0 -> 20
+    color = tonemap(color, getExposure(lumMap));
 #endif
  
 #if VIGNETTE   
@@ -208,19 +235,22 @@ void main()
 #endif
 
 #if DEPTH_EDGE
-    color *= getEdge(depthMap, tex);
+    //color *= getEdge(depthMap, tex);
+    color += 1-getEdge(depthMap, tex);
 #endif
 
 #if FOG
-    float beginFog = 0.995f;
+    float beginFog = 0.997f;
     float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));
 
-    color = color * (1 - fog) + vec3(0.2f, 0.4f, 0.6f) * (fog);
+    color = color * (1 - fog) + fogColor * (fog);
 #endif
 
-#if SSAO
-    color = color * (1.0f - renderAO());
+#if AO
+    color *= ao;
 #endif
     
+    //color = color - gi;
+    //color = vec3(ao);
     outColor = vec4(color, 1.0f);
 }

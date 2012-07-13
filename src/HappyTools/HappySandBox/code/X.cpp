@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,17 +16,17 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  
-//Created: 
+//Created: //
+
+#include "HappySandBoxPCH.h" 
 
 #include "X.h"
-#include "HappyPCH.h"
 
-namespace happysandbox {
+namespace hs {
 
 X::X()
 {
 }
-
 
 X::~X()
 {

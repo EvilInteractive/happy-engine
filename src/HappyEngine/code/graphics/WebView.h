@@ -38,10 +38,12 @@ public:
 
     /* GENERAL */
     void draw(const vec2& pos = vec2());
-    void loadUrl(const std::string& url);
+    void loadUrl(const std::string& url); // for web
+    void loadFile(const std::string& path); // for local
     void excecuteJavaScript(const std::string& script);
     void focus();
     void unfocus();
+    void setTransparent(bool transparent);
 
     /* GETTERS */
     Awesomium::WebView* getAWEView() const;
