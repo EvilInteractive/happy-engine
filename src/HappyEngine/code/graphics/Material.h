@@ -78,8 +78,8 @@ private:
 
     bool m_DepthRead, m_DepthWrite;
 
-    BufferLayout m_CompatibleVL;
-    BufferLayout m_CompatibleIL;
+    BufferLayout m_CompatibleVL; // vertex layout
+    BufferLayout m_CompatibleIL; // instance layout
 
     // Disabled
     Material(const Material* other);
