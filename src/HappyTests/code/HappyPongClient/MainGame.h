@@ -57,8 +57,6 @@ public:
     void addPoint(he::byte player);
     void restart(bool timeout);
 
-    void setActiveBall(Ball* ball);
-
 private:
     void connectionSuccessful();
     void connectionFailed();
@@ -74,9 +72,6 @@ private:
     std::vector<Obstacle*> m_Obstacles;
     Ball* m_Ball;
 
-    bool m_2D;
-
-    he::gfx::Canvas2D* m_Canvas;
 
     std::vector<he::ge::Entity*> m_EntityList;
 

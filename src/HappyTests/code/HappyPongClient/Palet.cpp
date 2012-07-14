@@ -38,8 +38,6 @@
 
 namespace hpc {
 
-#define AI_REACTION_TIME 0.0333f
-
 Palet::Palet(): 
     m_Speed(50.0f), 
     m_PaletDim(1.0f, 5.0f),
@@ -47,8 +45,7 @@ Palet::Palet():
     m_Ai(false),
     m_GoDown(false),
     m_GoUp(false),
-    m_LightFlashAddPointComponent(nullptr),
-    m_AiActionTime(0.0f)
+    m_LightFlashAddPointComponent(nullptr)
 {
 }
 
@@ -62,56 +59,31 @@ Palet::~Palet()
 void Palet::tick( float dTime )
 {
     MainGame* game(MainGame::getInstance());
-
-    if (NETWORK->getNetworkId() == getOwner())
+    if (m_Ai)
     {
-        if (m_Ai)
+        Ball* ball(game->getBall());
+        if (he::dot(ball->getVelocity(), m_MoveTo) > 0.0)
         {
-            m_AiActionTime -= dTime;
-            Ball* ball(game->getBall());
-            if (ball != nullptr && m_AiActionTime <= 0.0f)
+            float z(ball->getPosition().z);
+            if (fabs(m_MoveTo.z - z) > m_PaletDim.y/2)
             {
-                m_AiActionTime = AI_REACTION_TIME;
-                float moveToZ(0.0f);
-                if (he::dot(ball->getVelocity(), ball->getPosition() - m_Position) < 0.0)
-                { // Move to ball
-                    moveToZ = ball->getPosition().z + ball->getVelocity().z * AI_REACTION_TIME;
-                }
-                else
-                {// return to center
-                }
-
-                float epsilon(m_PaletDim.y / 8);
-                if (fabs(m_MoveTo.z - moveToZ) > m_Speed * AI_REACTION_TIME)
-                {
-                    if (m_MoveTo.z < moveToZ - epsilon)
-                    {
-                        if (m_GoUp == false)
-                        {
-                            m_GoUp = true;
-                            m_GoDown = false;
-                            setSerializeDataDirty();
-                        }
-                    }                    
-                    else if (m_MoveTo.z > moveToZ + epsilon)
-                    {
-                        if (m_GoDown == false)
-                        {
-                            m_GoUp = false;
-                            m_GoDown = true;
-                            setSerializeDataDirty();
-                        }
-                    }
-                    else if (m_GoUp == true || m_GoDown == true)
-                    {
-                        m_GoUp = false;
-                        m_GoDown = false;
-                        setSerializeDataDirty();
-                    }
-                }
+                if (m_MoveTo.z < z - m_Speed * dTime)
+                    m_MoveTo.z += m_Speed * dTime;
+                else if (m_MoveTo.z > z + m_Speed * dTime)
+                    m_MoveTo.z -= m_Speed * dTime;
             }
         }
         else
+        {// return to center
+            if (m_MoveTo.z < -m_Speed * dTime)
+                m_MoveTo.z += m_Speed * dTime;
+            else if (m_MoveTo.z > m_Speed * dTime)
+                m_MoveTo.z -= m_Speed * dTime;
+        }
+    }
+    else
+    {
+        if (NETWORK->getNetworkId() == getOwner())
         {
             he::io::Key up(he::io::Key_Up);
             he::io::Key down(he::io::Key_Down);
@@ -126,18 +98,19 @@ void Palet::tick( float dTime )
                 setSerializeDataDirty();
             }
         }
-    }
-    if (m_GoUp)
-    {
-        m_MoveTo.z += m_Speed * dTime;
-        if (m_MoveTo.z + m_PaletDim.y / 2 > game->getBoardDimension().y / 2)
-            m_MoveTo.z = game->getBoardDimension().y / 2 - m_PaletDim.y / 2;
-    }
-    if (m_GoDown)
-    {
-        m_MoveTo.z -= m_Speed * dTime;
-        if (m_MoveTo.z - m_PaletDim.y / 2 <  -game->getBoardDimension().y / 2)
-            m_MoveTo.z = -game->getBoardDimension().y / 2 + m_PaletDim.y / 2;
+
+        if (m_GoUp)
+        {
+            m_MoveTo.z += m_Speed * dTime;
+            if (m_MoveTo.z + m_PaletDim.y / 2 > game->getBoardDimension().y / 2)
+                m_MoveTo.z = game->getBoardDimension().y / 2 - m_PaletDim.y / 2;
+        }
+        if (m_GoDown)
+        {
+            m_MoveTo.z -= m_Speed * dTime;
+            if (m_MoveTo.z - m_PaletDim.y / 2 <  -game->getBoardDimension().y / 2)
+                m_MoveTo.z = -game->getBoardDimension().y / 2 + m_PaletDim.y / 2;
+        }
     }
 
     float len(he::length(m_MoveTo - m_Position));
@@ -183,7 +156,6 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
 
     MainGame* game(MainGame::getInstance());
 
-    /*
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
     he::ObjectHandle paletMaterial(CONTENT->loadMaterial("pong/palet.material"));
     model->setMaterial(paletMaterial);
@@ -192,7 +164,7 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(paletMaterial);
     mesh->release();
     model->setLocalTransform(he::mat44::createScale(100));
-    addComponent(model);*/
+    addComponent(model);
 
     m_LightFlashComponent = NEW LightFlashComponent();
     addComponent(m_LightFlashComponent);
