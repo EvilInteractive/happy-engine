@@ -27,7 +27,8 @@
 namespace he {
 namespace ge {
 
-Entity::Entity(): m_IsSerializeDataDirty(false), m_Scene(nullptr)
+Entity::Entity(): m_IsSerializeDataDirty(false), m_Scene(nullptr), 
+    m_SleepEvaluaters([](bool& inoutA, const bool& outB){ inoutA |= outB; }, false)
 {
 }
 
@@ -42,12 +43,6 @@ Entity::~Entity()
 void Entity::init( gfx::Scene* scene )
 {
     m_Scene = scene;
-}
-
-
-mat44 Entity::getWorldMatrix() const
-{
-    return m_mtxWorld;
 }
 
 void Entity::setWorldMatrix(const mat44& mtxWorld)
@@ -141,27 +136,7 @@ void Entity::deserialize( net::NetworkDeserializer& serializer )
 
 bool Entity::isSleeping() const
 {
-    std::vector<boost::function0<bool>>::const_iterator it(m_SleepEvaluaters.cbegin());
-    for( ; it != m_SleepEvaluaters.cend(); ++it)
-    {
-        if ((*it)())
-            return true;
-    }
-    return false;
-}
-
-void Entity::addSleepEvaluator( const boost::function0<bool>& evaluater )
-{
-    m_SleepEvaluaters.push_back(evaluater);
-}
-
-void Entity::removeSleepEvaluator( const boost::function0<bool>& evaluater )
-{
-    HE_IF_ASSERT(std::find(m_SleepEvaluaters.cbegin(), m_SleepEvaluaters.cend(), evaluater) != m_SleepEvaluaters.cend(), "Sleep evaluator not found")
-    {
-        *std::find(m_SleepEvaluaters.begin(), m_SleepEvaluaters.end(), evaluater) = m_SleepEvaluaters.back();
-        m_SleepEvaluaters.pop_back();
-    }
+    return m_SleepEvaluaters();
 }
 
 } } //end namespace

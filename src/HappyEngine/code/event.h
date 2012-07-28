@@ -25,105 +25,98 @@
 
 namespace he {
 
+namespace details {
+
+template<typename T>
+void defaultEventCombiner(T& inoutA, const T& inB)
+{
+    inoutA = inB;
+}
+
+template<typename T>
+class EventCombiner
+{
+public:
+    typedef boost::function2<void, T&, const T&> EventCombinerType;
+    typedef T result_type;
+
+    EventCombiner(
+        const EventCombinerType& combiner = &defaultEventCombiner<T>,
+        const T& defaultValue = T()):
+      m_DefaultValue(defaultValue),
+      m_EventCombiner(combiner) {}
+
+    template<typename InputIterator>
+    T operator()(InputIterator first, InputIterator last) const
+    {
+        if (first == last)
+            return m_DefaultValue;
+
+        T outValue(*first);
+        while (++first != last) 
+        {
+            m_EventCombiner(outValue, *first);
+        }
+
+        return outValue;
+    }
+
+private:
+    EventCombinerType m_EventCombiner;
+    T m_DefaultValue;
+};
+
+}
+
+
+template<typename ReturnType>
+struct eventCallback0
+{
+    friend event0<ReturnType>;
+    typedef boost::function0<ReturnType> Function;
+
+public:
+    explicit eventCallback0(const Function& function):
+      m_Function(function) {}
+
+private:
+    boost::function0<ReturnType> m_Function;
+    boost::signals::connection m_Connection;
+};
+
 template<typename returnType>
 class event0
 {
-private: 
-    typedef boost::function0<returnType> function;
-
+    typedef eventCallback0<returnType> function;
+    typedef typename details::EventCombiner<returnType>::EventCombinerType EventCombinerType;
+    typedef boost::signal0<returnType, details::EventCombiner<returnType>> Signal;
 public:
     event0() {}
+    event0(const EventCombinerType& combiner, const returnType& defaultValue):
+        m_Combiner(combiner, defaultValue) {}
     ~event0() {}
 
-    void operator+=(const function& func)
+    void operator+=(function& func)
     {
-        m_FuncList.push_back(func);
+        func.m_Connection = m_Signal.connect(func.m_Function);
     }
     void operator-=(const function& func)
     {
-        HE_IF_ASSERT(std::find(m_FuncList.cbegin(), m_FuncList.cend(), func) != m_FuncList.cend(), "Func does not exist in this event!")
-        {
-            (*std::find(m_FuncList.begin(), m_FuncList.end(), func)) = m_FuncList.back();
-            m_FuncList.pop_back();
-        }
+        m_Signal.disconnect(func.m_Connection);
     }
-    returnType operator()()
+    returnType operator()() const
     {
-        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [](const function& func)
-        {
-            func();
-        });
+        return m_Signal.signal();
     }
 
     void clear()
     {
-        m_FuncList.clear();
+        m_Signal.disconnect_all_slots();
     }
 
 private:
-    std::vector<function> m_FuncList;
-};
-
-template<typename returnType, typename parameterType>
-class event1
-{
-private: 
-    typedef boost::function1<returnType, parameterType> function;
-
-public:
-    event1() {}
-    ~event1() {}
-
-    void operator+=(const function& func)
-    {
-        m_FuncList.push_back(func);
-    }
-    returnType operator()(parameterType par)
-    {
-        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [&](const function& func)
-        {
-            func(par);
-        });
-    }
-
-    void clear()
-    {
-        m_FuncList.clear();
-    }
-
-private:
-    std::vector<function> m_FuncList;
-};
-
-template<typename returnType, typename parameterType1, typename parameterType2>
-class event2
-{
-private: 
-    typedef boost::function2<returnType, parameterType1, parameterType2> function;
-
-public:
-    event2() {}
-    ~event2() {}
-
-    void operator+=(const function& func)
-    {
-        m_FuncList.push_back(func);
-    }
-    returnType operator()(parameterType1 par, parameterType2 par2)
-    {
-        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [&](const function& func)
-        {
-            func(par, par2);
-        });
-    }
-
-    void clear()
-    {
-        m_FuncList.clear();
-    }
-
-private:
-    std::vector<function> m_FuncList;
+    Signal m_Signal;
+    details::EventCombiner<returnType> m_Combiner;
 };
 
 } //end namespace

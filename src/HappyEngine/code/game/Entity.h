@@ -34,7 +34,7 @@ namespace gfx {
 }
 namespace ge {
 
-class Entity : public gfx::I3DObject, public net::INetworkSerializable
+class Entity : public net::INetworkSerializable
 {
 public:
     Entity();
@@ -47,7 +47,7 @@ public:
     void addComponent(IComponent* pComponent); //will clean up pComponent
     void deleteComponent(IComponent* pComponent);
 
-    virtual mat44 getWorldMatrix() const;
+    const mat44& getWorldMatrix() const { return m_mtxWorld; }
     void setWorldMatrix(const mat44& mtxWorld);
 
     bool isSleeping() const;
@@ -67,13 +67,13 @@ public:
     virtual void deserialize(net::NetworkDeserializer& serializer);
     //////////////////////////////////////////////////////////////////////////
 
+    event0<bool> m_SleepEvaluaters;
+
 private:
     bool m_IsSerializeDataDirty;
     mat44 m_mtxWorld;
     std::vector<IComponent*> m_Components;
     gfx::Scene* m_Scene;
-
-    std::vector<boost::function0<bool>> m_SleepEvaluaters;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);
