@@ -37,6 +37,7 @@
 
 #include "Scrollbar.h"
 #include "TextBox.h"
+#include "View.h"
 
 namespace he {
 namespace tools {
@@ -51,7 +52,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_pScrollBar(nullptr),
                         m_Help(nullptr),
                         m_Canvas2D(nullptr),
-                        m_pFont(nullptr)
+                        m_pFont(nullptr),
+                        m_View(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -92,8 +94,11 @@ void Console::load()
     m_Help->addLine("'listcmds' (displays registered commands)");
     m_Help->addLine("******** HELP ********");
 
+    m_pScrollBar = NEW gui::Scrollbar(
+        vec2(1280-20, 0), vec2(20,200), 50.0f);
+
     m_pTextBox = NEW gui::TextBox(
-        RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
+        RectF(0,200,1280, 20),
         "Enter command...", 10, "Inconsolata.otf");
 
     m_pTextBox->setColors(
@@ -104,13 +109,18 @@ void Console::load()
 
     m_CmdHistory.push_back("");
 
-    m_pScrollBar = NEW gui::Scrollbar(
-        vec2(static_cast<float>(GRAPHICS->getScreenWidth()) - 20.0f, 0.0f), vec2(20,200), 50.0f);
 
     m_pScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getLineSpacing());
 }
+void Console::setView( const gfx::View* view )
+{
+    m_View = view;
+    m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
+    m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
+}
+
 
 Console::~Console()
 {
@@ -138,6 +148,8 @@ void Console::processCommand(const std::string& command)
     // remove spaces
     #if !GCC
     s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    #else
+    #error What if GCC?
     #endif
 
     // console commands
@@ -329,73 +341,76 @@ void Console::draw()
 {
     if (m_bOpen)
     {
-        m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-        m_Canvas2D->fillRect(vec2(0,0), vec2(vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
-
-        m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
-        m_Canvas2D->strokeRect(vec2(0,0), vec2(vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
-
-        m_pTextBox->draw(m_Canvas2D);
-
-        std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
-
-        std::for_each(m_MsgHistory.cbegin(), m_MsgHistory.cend(), [&] (std::pair<CMSG_TYPE, std::string> p)
+        HE_IF_ASSERT(m_View != nullptr, "set CONSOLE->setView first!")
         {
-            if (m_ShowMessageTypes[p.first] == true)
-                msgHistory.push_back(p);
-        });
+            m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
+            m_Canvas2D->fillRect(vec2(0,0), vec2(vec2(static_cast<float>(m_View->getViewport().width), 200)));
 
-        uint startPos(0);
+            m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
+            m_Canvas2D->strokeRect(vec2(0,0), vec2(vec2(static_cast<float>(m_View->getViewport().width), 200)));
 
-        if (msgHistory.size() > m_MaxMessagesInWindow)
-        {
-            startPos = static_cast<uint>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
-        }
+            m_pTextBox->draw(m_Canvas2D);
 
-        uint i(startPos);
+            std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
 
-        std::vector<std::pair<CMSG_TYPE, std::string> > msg;
-
-        if (msgHistory.size() > m_MaxMessagesInWindow)
-        {
-            for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
+            std::for_each(m_MsgHistory.cbegin(), m_MsgHistory.cend(), [&] (std::pair<CMSG_TYPE, std::string> p)
             {
-                msg.push_back(msgHistory[i]);
-            }
-        }
-        else
-        {
-            for (; i < msgHistory.size(); ++i)
+                if (m_ShowMessageTypes[p.first] == true)
+                    msgHistory.push_back(p);
+            });
+
+            uint startPos(0);
+
+            if (msgHistory.size() > m_MaxMessagesInWindow)
             {
-                msg.push_back(msgHistory[i]);
+                startPos = static_cast<uint>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
             }
+
+            uint i(startPos);
+
+            std::vector<std::pair<CMSG_TYPE, std::string> > msg;
+
+            if (msgHistory.size() > m_MaxMessagesInWindow)
+            {
+                for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
+                {
+                    msg.push_back(msgHistory[i]);
+                }
+            }
+            else
+            {
+                for (; i < msgHistory.size(); ++i)
+                {
+                    msg.push_back(msgHistory[i]);
+                }
+            }
+
+            gui::Text text(m_pFont);
+            text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+            text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+
+            uint k(0);
+            std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
+            {
+                m_Canvas2D->setFillColor(m_MsgColors[p.first]);
+
+                text.clear();
+                text.addLine(p.second);
+
+                //GUI->drawText(	text, RectF(5,5,
+     //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
+    //                            190.0f - (k * m_pFont->getLineSpacing())));
+
+                m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
+
+                ++k;
+            });
+
+            if (msgHistory.size() > m_MaxMessagesInWindow)
+                m_pScrollBar->draw(m_Canvas2D);
+
+            m_Canvas2D->draw();
         }
-
-        gui::Text text(m_pFont);
-        text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-        text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
-
-        uint k(0);
-        std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
-        {
-            m_Canvas2D->setFillColor(m_MsgColors[p.first]);
-
-            text.clear();
-            text.addLine(p.second);
-
-            //GUI->drawText(	text, RectF(5,5,
- //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-//                            190.0f - (k * m_pFont->getLineSpacing())));
-
-            m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
-
-            ++k;
-        });
-
-        if (msgHistory.size() > m_MaxMessagesInWindow)
-            m_pScrollBar->draw(m_Canvas2D);
-
-        m_Canvas2D->draw();
     }
 }
 

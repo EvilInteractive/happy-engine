@@ -46,11 +46,17 @@ set (CODE_GRAPHICS_PICKING_FILTER
             Picker.cpp                          Picker.h)
             
 set (CODE_GRAPHICS_RENDERING_FILTER
-            Camera.cpp                          Camera.h
-            DynamicBuffer.cpp                   DynamicBuffer.h
-            GraphicsEngine.cpp                  GraphicsEngine.h                      
+            CameraOrtho.cpp                     CameraOrtho.h
+            CameraPerspective.cpp               CameraPerspective.h
+            CameraBound.cpp                     CameraBound.h
+            CullOctree.cpp                      CullOctree.h
+            DynamicBuffer.cpp                   DynamicBuffer.h                     
             ICamera.h                        
-            IRenderer.h)
+            IRenderer.h
+            RenderTarget.cpp                    RenderTarget.h
+            Scene.cpp                           Scene.h
+            View.cpp                            View.h
+            Window.cpp                          Window.h)
             
     set (CODE_GRAPHICS_RENDERING_2D_FILTER
                 Canvas2D.cpp                        Canvas2D.h
@@ -79,7 +85,7 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 
     set (CODE_GRAPHICS_RENDERING_MANAGER_FILTER
                 DrawListContainer.cpp               DrawListContainer.h
-                DrawManager.cpp                     DrawManager.h
+                GraphicsEngine.cpp                  GraphicsEngine.h 
                 RenderSettings.h)
                 
     set (CODE_GRAPHICS_RENDERING_POST_FILTER

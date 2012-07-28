@@ -22,6 +22,8 @@
 #define _HE_I3D_OBJECT_H_
 #pragma once
 
+#include "Bound.h"
+
 namespace he {
 class mat44;
 namespace gfx {
@@ -32,6 +34,7 @@ public:
     virtual ~I3DObject() {}
     
     virtual mat44 getWorldMatrix() const = 0;
+    virtual const Bound& getBound() const = 0;
 };  
 
 } } //end namespace

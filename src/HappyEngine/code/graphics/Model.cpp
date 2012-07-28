@@ -21,6 +21,7 @@
 #include "HappyPCH.h" 
 
 #include "Model.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {

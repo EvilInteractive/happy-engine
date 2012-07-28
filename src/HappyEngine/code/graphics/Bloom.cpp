@@ -30,6 +30,7 @@
 #include "Texture2D.h"
 #include "ModelMesh.h"
 #include "Shader.h"
+#include "View.h"
 
 namespace he {
 namespace gfx {
@@ -47,6 +48,7 @@ Bloom::Bloom(): m_DownSamples(4),
             id = UINT_MAX;
         });
     }
+    m_View->ViewportSizeChanged -= boost::bind(&Bloom::resize, this);
 }
 
 
@@ -106,8 +108,10 @@ void Bloom::cleanShaders()
 }
 
 
-void Bloom::init(bool hdr)
+void Bloom::init(View* view, bool hdr)
 {
+    m_View = view;
+    m_View->ViewportSizeChanged += boost::bind(&Bloom::resize, this);
     cleanShaders();
 
     m_Hdr = hdr;
@@ -176,7 +180,7 @@ void Bloom::resize()
             m_Texture[pass][i]->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, 
                 gfx::Texture2D::TextureFormat_RGBA16F, false);
             m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
-            m_Texture[pass][i]->setData(GRAPHICS->getScreenWidth() / ((i+2) * 2), GRAPHICS->getScreenHeight() / ((i+2) * 2), 
+            m_Texture[pass][i]->setData(m_View->getViewport().width / ((i+2) * 2), m_View->getViewport().height / ((i+2) * 2), 
                 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float, 0 );
         }
 
@@ -210,13 +214,15 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
 
     GL::heBindVao(m_Mesh->getVertexArraysID());
 
+    RectI oldViewport(GL::heGetViewport());
+
     //BrightPass
     GL::heBindFbo(m_FboId[0][0]);
     m_pDownSampleBrightPassShader->bind();
     m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassMap, pTexture);
     if (m_Hdr)
         m_pDownSampleBrightPassShader->setShaderVar(m_DownSampleBrightPassLumMap, pLumMap);
-    GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
+    GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][0]->getWidth(), (int)m_Texture[0][0]->getHeight()));
     glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
 
     //DownSample further
@@ -225,7 +231,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
     {
         GL::heBindFbo(m_FboId[0][fboId]);
         m_pDownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
-        GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
+        GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[0][fboId]->getWidth(), (int)m_Texture[0][fboId]->getHeight()));
 
         glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
     }
@@ -238,11 +244,11 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
         {
             GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
-            GRAPHICS->setViewport(he::RectI(0, 0, (int)m_Texture[pass == 0?1:0][fboId]->getWidth(), (int)m_Texture[pass == 0?1:0][fboId]->getHeight()));
+            GL::heSetViewport(he::RectI(0, 0, (int)m_Texture[pass == 0?1:0][fboId]->getWidth(), (int)m_Texture[pass == 0?1:0][fboId]->getHeight()));
             glDrawElements(GL_TRIANGLES, m_Mesh->getNumIndices(), m_Mesh->getIndexType(), 0);
         }
     }
-    GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    GL::heSetViewport(oldViewport);
 }
 
 const Texture2D* Bloom::getBloom( byte level ) const

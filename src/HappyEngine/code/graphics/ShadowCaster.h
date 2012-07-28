@@ -33,6 +33,9 @@ class Shader;
 class Texture2D;
 class ModelMesh;
 class Material;
+class RenderTarget;
+class View;
+class CameraOrtho;
 
 class ShadowCaster
 {
@@ -40,17 +43,21 @@ public:
     ShadowCaster();
     virtual ~ShadowCaster();
 
-    void init(const RenderSettings& settings);
-    void setSettings(const RenderSettings& settings);
+    void init(View* view);
     
-    void render(const DrawListContainer& elements, DirectionalLight* directionalLight);
+    void render();
 
 private:
+    void onSettingsChanged();
+    void setShadowCamLens(float nearClip, float farClip, CameraOrtho& inoutCam);
 
-    uint m_FboId;
+    ShadowSettings m_Settings;
+
+    View* m_View;
+    RenderTarget* m_RenderTarget;
 
     const static int COUNT = DirectionalLight::CASCADES + 1;
-    Texture2D* m_pShadowTexture[COUNT]; //first = blur temp
+    Texture2D* m_ShadowTexture[COUNT]; //first = blur temp
     uint m_DepthRenderbuff;
     
     Material* m_MatSingle;

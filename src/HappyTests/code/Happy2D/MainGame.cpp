@@ -60,7 +60,7 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    CAMERAMANAGER->addCamera("default", NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    CAMERAMANAGER->addCamera("default", NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     CAMERAMANAGER->setActiveCamera("default");
 
     //m_pWebView = GUI_NEW->createWebView(true);

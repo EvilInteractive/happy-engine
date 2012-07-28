@@ -24,6 +24,7 @@
 #include "GraphicsEngine.h"
 #include "Renderer2D.h"
 #include "Vertex.h"
+#include "View.h"
 
 namespace he {
 namespace gfx {
@@ -94,12 +95,13 @@ Canvas2D::Canvas2D(Data* pData, const vec2& size) :     m_pBufferData(pData),
 {
     init();
 
-    if (m_CanvasSize.x == (float)GRAPHICS->getScreenWidth() &&
-        m_CanvasSize.y == (float)GRAPHICS->getScreenHeight())
-    {
-        m_FullScreen = true;
-    }
-    else
+    // TODO:
+//     if (m_CanvasSize.x == (float)GRAPHICS->getScreenWidth() &&
+//         m_CanvasSize.y == (float)GRAPHICS->getScreenHeight())
+//     {
+//         m_FullScreen = true;
+//     }
+//     else
     {
         m_FullScreen = false;
     }
@@ -297,7 +299,7 @@ void Canvas2D::draw(const vec2& pos)
 
     if (m_FullScreen)
     {
-        vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
+        vec2 dim((float)GRAPHICS->getActiveView()->getViewport().width, (float)GRAPHICS->getActiveView()->getViewport().height);
 
         if (m_CanvasSize != dim)
         {

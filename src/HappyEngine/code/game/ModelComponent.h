@@ -28,7 +28,9 @@
 
 namespace he {
 namespace ge {
-    
+
+class ModelComponent;
+
 class ModelComponent : public gfx::DefaultSingleDrawable, public IComponent
 {
 public:
@@ -60,20 +62,32 @@ public:
 
     void setMaterial(const ObjectHandle& material);
 
+    virtual bool isDynamic() const = 0;
+    virtual bool isSleeping() const = 0; 
+
+protected:
+    Entity* m_Parent;
+
 private:
-    const gfx::ModelMesh* m_pModel;
+    const gfx::ModelMesh* m_Model;
     const gfx::Material* m_Material;
 
-    mat44 m_mtxLocalTransform;
-    
-    Entity* m_pParent;
-
-    bool m_AttachedToScene;
-    
+    mat44 m_mtxLocalTransform;   
 
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);
     ModelComponent& operator=(const ModelComponent&);
+};
+
+class StaticModelComponent : public ModelComponent
+{
+    virtual bool isDynamic() const { return false; };
+    virtual bool isSleeping() const { return true; }; 
+};
+class DynamicModelComponent : public ModelComponent
+{
+    virtual bool isDynamic() const { return true; };
+    virtual bool isSleeping() const; 
 };
 
 } } //end namespace

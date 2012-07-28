@@ -28,6 +28,9 @@
 #include "IInstancible.h"
 
 namespace he {
+namespace gfx {
+    class InstancingController;
+}
 namespace ge {
     
 class InstancedModelComponent : public IComponent, public gfx::IInstancible, public gfx::I3DObject
@@ -61,15 +64,15 @@ public:
     const mat44& getLocalTransform() const;
 
     void setController(const std::string& key);
-    const std::string& getController() const;
+    const gfx::InstancingController* getController() const;
 
 private:
-    std::string m_ControllerKey;
+    gfx::InstancingController* m_Controller;
     uint m_InstanceId;
 
     mat44 m_mtxLocalTransform;
 
-    Entity* m_pParent;
+    Entity* m_Parent;
     
 
     //Disable default copy constructor and default assignment operator

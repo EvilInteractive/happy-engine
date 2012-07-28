@@ -26,9 +26,13 @@
 #include "ContentManager.h"
 #include "Renderer2D.h"
 #include "CameraManager.h"
-#include "Camera.h"
 #include "LightManager.h"
 #include "ShaderVar.h"
+#include "View.h"
+#include "Scene.h"
+#include "RenderTarget.h"
+#include "CameraPerspective.h"
+#include "CameraOrtho.h"
 
 namespace he {
 namespace gfx {
@@ -39,12 +43,13 @@ ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad
     CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
     for (int i = 0; i < COUNT; ++i)
     {
-        m_pShadowTexture[i] = nullptr;
+        m_ShadowTexture[i] = nullptr;
     }
     for (uint i(0); i < s_ShadowBlurPasses; ++i)
     {
     	m_pShadowBlurShaderPass[i] = nullptr;
     }
+    he_memset(&m_Settings, 0, sizeof(ShadowSettings));
 }
 
 
@@ -52,8 +57,8 @@ ShadowCaster::~ShadowCaster()
 {
     for (int i = 0; i < COUNT; ++i)
     {
-        if (m_pShadowTexture[i] != nullptr)
-            m_pShadowTexture[i]->release();
+        if (m_ShadowTexture[i] != nullptr)
+            m_ShadowTexture[i]->release();
     }
     if (m_pQuad != nullptr)
         m_pQuad->release();
@@ -70,44 +75,15 @@ ShadowCaster::~ShadowCaster()
     if (m_MatInstanced != nullptr)
         m_MatInstanced->release();
 
-    glDeleteRenderbuffers(1, &m_DepthRenderbuff);
-    glDeleteFramebuffers(1, &m_FboId);
+    delete m_RenderTarget;
 }
 
-void ShadowCaster::init(const RenderSettings& settings)
+void ShadowCaster::init(View* view)
 {
-    m_ShadowSize = static_cast<short>(512 * pow(2.0f, settings.shadowMult - 1.0f));
-    HE_ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
-    //////////////////////////////////////////////////////////////////////////
-    ///                             Textures                               ///
-    //////////////////////////////////////////////////////////////////////////
-    for (int i = 0; i < COUNT; ++i)
-    {
-        if (m_pShadowTexture[i] != nullptr)
-            m_pShadowTexture[i]->release();
-        ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
-        m_pShadowTexture[i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
-        m_pShadowTexture[i]->setName("ShadowCaster::m_pShadowTexture[i]");
-        m_pShadowTexture[i]->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RG16, true);
-        m_pShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 0, 
-            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float, 0 );
-    }
-    //////////////////////////////////////////////////////////////////////////
-    ///                            LOAD FBO's                              ///
-    //////////////////////////////////////////////////////////////////////////
-    glGenRenderbuffers(1, &m_DepthRenderbuff);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderbuff);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_ShadowSize, m_ShadowSize);
+    m_View = view;
 
-    glGenFramebuffers(1, &m_FboId);
-    GL::heBindFbo(m_FboId);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[0]->getID(), 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderbuff);
-    err::checkFboStatus("shadow");
-
-    GL::heBindFbo(0);
-
-
+    onSettingsChanged();
+ 
     //////////////////////////////////////////////////////////////////////////
     ///                             Shaders                                ///
     //////////////////////////////////////////////////////////////////////////
@@ -206,26 +182,46 @@ void ShadowCaster::init(const RenderSettings& settings)
     pShadowShaderSkinned->release();
     pShadowShaderInstanced->release();
 }
-void ShadowCaster::setSettings( const RenderSettings& settings )
+void ShadowCaster::onSettingsChanged()
 {
-    if (m_ShadowSize != settings.shadowMult * 512)
-    {
-        m_ShadowSize = 512 * settings.shadowMult;
-        //////////////////////////////////////////////////////////////////////////
-        ///                             Clean                                  ///
-        //////////////////////////////////////////////////////////////////////////
-        if (m_DepthRenderbuff != UINT_MAX)
-            glDeleteRenderbuffers(1, &m_DepthRenderbuff);
-        if (m_FboId != UINT_MAX)
-            glDeleteFramebuffers(1, &m_FboId);
+    ushort newShadowSize(static_cast<short>(512 * pow(2.0f, m_Settings.shadowMult - 1.0f)));
+    HE_ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
 
-        init(settings);
+    bool reload(newShadowSize != m_ShadowSize);
+
+    if (reload == true)
+    {
+        //////////////////////////////////////////////////////////////////////////
+        ///                             Textures                               ///
+        //////////////////////////////////////////////////////////////////////////
+        for (int i = 0; i < COUNT; ++i)
+        {
+            if (m_ShadowTexture[i] != nullptr)
+                m_ShadowTexture[i]->release();
+            ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+            m_ShadowTexture[i] = ResourceFactory<Texture2D>::getInstance()->get(handle);
+            m_ShadowTexture[i]->setName("ShadowCaster::m_ShadowTexture[i]");
+            m_ShadowTexture[i]->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RG16, true);
+            m_ShadowTexture[i]->setData(m_ShadowSize, m_ShadowSize, 0, 
+                gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Float, 0 );
+        }
+        //////////////////////////////////////////////////////////////////////////
+        ///                            LOAD FBO's                              ///
+        //////////////////////////////////////////////////////////////////////////
+        m_RenderTarget->removeAllTargets();
+        m_RenderTarget->setDepthTarget();
+        for (int i = 0; i < COUNT; ++i)
+        {
+            m_RenderTarget->addTextureTarget(m_ShadowTexture[i]);
+        }
+        m_RenderTarget->init();
     }
 }
 
-mat44 getProjection(const mat44& mtxShadowView, float nearClip, float farClip)
+void ShadowCaster::setShadowCamLens(float nearClip, float farClip, CameraOrtho& inoutCam)
 {
-    const Camera& camera(*CAMERAMANAGER->getActiveCamera());
+    const CameraPerspective& camera(*m_View->getScene()->getCameraManager()->getActiveCamera());
+    const mat44& mtxShadowView(inoutCam.getView());
 
     float wFar = farClip * tan(camera.getFov()),          //half width
           hFar = wFar * camera.getAspectRatio();          //half height
@@ -253,31 +249,14 @@ mat44 getProjection(const mat44& mtxShadowView, float nearClip, float farClip)
         maxP = maxPerComponent(maxP, p);
     });
     float res(max(maxP.x - minP.x, maxP.y - minP.y));
-    return mat44::createOrthoLH(minP.x, minP.x + res, minP.y + res, minP.y, 1, 500);
+    inoutCam.setLens(minP.x, minP.x + res, minP.y + res, minP.y, 1, 500);
 }
-struct ShadowCam : public ICamera
+
+void ShadowCaster::render()
 {
-    mat44 viewProjection;
-    mat44 view;
-    mat44 projection;
+    const Scene* scene(m_View->getScene());
+    DirectionalLight* directionalLight(scene->getLightManager()->getDirectionalLight());
 
-    float nearClip;
-    float farClip;
-
-    vec3 position;
-    vec3 look;
-
-    virtual const mat44& getView() const { return view; }
-    virtual const mat44& getProjection() const { return projection; }
-    virtual const mat44& getViewProjection() const { return viewProjection; };
-
-    virtual float getNearClip() const { return nearClip; };
-    virtual float getFarClip() const { return farClip; };
-    virtual vec3 getPosition() const { return position; };
-    virtual const vec3& getLook() const { return look; };
-};
-void ShadowCaster::render(const DrawListContainer& drawables, DirectionalLight* directionalLight )
-{
     vec3 shadowLook(-normalize(directionalLight->getDirection()));
     vec3 up(vec3::up);
     if (dot(up, shadowLook) > 0.99f)
@@ -285,108 +264,56 @@ void ShadowCaster::render(const DrawListContainer& drawables, DirectionalLight* 
     vec3 right(normalize(cross(shadowLook, up)));
     up = normalize(cross(shadowLook, right));
 
-    const Camera& camera(*CAMERAMANAGER->getActiveCamera());
+    const CameraPerspective& camera(*m_View->getScene()->getCameraManager()->getActiveCamera());
 
-    mat44 mtxShadowView(mat44::createLookAtLH(camera.getPosition() - shadowLook*250, camera.getPosition(), up));
-    mat44 mtxShadowProjection[COUNT-1];
-    mtxShadowProjection[0] = getProjection(mtxShadowView, 1, 20);
-    mtxShadowProjection[1] = getProjection(mtxShadowView, 1, 40); 
-    mtxShadowProjection[2] = getProjection(mtxShadowView, 20, 60);
-    mtxShadowProjection[3] = getProjection(mtxShadowView, 40, camera.getFarClip());
+    CameraOrtho shadowCam[4];
+    for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
+    {
+        shadowCam[i].lookAt(camera.getPosition() - shadowLook*250, camera.getPosition(), up);
+    }
+    setShadowCamLens(1, 20, shadowCam[0]);
+    setShadowCamLens(1, 40, shadowCam[1]); 
+    setShadowCamLens(20, 60, shadowCam[2]);
+    setShadowCamLens(40, camera.getFarClip(), shadowCam[3]);
     
 
     //Begin drawing
-    GL::heBindFbo(m_FboId);
-
-    const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers(1, buffers);
-
-    GRAPHICS->setViewport(he::RectI(0, 0, m_ShadowSize, m_ShadowSize));
-
-
     GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));   
-    //GL::heBlendFunc(BlendFunc_Zero, BlendFunc_One);
-    //GL::heBlendEquation(BlendEquation_Add);
+    GL::heSetViewport(he::RectI(0, 0, m_ShadowSize, m_ShadowSize));
     GL::heBlendEnabled(false);
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthWrite(true);
     GL::heSetDepthRead(true);
 
+
     for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
     {   
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0);
+        m_RenderTarget->prepareForRendering(1, i);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-        ShadowCam shadowCam;
-        shadowCam.projection = mtxShadowProjection[i - 1];
-        shadowCam.view = mtxShadowView;
-        shadowCam.viewProjection = shadowCam.projection * shadowCam.view;
-        shadowCam.look = shadowLook;
-        shadowCam.position = camera.getPosition() - shadowLook * 250;       // HACK: hard coded values  TODO !!
-        shadowCam.farClip = 500;
-        shadowCam.nearClip = 1;
         
-        //////////////////////////////////////////////////////////////////////////
-        ///                          Build DrawLists                           ///
-        //////////////////////////////////////////////////////////////////////////
-        std::vector<IDrawable*> culledDrawList;
-        std::vector<IDrawable*> culledSkinnedDrawList;
-
-        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Blended | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Single | DrawListContainer::F_Sub_Skinned, [&](IDrawable* pDrawable)
-        {
-            if (pDrawable->isVisible() && pDrawable->getCastsShadow() && pDrawable->getModelMesh()->isLoaded())
-            {
-                if (pDrawable->isInCamera(&shadowCam))
-                {
-                    if (pDrawable->isSkinned())
-                        culledSkinnedDrawList.push_back(pDrawable);
-                    else
-                        culledDrawList.push_back(pDrawable);
-                }
-            }
-        });
-
-        mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
-
-        // Sort
-        std::sort(culledDrawList.begin(), culledDrawList.end(), [](const IDrawable* d1, const IDrawable* d2)
-        {
-            return d1->getDrawPriority(CAMERAMANAGER->getActiveCamera()) > d2->getDrawPriority(CAMERAMANAGER->getActiveCamera());
-        });
-        std::sort(culledSkinnedDrawList.begin(), culledSkinnedDrawList.end(),  [](const IDrawable* d1, const IDrawable* d2)
-        {
-            return d1->getDrawPriority(CAMERAMANAGER->getActiveCamera()) > d2->getDrawPriority(CAMERAMANAGER->getActiveCamera());
-        });
-
         //////////////////////////////////////////////////////////////////////////
         ///                                 Draw                               ///
         //////////////////////////////////////////////////////////////////////////
-        std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
+        scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, &shadowCam[i-1], [&](IDrawable* drawable)
         {
-            pDrawable->applyMaterial(m_MatSingle, &shadowCam);
-            pDrawable->drawShadow();
-        });
-
-        std::for_each(culledSkinnedDrawList.cbegin(), culledSkinnedDrawList.cend(), [&](IDrawable* pDrawable)
-        {
-            pDrawable->applyMaterial(m_MatSkinned, &shadowCam);
-            pDrawable->drawShadow();
-        });
-
-        drawables.for_each(DrawListContainer::F_Loc_BeforePost | DrawListContainer::F_Main_Blended | DrawListContainer::F_Main_Opac | DrawListContainer::F_Sub_Instanced, [&](IDrawable* pDrawable)
-        {
-            if (pDrawable->getCastsShadow() && pDrawable->isVisible() && pDrawable->isInCamera(&shadowCam))
+            if (drawable->getCastsShadow() == true)
             {
-                pDrawable->applyMaterial(m_MatInstanced, &shadowCam);
-                pDrawable->drawShadow();
+                if (drawable->isSkinned())
+                    drawable->applyMaterial(m_MatSkinned, &shadowCam[i-1]);
+                else if (drawable->isSingle())
+                    drawable->applyMaterial(m_MatSingle, &shadowCam[i-1]);
+                else
+                    drawable->applyMaterial(m_MatInstanced, &shadowCam[i-1]);
+
+                drawable->drawShadow();
             }
         });
 
-        directionalLight->setShadowMatrix(i - 1, mtxShadowViewProjection * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
+        directionalLight->setShadowMatrix(i - 1, shadowCam[i-1].getViewProjection() * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
-    directionalLight->setShadowPosition(camera.getPosition() - shadowLook*250);
-    directionalLight->setShadowNearFar(1, 500);
+    directionalLight->setShadowPosition(shadowCam[0].getPosition());
+    directionalLight->setShadowNearFar(shadowCam[0].getNearClip(), shadowCam[COUNT - 1].getFarClip());
     //////////////////////////////////////////////////////////////////////////
     //                                 Blur                                 //
     //////////////////////////////////////////////////////////////////////////
@@ -396,37 +323,36 @@ void ShadowCaster::render(const DrawListContainer& drawables, DirectionalLight* 
     GL::heBindVao(m_pQuad->getVertexShadowArraysID());
     for (int i(1); i < COUNT; ++i)
     {      
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i - 1]->getID(), 0); 
-        m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_pShadowTexture[i]);
+        m_RenderTarget->prepareForRendering(1, i - 1);
+        m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_ShadowTexture[i]);
         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
     }
     m_pShadowBlurShaderPass[1]->bind();
     for (int i(COUNT - 1); i >= 1; --i)
     {         
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pShadowTexture[i]->getID(), 0); 
-        m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_pShadowTexture[i - 1]);
+        m_RenderTarget->prepareForRendering(1, i);
+        m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_ShadowTexture[i - 1]);
         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
     }
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0); 
+
     for (int i(0); i < COUNT - 1; ++i)
     {
-        GL::heBindTexture2D(0, m_pShadowTexture[i+1]->getID());
-        m_pShadowTexture[i+1]->generateMipMaps();
-        directionalLight->setShadowMap(i, m_pShadowTexture[i+1]);
+        m_ShadowTexture[i+1]->generateMipMaps();
+        directionalLight->setShadowMap(i, m_ShadowTexture[i+1]);
     }
 
-    GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    GL::heSetViewport(m_View->getViewport());
 
     if (m_ShowShadowDebug)
     {
-        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0) != nullptr)
-            GUI->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), false, vec2(256, 256));
-        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1) != nullptr)
-            GUI->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), false, vec2(256, 256));
-        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2) != nullptr)
-            GUI->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), false, vec2(256, 256));
-        if (GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3) != nullptr)
-            GUI->drawTexture2DToScreen(GRAPHICS->getLightManager()->getDirectionalLight()->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), false, vec2(256, 256));
+        if (directionalLight->getShadowMap(0) != nullptr)
+            GUI->drawTexture2DToScreen(directionalLight->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), false, vec2(256, 256));
+        if (directionalLight->getShadowMap(1) != nullptr)
+            GUI->drawTexture2DToScreen(directionalLight->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), false, vec2(256, 256));
+        if (directionalLight->getShadowMap(2) != nullptr)
+            GUI->drawTexture2DToScreen(directionalLight->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), false, vec2(256, 256));
+        if (directionalLight->getShadowMap(3) != nullptr)
+            GUI->drawTexture2DToScreen(directionalLight->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), false, vec2(256, 256));
     }
 }
 

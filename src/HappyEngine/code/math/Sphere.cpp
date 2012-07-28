@@ -20,13 +20,8 @@
 #include "HappyPCH.h" 
 
 #include "Sphere.h"
-#include "HappyNew.h"
-#include "MathFunctions.h"
-#include <algorithm>
 
 namespace he {
-
-namespace shapes {
 
 Sphere::Sphere(): m_Position(0, 0, 0), m_Radius(0.0f)
 {
@@ -40,16 +35,35 @@ Sphere::~Sphere()
 {
 }
 
-const vec3& Sphere::getPosition() const
+bool Sphere::intersectTest(const Sphere& other) const
 {
-    return m_Position;
+    vec3 axis(other.m_Position - m_Position);
+    float intersectDist(m_Radius + other.m_Radius);
+
+    if (lengthSqr(axis) < intersectDist * intersectDist)
+        return true;
+
+    return false;
 }
-float Sphere::getRadius() const
+IntersectResult Sphere::intersect(const Sphere& other) const
 {
-    return m_Radius;
+    vec3 axis(other.m_Position - m_Position);
+
+    float intersectDistSq(m_Radius + other.m_Radius);
+    intersectDistSq *= intersectDistSq;
+
+    float distSq(lengthSqr(axis));
+
+    if (distSq < intersectDistSq)
+        if (distSq + sqr(other.m_Radius) < sqr(m_Radius))
+            return IntersectResult_Inside;
+        else
+            return IntersectResult_Intersecting;
+
+    return IntersectResult_Outside;
 }
 
-Sphere Sphere::getBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset)
+Sphere Sphere::calculateBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset)
 {
     vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
          max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -57,8 +71,8 @@ Sphere Sphere::getBoundingSphere(const void* pointCloud, uint num, uint stride, 
     for(uint i = 0; i < num; ++i)
     {
         const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
-        min = he::minPerComponent(min, p);
-        max = he::maxPerComponent(max, p);
+        he::minPerComponent(min, p, min);
+        he::maxPerComponent(max, p, max);
     }
     vec3 center((min + max) / 2.0f);
     float radius(length(min - center));
@@ -66,4 +80,4 @@ Sphere Sphere::getBoundingSphere(const void* pointCloud, uint num, uint stride, 
     return Sphere(center, radius);
 }
 
-} }//end namespace
+} //end namespace

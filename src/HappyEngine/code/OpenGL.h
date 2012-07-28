@@ -79,23 +79,27 @@ enum BlendEquation
 class GL
 {
 public:
-    //Reset
+    // Reset
     static void reset();
     static void init();
 
-    //Clear
+    // Misc
+    static void heSetViewport(const RectI& viewport);
+    static const RectI& heGetViewport();
+
+    // Clear
     static void heClearColor(const Color& color);
 
-    //Depth
+    // Depth
     static void heSetDepthRead(bool read);
     static void heSetDepthFunc(DepthFunc func);
     static void heSetDepthWrite(bool write);
 
-    //Culling
+    // Culling
     static void heSetCullFace(bool cullFrontFace);
     static void heSetWindingFrontFace(bool cw);
 
-    //Binding
+    // Binding
     static void heBindFbo(uint fbo);
     static void heBindVao(uint vao);
     static void heBindTexture2D(uint tex);
@@ -103,17 +107,17 @@ public:
     static void heBindTextureCube(uint texPos, uint tex);
     static void heBindUniformBuffer(uint uboId, uint bufferId);
 
-    //Blending
+    // Blending
     static void heBlendEnabled(bool enabled);
     static void heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor);
     static void heBlendEquation(BlendEquation eq);
     static void heBlendColor(const Color& color);
 
-    //Scissor
+    // Scissor
     static void heScissorEnabled(bool enabled);
     static void heScissorRect(const RectI& rect);
 
-    //line smoothing
+    // Line smoothing
     static void heLineSmoothEnabled(bool enabled);
 
     // Texture
@@ -122,18 +126,21 @@ public:
 
 
 private:
-    //Clear
+    // Clear
     static Color m_ClearColor;
 
-    //Depth
+    // Misc
+    static RectI m_Viewport;
+
+    // Depth
     static bool m_DepthRead, m_DepthWrite;
     static DepthFunc m_DepthFunc;
 
-    //Culling
+    // Culling
     static bool m_CullFrontFace;
     static bool m_CullCWFrontFace;
 
-    //Binding
+    // Binding
     static uint m_BoundFbo, m_BoundVao;
     const static int MAX_UBO = 50;
     static uint m_BoundUbo[MAX_UBO];
@@ -141,17 +148,17 @@ private:
     static uint m_BoundTex2D[MAX_SAMPLERS];
     static uint m_ActiveTex;
 
-    //Blending
+    // Blending
     static bool m_BlendEnabled;
     static BlendFunc m_BlendSrc, m_BlendDest;
     static BlendEquation m_BlendEquation;
     static Color m_BlendColor;
 
-    //Scissor
+    // Scissor
     static bool m_ScissorEnabled;
     static RectI m_ScissorRect;
 
-    //Line smoothing
+    // Line smoothing
     static bool m_LineSmoothEnabled;
 
     // Texture

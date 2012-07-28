@@ -26,15 +26,19 @@
 #include "IPickable.h"
 
 namespace he {
+class Bound;
 namespace gfx {
 
 class ICamera;
 class ModelMesh;
 class Material;
+class CullOctreeNode;
+class Scene;
 
 class IDrawable : public IPickable
 {
 public:
+    IDrawable(): m_Node(nullptr) {}
     virtual ~IDrawable() {}
 
     virtual const Material* getMaterial() const = 0;
@@ -45,45 +49,38 @@ public:
     
     virtual bool getCastsShadow() const = 0;
     virtual void setCastsShadow(bool castShadow) = 0;
+    
+    virtual const Bound& getBound() const = 0;
 
-    virtual bool isVisible() const = 0;
-    virtual void setVisible(bool visible) = 0;
-
-    virtual bool isInCamera(const ICamera* pCamera) const = 0; 
-    virtual float getDrawPriority(const ICamera* pCamera) const = 0; 
-
+    virtual void detachFromScene() = 0;
+    virtual void attachToScene(Scene* scene, bool dynamic) = 0;
+    virtual Scene* getScene() const = 0;
+    virtual bool isAttachedToScene() const = 0;
+        
     virtual void draw() = 0;
     virtual void drawShadow() = 0;
 
     virtual bool isSingle() const = 0;
     virtual bool isInstanced() const = 0;
     virtual bool isSkinned() const = 0;
+
+    // needs to reevaluate octree node every draw when dynamicly inserted
+    // if sleeping this object will be ignored when updating dynamic bounds
+    // Hint: set this value to physics->isSleeping()
+    virtual bool isSleeping() const = 0; 
+
+    //////////////////////////////////////////////////////////////////////////
+    CullOctreeNode* getNode() const { return m_Node; };
+    void setNode(CullOctreeNode* node) { m_Node = node; };
+
+private:
+    CullOctreeNode* m_Node;
 }; 
 
 class ISingleDrawable : public I3DObject, public IDrawable
 {
 public:
     virtual ~ISingleDrawable() {}
-
-    virtual const Material* getMaterial() const = 0;
-    virtual void applyMaterial(const ICamera* pCamera) const = 0; 
-    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
-
-    virtual const ModelMesh* getModelMesh() const = 0;
-
-    virtual mat44 getWorldMatrix() const = 0;
-
-    virtual bool getCastsShadow() const = 0;
-    virtual void setCastsShadow(bool castShadow) = 0;
-
-    virtual bool isVisible() const = 0;
-    virtual void setVisible(bool visible) = 0;
-
-    virtual bool isInCamera(const ICamera* pCamera) const = 0; 
-    virtual float getDrawPriority(const ICamera* pCamera) const = 0; 
-
-    virtual void draw() = 0;
-    virtual void drawShadow() = 0;
 
     virtual bool isSingle() const { return true; }
     virtual bool isInstanced() const { return false; }
@@ -95,27 +92,7 @@ class IInstancedDrawable : public IDrawable
 {
 public:
     virtual ~IInstancedDrawable() {}
-
-    virtual const Material* getMaterial() const = 0;
-    virtual void applyMaterial(const ICamera* pCamera) const = 0;
-    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
-
-    virtual const ModelMesh* getModelMesh() const = 0;
-
-    virtual bool getCastsShadow() const = 0;
-    virtual void setCastsShadow(bool castShadow) = 0;
-
-    virtual bool isVisible() const = 0;
-    virtual void setVisible(bool visible) = 0;
-
-    virtual bool isInCamera(const ICamera* pCamera) const = 0; 
-    virtual float getDrawPriority(const ICamera* pCamera) const = 0; 
-
-    virtual uint getCount() const = 0;
-
-    virtual void draw() = 0;
-    virtual void drawShadow() = 0;
-
+    
     virtual bool isSingle() const { return false; }
     virtual bool isInstanced() const { return true; }
     virtual bool isSkinned() const { return false; }
@@ -127,26 +104,7 @@ class ISkinnedDrawable : public I3DObject, public IDrawable
 public:
     virtual ~ISkinnedDrawable() {}
 
-    virtual const Material* getMaterial() const = 0;
-    virtual void applyMaterial(const ICamera* pCamera) const = 0;
-    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
-
-    virtual const ModelMesh* getModelMesh() const = 0;
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
-
-    virtual mat44 getWorldMatrix() const = 0;
-
-    virtual bool getCastsShadow() const = 0;
-    virtual void setCastsShadow(bool castShadow) = 0;
-
-    virtual bool isVisible() const = 0;
-    virtual void setVisible(bool visible) = 0;
-
-    virtual bool isInCamera(const ICamera* pCamera) const = 0; 
-    virtual float getDrawPriority(const ICamera* pCamera) const = 0; 
-
-    virtual void draw() = 0;
-    virtual void drawShadow() = 0;
 
     virtual bool isSingle() const { return true; }
     virtual bool isInstanced() const { return false; }

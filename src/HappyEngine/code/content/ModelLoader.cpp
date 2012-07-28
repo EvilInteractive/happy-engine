@@ -23,13 +23,9 @@
 #include "HappyPCH.h" 
 
 #include "ModelLoader.h"
-#include "HappyNew.h"
 #include "BinObjLoader.h"
 #include "ObjLoader.h"
-#include "HappyEngine.h"
-#include "Console.h"
-
-#include <vector>
+#include "ModelMesh.h"
 
 namespace he {
 namespace ct {

@@ -308,4 +308,16 @@ void TextBox::setColors(	const Color& backgroundColor,
 	m_Colors["edge"] = edgeColor;
 }
 
+void TextBox::setSize( const vec2& size )
+{
+    m_Rect.width = size.x;
+    m_Rect.height = size.y;
+}
+
+void TextBox::setPosition( const vec2& pos )
+{
+    m_Rect.x = pos.x;
+    m_Rect.y = pos.y;
+}
+
 } } //end namespace

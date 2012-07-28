@@ -23,6 +23,8 @@
 #include "HappyNew.h"
 #include "Mouse.h"
 #include "Keyboard.h"
+#include "GraphicsEngine.h"
+#include "Window.h"
 
 
 namespace he {
@@ -55,7 +57,9 @@ void ControlsManager::tick()
     vec2 mousePos(-1.0f,-1.0f);
     std::vector<char> chars;
 
-    std::for_each(HAPPYENGINE->getEvents().cbegin(), HAPPYENGINE->getEvents().cend(), [&](sf::Event ev)
+    const std::vector<sf::Event>& events(GRAPHICS->getActiveWindow()->getEvents());
+
+    std::for_each(events.cbegin(), events.cend(), [&](sf::Event ev)
     {
         switch(ev.type)
         {

@@ -23,7 +23,7 @@
 #pragma once
 
 namespace he {
-class mat44;
+class Bound;
 
 namespace gfx {
 
@@ -39,9 +39,10 @@ public:
     virtual float getNearClip() const = 0;
     virtual float getFarClip() const = 0;
 
-    virtual vec3 getPosition() const = 0;
+    virtual const vec3& getPosition() const = 0;
     virtual const vec3& getLook() const = 0;
 
+    virtual IntersectResult intersect(const Bound& bound) const = 0;
 };  
 
 } } //end namespace

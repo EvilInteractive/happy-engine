@@ -20,17 +20,15 @@
 #include "HappyPCH.h" 
 
 #include "DynamicPhysicsComponent.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
 
 #include "Entity.h"
-#include "HappyEngine.h"
 #include "Game.h"
+#include "PhysicsDynamicActor.h"
 
 namespace he {
 namespace ge {
 
-DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
+DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr)
 {
 }
 
@@ -38,17 +36,20 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
     GAME->removeFromTickList(this);
-    delete m_pDynamicActor;
+    m_Parent->removeSleepEvaluator(boost::bind(&px::PhysicsDynamicActor::isSleeping, m_DynamicActor));
+    delete m_DynamicActor;
 }
 
-void DynamicPhysicsComponent::init( Entity* pParent )
+void DynamicPhysicsComponent::init( Entity* parent )
 {
-    m_pParent = pParent;
-    m_pDynamicActor = NEW px::PhysicsDynamicActor(m_pParent->getWorldMatrix());
+    HE_ASSERT(parent != nullptr, "Component must have a parent!");
+    m_Parent = parent;
+    m_DynamicActor = NEW px::PhysicsDynamicActor(m_Parent->getWorldMatrix());
+    m_Parent->addSleepEvaluator(boost::bind(&px::PhysicsDynamicActor::isSleeping, m_DynamicActor));
     GAME->addToTickList(this);
     
     //if (HAPPYENGINE->isEditor())
-    //    m_pDynamicActor->setKeyframed(true);
+    //    m_DynamicActor->setKeyframed(true);
 }
 
 void DynamicPhysicsComponent::serialize(SerializerStream& /*stream*/)
@@ -63,20 +64,20 @@ void DynamicPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 void DynamicPhysicsComponent::tick( float /*dTime*/ )
 {
-    m_pParent->setWorldMatrix(m_pDynamicActor->getPose());
+    m_Parent->setWorldMatrix(m_DynamicActor->getPose());
 }
 
 
-void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass, 
+void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, float mass, 
     uint32 collisionGroup, uint32 collisionGroupAgainst, const mat44& localPose )
 {
-    HE_ASSERT(m_pDynamicActor != nullptr, "attach component first to entity");
-    m_pDynamicActor->addShape(pShape, material, mass, collisionGroup, collisionGroupAgainst, localPose);
+    HE_ASSERT(m_DynamicActor != nullptr, "attach component first to entity");
+    m_DynamicActor->addShape(shape, material, mass, collisionGroup, collisionGroupAgainst, localPose);
 }
 
 px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
 {
-    return m_pDynamicActor;
+    return m_DynamicActor;
 }
 
 } } //end namespace

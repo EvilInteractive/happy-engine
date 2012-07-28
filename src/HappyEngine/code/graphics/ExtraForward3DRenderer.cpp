@@ -23,9 +23,10 @@
 #include "ExtraForward3DRenderer.h"
 
 #include "GraphicsEngine.h"
-#include "DrawManager.h"
 #include "Renderer2D.h"
 #include "Vertex.h"
+#include "SimpleColorEffect.h"
+#include "BillboardEffect.h"
 
 namespace he {
 namespace gfx {
@@ -102,7 +103,7 @@ void ExtraForward3DRenderer::init()
     resize();    
 }
 
-void ExtraForward3DRenderer::begin(const Camera* pCamera)
+void ExtraForward3DRenderer::begin(const CameraPerspective* pCamera)
 {
     vec2 screenDim(static_cast<float>(GRAPHICS->getScreenWidth()), static_cast<float>(GRAPHICS->getScreenHeight()));
     if (m_ScreenDimensions != screenDim)

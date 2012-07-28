@@ -26,7 +26,12 @@ namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
     
-ModelMesh::ModelMesh(): m_NumVertices(0), m_NumIndices(0), m_isLoaded(false), m_isVisible(true)
+ModelMesh::ModelMesh(): 
+    m_NumVertices(0), 
+    m_NumIndices(0), 
+    m_isLoaded(false), 
+    m_isVisible(true),
+    m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
 {
 }
 
@@ -71,7 +76,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout&
             boneWeightOffset = e.getByteOffset();
         }
     });
-    m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getSize(), posOffset);
+    m_Bound = Bound(AABB::calculateBoundingAABB(pVertices, num, vertexLayout.getSize(), posOffset));
 
     GL::heBindVao(m_VaoID[0]);
 
@@ -205,9 +210,9 @@ uint ModelMesh::getIndexType() const
     return m_IndexType;
 }
 
-const shapes::Sphere& ModelMesh::getBoundingSphere() const
+const Bound& ModelMesh::getBound() const
 {
-    return m_BoundingSphere;
+    return m_Bound;
 }
 
 he::uint ModelMesh::getVertexShadowArraysID() const

@@ -24,10 +24,14 @@
 
 #include "IComponent.h"
 #include "ITickable.h"
-#include "IPhysicsShape.h"
-#include "PhysicsDynamicActor.h"
 
 namespace he {
+namespace px {
+    class PhysicsDynamicActor;
+    class IPhysicsShape;
+    class PhysicsMaterial;
+}
+
 namespace ge {
 
 class DynamicPhysicsComponent : public IComponent, public ITickable
@@ -51,16 +55,16 @@ public:
     virtual void tick(float dTime);
     //////////////////////////////////////////////////////////////////////////
     
-    void addShape( const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass, 
+    void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, float mass, 
         uint32 collisionGroup, uint32 collisionGroupAgainst, const mat44& localPose = mat44::Identity);
 
     px::PhysicsDynamicActor* getDynamicActor() const;
 
 private:
 
-    px::PhysicsDynamicActor* m_pDynamicActor;
+    px::PhysicsDynamicActor* m_DynamicActor;
     
-    Entity* m_pParent;
+    Entity* m_Parent;
     
 
     //Disable default copy constructor and default assignment operator

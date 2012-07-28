@@ -29,6 +29,8 @@
 #include "SpotLight.h"
 #include "PointLight.h"
 
+#include "Scene.h"
+
 namespace he {
 namespace ge {
 
@@ -41,14 +43,15 @@ PointLightComponent::PointLightComponent(): m_PointLight(ObjectHandle::unassigne
 
 PointLightComponent::~PointLightComponent()
 {
-    GRAPHICS->getLightManager()->remove(m_PointLight);
+    m_Parent->getScene()->getLightManager()->remove(m_PointLight);
     GAME->removeFromTickList(this);
 }
 
-void PointLightComponent::init(Entity* pParent)
+void PointLightComponent::init(Entity* parent)
 {
-    m_Parent = pParent;
-    m_PointLight = GRAPHICS->getLightManager()->addPointLight(m_Offset,
+    HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
+    m_Parent = parent;
+    m_PointLight = m_Parent->getScene()->getLightManager()->addPointLight(m_Offset,
                                                                Color(1.0f, 1.0f, 1.0f),
                                                                1.0f,
                                                                0.0f,
@@ -180,15 +183,16 @@ SpotLightComponent::~SpotLightComponent()
 {
     if (m_SpotLight != ObjectHandle::unassigned)
     {
-        GRAPHICS->getLightManager()->remove(m_SpotLight);
+        m_Parent->getScene()->getLightManager()->remove(m_SpotLight);
         GAME->removeFromTickList(this);
     }
 }
 
 void SpotLightComponent::init( Entity* parent )
 {
+    HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
-    m_SpotLight = GRAPHICS->getLightManager()->addSpotLight(
+    m_SpotLight = m_Parent->getScene()->getLightManager()->addSpotLight(
         m_Offset,
         m_Direction,
         Color(1.0f, 1.0f, 1.0f),

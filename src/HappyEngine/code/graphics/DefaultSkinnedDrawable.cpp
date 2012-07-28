@@ -20,15 +20,15 @@
 #include "HappyPCH.h" 
 
 #include "DefaultSkinnedDrawable.h"
-#include "DrawManager.h"
 #include "ICamera.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
 
 namespace he {
 namespace gfx {
 
-DefaultSkinnedDrawable::DefaultSkinnedDrawable()
+DefaultSkinnedDrawable::DefaultSkinnedDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
 {
 }
 
@@ -49,40 +49,12 @@ void DefaultSkinnedDrawable::applyMaterial( const Material* customMaterial, cons
 
 bool DefaultSkinnedDrawable::getCastsShadow() const
 {
-    return m_castsShadow;
+    return m_CastsShadow;
 }
 
 void DefaultSkinnedDrawable::setCastsShadow( bool castShadow )
 {
-    m_castsShadow = castShadow;
-}
-
-bool DefaultSkinnedDrawable::isVisible() const
-{
-    return m_isVisible && getModelMesh()->isLoaded();
-}
-
-void DefaultSkinnedDrawable::setVisible( bool visible )
-{
-    m_isVisible = visible;
-}
-
-bool DefaultSkinnedDrawable::isInCamera( const ICamera* pCamera ) const
-{
-    if (isVisible() == false)
-        return false;
-
-    float radius(max<float>(max<float>(getWorldMatrix()(0, 0), getWorldMatrix()(1, 1)), getWorldMatrix()(2, 2)) * getModelMesh()->getBoundingSphere().getRadius());
-    vec3 position(getWorldMatrix() * getModelMesh()->getBoundingSphere().getPosition());
-
-    shapes::Sphere sphere(position, radius);
-
-    return !DrawManager::viewClip(pCamera, sphere);
-}
-
-float DefaultSkinnedDrawable::getDrawPriority( const ICamera* pCamera ) const
-{
-    return FLT_MAX - lengthSqr(pCamera->getPosition() - vec3(getWorldMatrix()(0, 3), getWorldMatrix()(1, 3), getWorldMatrix()(2, 3)));
+    m_CastsShadow = castShadow;
 }
 
 void DefaultSkinnedDrawable::draw()
@@ -95,6 +67,34 @@ void DefaultSkinnedDrawable::drawShadow()
 {
     GL::heBindVao(getModelMesh()->getVertexShadowArraysID());
     glDrawElements(GL_TRIANGLES, getModelMesh()->getNumIndices(), getModelMesh()->getIndexType(), 0);
+}
+
+void DefaultSkinnedDrawable::detachFromScene()
+{
+    HE_IF_ASSERT(m_Scene != nullptr, "Object not attached to scene")
+    {
+        m_Scene->detachFromScene(this);
+        m_Scene = nullptr;
+    }
+}
+
+void DefaultSkinnedDrawable::attachToScene( Scene* scene, bool dynamic )
+{
+    HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
+    {
+        m_Scene = scene;
+        m_Scene->attachToScene(this, dynamic);
+    }
+}
+
+Scene* DefaultSkinnedDrawable::getScene() const
+{
+    return m_Scene;
+}
+
+bool DefaultSkinnedDrawable::isAttachedToScene() const
+{
+    return m_Scene != nullptr;
 }
 
 } } //end namespace

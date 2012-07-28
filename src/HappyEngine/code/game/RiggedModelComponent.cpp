@@ -29,24 +29,22 @@
 namespace he {
 namespace ge {
 
-RiggedModelComponent::RiggedModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_Material(nullptr)
+RiggedModelComponent::RiggedModelComponent(): m_Model(nullptr), m_Parent(nullptr), m_Material(nullptr)
 {
 }
 
 
 RiggedModelComponent::~RiggedModelComponent()
 {
-    if (m_pModel != nullptr)
-        m_pModel->release();
+    if (m_Model != nullptr)
+        m_Model->release();
     if (m_Material != nullptr)
         m_Material->release();
 }
 
-void RiggedModelComponent::init( Entity* pParent )
+void RiggedModelComponent::init( Entity* parent )
 {
-    m_pParent = pParent;
-    setVisible(false);
-    GRAPHICS->addToDrawList(this);
+    m_Parent = parent;
 }
 
 void RiggedModelComponent::serialize(SerializerStream& stream)
@@ -66,12 +64,12 @@ const gfx::Material* RiggedModelComponent::getMaterial() const
 
 const gfx::ModelMesh* RiggedModelComponent::getModelMesh() const
 {
-    return m_pModel;
+    return m_Model;
 }
 
 mat44 RiggedModelComponent::getWorldMatrix() const
 {
-    return m_pParent->getWorldMatrix() * m_mtxLocalTransform;
+    return m_Parent->getWorldMatrix() * m_mtxLocalTransform;
 }
 
 void RiggedModelComponent::setLocalTransform( const mat44& mtxWorld )
@@ -86,10 +84,10 @@ const mat44& RiggedModelComponent::getLocalTransform() const
 
 void RiggedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
 {
-    if (m_pModel != nullptr)
-        m_pModel->release();
+    if (m_Model != nullptr)
+        m_Model->release();
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
+    m_Model = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     m_BoneTransform.clear();
     m_Bones.clear();
 
@@ -97,8 +95,8 @@ void RiggedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
 }
 void RiggedModelComponent::modelLoadedCallback()
 {
-    m_BoneTransform.reserve(m_pModel->getBones().size());
-    std::for_each(m_pModel->getBones().cbegin(), m_pModel->getBones().cend(), [&](const gfx::Bone& bone)
+    m_BoneTransform.reserve(m_Model->getBones().size());
+    std::for_each(m_Model->getBones().cbegin(), m_Model->getBones().cend(), [&](const gfx::Bone& bone)
     {
         //m_BoneTransform.push_back(bone.m_BaseTransform);
         m_BoneTransform.push_back(mat44::Identity);
@@ -113,12 +111,12 @@ void RiggedModelComponent::modelLoadedCallback()
 
     if (m_BoneTransform.size() > 0)
     {
-        setVisible(true);
+
         onModelLoaded();
     }
     else
     {
-        HE_ERROR("SkinnedMesh error: no bones found in %s", m_pModel->getName());
+        HE_ERROR("SkinnedMesh error: no bones found in %s", m_Model->getName());
     }
 }
 

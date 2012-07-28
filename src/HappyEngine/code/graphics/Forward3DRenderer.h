@@ -30,6 +30,7 @@ namespace gfx {
 class Shader;
 class ModelMesh;
 class Texture2D;
+class RenderTarget;
 
 class Forward3DRenderer : public IRenderer
 {
@@ -40,36 +41,14 @@ public:
     virtual ~Forward3DRenderer();
 
     /* GENERAL */
-    virtual void init(const RenderSettings& settings, 
-        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget);
+    virtual void init( View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend);
 
-    virtual void setRenderSettings(const RenderSettings& settings);
-    virtual void onScreenResized();
+    virtual void draw();
 
-    virtual void draw(const DrawListContainer& drawList, uint renderFlags);
-
-    virtual void clear(bool color, bool normal, bool depth);
-
-    virtual bool getSupportsTranslucency() const { return true; }
-
-private:
-    void compileShaders();
-    void initFbo();
-
-    uint m_FboId;
-    uint m_DrawBuffers[2];
-
-    const Texture2D* m_pOutColorTexture;
-    bool m_OwnsColorBuffer;
-    const Texture2D* m_pOutNormalTexture;
-    const Texture2D* m_pOutDepthTexture;
-
-    ModelMesh* m_pQuad;
-
-    Shader* m_QuadShader;
-    uint m_QuadShaderTexPos;
-
-    RenderSettings m_Settings;
+private:    
+    const RenderTarget* m_RenderTarget;
+    View* m_View;
+    DrawListContainer::BlendFilter m_BlendFilter;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Forward3DRenderer(const Forward3DRenderer&);

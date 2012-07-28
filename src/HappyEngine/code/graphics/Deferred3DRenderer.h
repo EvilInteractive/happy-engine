@@ -37,6 +37,8 @@ class AutoExposure;
 class DrawSettings;
 class Texture2D;
 class ModelMesh;
+class RenderTarget;
+class Scene;
 
 class Deferred3DRenderer : public IRenderer
 {
@@ -109,42 +111,35 @@ public:
     Deferred3DRenderer();
     virtual ~Deferred3DRenderer();
 
-    virtual void init(const RenderSettings& settings, 
-        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget);
+    virtual void init(View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend);
 
-    virtual void setRenderSettings(const RenderSettings& settings);
-    virtual void onScreenResized();
-
-    virtual void draw(const DrawListContainer& drawList, uint renderFlags);
-
-    virtual void clear(bool color, bool normal, bool depth);
-
-    virtual bool getSupportsTranslucency() const { return false; }
+    virtual void draw();
 
 private:
     static BufferLayout s_VertexLayoutFullscreenQuad;
 
+    void onViewResized();
     void compileShaders();
 
-    void postAmbDirIllLight();
-    void postPointLights();
-    void postSpotLights();
+    void postAmbDirIllLight(const Scene* scene);
+    void postPointLights(const Scene* scene);
+    void postSpotLights(const Scene* scene);
 
     void drawDebugTextures() const;
 
+
     //////////////////////////////////////////////////////////////////////////
-    ///                              FBO                                   ///
+    ///                              Draw Data                             ///
     //////////////////////////////////////////////////////////////////////////
     // Collection FBO
-    uint m_CollectionFboId;
+    RenderTarget* m_CollectionRenderTarget;
     Texture2D* m_pColorIllTexture;
     Texture2D* m_pSGTexture;
-    const Texture2D* m_pNormalTexture;
-    const Texture2D* m_pDepthTexture;
 
     // Render FBO
-    uint m_RenderFboId;
-    const Texture2D* m_pOutTexture;
+    View* m_View;
+    DrawListContainer::BlendFilter m_BlendFilter;
+    const RenderTarget* m_OutputRenderTarget;
     
     //////////////////////////////////////////////////////////////////////////
     ///                              SHADERS                               ///
@@ -172,7 +167,6 @@ private:
     //////////////////////////////////////////////////////////////////////////
     ///                              Settings                              ///
     ////////////////////////////////////////////////////////////////////////// 
-    RenderSettings m_RenderSettings;
     bool m_ShowDebugTextures;
 
     

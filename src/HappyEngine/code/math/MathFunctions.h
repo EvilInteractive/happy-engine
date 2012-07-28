@@ -176,22 +176,28 @@ inline const vec3& max(const vec3& a, const vec3& b)
 {
     return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
+inline void minPerComponent(const vec3& a, const vec3& b, vec3& outVec)
+{
+    outVec.x = min<float>(a.x, b.x);
+    outVec.y = min<float>(a.y, b.y);
+    outVec.z = min<float>(a.z, b.z);
+}
+inline void maxPerComponent(const vec3& a, const vec3& b, vec3& outVec)
+{
+    outVec.x = max<float>(a.x, b.x);
+    outVec.y = max<float>(a.y, b.y);
+    outVec.z = max<float>(a.z, b.z);
+}
 inline vec3 minPerComponent(const vec3& a, const vec3& b)
 {
     vec3 minP;
-    minP.x = min<float>(a.x, b.x);
-    minP.y = min<float>(a.y, b.y);
-    minP.z = min<float>(a.z, b.z);
-
+    minPerComponent(a, b, minP);
     return minP;
 }
 inline vec3 maxPerComponent(const vec3& a, const vec3& b)
 {
     vec3 maxP;
-    maxP.x = max<float>(a.x, b.x);
-    maxP.y = max<float>(a.y, b.y);
-    maxP.z = max<float>(a.z, b.z);
-
+    maxPerComponent(a, b, maxP);
     return maxP;
 }
 

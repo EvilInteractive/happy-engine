@@ -22,7 +22,6 @@
 #define _HE_CONSOLE_H_
 #pragma once
 
-#include "Font.h"
 #include <typeinfo>
 
 namespace he {
@@ -44,6 +43,8 @@ namespace gui {
 
 namespace gfx {
     class Canvas2D;
+    class Font;
+    class View;
 }
 
 namespace tools {
@@ -60,6 +61,7 @@ public:
     void load();
     void tick();
     void draw();
+    void setView(const gfx::View* view);
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
     void addMessage(const std::string& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
@@ -140,6 +142,7 @@ private:
     gfx::Font* m_pFont;
 
     gfx::Canvas2D* m_Canvas2D;
+    const gfx::View* m_View;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

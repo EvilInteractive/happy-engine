@@ -74,6 +74,7 @@ public:
     virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Point; }
+    virtual bool isSleeping() const { return true; } 
 };
 
 } } //end namespace

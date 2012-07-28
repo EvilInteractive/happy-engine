@@ -42,6 +42,15 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
+typedef uint32 SceneID;
+
+enum IntersectResult
+{
+    IntersectResult_Inside,
+    IntersectResult_Intersecting,
+    IntersectResult_Outside
+};
+
 typedef RakNet::BitStream NetworkStream;
 typedef RakNet::RakNetGUID NetworkID;
 #define UNASSIGNED_NETWORKID RakNet::UNASSIGNED_RAKNET_GUID

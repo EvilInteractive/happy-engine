@@ -22,18 +22,20 @@
 #define _HE_SIMPLE_FORWARD_3D_RENDERER_H_
 #pragma once
 
-#include "ModelMesh.h"
-#include "SimpleColorEffect.h"
-#include "Camera.h"
-#include "BillboardEffect.h"
+#include "BufferLayout.h"
+#include "IRenderer.h"
 
 namespace he {
 namespace gfx {
 
 class Texture2D;
 class ModelMesh;
+class CameraPerspective;
+class BillboardEffect;
+class SimpleColorEffect;
+class ModelMesh;
 
-class ExtraForward3DRenderer
+class ExtraForward3DRenderer : public IRenderer
 {
 public:
 
@@ -43,7 +45,7 @@ public:
 
     /* GENERAL */
     void init();
-    void begin(const Camera* pCamera);
+    void begin(const CameraPerspective* pCamera);
     void end();
     void resize();
 
@@ -72,7 +74,7 @@ private:
 
     vec2 m_ScreenDimensions;
 
-    const Camera* m_pCamera;
+    const CameraPerspective* m_pCamera;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     ExtraForward3DRenderer(const ExtraForward3DRenderer&);

@@ -67,13 +67,14 @@ void WebView::draw(const vec2& pos)
 
         if (m_FullScreen)
         {
-            vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
-            vec2 dim2((float)pSurface->width(), (float)pSurface->height());
-
-            if (dim != dim2)
-            {
-                m_pWebView->Resize((int)dim.x,(int)dim.y);
-            }
+            // TODO:
+//             vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
+//             vec2 dim2((float)pSurface->width(), (float)pSurface->height());
+// 
+//             if (dim != dim2)
+//             {
+//                 m_pWebView->Resize((int)dim.x,(int)dim.y);
+//             }
         }
     }
 

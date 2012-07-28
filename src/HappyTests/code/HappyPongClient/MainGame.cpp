@@ -104,7 +104,7 @@ void MainGame::load()
     NETWORK->ConnectionLost += boost::bind(&MainGame::connectionLost, this);
     NETWORK->join(ip, port);
 
-    he::gfx::Camera* camera(NEW he::gfx::Camera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     camera->setLens((float)GRAPHICS->getScreenHeight() / GRAPHICS->getScreenWidth(), he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
     CAMERAMANAGER->addCamera("default", camera);

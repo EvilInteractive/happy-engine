@@ -22,37 +22,35 @@
 #define _HE_CAMERA_MANAGER_H_
 #pragma once
 
-#include <map>
 #include "ITickable.h"
 
 namespace he {
-namespace gfx{
-class Camera;
+namespace gfx {
+class CameraPerspective;
 }
 
-namespace ge{
+namespace ge {
 
 class CameraManager : public ITickable
 {
 public:
     CameraManager();
-    virtual ~CameraManager(); //deleteAllCameras is not auto called, user can decide when to delete using deleteCamera or deleteAllCamera
+    virtual ~CameraManager();
 
     void init(); // Internal called
 
-    void addCamera(const std::string& id, gfx::Camera* pCamera);
+    void addCamera(const std::string& id, gfx::CameraPerspective* camera);
+    gfx::CameraPerspective* getCamera(const std::string& id);
     void deleteCamera(const std::string& id);
     void deleteAllCameras();
-    void setActiveCamera(const std::string& id);
 
-    gfx::Camera* getActiveCamera() const;
-
-    virtual void tick(float dTime); // Internal called
+    void setActiveCamera(gfx::CameraPerspective* camera) { m_ActiveCamera = camera; }
+    gfx::CameraPerspective* getActiveCamera() { return m_ActiveCamera; }
 
 private:
 
-    gfx::Camera* m_pActiveCamera;
-    std::map<std::string, gfx::Camera*> m_Cameras;
+    gfx::CameraPerspective* m_ActiveCamera;
+    std::map<std::string, gfx::CameraPerspective*> m_Cameras;
 
 
     //Disable default copy constructor and default assignment operator

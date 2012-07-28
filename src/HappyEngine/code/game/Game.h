@@ -26,7 +26,7 @@
 namespace he {
 
 namespace gfx {
-    class Camera;
+    class CameraPerspective;
 }
 
 namespace ge {

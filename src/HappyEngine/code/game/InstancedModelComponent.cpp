@@ -31,22 +31,22 @@
 namespace he {
 namespace ge {
 
-InstancedModelComponent::InstancedModelComponent(): m_InstanceId(0), m_ControllerKey("")
+InstancedModelComponent::InstancedModelComponent(): m_InstanceId(0), m_Controller(nullptr)
 {
 }
 
 
 InstancedModelComponent::~InstancedModelComponent()
 {
-    if (m_ControllerKey != "")
+    if (m_Controller != nullptr)
     {
-        GRAPHICS->getInstancingManager()->getController(m_ControllerKey)->removeInstance(m_InstanceId);
+        m_Controller->removeInstance(m_InstanceId);
     }
 }
 
 void InstancedModelComponent::init( Entity* pParent )
 {
-    m_pParent = pParent;
+    m_Parent = pParent;
 }
 
 void InstancedModelComponent::serialize(SerializerStream& stream)
@@ -61,7 +61,7 @@ void InstancedModelComponent::deserialize(const SerializerStream& stream)
 
 mat44 InstancedModelComponent::getWorldMatrix() const
 {
-    return m_pParent->getWorldMatrix() * m_mtxLocalTransform;
+    return m_Parent->getWorldMatrix() * m_mtxLocalTransform;
 }
 
 void InstancedModelComponent::setLocalTransform( const mat44& mtxWorld )
@@ -76,20 +76,20 @@ const mat44& InstancedModelComponent::getLocalTransform() const
 
 void InstancedModelComponent::setController( const std::string& key )
 {
-    if (m_ControllerKey != "")
+    if (m_Controller != nullptr)
     {
-        GRAPHICS->getInstancingManager()->getController(m_ControllerKey)->removeInstance(m_InstanceId);
+        m_Controller->removeInstance(m_InstanceId);
     }
     if (key != "")
     {
-        m_ControllerKey = key;
-        m_InstanceId = GRAPHICS->getInstancingManager()->getController(m_ControllerKey)->addInstance(this);
+        m_Controller = GRAPHICS->getInstancingManager()->getController(key);
+        m_InstanceId = m_Controller->addInstance(this);
     }
 }
 
-const std::string& InstancedModelComponent::getController() const
+const gfx::InstancingController* InstancedModelComponent::getController() const
 {
-    return m_ControllerKey;
+    return m_Controller;
 }
 
 void InstancedModelComponent::fillInstancingBuffer( gfx::DynamicBuffer& buffer ) const

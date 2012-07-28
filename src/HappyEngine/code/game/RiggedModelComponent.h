@@ -52,7 +52,7 @@ public:
     
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         ISkinnedDrawable                           ///
+    ///                     DefaultSkinnedDrawable                         ///
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const; 
@@ -75,7 +75,7 @@ protected:
 private:
     void modelLoadedCallback();
 
-    const gfx::ModelMesh* m_pModel;
+    const gfx::ModelMesh* m_Model;
     const gfx::Material* m_Material;
 
     std::vector<mat44> m_BoneTransform;
@@ -83,7 +83,7 @@ private:
 
     mat44 m_mtxLocalTransform;
     
-    Entity* m_pParent;
+    Entity* m_Parent;
     
 
     //Disable default copy constructor and default assignment operator

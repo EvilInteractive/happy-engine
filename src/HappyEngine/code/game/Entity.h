@@ -29,6 +29,9 @@
 #include "INetworkSerializable.h"
 
 namespace he {
+namespace gfx {
+    class Scene;
+}
 namespace ge {
 
 class Entity : public gfx::I3DObject, public net::INetworkSerializable
@@ -37,11 +40,19 @@ public:
     Entity();
     virtual ~Entity();
     
+    void init(gfx::Scene* scene);
+
+    gfx::Scene* getScene() const { return m_Scene; }
+
     void addComponent(IComponent* pComponent); //will clean up pComponent
     void deleteComponent(IComponent* pComponent);
 
     virtual mat44 getWorldMatrix() const;
     void setWorldMatrix(const mat44& mtxWorld);
+
+    bool isSleeping() const;
+    void addSleepEvaluator(const boost::function0<bool>& evaluater);
+    void removeSleepEvaluator(const boost::function0<bool>& evaluater);
 
     //////////////////////////////////////////////////////////////////////////
     /// INetworkSerializable
@@ -60,6 +71,9 @@ private:
     bool m_IsSerializeDataDirty;
     mat44 m_mtxWorld;
     std::vector<IComponent*> m_Components;
+    gfx::Scene* m_Scene;
+
+    std::vector<boost::function0<bool>> m_SleepEvaluaters;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

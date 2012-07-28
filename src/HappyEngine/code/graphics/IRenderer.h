@@ -23,30 +23,23 @@
 #pragma once
 
 #include "DrawListContainer.h"
-#include "RenderSettings.h"
-#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
 
 class LightManager;
+class Texture2D;
+class View;
+class RenderTarget;
 
 class IRenderer
 {
 public:
     virtual ~IRenderer() {}
 
-    virtual void init(const RenderSettings& settings, 
-        const Texture2D* pOutTarget, const Texture2D* pOutNormalTarget, const Texture2D* pOutDepthTarget) = 0;
+    virtual void init(View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend) = 0;
     
-    virtual void setRenderSettings(const RenderSettings& settings) = 0;
-    virtual void onScreenResized() = 0;
-
-    virtual void draw(const DrawListContainer& drawList, uint renderFlags) = 0;
-
-    virtual void clear(bool color, bool normal, bool depth) = 0;
-
-    virtual bool getSupportsTranslucency() const = 0;
+    virtual void draw() = 0;
 };
 
 

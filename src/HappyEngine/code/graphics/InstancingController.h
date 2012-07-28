@@ -27,6 +27,7 @@
 #include "IDrawable.h"
 #include "BufferLayout.h"
 #include "InstancingBuffer.h"
+#include "Bound.h"
 
 namespace he {
 namespace gfx {
@@ -55,13 +56,9 @@ public:
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);
 
-    virtual bool isVisible() const;
-    virtual void setVisible(bool visible);
-
-    virtual float getDrawPriority(const he::gfx::ICamera *) const { return 0.0f; }
-
-    virtual bool isInCamera(const ICamera* /*pCamera*/) const { return true; }; 
-
+    virtual const Bound& getBound() const { return m_Bound; }
+    virtual bool isSleeping() const { return m_Dynamic; }; 
+    
     virtual uint getCount() const;
 
     virtual void draw();
@@ -90,7 +87,7 @@ private:
     Material* m_Material;
 
     bool m_CastShadows;
-    bool m_IsVisible;
+    Bound m_Bound;
 
     SlotPContainer<const IInstancible*> m_Instances;
 

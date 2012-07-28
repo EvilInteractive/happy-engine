@@ -23,10 +23,10 @@
 #pragma once
 
 #include "BufferLayout.h"
-#include "Sphere.h"
 #include "Bone.h"
 
 #include "Resource.h"
+#include "Bound.h"
 
 namespace he {
 namespace gfx {
@@ -65,7 +65,7 @@ public:
 
     bool isLoaded() const;
 
-    const shapes::Sphere& getBoundingSphere() const;
+    const Bound& getBound() const;
 
     void callbackOnceIfLoaded(const boost::function<void()>& callback);
 
@@ -98,7 +98,7 @@ private:
     bool m_isVisible;
     bool m_isLoaded;
 
-    shapes::Sphere m_BoundingSphere;
+    Bound m_Bound;
 
     std::vector<Bone> m_BoneList;
 

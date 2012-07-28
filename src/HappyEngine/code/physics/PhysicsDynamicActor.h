@@ -57,6 +57,8 @@ public:
     void keyframedSetPose(const vec3& position, const vec3& axis = vec3::up, float angle = 0.0f);
     void keyframedSetPose(const mat44& pose);
 
+    bool isSleeping() const;
+
 private:
     void addShape(physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup);
 

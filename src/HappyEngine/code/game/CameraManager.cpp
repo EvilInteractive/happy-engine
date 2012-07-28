@@ -20,41 +20,27 @@
 #include "HappyPCH.h" 
 
 #include "CameraManager.h"
-#include "Camera.h"
-#include "HappyEngine.h"
+#include "CameraPerspective.h"
 #include "Game.h"
 
 namespace he {
 namespace ge {
 
-CameraManager::CameraManager(): m_pActiveCamera(nullptr)
+CameraManager::CameraManager()
 {
 }
 
 
 CameraManager::~CameraManager()
 {
-    if (GAME != nullptr)
-        GAME->removeFromTickList(this);
-}
-
-void CameraManager::tick(float dTime)
-{
-    if (m_pActiveCamera != nullptr)
-        m_pActiveCamera->tick(dTime);
+    deleteAllCameras();
 }
 
 void CameraManager::init()
 {
-    GAME->addToTickList(this);
 }
 
-gfx::Camera* ge::CameraManager::getActiveCamera() const
-{
-    return m_pActiveCamera;
-}
-
-void ge::CameraManager::addCamera( const std::string& id, gfx::Camera* pCamera )
+void ge::CameraManager::addCamera( const std::string& id, gfx::CameraPerspective* pCamera )
 {
     HE_ASSERT(m_Cameras.find(id) == m_Cameras.cend(), "Adding camera to existing ID, memleak will occure");
     m_Cameras[id] = pCamera;
@@ -69,17 +55,17 @@ void ge::CameraManager::deleteCamera( const std::string& id )
 
 void ge::CameraManager::deleteAllCameras()
 {
-    std::for_each(m_Cameras.cbegin(), m_Cameras.cend(), [](const std::pair<std::string, gfx::Camera*>& pr)
+    std::for_each(m_Cameras.cbegin(), m_Cameras.cend(), [](const std::pair<std::string, gfx::CameraPerspective*>& pr)
     {
         delete pr.second;
     });
     m_Cameras.clear();
 }
 
-void ge::CameraManager::setActiveCamera( const std::string& id )
+gfx::CameraPerspective* ge::CameraManager::getCamera( const std::string& id )
 {
     HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Selected Camera does not exist");
-    m_pActiveCamera = m_Cameras.find(id)->second;
+    return m_Cameras.find(id)->second;
 }
 
 } } //end namespace

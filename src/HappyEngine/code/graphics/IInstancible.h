@@ -22,11 +22,13 @@
 #define _HE_IINSTANCIBLE_H_
 #pragma once
 
+#include "I3DObject.h"
+
 namespace he {
 namespace gfx {
 
 class DynamicBuffer;
-class IInstancible
+class IInstancible : public I3DObject
 {
 public:
     virtual ~IInstancible() {}

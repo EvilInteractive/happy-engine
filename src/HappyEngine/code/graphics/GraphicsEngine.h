@@ -23,18 +23,14 @@
 #define _HE_GRAPHICS_ENGINE_H_
 #pragma once
 
-#include "Rect.h"
-#include "RenderSettings.h"
+#include "SlotPContainer.h"
 
 namespace he {
 namespace gfx {
 
-class DrawManager;
-class InstancingManager;
-class Picker;
-class IDrawable;
-class Deferred3DRenderer;
-class LightManager;
+class Window;
+class Scene;
+class View;
 
 class GraphicsEngine
 {
@@ -46,66 +42,42 @@ public:
 
     /* GENERAL */
     void init();
+    void draw();
 
-    // only init picking when needed, because it requires extra FBO & shader
-    void initPicking();
 
-    void clearAll() const;
-    void clearColor() const;
-    void clearDepth() const;
+    // View depends on window and scene!
+    // Always delete view first!
+    Scene* createScene();
+    Scene* getScene(SceneID id);
+    void removeScene(Scene* scene);
 
-    void addToDrawList(IDrawable* pDrawable);
-    void removeFromDrawList(IDrawable* pDrawable);
-    InstancingManager* getInstancingManager() const;
+    View* createView();
+    void removeView(View* view);
 
-    void drawScene();
-    void present() const;
-    
-    uint pick(const vec2& screenPoint);
-    uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
+    Window* createWindow();
+    void removeWindow(Window* window);
 
     /* SETTERS */
-    void setWindowTitle(const std::string& caption);
-    void setScreenPosition(int x, int y);
-    void setScreenDimension(uint width, uint height);
-    void setViewport(const RectI& viewport);
-    void setVSync(bool enable);
-    void setBackgroundColor(const Color& color);
+    void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
+    void setActiveView(View* view) { m_ActiveView = view; } // Internal use
     
     /* GETTERS */
-    void getScreenPosition(int& x, int& y) const;
-    const RectI& getScreenRect() const;
-    uint getScreenWidth() const;
-    uint getScreenHeight() const;
-    const RectI& getViewport() const;
-    LightManager* getLightManager() const;
-    const RenderSettings& getSettings() const;
-    const DrawManager* getDrawManager() const;
-    sf::Window* getWindow() const;
-    const RenderSettings& getRenderSettings() const;
+    Window* getActiveWindow() const { return m_ActiveWindow; }
+    Window* getMainWindow() const { return m_MainWindow; }
+    const std::vector<Window*>& getAllWindows() const { return m_Windows; }
+
+    View* getActiveView() const { return m_ActiveView; }
 
 private:
-    void initWindow();
 
     /* DATAMEMBERS */
-    sf::Window* m_pMainWindow;
-    //void* m_GLContext; ----- needed?
+    SlotPContainer<Scene*>  m_Scenes;
+    std::vector<View*>   m_Views;
+    std::vector<Window*> m_Windows;
 
-    RectI m_Viewport;
-    RectI m_ScreenRect;
-
-    bool m_VSyncEnabled;
-    std::string m_WindowTitle;
-
-    Color m_ClearColor;
-    InstancingManager* m_pInstancingManager;
-
-    DrawManager* m_pDrawManager;
-    LightManager* m_pLightManager;
-
-    RenderSettings m_Settings;
-    
-    Picker* m_pPicker;
+    Window* m_ActiveWindow;
+    Window* m_MainWindow;
+    View* m_ActiveView;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

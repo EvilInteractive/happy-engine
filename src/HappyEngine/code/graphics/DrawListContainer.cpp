@@ -22,105 +22,75 @@
 #include "DrawListContainer.h"
 #include "IDrawable.h"
 #include "Material.h"
+#include "CullOctree.h"
+#include "ICamera.h"
 
 namespace he {
 namespace gfx {
 
 DrawListContainer::DrawListContainer()
 {
+    for (uint blend(0); blend < BlendFilter_MAX; ++blend)
+        m_DrawList[blend] = NEW CullOctree(10000); // 20km^3 - TODO make dynamic!
 }
 
 
 DrawListContainer::~DrawListContainer()
 {
+    for (uint blend(0); blend < BlendFilter_MAX; ++blend)
+        delete m_DrawList[blend];
 }
 
 
-void DrawListContainer::getContainerIndex(const IDrawable* drawable, uint& i0, uint& i1, uint& i2)
+void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter& blend)
 {
     const gfx::Material* material(drawable->getMaterial());
     HE_IF_ASSERT(material != nullptr, "Material is nullptr!")
     {
-        if (material->noPost())
-            if (material->isBackground())
-                i0 = BACKGROUND_INDEX;
-            else
-                i0 = AFTERPOST_INDEX;
-        else
-            i0 = BEFOREPOST_INDEX;
-
         if (material->isBlended())
-            i1 = BLENDING_INDEX;
+            blend = BlendFilter_Blend;
         else
-            i1 = OPAC_INDEX;
-
-        if (drawable->isInstanced())
-            i2 = INSTANCE_INDEX;
-        else if (drawable->isSkinned())
-            i2 = SKINNED_INDEX;
-        else
-            i2 = SINGLE_INDEX;
+            blend = BlendFilter_Opac;
     }
 }
-void DrawListContainer::insert( IDrawable* pDrawable )
+void DrawListContainer::insert( IDrawable* drawable, bool dynamic )
 {
-    uint i0(0), i1(0), i2(0);
-    getContainerIndex(pDrawable, i0, i1, i2);
-    m_DrawList[i0][i1][i2].push_back(pDrawable);
+    BlendFilter blend;
+    getContainerIndex(drawable, blend);
+    m_DrawList[blend]->insert(drawable);
+    if (dynamic)
+        m_Dynamics.push_back(drawable);
 }
-void removeFromVector( DrawListContainer::Container& vec, const IDrawable* pDrawable )
+
+void DrawListContainer::remove( IDrawable* drawable )
 {
-    for (uint i(0); i < vec.size(); ++i)
+    BlendFilter blend;
+    getContainerIndex(drawable, blend);  
+    m_DrawList[blend]->remove(drawable);
+    std::vector<IDrawable*>::iterator it(std::find(m_Dynamics.begin(), m_Dynamics.end(), drawable));
+    if (it != m_Dynamics.cend())
     {
-        if (vec[i] == pDrawable)
-        {
-            std::swap(vec[i], vec[vec.size()-1]);
-            break;
-        }
+        (*it) = m_Dynamics.back();
+        m_Dynamics.pop_back();
     }
-    vec.pop_back();
 }
 
-void DrawListContainer::remove( const IDrawable* pDrawable )
+void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc ) const
 {
-    uint i0(0), i1(0), i2(0);
-    getContainerIndex(pDrawable, i0, i1, i2);
-    removeFromVector(m_DrawList[i0][i1][i2], pDrawable);
+    m_DrawList[blend]->draw(camera, drawFunc);
 }
 
-void DrawListContainer::for_each( uint filter, const boost::function<void(IDrawable*)>& f ) const
+void DrawListContainer::prepareForRendering()
 {
-    #pragma region ASSERTS
-    HE_ASSERT(filter & F_Loc_BeforePost || filter & F_Loc_AfterPost || filter & F_Loc_Background,
-        "flag at least one Location filter: F_Loc_BeforePost or F_Loc_AfterPost");
-    HE_ASSERT(filter & F_Sub_Single     || filter & F_Sub_Skinned     || filter & F_Sub_Instanced,
-        "flag at least one sub filter: F_Sub_Single, F_Sub_Skinned or F_Sub_Instanced");
-    #pragma endregion
-
-    for (int i0(0); i0 < MAX_I0; ++i0)
+    std::for_each(m_Dynamics.cbegin(), m_Dynamics.cend(), [&](IDrawable* drawable)
     {
-        if (( (filter & F_Loc_BeforePost) && (BEFOREPOST_INDEX == i0) ||
-              (filter & F_Loc_AfterPost)  && (AFTERPOST_INDEX  == i0) || 
-              (filter & F_Loc_Background) && (BACKGROUND_INDEX == i0) ) == false)
-            continue;
-
-        for (int i1(0); i1 < MAX_I1; ++i1)
+        if (drawable->isSleeping() == false)
         {
-            if (( (filter & F_Main_Opac)        && (OPAC_INDEX      == i1) ||
-                  (filter & F_Main_Blended)     && (BLENDING_INDEX  == i1) ) == false)
-                continue;
-
-            for (int i2(0); i2 < MAX_I2; ++i2)
-            {
-                if (((filter & F_Sub_Single)    && (SINGLE_INDEX   == i2) ||
-                     (filter & F_Sub_Skinned)   && (SKINNED_INDEX  == i2) ||
-                     (filter & F_Sub_Instanced) && (INSTANCE_INDEX == i2) ) == false)
-                    continue;
-
-                std::for_each(m_DrawList[i0][i1][i2].cbegin(), m_DrawList[i0][i1][i2].cend(), f);
-            }
+            BlendFilter blend;
+            getContainerIndex(drawable, blend);
+            m_DrawList[blend]->reevaluate(drawable);
         }
-    }
+    });
 }
 
 } } //end namespace

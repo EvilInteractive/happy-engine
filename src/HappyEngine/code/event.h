@@ -39,6 +39,14 @@ public:
     {
         m_FuncList.push_back(func);
     }
+    void operator-=(const function& func)
+    {
+        HE_IF_ASSERT(std::find(m_FuncList.cbegin(), m_FuncList.cend(), func) != m_FuncList.cend(), "Func does not exist in this event!")
+        {
+            (*std::find(m_FuncList.begin(), m_FuncList.end(), func)) = m_FuncList.back();
+            m_FuncList.pop_back();
+        }
+    }
     returnType operator()()
     {
         std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [](const function& func)

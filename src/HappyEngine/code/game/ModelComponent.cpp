@@ -24,33 +24,34 @@
 #include "GraphicsEngine.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
 
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_AttachedToScene(false), m_Material(nullptr)
+ModelComponent::ModelComponent(): m_Model(nullptr), m_Parent(nullptr), m_Material(nullptr)
 {
 }
 
 
 ModelComponent::~ModelComponent()
 {
-    if (m_pModel != nullptr)
-        m_pModel->release();
-    if (m_AttachedToScene)
-        GRAPHICS->removeFromDrawList(this);
+    if (m_Model != nullptr)
+        m_Model->release();
+    if (isAttachedToScene())
+        detachFromScene();
     if (m_Material != nullptr)
         m_Material->release();
 }
 
-void ModelComponent::init(Entity* pParent)
+void ModelComponent::init(Entity* parent)
 {
-    m_pParent = pParent;
+    HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
+    m_Parent = parent;
 
-    if (m_pModel != nullptr && m_AttachedToScene == false)
+    if (m_Model != nullptr && isAttachedToScene() == false)
     {
-        GRAPHICS->addToDrawList(this);
-        m_AttachedToScene = true;
+        m_Parent->getScene()->attachToScene(this, isDynamic());
     }
 }
 
@@ -71,12 +72,12 @@ const gfx::Material* ModelComponent::getMaterial() const
 
 const gfx::ModelMesh* ModelComponent::getModelMesh() const
 {
-    return m_pModel;
+    return m_Model;
 }
 
 mat44 ModelComponent::getWorldMatrix() const
 {
-    return m_pParent->getWorldMatrix() * m_mtxLocalTransform;
+    return m_Parent->getWorldMatrix() * m_mtxLocalTransform;
 }
 
 void ModelComponent::setLocalTransform( const mat44& mtxWorld )
@@ -91,17 +92,16 @@ const mat44& ModelComponent::getLocalTransform() const
 
 void ModelComponent::setModelMesh( const ObjectHandle& modelHandle, bool isPickable )
 {
-    if (m_pModel != nullptr)
+    if (m_Model != nullptr)
     {
-        m_pModel->release();
+        m_Model->release();
     }
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
+    m_Model = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     setPickable(isPickable);
-    if (m_AttachedToScene == false && m_pParent != nullptr)
+    if (isAttachedToScene() == false && m_Parent != nullptr)
     {
-        GRAPHICS->addToDrawList(this);
-        m_AttachedToScene = true;
+        m_Parent->getScene()->attachToScene(this, isDynamic());
     }
 }
 
@@ -112,6 +112,12 @@ void ModelComponent::setMaterial( const ObjectHandle& material )
     m_Material = ResourceFactory<gfx::Material>::getInstance()->get(material);
     if (m_Material != nullptr)
         ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
+}
+
+
+bool DynamicModelComponent::isSleeping() const
+{
+    return m_Parent->isSleeping();
 }
 
 } } //end namespace

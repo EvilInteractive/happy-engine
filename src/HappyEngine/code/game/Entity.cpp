@@ -21,11 +21,13 @@
 #include "HappyPCH.h" 
 
 #include "Entity.h"
+#include "Scene.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace ge {
 
-Entity::Entity(): m_IsSerializeDataDirty(false)
+Entity::Entity(): m_IsSerializeDataDirty(false), m_Scene(nullptr)
 {
 }
 
@@ -37,6 +39,11 @@ Entity::~Entity()
         delete pComponent;
     });
 }
+void Entity::init( gfx::Scene* scene )
+{
+    m_Scene = scene;
+}
+
 
 mat44 Entity::getWorldMatrix() const
 {
@@ -50,6 +57,7 @@ void Entity::setWorldMatrix(const mat44& mtxWorld)
 
 void Entity::addComponent( IComponent* pComponent )
 {
+    HE_ASSERT(m_Scene != nullptr, "Init Entity first!");
     m_Components.push_back(pComponent);
     pComponent->init(this);
 }
@@ -62,6 +70,7 @@ void Entity::deleteComponent( IComponent* pComponent )
 
 void Entity::serializeCreate( NetworkStream* stream ) const
 {
+    stream->Write(m_Scene->getId());
     std::for_each(m_Components.cbegin(), m_Components.cend(), [&stream](IComponent* component)
     {
         component->serializeCreate(stream);
@@ -70,6 +79,9 @@ void Entity::serializeCreate( NetworkStream* stream ) const
 
 bool Entity::deserializeCreate( NetworkStream* stream )
 {
+    SceneID id;
+    stream->Read(id);
+    m_Scene = GRAPHICS->getScene(id);
     bool keep(true);
     std::for_each(m_Components.cbegin(), m_Components.cend(), [&keep,&stream](IComponent* component)
     {
@@ -125,6 +137,31 @@ void Entity::deserialize( net::NetworkDeserializer& serializer )
     {
         component->deserialize(serializer);
     });
+}
+
+bool Entity::isSleeping() const
+{
+    std::vector<boost::function0<bool>>::const_iterator it(m_SleepEvaluaters.cbegin());
+    for( ; it != m_SleepEvaluaters.cend(); ++it)
+    {
+        if ((*it)())
+            return true;
+    }
+    return false;
+}
+
+void Entity::addSleepEvaluator( const boost::function0<bool>& evaluater )
+{
+    m_SleepEvaluaters.push_back(evaluater);
+}
+
+void Entity::removeSleepEvaluator( const boost::function0<bool>& evaluater )
+{
+    HE_IF_ASSERT(std::find(m_SleepEvaluaters.cbegin(), m_SleepEvaluaters.cend(), evaluater) != m_SleepEvaluaters.cend(), "Sleep evaluator not found")
+    {
+        *std::find(m_SleepEvaluaters.begin(), m_SleepEvaluaters.end(), evaluater) = m_SleepEvaluaters.back();
+        m_SleepEvaluaters.pop_back();
+    }
 }
 
 } } //end namespace

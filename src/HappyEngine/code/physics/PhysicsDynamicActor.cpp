@@ -183,4 +183,9 @@ physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const
     return m_pActor;
 }
 
+bool PhysicsDynamicActor::isSleeping() const
+{
+    return m_pActor->isSleeping();
+}
+
 } } //end namespace

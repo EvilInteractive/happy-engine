@@ -34,12 +34,12 @@
 #include "Renderer2D.h"
 #include "Renderer2D.h"
 #include "Game.h"
-#include "CameraManager.h"
 #include "Console.h"
 #include "SoundEngine.h"
 #include "ExtraForward3DRenderer.h"
 #include "LoadingScreen.h"
 #include "StaticDataManager.h"
+#include "Window.h"
 
 namespace he {
 
@@ -50,8 +50,8 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr), m_pRenderer2D(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
-                            m_pCameraManager(nullptr), m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
-                            m_pMainWindow(nullptr), m_RootDir("./")
+                            m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
+                            m_RootDir("./")
 {
 }
 HappyEngine::~HappyEngine()
@@ -96,8 +96,6 @@ void HappyEngine::cleanup()
     m_pControlsManager = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
-    delete m_pCameraManager;
-    m_pCameraManager = nullptr;
 
     delete m_pLoadingScreen;
     m_pLoadingScreen = nullptr;
@@ -115,13 +113,12 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 {
     m_SubEngines |= subengines;
 
-    m_pConsole = NEW tools::Console();
 
     if (subengines & SubEngine_Graphics)
     {
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
         m_p3DRenderer = NEW gfx::ExtraForward3DRenderer();
-        m_pCameraManager = NEW ge::CameraManager();
+        m_pConsole = NEW tools::Console();
     }
 
     if (subengines & SubEngine_Content)
@@ -201,14 +198,11 @@ void HappyEngine::start(ge::Game* pGame)
     if (m_SubEngines & SubEngine_Graphics)
     {
         m_pGraphicsEngine->init();
-
-        m_pMainWindow = m_pGraphicsEngine->getWindow();
-
+        
         m_p3DRenderer->init();
-        m_pCameraManager->init();
         m_pRenderer2D->init();
 
-        m_pConsole->load();
+        m_pConsole->load(GRAPHICS->getMainView());
         CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
 
         PROFILER->load();
@@ -259,24 +253,11 @@ void HappyEngine::updateLoop(float dTime)
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     
     PROFILER_BEGIN("SFML poll events");
-    sf::Event event0;
-    m_Events.clear();
-
-    if (m_pMainWindow != nullptr)
+    const std::vector<gfx::Window*>& windows(GRAPHICS->getAllWindows());
+    std::for_each(windows.cbegin(), windows.cend(), [](gfx::Window* window)
     {
-        while (m_pMainWindow->pollEvent(event0))
-        {
-            switch (event0.type)
-            {
-                case sf::Event::Closed:
-                    m_Quit = true;
-                    break;
-            }
-
-            // needed for checking events in other places in program
-            m_Events.push_back(event0);
-    }
-    }
+        window->doEvents(dTime);
+    });
     PROFILER_END();
 
     if (m_SubEngines & SubEngine_Networking)
@@ -309,7 +290,7 @@ void HappyEngine::drawLoop()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     // display 3D scene
-    GRAPHICS->drawScene();
+    GRAPHICS->draw();
 
     // draw 2D stuff
     if (m_bGameLoading)
@@ -336,11 +317,6 @@ void HappyEngine::drawLoop()
 HappyEngine* HappyEngine::getPointer()
 {
     return s_pHappyEngine;
-}
-
-const std::vector<sf::Event>& HappyEngine::getEvents() const
-{
-    return m_Events;
 }
 
 void HappyEngine::audioLoop()

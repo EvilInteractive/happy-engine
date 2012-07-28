@@ -26,10 +26,12 @@
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "CameraManager.h"
-#include "Camera.h"
 #include "Renderer2D.h"
+#include "View.h"
 
 #include "ModelMesh.h"
+#include "Awesomium/WebViewListener.h"
+#include "RenderTarget.h"
 
 namespace he {
 namespace gfx {
@@ -61,37 +63,80 @@ PostProcesser::~PostProcesser()
 }
 
 
-void PostProcesser::init( const RenderSettings& settings )
+void PostProcesser::init( View* view, const RenderTarget* writeTarget, const RenderTarget* readTarget )
 {
-    m_pQuad = CONTENT->getFullscreenQuad();
-    setSettings(settings);
-    CONSOLE->registerVar(&m_ShowDebugTextures, "debugPostTex");
+    HE_IF_ASSERT(m_View == nullptr, "PostProcessor is already initialized")
+    {
+        m_WriteRenderTarget = writeTarget;
+        m_ReadRenderTarget = readTarget;
+        m_View = view;
+
+        m_View->SettingsChanged += [&](){ onSettingsChanged(m_View->getSettings(), false); }; // this is safe because PostProcessor is a member of View
+        
+        m_pQuad = CONTENT->getFullscreenQuad();
+        
+        onSettingsChanged(m_View->getSettings(), true);
+
+        CONSOLE->registerVar(&m_ShowDebugTextures, "debugPostTex");
+    }
 }
 
-void PostProcesser::setSettings( const RenderSettings& settings )
+void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool force )
 {
+    bool recompileShader(force || settings.postSettings.shaderSettings != m_Settings.postSettings.shaderSettings);
+    
+    if (force || settings.postSettings.shaderSettings.enableBloom != m_Settings.postSettings.shaderSettings.enableBloom)
+    {
+        delete m_pBloom;
+        if (settings.postSettings.shaderSettings.enableBloom)
+        {
+            m_pBloom = NEW Bloom();
+            m_pBloom->init(m_View, settings.postSettings.shaderSettings.enableHDR);
+        }
+        else
+            m_pBloom = nullptr;
+    }
+    if (force || settings.postSettings.shaderSettings.enableHDR != m_Settings.postSettings.shaderSettings.enableHDR)
+    {
+        delete m_pAutoExposure;
+        if (settings.postSettings.shaderSettings.enableHDR)
+        {
+            m_pAutoExposure = NEW AutoExposure();
+            m_pAutoExposure->init(settings);
+        }
+        else 
+            m_pAutoExposure = nullptr;
+    }
+
     m_Settings = settings;
 
+    if (recompileShader == true)
+        compileShader();
+}
+void PostProcesser::compileShader()
+{
     std::set<std::string> postDefines;
-    if (m_Settings.enableBloom)
+    const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
+
+    if (settings.enableBloom)
         postDefines.insert("BLOOM");
 
-    if (m_Settings.enableAO)
+    if (settings.enableAO)
         postDefines.insert("AO");
 
-    if (m_Settings.enableDepthEdgeDetect)
+    if (settings.enableDepthEdgeDetect)
         postDefines.insert("DEPTH_EDGE");
 
-    if (m_Settings.enableNormalEdgeDetect)
+    if (settings.enableNormalEdgeDetect)
         postDefines.insert("NORMAL_EDGE");
 
-    if (m_Settings.enableHDR)
+    if (settings.enableHDR)
         postDefines.insert("HDR");
 
-    if (m_Settings.enableFog)
+    if (settings.enableFog)
         postDefines.insert("FOG");
 
-    if (m_Settings.enableVignette)
+    if (settings.enableVignette)
         postDefines.insert("VIGNETTE");
 
     if (m_PostShader != nullptr)
@@ -104,20 +149,20 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     const std::string& folder(CONTENT->getShaderFolderPath().str());
 
     m_PostShader->initFromFile(folder + "shared/postShaderQuad.vert", 
-                               folder + "post/postEffects.frag", 
-                               shaderLayout, postDefines);
+        folder + "post/postEffects.frag", 
+        shaderLayout, postDefines);
 
     m_PostShaderVars[PV_ColorMap]  = m_PostShader->getShaderSamplerId("colorMap"); 
-    if (m_Settings.enableNormalEdgeDetect)
+    if (settings.enableNormalEdgeDetect)
         m_PostShaderVars[PV_NormalMap] = m_PostShader->getShaderSamplerId("normalMap");
-    if (m_Settings.enableFog)
+    if (settings.enableFog)
         m_PostShaderVars[PV_FogColor] = m_PostShader->getShaderVarId("fogColor");
-    if (m_Settings.enableFog || m_Settings.enableAO || m_Settings.enableDepthEdgeDetect)
+    if (settings.enableFog || settings.enableAO || settings.enableDepthEdgeDetect)
         m_PostShaderVars[PV_DepthMap] = m_PostShader->getShaderSamplerId("depthMap");
-    if (m_Settings.enableHDR)
+    if (settings.enableHDR)
         m_PostShaderVars[PV_LumMap] = m_PostShader->getShaderSamplerId("lumMap");
 
-    if (m_Settings.enableBloom)
+    if (settings.enableBloom)
     {
         m_PostShaderVars[PV_Bloom0] = m_PostShader->getShaderSamplerId("blur0");
         m_PostShaderVars[PV_Bloom1] = m_PostShader->getShaderSamplerId("blur1");
@@ -126,7 +171,7 @@ void PostProcesser::setSettings( const RenderSettings& settings )
     }
     if (m_pRandomNormals != nullptr)
         m_pRandomNormals->release();
-    if (m_Settings.enableAO)
+    if (settings.enableAO)
     {
         m_pRandomNormals = CONTENT->asyncLoadTexture("engine/noise.png");
 
@@ -138,69 +183,60 @@ void PostProcesser::setSettings( const RenderSettings& settings )
         //m_PostShaderVars[PV_ProjParams] = m_pPostShader->getShaderVarId("projParams");
         m_PostShaderVars[PV_ViewPortSize] = m_PostShader->getShaderVarId("viewPortSize");
     }
-
-    if (m_Settings.enableBloom)
-    {
-        delete m_pBloom;
-        m_pBloom = NEW Bloom();
-        m_pBloom->init(m_Settings.enableHDR);
-    }
-    if (m_Settings.enableHDR)
-    {
-        delete m_pAutoExposure;
-        m_pAutoExposure = NEW AutoExposure();
-        m_pAutoExposure->init(settings);
-    }
 }
 
-void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap)
+
+void PostProcesser::draw()
 {    
-    if (m_Settings.enableHDR)
+    const Texture2D* colorMap(m_ReadRenderTarget->getTextureTarget(0));
+    const Texture2D* normalMap(m_ReadRenderTarget->getTextureTarget(1));
+    const Texture2D* depthMap(m_ReadRenderTarget->getDepthTarget());
+
+    const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
+    if (settings.enableHDR)
     {
         PROFILER_BEGIN("Auto Exposure");
-        m_pAutoExposure->calculate(pColorMap);
+        m_pAutoExposure->calculate(colorMap);
         PROFILER_END();
     }
     
     GL::heBlendEnabled(false);
-    if (m_Settings.enableBloom)
+    if (settings.enableBloom)
     {
         PROFILER_BEGIN("Bloom");
-        if (m_Settings.enableHDR)
-            m_pBloom->render(pColorMap, m_pAutoExposure->getLuminanceMap());
+        if (settings.enableHDR)
+            m_pBloom->render(colorMap, m_pAutoExposure->getLuminanceMap());
         else
-            m_pBloom->render(pColorMap);
+            m_pBloom->render(colorMap);
         PROFILER_END();
     }
 
-    GL::heBindFbo(0);
+    m_WriteRenderTarget->prepareForRendering();
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(false);
     GL::heSetCullFace(false);
-    const static GLenum buffers[1] = { GL_BACK_LEFT };
-    glDrawBuffers(1, buffers);
 
     m_PostShader->bind();
 
-    m_PostShader->setShaderVar(m_PostShaderVars[PV_ColorMap], pColorMap);
-    if (m_Settings.enableBloom)
+    m_PostShader->setShaderVar(m_PostShaderVars[PV_ColorMap], colorMap);
+    if (settings.enableBloom)
     {
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom0], m_pBloom->getBloom(0));
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom1], m_pBloom->getBloom(1));
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom2], m_pBloom->getBloom(2));
         m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom3], m_pBloom->getBloom(3));
     }
-    if (m_Settings.enableHDR)
+    if (settings.enableHDR)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_LumMap], m_pAutoExposure->getLuminanceMap());
 
-    if (m_Settings.enableNormalEdgeDetect)
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalMap], pNormalMap); 
-    if (m_Settings.enableFog)
+    if (settings.enableNormalEdgeDetect)
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalMap], normalMap); 
+    if (settings.enableFog)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
-    if (m_Settings.enableFog || m_Settings.enableAO || m_Settings.enableDepthEdgeDetect)
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_DepthMap], pDepthMap);
+    if (settings.enableFog || settings.enableAO || settings.enableDepthEdgeDetect)
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_DepthMap], depthMap);
 
-    if (m_Settings.enableAO)
+    if (settings.enableAO)
     {
         m_PostShader->setShaderVar(m_PostShaderVars[PV_SSAORandomNormals], m_pRandomNormals);
         //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAORadius], m_Settings.ssaoSettings.radius);
@@ -214,7 +250,7 @@ void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap
             CAMERAMANAGER->getActiveCamera()->getProjection()(2, 2),
             CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3)));*/
         m_PostShader->setShaderVar(m_PostShaderVars[PV_ViewPortSize], 
-            vec2((float)GRAPHICS->getViewport().width, (float)GRAPHICS->getViewport().height));
+            vec2((float)m_View->getViewport().width, (float)m_View->getViewport().height));
     }
 
     GL::heBindVao(m_pQuad->getVertexArraysID());
@@ -222,12 +258,7 @@ void PostProcesser::draw(const Texture2D* pColorMap, const Texture2D* pNormalMap
 
     drawDebugTextures();
 }
-
-void PostProcesser::onScreenResized()
-{
-    if (m_pBloom != nullptr)
-        m_pBloom->resize();
-}
+\
 
 void PostProcesser::drawDebugTextures() const
 {

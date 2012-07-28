@@ -28,6 +28,9 @@ namespace he {
 //Clear
 Color GL::m_ClearColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
 
+// Misc
+he::RectI GL::m_Viewport(0, 0, 0, 0);
+
 //Depth
 bool GL::m_DepthRead = false, GL::m_DepthWrite = false;
 DepthFunc GL::m_DepthFunc = DepthFunc_Less;
@@ -276,6 +279,20 @@ void GL::reset()
 
 
     m_ActiveTex = UINT_MAX;;
+}
+
+void GL::heSetViewport( const RectI& viewport )
+{
+    if (viewport != m_Viewport)
+    {
+        m_Viewport = viewport;
+        glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    }
+}
+
+const RectI& GL::heGetViewport()
+{
+    return m_Viewport;
 }
 
 

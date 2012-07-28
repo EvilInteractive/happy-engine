@@ -20,11 +20,11 @@
 #define _FLY_CAMERA_H_
 #pragma once
 
-#include "Camera.h"
+#include "CameraPerspective.h"
 
 namespace hs {
 
-class FlyCamera : public he::gfx::Camera
+class FlyCamera : public he::gfx::CameraPerspective
 {
 public:
     // CONSTRUCTOR - DESTRUCTOR

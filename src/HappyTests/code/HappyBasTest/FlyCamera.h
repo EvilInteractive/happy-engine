@@ -24,7 +24,7 @@
 
 namespace ht {
 
-class FlyCamera : public he::gfx::Camera
+class FlyCamera : public he::gfx::CameraPerspective
 {
 public:
     // CONSTRUCTOR - DESTRUCTOR

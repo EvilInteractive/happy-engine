@@ -61,7 +61,6 @@ namespace ge {
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
-#define CAMERAMANAGER HAPPYENGINE->getCameraManager()
 #define HE3DX HAPPYENGINE->get3DRenderer()
 
 namespace he {
@@ -91,9 +90,7 @@ public:
     static HappyEngine* getPointer();
 
     void quit();
-
-    const std::vector<sf::Event>& getEvents() const;
-
+    
     void audioLoop();
 
     //root dir
@@ -110,7 +107,6 @@ public:
     tools::Console* getConsole() const;
     sfx::SoundEngine* getSoundEngine() const;
     ge::Game* getGame() const;
-    ge::CameraManager* getCameraManager() const;
     gfx::ExtraForward3DRenderer* get3DRenderer() const;
 
 private:
@@ -124,7 +120,6 @@ private:
     tools::LoadingScreen* m_pLoadingScreen;
 
     ge::Game* m_pGame;
-    ge::CameraManager* m_pCameraManager;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
     gfx::Renderer2D* m_pRenderer2D;
@@ -145,13 +140,10 @@ private:
 
     int m_SubEngines;
 
-    std::vector<sf::Event> m_Events;
     boost::thread m_AudioThread;
 
     boost::chrono::high_resolution_clock::time_point m_PrevTime;
-
-    sf::Window* m_pMainWindow;
-
+    
     // Methods
     void initWindow();
     void loop();

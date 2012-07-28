@@ -56,8 +56,8 @@ Canvas2D* Renderer2D::createCanvas(const vec2& size)
 
     if (size.x <= 0 || size.y <= 0)
     {
-        dim.x = (float)GRAPHICS->getScreenWidth();
-        dim.y = (float)GRAPHICS->getScreenHeight();
+        dim.x = (float)GRAPHICS->getActiveView()->getScreenWidth();
+        dim.y = (float)GRAPHICS->getActiveView()->getScreenHeight();
     }
 
     Canvas2D::Data* data = Canvas2D::create(dim);

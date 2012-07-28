@@ -32,6 +32,8 @@ class Bloom;
 class AutoExposure;
 class Texture2D;
 class ModelMesh;
+class View;
+class RenderTarget;
 
 class PostProcesser
 {
@@ -39,17 +41,16 @@ public:
     PostProcesser();
     virtual ~PostProcesser();
 
-    void init(const RenderSettings& settings);
-    void setSettings(const RenderSettings& settings);
+    void init(View* view, const RenderTarget* writeTarget, const RenderTarget* readTarget);
 
     void setFogColor(const he::vec3& color);
 
-    void onScreenResized();
-
-    void draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap);
+    void draw();
     void drawDebugTextures() const;
 
 private:
+    void onSettingsChanged(const RenderSettings& settings, bool force = false);
+    void compileShader();
 
     enum PostShaderVar
     {
@@ -77,6 +78,9 @@ private:
         MAX_POST_SHADER_VARS
     };
 
+    View* m_View;
+    const RenderTarget* m_WriteRenderTarget;
+    const RenderTarget* m_ReadRenderTarget;
     RenderSettings m_Settings;
 
     Bloom* m_pBloom;

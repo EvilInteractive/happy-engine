@@ -169,11 +169,6 @@ void InstancingController::init()
         glVertexAttribDivisor(1 + 1, 1);
         glVertexAttribDivisor(1 + 2, 1);
         glVertexAttribDivisor(1 + 3, 1);
-
-
-    GL::heBindVao(0);
-
-    GRAPHICS->addToDrawList(this);
 }
 
 void InstancingController::updateBuffer()
@@ -197,14 +192,15 @@ void InstancingController::updateBuffer()
         }
 
         m_CpuBuffer.reset();
+        AABB newBound;
         if (m_ManualMode == false)
         {
             DynamicBuffer b(m_InstancingLayout);
             he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&](const IInstancible* pObj)
             {
-                //check for culling here
                 b.setBuffer(m_CpuBuffer.addItem());
                 pObj->fillInstancingBuffer(b);
+                newBound.merge(pObj->getBound().getAABB());
             });
         }
         else
@@ -212,8 +208,10 @@ void InstancingController::updateBuffer()
             std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](IInstanceFiller* pFiller)
             {
                 pFiller->fillInstancingBuffer(m_CpuBuffer);
+                newBound.merge(pFiller->getAABB());
             });
         }
+        m_Bound = Bound(newBound);
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
         m_NeedsUpdate = false;
@@ -284,16 +282,6 @@ bool InstancingController::getCastsShadow() const
 void InstancingController::setCastsShadow( bool castShadow )
 {
     m_CastShadows = castShadow;
-}
-
-bool InstancingController::isVisible() const
-{
-    return m_IsVisible;
-}
-
-void InstancingController::setVisible( bool visible )
-{
-    m_IsVisible = visible;
 }
 
 uint InstancingController::getCount() const

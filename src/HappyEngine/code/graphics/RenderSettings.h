@@ -26,38 +26,71 @@
 
 namespace he {
 namespace gfx {
-
-struct AOSettings
+ 
+struct PostSettings
 {
-    float radius;
-    float maxDistance;
+    struct HdrSettings
+    {
+        float exposureSpeed;
+    };
+    struct AOSettings
+    {
+        float radius;
+        float maxDistance;
+    };
+    struct ShaderSettings
+    {
+        bool enableHDR : 1;
+        bool enableAO : 1;
+        bool enableBloom : 1;
+        bool enableNormalEdgeDetect : 1;
+        bool enableDepthEdgeDetect : 1;
+        bool enableVignette : 1;
+        bool enableFog : 1;
+
+        bool operator==(const ShaderSettings& other) const
+        {
+            return enableHDR == other.enableHDR && 
+                   enableAO == other.enableAO && 
+                   enableBloom == other.enableBloom && 
+                   enableNormalEdgeDetect == other.enableNormalEdgeDetect && 
+                   enableDepthEdgeDetect == other.enableDepthEdgeDetect && 
+                   enableVignette == other.enableVignette && 
+                   enableFog == other.enableFog;
+        }
+        bool operator!=(const ShaderSettings& other) const
+        {
+            return !(*this == other);
+        }
+    };
+
+    HdrSettings hdrSettings;
+    ShaderSettings shaderSettings;
+    AOSettings aoSettings;
 };  
+struct ShadowSettings
+{
+    byte shadowMult;
+};
+struct LightingSettings
+{
+    bool enableLighting;
+    bool enableSpecular;
+    bool enableNormalMap;
+};
 
 struct RenderSettings
 {
 public:
     bool isFullscreen;
-    bool enableDeferred;
 
-    bool enableHDR;
-    bool enableAO;
-    bool enableBloom;
+    bool enableDeferred;
+    bool enablePost; 
     bool enableShadows;
     
-    bool enableLighting;
-    bool enableSpecular;
-    bool enableNormalMap;
-
-    bool enableNormalEdgeDetect;
-    bool enableDepthEdgeDetect;
-    bool enableVignette;
-    bool enableFog;
-
-    AOSettings aoSettings;
-
-    byte shadowMult;
-
-    float exposureSpeed;
+    LightingSettings lightingSettings;
+    PostSettings postSettings;
+    ShadowSettings shadowSettings;
 };
 
 } } //end namespace

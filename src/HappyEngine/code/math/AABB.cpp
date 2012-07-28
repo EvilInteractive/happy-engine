@@ -20,19 +20,23 @@
 #include "HappyPCH.h" 
 
 #include "AABB.h"
-#include "HappyNew.h"
 
 namespace he {
 
-namespace shapes {
-
-AABB::AABB()
+AABB AABB::calculateBoundingAABB( const void* pointCloud, uint num, uint stride, uint posOffset )
 {
+    vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
+         max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+    const char* charPointCloud = static_cast<const char*>(pointCloud);
+    for(uint i = 0; i < num; ++i)
+    {
+        const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
+        he::minPerComponent(min, p, min);
+        he::maxPerComponent(max, p, max);
+    }
+
+    return AABB(min, max);
 }
 
-
-AABB::~AABB()
-{
-}
-
-} } //end namespace
+} //end namespace

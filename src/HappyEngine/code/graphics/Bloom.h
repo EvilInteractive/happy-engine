@@ -28,6 +28,7 @@ namespace gfx {
 class Texture2D;
 class ModelMesh;
 class Shader;
+class View;
 
 class Bloom
 {
@@ -35,14 +36,14 @@ public:
     Bloom();
     virtual ~Bloom();
 
-    void init(bool hdr);
-    void resize();
+    void init(View* view, bool hdr);
 
     const Texture2D* getBloom(byte level) const;
 
     void render( const Texture2D* pTexture, const Texture2D* pLumMap = nullptr );
 
 private:
+    void resize();
     void cleanTextures();
     void cleanShaders();
 
@@ -66,6 +67,7 @@ private:
     bool m_Hdr;
 
     ModelMesh* m_Mesh;
+    View* m_View;
 
     //Disable default copy constructor and default assignment operator
     Bloom(const Bloom&);
