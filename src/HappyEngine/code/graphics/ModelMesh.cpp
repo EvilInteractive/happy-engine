@@ -245,7 +245,8 @@ void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
     }
     else
     {
-        Loaded += callback;
+        eventCallback0<void> handler(callback);
+        Loaded += handler;
         m_LoadMutex.unlock();
     }
 }

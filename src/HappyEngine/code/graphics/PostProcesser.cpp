@@ -71,7 +71,8 @@ void PostProcesser::init( View* view, const RenderTarget* writeTarget, const Ren
         m_ReadRenderTarget = readTarget;
         m_View = view;
 
-        m_View->SettingsChanged += [&](){ onSettingsChanged(m_View->getSettings(), false); }; // this is safe because PostProcessor is a member of View
+        eventCallback0<void> handler([&](){ onSettingsChanged(m_View->getSettings(), false); });
+        m_View->SettingsChanged += handler;  // this is safe because PostProcessor is a member of View
         
         m_pQuad = CONTENT->getFullscreenQuad();
         

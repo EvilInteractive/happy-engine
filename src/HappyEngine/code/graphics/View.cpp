@@ -58,7 +58,7 @@ View::View():
 View::~View()
 {
     if (m_Window != nullptr)
-        m_Window->Resized -= boost::bind(&View::calcViewportFromPercentage, this);
+        m_Window->Resized -= m_WindowResizedCallback;
 
     delete m_IntermediateRenderTarget;
     delete m_OutputRenderTarget;
@@ -146,9 +146,10 @@ void View::setWindow( Window* window )
 {
     HE_ASSERT(window != nullptr, "active window can not be nullptr!");
     if (m_Window != nullptr)
-        m_Window->Resized -= boost::bind(&View::calcViewportFromPercentage, this);
+        m_Window->Resized -= m_WindowResizedCallback;
+    m_WindowResizedCallback = eventCallback0<void>(boost::bind(&View::calcViewportFromPercentage, this));
     m_Window = window;
-    m_Window->Resized += boost::bind(&View::calcViewportFromPercentage, this);
+    m_Window->Resized += m_WindowResizedCallback;
 }
 
 const RectI& View::getViewport() const

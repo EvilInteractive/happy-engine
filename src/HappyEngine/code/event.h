@@ -28,21 +28,28 @@ namespace he {
 namespace details {
 
 template<typename T>
-void defaultEventCombiner(T& inoutA, const T& inB)
+bool defaultEventCombiner(T& inoutA, const T& inB)
 {
     inoutA = inB;
+    return false;
+}
+
 }
 
 template<typename T>
 class EventCombiner
 {
 public:
-    typedef boost::function2<void, T&, const T&> EventCombinerType;
+    // return true if it has to return immediately without validating others
+    typedef boost::function2<bool, T&, const T&> EventCombinerType;
     typedef T result_type;
 
+    EventCombiner():
+    m_EventCombiner(&details::defaultEventCombiner<T>),
+    m_DefaultValue(T()) {}
     EventCombiner(
-        const EventCombinerType& combiner = &defaultEventCombiner<T>,
-        const T& defaultValue = T()):
+        const EventCombinerType& combiner,
+        const T& defaultValue):
       m_DefaultValue(defaultValue),
       m_EventCombiner(combiner) {}
 
@@ -53,10 +60,7 @@ public:
             return m_DefaultValue;
 
         T outValue(*first);
-        while (++first != last) 
-        {
-            m_EventCombiner(outValue, *first);
-        }
+        while (++first != last && !m_EventCombiner(outValue, *first));
 
         return outValue;
     }
@@ -66,47 +70,70 @@ private:
     T m_DefaultValue;
 };
 
-}
+template<>
+class EventCombiner<void>
+{
+public:
+    // return true if it has to return immediately without validating others
+    typedef void result_type;
 
+    EventCombiner() {}
+
+    template<typename InputIterator>
+    void operator()(InputIterator first, InputIterator last) const
+    {
+        while (++first != last)
+            *first;
+
+        return;
+    }
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+// event0
+//////////////////////////////////////////////////////////////////////////
+template<typename ReturnType>
+class event0;
 
 template<typename ReturnType>
 struct eventCallback0
 {
-    friend event0<ReturnType>;
+    template<typename T> friend class event0;
     typedef boost::function0<ReturnType> Function;
 
 public:
-    explicit eventCallback0(const Function& function):
-      m_Function(function) {}
+    eventCallback0() {}
+    explicit eventCallback0(const Function& Function):
+      m_Function(Function) {}
 
 private:
-    boost::function0<ReturnType> m_Function;
+    Function m_Function;
     boost::signals::connection m_Connection;
 };
 
-template<typename returnType>
+template<typename ReturnType>
 class event0
 {
-    typedef eventCallback0<returnType> function;
-    typedef typename details::EventCombiner<returnType>::EventCombinerType EventCombinerType;
-    typedef boost::signal0<returnType, details::EventCombiner<returnType>> Signal;
+    typedef eventCallback0<ReturnType> Function;
+    typedef boost::signal0<ReturnType, EventCombiner<ReturnType>> Signal;
 public:
     event0() {}
-    event0(const EventCombinerType& combiner, const returnType& defaultValue):
-        m_Combiner(combiner, defaultValue) {}
+    event0(const EventCombiner<ReturnType>& combiner):
+        m_Combiner(combiner) {}
     ~event0() {}
 
-    void operator+=(function& func)
+    void operator+=(Function& func)
     {
         func.m_Connection = m_Signal.connect(func.m_Function);
     }
-    void operator-=(const function& func)
+    void operator-=(const Function& func)
     {
         m_Signal.disconnect(func.m_Connection);
     }
-    returnType operator()() const
+    ReturnType operator()() const
     {
-        return m_Signal.signal();
+        return m_Signal();
     }
 
     void clear()
@@ -116,7 +143,69 @@ public:
 
 private:
     Signal m_Signal;
-    details::EventCombiner<returnType> m_Combiner;
+    EventCombiner<ReturnType> m_Combiner;
+
+    event0(const event0&);
+    event0& operator=(const event0&);
+};
+
+//////////////////////////////////////////////////////////////////////////
+// event0
+//////////////////////////////////////////////////////////////////////////
+template<typename ReturnType, typename Arg1Type>
+class event1;
+
+template<typename ReturnType, typename Arg1Type>
+struct eventCallback1
+{
+    template<typename T, typename Arg1Type> friend class event1;
+    typedef boost::function1<ReturnType, Arg1Type> Function;
+
+public:
+    eventCallback1() {}
+    explicit eventCallback1(const Function& Function):
+    m_Function(Function) {}
+
+private:
+    Function m_Function;
+    boost::signals::connection m_Connection;
+};
+
+template<typename ReturnType, typename Arg1Type>
+class event1
+{
+    typedef eventCallback1<ReturnType, Arg1Type> Function;
+    typedef boost::signal1<ReturnType, Arg1Type, EventCombiner<ReturnType>> Signal;
+public:
+    event1() {}
+    event1(const EventCombiner<ReturnType>& combiner):
+    m_Combiner(combiner) {}
+    ~event1() {}
+
+    void operator+=(Function& func)
+    {
+        func.m_Connection = m_Signal.connect(func.m_Function);
+    }
+    void operator-=(const Function& func)
+    {
+        m_Signal.disconnect(func.m_Connection);
+    }
+    ReturnType operator()() const
+    {
+        return m_Signal();
+    }
+
+    void clear()
+    {
+        m_Signal.disconnect_all_slots();
+    }
+
+private:
+    Signal m_Signal;
+    EventCombiner<ReturnType> m_Combiner;
+
+    event1(const event1&);
+    event1& operator=(const event1&);
 };
 
 } //end namespace

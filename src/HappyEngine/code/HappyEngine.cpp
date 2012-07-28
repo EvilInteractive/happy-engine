@@ -396,11 +396,6 @@ gfx::ExtraForward3DRenderer* HappyEngine::get3DRenderer() const
     return m_p3DRenderer;
 }
 
-ge::CameraManager* HappyEngine::getCameraManager() const
-{
-    return m_pCameraManager;
-}
-
 void HappyEngine::setRootDir( const Path& rootDir )
 {
     m_RootDir = rootDir;

@@ -92,6 +92,9 @@ private:
     // Debug
     bool m_RenderDebugTextures;
 
+    // Events
+    he::eventCallback0<void> m_WindowResizedCallback;
+
 
     //Disable default copy constructor and default assignment operator
     View(const View&);

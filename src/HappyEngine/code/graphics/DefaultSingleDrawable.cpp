@@ -29,7 +29,7 @@
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
+DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true)
 {
 }
 

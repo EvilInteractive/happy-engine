@@ -28,7 +28,11 @@ namespace he {
 namespace ge {
 
 Entity::Entity(): m_IsSerializeDataDirty(false), m_Scene(nullptr), 
-    m_SleepEvaluaters([](bool& inoutA, const bool& outB){ inoutA |= outB; }, false)
+    m_SleepEvaluaters(EventCombiner<bool>([](bool& inoutA, const bool& outB) -> bool
+    { 
+        inoutA = outB; 
+        return inoutA;
+    }, false))
 {
 }
 

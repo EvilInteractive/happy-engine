@@ -69,6 +69,8 @@ private:
     ModelMesh* m_Mesh;
     View* m_View;
 
+    eventCallback0<void> m_ViewportSizeChangedHandler;
+
     //Disable default copy constructor and default assignment operator
     Bloom(const Bloom&);
     Bloom& operator=(const Bloom&);

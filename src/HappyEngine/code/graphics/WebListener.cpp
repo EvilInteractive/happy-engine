@@ -70,7 +70,8 @@ void WebListener::setObjectCallback(const std::string& object,
 
         JSObject jsObject(obj);
         jsObject.objectName = object;
-        jsObject.methodCallBacks[aweMethod] += callBack;
+        eventCallback0<void> handler(callBack);
+        jsObject.methodCallBacks[aweMethod] += handler; // TODO: seeb (is it correct you do not need a -= here? else keep callback as member)
 
         m_Objects.push_back(jsObject);
     }

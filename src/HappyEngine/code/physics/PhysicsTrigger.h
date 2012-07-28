@@ -46,8 +46,9 @@ public:
     /* CALLBACKS */
     void onTriggerEnter(physx::PxShape* shape);
     void onTriggerLeave(physx::PxShape* shape);
-    void addOnTriggerEnterCallBack(const boost::function<void()>& callback);
-    void addOnTriggerLeaveCallBack(const boost::function<void()>& callback);
+
+    event0<void> OnTriggerEnter;
+    event0<void> OnTriggerLeave;
 
 private:
     void addShape(physx::PxShape* shape);
@@ -55,8 +56,6 @@ private:
     /* DATAMEMBERS */
     PhysicsDynamicActor* m_Actor;
 
-    event0<void> m_OnTriggerEnterEvent;
-    event0<void> m_OnTriggerLeaveEvent;
 
     /* DEFAULT COPY & ASSIGNENT */
     PhysicsTrigger(const PhysicsTrigger&);

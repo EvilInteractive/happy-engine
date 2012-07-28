@@ -134,7 +134,8 @@ void Model::callbackOnceIfLoaded( const boost::function<void()>& callback )
     }
     else
     {
-        m_LoadedCallback += callback;
+        eventCallback0<void> handler(callback);
+        m_LoadedCallback += handler;
         m_LoadedMutex.unlock();
     }
 }

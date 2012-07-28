@@ -204,7 +204,8 @@ void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) 
     }
     else
     {
-        _this->Loaded += callback;
+        eventCallback0<void> handler(callback);
+        _this->Loaded += handler;
         _this->m_CallbackMutex.unlock();
     }
 }

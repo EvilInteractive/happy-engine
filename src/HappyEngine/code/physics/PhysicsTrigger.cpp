@@ -137,22 +137,13 @@ void PhysicsTrigger::setPose(const mat44& pose)
 /* CALLBACKS */
 void PhysicsTrigger::onTriggerEnter(physx::PxShape* /*pShape*/)
 {
-    m_OnTriggerEnterEvent();
+    OnTriggerEnter();
 }
 
 void PhysicsTrigger::onTriggerLeave(physx::PxShape* /*pShape*/)
 {
-    m_OnTriggerLeaveEvent();
+    OnTriggerLeave();
 }
 
-void PhysicsTrigger::addOnTriggerEnterCallBack(const boost::function<void()>& callback)
-{
-    m_OnTriggerEnterEvent += callback;
-}
-
-void PhysicsTrigger::addOnTriggerLeaveCallBack(const boost::function<void()>& callback)
-{
-    m_OnTriggerLeaveEvent += callback;
-}
 
 } } //end namespace

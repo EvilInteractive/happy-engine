@@ -150,11 +150,6 @@ void Button::setText(const std::string& text, ushort fontSize)
     m_pFont = CONTENT->getDefaultFont(fontSize);
 }
 
-void Button::addOnClickListener(boost::function<void()> callback)
-{
-    m_OnClickEvent += callback;
-}
-
 /* GETTERS */
 bool Button::isNormal() const
 {
@@ -254,7 +249,7 @@ void Button::drawSpriteSheet()
 /* CALLBACK HANDLERS */
 void Button::clicked()
 {
-    m_OnClickEvent();
+    OnClick();
 }
 
 } } //end namespace

@@ -75,7 +75,7 @@ public:
     virtual void setPosition(const vec2& centerPos);
     virtual void setText(const std::string& text, ushort fontSize = 12);
 
-    virtual void addOnClickListener(boost::function<void()> callback);
+    event0<void> OnClick;
 
     /* GETTERS */
     virtual bool isNormal() const;
@@ -111,8 +111,6 @@ protected:
 
     std::string m_Text;
     gfx::Font* m_pFont;
-
-    event0<void> m_OnClickEvent;
 
 private:
 

@@ -27,6 +27,7 @@
 #include "Vertex.h"
 #include "SimpleColorEffect.h"
 #include "BillboardEffect.h"
+#include "CameraPerspective.h"
 
 namespace he {
 namespace gfx {
