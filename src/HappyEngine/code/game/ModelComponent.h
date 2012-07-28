@@ -62,8 +62,8 @@ public:
 
     void setMaterial(const ObjectHandle& material);
 
-    virtual bool isDynamic() const = 0;
-    virtual bool isSleeping() const = 0; 
+    virtual bool isDynamic() const;
+    virtual bool isSleeping() const; 
 
 protected:
     Entity* m_Parent;

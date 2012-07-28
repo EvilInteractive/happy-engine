@@ -33,7 +33,7 @@ class ICamera;
 class CullOctreeNode
 {
 public:
-    explicit CullOctreeNode(CullOctreeNode* parent, const Bound& bound);
+    explicit CullOctreeNode(CullOctreeNode* parent, const Bound& bound); 
     ~CullOctreeNode();
 
     const Bound& getBound() const { return m_Bound; }
@@ -57,7 +57,7 @@ class CullOctree
 {
 public:
 
-    explicit CullOctree(uint32 rootSize);
+    explicit CullOctree(uint32 rootSize); // TODO: remove rootSize from constructor and make dynamic
     ~CullOctree();
 
     void insert(IDrawable* obj);

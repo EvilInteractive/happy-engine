@@ -44,7 +44,7 @@ public:
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);
 
-    virtual const Bound& getBound() const { return m_Bound; }
+    virtual const Bound& getBound() const;
 
     virtual void draw();
     virtual void drawShadow();
@@ -53,10 +53,7 @@ public:
     virtual void attachToScene(Scene* scene, bool dynamic);
     virtual Scene* getScene() const;
     virtual bool isAttachedToScene() const;
-
-protected:
-    Bound m_Bound;
-
+    
 private:
     bool m_CastsShadow;
     Scene* m_Scene;

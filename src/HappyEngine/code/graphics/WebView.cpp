@@ -54,6 +54,13 @@ void WebView::draw(const vec2& pos)
         if (pSurface->is_dirty())
         {
             byte* buffer = NEW byte[pSurface->width() * 4 * pSurface->height()];
+            // TODO: seeb
+            // make this buffer a member
+            // register to View->ViewportSizeChanged
+            // and realloc the buffer there
+            // also use he_malloc he_realloc and he_free
+            // realloc will first try to extend or shrink the buffer before searching for a new random spot in memory
+            // keeps mem fragmentation at lowest
 
             pSurface->CopyTo(buffer, pSurface->width() * 4, 4, false, true);
 
@@ -68,13 +75,13 @@ void WebView::draw(const vec2& pos)
         if (m_FullScreen)
         {
             // TODO: seeb
-//             vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
-//             vec2 dim2((float)pSurface->width(), (float)pSurface->height());
-// 
-//             if (dim != dim2)
-//             {
-//                 m_pWebView->Resize((int)dim.x,(int)dim.y);
-//             }
+            vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
+            vec2 dim2((float)pSurface->width(), (float)pSurface->height());
+
+            if (dim != dim2)
+            {
+                m_pWebView->Resize((int)dim.x,(int)dim.y);
+            }
         }
     }
 

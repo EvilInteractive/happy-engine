@@ -98,4 +98,11 @@ bool DefaultSingleDrawable::isAttachedToScene() const
     return m_Scene != nullptr;
 }
 
+const Bound& DefaultSingleDrawable::getBound() const
+{
+    HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
+    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octtree insertion will happen!");
+    return getModelMesh()->getBound();
+}
+
 } } //end namespace
