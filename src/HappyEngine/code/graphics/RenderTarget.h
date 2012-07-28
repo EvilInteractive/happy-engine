@@ -26,6 +26,10 @@ namespace he {
 namespace gfx {
 class Texture2D;
 
+// RenderTarget is a class which encapsulates a fbo
+// you can add texture targets and a depth target
+// to enable a RenderTarget call prepareForRendering
+// to draw to the backbuffer initialize an empty RenderTarget
 class RenderTarget
 {
 public:

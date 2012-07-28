@@ -45,6 +45,8 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 {
     CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
 
+    // TODO: seeb
+    // same problem here it needs a View
     setPos(vec2(GRAPHICS->getViewport().width - 115.0f, 5.0f));
 
     m_FpsHistory.reserve(300);

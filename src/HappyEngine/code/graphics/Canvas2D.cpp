@@ -95,7 +95,7 @@ Canvas2D::Canvas2D(Data* pData, const vec2& size) :     m_pBufferData(pData),
 {
     init();
 
-    // TODO:
+    // TODO: seeb
 //     if (m_CanvasSize.x == (float)GRAPHICS->getScreenWidth() &&
 //         m_CanvasSize.y == (float)GRAPHICS->getScreenHeight())
 //     {

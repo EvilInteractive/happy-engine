@@ -32,6 +32,11 @@
 namespace he {
 namespace gfx {
 
+// TODO: seeb
+// this class does the 2D stuff right?
+// it should also be inside a View
+// inherit from IRenderer would be perfect
+// you can get the viewport size from a View
 class Renderer2D
 {
 public:

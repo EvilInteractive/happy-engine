@@ -202,7 +202,7 @@ void HappyEngine::start(ge::Game* pGame)
         m_p3DRenderer->init();
         m_pRenderer2D->init();
 
-        m_pConsole->load(GRAPHICS->getMainView());
+        m_pConsole->load();
         CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
 
         PROFILER->load();
@@ -289,8 +289,15 @@ void HappyEngine::updateLoop(float dTime)
 void HappyEngine::drawLoop()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    // display 3D scene
+    
+    // render everything
     GRAPHICS->draw();
+
+    // TODO: seeb
+    // move all this stuff to View
+    // loadingscreen will be a problem, but should be handled in client then
+    // View will present all the corresponding window
+    // so executing the code here will be to late
 
     // draw 2D stuff
     if (m_bGameLoading)
@@ -306,12 +313,6 @@ void HappyEngine::drawLoop()
 
     // draw console
     CONSOLE->draw();
-
-    // display 2D
-    ////GUI->draw();    
-    
-    if (m_SubEngines & SubEngine_Graphics)
-        m_pGraphicsEngine->present();
 }
 
 HappyEngine* HappyEngine::getPointer()

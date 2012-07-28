@@ -98,7 +98,7 @@ void FlyCamera::tick(float dTime)
 
     CONTROLS->returnFocus(this);
 
-    // TODO:
+    // TODO: seeb
     //m_AspectRatio = GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth();
 
     buildProjectionMatrix();

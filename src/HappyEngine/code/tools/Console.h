@@ -49,6 +49,12 @@ namespace gfx {
 
 namespace tools {
 class ITypeHandler;
+
+// TODO: seeb
+// this class already works
+// but it also needs a view
+// now you need to tell the console to which view you like the console to draw
+// just so you'd now - this will be client called
 class Console
 {
 public:

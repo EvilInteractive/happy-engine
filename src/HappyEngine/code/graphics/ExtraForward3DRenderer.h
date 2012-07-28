@@ -35,7 +35,12 @@ class BillboardEffect;
 class SimpleColorEffect;
 class ModelMesh;
 
-class ExtraForward3DRenderer : public IRenderer
+// TODO: seeb
+// Is this still used?
+// if so consider moving it or renaming to ShapeRenderer
+// it also needs to be attached to a view
+// since it is a renderer it should inherit IRenderer and can then be used in a View
+class ExtraForward3DRenderer
 {
 public:
 

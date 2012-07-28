@@ -23,10 +23,7 @@
 #pragma once
 
 #include "Color.h"
-#include "vec2.h"
 #include "Text.h"
-#include "mat33.h"
-#include "HappyTypes.h"
 #include "Mesh2D.h"
 #include "Simple2DEffect.h"
 #include "Simple2DTextureEffect.h"
@@ -36,6 +33,12 @@
 namespace he {
 namespace gfx {
 
+// TODO: seeb
+// way to many includes
+// change to forward declarations
+// I does compile so no worries there
+// also now we have a RenderTarget class
+// consider updating the Canvas2D::Data::create method
 class Canvas2D
 {
 public:
