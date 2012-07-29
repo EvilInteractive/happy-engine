@@ -53,12 +53,12 @@ void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter
             blend = BlendFilter_Opac;
     }
 }
-void DrawListContainer::insert( IDrawable* drawable, bool dynamic )
+void DrawListContainer::insert( IDrawable* drawable, bool autoReevalute )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);
     m_DrawList[blend]->insert(drawable);
-    if (dynamic)
+    if (autoReevalute)
         m_Dynamics.push_back(drawable);
 }
 
@@ -91,6 +91,13 @@ void DrawListContainer::prepareForRendering()
             m_DrawList[blend]->reevaluate(drawable);
         }
     });
+}
+
+void DrawListContainer::forceReevalute( IDrawable* drawable )
+{
+    BlendFilter blend;
+    getContainerIndex(drawable, blend);  
+    m_DrawList[blend]->reevaluate(drawable);
 }
 
 } } //end namespace

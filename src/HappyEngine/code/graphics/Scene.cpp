@@ -35,9 +35,15 @@ Scene::Scene()
 Scene::~Scene()
 {
 }
-void Scene::attachToScene( IDrawable* drawable, bool dynamic )
+
+void Scene::forceReevalute( IDrawable* drawable )
 {
-    m_DrawList.insert(drawable, dynamic);
+    m_DrawList.forceReevalute(drawable);
+}
+
+void Scene::attachToScene( IDrawable* drawable, bool autoReevaluate )
+{
+    m_DrawList.insert(drawable, autoReevaluate);
 }
 
 void Scene::detachFromScene( IDrawable* drawable )

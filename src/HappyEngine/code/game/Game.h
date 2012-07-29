@@ -46,10 +46,22 @@ public:
     {
         if (m_RemoveTickList.size() > 0)
         {
-            std::for_each(m_RemoveTickList.cbegin(), m_RemoveTickList.cend(), [&](ITickable* pObj)
+            std::vector<ITickable*>::iterator it(m_TickList.begin());
+            for(; it != m_TickList.end() && m_RemoveTickList.size() > 0; )
             {
-                m_TickList.erase(std::remove(m_TickList.begin(), m_TickList.end(), pObj), m_TickList.end());
-            });
+                std::vector<ITickable*>::iterator removeIt(std::find(m_RemoveTickList.begin(), m_RemoveTickList.end(), *it));
+                if (removeIt != m_RemoveTickList.end())
+                {
+                    *it = m_TickList.back();
+                    m_TickList.pop_back();
+                    *removeIt = m_RemoveTickList.back();
+                    m_RemoveTickList.pop_back();
+                }
+                else
+                {
+                    ++it;
+                }
+            }
             m_RemoveTickList.clear();
         }
         if (m_NewTickList.size() > 0)

@@ -53,7 +53,7 @@ public:
     virtual const Bound& getBound() const = 0;
 
     virtual void detachFromScene() = 0;
-    virtual void attachToScene(Scene* scene, bool dynamic) = 0;
+    virtual void attachToScene(Scene* scene, bool autoReevalute) = 0;
     virtual Scene* getScene() const = 0;
     virtual bool isAttachedToScene() const = 0;
         
@@ -64,8 +64,8 @@ public:
     virtual bool isInstanced() const = 0;
     virtual bool isSkinned() const = 0;
 
-    // needs to reevaluate octree node every draw when dynamicly inserted
-    // if sleeping this object will be ignored when updating dynamic bounds
+    // needs to reevaluate octree node every draw when autoReevalute == true
+    // if sleeping this object will be ignored when updating bounds
     // Hint: set this value to physics->isSleeping()
     virtual bool isSleeping() const = 0; 
 

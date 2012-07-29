@@ -33,7 +33,7 @@ namespace gfx {
 }
 namespace ge {
     
-class InstancedModelComponent : public IComponent, public gfx::IInstancible, public gfx::I3DObject
+class InstancedModelComponent : public IComponent, public gfx::IInstancible
 {
 public:
     InstancedModelComponent();
@@ -64,10 +64,10 @@ public:
     const mat44& getLocalTransform() const;
 
     void setController(const std::string& key);
-    const gfx::InstancingController* getController() const;
+    const std::string& getControllerKey() const;
 
 private:
-    gfx::InstancingController* m_Controller;
+    std::string m_ControllerKey;
     uint m_InstanceId;
 
     mat44 m_mtxLocalTransform;

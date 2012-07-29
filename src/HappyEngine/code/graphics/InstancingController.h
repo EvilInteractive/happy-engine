@@ -28,6 +28,7 @@
 #include "BufferLayout.h"
 #include "InstancingBuffer.h"
 #include "Bound.h"
+#include "ITickable.h"
 
 namespace he {
 namespace gfx {
@@ -36,8 +37,9 @@ class IInstancible;
 class IInstanceFiller;
 class ModelMesh;
 class Material;
+class Scene;
 
-class InstancingController : public IInstancedDrawable
+class InstancingController : public IInstancedDrawable, public ge::ITickable
 {
 public:
     InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
@@ -46,26 +48,40 @@ public:
     uint addInstance(const IInstancible* pObj); //return id
     uint addInstance(); //return id // only for manual mode
     void removeInstance(uint id);
+    virtual uint getCount() const;
+
+    void addManualFiller(IInstanceFiller* pFiller);
+    void removeManualFiller(const IInstanceFiller* pFiller);
     
+    //////////////////////////////////////////////////////////////////////////
+    /// IDrawable
+    //////////////////////////////////////////////////////////////////////////
     virtual const Material* getMaterial() const;
     virtual void applyMaterial(const ICamera* pCamera) const;
     virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
+
+    virtual void detachFromScene();
+    // autoReevalute is ignored here, it is custom handled
+    virtual void attachToScene(Scene* scene, bool autoReevalute = false);
+    virtual Scene* getScene() const;
+    virtual bool isAttachedToScene() const;
+
+    virtual const Bound& getBound() const { return m_Bound; }
+    virtual bool isSleeping() const { return false; }; // is force handled in code
 
     virtual const ModelMesh* getModelMesh() const;
 
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);
 
-    virtual const Bound& getBound() const { return m_Bound; }
-    virtual bool isSleeping() const { return m_Dynamic; }; 
-    
-    virtual uint getCount() const;
-
     virtual void draw();
     virtual void drawShadow();
 
-    void addManualFiller(IInstanceFiller* pFiller);
-    void removeManualFiller(const IInstanceFiller* pFiller);
+
+    //////////////////////////////////////////////////////////////////////////
+    // ITickable
+    //////////////////////////////////////////////////////////////////////////
+    virtual void tick(float dTime);
 
 private:
     void init();
@@ -94,6 +110,8 @@ private:
     boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
 
     std::vector<IInstanceFiller*> m_ManualCpuBufferFillers;
+
+    Scene* m_Scene;
 
     //Disable default copy constructor and default assignment operator
     InstancingController(const InstancingController&);

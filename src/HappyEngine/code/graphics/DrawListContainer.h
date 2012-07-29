@@ -48,8 +48,9 @@ public:
     void prepareForRendering();
     void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc) const;
 
-    void insert(IDrawable* drawable, bool dynamic);
+    void insert(IDrawable* drawable, bool autoReevalute);
     void remove(IDrawable* drawable);
+    void forceReevalute(IDrawable* drawable);
     
 private:
 

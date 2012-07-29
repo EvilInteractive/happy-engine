@@ -254,7 +254,7 @@ void HappyEngine::updateLoop(float dTime)
     
     PROFILER_BEGIN("SFML poll events");
     const std::vector<gfx::Window*>& windows(GRAPHICS->getAllWindows());
-    std::for_each(windows.cbegin(), windows.cend(), [](gfx::Window* window)
+    std::for_each(windows.cbegin(), windows.cend(), [&dTime](gfx::Window* window)
     {
         window->doEvents(dTime);
     });

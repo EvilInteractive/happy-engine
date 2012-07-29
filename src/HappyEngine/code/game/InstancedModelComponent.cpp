@@ -20,9 +20,8 @@
 #include "HappyPCH.h" 
 
 #include "InstancedModelComponent.h"
-#include "HappyNew.h"
 #include "Entity.h"
-#include "HappyEngine.h"
+#include "Scene.h"
 #include "GraphicsEngine.h"
 #include "InstancingManager.h"
 #include "InstancingController.h"
@@ -31,22 +30,29 @@
 namespace he {
 namespace ge {
 
-InstancedModelComponent::InstancedModelComponent(): m_InstanceId(0), m_Controller(nullptr)
+InstancedModelComponent::InstancedModelComponent(): m_InstanceId(UINT_MAX), m_ControllerKey(""), m_Parent(nullptr)
 {
 }
 
 
 InstancedModelComponent::~InstancedModelComponent()
 {
-    if (m_Controller != nullptr)
+    if (m_ControllerKey != "" && m_Parent != nullptr)
     {
-        m_Controller->removeInstance(m_InstanceId);
+        gfx::InstancingController* controller(m_Parent->getScene()->getInstancingManager()->getController(m_ControllerKey));
+        HE_IF_ASSERT(controller != nullptr, "Instancing controller \"%s\" not found", m_ControllerKey.c_str())
+        {
+            controller->removeInstance(m_InstanceId);
+        }
     }
 }
 
-void InstancedModelComponent::init( Entity* pParent )
+void InstancedModelComponent::init( Entity* parent )
 {
-    m_Parent = pParent;
+    HE_ASSERT(parent != nullptr, "Parent cannot be nullptr!");
+    HE_ASSERT(m_Parent == nullptr, "Do not init this component 2 times");
+    m_Parent = parent;
+    setController(m_ControllerKey);
 }
 
 void InstancedModelComponent::serialize(SerializerStream& stream)
@@ -76,20 +82,32 @@ const mat44& InstancedModelComponent::getLocalTransform() const
 
 void InstancedModelComponent::setController( const std::string& key )
 {
-    if (m_Controller != nullptr)
+    if (m_ControllerKey != "")
     {
-        m_Controller->removeInstance(m_InstanceId);
+        if (m_Parent != nullptr)
+        {
+            gfx::InstancingController* controller(m_Parent->getScene()->getInstancingManager()->getController(m_ControllerKey));
+            HE_IF_ASSERT(controller != nullptr, "Instancing controller \"%s\" not found", m_ControllerKey.c_str())
+            {
+                controller->removeInstance(m_InstanceId);
+            }
+        }
+        m_InstanceId = UINT_MAX;
     }
-    if (key != "")
+    m_ControllerKey = key;
+    if (key != "" && m_Parent != nullptr)
     {
-        m_Controller = GRAPHICS->getInstancingManager()->getController(key);
-        m_InstanceId = m_Controller->addInstance(this);
+        gfx::InstancingController* controller(m_Parent->getScene()->getInstancingManager()->getController(m_ControllerKey));
+        HE_IF_ASSERT(controller != nullptr, "Instancing controller \"%s\" not found", m_ControllerKey.c_str())
+        {
+            m_InstanceId = controller->addInstance(this);
+        }
     }
 }
 
-const gfx::InstancingController* InstancedModelComponent::getController() const
+const std::string& InstancedModelComponent::getControllerKey() const
 {
-    return m_Controller;
+    return m_ControllerKey;
 }
 
 void InstancedModelComponent::fillInstancingBuffer( gfx::DynamicBuffer& buffer ) const

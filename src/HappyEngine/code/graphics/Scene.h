@@ -42,8 +42,9 @@ public:
     virtual ~Scene();
 
     // Drawlist
-    void attachToScene(IDrawable* drawable, bool dynamic);
+    void attachToScene(IDrawable* drawable, bool autoReevaluate);
     void detachFromScene(IDrawable* drawable);
+    void forceReevalute(IDrawable* drawable);
     void prepareForRendering();
     
     // Getters

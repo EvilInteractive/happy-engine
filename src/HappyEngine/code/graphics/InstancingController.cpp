@@ -30,6 +30,8 @@
 
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
+#include "Game.h"
 
 namespace he {
 namespace gfx {
@@ -38,7 +40,7 @@ namespace gfx {
 
 InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_pModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
-    m_ManualMode(false), m_Name(name), m_Material(nullptr)
+    m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
 {
     ResourceFactory<Material>::getInstance()->instantiate(material);
     m_Material = ResourceFactory<Material>::getInstance()->get(material);
@@ -57,11 +59,15 @@ InstancingController::~InstancingController()
     glDeleteBuffers(1, &m_GpuBuffer);
     m_pModelMesh->release();
     m_Material->release();
+    GAME->removeFromTickList(this);
+    if (isAttachedToScene())
+        detachFromScene();
 }
 
 
 void InstancingController::init()
 {
+    GAME->addToTickList(this);
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
@@ -173,10 +179,7 @@ void InstancingController::init()
 
 void InstancingController::updateBuffer()
 {
-    // only need to update once a frame
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevUpdateTime);
-
-    if ((m_Dynamic || m_NeedsUpdate) && elapsedTime.count() / static_cast<float>(boost::nano::den) * 1000 > 12.0f) //12ms ~62.5fps
+    if ((m_Dynamic || m_NeedsUpdate) && isAttachedToScene())
     {
         PROFILER_BEGIN("InstancingController::updateBuffer");
 
@@ -211,26 +214,24 @@ void InstancingController::updateBuffer()
                 newBound.merge(pFiller->getAABB());
             });
         }
-        m_Bound = Bound(newBound);
+        m_Bound.fromAABB(newBound);
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
         m_NeedsUpdate = false;
         m_PrevUpdateTime = boost::chrono::high_resolution_clock::now();
         PROFILER_END();
+
+        getScene()->forceReevalute(this);
     }
 }
 
 void InstancingController::draw()
 {
-    updateBuffer();
-
     GL::heBindVao(m_Vao);
     glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 void InstancingController::drawShadow()
 {
-    updateBuffer();
-
     GL::heBindVao(m_ShadowVao);
     glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
@@ -300,6 +301,38 @@ void InstancingController::removeManualFiller( const IInstanceFiller* pFiller )
 {
     m_ManualCpuBufferFillers.erase(std::remove(m_ManualCpuBufferFillers.begin(), m_ManualCpuBufferFillers.end(),
         pFiller), m_ManualCpuBufferFillers.end());
+}
+
+void InstancingController::tick( float /*dTime*/ )
+{
+    updateBuffer();
+}
+
+void InstancingController::detachFromScene()
+{
+    HE_IF_ASSERT(isAttachedToScene() == true, "Drawable not attached to scene when detaching")
+    {
+        m_Scene->detachFromScene(this);
+    }
+}
+
+void InstancingController::attachToScene( Scene* scene, bool /*autoReevalute*/ )
+{
+    HE_IF_ASSERT(isAttachedToScene() == false, "Drawable already attached to scene when attaching")
+    {
+        m_Scene = scene;
+        m_Scene->attachToScene(this, false);
+    }
+}
+
+Scene* InstancingController::getScene() const
+{
+    return m_Scene;
+}
+
+bool InstancingController::isAttachedToScene() const
+{
+    return m_Scene != nullptr;
 }
 
 } } //end namespace
