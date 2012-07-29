@@ -190,9 +190,9 @@ public:
     {
         m_Signal.disconnect(func.m_Connection);
     }
-    ReturnType operator()() const
+    ReturnType operator()(const Arg1Type& arg1) const
     {
-        return m_Signal();
+        return m_Signal(arg1);
     }
 
     void clear()
