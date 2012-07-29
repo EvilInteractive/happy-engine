@@ -36,7 +36,7 @@ MessageBox::~MessageBox()
 MessageBoxButton MessageBox::show(const std::string& caption, const std::string& message,
                     const std::string& button1, const std::string& button2, const std::string& button3)
 {
-    #define MARGE 8 
+    #define MARGE 16 
     #define MESSAGE_BUTTON_MARGE 16
     #define BUTTON_TEXT_MARGE 8
     #define BUTTON_SPACING 32
@@ -196,8 +196,6 @@ MessageBoxButton MessageBox::show(const std::string& caption, const std::string&
         window.display();
     }
     window.setActive(false);
-    if (GRAPHICS != nullptr && GRAPHICS->getWindow() != nullptr)
-        GRAPHICS->getWindow()->setActive(true);
 
     return result;
 }
