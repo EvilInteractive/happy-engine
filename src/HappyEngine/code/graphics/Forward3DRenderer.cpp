@@ -23,9 +23,10 @@
 #include "Forward3DRenderer.h"
 #include "Scene.h"
 #include "RenderTarget.h"
-#include "Camera.h"
+#include "CameraPerspective.h"
 #include "IDrawable.h"
 #include "CameraManager.h"
+#include "View.h"
 
 namespace he {
 namespace gfx {
@@ -44,13 +45,14 @@ Forward3DRenderer::~Forward3DRenderer()
 
 void Forward3DRenderer::init( View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend )
 {
-    m_RenderTarget = renderTarget;
+    m_RenderTarget = target;
     m_View = view;
     m_BlendFilter = blend;
 }
 
 void Forward3DRenderer::draw()
 {
+    const Scene* scene(m_View->getScene());
     m_RenderTarget->prepareForRendering();
 
     GL::heSetCullFace(false);
