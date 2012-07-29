@@ -27,6 +27,7 @@
 #include "IRenderer.h"
 #include "DrawListContainer.h"
 #include "BufferLayout.h"
+#include "RenderSettings.h"
 
 namespace he {
 namespace gfx {
@@ -119,6 +120,7 @@ private:
     static BufferLayout s_VertexLayoutFullscreenQuad;
 
     void onViewResized();
+    void onSettingChanged();
     void compileShaders();
 
     void postAmbDirIllLight(const Scene* scene);
@@ -167,6 +169,7 @@ private:
     //////////////////////////////////////////////////////////////////////////
     ///                              Settings                              ///
     ////////////////////////////////////////////////////////////////////////// 
+    LightingSettings m_Settings;
     bool m_ShowDebugTextures;
 
     

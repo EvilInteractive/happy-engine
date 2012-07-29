@@ -36,7 +36,8 @@
 #include "ContentManager.h"
 
 #include "CameraManager.h"
-#include "Camera.h"
+#include "CameraPerspective.h"
+#include "CameraBound.h"
 #include "LightFactory.h"
 
 #include "RenderTarget.h"
@@ -73,27 +74,22 @@ Deferred3DRenderer::Deferred3DRenderer():
 }
 void Deferred3DRenderer::init( View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend )
 {
+    HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
     CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
     m_BlendFilter = blend;
     m_OutputRenderTarget = target;
 
-    //////////////////////////////////////////////////////////////////////////
-    ///                          LOAD RENDER TARGETS                       ///
-    //////////////////////////////////////////////////////////////////////////
+    eventCallback0<void> settingsChangedHandler(boost::bind(&Deferred3DRenderer::onSettingChanged, this));
+    m_View->SettingsChanged += settingsChangedHandler;
+    eventCallback0<void> viewportSizeChangedHandler(boost::bind(&Deferred3DRenderer::onViewResized, this));
+    m_View->ViewportSizeChanged += viewportSizeChangedHandler;
+
+    m_Settings = m_View->getSettings().lightingSettings;
+    compileShaders();
     onViewResized();
 
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                          LOAD SHADERS                              ///
-    //////////////////////////////////////////////////////////////////////////
-    compileShaders();
-
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                         LOAD RENDER QUAD                           ///
-    //////////////////////////////////////////////////////////////////////////
     m_pQuad = CONTENT->getFullscreenQuad();
 }
 
@@ -140,9 +136,9 @@ void Deferred3DRenderer::compileShaders()
     //////////////////////////////////////////////////////////////////////////
     const std::string& folder(CONTENT->getShaderFolderPath().str());
     std::set<std::string> shaderDefines;
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         shaderDefines.insert("SPECULAR");
-    if (m_RenderSettings.enableShadows)
+    if (m_Settings.enableShadows)
         shaderDefines.insert("SHADOWS");
     m_PointLightShader->initFromFile(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostPLShader.frag", shaderLayout, shaderDefines);
     m_SpotLightShader->initFromFile(folder  + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout, shaderDefines);
@@ -159,7 +155,7 @@ void Deferred3DRenderer::compileShaders()
     m_PointLightData.pLightBuffer = m_PointLightShader->setBuffer(m_PointLightShader->getBufferId("LightBuffer"));
     m_SpotLightData.pLightBuffer = m_SpotLightShader->setBuffer(m_SpotLightShader->getBufferId("LightBuffer"));
     m_AmbDirIllLightData.pLightBuffer = m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("LightBuffer"));
-    if (m_RenderSettings.enableShadows)
+    if (m_Settings.enableShadows)
         m_AmbDirIllLightData.pPerFrameBuffer = m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("PerFrameBuffer"));
 
     //----PL----------------------------------------------------------------------
@@ -170,7 +166,7 @@ void Deferred3DRenderer::compileShaders()
     m_PointLightData.pLightBuffer->getShaderVar("light.endAttenuation", m_PointLightData.endAttenuation);
     m_PointLightData.colorIllMap = m_PointLightShader->getShaderSamplerId("colorIllMap");
     m_PointLightData.normalMap = m_PointLightShader->getShaderSamplerId("normalMap");
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         m_PointLightData.sgMap = m_PointLightShader->getShaderSamplerId("sgMap");
     m_PointLightData.depthMap = m_PointLightShader->getShaderSamplerId("depthMap");
     m_PointLightData.wvp = m_PointLightShader->getShaderVarId("mtxWVP");
@@ -184,7 +180,7 @@ void Deferred3DRenderer::compileShaders()
     m_SpotLightData.pLightBuffer->getShaderVar("light.cosCutoff", m_SpotLightData.cosCutOff);
     m_SpotLightData.colorIllMap = m_SpotLightShader->getShaderSamplerId("colorIllMap");
     m_SpotLightData.normalMap = m_SpotLightShader->getShaderSamplerId("normalMap");
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         m_SpotLightData.sgMap = m_SpotLightShader->getShaderSamplerId("sgMap");
     m_SpotLightData.depthMap = m_SpotLightShader->getShaderSamplerId("depthMap");
     m_SpotLightData.wvp = m_SpotLightShader->getShaderVarId("mtxWVP");
@@ -195,7 +191,7 @@ void Deferred3DRenderer::compileShaders()
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.direction", m_AmbDirIllLightData.dirDirection);
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.position", m_AmbDirIllLightData.dirPosition);
     m_AmbDirIllLightData.pLightBuffer->getShaderVar("dirLight.nearFar", m_AmbDirIllLightData.dirNearFar);
-    if (m_RenderSettings.enableShadows)
+    if (m_Settings.enableShadows)
     {
         m_AmbDirIllLightData.pPerFrameBuffer->getShaderVar("mtxDirLight0", m_AmbDirIllLightData.mtxDirLight0);
         m_AmbDirIllLightData.pPerFrameBuffer->getShaderVar("mtxDirLight1", m_AmbDirIllLightData.mtxDirLight1);
@@ -204,17 +200,26 @@ void Deferred3DRenderer::compileShaders()
     }
 
     m_AmbDirIllLightData.colorIllMap  = m_AmbDirIllShader->getShaderSamplerId("colorIllMap");
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         m_AmbDirIllLightData.sgMap  = m_AmbDirIllShader->getShaderSamplerId("sgMap");
     m_AmbDirIllLightData.normalMap  = m_AmbDirIllShader->getShaderSamplerId("normalMap");
     m_AmbDirIllLightData.depthMap  = m_AmbDirIllShader->getShaderSamplerId("depthMap");
     
-    if (m_RenderSettings.enableShadows)
+    if (m_Settings.enableShadows)
     {
         m_AmbDirIllLightData.shadowMap0 = m_AmbDirIllShader->getShaderSamplerId("shadowMap0");
         m_AmbDirIllLightData.shadowMap1 = m_AmbDirIllShader->getShaderSamplerId("shadowMap1");
         m_AmbDirIllLightData.shadowMap2 = m_AmbDirIllShader->getShaderSamplerId("shadowMap2");
         m_AmbDirIllLightData.shadowMap3 = m_AmbDirIllShader->getShaderSamplerId("shadowMap3");
+    }
+}
+
+void Deferred3DRenderer::onSettingChanged()
+{
+    if (m_View->getSettings().lightingSettings != m_Settings)
+    {
+        m_Settings = m_View->getSettings().lightingSettings;
+        compileShaders();
     }
 }
 
@@ -340,12 +345,12 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.dirNearFar);
 
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_pColorIllTexture);
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_pSGTexture);
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalMap,   m_CollectionRenderTarget->getTextureTarget(2));
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.depthMap,    m_CollectionRenderTarget->getDepthTarget());
 
-    if (m_RenderSettings.enableShadows)       
+    if (m_Settings.enableShadows)       
     {
         m_AmbDirIllLightData.mtxDirLight0.set(lightManager->getDirectionalLight()->getShadowMatrix(0));
         m_AmbDirIllLightData.mtxDirLight1.set(lightManager->getDirectionalLight()->getShadowMatrix(1));
@@ -377,7 +382,7 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
         return;
 
     m_PointLightShader->setShaderVar(m_PointLightData.colorIllMap, m_pColorIllTexture);
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         m_PointLightShader->setShaderVar(m_PointLightData.sgMap,   m_pSGTexture);
     m_PointLightShader->setShaderVar(m_PointLightData.normalMap,   m_CollectionRenderTarget->getTextureTarget(2));
     m_PointLightShader->setShaderVar(m_PointLightData.depthMap,    m_CollectionRenderTarget->getDepthTarget());
@@ -385,15 +390,12 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
     GL::heSetDepthRead(true);
 
     const CameraPerspective& camera(*scene->getCameraManager()->getActiveCamera());
-    const CameraBound& bound(camera.getBound());
     std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
         PointLight* light(lightFactory->getPointLight(lightHandle));
 
         Sphere sphere(light->getPosition(), light->getEndAttenuation());
-        if (bound.getSphere().intersectTest(sphere) &&
-            bound.getCone().intersectTest(sphere) &&
-            bound.getFrustum().intersect(sphere) != IntersectResult_Outside)  
+        if (camera.intersect(sphere) != IntersectResult_Outside)  
         {
             if (lengthSqr(light->getPosition() - camera.getPosition()) < sqr(light->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {
@@ -437,7 +439,7 @@ void Deferred3DRenderer::postSpotLights(const Scene* scene)
         return;
 
     m_SpotLightShader->setShaderVar(m_SpotLightData.colorIllMap, m_pColorIllTexture);
-    if (m_RenderSettings.enableSpecular)
+    if (m_Settings.enableSpecular)
         m_SpotLightShader->setShaderVar(m_SpotLightData.sgMap,   m_pSGTexture);
     m_SpotLightShader->setShaderVar(m_SpotLightData.normalMap,   m_CollectionRenderTarget->getTextureTarget(2));
     m_SpotLightShader->setShaderVar(m_SpotLightData.depthMap,    m_CollectionRenderTarget->getDepthTarget());
@@ -445,15 +447,12 @@ void Deferred3DRenderer::postSpotLights(const Scene* scene)
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
     const CameraPerspective& camera(*scene->getCameraManager()->getActiveCamera());
-    const CameraBound& bound(camera.getBound());
     std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
         SpotLight* light(lightFactory->getSpotLight(lightHandle));
 
         Sphere sphere(light->getPosition(), light->getEndAttenuation());
-        if (bound.getSphere().intersectTest(sphere) &&
-            bound.getCone().intersectTest(sphere) &&
-            bound.getFrustum().intersect(sphere) != IntersectResult_Outside)  
+        if (camera.intersect(sphere) != IntersectResult_Outside)  
         {
             if (lengthSqr(light->getPosition() - camera.getPosition()) < sqr(light->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {

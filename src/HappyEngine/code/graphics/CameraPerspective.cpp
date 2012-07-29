@@ -106,7 +106,7 @@ void CameraPerspective::buildProjectionMatrix()
     m_Bound.calculate(this);
 }
 
-he::IntersectResult CameraPerspective::intersect( const Bound& bound )
+he::IntersectResult CameraPerspective::intersect( const Bound& bound ) const
 {
     const Sphere& camSphereBound(m_Bound.getSphere());
     const Cone& camConeBound(m_Bound.getCone());
@@ -142,6 +142,25 @@ he::IntersectResult CameraPerspective::intersect( const Bound& bound )
     }
     HE_ASSERT(false, "Should never get here");
     return IntersectResult_Outside;
+}
+
+he::IntersectResult CameraPerspective::intersect( const Sphere& bound ) const
+{
+    const Sphere& camSphereBound(m_Bound.getSphere());
+    const Cone& camConeBound(m_Bound.getCone());
+    const Frustum& frustumBound(m_Bound.getFrustum());
+    const Sphere& otherSphereBound(bound);
+
+    // Fast sphere - sphere test
+    if (camSphereBound.intersectTest(otherSphereBound) == false) 
+        return IntersectResult_Outside;
+
+    // Fast cone - sphere test
+    if (camConeBound.intersectTest(otherSphereBound) == false) 
+        return IntersectResult_Outside;
+
+    // sphere frustum test
+    return frustumBound.intersect(otherSphereBound);
 }
 
 //////////////////////////////////////////////////////////////////////////

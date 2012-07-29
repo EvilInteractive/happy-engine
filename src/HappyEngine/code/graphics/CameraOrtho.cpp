@@ -131,6 +131,20 @@ IntersectResult CameraOrtho::intersect( const Bound& bound ) const
     return IntersectResult_Outside;
 }
 
+he::IntersectResult CameraOrtho::intersect( const Sphere& bound ) const
+{
+    const Sphere& camSphereBound(m_Bound.getSphere());
+    const Frustum& frustumBound(m_Bound.getFrustum());
+    const Sphere& otherSphereBound(bound);
+
+    // Fast sphere - sphere test
+    if (camSphereBound.intersectTest(otherSphereBound) == false) 
+        return IntersectResult_Outside;
+
+    // sphere frustum test
+    return frustumBound.intersect(otherSphereBound);
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

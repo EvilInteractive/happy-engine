@@ -63,7 +63,7 @@ AutoExposure::~AutoExposure()
     m_LumShader->release();
 }
 
-void AutoExposure::init(const RenderSettings& settings)
+void AutoExposure::init(const PostSettings::HdrSettings& settings)
 {
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///

@@ -103,7 +103,7 @@ void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool forc
         if (settings.postSettings.shaderSettings.enableHDR)
         {
             m_pAutoExposure = NEW AutoExposure();
-            m_pAutoExposure->init(settings);
+            m_pAutoExposure->init(settings.postSettings.hdrSettings);
         }
         else 
             m_pAutoExposure = nullptr;

@@ -24,6 +24,7 @@
 
 namespace he {
 class Bound;
+class Sphere;
 
 namespace gfx {
 
@@ -43,6 +44,7 @@ public:
     virtual const vec3& getLook() const = 0;
 
     virtual IntersectResult intersect(const Bound& bound) const = 0;
+    virtual IntersectResult intersect(const Sphere& bound) const = 0;
 };  
 
 } } //end namespace

@@ -395,50 +395,50 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         // Shadow
                         else if (node.second == L"SHADOW_CASCADE_MATRIX0")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix0));
                         }
                         else if (node.second == L"SHADOW_CASCADE_MATRIX1")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix1));
                         }
                         else if (node.second == L"SHADOW_CASCADE_MATRIX2")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix2));
                         }
                         else if (node.second == L"SHADOW_CASCADE_MATRIX3")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix3));
                         }
 
                         else if (node.second == L"SHADOW_CASCADE0")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade0));
                         }
                         else if (node.second == L"SHADOW_CASCADE1")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade1));
                         }
                         else if (node.second == L"SHADOW_CASCADE2")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade2));
                         }
                         else if (node.second == L"SHADOW_CASCADE3")
                         {
-                            if (m_RenderSettings.enableShadows)
+                            if (m_RenderSettings.lightingSettings.enableShadows)
                                 material->registerVar(
                                     NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade3));
                         }

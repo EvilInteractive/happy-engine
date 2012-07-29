@@ -60,6 +60,7 @@ public:
     virtual const vec3& getLook() const { return m_LookWorld; }
 
     virtual IntersectResult intersect(const Bound& bound) const;
+    virtual IntersectResult intersect(const Sphere& bound) const;
 
     // GENERAL
     virtual void tick(float /*dTime*/) {}

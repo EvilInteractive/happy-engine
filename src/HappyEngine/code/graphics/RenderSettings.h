@@ -77,6 +77,19 @@ struct LightingSettings
     bool enableLighting;
     bool enableSpecular;
     bool enableNormalMap;
+    bool enableShadows;
+
+    bool operator==(const LightingSettings& other) const
+    {
+        return enableLighting == other.enableLighting && 
+               enableSpecular == other.enableSpecular && 
+               enableNormalMap == other.enableNormalMap && 
+               enableShadows == other.enableShadows;
+    }
+    bool operator!=(const LightingSettings& other) const
+    {
+        return !(*this == other);
+    }
 };
 
 struct RenderSettings
@@ -86,7 +99,6 @@ public:
 
     bool enableDeferred;
     bool enablePost; 
-    bool enableShadows;
     
     LightingSettings lightingSettings;
     PostSettings postSettings;

@@ -37,7 +37,7 @@ public:
     AutoExposure();
     virtual ~AutoExposure();
 
-    void init(const RenderSettings& settings);
+    void init(const PostSettings::HdrSettings& settings);
 
     void calculate(const Texture2D* pHdrMap );
     virtual void tick(float dTime);

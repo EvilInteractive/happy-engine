@@ -114,7 +114,7 @@ void View::init( const RenderSettings& settings )
     m_TransparentRenderer = NEW Forward3DRenderer();
     m_TransparentRenderer->init(this, m_IntermediateRenderTarget, DrawListContainer::BlendFilter_Blend);
 
-    if (settings.enableShadows)
+    if (settings.lightingSettings.enableShadows)
     {
         m_ShadowCaster = NEW ShadowCaster();
         m_ShadowCaster->init(this);
@@ -193,7 +193,7 @@ void View::draw()
     m_Scene->prepareForRendering();
     GRAPHICS->setActiveView(this);
 
-    if (m_Settings.enableShadows)
+    if (m_Settings.lightingSettings.enableShadows)
         m_ShadowCaster->render();
 
     m_OpacRenderer->draw();
