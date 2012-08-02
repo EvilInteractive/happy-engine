@@ -91,6 +91,8 @@ void Window::hide()
 
 void Window::doEvents( float /*dTime*/ )
 {
+    if (isOpen() == false)
+        return;
     m_Events.clear();
     sf::Event event;
     while (m_Window->pollEvent(event))

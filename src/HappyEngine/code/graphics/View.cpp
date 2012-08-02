@@ -47,7 +47,8 @@ View::View():
     m_RenderDebugTextures(false), 
     m_Window(nullptr), m_Scene(nullptr), m_Camera(nullptr),
     m_IntermediateRenderTarget(NEW RenderTarget()),
-    m_OutputRenderTarget(NEW RenderTarget())
+    m_OutputRenderTarget(NEW RenderTarget()),
+    m_WindowResizedCallback(eventCallback0<void>(boost::bind(&View::calcViewportFromPercentage, this)))
 {
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
     m_NormalRenderMap->setName("View::m_NormalRenderMap");
@@ -147,7 +148,6 @@ void View::setWindow( Window* window )
     HE_ASSERT(window != nullptr, "active window can not be nullptr!");
     if (m_Window != nullptr)
         m_Window->Resized -= m_WindowResizedCallback;
-    m_WindowResizedCallback = eventCallback0<void>(boost::bind(&View::calcViewportFromPercentage, this));
     m_Window = window;
     m_Window->Resized += m_WindowResizedCallback;
 }
@@ -188,7 +188,6 @@ void View::calcViewportFromPercentage()
 
 void View::draw()
 {
-    GL::heSetViewport(m_Viewport);
     m_Window->prepareForRendering();
     m_Scene->prepareForRendering();
     GRAPHICS->setActiveView(this);
@@ -196,6 +195,7 @@ void View::draw()
     if (m_Settings.lightingSettings.enableShadows)
         m_ShadowCaster->render();
 
+    GL::heSetViewport(m_Viewport);
     m_OpacRenderer->draw();
     m_TransparentRenderer->draw();
 

@@ -32,11 +32,15 @@ struct PostSettings
     struct HdrSettings
     {
         float exposureSpeed;
+
+        HdrSettings(): exposureSpeed(1.0f)
     };
     struct AOSettings
     {
         float radius;
         float maxDistance;
+
+        AOSettings(): radius(1.0f), maxDistance(2.0f) {}
     };
     struct ShaderSettings
     {
@@ -95,8 +99,6 @@ struct LightingSettings
 struct RenderSettings
 {
 public:
-    bool isFullscreen;
-
     bool enableDeferred;
     bool enablePost; 
     

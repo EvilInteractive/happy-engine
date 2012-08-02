@@ -32,6 +32,11 @@ namespace he {
     namespace ge {
         class Entity;
     }
+    namespace gfx {
+        class Window;
+        class Scene;
+        class View;
+    }
 }
 
 namespace hpc {
@@ -74,6 +79,9 @@ private:
     std::vector<Obstacle*> m_Obstacles;
     Ball* m_Ball;
 
+    he::gfx::Window* m_Window;
+    he::gfx::View*   m_View;
+    he::gfx::Scene*  m_Scene;
 
     std::vector<he::ge::Entity*> m_EntityList;
 

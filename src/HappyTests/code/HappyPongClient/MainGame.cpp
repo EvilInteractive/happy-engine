@@ -43,6 +43,10 @@
 #include "IniWriter.h"
 #include "IniReader.h"
 
+#include "Window.h"
+#include "Scene.h"
+#include "View.h"
+
 namespace hpc {
 
 MainGame::MainGame(): m_pFPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(2.0f), m_Ball(nullptr)
@@ -62,16 +66,48 @@ MainGame::~MainGame()
     he::net::NetworkObjectFactory<Palet>::getInstance()->destroyAll();
     he::net::NetworkObjectFactory<Ball>::getInstance()->destroyAll();
 
-    CAMERAMANAGER->deleteAllCameras();
     delete m_pFPSGraph;
 
+    GRAPHICS->removeView(m_View);
+    GRAPHICS->removeScene(m_Scene);
+    GRAPHICS->removeWindow(m_Window);
 }
 
 void MainGame::init()
 {
-    GRAPHICS->setVSync(false);
-    GRAPHICS->setScreenDimension(1280, 720);
-    GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
+    m_View = GRAPHICS->createView();
+    m_Scene = GRAPHICS->createScene();
+    m_Window = GRAPHICS->createWindow();
+
+    m_Window->setResizable(true);
+    m_Window->setVSync(false);
+    m_Window->setWindowDimension(1280, 720);
+    m_Window->setWindowTitle("Happy pong - client");
+    m_Window->open();
+
+    he::gfx::RenderSettings settings;
+    settings.enableDeferred = true;
+    settings.enablePost = true;
+
+    settings.lightingSettings.enableLighting = true;
+    settings.lightingSettings.enableNormalMap = true;
+    settings.lightingSettings.enableShadows = true;
+    settings.lightingSettings.enableSpecular = true;
+
+    settings.postSettings.shaderSettings.enableAO = true;
+    settings.postSettings.shaderSettings.enableBloom = true;
+    settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
+    settings.postSettings.shaderSettings.enableFog = false;
+    settings.postSettings.shaderSettings.enableHDR = true;
+    settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
+    settings.postSettings.shaderSettings.enableVignette = true;
+    
+
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    m_View->setScene(m_Scene);
+    m_View->setWindow(m_Window);
+    m_View->init(settings);
+
 }
 
 void MainGame::load()
@@ -107,11 +143,11 @@ void MainGame::load()
     he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
     camera->setLens((float)GRAPHICS->getScreenHeight() / GRAPHICS->getScreenWidth(), he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
-    CAMERAMANAGER->addCamera("default", camera);
-    CAMERAMANAGER->setActiveCamera("default");
+    m_Scene->getCameraManager()->addCamera("default", camera);
+    m_View->setCamera("default");
 
-    GRAPHICS->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1, 1, 1), 0.75f);
-    GRAPHICS->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
+    m_Scene->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1, 1, 1), 0.75f);
+    m_Scene->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
     m_pFPSGraph = NEW he::tools::FPSGraph();
     m_pFPSGraph->setType(2);
@@ -119,6 +155,7 @@ void MainGame::load()
     m_BoardDimension = he::vec2(85, 47);
 
     he::ge::Entity* board(NEW he::ge::Entity());
+    board->init(m_Scene);
     he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
     he::ObjectHandle boardMaterial(CONTENT->loadMaterial("pong/board.material"));
     boardModel->setMaterial(boardMaterial);
