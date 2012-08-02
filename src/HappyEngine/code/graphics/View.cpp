@@ -36,6 +36,7 @@
 namespace he {
 namespace gfx {
 
+#pragma warning(disable:4355) //'this' : used in base member initializer list
 View::View(): 
     m_Viewport(0, 0, 0, 0),
     m_ShadowCaster(nullptr), m_OpacRenderer(nullptr), 
@@ -54,7 +55,7 @@ View::View():
     m_NormalRenderMap->setName("View::m_NormalRenderMap");
     m_DepthRenderMap->setName("View::m_DepthRenderMap");
 }
-
+#pragma warning(default:4355) 
 
 View::~View()
 {

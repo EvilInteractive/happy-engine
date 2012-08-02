@@ -26,7 +26,7 @@
 #include "NetworkManager.h"
 #include "NetworkObjectFactory.h"
 
-#include "Camera.h"
+#include "CameraPerspective.h"
 #include "FPSGraph.h"
 
 #include "LightManager.h"

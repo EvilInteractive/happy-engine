@@ -33,7 +33,7 @@ struct PostSettings
     {
         float exposureSpeed;
 
-        HdrSettings(): exposureSpeed(1.0f)
+        HdrSettings(): exposureSpeed(1.0f) {}
     };
     struct AOSettings
     {
