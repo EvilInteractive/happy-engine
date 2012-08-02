@@ -135,13 +135,17 @@ void MainGame::load()
     }
 
     NETWORK->setSyncTimeout(1 / 60.0f);
-    NETWORK->ConnectionSuccessful += boost::bind(&MainGame::connectionSuccessful, this);
-    NETWORK->ConnectionFailed += boost::bind(&MainGame::connectionFailed, this);
-    NETWORK->ConnectionLost += boost::bind(&MainGame::connectionLost, this);
+    he::eventCallback0<void> connectionSuccesHandler(boost::bind(&MainGame::connectionSuccessful, this));
+    he::eventCallback0<void> connectionFailedHandler(boost::bind(&MainGame::connectionFailed, this));
+    he::eventCallback0<void> connectionLostHandler(boost::bind(&MainGame::connectionLost, this));
+    NETWORK->ConnectionSuccessful += connectionSuccesHandler;
+    NETWORK->ConnectionFailed += connectionFailedHandler;
+    NETWORK->ConnectionLost += connectionLostHandler;
     NETWORK->join(ip, port);
 
-    he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    camera->setLens((float)GRAPHICS->getScreenHeight() / GRAPHICS->getScreenWidth(), he::piOverFour, 10.0f, 1000);
+    const he::RectI& viewport(m_View->getViewport());
+    he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective(viewport.width, viewport.height));
+    camera->setLens((float)viewport.height / viewport.width, he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
     m_Scene->getCameraManager()->addCamera("default", camera);
     m_View->setCamera("default");
