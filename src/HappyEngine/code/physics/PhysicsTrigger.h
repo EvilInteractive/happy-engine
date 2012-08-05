@@ -22,7 +22,6 @@
 #define _HE_PHYSICS_TRIGGER_H_
 #pragma once
 
-#include "event.h"
 #include "PhysicsDynamicActor.h"
 
 namespace he {
@@ -37,21 +36,31 @@ public:
     virtual ~PhysicsTrigger();
 
     /* GENERAL */
-    void addTriggerShape(const IPhysicsShape* shape, const mat44& localPose = mat44::Identity);
+    void addTriggerShape(const IPhysicsShape* shape, 
+        uint32 collisionGroup = 0xffffffff, uint32 collisionAgainstGroup = 0xffffffff, 
+        const mat44& localPose = mat44::Identity);
 
     /* SETTERS */
     void setPose(const vec3& move, const vec3& axis, float angle);
     void setPose(const mat44& pose);
 
+    /* USERDATA */
+    virtual const PhysicsUserData& getUserData() { return m_Actor->getUserData(); }
+    template<typename T>
+    void setUserData(T* rttiType)
+    {
+        m_Actor->setUserData<T>(rttiType);
+    }
+
     /* CALLBACKS */
     void onTriggerEnter(physx::PxShape* shape);
     void onTriggerLeave(physx::PxShape* shape);
 
-    event0<void> OnTriggerEnter;
-    event0<void> OnTriggerLeave;
+    event1<void, IPhysicsActor*> OnTriggerEnter;
+    event1<void, IPhysicsActor*> OnTriggerLeave;
 
 private:
-    void addShape(physx::PxShape* shape);
+    void addShape(physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup);
 
     /* DATAMEMBERS */
     PhysicsDynamicActor* m_Actor;

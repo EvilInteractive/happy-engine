@@ -21,6 +21,7 @@ set (CODE_FILES     event.h
                     HappyTypes.h            HappyTypes.cpp
                     MessageBox.h            MessageBox.cpp
                     OpenGL.h                OpenGL.cpp
+                    RTTI.h
                     Singleton.h             Singleton.cpp
                     StaticDataManager.h     StaticDataManager.cpp)
                         

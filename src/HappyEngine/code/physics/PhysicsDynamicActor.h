@@ -24,6 +24,7 @@
 #pragma once
 
 #include "IPhysicsActor.h"
+#include "PhysicsUserData.h"
 
 namespace physx {
     class PxShape;
@@ -59,10 +60,22 @@ public:
 
     bool isSleeping() const;
 
+    virtual const PhysicsUserData& getUserData() { return m_UserData; }
+    template<typename T>
+    void setUserData(T* rttiType)
+    {
+        if (rttiType != nullptr)
+            m_UserData.setRTTI(T::getRTTI());
+        else
+            m_UserData.setRTTI(0);
+        m_UserData.setData(rttiType);
+    }
+
 private:
     void addShape(physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup);
 
     physx::PxRigidDynamic* m_pActor;
+    PhysicsUserData m_UserData;
 
     //Disable default copy constructor and default assignment operator
     PhysicsDynamicActor(const PhysicsDynamicActor&);

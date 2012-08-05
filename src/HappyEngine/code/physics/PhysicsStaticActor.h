@@ -22,15 +22,18 @@
 #define _HE_PHYSICS_STATIC_ACTOR_H_
 #pragma once
 
-#include "PxRigidStatic.h"
-#include "vec3.h"
-#include "mat44.h"
-#include "IPhysicsShape.h"
-#include "PhysicsMaterial.h"
 #include "IPhysicsActor.h"
+#include "PhysicsUserData.h"
+
+namespace physx {
+    class PxShape;
+    class PxRigidStatic;
+}
 
 namespace he {
 namespace px {
+class IPhysicsShape;
+class PhysicsMaterial;
 
 class PhysicsStaticActor : public IPhysicsActor
 {
@@ -47,10 +50,22 @@ public:
                 uint32 collisionGroup = 0xffffffff, 
                 const mat44& localPose = mat44::Identity);
 
+    virtual const PhysicsUserData& getUserData() { return m_UserData; }
+    template<typename T>
+    void setUserData(T* rttiType)
+    {
+        if (rttiType != nullptr)
+            m_UserData.setRTTI(T::getRTTI());
+        else
+            m_UserData.setRTTI(0);
+        m_UserData.setData(rttiType);
+    }
+
 private:
     void addShape(physx::PxShape* shape, uint32 collisionGroup);
 
     physx::PxRigidStatic* m_Actor;
+    PhysicsUserData m_UserData;
 
     //Disable default copy constructor and default assignment operator
     PhysicsStaticActor(const PhysicsStaticActor&);

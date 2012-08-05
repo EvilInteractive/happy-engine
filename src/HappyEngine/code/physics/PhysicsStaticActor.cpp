@@ -20,8 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "PhysicsStaticActor.h"
-#include "HappyEngine.h"
-#include "HeAssert.h"
 #include "PhysicsEngine.h"
 
 #include "PhysicsBoxShape.h"

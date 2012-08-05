@@ -32,16 +32,17 @@ struct vec3;
 class mat44;
 
 namespace px {
+class PhysicsUserData;
 
 class IPhysicsActor
 {
 public:
     virtual ~IPhysicsActor() {}
 
-
     virtual physx::PxRigidActor* getInternalActor() const = 0;
     virtual vec3 getPosition() const = 0;
     virtual mat44 getPose() const = 0;
+    virtual const PhysicsUserData& getUserData() = 0;
 
 };
 

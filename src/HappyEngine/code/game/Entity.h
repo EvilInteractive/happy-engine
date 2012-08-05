@@ -37,6 +37,8 @@ namespace ge {
 class Entity : public net::INetworkSerializable
 {
 public:
+    DECLARE_RTTI(RTTI::Entity)
+
     Entity();
     virtual ~Entity();
     

@@ -47,7 +47,7 @@ PhysicsTrigger::~PhysicsTrigger()
 }
 
 /* GENERAL */
-void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, const mat44& localPose)
+void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose)
 {
     PHYSICS->lock();
     switch (shape->getType())
@@ -58,7 +58,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, const mat44& lo
             physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
                 physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
                 *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape);
+            addShape(pxShape, collisionGroup, collisionAgainstGroup);
             break;
         }
     case PhysicsShapeType_Sphere:
@@ -67,7 +67,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, const mat44& lo
             physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
                 physx::PxSphereGeometry(pSphereShape->getRadius()), 
                 *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape);
+            addShape(pxShape, collisionGroup, collisionAgainstGroup);
             break;
         }
     case PhysicsShapeType_Capsule:
@@ -76,7 +76,7 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, const mat44& lo
             physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
                 physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
                 *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape);
+            addShape(pxShape, collisionGroup, collisionAgainstGroup);
             break;
         }
     case PhysicsShapeType_Convex:
@@ -97,28 +97,29 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, const mat44& lo
                         physx::PxConvexMeshGeometry(mesh, 
                         physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
                         *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-                    addShape(pxShape);
+                    addShape(pxShape, collisionGroup, collisionAgainstGroup);
                 });
             }
             break;
         }
-    default: HE_ASSERT(false, "Type not supported with dynamic actors");
+    default: HE_ASSERT(false, "Shape not supported with triggers");
         break;
     }
     PHYSICS->unlock();
 }
-void PhysicsTrigger::addShape( physx::PxShape* shape )
+void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup )
 {
     HE_ASSERT(shape != nullptr, "Trigger shape creation failed");
 
     shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
     shape->userData = this;
 
-    physx::PxFilterData sFilter;
-    sFilter.word0 = COLLISION_FLAG_OBSTACLE;
-    sFilter.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+    physx::PxFilterData filter;
+    filter.word0 = collisionGroup;
+    filter.word1 = collisionAgainstGroup;
 
-    shape->setSimulationFilterData(sFilter);
+    shape->setQueryFilterData(filter);
+    shape->setSimulationFilterData(filter);
 }
 
 
@@ -135,14 +136,16 @@ void PhysicsTrigger::setPose(const mat44& pose)
 }
 
 /* CALLBACKS */
-void PhysicsTrigger::onTriggerEnter(physx::PxShape* /*pShape*/)
+void PhysicsTrigger::onTriggerEnter(physx::PxShape* shape)
 {
-    OnTriggerEnter();
+    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    OnTriggerEnter(actor);
 }
 
-void PhysicsTrigger::onTriggerLeave(physx::PxShape* /*pShape*/)
+void PhysicsTrigger::onTriggerLeave(physx::PxShape* shape)
 {
-    OnTriggerLeave();
+    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    OnTriggerLeave(actor);
 }
 
 

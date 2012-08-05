@@ -69,6 +69,8 @@
 #include "mat33.h"
 #include "Color.h"
 
+#include "RTTI.h"
+
 #include "Logger.h"
 #include "HappyInfo.h"
 

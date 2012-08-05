@@ -21,6 +21,7 @@
 #include "HappyPCH.h" 
 
 #include "TriggerComponent.h"
+#include "PhysicsTrigger.h"
 
 #include "Entity.h"
 #include "Game.h"
@@ -29,22 +30,52 @@ namespace he {
 namespace ge {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-TriggerComponent::TriggerComponent() :  m_pTrigger(nullptr),
-                                        m_pParent(nullptr)
+TriggerComponent::TriggerComponent() :  m_Trigger(nullptr),
+                                        m_Parent(nullptr)
 {
 }
 
 TriggerComponent::~TriggerComponent()
 {
-    delete m_pTrigger;
+    delete m_Trigger;
     GAME->removeFromTickList(this);
 }
 
 /* ICOMPONENT */
-void TriggerComponent::init(Entity* pParent)
+void TriggerComponent::init(Entity* parent)
 {
-    m_pParent = pParent;
-    m_pTrigger = NEW px::PhysicsTrigger(m_pParent->getWorldMatrix());
+    HE_ASSERT(parent != nullptr, "The parent of this component can not be nullptr!");
+    m_Parent = parent;
+    m_Trigger = NEW px::PhysicsTrigger(m_Parent->getWorldMatrix());
+    m_Trigger->setUserData(m_Parent);
+    
+    he::eventCallback1<void, px::IPhysicsActor*> onEnterHandler([&](px::IPhysicsActor* actor)
+    {
+        const px::PhysicsUserData& data(actor->getUserData());
+        if (RTTI::isA(data.getRTTI(), Entity::getRTTI()))
+        {
+            OnTriggerEnter(static_cast<Entity*>(data.getData()));
+        }
+        //else
+        //{
+        //   Should we handle this?
+        //}
+    });
+    he::eventCallback1<void, px::IPhysicsActor*> onLeaveHandler([&](px::IPhysicsActor* actor)
+    {
+        const px::PhysicsUserData& data(actor->getUserData());
+        if (data.getRTTI() == Entity::getRTTI())
+        {
+            OnTriggerLeave(static_cast<Entity*>(data.getData()));
+        }
+        //else
+        //{
+        //   Should we handle this?
+        //}
+    });
+
+    m_Trigger->OnTriggerEnter += onEnterHandler;
+    m_Trigger->OnTriggerLeave += onLeaveHandler;
 
     GAME->addToTickList(this);
 }
@@ -62,31 +93,17 @@ void TriggerComponent::deserialize(const SerializerStream& /*stream*/)
 /* ITICKABLE */
 void TriggerComponent::tick(float /*dTime*/)
 {
-    m_pTrigger->setPose(m_pParent->getWorldMatrix());
+    m_Trigger->setPose(m_Parent->getWorldMatrix());
 }
 
 /* GENERAL */
-void TriggerComponent::addShape(const px::IPhysicsShape* pShape, const mat44& localPose)
+void TriggerComponent::addShape(const px::IPhysicsShape* shape, 
+    uint32 collisionGroup, uint32 collisionGroupAgainst, 
+    const mat44& localPose)
 {
-    HE_ASSERT(m_pTrigger != nullptr, "attach component first to entity");
+    HE_ASSERT(m_Trigger != nullptr, "attach component first to entity");
 
-    m_pTrigger->addTriggerShape(pShape, localPose);
-}
-
-void TriggerComponent::addOnTriggerEnterCallBack(boost::function<void()> callback)
-{
-    m_pTrigger->addOnTriggerEnterCallBack(callback);
-}
-
-void TriggerComponent::addOnTriggerLeaveCallBack(boost::function<void()> callback)
-{
-    m_pTrigger->addOnTriggerLeaveCallBack(callback);
-}
-
-/* GETTERS */
-px::PhysicsTrigger* TriggerComponent::getTrigger()
-{
-    return m_pTrigger;
+    m_Trigger->addTriggerShape(shape, collisionGroup, collisionGroupAgainst, localPose);
 }
 
 } } //end namespace

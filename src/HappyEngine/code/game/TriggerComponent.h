@@ -23,11 +23,13 @@
 #pragma once
 
 #include "IComponent.h"
-#include "mat44.h"
 #include "ITickable.h"
-#include "PhysicsTrigger.h"
 
 namespace he {
+namespace px {
+    class PhysicsTrigger;
+    class IPhysicsShape;
+}
 namespace ge {
 
 class TriggerComponent : public IComponent, public ITickable
@@ -39,7 +41,7 @@ public:
     virtual ~TriggerComponent();
 
     /* ICOMPONENT */
-    virtual void init(Entity* pParent);
+    virtual void init(Entity* parent);
 
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
@@ -48,19 +50,20 @@ public:
     virtual void tick(float dTime);
 
     /* GENERAL */
-    void addShape(const px::IPhysicsShape* pShape, const mat44& localPose = mat44::Identity);
-    void addOnTriggerEnterCallBack(boost::function<void()> callback);
-    void addOnTriggerLeaveCallBack(boost::function<void()> callback);
+    void addShape(const px::IPhysicsShape* shape, 
+        uint32 collisionGroup, uint32 collisionGroupAgainst, 
+        const mat44& localPose = mat44::Identity);
 
-    /* GETTERS */
-    px::PhysicsTrigger* getTrigger();
+    /* EVENTS */
+    event1<void, Entity*> OnTriggerEnter;
+    event1<void, Entity*> OnTriggerLeave;
 
 private:
 
     /* DATAMEMBERS */
-    Entity* m_pParent;
+    Entity* m_Parent;
 
-    px::PhysicsTrigger* m_pTrigger;
+    px::PhysicsTrigger* m_Trigger;
 
     /* DEFAULT COPY & ASSIGNENT */
     TriggerComponent(const TriggerComponent&);
