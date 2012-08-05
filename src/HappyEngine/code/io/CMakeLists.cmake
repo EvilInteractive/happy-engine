@@ -12,7 +12,8 @@ set (CODE_IO_KEYBOARD_FILTER
         
 set (CODE_IO_MOUSE_FILTER
         IMouse.h
-        Mouse.cpp                           Mouse.h)
+        Mouse.cpp                           Mouse.h
+        MouseButtons.h)
         
                         
 foreach(f ${CODE_IO_NO_FILTER}) 

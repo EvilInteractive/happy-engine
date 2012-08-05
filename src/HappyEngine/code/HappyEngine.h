@@ -99,7 +99,7 @@ public:
 
     //subengines
     gfx::GraphicsEngine* getGraphicsEngine() const;
-    const io::ControlsManager* getControls() const;
+    io::ControlsManager* getControls() const;
     px::PhysicsEngine* getPhysics() const;
     ct::ContentManager* getContentManager() const;
     net::NetworkManager* getNetworkManager() const;

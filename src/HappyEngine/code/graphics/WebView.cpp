@@ -25,31 +25,156 @@
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 
+#include "ControlsManager.h"
+#include "IKeyboard.h"
+#include "IMouse.h"
+
+#define COMMON_ASCII_CHAR 128
+
 namespace he {
 namespace gfx {
 
-WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscreen) :   m_pWebView(pView),
+WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscreen) :   m_WebView(pView),
                                                                                         m_bInputEnabled(bEnableUserInput),
                                                                                         m_FullScreen(fullscreen)
 {
-    ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
-    m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(hnd);
+    ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
+    m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
     m_pRenderTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest,
                            gfx::Texture2D::TextureFormat_RGBA8, false);
+
+    if (m_bInputEnabled)
+    {
+        io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+        io::IMouse* mouse(CONTROLS->getMouse());
+
+        m_KeyPressedHandler = eventCallback1<void, io::Key>([&](io::Key key)
+        {
+            Awesomium::WebView* w(getAWEView());
+            Awesomium::WebKeyboardEvent keyEvent;
+
+            uint chr = io::getWebKeyFromKey(key);
+
+            keyEvent.virtual_key_code = chr;
+
+            char buf[20];
+            char* buffPtr(buf);
+            Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buffPtr);
+            strcpy(keyEvent.key_identifier, buf);
+                
+            keyEvent.modifiers = 0;
+            keyEvent.native_key_code = 0;
+            keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
+
+            w->InjectKeyboardEvent(keyEvent);
+
+            // if it is an ASCII char
+            if (chr < COMMON_ASCII_CHAR)
+            {
+                // if it is a letter
+                if (chr >= 65 && chr <= 90)
+                {
+                    if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
+                            CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
+                    {
+                        chr += 32; // to lowercase ASCII
+                    }
+                }
+
+                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
+                keyEvent.text[0] = (wchar16)chr;
+                keyEvent.unmodified_text[0] = (wchar16)chr;
+                keyEvent.native_key_code = chr;
+
+                w->InjectKeyboardEvent(keyEvent);
+            }
+        });
+
+        m_KeyReleasedHandler = eventCallback1<void, io::Key>([&](io::Key key)
+        {
+            Awesomium::WebView* w(getAWEView());
+            Awesomium::WebKeyboardEvent keyEvent;
+
+            char buf[20];
+            char* buffPtr(buf);
+            keyEvent.virtual_key_code = io::getWebKeyFromKey(key);
+
+            Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buffPtr);
+            strcpy(keyEvent.key_identifier, buf);
+
+            keyEvent.modifiers = 0;
+            keyEvent.native_key_code = 0;
+            keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyUp;
+
+            w->InjectKeyboardEvent(keyEvent);
+        });
+
+        m_MouseButtonPressedHandler = eventCallback1<void, io::MouseButton>([&](io::MouseButton but)
+        {
+            Awesomium::WebView* w(getAWEView());
+            if (but == io::MouseButton_Left)
+                w->InjectMouseDown(Awesomium::kMouseButton_Left);
+            else if (but == io::MouseButton_Right)
+                w->InjectMouseDown(Awesomium::kMouseButton_Right);
+            else if (but == io::MouseButton_Middle)
+                w->InjectMouseDown(Awesomium::kMouseButton_Middle);
+        });
+
+        m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([&](io::MouseButton but)
+        {
+            Awesomium::WebView* w(getAWEView());
+            if (but == io::MouseButton_Left)
+                w->InjectMouseUp(Awesomium::kMouseButton_Left);
+            else if (but == io::MouseButton_Right)
+                w->InjectMouseUp(Awesomium::kMouseButton_Right);
+            else if (but == io::MouseButton_Middle)
+                w->InjectMouseUp(Awesomium::kMouseButton_Middle);
+        });
+
+        m_MouseMoveHandler = eventCallback1<void, const vec2&>([&](const vec2& pos)
+        {
+            Awesomium::WebView* w(getAWEView());
+            w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
+        });
+
+        m_MouseScrollHandler = eventCallback1<void, int>([&](int move)
+        {
+            Awesomium::WebView* w(getAWEView());
+            w->InjectMouseWheel(move * 30, 0);
+        });
+
+        keyboard->KeyPressed += m_KeyPressedHandler;
+        keyboard->KeyReleased += m_KeyReleasedHandler;
+        mouse->MouseButtonPressed += m_MouseButtonPressedHandler;
+        mouse->MouseButtonReleased += m_MouseButtonReleasedHandler;
+        mouse->MouseMoved += m_MouseMoveHandler;
+        mouse->MouseWheelMoved += m_MouseScrollHandler;
+    }
 }
 
 WebView::~WebView()
 {
-    m_pWebView->Destroy();
+    if (m_bInputEnabled)
+    {
+        io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+        io::IMouse* mouse(CONTROLS->getMouse());
+        keyboard->KeyPressed -= m_KeyPressedHandler;
+        keyboard->KeyReleased -= m_KeyReleasedHandler;
+        mouse->MouseButtonPressed -= m_MouseButtonPressedHandler;
+        mouse->MouseButtonReleased -= m_MouseButtonReleasedHandler;
+        mouse->MouseMoved -= m_MouseMoveHandler;
+        mouse->MouseWheelMoved -= m_MouseScrollHandler;
+    }
+    m_WebView->Destroy();
     m_pRenderTexture->release();
 }
 
 /* GENERAL */
 void WebView::draw(const vec2& pos)
 {
-    if (m_pWebView->surface())
+    if (m_WebView->surface())
     {
-        Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(m_pWebView->surface());
+        Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(m_WebView->surface());
 
         if (pSurface->is_dirty())
         {
@@ -80,7 +205,7 @@ void WebView::draw(const vec2& pos)
 
             if (dim != dim2)
             {
-                m_pWebView->Resize((int)dim.x,(int)dim.y);
+                m_WebView->Resize((int)dim.x,(int)dim.y);
             }
         }
     }
@@ -91,39 +216,39 @@ void WebView::draw(const vec2& pos)
 void WebView::loadUrl(const std::string& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
-    m_pWebView->LoadURL(webUrl);
+    m_WebView->LoadURL(webUrl);
 }
 
 void WebView::loadFile(const std::string& /*path*/)
 {
-    //m_pWebView->LoadURL()
+    //m_WebView->LoadURL()
 }
 
 void WebView::excecuteJavaScript(const std::string& /*script*/)
 {
     //Awesomium::WebString string(script.c_str());
-    //m_pWebView->ExecuteJavascriptWithResult(string);
+    //m_WebView->ExecuteJavascriptWithResult(string);
 }
 
 void WebView::focus()
 {
-    m_pWebView->Focus();
+    m_WebView->Focus();
 }
 
 void WebView::unfocus()
 {
-    m_pWebView->Unfocus();
+    m_WebView->Unfocus();
 }
 
 void WebView::setTransparent(bool transparent)
 {
-    m_pWebView->SetTransparent(transparent);
+    m_WebView->SetTransparent(transparent);
 }
 
 /* GETTERS */
 Awesomium::WebView* WebView::getAWEView() const
 {
-    return m_pWebView;
+    return m_WebView;
 }
 
 bool WebView::inputEnabled() const

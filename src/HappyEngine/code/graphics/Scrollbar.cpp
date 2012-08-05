@@ -21,10 +21,9 @@
 #include "HappyPCH.h"
 
 #include "Scrollbar.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
 #include "ControlsManager.h"
 #include "Renderer2D.h"
+#include "IMouse.h"
 
 namespace he {
 namespace gui {

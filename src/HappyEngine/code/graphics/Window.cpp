@@ -21,6 +21,9 @@
 
 #include "Window.h"
 #include "GraphicsEngine.h"
+#include "ControlsManager.h"
+#include "IKeyboard.h"
+#include "IMouse.h"
 
 namespace he {
 namespace gfx {
@@ -93,12 +96,17 @@ void Window::doEvents( float /*dTime*/ )
 {
     if (isOpen() == false)
         return;
-    m_Events.clear();
+
     sf::Event event;
     while (m_Window->pollEvent(event))
     {
+        io::IMouse* mouse(CONTROLS->getMouse());
+        io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+        bool hasFocus(GRAPHICS->getActiveWindow() == this);
+
         switch (event.type)
         {
+        // Window
         case sf::Event::Closed:
             m_WindowRect.x = m_Window->getPosition().x;
             m_WindowRect.y = m_Window->getPosition().y;
@@ -112,10 +120,43 @@ void Window::doEvents( float /*dTime*/ )
         case sf::Event::GainedFocus:
             GRAPHICS->setActiveWindow(this);
             GainedFocus();
+            break;
         case sf::Event::LostFocus:
             LostFocus();
-        default:
-            m_Events.push_back(event);
+            break;
+
+        // Mouse
+        case sf::Event::MouseButtonPressed:
+            if (hasFocus == true) 
+                mouse->MouseButtonPressed(static_cast<io::MouseButton>(event.mouseButton.button));
+            break;
+        case sf::Event::MouseButtonReleased:
+            if (hasFocus == true) 
+                mouse->MouseButtonReleased(static_cast<io::MouseButton>(event.mouseButton.button));
+            break;
+        case sf::Event::MouseMoved:
+            if (hasFocus == true) 
+                mouse->MouseMoved(vec2((float)event.mouseButton.x, (float)event.mouseButton.y));
+            break;
+        case sf::Event::MouseWheelMoved:
+            if (hasFocus == true) 
+                mouse->MouseWheelMoved(event.mouseWheel.delta);
+            break;
+
+
+        // Keyboard
+        case sf::Event::KeyPressed:
+            if (hasFocus == true)
+                keyboard->KeyPressed(static_cast<io::Key>(event.key.code));
+            break;
+        case sf::Event::KeyReleased:
+            if (hasFocus == true)
+                keyboard->KeyReleased(static_cast<io::Key>(event.key.code));
+            break;
+        case sf::Event::TextEntered:
+            if (hasFocus == true)
+                keyboard->TextCharEntered(static_cast<char>(event.text.unicode));
+            break;
         }
     }
 }

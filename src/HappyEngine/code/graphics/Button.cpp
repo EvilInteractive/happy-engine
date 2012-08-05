@@ -26,6 +26,7 @@
 #include "Rect.h"
 #include "ControlsManager.h"
 #include "Renderer2D.h"
+#include "IMouse.h"
 
 namespace he {
 namespace gui {

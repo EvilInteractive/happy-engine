@@ -25,9 +25,9 @@
 #include "ContentManager.h"
 #include "Renderer2D.h"
 #include "ControlsManager.h"
+#include "IMouse.h"
+#include "IKeyboard.h"
 #include "Vertex.h"
-
-#define COMMON_ASCII_CHAR 128
 
 namespace he {
 namespace gfx {
@@ -79,134 +79,19 @@ WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
     }
 
     vec2 dim = size;
-    bool f = false;
+    bool fullscreen = false;
 
-    if (size == vec2(0,0))
+    if (size == vec2(0,0)) // TODO: do not allow this, pass bool if fullscreen or register on a Resized event of the View
     {
         dim.x = (float)GRAPHICS->getScreenWidth();
         dim.y = (float)GRAPHICS->getScreenHeight();
 
-        f = true;
+        fullscreen = true;
     }
 
-    Awesomium::WebView* pView = m_WebCore->CreateWebView((int)dim.x, (int)dim.y);
-
-    WebView* web = NEW WebView(pView, enableUserInput, f);
-    m_WebViews.push_back(web);
-
-    if (enableUserInput)
-    {
-        Awesomium::WebView* w = web->getAWEView();
-
-        CONTROLS->getKeyboard()->addOnKeyPressedListener([&, w](io::Key key)
-        {
-            if (w != nullptr)
-            {
-                Awesomium::WebKeyboardEvent keyEvent;
-
-                uint chr = io::getWebKeyFromKey(key);
-
-                keyEvent.virtual_key_code = chr;
-                char* buf = new char[20];
-
-                Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buf);
-                strcpy(keyEvent.key_identifier, buf);
-
-                delete[] buf;
-
-                keyEvent.modifiers = 0;
-                keyEvent.native_key_code = 0;
-                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
-
-                w->InjectKeyboardEvent(keyEvent);
-
-                // if it is an ASCII char
-                if (chr < COMMON_ASCII_CHAR)
-                {
-                    // if it is a letter
-                    if (chr >= 65 && chr <= 90)
-                    {
-                        if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
-                            CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
-                        {
-                            chr += 32; // to lowercase ASCII
-                        }
-                    }
-
-                    keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
-                    keyEvent.text[0] = (wchar16)chr;
-                    keyEvent.unmodified_text[0] = (wchar16)chr;
-                    keyEvent.native_key_code = chr;
-
-                    w->InjectKeyboardEvent(keyEvent);
-                }
-            }
-        });
-
-        CONTROLS->getKeyboard()->addOnKeyReleasedListener([&, w](io::Key key)
-        {
-            if (w != nullptr)
-            {
-                Awesomium::WebKeyboardEvent keyEvent;
-
-                char* buf = new char[20];
-                keyEvent.virtual_key_code = io::getWebKeyFromKey(key);
-
-                Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buf);
-                strcpy(keyEvent.key_identifier, buf);
-
-                delete[] buf;
-
-                keyEvent.modifiers = 0;
-                keyEvent.native_key_code = 0;
-                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyUp;
-
-                w->InjectKeyboardEvent(keyEvent);
-            }
-        });
-
-        CONTROLS->getMouse()->addOnButtonPressedListener([&, w](io::MouseButton but)
-        {
-            if (w != nullptr)
-            {
-                if (but == io::MouseButton_Left)
-                    w->InjectMouseDown(Awesomium::kMouseButton_Left);
-                else if (but == io::MouseButton_Right)
-                    w->InjectMouseDown(Awesomium::kMouseButton_Right);
-                else if (but == io::MouseButton_Middle)
-                    w->InjectMouseDown(Awesomium::kMouseButton_Middle);
-            }
-        });
-
-        CONTROLS->getMouse()->addOnButtonReleasedListener([&, w](io::MouseButton but)
-        {
-            if (w != nullptr)
-            {
-                if (but == io::MouseButton_Left)
-                    w->InjectMouseUp(Awesomium::kMouseButton_Left);
-                else if (but == io::MouseButton_Right)
-                    w->InjectMouseUp(Awesomium::kMouseButton_Right);
-                else if (but == io::MouseButton_Middle)
-                    w->InjectMouseUp(Awesomium::kMouseButton_Middle);
-            }
-        });
-
-        CONTROLS->getMouse()->addOnMouseMovedListener([&, w](const vec2& pos)
-        {
-            if (w != nullptr)
-            {
-                w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
-            }
-        });
-
-        CONTROLS->getMouse()->addOnMouseWheelMovedListener([&, w](int move)
-        {
-            if (w != nullptr)
-            {
-                w->InjectMouseWheel(move * 30, 0);
-            }
-        });
-    }
+    Awesomium::WebView* view = m_WebCore->CreateWebView((int)dim.x, (int)dim.y); // TODO: put this in WebView, keep ownership of pointers simple
+    WebView* web = NEW WebView(view, enableUserInput, fullscreen);
+    m_WebViews.push_back(web); // TODO: nothing is done with m_WebViews? unsafe because ownership of the pointer is passed to the client
 
     return web;
 }

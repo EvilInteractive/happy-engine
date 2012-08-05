@@ -52,12 +52,19 @@ public:
 private:
 
     /* DATAMEMBERS */
-    Awesomium::WebView* m_pWebView;
+    Awesomium::WebView* m_WebView;
 
     bool m_bInputEnabled;
     bool m_FullScreen;
     
     Texture2D* m_pRenderTexture;
+
+    he::eventCallback1<void, io::Key> m_KeyPressedHandler;
+    he::eventCallback1<void, io::Key> m_KeyReleasedHandler;
+    he::eventCallback1<void, io::MouseButton> m_MouseButtonPressedHandler;
+    he::eventCallback1<void, io::MouseButton> m_MouseButtonReleasedHandler;
+    he::eventCallback1<void, int> m_MouseScrollHandler;
+    he::eventCallback1<void, const vec2&> m_MouseMoveHandler;
 
     /* DEFAULT COPY & ASSIGNMENT */
     WebView(const WebView&);

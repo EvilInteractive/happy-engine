@@ -31,23 +31,20 @@ class IKeyboard
 {
 public:
     virtual ~IKeyboard() {}
-
-    virtual void tick(byte* pKeyState, const std::vector<char>& chars) = 0;
-
+    
     virtual bool isKeyUp(Key key) const = 0;
     virtual bool isKeyDown(Key key) const = 0;
 
     virtual bool isKeyPressed(Key key) const = 0;           //true when state goes from up to down
-    virtual bool isKeyPressed(KeyScanCode code) const = 0;
     virtual bool isKeyReleased(Key key) const = 0;          //true when state goes from down to up
-    virtual bool isKeyReleased(KeyScanCode code) const = 0;
+    
+    virtual const char& getTextCharEntered() const = 0;
 
-    virtual void addOnKeyPressedListener(boost::function<void(Key)> callback) const = 0;
-    virtual event1<void, Key>& getOnKeyPressedListeners() = 0;
-    virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const = 0;
-    virtual event1<void, Key>& getOnKeyReleasedListeners() = 0;
+    virtual void tick() = 0;
 
-    virtual const std::vector<char>& getTextEntered() const = 0;
+    event1<void, Key> KeyPressed;
+    event1<void, Key> KeyReleased;
+    event1<void, char> TextCharEntered;
 };
 
 } } //end namespace

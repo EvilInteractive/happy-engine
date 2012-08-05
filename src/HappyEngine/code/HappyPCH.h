@@ -85,6 +85,7 @@
 #include "Path.h"
 
 #include "Keys.h"
+#include "MouseButtons.h"
 
 #include "HappyEngine.h"
 #include "Console.h"

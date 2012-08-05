@@ -24,53 +24,62 @@
 namespace he {
 namespace io {
 
-#define MOUSE_ARRAY_SIZE sf::Mouse::ButtonCount * sizeof(byte)
-
-Mouse::Mouse(): m_Position(0.0f, 0.0f), m_ButtonState(0), m_PrevButtonState(0)
+Mouse::Mouse(): m_Position(0.0f, 0.0f), m_PrevPosition(0.0f, 0.0f), m_Scroll(0)
 {
-    m_ButtonState = static_cast<byte*>(he_malloc(MOUSE_ARRAY_SIZE));
-    m_PrevButtonState = static_cast<byte*>(he_malloc(MOUSE_ARRAY_SIZE));
-    he_memset(m_ButtonState, FALSE, MOUSE_ARRAY_SIZE);
-    he_memset(m_PrevButtonState, FALSE, MOUSE_ARRAY_SIZE);
+    he_memset(m_ButtonState, false, io::MouseButton_MAX);
+    he_memset(m_PrevButtonState, false, io::MouseButton_MAX);
+
+    eventCallback1<void, MouseButton> mouseButtonPressedHandler([&](MouseButton button)
+    {
+        m_ButtonState[button] = true;
+    });
+    eventCallback1<void, MouseButton> mouseButtonReleasedHandler([&](MouseButton button)
+    {
+        m_ButtonState[button] = false;
+    });
+    eventCallback1<void, const vec2&> mouseMovedHandler([&](const vec2& pos)
+    {
+        m_Position = pos;
+    });
+    eventCallback1<void, int> mouseWheelMovedHandler([&](int scroll)
+    {
+        m_Scroll = scroll;
+    });
+
+    MouseButtonPressed += mouseButtonPressedHandler;
+    MouseButtonReleased += mouseButtonReleasedHandler;
+    MouseMoved += mouseMovedHandler;
+    MouseWheelMoved += mouseWheelMovedHandler;
 }
 
 
 Mouse::~Mouse()
 {
-    he_free(m_ButtonState);
-    he_free(m_PrevButtonState);
 }
 
-void Mouse::tick(byte* pMouseState, int scrollState, const vec2& mousePos)
+void Mouse::tick()
 {
-    m_Scroll = scrollState;
-
-    std::swap(m_ButtonState, m_PrevButtonState);
-    he_memcpy(m_ButtonState, pMouseState, MOUSE_ARRAY_SIZE);
-    
+    he_memcpy(m_PrevButtonState, m_ButtonState, io::MouseButton_MAX);
     m_PrevPosition = m_Position;
-
-    if (mousePos.x >= 0 && mousePos.y >= 0)
-    {
-        m_Position = mousePos;   
-    }
+    m_Scroll = 0;
 }
+
 
 bool Mouse::isButtonDown(MouseButton button) const
 {
-    return m_ButtonState[button] == TRUE;
+    return m_ButtonState[button] == true;
 }
 bool Mouse::isButtonUp(MouseButton button) const
 {
-    return m_ButtonState[button] == FALSE;
+    return m_ButtonState[button] == false;
 }
 bool Mouse::isButtonReleased(MouseButton button) const
 {
-    return (m_ButtonState[button] == FALSE && m_PrevButtonState[button] == TRUE);
+    return (m_ButtonState[button] == false && m_PrevButtonState[button] == true);
 }
 bool Mouse::isButtonPressed(MouseButton button) const
 {
-    return (m_ButtonState[button] == TRUE && m_PrevButtonState[button] == FALSE);
+    return (m_ButtonState[button] == true && m_PrevButtonState[button] == false);
 }
 
 const vec2& Mouse::getPosition() const
@@ -84,43 +93,6 @@ int Mouse::getScroll() const
 vec2 Mouse::getMove() const
 {
     return (m_Position - m_PrevPosition);
-}
-
-void Mouse::addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const
-{
-    Mouse* _this = const_cast<Mouse*>(this);
-    _this->m_OnButtonPressedListeners += callback;
-}
-event1<void, MouseButton>& Mouse::getOnButtonPressedListeners()
-{
-    return m_OnButtonPressedListeners;
-}
-void Mouse::addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const
-{
-    Mouse* _this = const_cast<Mouse*>(this);
-    _this->m_OnButtonReleasedListeners += callback;
-}
-event1<void, MouseButton>& Mouse::getOnButtonReleasedListeners()
-{
-    return m_OnButtonReleasedListeners;
-}
-void Mouse::addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const
-{
-    Mouse* _this = const_cast<Mouse*>(this);
-    _this->m_OnMouseMovedListeners += callback;
-}
-event1<void, const vec2&>& Mouse::getOnMouseMovedListeners()
-{
-    return m_OnMouseMovedListeners;
-}
-void Mouse::addOnMouseWheelMovedListener(boost::function<void(int)> callback) const
-{
-    Mouse* _this = const_cast<Mouse*>(this);
-    _this->m_OnMouseWheelMovedListeners += callback;
-}
-event1<void, int>& Mouse::getOnMouseWheelMovedListeners()
-{
-    return m_OnMouseWheelMovedListeners;
 }
 
 } } //end namespace

@@ -281,6 +281,8 @@ enum Key
     Key_KbdIllumUp = sf::Keyboard::A,
     Key_Eject = sf::Keyboard::A,
     Key_Sleep = sf::Keyboard::A,*/
+
+    Key_MAX = sf::Keyboard::KeyCount
 };
 
 enum KeyScanCode

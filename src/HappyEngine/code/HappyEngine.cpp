@@ -260,11 +260,11 @@ void HappyEngine::updateLoop(float dTime)
     });
     PROFILER_END();
 
-    if (m_SubEngines & SubEngine_Networking)
-        m_pNetworkManager->tick(dTime);
-
     if (m_SubEngines & SubEngine_Controls)
         m_pControlsManager->tick();
+
+    if (m_SubEngines & SubEngine_Networking)
+        m_pNetworkManager->tick(dTime);
 
     if (m_SubEngines & SubEngine_Content)
     {
@@ -356,7 +356,7 @@ gfx::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 {
     return m_pGraphicsEngine;
 }
-const io::ControlsManager* HappyEngine::getControls() const
+io::ControlsManager* HappyEngine::getControls() const
 {
     return m_pControlsManager;
 }

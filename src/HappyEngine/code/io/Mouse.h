@@ -32,9 +32,7 @@ class Mouse : public IMouse
 public:
     Mouse();
     virtual ~Mouse();
-
-    virtual void tick(byte* mouseState, int scrollSate, const vec2& mousePos);
-
+    
     virtual bool isButtonDown(MouseButton button) const;
     virtual bool isButtonUp(MouseButton button) const;
     virtual bool isButtonReleased(MouseButton button) const; //true when it goes from down to up
@@ -44,29 +42,18 @@ public:
     virtual const vec2& getPosition() const;
     virtual vec2 getMove() const;
 
-    virtual void addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const;
-    virtual event1<void, MouseButton>& getOnButtonPressedListeners();
-    virtual void addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const;
-    virtual event1<void, MouseButton>& getOnButtonReleasedListeners();
-    virtual void addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const;
-    virtual event1<void, const vec2&>& getOnMouseMovedListeners();
-    virtual void addOnMouseWheelMovedListener(boost::function<void(int)> callback) const;
-    virtual event1<void, int>& getOnMouseWheelMovedListeners();
+    virtual void tick();
 
 private:
 
     vec2 m_Position;
     vec2 m_PrevPosition;
 
-    byte* m_ButtonState;
-    byte* m_PrevButtonState;
+    bool m_ButtonState[io::MouseButton_MAX];
+    bool m_PrevButtonState[io::MouseButton_MAX];
 
     int m_Scroll;
 
-    event1<void,MouseButton> m_OnButtonPressedListeners;
-    event1<void,MouseButton> m_OnButtonReleasedListeners;
-    event1<void,const vec2&> m_OnMouseMovedListeners;
-    event1<void,int> m_OnMouseWheelMovedListeners;
 
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);

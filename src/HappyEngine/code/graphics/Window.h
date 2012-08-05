@@ -57,7 +57,6 @@ public:
     void getWindowPosition(int& x, int& y) const;
     uint getWindowWidth() const;
     uint getWindowHeight() const;
-    const std::vector<sf::Event>& getEvents() { return m_Events; }
 
     // Events
     event0<void> Resized;
@@ -76,8 +75,6 @@ private:
     bool m_IsCursorVisible;
     bool m_Fullscreen;
     bool m_Resizeable; 
-
-    std::vector<sf::Event> m_Events;
 
     //Disable default copy constructor and default assignment operator
     Window(const Window&);
