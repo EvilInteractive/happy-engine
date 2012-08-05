@@ -1,0 +1,6 @@
+;!@Install@!UTF-8!
+InstallPath="."
+GUIMode="1"
+ExtractTitle="Happy Engine 2"
+ExtractDialogText="Extracting libs"
+;!@InstallEnd@!
