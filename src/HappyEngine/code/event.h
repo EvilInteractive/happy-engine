@@ -82,8 +82,8 @@ public:
     template<typename InputIterator>
     void operator()(InputIterator first, InputIterator last) const
     {
-        while (++first != last)
-            *first;
+        while (first != last)
+            *first++;
 
         return;
     }

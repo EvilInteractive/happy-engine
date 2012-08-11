@@ -39,9 +39,7 @@ public:
     virtual bool isKeyDown(Key key) const;
 
     virtual bool isKeyPressed(Key key) const;           //true when state goes from up to down
-    virtual bool isKeyPressed(KeyScanCode code) const;
     virtual bool isKeyReleased(Key key) const;          //true when state goes from down to up
-    virtual bool isKeyReleased(KeyScanCode code) const;
     
     virtual const char& getTextCharEntered() const;
 

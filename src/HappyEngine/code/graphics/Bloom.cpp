@@ -40,7 +40,8 @@ Bloom::Bloom(): m_DownSamples(4),
                 m_pDownSampleShader(nullptr), 
                 m_pDownSampleBrightPassShader(nullptr),
                 m_Mesh(nullptr), m_Hdr(true),
-                m_ViewportSizeChangedHandler(boost::bind(&Bloom::resize, this))
+                m_ViewportSizeChangedHandler(boost::bind(&Bloom::resize, this)),
+                m_View(nullptr)
 {
     for (uint i(0); i < s_BlurPasses; ++i)
     {
@@ -50,14 +51,14 @@ Bloom::Bloom(): m_DownSamples(4),
             id = UINT_MAX;
         });
     }
-    if (m_View != nullptr)
-        m_View->ViewportSizeChanged -= m_ViewportSizeChangedHandler;
 }
 #pragma warning(default:4355)
 
 
 Bloom::~Bloom()
 {
+    if (m_View != nullptr)
+        m_View->ViewportSizeChanged -= m_ViewportSizeChangedHandler;
     cleanTextures();
     cleanShaders();
 }

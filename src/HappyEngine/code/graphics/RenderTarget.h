@@ -58,7 +58,7 @@ public:
     // if (2, 1) only 1 and 2 will be bound
     void prepareForRendering(uint numTextureTargets, uint offset = 0) const;
 
-    const static int MAX_TEXTURE_TARGETS = 4;
+    const static int MAX_TEXTURE_TARGETS = 8;
 
 private:
     uint m_FboId;

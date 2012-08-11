@@ -26,7 +26,7 @@
 namespace he {
 namespace ge {
 
-CameraManager::CameraManager()
+CameraManager::CameraManager(): m_ActiveCamera(nullptr)
 {
 }
 
@@ -36,8 +36,16 @@ CameraManager::~CameraManager()
     deleteAllCameras();
 }
 
-void CameraManager::init()
+void CameraManager::tick( float dTime )
 {
+    HE_IF_ASSERT(m_ActiveCamera != nullptr, "Please set an active camera!")
+        m_ActiveCamera->tick(dTime);
+}
+
+void CameraManager::setActiveCamera( const std::string& id )
+{
+    HE_IF_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Setting non existing camera")
+        m_ActiveCamera = m_Cameras[id];
 }
 
 void ge::CameraManager::addCamera( const std::string& id, gfx::CameraPerspective* pCamera )

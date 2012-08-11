@@ -28,7 +28,7 @@ class Renderer2D;
 class I2DDrawable
 {
 public:
-    virtual ~I2DDrawable() = 0;
+    virtual ~I2DDrawable() {};
 
     virtual void draw2D(Renderer2D* renderer) = 0;
 }; 

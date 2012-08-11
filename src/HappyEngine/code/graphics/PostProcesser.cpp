@@ -43,7 +43,8 @@ PostProcesser::PostProcesser():
     m_pRandomNormals(nullptr),
     m_pQuad(nullptr),
     m_ShowDebugTextures(false),
-    m_FogColor(0.2f, 0.4f, 0.6f)
+    m_FogColor(0.2f, 0.4f, 0.6f),
+    m_View(nullptr)
 {
 }
 

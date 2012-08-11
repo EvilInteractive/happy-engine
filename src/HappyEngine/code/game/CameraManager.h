@@ -36,15 +36,15 @@ class CameraManager : public ITickable
 public:
     CameraManager();
     virtual ~CameraManager();
-
-    void init(); // Internal called
-
+    
     void addCamera(const std::string& id, gfx::CameraPerspective* camera);
     gfx::CameraPerspective* getCamera(const std::string& id);
     void deleteCamera(const std::string& id);
     void deleteAllCameras();
 
-    void setActiveCamera(gfx::CameraPerspective* camera) { m_ActiveCamera = camera; }
+    virtual void tick(float dTime);
+
+    void setActiveCamera(const std::string& id);
     gfx::CameraPerspective* getActiveCamera() { return m_ActiveCamera; }
 
 private:

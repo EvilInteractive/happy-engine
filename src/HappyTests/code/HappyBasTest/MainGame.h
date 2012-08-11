@@ -33,10 +33,14 @@ namespace he {
     }
     namespace gfx {
         class SkyBox;
+        class Window;
+        class Scene;
+        class View;
     }
 }
 
 namespace ht {
+class FlyCamera;
 
 class MainGame : public he::ge::Game
 {
@@ -47,15 +51,20 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void drawGui();
 
 private:
-    he::tools::FPSGraph* m_pFPSGraph;
+    he::tools::FPSGraph* m_FpsGraph;
 
     bool m_SpinShadows;
 
+    he::gfx::Window* m_Window;
+    he::gfx::View*   m_View;
+    he::gfx::Scene*  m_Scene;
+
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
+
+    FlyCamera* m_FlyCamera;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

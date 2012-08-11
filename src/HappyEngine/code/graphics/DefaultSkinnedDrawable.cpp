@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-DefaultSkinnedDrawable::DefaultSkinnedDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
+DefaultSkinnedDrawable::DefaultSkinnedDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))), m_Scene(nullptr)
 {
 }
 

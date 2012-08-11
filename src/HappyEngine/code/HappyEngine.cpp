@@ -170,10 +170,10 @@ void HappyEngine::start(ge::Game* pGame)
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
 
     m_pGame = pGame;
-
+  
     //Init Game
     pGame->init();
-    
+
     //load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
@@ -184,6 +184,7 @@ void HappyEngine::start(ge::Game* pGame)
 
         PROFILER->load();
     }
+
 
     //if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
 

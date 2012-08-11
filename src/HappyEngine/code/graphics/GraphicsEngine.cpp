@@ -33,7 +33,7 @@
 namespace he {
 namespace gfx {
 
-GraphicsEngine::GraphicsEngine(): m_MainWindow(nullptr), m_ActiveWindow(nullptr)
+GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr)
 {
 }
 
@@ -61,15 +61,6 @@ void GraphicsEngine::init()
 
     m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
         
-    m_MainWindow = createWindow();
-    m_MainWindow->setCursorVisible(true);
-    m_MainWindow->setFullscreen(false);
-    m_MainWindow->setResizable(true);
-    m_MainWindow->setVSync(false);
-    m_MainWindow->setWindowDimension(1280, 720);
-    m_MainWindow->open();
-    m_ActiveWindow = m_MainWindow;
-
     glewExperimental = true;
     glHandleError(glewInit());
 

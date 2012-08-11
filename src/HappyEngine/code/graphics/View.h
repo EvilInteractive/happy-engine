@@ -28,7 +28,6 @@ namespace he {
 namespace gfx {
 class Scene;
 class Window;
-class CameraPerspective;
 class IRenderer;
 class ShadowCaster;
 class PostProcesser;
@@ -49,7 +48,6 @@ public:
     void setRelativeViewport(const RectF& viewportPercentage);
     const RectI& getViewport() const;
 
-    void setCamera(const std::string& cameraId);
     void setScene(Scene* scene);
     void setWindow(Window* window);
 
@@ -71,7 +69,6 @@ private:
     RectF m_ViewportPercentage;
     bool m_UsePercentage;
 
-    gfx::CameraPerspective* m_Camera;
     gfx::Scene*  m_Scene;
     gfx::Window* m_Window;
 

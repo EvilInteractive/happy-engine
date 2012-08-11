@@ -24,10 +24,17 @@
 #include "DrawListContainer.h"
 #include "IDrawable.h"
 
+#include "CameraManager.h"
+#include "InstancingManager.h"
+#include "LightManager.h"
+
 namespace he {
 namespace gfx {
 
-Scene::Scene()
+Scene::Scene():
+          m_CameraManager(NEW ge::CameraManager)
+        , m_LightManager(NEW LightManager)
+        , m_InstancingManager(NEW InstancingManager)
 {
 }
 

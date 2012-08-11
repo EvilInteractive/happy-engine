@@ -44,7 +44,7 @@ void CullOctree::insert( IDrawable* obj )
 {
     HE_IF_ASSERT(obj->getNode() == nullptr, "Node already attached to tree")
     {
-        HE_ASSERT(obj->getBound().getSphere().intersect(m_Root->getBound().getSphere()) == IntersectResult_Inside, "Obj not completely in root!");
+        HE_ASSERT(m_Root->getBound().getSphere().intersect(obj->getBound().getSphere()) == IntersectResult_Inside, "Obj not completely in root!");
         m_Root->insert(obj);
     }
 }

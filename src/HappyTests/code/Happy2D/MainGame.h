@@ -51,7 +51,7 @@ public:
 private:
 
     /* DATAMEMBERS */
-    he::tools::FPSGraph* m_pFPSGraph;
+    he::tools::FPSGraph* m_FpsGraph;
     he::gfx::WebView* m_pWebView;
     he::gfx::Canvas2D* m_pCanvas;
     he::gfx::Font* m_pFont;

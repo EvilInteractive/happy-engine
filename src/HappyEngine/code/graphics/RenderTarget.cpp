@@ -47,7 +47,7 @@ RenderTarget::~RenderTarget()
 void RenderTarget::addTextureTarget( const Texture2D* tex2D )
 {
     HE_IF_ASSERT(m_TextureTargets.size() < MAX_TEXTURE_TARGETS, "Only %d targets are allowed in a TextureTarget!", MAX_TEXTURE_TARGETS)
-    HE_IF_ASSERT(m_Width != 0 && m_Width == tex2D->getWidth() && m_Height == tex2D->getHeight(), "Textures assigned to a RenderTarget must be of equal size!")
+    HE_IF_ASSERT(m_Width == 0 || m_Width == tex2D->getWidth() && m_Height == tex2D->getHeight(), "Textures assigned to a RenderTarget must be of equal size!")
     {
         ResourceFactory<Texture2D>::getInstance()->instantiate(tex2D->getHandle());
         m_TextureTargets.push_back(tex2D);
@@ -59,7 +59,7 @@ void RenderTarget::addTextureTarget( const Texture2D* tex2D )
 void RenderTarget::setDepthTarget( const Texture2D* tex2D )
 {
     HE_IF_ASSERT(m_DepthBuffer == UINT_MAX, "Depth was already assigned - ignoring")    
-    HE_IF_ASSERT(m_Width != 0 && m_Width == tex2D->getWidth() && m_Height == tex2D->getHeight(), "Textures assigned to a RenderTarget must be of equal size!")
+    HE_IF_ASSERT(m_Width == 0 || m_Width == tex2D->getWidth() && m_Height == tex2D->getHeight(), "Textures assigned to a RenderTarget must be of equal size!")
     {
         ResourceFactory<Texture2D>::getInstance()->instantiate(tex2D->getHandle());
         m_DepthBuffer = tex2D->getID();
@@ -138,7 +138,7 @@ void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset ) co
 
 const Texture2D* RenderTarget::getTextureTarget(uint index) const
 {
-    HE_ASSERT(index >= m_TextureTargets.size(), "Index out of bounds");
+    HE_ASSERT(index < m_TextureTargets.size(), "Index out of bounds");
     return m_TextureTargets[index];
 }
 

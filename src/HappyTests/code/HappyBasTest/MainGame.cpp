@@ -25,6 +25,8 @@
 #include "CameraManager.h"
 #include "ControlsManager.h"
 
+#include "ModelMesh.h"
+
 #include "FlyCamera.h"
 #include "FPSGraph.h"
 
@@ -39,10 +41,16 @@
 #include "DirectionalLight.h"
 #include "Random.h"
 
+#include "Scene.h"
+#include "View.h"
+#include "Window.h"
+
+#include "IKeyboard.h"
+
 
 namespace ht {
 
-MainGame::MainGame(): m_pFPSGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(false)
+MainGame::MainGame(): m_FpsGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(false)
 {
 }
 
@@ -55,29 +63,63 @@ MainGame::~MainGame()
         delete entity;     
     });
 
-    CAMERAMANAGER->deleteAllCameras();
-    delete m_pFPSGraph;
+    GRAPHICS->removeView(m_View);
+    GRAPHICS->removeScene(m_Scene);
+    GRAPHICS->removeWindow(m_Window);
+
+    delete m_FpsGraph;
 }
 
 void MainGame::init()
 {
-    GRAPHICS->setVSync(false);
-    GRAPHICS->setScreenDimension(1280, 720);
-    GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
+    m_View = GRAPHICS->createView();
+    m_Scene = GRAPHICS->createScene();
+    m_Window = GRAPHICS->createWindow();
+
+    m_Window->setResizable(true);
+    m_Window->setVSync(false);
+    m_Window->setWindowDimension(1280, 720);
+    m_Window->setWindowTitle("HappyBasTest");
+    m_Window->open();
 }
 
 void MainGame::load()
 {
     using namespace he;
-    
-    CAMERAMANAGER->addCamera("default", NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    CAMERAMANAGER->setActiveCamera("default");
-    CAMERAMANAGER->getActiveCamera()->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
 
-    m_pFPSGraph = NEW tools::FPSGraph();
-    //m_pFPSGraph->setType(1);
+    he::gfx::RenderSettings settings;
+    settings.enableDeferred = true;
+    settings.enablePost = true;
+
+    settings.lightingSettings.enableLighting = true;
+    settings.lightingSettings.enableNormalMap = true;
+    settings.lightingSettings.enableShadows = true;
+    settings.lightingSettings.enableSpecular = true;
+
+    settings.postSettings.shaderSettings.enableAO = true;
+    settings.postSettings.shaderSettings.enableBloom = true;
+    settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
+    settings.postSettings.shaderSettings.enableFog = false;
+    settings.postSettings.shaderSettings.enableHDR = true;
+    settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
+    settings.postSettings.shaderSettings.enableVignette = true;
+
+    m_View->setScene(m_Scene);
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    m_View->init(settings);
+    
+    m_FlyCamera = NEW FlyCamera();
+    m_Scene->getCameraManager()->addCamera("default", m_FlyCamera);
+    m_Scene->getCameraManager()->setActiveCamera("default");
+    m_FlyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+
+    m_FpsGraph = NEW tools::FPSGraph();
+    m_FpsGraph->setView(m_View);
+    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
 
     ge::Entity* scene(NEW ge::Entity());
+    scene->init(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
     he::ObjectHandle sceneMaterial(CONTENT->loadMaterial("testScene3.material"));
     modelComp->setMaterial(sceneMaterial);
@@ -106,8 +148,8 @@ void MainGame::load()
     m_EntityList.push_back(scene);
 
     #pragma region lights
-    GRAPHICS->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
-    GRAPHICS->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
+    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
 
     ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
     scene->addComponent(pTempPointLightComp);
@@ -118,9 +160,9 @@ void MainGame::load()
 
     #pragma endregion
 
-    m_pSkyBox = NEW gfx::SkyBox();
-    m_pSkyBox->load("skybox/day/day.png");
-    GRAPHICS->addToDrawList(m_pSkyBox);
+    //m_pSkyBox = NEW gfx::SkyBox();
+    //m_pSkyBox->load("skybox/day/day.png");
+    //m_Scene->attachToScene(m_pSkyBox);
 }
 
 void MainGame::tick( float dTime )
@@ -133,16 +175,11 @@ void MainGame::tick( float dTime )
     if (m_SpinShadows)
     {
         const he::mat44 rot(he::mat44::createRotation(he::vec3::up, dTime / 4.0f));
-        GRAPHICS->getLightManager()->getDirectionalLight()->setDirection(
-            (rot * he::vec4(GRAPHICS->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
+        m_Scene->getLightManager()->getDirectionalLight()->setDirection(
+            (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
 
-    m_pFPSGraph->tick(dTime);
-}
-
-void MainGame::drawGui()
-{
-    m_pFPSGraph->draw();
+    m_FpsGraph->tick(dTime);
 }
 
 } //end namespace

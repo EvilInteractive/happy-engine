@@ -35,7 +35,7 @@
 
 namespace ht {
 
-MainGame::MainGame(): m_pFPSGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullptr), m_pFont(nullptr)
+MainGame::MainGame(): m_FpsGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullptr), m_pFont(nullptr)
 {
 }
 
@@ -48,7 +48,7 @@ MainGame::~MainGame()
 
     delete m_pWebView;
     delete m_pCanvas;
-    delete m_pFPSGraph;
+    delete m_FpsGraph;
 }
 
 void MainGame::init()
@@ -68,8 +68,8 @@ void MainGame::load()
     //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_pWebView->loadUrl("http://www.youtube.be");
 
-    m_pFPSGraph = NEW he::tools::FPSGraph();
-    //m_pFPSGraph->setType(1);
+    m_FpsGraph = NEW he::tools::FPSGraph();
+    //m_FpsGraph->setType(1);
 
     m_pFont = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
 
@@ -79,7 +79,7 @@ void MainGame::load()
 void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
-    m_pFPSGraph->tick(dTime);
+    m_FpsGraph->tick(dTime);
 }
 
 void MainGame::drawGui()
@@ -101,7 +101,7 @@ void MainGame::drawGui()
 
     m_pCanvas->draw();
 
-    m_pFPSGraph->draw();
+    m_FpsGraph->draw();
 }
 
 } //end namespace

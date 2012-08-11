@@ -28,7 +28,7 @@ class ShapeRenderer;
 class IShapeDrawable
 {
 public:
-    virtual ~IShapeDrawable() = 0;
+    virtual ~IShapeDrawable() {};
 
     virtual void drawShapes(ShapeRenderer* renderer) = 0;
 }; 

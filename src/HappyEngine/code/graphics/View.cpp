@@ -48,7 +48,7 @@ View::View():
     m_NormalRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_DepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
     m_RenderDebugTextures(false), 
-    m_Window(nullptr), m_Scene(nullptr), m_Camera(nullptr),
+    m_Window(nullptr), m_Scene(nullptr),
     m_IntermediateRenderTarget(NEW RenderTarget()),
     m_OutputRenderTarget(NEW RenderTarget()),
     m_WindowResizedCallback(boost::bind(&View::calcViewportFromPercentage, this))
@@ -138,15 +138,6 @@ void View::init( const RenderSettings& settings )
     }
 
     CONSOLE->registerVar(&m_RenderDebugTextures, "debugRenderTex");
-}
-
-void View::setCamera( const std::string& cameraId )
-{
-    HE_IF_ASSERT(m_Scene != nullptr, "Set an active scene before setting the active camera")
-    {
-        m_Camera = m_Scene->getCameraManager()->getCamera(cameraId);
-        HE_ASSERT(m_Camera != nullptr, "no camera: \"%s\" exists on the active scene", cameraId.c_str());
-    }
 }
 
 void View::setScene( Scene* scene )

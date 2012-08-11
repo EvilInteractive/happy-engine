@@ -38,7 +38,7 @@ namespace he {
 namespace gfx {
 
 ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad(nullptr),
-    m_MatInstanced(nullptr), m_MatSingle(nullptr), m_MatSkinned(nullptr)
+    m_MatInstanced(nullptr), m_MatSingle(nullptr), m_MatSkinned(nullptr), m_RenderTarget(NEW RenderTarget())
 {
     CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
     for (int i = 0; i < COUNT; ++i)
@@ -269,7 +269,7 @@ void ShadowCaster::render()
     const CameraPerspective& camera(*m_View->getScene()->getCameraManager()->getActiveCamera());
 
     CameraOrtho shadowCam[4];
-    for (int i(1); i < COUNT; ++i) //begin at 1, first is blur temp
+    for (int i(0); i < COUNT-1; ++i) //begin at 1, first is blur temp
     {
         shadowCam[i].lookAt(camera.getPosition() - shadowLook*250, camera.getPosition(), up);
     }

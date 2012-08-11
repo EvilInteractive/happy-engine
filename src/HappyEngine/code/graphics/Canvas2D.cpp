@@ -106,8 +106,6 @@ Canvas2D::Canvas2D(const RectI& absoluteViewport) :
     m_CanvasSize(static_cast<float>(absoluteViewport.width), static_cast<float>(absoluteViewport.height)),
     m_View(nullptr)
 {
-    m_pBufferData = Canvas2D::create(m_CanvasSize);
-    HE_ASSERT(m_pBufferData != nullptr, "Failed to create Canvas2D::data! - fatal");
     init();
 }
 
@@ -115,7 +113,7 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_pBufferData(nullptr),
     m_pBufferMesh(NEW Mesh2D()),
     m_pColorEffect(NEW Simple2DEffect()),
-    m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd)),
+    m_pRenderTexture(nullptr),
     m_StackDepth(0),
     m_pTextureQuad(nullptr),
     m_pTextureEffect(NEW Simple2DTextureEffect()),
@@ -131,11 +129,9 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_View(view),
     m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this))
 {
-    m_pBufferData = Canvas2D::create(m_CanvasSize);
-    HE_ASSERT(m_pBufferData != nullptr, "Failed to create Canvas2D::data! - fatal");
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();
-    }
+}
 #pragma warning(default:4355) 
 
 Canvas2D::~Canvas2D()
@@ -154,6 +150,10 @@ Canvas2D::~Canvas2D()
 /* EXTRA */
 void Canvas2D::init()
 {
+    m_pBufferData = Canvas2D::create(m_CanvasSize);
+    HE_ASSERT(m_pBufferData != nullptr, "Failed to create Canvas2D::data! - fatal");
+    m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
+
     m_pColorEffect->load();
     m_pTextureEffect->load();
     m_pFontEffect->load();

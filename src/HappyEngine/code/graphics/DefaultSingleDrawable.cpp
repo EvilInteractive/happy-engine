@@ -29,7 +29,7 @@
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true)
+DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true), m_Scene(nullptr)
 {
 }
 

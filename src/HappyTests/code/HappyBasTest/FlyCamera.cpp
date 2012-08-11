@@ -27,12 +27,12 @@
 namespace ht {
 
 // CONSTRUCTOR - DESTRUCTOR
-FlyCamera::FlyCamera(int viewportWidth, int viewportHeight) :	CameraPerspective(viewportWidth, viewportHeight),
-                                                                m_bMoveable(true),
-                                                                m_Speed(10.0f),
-                                                                m_FastForward(20.0f),
-                                                                m_PreviousMousePos(0,0),
-                                                                m_MouseSensitivity(100.0f)
+FlyCamera::FlyCamera() :	CameraPerspective(1, 1),
+                            m_bMoveable(true),
+                            m_Speed(10.0f),
+                            m_FastForward(20.0f),
+                            m_PreviousMousePos(0,0),
+                            m_MouseSensitivity(100.0f)
 {
 }
 
@@ -79,16 +79,6 @@ void FlyCamera::tick(float dTime)
         m_PosWorld += dir * finalSpeed * dTime;
     }
 
-    /*float angle = static_cast<float>((CONTROLS->getMouse()-> / 120) / 200.0f);
-
-    if (angle != 0)
-    {
-        m_Speed += angle*200;
-
-        if (m_Speed < 2)
-            m_Speed = 2;
-    }*/
-
     if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right) && CONTROLS->hasFocus(this))
     {
         vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
@@ -110,11 +100,15 @@ void FlyCamera::tick(float dTime)
 
     CONTROLS->returnFocus(this);
 
-    m_AspectRatio = GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth();
-
     buildProjectionMatrix();
     buildViewMatrix();
 }
+
+void FlyCamera::setAspectRatio( float aspect )
+{
+    m_AspectRatio = aspect;
+}
+
 
 // SETTERS
 void FlyCamera::moveable(bool bMoveable)

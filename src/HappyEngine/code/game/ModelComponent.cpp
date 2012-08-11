@@ -29,7 +29,7 @@
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_Model(nullptr), m_Parent(nullptr), m_Material(nullptr)
+ModelComponent::ModelComponent(): m_Model(nullptr), m_Parent(nullptr), m_Material(nullptr), m_IsDynamic(false), m_IsAttached(false)
 {
 }
 
@@ -49,9 +49,13 @@ void ModelComponent::init(Entity* parent)
     HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
 
-    if (m_Model != nullptr && isAttachedToScene() == false)
+    if (m_Model != nullptr && m_IsAttached == false)
     {
-        m_Parent->getScene()->attachToScene(this, isDynamic());
+        m_IsAttached = true;
+        m_Model->callbackOnceIfLoaded([&]()
+        {
+            m_Parent->getScene()->attachToScene(this, m_IsDynamic);
+        });
     }
 }
 
@@ -99,9 +103,13 @@ void ModelComponent::setModelMesh( const ObjectHandle& modelHandle, bool isPicka
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
     m_Model = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     setPickable(isPickable);
-    if (isAttachedToScene() == false && m_Parent != nullptr)
+    if (m_Parent != nullptr)
     {
-        m_Parent->getScene()->attachToScene(this, isDynamic());
+        m_IsAttached = true;
+        m_Model->callbackOnceIfLoaded([&]()
+        {
+            m_Parent->getScene()->attachToScene(this, m_IsDynamic);
+        });
     }
 }
 
@@ -114,8 +122,7 @@ void ModelComponent::setMaterial( const ObjectHandle& material )
         ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
 }
 
-
-bool DynamicModelComponent::isSleeping() const
+bool ModelComponent::isSleeping() const
 {
     return m_Parent->isSleeping();
 }

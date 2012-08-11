@@ -68,7 +68,6 @@ public:
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
-    Window* getMainWindow() const { return m_MainWindow; }
     const std::vector<Window*>& getAllWindows() const { return m_Windows; }
 
     View* getActiveView() const { return m_ActiveView; }
@@ -83,7 +82,6 @@ private:
     std::vector<Window*> m_Windows;
 
     Window* m_ActiveWindow;
-    Window* m_MainWindow;
     View* m_ActiveView;
 
     Awesomium::WebCore* m_WebCore;

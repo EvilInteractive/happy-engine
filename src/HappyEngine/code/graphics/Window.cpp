@@ -49,7 +49,7 @@ Window::~Window()
 
 void Window::open()
 {
-    HE_ASSERT(m_Parent != nullptr && m_Parent->isOpen(), "Parent window is not open!");
+    HE_ASSERT(m_Parent == nullptr || m_Parent->isOpen(), "Parent window is not open!");
     sf::ContextSettings settings;
     settings.depthBits = 24;
     settings.stencilBits = 8;
@@ -230,6 +230,11 @@ void Window::setFullscreen( bool fullscreen )
             open();
         }
     }
+}
+
+void Window::setResizable( bool resizable )
+{
+    m_Resizeable = resizable;
 }
 
 

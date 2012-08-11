@@ -57,19 +57,23 @@ public:
     
     void setLocalTransform(const mat44& mtxWorld);
     const mat44& getLocalTransform() const;
+
+    void setDynamic(bool dynamic) { m_IsDynamic = dynamic; } // call before init
    
     void setModelMesh(const ObjectHandle& modelHandle, bool isPickable = true);
 
     void setMaterial(const ObjectHandle& material);
 
-    virtual bool isDynamic() const;
-    virtual bool isSleeping() const; 
+    virtual bool isSleeping() const;
 
 protected:
     Entity* m_Parent;
 
 private:
-    const gfx::ModelMesh* m_Model;
+    bool m_IsDynamic;
+    bool m_IsAttached;
+
+    gfx::ModelMesh* m_Model;
     const gfx::Material* m_Material;
 
     mat44 m_mtxLocalTransform;   
