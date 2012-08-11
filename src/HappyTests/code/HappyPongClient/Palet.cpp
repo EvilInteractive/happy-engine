@@ -22,6 +22,7 @@
 #include "Palet.h"
 
 #include "ControlsManager.h"
+#include "IKeyboard.h"
 #include "ContentManager.h"
 
 #include "ModelComponent.h"

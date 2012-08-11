@@ -23,6 +23,7 @@
 #include "WebListener.h"
 #include "WebView.h"
 #include "Awesomium/JSValue.h"
+#include "Awesomium/WebView.h"
 
 namespace he {
 namespace gfx {
@@ -35,6 +36,11 @@ WebListener::WebListener() : m_WebView(nullptr)
 WebListener::~WebListener()
 {
     m_WebView = nullptr;
+
+    std::for_each(m_Objects.cbegin(), m_Objects.cend(), [](JSObject* obj)
+    {
+        delete obj;
+    });
 }
 
 /* GENERAL */
@@ -43,22 +49,17 @@ void WebListener::attachToView(WebView* view)
     view->getAWEView()->set_js_method_handler(this);
     m_WebView = view;
 }
-void WebListener::setObjectCallback(const std::string& object,
+void WebListener::addObjectCallback(const std::string& object,
                                     const std::string& method,
-                                    boost::function<void()> callBack)
+                                    eventCallback0<void>& callBack)
 {
-    bool objectExists(false);
-
     // check if jsobject already exists
-    std::for_each(m_Objects.cbegin(), m_Objects.cend(), [&](JSObject jsObject)
+    bool objectExists(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
     {
-        if (jsObject.objectName == object)
-        {
-            objectExists = true;
-        }
-    });
+        return obj->getObjectName() == object;
+    }) != m_Objects.cend());
 
-    // create new js object if it doesnt already exists
+    // create new js object if it doesn't already exists
     if (objectExists == false)
     {
         Awesomium::JSValue val = m_WebView->getAWEView()->CreateGlobalJavascriptObject(
@@ -68,17 +69,32 @@ void WebListener::setObjectCallback(const std::string& object,
 
         Awesomium::JSObject& obj = val.ToObject();
 
-        JSObject jsObject(obj);
-        jsObject.objectName = object;
-        eventCallback0<void> handler(callBack);
-        jsObject.methodCallBacks[aweMethod] += handler; // TODO: seeb (is it correct you do not need a -= here? else keep callback as member)
+        JSObject* jsObject(NEW JSObject(obj, object));
+        jsObject->addCallback(aweMethod, callBack);
 
         m_Objects.push_back(jsObject);
     }
 
+    // TODO: seeb i don't think this line is correct, why always the last in the list? what if objectExists == true
     // set method on object
-    m_Objects[m_Objects.size() - 1].aweObject.SetCustomMethod(
+    m_Objects.back()->getAweObject().SetCustomMethod(
         Awesomium::WebString::CreateFromUTF8(method.c_str(), strlen(method.c_str())), false);
+}
+void WebListener::removeObjectCallback(const std::string& object,
+    const std::string& method,
+    eventCallback0<void>& callBack)
+{
+    // check if jsobject already exists
+    std::vector<JSObject*>::iterator it(std::find_if(m_Objects.begin(), m_Objects.end(), [&object](JSObject* obj)
+    {
+        return obj->getObjectName() == object;
+    }));
+
+    HE_IF_ASSERT(it != m_Objects.end(), "object ('%s') not found to remove callback from", object.c_str())
+    {
+        Awesomium::WebString aweMethod = Awesomium::WebString::CreateFromUTF8(method.c_str(), strlen(method.c_str()));
+        (*it)->removeCallback(aweMethod, callBack);
+    }
 }
 
 void WebListener::OnMethodCall(Awesomium::WebView* caller,
@@ -89,11 +105,11 @@ void WebListener::OnMethodCall(Awesomium::WebView* caller,
     if (caller == m_WebView->getAWEView())
     {
         // call correct callback on method of jsobject
-        std::for_each(m_Objects.cbegin(), m_Objects.cend(), [&](JSObject jsObject)
+        std::for_each(m_Objects.cbegin(), m_Objects.cend(), [&](JSObject* jsObject)
         {
-            if (jsObject.aweObject.remote_id() == remote_object_id)
+            if (jsObject->getAweObject().remote_id() == remote_object_id)
             {
-                jsObject.methodCallBacks[method_name]();
+                jsObject->executeCallback(method_name);
             }            
         });
     }

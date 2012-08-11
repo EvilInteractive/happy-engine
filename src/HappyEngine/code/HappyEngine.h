@@ -40,7 +40,6 @@ namespace net {
 }
 namespace tools {
     class Console;
-    class LoadingScreen;
 }
 namespace sfx {
     class SoundEngine;
@@ -57,11 +56,9 @@ namespace ge {
 #define PHYSICS HAPPYENGINE->getPhysics()
 #define CONTENT HAPPYENGINE->getContentManager()
 #define NETWORK HAPPYENGINE->getNetworkManager()
-#define GUI HAPPYENGINE->getRenderer2D()
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
-#define HE3DX HAPPYENGINE->get3DRenderer()
 
 namespace he {
 enum SubEngine
@@ -103,27 +100,19 @@ public:
     px::PhysicsEngine* getPhysics() const;
     ct::ContentManager* getContentManager() const;
     net::NetworkManager* getNetworkManager() const;
-    gfx::Renderer2D* getRenderer2D() const;
     tools::Console* getConsole() const;
     sfx::SoundEngine* getSoundEngine() const;
     ge::Game* getGame() const;
-    gfx::ExtraForward3DRenderer* get3DRenderer() const;
 
 private:
     // Singleton design pattern
     HappyEngine();
     static HappyEngine* s_pHappyEngine;
     void initSubEngines(int subengines);
-
-    void drawLoadingScreen();
-
-    tools::LoadingScreen* m_pLoadingScreen;
-
+    
     ge::Game* m_pGame;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
-    gfx::Renderer2D* m_pRenderer2D;
-    gfx::ExtraForward3DRenderer* m_p3DRenderer;
 
     io::ControlsManager* m_pControlsManager;
     px::PhysicsEngine* m_pPhysicsEngine;

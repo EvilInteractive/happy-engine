@@ -44,6 +44,9 @@
 #include "Scene.h"
 #include "View.h"
 
+#include "Texture2D.h"
+#include "ModelMesh.h"
+
 namespace he {
 namespace gfx {
 
@@ -72,13 +75,12 @@ Deferred3DRenderer::Deferred3DRenderer():
         Texture2D::TextureFormat_RGBA8, false);
 
 }
-void Deferred3DRenderer::init( View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend )
+void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
     CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
-    m_BlendFilter = blend;
     m_OutputRenderTarget = target;
 
     eventCallback0<void> settingsChangedHandler(boost::bind(&Deferred3DRenderer::onSettingChanged, this));
@@ -90,12 +92,16 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target, DrawListC
     compileShaders();
     onViewResized();
 
+    m_View->get2DRenderer()->attachToRender(this);
+
     m_pQuad = CONTENT->getFullscreenQuad();
 }
 
 
 Deferred3DRenderer::~Deferred3DRenderer()
 {
+    m_View->get2DRenderer()->detachFromRender(this);
+
     m_pColorIllTexture->release();
     m_pSGTexture->release();
 
@@ -273,7 +279,7 @@ void Deferred3DRenderer::draw()
     ///                             DRAW                                   ///
     //////////////////////////////////////////////////////////////////////////
     const CameraPerspective* camera(scene->getCameraManager()->getActiveCamera());
-    scene->getDrawList().draw(m_BlendFilter, camera, [&camera](IDrawable* d)
+    scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
     {
         d->applyMaterial(camera);
         d->draw();
@@ -308,17 +314,15 @@ void Deferred3DRenderer::draw()
 
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    
-    drawDebugTextures();
 }
-void Deferred3DRenderer::drawDebugTextures() const
+void Deferred3DRenderer::draw2D(Renderer2D* renderer)
 {
     if (m_ShowDebugTextures)
     {
-        GUI->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
-        GUI->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        GUI->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(1),   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        GUI->drawTexture2DToScreen(m_OutputRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(1),   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_OutputRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
     }
 }
 

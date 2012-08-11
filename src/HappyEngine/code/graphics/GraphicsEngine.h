@@ -25,6 +25,10 @@
 
 #include "SlotPContainer.h"
 
+namespace Awesomium {
+    class WebCore;
+}
+
 namespace he {
 namespace gfx {
 
@@ -42,6 +46,7 @@ public:
 
     /* GENERAL */
     void init();
+    void tick(float dTime);
     void draw();
 
 
@@ -68,6 +73,8 @@ public:
 
     View* getActiveView() const { return m_ActiveView; }
 
+    Awesomium::WebCore* getWebCore() const { return m_WebCore; }
+
 private:
 
     /* DATAMEMBERS */
@@ -78,6 +85,8 @@ private:
     Window* m_ActiveWindow;
     Window* m_MainWindow;
     View* m_ActiveView;
+
+    Awesomium::WebCore* m_WebCore;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

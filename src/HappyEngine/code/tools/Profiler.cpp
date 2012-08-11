@@ -24,9 +24,10 @@
 
 #include "ContentManager.h"
 
-#include "boost/chrono.hpp"
+#include "Font.h"
 #include "Text.h"
 #include "Canvas2D.h"
+#include "View.h"
 
 namespace he {
 namespace tools {
@@ -67,20 +68,20 @@ struct Profiler::ProfileTreeNode
     }
 };
 
-Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_pCanvas2D(nullptr)
+Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_pCanvas2D(nullptr), m_View(nullptr)
 {
 }
 void Profiler::load()
 {
-    //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
-    m_pCanvas2D = GUI->createCanvas();
 }
 
 
 
 Profiler::~Profiler()
 {
+    m_View->get2DRenderer()->detachFromRender(this);
+    m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
     if (m_pFont != nullptr)
         m_pFont->release();
     delete m_pCanvas2D;
@@ -154,7 +155,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
         drawProfileNode(treeNodePair.second, text, treeDepth + 1);
     });
 }
-void Profiler::draw()
+void Profiler::draw2D(gfx::Renderer2D* renderer)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Width = 0;
@@ -175,7 +176,19 @@ void Profiler::draw()
     m_pCanvas2D->setFillColor(Color(1.0f, 1.0f, 1.0f));
     m_pCanvas2D->fillText(text, vec2(4, 4));
 
-    m_pCanvas2D->draw();
+    m_pCanvas2D->draw2D(renderer);
+}
+
+void Profiler::setView( gfx::View* view )
+{
+    if (m_View != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+        m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
+    }
+    m_View = view;
+    m_View->get2DRenderer()->attachToRender(this);
+    m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
 }
 
 } } //end namespace

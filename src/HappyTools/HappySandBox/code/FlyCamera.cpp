@@ -20,6 +20,8 @@
 #include "FlyCamera.h"
 #include "MathFunctions.h"
 #include "ControlsManager.h"
+#include "IKeyboard.h"
+#include "IMouse.h"
 #include "GraphicsEngine.h"
 
 namespace hs {

@@ -24,6 +24,7 @@
 #include "Texture2D.h"
 #include "ContentManager.h"
 #include "Rect.h"
+#include "Text.h"
 #include "ControlsManager.h"
 #include "Renderer2D.h"
 #include "IMouse.h"

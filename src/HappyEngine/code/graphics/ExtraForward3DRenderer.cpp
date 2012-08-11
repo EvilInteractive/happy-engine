@@ -28,6 +28,7 @@
 #include "SimpleColorEffect.h"
 #include "BillboardEffect.h"
 #include "CameraPerspective.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {

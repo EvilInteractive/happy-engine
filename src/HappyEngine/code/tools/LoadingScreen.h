@@ -22,15 +22,16 @@
 #define _HE_LOADING_SCREEN_H_
 #pragma once
 
-#include "vec2.h"
-#include <vector>
-#include "Texture2D.h"
-#include "Font.h"
+#include "I2DDrawable.h"
 
 namespace he {
+namespace gfx {
+    class Texture2D;
+    class Font;
+}
 namespace tools {
 
-class LoadingScreen
+class LoadingScreen : public gfx::I2DDrawable
 {
 public:
 
@@ -40,7 +41,7 @@ public:
 
     /* GENERAL */
     void tick();
-    void draw();
+    virtual void draw2D(gfx::Renderer2D* renderer);
 
 private:
 

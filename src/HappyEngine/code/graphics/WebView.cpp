@@ -22,8 +22,12 @@
 
 #include "WebView.h"
 #include "Awesomium/BitmapSurface.h"
+#include "Awesomium/WebView.h"
+#include "Awesomium/WebCore.h"
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
+#include "Texture2D.h"
+#include "View.h"
 
 #include "ControlsManager.h"
 #include "IKeyboard.h"
@@ -34,23 +38,51 @@
 namespace he {
 namespace gfx {
 
-WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscreen) :   m_WebView(pView),
-                                                                                        m_bInputEnabled(bEnableUserInput),
-                                                                                        m_FullScreen(fullscreen)
+WebView::WebView(const RectI& viewport, bool bEnableUserInput) :   
+m_WebView(nullptr),
+    m_bInputEnabled(bEnableUserInput),
+    m_pRenderTexture(nullptr),
+    m_Position(static_cast<float>(viewport.x), static_cast<float>(viewport.y)),
+    m_Size(-1, -1),
+    m_View(nullptr),
+    m_ViewportPercent(0, 0, 1, 1),
+    m_Buffer(nullptr)
+{    
+    init();
+    resize(vec2(static_cast<float>(viewport.width), static_cast<float>(viewport.height)));
+}
+#pragma warning(disable:4355) // this is initializer list
+WebView::WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput) :   
+    m_WebView(nullptr),
+    m_bInputEnabled(bEnableUserInput),
+    m_pRenderTexture(nullptr),
+    m_Position(0, 0),
+    m_Size(-1, -1),
+    m_View(view),
+    m_ViewportPercent(viewportPercent),
+    m_ViewResizedHandler(boost::bind(&WebView::onViewResized, this)),
+    m_Buffer(nullptr)
+{    
+    init();
+    m_View->ViewportSizeChanged += m_ViewResizedHandler;
+    onViewResized();
+}
+#pragma warning(default:4355)
+void WebView::init()
 {
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
     m_pRenderTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest,
-                           gfx::Texture2D::TextureFormat_RGBA8, false);
+        gfx::Texture2D::TextureFormat_RGBA8, false);
 
     if (m_bInputEnabled)
     {
         io::IKeyboard* keyboard(CONTROLS->getKeyboard());
         io::IMouse* mouse(CONTROLS->getMouse());
 
-        m_KeyPressedHandler = eventCallback1<void, io::Key>([&](io::Key key)
+        Awesomium::WebView* w(m_WebView);
+        m_KeyPressedHandler = eventCallback1<void, io::Key>([w](io::Key key)
         {
-            Awesomium::WebView* w(getAWEView());
             Awesomium::WebKeyboardEvent keyEvent;
 
             uint chr = io::getWebKeyFromKey(key);
@@ -61,7 +93,7 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
             char* buffPtr(buf);
             Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buffPtr);
             strcpy(keyEvent.key_identifier, buf);
-                
+
             keyEvent.modifiers = 0;
             keyEvent.native_key_code = 0;
             keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
@@ -75,7 +107,7 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
                 if (chr >= 65 && chr <= 90)
                 {
                     if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
-                            CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
+                        CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
                     {
                         chr += 32; // to lowercase ASCII
                     }
@@ -90,9 +122,8 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
             }
         });
 
-        m_KeyReleasedHandler = eventCallback1<void, io::Key>([&](io::Key key)
+        m_KeyReleasedHandler = eventCallback1<void, io::Key>([w](io::Key key)
         {
-            Awesomium::WebView* w(getAWEView());
             Awesomium::WebKeyboardEvent keyEvent;
 
             char buf[20];
@@ -109,9 +140,8 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
             w->InjectKeyboardEvent(keyEvent);
         });
 
-        m_MouseButtonPressedHandler = eventCallback1<void, io::MouseButton>([&](io::MouseButton but)
+        m_MouseButtonPressedHandler = eventCallback1<void, io::MouseButton>([w](io::MouseButton but)
         {
-            Awesomium::WebView* w(getAWEView());
             if (but == io::MouseButton_Left)
                 w->InjectMouseDown(Awesomium::kMouseButton_Left);
             else if (but == io::MouseButton_Right)
@@ -120,9 +150,8 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
                 w->InjectMouseDown(Awesomium::kMouseButton_Middle);
         });
 
-        m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([&](io::MouseButton but)
+        m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([w](io::MouseButton but)
         {
-            Awesomium::WebView* w(getAWEView());
             if (but == io::MouseButton_Left)
                 w->InjectMouseUp(Awesomium::kMouseButton_Left);
             else if (but == io::MouseButton_Right)
@@ -131,15 +160,13 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
                 w->InjectMouseUp(Awesomium::kMouseButton_Middle);
         });
 
-        m_MouseMoveHandler = eventCallback1<void, const vec2&>([&](const vec2& pos)
+        m_MouseMoveHandler = eventCallback1<void, const vec2&>([w](const vec2& pos)
         {
-            Awesomium::WebView* w(getAWEView());
             w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
         });
 
-        m_MouseScrollHandler = eventCallback1<void, int>([&](int move)
+        m_MouseScrollHandler = eventCallback1<void, int>([w](int move)
         {
-            Awesomium::WebView* w(getAWEView());
             w->InjectMouseWheel(move * 30, 0);
         });
 
@@ -152,8 +179,11 @@ WebView::WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscre
     }
 }
 
+
 WebView::~WebView()
 {
+    if (m_View != nullptr)
+        m_View->ViewportSizeChanged -= m_ViewResizedHandler;
     if (m_bInputEnabled)
     {
         io::IKeyboard* keyboard(CONTROLS->getKeyboard());
@@ -165,12 +195,13 @@ WebView::~WebView()
         mouse->MouseMoved -= m_MouseMoveHandler;
         mouse->MouseWheelMoved -= m_MouseScrollHandler;
     }
+    he_free(m_Buffer);
     m_WebView->Destroy();
     m_pRenderTexture->release();
 }
 
 /* GENERAL */
-void WebView::draw(const vec2& pos)
+void WebView::draw2D(Renderer2D* renderer)
 {
     if (m_WebView->surface())
     {
@@ -178,39 +209,16 @@ void WebView::draw(const vec2& pos)
 
         if (pSurface->is_dirty())
         {
-            byte* buffer = NEW byte[pSurface->width() * 4 * pSurface->height()];
-            // TODO: seeb
-            // make this buffer a member
-            // register to View->ViewportSizeChanged
-            // and realloc the buffer there
-            // also use he_malloc he_realloc and he_free
-            // realloc will first try to extend or shrink the buffer before searching for a new random spot in memory
-            // keeps mem fragmentation at lowest
-
-            pSurface->CopyTo(buffer, pSurface->width() * 4, 4, false, true);
+            pSurface->CopyTo(m_Buffer, pSurface->width() * 4, 4, false, true);
 
             m_pRenderTexture->setData(
                 pSurface->width(), pSurface->height(), 
-                buffer, 
+                m_Buffer, 
                 gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0);
-
-            delete[] buffer;
-        }
-
-        if (m_FullScreen)
-        {
-            // TODO: seeb
-            vec2 dim((float)GRAPHICS->getScreenWidth(), (float)GRAPHICS->getScreenHeight());
-            vec2 dim2((float)pSurface->width(), (float)pSurface->height());
-
-            if (dim != dim2)
-            {
-                m_WebView->Resize((int)dim.x,(int)dim.y);
-            }
         }
     }
 
-    GUI->drawTexture2DToScreen(m_pRenderTexture, pos);
+    renderer->drawTexture2DToScreen(m_pRenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)
@@ -219,7 +227,7 @@ void WebView::loadUrl(const std::string& url)
     m_WebView->LoadURL(webUrl);
 }
 
-void WebView::loadFile(const std::string& /*path*/)
+void WebView::loadFile(const he::Path& /*path*/)
 {
     //m_WebView->LoadURL()
 }
@@ -254,6 +262,29 @@ Awesomium::WebView* WebView::getAWEView() const
 bool WebView::inputEnabled() const
 {
     return m_bInputEnabled;
+}
+
+void WebView::onViewResized()
+{
+    const RectI& viewport(m_View->getViewport());
+    m_Position.x = viewport.x * m_ViewportPercent.x;
+    m_Position.y = viewport.y * m_ViewportPercent.y;
+
+    resize(vec2(viewport.width * m_ViewportPercent.width, viewport.height * m_ViewportPercent.height));
+}
+
+void WebView::resize( const vec2& newSize )
+{
+    if (m_Size != newSize)
+    {
+        if (m_WebView != nullptr)
+            m_WebView->Resize((int)newSize.x, (int)newSize.y);
+        else
+            m_WebView = GRAPHICS->getWebCore()-> CreateWebView((int)newSize.x, (int)newSize.y);
+        Awesomium::BitmapSurface* surface(static_cast<Awesomium::BitmapSurface*>(m_WebView->surface()));
+        m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, surface->width() * 4 * surface->height()));
+        m_Size = newSize;
+    }
 }
 
 }} //end namespace

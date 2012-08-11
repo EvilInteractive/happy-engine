@@ -4,6 +4,7 @@ set (CODE_GRAPHICS_NO_FILTER
             DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
             DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
             Hitregion.cpp                       Hitregion.h
+            I2DDrawable.h
             I3DObject.h
             IDrawable.h    
             IPickable.h 

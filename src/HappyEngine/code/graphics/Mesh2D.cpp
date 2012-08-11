@@ -21,8 +21,10 @@
 #include "HappyPCH.h" 
 
 #include "Mesh2D.h"
+#include "Polygon.h"
 
 namespace he {
+namespace gfx {
 
 Mesh2D::Mesh2D() :  m_pPolygon(NEW Polygon()),
                     m_WorldMatrix(mat44::Identity)
@@ -129,4 +131,4 @@ void Mesh2D::setWorldMatrix(const mat44& mat)
     m_WorldMatrix = mat;
 }
 
-} //end namespace
+} } //end namespace

@@ -22,24 +22,29 @@
 #define _HE_WEBVIEW_H_
 #pragma once
 
-#include "Awesomium/WebCore.h"
-#include "Texture2D.h"
+#include "I2DDrawable.h"
+
+namespace Awesomium {
+    class WebView;
+}
 
 namespace he {
 namespace gfx {
+class Texture2D;
 
-class WebView
+class WebView : public I2DDrawable
 {
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebView(Awesomium::WebView* pView, bool bEnableUserInput, bool fullscreen);
+    WebView(const RectI& viewport, bool bEnableUserInput);
+    WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput);
     virtual ~WebView();
 
     /* GENERAL */
-    void draw(const vec2& pos = vec2());
-    void loadUrl(const std::string& url); // for web
-    void loadFile(const std::string& path); // for local
+    virtual void draw2D(Renderer2D* renderer);
+    void loadUrl(const std::string& url);   // for web
+    void loadFile(const he::Path& path);    // for local
     void excecuteJavaScript(const std::string& script);
     void focus();
     void unfocus();
@@ -49,16 +54,31 @@ public:
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
 
+    /* Setters */
+    void setPosition(const vec2& position) { m_Position = position; }
+
 private:
+    void init();
+    void onViewResized();
+    void resize(const vec2& newSize);
 
     /* DATAMEMBERS */
     Awesomium::WebView* m_WebView;
 
     bool m_bInputEnabled;
-    bool m_FullScreen;
     
     Texture2D* m_pRenderTexture;
+    vec2 m_Position;
+    vec2 m_Size;
+    RectF m_ViewportPercent;
 
+    byte* m_Buffer;
+
+    // View
+    View* m_View;
+    he::eventCallback0<void> m_ViewResizedHandler;
+
+    // Controls
     he::eventCallback1<void, io::Key> m_KeyPressedHandler;
     he::eventCallback1<void, io::Key> m_KeyReleasedHandler;
     he::eventCallback1<void, io::MouseButton> m_MouseButtonPressedHandler;

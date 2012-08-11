@@ -69,6 +69,7 @@
 #include "mat33.h"
 #include "Color.h"
 
+
 #include "RTTI.h"
 
 #include "Logger.h"
@@ -80,6 +81,8 @@
 #include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
+
+#include "ObjectFactory.h"
 
 #include "Profiler.h"
 

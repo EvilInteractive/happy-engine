@@ -126,7 +126,7 @@ void MainGame::load()
     {
         he::io::IniWriter writer;
         writer.open("net.cfg");
-        writer.writeInt(L"Net", L"port", 30000);
+        writer.writeInt(L"Net", L"port", 3000);
         writer.writeString(L"Net", L"ip", "localhost");
         writer.close();
         HE_ERROR("Failed to load the net cfg file, please fill it in and restart");

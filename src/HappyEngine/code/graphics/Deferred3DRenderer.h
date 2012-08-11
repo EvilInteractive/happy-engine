@@ -28,6 +28,7 @@
 #include "DrawListContainer.h"
 #include "BufferLayout.h"
 #include "RenderSettings.h"
+#include "I2DDrawable.h"
 
 namespace he {
 namespace gfx {
@@ -41,7 +42,7 @@ class ModelMesh;
 class RenderTarget;
 class Scene;
 
-class Deferred3DRenderer : public IRenderer
+class Deferred3DRenderer : public IRenderer, public I2DDrawable
 {
 private:
     struct PostPointLightData
@@ -112,9 +113,10 @@ public:
     Deferred3DRenderer();
     virtual ~Deferred3DRenderer();
 
-    virtual void init(View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend);
+    virtual void init(View* view, const RenderTarget* target);
 
     virtual void draw();
+    virtual void draw2D(Renderer2D* renderer);
 
 private:
     static BufferLayout s_VertexLayoutFullscreenQuad;
@@ -127,7 +129,6 @@ private:
     void postPointLights(const Scene* scene);
     void postSpotLights(const Scene* scene);
 
-    void drawDebugTextures() const;
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -140,7 +141,6 @@ private:
 
     // Render FBO
     View* m_View;
-    DrawListContainer::BlendFilter m_BlendFilter;
     const RenderTarget* m_OutputRenderTarget;
     
     //////////////////////////////////////////////////////////////////////////

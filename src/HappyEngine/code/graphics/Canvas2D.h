@@ -22,24 +22,19 @@
 #define _HE_CANVAS2D_H_
 #pragma once
 
-#include "Color.h"
-#include "Text.h"
-#include "Mesh2D.h"
-#include "Simple2DEffect.h"
-#include "Simple2DTextureEffect.h"
-#include "Simple2DFontEffect.h"
-#include "ModelMesh.h"
+#include "I2DDrawable.h"
 
 namespace he {
 namespace gfx {
+class View;
+class Mesh2D;
+class Simple2DEffect;
+class Simple2DTextureEffect;
+class Simple2DFontEffect;
+class ModelMesh;
+class Texture2D;
 
-// TODO: seeb
-// way to many includes
-// change to forward declarations
-// I does compile so no worries there
-// also now we have a RenderTarget class
-// consider updating the Canvas2D::Data::create method
-class Canvas2D
+class Canvas2D : public I2DDrawable
 {
 public:
 
@@ -73,7 +68,8 @@ public:
     static Data* create(const vec2& size);
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2D(Data* pData, const vec2& size);
+    Canvas2D(const RectI& absoluteViewport);
+    Canvas2D(View* view, const RectF& relativeViewport);
     virtual ~Canvas2D();
 
     /* GENERAL */
@@ -86,6 +82,7 @@ public:
 
     /* GETTERS */
     Data* getData() const;
+    const vec2& getSize() const { return m_CanvasSize; }
 
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
@@ -96,10 +93,11 @@ public:
     void setGlobalAlpha(float alpha);
 
     void setAutoClearing(bool clearAfterDraw);
+    void setPosition(const vec2& position) { m_Position = position; }
     
     /* DRAW METHODS */
     void clear();
-    void draw(const vec2& pos = vec2(0,0));
+    virtual void draw2D(Renderer2D* renderer);
 
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
@@ -134,6 +132,10 @@ private:
     mat44 getTransformation();
     float getNewDepth();
 
+    void viewResized();
+    void resize(const vec2& newSize);
+    eventCallback0<void> m_ViewResizedHandler;
+
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
     ushort m_StackDepth;
@@ -157,8 +159,11 @@ private:
     Texture2D* m_pRenderTexture;
     Texture2D* m_pTextBuffer;
 
+
+    View* m_View;
+    RectF m_RelativeViewport;
     vec2 m_CanvasSize;
-    bool m_FullScreen;
+    vec2 m_Position;
 
     ModelMesh* m_pTextureQuad;
 

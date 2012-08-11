@@ -38,6 +38,7 @@
 #include "Scrollbar.h"
 #include "TextBox.h"
 #include "View.h"
+#include "Text.h"
 
 namespace he {
 namespace tools {
@@ -84,8 +85,6 @@ Console::Console() :	m_Shortcut(io::Key_C),
 }
 void Console::load()
 {
-    m_Canvas2D = GUI->createCanvas();
-
     m_pFont = CONTENT->loadFont("Inconsolata.otf", 10);
 
     m_Help = new gui::Text(m_pFont);
@@ -116,7 +115,14 @@ void Console::load()
 }
 void Console::setView( const gfx::View* view )
 {
+    if (m_Canvas2D != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+        m_View->get2DRenderer()->removeCanvas(m_Canvas2D);
+    }
     m_View = view;
+    m_View->get2DRenderer()->attachToRender(this);
+    m_Canvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
     m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
     m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
 }
@@ -134,6 +140,11 @@ Console::~Console()
 
     if (m_pFont != nullptr)
         m_pFont->release();
+
+    if (m_View != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+    }
 
     delete m_pTextBox;
     delete m_pScrollBar;
@@ -277,12 +288,15 @@ void Console::tick()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_pTextBox->hasFocus())
     {
-        m_bOpen =! m_bOpen;
-        m_pTextBox->resetText();
-
-        if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+        HE_IF_ASSERT(m_View == nullptr, "set View first with setView!")
         {
-            addMessage(m_HelpCommand, CMSG_TYPE_INFO);
+            m_bOpen =! m_bOpen;
+            m_pTextBox->resetText();
+
+            if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+            {
+                addMessage(m_HelpCommand, CMSG_TYPE_INFO);
+            }
         }
     }
 
@@ -337,80 +351,77 @@ void Console::tick()
     }
 }
 
-void Console::draw()
+void Console::draw2D(gfx::Renderer2D* renderer)
 {
     if (m_bOpen)
     {
-        HE_IF_ASSERT(m_View != nullptr, "set CONSOLE->setView first!")
+        m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
+        m_Canvas2D->fillRect(vec2(0,0), vec2(m_Canvas2D->getSize().x, 200));
+
+        m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
+        m_Canvas2D->strokeRect(vec2(0,0), vec2(m_Canvas2D->getSize().x, 200));
+
+        m_pTextBox->draw(m_Canvas2D);
+
+        std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
+
+        std::for_each(m_MsgHistory.cbegin(), m_MsgHistory.cend(), [&] (std::pair<CMSG_TYPE, std::string> p)
         {
-            m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-            m_Canvas2D->fillRect(vec2(0,0), vec2(vec2(static_cast<float>(m_View->getViewport().width), 200)));
+            if (m_ShowMessageTypes[p.first] == true)
+                msgHistory.push_back(p);
+        });
 
-            m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
-            m_Canvas2D->strokeRect(vec2(0,0), vec2(vec2(static_cast<float>(m_View->getViewport().width), 200)));
+        uint startPos(0);
 
-            m_pTextBox->draw(m_Canvas2D);
-
-            std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
-
-            std::for_each(m_MsgHistory.cbegin(), m_MsgHistory.cend(), [&] (std::pair<CMSG_TYPE, std::string> p)
-            {
-                if (m_ShowMessageTypes[p.first] == true)
-                    msgHistory.push_back(p);
-            });
-
-            uint startPos(0);
-
-            if (msgHistory.size() > m_MaxMessagesInWindow)
-            {
-                startPos = static_cast<uint>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
-            }
-
-            uint i(startPos);
-
-            std::vector<std::pair<CMSG_TYPE, std::string> > msg;
-
-            if (msgHistory.size() > m_MaxMessagesInWindow)
-            {
-                for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
-                {
-                    msg.push_back(msgHistory[i]);
-                }
-            }
-            else
-            {
-                for (; i < msgHistory.size(); ++i)
-                {
-                    msg.push_back(msgHistory[i]);
-                }
-            }
-
-            gui::Text text(m_pFont);
-            text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-            text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
-
-            uint k(0);
-            std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
-            {
-                m_Canvas2D->setFillColor(m_MsgColors[p.first]);
-
-                text.clear();
-                text.addLine(p.second);
-
-                //GUI->drawText(	text, RectF(5,5,
-     //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-    //                            190.0f - (k * m_pFont->getLineSpacing())));
-
-                m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
-
-                ++k;
-            });
-
-            if (msgHistory.size() > m_MaxMessagesInWindow)
-                m_pScrollBar->draw(m_Canvas2D);
-
-            m_Canvas2D->draw();
+        if (msgHistory.size() > m_MaxMessagesInWindow)
+        {
+            startPos = static_cast<uint>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
         }
+
+        uint i(startPos);
+
+        std::vector<std::pair<CMSG_TYPE, std::string> > msg;
+
+        if (msgHistory.size() > m_MaxMessagesInWindow)
+        {
+            for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
+            {
+                msg.push_back(msgHistory[i]);
+            }
+        }
+        else
+        {
+            for (; i < msgHistory.size(); ++i)
+            {
+                msg.push_back(msgHistory[i]);
+            }
+        }
+
+        gui::Text text(m_pFont);
+        text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+        text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+
+        uint k(0);
+        std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
+        {
+            m_Canvas2D->setFillColor(m_MsgColors[p.first]);
+
+            text.clear();
+            text.addLine(p.second);
+
+            //GUI->drawText(	text, RectF(5,5,
+    //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
+//                            190.0f - (k * m_pFont->getLineSpacing())));
+
+            m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
+
+            ++k;
+        });
+
+        if (msgHistory.size() > m_MaxMessagesInWindow)
+            m_pScrollBar->draw(m_Canvas2D);
+
+        m_Canvas2D->draw2D(renderer);
     }
 }
 
@@ -445,14 +456,7 @@ void Console::addMessage(const std::string& msg, CMSG_TYPE type)
 
 void Console::registerCmd(boost::function<void()> command, const std::string& cmdKey)
 {
-    if (m_FunctionContainer.find(cmdKey) != m_FunctionContainer.end())
-    {
-        std::stringstream str;
-        str << "Command: '" << cmdKey << "' already registered!";
-
-        HE_ASSERT(false, str.str().c_str());
-    }
-    else
+    HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {
         m_FunctionContainer[cmdKey] = command;
     }
@@ -460,13 +464,9 @@ void Console::registerCmd(boost::function<void()> command, const std::string& cm
 
 void Console::addTypeHandler(ITypeHandler* typeHandler)
 {
-    if (m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend())
+    HE_IF_ASSERT(m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend(), "Type handler for '%s' already added!", typeHandler->getType().c_str())
     {
         m_TypeHandlers[typeHandler->getType()] = typeHandler;
-    }
-    else
-    {
-        HE_ASSERT(false, "Type handler for '%s' already added!", typeHandler->getType().c_str());
     }
 }
 

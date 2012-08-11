@@ -21,11 +21,12 @@
 #include "HappyPCH.h" 
 
 #include "LoadingScreen.h"
-#include "HappyEngine.h"
 #include "ContentManager.h"
 #include "Renderer2D.h"
-#include "GraphicsEngine.h"
-#include <algorithm>
+#include "View.h"
+#include "Font.h"
+#include "Text.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace tools {
@@ -72,7 +73,7 @@ void LoadingScreen::tick()
     });*/
 }
 
-void LoadingScreen::draw()
+void LoadingScreen::draw2D(gfx::Renderer2D* renderer)
 {
     //GUI->setColor(0.9f,0.9f,0.9f);
 
@@ -92,12 +93,13 @@ void LoadingScreen::draw()
     ////GUI->setColor(1.0f,0.1f,0.1f);
     ////GUI->drawText(message, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()),true);
 
-    GUI->drawTexture2DToScreen(m_pLogo, vec2(	GRAPHICS->getScreenWidth()/2.0f - m_pLogo->getWidth()/2.0f,
-                                        GRAPHICS->getScreenHeight()/2.0f - m_pLogo->getHeight()/2.0f));
+    const RectI& viewport(renderer->getView()->getViewport());
+    renderer->drawTexture2DToScreen(m_pLogo, vec2(	viewport.width / 2.0f - m_pLogo->getWidth() / 2.0f,
+                                                    viewport.height / 2.0f - m_pLogo->getHeight() / 2.0f));
 
-    gui::Text loading("HAPPY ENGINE // LOADING", m_pFontLoading);
-    loading.setHorizontalAlignment(gui::Text::HAlignment_Left);
-    loading.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+    //gui::Text loading("HAPPY ENGINE // LOADING", m_pFontLoading);
+    //loading.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    //loading.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
     //GUI->setColor(0.3f,0.3f,0.3f);
     //GUI->drawText(loading, RectF(   10.0f, 0.0f,

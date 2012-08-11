@@ -126,6 +126,10 @@ void GL::heBindFbo(uint fbo)
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
 }
+uint GL::heGetBoundFbo()
+{
+    return m_BoundFbo;
+}
 void GL::heBindVao(uint vao)
 {
     /*if (m_BoundVao != vao)
@@ -294,6 +298,7 @@ const RectI& GL::heGetViewport()
 {
     return m_Viewport;
 }
+
 
 
 } //end namespace

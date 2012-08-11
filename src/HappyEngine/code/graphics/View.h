@@ -33,6 +33,8 @@ class IRenderer;
 class ShadowCaster;
 class PostProcesser;
 class RenderTarget;
+class Renderer2D;
+class Texture2D;
 
 class View
 {
@@ -49,6 +51,8 @@ public:
     void setCamera(const std::string& cameraId);
     void setScene(Scene* scene);
     void setWindow(Window* window);
+
+    Renderer2D* get2DRenderer() const { return m_2DRenderer; }
 
     const Scene* getScene() const { return m_Scene; }
     const RenderSettings& getSettings() const { return m_Settings; }
@@ -82,6 +86,8 @@ private:
     // Renderers
     IRenderer* m_OpacRenderer;
     IRenderer* m_TransparentRenderer;
+    IRenderer* m_ShapeRenderer;
+    Renderer2D* m_2DRenderer;
 
     // Shadow
     ShadowCaster* m_ShadowCaster;

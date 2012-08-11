@@ -125,16 +125,29 @@ public:
 
     void operator+=(Function& func)
     {
-        func.m_Connection = m_Signal.connect(func.m_Function);
+        add(func);
     }
     void operator-=(const Function& func)
+    {
+        remove(func);
+    }
+    void add(Function& func)
+    {
+        func.m_Connection = m_Signal.connect(func.m_Function);
+    }
+    void remove(const Function& func)
     {
         m_Signal.disconnect(func.m_Connection);
     }
     ReturnType operator()() const
     {
+        return execute();
+    }
+    ReturnType execute() const
+    {
         return m_Signal();
     }
+
 
     void clear()
     {

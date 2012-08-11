@@ -25,6 +25,14 @@
 #include "Renderer2D.h"
 #include "Vertex.h"
 #include "View.h"
+#include "Texture2D.h"
+#include "Mesh2D.h"
+#include "ModelMesh.h"
+#include "Simple2DEffect.h"
+#include "Simple2DFontEffect.h"
+#include "Simple2DTextureEffect.h"
+#include "Text.h"
+#include "Font.h"
 
 namespace he {
 namespace gfx {
@@ -38,8 +46,8 @@ Canvas2D::Data* Canvas2D::create(const vec2& size)
     Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
 
     pTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RGBA8, false);
-    pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);
-    
+    pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);   
+
     // create final FBO & RB
     glGenFramebuffers(1, &pData->resolvedFbufferID);
     GL::heBindFbo(pData->resolvedFbufferID);
@@ -78,34 +86,57 @@ Canvas2D::Data* Canvas2D::create(const vec2& size)
 }
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Canvas2D::Canvas2D(Data* pData, const vec2& size) :     m_pBufferData(pData),
-                                                        m_pBufferMesh(NEW Mesh2D()),
-                                                        m_pColorEffect(NEW Simple2DEffect()),
-                                                        m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd)),
-                                                        m_StackDepth(0),
-                                                        m_CanvasSize(size),
-                                                        m_pTextureQuad(nullptr),
-                                                        m_pTextureEffect(NEW Simple2DTextureEffect()),
-                                                        m_GlobalAlpha(1.0f),
-                                                        m_pFontEffect(NEW Simple2DFontEffect()),
-                                                        m_FillColor(Color(1.0f,1.0f,1.0f)),
-                                                        m_StrokeColor(Color(1.0f,1.0f,1.0f)),
-                                                        m_PixelDepth(9999.99f),
-                                                        m_AutoClear(true)
+#pragma warning(disable:4355) // this pointer in member initialize list
+Canvas2D::Canvas2D(const RectI& absoluteViewport) :     
+    m_pBufferData(nullptr),
+    m_pBufferMesh(NEW Mesh2D()),
+    m_pColorEffect(NEW Simple2DEffect()),
+    m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd)),
+    m_StackDepth(0),
+    m_pTextureQuad(nullptr),
+    m_pTextureEffect(NEW Simple2DTextureEffect()),
+    m_GlobalAlpha(1.0f),
+    m_pFontEffect(NEW Simple2DFontEffect()),
+    m_FillColor(Color(1.0f,1.0f,1.0f)),
+    m_StrokeColor(Color(1.0f,1.0f,1.0f)),
+    m_PixelDepth(9999.99f),
+    m_AutoClear(true),
+    m_RelativeViewport(0, 0, 0, 0),
+    m_Position(static_cast<float>(absoluteViewport.x), static_cast<float>(absoluteViewport.y)),
+    m_CanvasSize(static_cast<float>(absoluteViewport.width), static_cast<float>(absoluteViewport.height)),
+    m_View(nullptr)
 {
+    m_pBufferData = Canvas2D::create(m_CanvasSize);
+    HE_ASSERT(m_pBufferData != nullptr, "Failed to create Canvas2D::data! - fatal");
     init();
-
-    // TODO: seeb
-//     if (m_CanvasSize.x == (float)GRAPHICS->getScreenWidth() &&
-//         m_CanvasSize.y == (float)GRAPHICS->getScreenHeight())
-//     {
-//         m_FullScreen = true;
-//     }
-//     else
-    {
-        m_FullScreen = false;
-    }
 }
+
+Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :     
+    m_pBufferData(nullptr),
+    m_pBufferMesh(NEW Mesh2D()),
+    m_pColorEffect(NEW Simple2DEffect()),
+    m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd)),
+    m_StackDepth(0),
+    m_pTextureQuad(nullptr),
+    m_pTextureEffect(NEW Simple2DTextureEffect()),
+    m_GlobalAlpha(1.0f),
+    m_pFontEffect(NEW Simple2DFontEffect()),
+    m_FillColor(Color(1.0f,1.0f,1.0f)),
+    m_StrokeColor(Color(1.0f,1.0f,1.0f)),
+    m_PixelDepth(9999.99f),
+    m_AutoClear(true),
+    m_RelativeViewport(relativeViewport),
+    m_Position(view->getViewport().x * relativeViewport.x, view->getViewport().y * relativeViewport.y),
+    m_CanvasSize(view->getViewport().width * relativeViewport.width, view->getViewport().height * relativeViewport.height),
+    m_View(view),
+    m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this))
+{
+    m_pBufferData = Canvas2D::create(m_CanvasSize);
+    HE_ASSERT(m_pBufferData != nullptr, "Failed to create Canvas2D::data! - fatal");
+    m_View->ViewportSizeChanged += m_ViewResizedHandler;
+    init();
+    }
+#pragma warning(default:4355) 
 
 Canvas2D::~Canvas2D()
 {
@@ -114,6 +145,8 @@ Canvas2D::~Canvas2D()
     delete m_pTextureEffect;
     delete m_pBufferMesh;
     delete m_pFontEffect;
+
+    m_View->ViewportSizeChanged -= m_ViewResizedHandler;
 
     cleanup();
 }
@@ -162,6 +195,19 @@ void Canvas2D::init()
 
     m_pTextureQuad->setVertices(&vertices[0], 4, vLayout);
     m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+}
+void Canvas2D::resize( const vec2& newSize )
+{
+    if (m_CanvasSize != newSize)
+    {
+        cleanup();
+
+        m_pBufferData = Canvas2D::create(newSize);
+        m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
+
+        m_CanvasSize = newSize;
+        m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.0f, 10000.0f);
+    }
 }
 
 void Canvas2D::cleanup()
@@ -279,38 +325,24 @@ void Canvas2D::clear()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Canvas2D::draw(const vec2& pos)
+void Canvas2D::draw2D(Renderer2D* renderer)
 {
     // blit MS FBO to normal FBO
+    uint oldFbo(GL::heGetBoundFbo());
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pBufferData->fbufferID);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBufferData->resolvedFbufferID);
+    GL::heBindFbo(m_pBufferData->resolvedFbufferID);
 
     glBlitFramebuffer(  0, 0, (GLint)m_CanvasSize.x, (GLint)m_CanvasSize.y,
                         0, 0, (GLint)m_CanvasSize.x, (GLint)m_CanvasSize.y,
                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    GL::heBindFbo(oldFbo);
 
     Texture2D* tex = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
-    GUI->drawTexture2DToScreen(tex, pos);
+    renderer->drawTexture2DToScreen(tex, m_Position);
 
     if (m_AutoClear)
     {
         clear();
-    }
-
-    if (m_FullScreen)
-    {
-        vec2 dim((float)GRAPHICS->getActiveView()->getViewport().width, (float)GRAPHICS->getActiveView()->getViewport().height);
-
-        if (m_CanvasSize != dim)
-        {
-            cleanup();
-
-            m_pBufferData = Canvas2D::create(dim);
-            m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
-
-            m_CanvasSize = dim;
-            m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.0f, 10000.0f);
-        }
     }
 }
 
@@ -597,5 +629,15 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
 
     restore();
 }
+
+void Canvas2D::viewResized()
+{
+    const RectI& viewport(m_View->getViewport());
+    vec2 newSize(viewport.width * m_RelativeViewport.width, viewport.height * m_RelativeViewport.height);
+    resize(newSize);
+    m_Position.x = viewport.x * m_RelativeViewport.x;
+    m_Position.y = viewport.y * m_RelativeViewport.y;
+}
+
 
 } }//end namespace

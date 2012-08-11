@@ -28,6 +28,7 @@
 
 #include "Deferred3DRenderer.h"
 #include "Forward3DRenderer.h"
+#include "Renderer2D.h"
 #include "PostProcesser.h"
 #include "ShadowCaster.h"
 #include "RenderTarget.h"
@@ -40,8 +41,8 @@ namespace gfx {
 View::View(): 
     m_Viewport(0, 0, 0, 0),
     m_ShadowCaster(nullptr), m_OpacRenderer(nullptr), 
-    m_TransparentRenderer(nullptr), 
-    m_PostProcesser(nullptr),
+    m_TransparentRenderer(nullptr), m_ShapeRenderer(nullptr),
+    m_PostProcesser(nullptr), m_2DRenderer(nullptr),
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_DepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
@@ -49,7 +50,7 @@ View::View():
     m_Window(nullptr), m_Scene(nullptr), m_Camera(nullptr),
     m_IntermediateRenderTarget(NEW RenderTarget()),
     m_OutputRenderTarget(NEW RenderTarget()),
-    m_WindowResizedCallback(eventCallback0<void>(boost::bind(&View::calcViewportFromPercentage, this)))
+    m_WindowResizedCallback(boost::bind(&View::calcViewportFromPercentage, this))
 {
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
     m_NormalRenderMap->setName("View::m_NormalRenderMap");
@@ -68,6 +69,8 @@ View::~View()
     delete m_TransparentRenderer;
     delete m_PostProcesser;
     delete m_ShadowCaster;
+    delete m_ShapeRenderer;
+    delete m_2DRenderer;
     m_ColorRenderMap->release();
     m_NormalRenderMap->release();
     m_DepthRenderMap->release();
@@ -79,6 +82,9 @@ void View::init( const RenderSettings& settings )
 
     uint width(m_Viewport.width), 
         height(m_Viewport.height);
+
+    m_2DRenderer = NEW Renderer2D();
+    m_2DRenderer->init(this, m_OutputRenderTarget);
 
     m_Settings.postSettings.shaderSettings.enableHDR = m_Settings.postSettings.shaderSettings.enableHDR && m_Settings.enablePost;
     if (m_Settings.enablePost)
@@ -110,11 +116,11 @@ void View::init( const RenderSettings& settings )
     if (settings.enableDeferred)
         m_OpacRenderer = NEW Deferred3DRenderer();
     else
-        m_OpacRenderer = NEW Forward3DRenderer();
-    m_OpacRenderer->init(this, m_IntermediateRenderTarget, DrawListContainer::BlendFilter_Opac);
+        m_OpacRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Opac);
+    m_OpacRenderer->init(this, m_IntermediateRenderTarget);
 
-    m_TransparentRenderer = NEW Forward3DRenderer();
-    m_TransparentRenderer->init(this, m_IntermediateRenderTarget, DrawListContainer::BlendFilter_Blend);
+    m_TransparentRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Blend);
+    m_TransparentRenderer->init(this, m_IntermediateRenderTarget);
 
     if (settings.lightingSettings.enableShadows)
     {
@@ -202,6 +208,10 @@ void View::draw()
 
     if (m_Settings.enablePost)
         m_PostProcesser->draw();
+
+    m_ShapeRenderer->draw();
+
+    m_2DRenderer->draw();
 
     m_Window->present();
 }

@@ -27,6 +27,8 @@
 #include "Scene.h"
 #include "View.h"
 
+#include "Awesomium/WebCore.h"
+
 
 namespace he {
 namespace gfx {
@@ -50,10 +52,14 @@ GraphicsEngine::~GraphicsEngine()
     {
         delete scene;
     });
+
+    Awesomium::WebCore::Shutdown();
 }
 void GraphicsEngine::init()
 {
     using namespace err;
+
+    m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
         
     m_MainWindow = createWindow();
     m_MainWindow->setCursorVisible(true);
@@ -161,6 +167,11 @@ void GraphicsEngine::draw()
     {
         view->draw();
     });
+}
+
+void GraphicsEngine::tick( float /*dTime*/ )
+{
+    m_WebCore->Update();
 }
 
 } } //end namespace

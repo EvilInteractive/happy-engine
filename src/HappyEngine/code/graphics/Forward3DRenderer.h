@@ -37,11 +37,11 @@ class Forward3DRenderer : public IRenderer
 public:
 
     /* CONSTRUCTOR - DESCTRUCTOR */
-    Forward3DRenderer();
+    Forward3DRenderer(DrawListContainer::BlendFilter blend);
     virtual ~Forward3DRenderer();
 
     /* GENERAL */
-    virtual void init( View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend);
+    virtual void init( View* view, const RenderTarget* target);
 
     virtual void draw();
 

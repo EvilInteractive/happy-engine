@@ -30,8 +30,8 @@
 #include "View.h"
 
 #include "ModelMesh.h"
-#include "Awesomium/WebViewListener.h"
 #include "RenderTarget.h"
+#include "Texture2D.h"
 
 namespace he {
 namespace gfx {
@@ -60,6 +60,8 @@ PostProcesser::~PostProcesser()
 
     if (m_pQuad != nullptr)
         m_pQuad->release();
+
+    m_View->get2DRenderer()->detachFromRender(this);
 }
 
 
@@ -73,6 +75,8 @@ void PostProcesser::init( View* view, const RenderTarget* writeTarget, const Ren
 
         eventCallback0<void> handler([&](){ onSettingsChanged(m_View->getSettings(), false); });
         m_View->SettingsChanged += handler;  // this is safe because PostProcessor is a member of View
+
+        m_View->get2DRenderer()->attachToRender(this);
         
         m_pQuad = CONTENT->getFullscreenQuad();
         
@@ -256,19 +260,16 @@ void PostProcesser::draw()
 
     GL::heBindVao(m_pQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-
-    drawDebugTextures();
 }
-\
 
-void PostProcesser::drawDebugTextures() const
+void PostProcesser::draw2D(Renderer2D* renderer)
 {
     if (m_ShowDebugTextures)
     {
-        GUI->drawTexture2DToScreen(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
-        GUI->drawTexture2DToScreen(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        GUI->drawTexture2DToScreen(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        GUI->drawTexture2DToScreen(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
     }
 }
 

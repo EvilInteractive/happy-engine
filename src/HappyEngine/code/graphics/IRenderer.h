@@ -37,7 +37,7 @@ class IRenderer
 public:
     virtual ~IRenderer() {}
 
-    virtual void init(View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend) = 0;
+    virtual void init(View* view, const RenderTarget* target) = 0;
     
     virtual void draw() = 0;
 };

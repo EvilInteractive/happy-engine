@@ -101,6 +101,7 @@ public:
 
     // Binding
     static void heBindFbo(uint fbo);
+    static uint heGetBoundFbo();
     static void heBindVao(uint vao);
     static void heBindTexture2D(uint tex);
     static void heBindTexture2D(uint texPos, uint tex);

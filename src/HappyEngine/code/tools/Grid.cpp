@@ -26,6 +26,8 @@
 #include "BufferLayout.h"
 #include "ExtraForward3DRenderer.h"
 
+#include "ModelMesh.h"
+
 namespace he {
 namespace tools {
 

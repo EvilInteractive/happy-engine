@@ -15,55 +15,23 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 25/04/2012
+//Author:  Bastian Damman
+//Created: 30/09/2011
 
-#ifndef _HE_MESH2D_H_
-#define _HE_MESH2D_H_
+#ifndef _HE_I2DDrawable_H_
+#define _HE_I2DDrawable_H_
 #pragma once
 
 namespace he {
-class Polygon;
 namespace gfx {
-
-class Mesh2D
+class Renderer2D;
+class I2DDrawable
 {
 public:
+    virtual ~I2DDrawable() = 0;
 
-    /* CONSTRUCTOR - DESTRUCTOR */
-    Mesh2D();
-    virtual ~Mesh2D();
-
-    /* GENERAL */
-    void addVertex(const vec2& point);
-    void clear();
-
-    bool triangulate();
-
-    void createBuffer(bool outline = false);
-
-    /* GETTERS */
-    uint getBufferID() const;
-    const mat44& getWorldMatrix() const;
-    const std::vector<vec2>& getVertices() const;
-    const std::vector<uint>& getIndices() const;
-
-    /* SETTERS */
-    void setWorldMatrix(const mat44& mat);
-
-private:
-
-    /* DATAMEMBERS */
-    Polygon* m_pPolygon;
-    mat44 m_WorldMatrix;
-    uint m_VBOID;
-    uint m_IBOID;
-    uint m_VAOID;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    Mesh2D(const Mesh2D&);
-    Mesh2D& operator=(const Mesh2D&);
-};
+    virtual void draw2D(Renderer2D* renderer) = 0;
+}; 
 
 } } //end namespace
 

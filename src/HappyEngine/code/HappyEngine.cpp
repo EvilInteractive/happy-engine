@@ -48,9 +48,9 @@ HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr), m_pRenderer2D(nullptr),
+                            m_pNetworkManager(nullptr),
                             m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
-                            m_bShowProfiler(false), m_pLoadingScreen(nullptr), m_bGameLoading(true),
+                            m_bShowProfiler(false), m_bGameLoading(true),
                             m_RootDir("./")
 {
 }
@@ -82,10 +82,6 @@ void HappyEngine::cleanup()
 
     //dispose/delete all sub engines here
     m_pGame = nullptr;
-    delete m_p3DRenderer;
-    m_p3DRenderer = nullptr;
-    delete m_pRenderer2D;
-    m_pRenderer2D = nullptr;
     delete m_pGraphicsEngine;
     m_pGraphicsEngine = nullptr;
     delete m_pContentManager;
@@ -97,8 +93,6 @@ void HappyEngine::cleanup()
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
 
-    delete m_pLoadingScreen;
-    m_pLoadingScreen = nullptr;
     delete m_pConsole;
     m_pConsole = nullptr;
 }
@@ -117,7 +111,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     if (subengines & SubEngine_Graphics)
     {
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
-        m_p3DRenderer = NEW gfx::ExtraForward3DRenderer();
         m_pConsole = NEW tools::Console();
     }
 
@@ -149,11 +142,6 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     if (subengines & SubEngine_Networking)
     {
         m_pNetworkManager = NEW net::NetworkManager();
-    }
-
-    if (subengines & SubEngine_2DRenderer)
-    {
-        m_pRenderer2D = NEW gfx::Renderer2D();
     }
 
     if (subengines & SubEngine_Audio)
@@ -199,15 +187,10 @@ void HappyEngine::start(ge::Game* pGame)
     {
         m_pGraphicsEngine->init();
         
-        m_p3DRenderer->init();
-        m_pRenderer2D->init();
-
         m_pConsole->load();
         CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
 
         PROFILER->load();
-
-        m_pLoadingScreen = NEW tools::LoadingScreen();
     }
 
     //if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
@@ -279,7 +262,7 @@ void HappyEngine::updateLoop(float dTime)
 
     if (m_SubEngines & SubEngine_Graphics)
     {
-        GUI->tick();
+        m_pGraphicsEngine->tick(dTime);
         CONSOLE->tick();
         if (CONTENT->isLoading() == false && m_bGameLoading == true)
             m_bGameLoading = false;
@@ -292,27 +275,6 @@ void HappyEngine::drawLoop()
     
     // render everything
     GRAPHICS->draw();
-
-    // TODO: seeb
-    // move all this stuff to View
-    // loadingscreen will be a problem, but should be handled in client then
-    // View will present all the corresponding window
-    // so executing the code here will be to late
-
-    // draw 2D stuff
-    if (m_bGameLoading)
-        drawLoadingScreen();
-    else
-        m_pGame->drawGui();
-
-    //GUI->draw();
-
-    // draw profiler if needed
-    if (m_bShowProfiler)
-        PROFILER->draw();
-
-    // draw console
-    CONSOLE->draw();
 }
 
 HappyEngine* HappyEngine::getPointer()
@@ -342,15 +304,6 @@ void HappyEngine::audioLoop()
     }
 }
 
-void HappyEngine::drawLoadingScreen()
-{
-    m_pLoadingScreen->tick();
-
-    //GUI->setDepth(1);
-
-    m_pLoadingScreen->draw();
-}
-
 //SubEngines
 gfx::GraphicsEngine* HappyEngine::getGraphicsEngine() const
 {
@@ -372,10 +325,6 @@ net::NetworkManager* HappyEngine::getNetworkManager() const
 {
     return m_pNetworkManager;
 }
-gfx::Renderer2D* HappyEngine::getRenderer2D() const
-{
-    return m_pRenderer2D;
-}
 tools::Console* HappyEngine::getConsole() const
 {
     return m_pConsole;
@@ -389,11 +338,6 @@ sfx::SoundEngine* HappyEngine::getSoundEngine() const
 ge::Game* HappyEngine::getGame() const
 {
     return m_pGame;
-}
-
-gfx::ExtraForward3DRenderer* HappyEngine::get3DRenderer() const
-{
-    return m_p3DRenderer;
 }
 
 void HappyEngine::setRootDir( const Path& rootDir )

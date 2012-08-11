@@ -33,9 +33,10 @@ namespace gfx {
 
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-Forward3DRenderer::Forward3DRenderer(): 
+Forward3DRenderer::Forward3DRenderer(DrawListContainer::BlendFilter blend): 
             m_RenderTarget(nullptr),
-            m_View(nullptr)
+            m_View(nullptr),
+            m_BlendFilter(blend)
 {
 }
 
@@ -43,11 +44,10 @@ Forward3DRenderer::~Forward3DRenderer()
 {
 }
 
-void Forward3DRenderer::init( View* view, const RenderTarget* target, DrawListContainer::BlendFilter blend )
+void Forward3DRenderer::init( View* view, const RenderTarget* target)
 {
     m_RenderTarget = target;
     m_View = view;
-    m_BlendFilter = blend;
 }
 
 void Forward3DRenderer::draw()

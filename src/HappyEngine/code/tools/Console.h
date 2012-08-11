@@ -23,6 +23,7 @@
 #pragma once
 
 #include <typeinfo>
+#include "I2DDrawable.h"
 
 namespace he {
 
@@ -50,12 +51,7 @@ namespace gfx {
 namespace tools {
 class ITypeHandler;
 
-// TODO: seeb
-// this class already works
-// but it also needs a view
-// now you need to tell the console to which view you like the console to draw
-// just so you'd now - this will be client called
-class Console
+class Console : public gfx::I2DDrawable
 {
 public:
 
@@ -66,8 +62,8 @@ public:
     /* GENERAL */
     void load();
     void tick();
-    void draw();
     void setView(const gfx::View* view);
+    virtual void draw2D(gfx::Renderer2D* renderer); // auto called
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
     void addMessage(const std::string& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
@@ -75,7 +71,8 @@ public:
     template <typename T>
     void registerVar(T* pVar, const std::string& varKey)
     {
-        if (m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend())
+        const char* type(typeid(T).name());
+        HE_IF_ASSERT(m_TypeHandlers.find(type) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", type)
         {
             if (m_ValueContainer.find(varKey) != m_ValueContainer.end())
             {
@@ -88,13 +85,6 @@ public:
             {
                 m_ValueContainer[varKey] = pVar;
             }
-        }
-        else
-        {
-            std::stringstream str;
-            str << "Type handler for '" << typeid(T).name() << "'not specfied!";
-
-            HE_ASSERT(false, str.str().c_str());
         }
     }
 

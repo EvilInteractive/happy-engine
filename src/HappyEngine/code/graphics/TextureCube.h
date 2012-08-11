@@ -22,6 +22,8 @@
 #define _HE_TEXTURE_CUBE_H_
 #pragma once
 
+#include "Shader.h"
+
 namespace he {
 namespace gfx {
     

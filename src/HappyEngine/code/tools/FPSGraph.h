@@ -24,25 +24,35 @@
 
 #define BOOST_DISABLE_ASSERTS
 
-#include <vector>
-#include "HappyTypes.h"
-#include "Font.h"
-#include "Canvas2D.h"
+#include "I2DDrawable.h"
 
 namespace he {
+namespace gfx {
+    class Canvas2D;
+    class Font;
+    class View;
+}
 namespace tools {
 
-class FPSGraph
+class FPSGraph : public gfx::I2DDrawable
 {
 public:
+    enum Type
+    {
+        Type_Hide,
+        Type_ToConsole,
+        Type_TextOnly,
+        Type_Full
+    };
 
     /* CONSTRUCTOR - DESTRUCTOR */
     FPSGraph();
     virtual ~FPSGraph();
 
     /* GENERAL */
+    void setView(gfx::View* view);
     void tick(float dTime, float interval = 0.5f);
-    void draw();
+    virtual void draw2D(gfx::Renderer2D* renderer);
 
     /* GETTERS */
     ushort getMaxFPS() const;
@@ -50,15 +60,15 @@ public:
     ushort getAverageFPS() const;
 
     /* SETTERS */
-    void setType(int type);
-    void setPos(vec2 pos);
+    void setType(Type type);
+    void setPos(const vec2& pos);
 
 private:
 
     ushort cap(float fps);
-    void drawToConsole();
-    void drawTextOnly();
-    void drawFull();
+    void drawToConsole(gfx::Renderer2D* renderer);
+    void drawTextOnly(gfx::Renderer2D* renderer);
+    void drawFull(gfx::Renderer2D* renderer);
 
     /* DATAMEMBERS */
     std::vector<ushort> m_FpsHistory;
@@ -71,6 +81,7 @@ private:
     ushort m_CurrentFPS;
     
     gfx::Font* m_pFont;
+    gfx::View* m_View;
 
     int m_FPSGraphState;
 
