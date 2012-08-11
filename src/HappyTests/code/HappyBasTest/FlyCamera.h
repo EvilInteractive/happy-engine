@@ -20,7 +20,7 @@
 #define _FLY_CAMERA_H_
 #pragma once
 
-#include "Camera.h"
+#include "CameraPerspective.h"
 
 namespace ht {
 

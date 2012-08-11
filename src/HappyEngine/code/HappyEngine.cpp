@@ -17,12 +17,7 @@
 #include "HappyPCH.h" 
 
 #include "HappyEngine.h"
-#include "HappyNew.h"
 
-#include <iostream>
-
-#include "HeAssert.h"
-#include "ExternalError.h"
 #include "IL/il.h"
 #include "IL/ilu.h"
 
@@ -32,12 +27,9 @@
 #include "ContentManager.h"
 #include "NetworkManager.h"
 #include "Renderer2D.h"
-#include "Renderer2D.h"
 #include "Game.h"
 #include "Console.h"
 #include "SoundEngine.h"
-#include "ExtraForward3DRenderer.h"
-#include "LoadingScreen.h"
 #include "StaticDataManager.h"
 #include "Window.h"
 
@@ -49,7 +41,7 @@ HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
                             m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
                             m_pNetworkManager(nullptr),
-                            m_pConsole(nullptr), m_pSoundEngine(nullptr), m_p3DRenderer(nullptr), m_SubEngines(0),
+                            m_pConsole(nullptr), m_pSoundEngine(nullptr), m_SubEngines(0),
                             m_bShowProfiler(false), m_bGameLoading(true),
                             m_RootDir("./")
 {

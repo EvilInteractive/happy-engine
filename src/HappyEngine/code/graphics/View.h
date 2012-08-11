@@ -35,6 +35,7 @@ class PostProcesser;
 class RenderTarget;
 class Renderer2D;
 class Texture2D;
+class ShapeRenderer;
 
 class View
 {
@@ -86,7 +87,7 @@ private:
     // Renderers
     IRenderer* m_OpacRenderer;
     IRenderer* m_TransparentRenderer;
-    IRenderer* m_ShapeRenderer;
+    ShapeRenderer* m_ShapeRenderer;
     Renderer2D* m_2DRenderer;
 
     // Shadow

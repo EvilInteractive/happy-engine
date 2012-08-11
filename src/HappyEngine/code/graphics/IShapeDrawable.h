@@ -18,19 +18,19 @@
 //Author:  Bastian Damman
 //Created: 11/08/2012
 
-#ifndef _HE_I2DDrawable_H_
-#define _HE_I2DDrawable_H_
+#ifndef _HE_IShapeDrawable_H_
+#define _HE_IShapeDrawable_H_
 #pragma once
 
 namespace he {
 namespace gfx {
-class Renderer2D;
-class I2DDrawable
+class ShapeRenderer;
+class IShapeDrawable
 {
 public:
-    virtual ~I2DDrawable() = 0;
+    virtual ~IShapeDrawable() = 0;
 
-    virtual void draw2D(Renderer2D* renderer) = 0;
+    virtual void drawShapes(ShapeRenderer* renderer) = 0;
 }; 
 
 } } //end namespace

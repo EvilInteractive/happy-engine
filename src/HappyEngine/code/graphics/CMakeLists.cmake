@@ -6,6 +6,7 @@ set (CODE_GRAPHICS_NO_FILTER
             Hitregion.cpp                       Hitregion.h
             I2DDrawable.h
             I3DObject.h
+            IShapeDrawable.h
             IDrawable.h    
             IPickable.h 
             SkyBox.cpp                          SkyBox.h
@@ -73,7 +74,7 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 
     set (CODE_GRAPHICS_RENDERING_FORWARD_FILTER
                 BillboardEffect.cpp                 BillboardEffect.h
-                ExtraForward3DRenderer.cpp          ExtraForward3DRenderer.h
+                ShapeRenderer.cpp                   ShapeRenderer.h
                 Forward3DRenderer.cpp               Forward3DRenderer.h
                 SimpleColorEffect.cpp               SimpleColorEffect.h)
                 

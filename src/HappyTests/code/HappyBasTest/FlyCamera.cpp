@@ -21,6 +21,8 @@
 #include "MathFunctions.h"
 #include "ControlsManager.h"
 #include "GraphicsEngine.h"
+#include "IKeyboard.h"
+#include "IMouse.h"
 
 namespace ht {
 

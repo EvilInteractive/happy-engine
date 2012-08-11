@@ -28,6 +28,7 @@
 
 #include "Deferred3DRenderer.h"
 #include "Forward3DRenderer.h"
+#include "ShapeRenderer.h"
 #include "Renderer2D.h"
 #include "PostProcesser.h"
 #include "ShadowCaster.h"
@@ -83,9 +84,6 @@ void View::init( const RenderSettings& settings )
     uint width(m_Viewport.width), 
         height(m_Viewport.height);
 
-    m_2DRenderer = NEW Renderer2D();
-    m_2DRenderer->init(this, m_OutputRenderTarget);
-
     m_Settings.postSettings.shaderSettings.enableHDR = m_Settings.postSettings.shaderSettings.enableHDR && m_Settings.enablePost;
     if (m_Settings.enablePost)
     {
@@ -112,6 +110,12 @@ void View::init( const RenderSettings& settings )
     m_IntermediateRenderTarget->setDepthTarget(m_DepthRenderMap);
     m_IntermediateRenderTarget->init();
     m_OutputRenderTarget->init();
+
+    m_2DRenderer = NEW Renderer2D();
+    m_2DRenderer->init(this, m_OutputRenderTarget);
+
+    m_ShapeRenderer = NEW ShapeRenderer();
+    m_ShapeRenderer->init(this, m_OutputRenderTarget);
 
     if (settings.enableDeferred)
         m_OpacRenderer = NEW Deferred3DRenderer();

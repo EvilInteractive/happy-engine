@@ -24,7 +24,7 @@
 
 #include "Vertex.h"
 #include "BufferLayout.h"
-#include "ExtraForward3DRenderer.h"
+#include "ShapeRenderer.h"
 
 #include "ModelMesh.h"
 
@@ -95,12 +95,12 @@ Grid::~Grid()
 }
 
 /* GENERAL */
-void Grid::draw()
+void Grid::drawShapes(gfx::ShapeRenderer* renderer)
 {
     mat44 world(mat44::createTranslation(m_Position));
 
-    HE3DX->drawSpline(m_pModelMesh, world, m_Color);
-    HE3DX->drawSpline(m_pModelMesh2, world, m_Color2);
+    renderer->drawSpline(m_pModelMesh, world, m_Color);
+    renderer->drawSpline(m_pModelMesh2, world, m_Color2);
 }
 
 /* SETTERS */

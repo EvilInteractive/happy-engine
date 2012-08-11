@@ -23,7 +23,7 @@ namespace he {
 namespace gfx {
     class GraphicsEngine;
     class HappyQtWidget;
-    class ExtraForward3DRenderer;
+    class ShapeRenderer;
     class Renderer2D;
 }
 namespace io {
