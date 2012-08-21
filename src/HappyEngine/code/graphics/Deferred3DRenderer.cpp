@@ -103,8 +103,8 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
     //FBO Collection
     m_CollectionRenderTarget->removeAllTargets();
     m_CollectionRenderTarget->addTextureTarget(m_pColorIllTexture);
-    m_CollectionRenderTarget->addTextureTarget(m_pNormalTexture);
     m_CollectionRenderTarget->addTextureTarget(m_pSGTexture);
+    m_CollectionRenderTarget->addTextureTarget(m_pNormalTexture);
     m_CollectionRenderTarget->setDepthTarget(target->getDepthTarget());
     m_CollectionRenderTarget->init();
     
