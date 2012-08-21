@@ -128,6 +128,7 @@ void SkyBox::load( const std::string& /*asset*/ )
     //m_pCube->init();
     //m_pCube->setVertices(vertices.data(), vertices.size(), layout);\
     //m_pCube->setIndices(indices.data(), indices.size(), IndexStride_Byte);
+    //m_pCube->setLoaded();
 
     ////////////////////////////////////////////////////////////////////////////
     ///// Load Shader

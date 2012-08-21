@@ -47,29 +47,34 @@ public:
     void init();
     void setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout);
     void setIndices(const void* pIndices, uint num, IndexStride type);
-
     void setBones(const std::vector<Bone>& boneList);
-    const std::vector<Bone>& getBones() const;
+    void setLoaded();
 
-    uint getVertexArraysID() const;
-    uint getVertexShadowArraysID() const;
-    uint getVBOID() const;
-    uint getVBOShadowID() const;
-    uint getVBOIndexID() const;
+    // Getters
+    inline const std::vector<Bone>& getBones() const { return m_BoneList; }
 
-    uint getNumVertices() const;
-    uint getNumIndices() const;
+    inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->id]; } 
+    inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->id]; }
+    inline uint getVBOID() const { return m_VertexVboID; }
+    inline uint getVBOIndexID() const { return m_IndexVboID; }
 
-    uint getIndexType() const;
-    const BufferLayout& getVertexLayout() const;
+    inline uint getNumVertices() const { return m_NumVertices; }
+    inline uint getNumIndices() const { return m_NumIndices; }
 
-    bool isLoaded() const;
+    inline uint getIndexType() const { return m_IndexType; }
+    inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
-    const Bound& getBound() const;
+    inline bool isLoaded() const { return m_IsLoaded; }
 
+    inline const Bound& getBound() const { return m_Bound; }
+
+    // Events
     void callbackOnceIfLoaded(const boost::function<void()>& callback);
 
 private:
+    void initVAO(GLContext* context);
+    void destroyVAO(GLContext* context);
+
     struct ShadowSkinnedVertex
     {
         vec3 pos;
@@ -79,28 +84,28 @@ private:
 
 
     event0<void> Loaded;
-    void setLoaded();
     boost::mutex m_LoadMutex;
 
-    uint m_VaoID[1];
-    uint m_VertexVboID[1];
-    uint m_VaoShadowID[1];
-    uint m_VertexVboShadowID[1];
-    uint m_IndexVboID[1];
+    VaoID m_VaoID[MAX_VERTEX_ARRAY_OBJECTS];
+    VaoID m_VaoShadowID[MAX_VERTEX_ARRAY_OBJECTS];
+    uint m_VertexVboID;
+    uint m_IndexVboID;
 
     uint m_NumVertices;
     uint m_NumIndices;
-
 
     BufferLayout m_VertexLayout;
     uint m_IndexType;
 
     bool m_isVisible;
-    bool m_isLoaded;
+    bool m_IsLoaded;
 
     Bound m_Bound;
 
     std::vector<Bone> m_BoneList;
+
+    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
+    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
 
     //Disable default copy constructor and default assignment operator
     ModelMesh(const ModelMesh&);

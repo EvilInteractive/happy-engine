@@ -138,10 +138,11 @@ private:
     RenderTarget* m_CollectionRenderTarget;
     Texture2D* m_pColorIllTexture;
     Texture2D* m_pSGTexture;
+    const Texture2D* m_pNormalTexture;
 
     // Render FBO
     View* m_View;
-    const RenderTarget* m_OutputRenderTarget;
+    RenderTarget* m_OutputRenderTarget;
     
     //////////////////////////////////////////////////////////////////////////
     ///                              SHADERS                               ///

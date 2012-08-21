@@ -54,6 +54,7 @@ public:
 
     virtual void detachFromScene() = 0;
     virtual void attachToScene(Scene* scene, bool autoReevalute) = 0;
+    virtual void setScene(Scene* scene) = 0;
     virtual Scene* getScene() const = 0;
     virtual bool isAttachedToScene() const = 0;
         

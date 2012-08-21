@@ -88,6 +88,7 @@ void ShapeRenderer::createBillboardQuad()
 
     m_pBillboardQuad->setVertices(&vertices[0], 4, m_VertexLayoutBillboard);
     m_pBillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pBillboardQuad->setLoaded();
 }
 
 /* GENERAL */

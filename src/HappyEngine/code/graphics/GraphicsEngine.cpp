@@ -28,6 +28,7 @@
 #include "View.h"
 
 #include "Awesomium/WebCore.h"
+#include "GLContext.h"
 
 
 namespace he {
@@ -35,6 +36,10 @@ namespace gfx {
 
 GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr)
 {
+    for (uint i(0); i < MAX_OPENGL_CONTEXT; ++i)
+    {
+        m_FreeContexts.push(i);
+    }
 }
 
 
@@ -61,11 +66,6 @@ void GraphicsEngine::init()
 
     m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
         
-    glewExperimental = true;
-    glHandleError(glewInit());
-
-    GL::init();
-
     HE_INFO((char*)glGetString(GL_VENDOR));
     HE_INFO((char*)glGetString(GL_RENDERER));
     HE_INFO((char*)glGetString(GL_VERSION));
@@ -89,16 +89,6 @@ void GraphicsEngine::init()
     HE_INFO("Max rect tex size: %d", maxRectSize);
 
     HE_INFO("Max anisotropic filtering support: %.1fx", GL::getMaxAnisotropicFilteringSupport());
-
-    glClearDepth(1.0f);
-
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetWindingFrontFace(true);
-    GL::heSetCullFace(false);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 Scene* GraphicsEngine::createScene()
@@ -163,6 +153,44 @@ void GraphicsEngine::draw()
 void GraphicsEngine::tick( float /*dTime*/ )
 {
     m_WebCore->Update();
+}
+
+bool GraphicsEngine::registerContext( GLContext* context )
+{
+    HE_IF_ASSERT(context->id == UINT_MAX, "Context is already registered")
+    if (m_FreeContexts.empty() == false)
+    {
+        context->id = m_FreeContexts.front();
+        m_Contexts.push_back(context);
+        m_FreeContexts.pop();
+        setActiveContext(context);
+        ContextCreated(context);
+        return true;
+    }
+    HE_ASSERT(false, "No free contexts available");
+    return false;
+}
+
+void GraphicsEngine::unregisterContext( GLContext* context )
+{
+    HE_IF_ASSERT(context->id != UINT_MAX, "Context has not been registered or is already unregistered")
+    {
+        m_FreeContexts.push(context->id);
+        *std::find(m_Contexts.begin(), m_Contexts.end(), context) = m_Contexts.back();
+        m_Contexts.pop_back();
+        setActiveContext(context);
+        ContextRemoved(context);
+        context->id = UINT_MAX;
+    }
+}
+
+void GraphicsEngine::setActiveContext( GLContext* context )
+{
+    if (GL::s_CurrentContext != context)
+    {
+        context->window->m_Window->setActive(true);
+        GL::s_CurrentContext = context;
+    }
 }
 
 } } //end namespace

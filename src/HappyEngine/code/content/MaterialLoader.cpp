@@ -42,84 +42,84 @@ MaterialLoader::~MaterialLoader()
     m_AssetContainer.removeAllAssets();
 }
 
-BlendEquation blendEquationFromString(const std::string& str)
+gfx::BlendEquation blendEquationFromString(const std::string& str)
 {
     if (str == "ADD")
     {
-        return BlendEquation_Add;
+        return gfx::BlendEquation_Add;
     }
     else if (str == "SUBTRACT")
     {
-        return BlendEquation_Subtract;
+        return gfx::BlendEquation_Subtract;
     }
     else if (str == "REVERSE_SUBTRACT" || str == "INVERSE_SUBTRACT")
     {
-        return BlendEquation_ReverseSubtract;
+        return gfx::BlendEquation_ReverseSubtract;
     }
     else if (str == "MIN")
     {
-        return BlendEquation_Min;
+        return gfx::BlendEquation_Min;
     }
     else if (str == "MAX")
     {
-        return BlendEquation_Max;
+        return gfx::BlendEquation_Max;
     }
     else 
     {
         HE_ERROR("unknown blendEquationFromString: %s", str.c_str());
-        return BlendEquation_Add;
+        return gfx::BlendEquation_Add;
     }
 }
-BlendFunc blendFuncFromString(const std::string& str)
+gfx::BlendFunc blendFuncFromString(const std::string& str)
 {
     if (str == "ZERO")
     {
-        return BlendFunc_Zero;
+        return gfx::BlendFunc_Zero;
     }
     else if (str == "ONE")
     {
-        return BlendFunc_One;
+        return gfx::BlendFunc_One;
     }
     else if (str == "SRC_COLOR")
     {
-        return BlendFunc_SrcColor;
+        return gfx::BlendFunc_SrcColor;
     }
     else if (str == "INV_SRC_COLOR" || str == "ONE_MIN_SRC_COLOR")
     {
-        return BlendFunc_OneMinusSrcColor;
+        return gfx::BlendFunc_OneMinusSrcColor;
     }
     else if (str == "DEST_COLOR")
     {
-        return BlendFunc_DestColor;
+        return gfx::BlendFunc_DestColor;
     }
     else if (str == "INV_DEST_COLOR" || str == "ONE_MIN_DEST_COLOR")
     {
-        return BlendFunc_OneMinusDestColor;
+        return gfx::BlendFunc_OneMinusDestColor;
     }
     else if (str == "SRC_ALPHA")
     {
-        return BlendFunc_SrcAlpha;
+        return gfx::BlendFunc_SrcAlpha;
     }
     else if (str == "INV_SRC_ALPHA" || str == "ONE_MIN_SRC_ALPHA" )
     {
-        return BlendFunc_OneMinusSrcAlpha;
+        return gfx::BlendFunc_OneMinusSrcAlpha;
     }
     else if (str == "DEST_ALPHA")
     {
-        return BlendFunc_DestAlpha;
+        return gfx::BlendFunc_DestAlpha;
     }
     else if (str == "INV_DEST_ALPHA" || str == "ONE_MIN_DEST_ALPHA" )
     {
-        return BlendFunc_OneMinusDestAlpha;
+        return gfx::BlendFunc_OneMinusDestAlpha;
     }
     else if (str == "SRC_ALPHA_SAT")
     {
-        return BlendFunc_SrcAlphaSaturate;
+        return gfx::BlendFunc_SrcAlphaSaturate;
     }
     else 
     {
         HE_ERROR("unknown blendFuncFromString: %s", str.c_str());
-        return BlendFunc_One;
+        return gfx::BlendFunc_One;
     }
 }
 
@@ -316,8 +316,8 @@ ObjectHandle MaterialLoader::load(const std::string& path)
 
                 // [info]
                 bool isBlended(false);
-                BlendEquation blendEq(BlendEquation_Add);
-                BlendFunc srcBlend(BlendFunc_One), destBlend(BlendFunc_Zero);
+                gfx::BlendEquation blendEq(gfx::BlendEquation_Add);
+                gfx::BlendFunc srcBlend(gfx::BlendFunc_One), destBlend(gfx::BlendFunc_Zero);
                 bool post(true);
                 if (reader.containsRoot(L"info"))
                 {

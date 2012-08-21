@@ -4,6 +4,7 @@ set (CODE_GRAPHICS_NO_FILTER
             DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
             DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
             Hitregion.cpp                       Hitregion.h
+            GLContext.h
             I2DDrawable.h
             I3DObject.h
             IShapeDrawable.h
@@ -67,7 +68,7 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 Simple2DFontEffect.cpp              Simple2DFontEffect.h
                 Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
                 WebView.cpp                         WebView.h
-				WebListener.cpp					WebListener.h)
+				WebListener.cpp					    WebListener.h)
                 
     set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
                 Deferred3DRenderer.cpp              Deferred3DRenderer.h)

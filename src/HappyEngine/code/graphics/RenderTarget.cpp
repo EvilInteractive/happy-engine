@@ -22,17 +22,19 @@
 #include "RenderTarget.h"
 
 #include "Texture2D.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {
 
-RenderTarget::RenderTarget()
+RenderTarget::RenderTarget(GLContext* context)
     : m_FboId(0)
     , m_DepthBuffer(UINT_MAX)
     , m_DepthTarget(nullptr)
     , m_Width(0)
     , m_Height(0)
     , m_DrawBufferCount(0)
+    , m_Context(context)
 {
 }
 
@@ -40,7 +42,10 @@ RenderTarget::RenderTarget()
 RenderTarget::~RenderTarget()
 {
     if (m_FboId != UINT_MAX && m_FboId != 0)
+    {
+        GRAPHICS->setActiveContext(m_Context);
         glDeleteFramebuffers(1, &m_FboId);
+    }
     removeAllTargets();
 }
 
@@ -76,10 +81,11 @@ void RenderTarget::setDepthTarget()
 }
 void RenderTarget::init()
 {
+    GRAPHICS->setActiveContext(m_Context);
     if (m_TextureTargets.size() == 0 && m_DepthTarget == nullptr && m_DepthBuffer == UINT_MAX)
     {
         m_DrawBufferCount = 1;
-        m_DrawBuffers[0] = GL_BACK_LEFT;
+        m_DrawBuffers[0] = GL_BACK;
     }
     else
     {
@@ -132,7 +138,15 @@ void RenderTarget::prepareForRendering() const
 
 void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset ) const
 {
+    HE_ASSERT(m_Context == GL::s_CurrentContext, "Access violation: wrong context is bound!");
     GL::heBindFbo(m_FboId);
+//     for (uint i(0); i < m_TextureTargets.size(); ++i)
+//     {
+//         if (i < numTextureTargets)
+//             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureTargets[i+offset]->getID(), 0);
+//         else
+//             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0);
+//     }
     glDrawBuffers(numTextureTargets, m_DrawBuffers + offset);
 }
 

@@ -136,6 +136,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
         mesh->setBones(data.loader->getBones(i));
         mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), data.vertexLayout);
         mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
+        mesh->setLoaded();
 
         mesh->release();
     }

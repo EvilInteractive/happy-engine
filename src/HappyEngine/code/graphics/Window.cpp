@@ -25,12 +25,15 @@
 #include "IKeyboard.h"
 #include "IMouse.h"
 
+#include "OpenGL.h"
+
 namespace he {
 namespace gfx {
 
-Window::Window(Window* parent) 
+#pragma warning(disable:4355) // use of this in initializer list
+Window::Window() 
   : m_Window(NEW sf::Window())
-  , m_Parent(parent)
+  , m_Parent(nullptr)
   , m_ClearColor(0, 0, 0)
   , m_WindowRect(-1, -1, 1280, 720)
   , m_Titel("")
@@ -38,17 +41,21 @@ Window::Window(Window* parent)
   , m_IsCursorVisible(true)
   , m_Fullscreen(false)
   , m_Resizeable(true)
+  , m_Context(this)
 {
 }
+#pragma warning(default:4355)
 
 
 Window::~Window()
 {
+    destroy();
     delete m_Window;
 }
 
-void Window::open()
+void Window::create(Window* parent)
 {
+    m_Parent = parent;
     HE_ASSERT(m_Parent == nullptr || m_Parent->isOpen(), "Parent window is not open!");
     sf::ContextSettings settings;
     settings.depthBits = 24;
@@ -59,7 +66,7 @@ void Window::open()
     if (m_Parent == nullptr)
     {
         m_Window->create(sf::VideoMode(m_WindowRect.width, m_WindowRect.height, 32), m_Titel, 
-            m_Fullscreen? sf::Style::Fullscreen : (m_Resizeable? sf::Style::Resize : sf::Style::Close), settings);
+            m_Fullscreen? sf::Style::Fullscreen : (m_Resizeable? sf::Style::Resize | sf::Style::Close : sf::Style::Close), settings);
     }
     else
     {
@@ -72,24 +79,52 @@ void Window::open()
     setWindowPosition(m_WindowRect.x, m_WindowRect.y);
     setCursorVisible(m_IsCursorVisible);
     setVSync(m_VSyncEnabled);
+    GRAPHICS->setActiveWindow(this);
+
+    GRAPHICS->setActiveContext(&m_Context);
+    glewExperimental = true;
+    err::glHandleError(glewInit());
+
+    GL::init();
+
+    glClearDepth(1.0f);
+
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetWindingFrontFace(true);
+    GL::heSetCullFace(false);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+    if (GRAPHICS->registerContext(&m_Context) == false)
+    {
+        m_Window->close();
+    }
 }
-void Window::close()
+void Window::destroy()
 {
-    m_Window->close();
+    if (m_Window->isOpen())
+    {
+        close();
+        m_Window->close();
+        GRAPHICS->unregisterContext(&m_Context);
+    }
 }
 bool Window::isOpen()
 {
     return m_Window->isOpen();
 }
 
-void Window::show()
+void Window::open()
 {
     m_Window->setVisible(true);
 }
 
-void Window::hide()
+void Window::close()
 {
     m_Window->setVisible(false);
+    Closed();
 }
 
 void Window::doEvents( float /*dTime*/ )
@@ -110,7 +145,7 @@ void Window::doEvents( float /*dTime*/ )
         case sf::Event::Closed:
             m_WindowRect.x = m_Window->getPosition().x;
             m_WindowRect.y = m_Window->getPosition().y;
-            Closed();
+            close();
             break;
         case sf::Event::Resized:
             m_WindowRect.width = static_cast<int>(m_Window->getSize().x);
@@ -136,7 +171,7 @@ void Window::doEvents( float /*dTime*/ )
             break;
         case sf::Event::MouseMoved:
             if (hasFocus == true) 
-                mouse->MouseMoved(vec2((float)event.mouseButton.x, (float)event.mouseButton.y));
+                mouse->MouseMoved(vec2((float)event.mouseMove.x, (float)event.mouseMove.y));
             break;
         case sf::Event::MouseWheelMoved:
             if (hasFocus == true) 
@@ -211,7 +246,7 @@ void Window::setCursorVisible( bool visible )
 
 void Window::prepareForRendering()
 {
-    m_Window->setActive(true);
+    GRAPHICS->setActiveContext(&m_Context);
 }
 
 void Window::present()

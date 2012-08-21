@@ -27,16 +27,17 @@ namespace gfx {
 
 class Window
 {
+friend GraphicsEngine;
 public:
-    Window(Window* parent = nullptr);
+    Window();
     virtual ~Window();
 
     // Open/Close
+    void create(Window* parent = nullptr);
+    void destroy();
+    bool isOpen();
     void open();
     void close();
-    bool isOpen();
-    void show();
-    void hide();
 
     // Do
     void doEvents(float dTime);
@@ -51,12 +52,13 @@ public:
     void setBackgroundColor(const Color& color);
     void setCursorVisible(bool visible);
     void setFullscreen(bool fullscreen);
-    void setResizable(bool resizable);   // call before opening, or close and reopen
+    void setResizable(bool resizable);   // call before creating, or destroy and create
 
     // Getters
     void getWindowPosition(int& x, int& y) const;
     uint getWindowWidth() const;
     uint getWindowHeight() const;
+    GLContext* getContext() { return &m_Context; }  
 
     // Events
     event0<void> Resized;
@@ -75,6 +77,8 @@ private:
     bool m_IsCursorVisible;
     bool m_Fullscreen;
     bool m_Resizeable; 
+
+    GLContext m_Context;
 
     //Disable default copy constructor and default assignment operator
     Window(const Window&);

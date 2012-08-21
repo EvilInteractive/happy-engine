@@ -51,15 +51,12 @@
 #pragma warning (default : 4512)
 
 #include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
 
 #undef MessageBox
 
+#define glewGetContext() (&he::gfx::GL::s_CurrentContext->internalContext)
 
 #include "GL/glew.h"
-#include "OpenGL.h"
-
-#include "PxPhysicsAPI.h"
 
 #include "HappyTypes.h"
 #include "vec2.h"
@@ -68,7 +65,9 @@
 #include "mat44.h"
 #include "mat33.h"
 #include "Color.h"
+#include "Rect.h"
 
+#include "PxPhysicsAPI.h"
 
 #include "RTTI.h"
 
@@ -81,6 +80,9 @@
 #include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
+
+#include "GLContext.h"
+#include "OpenGL.h"
 
 #include "ObjectFactory.h"
 

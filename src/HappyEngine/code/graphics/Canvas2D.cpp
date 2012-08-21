@@ -25,6 +25,7 @@
 #include "Renderer2D.h"
 #include "Vertex.h"
 #include "View.h"
+#include "Window.h"
 #include "Texture2D.h"
 #include "Mesh2D.h"
 #include "ModelMesh.h"
@@ -33,15 +34,18 @@
 #include "Simple2DTextureEffect.h"
 #include "Text.h"
 #include "Font.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {
 
 /* STATIC */
-Canvas2D::Data* Canvas2D::create(const vec2& size)
+Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 {
+    GRAPHICS->setActiveContext(context);
     Canvas2D::Data* pData = NEW Canvas2D::Data();
 
+    pData->context = context;
     pData->renderTextureHnd = ResourceFactory<Texture2D>::getInstance()->create();
     Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
 
@@ -150,7 +154,7 @@ Canvas2D::~Canvas2D()
 /* EXTRA */
 void Canvas2D::init()
 {
-    m_pBufferData = Canvas2D::create(m_CanvasSize);
+    m_pBufferData = Canvas2D::create(m_View->getWindow()->getContext(), m_CanvasSize);
     HE_ASSERT(m_pBufferData != nullptr, "Failed to create Canvas2D::data! - fatal");
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
 
@@ -195,6 +199,7 @@ void Canvas2D::init()
 
     m_pTextureQuad->setVertices(&vertices[0], 4, vLayout);
     m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pTextureQuad->setLoaded();
 }
 void Canvas2D::resize( const vec2& newSize )
 {
@@ -202,7 +207,7 @@ void Canvas2D::resize( const vec2& newSize )
     {
         cleanup();
 
-        m_pBufferData = Canvas2D::create(newSize);
+        m_pBufferData = Canvas2D::create(m_View->getWindow()->getContext(), newSize);
         m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
 
         m_CanvasSize = newSize;
@@ -212,6 +217,7 @@ void Canvas2D::resize( const vec2& newSize )
 
 void Canvas2D::cleanup()
 {
+    GRAPHICS->setActiveContext(m_pBufferData->context);
     glDeleteFramebuffers(1, &m_pBufferData->fbufferID);
     glDeleteFramebuffers(1, &m_pBufferData->resolvedFbufferID);
     glDeleteRenderbuffers(1, &m_pBufferData->colorRbufferID);
@@ -316,6 +322,7 @@ void Canvas2D::setAutoClearing(bool clearAfterDraw)
 /* DRAW METHODS */
 void Canvas2D::clear()
 {
+    HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     GL::heBindFbo(m_pBufferData->fbufferID);
     GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -327,6 +334,7 @@ void Canvas2D::clear()
 
 void Canvas2D::draw2D(Renderer2D* renderer)
 {
+    HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     // blit MS FBO to normal FBO
     uint oldFbo(GL::heGetBoundFbo());
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pBufferData->fbufferID);
@@ -348,6 +356,7 @@ void Canvas2D::draw2D(Renderer2D* renderer)
 
 void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 {
+    HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(true);
@@ -376,6 +385,7 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 
 void Canvas2D::fillRect(const vec2& pos, const vec2& size)
 {
+    HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(true);
@@ -459,6 +469,7 @@ void Canvas2D::stroke()
 
 void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 {
+    HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     PROFILER_BEGIN("Canvas2D::fillText");
 
     vec2 linePos = pos;
@@ -574,6 +585,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
                             const vec2& newDimensions,
                             const RectF& regionToDraw)
 {
+    HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
     vec2 size;

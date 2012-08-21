@@ -80,8 +80,11 @@ void Profiler::load()
 
 Profiler::~Profiler()
 {
-    m_View->get2DRenderer()->detachFromRender(this);
-    m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
+    if (m_View != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+        m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
+    }
     if (m_pFont != nullptr)
         m_pFont->release();
     delete m_pCanvas2D;

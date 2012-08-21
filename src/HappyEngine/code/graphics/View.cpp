@@ -49,8 +49,8 @@ View::View():
     m_DepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
     m_RenderDebugTextures(false), 
     m_Window(nullptr), m_Scene(nullptr),
-    m_IntermediateRenderTarget(NEW RenderTarget()),
-    m_OutputRenderTarget(NEW RenderTarget()),
+    m_IntermediateRenderTarget(nullptr),
+    m_OutputRenderTarget(nullptr),
     m_WindowResizedCallback(boost::bind(&View::calcViewportFromPercentage, this))
 {
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
@@ -80,6 +80,9 @@ View::~View()
 void View::init( const RenderSettings& settings )
 {
     m_Settings = settings;
+
+    m_IntermediateRenderTarget = NEW RenderTarget(m_Window->getContext());
+    m_OutputRenderTarget = NEW RenderTarget(m_Window->getContext());
 
     uint width(m_Viewport.width), 
         height(m_Viewport.height);
@@ -114,8 +117,8 @@ void View::init( const RenderSettings& settings )
     m_2DRenderer = NEW Renderer2D();
     m_2DRenderer->init(this, m_OutputRenderTarget);
 
-    m_ShapeRenderer = NEW ShapeRenderer();
-    m_ShapeRenderer->init(this, m_OutputRenderTarget);
+     m_ShapeRenderer = NEW ShapeRenderer();
+     m_ShapeRenderer->init(this, m_OutputRenderTarget);
 
     if (settings.enableDeferred)
         m_OpacRenderer = NEW Deferred3DRenderer();
@@ -137,7 +140,7 @@ void View::init( const RenderSettings& settings )
         m_PostProcesser->init(this, m_OutputRenderTarget, m_IntermediateRenderTarget);
     }
 
-    CONSOLE->registerVar(&m_RenderDebugTextures, "debugRenderTex");
+    //CONSOLE->registerVar(&m_RenderDebugTextures, "debugRenderTex");
 }
 
 void View::setScene( Scene* scene )
@@ -191,6 +194,7 @@ void View::calcViewportFromPercentage()
 void View::draw()
 {
     m_Window->prepareForRendering();
+    GL::reset();
     m_Scene->prepareForRendering();
     GRAPHICS->setActiveView(this);
 
@@ -198,14 +202,16 @@ void View::draw()
         m_ShadowCaster->render();
 
     GL::heSetViewport(m_Viewport);
+    m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 1.0f));
+    m_OutputRenderTarget->clear(Color(1.0f, 0, 0, 1.0f));
     m_OpacRenderer->draw();
     m_TransparentRenderer->draw();
-
+    
     if (m_Settings.enablePost)
         m_PostProcesser->draw();
-
+    
     m_ShapeRenderer->draw();
-
+    
     m_2DRenderer->draw();
 
     m_Window->present();

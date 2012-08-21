@@ -43,6 +43,7 @@
 #include "RenderTarget.h"
 #include "Scene.h"
 #include "View.h"
+#include "Window.h"
 
 #include "Texture2D.h"
 #include "ModelMesh.h"
@@ -54,13 +55,14 @@ BufferLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = BufferLayout();
 
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_pQuad(nullptr), 
-            m_ShowDebugTextures(false),
+            m_ShowDebugTextures(true),
             m_PointLightShader(nullptr),
             m_SpotLightShader(nullptr),
             m_AmbDirIllShader(nullptr),
-            m_CollectionRenderTarget(NEW RenderTarget),
+            m_CollectionRenderTarget(nullptr),
             m_OutputRenderTarget(nullptr),
-            m_View(nullptr)
+            m_View(nullptr),
+            m_pNormalTexture(nullptr)
 {
     ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
     m_pColorIllTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
@@ -78,10 +80,16 @@ Deferred3DRenderer::Deferred3DRenderer():
 void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
-    CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
+    //CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
-    m_OutputRenderTarget = target;
+    m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
+    m_OutputRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
+    m_OutputRenderTarget->addTextureTarget(target->getTextureTarget(0));
+    m_OutputRenderTarget->setDepthTarget(target->getDepthTarget());
+    m_OutputRenderTarget->init();
+
+    m_pNormalTexture = target->getTextureTarget(1);
 
     eventCallback0<void> settingsChangedHandler(boost::bind(&Deferred3DRenderer::onSettingChanged, this));
     m_View->SettingsChanged += settingsChangedHandler;
@@ -91,6 +99,16 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
     m_Settings = m_View->getSettings().lightingSettings;
     compileShaders();
     onViewResized();
+
+    //FBO Collection
+    m_CollectionRenderTarget->removeAllTargets();
+    m_CollectionRenderTarget->addTextureTarget(m_pColorIllTexture);
+    m_CollectionRenderTarget->addTextureTarget(m_pNormalTexture);
+    m_CollectionRenderTarget->addTextureTarget(m_pSGTexture);
+    m_CollectionRenderTarget->setDepthTarget(target->getDepthTarget());
+    m_CollectionRenderTarget->init();
+    
+
 
     m_View->get2DRenderer()->attachToRender(this);
 
@@ -106,6 +124,7 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_pSGTexture->release();
 
     delete m_CollectionRenderTarget;
+    delete m_OutputRenderTarget;
     
     m_pQuad->release();
 
@@ -247,17 +266,6 @@ void Deferred3DRenderer::onViewResized()
     m_pSGTexture->setData(width, height, 0, 
         Texture2D::BufferLayout_BGRA, Texture2D::BufferType_Byte, 0 );
 
-    //////////////////////////////////////////////////////////////////////////
-    ///                            LOAD FBO's                              ///
-    //////////////////////////////////////////////////////////////////////////
-
-    //FBO Collection
-    m_CollectionRenderTarget->removeAllTargets();
-    m_CollectionRenderTarget->addTextureTarget(m_pColorIllTexture);
-    m_CollectionRenderTarget->addTextureTarget(m_pSGTexture);
-    m_CollectionRenderTarget->addTextureTarget(m_OutputRenderTarget->getTextureTarget(1)); // Normal
-    m_CollectionRenderTarget->setDepthTarget(m_OutputRenderTarget->getDepthTarget());
-    m_CollectionRenderTarget->init();
 }
 
 void Deferred3DRenderer::draw()
@@ -273,6 +281,7 @@ void Deferred3DRenderer::draw()
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
     GL::heBlendEnabled(false);
+    m_CollectionRenderTarget->clear(he::Color(0.0f, 0, 0, 0));
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -289,12 +298,13 @@ void Deferred3DRenderer::draw()
     //////////////////////////////////////////////////////////////////////////
     ///                             POST                                   ///
     //////////////////////////////////////////////////////////////////////////
-    m_OutputRenderTarget->prepareForRendering(1); // only need color - no normal info will be written
+    m_OutputRenderTarget->prepareForRendering();
 
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_One, BlendFunc_One);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     m_SharedShaderData.projParams.set(vec4(
         camera->getProjection()(0, 0),
@@ -305,7 +315,7 @@ void Deferred3DRenderer::draw()
 
     m_PointLightShader->bind();
     postPointLights(scene);           
-
+ 
     m_SpotLightShader->bind();
     postSpotLights(scene);
 
@@ -321,8 +331,10 @@ void Deferred3DRenderer::draw2D(Renderer2D* renderer)
     {
         renderer->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
         renderer->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        renderer->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(1),   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        renderer->drawTexture2DToScreen(m_OutputRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        renderer->drawTexture2DToScreen(m_CollectionRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+
+        renderer->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
     }
 }
 
@@ -351,7 +363,7 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_pColorIllTexture);
     if (m_Settings.enableSpecular)
         m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_pSGTexture);
-    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalMap,   m_CollectionRenderTarget->getTextureTarget(2));
+    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.normalMap,   m_pNormalTexture);
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.depthMap,    m_CollectionRenderTarget->getDepthTarget());
 
     if (m_Settings.enableShadows)       
@@ -372,7 +384,7 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
         m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.shadowMap3, lightManager->getDirectionalLight()->getShadowMap(3));
     }
 
-    GL::heBindVao(m_pQuad->getVertexArraysID());
+    GL::heBindVao(m_pQuad->getVertexArraysID());       
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
 }
 void Deferred3DRenderer::postPointLights(const Scene* scene)
@@ -388,7 +400,7 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
     m_PointLightShader->setShaderVar(m_PointLightData.colorIllMap, m_pColorIllTexture);
     if (m_Settings.enableSpecular)
         m_PointLightShader->setShaderVar(m_PointLightData.sgMap,   m_pSGTexture);
-    m_PointLightShader->setShaderVar(m_PointLightData.normalMap,   m_CollectionRenderTarget->getTextureTarget(2));
+    m_PointLightShader->setShaderVar(m_PointLightData.normalMap,   m_pNormalTexture);
     m_PointLightShader->setShaderVar(m_PointLightData.depthMap,    m_CollectionRenderTarget->getDepthTarget());
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
@@ -445,7 +457,7 @@ void Deferred3DRenderer::postSpotLights(const Scene* scene)
     m_SpotLightShader->setShaderVar(m_SpotLightData.colorIllMap, m_pColorIllTexture);
     if (m_Settings.enableSpecular)
         m_SpotLightShader->setShaderVar(m_SpotLightData.sgMap,   m_pSGTexture);
-    m_SpotLightShader->setShaderVar(m_SpotLightData.normalMap,   m_CollectionRenderTarget->getTextureTarget(2));
+    m_SpotLightShader->setShaderVar(m_SpotLightData.normalMap,   m_pNormalTexture);
     m_SpotLightShader->setShaderVar(m_SpotLightData.depthMap,    m_CollectionRenderTarget->getDepthTarget());
 
     GL::heSetDepthWrite(false);

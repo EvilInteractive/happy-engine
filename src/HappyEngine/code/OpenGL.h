@@ -23,10 +23,13 @@
 #pragma once
 
 #include "GL/glew.h"
-#include "Color.h"
-#include "Rect.h"
 
 namespace he {
+namespace gfx {
+
+#define MAX_OPENGL_CONTEXT 10
+#define MAX_VERTEX_ARRAY_OBJECTS MAX_OPENGL_CONTEXT
+typedef uint VaoID;
 
 //http://www.opengl.org/sdk/docs/man3/xhtml/glDepthFunc.xml
 enum DepthFunc
@@ -39,6 +42,7 @@ enum DepthFunc
     DepthFunc_NotEqual      =     GL_NOTEQUAL,     // Passes if the incoming depth value is not equal to the stored depth value.
     DepthFunc_GeaterOrEqual =     GL_GEQUAL,       // Passes if the incoming depth value is greater than or equal to the stored depth value.
     DepthFunc_Always        =     GL_ALWAYS,       // Always passes.
+    DepthFunc_Unassigned    =     0xffff
 };
 
 //more info check http://www.opengl.org/sdk/docs/man3/xhtml/glBlendFunc.xml
@@ -58,11 +62,12 @@ enum BlendFunc
     BlendFunc_OneMinusConstColor =  GL_ONE_MINUS_CONSTANT_COLOR,        // (1, 1, 1, 1) - (Rc, Gc, Bc, Ac)
     BlendFunc_ConstAlpha         =  GL_CONSTANT_ALPHA,	                // (Ac, Ac, Ac, Ac)
     BlendFunc_OneMinusConstAlpha =  GL_ONE_MINUS_CONSTANT_ALPHA,	    // (1, 1, 1, 1) - (Ac, Ac, Ac, Ac)
-    BlendFunc_SrcAlphaSaturate   =  GL_SRC_ALPHA_SATURATE	            // (i, i, i, 1)
+    BlendFunc_SrcAlphaSaturate   =  GL_SRC_ALPHA_SATURATE,	            // (i, i, i, 1)
     //GL_SRC1_COLOR	                                            // (Rs1, Gs1, Bs1, As1)
     //GL_ONE_MINUS_SRC1_COLOR	                                // (1, 1, 1, 1) - (Rs1, Gs1, Bs1, As1)
     //GL_SRC1_ALPHA	                                            // (As1, As1, As1, As1)
     //GL_ONE_MINUS_SRC1_ALPHA	                                // (1, 1, 1, 1) - (As1, As1, A s1, As1) 
+    BlendFunc_Unassigned         =  0xffff
 };
 
 //http://www.opengl.org/sdk/docs/man3/xhtml/glBlendEquationSeparate.
@@ -72,13 +77,17 @@ enum BlendEquation
     BlendEquation_Subtract        =     GL_FUNC_SUBTRACT,           // src * srcFunc - dest * destFunc
     BlendEquation_ReverseSubtract =     GL_FUNC_REVERSE_SUBTRACT,   // dest * destFunc - src * srcFunc
     BlendEquation_Min             =     GL_MIN,                     // min(src, dest)      per component, not using factors
-    BlendEquation_Max             =     GL_MAX                      // max(src, dest)      per component, not using factors
+    BlendEquation_Max             =     GL_MAX,                     // max(src, dest)      per component, not using factors
+    BlendEquation_Unassigned      =     0xffff
 };
 
-
+class BufferElement;
+class GLContext;
 class GL
 {
 public:
+    static GLContext* s_CurrentContext;
+
     // Reset
     static void reset();
     static void init();
@@ -86,6 +95,7 @@ public:
     // Misc
     static void heSetViewport(const RectI& viewport);
     static const RectI& heGetViewport();
+    static void getGLTypesFromBufferElement(const BufferElement& element, GLint& components, GLenum& type);
 
     // Clear
     static void heClearColor(const Color& color);
@@ -122,53 +132,15 @@ public:
     static void heLineSmoothEnabled(bool enabled);
 
     // Texture
-    static float getMaxAnisotropicFilteringSupport() { return m_MaxAnisotropicFilteringSupport; }
-    static bool  getSupportTextureCompression() { return m_SupportTextureCompression; }
+    static float getMaxAnisotropicFilteringSupport();
+    static bool  getSupportTextureCompression();
 
 
 private:
-    // Clear
-    static Color m_ClearColor;
-
-    // Misc
-    static RectI m_Viewport;
-
-    // Depth
-    static bool m_DepthRead, m_DepthWrite;
-    static DepthFunc m_DepthFunc;
-
-    // Culling
-    static bool m_CullFrontFace;
-    static bool m_CullCWFrontFace;
-
-    // Binding
-    static uint m_BoundFbo, m_BoundVao;
-    const static int MAX_UBO = 50;
-    static uint m_BoundUbo[MAX_UBO];
-    const static int MAX_SAMPLERS = 31;
-    static uint m_BoundTex2D[MAX_SAMPLERS];
-    static uint m_ActiveTex;
-
-    // Blending
-    static bool m_BlendEnabled;
-    static BlendFunc m_BlendSrc, m_BlendDest;
-    static BlendEquation m_BlendEquation;
-    static Color m_BlendColor;
-
-    // Scissor
-    static bool m_ScissorEnabled;
-    static RectI m_ScissorRect;
-
-    // Line smoothing
-    static bool m_LineSmoothEnabled;
-
-    // Texture
-    static float m_MaxAnisotropicFilteringSupport;
-    static bool  m_SupportTextureCompression;
 
     GL() {}
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

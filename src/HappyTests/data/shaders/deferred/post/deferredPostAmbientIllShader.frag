@@ -77,7 +77,6 @@ uniform sampler2D normalMap;
 uniform sampler2D sgMap;
 #endif
 uniform sampler2D depthMap;
-uniform sampler2D colorRamp;
 
 vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
 {

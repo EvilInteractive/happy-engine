@@ -32,10 +32,6 @@ namespace he {
 class Bound;
 namespace gfx {
 
-// TODO: seeb
-// hello and welcome to the CameraPerspective class, used to be Camera
-// now we have two base cameras CameraPerspective and CameraOrthographic (used in shadowing)
-// I needed to do this for better viewport clipping (see virtual IntersectResult intersect(const Bound& bound))
 class CameraPerspective : public ICamera
 {
 public:

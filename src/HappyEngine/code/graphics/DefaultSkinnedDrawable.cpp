@@ -87,6 +87,10 @@ void DefaultSkinnedDrawable::attachToScene( Scene* scene, bool dynamic )
     }
 }
 
+void DefaultSkinnedDrawable::setScene( Scene* scene )
+{
+    m_Scene = scene;
+}
 Scene* DefaultSkinnedDrawable::getScene() const
 {
     return m_Scene;
@@ -96,5 +100,6 @@ bool DefaultSkinnedDrawable::isAttachedToScene() const
 {
     return m_Scene != nullptr;
 }
+
 
 } } //end namespace

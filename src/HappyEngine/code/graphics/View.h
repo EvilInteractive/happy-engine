@@ -50,6 +50,7 @@ public:
 
     void setScene(Scene* scene);
     void setWindow(Window* window);
+    Window* getWindow() const { return m_Window; }
 
     Renderer2D* get2DRenderer() const { return m_2DRenderer; }
 

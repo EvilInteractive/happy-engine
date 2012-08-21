@@ -63,6 +63,7 @@ public:
     virtual void detachFromScene();
     // autoReevalute is ignored here, it is custom handled
     virtual void attachToScene(Scene* scene, bool autoReevalute = false);
+    virtual void setScene(Scene* scene);
     virtual Scene* getScene() const;
     virtual bool isAttachedToScene() const;
 
@@ -85,6 +86,8 @@ public:
 
 private:
     void init();
+    void initVao(GLContext* context);
+    void destroyVao(GLContext* context);
     void updateBuffer();
 
     bool m_Dynamic, m_NeedsUpdate, m_ManualMode;
@@ -95,8 +98,8 @@ private:
     uint  m_GpuBuffer;
     uint  m_BufferCapacity;
 
-    uint m_Vao;
-    uint m_ShadowVao;
+    VaoID m_Vao[MAX_VERTEX_ARRAY_OBJECTS];
+    VaoID m_ShadowVao[MAX_VERTEX_ARRAY_OBJECTS];
 
     BufferLayout m_InstancingLayout;
     const ModelMesh* m_pModelMesh;
@@ -112,6 +115,9 @@ private:
     std::vector<IInstanceFiller*> m_ManualCpuBufferFillers;
 
     Scene* m_Scene;
+
+    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
+    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
 
     //Disable default copy constructor and default assignment operator
     InstancingController(const InstancingController&);

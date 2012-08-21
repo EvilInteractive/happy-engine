@@ -52,13 +52,18 @@ public:
     void setWorldMatrix(const mat44& mat);
 
 private:
+    void initVao(GLContext* context);
+    void destroyVao(GLContext* context);
 
     /* DATAMEMBERS */
     Polygon* m_pPolygon;
     mat44 m_WorldMatrix;
     uint m_VBOID;
     uint m_IBOID;
-    uint m_VAOID;
+    VaoID m_VAOID[MAX_VERTEX_ARRAY_OBJECTS];
+
+    eventCallback1<void, GLContext*> m_ContextCreatedHandler;
+    eventCallback1<void, GLContext*> m_ContextRemovedHandler;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Mesh2D(const Mesh2D&);

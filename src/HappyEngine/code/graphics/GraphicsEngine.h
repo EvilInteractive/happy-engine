@@ -61,18 +61,26 @@ public:
 
     Window* createWindow();
     void removeWindow(Window* window);
+    bool registerContext(GLContext* context);
+    void unregisterContext(GLContext* context);
 
     /* SETTERS */
     void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
+    void setActiveContext(GLContext* context);
     void setActiveView(View* view) { m_ActiveView = view; } // Internal use
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
     const std::vector<Window*>& getAllWindows() const { return m_Windows; }
+    const std::vector<GLContext*>& getContexts() const { return m_Contexts; } 
 
     View* getActiveView() const { return m_ActiveView; }
 
     Awesomium::WebCore* getWebCore() const { return m_WebCore; }
+
+    // Events
+    he::event1<void, GLContext*> ContextCreated;
+    he::event1<void, GLContext*> ContextRemoved;
 
 private:
 
@@ -85,6 +93,9 @@ private:
     View* m_ActiveView;
 
     Awesomium::WebCore* m_WebCore;
+
+    std::queue<uint> m_FreeContexts;
+    std::vector<GLContext*> m_Contexts;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

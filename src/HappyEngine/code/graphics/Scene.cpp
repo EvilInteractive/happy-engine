@@ -51,11 +51,13 @@ void Scene::forceReevalute( IDrawable* drawable )
 void Scene::attachToScene( IDrawable* drawable, bool autoReevaluate )
 {
     m_DrawList.insert(drawable, autoReevaluate);
+    drawable->setScene(this);
 }
 
 void Scene::detachFromScene( IDrawable* drawable )
 {
     m_DrawList.remove(drawable);
+    drawable->setScene(nullptr);
 }
 
 void Scene::prepareForRendering()

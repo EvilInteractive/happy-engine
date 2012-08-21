@@ -53,6 +53,7 @@ public:
         uint fbufferID;
         uint colorRbufferID;
         uint depthRbufferID;
+        GLContext* context;
     };
 
     struct DrawingState
@@ -65,7 +66,7 @@ public:
     };
 
     /* STATIC */
-    static Data* create(const vec2& size);
+    static Data* create(GLContext* context, const vec2& size);
 
     /* CONSTRUCTOR - DESTRUCTOR */
     Canvas2D(const RectI& absoluteViewport);

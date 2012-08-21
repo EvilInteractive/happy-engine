@@ -83,7 +83,7 @@ void PostProcesser::init( View* view, const RenderTarget* writeTarget, const Ren
         
         onSettingsChanged(m_View->getSettings(), true);
 
-        CONSOLE->registerVar(&m_ShowDebugTextures, "debugPostTex");
+        //CONSOLE->registerVar(&m_ShowDebugTextures, "debugPostTex");
     }
 }
 
@@ -218,9 +218,11 @@ void PostProcesser::draw()
     }
 
     m_WriteRenderTarget->prepareForRendering();
+    GL::heBlendEnabled(false);
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(false);
     GL::heSetCullFace(false);
+    GL::heSetViewport(m_View->getViewport());
 
     m_PostShader->bind();
 

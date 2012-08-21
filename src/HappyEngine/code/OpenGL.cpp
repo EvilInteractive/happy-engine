@@ -19,63 +19,31 @@
 //Created: 22/10/2011
 #include "HappyPCH.h" 
 
-
 #include "OpenGL.h"
-#include "HappyNew.h"
+#include "GLContext.h"
+#include "BufferLayout.h"
 
 namespace he {
+namespace gfx {
 
-//Clear
-Color GL::m_ClearColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-
-// Misc
-he::RectI GL::m_Viewport(0, 0, 0, 0);
-
-//Depth
-bool GL::m_DepthRead = false, GL::m_DepthWrite = false;
-DepthFunc GL::m_DepthFunc = DepthFunc_Less;
-
-//Culling
-bool GL::m_CullFrontFace = false;
-bool GL::m_CullCWFrontFace = false;
-
-//Binding
-uint GL::m_BoundFbo = 0, GL::m_BoundVao = 0, GL::m_ActiveTex = 0;
-uint GL::m_BoundTex2D[MAX_SAMPLERS] = {UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX } ;
-uint GL::m_BoundUbo[MAX_UBO];
-//Blending
-bool GL::m_BlendEnabled = false;
-BlendFunc GL::m_BlendSrc = BlendFunc_One, GL::m_BlendDest = BlendFunc_Zero;
-BlendEquation GL::m_BlendEquation = BlendEquation_Add;
-Color GL::m_BlendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-
-//Scissor
-bool GL::m_ScissorEnabled = false;
-RectI GL::m_ScissorRect = RectI(0, 0, 0, 0);
-
-//Line Smoothing
-bool GL::m_LineSmoothEnabled = false;
-
-// Texture
-float GL::m_MaxAnisotropicFilteringSupport = 0.0f;
-bool  GL::m_SupportTextureCompression = false;
+GLContext* GL::s_CurrentContext = nullptr;
 
 //Clear
 void GL::heClearColor(const Color& color)
 {
-   if (color != m_ClearColor)
+   if (color != s_CurrentContext->m_ClearColor)
    {
        glClearColor(color.r(), color.g(), color.b(), color.a());
-       m_ClearColor = color;
+       s_CurrentContext->m_ClearColor = color;
    }
 }
 
 //Depth
 void GL::heSetDepthRead(bool read)
 {
-    if (m_DepthRead != read)
+    if (s_CurrentContext->m_DepthRead != read)
     {
-        m_DepthRead = read;
+        s_CurrentContext->m_DepthRead = read;
         if (read)
             glEnable(GL_DEPTH_TEST);
         else
@@ -84,17 +52,17 @@ void GL::heSetDepthRead(bool read)
 }
 void GL::heSetDepthWrite(bool write)
 {
-    if (m_DepthWrite != write)
+    if (s_CurrentContext->m_DepthWrite != write)
     {
-        m_DepthWrite = write;
+        s_CurrentContext->m_DepthWrite = write;
         glDepthMask(write);
     }
 }
 void GL::heSetDepthFunc(DepthFunc func)
 {
-    if (m_DepthFunc != func)
+    if (s_CurrentContext->m_DepthFunc != func)
     {
-        m_DepthFunc = func;
+        s_CurrentContext->m_DepthFunc = func;
         glDepthFunc(func);
     }
 }
@@ -102,17 +70,17 @@ void GL::heSetDepthFunc(DepthFunc func)
 //Culling
 void GL::heSetCullFace(bool cullFrontFace)
 {
-    if (m_CullFrontFace != cullFrontFace)
+    if (s_CurrentContext->m_CullFrontFace != cullFrontFace)
     {
-        m_CullFrontFace = cullFrontFace;
+        s_CurrentContext->m_CullFrontFace = cullFrontFace;
         glCullFace(cullFrontFace? GL_FRONT : GL_BACK);
     }
 }
 void GL::heSetWindingFrontFace(bool cw)
 {
-    if (m_CullCWFrontFace != cw)
+    if (s_CurrentContext->m_CullCWFrontFace != cw)
     {
-        m_CullCWFrontFace = cw;
+        s_CurrentContext->m_CullCWFrontFace = cw;
         glFrontFace(cw? GL_CW : GL_CCW);
     }
 }
@@ -120,41 +88,41 @@ void GL::heSetWindingFrontFace(bool cw)
 //Binding
 void GL::heBindFbo(uint fbo)
 {
-    if (m_BoundFbo != fbo)
+    if (s_CurrentContext->m_BoundFbo != fbo)
     {
-        m_BoundFbo = fbo;
+        s_CurrentContext->m_BoundFbo = fbo;
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
 }
 uint GL::heGetBoundFbo()
 {
-    return m_BoundFbo;
+    return s_CurrentContext->m_BoundFbo;
 }
 void GL::heBindVao(uint vao)
 {
     /*if (m_BoundVao != vao)
     {*/
-        m_BoundVao = vao;
+        s_CurrentContext->m_BoundVao = vao;
         glBindVertexArray(vao);
     //}
 }
 void GL::heBindTexture2D(uint samplerPos, uint tex)
 {
-    HE_ASSERT(samplerPos < MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
-    if (m_BoundTex2D[samplerPos] != tex)
+    HE_ASSERT(samplerPos < GLContext::MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
+    if (s_CurrentContext->m_BoundTex2D[samplerPos] != tex)
     {
-        if (m_ActiveTex != samplerPos)
+        if (s_CurrentContext->m_ActiveTex != samplerPos)
         {
             glActiveTexture(GL_TEXTURE0 + samplerPos);
-            m_ActiveTex = samplerPos;
+            s_CurrentContext->m_ActiveTex = samplerPos;
         }
-        m_BoundTex2D[samplerPos] = tex;
+        s_CurrentContext->m_BoundTex2D[samplerPos] = tex;
         glBindTexture(GL_TEXTURE_2D, tex);
     }
 }
 void GL::heBindTexture2D(uint tex)
 {
-    m_BoundTex2D[0] = tex;
+    s_CurrentContext->m_BoundTex2D[0] = tex;
     glBindTexture(GL_TEXTURE_2D, tex);
 }
 void GL::heBindTextureCube( uint texPos, uint tex )
@@ -165,10 +133,10 @@ void GL::heBindTextureCube( uint texPos, uint tex )
 
 void GL::heBindUniformBuffer( uint uboId, uint bufferId )
 {
-    if (m_BoundUbo[uboId] != bufferId)
+    if (s_CurrentContext->m_BoundUbo[uboId] != bufferId)
     {
         glBindBufferBase(GL_UNIFORM_BUFFER, uboId, bufferId);
-        m_BoundUbo[uboId] = bufferId;
+        s_CurrentContext->m_BoundUbo[uboId] = bufferId;
     }
 }
 
@@ -176,9 +144,9 @@ void GL::heBindUniformBuffer( uint uboId, uint bufferId )
 //Blending
 void GL::heBlendEnabled(bool enabled)
 {
-    if (m_BlendEnabled != enabled)
+    if (s_CurrentContext->m_BlendEnabled != enabled)
     {
-        m_BlendEnabled = enabled;
+        s_CurrentContext->m_BlendEnabled = enabled;
         if (enabled)
             glEnable(GL_BLEND);
         else
@@ -187,27 +155,27 @@ void GL::heBlendEnabled(bool enabled)
 }
 void GL::heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor)
 {
-    if (srcFactor != m_BlendSrc || destFactor != m_BlendDest)
+    if (srcFactor != s_CurrentContext->m_BlendSrc || destFactor != s_CurrentContext->m_BlendDest)
     {
-        m_BlendSrc = srcFactor;
-        m_BlendDest = destFactor;
+        s_CurrentContext->m_BlendSrc = srcFactor;
+        s_CurrentContext->m_BlendDest = destFactor;
         glBlendFunc(srcFactor, destFactor);
     }
 }
 void GL::heBlendEquation( BlendEquation eq )
 {
-    if (m_BlendEquation != eq)
+    if (s_CurrentContext->m_BlendEquation != eq)
     {
-        m_BlendEquation = eq;
+        s_CurrentContext->m_BlendEquation = eq;
         glBlendEquation(eq);
     }
 }
 
 void GL::heBlendColor(const Color& color)
 {
-    if (color != m_BlendColor)
+    if (color != s_CurrentContext->m_BlendColor)
     {
-        m_BlendColor = color;
+        s_CurrentContext->m_BlendColor = color;
         glBlendColor(color.r(), color.g(), color.b(), color.a());
     }
 }
@@ -215,9 +183,9 @@ void GL::heBlendColor(const Color& color)
 //Scissor
 void GL::heScissorEnabled(bool enabled)
 {
-    if (enabled != m_ScissorEnabled)
+    if (enabled != s_CurrentContext->m_ScissorEnabled)
     {
-        m_ScissorEnabled = enabled;
+        s_CurrentContext->m_ScissorEnabled = enabled;
         if (enabled)
             glEnable(GL_SCISSOR_TEST);
         else
@@ -226,18 +194,18 @@ void GL::heScissorEnabled(bool enabled)
 }
 void GL::heScissorRect(const RectI& rect)
 {
-    if (rect != m_ScissorRect)
+    if (rect != s_CurrentContext->m_ScissorRect)
     {
-        m_ScissorRect = rect;
+        s_CurrentContext->m_ScissorRect = rect;
         glScissor(rect.x, rect.y, rect.width, rect.height);
     }
 }
 //line smoothing
 void GL::heLineSmoothEnabled(bool enabled)
 {
-    if (m_LineSmoothEnabled != enabled)
+    if (s_CurrentContext->m_LineSmoothEnabled != enabled)
     {
-        m_LineSmoothEnabled = enabled;
+        s_CurrentContext->m_LineSmoothEnabled = enabled;
 
         if (enabled)
             glEnable(GL_LINE_SMOOTH);
@@ -248,57 +216,76 @@ void GL::heLineSmoothEnabled(bool enabled)
 
 void GL::init()
 {
-    for (int i(0); i < MAX_UBO; ++i)
+    if (glewGetContext()->__GLEW_EXT_texture_filter_anisotropic == GL_TRUE)
     {
-        m_BoundUbo[i] = UINT_MAX;
-    }
-
-    if (GLEW_EXT_texture_filter_anisotropic)
-    {
-        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_MaxAnisotropicFilteringSupport);
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &s_CurrentContext->m_MaxAnisotropicFilteringSupport);
     }
     else
     {
-        m_MaxAnisotropicFilteringSupport = 0.0f;
+        s_CurrentContext->m_MaxAnisotropicFilteringSupport = 0.0f;
     }
 
-    m_SupportTextureCompression = GLEW_EXT_texture_compression_s3tc == GL_TRUE;
+    s_CurrentContext->m_SupportTextureCompression = glewGetContext()->__GLEW_EXT_texture_compression_s3tc == GL_TRUE;
 }
 void GL::reset()
 {
-    m_BoundFbo = UINT_MAX;
-    m_BoundVao = UINT_MAX;
+    s_CurrentContext->m_BoundFbo = UINT_MAX;
+    s_CurrentContext->m_BoundVao = UINT_MAX;
 
-    for (int i(0); i < MAX_UBO; ++i)
-    {
-        m_BoundUbo[i] = UINT_MAX;
-    }
+    he_memset(s_CurrentContext->m_BoundTex2D, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint));
+    he_memset(s_CurrentContext->m_BoundUbo, 0xff, GLContext::MAX_UBO * sizeof(uint));
 
-    m_BoundTex2D[0] = UINT_MAX;
-    m_BoundTex2D[1] = UINT_MAX;
-    m_BoundTex2D[2] = UINT_MAX;
-    m_BoundTex2D[3] = UINT_MAX;
-    m_BoundTex2D[4] = UINT_MAX;
-    m_BoundTex2D[5] = UINT_MAX;
+    s_CurrentContext->m_Viewport.x = -1;
+    s_CurrentContext->m_Viewport.y = -1;
+    s_CurrentContext->m_Viewport.width = -1;
+    s_CurrentContext->m_Viewport.height = -1;
 
 
-    m_ActiveTex = UINT_MAX;;
+    s_CurrentContext->m_ActiveTex = UINT_MAX;
 }
 
 void GL::heSetViewport( const RectI& viewport )
 {
-    if (viewport != m_Viewport)
+    if (viewport != s_CurrentContext->m_Viewport)
     {
-        m_Viewport = viewport;
+        s_CurrentContext->m_Viewport = viewport;
         glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
     }
 }
 
 const RectI& GL::heGetViewport()
 {
-    return m_Viewport;
+    return s_CurrentContext->m_Viewport;
+}
+
+void GL::getGLTypesFromBufferElement( const BufferElement& element, GLint& components, GLenum& type )
+{
+    switch (element.getType())
+    {
+    case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
+    case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
+    case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
+    case BufferElement::Type_Float: type = GL_FLOAT; break;
+
+    case BufferElement::Type_Int: type = GL_INT; break;
+    case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
+    case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
+
+    default: HE_ASSERT(false, "unknown/unsupported BufferElement"); break;
+    }
+}
+
+float GL::getMaxAnisotropicFilteringSupport()
+{
+    return s_CurrentContext->m_MaxAnisotropicFilteringSupport;
+}
+
+bool GL::getSupportTextureCompression()
+{
+    return s_CurrentContext->m_SupportTextureCompression;
 }
 
 
 
-} //end namespace
+
+} } //end namespace

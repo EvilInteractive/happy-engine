@@ -28,11 +28,13 @@ namespace ge {
 
 CameraManager::CameraManager(): m_ActiveCamera(nullptr)
 {
+    GAME->addToTickList(this);
 }
 
 
 CameraManager::~CameraManager()
 {
+    GAME->removeFromTickList(this);
     deleteAllCameras();
 }
 

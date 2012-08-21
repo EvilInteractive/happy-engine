@@ -31,6 +31,7 @@
 #include "FontLoader.h"
 #include "ShaderLoader.h"
 #include "Shader.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace ct {
@@ -332,6 +333,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         m_FullscreenQuad->init();
         m_FullscreenQuad->setVertices(&vertices[0], 4, layout);
         m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        m_FullscreenQuad->setLoaded();
     }
 
     ResourceFactory<ModelMesh>::getInstance()->instantiate(m_FullscreenQuad->getHandle());
@@ -375,6 +377,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         m_ParticleQuad->init();
         m_ParticleQuad->setVertices(&vertices[0], 4, layout);
         m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        m_ParticleQuad->setLoaded();
     }
 
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_ParticleQuad->getHandle());

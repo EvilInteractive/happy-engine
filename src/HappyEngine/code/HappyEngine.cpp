@@ -227,7 +227,10 @@ void HappyEngine::loop()
 void HappyEngine::updateLoop(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    
+
+    if (m_SubEngines & SubEngine_Controls)
+        m_pControlsManager->tick();
+
     PROFILER_BEGIN("SFML poll events");
     const std::vector<gfx::Window*>& windows(GRAPHICS->getAllWindows());
     std::for_each(windows.cbegin(), windows.cend(), [&dTime](gfx::Window* window)
@@ -235,9 +238,6 @@ void HappyEngine::updateLoop(float dTime)
         window->doEvents(dTime);
     });
     PROFILER_END();
-
-    if (m_SubEngines & SubEngine_Controls)
-        m_pControlsManager->tick();
 
     if (m_SubEngines & SubEngine_Networking)
         m_pNetworkManager->tick(dTime);

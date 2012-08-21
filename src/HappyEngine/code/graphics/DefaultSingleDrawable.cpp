@@ -88,6 +88,11 @@ void DefaultSingleDrawable::attachToScene( Scene* scene, bool dynamic )
     }
 }
 
+void DefaultSingleDrawable::setScene( Scene* scene )
+{
+    m_Scene = scene;
+}
+
 Scene* DefaultSingleDrawable::getScene() const
 {
     return m_Scene;

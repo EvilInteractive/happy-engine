@@ -153,6 +153,7 @@ void Renderer2D::init( View* view, const RenderTarget* target )
 
     m_TextureQuad->setVertices(&vertices[0], 4, vLayout);
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_TextureQuad->setLoaded();
 }
 
 void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
@@ -196,7 +197,8 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffect->setTCScale(tcScale);
     m_TextureEffect->setDepth(0.0f);
 
-    GL::heSetDepthFunc(DepthFunc_Always);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     if (useBlending == true)
     {
@@ -208,8 +210,6 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     {
         GL::heBlendEnabled(false);
     }
-
-    GL::heBindFbo(0);
 
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);

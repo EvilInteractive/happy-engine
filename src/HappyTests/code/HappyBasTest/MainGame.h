@@ -61,6 +61,9 @@ private:
     he::gfx::View*   m_View;
     he::gfx::Scene*  m_Scene;
 
+    he::gfx::Window* m_Window2;
+    he::gfx::View*   m_View2;
+
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
 

@@ -30,6 +30,7 @@
 #include "ShaderVar.h"
 #include "View.h"
 #include "Scene.h"
+#include "Window.h"
 #include "RenderTarget.h"
 #include "CameraPerspective.h"
 #include "CameraOrtho.h"
@@ -38,9 +39,9 @@ namespace he {
 namespace gfx {
 
 ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad(nullptr),
-    m_MatInstanced(nullptr), m_MatSingle(nullptr), m_MatSkinned(nullptr), m_RenderTarget(NEW RenderTarget())
+    m_MatInstanced(nullptr), m_MatSingle(nullptr), m_MatSkinned(nullptr), m_RenderTarget(nullptr)
 {
-    CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
+    //CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
     for (int i = 0; i < COUNT; ++i)
     {
         m_ShadowTexture[i] = nullptr;
@@ -83,6 +84,8 @@ void ShadowCaster::init(View* view)
 {
     m_View = view;
     m_View->get2DRenderer()->attachToRender(this);
+
+    m_RenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
 
     onSettingsChanged();
  
@@ -187,12 +190,13 @@ void ShadowCaster::init(View* view)
 void ShadowCaster::onSettingsChanged()
 {
     ushort newShadowSize(static_cast<short>(512 * pow(2.0f, m_Settings.shadowMult - 1.0f)));
-    HE_ASSERT(m_ShadowSize <= 2048, "shadowmap size must be <= 2048");
+    HE_ASSERT(newShadowSize <= 2048, "shadowmap size must be <= 2048");
 
     bool reload(newShadowSize != m_ShadowSize);
 
     if (reload == true)
     {
+        m_ShadowSize = newShadowSize;
         //////////////////////////////////////////////////////////////////////////
         ///                             Textures                               ///
         //////////////////////////////////////////////////////////////////////////

@@ -46,6 +46,7 @@
 #include "Window.h"
 
 #include "IKeyboard.h"
+#include "Renderer2D.h"
 
 
 namespace ht {
@@ -57,6 +58,8 @@ MainGame::MainGame(): m_FpsGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(fal
 
 MainGame::~MainGame()
 {
+    m_View2->get2DRenderer()->detachFromRender(m_FpsGraph);
+    delete m_FpsGraph;
     delete m_pSkyBox;
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
@@ -66,8 +69,8 @@ MainGame::~MainGame()
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeScene(m_Scene);
     GRAPHICS->removeWindow(m_Window);
-
-    delete m_FpsGraph;
+    GRAPHICS->removeView(m_View2);
+    GRAPHICS->removeWindow(m_Window2);
 }
 
 void MainGame::init()
@@ -76,11 +79,16 @@ void MainGame::init()
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
+    m_View2 = GRAPHICS->createView();
+    m_Window2 = GRAPHICS->createWindow();
+
     m_Window->setResizable(true);
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("HappyBasTest");
-    m_Window->open();
+    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    m_Window->Closed += quitHandler;
+    m_Window->create();
 }
 
 void MainGame::load()
@@ -93,30 +101,49 @@ void MainGame::load()
 
     settings.lightingSettings.enableLighting = true;
     settings.lightingSettings.enableNormalMap = true;
-    settings.lightingSettings.enableShadows = true;
+    settings.lightingSettings.enableShadows = false;
     settings.lightingSettings.enableSpecular = true;
 
-    settings.postSettings.shaderSettings.enableAO = true;
-    settings.postSettings.shaderSettings.enableBloom = true;
+    settings.shadowSettings.shadowMult = 0;
+
+    settings.postSettings.shaderSettings.enableAO = false;
+    settings.postSettings.shaderSettings.enableBloom = false;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
     settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
 
+    CONTENT->setRenderSettings(settings);
+
     m_View->setScene(m_Scene);
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
+
+    m_Window2->setResizable(true);
+    m_Window2->setVSync(false);
+    m_Window2->setWindowDimension(720, 720);
+    m_Window2->setWindowTitle("HappyBasTest - 2");
+    m_Window2->create();
+
+    m_View2->setScene(m_Scene);
+    m_View2->setWindow(m_Window2);
+    m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    m_View2->init(settings);
+
     
     m_FlyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", m_FlyCamera);
     m_Scene->getCameraManager()->setActiveCamera("default");
     m_FlyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    m_FlyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
-    m_FpsGraph = NEW tools::FPSGraph();
-    m_FpsGraph->setView(m_View);
-    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
+//     m_FpsGraph = NEW tools::FPSGraph();
+//     m_FpsGraph->setView(m_View);
+//     m_FpsGraph->setPos(vec2(1280 - 256, 8));
+//     m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
+//    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
     ge::Entity* scene(NEW ge::Entity());
     scene->init(m_Scene);
@@ -179,7 +206,7 @@ void MainGame::tick( float dTime )
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
 
-    m_FpsGraph->tick(dTime);
+   // m_FpsGraph->tick(dTime);
 }
 
 } //end namespace

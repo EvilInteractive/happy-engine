@@ -33,7 +33,7 @@ class Texture2D;
 class RenderTarget
 {
 public:
-    RenderTarget();
+    RenderTarget(GLContext* context);
     virtual ~RenderTarget();
 
     // Add all targets then call init
@@ -71,6 +71,7 @@ private:
     uint m_DrawBufferCount;
 
     uint m_Width, m_Height;
+    GLContext* m_Context;
 
     //Disable default copy constructor and default assignment operator
     RenderTarget(const RenderTarget&);

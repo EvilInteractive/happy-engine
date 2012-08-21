@@ -12,7 +12,7 @@ include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/PhysX/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
 
-add_definitions( -DGLEW_STATIC -DSFML_STATIC )
+add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX )
 
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Assimp/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/lib/${PLATFORM}${BITNESS})
@@ -53,7 +53,8 @@ target_link_libraries(${target} ILU)
 target_link_libraries(${target} debug freetype249_D)
 target_link_libraries(${target} optimized freetype249)
 
-target_link_libraries(${target} glew32s)
+target_link_libraries(${target} debug glew32mxsd)
+target_link_libraries(${target} optimized glew32mxs)
 target_link_libraries(${target} libsndfile-1)
 target_link_libraries(${target} OpenAL32)
 
