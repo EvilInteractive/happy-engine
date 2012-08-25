@@ -125,6 +125,7 @@ public:
     virtual void destroyObject(const ObjectHandle& handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): destroying unassigned handle", m_DisplayName.c_str());
+        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
         if (m_Salt[handle.index] != handle.salt)
         {
             HE_ERROR("ObjectFactory (%s): salt mismatch when destroying object", m_DisplayName.c_str());
