@@ -186,6 +186,9 @@ protected:
 
     std::string m_DisplayName;
 
+protected:
+    ObjectHandle::ObjectType m_Type;
+
 private:
     ObjectHandle getFreeHandle()
     {
@@ -208,8 +211,6 @@ private:
     std::vector<T*> m_Pool;
     std::vector<ObjectHandle::SaltType> m_Salt;
     std::queue<ObjectHandle::IndexType> m_FreeHandles;
-
-    ObjectHandle::ObjectType m_Type;
 
     //Disable default copy constructor and default assignment operator
     ObjectFactory(const ObjectFactory&);
