@@ -34,7 +34,8 @@
 namespace he {
 namespace gfx {
 
-GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr), m_FallBackContext(nullptr)
+GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr),
+    m_FallBackContext(nullptr), m_FallBackSfContext(nullptr)
 {
     for (uint i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -45,6 +46,7 @@ GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m
 
 GraphicsEngine::~GraphicsEngine()
 {
+    delete m_FallBackSfContext;
 }
 void GraphicsEngine::destroy()
 {
@@ -58,7 +60,9 @@ void GraphicsEngine::destroy()
 void GraphicsEngine::init()
 {
     using namespace err;
-
+    
+    m_FallBackSfContext = NEW sf::Context();
+    m_FallBackSfContext->setActive(true);
     GL::s_CurrentContext = &m_FallBackContext;
     GL::init();
 
@@ -194,6 +198,7 @@ void GraphicsEngine::unregisterContext( GLContext* context )
         ContextRemoved(context);
         context->window->m_Window->setActive(false);
         context->id = UINT_MAX;
+        m_FallBackSfContext->setActive(true);
         GL::s_CurrentContext = &m_FallBackContext;
     }
 }

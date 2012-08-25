@@ -91,6 +91,7 @@ public:
 
 private:
     GLContext m_FallBackContext;
+    sf::Context* m_FallBackSfContext;
 
     /* DATAMEMBERS */
     std::vector<ObjectHandle> m_Scenes;

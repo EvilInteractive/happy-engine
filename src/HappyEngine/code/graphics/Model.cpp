@@ -48,7 +48,7 @@ bool Model::canBeGarbageCollected()
     // only GC if all meshes are referenced just by this instance
     bool block(std::any_of(cbegin(), cend(), [](ModelMesh* mesh)
     {
-        return ResourceFactory<ModelMesh>::getInstance()->getRefCount(mesh->getHandle()) == 1;
+        return ResourceFactory<ModelMesh>::getInstance()->getRefCount(mesh->getHandle()) > 1;
     }));
     return !block;
 }

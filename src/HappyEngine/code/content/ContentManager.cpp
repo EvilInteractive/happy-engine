@@ -1,3 +1,4 @@
+
 //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
@@ -65,13 +66,24 @@ ContentManager::ContentManager():
     m_FxPath(""),
 
     m_ParticleQuad(nullptr),
-    m_FullscreenQuad(nullptr)
+    m_FullscreenQuad(nullptr),
+    m_pDefaultFont(nullptr)
 {
     setContentDir(HAPPYENGINE->getRootDir().getAbsolutePath(Path("../data/")));
 }
 
 ContentManager::~ContentManager()
 {
+    if (m_ParticleQuad != nullptr)
+        m_ParticleQuad->release();
+    if (m_FullscreenQuad != nullptr)
+        m_FullscreenQuad->release();
+
+    if (m_pDefaultFont != nullptr)
+        m_pDefaultFont->release();
+
+    // All content should be gone when getting here
+    // loaders perform last garbage collect
     delete m_pMaterialLoader;
     delete m_pShaderLoader;
     delete m_pPhysicsShapeLoader;
@@ -79,13 +91,6 @@ ContentManager::~ContentManager()
     delete m_pFontLoader;
     delete m_pModelLoader;
     delete m_pTextureLoader;
-
-    if (m_ParticleQuad != nullptr)
-        m_ParticleQuad->release();
-    if (m_FullscreenQuad != nullptr)
-        m_FullscreenQuad->release();
-
-    //m_pDefaultFont->release();
 }
 
 
@@ -373,6 +378,10 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         std::vector<byte> indices;
         indices.push_back(0); indices.push_back(1); indices.push_back(2);
         indices.push_back(1); indices.push_back(3); indices.push_back(2);
+
+        ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
+        m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
+        m_ParticleQuad->setName("Particle quad");
 
         m_ParticleQuad->init();
         m_ParticleQuad->setVertices(&vertices[0], 4, layout);

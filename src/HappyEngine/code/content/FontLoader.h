@@ -36,7 +36,7 @@ class FontLoader
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR*/
-	FontLoader();
+    FontLoader();
     virtual ~FontLoader();
 
     /* GENERAL */
@@ -45,7 +45,7 @@ public:
 private:
 
     /* DATAMEMBERS */
-    AssetContainer<ObjectHandle>* m_pAssetContainer;
+    AssetContainer<ObjectHandle> m_AssetContainer;
 
     FT_Library m_FTLibrary;
 

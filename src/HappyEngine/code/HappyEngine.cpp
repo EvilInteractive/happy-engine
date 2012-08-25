@@ -85,12 +85,12 @@ void HappyEngine::cleanup()
     m_pControlsManager = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
-    delete m_pGraphicsEngine;
-    m_pGraphicsEngine = nullptr;
     delete m_pPhysicsEngine;
     m_pPhysicsEngine = nullptr;
 
-
+    // Gl context get deleted here - make sure all content is gone
+    delete m_pGraphicsEngine;
+    m_pGraphicsEngine = nullptr;
 }
 void HappyEngine::init(int subengines)
 {
@@ -108,28 +108,20 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     {
         m_pGraphicsEngine = NEW gfx::GraphicsEngine();
         m_pConsole = NEW tools::Console();
-    }
 
-    if (subengines & SubEngine_Content)
-    {
         ilInit();
         iluInit();
         iluSetLanguage(ILU_ENGLISH);
         ilSetInteger(IL_KEEP_DXTC_DATA, IL_TRUE);
         ilEnable(IL_ORIGIN_SET);
         ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
-        m_pContentManager = NEW ct::ContentManager();
-    }
-    else
-    {
-        m_bGameLoading = false;
-    }
-    
-    if (subengines & SubEngine_Controls)
-    {
+
         m_pControlsManager = NEW io::ControlsManager();
     }
 
+    if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
+        m_pContentManager = NEW ct::ContentManager();
+    
     if (subengines & SubEngine_Physics)
     {
         m_pPhysicsEngine = NEW px::PhysicsEngine();
@@ -232,22 +224,29 @@ void HappyEngine::updateLoop(float dTime)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
-    if (m_SubEngines & SubEngine_Controls)
+    if (m_SubEngines & SubEngine_Graphics)
+    {
         m_pControlsManager->tick();
 
-    PROFILER_BEGIN("SFML poll events");
-    const std::vector<ObjectHandle>& windows(GRAPHICS->getAllWindows());
-    gfx::WindowFactory* windowFactory(gfx::WindowFactory::getInstance());
-    std::for_each(windows.cbegin(), windows.cend(), [&dTime,windowFactory](const ObjectHandle& window)
-    {
-        windowFactory->get(window)->doEvents(dTime);
-    });
-    PROFILER_END();
+        PROFILER_BEGIN("SFML poll events");
+        const std::vector<ObjectHandle>& windows(GRAPHICS->getAllWindows());
+        gfx::WindowFactory* windowFactory(gfx::WindowFactory::getInstance());
+        std::for_each(windows.cbegin(), windows.cend(), [&dTime,windowFactory](const ObjectHandle& window)
+        {
+            windowFactory->get(window)->doEvents(dTime);
+        });
+        PROFILER_END();
+
+        m_pGraphicsEngine->tick(dTime);
+        CONSOLE->tick();
+        if (m_bGameLoading == true && CONTENT->isLoading() == false) // TODO: event this
+            m_bGameLoading = false;
+    }
 
     if (m_SubEngines & SubEngine_Networking)
         m_pNetworkManager->tick(dTime);
 
-    if (m_SubEngines & SubEngine_Content)
+    if (m_pContentManager != nullptr)
     {
         m_pContentManager->tick(dTime);
         m_pContentManager->glThreadInvoke();
@@ -257,15 +256,6 @@ void HappyEngine::updateLoop(float dTime)
         m_pPhysicsEngine->tick(dTime);
 
     m_pGame->tick(dTime);
-
-    if (m_SubEngines & SubEngine_Graphics)
-    {
-        m_pGraphicsEngine->tick(dTime);
-        CONSOLE->tick();
-        if (CONTENT->isLoading() == false && m_bGameLoading == true)
-            m_bGameLoading = false;
-    }
-
 }
 void HappyEngine::drawLoop()
 {
@@ -300,52 +290,6 @@ void HappyEngine::audioLoop()
         else
             boost::this_thread::sleep(waitTime);
     }
-}
-
-//SubEngines
-gfx::GraphicsEngine* HappyEngine::getGraphicsEngine() const
-{
-    return m_pGraphicsEngine;
-}
-io::ControlsManager* HappyEngine::getControls() const
-{
-    return m_pControlsManager;
-}
-px::PhysicsEngine* HappyEngine::getPhysics() const
-{
-    return m_pPhysicsEngine;
-}
-ct::ContentManager* HappyEngine::getContentManager() const
-{
-    return m_pContentManager;
-}
-net::NetworkManager* HappyEngine::getNetworkManager() const
-{
-    return m_pNetworkManager;
-}
-tools::Console* HappyEngine::getConsole() const
-{
-    return m_pConsole;
-}
-
-sfx::SoundEngine* HappyEngine::getSoundEngine() const
-{
-    return m_pSoundEngine;
-}
-
-ge::Game* HappyEngine::getGame() const
-{
-    return m_pGame;
-}
-
-void HappyEngine::setRootDir( const Path& rootDir )
-{
-    m_RootDir = rootDir;
-}
-
-const Path& HappyEngine::getRootDir() const
-{
-    return m_RootDir;
 }
 
 } //end namespace

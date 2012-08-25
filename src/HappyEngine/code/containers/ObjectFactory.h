@@ -84,6 +84,18 @@ protected:
 public:
     virtual ~ObjectFactory()
     {
+#ifdef _DEBUG
+        size_t leakCounter(0);
+        for (ObjectHandle::IndexType i(0); i < m_Pool.size(); ++i)
+        {
+            if (isAliveAt(i))
+            {
+                ++leakCounter;
+            }
+        }
+        if (leakCounter > 0)
+            HE_WARNING("%s: %d leaks detected!", m_DisplayName.c_str(), leakCounter);
+#endif
     }
     virtual void destroyAll()
     {
@@ -137,6 +149,7 @@ public:
     virtual T* get(const ObjectHandle& handle) const
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ObjectFactory (%s): getting unassigned handle", m_DisplayName.c_str());
+        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
         HE_ASSERT(m_Salt[handle.index] == handle.salt, "ObjectFactory (%s): salt mismatch when getting object", m_DisplayName.c_str());
         return m_Pool[handle.index];
     }

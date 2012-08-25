@@ -39,6 +39,7 @@ MaterialLoader::MaterialLoader()
 
 MaterialLoader::~MaterialLoader()
 {
+    ResourceFactory<gfx::Material>::getInstance()->garbageCollect();
     m_AssetContainer.removeAllAssets();
 }
 

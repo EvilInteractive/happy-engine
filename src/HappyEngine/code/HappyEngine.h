@@ -67,11 +67,8 @@ enum SubEngine
     SubEngine_Graphics = 1 << 0,
     SubEngine_Physics = 1 << 1,
     SubEngine_Networking = 1 << 2,
-    SubEngine_Controls = 1 << 3,
-    SubEngine_Content = 1 << 4,
-    SubEngine_2DRenderer = 1 << 5,
-    SubEngine_Audio = 1 << 6,
-    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6
+    SubEngine_Audio = 1 << 3,
+    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3
 };
 
 class HappyEngine
@@ -91,18 +88,18 @@ public:
     void audioLoop();
 
     //root dir
-    void setRootDir(const Path& rootDir);
-    const Path& getRootDir() const; //includes trailing slash
+    void setRootDir(const Path& rootDir) { m_RootDir = rootDir; }
+    const Path& getRootDir() const { return m_RootDir; } //includes trailing slash
 
     //subengines
-    gfx::GraphicsEngine* getGraphicsEngine() const;
-    io::ControlsManager* getControls() const;
-    px::PhysicsEngine* getPhysics() const;
-    ct::ContentManager* getContentManager() const;
-    net::NetworkManager* getNetworkManager() const;
-    tools::Console* getConsole() const;
-    sfx::SoundEngine* getSoundEngine() const;
-    ge::Game* getGame() const;
+    gfx::GraphicsEngine* getGraphicsEngine() const { return m_pGraphicsEngine; }
+    io::ControlsManager* getControls() const { return m_pControlsManager; }
+    px::PhysicsEngine* getPhysics() const { return m_pPhysicsEngine; }
+    ct::ContentManager* getContentManager() const { return m_pContentManager; }
+    net::NetworkManager* getNetworkManager() const { return m_pNetworkManager; }
+    tools::Console* getConsole() const { return m_pConsole; }
+    sfx::SoundEngine* getSoundEngine() const { return m_pSoundEngine; }
+    ge::Game* getGame() const { return m_pGame; }
 
 private:
     // Singleton design pattern
@@ -136,7 +133,6 @@ private:
     // Methods
     void initWindow();
     void loop();
-private:
     void updateLoop(float dTime);
     void drawLoop();
     void cleanup();
