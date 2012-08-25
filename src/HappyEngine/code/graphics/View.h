@@ -23,6 +23,8 @@
 #pragma once
 
 #include "RenderSettings.h"
+#include "ITickable.h"
+#include "Singleton.h"
 
 namespace he {
 namespace gfx {
@@ -35,9 +37,19 @@ class RenderTarget;
 class Renderer2D;
 class Texture2D;
 class ShapeRenderer;
+class CameraPerspective;
+class View;
 
-class View
+class ViewFactory: public ObjectFactory<View>, public Singleton<ViewFactory>
 {
+    friend Singleton;
+    ViewFactory() { init(1, 2, "ViewFactory"); }
+    virtual ~ViewFactory() { }
+};
+
+class View : public ge::ITickable
+{
+DECLARE_OBJECT(View)
 public:
     View();
     virtual ~View();
@@ -52,10 +64,15 @@ public:
     void setWindow(Window* window);
     Window* getWindow() const { return m_Window; }
 
+    void setCamera(const std::string& camera);
+    CameraPerspective* getCamera() const { return m_Camera; }
+
     Renderer2D* get2DRenderer() const { return m_2DRenderer; }
 
     const Scene* getScene() const { return m_Scene; }
     const RenderSettings& getSettings() const { return m_Settings; }
+
+    virtual void tick( float dTime );
 
     event0<void> SettingsChanged;
     event0<void> ViewportSizeChanged;
@@ -64,7 +81,11 @@ public:
     void draw();
 
 private:
+    void resize();
     void calcViewportFromPercentage();
+
+    CameraPerspective* m_Camera;
+    std::string m_CameraId;
 
     RectI m_Viewport;
     RectF m_ViewportPercentage;
@@ -74,7 +95,7 @@ private:
     gfx::Window* m_Window;
 
     RenderSettings m_Settings;
-
+    
     // Render Textures
     Texture2D* m_ColorRenderMap;
     Texture2D* m_NormalRenderMap;
@@ -104,6 +125,7 @@ private:
     //Disable default copy constructor and default assignment operator
     View(const View&);
     View& operator=(const View&);
+
 };
 
 } } //end namespace

@@ -165,12 +165,7 @@ void Bloom::init(View* view, bool hdr)
     //////////////////////////////////////////////////////////////////////////
     m_Mesh = CONTENT->getFullscreenQuad();
 
-    resize();
-}
 
-void Bloom::resize()
-{
-    cleanTextures();
     for (int pass = 0; pass < 2; ++pass)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -185,8 +180,6 @@ void Bloom::resize()
             m_Texture[pass][i]->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Linear, 
                 gfx::Texture2D::TextureFormat_RGBA16F, false);
             m_Texture[pass][i]->setName("Bloom::m_Texture[pass][i]");
-            m_Texture[pass][i]->setData(m_View->getViewport().width / ((i+2) * 2), m_View->getViewport().height / ((i+2) * 2), 
-                0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float, 0 );
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -201,6 +194,22 @@ void Bloom::resize()
         {
             GL::heBindFbo(m_FboId[pass][i]);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture[pass][i]->getID(), 0);       
+        }
+    }
+    resize();
+}
+
+void Bloom::resize()
+{
+    for (int pass = 0; pass < 2; ++pass)
+    {
+        //////////////////////////////////////////////////////////////////////////
+        ///                             Textures                               ///
+        //////////////////////////////////////////////////////////////////////////
+        for (int i = 0; i < m_DownSamples; ++i)
+        {
+            m_Texture[pass][i]->setData(m_View->getViewport().width / ((i+2) * 2), m_View->getViewport().height / ((i+2) * 2), 
+                0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Float, 0 );
         }
     }
 }

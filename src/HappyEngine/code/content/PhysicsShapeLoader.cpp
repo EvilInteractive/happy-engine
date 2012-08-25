@@ -38,6 +38,8 @@ PhysicsShapeLoader::PhysicsShapeLoader()
 
 PhysicsShapeLoader::~PhysicsShapeLoader()
 {
+    CC_FACTORY->garbageCollect();
+    CV_FACTORY->garbageCollect();
 }
 
 ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)

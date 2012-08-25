@@ -42,9 +42,9 @@ void LightFactory::destroyLight( const ObjectHandle& handle )
     destroyObject(handle);
 }
 
-ILight* LightFactory::get( const ObjectHandle& handle ) const
+Light* LightFactory::get( const ObjectHandle& handle ) const
 {
-    return ObjectFactory<ILight>::get(handle);
+    return ObjectFactory<Light>::get(handle);
 }
 
 he::ObjectHandle gfx::LightFactory::createPointLight()
@@ -59,7 +59,7 @@ he::ObjectHandle gfx::LightFactory::createSpotLight()
 
 SpotLight* gfx::LightFactory::getSpotLight( const ObjectHandle& handle ) const
 {
-    ILight* light(get(handle));
+    Light* light(get(handle));
     HE_ASSERT(light != nullptr, "Could not get light from light factory");
     HE_ASSERT(light->getType() == LightType_Spot, "Trying to get pointlight as spotlight!");
     return static_cast<SpotLight*>(light);
@@ -67,7 +67,7 @@ SpotLight* gfx::LightFactory::getSpotLight( const ObjectHandle& handle ) const
 
 PointLight* gfx::LightFactory::getPointLight( const ObjectHandle& handle ) const
 {
-    ILight* light(get(handle));
+    Light* light(get(handle));
     HE_ASSERT(light != nullptr, "Could not get light from light factory");
     HE_ASSERT(light->getType() == LightType_Point, "Trying to get spotlight as pointlight!");
     return static_cast<PointLight*>(light);

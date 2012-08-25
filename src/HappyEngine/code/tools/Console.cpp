@@ -119,12 +119,16 @@ void Console::setView( const gfx::View* view )
     {
         m_View->get2DRenderer()->detachFromRender(this);
         m_View->get2DRenderer()->removeCanvas(m_Canvas2D);
+        m_Canvas2D = nullptr;
     }
     m_View = view;
-    m_View->get2DRenderer()->attachToRender(this);
-    m_Canvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
-    m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
-    m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
+    if (view != nullptr)
+    {
+        m_View->get2DRenderer()->attachToRender(this);
+        m_Canvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
+        m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
+        m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
+    }
 }
 
 
@@ -149,7 +153,8 @@ Console::~Console()
     delete m_pTextBox;
     delete m_pScrollBar;
     delete m_Help;
-    delete m_Canvas2D;
+    if (m_Canvas2D != nullptr)
+        delete m_Canvas2D;
 }
 
 void Console::processCommand(const std::string& command)
@@ -288,7 +293,7 @@ void Console::tick()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_pTextBox->hasFocus())
     {
-        HE_IF_ASSERT(m_View == nullptr, "set View first with setView!")
+        HE_IF_ASSERT(m_View != nullptr, "set View first with setView!")
         {
             m_bOpen =! m_bOpen;
             m_pTextBox->resetText();

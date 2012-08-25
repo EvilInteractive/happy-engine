@@ -62,6 +62,8 @@ public:
     virtual IntersectResult intersect(const Bound& bound) const;
     virtual IntersectResult intersect(const Sphere& bound) const;
 
+    virtual void prepareForRendering();
+
     // GENERAL
     virtual void tick(float /*dTime*/) {}
     virtual void lookAt(const vec3& pos, const vec3& target, const vec3& up);
@@ -104,6 +106,7 @@ private:
     //Disable default copy constructor and default assignment operator
     CameraOrtho(const CameraOrtho&);
     CameraOrtho& operator=(const CameraOrtho&);
+
 };
 
 } } //end namespace

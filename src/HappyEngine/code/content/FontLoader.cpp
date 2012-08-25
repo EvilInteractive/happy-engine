@@ -22,11 +22,6 @@
 
 #include "FontLoader.h"
 
-#include <iostream>
-#include <sstream>
-
-#include "HappyNew.h"
-#include "HeAssert.h"
 #include "ResourceFactory.h"
 
 #define FACTORY ResourceFactory<gfx::Font>::getInstance()
@@ -44,7 +39,8 @@ FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<ObjectHandle>()
 FontLoader::~FontLoader()
 {
     delete m_pAssetContainer;
-    FT_Done_FreeType(m_FTLibrary);
+    ResourceFactory<gfx::Font>::getInstance()->garbageCollect();
+    //FT_Done_FreeType(m_FTLibrary);
 }
 
 /* GENERAL */

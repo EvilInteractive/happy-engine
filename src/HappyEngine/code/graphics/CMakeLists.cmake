@@ -25,7 +25,7 @@ set (CODE_GRAPHICS_GUI_FILTER
 set (CODE_GRAPHICS_LIGHT_FILTER
             AmbientLight.cpp                    AmbientLight.h
             DirectionalLight.cpp                DirectionalLight.h                   
-            ILight.h
+            Light.cpp                           Light.h
             LightFactory.cpp                    LightFactory.h
             LightManager.cpp                    LightManager.h
             PointLight.cpp                      PointLight.h

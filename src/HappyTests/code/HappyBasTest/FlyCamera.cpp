@@ -27,8 +27,7 @@
 namespace ht {
 
 // CONSTRUCTOR - DESTRUCTOR
-FlyCamera::FlyCamera() :	CameraPerspective(1, 1),
-                            m_bMoveable(true),
+FlyCamera::FlyCamera() :	m_bMoveable(true),
                             m_Speed(10.0f),
                             m_FastForward(20.0f),
                             m_PreviousMousePos(0,0),
@@ -100,13 +99,7 @@ void FlyCamera::tick(float dTime)
 
     CONTROLS->returnFocus(this);
 
-    buildProjectionMatrix();
-    buildViewMatrix();
-}
-
-void FlyCamera::setAspectRatio( float aspect )
-{
-    m_AspectRatio = aspect;
+    m_RegenViewMatrix = true;
 }
 
 

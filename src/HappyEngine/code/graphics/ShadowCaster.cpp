@@ -226,7 +226,7 @@ void ShadowCaster::onSettingsChanged()
 
 void ShadowCaster::setShadowCamLens(float nearClip, float farClip, CameraOrtho& inoutCam)
 {
-    const CameraPerspective& camera(*m_View->getScene()->getCameraManager()->getActiveCamera());
+    const CameraPerspective& camera(*m_View->getCamera());
     const mat44& mtxShadowView(inoutCam.getView());
 
     float wFar = farClip * tan(camera.getFov()),          //half width
@@ -270,7 +270,7 @@ void ShadowCaster::render()
     vec3 right(normalize(cross(shadowLook, up)));
     up = normalize(cross(shadowLook, right));
 
-    const CameraPerspective& camera(*m_View->getScene()->getCameraManager()->getActiveCamera());
+    const CameraPerspective& camera(*m_View->getCamera());
 
     CameraOrtho shadowCam[4];
     for (int i(0); i < COUNT-1; ++i) //begin at 1, first is blur temp

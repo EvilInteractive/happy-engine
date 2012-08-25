@@ -43,6 +43,8 @@ public:
     virtual const vec3& getPosition() const = 0;
     virtual const vec3& getLook() const = 0;
 
+    virtual void prepareForRendering() = 0;
+
     virtual IntersectResult intersect(const Bound& bound) const = 0;
     virtual IntersectResult intersect(const Sphere& bound) const = 0;
 };  

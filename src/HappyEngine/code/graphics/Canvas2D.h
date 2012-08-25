@@ -67,6 +67,7 @@ public:
 
     /* STATIC */
     static Data* create(GLContext* context, const vec2& size);
+    static void resizeData(Data* data, const vec2& size);
 
     /* CONSTRUCTOR - DESTRUCTOR */
     Canvas2D(const RectI& absoluteViewport);

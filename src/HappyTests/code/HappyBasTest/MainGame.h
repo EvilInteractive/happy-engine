@@ -67,8 +67,6 @@ private:
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
 
-    FlyCamera* m_FlyCamera;
-
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
     MainGame& operator=(const MainGame&);

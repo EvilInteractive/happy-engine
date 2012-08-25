@@ -34,7 +34,7 @@
 namespace he {
 namespace gfx {
 
-GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr)
+GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr), m_FallBackContext(nullptr)
 {
     for (uint i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -45,24 +45,22 @@ GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m
 
 GraphicsEngine::~GraphicsEngine()
 {
-    std::for_each(m_Views.cbegin(), m_Views.cend(), [](View* view)
-    {
-        delete view;
-    });
-    std::for_each(m_Windows.cbegin(), m_Windows.cend(), [](Window* window)
-    {
-        delete window;
-    });
-    he::for_each(m_Scenes.cbegin(), m_Scenes.cend(), [](Scene* scene)
-    {
-        delete scene;
-    });
+}
+void GraphicsEngine::destroy()
+{
+    ViewFactory::getInstance()->destroyAll();
+    SceneFactory::getInstance()->destroyAll();
+    WindowFactory::getInstance()->destroyAll();
 
     Awesomium::WebCore::Shutdown();
 }
+
 void GraphicsEngine::init()
 {
     using namespace err;
+
+    GL::s_CurrentContext = &m_FallBackContext;
+    GL::init();
 
     m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
         
@@ -93,60 +91,74 @@ void GraphicsEngine::init()
 
 Scene* GraphicsEngine::createScene()
 {
-    Scene* scene(NEW Scene());
-    scene->setId(m_Scenes.insert(scene));
+    SceneFactory* factory(SceneFactory::getInstance());
+    Scene* scene(factory->get(factory->create()));
+    m_Scenes.push_back(scene->getHandle());
+    //scene->setId(m_Scenes.insert(scene->getHandle()));
     return scene;
 }
 
-Scene* GraphicsEngine::getScene( SceneID id )
+Scene* GraphicsEngine::getScene( SceneID /*id*/ )
 {
-    return m_Scenes[id];
+    HE_ASSERT(false, "not implemented");
+    return nullptr;
 }
 
 void GraphicsEngine::removeScene( Scene* scene )
 {
-    delete m_Scenes.remove(scene->getId());
+    HE_IF_ASSERT(std::find(m_Scenes.cbegin(), m_Scenes.cend(), scene->getHandle()) != m_Scenes.cend(), "Scene does not exist in the scene list")
+    {
+        SceneFactory* factory(SceneFactory::getInstance());
+        *std::find(m_Scenes.begin(), m_Scenes.end(), scene->getHandle()) = m_Scenes.back();
+        m_Scenes.pop_back();
+        factory->destroyObject(scene->getHandle());
+    }
 }
 
 View* GraphicsEngine::createView()
 {
-    View* view(NEW View());
-    m_Views.push_back(view);
+    ViewFactory* factory(ViewFactory::getInstance());
+    View* view(factory->get(factory->create()));
+    m_Views.push_back(view->getHandle());
     return view;
 }
 
 void GraphicsEngine::removeView( View* view )
 {
-    HE_IF_ASSERT(std::find(m_Views.cbegin(), m_Views.cend(), view) != m_Views.cend(), "View does not exist in the view list")
+    HE_IF_ASSERT(std::find(m_Views.cbegin(), m_Views.cend(), view->getHandle()) != m_Views.cend(), "View does not exist in the view list")
     {
-        *std::find(m_Views.begin(), m_Views.end(), view) = m_Views.back();
+        ViewFactory* factory(ViewFactory::getInstance());
+        *std::find(m_Views.begin(), m_Views.end(), view->getHandle()) = m_Views.back();
         m_Views.pop_back();
-        delete view;
+        factory->destroyObject(view->getHandle());
     }
 }
 
 Window* GraphicsEngine::createWindow()
 {
-    Window* window(NEW Window());
-    m_Windows.push_back(window);
+    WindowFactory* factory(WindowFactory::getInstance());
+    Window* window(factory->get(factory->create()));
+    m_Windows.push_back(window->getHandle());
     return window;
 }
 
 void GraphicsEngine::removeWindow( Window* window )
 {
-    HE_IF_ASSERT(std::find(m_Windows.cbegin(), m_Windows.cend(), window) != m_Windows.cend(), "Window does not exist in the window list")
+    HE_IF_ASSERT(std::find(m_Windows.cbegin(), m_Windows.cend(), window->getHandle()) != m_Windows.cend(), "Window does not exist in the window list")
     {
-        *std::find(m_Windows.begin(), m_Windows.end(), window) = m_Windows.back();
+        WindowFactory* factory(WindowFactory::getInstance());
+        *std::find(m_Windows.begin(), m_Windows.end(), window->getHandle()) = m_Windows.back();
         m_Windows.pop_back();
-        delete window;
+        factory->destroyObject(window->getHandle());
     }
 }
 
 void GraphicsEngine::draw()
 {
-    std::for_each(m_Views.cbegin(), m_Views.cend(), [](View* view)
+    ViewFactory* factory(ViewFactory::getInstance());
+    std::for_each(m_Views.cbegin(), m_Views.cend(), [factory](const ObjectHandle& view)
     {
-        view->draw();
+        factory->get(view)->draw();
     });
 }
 
@@ -180,7 +192,9 @@ void GraphicsEngine::unregisterContext( GLContext* context )
         m_Contexts.pop_back();
         setActiveContext(context);
         ContextRemoved(context);
+        context->window->m_Window->setActive(false);
         context->id = UINT_MAX;
+        GL::s_CurrentContext = &m_FallBackContext;
     }
 }
 

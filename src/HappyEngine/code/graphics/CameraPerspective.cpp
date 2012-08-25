@@ -27,17 +27,19 @@
 namespace he {
 namespace gfx {
 
-CameraPerspective::CameraPerspective(int viewportWidth, int viewportHeight) :	m_FOV(piOverFour),
-                                                        m_AspectRatio(static_cast<float>(viewportHeight/viewportWidth)),
-                                                        m_NearZ(10.0f),
-                                                        m_FarZ(1000.0f),
-                                                        m_View(mat44::Identity),
-                                                        m_Projection(mat44::Identity),
-                                                        m_ViewProjection(mat44::Identity),
-                                                        m_PosWorld(0.0f, 0.0f, 0.0f),
-                                                        m_RightWorld(0.0f, 0.0f, 1.0f),
-                                                        m_UpWorld(0.0f, 1.0f, 0.0f),
-                                                        m_LookWorld(1.0f, 0.0f, 0.0f)
+CameraPerspective::CameraPerspective() :	        
+        m_FOV(piOverFour),
+        m_AspectRatio(1),
+        m_NearZ(10.0f),
+        m_FarZ(1000.0f),
+        m_View(mat44::Identity),
+        m_Projection(mat44::Identity),
+        m_ViewProjection(mat44::Identity),
+        m_PosWorld(0.0f, 0.0f, 0.0f),
+        m_RightWorld(0.0f, 0.0f, 1.0f),
+        m_UpWorld(0.0f, 1.0f, 0.0f),
+        m_LookWorld(1.0f, 0.0f, 0.0f),
+        m_RegenViewMatrix(true), m_RegenProjMatrix(true)
 {
     m_Bound.calculate(this);
 }
@@ -47,11 +49,6 @@ CameraPerspective::~CameraPerspective()
 }
 
 // GENERAL
-void CameraPerspective::resize(int viewportWidth, int viewportHeight)
-{
-    m_AspectRatio = static_cast<float>(viewportHeight/viewportWidth);
-}
-
 void CameraPerspective::lookAt(const vec3 &pos, const vec3 &target, const vec3 &up)
 {
     vec3 lookAt = target - pos;
@@ -65,45 +62,35 @@ void CameraPerspective::lookAt(const vec3 &pos, const vec3 &target, const vec3 &
     m_UpWorld = newUp;
     m_LookWorld = lookAt;
 
-    buildViewMatrix();
+    m_RegenViewMatrix = true;
 }
 
 // SETTERS
 void CameraPerspective::setPosition(const vec3 &pos)
 {
     m_PosWorld = pos;
-
-    buildViewMatrix();
+    m_RegenViewMatrix = true;
 }
 
 void CameraPerspective::setLens(float aspectRatio, float fov, float nearZ, float farZ)
 {
     m_FOV = fov;
+    if (m_FOV > pi / 5 * 4.0f) m_FOV = static_cast<float>(pi / 5 * 4.0f);
+    if (m_FOV < pi / 30.0f) m_FOV = static_cast<float>(pi / 30.0f);
     m_AspectRatio = aspectRatio;
     m_NearZ = nearZ;
     m_FarZ = farZ;
 
-    buildProjectionMatrix();
+    m_RegenProjMatrix = true;
 }
 
-
-void CameraPerspective::buildViewMatrix()
+void CameraPerspective::setAspectRatio( float aspectRatio )
 {
-    vec3 pos(getPosition());
-    m_View = mat44::createLookAtLH(pos, pos + m_LookWorld, m_UpWorld);
-    m_ViewProjection = m_Projection * m_View;
-    m_Bound.calculate(this);
-}
-
-void CameraPerspective::buildProjectionMatrix()
-{
-    if (m_FOV > pi / 5 * 4.0f) m_FOV = static_cast<float>(pi / 5 * 4.0f);
-    if (m_FOV < pi / 30.0f) m_FOV = static_cast<float>(pi / 30.0f);
-
-    m_Projection = mat44::createPerspectiveLH(m_FOV, m_AspectRatio, m_NearZ, m_FarZ);
-
-    m_ViewProjection = m_Projection * m_View;
-    m_Bound.calculate(this);
+    if (fabs(m_AspectRatio - aspectRatio) > FLT_EPSILON)
+    {
+        m_AspectRatio = aspectRatio;
+        m_RegenProjMatrix = true;
+    }
 }
 
 he::IntersectResult CameraPerspective::intersect( const Bound& bound ) const
@@ -162,6 +149,27 @@ he::IntersectResult CameraPerspective::intersect( const Sphere& bound ) const
     // sphere frustum test
     return frustumBound.intersect(otherSphereBound);
 }
+
+void CameraPerspective::prepareForRendering()
+{
+    if (m_RegenViewMatrix)
+    {
+        const vec3& pos(getPosition());
+        m_View = mat44::createLookAtLH(pos, pos + m_LookWorld, m_UpWorld);
+    }
+    if (m_RegenProjMatrix)
+    {
+        m_Projection = mat44::createPerspectiveLH(m_FOV, m_AspectRatio, m_NearZ, m_FarZ);
+    }
+    if (m_RegenProjMatrix || m_RegenViewMatrix)
+    {
+        m_ViewProjection = m_Projection * m_View;
+        m_Bound.calculate(this);
+        m_RegenViewMatrix = false;
+        m_RegenProjMatrix = false;
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

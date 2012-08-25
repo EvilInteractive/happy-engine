@@ -160,6 +160,8 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
                                         bool useBlending, const vec2& newDimensions,
                                         const RectF& regionToDraw)
 {
+    m_RenderTarget->prepareForRendering();
+
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
     vec2 size;

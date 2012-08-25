@@ -51,6 +51,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 
     pTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RGBA8, false);
     pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);   
+    pTexture->setLoadFinished();
 
     // create final FBO & RB
     glGenFramebuffers(1, &pData->resolvedFbufferID);
@@ -64,7 +65,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     GL::heBindFbo(pData->fbufferID);
 
     int samples;
-    glGetIntegerv(GL_MAX_SAMPLES, &samples);
+    glGetIntegerv(GL_MAX_SAMPLES, &samples); // TODO: seeb: cache this in GL class
 
     glGenRenderbuffers(1, &pData->colorRbufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, pData->colorRbufferID);
@@ -88,6 +89,21 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 
     return pData;
 }
+void Canvas2D::resizeData( Data* data, const vec2& size )
+{
+    Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(data->renderTextureHnd));
+    texture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);   
+
+    int samples;
+    glGetIntegerv(GL_MAX_SAMPLES, &samples); // TODO: seeb: cache this in GL class
+
+    glBindRenderbuffer(GL_RENDERBUFFER, data->colorRbufferID);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, data->depthRbufferID);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GL_DEPTH_COMPONENT16, (GLsizei)size.x, (GLsizei)size.y);
+}
+
 
 /* CONSTRUCTOR - DESTRUCTOR */
 #pragma warning(disable:4355) // this pointer in member initialize list
@@ -140,6 +156,8 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
 
 Canvas2D::~Canvas2D()
 {
+    cleanup();
+
     delete m_pBufferData;
     delete m_pColorEffect;
     delete m_pTextureEffect;
@@ -148,7 +166,6 @@ Canvas2D::~Canvas2D()
 
     m_View->ViewportSizeChanged -= m_ViewResizedHandler;
 
-    cleanup();
 }
 
 /* EXTRA */
@@ -205,10 +222,7 @@ void Canvas2D::resize( const vec2& newSize )
 {
     if (m_CanvasSize != newSize)
     {
-        cleanup();
-
-        m_pBufferData = Canvas2D::create(m_View->getWindow()->getContext(), newSize);
-        m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
+        resizeData(m_pBufferData, newSize);
 
         m_CanvasSize = newSize;
         m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.0f, 10000.0f);
@@ -336,14 +350,12 @@ void Canvas2D::draw2D(Renderer2D* renderer)
 {
     HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     // blit MS FBO to normal FBO
-    uint oldFbo(GL::heGetBoundFbo());
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pBufferData->fbufferID);
     GL::heBindFbo(m_pBufferData->resolvedFbufferID);
 
     glBlitFramebuffer(  0, 0, (GLint)m_CanvasSize.x, (GLint)m_CanvasSize.y,
                         0, 0, (GLint)m_CanvasSize.x, (GLint)m_CanvasSize.y,
                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    GL::heBindFbo(oldFbo);
 
     Texture2D* tex = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
     renderer->drawTexture2DToScreen(tex, m_Position);

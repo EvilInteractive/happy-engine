@@ -22,11 +22,22 @@
 #define _HE_Window_H_
 #pragma once
 
+#include "Singleton.h"
+
 namespace he {
 namespace gfx {
+class Window;
+
+class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactory>
+{
+    friend Singleton;
+    WindowFactory() { init(1, 2, "WindowFactory"); }
+    virtual ~WindowFactory() { }
+};
 
 class Window
 {
+DECLARE_OBJECT(Window)
 friend GraphicsEngine;
 public:
     Window();

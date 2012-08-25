@@ -36,6 +36,7 @@ ShaderLoader::ShaderLoader()
 
 ShaderLoader::~ShaderLoader()
 {
+    ResourceFactory<gfx::Shader>::getInstance()->garbageCollect();
 }
 
 ObjectHandle ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)

@@ -51,7 +51,7 @@ public:
     };
 
     // CONSTRUCTOR - DESTRUCTOR
-    CameraPerspective(int viewportWidth, int viewportHeight);
+    CameraPerspective();
     virtual ~CameraPerspective();
 
     // ICamera
@@ -62,17 +62,18 @@ public:
     virtual float getFarClip() const { return m_FarZ; }
     virtual const vec3& getPosition() const { return m_PosWorld; }
     virtual const vec3& getLook() const { return m_LookWorld; }
+    virtual void prepareForRendering();
     virtual IntersectResult intersect(const Bound& bound) const;
     virtual IntersectResult intersect(const Sphere& bound) const;
 
     // GENERAL
     virtual void tick(float /*dTime*/) {}
-    virtual void resize(int viewportWidth, int viewportHeight);
     virtual void lookAt(const vec3& pos, const vec3& target, const vec3& up);
 
     // SETTERS
     virtual void setPosition(const vec3& pos);
     virtual void setLens(float aspectRatio = (9.0f/16.0f), float fov = piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
+    virtual void setAspectRatio(float aspectRatio);
 
     // GETTERS
     virtual const vec3& getRight() const { return m_RightWorld; }
@@ -82,10 +83,6 @@ public:
     virtual float getAspectRatio() const { return m_AspectRatio; }
 
 protected:
-
-    void buildViewMatrix();
-    void buildProjectionMatrix();
-
     // DATAMEMBERS
     mat44 m_View;
     mat44 m_Projection;
@@ -101,6 +98,8 @@ protected:
     float m_FOV;
     float m_AspectRatio;
     float m_NearZ, m_FarZ;
+
+    bool m_RegenViewMatrix, m_RegenProjMatrix;
     
 private:
 

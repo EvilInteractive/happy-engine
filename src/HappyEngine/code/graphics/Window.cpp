@@ -29,6 +29,7 @@
 
 namespace he {
 namespace gfx {
+IMPLEMENT_OBJECT(Window)
 
 #pragma warning(disable:4355) // use of this in initializer list
 Window::Window() 
@@ -82,20 +83,7 @@ void Window::create(Window* parent)
     GRAPHICS->setActiveWindow(this);
 
     GRAPHICS->setActiveContext(&m_Context);
-    glewExperimental = true;
-    err::glHandleError(glewInit());
-
     GL::init();
-
-    glClearDepth(1.0f);
-
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetWindingFrontFace(true);
-    GL::heSetCullFace(false);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     if (GRAPHICS->registerContext(&m_Context) == false)
     {
@@ -104,11 +92,11 @@ void Window::create(Window* parent)
 }
 void Window::destroy()
 {
+    GRAPHICS->unregisterContext(&m_Context);
     if (m_Window->isOpen())
     {
         close();
         m_Window->close();
-        GRAPHICS->unregisterContext(&m_Context);
     }
 }
 bool Window::isOpen()

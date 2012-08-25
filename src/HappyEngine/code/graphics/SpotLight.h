@@ -23,12 +23,12 @@
 #pragma once
 
 #include "DefaultSingleDrawable.h"
-#include "ILight.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
 
-class SpotLight : public DefaultSingleDrawable, public ILight
+class SpotLight : public DefaultSingleDrawable, public Light
 {
 private:
     vec3 m_Position;

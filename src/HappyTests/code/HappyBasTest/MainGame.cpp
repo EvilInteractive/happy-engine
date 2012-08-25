@@ -66,11 +66,15 @@ MainGame::~MainGame()
         delete entity;     
     });
 
+    CONSOLE->setView(nullptr);
     GRAPHICS->removeView(m_View);
-    GRAPHICS->removeScene(m_Scene);
-    GRAPHICS->removeWindow(m_Window);
     GRAPHICS->removeView(m_View2);
+
+    GRAPHICS->removeWindow(m_Window);
     GRAPHICS->removeWindow(m_Window2);
+
+    m_Scene->getCameraManager()->deleteAllCameras();
+    GRAPHICS->removeScene(m_Scene);
 }
 
 void MainGame::init()
@@ -104,10 +108,10 @@ void MainGame::load()
     settings.lightingSettings.enableShadows = false;
     settings.lightingSettings.enableSpecular = true;
 
-    settings.shadowSettings.shadowMult = 0;
+    settings.shadowSettings.shadowMult = 2;
 
     settings.postSettings.shaderSettings.enableAO = false;
-    settings.postSettings.shaderSettings.enableBloom = false;
+    settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
     settings.postSettings.shaderSettings.enableHDR = true;
@@ -121,6 +125,8 @@ void MainGame::load()
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
+    CONSOLE->setView(m_View);
+
     m_Window2->setResizable(true);
     m_Window2->setVSync(false);
     m_Window2->setWindowDimension(720, 720);
@@ -131,19 +137,25 @@ void MainGame::load()
     m_View2->setWindow(m_Window2);
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View2->init(settings);
+  
+    FlyCamera* flyCamera = NEW FlyCamera();
+    m_Scene->getCameraManager()->addCamera("default", flyCamera);
+    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
-    
-    m_FlyCamera = NEW FlyCamera();
-    m_Scene->getCameraManager()->addCamera("default", m_FlyCamera);
-    m_Scene->getCameraManager()->setActiveCamera("default");
-    m_FlyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
-    m_FlyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
+    FlyCamera* flyCamera2 = NEW FlyCamera();
+    m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
+    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
-//     m_FpsGraph = NEW tools::FPSGraph();
-//     m_FpsGraph->setView(m_View);
-//     m_FpsGraph->setPos(vec2(1280 - 256, 8));
-//     m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
-//    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_View->setCamera("default");
+    m_View2->setCamera("default2");
+
+    m_FpsGraph = NEW tools::FPSGraph();
+    m_FpsGraph->setView(m_View2);
+    m_FpsGraph->setPos(vec2(8, 8));
+    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
+    m_View2->get2DRenderer()->attachToRender(m_FpsGraph);
 
     ge::Entity* scene(NEW ge::Entity());
     scene->init(m_Scene);
@@ -206,7 +218,7 @@ void MainGame::tick( float dTime )
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
 
-   // m_FpsGraph->tick(dTime);
+    m_FpsGraph->tick(dTime);
 }
 
 } //end namespace

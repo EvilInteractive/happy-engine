@@ -29,6 +29,12 @@ namespace Awesomium {
     class WebCore;
 }
 
+namespace sf {
+namespace priv {
+    class GlContext;
+}
+}
+
 namespace he {
 namespace gfx {
 
@@ -46,6 +52,7 @@ public:
 
     /* GENERAL */
     void init();
+    void destroy();
     void tick(float dTime);
     void draw();
 
@@ -71,7 +78,7 @@ public:
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
-    const std::vector<Window*>& getAllWindows() const { return m_Windows; }
+    const std::vector<ObjectHandle>& getAllWindows() const { return m_Windows; }
     const std::vector<GLContext*>& getContexts() const { return m_Contexts; } 
 
     View* getActiveView() const { return m_ActiveView; }
@@ -83,11 +90,12 @@ public:
     he::event1<void, GLContext*> ContextRemoved;
 
 private:
+    GLContext m_FallBackContext;
 
     /* DATAMEMBERS */
-    SlotPContainer<Scene*>  m_Scenes;
-    std::vector<View*>   m_Views;
-    std::vector<Window*> m_Windows;
+    std::vector<ObjectHandle> m_Scenes;
+    std::vector<ObjectHandle> m_Views;
+    std::vector<ObjectHandle> m_Windows;
 
     Window* m_ActiveWindow;
     View* m_ActiveView;

@@ -34,9 +34,12 @@
 #include "ShadowCaster.h"
 #include "RenderTarget.h"
 #include "GraphicsEngine.h"
+#include "CameraPerspective.h"
+#include "Game.h"
 
 namespace he {
 namespace gfx {
+IMPLEMENT_OBJECT(View)
 
 #pragma warning(disable:4355) //'this' : used in base member initializer list
 View::View(): 
@@ -51,16 +54,20 @@ View::View():
     m_Window(nullptr), m_Scene(nullptr),
     m_IntermediateRenderTarget(nullptr),
     m_OutputRenderTarget(nullptr),
-    m_WindowResizedCallback(boost::bind(&View::calcViewportFromPercentage, this))
+    m_WindowResizedCallback(boost::bind(&View::resize, this))
 {
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
     m_NormalRenderMap->setName("View::m_NormalRenderMap");
     m_DepthRenderMap->setName("View::m_DepthRenderMap");
+
+    GAME->addToTickList(this);
 }
 #pragma warning(default:4355) 
 
 View::~View()
 {
+    GAME->removeFromTickList(this);
+
     if (m_Window != nullptr)
         m_Window->Resized -= m_WindowResizedCallback;
 
@@ -146,6 +153,8 @@ void View::init( const RenderSettings& settings )
 void View::setScene( Scene* scene )
 {
     m_Scene = scene;
+    if (m_CameraId != "")
+        m_Camera = m_Scene->getCameraManager()->getCamera(m_CameraId);
 }
 
 void View::setWindow( Window* window )
@@ -180,6 +189,26 @@ void View::setRelativeViewport( const RectF& viewportPercentage )
     }
 }
 
+void View::resize()
+{
+    calcViewportFromPercentage();
+
+    if (m_Settings.enablePost)
+    {
+        // Color
+        m_ColorRenderMap->setData(m_Viewport.width, m_Viewport.height, 0,
+            gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
+
+        // Normal
+        m_NormalRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
+            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte, 0 );
+    }
+    // Depth
+    m_DepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
+        gfx::Texture2D::BufferLayout_Depth, gfx::Texture2D::BufferType_Float, 0 );
+    ViewportSizeChanged();
+}
+
 void View::calcViewportFromPercentage()
 {
     HE_IF_ASSERT(m_Window != nullptr, "Window must first be set!")
@@ -197,6 +226,8 @@ void View::draw()
     GL::reset();
     m_Scene->prepareForRendering();
     GRAPHICS->setActiveView(this);
+    m_Camera->setAspectRatio(m_Viewport.height / (float)m_Viewport.width);
+    m_Camera->prepareForRendering();
 
     if (m_Settings.lightingSettings.enableShadows)
         m_ShadowCaster->render();
@@ -215,6 +246,19 @@ void View::draw()
     m_2DRenderer->draw();
 
     m_Window->present();
+}
+
+void View::setCamera( const std::string& camera )
+{
+    m_CameraId = camera;
+    if (m_Scene != nullptr)
+        m_Camera = m_Scene->getCameraManager()->getCamera(m_CameraId);
+}
+
+void View::tick( float dTime )
+{
+    if (m_Window == GRAPHICS->getActiveWindow()) // not a good way but good for now
+        m_Camera->tick(dTime);
 }
 
 

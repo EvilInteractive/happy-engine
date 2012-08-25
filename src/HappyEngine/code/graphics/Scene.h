@@ -24,6 +24,7 @@
 
 #include "DrawListContainer.h"
 #include "Bound.h"
+#include "Singleton.h"
 
 namespace he {
 namespace ge {
@@ -34,9 +35,18 @@ class LightManager;
 class InstancingManager;
 class Picker;
 class IDrawable;
+class Scene;
+
+class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
+{
+    friend Singleton;
+    SceneFactory() { init(1, 2, "SceneFactory"); }
+    virtual ~SceneFactory() { }
+};
 
 class Scene
 {
+    DECLARE_OBJECT(Scene)
 public:
     Scene();
     virtual ~Scene();
@@ -52,11 +62,7 @@ public:
     InstancingManager* getInstancingManager() const { return m_InstancingManager; }
     ge::CameraManager* getCameraManager() const { return m_CameraManager; }
     const DrawListContainer& getDrawList() const { return m_DrawList; }
-
-    // Internal
-    SceneID getId() const { return m_Id; }
-    void setId(SceneID id) { m_Id = id; }
-
+    
     // Visual Picking
     //void initPicking(); // only init picking when needed, because it requires extra FBO & shader
     //uint pick(const vec2& screenPoint);
@@ -70,8 +76,6 @@ private:
     DrawListContainer m_DrawList;
     
     Picker* m_Picker;
-
-    SceneID m_Id;
 
     //Disable default copy constructor and default assignment operator
     Scene(const Scene&);

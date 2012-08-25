@@ -30,6 +30,7 @@
 
 namespace he {
 namespace gfx {
+IMPLEMENT_OBJECT(Scene)
 
 Scene::Scene():
           m_CameraManager(NEW ge::CameraManager)
@@ -41,6 +42,9 @@ Scene::Scene():
 
 Scene::~Scene()
 {
+    delete m_LightManager;
+    delete m_InstancingManager;
+    delete m_CameraManager;
 }
 
 void Scene::forceReevalute( IDrawable* drawable )

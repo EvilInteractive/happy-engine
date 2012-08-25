@@ -39,6 +39,8 @@ ModelLoader::ModelLoader(): m_isModelThreadRunning(false)
 ModelLoader::~ModelLoader()
 {
     m_EmptyMesh->release();
+    ResourceFactory<gfx::Model>::getInstance()->garbageCollect();
+    ResourceFactory<gfx::ModelMesh>::getInstance()->garbageCollect();
 }
 
 void ModelLoader::tick(float /*dTime*/)

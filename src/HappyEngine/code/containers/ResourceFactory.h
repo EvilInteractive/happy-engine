@@ -54,7 +54,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void garbageCollect()
     {
-        for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
+        for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
         {
             if (m_RefCounter[i] == 0 && isAliveAt(i) && getAt(i)->canBeGarbageCollected())
             {
@@ -87,7 +87,6 @@ public:
     virtual ObjectHandle create()
     {
         ObjectHandle handle(ObjectFactory<T>::create());
-        get(handle)->setHandle(handle);
         instantiate(handle);
         return handle;
     }
@@ -109,7 +108,7 @@ protected:
     {
         ObjectFactory<T>::destroyObject(handle);
     }
-    virtual void destroyAt(ObjectHandle::Type index)
+    virtual void destroyAt(ObjectHandle::IndexType index)
     {
         ObjectFactory<T>::destroyAt(index);
     }
@@ -133,8 +132,7 @@ private:
     }
     virtual ~ResourceFactory() 
     {
-        garbageCollect();
-        for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
+        for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
         {
             if (m_RefCounter[i] != 0)
             {

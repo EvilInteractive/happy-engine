@@ -82,7 +82,7 @@ public:
             NETWORK->BroadcastDestruction(get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
         ObjectFactory<T>::destroyObject(handle);
     }
-    virtual void destroyAt(ObjectHandle::Type index)
+    virtual void destroyAt(ObjectHandle::IndexType index)
     {
         if (NETWORK->isConnected())
             NETWORK->BroadcastDestruction(getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);

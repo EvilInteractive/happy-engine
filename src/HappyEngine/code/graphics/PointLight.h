@@ -23,7 +23,7 @@
 #pragma once
 
 #include "DefaultSingleDrawable.h"
-#include "ILight.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
@@ -31,7 +31,7 @@ namespace gfx {
 class ModelMesh;
 class Material;
 
-class PointLight : public DefaultSingleDrawable, public ILight
+class PointLight : public DefaultSingleDrawable, public Light
 {
 private:
     vec3 m_Position;

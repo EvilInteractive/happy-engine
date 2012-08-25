@@ -16,60 +16,31 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 17/03/2012
+//Created: 17/08/2011
 
-#ifndef _HE_RESOURCE_H_
-#define _HE_RESOURCE_H_
+#ifndef _HE_ILIGHT_H_
+#define _HE_ILIGHT_H_
 #pragma once
 
-#include "ResourceFactory.h"
-
 namespace he {
+namespace gfx {
 
-template<typename T>
-class Resource
+enum LightType
 {
-DECLARE_OBJECT(Resource<T>)
+    LightType_Point,
+    LightType_Spot,
+    LightType_Unkown
+};
+
+class Light
+{
+DECLARE_OBJECT(Light)
 public:
-    Resource()
-    {
-    }
-    virtual ~Resource()
-    {
-    }
-
-    virtual void release() const
-    {
-        ResourceFactory<T>::getInstance()->release(m_Handle);
-    }
-
-    void setName(const std::string& name)
-    {
-        m_Name = name;
-    }
-    const std::string& getName() const
-    {
-        return m_Name;
-    }
-
-    virtual bool canBeGarbageCollected() const
-    {
-        return true;
-    }
-
-private:
-
-    std::string m_Name;
-
-    // disabled assignment operator
-    Resource& operator=(const Resource&);
-    Resource(const Resource&);
+    virtual ~Light() {}
+    virtual LightType getType() const { return LightType_Unkown; }
 };
 
 
-template<typename T>
-IMPLEMENT_OBJECT(Resource<T>)
-
-} //end namespace
+} } //end namespace
 
 #endif

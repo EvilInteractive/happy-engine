@@ -253,8 +253,8 @@ void Deferred3DRenderer::onViewResized()
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
     //////////////////////////////////////////////////////////////////////////
-    uint width(m_OutputRenderTarget->getWidth()); 
-    uint height(m_OutputRenderTarget->getHeight());
+    uint width(m_View->getViewport().width); 
+    uint height(m_View->getViewport().height);
 
 
     //Collection Textures - just SGI and color others are shared
@@ -287,7 +287,7 @@ void Deferred3DRenderer::draw()
     //////////////////////////////////////////////////////////////////////////
     ///                             DRAW                                   ///
     //////////////////////////////////////////////////////////////////////////
-    const CameraPerspective* camera(scene->getCameraManager()->getActiveCamera());
+    const CameraPerspective* camera(m_View->getCamera());
     scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
     {
         d->applyMaterial(camera);
@@ -350,8 +350,8 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
 
     m_AmbDirIllLightData.ambColor.set(vec4(ambLight->color, ambLight->multiplier));
     m_AmbDirIllLightData.dirColor.set(vec4(dirLight->getColor(), dirLight->getMultiplier()));
-    m_AmbDirIllLightData.dirDirection.set(normalize((scene->getCameraManager()->getActiveCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz()));
-    m_AmbDirIllLightData.dirPosition.set((scene->getCameraManager()->getActiveCamera()->getView() * vec4(dirLight->getShadowPosition(), 1.0f)).xyz());
+    m_AmbDirIllLightData.dirDirection.set(normalize((m_View->getCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz()));
+    m_AmbDirIllLightData.dirPosition.set((m_View->getCamera()->getView() * vec4(dirLight->getShadowPosition(), 1.0f)).xyz());
     m_AmbDirIllLightData.dirNearFar.set(dirLight->getShadowNearFar());
 
     m_AmbDirIllLightData.pLightBuffer->setShaderVar(m_AmbDirIllLightData.ambColor);
@@ -405,7 +405,7 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
 
-    const CameraPerspective& camera(*scene->getCameraManager()->getActiveCamera());
+    const CameraPerspective& camera(*m_View->getCamera());
     std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
         PointLight* light(lightFactory->getPointLight(lightHandle));
@@ -462,7 +462,7 @@ void Deferred3DRenderer::postSpotLights(const Scene* scene)
 
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
-    const CameraPerspective& camera(*scene->getCameraManager()->getActiveCamera());
+    const CameraPerspective& camera(*m_View->getCamera());
     std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
         SpotLight* light(lightFactory->getSpotLight(lightHandle));

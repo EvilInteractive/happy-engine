@@ -62,7 +62,7 @@ void Forward3DRenderer::draw()
     GL::heBlendEnabled(m_BlendFilter == DrawListContainer::BlendFilter_Blend);
 
     const DrawListContainer& drawList(scene->getDrawList());
-    const CameraPerspective* camera(scene->getCameraManager()->getActiveCamera());
+    const CameraPerspective* camera(m_View->getCamera());
     drawList.draw(m_BlendFilter, camera, [&camera](IDrawable* drawable)
     {
         drawable->applyMaterial(camera);

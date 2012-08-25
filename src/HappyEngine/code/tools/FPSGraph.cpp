@@ -137,6 +137,7 @@ void FPSGraph::drawTextOnly(gfx::Renderer2D* renderer)
     sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
     txt.addLine(std::string(buff));
     
+    m_pCanvas2D->fillRect(m_Pos, vec2(128, 16));
     m_pCanvas2D->fillText(txt, m_Pos);
 
     m_pCanvas2D->draw2D(renderer);

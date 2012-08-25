@@ -22,6 +22,7 @@
 #include "OpenGL.h"
 #include "GLContext.h"
 #include "BufferLayout.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {
@@ -216,6 +217,19 @@ void GL::heLineSmoothEnabled(bool enabled)
 
 void GL::init()
 {
+    glewExperimental = true;
+    err::glHandleError(glewInit());
+
+    glClearDepth(1.0f);
+
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetWindingFrontFace(true);
+    GL::heSetCullFace(false);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
     if (glewGetContext()->__GLEW_EXT_texture_filter_anisotropic == GL_TRUE)
     {
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &s_CurrentContext->m_MaxAnisotropicFilteringSupport);

@@ -82,19 +82,29 @@ struct NetworkObjectID
 #define OBJECTHANDLE_MAX 0xffff
 struct ObjectHandle
 {
-    typedef ushort Type;
-    Type index;
-    Type salt;
+    typedef uint16 ObjectType;
+    typedef uint32 SaltType;
+    typedef uint16 IndexType;
 
-    ObjectHandle(): index(0xffff), salt(0xffff) {}
+    static const int MAX_INDEX = UINT16_MAX;
+    static const int MAX_SALT = UINT32_MAX;
+    static const int MAX_TYPE = UINT16_MAX;
+
+    static const int UNASSIGNED_TYPE = 0;
+
+    IndexType   index;
+    SaltType    salt;
+    ObjectType  type;
+
+    ObjectHandle(): index(0), salt(0), type(UNASSIGNED_TYPE)  {}
 
     bool operator==(const ObjectHandle& other) const
     {
-        return index == other.index && salt == other.salt;
+        return type == other.type && index == other.index && salt == other.salt;
     }
     bool operator!=(const ObjectHandle& other) const
     {
-        return index != other.index || salt != other.salt;
+        return type != other.type || index != other.index || salt != other.salt;
     }
 
     const static ObjectHandle unassigned;

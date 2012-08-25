@@ -16,29 +16,14 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 17/08/2011
-
-#ifndef _HE_ILIGHT_H_
-#define _HE_ILIGHT_H_
-#pragma once
+//Created: 25/08/2012
+#include "HappyPCH.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
 
-enum LightType
-{
-    LightType_Point,
-    LightType_Spot,
-    LightType_Unkown
-};
-
-class ILight
-{
-public:
-    virtual ~ILight() {}
-    virtual LightType getType() const { return LightType_Unkown; }
-};
+IMPLEMENT_OBJECT(Light);
 
 } } //end namespace
 
-#endif

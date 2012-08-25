@@ -31,7 +31,7 @@ class CameraPerspective;
 
 namespace ge {
 
-class CameraManager : public ITickable
+class CameraManager
 {
 public:
     CameraManager();
@@ -42,16 +42,8 @@ public:
     void deleteCamera(const std::string& id);
     void deleteAllCameras();
 
-    virtual void tick(float dTime);
-
-    void setActiveCamera(const std::string& id);
-    gfx::CameraPerspective* getActiveCamera() { return m_ActiveCamera; }
-
 private:
-
-    gfx::CameraPerspective* m_ActiveCamera;
     std::map<std::string, gfx::CameraPerspective*> m_Cameras;
-
 
     //Disable default copy constructor and default assignment operator
     CameraManager(const CameraManager&);

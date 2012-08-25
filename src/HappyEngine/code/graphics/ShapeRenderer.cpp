@@ -169,7 +169,7 @@ void ShapeRenderer::draw()
 
     m_RenderTarget->prepareForRendering(1);
 
-    gfx::CameraPerspective* cam(m_View->getScene()->getCameraManager()->getActiveCamera());
+    gfx::CameraPerspective* cam(m_View->getCamera());
     m_ViewProjection = cam->getViewProjection();
     m_BillboardMatrix = mat44::createBillboard(cam);
 

@@ -30,6 +30,7 @@ namespace px {
 
 class PhysicsConvexShape : public IPhysicsShape
 {
+DECLARE_OBJECT(PhysicsConvexShape)
 public:
     PhysicsConvexShape();
     explicit PhysicsConvexShape(const ObjectHandle& convexMesh, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));

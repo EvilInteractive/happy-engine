@@ -33,9 +33,7 @@ public:
 
     // GENERAL
     virtual void tick(float dTime);
-
-    void setAspectRatio(float aspect);
-
+    
     // SETTERS
     void moveable(bool bMoveable);
     void setMouseSensitivty(float sens = 100.0f);

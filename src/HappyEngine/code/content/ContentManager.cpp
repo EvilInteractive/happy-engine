@@ -72,13 +72,13 @@ ContentManager::ContentManager():
 
 ContentManager::~ContentManager()
 {
+    delete m_pMaterialLoader;
+    delete m_pShaderLoader;
+    delete m_pPhysicsShapeLoader;
+    delete m_pLineLoader;
+    delete m_pFontLoader;
     delete m_pModelLoader;
     delete m_pTextureLoader;
-    delete m_pLineLoader;
-    delete m_pPhysicsShapeLoader;
-    delete m_pFontLoader;
-    delete m_pShaderLoader;
-    delete m_pMaterialLoader;
 
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();

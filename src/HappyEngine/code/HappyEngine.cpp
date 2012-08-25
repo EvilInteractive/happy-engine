@@ -61,7 +61,6 @@ void HappyEngine::dispose()
     HAPPYENGINE->cleanup();
 
     StaticDataManager::destroy();
-    delete HAPPYENGINE->m_pPhysicsEngine;
 
     delete s_pHappyEngine;
     s_pHappyEngine = nullptr;
@@ -72,21 +71,26 @@ void HappyEngine::cleanup()
 
     m_AudioThread.join(); // wait for audiothread to finish
 
+    m_pGraphicsEngine->destroy();
+
     //dispose/delete all sub engines here
-    m_pGame = nullptr;
-    delete m_pGraphicsEngine;
-    m_pGraphicsEngine = nullptr;
+    delete m_pConsole;
+    m_pConsole = nullptr;
     delete m_pContentManager;
     m_pContentManager = nullptr;
+    m_pGame = nullptr;
     delete m_pSoundEngine;
     m_pSoundEngine = nullptr;
     delete m_pControlsManager;
     m_pControlsManager = nullptr;
     delete m_pNetworkManager;
     m_pNetworkManager = nullptr;
+    delete m_pGraphicsEngine;
+    m_pGraphicsEngine = nullptr;
+    delete m_pPhysicsEngine;
+    m_pPhysicsEngine = nullptr;
 
-    delete m_pConsole;
-    m_pConsole = nullptr;
+
 }
 void HappyEngine::init(int subengines)
 {
@@ -232,10 +236,11 @@ void HappyEngine::updateLoop(float dTime)
         m_pControlsManager->tick();
 
     PROFILER_BEGIN("SFML poll events");
-    const std::vector<gfx::Window*>& windows(GRAPHICS->getAllWindows());
-    std::for_each(windows.cbegin(), windows.cend(), [&dTime](gfx::Window* window)
+    const std::vector<ObjectHandle>& windows(GRAPHICS->getAllWindows());
+    gfx::WindowFactory* windowFactory(gfx::WindowFactory::getInstance());
+    std::for_each(windows.cbegin(), windows.cend(), [&dTime,windowFactory](const ObjectHandle& window)
     {
-        window->doEvents(dTime);
+        windowFactory->get(window)->doEvents(dTime);
     });
     PROFILER_END();
 

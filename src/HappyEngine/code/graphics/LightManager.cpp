@@ -26,7 +26,7 @@
 #include "SpotLight.h"
 #include "AmbientLight.h"
 #include "DirectionalLight.h"
-#include "ILight.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
@@ -133,7 +133,7 @@ void LightManager::removeAllLights()
 }
 void LightManager::remove(const ObjectHandle& lightHandle)
 {
-    ILight* light(LightFactory::getInstance()->get(lightHandle));
+    Light* light(LightFactory::getInstance()->get(lightHandle));
     if (light->getType() == LightType_Point)
     {
         m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), lightHandle), m_PointLightVector.end());

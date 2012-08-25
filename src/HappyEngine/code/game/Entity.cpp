@@ -69,7 +69,7 @@ void Entity::deleteComponent( IComponent* pComponent )
 
 void Entity::serializeCreate( NetworkStream* stream ) const
 {
-    stream->Write(m_Scene->getId());
+    //stream->Write(m_Scene->getId());
     std::for_each(m_Components.cbegin(), m_Components.cend(), [&stream](IComponent* component)
     {
         component->serializeCreate(stream);
@@ -78,9 +78,9 @@ void Entity::serializeCreate( NetworkStream* stream ) const
 
 bool Entity::deserializeCreate( NetworkStream* stream )
 {
-    SceneID id;
-    stream->Read(id);
-    m_Scene = GRAPHICS->getScene(id);
+    //SceneID id;
+    //stream->Read(id);
+    m_Scene = GRAPHICS->getScene(0);
     bool keep(true);
     std::for_each(m_Components.cbegin(), m_Components.cend(), [&keep,&stream](IComponent* component)
     {
