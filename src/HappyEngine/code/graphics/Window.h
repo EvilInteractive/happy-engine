@@ -88,6 +88,7 @@ private:
     bool m_IsCursorVisible;
     bool m_Fullscreen;
     bool m_Resizeable; 
+    bool m_IsVisible;
 
     GLContext m_Context;
 

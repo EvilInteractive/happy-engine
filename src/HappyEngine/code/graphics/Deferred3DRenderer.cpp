@@ -147,9 +147,10 @@ void Deferred3DRenderer::compileShaders()
     if (m_AmbDirIllShader != nullptr)
         m_AmbDirIllShader->release();
 
-    m_PointLightShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    m_SpotLightShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    m_AmbDirIllShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
+    ResourceFactory<Shader>* factory(ResourceFactory<Shader>::getInstance());
+    m_PointLightShader =  factory->get(factory->create());
+    m_SpotLightShader  =  factory->get(factory->create());
+    m_AmbDirIllShader  =  factory->get(factory->create());
 
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));

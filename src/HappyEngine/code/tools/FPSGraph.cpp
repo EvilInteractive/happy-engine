@@ -40,7 +40,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(0.5f),
                         m_pFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 10)),
-                        m_FPSGraphState(Type_TextOnly),
+                        m_FPSGraphState(Type_ToConsole),
                         m_Pos(5.0f, 5.0f),
                         m_View(nullptr),
                         m_pCanvas2D(nullptr)
@@ -115,7 +115,7 @@ ushort FPSGraph::cap(float fps)
 
 void FPSGraph::drawToConsole(gfx::Renderer2D* /*renderer*/)
 {
-    if ((m_GameTime - m_TBase) >= m_Interval)
+    if ((m_GameTime - m_TBase) < FLT_EPSILON)
     {
         HE_INFO("Fps: %d", (int)m_CurrentFPS);
     }

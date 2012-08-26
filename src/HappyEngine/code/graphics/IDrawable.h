@@ -50,6 +50,7 @@ public:
     virtual bool getCastsShadow() const = 0;
     virtual void setCastsShadow(bool castShadow) = 0;
     
+    virtual void calculateBound() = 0;
     virtual const Bound& getBound() const = 0;
 
     virtual void detachFromScene() = 0;

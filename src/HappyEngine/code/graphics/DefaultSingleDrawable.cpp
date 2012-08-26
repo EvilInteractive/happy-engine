@@ -29,7 +29,7 @@
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true), m_Scene(nullptr)
+DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))), m_Scene(nullptr)
 {
 }
 
@@ -105,9 +105,18 @@ bool DefaultSingleDrawable::isAttachedToScene() const
 
 const Bound& DefaultSingleDrawable::getBound() const
 {
+    return m_Bound;
+}
+
+void DefaultSingleDrawable::calculateBound()
+{
     HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
     HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octtree insertion will happen!");
-    return getModelMesh()->getBound();
+    const AABB& aabb(getModelMesh()->getBound().getAABB());
+    mat44 world(getWorldMatrix());
+    AABB newAABB(world * aabb.getTopFrontLeft(),
+                 world * aabb.getBottomBackRight());
+    m_Bound.fromAABB(newAABB);
 }
 
 } } //end namespace

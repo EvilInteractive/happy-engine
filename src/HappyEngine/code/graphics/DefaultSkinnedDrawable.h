@@ -42,6 +42,7 @@ public:
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
     virtual mat44 getWorldMatrix() const = 0;
 
+    virtual void calculateBound();
     virtual const Bound& getBound() const { return m_Bound; }
 
     virtual bool getCastsShadow() const;

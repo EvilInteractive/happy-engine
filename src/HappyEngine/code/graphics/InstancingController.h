@@ -67,6 +67,7 @@ public:
     virtual Scene* getScene() const;
     virtual bool isAttachedToScene() const;
 
+    virtual void calculateBound();
     virtual const Bound& getBound() const { return m_Bound; }
     virtual bool isSleeping() const { return false; }; // is force handled in code
 

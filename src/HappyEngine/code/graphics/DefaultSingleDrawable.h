@@ -44,6 +44,7 @@ public:
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);
 
+    virtual void calculateBound();
     virtual const Bound& getBound() const;
 
     virtual void draw();
@@ -58,6 +59,7 @@ public:
 private:
     bool m_CastsShadow;
     Scene* m_Scene;
+    Bound m_Bound;
 
     //Disable default copy constructor and default assignment operator
     DefaultSingleDrawable(const DefaultSingleDrawable&);

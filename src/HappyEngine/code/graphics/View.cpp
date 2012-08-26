@@ -222,30 +222,33 @@ void View::calcViewportFromPercentage()
 
 void View::draw()
 {
-    m_Window->prepareForRendering();
-    GL::reset();
-    m_Scene->prepareForRendering();
-    GRAPHICS->setActiveView(this);
-    m_Camera->setAspectRatio(m_Viewport.height / (float)m_Viewport.width);
-    m_Camera->prepareForRendering();
+    if (m_Window->isOpen())
+    {
+        m_Window->prepareForRendering();
+        GL::reset();
+        m_Scene->prepareForRendering();
+        GRAPHICS->setActiveView(this);
+        m_Camera->setAspectRatio(m_Viewport.height / (float)m_Viewport.width);
+        m_Camera->prepareForRendering();
 
-    if (m_Settings.lightingSettings.enableShadows)
-        m_ShadowCaster->render();
+        if (m_Settings.lightingSettings.enableShadows)
+            m_ShadowCaster->render();
 
-    GL::heSetViewport(m_Viewport);
-    m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 1.0f));
-    m_OutputRenderTarget->clear(Color(1.0f, 0, 0, 1.0f));
-    m_OpacRenderer->draw();
-    m_TransparentRenderer->draw();
-    
-    if (m_Settings.enablePost)
-        m_PostProcesser->draw();
-    
-    m_ShapeRenderer->draw();
-    
-    m_2DRenderer->draw();
+        GL::heSetViewport(m_Viewport);
+        m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 1.0f));
+        m_OutputRenderTarget->clear(Color(1.0f, 0, 0, 1.0f));
+        m_OpacRenderer->draw();
+        m_TransparentRenderer->draw();
 
-    m_Window->present();
+        if (m_Settings.enablePost)
+            m_PostProcesser->draw();
+
+        m_ShapeRenderer->draw();
+
+        m_2DRenderer->draw();
+
+        m_Window->present();
+    }
 }
 
 void View::setCamera( const std::string& camera )

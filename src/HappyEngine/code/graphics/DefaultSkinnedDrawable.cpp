@@ -101,5 +101,16 @@ bool DefaultSkinnedDrawable::isAttachedToScene() const
     return m_Scene != nullptr;
 }
 
+void DefaultSkinnedDrawable::calculateBound()
+{
+    HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
+    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octtree insertion will happen!");
+    const AABB& aabb(getModelMesh()->getBound().getAABB());
+    mat44 world(getWorldMatrix());
+    AABB newAABB(world * aabb.getTopFrontLeft(),
+                 world * aabb.getBottomBackRight());
+    m_Bound.fromAABB(newAABB);
+}
+
 
 } } //end namespace

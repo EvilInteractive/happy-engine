@@ -54,11 +54,14 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     pTexture->setLoadFinished();
 
     // create final FBO & RB
+    glGenRenderbuffers(1, &pData->resolvedRbufferID);
     glGenFramebuffers(1, &pData->resolvedFbufferID);
     GL::heBindFbo(pData->resolvedFbufferID);
-    glGenRenderbuffers(1, &pData->resolvedRbufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, pData->resolvedRbufferID);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (uint)size.x, (uint)size.y);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pData->resolvedRbufferID);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pTexture->getID(), 0);
+    he::err::checkFboStatus("Canvas2D: resolvedFbuffer");
 
     // create intermediate FBO & RB, MultiSampling
     glGenFramebuffers(1, &pData->fbufferID);

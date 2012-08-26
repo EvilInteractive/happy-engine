@@ -32,7 +32,7 @@ namespace he {
     namespace gfx {
 
 AutoExposure::AutoExposure():
-    m_LumShader(ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create())), 
+    m_LumShader(nullptr), 
     m_FirstBuffer(true),
     m_DTime(0), 
     m_ExposureSpeed(1.0f), 
@@ -88,9 +88,12 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
-    m_LumShader->initFromFile(folder + "shared/postShaderQuad.vert", 
-                               folder + "post/autoLum.frag", shaderLayout);
+    std::vector<std::string> shaderOutputs;
+    shaderOutputs.push_back("outColor");
+
+    m_LumShader = ResourceFactory<gfx::Shader>::getInstance()->get(
+        CONTENT->loadShader("shared/postShaderQuad.vert", 
+                            "post/autoLum.frag", shaderLayout, shaderOutputs));
     m_HDRmapPos = m_LumShader->getShaderSamplerId("hdrMap");
     m_PrevLumMapPos = m_LumShader->getShaderSamplerId("prevLumMap");
     m_DTimePos = m_LumShader->getShaderVarId("dTime");

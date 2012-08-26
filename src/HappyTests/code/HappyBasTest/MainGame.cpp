@@ -125,7 +125,6 @@ void MainGame::load()
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
-    CONSOLE->setView(m_View);
 
     m_Window2->setResizable(true);
     m_Window2->setVSync(false);
@@ -137,6 +136,8 @@ void MainGame::load()
     m_View2->setWindow(m_Window2);
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View2->init(settings);
+
+    CONSOLE->setView(m_View2);
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
@@ -152,10 +153,10 @@ void MainGame::load()
     m_View2->setCamera("default2");
 
     m_FpsGraph = NEW tools::FPSGraph();
-    m_FpsGraph->setView(m_View2);
+    m_FpsGraph->setView(m_View);
     m_FpsGraph->setPos(vec2(8, 8));
-    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
-    m_View2->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
+    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
     ge::Entity* scene(NEW ge::Entity());
     scene->init(m_Scene);
@@ -181,8 +182,28 @@ void MainGame::load()
     scene->addComponent(modelComp);
     mesh->release();
 
+
+    he::ObjectHandle cubeMat(CONTENT->loadMaterial("cube.material"));
+    mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
+
+    for (size_t x(0); x < 20; ++x)
+    for (size_t y(0); y < 20; ++y)
+    for (size_t z(0); z < 20; ++z)
+    {
+        modelComp = NEW ge::ModelComponent();
+        modelComp->setMaterial(cubeMat);
+        modelComp->setModelMesh(mesh->getHandle());
+        modelComp->setLocalTransform(he::mat44::createTranslation(
+            he::vec3(x * 2.0f + 1, 
+                     y * 2.0f + 1, 
+                     z * 2.0f + 1)) * he::mat44::createScale(1));
+        scene->addComponent(modelComp);
+    }
+    mesh->release();
+
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial);
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial2);
+    he::ResourceFactory<he::gfx::Material>::getInstance()->release(cubeMat);
 
     m_EntityList.push_back(scene);
 

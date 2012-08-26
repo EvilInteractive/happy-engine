@@ -57,7 +57,7 @@ void Triangulator::triangulateConvex(const std::vector<vec2>& vertices, std::vec
 bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint>& indices)
 {
     int n = (int)vertices.size();
-    int* V = NEW int[n];
+    int* V = NEW int[n]; // TODO: seeb cache this buffer as a member, enlarge if needed
 
     if ( 0.0f < calculateArea(vertices) )
         for (int v=0; v<n; v++) V[v] = v;

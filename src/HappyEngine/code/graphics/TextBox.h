@@ -41,66 +41,66 @@ class TextBox
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	TextBox(	RectF posSize,
-				const std::string& defaultString = std::string(""),
-				ushort fontSize = 12,
-				const std::string& customFont = std::string("Ubuntu-Regular.ttf"));
+    /* CONSTRUCTOR - DESTRUCTOR */
+    TextBox(	RectF posSize,
+                const std::string& defaultString = std::string(""),
+                ushort fontSize = 12,
+                const std::string& customFont = std::string("Ubuntu-Regular.ttf"));
     virtual ~TextBox();
 
-	/* GENERAL */
-	void tick();
-	void draw(gfx::Canvas2D* canvas);
+    /* GENERAL */
+    void tick();
+    void draw(gfx::Canvas2D* canvas);
 
-	void resetText();
+    void resetText();
 
-	/* GETTERS */
-	const std::string& getString() const;
-	bool hasFocus() const;
-	bool entered() const;
+    /* GETTERS */
+    const std::string& getString() const;
+    bool hasFocus() const;
+    bool entered() const;
 
-	/* SETTERS */
-	void setActive(bool isActive);
-	void setFocus(bool focus);
-	void setString(const std::string& string);
-	void setColors(	const Color& backgroundColor = Color(0.9f,0.9f,0.9f),
-					const Color& textColor = Color(0.2f,0.2f,0.2f),
-					const Color& focusColor = Color(0.0f,0.75f,1.0f),
+    /* SETTERS */
+    void setActive(bool isActive);
+    void setFocus(bool focus);
+    void setString(const std::string& string);
+    void setColors(	const Color& backgroundColor = Color(0.9f,0.9f,0.9f),
+                    const Color& textColor = Color(0.2f,0.2f,0.2f),
+                    const Color& focusColor = Color(0.0f,0.75f,1.0f),
                     const Color& edgeColor = Color(0.1f,0.1f,0.1f));
     void setPosition(const vec2& pos);
     void setSize(const vec2& size);
 
 private:
 
-	/* DATAMEMBERS */
-	RectF m_Rect;
+    /* DATAMEMBERS */
+    RectF m_Rect;
 
-	gfx::Font* m_pFont;
+    gfx::Font* m_pFont;
 
-	std::string m_DefaultString;
-	std::string m_String;
-	std::string m_Cursor;
+    std::string m_DefaultString;
+    std::string m_String;
+    std::string m_Cursor;
 
-	bool m_bActive;
-	bool m_bHasFocus;
-	bool m_bEntered;
-	bool m_bKeyDown;
+    bool m_bActive;
+    bool m_bHasFocus;
+    bool m_bEntered;
+    bool m_bKeyDown;
 
     bool m_BackspaceDown;
 
-	gui::Hitregion* m_pHitrect;
+    gui::Hitregion* m_pHitrect;
 
-	std::map<std::string, Color> m_Colors;
+    std::map<std::string, Color> m_Colors; // TODO: seeb: change with enum and normal array please, no need for slow map
 
-	uint m_CursorPos;
+    uint m_CursorPos;
 
-	boost::timer m_BlinkTimer;
+    boost::timer m_BlinkTimer;
     uint m_BackSpaceTimer;
     uint m_BackSpaceDelayTimer;
 
-	std::vector<io::Key> m_CharacterKeyCodes;
+    std::vector<io::Key> m_CharacterKeyCodes;
 
-	/* DEFAULT COPY & ASSIGNMENT OPERATOR */
+    /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     TextBox(const TextBox&);
     TextBox& operator=(const TextBox&);
 };

@@ -60,7 +60,6 @@ void Mesh2D::initVao( GLContext* context )
         glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(0);
-        GL::heBindVao(0);
     }
 }
 

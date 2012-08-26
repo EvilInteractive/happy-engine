@@ -43,6 +43,7 @@ Window::Window()
   , m_Fullscreen(false)
   , m_Resizeable(true)
   , m_Context(this)
+  , m_IsVisible(true)
 {
 }
 #pragma warning(default:4355)
@@ -101,17 +102,19 @@ void Window::destroy()
 }
 bool Window::isOpen()
 {
-    return m_Window->isOpen();
+    return m_Window->isOpen() && m_IsVisible;
 }
 
 void Window::open()
 {
     m_Window->setVisible(true);
+    m_IsVisible = true;
 }
 
 void Window::close()
 {
     m_Window->setVisible(false);
+    m_IsVisible = false;
     Closed();
 }
 

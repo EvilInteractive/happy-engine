@@ -373,6 +373,11 @@ bool InstancingController::isAttachedToScene() const
     return m_Scene != nullptr;
 }
 
+void InstancingController::calculateBound()
+{
+
+}
+
 
 
 } } //end namespace
