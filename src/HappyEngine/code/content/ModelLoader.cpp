@@ -134,10 +134,10 @@ bool ModelLoader::createModel( ModelLoadData& data )
             model->addMesh(handle);
         }
 
-        mesh->init();
+        mesh->init(data.vertexLayout, gfx::MeshDrawMode_Triangles);
         mesh->setBones(data.loader->getBones(i));
-        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), data.vertexLayout);
-        mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
+        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), gfx::MeshUsage_Static);
+        mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i), gfx::MeshUsage_Static);
         mesh->setLoaded();
 
         mesh->release();

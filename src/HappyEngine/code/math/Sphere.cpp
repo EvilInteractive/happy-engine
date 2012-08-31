@@ -30,11 +30,6 @@ Sphere::Sphere(const vec3& pos, float radius): m_Position(pos), m_Radius(radius)
 {
 }
 
-
-Sphere::~Sphere()
-{
-}
-
 bool Sphere::intersectTest(const Sphere& other) const
 {
     vec3 axis(other.m_Position - m_Position);

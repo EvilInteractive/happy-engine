@@ -208,7 +208,7 @@ void CameraPerspective::CameraBound::calculate(const CameraPerspective* cam)
         matrix(3, 2) + matrix(2, 2),
         matrix(3, 3) + matrix(2, 3));
 
-    m_Frustum.getPlaneForEdit(FrustumPlane_FarLeftClipPlane) = Plane(
+    m_Frustum.getPlaneForEdit(FrustumPlane_FarClipPlane) = Plane(
         matrix(3, 0) - matrix(2, 0),
         matrix(3, 1) - matrix(2, 1),
         matrix(3, 2) - matrix(2, 2),
@@ -217,31 +217,32 @@ void CameraPerspective::CameraBound::calculate(const CameraPerspective* cam)
 
     // calculate sphere
     float nearClip(cam->getNearClip());
+    float farClip(cam->getFarClip());
     float tanFov(tan(cam->getFov() * 0.5f));
     const vec3& pos(cam->getPosition());
     const vec3& look(cam->getLook());
 
-    float viewLength(cam->getFarClip() - nearClip);
+    float viewLength(farClip - nearClip);
 
-    float height(viewLength * tanFov);
-    float width(height / cam->getAspectRatio());
+    float halfHeight(farClip * tanFov);
+    float halfWidth(halfHeight * cam->getAspectRatio());
 
-    vec3 halfWayPoint(0.0f, 0.0f, nearClip + viewLength * 0.5f);
-    vec3 farCorner(width, height, viewLength);
+    vec3 halfWayPoint(0.0f, 0.0f, viewLength * 0.5f);
+    vec3 farCorner(halfWidth, halfHeight, viewLength);
     vec3 diff(halfWayPoint - farCorner);
 
     m_Sphere.setRadius(length(diff));
-    m_Sphere.setPosition(pos + (look * ((viewLength * 0.5f) + nearClip)));
+    m_Sphere.setPosition(pos + look * halfWayPoint.z);
 
 
     // calculate cone
-    float depth(height / tanFov);
-    float corner(sqrt(width * width + height * height));
-    float fov(atan(corner / depth));
+    float corner(sqrt(halfWidth * halfWidth + halfHeight * halfHeight));
+    float fov(atan(corner / farClip) * 2.0f);
 
     m_Cone.setPosition(pos);
     m_Cone.setAxis(look);
     m_Cone.setFov(fov);
+    m_Cone.setAxisLength(farClip);
 }
 
 } } //end namespace

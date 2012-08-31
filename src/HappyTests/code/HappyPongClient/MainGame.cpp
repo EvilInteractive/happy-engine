@@ -145,7 +145,7 @@ void MainGame::load()
 
     const he::RectI& viewport(m_View->getViewport());
     he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective(viewport.width, viewport.height));
-    camera->setLens((float)viewport.height / viewport.width, he::piOverFour, 10.0f, 1000);
+    camera->setLens((float)viewport.width / viewport.height, he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
     m_Scene->getCameraManager()->addCamera("default", camera);
     m_View->setCamera("default");

@@ -68,6 +68,7 @@ public:
     CameraPerspective* getCamera() const { return m_Camera; }
 
     Renderer2D* get2DRenderer() const { return m_2DRenderer; }
+    ShapeRenderer* getShapeRenderer() const { return m_ShapeRenderer; }
 
     const Scene* getScene() const { return m_Scene; }
     const RenderSettings& getSettings() const { return m_Settings; }

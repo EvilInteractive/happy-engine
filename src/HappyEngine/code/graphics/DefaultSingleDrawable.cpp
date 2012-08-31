@@ -60,14 +60,16 @@ void DefaultSingleDrawable::setCastsShadow( bool castShadow )
 
 void DefaultSingleDrawable::draw()
 {
-    GL::heBindVao(getModelMesh()->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, getModelMesh()->getNumIndices(), getModelMesh()->getIndexType(), 0);
+    const ModelMesh* mesh(getModelMesh());
+    GL::heBindVao(mesh->getVertexArraysID());
+    glDrawElements(mesh->getDrawMode(), mesh->getNumIndices(), mesh->getIndexType(), 0);
 }
 
 void DefaultSingleDrawable::drawShadow()
 {
-    GL::heBindVao(getModelMesh()->getVertexShadowArraysID());
-    glDrawElements(GL_TRIANGLES, getModelMesh()->getNumIndices(), getModelMesh()->getIndexType(), 0);
+    const ModelMesh* mesh(getModelMesh());
+    GL::heBindVao(mesh->getVertexShadowArraysID());
+    glDrawElements(mesh->getDrawMode(), mesh->getNumIndices(), mesh->getIndexType(), 0);
 }
 
 void DefaultSingleDrawable::detachFromScene()

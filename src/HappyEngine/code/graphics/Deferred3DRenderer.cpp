@@ -84,10 +84,7 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
     
     m_View = view;
     m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
-    m_OutputRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
-    m_OutputRenderTarget->addTextureTarget(target->getTextureTarget(0));
-    m_OutputRenderTarget->setDepthTarget(target->getDepthTarget());
-    m_OutputRenderTarget->init();
+    m_OutputRenderTarget = target;
 
     m_pNormalTexture = target->getTextureTarget(1);
 
@@ -124,7 +121,6 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_pSGTexture->release();
 
     delete m_CollectionRenderTarget;
-    delete m_OutputRenderTarget;
     
     m_pQuad->release();
 
@@ -299,7 +295,7 @@ void Deferred3DRenderer::draw()
     //////////////////////////////////////////////////////////////////////////
     ///                             POST                                   ///
     //////////////////////////////////////////////////////////////////////////
-    m_OutputRenderTarget->prepareForRendering();
+    m_OutputRenderTarget->prepareForRendering(1);
 
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_One, BlendFunc_One);

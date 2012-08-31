@@ -124,8 +124,8 @@ void View::init( const RenderSettings& settings )
     m_2DRenderer = NEW Renderer2D();
     m_2DRenderer->init(this, m_OutputRenderTarget);
 
-     m_ShapeRenderer = NEW ShapeRenderer();
-     m_ShapeRenderer->init(this, m_OutputRenderTarget);
+    m_ShapeRenderer = NEW ShapeRenderer();
+    m_ShapeRenderer->init(this, m_IntermediateRenderTarget);
 
     if (settings.enableDeferred)
         m_OpacRenderer = NEW Deferred3DRenderer();
@@ -228,7 +228,7 @@ void View::draw()
         GL::reset();
         m_Scene->prepareForRendering();
         GRAPHICS->setActiveView(this);
-        m_Camera->setAspectRatio(m_Viewport.height / (float)m_Viewport.width);
+        m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
         m_Camera->prepareForRendering();
 
         if (m_Settings.lightingSettings.enableShadows)
@@ -240,10 +240,10 @@ void View::draw()
         m_OpacRenderer->draw();
         m_TransparentRenderer->draw();
 
+        m_ShapeRenderer->draw();
+
         if (m_Settings.enablePost)
             m_PostProcesser->draw();
-
-        m_ShapeRenderer->draw();
 
         m_2DRenderer->draw();
 

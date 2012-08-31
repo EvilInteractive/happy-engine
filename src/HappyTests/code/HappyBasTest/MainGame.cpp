@@ -47,7 +47,9 @@
 
 #include "IKeyboard.h"
 #include "Renderer2D.h"
+#include "ShapeRenderer.h"
 
+#define CONE_VERTICES 16
 
 namespace ht {
 
@@ -99,6 +101,7 @@ void MainGame::load()
 {
     using namespace he;
 
+    #pragma region Window/View/Scene
     he::gfx::RenderSettings settings;
     settings.enableDeferred = true;
     settings.enablePost = true;
@@ -114,7 +117,7 @@ void MainGame::load()
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
-    settings.postSettings.shaderSettings.enableHDR = true;
+    settings.postSettings.shaderSettings.enableHDR = false;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
 
@@ -141,12 +144,12 @@ void MainGame::load()
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
-    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
     FlyCamera* flyCamera2 = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
-    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
     flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
     m_View->setCamera("default");
@@ -158,6 +161,12 @@ void MainGame::load()
     m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
     m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
+    m_View->getShapeRenderer()->attachToRenderer(this);
+    m_View2->getShapeRenderer()->attachToRenderer(this);
+
+    #pragma endregion
+
+    #pragma region Scene
     ge::Entity* scene(NEW ge::Entity());
     scene->init(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
@@ -182,7 +191,6 @@ void MainGame::load()
     scene->addComponent(modelComp);
     mesh->release();
 
-
     he::ObjectHandle cubeMat(CONTENT->loadMaterial("cube.material"));
     mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
 
@@ -206,18 +214,73 @@ void MainGame::load()
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(cubeMat);
 
     m_EntityList.push_back(scene);
+    #pragma endregion
 
-    #pragma region lights
-    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
+    #pragma region Lights
+    //m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
+    //m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
+    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
 
-    ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
-    scene->addComponent(pTempPointLightComp);
-    pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
-    pTempPointLightComp->setMultiplier(50.0f);
-    pTempPointLightComp->setColor(Color((he::byte)126, 190, 255, 255));
-    pTempPointLightComp->setAttenuation(0, 15);
+    mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
+    for (size_t i(0); i < 50; ++i)
+    {
+        vec3 direction(rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f);
+        direction = normalize(direction);
+        float len(33.0f);
+        vec3 pos(direction * len + vec3(20, 20, 20));
 
+        ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
+        scene->addComponent(pTempPointLightComp);
+        pTempPointLightComp->setOffset(pos);
+        pTempPointLightComp->setMultiplier(0.5f);
+        pTempPointLightComp->setColor(Color((he::byte)(rand()%255), 128, 255, 255));
+        pTempPointLightComp->setAttenuation(0, 15);
+
+        modelComp = NEW ge::ModelComponent();
+        modelComp->setMaterial(cubeMat);
+        modelComp->setModelMesh(mesh->getHandle());
+        modelComp->setLocalTransform(he::mat44::createTranslation(pos) * he::mat44::createScale(1));
+        scene->addComponent(modelComp);
+    }
+    mesh->release();
+    #pragma endregion
+
+    #pragma region Camera Debug Shape
+    ResourceFactory<gfx::ModelMesh>* meshFactory(ResourceFactory<gfx::ModelMesh>::getInstance());
+    gfx::BufferLayout debugCameraLayout;
+    debugCameraLayout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), 0));
+    m_CameraFrustumMeshes.push_back(meshFactory->get(meshFactory->create()));
+
+    std::vector<he::ushort> camerafrustumIndices;
+
+    //Front
+    camerafrustumIndices.push_back(0); camerafrustumIndices.push_back(1);
+    camerafrustumIndices.push_back(0); camerafrustumIndices.push_back(2);
+    camerafrustumIndices.push_back(1); camerafrustumIndices.push_back(3);
+    camerafrustumIndices.push_back(2); camerafrustumIndices.push_back(3);
+
+    //Back
+    camerafrustumIndices.push_back(4); camerafrustumIndices.push_back(5);
+    camerafrustumIndices.push_back(4); camerafrustumIndices.push_back(6);
+    camerafrustumIndices.push_back(5); camerafrustumIndices.push_back(7);
+    camerafrustumIndices.push_back(6); camerafrustumIndices.push_back(7);
+
+    //Sides
+    camerafrustumIndices.push_back(0); camerafrustumIndices.push_back(4);
+    camerafrustumIndices.push_back(1); camerafrustumIndices.push_back(5);
+    camerafrustumIndices.push_back(2); camerafrustumIndices.push_back(6);
+    camerafrustumIndices.push_back(3); camerafrustumIndices.push_back(7);
+
+    he::Cone::generateConeIndices<he::ushort>(CONE_VERTICES, 8, camerafrustumIndices);
+
+    std::for_each(m_CameraFrustumMeshes.cbegin(), m_CameraFrustumMeshes.cend(), [&debugCameraLayout, &camerafrustumIndices](gfx::ModelMesh* mesh)
+    {
+        mesh->init(debugCameraLayout, he::gfx::MeshDrawMode_Lines);
+        mesh->setVertices(nullptr, 0, he::gfx::MeshUsage_Dynamic);
+        mesh->setIndices(camerafrustumIndices.data(), camerafrustumIndices.size(), he::gfx::IndexStride_UShort, he::gfx::MeshUsage_Static);
+        mesh->setLoaded();
+    });
     #pragma endregion
 
     //m_pSkyBox = NEW gfx::SkyBox();
@@ -238,8 +301,31 @@ void MainGame::tick( float dTime )
         m_Scene->getLightManager()->getDirectionalLight()->setDirection(
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
-
+    fillDebugCameraMeshes(m_View->getCamera(), m_CameraFrustumMeshes[0]);
     m_FpsGraph->tick(dTime);
+}
+
+void MainGame::fillDebugCameraMeshes(he::gfx::CameraPerspective* camera, he::gfx::ModelMesh* mesh)
+{
+    m_PointBuffer.clear();
+
+    const he::Frustum& frustum(camera->getBound().getFrustum());
+    frustum.generateFrustumPoints(m_PointBuffer);
+
+    const he::Cone& cone(camera->getBound().getCone());
+    cone.generateConeVertices(CONE_VERTICES, m_PointBuffer);
+
+    mesh->setVertices(m_PointBuffer.data(), m_PointBuffer.size(), he::gfx::MeshUsage_Dynamic);
+
+    m_PointBuffer.clear();
+}
+
+void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
+{
+    std::for_each(m_CameraFrustumMeshes.cbegin(), m_CameraFrustumMeshes.cend(), [renderer](he::gfx::ModelMesh* mesh)
+    {
+        renderer->drawMeshColor(mesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1));
+    });
 }
 
 } //end namespace

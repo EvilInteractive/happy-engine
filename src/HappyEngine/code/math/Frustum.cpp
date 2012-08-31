@@ -36,7 +36,7 @@ IntersectResult Frustum::intersect( const Sphere& sphere ) const
 
     for(uint i(0); i < 6; ++i) 
     {
-        distance = dot(m_Plane[i].getNormal(), sphere.getPosition()) + m_Plane[i].getDistance();
+        distance = dot(m_Plane[i].getNormal(), sphere.getPosition()) - m_Plane[i].getDistance();
 
         if(distance < -sphere.getRadius())
             return IntersectResult_Outside;
@@ -69,6 +69,26 @@ IntersectResult Frustum::intersect( const AABB& aabb ) const
         return IntersectResult_Inside;
     
     return IntersectResult_Intersecting;
+}
+
+void Frustum::generateFrustumPoints( std::vector<vec3>& pointBuffer ) const
+{
+    // 0 : FTL 
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
+    // 1 : FTR  
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_RightClipPlane]));    
+    // 2 : FBL
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));      
+    // 3 : FBR      
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
+    // 4 : BTL
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
+    // 5 : BTR
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
+    // 6 : BBL
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
+    // 7 : BBR
+    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
 }
 
 } //end namespace

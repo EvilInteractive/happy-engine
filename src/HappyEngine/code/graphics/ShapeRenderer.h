@@ -55,7 +55,7 @@ public:
     /* DRAW METHODS */
     void drawColored(const ModelMesh* model, const mat44& world, const Color& color) const;
     void drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const;
-    void drawSpline(const ModelMesh* spline, const mat44& world, const Color& color) const;
+    void drawMeshColor(const ModelMesh* spline, const mat44& world, const Color& color) const;
     void drawBillboard(const Texture2D* tex2D, const vec3& pos);
 
 private:

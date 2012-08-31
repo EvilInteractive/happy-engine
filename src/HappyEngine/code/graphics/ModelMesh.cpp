@@ -35,10 +35,13 @@ ModelMesh::ModelMesh():
     m_isVisible(true),
     m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&ModelMesh::initVAO, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&ModelMesh::destroyVAO, this, _1))
+    m_ContextRemovedHandler(boost::bind(&ModelMesh::destroyVAO, this, _1)),
+    m_DrawMode(MeshDrawMode_Triangles),
+    m_IndexVboID(UINT_MAX),
+    m_VertexVboID(UINT_MAX)
 {
-    he_memset(m_VaoID, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
-    he_memset(m_VaoShadowID, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+    he_memset(m_VaoID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+    he_memset(m_VaoShadowID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
 }
 #pragma warning(default:4355) // use of this in initializer list
 
@@ -52,12 +55,28 @@ ModelMesh::~ModelMesh()
     {
         destroyVAO(context);
     });
-    glDeleteBuffers(1, &m_VertexVboID);
-    glDeleteBuffers(1, &m_IndexVboID);
+    if (m_VertexVboID != UINT_MAX)
+        glDeleteBuffers(1, &m_VertexVboID);
+    if (m_IndexVboID != UINT_MAX)
+        glDeleteBuffers(1, &m_IndexVboID);
 }
 
-void ModelMesh::init()
+void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
 {
+    HE_IF_ASSERT(m_VertexVboID == UINT_MAX, "Only init ModelMesh once!")
+    {
+        m_VertexLayout = vertexLayout;
+        m_DrawMode = mode;
+        glGenBuffers(1, &m_IndexVboID);
+        glGenBuffers(1, &m_VertexVboID);
+        const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+        std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+        {
+            initVAO(context);
+        });
+        GRAPHICS->ContextCreated += m_ContextCreatedHandler;
+        GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
+    }
 }
 
 void ModelMesh::initVAO( GLContext* context )
@@ -127,7 +146,6 @@ void ModelMesh::initVAO( GLContext* context )
             glEnableVertexAttribArray(2);
         }
     }
-    GL::heBindVao(0);
 }
 void ModelMesh::destroyVAO( GLContext* context )
 {
@@ -146,34 +164,31 @@ void ModelMesh::destroyVAO( GLContext* context )
 
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
-void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout)
+void ModelMesh::setVertices(const void* pVertices, uint num, MeshUsage usage)
 {
-    HE_ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
-    m_VertexLayout = vertexLayout;
 
     uint posOffset = UINT_MAX;
-    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const BufferElement& e)
+    std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
     {
         if (e.getUsage() == gfx::BufferElement::Usage_Position)
         {
             posOffset = e.getByteOffset();
         }
     });
-    m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, vertexLayout.getSize(), posOffset));
+    m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, m_VertexLayout.getSize(), posOffset));
 
-    glGenBuffers(1, &m_VertexVboID);
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
-    glBufferData(GL_ARRAY_BUFFER, vertexLayout.getSize() * num, pVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, nullptr, usage);
+    glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, pVertices, usage);
 }
-void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
+void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type, MeshUsage usage)
 {
-    HE_ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModelMesh instead");
     m_NumIndices = num;
     
-    glGenBuffers(1, &m_IndexVboID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, nullptr, usage);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, usage);
 
     switch (type)
     {
@@ -207,13 +222,6 @@ void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
 
 void ModelMesh::setLoaded()
 {
-    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
-    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
-    {
-        initVAO(context);
-    });
-    GRAPHICS->ContextCreated += m_ContextCreatedHandler;
-    GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
     m_IsLoaded = true;
     m_LoadMutex.lock();
     Loaded();

@@ -35,7 +35,7 @@ enum FrustumPlane
     FrustumPlane_TopClipPlane,
     FrustumPlane_BottomClipPlane,
     FrustumPlane_NearClipPlane,
-    FrustumPlane_FarLeftClipPlane
+    FrustumPlane_FarClipPlane
 };
 
 class Frustum
@@ -47,6 +47,15 @@ public:
     IntersectResult intersect(const AABB& aabb) const;
 
     Plane& getPlaneForEdit(FrustumPlane plane) { return m_Plane[plane]; }
+
+    // Defined as:
+    // FTL = Front Top Left, BBR = Bottom Back Right
+    // All seen from position of camera
+    // 0 : FTL      // 4: BTL
+    // 1 : FTR      // 5: BTR
+    // 2 : FBL      // 6: BBL
+    // 3 : FBR      // 7: BBR
+    void generateFrustumPoints(std::vector<vec3>& pointBuffer) const;
 
 private:
     Plane m_Plane[6];

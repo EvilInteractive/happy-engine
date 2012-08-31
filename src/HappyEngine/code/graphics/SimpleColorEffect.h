@@ -31,28 +31,28 @@ class SimpleColorEffect
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	SimpleColorEffect();
+    /* CONSTRUCTOR - DESTRUCTOR */
+    SimpleColorEffect();
     virtual ~SimpleColorEffect();
 
-	/* GENERAL */
-	void load();
-	void begin() const;
-	void end() const;
+    /* GENERAL */
+    void load();
+    void begin() const;
+    void end() const;
 
-	/* SETTERS */
-	void setViewProjection(const mat44& mat);
-	void setWorld(const mat44& mat);
-	void setColor(const Color& color);
+    /* SETTERS */
+    void setViewProjection(const mat44& mat);
+    void setWorld(const mat44& mat);
+    void setColor(const Color& color);
 
 private:
 
-	/* DATAMEMBERS */
-	Shader* m_Shader;
+    /* DATAMEMBERS */
+    Shader* m_Shader;
 
-	uint m_ShaderVPPos;
-	uint m_ShaderWPos;
-	uint m_ShaderColorPos;
+    uint m_ShaderVPPos;
+    uint m_ShaderWPos;
+    uint m_ShaderColorPos;
 
     /* DEFAULT COPY & ASSIGNMENT */
     SimpleColorEffect(const SimpleColorEffect&);

@@ -194,7 +194,7 @@ void Canvas2D::init()
 
     // model texturequad
     m_pTextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_pTextureQuad->init();
+    m_pTextureQuad->init(vLayout, gfx::MeshDrawMode_Triangles);
 
     std::vector<VertexPosTex2D> vertices;
     vertices.push_back(
@@ -217,8 +217,8 @@ void Canvas2D::init()
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
-    m_pTextureQuad->setVertices(&vertices[0], 4, vLayout);
-    m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pTextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+    m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_pTextureQuad->setLoaded();
 }
 void Canvas2D::resize( const vec2& newSize )

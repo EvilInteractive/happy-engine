@@ -5,9 +5,9 @@ shader = "defaultDeferred.shader"
 shader = "defaultForward.shader"
 
 [TEXTURE2D]
-diffuseMap = 0.5, 0.5, 0.5, 1
-normalMap = 0.5, 0.5, 1, 1
-specGlossIllMap = 0.1, 0.2, 0.0, 1
+diffuseMap = "terrain/Jungle_TT_1_DM.DDS"
+normalMap = "terrain/Jungle_TT_1_NM.DDS"
+specGlossIllMap = "terrain/Jungle_TT_1_SM.DDS"
 
 [info]
 blending = false

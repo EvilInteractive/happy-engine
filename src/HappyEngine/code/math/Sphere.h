@@ -29,7 +29,6 @@ class Sphere
 public:
     Sphere();
     Sphere(const vec3& pos, float radius);
-    virtual ~Sphere();
     //default copy and assignment are fine
 
     inline const vec3& getPosition() const { return m_Position; }

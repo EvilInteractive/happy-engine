@@ -25,6 +25,8 @@ namespace he {
 
 AABB AABB::calculateBoundingAABB( const void* pointCloud, uint num, uint stride, uint posOffset )
 {
+    if (num < 2)
+        return AABB(vec3(0, 0, 0), vec3(0, 0, 0));
     vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
          max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 

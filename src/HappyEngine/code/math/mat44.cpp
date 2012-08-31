@@ -52,23 +52,29 @@ mat44::~mat44()
 //static constructors
 mat44 mat44::createPerspectiveRH(float fov, float viewWidth, float viewHeight, float zNear, float zFar)
 {
+    return createPerspectiveRH(fov, viewWidth / viewHeight, zNear, zFar);
+}
+
+he::mat44 mat44::createPerspectiveRH( float fov, float aspectRatio, float zNear, float zFar )
+{
     float _11 = cosf(fov * 0.5f) / sinf(fov * 0.5f);
-    float _00 = _11 * viewHeight / viewWidth;
+    float _00 = _11 * aspectRatio;
     return mat44(
-         _00, 0.0f, 0.0f                            , 0.0f,
+        _00, 0.0f, 0.0f                            , 0.0f,
         0.0f,  _11, 0.0f                            , 0.0f,
         0.0f, 0.0f, (zFar) / (zFar - zNear)         , (zFar * zNear) / (zFar - zNear),
         0.0f, 0.0f, -1.0f                           , 0.0f);
 }
+
 mat44 mat44::createPerspectiveLH(float fov, float viewWidth, float viewHeight, float zNear, float zFar)
 {
-    return createPerspectiveLH(fov, viewHeight / viewWidth, zNear, zFar);
+    return createPerspectiveLH(fov, viewWidth / viewHeight, zNear, zFar);
 }
 
 he::mat44 mat44::createPerspectiveLH( float fov, float aspectRatio, float zNear, float zFar )
 {
     float _11 = cosf(fov * 0.5f) / sinf(fov * 0.5f);
-    float _00 = _11 * aspectRatio;
+    float _00 = _11 / aspectRatio;
     return mat44(
          _00, 0.0f, 0.0f                     , 0.0f,
         0.0f,  _11, 0.0f                     , 0.0f,

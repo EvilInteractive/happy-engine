@@ -25,7 +25,7 @@
 namespace he {
 
 // a*Nx + b*Ny + c*Nz + d = 0
-Plane::Plane( float a, float b, float c, float d ): m_Normal(a, b, c), m_Distance(d)
+Plane::Plane( float a, float b, float c, float d ): m_Normal(a, b, c), m_Distance(-d)
 {
     float len(length(m_Normal));
     m_Normal /= len;
@@ -86,7 +86,19 @@ he::IntersectResult Plane::intersect( const AABB& box ) const
 
 float Plane::getDistanceToPoint( const vec3& point ) const
 {
-    return dot(m_Normal, point) + m_Distance;
+    return dot(m_Normal, point) - m_Distance;
+}
+
+he::vec3 Plane::getIntersectionPoint( const Plane& p1, const Plane& p2, const Plane& p3 )
+{
+    vec3 crossN2N3(cross(p2.m_Normal, p3.m_Normal));
+    vec3 crossN1N2(cross(p1.m_Normal, p2.m_Normal));
+    vec3 crossN3N1(cross(p3.m_Normal, p1.m_Normal));
+    vec3 outPoint(crossN1N2 * p3.m_Distance);
+    outPoint += crossN3N1 * p2.m_Distance;
+    outPoint += crossN2N3 * p1.m_Distance;
+    outPoint /= dot(p1.m_Normal, crossN2N3);
+    return outPoint;
 }
 
 } //end namespace
