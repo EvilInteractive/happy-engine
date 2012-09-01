@@ -224,6 +224,9 @@ void View::draw()
 {
     if (m_Window->isOpen())
     {
+        m_DebugIndices.clear();
+        m_DebugVertices.clear();
+
         m_Window->prepareForRendering();
         GL::reset();
         m_Scene->prepareForRendering();

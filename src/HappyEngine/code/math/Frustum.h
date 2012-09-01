@@ -56,6 +56,27 @@ public:
     // 2 : FBL      // 6: BBL
     // 3 : FBR      // 7: BBR
     void generateFrustumPoints(std::vector<vec3>& pointBuffer) const;
+    template<typename T>
+    static void generateFrustumIndices(std::vector<T>& indexBuffer, T offset)
+    {
+        //Front
+        indexBuffer.push_back(offset + 0); indexBuffer.push_back(offset + 1);
+        indexBuffer.push_back(offset + 0); indexBuffer.push_back(offset + 2);
+        indexBuffer.push_back(offset + 1); indexBuffer.push_back(offset + 3);
+        indexBuffer.push_back(offset + 2); indexBuffer.push_back(offset + 3);
+
+        //Back
+        indexBuffer.push_back(offset + 4); indexBuffer.push_back(offset + 5);
+        indexBuffer.push_back(offset + 4); indexBuffer.push_back(offset + 6);
+        indexBuffer.push_back(offset + 5); indexBuffer.push_back(offset + 7);
+        indexBuffer.push_back(offset + 6); indexBuffer.push_back(offset + 7);
+
+        //Sides
+        indexBuffer.push_back(offset + 0); indexBuffer.push_back(offset + 4);
+        indexBuffer.push_back(offset + 1); indexBuffer.push_back(offset + 5);
+        indexBuffer.push_back(offset + 2); indexBuffer.push_back(offset + 6);
+        indexBuffer.push_back(offset + 3); indexBuffer.push_back(offset + 7);
+    }
 
 private:
     Plane m_Plane[6];

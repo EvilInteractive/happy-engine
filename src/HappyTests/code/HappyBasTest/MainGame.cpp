@@ -60,6 +60,7 @@ MainGame::MainGame(): m_FpsGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(fal
 
 MainGame::~MainGame()
 {
+    m_DebugMesh->release();
     m_View2->get2DRenderer()->detachFromRender(m_FpsGraph);
     delete m_FpsGraph;
     delete m_pSkyBox;
@@ -85,8 +86,8 @@ void MainGame::init()
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
-    m_View2 = GRAPHICS->createView();
-    m_Window2 = GRAPHICS->createWindow();
+     m_View2 = GRAPHICS->createView();
+     m_Window2 = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
     m_Window->setVSync(false);
@@ -140,7 +141,7 @@ void MainGame::load()
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View2->init(settings);
 
-    CONSOLE->setView(m_View2);
+    //CONSOLE->setView(m_View2);
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
@@ -194,17 +195,17 @@ void MainGame::load()
     he::ObjectHandle cubeMat(CONTENT->loadMaterial("cube.material"));
     mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
 
-    for (size_t x(0); x < 20; ++x)
-    for (size_t y(0); y < 20; ++y)
-    for (size_t z(0); z < 20; ++z)
+    for (size_t x(0); x < 5; ++x)
+    for (size_t y(0); y < 5; ++y)
+    for (size_t z(0); z < 5; ++z)
     {
         modelComp = NEW ge::ModelComponent();
         modelComp->setMaterial(cubeMat);
         modelComp->setModelMesh(mesh->getHandle());
         modelComp->setLocalTransform(he::mat44::createTranslation(
-            he::vec3(x * 2.0f + 1, 
-                     y * 2.0f + 1, 
-                     z * 2.0f + 1)) * he::mat44::createScale(1));
+            he::vec3(x * 3.0f + 10, 
+                     y * 3.0f + 10, 
+                     z * 3.0f + 10)) * he::mat44::createScale(1));
         scene->addComponent(modelComp);
     }
     mesh->release();
@@ -220,7 +221,7 @@ void MainGame::load()
     //m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
     //m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
     m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
 
     mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
     for (size_t i(0); i < 50; ++i)
@@ -250,37 +251,12 @@ void MainGame::load()
     ResourceFactory<gfx::ModelMesh>* meshFactory(ResourceFactory<gfx::ModelMesh>::getInstance());
     gfx::BufferLayout debugCameraLayout;
     debugCameraLayout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), 0));
-    m_CameraFrustumMeshes.push_back(meshFactory->get(meshFactory->create()));
-
-    std::vector<he::ushort> camerafrustumIndices;
-
-    //Front
-    camerafrustumIndices.push_back(0); camerafrustumIndices.push_back(1);
-    camerafrustumIndices.push_back(0); camerafrustumIndices.push_back(2);
-    camerafrustumIndices.push_back(1); camerafrustumIndices.push_back(3);
-    camerafrustumIndices.push_back(2); camerafrustumIndices.push_back(3);
-
-    //Back
-    camerafrustumIndices.push_back(4); camerafrustumIndices.push_back(5);
-    camerafrustumIndices.push_back(4); camerafrustumIndices.push_back(6);
-    camerafrustumIndices.push_back(5); camerafrustumIndices.push_back(7);
-    camerafrustumIndices.push_back(6); camerafrustumIndices.push_back(7);
-
-    //Sides
-    camerafrustumIndices.push_back(0); camerafrustumIndices.push_back(4);
-    camerafrustumIndices.push_back(1); camerafrustumIndices.push_back(5);
-    camerafrustumIndices.push_back(2); camerafrustumIndices.push_back(6);
-    camerafrustumIndices.push_back(3); camerafrustumIndices.push_back(7);
-
-    he::Cone::generateConeIndices<he::ushort>(CONE_VERTICES, 8, camerafrustumIndices);
-
-    std::for_each(m_CameraFrustumMeshes.cbegin(), m_CameraFrustumMeshes.cend(), [&debugCameraLayout, &camerafrustumIndices](gfx::ModelMesh* mesh)
-    {
-        mesh->init(debugCameraLayout, he::gfx::MeshDrawMode_Lines);
-        mesh->setVertices(nullptr, 0, he::gfx::MeshUsage_Dynamic);
-        mesh->setIndices(camerafrustumIndices.data(), camerafrustumIndices.size(), he::gfx::IndexStride_UShort, he::gfx::MeshUsage_Static);
-        mesh->setLoaded();
-    });
+    m_DebugMesh = meshFactory->get(meshFactory->create());
+    m_DebugMesh->setName("Debug Mesh");
+    m_DebugMesh->init(debugCameraLayout, he::gfx::MeshDrawMode_Lines);
+    m_DebugMesh->setVertices(nullptr, 0, he::gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setIndices(nullptr, 0, he::gfx::IndexStride_UInt, he::gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setLoaded();
     #pragma endregion
 
     //m_pSkyBox = NEW gfx::SkyBox();
@@ -301,31 +277,30 @@ void MainGame::tick( float dTime )
         m_Scene->getLightManager()->getDirectionalLight()->setDirection(
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
-    fillDebugCameraMeshes(m_View->getCamera(), m_CameraFrustumMeshes[0]);
+    fillDebugMeshes();
     m_FpsGraph->tick(dTime);
 }
 
-void MainGame::fillDebugCameraMeshes(he::gfx::CameraPerspective* camera, he::gfx::ModelMesh* mesh)
+void MainGame::fillDebugMeshes()
 {
-    m_PointBuffer.clear();
+    using namespace he;
+    gfx::CameraPerspective* camera(m_View->getCamera());
+    
+    const Frustum& frustum(camera->getBound().getFrustum());
+    Frustum::generateFrustumIndices<uint>(m_View->getDebugIndices(), (uint)m_View->getDebugVertices().size());
+    frustum.generateFrustumPoints(m_View->getDebugVertices());
 
-    const he::Frustum& frustum(camera->getBound().getFrustum());
-    frustum.generateFrustumPoints(m_PointBuffer);
+    const Cone& cone(camera->getBound().getCone());
+    Cone::generateConeIndices<uint>(CONE_VERTICES, (uint)m_View->getDebugVertices().size(), m_View->getDebugIndices());
+    cone.generateConeVertices(CONE_VERTICES, m_View->getDebugVertices());
 
-    const he::Cone& cone(camera->getBound().getCone());
-    cone.generateConeVertices(CONE_VERTICES, m_PointBuffer);
-
-    mesh->setVertices(m_PointBuffer.data(), m_PointBuffer.size(), he::gfx::MeshUsage_Dynamic);
-
-    m_PointBuffer.clear();
+    m_DebugMesh->setVertices(m_View->getDebugVertices().data(), m_View->getDebugVertices().size(), gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setIndices(m_View->getDebugIndices().data(), m_View->getDebugIndices().size(), gfx::IndexStride_UInt, gfx::MeshUsage_Dynamic);
 }
 
 void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
 {
-    std::for_each(m_CameraFrustumMeshes.cbegin(), m_CameraFrustumMeshes.cend(), [renderer](he::gfx::ModelMesh* mesh)
-    {
-        renderer->drawMeshColor(mesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1));
-    });
+    renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1));
 }
 
 } //end namespace

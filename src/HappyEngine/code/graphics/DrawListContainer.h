@@ -47,6 +47,8 @@ public:
 
     void prepareForRendering();
     void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc) const;
+    void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc,
+        std::vector<vec3>& vertices, std::vector<uint>& indices) const;
 
     void insert(IDrawable* drawable, bool autoReevalute);
     void remove(IDrawable* drawable);

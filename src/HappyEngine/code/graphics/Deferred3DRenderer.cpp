@@ -222,9 +222,9 @@ void Deferred3DRenderer::compileShaders()
     }
 
     m_AmbDirIllLightData.colorIllMap  = m_AmbDirIllShader->getShaderSamplerId("colorIllMap");
+    m_AmbDirIllLightData.normalMap  = m_AmbDirIllShader->getShaderSamplerId("normalMap");
     if (m_Settings.enableSpecular)
         m_AmbDirIllLightData.sgMap  = m_AmbDirIllShader->getShaderSamplerId("sgMap");
-    m_AmbDirIllLightData.normalMap  = m_AmbDirIllShader->getShaderSamplerId("normalMap");
     m_AmbDirIllLightData.depthMap  = m_AmbDirIllShader->getShaderSamplerId("depthMap");
     
     if (m_Settings.enableShadows)
@@ -285,11 +285,12 @@ void Deferred3DRenderer::draw()
     ///                             DRAW                                   ///
     //////////////////////////////////////////////////////////////////////////
     const CameraPerspective* camera(m_View->getCamera());
-    scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+    //scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+    scene->getDrawList().drawAndCreateDebugMesh(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
     {
         d->applyMaterial(camera);
         d->draw();
-    });
+    }, m_View->getDebugVertices(), m_View->getDebugIndices());
 
 
     //////////////////////////////////////////////////////////////////////////

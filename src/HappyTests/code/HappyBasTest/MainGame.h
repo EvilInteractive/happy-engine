@@ -58,7 +58,7 @@ public:
     virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
 
 private:
-    void fillDebugCameraMeshes(he::gfx::CameraPerspective* camera, he::gfx::ModelMesh* mesh);
+    void fillDebugMeshes();
 
     he::tools::FPSGraph* m_FpsGraph;
 
@@ -74,10 +74,7 @@ private:
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
 
-    std::vector<he::gfx::ModelMesh*> m_CameraFrustumMeshes;
-    std::vector<he::gfx::ModelMesh*> m_CameraConeMeshes;
-    std::vector<he::gfx::ModelMesh*> m_CameraSphereMeshes;
-    std::vector<he::vec3> m_PointBuffer;
+    he::gfx::ModelMesh* m_DebugMesh;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

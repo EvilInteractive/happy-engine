@@ -274,7 +274,7 @@ void ShadowCaster::render()
     const CameraPerspective& camera(*m_View->getCamera());
 
     CameraOrtho shadowCam[4];
-    for (int i(0); i < COUNT-1; ++i) //begin at 1, first is blur temp
+    for (int i(0); i < COUNT - 1; ++i)
     {
         shadowCam[i].lookAt(camera.getPosition() - shadowLook*250, camera.getPosition(), up);
     }

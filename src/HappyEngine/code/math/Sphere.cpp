@@ -40,6 +40,14 @@ bool Sphere::intersectTest(const Sphere& other) const
 
     return false;
 }
+bool Sphere::isOtherInside(const Sphere& other) const
+{
+    vec3 axis(other.m_Position - m_Position);
+    if (lengthSqr(axis) < sqr(m_Radius - other.getRadius()))
+        return true;
+
+    return false;
+}
 IntersectResult Sphere::intersect(const Sphere& other) const
 {
     vec3 axis(other.m_Position - m_Position);
