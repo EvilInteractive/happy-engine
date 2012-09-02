@@ -54,6 +54,7 @@ void CullOctree::reevaluate( IDrawable* obj )
     HE_IF_ASSERT(obj->getNode() != nullptr, "Node is not attached to the tree")
     {
         obj->getNode()->reevaluate(obj);
+        m_Root = m_Root->getRoot();
     }
 }
 
@@ -203,8 +204,10 @@ void CullOctreeNode::rinsert( IDrawable* drawable )
     }
     else
     {
-        HE_IF_ASSERT(m_Parent != nullptr, "This is a big problem - node is not inside root")
+        if (m_Parent != nullptr)
             m_Parent->rinsert(drawable);
+        else
+            rootInsert(drawable);
     }
 }
 void CullOctreeNode::reevaluate( IDrawable* drawable )
@@ -219,8 +222,10 @@ void CullOctreeNode::reevaluate( IDrawable* drawable )
     else
     {
         remove(drawable);
-        HE_IF_ASSERT(m_Parent != nullptr, "This is a big problem - node is not inside root")
+        if (m_Parent != nullptr)
             m_Parent->rinsert(drawable);
+        else
+            rootInsert(drawable);
     }
 
 }
@@ -254,7 +259,7 @@ void CullOctreeNode::createChilds( CullOctreeNode* child, byte xIndex, byte yInd
     for (byte y(0); y < 2; ++y)
     for (byte z(0); z < 2; ++z)
     {
-        if (x != xIndex && y != yIndex && z != zIndex)
+        if (x != xIndex || y != yIndex || z != zIndex)
             m_ChildNodes[index++] = NEW CullOctreeNode(this, x, y, z);
         else
             m_ChildNodes[index++] = child;
@@ -331,6 +336,14 @@ bool CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
         std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
     }
     return hasChilds;
+}
+
+CullOctreeNode* CullOctreeNode::getRoot()
+{
+    if (m_Parent == nullptr)
+        return this;
+    else 
+        return m_Parent->getRoot();
 }
 
 } } //end namespace

@@ -50,11 +50,26 @@
 #include "ShapeRenderer.h"
 
 #define CONE_VERTICES 16
+#define NUM_MOVING_ENTITIES 50
 
 namespace ht {
 
-MainGame::MainGame(): m_FpsGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(false)
+he::Random MainGame::s_Random(0);
+
+MainGame::MainGame()
+    : m_FpsGraph(nullptr)
+    , m_pSkyBox(nullptr)
+    , m_SpinShadows(false)
+    , m_MovingEntityFase(0)
 {
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        MovingEntityRandomness r;
+        r.a = he::vec3(s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100));
+        r.b = he::vec3(s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100));
+        r.c = he::vec3((float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5));
+        m_MovingEntityRandomness.push_back(r);
+    }
 }
 
 
@@ -195,26 +210,42 @@ void MainGame::load()
     he::ObjectHandle cubeMat(CONTENT->loadMaterial("cube.material"));
     mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
 
-    for (size_t x(0); x < 5; ++x)
-    for (size_t y(0); y < 5; ++y)
-    for (size_t z(0); z < 5; ++z)
+//     for (size_t x(0); x < 5; ++x)
+//     for (size_t y(0); y < 5; ++y)
+//     for (size_t z(0); z < 5; ++z)
+//     {
+//         modelComp = NEW ge::ModelComponent();
+//         modelComp->setMaterial(cubeMat);
+//         modelComp->setModelMesh(mesh->getHandle());
+//         modelComp->setLocalTransform(he::mat44::createTranslation(
+//             he::vec3(x * 3.0f + 10, 
+//                      y * 3.0f + 10, 
+//                      z * 3.0f + 10)) * he::mat44::createScale(1));
+//         scene->addComponent(modelComp);
+//     }
+
+
+    m_EntityList.push_back(scene);
+
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
+        ge::Entity* entity(NEW he::ge::Entity());
+        entity->init(m_Scene);
         modelComp = NEW ge::ModelComponent();
+        modelComp->setDynamic(true);
         modelComp->setMaterial(cubeMat);
         modelComp->setModelMesh(mesh->getHandle());
-        modelComp->setLocalTransform(he::mat44::createTranslation(
-            he::vec3(x * 3.0f + 10, 
-                     y * 3.0f + 10, 
-                     z * 3.0f + 10)) * he::mat44::createScale(1));
-        scene->addComponent(modelComp);
+        entity->addComponent(modelComp);
+        m_MovingEntityList.push_back(entity);
+        m_EntityList.push_back(entity);
     }
+
     mesh->release();
 
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial);
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial2);
     he::ResourceFactory<he::gfx::Material>::getInstance()->release(cubeMat);
 
-    m_EntityList.push_back(scene);
     #pragma endregion
 
     #pragma region Lights
@@ -224,7 +255,7 @@ void MainGame::load()
     m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
 
     mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
-    for (size_t i(0); i < 50; ++i)
+    for (size_t i(0); i < 5; ++i)
     {
         vec3 direction(rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f);
         direction = normalize(direction);
@@ -268,6 +299,19 @@ void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
 
+    m_MovingEntityFase += dTime;
+    if (m_MovingEntityFase >= he::twoPi)
+        m_MovingEntityFase -= he::twoPi;
+
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+        m_MovingEntityList[i]->setWorldMatrix(he::mat44::createTranslation(
+            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z)));
+    }
+
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;
 
@@ -283,6 +327,7 @@ void MainGame::tick( float dTime )
 
 void MainGame::fillDebugMeshes()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     using namespace he;
     gfx::CameraPerspective* camera(m_View->getCamera());
     

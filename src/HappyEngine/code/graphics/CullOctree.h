@@ -45,6 +45,7 @@ public:
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen) const;
     bool drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
         std::vector<vec3>& vertices, std::vector<uint>& indices) const;
+    CullOctreeNode* getRoot();
 
 private:
     CullOctreeNode(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex); 

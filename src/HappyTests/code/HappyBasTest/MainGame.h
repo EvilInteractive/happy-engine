@@ -24,6 +24,7 @@
 
 #include "Game.h"
 #include "IShapeDrawable.h"
+#include "Random.h"
 
 namespace he {
     namespace tools {
@@ -75,6 +76,17 @@ private:
     he::gfx::SkyBox* m_pSkyBox;
 
     he::gfx::ModelMesh* m_DebugMesh;
+
+    static he::Random s_Random;
+    struct MovingEntityRandomness
+    {
+        he::vec3 a;
+        he::vec3 b;
+        he::vec3 c;
+    };
+    std::vector<MovingEntityRandomness> m_MovingEntityRandomness;
+    std::vector<he::ge::Entity*> m_MovingEntityList;
+    float m_MovingEntityFase;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
