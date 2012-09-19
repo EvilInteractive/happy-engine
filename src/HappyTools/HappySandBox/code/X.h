@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,13 +16,13 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  
-//Created: 
+//Created: //
 
-#ifndef _X_H_
-#define _X_H_
+#ifndef _HT_X_H_
+#define _HT_X_H_
 #pragma once
 
-namespace happysandbox {
+namespace hs {
 
 class X
 {
@@ -32,7 +32,7 @@ public:
 
 private:
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT */
     X(const X&);
     X& operator=(const X&);
 };

@@ -39,7 +39,7 @@ layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
-layout(packed) uniform LightBuffer
+layout(std140) uniform LightBuffer
 {
     PointLight light;
 };
@@ -87,5 +87,5 @@ void main()
     vec4 color = texture(colorIllMap, texCoord);
     outColor = vec4(
           (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 20) *
-          light.color * light.multiplier * attenuationValue, 0.0f);
+          light.color * light.multiplier * attenuationValue, 1.0f);
 }

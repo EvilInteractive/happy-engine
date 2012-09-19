@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -21,32 +21,31 @@
 #pragma once
 
 #include "Camera.h"
-#include "vec2.h"
 
-namespace happysandbox {
+namespace hs {
 
 class FlyCamera : public he::gfx::Camera
 {
 public:
-	// CONSTRUCTOR - DESTRUCTOR
-	FlyCamera(int viewportWidth, int viewportHeight);
+    // CONSTRUCTOR - DESTRUCTOR
+    FlyCamera(int viewportWidth, int viewportHeight);
     virtual ~FlyCamera();
 
-	// GENERAL
-	void tick(float dTime);
+    // GENERAL
+    virtual void tick(float dTime);
 
-	// SETTERS
-	void moveable(bool bMoveable);
-	void setMouseSensitivty(float sens = 100.0f);
+    // SETTERS
+    void moveable(bool bMoveable);
+    void setMouseSensitivty(float sens = 100.0f);
 
 private:
-	bool m_bMoveable;
+    bool m_bMoveable;
 
-	float m_Speed;
-	float m_FastForward;
-	float m_MouseSensitivity;
+    float m_Speed;
+    float m_FastForward;
+    float m_MouseSensitivity;
 
-	he::vec2 m_PreviousMousePos;
+    he::vec2 m_PreviousMousePos;
 
     //Disable default copy constructor and default assignment operator
     FlyCamera(const FlyCamera&);

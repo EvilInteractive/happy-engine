@@ -22,12 +22,14 @@
 in vec3 inPosition;
 in mat4 inWorld;
 
+uniform mat4 matV;
 uniform mat4 matVP;
 
 out vec4 passPos;
 
 void main()
 {
-    passPos = matVP * inWorld * vec4(inPosition, 1.0f);
-    gl_Position = passPos;
+    vec4 world = inWorld * vec4(inPosition, 1.0f);
+    passPos = matV * world;
+    gl_Position = matVP * world;
 }

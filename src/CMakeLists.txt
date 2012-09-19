@@ -38,6 +38,7 @@ message(Platform: ${PLATFORM}${BITNESS})
 
 SET(Include_HappyEngine on CACHE BOOL "Include HappyEngine in solution")
 SET(Include_HappyTests on CACHE BOOL "Include HappyTests in solution")
+SET(Include_HappySandBox on CACHE BOOL "Include HappySandBox in solution")
 
 if (${Include_HappyEngine})
     add_subdirectory (HappyEngine)
@@ -45,5 +46,9 @@ endif()
 
 if (${Include_HappyTests})
     add_subdirectory (HappyTests)
+endif()
+
+if (${Include_HappySandBox})
+    add_subdirectory (HappyTools/HappySandBox)
 endif()
 

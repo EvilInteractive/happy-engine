@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -14,31 +14,30 @@
 //
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Sebastiaan Sprengers
+//Created: 10/07/2012
 
-#ifndef _MAINGAME_H_
-#define _MAINGAME_H_
+#ifndef _HS_MainGame_H_
+#define _HS_MainGame_H_
 #pragma once
 
-#include <vector>
-
-#include "HappyQtWidget.h"
 #include "Game.h"
-#include "FPSGraph.h"
-#include "Entity.h"
-#include "Grid.h"
-#include "HappyFxEditorBinding.h"
-#include "Game.h"
-#include "SceneInfo.h"
-#include "TransformTools.h"
 
-#include "Texture2D.h"
+namespace he {
+    namespace tools {
+        class FPSGraph;
+    }
+}
 
-namespace happysandbox {
+namespace hs {
+    class UIController;
+    class UIBind;
 
-class MainGame : public he::gfx::HappyQtWidget
+class MainGame : public he::ge::Game
 {
 public:
-    MainGame(QWidget* parent = 0);
+    MainGame();
     virtual ~MainGame();
 
     virtual void init();
@@ -48,17 +47,12 @@ public:
 
 private:
 
-    he::tools::Grid* m_pBaseGrid;
+    he::tools::FPSGraph* m_FPSGraph;
 
-    he::tools::HappyFxEditorBinding* m_pFxEditorBinding;
+    UIController* m_UIController;
+    UIBind* m_UIBind;
 
-    SceneInfo* m_pSceneInfo;
-
-    he::gfx::Texture2D::pointer m_pTest;
-
-    TransformTools* m_pTransFormTools;
-
-    /* DEFAULT COPY & ASSIGNMENT */
+    //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
     MainGame& operator=(const MainGame&);
 };

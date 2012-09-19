@@ -1,0 +1,454 @@
+@font-face
+{
+    font-family: 'UbuntuRegular';
+    src: url('../font/ubunturegular/ubuntu-regular-webfont.eot');
+    src: url('../font/ubunturegular/ubuntu-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/ubunturegular/ubuntu-regular-webfont.woff') format('woff'),
+         url('../font/ubunturegular/ubuntu-regular-webfont.ttf') format('truetype'),
+         url('../font/ubunturegular/ubuntu-regular-webfont.svg#UbuntuRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+    font-family: 'DroidSansRegular';
+    src: url('../font/droidsansregular/droidsans-webfont.eot');
+    src: url('../font/droidsansregular/droidsans-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/droidsansregular/droidsans-webfont.woff') format('woff'),
+         url('../font/droidsansregular/droidsans-webfont.ttf') format('truetype'),
+         url('../font/droidsansregular/droidsans-webfont.svg#DroidSansRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+    font-family: 'UbuntuBold';
+    src: url('../font/ubuntubold/ubuntu-bold-webfont.eot');
+    src: url('../font/ubuntubold/ubuntu-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/ubuntubold/ubuntu-bold-webfont.woff') format('woff'),
+         url('../font/ubuntubold/ubuntu-bold-webfont.ttf') format('truetype'),
+         url('../font/ubuntubold/ubuntu-bold-webfont.svg#UbuntuBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body
+{
+    margin: 0;
+    padding: 0;
+    
+    font: normal 12px UbuntuRegular;
+    color: #666;
+    
+    overflow: hidden;
+    
+    background-color: transparent;
+}
+
+a
+{
+    color: #333;
+}
+
+a.tip span
+{
+    display: none;
+}
+
+a.tip:hover span
+{
+    PADDING: 2px 2px 2px 2px;
+    DISPLAY: block;
+    Z-INDEX: 100;
+    LEFT: 0px;
+    MARGIN: 20px;
+    WIDTH: 150px;
+    POSITION: absolute;
+    TOP: 10px;
+    TEXT-DECORATION: none;
+    
+    background: #eee;
+    border: solid 1px #bbb;
+    color: #555;
+    font-size: 12px;
+}
+
+#menuBar
+{
+    position: absolute;
+    margin: 0;
+    padding: 0 0 2px 0;
+    line-height: 100%;
+    
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+
+    background: #8b8b8b; /* for non-css3 browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#a5a5a5), to(#555));
+    height: 16px;
+    width: 100%;
+}
+
+#menuBar li
+{
+    margin: 0 2px;
+    padding: 0;
+    float: left;
+    position: relative;
+    list-style: none;
+}
+
+#menuBar li li.divider
+{
+    height: 4px;
+    border-bottom: solid 1px #666;
+    width: 140px;
+    left: 5px;
+    top: -2px;
+}
+
+#menuBar a
+{
+    position: relative;
+    /*font-weight: bold;*/
+    font-family: UbuntuRegular;
+    color: #ddd;
+    text-decoration: none;
+    display: block;
+    padding: 0px 2px;
+    margin: 0;
+    -webkit-border-bottom-left-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+    top: -1px;
+}
+
+#menuBar a.first
+{
+    padding: 4px 8px;
+}
+
+#menuBar li a.selected, #menuBar li a:hover
+{
+    background: #ebebeb;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ebebeb), to(#a1a1a1));
+
+    color: #444;
+    border-top: solid 1px #f8f8f8;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+#menuBar ul li a, #menuBar li:hover li a
+{
+    background: none;
+    border: none;
+    color: #444;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+#menuBar ul
+{
+    background: #ddd; /* for non-css3 browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#ebebeb), to(#a1a1a1));
+
+    display: none;
+    margin: 0;
+    padding: 0;
+    width: 150px;
+    position: absolute;
+    top: 24px;
+    left: 0;
+    -webkit-border-radius: 4px;
+    /*-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .3);*/
+}
+
+#menuBar ul a:hover
+{
+    background: #0399d4 !important;
+    background: -webkit-gradient(linear, left top, left bottom, from(#04acec), to(#0186ba)) !important; /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #04acec,  #0186ba) !important; /* for firefox 3.6+ */
+
+    color: #fff !important;
+    -webkit-border-radius: 0px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+}
+
+#menuBar ul li
+{
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+
+#menuBar ul a
+{
+    font-weight: normal;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, .9);
+    padding: 5px;
+    top: 0;
+}
+
+#menuBar ul ul
+{
+    left: 181px;
+    top: -20px;
+}
+
+/* rounded corners for first and last child */
+#menuBar ul li:first-child > a
+{
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
+}
+
+#menuBar ul li:last-child > a
+{
+    -webkit-border-bottom-left-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+}
+
+
+/* clearfix */
+#menuBar:after
+{
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
+#menuBar
+{
+    display: inline-block;
+}
+
+html[xmlns] #menuBar
+{
+    display: block;
+}
+
+* html #menuBar
+{
+    height: 1%;
+}
+
+#scene
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*background: #383838;*/
+    background-color: transparent;
+    top: 18px;
+}
+
+#propertyPanel
+{
+    position: absolute;
+    width: 200px;
+    height: 100%;
+    top: 16px;
+    right: 0;
+    background: #2b2c2d;
+    /*-webkit-box-shadow: -1px 0px 4px rgba(0, 0, 0, .4);*/
+    border-left: 1px solid #222;
+    
+    color: #ddd;
+    
+    resize: both;
+    overflow: hidden;
+}
+
+#propertyPanel div.header
+{
+    width: 100%;
+    position: relative;
+    text-align: left;
+    
+    padding: 2px 4px;
+    
+    /*background: #333;*/
+}
+
+#propertyList
+{
+    margin: 0;
+    padding:0;
+    padding-left: 0px;
+    padding-top: 5px;
+    float: left;
+    position: relative;
+    list-style: none;
+}
+
+#propertyList li
+{
+    margin-left: 4px;
+    float: left;
+    position: relative;
+    list-style: none;
+}
+
+#propertyList li span.property
+{
+    font-family: UbuntuBold;
+    font-size: 14px;
+    
+    background: -webkit-gradient(linear, left top, left bottom, from(#999), to(#777));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+#propertyList li ul
+{
+    margin: 0;
+    margin-left: 0;
+    margin-top: 4px;
+    padding:0;
+    float: left;
+    position: relative;
+    list-style: none;
+}
+
+#propertyList li ul li
+{
+    text-align: center;
+    margin-top: 2px;
+}
+
+#toolPanel
+{
+    position: absolute;
+    width: 38px;
+    height: 100%;
+    top: 16px;
+    left: 0;
+    background: #2b2c2d;
+    /*-webkit-box-shadow: 1px 0px 4px rgba(0, 0, 0, .4);*/
+    border-right: 1px solid #222;
+    
+    color: #2e2e2e;
+    
+    resize: both;
+    overflow: hidden;
+}
+
+#tools
+{
+    margin: 0;
+    padding: 0;
+}
+
+#tools li
+{
+    margin: 2px 0px 2px 5px;
+    padding: 2px;
+    float: left;
+    position: relative;
+    list-style: none;
+    
+    background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#444));
+
+    border: 1px solid #222;
+    
+    -webkit-border-radius: 4px;
+}
+
+#tools li:hover
+{
+    background: -webkit-gradient(linear, left top, left bottom, from(#aaa), to(#888));
+
+    border: 1px solid #222;
+    
+    -webkit-border-radius: 4px;
+}
+
+#tools li:active
+{
+    background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
+}
+
+#tools li.first
+{
+    margin-top: 10px;
+}
+
+#tools a
+{
+    text-decoration: none;
+    display: block;
+}
+
+#tools li.divider
+{
+    margin: 3px 0;
+    padding: 0;
+    
+    height: 4px;
+    width: 50px;
+    
+    background: #333;
+    border: none;
+    
+    -webkit-box-shadow: none;
+    
+    -webkit-border-radius: 0;
+}
+
+#infoBar
+{
+    position: absolute;
+    width: 100%;
+    height: 15px;
+    bottom: 0;
+    
+    background: #555;
+    
+    color: #ddd;
+}
+
+#infoText
+{
+    margin-left: 10px;
+    margin-top: 1px;
+}
+
+#propertyList input.tb
+{
+    font-family: UbuntuRegular;
+    resize: none;
+
+    font-size: 12px;
+    
+    color: #222;
+    
+    height: 12px;
+    width: 22%;
+    
+    padding: 2px;
+    border: 1px solid #222;
+    
+    -webkit-border-radius: 3px;
+    
+    background: #999;
+    margin: 0 2px;
+}
+
+#propertyList form
+{
+    color: #aaa;
+}
+
+#propertyList input.tb:focus
+{
+    border: 1px solid #aaa;
+    outline: none;
+}

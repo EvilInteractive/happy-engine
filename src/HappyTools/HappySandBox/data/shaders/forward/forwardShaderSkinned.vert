@@ -34,7 +34,7 @@ out vec3 passPosition;
 uniform mat4 matWVP;
 uniform mat4 matWV;
 
-uniform mat4[32] matBones;
+uniform mat4[64] matBones;
 
 void main()
 {    

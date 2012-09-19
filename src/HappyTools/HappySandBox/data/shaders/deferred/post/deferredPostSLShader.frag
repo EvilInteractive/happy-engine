@@ -40,7 +40,7 @@ layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
-layout(packed) uniform LightBuffer
+layout(std140) uniform LightBuffer
 {
     SpotLight light;
 };
@@ -88,13 +88,13 @@ void main()
 #if SPECULAR
     vec4 sg = texture(sgMap, texCoord);	
     vec3 vCamDir = normalize(-position);
-    spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.b * 100.0f) * sg.r);
+    spec = max(0, pow(dot(reflect(-lightDir, normal), vCamDir), sg.g * 100.0f) * sg.r);
 #endif
 
     float attenuationValue = 1 - max(0, (lightDist - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation));
     
     vec4 color = texture(colorIllMap, texCoord);
     outColor = vec4(
-          (dotLightNormal * color.rgb + vec3(spec, spec, spec)) 
-          * light.color * light.multiplier * attenuationValue * spot, 0.0f);						
+          (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 20) *
+          light.color * light.multiplier * attenuationValue * spot, 1.0f);						
 }
