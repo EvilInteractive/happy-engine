@@ -1,5 +1,47 @@
+include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/LibFindPackage.cmake)
+
+macro (IncludeThirdPartyOSX)
+
+set(Boost_USE_STATIC_LIBS   ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package( Boost 1.49.0 COMPONENTS date_time system thread regex chrono )
+
+if (Boost_FOUND)
+include_directories(${Boost_INCLUDE_DIRS})
+message(Boost found!)
+else()
+message(Could not find boost!)
+endif()
+
+
+
+# Dependencies
+libfind_package(glew glew)
+
+# Use pkg-config to get hints about paths
+libfind_pkg_check_modules(glew_PKGCONF glew)
+
+# Include dir
+find_path(glew_INCLUDE_DIR
+  PATHS ${glew_PKGCONF_INCLUDE_DIRS}
+)
+
+# Finally the library itself
+find_library(glew_LIBRARY
+  PATHS ${glew_PKGCONF_LIBRARY_DIRS}
+)
+
+# Set the include dir variables and the libraries and let libfind_process do the rest.
+# NOTE: Singular variables for this library, plural for libraries this this lib depends on.
+set(glew_PROCESS_INCLUDES glew_INCLUDE_DIR glew_INCLUDE_DIRS)
+set(glew_PROCESS_LIBS glew_LIBRARY glew_LIBRARIES)
+libfind_process(glew)
+endmacro()
+
 
 macro (IncludeThirdParty)
+
+
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Assimp/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Boost/include)
@@ -25,6 +67,12 @@ link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/OpenAl/lib/${PLATFORM}${
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/PhysX/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/lib/${PLATFORM}${BITNESS})
+endmacro()
+
+
+
+macro (LinkThirdPartyOSX target)
+target_link_libraries($(target) ${Boost_LIBRARIES})
 endmacro()
 
 macro (LinkThirdParty target)

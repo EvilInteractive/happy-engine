@@ -10,7 +10,11 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
 
 # include + link thirdparty
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
+if (APPLE)
+IncludeThirdPartyOSX()
+else()
 IncludeThirdParty()
+endif()
 
 # Create HappyEngine library
 add_library (HappyEngine STATIC ${HAPPYENGINE_SRCS})
