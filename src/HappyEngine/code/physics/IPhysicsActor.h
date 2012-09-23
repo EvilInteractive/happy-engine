@@ -24,6 +24,7 @@
 
 namespace physx {
 class PxRigidActor;
+class PxShape;
 }
 
 namespace he {
@@ -32,6 +33,8 @@ struct vec3;
 class mat44;
 
 namespace px {
+class IPhysicsShape;
+class PhysicsMaterial;
 
 class IPhysicsActor
 {
@@ -42,6 +45,15 @@ public:
     virtual void getTranslation(vec3& translation) const = 0;
     virtual void getRotation(mat33& rotation) const = 0;
     virtual void getPose(mat44& pose) const = 0;
+
+    virtual void teleport(const mat44& pose);
+
+protected:
+    virtual uint getCompatibleShapes() const = 0;
+
+    // return true if successful
+    virtual bool createShape(std::vector<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
+                             const PhysicsMaterial& material, const mat44& localPose = mat44::Identity);
 
 };
 

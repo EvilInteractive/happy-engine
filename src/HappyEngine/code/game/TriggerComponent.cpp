@@ -39,7 +39,6 @@ TriggerComponent::TriggerComponent() :  m_Trigger(nullptr),
 TriggerComponent::~TriggerComponent()
 {
     delete m_Trigger;
-    GAME->removeFromTickList(this);
 }
 
 /* ICOMPONENT */
@@ -47,8 +46,6 @@ void TriggerComponent::init(Entity* pParent)
 {
     m_Parent = pParent;
     m_Trigger = NEW px::PhysicsTrigger(m_Parent->getWorldMatrix());
-
-    GAME->addToTickList(this);
 }
 
 void TriggerComponent::serialize(SerializerStream& /*stream*/)
@@ -61,18 +58,14 @@ void TriggerComponent::deserialize(const SerializerStream& /*stream*/)
 
 }
 
-/* ITICKABLE */
-void TriggerComponent::tick(float /*dTime*/)
-{
-    m_Trigger->setPose(m_Parent->getWorldMatrix());
-}
-
 /* GENERAL */
-void TriggerComponent::addShape(const px::IPhysicsShape* pShape, const mat44& localPose)
+void TriggerComponent::addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
+    const mat44& localPose)
 {
-    HE_ASSERT(m_Trigger != nullptr, "attach component first to entity");
-
-    m_Trigger->addTriggerShape(pShape, localPose);
+    HE_IF_ASSERT(m_Trigger != nullptr, "attach component first to entity")
+    {
+        m_Trigger->addTriggerShape(shape, collisionGroup, collisionGroupAgainst, localPose);
+    }
 }
 
 void TriggerComponent::addOnTriggerEnterCallBack(boost::function<void()> callback)
@@ -89,6 +82,12 @@ void TriggerComponent::addOnTriggerLeaveCallBack(boost::function<void()> callbac
 px::PhysicsTrigger* TriggerComponent::getTrigger()
 {
     return m_Trigger;
+}
+
+void TriggerComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
+    m_Trigger->setPose(m_WorldMatrix);
 }
 
 } } //end namespace

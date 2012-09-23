@@ -48,6 +48,9 @@ public:
                 uint32 collisionGroup = 0xffffffff, 
                 const mat44& localPose = mat44::Identity);
 
+protected:
+    virtual uint getCompatibleShapes() const;
+
 private:
     void addShape(physx::PxShape* shape, uint32 collisionGroup);
 

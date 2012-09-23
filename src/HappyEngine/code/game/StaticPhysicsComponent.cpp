@@ -40,7 +40,7 @@ StaticPhysicsComponent::~StaticPhysicsComponent()
 void StaticPhysicsComponent::init( Entity* pParent )
 {
     m_Parent = pParent;
-    m_StaticActor = NEW px::PhysicsStaticActor(m_Parent->getWorldMatrix());
+    m_StaticActor = NEW px::PhysicsStaticActor(getWorldMatrix());
 }
 
 void StaticPhysicsComponent::serialize(SerializerStream& /*stream*/)
@@ -62,6 +62,13 @@ void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const p
 px::PhysicsStaticActor* StaticPhysicsComponent::getStaticActor() const
 {
     return m_StaticActor;
+}
+
+void StaticPhysicsComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
+    if (m_StaticActor != nullptr)
+        m_StaticActor->teleport(m_WorldMatrix);
 }
 
 } } //end namespace

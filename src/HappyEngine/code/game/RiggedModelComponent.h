@@ -30,6 +30,7 @@ namespace ge {
     
 class SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
 {
+    IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSkinnedDrawable)
 public:
     SkinnedModelComponent();
     virtual ~SkinnedModelComponent();

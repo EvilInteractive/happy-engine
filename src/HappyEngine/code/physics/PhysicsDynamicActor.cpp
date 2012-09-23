@@ -49,68 +49,19 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
     PHYSICS->getScene()->addActor(*m_Actor);
     PHYSICS->unlock();
 }
-void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
+void PhysicsDynamicActor::addShape( const IPhysicsShape* shape, const PhysicsMaterial& material, float mass, 
     uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose/* = mat44::Identity*/ )
 {
-    PHYSICS->lock();
-    switch (pShape->getType())
+    std::vector<physx::PxShape*> shapes;
+    if (createShape(shapes, shape, material, localPose))
     {
-    case PhysicsShapeType_Box:
+        PHYSICS->lock();
+        std::for_each(shapes.cbegin(), shapes.cend(), [&](physx::PxShape* pxShape)
         {
-            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(pShape));
-            physx::PxShape* pxShape(m_Actor->createShape(
-                physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
             addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Sphere:
-        {
-            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(pShape));
-            physx::PxShape* pxShape(m_Actor->createShape(
-                physx::PxSphereGeometry(pSphereShape->getRadius()), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Capsule:
-        {
-            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
-            physx::PxShape* pxShape(m_Actor->createShape(
-                physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Convex:
-        {
-            const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(pShape));
-            if (convexShape->getConvexMesh() != ObjectHandle::unassigned) // load failed
-            {
-                const std::vector<physx::PxConvexMesh*>& meshes(
-                    ResourceFactory<PhysicsConvexMesh>::getInstance()->get(
-                    convexShape->getConvexMesh())->getInternalMeshes());
-
-                std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxConvexMesh* mesh)
-                {
-                    physx::PxVec3 scale;
-                    convexShape->getScale().toPxVec3(&scale);
-
-                    physx::PxShape* pxShape(m_Actor->createShape(
-                        physx::PxConvexMeshGeometry(mesh, 
-                            physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
-                            *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-                    addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-                });
-            }
-            break;
-        }
-
-    default: 
-        HE_ASSERT(false, "Type not supported with dynamic actors");
-        break;
+        });
+        PHYSICS->unlock();
     }
-    PHYSICS->unlock();
 }
 
 void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup )
@@ -175,6 +126,10 @@ void PhysicsDynamicActor::setKeyframed(bool keyframed)
 {
     m_Actor->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, keyframed);
 }
+bool PhysicsDynamicActor::isKeyframed() const
+{
+    return m_Actor->getRigidDynamicFlags() & physx::PxRigidDynamicFlag::eKINEMATIC;
+}
 void PhysicsDynamicActor::keyframedSetPose(const vec3& position, const vec3& axis, float angle)
 {
     m_Actor->setKinematicTarget(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
@@ -190,5 +145,11 @@ physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const
 {
     return m_Actor;
 }
+
+he::uint PhysicsDynamicActor::getCompatibleShapes() const
+{
+    return PhysicsShapeType_DynamicCompatible;
+}
+
 
 } } //end namespace

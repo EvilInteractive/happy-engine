@@ -79,4 +79,9 @@ px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
     return m_DynamicActor;
 }
 
+void DynamicPhysicsComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
+}
+
 } } //end namespace

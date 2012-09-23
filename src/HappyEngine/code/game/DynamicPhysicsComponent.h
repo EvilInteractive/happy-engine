@@ -33,7 +33,7 @@ namespace px {
 }
 namespace ge {
 
-class DynamicPhysicsComponent : public EntityComponent, public ITickable
+class DynamicPhysicsComponent : public EntityComponent, public Object3D, public ITickable
 {
 public:
     DynamicPhysicsComponent();
@@ -65,10 +65,37 @@ private:
     
     Entity* m_Parent;
     
-
     //Disable default copy constructor and default assignment operator
     DynamicPhysicsComponent(const DynamicPhysicsComponent&);
     DynamicPhysicsComponent& operator=(const DynamicPhysicsComponent&);
+
+
+    //////////////////////////////////////////////////////////////////////////
+    /// Object3D
+    //////////////////////////////////////////////////////////////////////////
+public:
+    virtual void setLocalTranslate(const vec3& translate)  { Object3D::setLocalTranslate(translate); } 
+    virtual void setLocalRotate(const mat33& rotate) { Object3D::setLocalRotate(rotate); } 
+    virtual void setLocalScale(const vec3& scale) { Object3D::setLocalScale(scale); } 
+
+    virtual const vec3&  getLocalTranslate() const { return Object3D::getLocalTranslate(); } 
+    virtual const mat33& getLocalRotate() const { return Object3D::getLocalRotate(); } 
+    virtual const vec3&  getLocalScale() const { return Object3D::getLocalScale(); } 
+
+    virtual const mat44& getLocalMatrix() const { return Object3D::getLocalMatrix(); } 
+    virtual const mat44& getWorldMatrix() const { return Object3D::getWorldMatrix(); } 
+
+    virtual void attach(IObject3D* child) { Object3D::attach(child); }
+    virtual void detach(IObject3D* child) { Object3D::detach(child); }
+
+protected:
+    virtual IObject3D* getParent() const { return Object3D::getParent(); } 
+    virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
+
+    virtual void setWorldMatrixDirty(byte cause) { Object3D::setWorldMatrixDirty(cause); } 
+    virtual void setLocalMatrixDirty(byte cause) { Object3D::setLocalMatrixDirty(cause); } 
+
+    virtual void calculateWorldMatrix();
 };
 
 } } //end namespace

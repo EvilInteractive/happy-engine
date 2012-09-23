@@ -11,8 +11,7 @@ set (CODE_GAME_COMPONENT_FILTER
                         InstancedModelComponent.cpp             InstancedModelComponent.h
                         LightComponent.cpp                      LightComponent.h
                         ModelComponent.cpp                      ModelComponent.h
-                        NetworkObjectComponent.cpp              NetworkObjectComponent.h
-                        RiggedModelComponent.cpp                RiggedModelComponent.h
+                        SkinnedModelComponent.cpp                SkinnedModelComponent.h
                         StaticPhysicsComponent.cpp              StaticPhysicsComponent.h
                         TriggerComponent.cpp                    TriggerComponent.h
                         )
