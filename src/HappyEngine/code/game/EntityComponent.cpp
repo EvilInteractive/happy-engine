@@ -16,29 +16,12 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 23/06/2012
-
-#ifndef _HE_NetworkObjectComponent_H_
-#define _HE_NetworkObjectComponent_H_
-#pragma once
+//Created: 04/09/2012
+#include "HappyPCH.h"
+#include "EntityComponent.h"
+#include "NetworkSerializer.h"
 
 namespace he {
-namespace net {
-
-class NetworkObjectComponent
-{
-public:
-    NetworkObjectComponent();
-    virtual ~NetworkObjectComponent();
-
-private:
-
-
-    //Disable default copy constructor and default assignment operator
-    NetworkObjectComponent(const NetworkObjectComponent&);
-    NetworkObjectComponent& operator=(const NetworkObjectComponent&);
-};
+namespace ge {
 
 } } //end namespace
-
-#endif

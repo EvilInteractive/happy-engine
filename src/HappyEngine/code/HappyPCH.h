@@ -38,25 +38,25 @@
 #include <sstream>
 #include <cstdarg>
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
 #pragma warning (disable : 4244)
-#include "boost/thread.hpp"
+#include <boost/thread.hpp>
 #pragma warning (default : 4244)
-#include "boost/chrono.hpp"
-#include "boost/any.hpp"
-#include "boost/function.hpp"
-#include "boost/date_time.hpp"
+#include <boost/chrono.hpp>
+#include <boost/any.hpp>
+#include <boost/function.hpp>
+#include <boost/date_time.hpp>
 #pragma warning (disable : 4512) // assignment operator could not be generated
-#include "boost/signal.hpp"
+#include <boost/signal.hpp>
 #pragma warning (default : 4512)
 
-#include "SFML/Window.hpp"
+#include <SFML/Window.hpp>
 
 #undef MessageBox
 
 #define glewGetContext() (&he::gfx::GL::s_CurrentContext->internalContext)
 
-#include "GL/glew.h"
+#include <GL/glew.h>
 
 #include "HappyTypes.h"
 #include "vec2.h"

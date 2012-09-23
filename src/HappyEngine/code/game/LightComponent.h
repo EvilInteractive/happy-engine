@@ -22,38 +22,32 @@
 #define _HE_LIGHT_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
+#include "EntityComponent.h"
 #include "ITickable.h"
 
-#include "PointLight.h"
-#include "SpotLight.h"
-
-#include "Random.h"
-
 namespace he {
+namespace gfx {
+    class PointLight;
+    class SpotLight;
+}
 namespace ge {
     
-class PointLightComponent : public IComponent, public ITickable
+class PointLightComponent : public EntityComponent, public Object3D
 {
+    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     PointLightComponent();
     virtual ~PointLightComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
 
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
-
-    virtual void tick(float dTime);
-
-    void setLocalTransform(const mat44& mtxWorld);
-    const mat44& getLocalTransform() const;
-    
-    void setOffset(const vec3& offset);
+        
     void setMultiplier(float multiplier);
     void setAttenuation(float begin, float end);
     void setColor(const vec3& color);
@@ -66,42 +60,31 @@ public:
     const vec3& getColor() const;
 
 
-private:
-    mat44 m_mtxLocalTransform;
-    vec3 m_Offset;
-    
-    Entity* m_Parent;
-    
-    ObjectHandle m_PointLight;
-
-    static Random s_Random;
+private:    
+    Entity* m_Parent;   
+    gfx::PointLight* m_PointLight;
 
     //Disable default copy constructor and default assignment operator
     PointLightComponent(const PointLightComponent&);
     PointLightComponent& operator=(const PointLightComponent&);
 };
 
-class SpotLightComponent : public IComponent, public ITickable
+class SpotLightComponent : public EntityComponent, public Object3D
 {
+IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     SpotLightComponent();
     virtual ~SpotLightComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
 
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
-
-    virtual void tick(float dTime);
-
-    void setLocalTransform(const mat44& mtxWorld);
-    const mat44& getLocalTransform() const;
-
-    void setOffset(const vec3& position);
+    
     void setMultiplier(float multiplier);
     void setDirection(const vec3& direction);
     void setAttenuation(float begin, float end);
@@ -109,7 +92,6 @@ public:
     void setColor(const Color& color);
     void setFov(float angle);
 
-    const vec3& getOffset() const;
     float getMultiplier() const;
     const vec3& getDirection() const;
     float getBeginAttenuation() const;
@@ -120,14 +102,8 @@ public:
 
 
 private:
-    mat44 m_mtxLocalTransform;
-
     Entity* m_Parent;
-
-    vec3 m_Offset;
-    vec3 m_Direction;
-
-    ObjectHandle m_SpotLight;
+    gfx::SpotLight* m_SpotLight;
 
     //Disable default copy constructor and default assignment operator
     SpotLightComponent(const SpotLightComponent&);

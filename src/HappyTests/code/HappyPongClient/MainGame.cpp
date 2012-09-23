@@ -161,18 +161,11 @@ void MainGame::load()
     he::ge::Entity* board(NEW he::ge::Entity());
     board->init(m_Scene);
     he::ge::ModelComponent* boardModel(NEW he::ge::ModelComponent());
-    he::ObjectHandle boardMaterial(CONTENT->loadMaterial("pong/board.material"));
-    boardModel->setMaterial(boardMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/board.binobj", "M_Board", boardModel->getMaterial()->getCompatibleVertexLayout()));
-    boardModel->setModelMesh(mesh->getHandle());
-    mesh->release();
-    board->setWorldMatrix(he::mat44::createScale(100));
+    boardModel->setModelMeshAndMaterial("pong/board.material", "pong/board.binobj");
+    board->setLocalScale(he::vec3(100, 100, 100));
 
     board->addComponent(boardModel);
     m_EntityList.push_back(board);
-
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(boardMaterial);
-
 }
 
 void MainGame::tick( float dTime )

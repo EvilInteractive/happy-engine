@@ -22,7 +22,7 @@
 #define _HE_TRIGGER_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
+#include "EntityComponent.h"
 #include "ITickable.h"
 
 namespace he {
@@ -32,7 +32,7 @@ namespace px {
 }
 namespace ge {
 
-class TriggerComponent : public IComponent, public ITickable
+class TriggerComponent : public EntityComponent, public Object3D
 {
 public:
 
@@ -40,26 +40,22 @@ public:
     TriggerComponent();
     virtual ~TriggerComponent();
 
-    /* ICOMPONENT */
-    virtual void init(Entity* parent);
-
+    /* EntityComponent */
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
-
-    /* ITICKABLE */
-    virtual void tick(float dTime);
-
+    
     /* GENERAL */
-    void addShape(const px::IPhysicsShape* shape, 
-        uint32 collisionGroup, uint32 collisionGroupAgainst, 
+    void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
         const mat44& localPose = mat44::Identity);
 
     /* EVENTS */
     event1<void, Entity*> OnTriggerEnter;
     event1<void, Entity*> OnTriggerLeave;
 
-private:
+protected:
+    virtual void init(Entity* parent);
 
+private:
     /* DATAMEMBERS */
     Entity* m_Parent;
 
@@ -68,6 +64,36 @@ private:
     /* DEFAULT COPY & ASSIGNENT */
     TriggerComponent(const TriggerComponent&);
     TriggerComponent& operator=(const TriggerComponent&);
+
+
+    //////////////////////////////////////////////////////////////////////////
+    /// Object3D
+    //////////////////////////////////////////////////////////////////////////
+public:
+    virtual void setLocalTranslate(const vec3& translate)  { Object3D::setLocalTranslate(translate); } 
+    virtual void setLocalRotate(const mat33& rotate) { Object3D::setLocalRotate(rotate); } 
+    virtual void setLocalScale(const vec3& scale) { Object3D::setLocalScale(scale); } 
+
+    virtual const vec3&  getLocalTranslate() const { return Object3D::getLocalTranslate(); } 
+    virtual const mat33& getLocalRotate() const { return Object3D::getLocalRotate(); } 
+    virtual const vec3&  getLocalScale() const { return Object3D::getLocalScale(); } 
+
+    virtual const mat44& getLocalMatrix() const { return Object3D::getLocalMatrix(); } 
+    virtual const mat44& getWorldMatrix() const { return Object3D::getWorldMatrix(); } 
+
+    virtual void attach(IObject3D* child) { Object3D::attach(child); }
+    virtual void detach(IObject3D* child) { Object3D::detach(child); }
+
+protected:
+    virtual IObject3D* getParent() const { return Object3D::getParent(); } 
+    virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
+
+    virtual void setWorldMatrixDirty(byte cause) { Object3D::setWorldMatrixDirty(cause); } 
+    virtual void setLocalMatrixDirty(byte cause) { Object3D::setLocalMatrixDirty(cause); } 
+
+    virtual void calculateWorldMatrix();
+
+private:
 };
 
 } } //end namespace

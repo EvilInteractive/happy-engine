@@ -24,6 +24,7 @@
 namespace he {
 struct vec3;
 struct vec2;
+class mat33;
 
 namespace gfx {
 class ICamera;
@@ -61,6 +62,7 @@ public:
     static mat44 createScale(float scale);
     static mat44 createBillboard(const gfx::ICamera* pCam);
     static mat44 createWorld(const vec3& position, const vec3& forward, const vec3& up);
+    static mat44 createWorld(const vec3& translation, const mat33& rotation, const vec3& scale);
 
     //operators
     mat44 operator*(const mat44& mat) const;
@@ -76,10 +78,12 @@ public:
 
     //getters
     const float* toFloatArray() const;
-    vec3 getTranslation() const;
     const physx::PxMat44& getPhyicsMatrix() const;
     mat44 inverse() const;
     float getDeterminant() const;
+
+    void getTranslationComponent(vec3& translation) const;
+    void getRotationComponent(mat33& rotation) const;
     
     //Static
     static const mat44 Identity;

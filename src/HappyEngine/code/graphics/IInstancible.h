@@ -22,20 +22,19 @@
 #define _HE_IINSTANCIBLE_H_
 #pragma once
 
-#include "I3DObject.h"
-
 namespace he {
+class Bound;
 namespace gfx {
 
 class DynamicBuffer;
-class IInstancible : public I3DObject
+class IInstancible : public IObject3D
 {
 public:
     virtual ~IInstancible() {}
     
     virtual void fillInstancingBuffer(DynamicBuffer& buffer) const = 0;
-};  
+}; 
 
-} } //end namespace
+}}  //end namespace
 
 #endif

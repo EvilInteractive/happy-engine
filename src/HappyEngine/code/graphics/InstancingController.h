@@ -39,7 +39,7 @@ class ModelMesh;
 class Material;
 class Scene;
 
-class InstancingController : public IInstancedDrawable, public ge::ITickable
+class InstancingController : public InstancedDrawable, public ge::ITickable
 {
 public:
     InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);

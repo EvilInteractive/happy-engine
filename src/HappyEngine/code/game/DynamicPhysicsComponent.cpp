@@ -47,9 +47,6 @@ void DynamicPhysicsComponent::init( Entity* parent )
     m_DynamicActor = NEW px::PhysicsDynamicActor(m_Parent->getWorldMatrix());
     m_Parent->addSleepEvaluator(boost::bind(&px::PhysicsDynamicActor::isSleeping, m_DynamicActor));
     GAME->addToTickList(this);
-    
-    //if (HAPPYENGINE->isEditor())
-    //    m_DynamicActor->setKeyframed(true);
 }
 
 void DynamicPhysicsComponent::serialize(SerializerStream& /*stream*/)
@@ -64,7 +61,12 @@ void DynamicPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 void DynamicPhysicsComponent::tick( float /*dTime*/ )
 {
-    m_Parent->setWorldMatrix(m_DynamicActor->getPose());
+    vec3 translation;
+    mat33 rotation;
+    m_DynamicActor->getTranslation(translation);
+    m_DynamicActor->getRotation(rotation);
+    m_Parent->setLocalTranslate(translation);
+    m_Parent->setLocalRotate(rotation);
 }
 
 
@@ -78,6 +80,11 @@ void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* shape, const p
 px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
 {
     return m_DynamicActor;
+}
+
+void DynamicPhysicsComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
 }
 
 } } //end namespace

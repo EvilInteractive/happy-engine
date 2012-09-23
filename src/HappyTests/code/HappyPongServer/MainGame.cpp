@@ -134,7 +134,7 @@ void MainGame::drawGui()
 {
 }
 
-void MainGame::createNewPaddle( const he::NetworkID& id )
+void MainGame::createNewPaddle( const he::net::NetworkID& id )
 {
     HE_IF_ASSERT(m_Player1Id == UNASSIGNED_NETWORKID || m_Player2Id == UNASSIGNED_NETWORKID, "2 players already connected!")
     {
@@ -156,7 +156,7 @@ void MainGame::createNewPaddle( const he::NetworkID& id )
         m_Palets.push_back(palet);
     }
 }
-void MainGame::unregisterPaddle( const he::NetworkID& id )
+void MainGame::unregisterPaddle( const he::net::NetworkID& id )
 {
     for (he::uint i(0); i < m_Palets.size(); ++i)
     {

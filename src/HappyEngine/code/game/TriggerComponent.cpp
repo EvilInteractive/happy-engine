@@ -21,10 +21,12 @@
 #include "HappyPCH.h" 
 
 #include "TriggerComponent.h"
+
 #include "PhysicsTrigger.h"
 
 #include "Entity.h"
 #include "Game.h"
+#include "PhysicsUserData.h"
 
 namespace he {
 namespace ge {
@@ -38,7 +40,6 @@ TriggerComponent::TriggerComponent() :  m_Trigger(nullptr),
 TriggerComponent::~TriggerComponent()
 {
     delete m_Trigger;
-    GAME->removeFromTickList(this);
 }
 
 /* ICOMPONENT */
@@ -76,8 +77,6 @@ void TriggerComponent::init(Entity* parent)
 
     m_Trigger->OnTriggerEnter += onEnterHandler;
     m_Trigger->OnTriggerLeave += onLeaveHandler;
-
-    GAME->addToTickList(this);
 }
 
 void TriggerComponent::serialize(SerializerStream& /*stream*/)
@@ -90,20 +89,20 @@ void TriggerComponent::deserialize(const SerializerStream& /*stream*/)
 
 }
 
-/* ITICKABLE */
-void TriggerComponent::tick(float /*dTime*/)
-{
-    m_Trigger->setPose(m_Parent->getWorldMatrix());
-}
-
 /* GENERAL */
-void TriggerComponent::addShape(const px::IPhysicsShape* shape, 
-    uint32 collisionGroup, uint32 collisionGroupAgainst, 
+void TriggerComponent::addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
     const mat44& localPose)
 {
-    HE_ASSERT(m_Trigger != nullptr, "attach component first to entity");
+    HE_IF_ASSERT(m_Trigger != nullptr, "attach component first to entity")
+    {
+        m_Trigger->addTriggerShape(shape, collisionGroup, collisionGroupAgainst, localPose);
+    }
+}
 
-    m_Trigger->addTriggerShape(shape, collisionGroup, collisionGroupAgainst, localPose);
+void TriggerComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
+    m_Trigger->setPose(m_WorldMatrix);
 }
 
 } } //end namespace

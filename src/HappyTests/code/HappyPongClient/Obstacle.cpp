@@ -37,16 +37,11 @@ Obstacle::Obstacle():
     m_Radius(8.0f)
 {
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
-    he::ObjectHandle material(CONTENT->loadMaterial("pong/obstacle.material"));
-    model->setMaterial(material);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/obstacles.binobj", "M_Torus", model->getMaterial()->getCompatibleVertexLayout()));
-    model->setModelMesh(mesh->getHandle());
-    mesh->release();
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(material);
-    model->setLocalTransform(he::mat44::createScale(100));
+    model->setModelMeshAndMaterial("pong/obstacle.material", "pong/obstacles.binobj");
+    model->setLocalScale(he::vec3(100, 100, 100));
     addComponent(model);
 
-    setWorldMatrix(he::mat44::createTranslation(m_Position));
+    setLocalTranslate(m_Position);
 }
 
 

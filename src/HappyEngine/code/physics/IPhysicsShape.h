@@ -27,20 +27,26 @@ namespace px {
 
 enum PhysicsShapeType
 {
-    PhysicsShapeType_Box,
-    PhysicsShapeType_Convex,
-    PhysicsShapeType_Sphere,
-    PhysicsShapeType_Capsule,
+    PhysicsShapeType_Box = 1 << 1,
+    PhysicsShapeType_Convex = 1 << 2,
+    PhysicsShapeType_Sphere = 1 << 3,
+    PhysicsShapeType_Capsule = 1 << 4,
+    PhysicsShapeType_Concave = 1 << 5,
+    PhysicsShapeType_Plane = 1 << 6,
+    PhysicsShapeType_HeightField = 1 << 7,
 
-    //Only for static actors
-    PhysicsShapeType_Concave,
-    PhysicsShapeType_Plane,
-    PhysicsShapeType_HeightField
+    PhysicsShapeType_StaticCompatible = PhysicsShapeType_Box | PhysicsShapeType_Convex |  PhysicsShapeType_Sphere |
+                                        PhysicsShapeType_Capsule | PhysicsShapeType_Concave | PhysicsShapeType_Plane |
+                                        PhysicsShapeType_HeightField,
+    PhysicsShapeType_DynamicCompatible = PhysicsShapeType_Box | PhysicsShapeType_Convex |  PhysicsShapeType_Sphere |
+                                         PhysicsShapeType_Capsule,
+    PhysicsShapeType_TriggerCompatible = PhysicsShapeType_Box | PhysicsShapeType_Convex |  PhysicsShapeType_Sphere |
+                                         PhysicsShapeType_Capsule
 };
-
-class IPhysicsShape
-{
-public:
+    
+class IPhysicsShape                                            
+{                                                              
+    public:                                                        
     virtual ~IPhysicsShape() {}
 
     virtual PhysicsShapeType getType() const = 0;

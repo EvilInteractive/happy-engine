@@ -51,28 +51,31 @@ enum IntersectResult
     IntersectResult_Outside
 };
 
+namespace net {
 typedef RakNet::BitStream NetworkStream;
 typedef RakNet::RakNetGUID NetworkID;
 #define UNASSIGNED_NETWORKID RakNet::UNASSIGNED_RAKNET_GUID
 
-struct NetworkObjectID
+struct NetworkObjectTypeID
 {
     uint16 id;
 
-    NetworkObjectID(): id(0xffff) {}
-    NetworkObjectID(uint16 _id): id(_id) {}
+    NetworkObjectTypeID(): id(0xffff) {}
+    NetworkObjectTypeID(uint16 _id): id(_id) {}
 
-    bool operator==(const NetworkObjectID& other) const
+    bool operator==(const NetworkObjectTypeID& other) const
     {
         return id == other.id;
     }
-    bool operator!=(const NetworkObjectID& other) const
+    bool operator!=(const NetworkObjectTypeID& other) const
     {
         return id != other.id;
     }
 
-    const static NetworkObjectID unassigned;
+    const static NetworkObjectTypeID unassigned;
 };
+
+}
 
 #undef TRUE
 #undef FALSE

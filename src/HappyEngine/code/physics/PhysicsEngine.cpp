@@ -288,14 +288,12 @@ void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*
     case physx::PxPairFlag::eNOTIFY_TOUCH_FOUND:
         {
             pTrigger->onTriggerEnter(pairs->otherShape);
-
             break;
         }
 
     case physx::PxPairFlag::eNOTIFY_TOUCH_LOST:
         {
             pTrigger->onTriggerLeave(pairs->otherShape);
-
             break;
         }
     }

@@ -37,14 +37,14 @@ NetworkObjectFactoryManager::~NetworkObjectFactoryManager()
 
 void NetworkObjectFactoryManager::registerFactory( INetworkObjectFactory* factory )
 {
-    HE_IF_ASSERT(factory->getId() == NetworkObjectID::unassigned, "factory already registered!")
+    HE_IF_ASSERT(factory->getId() == NetworkObjectTypeID::unassigned, "factory already registered!")
     {
         factory->setId(static_cast<uint16>(m_Factories.size()));
         m_Factories.push_back(factory);
     }
 }
 
-details::NetworkObjectBase* NetworkObjectFactoryManager::createObject( const NetworkObjectID& id )
+details::NetworkObjectBase* NetworkObjectFactoryManager::createObject( const NetworkObjectTypeID& id )
 {
     HE_IF_ASSERT(id.id < m_Factories.size(), "Invalid network ID!")
     {

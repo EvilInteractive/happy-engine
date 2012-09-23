@@ -22,7 +22,7 @@
 #define _HE_MODEL_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
+#include "EntityComponent.h"
 #include "DefaultSingleDrawable.h"
 #include "IPickable.h"
 
@@ -31,16 +31,17 @@ namespace ge {
 
 class ModelComponent;
 
-class ModelComponent : public gfx::DefaultSingleDrawable, public IComponent
+class ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
+    IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
 public:
     ModelComponent();
     virtual ~ModelComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* pParent);
+    virtual void init(Entity* parent);
 
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
@@ -51,18 +52,11 @@ public:
     ///                         IDrawable                                  ///
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material* getMaterial() const;
-    virtual const gfx::ModelMesh* getModelMesh() const;   
-    virtual mat44 getWorldMatrix() const;
+    virtual const gfx::ModelMesh* getModelMesh() const;
     //////////////////////////////////////////////////////////////////////////
-    
-    void setLocalTransform(const mat44& mtxWorld);
-    const mat44& getLocalTransform() const;
-
+       
+    void setModelMeshAndMaterial(const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName = "");
     void setDynamic(bool dynamic) { m_IsDynamic = dynamic; } // call before init
-   
-    void setModelMesh(const ObjectHandle& modelHandle, bool isPickable = true);
-
-    void setMaterial(const ObjectHandle& material);
 
     virtual bool isSleeping() const;
 
@@ -73,10 +67,8 @@ private:
     bool m_IsDynamic;
     bool m_IsAttached;
 
-    gfx::ModelMesh* m_Model;
+    gfx::ModelMesh* m_ModelMesh;
     const gfx::Material* m_Material;
-
-    mat44 m_mtxLocalTransform;   
 
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);

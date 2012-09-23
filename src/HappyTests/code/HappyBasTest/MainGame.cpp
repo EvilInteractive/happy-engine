@@ -186,45 +186,16 @@ void MainGame::load()
     ge::Entity* scene(NEW ge::Entity());
     scene->init(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
-    he::ObjectHandle sceneMaterial(CONTENT->loadMaterial("testScene3.material"));
-    modelComp->setMaterial(sceneMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial()->getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene5.binobj", "M_Terrain", modelComp->getMaterial().getCompatibleVertexLayout()));
-
-    modelComp->setModelMesh(mesh->getHandle());
-    //modelComp->setLocalTransform(he::mat44::createScale(100));
     scene->addComponent(modelComp);
-    mesh->release();
+    modelComp->setModelMeshAndMaterial("testScene3.material", "testScene3.binobj");
 
     modelComp = NEW ge::ModelComponent();
-    he::ObjectHandle sceneMaterial2(CONTENT->loadMaterial("testScene4.material"));
-    modelComp->setMaterial(sceneMaterial2);
-    mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial()->getCompatibleVertexLayout());
-    modelComp->setModelMesh(mesh->getHandle());
-    modelComp->setLocalTransform(he::mat44::createTranslation(he::vec3(1, 1, 1)) * he::mat44::createRotation(vec3(0, 1, 0), he::pi) * he::mat44::createScale(100));
+    modelComp->setModelMeshAndMaterial("testScene4.material", "testScene4.binobj");
+    modelComp->setLocalTranslate(he::vec3(1, 1, 1));
+    modelComp->setLocalRotate(he::mat33::createRotation3D(vec3(0, 1, 0), he::pi));
+    modelComp->setLocalScale(vec3(100.0f, 100.0f, 100.0f));
     scene->addComponent(modelComp);
-    mesh->release();
-
-    he::ObjectHandle cubeMat(CONTENT->loadMaterial("cube.material"));
-    mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
-
-//     for (size_t x(0); x < 5; ++x)
-//     for (size_t y(0); y < 5; ++y)
-//     for (size_t z(0); z < 5; ++z)
-//     {
-//         modelComp = NEW ge::ModelComponent();
-//         modelComp->setMaterial(cubeMat);
-//         modelComp->setModelMesh(mesh->getHandle());
-//         modelComp->setLocalTransform(he::mat44::createTranslation(
-//             he::vec3(x * 3.0f + 10, 
-//                      y * 3.0f + 10, 
-//                      z * 3.0f + 10)) * he::mat44::createScale(1));
-//         scene->addComponent(modelComp);
-//     }
-
-
+    
     m_EntityList.push_back(scene);
 
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
@@ -233,28 +204,18 @@ void MainGame::load()
         entity->init(m_Scene);
         modelComp = NEW ge::ModelComponent();
         modelComp->setDynamic(true);
-        modelComp->setMaterial(cubeMat);
-        modelComp->setModelMesh(mesh->getHandle());
+        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
         entity->addComponent(modelComp);
         m_MovingEntityList.push_back(entity);
         m_EntityList.push_back(entity);
     }
 
-    mesh->release();
-
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial);
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial2);
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(cubeMat);
-
     #pragma endregion
 
     #pragma region Lights
-    //m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
-    //m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
     m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
     m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
 
-    mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
     for (size_t i(0); i < 5; ++i)
     {
         vec3 direction(rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f);
@@ -264,18 +225,16 @@ void MainGame::load()
 
         ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
         scene->addComponent(pTempPointLightComp);
-        pTempPointLightComp->setOffset(pos);
+        pTempPointLightComp->setLocalTranslate(pos);
         pTempPointLightComp->setMultiplier(0.5f);
         pTempPointLightComp->setColor(Color((he::byte)(rand()%255), 128, 255, 255));
         pTempPointLightComp->setAttenuation(0, 15);
 
         modelComp = NEW ge::ModelComponent();
-        modelComp->setMaterial(cubeMat);
-        modelComp->setModelMesh(mesh->getHandle());
-        modelComp->setLocalTransform(he::mat44::createTranslation(pos) * he::mat44::createScale(1));
+        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
+        modelComp->setLocalTranslate(pos);
         scene->addComponent(modelComp);
     }
-    mesh->release();
     #pragma endregion
 
     #pragma region Camera Debug Shape
@@ -289,10 +248,7 @@ void MainGame::load()
     m_DebugMesh->setIndices(nullptr, 0, he::gfx::IndexStride_UInt, he::gfx::MeshUsage_Dynamic);
     m_DebugMesh->setLoaded();
     #pragma endregion
-
-    //m_pSkyBox = NEW gfx::SkyBox();
-    //m_pSkyBox->load("skybox/day/day.png");
-    //m_Scene->attachToScene(m_pSkyBox);
+    
 }
 
 void MainGame::tick( float dTime )
@@ -306,10 +262,10 @@ void MainGame::tick( float dTime )
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
         const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setWorldMatrix(he::mat44::createTranslation(
+        m_MovingEntityList[i]->setLocalTranslate(
             he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
                      pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z)));
+                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
     }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))

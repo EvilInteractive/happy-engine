@@ -39,8 +39,8 @@ NetworkReplicaConnection::~NetworkReplicaConnection()
 
 RakNet::Replica3* NetworkReplicaConnection::AllocReplica( RakNet::BitStream* allocationId, RakNet::ReplicaManager3* /*replicaManager3*/ )
 {
-    NetworkObjectID id(0);
-    allocationId->Read<NetworkObjectID>(id);
+    NetworkObjectTypeID id(0);
+    allocationId->Read<NetworkObjectTypeID>(id);
 
     return NETWORK->getNetworkObjectFactoryManager()->createObject(id);
 }

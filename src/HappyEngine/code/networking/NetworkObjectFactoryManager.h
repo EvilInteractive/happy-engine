@@ -36,7 +36,7 @@ public:
     virtual ~NetworkObjectFactoryManager();
 
     void registerFactory(INetworkObjectFactory* factory);
-    details::NetworkObjectBase* createObject(const NetworkObjectID& id);
+    details::NetworkObjectBase* createObject(const NetworkObjectTypeID& id);
 
 private:
     std::vector<INetworkObjectFactory*> m_Factories;

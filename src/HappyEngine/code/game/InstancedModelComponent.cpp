@@ -55,29 +55,14 @@ void InstancedModelComponent::init( Entity* parent )
     setController(m_ControllerKey);
 }
 
-void InstancedModelComponent::serialize(SerializerStream& stream)
+void InstancedModelComponent::serialize(SerializerStream& /*stream*/)
 {
-    stream << m_mtxLocalTransform << m_ControllerKey;
+    //stream << m_ControllerKey;
 }
 
-void InstancedModelComponent::deserialize(const SerializerStream& stream)
+void InstancedModelComponent::deserialize(const SerializerStream& /*stream*/)
 {
-    stream >> m_mtxLocalTransform >> m_ControllerKey;
-}
-
-mat44 InstancedModelComponent::getWorldMatrix() const
-{
-    return m_Parent->getWorldMatrix() * m_mtxLocalTransform;
-}
-
-void InstancedModelComponent::setLocalTransform( const mat44& mtxWorld )
-{
-    m_mtxLocalTransform = mtxWorld;
-}
-
-const mat44& InstancedModelComponent::getLocalTransform() const
-{
-    return m_mtxLocalTransform;
+    //stream >> m_mtxLocalTransform >> m_ControllerKey;
 }
 
 void InstancedModelComponent::setController( const std::string& key )

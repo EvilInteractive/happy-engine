@@ -23,7 +23,6 @@
 #include "CameraManager.h"
 #include "GraphicsEngine.h"
 #include "OpenGL.h"
-#include "I3DObject.h"
 #include "DynamicBuffer.h"
 #include "IInstancible.h"
 #include "IInstanceFiller.h"
@@ -237,12 +236,18 @@ void InstancingController::updateBuffer()
             {
                 b.setBuffer(m_CpuBuffer.addItem());
                 pObj->fillInstancingBuffer(b);
-                newBound.merge(pObj->getBound().getAABB());
+
+                // TODO: optimize this
+                const he::AABB& aabb(getModelMesh()->getBound().getAABB());
+                const mat44& world(pObj->getWorldMatrix());
+                AABB newAABB(world * aabb.getTopFrontLeft(),
+                             world * aabb.getBottomBackRight());
+                newBound.merge(newAABB);
             });
         }
         else
         {
-            std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](IInstanceFiller* pFiller)
+            std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](const IInstanceFiller* pFiller)
             {
                 pFiller->fillInstancingBuffer(m_CpuBuffer);
                 newBound.merge(pFiller->getAABB());

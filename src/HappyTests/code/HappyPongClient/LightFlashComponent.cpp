@@ -20,6 +20,7 @@
 #include "HappyPongClientPCH.h" 
 
 #include "LightFlashComponent.h"
+#include "Game.h"
 
 namespace hpc {
 
@@ -29,17 +30,17 @@ LightFlashComponent::LightFlashComponent():
     m_LightAnimSpeed(5.0f),
     m_LightAnim(0.0f)
 {
+    GAME->addToTickList(this);
 }
 
 
 LightFlashComponent::~LightFlashComponent()
 {
+    GAME->removeFromTickList(this);
 }
 
 void LightFlashComponent::tick( float dTime )
 {
-    he::ge::PointLightComponent::tick(dTime);
-
     setMultiplier(he::lerp(m_LightNormalMult, m_LightFlashMult, m_LightAnim));
     if (m_LightAnim > 0.0f)
     {

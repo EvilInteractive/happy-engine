@@ -6,8 +6,8 @@ set (CODE_GRAPHICS_NO_FILTER
             Hitregion.cpp                       Hitregion.h
             GLContext.h
             I2DDrawable.h
-            I3DObject.h
             IShapeDrawable.h
+            Object3D.cpp                        Object3D.h
             IDrawable.h    
             IPickable.h 
             SkyBox.cpp                          SkyBox.h

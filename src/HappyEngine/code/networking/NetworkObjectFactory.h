@@ -38,8 +38,8 @@ class INetworkObjectFactory
 public:
     virtual ~INetworkObjectFactory() {}
 
-    virtual const NetworkObjectID& getId() const = 0;
-    virtual void setId(const NetworkObjectID& id) = 0;
+    virtual const NetworkObjectTypeID& getId() const = 0;
+    virtual void setId(const NetworkObjectTypeID& id) = 0;
 
     // internal
     virtual details::NetworkObjectBase* createReplica() = 0;
@@ -90,8 +90,8 @@ public:
     }
     //////////////////////////////////////////////////////////////////////////
 
-    virtual const NetworkObjectID& getId() const { return m_Id; }
-    virtual void setId(const NetworkObjectID& id) { m_Id = id; }
+    virtual const NetworkObjectTypeID& getId() const { return m_Id; }
+    virtual void setId(const NetworkObjectTypeID& id) { m_Id = id; }
 
     virtual details::NetworkObjectBase* createReplica() 
     { 
@@ -102,7 +102,7 @@ public:
     };
     
 private:
-    NetworkObjectID m_Id;
+    NetworkObjectTypeID m_Id;
 
     //Disable default copy constructor and default assignment operator
     NetworkObjectFactory(const NetworkObjectFactory&);

@@ -22,8 +22,8 @@
 #define _HE_IDRAWABLE_H_
 #pragma once
 
-#include "I3DObject.h"
 #include "IPickable.h"
+#include "Object3D.h"
 
 namespace he {
 class Bound;
@@ -79,10 +79,10 @@ private:
     CullOctreeNode* m_Node;
 }; 
 
-class ISingleDrawable : public I3DObject, public IDrawable
+class SingleDrawable : public Object3D, public IDrawable
 {
 public:
-    virtual ~ISingleDrawable() {}
+    virtual ~SingleDrawable() {}
 
     virtual bool isSingle() const { return true; }
     virtual bool isInstanced() const { return false; }
@@ -90,10 +90,10 @@ public:
 
 }; 
 
-class IInstancedDrawable : public IDrawable
+class InstancedDrawable : public IDrawable
 {
 public:
-    virtual ~IInstancedDrawable() {}
+    virtual ~InstancedDrawable() {}
     
     virtual bool isSingle() const { return false; }
     virtual bool isInstanced() const { return true; }
@@ -101,13 +101,13 @@ public:
 
 };
 
-class ISkinnedDrawable : public I3DObject, public IDrawable
+class SkinnedDrawable : public Object3D, public IDrawable
 {
 public:
-    virtual ~ISkinnedDrawable() {}
+    virtual ~SkinnedDrawable() {}
 
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
-
+    
     virtual bool isSingle() const { return true; }
     virtual bool isInstanced() const { return false; }
     virtual bool isSkinned() const { return true; }

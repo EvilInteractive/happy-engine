@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,28 +15,13 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 30/09/2011
+//Author:  
+//Created: //
+#include "HappyPCH.h" 
 
-#ifndef _HE_I3D_OBJECT_H_
-#define _HE_I3D_OBJECT_H_
-#pragma once
-
-#include "Bound.h"
+#include "EntityComponentFactory.h"
 
 namespace he {
-class mat44;
-namespace gfx {
-
-class I3DObject
-{
-public:
-    virtual ~I3DObject() {}
-    
-    virtual mat44 getWorldMatrix() const = 0;
-    virtual const Bound& getBound() const = 0;
-};  
+namespace ge {
 
 } } //end namespace
-
-#endif

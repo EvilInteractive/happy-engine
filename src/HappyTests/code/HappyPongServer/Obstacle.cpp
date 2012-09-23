@@ -30,7 +30,7 @@ Obstacle::Obstacle():
     m_Position(0, 0, 0), 
     m_Radius(8.0f)
 {
-    setWorldMatrix(he::mat44::createTranslation(m_Position));
+    setLocalTranslate(m_Position);
 }
 
 
