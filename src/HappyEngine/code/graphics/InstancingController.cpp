@@ -23,7 +23,6 @@
 #include "CameraManager.h"
 #include "GraphicsEngine.h"
 #include "OpenGL.h"
-#include "I3DObject.h"
 #include "DynamicBuffer.h"
 #include "IInstancible.h"
 #include "IInstanceFiller.h"
@@ -209,7 +208,7 @@ void InstancingController::updateBuffer()
         }
         else
         {
-            std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](IInstanceFiller* pFiller)
+            std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](const IInstanceFiller* pFiller)
             {
                 pFiller->fillInstancingBuffer(m_CpuBuffer);
             });

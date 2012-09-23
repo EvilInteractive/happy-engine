@@ -30,7 +30,7 @@ Hitregion::Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size
 																										m_Size(size),
 																										m_Pos(centerPos)
 {
-	m_matWorld = mat33::createTranslaton(centerPos);
+	m_matWorld = mat33::createTranslation2D(centerPos);
 }
 
 Hitregion::~Hitregion()

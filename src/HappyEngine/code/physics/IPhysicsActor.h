@@ -38,10 +38,10 @@ class IPhysicsActor
 public:
     virtual ~IPhysicsActor() {}
 
-
     virtual physx::PxRigidActor* getInternalActor() const = 0;
-    virtual vec3 getPosition() const = 0;
-    virtual mat44 getPose() const = 0;
+    virtual void getTranslation(vec3& translation) const = 0;
+    virtual void getRotation(mat33& rotation) const = 0;
+    virtual void getPose(mat44& pose) const = 0;
 
 };
 

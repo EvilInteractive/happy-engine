@@ -131,7 +131,7 @@ void Ball::tick( float dTime )
         m_Velocity = he::reflect(-m_Velocity, he::normalize(normal)) * m_Restitution;
         setSerializeDataDirty();
     }
-    setWorldMatrix(he::mat44::createTranslation(m_Position));
+    setLocalTranslate(m_Position);
 }
 
 const he::vec3& Ball::getPosition() const
@@ -149,37 +149,37 @@ float Ball::getRadius() const
     return m_Radius;
 }
 
-void Ball::serializeCreate( he::NetworkStream* stream ) const
+void Ball::serializeCreate( he::net::NetworkStream* stream ) const
 {
     stream->Write(m_Position);
     stream->Write(m_Velocity);
 }
 
-bool Ball::deserializeCreate( he::NetworkStream* stream )
+bool Ball::deserializeCreate( he::net::NetworkStream* stream )
 {
     HE_ASSERT(false, "Will never happen");
-    return Entity::deserializeCreate(stream);
+    return he::net::NetworkObject<Ball>::deserializeCreate(stream);
 }
 
-void Ball::serializeRemove( he::NetworkStream* /*stream*/ ) const
+void Ball::serializeRemove( he::net::NetworkStream* stream ) const
 {
-
+    he::net::NetworkObject<Ball>::serializeRemove(stream);
 }
 
-bool Ball::deserializeRemove( he::NetworkStream* stream )
+bool Ball::deserializeRemove( he::net::NetworkStream* stream )
 {
     HE_ASSERT(false, "Will never happen");
-    return Entity::deserializeRemove(stream);
+    return he::net::NetworkObject<Ball>::deserializeRemove(stream);
 }
 
-void Ball::serialize( he::net::NetworkSerializer& serializer )
+void Ball::serialize(const  he::net::NetworkSerializer& serializer )
 {
     serializer.serializeVariable(m_Position);
     serializer.serializeVariable(m_Velocity);
     setSerializeDataDirty(false);
 }
 
-void Ball::deserialize( he::net::NetworkDeserializer& /*serializer*/ )
+void Ball::deserialize(const  he::net::NetworkDeserializer& /*serializer*/ )
 {
     HE_ASSERT(false, "Will never happen");
 }

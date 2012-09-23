@@ -185,17 +185,17 @@ float Canvas2D::getNewDepth()
 /* GENERAL */
 void Canvas2D::translate(const vec2& translation)
 {
-    m_TransformationStack[m_StackDepth] = mat33::createTranslaton(translation) * m_TransformationStack[m_StackDepth];
+    m_TransformationStack[m_StackDepth] = mat33::createTranslation2D(translation) * m_TransformationStack[m_StackDepth];
 }
 
 void Canvas2D::rotate(float rotation)
 {
-    m_TransformationStack[m_StackDepth] = mat33::createRotation(rotation) * m_TransformationStack[m_StackDepth];
+    m_TransformationStack[m_StackDepth] = mat33::createRotation2D(rotation) * m_TransformationStack[m_StackDepth];
 }
 
 void Canvas2D::scale(const vec2& scale)
 {
-    m_TransformationStack[m_StackDepth] = mat33::createScale(scale) * m_TransformationStack[m_StackDepth];
+    m_TransformationStack[m_StackDepth] = mat33::createScale2D(scale) * m_TransformationStack[m_StackDepth];
 }
 
 void Canvas2D::save()

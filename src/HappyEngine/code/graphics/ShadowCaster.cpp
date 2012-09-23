@@ -350,11 +350,11 @@ void ShadowCaster::render(const DrawListContainer& drawables, DirectionalLight* 
         mat44 mtxShadowViewProjection(mtxShadowProjection[i-1] * mtxShadowView);
 
         // Sort
-        std::sort(culledDrawList.begin(), culledDrawList.end(), [](const IDrawable* d1, const IDrawable* d2)
+        std::sort(culledDrawList.begin(), culledDrawList.end(), [](IDrawable* d1, IDrawable* d2)
         {
             return d1->getDrawPriority(CAMERAMANAGER->getActiveCamera()) > d2->getDrawPriority(CAMERAMANAGER->getActiveCamera());
         });
-        std::sort(culledSkinnedDrawList.begin(), culledSkinnedDrawList.end(),  [](const IDrawable* d1, const IDrawable* d2)
+        std::sort(culledSkinnedDrawList.begin(), culledSkinnedDrawList.end(),  [](IDrawable* d1, IDrawable* d2)
         {
             return d1->getDrawPriority(CAMERAMANAGER->getActiveCamera()) > d2->getDrawPriority(CAMERAMANAGER->getActiveCamera());
         });

@@ -465,14 +465,16 @@ void Deferred3DRenderer::postPointLights()
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
+    vec3 position;
     std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
         PointLight* light(lightFactory->getPointLight(lightHandle));
 
-        shapes::Sphere bsphere(light->getPosition(), light->getEndAttenuation());
+        light->getWorldMatrix().getTranslationComponent(position);
+        shapes::Sphere bsphere(position, light->getScaledEndAttenuation());
         if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false)  
         {
-            if (lengthSqr(light->getPosition() - camera.getPosition()) < sqr(light->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
+            if (lengthSqr(position - camera.getPosition()) < sqr(light->getScaledEndAttenuation() + camera.getNearClip())) //if inside light //HACK
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -483,11 +485,11 @@ void Deferred3DRenderer::postPointLights()
                 GL::heSetDepthFunc(DepthFunc_LessOrEqual);
             }
 
-            m_PointLightData.position.set(camera.getView() * light->getPosition());
+            m_PointLightData.position.set(camera.getView() * position);
             m_PointLightData.multiplier.set(light->getMultiplier());
             m_PointLightData.color.set(light->getColor());
-            m_PointLightData.beginAttenuation.set(light->getBeginAttenuation());
-            m_PointLightData.endAttenuation.set(light->getEndAttenuation());
+            m_PointLightData.beginAttenuation.set(light->getScaledBeginAttenuation());
+            m_PointLightData.endAttenuation.set(light->getScaledEndAttenuation());
 
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.position);
             m_PointLightData.pLightBuffer->setShaderVar(m_PointLightData.multiplier);
@@ -522,14 +524,16 @@ void Deferred3DRenderer::postSpotLights()
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
     const Camera& camera(*CAMERAMANAGER->getActiveCamera());
+    vec3 position;
     std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
     {
         SpotLight* light(lightFactory->getSpotLight(lightHandle));
 
-        shapes::Sphere bsphere(light->getPosition(), light->getEndAttenuation());
+        light->getWorldMatrix().getTranslationComponent(position);
+        shapes::Sphere bsphere(position, light->getScaledEndAttenuation());
         if (DrawManager::viewClip(camera.getPosition(), camera.getLook(), camera.getFarClip(), bsphere) == false) 
         {
-            if (lengthSqr(light->getPosition() - camera.getPosition()) < sqr(light->getEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
+            if (lengthSqr(position - camera.getPosition()) < sqr(light->getScaledEndAttenuation() * 2 + camera.getNearClip())) //if inside light //HACK
             {
                 GL::heSetCullFace(true);
                 GL::heSetDepthFunc(DepthFunc_GeaterOrEqual);
@@ -539,12 +543,12 @@ void Deferred3DRenderer::postSpotLights()
                 GL::heSetCullFace(false);
                 GL::heSetDepthFunc(DepthFunc_LessOrEqual);
             }
-            m_SpotLightData.position.set(camera.getView() * light->getPosition());
+            m_SpotLightData.position.set(camera.getView() * position);
             m_SpotLightData.multiplier.set(light->getMultiplier());
-            m_SpotLightData.direction.set(normalize((camera.getView() * vec4(light->getDirection(), 0)).xyz()));
-            m_SpotLightData.beginAttenuation.set(light->getBeginAttenuation());
+            m_SpotLightData.direction.set(normalize((camera.getView() * vec4(light->getWorldDirection(), 0)).xyz()));
+            m_SpotLightData.beginAttenuation.set(light->getScaledBeginAttenuation());
             m_SpotLightData.color.set(light->getColor());
-            m_SpotLightData.endAttenuation.set(light->getEndAttenuation());
+            m_SpotLightData.endAttenuation.set(light->getScaledEndAttenuation());
             m_SpotLightData.cosCutOff.set(light->getCosCutoff());
 
             m_SpotLightData.pLightBuffer->setShaderVar(m_SpotLightData.position);

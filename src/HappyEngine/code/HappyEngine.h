@@ -19,6 +19,8 @@
 #define _HE_HAPPYENGINE_H_
 #pragma once
 
+#include "Random.h"
+
 namespace he {
 namespace gfx {
     class GraphicsEngine;
@@ -113,10 +115,14 @@ public:
     ge::CameraManager* getCameraManager() const;
     gfx::ExtraForward3DRenderer* get3DRenderer() const;
 
+    static const Random& getRandom() { return s_Random; }
+
 private:
     // Singleton design pattern
     HappyEngine();
     static HappyEngine* s_pHappyEngine;
+    static Random s_Random;
+
     void initSubEngines(int subengines);
 
     void drawLoadingScreen();

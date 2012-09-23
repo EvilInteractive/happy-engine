@@ -31,7 +31,7 @@ namespace details {
 
 void NetworkObjectBase::WriteAllocationID( RakNet::Connection_RM3* /*destinationConnection*/, RakNet::BitStream* stream ) const
 {
-    writeObjectID(stream);
+    writeObjectTypeID(stream);
 }
 
 void NetworkObjectBase::DeallocReplica( RakNet::Connection_RM3* /*sourceConnection*/ )

@@ -44,6 +44,8 @@
 namespace he {
 
 HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
+Random HappyEngine::s_Random;
+
 
 HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
                             m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),

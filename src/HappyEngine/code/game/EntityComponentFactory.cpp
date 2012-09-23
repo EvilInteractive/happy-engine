@@ -15,37 +15,13 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 30/03/2012
-#include "HappyPongServerPCH.h" 
+//Author:  
+//Created: //
+#include "HappyPCH.h" 
 
-#include "Obstacle.h"
+#include "EntityComponentFactory.h"
 
-#include "Material.h"
-#include "Game.h"
+namespace he {
+namespace ge {
 
-namespace hps {
-
-Obstacle::Obstacle(): 
-    m_Position(0, 0, 0), 
-    m_Radius(8.0f)
-{
-    setLocalTranslate(m_Position);
-}
-
-
-Obstacle::~Obstacle()
-{
-}
-
-float Obstacle::getRadius() const
-{
-    return m_Radius;
-}
-
-const he::vec3& Obstacle::getPosition() const
-{
-    return m_Position;
-}
-
-} //end namespace
+} } //end namespace

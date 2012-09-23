@@ -22,25 +22,26 @@
 #define _HE_DYNAMIC_PHYSICS_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
+#include "EntityComponent.h"
 #include "ITickable.h"
-#include "IPhysicsShape.h"
-#include "PhysicsDynamicActor.h"
 
 namespace he {
+namespace px {
+    class PhysicsDynamicActor;
+    class PhysicsMaterial;
+    class IPhysicsShape;
+}
 namespace ge {
 
-class DynamicPhysicsComponent : public IComponent, public ITickable
+class DynamicPhysicsComponent : public EntityComponent, public ITickable
 {
 public:
-	DynamicPhysicsComponent();
+    DynamicPhysicsComponent();
     virtual ~DynamicPhysicsComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* pParent);
-
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
@@ -56,11 +57,13 @@ public:
 
     px::PhysicsDynamicActor* getDynamicActor() const;
 
-private:
+protected:
+    virtual void init(Entity* parent);
 
-    px::PhysicsDynamicActor* m_pDynamicActor;
+private:
+    px::PhysicsDynamicActor* m_DynamicActor;
     
-    Entity* m_pParent;
+    Entity* m_Parent;
     
 
     //Disable default copy constructor and default assignment operator

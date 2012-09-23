@@ -54,9 +54,9 @@ public:
     void restart(bool timeout);
 
 
-    void unregisterPaddle(const he::NetworkID& id);
+    void unregisterPaddle(const he::net::NetworkID& id);
 private:
-    void createNewPaddle(const he::NetworkID& id);
+    void createNewPaddle(const he::net::NetworkID& id);
     void inputThread();
 
     float m_RestartTime;
@@ -67,7 +67,7 @@ private:
     std::vector<Obstacle*> m_Obstacles;
     Ball* m_Ball;
     
-    he::NetworkID m_Player1Id, m_Player2Id;
+    he::net::NetworkID m_Player1Id, m_Player2Id;
 
     boost::thread m_InputThread;
 

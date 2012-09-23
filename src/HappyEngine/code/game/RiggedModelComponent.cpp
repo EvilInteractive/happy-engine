@@ -29,76 +29,59 @@
 namespace he {
 namespace ge {
 
-RiggedModelComponent::RiggedModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_Material(nullptr)
+SkinnedModelComponent::SkinnedModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr)
 {
 }
 
 
-RiggedModelComponent::~RiggedModelComponent()
+SkinnedModelComponent::~SkinnedModelComponent()
 {
-    if (m_pModel != nullptr)
-        m_pModel->release();
+    if (m_ModelMesh != nullptr)
+        m_ModelMesh->release();
     if (m_Material != nullptr)
         m_Material->release();
 }
 
-void RiggedModelComponent::init( Entity* pParent )
+void SkinnedModelComponent::init( Entity* pParent )
 {
-    m_pParent = pParent;
+    m_Parent = pParent;
     setVisible(false);
     GRAPHICS->addToDrawList(this);
 }
 
-void RiggedModelComponent::serialize(SerializerStream& stream)
+void SkinnedModelComponent::serialize(SerializerStream& /*stream*/)
 {
-    stream << m_mtxLocalTransform;
 }
 
-void RiggedModelComponent::deserialize(const SerializerStream& stream)
+void SkinnedModelComponent::deserialize(const SerializerStream& /*stream*/)
 {
-    stream >> m_mtxLocalTransform;
 }
 
-const gfx::Material* RiggedModelComponent::getMaterial() const
+const gfx::Material* SkinnedModelComponent::getMaterial() const
 {
     return m_Material;
 }
 
-const gfx::ModelMesh* RiggedModelComponent::getModelMesh() const
+const gfx::ModelMesh* SkinnedModelComponent::getModelMesh() const
 {
-    return m_pModel;
+    return m_ModelMesh;
 }
 
-mat44 RiggedModelComponent::getWorldMatrix() const
+void SkinnedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
 {
-    return m_pParent->getWorldMatrix() * m_mtxLocalTransform;
-}
-
-void RiggedModelComponent::setLocalTransform( const mat44& mtxWorld )
-{
-    m_mtxLocalTransform = mtxWorld;
-}
-
-const mat44& RiggedModelComponent::getLocalTransform() const
-{
-    return m_mtxLocalTransform;
-}
-
-void RiggedModelComponent::setModelMesh( const ObjectHandle& modelHandle )
-{
-    if (m_pModel != nullptr)
-        m_pModel->release();
+    if (m_ModelMesh != nullptr)
+        m_ModelMesh->release();
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
+    m_ModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
     m_BoneTransform.clear();
     m_Bones.clear();
 
-    ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&RiggedModelComponent::modelLoadedCallback, this));
+    ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&SkinnedModelComponent::modelLoadedCallback, this));
 }
-void RiggedModelComponent::modelLoadedCallback()
+void SkinnedModelComponent::modelLoadedCallback()
 {
-    m_BoneTransform.reserve(m_pModel->getBones().size());
-    std::for_each(m_pModel->getBones().cbegin(), m_pModel->getBones().cend(), [&](const gfx::Bone& bone)
+    m_BoneTransform.reserve(m_ModelMesh->getBones().size());
+    std::for_each(m_ModelMesh->getBones().cbegin(), m_ModelMesh->getBones().cend(), [&](const gfx::Bone& bone)
     {
         //m_BoneTransform.push_back(bone.m_BaseTransform);
         m_BoneTransform.push_back(mat44::Identity);
@@ -118,12 +101,12 @@ void RiggedModelComponent::modelLoadedCallback()
     }
     else
     {
-        HE_ERROR("SkinnedMesh error: no bones found in %s", m_pModel->getName());
+        HE_ERROR("SkinnedMesh error: no bones found in %s", m_ModelMesh->getName());
     }
 }
 
 
-void RiggedModelComponent::setMaterial( const ObjectHandle& material )
+void SkinnedModelComponent::setMaterial( const ObjectHandle& material )
 {
     if (m_Material != nullptr)
         m_Material->release();
@@ -132,17 +115,17 @@ void RiggedModelComponent::setMaterial( const ObjectHandle& material )
         ResourceFactory<gfx::Material>::getInstance()->instantiate(material);
 }
 
-const std::vector<mat44>& RiggedModelComponent::getBoneTransforms() const
+const std::vector<mat44>& SkinnedModelComponent::getBoneTransforms() const
 {
     return m_BoneTransform;
 }
 
-RiggedModelComponent::BoneTransform RiggedModelComponent::getBone( const std::string& name ) const
+SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const std::string& name ) const
 {
     std::map<std::string, BoneTransform>::const_iterator it(m_Bones.find(name));
     if (it == m_Bones.cend())
     {
-        HE_ERROR("RiggedModelComponent error: No bone exists with name: %s", name.c_str());
+        HE_ERROR("SkinnedModelComponent error: No bone exists with name: %s", name.c_str());
         return BoneTransform();
     }
     else

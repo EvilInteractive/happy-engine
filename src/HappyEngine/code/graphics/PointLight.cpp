@@ -27,10 +27,15 @@
 namespace he {
 namespace gfx {
 
-PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenuation(0.0f),
-    m_Color(1.0f, 1.0f, 1.0f), m_EndAttenuation(10.0f), m_Material(nullptr)
+PointLight::PointLight()
+    : m_Multiplier(1.0f)
+    , m_Attenuation(0.0f, 10.0f)
+    , m_ScaledAttenuation(0.0f, 10.0f)
+    , m_Color(1.0f, 1.0f, 1.0f)
+    , m_Material(nullptr)
+    , m_Model(nullptr)
+    , m_LightVolume(nullptr)
 {
-    calculateWorld();
     m_Material = ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
     BufferLayout vertexLayout;
     vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
@@ -41,12 +46,10 @@ PointLight::PointLight(): m_Position(0, 0, 0), m_Multiplier(1.0f), m_BeginAttenu
 }
 
 PointLight::PointLight( const PointLight& other )
-: m_Position(other.m_Position)
-, m_Multiplier(other.m_Multiplier)
+: m_Multiplier(other.m_Multiplier)
 , m_Color(other.m_Color)
-, m_BeginAttenuation(other.m_BeginAttenuation)
-, m_EndAttenuation(other.m_EndAttenuation)
-, m_mtxWorld(other.m_mtxWorld)
+, m_Attenuation(other.m_Attenuation)
+, m_ScaledAttenuation(other.m_ScaledAttenuation)
 , m_Material(other.m_Material)
 , m_Model(other.m_Model)
 , m_LightVolume(other.m_LightVolume)
@@ -58,14 +61,11 @@ PointLight::PointLight( const PointLight& other )
 
 PointLight& PointLight::operator=( const PointLight& other )
 {
-    m_Position = other.m_Position;
     m_Multiplier = other.m_Multiplier;
     m_Color = other.m_Color;
-    m_BeginAttenuation = other.m_BeginAttenuation;
-    m_EndAttenuation = other.m_EndAttenuation;
+    m_Attenuation = other.m_Attenuation;
+    m_ScaledAttenuation = other.m_ScaledAttenuation;
 
-    m_mtxWorld = other.m_mtxWorld;
-    
     if (m_Model != nullptr)
         m_Model->release();
     if (m_LightVolume != nullptr)
@@ -92,33 +92,18 @@ PointLight::~PointLight()
         m_Material->release();
 }
 
-
-void PointLight::calculateWorld()
-{
-    m_mtxWorld = mat44::createTranslation(m_Position) * mat44::createScale(m_EndAttenuation + 1);
-}
-
-
-
-void PointLight::setPosition(const vec3& position)
-{
-    if (m_Position != position)
-    {
-        m_Position = position;
-        calculateWorld();
-    }
-}
 void PointLight::setMultiplier(float multiplier)
 {
     m_Multiplier = multiplier;
 }
 void PointLight::setAttenuation(float begin, float end)
 {
-    if (begin != m_BeginAttenuation || end != m_EndAttenuation)
+    if (m_Attenuation.x != begin || m_Attenuation.y != end)
     {
-        m_BeginAttenuation = begin;
-        m_EndAttenuation = end;
-        calculateWorld();
+        m_Attenuation.x = begin;
+        m_Attenuation.y = end;
+        setLocalScale(vec3(end, end, end));
+        setWorldMatrixDirty(Object3D::DirtyFlag_Scale);
     }
 }
 void PointLight::setColor(const vec3& color)
@@ -130,31 +115,31 @@ void PointLight::setColor(const Color& color)
     m_Color = color.rgb();
 }
 
-const vec3& PointLight::getPosition() const
-{
-    return m_Position;
-}
 float PointLight::getMultiplier() const
 {
     return m_Multiplier;
 }
 float PointLight::getBeginAttenuation() const
 {
-    return m_BeginAttenuation;
+    return m_Attenuation.x;
 }
 float PointLight::getEndAttenuation() const
 {
-    return m_EndAttenuation;
+    return m_Attenuation.y;
+}
+float PointLight::getScaledBeginAttenuation() const
+{
+    return m_ScaledAttenuation.x;
+}
+float PointLight::getScaledEndAttenuation() const
+{
+    return m_ScaledAttenuation.y;
 }
 const vec3& PointLight::getColor() const
 {
     return m_Color;
 }
-    
-mat44 PointLight::getWorldMatrix() const
-{
-    return m_mtxWorld;
-}
+  
 const ModelMesh* PointLight::getLightVolume() const
 {
     return m_LightVolume;
@@ -166,6 +151,13 @@ const Material* PointLight::getMaterial() const
 const ModelMesh* PointLight::getModelMesh() const
 {
     return m_Model;
+}
+
+void PointLight::calculateWorldMatrix()
+{
+    DefaultSingleDrawable::calculateWorldMatrix();
+    float scale(length(vec3(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0)))); // takes x as uniform scale
+    m_ScaledAttenuation = m_Attenuation * (scale / m_Attenuation.y);
 }
 
 } } //end namespace

@@ -22,39 +22,41 @@
 #define _HE_STATIC_PHYSICS_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
-#include "mat44.h"
+#include "EntityComponent.h"
 #include "ITickable.h"
-#include "IPhysicsShape.h"
-#include "PhysicsStaticActor.h"
+
 
 namespace he {
+namespace px {
+    class PhysicsStaticActor;
+    class PhysicsMaterial;
+    class IPhysicsShape;
+}
 namespace ge {
 
-class StaticPhysicsComponent : public IComponent
+class StaticPhysicsComponent : public EntityComponent
 {
 public:
-	StaticPhysicsComponent();
+    StaticPhysicsComponent();
     virtual ~StaticPhysicsComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* pParent);
-
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
     //////////////////////////////////////////////////////////////////////////
          
-    void addShape( const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, uint32 collisionGroup = 0xffffffff, const mat44& localPose = mat44::Identity );
+    void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, uint32 collisionGroup = 0xffffffff, const mat44& localPose = mat44::Identity );
 
     px::PhysicsStaticActor* getStaticActor() const;
 
-private:
+protected:
+    virtual void init(Entity* parent);
 
-    px::PhysicsStaticActor* m_pStaticActor;
-    
-    Entity* m_pParent;
+private:
+    px::PhysicsStaticActor* m_StaticActor;    
+    Entity* m_Parent;
     
 
     //Disable default copy constructor and default assignment operator

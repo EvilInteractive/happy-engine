@@ -147,7 +147,7 @@ void Palet::tick( float dTime )
         m_Position = m_MoveTo;
 
 
-    setWorldMatrix(he::mat44::createTranslation(m_Position));
+    setLocalTranslate(m_Position);
 }
 
 const he::vec2& Palet::getDimension() const
@@ -170,12 +170,11 @@ void Palet::addPoint()
     m_LightFlashAddPointComponent->flash();
 }
 
-void Palet::serializeCreate( he::NetworkStream* stream ) const
+void Palet::serializeCreate( he::net::NetworkStream* /*stream*/ ) const
 {
-    Entity::serializeCreate(stream);
 }
 
-bool Palet::deserializeCreate( he::NetworkStream* stream )
+bool Palet::deserializeCreate( he::net::NetworkStream* stream )
 {
     stream->Read(m_Position);
     m_MoveTo = m_Position;
@@ -184,13 +183,8 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
     MainGame* game(MainGame::getInstance());
 
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
-    he::ObjectHandle paletMaterial(CONTENT->loadMaterial("pong/palet.material"));
-    model->setMaterial(paletMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/palet.binobj", "M_Palet", model->getMaterial()->getCompatibleVertexLayout()));
-    model->setModelMesh(mesh->getHandle());
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(paletMaterial);
-    mesh->release();
-    model->setLocalTransform(he::mat44::createScale(100));
+    model->setModelMeshAndMaterial("pong/palet.material", "pong/palet.binobj");
+    model->setLocalScale(he::vec3(100, 100, 100));
     addComponent(model);
 
     m_LightFlashComponent = NEW LightFlashComponent();
@@ -200,7 +194,7 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
         m_LightFlashComponent->setColor(he::Color(0.2f, 1.0f, 0.2f));
     else
         m_LightFlashComponent->setColor(he::Color(0.2f, 0.2f, 1.0f));
-    m_LightFlashComponent->setOffset(he::vec3(0.0f, 1.5f, 0));
+    m_LightFlashComponent->setLocalTranslate(he::vec3(0.0f, 1.5f, 0));
     m_LightFlashComponent->setFlashMultiplier(5);
     m_LightFlashComponent->setNormalMultiplier(2);
     m_LightFlashComponent->setFlashDuration(0.5f);
@@ -210,12 +204,12 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
     m_LightFlashAddPointComponent->setAttenuation(1.0f, 100);
     if (m_Player == 0)
     {
-        m_LightFlashAddPointComponent->setOffset(he::vec3(-game->getBoardDimension().x/2, 0.5f, 0));
+        m_LightFlashAddPointComponent->setLocalTranslate(he::vec3(-game->getBoardDimension().x/2, 0.5f, 0));
         m_LightFlashAddPointComponent->setColor(he::Color(0.2f, 1.0f, 0.2f));
     }
     else
     {
-        m_LightFlashAddPointComponent->setOffset(he::vec3(game->getBoardDimension().x/2, 0.5f, 0));
+        m_LightFlashAddPointComponent->setLocalTranslate(he::vec3(game->getBoardDimension().x/2, 0.5f, 0));
         m_LightFlashAddPointComponent->setColor(he::Color(0.2f, 0.2f, 1.0f));
     }
     m_LightFlashAddPointComponent->setFlashMultiplier(50);
@@ -224,36 +218,33 @@ bool Palet::deserializeCreate( he::NetworkStream* stream )
 
     GAME->addToTickList(this);
 
-    return Entity::deserializeCreate(stream);
+    return true;
 }
 
-void Palet::serializeRemove( he::NetworkStream* stream ) const
+void Palet::serializeRemove( he::net::NetworkStream* /*stream*/ ) const
 {
-    Entity::serializeRemove(stream);
 }
 
-bool Palet::deserializeRemove( he::NetworkStream* stream )
+bool Palet::deserializeRemove( he::net::NetworkStream* /*stream*/ )
 {
-    return Entity::deserializeRemove(stream);
+    return true;
 }
 
-void Palet::serialize( he::net::NetworkSerializer& serializer )
+void Palet::serialize(const he::net::NetworkSerializer& serializer )
 {
     serializer.serializeVariable(m_MoveTo);
     serializer.serializeVariable(m_GoUp);
     serializer.serializeVariable(m_GoDown);
     
-    Entity::serialize(serializer);
     setSerializeDataDirty(false);
 }
 
-void Palet::deserialize( he::net::NetworkDeserializer& deserializer )
+void Palet::deserialize(const he::net::NetworkDeserializer& deserializer )
 {
     deserializer.deserializeVariable(m_MoveTo);
     deserializer.deserializeVariable(m_GoUp);
     deserializer.deserializeVariable(m_GoDown);
     //tick(deserializer.getDTime());
-    Entity::deserialize(deserializer);
 }
 
 } //end namespace

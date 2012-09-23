@@ -27,9 +27,9 @@
 namespace he {
 namespace gfx {
 
-class IInstancedDrawable;
-class ISingleDrawable;
-class ISkinnedDrawable;
+class InstancedDrawable;
+class SingleDrawable;
+class SkinnedDrawable;
 class ICamera;
 class ShaderVar;
 
@@ -46,9 +46,9 @@ public:
     const BufferLayout& getCompatibleVertexLayout() const;
     const BufferLayout& getCompatibleInstancingLayout() const;
 
-    void apply(const IInstancedDrawable* pObj,  const ICamera* pCamera) const;
-    void apply(const ISingleDrawable*    pObj,  const ICamera* pCamera) const;
-    void apply(const ISkinnedDrawable*   pObj,  const ICamera* pCamera) const;
+    void apply(const InstancedDrawable* pObj,  const ICamera* pCamera) const;
+    void apply(const SingleDrawable*    pObj,  const ICamera* pCamera) const;
+    void apply(const SkinnedDrawable*   pObj,  const ICamera* pCamera) const;
 
     void setIsBlended(bool isBlended, BlendEquation equation = BlendEquation_Add, 
                                       BlendFunc sourceBlend  = BlendFunc_One,

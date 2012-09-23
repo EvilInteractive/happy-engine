@@ -4,7 +4,7 @@ set (CODE_GRAPHICS_NO_FILTER
             DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
             DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
             Hitregion.cpp                       Hitregion.h
-            I3DObject.h
+            Object3D.cpp                        Object3D.h
             IDrawable.h    
             IPickable.h 
             SkyBox.cpp                          SkyBox.h

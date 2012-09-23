@@ -34,18 +34,17 @@ class Material;
 class PointLight : public DefaultSingleDrawable, public ILight
 {
 private:
-    vec3 m_Position;
     float m_Multiplier;
     vec3 m_Color;
-    float m_BeginAttenuation;
-    float m_EndAttenuation;
-
-    mat44 m_mtxWorld;
-    void calculateWorld();
+    vec2 m_Attenuation;
+    vec2 m_ScaledAttenuation;
 
     ModelMesh* m_LightVolume;
     ModelMesh* m_Model;
     Material* m_Material;
+
+protected:
+    virtual void calculateWorldMatrix(); // override Object3D
 
 public:
     PointLight();
@@ -53,19 +52,18 @@ public:
     PointLight(const PointLight& other);
     PointLight& operator=(const PointLight& other);
 
-    void setPosition(const vec3& position);
     void setMultiplier(float multiplier);
     void setAttenuation(float begin, float end);
     void setColor(const vec3& color);
     void setColor(const Color& color);
 
-    const vec3& getPosition() const;
     float getMultiplier() const;
     float getBeginAttenuation() const;
     float getEndAttenuation() const;
+    float getScaledBeginAttenuation() const;
+    float getScaledEndAttenuation() const;
     const vec3& getColor() const;
     
-    mat44 getWorldMatrix() const; 
     const ModelMesh* getLightVolume() const;
     
     virtual bool getCastsShadow() const { return false; }

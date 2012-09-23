@@ -22,8 +22,8 @@
 #define _HE_IDRAWABLE_H_
 #pragma once
 
-#include "I3DObject.h"
 #include "IPickable.h"
+#include "Object3D.h"
 
 namespace he {
 namespace gfx {
@@ -60,18 +60,16 @@ public:
     virtual bool isSkinned() const = 0;
 }; 
 
-class ISingleDrawable : public I3DObject, public IDrawable
+class SingleDrawable : public Object3D, public IDrawable
 {
 public:
-    virtual ~ISingleDrawable() {}
+    virtual ~SingleDrawable() {}
 
     virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0; 
     virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const = 0;
 
     virtual const ModelMesh* getModelMesh() const = 0;
-
-    virtual mat44 getWorldMatrix() const = 0;
 
     virtual bool getCastsShadow() const = 0;
     virtual void setCastsShadow(bool castShadow) = 0;
@@ -91,10 +89,10 @@ public:
 
 }; 
 
-class IInstancedDrawable : public IDrawable
+class InstancedDrawable : public IDrawable
 {
 public:
-    virtual ~IInstancedDrawable() {}
+    virtual ~InstancedDrawable() {}
 
     virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
@@ -122,10 +120,10 @@ public:
 
 };
 
-class ISkinnedDrawable : public I3DObject, public IDrawable
+class SkinnedDrawable : public Object3D, public IDrawable
 {
 public:
-    virtual ~ISkinnedDrawable() {}
+    virtual ~SkinnedDrawable() {}
 
     virtual const Material* getMaterial() const = 0;
     virtual void applyMaterial(const ICamera* pCamera) const = 0;
@@ -133,9 +131,7 @@ public:
 
     virtual const ModelMesh* getModelMesh() const = 0;
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
-
-    virtual mat44 getWorldMatrix() const = 0;
-
+    
     virtual bool getCastsShadow() const = 0;
     virtual void setCastsShadow(bool castShadow) = 0;
 

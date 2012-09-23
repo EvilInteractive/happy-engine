@@ -33,7 +33,7 @@ class TextureCube;
 class ModelMesh;
 class Material;
 
-class SkyBox : public ISingleDrawable
+class SkyBox : public SingleDrawable
 {
 public:
     SkyBox();
@@ -42,7 +42,7 @@ public:
     void load(const std::string& asset);
 
     //////////////////////////////////////////////////////////////////////////
-    /// ISingleDrawable
+    /// SingleDrawable
     /////////////////////////////////////////////////////////////////////////
     virtual const Material* getMaterial() const;
     virtual void applyMaterial(const ICamera* pCamera) const;
@@ -61,8 +61,6 @@ public:
 
     virtual void draw();
     virtual void drawShadow() {}
-
-    virtual mat44 getWorldMatrix() const;
 
 private:
 

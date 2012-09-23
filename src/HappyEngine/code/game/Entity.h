@@ -24,42 +24,60 @@
 #define _HE_ENTITY_H_
 #pragma once
 
-#include "IComponent.h"
-#include "I3DObject.h"
-#include "INetworkSerializable.h"
+#include "EntityComponent.h"
 
 namespace he {
 namespace ge {
 
-class Entity : public gfx::I3DObject, public net::INetworkSerializable
+class Entity : public EntityComponent, public Object3D
 {
 public:
     Entity();
     virtual ~Entity();
     
-    void addComponent(IComponent* pComponent); //will clean up pComponent
-    void deleteComponent(IComponent* pComponent);
-
-    virtual mat44 getWorldMatrix() const;
-    void setWorldMatrix(const mat44& mtxWorld);
+    void addComponent(EntityComponent* component);      // Gives ownership to Entity
+    void removeComponent(EntityComponent* component);   // Returns ownership to caller
 
     //////////////////////////////////////////////////////////////////////////
-    /// INetworkSerializable
+    /// EntityComponent
     //////////////////////////////////////////////////////////////////////////
-    virtual void serializeCreate(NetworkStream* stream) const;
-    virtual bool deserializeCreate(NetworkStream* stream);
-    virtual void serializeRemove(NetworkStream* stream) const;
-    virtual bool deserializeRemove(NetworkStream* stream);
+    virtual void serialize(SerializerStream& /*stream*/) {};
+    virtual void deserialize(const SerializerStream& /*stream*/) {};
 
-    virtual bool isSerializeDataDirty() const;
-    virtual void serialize(net::NetworkSerializer& serializer);
-    virtual void deserialize(net::NetworkDeserializer& serializer);
+
     //////////////////////////////////////////////////////////////////////////
+    /// Object3D (resolve ambiguity)
+    //////////////////////////////////////////////////////////////////////////
+public:
+    virtual void setLocalTranslate(const vec3& translate)  { Object3D::setLocalTranslate(translate); } 
+    virtual void setLocalRotate(const mat33& rotate) { Object3D::setLocalRotate(rotate); } 
+    virtual void setLocalScale(const vec3& scale) { Object3D::setLocalScale(scale); } 
+           
+    virtual const vec3&  getLocalTranslate() const { return Object3D::getLocalTranslate(); } 
+    virtual const mat33& getLocalRotate() const { return Object3D::getLocalRotate(); } 
+    virtual const vec3&  getLocalScale() const { return Object3D::getLocalScale(); } 
+           
+    virtual const mat44& getLocalMatrix() const { return Object3D::getLocalMatrix(); } 
+    virtual const mat44& getWorldMatrix() const { return Object3D::getWorldMatrix(); } 
+           
+protected:
+    virtual IObject3D* getParent() const { return Object3D::getParent(); } 
+    virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
+
+    virtual void setWorldMatrixDirty(byte cause) { Object3D::setWorldMatrixDirty(cause); } 
+    virtual void setLocalMatrixDirty(byte cause) { Object3D::setLocalMatrixDirty(cause); } 
+
+    virtual void calculateWorldMatrix() { Object3D::calculateWorldMatrix(); }
 
 private:
-    bool m_IsSerializeDataDirty;
-    mat44 m_mtxWorld;
-    std::vector<IComponent*> m_Components;
+    virtual void init(Entity* parent) { m_Parent = parent; }
+
+    // Made these methods private, use addComponent
+    virtual void attach(IObject3D* child) { Object3D::attach(child); }
+    virtual void detach(IObject3D* child) { Object3D::detach(child); }
+
+    std::vector<EntityComponent*> m_Components;
+    Entity* m_Parent;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

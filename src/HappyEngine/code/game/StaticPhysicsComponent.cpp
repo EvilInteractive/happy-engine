@@ -20,33 +20,27 @@
 #include "HappyPCH.h" 
 
 #include "StaticPhysicsComponent.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
 
 #include "Entity.h"
-#include "HappyEngine.h"
-#include "Game.h"
+#include "PhysicsStaticActor.h"
 
 namespace he {
 namespace ge {
 
-StaticPhysicsComponent::StaticPhysicsComponent(): m_pStaticActor(nullptr)
+StaticPhysicsComponent::StaticPhysicsComponent(): m_StaticActor(nullptr)
 {
 }
 
 
 StaticPhysicsComponent::~StaticPhysicsComponent()
 {
-	delete m_pStaticActor;
+    delete m_StaticActor;
 }
 
 void StaticPhysicsComponent::init( Entity* pParent )
 {
-    m_pParent = pParent;
-    m_pStaticActor = NEW px::PhysicsStaticActor(m_pParent->getWorldMatrix());
-    
-    //if (HAPPYENGINE->isEditor())
-    //    m_pDynamicActor->setKeyframed(true);
+    m_Parent = pParent;
+    m_StaticActor = NEW px::PhysicsStaticActor(m_Parent->getWorldMatrix());
 }
 
 void StaticPhysicsComponent::serialize(SerializerStream& /*stream*/)
@@ -61,13 +55,13 @@ void StaticPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, uint32 collisionGroup, const mat44& localPose )
 {
-    HE_ASSERT(m_pStaticActor != nullptr, "attach component first to entity");
-    m_pStaticActor->addShape(pShape, material, collisionGroup, localPose);
+    HE_ASSERT(m_StaticActor != nullptr, "attach component first to entity");
+    m_StaticActor->addShape(pShape, material, collisionGroup, localPose);
 }
 
 px::PhysicsStaticActor* StaticPhysicsComponent::getStaticActor() const
 {
-    return m_pStaticActor;
+    return m_StaticActor;
 }
 
 } } //end namespace

@@ -140,33 +140,31 @@ void Palet::addPoint()
 {
 }
 
-void Palet::serializeCreate( he::NetworkStream* stream ) const
+void Palet::serializeCreate( he::net::NetworkStream* stream ) const
 {
     stream->Write(m_Position);
     stream->Write(m_Player);
-    he::ge::Entity::serializeCreate(stream);
     he::net::NetworkObject<Palet>::serializeCreate(stream);
 }
 
-bool Palet::deserializeCreate( he::NetworkStream* stream )
+bool Palet::deserializeCreate( he::net::NetworkStream* stream )
 {
     bool succes(true);
     succes &= he::net::NetworkObject<Palet>::deserializeCreate(stream);
-    succes &= he::ge::Entity::deserializeCreate(stream);
     return succes;
 }
 
-void Palet::serializeRemove( he::NetworkStream* stream ) const
+void Palet::serializeRemove( he::net::NetworkStream* stream ) const
 {
-    he::ge::Entity::serializeRemove(stream);
+    he::net::NetworkObject<Palet>::serializeRemove(stream);
 }
 
-bool Palet::deserializeRemove( he::NetworkStream* stream )
+bool Palet::deserializeRemove( he::net::NetworkStream* stream )
 {
-    return he::ge::Entity::deserializeRemove(stream);
+    return he::net::NetworkObject<Palet>::deserializeRemove(stream);
 }
 
-void Palet::serialize( he::net::NetworkSerializer& serializer )
+void Palet::serialize(const  he::net::NetworkSerializer& serializer )
 {
     serializer.serializeVariable(m_MoveTo);
     serializer.serializeVariable(m_GoUp);
@@ -174,7 +172,7 @@ void Palet::serialize( he::net::NetworkSerializer& serializer )
     setSerializeDataDirty(false);
 }
 
-void Palet::deserialize( he::net::NetworkDeserializer& deserializer )
+void Palet::deserialize(const  he::net::NetworkDeserializer& deserializer )
 {
     deserializer.deserializeVariable(m_MoveTo);
     deserializer.deserializeVariable(m_GoUp);

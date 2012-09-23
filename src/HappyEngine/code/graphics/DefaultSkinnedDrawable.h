@@ -27,7 +27,7 @@
 namespace he {
 namespace gfx {
 
-class DefaultSkinnedDrawable : public ISkinnedDrawable
+class DefaultSkinnedDrawable : public SkinnedDrawable
 {
 public:
     DefaultSkinnedDrawable();
@@ -39,7 +39,6 @@ public:
 
     virtual const ModelMesh* getModelMesh() const = 0;
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
-    virtual mat44 getWorldMatrix() const = 0;
 
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);

@@ -37,7 +37,7 @@
 namespace he {
 namespace px {
 
-PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* pShape, const PhysicsMaterial& material)
+PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* shape, const PhysicsMaterial& material)
 {
     PHYSICS->lock();
     m_Actor = PHYSICS->getSDK()->createRigidStatic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
@@ -47,7 +47,7 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* p
     PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
 
-    addShape(pShape, material);
+    addShape(shape, material);
 
     PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_Actor);
@@ -180,13 +180,22 @@ PhysicsStaticActor::~PhysicsStaticActor()
     }
 }
 
-vec3 PhysicsStaticActor::getPosition() const
+void PhysicsStaticActor::getTranslation( vec3& translation ) const
 {
-    return vec3(m_Actor->getGlobalPose().p);
+    const physx::PxVec3& pos(m_Actor->getGlobalPose().p);
+    translation.x = pos.x;
+    translation.y = pos.y;
+    translation.z = pos.z;
 }
-mat44 PhysicsStaticActor::getPose() const
+
+void PhysicsStaticActor::getRotation( mat33& rotation ) const
 {
-    return mat44(physx::PxMat44(physx::PxMat33(m_Actor->getGlobalPose().q), m_Actor->getGlobalPose().p));
+    rotation = mat33(physx::PxMat33(m_Actor->getGlobalPose().q));
+}
+
+void PhysicsStaticActor::getPose(mat44& pose) const
+{
+    pose = mat44(physx::PxMat44(physx::PxMat33(m_Actor->getGlobalPose().q), m_Actor->getGlobalPose().p));
 }
 
 physx::PxRigidActor* PhysicsStaticActor::getInternalActor() const

@@ -43,13 +43,19 @@ public:
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
 
     /* STATIC CONSTRUCTORS */
-    static mat33 createTranslaton(const vec2& translation);
-    static mat33 createRotation(const float radians);
-    static mat33 createScale(const vec2& scale);
+    static mat33 createTranslation2D(const vec2& translation);
+    static mat33 createRotation2D(const float radians);
+    static mat33 createScale2D(const vec2& scale);
+
+    static mat33 createRotation3D(const vec3& axis, float radians);
 
     /* OPERATORS */
     mat33 operator*(const mat33& mat);
     vec2 operator*(const vec2& vec);
+    bool operator==(const mat33& other) const;
+    bool operator!=(const mat33& other) const;
+    float operator()(int row, int column) const;
+    float& operator()(int row, int column);
 
     /* GETTERS */
     vec2 getTranslation() const;

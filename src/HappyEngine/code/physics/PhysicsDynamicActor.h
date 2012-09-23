@@ -41,8 +41,9 @@ public:
     PhysicsDynamicActor(const mat44& pose);
     virtual ~PhysicsDynamicActor();
 
-    virtual vec3 getPosition() const;
-    virtual mat44 getPose() const;
+    virtual void getTranslation(vec3& translation) const;
+    virtual void getRotation(mat33& rotation) const;
+    virtual void getPose(mat44& pose) const;
     virtual physx::PxRigidDynamic* getInternalActor() const;
 
     void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
@@ -60,8 +61,8 @@ public:
 private:
     void addShape(physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup);
 
-    physx::PxRigidDynamic* m_pActor;
-
+    physx::PxRigidDynamic* m_Actor;
+    
     //Disable default copy constructor and default assignment operator
     PhysicsDynamicActor(const PhysicsDynamicActor&);
     PhysicsDynamicActor& operator=(const PhysicsDynamicActor&);
