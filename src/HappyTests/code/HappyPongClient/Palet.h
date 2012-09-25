@@ -31,9 +31,12 @@ class LightFlashComponent;
 class MainGame;
 class Palet : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Palet>
 {
+DECLARE_OBJECT(Palet)
 public:
     Palet();
     virtual ~Palet();
+
+    virtual void init(he::gfx::Scene* scene);
 
     //////////////////////////////////////////////////////////////////////////
     // he::ge::ITickable
@@ -77,6 +80,8 @@ private:
     float m_AiActionTime;
 
     bool m_GoUp, m_GoDown;
+
+    Entity* m_FlashLightScore; // TODO should not be here
 
     //Disable default copy constructor and default assignment operator
     Palet(const Palet&);

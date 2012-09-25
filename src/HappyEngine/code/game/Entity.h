@@ -43,7 +43,7 @@ public:
     void addComponent(EntityComponent* component);      // Gives ownership to Entity
     void removeComponent(EntityComponent* component);   // Returns ownership to caller
 
-    void init(gfx::Scene* scene);
+    virtual void init(gfx::Scene* scene);
     gfx::Scene* getScene() const { return m_Scene; }
      
     //////////////////////////////////////////////////////////////////////////

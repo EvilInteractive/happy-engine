@@ -42,7 +42,6 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* pParent);
 
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
@@ -59,6 +58,8 @@ public:
     float getEndAttenuation() const;
     const vec3& getColor() const;
 
+protected:
+    virtual void init(Entity* pParent);
 
 private:    
     Entity* m_Parent;   

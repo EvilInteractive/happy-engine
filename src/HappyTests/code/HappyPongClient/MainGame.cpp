@@ -83,35 +83,40 @@ void MainGame::init()
     m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("Happy pong - client");
-    m_Window->open();
+    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    m_Window->Closed += quitHandler;
+    m_Window->create();
 
+}
+
+void MainGame::load()
+{
     he::gfx::RenderSettings settings;
     settings.enableDeferred = true;
     settings.enablePost = true;
 
     settings.lightingSettings.enableLighting = true;
     settings.lightingSettings.enableNormalMap = true;
-    settings.lightingSettings.enableShadows = true;
+    settings.lightingSettings.enableShadows = false;
     settings.lightingSettings.enableSpecular = true;
 
-    settings.postSettings.shaderSettings.enableAO = true;
+    settings.shadowSettings.shadowMult = 2;
+
+    settings.postSettings.shaderSettings.enableAO = false;
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
     settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
-    
 
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    CONTENT->setRenderSettings(settings);
+
     m_View->setScene(m_Scene);
     m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
-}
-
-void MainGame::load()
-{
     he::ushort port(0);
     std::string ip("");
 
@@ -144,7 +149,7 @@ void MainGame::load()
     NETWORK->join(ip, port);
 
     const he::RectI& viewport(m_View->getViewport());
-    he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective(viewport.width, viewport.height));
+    he::gfx::CameraPerspective* camera(NEW he::gfx::CameraPerspective());
     camera->setLens((float)viewport.width / viewport.height, he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
     m_Scene->getCameraManager()->addCamera("default", camera);
@@ -154,7 +159,7 @@ void MainGame::load()
     m_Scene->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
     m_pFPSGraph = NEW he::tools::FPSGraph();
-    m_pFPSGraph->setType(2);
+    m_pFPSGraph->setType(he::tools::FPSGraph::Type_ToConsole);
 
     m_BoardDimension = he::vec2(85, 47);
 
@@ -188,8 +193,6 @@ void MainGame::tick( float dTime )
 
 void MainGame::drawGui()
 {
-    m_pFPSGraph->draw();
-
 }
 
 const std::vector<Palet*>& MainGame::getPalets() const

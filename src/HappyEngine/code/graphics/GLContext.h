@@ -22,7 +22,6 @@
 #define _HE_GLCONTEXT_H_
 #pragma once
 
-#include "GL/glew.h"
 #include "OpenGL.h"
 #include "Rect.h"
 #include "Color.h"

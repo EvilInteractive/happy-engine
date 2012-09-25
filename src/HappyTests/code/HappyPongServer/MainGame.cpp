@@ -87,7 +87,7 @@ void MainGame::load()
     NETWORK->setSyncTimeout(1 / 60.0f);
     NETWORK->setMaxConnections(2);
     NETWORK->host(port);
-    he::eventCallback1<void, const he::NetworkID&> clientConnectedHandler(boost::bind(&hps::MainGame::createNewPaddle, this, _1));
+    he::eventCallback1<void, const he::net::NetworkID&> clientConnectedHandler(boost::bind(&hps::MainGame::createNewPaddle, this, _1));
     NETWORK->ClientConnected += clientConnectedHandler;
 
     m_BoardDimension = he::vec2(85, 47);

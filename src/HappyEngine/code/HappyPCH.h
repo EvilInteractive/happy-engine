@@ -19,9 +19,9 @@
 #define _HE_HAPPYPCH_H_
 #pragma once
 
-#pragma message("-------------------------------------------")
-#pragma message("HappyEngine: Compiling precompiled headers.")
-#pragma message("-------------------------------------------\n")
+#pragma message("-------------------------------------------------")
+#pragma message("-- HappyEngine: Compiling precompiled headers. --")
+#pragma message("-------------------------------------------------\n")
 
 #define __HE_FUNCTION__ __FUNCTION__
 #include <cstdlib>

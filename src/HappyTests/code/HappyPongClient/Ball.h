@@ -33,9 +33,12 @@ class MainGame;
 class LightFlashComponent;
 class Ball : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Ball>
 {
+DECLARE_OBJECT(hpc::Ball)
 public:
     Ball();
     virtual ~Ball();
+
+    virtual void init(he::gfx::Scene* scene);
 
     virtual void tick(float dTime);
 

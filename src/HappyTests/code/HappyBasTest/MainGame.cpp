@@ -48,6 +48,7 @@
 #include "IKeyboard.h"
 #include "Renderer2D.h"
 #include "ShapeRenderer.h"
+#include "MessageBox.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 50
@@ -101,8 +102,8 @@ void MainGame::init()
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
-     m_View2 = GRAPHICS->createView();
-     m_Window2 = GRAPHICS->createWindow();
+    m_View2 = GRAPHICS->createView();
+    m_Window2 = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
     m_Window->setVSync(false);
@@ -249,6 +250,7 @@ void MainGame::load()
     m_DebugMesh->setLoaded();
     #pragma endregion
     
+    he::MessageBox::show("Load Completed", "Success!");
 }
 
 void MainGame::tick( float dTime )

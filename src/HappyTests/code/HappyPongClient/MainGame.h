@@ -43,7 +43,7 @@ namespace hpc {
 class Palet;
 class Obstacle;
 class Ball;
-class MainGame : public he::ge::Game, public he::Singleton<MainGame>
+class MainGame : public he::ge::Game
 {
 public:
     MainGame();
@@ -63,6 +63,8 @@ public:
     void restart(bool timeout);
 
     void setActiveBall(Ball* ball);
+
+    he::gfx::Scene* getActiveScene() const { return m_Scene; }
 
 private:
     void connectionSuccessful();

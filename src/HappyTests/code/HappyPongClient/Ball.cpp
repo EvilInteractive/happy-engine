@@ -34,6 +34,8 @@
 
 namespace hpc {
 
+IMPLEMENT_OBJECT(hpc::Ball)
+
 Ball::Ball(): 
     m_Position(0, 0, 0), 
     m_Velocity(0, 0, 0), 
@@ -42,6 +44,11 @@ Ball::Ball():
     m_Restitution(1.01f)
 {
     reset();
+
+}
+void Ball::init( he::gfx::Scene* scene )
+{
+    he::ge::Entity::init(scene);
 
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
     model->setModelMeshAndMaterial("pong/ball.material", "pong/ball.binobj");
@@ -68,6 +75,7 @@ Ball::Ball():
     m_MainGame->setActiveBall(this);
     GAME->addToTickList(this);
 }
+
 
 void Ball::reset()
 {
@@ -116,6 +124,7 @@ bool Ball::deserializeCreate( he::net::NetworkStream* stream )
     stream->Read(m_MoveTo);
     stream->Read(m_Velocity);
     m_Position = m_MoveTo;
+    init(static_cast<MainGame*>(GAME)->getActiveScene());
     return true;
 }
 
