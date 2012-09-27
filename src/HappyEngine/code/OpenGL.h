@@ -96,6 +96,7 @@ public:
     static void heSetViewport(const RectI& viewport);
     static const RectI& heGetViewport();
     static void getGLTypesFromBufferElement(const BufferElement& element, GLint& components, GLenum& type);
+    static int getMaxMultiSamples();
 
     // Clear
     static void heClearColor(const Color& color);

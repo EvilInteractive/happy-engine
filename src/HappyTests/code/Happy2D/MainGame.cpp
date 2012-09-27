@@ -26,7 +26,6 @@
 #include "CameraManager.h"
 #include "ContentManager.h"
 
-#include "Camera.h"
 #include "FPSGraph.h"
 #include "WebView.h"
 #include "Renderer2D.h"
@@ -42,8 +41,6 @@ MainGame::MainGame(): m_FpsGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullpt
 
 MainGame::~MainGame()
 {
-    CAMERAMANAGER->deleteAllCameras();
-
     m_pFont->release();
 
     delete m_pWebView;
@@ -60,8 +57,8 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    CAMERAMANAGER->addCamera("default", NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    CAMERAMANAGER->setActiveCamera("default");
+    //CAMERAMANAGER->addCamera("default", NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
+    //CAMERAMANAGER->setActiveCamera("default");
 
     //m_pWebView = GUI_NEW->createWebView(true);
     //m_pWebView->loadUrl("http://www.google.be");

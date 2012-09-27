@@ -299,7 +299,20 @@ bool GL::getSupportTextureCompression()
     return s_CurrentContext->m_SupportTextureCompression;
 }
 
+int GL::getMaxMultiSamples()
+{
+    if (s_CurrentContext->m_MaxMultiSamples == -1)
+    {
+        int samples;
+        glGetIntegerv(GL_MAX_SAMPLES, &samples);
 
+        HE_ASSERT(samples >= 0, "Could not get max multisamples");
+
+        s_CurrentContext->m_MaxMultiSamples = samples;
+    }
+
+    return s_CurrentContext->m_MaxMultiSamples;
+}
 
 
 } } //end namespace

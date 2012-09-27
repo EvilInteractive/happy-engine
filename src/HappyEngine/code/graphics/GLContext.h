@@ -45,6 +45,7 @@ public:
 
             // Misc
         , m_Viewport(-1, -1, -1, -1)
+        , m_MaxMultiSamples(-1)
 
             //Depth
         , m_DepthWrite(false)
@@ -86,6 +87,7 @@ private:
 
     // Misc
     RectI m_Viewport;
+    int m_MaxMultiSamples;
 
     // Depth
     bool m_DepthRead, m_DepthWrite;

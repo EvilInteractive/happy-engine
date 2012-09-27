@@ -104,19 +104,6 @@ public:
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
 
-    void strokeArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
-    void fillArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
-
-    void beginPath();
-    void closePath();
-    void moveTo(const vec2& pos);
-    void lineTo(const vec2& pos);
-    void arcTo(float radius, float startAngle, float endAngle, bool antiClockwise);
-    void quadraticCurveTo(const vec2& cp, const vec2& pos);
-    void bezierCurveTo(const vec2& cp1, const vec2& cp2, const vec2& pos);
-    void fill();
-    void stroke();
-
     void fillText(const gui::Text& txt, const vec2& pos);
 
     void drawImage(	const Texture2D* tex2D, const vec2& pos,

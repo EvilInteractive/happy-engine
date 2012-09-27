@@ -67,8 +67,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     glGenFramebuffers(1, &pData->fbufferID);
     GL::heBindFbo(pData->fbufferID);
 
-    int samples;
-    glGetIntegerv(GL_MAX_SAMPLES, &samples); // TODO: seeb: cache this in GL class
+    int samples = GL::getMaxMultiSamples();
 
     glGenRenderbuffers(1, &pData->colorRbufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, pData->colorRbufferID);
@@ -97,8 +96,7 @@ void Canvas2D::resizeData( Data* data, const vec2& size )
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(data->renderTextureHnd));
     texture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);   
 
-    int samples;
-    glGetIntegerv(GL_MAX_SAMPLES, &samples); // TODO: seeb: cache this in GL class
+    int samples = GL::getMaxMultiSamples();
 
     glBindRenderbuffer(GL_RENDERBUFFER, data->colorRbufferID);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
@@ -425,61 +423,6 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
 
     GL::heBindVao(m_pBufferMesh->getBufferID());
     glDrawElements(GL_TRIANGLES, (GLsizei)m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
-}
-
-void Canvas2D::strokeArc(const vec2& /*pos*/, float /*radius*/, float /*startAngle*/, float /*endAngle*/, bool /*antiClockwise*/)
-{
-
-}
-
-void Canvas2D::fillArc(const vec2& /*pos*/, float /*radius*/, float /*startAngle*/, float /*endAngle*/, bool /*antiClockwise*/)
-{
-
-}
-
-void Canvas2D::beginPath()
-{
-
-}
-
-void Canvas2D::closePath()
-{
-
-}
-
-void Canvas2D::moveTo(const vec2& /*pos*/)
-{
-
-}
-
-void Canvas2D::lineTo(const vec2& /*pos*/)
-{
-
-}
-
-void Canvas2D::arcTo(float /*radius*/, float /*startAngle*/, float /*endAngle*/, bool /*antiClockwise*/)
-{
-
-}
-
-void Canvas2D::quadraticCurveTo(const vec2& /*cp*/, const vec2& /*pos*/)
-{
-
-}
-
-void Canvas2D::bezierCurveTo(const vec2& /*cp1*/, const vec2& /*cp2*/, const vec2& /*pos*/)
-{
-
-}
-
-void Canvas2D::fill()
-{
-
-}
-
-void Canvas2D::stroke()
-{
-
 }
 
 void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
