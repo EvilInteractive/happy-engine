@@ -22,8 +22,6 @@
 #define _HE_OPENGL_H_
 #pragma once
 
-#include "GL/glew.h"
-
 namespace he {
 namespace gfx {
 

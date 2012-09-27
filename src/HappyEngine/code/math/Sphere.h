@@ -29,7 +29,6 @@ class Sphere
 public:
     Sphere();
     Sphere(const vec3& pos, float radius);
-    virtual ~Sphere();
     //default copy and assignment are fine
 
     inline const vec3& getPosition() const { return m_Position; }
@@ -39,6 +38,7 @@ public:
     inline void setRadius(float radius) { m_Radius = radius; }
     
     bool intersectTest(const Sphere& other) const;
+    bool isOtherInside(const Sphere& other) const;
     IntersectResult intersect(const Sphere& other) const;
 
     static Sphere calculateBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset);

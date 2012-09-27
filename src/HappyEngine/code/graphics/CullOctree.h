@@ -33,31 +33,41 @@ class ICamera;
 class CullOctreeNode
 {
 public:
-    explicit CullOctreeNode(CullOctreeNode* parent, const Bound& bound); 
+    CullOctreeNode();
     ~CullOctreeNode();
 
-    const Bound& getBound() const { return m_Bound; }
+    inline const Bound& getStrictBound() const { return m_StrictBound; }
+    inline const Bound& getLooseBound() const { return m_LooseBound; }
 
-    void insert(IDrawable* drawable);
-    void rinsert(IDrawable* obj);
+    CullOctreeNode* rootInsert(IDrawable* drawable); // returns current root
     void remove(IDrawable* obj);
     void reevaluate(IDrawable* obj);
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen) const;
+    bool drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
+        std::vector<vec3>& vertices, std::vector<uint>& indices) const;
+    CullOctreeNode* getRoot();
 
 private:
+    CullOctreeNode(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex); 
+    CullOctreeNode(const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
     void createChilds();
+    void createChilds(CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
+    void rinsert(IDrawable* obj);
+    void createBounds(const vec3& pos, float strictSize);
+    void insert(IDrawable* drawable);
 
     CullOctreeNode* m_ChildNodes[8];
     CullOctreeNode* m_Parent;
     std::vector<IDrawable*> m_ObjectChilds;
-    Bound m_Bound;
+    Bound m_StrictBound, m_LooseBound;
+    bool m_IsLeafe;
 };
 
 class CullOctree
 {
 public:
 
-    explicit CullOctree(uint32 rootSize); // TODO: remove rootSize from constructor and make dynamic
+    explicit CullOctree(); 
     ~CullOctree();
 
     void insert(IDrawable* obj);
@@ -65,8 +75,10 @@ public:
     void remove(IDrawable* obj);
 
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction) const;
+    void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, 
+        std::vector<vec3>& vertices, std::vector<uint>& indices) const;
 
-    const static int s_MinLeaveSize = 2;
+    const static float s_MinLeaveSize;
 
 private:
     CullOctreeNode* m_Root;

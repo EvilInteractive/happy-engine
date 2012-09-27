@@ -87,7 +87,7 @@ void MainGame::load()
     NETWORK->setSyncTimeout(1 / 60.0f);
     NETWORK->setMaxConnections(2);
     NETWORK->host(port);
-    he::eventCallback1<void, const he::NetworkID&> clientConnectedHandler(boost::bind(&hps::MainGame::createNewPaddle, this, _1));
+    he::eventCallback1<void, const he::net::NetworkID&> clientConnectedHandler(boost::bind(&hps::MainGame::createNewPaddle, this, _1));
     NETWORK->ClientConnected += clientConnectedHandler;
 
     m_BoardDimension = he::vec2(85, 47);
@@ -134,7 +134,7 @@ void MainGame::drawGui()
 {
 }
 
-void MainGame::createNewPaddle( const he::NetworkID& id )
+void MainGame::createNewPaddle( const he::net::NetworkID& id )
 {
     HE_IF_ASSERT(m_Player1Id == UNASSIGNED_NETWORKID || m_Player2Id == UNASSIGNED_NETWORKID, "2 players already connected!")
     {
@@ -156,7 +156,7 @@ void MainGame::createNewPaddle( const he::NetworkID& id )
         m_Palets.push_back(palet);
     }
 }
-void MainGame::unregisterPaddle( const he::NetworkID& id )
+void MainGame::unregisterPaddle( const he::net::NetworkID& id )
 {
     for (he::uint i(0); i < m_Palets.size(); ++i)
     {

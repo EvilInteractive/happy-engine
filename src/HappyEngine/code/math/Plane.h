@@ -42,6 +42,8 @@ public:
     float getDistanceToPoint(const vec3& point) const;
     IntersectResult intersect(const AABB& box) const;
 
+    static vec3 getIntersectionPoint(const Plane& p1, const Plane& p2, const Plane& p3);
+
 private:
     vec3 m_Normal;
     float m_Distance;

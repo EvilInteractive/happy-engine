@@ -65,23 +65,23 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// INetworkSerializable
     //////////////////////////////////////////////////////////////////////////
-    virtual void serializeCreate(NetworkStream* stream) const = 0;
-    virtual bool deserializeCreate(NetworkStream* stream) = 0;
-    virtual void serializeRemove(NetworkStream* stream) const = 0;
-    virtual bool deserializeRemove(NetworkStream* stream) = 0;
+    virtual void serializeCreate(net::NetworkStream* stream) const = 0;
+    virtual bool deserializeCreate(net::NetworkStream* stream) = 0;
+    virtual void serializeRemove(net::NetworkStream* stream) const = 0;
+    virtual bool deserializeRemove(net::NetworkStream* stream) = 0;
 
     virtual bool isSerializeDataDirty() const = 0;
-    virtual void serialize(NetworkSerializer& serializer) = 0;
-    virtual void deserialize(NetworkDeserializer& serializer) = 0;
+    virtual void serialize(const NetworkSerializer& serializer) = 0;
+    virtual void deserialize(const NetworkDeserializer& serializer) = 0;
     //////////////////////////////////////////////////////////////////////////
 
     virtual void destroyReplica() = 0;
-    virtual void writeObjectID(NetworkStream* stream) const = 0;
+    virtual void writeObjectTypeID(net::NetworkStream* stream) const = 0;
 
     //////////////////////////////////////////////////////////////////////////
 
-    virtual void setHandle(const ObjectHandle& handle) { m_Handle = handle; }
-    virtual const ObjectHandle& getHandle() const { return m_Handle; }
+    virtual void setHandle(const ObjectHandle& handle) = 0;
+    virtual const ObjectHandle& getHandle() const = 0;
 
     // Call this just after creation, synced in serializeCreate!
     virtual void setOwner(const NetworkID& id) { creatingSystemGUID = id; }
@@ -93,7 +93,6 @@ protected:
 
 private:
     RakNet::VariableDeltaSerializer m_VariableDeltaSerializer;
-    ObjectHandle m_Handle;
     bool m_Serialize;
 };
 

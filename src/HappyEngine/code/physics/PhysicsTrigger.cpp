@@ -23,6 +23,7 @@
 #include "PhysicsTrigger.h"
 
 #include "PhysicsEngine.h"
+#include "PhysicsDynamicActor.h"
 
 #include "PhysicsBoxShape.h"
 #include "PhysicsSphereShape.h"
@@ -49,63 +50,17 @@ PhysicsTrigger::~PhysicsTrigger()
 /* GENERAL */
 void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose)
 {
-    PHYSICS->lock();
-    switch (shape->getType())
+    px::PhysicsMaterial mat(0, 0, 0);
+    std::vector<physx::PxShape*> shapes;
+    if (createShape(shapes, shape, mat, localPose))
     {
-    case PhysicsShapeType_Box:
+        PHYSICS->lock();
+        std::for_each(shapes.cbegin(), shapes.cend(), [&](physx::PxShape* pxShape)
         {
-            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(shape));
-            physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
-                physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
-                *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
             addShape(pxShape, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Sphere:
-        {
-            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(shape));
-            physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
-                physx::PxSphereGeometry(pSphereShape->getRadius()), 
-                *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Capsule:
-        {
-            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(shape));
-            physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
-                physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
-                *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Convex:
-        {
-            const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(shape));
-            if (convexShape->getConvexMesh() != ObjectHandle::unassigned) // load failed
-            {
-                const std::vector<physx::PxConvexMesh*>& meshes(
-                    ResourceFactory<PhysicsConvexMesh>::getInstance()->get(
-                    convexShape->getConvexMesh())->getInternalMeshes());
-
-                std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxConvexMesh* mesh)
-                {
-                    physx::PxVec3 scale;
-                    convexShape->getScale().toPxVec3(&scale);
-
-                    physx::PxShape* pxShape(m_Actor->getInternalActor()->createShape(
-                        physx::PxConvexMeshGeometry(mesh, 
-                        physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
-                        *PHYSICS->createMaterial(0, 0, 0), physx::PxTransform(localPose.getPhyicsMatrix())));
-                    addShape(pxShape, collisionGroup, collisionAgainstGroup);
-                });
-            }
-            break;
-        }
-    default: HE_ASSERT(false, "Shape not supported with triggers");
-        break;
+        });
+        PHYSICS->unlock();
     }
-    PHYSICS->unlock();
 }
 void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup )
 {
@@ -135,18 +90,46 @@ void PhysicsTrigger::setPose(const mat44& pose)
     m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
-/* CALLBACKS */
-void PhysicsTrigger::onTriggerEnter(physx::PxShape* shape)
+he::uint PhysicsTrigger::getCompatibleShapes() const
+{
+    return PhysicsShapeType_TriggerCompatible;
+}
+
+physx::PxRigidActor* PhysicsTrigger::getInternalActor() const
+{
+    return m_Actor->getInternalActor();
+}
+
+void PhysicsTrigger::getTranslation( vec3& translation ) const
+{
+    m_Actor->getTranslation(translation);
+}
+
+void PhysicsTrigger::getRotation( mat33& rotation ) const
+{
+    m_Actor->getRotation(rotation);
+}
+
+void PhysicsTrigger::getPose( mat44& pose ) const
+{
+    m_Actor->getPose(pose);
+}
+
+const PhysicsUserData& PhysicsTrigger::getUserData()
+{
+    return m_Actor->getUserData();
+}
+
+void PhysicsTrigger::onTriggerEnter( physx::PxShape* shape )
 {
     IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
     OnTriggerEnter(actor);
 }
 
-void PhysicsTrigger::onTriggerLeave(physx::PxShape* shape)
+void PhysicsTrigger::onTriggerLeave( physx::PxShape* shape )
 {
     IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
     OnTriggerLeave(actor);
 }
-
 
 } } //end namespace

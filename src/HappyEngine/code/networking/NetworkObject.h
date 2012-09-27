@@ -36,21 +36,21 @@ public:
     NetworkObject() {}
     virtual ~NetworkObject() {}
 
-    virtual void serializeCreate(NetworkStream* /*stream*/) const {}
-    virtual bool deserializeCreate(NetworkStream* /*stream*/)  { return true; }
-    virtual void serializeRemove(NetworkStream* /*stream*/) const {}
-    virtual bool deserializeRemove(NetworkStream* /*stream*/) { return true; }
+    virtual void serializeCreate(net::NetworkStream* /*stream*/) const {}
+    virtual bool deserializeCreate(net::NetworkStream* /*stream*/)  { return true; }
+    virtual void serializeRemove(net::NetworkStream* /*stream*/) const {}
+    virtual bool deserializeRemove(net::NetworkStream* /*stream*/) { return true; }
 
     virtual bool isSerializeDataDirty() const { return m_IsSerializeDataDirty; }
     virtual void setSerializeDataDirty(bool dirty = true) { m_IsSerializeDataDirty = dirty; }
     virtual void serialize(const NetworkSerializer& /*serializer*/) {};
-    virtual void deserialize(const NetworkDeserializer& /*serializer*/) const {};
+    virtual void deserialize(const NetworkDeserializer& /*serializer*/) {};
 
     virtual void destroyReplica()
     {
         NetworkObjectFactory<T>::getInstance()->destroyObject(getHandle()); // weird but raknets way of doing it
     }
-    virtual void writeObjectID(NetworkStream* stream) const
+    virtual void writeObjectTypeID(net::NetworkStream* stream) const
     {
         stream->Write(NetworkObjectFactory<T>::getInstance()->getId());
     }

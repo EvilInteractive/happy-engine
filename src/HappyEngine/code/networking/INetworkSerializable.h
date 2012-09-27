@@ -30,14 +30,14 @@ class NetworkDeserializer;
 class INetworkSerializable
 {
 public:
-    virtual void serializeCreate(NetworkStream* stream) const = 0;
-    virtual bool deserializeCreate(NetworkStream* stream) = 0;
-    virtual void serializeRemove(NetworkStream* stream) const = 0;
-    virtual bool deserializeRemove(NetworkStream* stream) = 0;
+    virtual void serializeCreate(net::NetworkStream* stream) const = 0;
+    virtual bool deserializeCreate(net::NetworkStream* stream) = 0;
+    virtual void serializeRemove(net::NetworkStream* stream) const = 0;
+    virtual bool deserializeRemove(net::NetworkStream* stream) = 0;
 
     virtual bool isSerializeDataDirty() const = 0;
-    virtual void serialize(NetworkSerializer& serializer) = 0;
-    virtual void deserialize(NetworkDeserializer& serializer) = 0;
+    virtual void serialize(const NetworkSerializer& serializer) = 0;
+    virtual void deserialize(const NetworkDeserializer& serializer) = 0;
 };
 
 } } //end namespace

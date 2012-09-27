@@ -33,6 +33,7 @@ class MainGame;
 class LightFlashComponent;
 class Ball : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Ball>
 {
+DECLARE_OBJECT(Ball)
 public:
     Ball();
     virtual ~Ball();
@@ -47,13 +48,13 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// INetworkSerializable
     //////////////////////////////////////////////////////////////////////////
-    virtual void serializeCreate(he::NetworkStream* stream) const;
-    virtual bool deserializeCreate(he::NetworkStream* stream);
-    virtual void serializeRemove(he::NetworkStream* stream) const;
-    virtual bool deserializeRemove(he::NetworkStream* stream);
+    virtual void serializeCreate(he::net::NetworkStream* stream) const;
+    virtual bool deserializeCreate(he::net::NetworkStream* stream);
+    virtual void serializeRemove(he::net::NetworkStream* stream) const;
+    virtual bool deserializeRemove(he::net::NetworkStream* stream);
 
-    virtual void serialize(he::net::NetworkSerializer& serializer);
-    virtual void deserialize(he::net::NetworkDeserializer& serializer);
+    virtual void serialize(const he::net::NetworkSerializer& serializer);
+    virtual void deserialize(const he::net::NetworkDeserializer& serializer);
     //////////////////////////////////////////////////////////////////////////
 
 private:

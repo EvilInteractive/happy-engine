@@ -31,9 +31,12 @@ class LightFlashComponent;
 class MainGame;
 class Palet : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Palet>
 {
+DECLARE_OBJECT(Palet)
 public:
     Palet();
     virtual ~Palet();
+
+    virtual void init(he::gfx::Scene* scene);
 
     //////////////////////////////////////////////////////////////////////////
     // he::ge::ITickable
@@ -44,13 +47,13 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// INetworkSerializable
     //////////////////////////////////////////////////////////////////////////
-    virtual void serializeCreate(he::NetworkStream* stream) const;
-    virtual bool deserializeCreate(he::NetworkStream* stream);
-    virtual void serializeRemove(he::NetworkStream* stream) const;
-    virtual bool deserializeRemove(he::NetworkStream* stream);
+    virtual void serializeCreate(he::net::NetworkStream* stream) const;
+    virtual bool deserializeCreate(he::net::NetworkStream* stream);
+    virtual void serializeRemove(he::net::NetworkStream* stream) const;
+    virtual bool deserializeRemove(he::net::NetworkStream* stream);
 
-    virtual void serialize(he::net::NetworkSerializer& serializer);
-    virtual void deserialize(he::net::NetworkDeserializer& serializer);
+    virtual void serialize(const he::net::NetworkSerializer& serializer);
+    virtual void deserialize(const he::net::NetworkDeserializer& serializer);
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
@@ -77,6 +80,8 @@ private:
     float m_AiActionTime;
 
     bool m_GoUp, m_GoDown;
+
+    Entity* m_FlashLightScore; // TODO should not be here
 
     //Disable default copy constructor and default assignment operator
     Palet(const Palet&);

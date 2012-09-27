@@ -41,9 +41,10 @@ public:
     PhysicsStaticActor(const mat44& pose, const IPhysicsShape* shape, const PhysicsMaterial& material);
     PhysicsStaticActor(const mat44& pose);
     virtual ~PhysicsStaticActor();
-    
-    virtual vec3 getPosition() const;
-    virtual mat44 getPose() const;
+
+    virtual void getTranslation(vec3& translation) const;
+    virtual void getRotation(mat33& rotation) const;
+    virtual void getPose(mat44& pose) const;
     virtual physx::PxRigidActor* getInternalActor() const;
 
     void addShape(const IPhysicsShape* shape, const PhysicsMaterial& material, 
@@ -60,6 +61,9 @@ public:
             m_UserData.setRTTI(0);
         m_UserData.setData(rttiType);
     }
+
+protected:
+    virtual uint getCompatibleShapes() const;
 
 private:
     void addShape(physx::PxShape* shape, uint32 collisionGroup);

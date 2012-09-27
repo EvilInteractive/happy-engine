@@ -47,17 +47,36 @@
 
 #include "IKeyboard.h"
 #include "Renderer2D.h"
+#include "ShapeRenderer.h"
+#include "MessageBox.h"
 
+#define CONE_VERTICES 16
+#define NUM_MOVING_ENTITIES 50
 
 namespace ht {
 
-MainGame::MainGame(): m_FpsGraph(nullptr), m_pSkyBox(nullptr), m_SpinShadows(false)
+he::Random MainGame::s_Random(0);
+
+MainGame::MainGame()
+    : m_FpsGraph(nullptr)
+    , m_pSkyBox(nullptr)
+    , m_SpinShadows(false)
+    , m_MovingEntityFase(0)
 {
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        MovingEntityRandomness r;
+        r.a = he::vec3(s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100));
+        r.b = he::vec3(s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100));
+        r.c = he::vec3((float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5));
+        m_MovingEntityRandomness.push_back(r);
+    }
 }
 
 
 MainGame::~MainGame()
 {
+    m_DebugMesh->release();
     m_View2->get2DRenderer()->detachFromRender(m_FpsGraph);
     delete m_FpsGraph;
     delete m_pSkyBox;
@@ -99,6 +118,7 @@ void MainGame::load()
 {
     using namespace he;
 
+    #pragma region Window/View/Scene
     he::gfx::RenderSettings settings;
     settings.enableDeferred = true;
     settings.enablePost = true;
@@ -114,7 +134,7 @@ void MainGame::load()
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
-    settings.postSettings.shaderSettings.enableHDR = true;
+    settings.postSettings.shaderSettings.enableHDR = false;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
 
@@ -137,16 +157,16 @@ void MainGame::load()
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View2->init(settings);
 
-    CONSOLE->setView(m_View2);
+    //CONSOLE->setView(m_View2);
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
-    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
     FlyCamera* flyCamera2 = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
-    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 250.0f);
+    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
     flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
 
     m_View->setCamera("default");
@@ -158,76 +178,97 @@ void MainGame::load()
     m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
     m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
-    ge::Entity* scene(NEW ge::Entity());
-    scene->init(m_Scene);
-    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
-    he::ObjectHandle sceneMaterial(CONTENT->loadMaterial("testScene3.material"));
-    modelComp->setMaterial(sceneMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial()->getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene5.binobj", "M_Terrain", modelComp->getMaterial().getCompatibleVertexLayout()));
-
-    modelComp->setModelMesh(mesh->getHandle());
-    //modelComp->setLocalTransform(he::mat44::createScale(100));
-    scene->addComponent(modelComp);
-    mesh->release();
-
-    modelComp = NEW ge::ModelComponent();
-    he::ObjectHandle sceneMaterial2(CONTENT->loadMaterial("testScene4.material"));
-    modelComp->setMaterial(sceneMaterial2);
-    mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial()->getCompatibleVertexLayout());
-    modelComp->setModelMesh(mesh->getHandle());
-    modelComp->setLocalTransform(he::mat44::createTranslation(he::vec3(1, 1, 1)) * he::mat44::createRotation(vec3(0, 1, 0), he::pi) * he::mat44::createScale(100));
-    scene->addComponent(modelComp);
-    mesh->release();
-
-
-    he::ObjectHandle cubeMat(CONTENT->loadMaterial("cube.material"));
-    mesh = CONTENT->asyncLoadModelMesh("cube.binobj", "M_Cube", modelComp->getMaterial()->getCompatibleVertexLayout());
-
-    for (size_t x(0); x < 20; ++x)
-    for (size_t y(0); y < 20; ++y)
-    for (size_t z(0); z < 20; ++z)
-    {
-        modelComp = NEW ge::ModelComponent();
-        modelComp->setMaterial(cubeMat);
-        modelComp->setModelMesh(mesh->getHandle());
-        modelComp->setLocalTransform(he::mat44::createTranslation(
-            he::vec3(x * 2.0f + 1, 
-                     y * 2.0f + 1, 
-                     z * 2.0f + 1)) * he::mat44::createScale(1));
-        scene->addComponent(modelComp);
-    }
-    mesh->release();
-
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial);
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial2);
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(cubeMat);
-
-    m_EntityList.push_back(scene);
-
-    #pragma region lights
-    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.5f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-2.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 2.0f);
-
-    ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
-    scene->addComponent(pTempPointLightComp);
-    pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
-    pTempPointLightComp->setMultiplier(50.0f);
-    pTempPointLightComp->setColor(Color((he::byte)126, 190, 255, 255));
-    pTempPointLightComp->setAttenuation(0, 15);
+    m_View->getShapeRenderer()->attachToRenderer(this);
+    m_View2->getShapeRenderer()->attachToRenderer(this);
 
     #pragma endregion
 
-    //m_pSkyBox = NEW gfx::SkyBox();
-    //m_pSkyBox->load("skybox/day/day.png");
-    //m_Scene->attachToScene(m_pSkyBox);
+    #pragma region Scene
+    ge::Entity* scene(NEW ge::Entity());
+    scene->init(m_Scene);
+    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
+    scene->addComponent(modelComp);
+    modelComp->setModelMeshAndMaterial("testScene3.material", "testScene3.binobj");
+
+    modelComp = NEW ge::ModelComponent();
+    modelComp->setModelMeshAndMaterial("testScene4.material", "testScene4.binobj");
+    modelComp->setLocalTranslate(he::vec3(1, 1, 1));
+    modelComp->setLocalRotate(he::mat33::createRotation3D(vec3(0, 1, 0), he::pi));
+    modelComp->setLocalScale(vec3(100.0f, 100.0f, 100.0f));
+    scene->addComponent(modelComp);
+    
+    m_EntityList.push_back(scene);
+
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        ge::Entity* entity(NEW he::ge::Entity());
+        entity->init(m_Scene);
+        modelComp = NEW ge::ModelComponent();
+        modelComp->setDynamic(true);
+        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
+        entity->addComponent(modelComp);
+        m_MovingEntityList.push_back(entity);
+        m_EntityList.push_back(entity);
+    }
+
+    #pragma endregion
+
+    #pragma region Lights
+    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
+
+    for (size_t i(0); i < 5; ++i)
+    {
+        vec3 direction(rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f);
+        direction = normalize(direction);
+        float len(33.0f);
+        vec3 pos(direction * len + vec3(20, 20, 20));
+
+        ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
+        scene->addComponent(pTempPointLightComp);
+        pTempPointLightComp->setLocalTranslate(pos);
+        pTempPointLightComp->setMultiplier(0.5f);
+        pTempPointLightComp->setColor(Color((he::byte)(rand()%255), 128, 255, 255));
+        pTempPointLightComp->setAttenuation(0, 15);
+
+        modelComp = NEW ge::ModelComponent();
+        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
+        modelComp->setLocalTranslate(pos);
+        scene->addComponent(modelComp);
+    }
+    #pragma endregion
+
+    #pragma region Camera Debug Shape
+    ResourceFactory<gfx::ModelMesh>* meshFactory(ResourceFactory<gfx::ModelMesh>::getInstance());
+    gfx::BufferLayout debugCameraLayout;
+    debugCameraLayout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), 0));
+    m_DebugMesh = meshFactory->get(meshFactory->create());
+    m_DebugMesh->setName("Debug Mesh");
+    m_DebugMesh->init(debugCameraLayout, he::gfx::MeshDrawMode_Lines);
+    m_DebugMesh->setVertices(nullptr, 0, he::gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setIndices(nullptr, 0, he::gfx::IndexStride_UInt, he::gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setLoaded();
+    #pragma endregion
+    
+    he::MessageBox::show("Load Completed", "Success!");
 }
 
 void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
+
+    m_MovingEntityFase += dTime;
+    if (m_MovingEntityFase >= he::twoPi)
+        m_MovingEntityFase -= he::twoPi;
+
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+        m_MovingEntityList[i]->setLocalTranslate(
+            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+    }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;
@@ -238,8 +279,31 @@ void MainGame::tick( float dTime )
         m_Scene->getLightManager()->getDirectionalLight()->setDirection(
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
-
+    fillDebugMeshes();
     m_FpsGraph->tick(dTime);
+}
+
+void MainGame::fillDebugMeshes()
+{
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+    using namespace he;
+    gfx::CameraPerspective* camera(m_View->getCamera());
+    
+    const Frustum& frustum(camera->getBound().getFrustum());
+    Frustum::generateFrustumIndices<uint>(m_View->getDebugIndices(), (uint)m_View->getDebugVertices().size());
+    frustum.generateFrustumPoints(m_View->getDebugVertices());
+
+    const Cone& cone(camera->getBound().getCone());
+    Cone::generateConeIndices<uint>(CONE_VERTICES, (uint)m_View->getDebugVertices().size(), m_View->getDebugIndices());
+    cone.generateConeVertices(CONE_VERTICES, m_View->getDebugVertices());
+
+    m_DebugMesh->setVertices(m_View->getDebugVertices().data(), m_View->getDebugVertices().size(), gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setIndices(m_View->getDebugIndices().data(), m_View->getDebugIndices().size(), gfx::IndexStride_UInt, gfx::MeshUsage_Dynamic);
+}
+
+void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
+{
+    renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1));
 }
 
 } //end namespace

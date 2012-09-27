@@ -22,12 +22,14 @@
 #define _HE_PHYSICS_TRIGGER_H_
 #pragma once
 
+#include "IPhysicsActor.h"
 #include "PhysicsDynamicActor.h"
 
 namespace he {
 namespace px {
+class PhysicsDynamicActor;
 
-class PhysicsTrigger
+class PhysicsTrigger : public IPhysicsActor
 {
 public:
 
@@ -36,16 +38,21 @@ public:
     virtual ~PhysicsTrigger();
 
     /* GENERAL */
-    void addTriggerShape(const IPhysicsShape* shape, 
-        uint32 collisionGroup = 0xffffffff, uint32 collisionAgainstGroup = 0xffffffff, 
-        const mat44& localPose = mat44::Identity);
+    virtual physx::PxRigidActor* getInternalActor() const;
+    virtual void getTranslation(vec3& translation) const;
+    virtual void getRotation(mat33& rotation) const;
+    virtual void getPose(mat44& pose) const;
+
+
+    void addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup = 0xffffffff, 
+                         uint32 collisionAgainstGroup = 0xffffffff, const mat44& localPose = mat44::Identity);
 
     /* SETTERS */
     void setPose(const vec3& move, const vec3& axis, float angle);
     void setPose(const mat44& pose);
 
     /* USERDATA */
-    virtual const PhysicsUserData& getUserData() { return m_Actor->getUserData(); }
+    virtual const PhysicsUserData& getUserData();
     template<typename T>
     void setUserData(T* rttiType)
     {
@@ -58,6 +65,9 @@ public:
 
     event1<void, IPhysicsActor*> OnTriggerEnter;
     event1<void, IPhysicsActor*> OnTriggerLeave;
+
+protected:
+    virtual uint getCompatibleShapes() const;
 
 private:
     void addShape(physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup);

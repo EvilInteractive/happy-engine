@@ -30,7 +30,7 @@ class Cone
 {
 public:
     Cone();
-    Cone(const vec3& position, const vec3& axis, float fov);
+    Cone(const vec3& position, const vec3& axis, float fov, float axisLength);
 
     bool intersectTest(const Sphere& sphere) const;
 
@@ -41,14 +41,30 @@ public:
     void setPosition(const vec3& position) { m_Position = position; }
     void setAxis(const vec3& axis) { m_Axis = axis; }
     void setFov(float fov);
+    void setAxisLength(float length) { m_Length = length; }
+
+    // circleVertices: MIN: 3
+    template<typename T>
+    static void generateConeIndices(T circleVertices, T indexOffset, std::vector<T>& outBuffer)
+    {
+        for (T i(1); i < circleVertices; ++i)
+        {
+            outBuffer.push_back(indexOffset); outBuffer.push_back(indexOffset + i);
+            outBuffer.push_back(indexOffset + i); outBuffer.push_back(indexOffset + i + 1);
+        }
+        outBuffer.push_back(indexOffset); outBuffer.push_back(indexOffset + circleVertices);
+        outBuffer.push_back(indexOffset + circleVertices); outBuffer.push_back(indexOffset + 1); 
+    }
+    void generateConeVertices(uint circleVertices, std::vector<vec3>& outBuffer) const;
 
 private:
 
     vec3 m_Position;
     vec3 m_Axis;
     float m_Fov;
+    float m_Length;
 
-    // Cach - faster intersect check
+    // Cache - faster intersect check
     // m_CosSqr   = cos(m_Fov / 2.0f)^2
     // m_SinSqr   = sin(m_Fov / 2.0f)^2
     // m_SinRecip = 1 / sin(m_Fov / 2.0f)

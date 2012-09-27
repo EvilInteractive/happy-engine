@@ -187,7 +187,7 @@ void CameraOrtho::CameraBound::calculate(const CameraOrtho* cam)
         matrix(3, 2) + matrix(2, 2),
         matrix(3, 3) + matrix(2, 3));
 
-    m_Frustum.getPlaneForEdit(FrustumPlane_FarLeftClipPlane) = Plane(
+    m_Frustum.getPlaneForEdit(FrustumPlane_FarClipPlane) = Plane(
         matrix(3, 0) - matrix(2, 0),
         matrix(3, 1) - matrix(2, 1),
         matrix(3, 2) - matrix(2, 2),

@@ -128,7 +128,7 @@ void Renderer2D::init( View* view, const RenderTarget* target )
 
     // model texturequad
     m_TextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_TextureQuad->init();
+    m_TextureQuad->init(vLayout, gfx::MeshDrawMode_Triangles);
 
     std::vector<VertexPosTex2D> vertices;
     vertices.push_back(
@@ -151,8 +151,8 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
-    m_TextureQuad->setVertices(&vertices[0], 4, vLayout);
-    m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+    m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_TextureQuad->setLoaded();
 }
 

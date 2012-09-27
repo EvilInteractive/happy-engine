@@ -38,7 +38,7 @@
 namespace he {
 namespace gfx {
 
-ShadowCaster::ShadowCaster(): m_ShowShadowDebug(false), m_ShadowSize(0), m_pQuad(nullptr),
+ShadowCaster::ShadowCaster(): m_ShowShadowDebug(true), m_ShadowSize(0), m_pQuad(nullptr),
     m_MatInstanced(nullptr), m_MatSingle(nullptr), m_MatSkinned(nullptr), m_RenderTarget(nullptr)
 {
     //CONSOLE->registerVar(&m_ShowShadowDebug, "b_shadowtex");
@@ -189,6 +189,7 @@ void ShadowCaster::init(View* view)
 }
 void ShadowCaster::onSettingsChanged()
 {
+    m_Settings = m_View->getSettings().shadowSettings;
     ushort newShadowSize(static_cast<short>(512 * pow(2.0f, m_Settings.shadowMult - 1.0f)));
     HE_ASSERT(newShadowSize <= 2048, "shadowmap size must be <= 2048");
 
@@ -273,7 +274,7 @@ void ShadowCaster::render()
     const CameraPerspective& camera(*m_View->getCamera());
 
     CameraOrtho shadowCam[4];
-    for (int i(0); i < COUNT-1; ++i) //begin at 1, first is blur temp
+    for (int i(0); i < COUNT - 1; ++i)
     {
         shadowCam[i].lookAt(camera.getPosition() - shadowLook*250, camera.getPosition(), up);
     }
@@ -316,30 +317,30 @@ void ShadowCaster::render()
             }
         });
 
-        directionalLight->setShadowMatrix(i - 1, shadowCam[i-1].getViewProjection() * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
+        directionalLight->setShadowMatrix(i - 1, shadowCam[i - 1].getViewProjection() * camera.getView().inverse()); //multiply by inverse view, because everything in shader is in viewspace
     }
     directionalLight->setShadowPosition(shadowCam[0].getPosition());
     directionalLight->setShadowNearFar(shadowCam[0].getNearClip(), shadowCam[COUNT - 1].getFarClip());
     //////////////////////////////////////////////////////////////////////////
     //                                 Blur                                 //
     //////////////////////////////////////////////////////////////////////////
-    GL::heSetDepthWrite(false);
-    GL::heSetDepthRead(false);
-    m_pShadowBlurShaderPass[0]->bind();
-    GL::heBindVao(m_pQuad->getVertexShadowArraysID());
-    for (int i(1); i < COUNT; ++i)
-    {      
-        m_RenderTarget->prepareForRendering(1, i - 1);
-        m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_ShadowTexture[i]);
-        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-    }
-    m_pShadowBlurShaderPass[1]->bind();
-    for (int i(COUNT - 1); i >= 1; --i)
-    {         
-        m_RenderTarget->prepareForRendering(1, i);
-        m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_ShadowTexture[i - 1]);
-        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-    }
+//     GL::heSetDepthWrite(false);
+//     GL::heSetDepthRead(false);
+//     m_pShadowBlurShaderPass[0]->bind();
+//     GL::heBindVao(m_pQuad->getVertexShadowArraysID());
+//     for (int i(1); i < COUNT; ++i)
+//     {      
+//         m_RenderTarget->prepareForRendering(1, i - 1);
+//         m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_ShadowTexture[i]);
+//         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+//     }
+//     m_pShadowBlurShaderPass[1]->bind();
+//     for (int i(COUNT - 1); i >= 1; --i)
+//     {         
+//         m_RenderTarget->prepareForRendering(1, i);
+//         m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_ShadowTexture[i - 1]);
+//         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+//     }
 
     for (int i(0); i < COUNT - 1; ++i)
     {

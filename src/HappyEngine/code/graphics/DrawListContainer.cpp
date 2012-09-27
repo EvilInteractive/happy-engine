@@ -31,7 +31,7 @@ namespace gfx {
 DrawListContainer::DrawListContainer()
 {
     for (uint blend(0); blend < BlendFilter_MAX; ++blend)
-        m_DrawList[blend] = NEW CullOctree(10000); // 20km^3 - TODO make dynamic!
+        m_DrawList[blend] = NEW CullOctree();
 }
 
 
@@ -77,17 +77,26 @@ void DrawListContainer::remove( IDrawable* drawable )
 
 void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc ) const
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_DrawList[blend]->draw(camera, drawFunc);
 }
+void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, std::vector<vec3>& vertices, std::vector<uint>& indices ) const
+{
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+    m_DrawList[blend]->drawAndCreateDebugMesh(camera, drawFunc, vertices, indices);
+}
+
 
 void DrawListContainer::prepareForRendering()
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     std::for_each(m_Dynamics.cbegin(), m_Dynamics.cend(), [&](IDrawable* drawable)
     {
         if (drawable->isSleeping() == false)
         {
             BlendFilter blend;
             getContainerIndex(drawable, blend);
+            drawable->calculateBound();
             m_DrawList[blend]->reevaluate(drawable);
         }
     });

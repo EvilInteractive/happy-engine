@@ -38,79 +38,30 @@ namespace px {
 PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 {  
     PHYSICS->lock();
-    m_pActor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
+    m_Actor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
                                   physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column1.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column2.getXYZ()))));
     PHYSICS->unlock();
-    HE_ASSERT(m_pActor != nullptr, "Actor creation failed");
+    HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
 
     PHYSICS->lock();
-    PHYSICS->getScene()->addActor(*m_pActor);
+    PHYSICS->getScene()->addActor(*m_Actor);
     PHYSICS->unlock();
 }
-void PhysicsDynamicActor::addShape( const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
+void PhysicsDynamicActor::addShape( const IPhysicsShape* shape, const PhysicsMaterial& material, float mass, 
     uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose/* = mat44::Identity*/ )
 {
-    PHYSICS->lock();
-    switch (pShape->getType())
+    std::vector<physx::PxShape*> shapes;
+    if (createShape(shapes, shape, material, localPose))
     {
-    case PhysicsShapeType_Box:
+        PHYSICS->lock();
+        std::for_each(shapes.cbegin(), shapes.cend(), [&](physx::PxShape* pxShape)
         {
-            const PhysicsBoxShape* pBoxShape(static_cast<const PhysicsBoxShape*>(pShape));
-            physx::PxShape* pxShape(m_pActor->createShape(
-                physx::PxBoxGeometry(pBoxShape->getDimension().x / 2.0f, pBoxShape->getDimension().y / 2.0f, pBoxShape->getDimension().z / 2.0f), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
             addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Sphere:
-        {
-            const PhysicsSphereShape* pSphereShape(static_cast<const PhysicsSphereShape*>(pShape));
-            physx::PxShape* pxShape(m_pActor->createShape(
-                physx::PxSphereGeometry(pSphereShape->getRadius()), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Capsule:
-        {
-            const PhysicsCapsuleShape* pCapsuleShape(static_cast<const PhysicsCapsuleShape*>(pShape));
-            physx::PxShape* pxShape(m_pActor->createShape(
-                physx::PxCapsuleGeometry(pCapsuleShape->getRadius(), pCapsuleShape->getHeight() / 2.0f), 
-                *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-            addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-            break;
-        }
-    case PhysicsShapeType_Convex:
-        {
-            const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(pShape));
-            if (convexShape->getConvexMesh() != ObjectHandle::unassigned) // load failed
-            {
-                const std::vector<physx::PxConvexMesh*>& meshes(
-                    ResourceFactory<PhysicsConvexMesh>::getInstance()->get(
-                    convexShape->getConvexMesh())->getInternalMeshes());
-
-                std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxConvexMesh* mesh)
-                {
-                    physx::PxVec3 scale;
-                    convexShape->getScale().toPxVec3(&scale);
-
-                    physx::PxShape* pxShape(m_pActor->createShape(
-                        physx::PxConvexMeshGeometry(mesh, 
-                            physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
-                            *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix())));
-                    addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
-                });
-            }
-            break;
-        }
-
-    default: 
-        HE_ASSERT(false, "Type not supported with dynamic actors");
-        break;
+        });
+        PHYSICS->unlock();
     }
-    PHYSICS->unlock();
 }
 
 void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup )
@@ -119,8 +70,8 @@ void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass, uint32 co
 
     shape->userData = static_cast<IPhysicsActor*>(this);
 
-    physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_pActor, m_pActor->getMass() + mass);
-    //physx::PxRigidBodyExt::updateMassAndInertia(*m_pActor, 1.0f);
+    physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_Actor, m_Actor->getMass() + mass);
+    //physx::PxRigidBodyExt::updateMassAndInertia(*m_Actor, 1.0f);
 
     physx::PxFilterData filter;
     filter.word0 = collisionGroup;
@@ -135,57 +86,75 @@ PhysicsDynamicActor::~PhysicsDynamicActor()
     if (PHYSICS != nullptr)
     {
         PHYSICS->lock();
-        PHYSICS->getScene()->removeActor(*m_pActor);
+        PHYSICS->getScene()->removeActor(*m_Actor);
         PHYSICS->unlock();
-        m_pActor->release();
+        m_Actor->release();
     }
 }
 
-vec3 PhysicsDynamicActor::getPosition() const
+void PhysicsDynamicActor::getTranslation(vec3& translation) const
 {
-    return vec3(m_pActor->getGlobalPose().p);
+    const physx::PxVec3& pos(m_Actor->getGlobalPose().p);
+    translation.x = pos.x;
+    translation.y = pos.y;
+    translation.z = pos.z;
 }
-mat44 PhysicsDynamicActor::getPose() const
+void PhysicsDynamicActor::getRotation( mat33& rotation ) const
 {
-    return mat44(physx::PxMat44(physx::PxMat33(m_pActor->getGlobalPose().q), m_pActor->getGlobalPose().p));
+    rotation = mat33(physx::PxMat33(m_Actor->getGlobalPose().q));
+}
+
+void PhysicsDynamicActor::getPose( mat44& pose) const
+{
+    pose = mat44(physx::PxMat44(physx::PxMat33(m_Actor->getGlobalPose().q), m_Actor->getGlobalPose().p));
 }
 
 void PhysicsDynamicActor::setVelocity(const vec3& velocity)
 {
-    m_pActor->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
+    m_Actor->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
 }
 void PhysicsDynamicActor::addVelocity(const vec3& velocity)
 {
-    m_pActor->addForce(physx::PxVec3(velocity.x, velocity.y, velocity.z), physx::PxForceMode::eVELOCITY_CHANGE);
+    m_Actor->addForce(physx::PxVec3(velocity.x, velocity.y, velocity.z), physx::PxForceMode::eVELOCITY_CHANGE);
 }
 void PhysicsDynamicActor::addForce(const vec3& force)
 {
-    m_pActor->addForce(physx::PxVec3(force.x, force.y, force.z), physx::PxForceMode::eFORCE);
+    m_Actor->addForce(physx::PxVec3(force.x, force.y, force.z), physx::PxForceMode::eFORCE);
 }
 
 void PhysicsDynamicActor::setKeyframed(bool keyframed)
 {
-    m_pActor->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, keyframed);
+    m_Actor->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, keyframed);
+}
+bool PhysicsDynamicActor::isKeyframed() const
+{
+    return m_Actor->getRigidDynamicFlags() & physx::PxRigidDynamicFlag::eKINEMATIC;
 }
 void PhysicsDynamicActor::keyframedSetPose(const vec3& position, const vec3& axis, float angle)
 {
-    m_pActor->setKinematicTarget(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+    m_Actor->setKinematicTarget(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
         physx::PxQuat(angle, physx::PxVec3(axis.x, axis.y, axis.z))));
 }
 
 void PhysicsDynamicActor::keyframedSetPose(const mat44& pose)
 {
-    m_pActor->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
+    m_Actor->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
 physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const
 {
-    return m_pActor;
+    return m_Actor;
 }
 
 bool PhysicsDynamicActor::isSleeping() const
 {
-    return m_pActor->isSleeping();
+    return m_Actor->isSleeping();
+}
+
+
+he::uint PhysicsDynamicActor::getCompatibleShapes() const
+{
+    return PhysicsShapeType_DynamicCompatible;
 }
 
 

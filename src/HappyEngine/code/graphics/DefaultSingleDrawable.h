@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-class DefaultSingleDrawable : public ISingleDrawable
+class DefaultSingleDrawable : public SingleDrawable
 {
 public:
     DefaultSingleDrawable();
@@ -39,7 +39,6 @@ public:
     virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
 
     virtual const ModelMesh* getModelMesh() const = 0;
-    virtual mat44 getWorldMatrix() const = 0;
 
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);

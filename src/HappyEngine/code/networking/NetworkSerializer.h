@@ -35,7 +35,7 @@ public:
     ~NetworkSerializer();
 
     template <class T>
-    void serializeVariable(const T& variable)
+    void serializeVariable(const T& variable) const
     {
         m_InternalSerializer->SerializeVariable(m_Context, variable);
     }
@@ -55,7 +55,7 @@ public:
     
     // Returns true is variable is changed
     template <class T>
-    bool deserializeVariable(T& variable)
+    bool deserializeVariable(T& variable) const
     {
         return m_InternalSerializer->DeserializeVariable(m_Context, variable);
     }

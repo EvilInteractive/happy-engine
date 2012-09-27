@@ -63,7 +63,7 @@ void ShapeRenderer::createBillboardQuad()
     m_VertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
 
     m_pBillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_pBillboardQuad->init();
+    m_pBillboardQuad->init(m_VertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
 
     std::vector<VertexPosTex> vertices;
     vertices.push_back(
@@ -86,8 +86,8 @@ void ShapeRenderer::createBillboardQuad()
     indices.push_back(0); indices.push_back(1); indices.push_back(2);
     indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
-    m_pBillboardQuad->setVertices(&vertices[0], 4, m_VertexLayoutBillboard);
-    m_pBillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pBillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+    m_pBillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_pBillboardQuad->setLoaded();
 }
 
@@ -132,7 +132,7 @@ void ShapeRenderer::drawColoredNoDepth(const ModelMesh* model, const mat44& worl
     GL::heSetDepthWrite(true);
 }
 
-void ShapeRenderer::drawSpline(const ModelMesh* spline, const mat44& world, const Color& color) const
+void ShapeRenderer::drawMeshColor(const ModelMesh* spline, const mat44& world, const Color& color) const
 {
     m_pColorEffect->begin();
     m_pColorEffect->setViewProjection(m_ViewProjection);
@@ -140,7 +140,7 @@ void ShapeRenderer::drawSpline(const ModelMesh* spline, const mat44& world, cons
     m_pColorEffect->setColor(color);
 
     GL::heBindVao(spline->getVertexArraysID());
-    glDrawElements(GL_LINES, spline->getNumIndices(), spline->getIndexType(), 0);
+    glDrawElements(spline->getDrawMode(), spline->getNumIndices(), spline->getIndexType(), 0);
 }
 
 void ShapeRenderer::drawBillboard(const Texture2D* tex2D, const vec3& pos)

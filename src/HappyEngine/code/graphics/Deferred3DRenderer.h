@@ -142,7 +142,7 @@ private:
 
     // Render FBO
     View* m_View;
-    RenderTarget* m_OutputRenderTarget;
+    const RenderTarget* m_OutputRenderTarget;
     
     //////////////////////////////////////////////////////////////////////////
     ///                              SHADERS                               ///

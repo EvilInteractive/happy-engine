@@ -140,12 +140,16 @@ void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset ) co
 {
     HE_ASSERT(m_Context == GL::s_CurrentContext, "Access violation: wrong context is bound!");
     GL::heBindFbo(m_FboId);
-//     for (uint i(0); i < m_TextureTargets.size(); ++i)
+//     if (m_TextureTargets.size() > 0)
 //     {
-//         if (i < numTextureTargets)
-//             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureTargets[i+offset]->getID(), 0);
-//         else
+//         for (uint i(0); i < m_TextureTargets.size(); ++i)
+//         {
 //             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0);
+//         }
+//         for (uint i(0); i < numTextureTargets; ++i)
+//         {
+//             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureTargets[i + offset]->getID(), 0);
+//         }
 //     }
     glDrawBuffers(numTextureTargets, m_DrawBuffers + offset);
 }

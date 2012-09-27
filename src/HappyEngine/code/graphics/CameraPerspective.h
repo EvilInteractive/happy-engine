@@ -72,7 +72,7 @@ public:
 
     // SETTERS
     virtual void setPosition(const vec3& pos);
-    virtual void setLens(float aspectRatio = (9.0f/16.0f), float fov = piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
+    virtual void setLens(float aspectRatio = (16.0f/9.0f), float fov = piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
     virtual void setAspectRatio(float aspectRatio);
 
     // GETTERS
@@ -81,6 +81,8 @@ public:
 
     virtual float getFov() const { return m_FOV; }
     virtual float getAspectRatio() const { return m_AspectRatio; }
+
+    virtual const CameraBound& getBound() const { return m_Bound; }
 
 protected:
     // DATAMEMBERS

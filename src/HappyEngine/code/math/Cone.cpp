@@ -32,13 +32,15 @@ Cone::Cone():
     , m_CosSqr(0.5f)
     , m_SinSqr(0.5f)
     , m_SinRecip(1.41421356f)
+    , m_Length(5.0f)
 {
 }
 
-Cone::Cone( const vec3& position, const vec3& axis, float fov ): 
+Cone::Cone( const vec3& position, const vec3& axis, float fov, float axisLength ): 
       m_Position(position)
     , m_Axis(axis)
     , m_Fov(fov)
+    , m_Length(axisLength)
     , m_CosSqr(sqr(cos(fov / 2.0f)))
     , m_SinSqr(sqr(sin(fov / 2.0f)))
     , m_SinRecip(1 / sin(fov / 2.0f))
@@ -49,27 +51,43 @@ void Cone::setFov( float fov )
 {
     m_Fov = fov;
     m_CosSqr = sqr(cos(fov / 2.0f));
-    m_SinSqr = sqr(sin(fov / 2.0f));
-    m_SinRecip = 1 / sin(fov / 2.0f);
+    float sinFov(sin(fov / 2.0f));
+    m_SinSqr = sqr(sinFov);
+    m_SinRecip = 1 / sinFov;
 }
 
 bool Cone::intersectTest( const Sphere& sphere ) const
 {
-    vec3 temp(m_Position - m_Axis * (sphere.getRadius() * m_SinRecip));
-    vec3 temp2(sphere.getPosition() - temp);
+    vec3 temp(sphere.getPosition() - m_Position);
+    vec3 temp2(temp + m_Axis * sphere.getRadius() * m_SinRecip);
     float distSq(lengthSqr(temp2));
-    float projDist(dot(m_Axis, temp2));
+    float projDist(dot(temp2, m_Axis));
     if ( projDist > 0 && sqr(projDist) >= distSq * m_CosSqr )
     {
-        temp2 = sphere.getPosition() - m_Position;
-        distSq = lengthSqr(temp2);
-        projDist = -dot(m_Axis, temp2);
+        distSq = lengthSqr(temp);
+        projDist = -dot(temp2, m_Axis);
         if ( projDist > 0 && sqr(projDist) >= distSq * m_SinSqr )
             return distSq <= sqr(sphere.getRadius());
         else
             return true;
     }
     return false;
+}
+
+void Cone::generateConeVertices( uint circleVertices, std::vector<vec3>& outBuffer ) const
+{
+    outBuffer.push_back(m_Position);
+
+    vec3 centerCircle(m_Position + m_Axis * m_Length);
+    float radius(tan(m_Fov / 2.0f) * m_Length);
+    vec3 up(dot(m_Axis, vec3::up) < 0.99f? vec3::up : vec3::right);
+    vec3 right(normalize(cross(up, m_Axis)));
+    up = normalize(cross(right, m_Axis));
+    for (uint i(0); i < circleVertices; ++i)
+    {
+        float angle(he::twoPi / circleVertices * i);
+        outBuffer.push_back(centerCircle + up * (radius * cos(angle)) + right * (radius * sin(angle)));
+    }
 }
 
 } //end namespace

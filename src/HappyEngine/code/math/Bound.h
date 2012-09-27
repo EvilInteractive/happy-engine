@@ -58,6 +58,14 @@ public:
         }
         return IntersectResult_Outside;
     }
+    bool isOtherInside(const Bound& other) const
+    {
+        if (m_Sphere.intersectTest(other.m_Sphere))
+        {
+            return m_AABB.isOtherInside(other.m_AABB);
+        }
+        return false;
+    }
 
 private:
 

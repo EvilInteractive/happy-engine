@@ -22,9 +22,8 @@
 #define _HE_INSTANCED_MODEL_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
-#include "I3DObject.h"
-#include "IPickable.h"
+#include "EntityComponent.h"
+#include "Object3D.h"
 #include "IInstancible.h"
 
 namespace he {
@@ -33,14 +32,15 @@ namespace gfx {
 }
 namespace ge {
     
-class InstancedModelComponent : public IComponent, public gfx::IInstancible
+class InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
 {
+    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     InstancedModelComponent();
     virtual ~InstancedModelComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
 
@@ -54,15 +54,6 @@ public:
     virtual void fillInstancingBuffer(gfx::DynamicBuffer& buffer) const;
     //////////////////////////////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////
-    ///                         I3DObject                                  ///
-    ////////////////////////////////////////////////////////////////////////// 
-    virtual mat44 getWorldMatrix() const;
-    //////////////////////////////////////////////////////////////////////////
-    
-    void setLocalTransform(const mat44& mtxWorld);
-    const mat44& getLocalTransform() const;
-
     void setController(const std::string& key);
     const std::string& getControllerKey() const;
 
@@ -70,10 +61,7 @@ private:
     std::string m_ControllerKey;
     uint m_InstanceId;
 
-    mat44 m_mtxLocalTransform;
-
-    Entity* m_Parent;
-    
+    Entity* m_Parent; 
 
     //Disable default copy constructor and default assignment operator
     InstancedModelComponent(const InstancedModelComponent&);

@@ -335,9 +335,9 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         indices.push_back(0); indices.push_back(1); indices.push_back(2);
         indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
-        m_FullscreenQuad->init();
-        m_FullscreenQuad->setVertices(&vertices[0], 4, layout);
-        m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
+        m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
         m_FullscreenQuad->setLoaded();
     }
 
@@ -383,9 +383,9 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
         m_ParticleQuad->setName("Particle quad");
 
-        m_ParticleQuad->init();
-        m_ParticleQuad->setVertices(&vertices[0], 4, layout);
-        m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
+        m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
         m_ParticleQuad->setLoaded();
     }
 

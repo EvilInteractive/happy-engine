@@ -42,8 +42,9 @@ public:
     PhysicsDynamicActor(const mat44& pose);
     virtual ~PhysicsDynamicActor();
 
-    virtual vec3 getPosition() const;
-    virtual mat44 getPose() const;
+    virtual void getTranslation(vec3& translation) const;
+    virtual void getRotation(mat33& rotation) const;
+    virtual void getPose(mat44& pose) const;
     virtual physx::PxRigidDynamic* getInternalActor() const;
 
     void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
@@ -55,6 +56,7 @@ public:
     void addForce(const vec3& force);
 
     void setKeyframed(bool keyframed);
+    bool isKeyframed() const;
     void keyframedSetPose(const vec3& position, const vec3& axis = vec3::up, float angle = 0.0f);
     void keyframedSetPose(const mat44& pose);
 
@@ -71,10 +73,13 @@ public:
         m_UserData.setData(rttiType);
     }
 
+protected:
+    virtual uint getCompatibleShapes() const;
+
 private:
     void addShape(physx::PxShape* shape, float mass, uint32 collisionGroup, uint32 collisionAgainstGroup);
 
-    physx::PxRigidDynamic* m_pActor;
+    physx::PxRigidDynamic* m_Actor;
     PhysicsUserData m_UserData;
 
     //Disable default copy constructor and default assignment operator

@@ -38,8 +38,8 @@ class INetworkObjectFactory
 public:
     virtual ~INetworkObjectFactory() {}
 
-    virtual const NetworkObjectID& getId() const = 0;
-    virtual void setId(const NetworkObjectID& id) = 0;
+    virtual const NetworkObjectTypeID& getId() const = 0;
+    virtual void setId(const NetworkObjectTypeID& id) = 0;
 
     // internal
     virtual details::NetworkObjectBase* createReplica() = 0;
@@ -49,12 +49,15 @@ public:
 template<typename T>
 class NetworkObjectFactory : public ObjectFactory<T>, public INetworkObjectFactory, public Singleton<NetworkObjectFactory<T>>
 {
+friend class Singleton<NetworkObjectFactory<T>>;
 public:
-    NetworkObjectFactory()
-    {
-        NETWORK->registerFactory(this);
-    }
     virtual ~NetworkObjectFactory() {}
+    
+    // TODO: should not be public, this class should always be inherited
+    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
+    {
+        ObjectFactory<T>::init(startSize, increaseSize, displayName);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // ObjectFactory
@@ -90,8 +93,8 @@ public:
     }
     //////////////////////////////////////////////////////////////////////////
 
-    virtual const NetworkObjectID& getId() const { return m_Id; }
-    virtual void setId(const NetworkObjectID& id) { m_Id = id; }
+    virtual const NetworkObjectTypeID& getId() const { return m_Id; }
+    virtual void setId(const NetworkObjectTypeID& id) { m_Id = id; }
 
     virtual details::NetworkObjectBase* createReplica() 
     { 
@@ -100,9 +103,15 @@ public:
         obj->setHandle(handle);
         return get(handle); 
     };
-    
+
+protected: 
+    NetworkObjectFactory()
+    {
+        NETWORK->registerFactory(this);
+    }
+
 private:
-    NetworkObjectID m_Id;
+    NetworkObjectTypeID m_Id;
 
     //Disable default copy constructor and default assignment operator
     NetworkObjectFactory(const NetworkObjectFactory&);

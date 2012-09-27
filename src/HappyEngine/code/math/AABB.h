@@ -30,7 +30,6 @@ public:
     AABB(): m_TopFrontLeft(0, 0, 0), m_BottomBackRight(0, 0, 0) {}
     AABB(const AABB& other): m_TopFrontLeft(other.m_TopFrontLeft), m_BottomBackRight(other.m_BottomBackRight) {}
     AABB(const vec3& topFrontLeft, const vec3& bottomBackRight): m_TopFrontLeft(topFrontLeft), m_BottomBackRight(bottomBackRight) {}
-    ~AABB(){}
 
     inline const vec3& getTopFrontLeft()     const { return m_TopFrontLeft; }
     inline const vec3& getBottomBackRight()  const { return m_BottomBackRight; }
@@ -92,6 +91,9 @@ public:
     }
 
     static AABB calculateBoundingAABB(const void* pointCloud, uint num, uint stride, uint posOffset);
+
+    void generateVertices(std::vector<vec3>& outBuffer) const;
+    void generateIndices(std::vector<uint>& outBuffer, uint offset) const;
 
 private:
     vec3 m_TopFrontLeft; 

@@ -192,7 +192,7 @@ void Canvas2D::init()
 
     // model texturequad
     m_pTextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_pTextureQuad->init();
+    m_pTextureQuad->init(vLayout, gfx::MeshDrawMode_Triangles);
 
     std::vector<VertexPosTex2D> vertices;
     vertices.push_back(
@@ -215,8 +215,8 @@ void Canvas2D::init()
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
-    m_pTextureQuad->setVertices(&vertices[0], 4, vLayout);
-    m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_pTextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+    m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_pTextureQuad->setLoaded();
 }
 void Canvas2D::resize( const vec2& newSize )
@@ -254,17 +254,17 @@ float Canvas2D::getNewDepth()
 /* GENERAL */
 void Canvas2D::translate(const vec2& translation)
 {
-    m_TransformationStack[m_StackDepth] = mat33::createTranslaton(translation) * m_TransformationStack[m_StackDepth];
+    m_TransformationStack[m_StackDepth] = mat33::createTranslation2D(translation) * m_TransformationStack[m_StackDepth];
 }
 
 void Canvas2D::rotate(float rotation)
 {
-    m_TransformationStack[m_StackDepth] = mat33::createRotation(rotation) * m_TransformationStack[m_StackDepth];
+    m_TransformationStack[m_StackDepth] = mat33::createRotation2D(rotation) * m_TransformationStack[m_StackDepth];
 }
 
 void Canvas2D::scale(const vec2& scale)
 {
-    m_TransformationStack[m_StackDepth] = mat33::createScale(scale) * m_TransformationStack[m_StackDepth];
+    m_TransformationStack[m_StackDepth] = mat33::createScale2D(scale) * m_TransformationStack[m_StackDepth];
 }
 
 void Canvas2D::save()

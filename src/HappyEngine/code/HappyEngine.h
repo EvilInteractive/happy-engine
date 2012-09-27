@@ -19,6 +19,8 @@
 #define _HE_HAPPYENGINE_H_
 #pragma once
 
+#include "Random.h"
+
 namespace he {
 namespace gfx {
     class GraphicsEngine;
@@ -101,10 +103,14 @@ public:
     sfx::SoundEngine* getSoundEngine() const { return m_pSoundEngine; }
     ge::Game* getGame() const { return m_pGame; }
 
+    static const Random& getRandom() { return s_Random; }
+
 private:
     // Singleton design pattern
     HappyEngine();
     static HappyEngine* s_pHappyEngine;
+    static Random s_Random;
+
     void initSubEngines(int subengines);
     
     ge::Game* m_pGame;

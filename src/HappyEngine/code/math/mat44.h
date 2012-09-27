@@ -24,6 +24,7 @@
 namespace he {
 struct vec3;
 struct vec2;
+class mat33;
 
 namespace gfx {
 class ICamera;
@@ -49,6 +50,7 @@ public:
     static mat44 createPerspectiveLH(float fov, float viewWidth, float viewHeight, float zNear, float zFar);
     static mat44 createPerspectiveLH(float fov, float aspectRatio, float zNear, float zFar);
     static mat44 createPerspectiveRH(float fov, float viewWidth, float viewHeight, float zNear, float zFar);
+    static mat44 createPerspectiveRH(float fov, float aspectRatio, float zNear, float zFar);
     static mat44 createOrthoLH(float left, float right, float top, float bottom, float zNear, float zFar);
     static mat44 createOrthoRH(float left, float right, float top, float bottom, float zNear, float zFar);
     static mat44 createLookAtLH(const vec3& eye, const vec3& target, const vec3& up);
@@ -60,6 +62,7 @@ public:
     static mat44 createScale(float scale);
     static mat44 createBillboard(const gfx::ICamera* pCam);
     static mat44 createWorld(const vec3& position, const vec3& forward, const vec3& up);
+    static mat44 createWorld(const vec3& translation, const mat33& rotation, const vec3& scale);
 
     //operators
     mat44 operator*(const mat44& mat) const;
@@ -75,10 +78,12 @@ public:
 
     //getters
     const float* toFloatArray() const;
-    vec3 getTranslation() const;
     const physx::PxMat44& getPhyicsMatrix() const;
     mat44 inverse() const;
     float getDeterminant() const;
+
+    void getTranslationComponent(vec3& translation) const;
+    void getRotationComponent(mat33& rotation) const;
     
     //Static
     static const mat44 Identity;

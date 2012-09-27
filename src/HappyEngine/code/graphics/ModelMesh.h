@@ -38,15 +38,30 @@ enum IndexStride
     IndexStride_UInt = sizeof(uint)
 };
 
+enum MeshUsage
+{
+    MeshUsage_Static  =  GL_STATIC_DRAW,    // Update rarely to never
+    MeshUsage_Stream  =  GL_STREAM_DRAW,    // Update frequently
+    MeshUsage_Dynamic =  GL_DYNAMIC_DRAW    // Update every frame
+};
+
+
+enum MeshDrawMode
+{
+    MeshDrawMode_Points     =   GL_POINTS,
+    MeshDrawMode_Lines      =   GL_LINES,
+    MeshDrawMode_Triangles  =   GL_TRIANGLES
+};
+
 class ModelMesh : public Resource<ModelMesh>
 {
 public:
     ModelMesh();
     virtual ~ModelMesh();
 
-    void init();
-    void setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout);
-    void setIndices(const void* pIndices, uint num, IndexStride type);
+    void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
+    void setVertices(const void* pVertices, uint num, MeshUsage usage);
+    void setIndices(const void* pIndices, uint num, IndexStride type, MeshUsage usage);
     void setBones(const std::vector<Bone>& boneList);
     void setLoaded();
 
@@ -57,6 +72,7 @@ public:
     inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->id]; }
     inline uint getVBOID() const { return m_VertexVboID; }
     inline uint getVBOIndexID() const { return m_IndexVboID; }
+    inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
 
     inline uint getNumVertices() const { return m_NumVertices; }
     inline uint getNumIndices() const { return m_NumIndices; }
@@ -103,6 +119,8 @@ private:
     Bound m_Bound;
 
     std::vector<Bone> m_BoneList;
+
+    MeshDrawMode m_DrawMode;
 
     eventCallback1<void, GLContext*> m_ContextCreatedHandler;
     eventCallback1<void, GLContext*> m_ContextRemovedHandler;

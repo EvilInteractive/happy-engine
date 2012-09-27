@@ -51,43 +51,21 @@ AmbientLight* LightManager::setAmbientLight(const Color& color,
 
     return m_AmbientLight;
 }
-ObjectHandle LightManager::addPointLight(const vec3&  pos,
-                                        const Color&  color,
-                                        float         multiplier,
-                                        float         beginAttenuation,
-                                        float         endAttentuation)
+PointLight* LightManager::addPointLight()
 {
     ObjectHandle lightHandle(LightFactory::getInstance()->createPointLight());
     PointLight* light(LightFactory::getInstance()->getPointLight(lightHandle));
     m_PointLightVector.push_back(lightHandle);
 
-    light->setPosition(pos);
-    light->setColor(color);
-    light->setMultiplier(multiplier);
-    light->setAttenuation(beginAttenuation, endAttentuation);
-
-    return lightHandle;
+    return light;
 }
-ObjectHandle LightManager::addSpotLight(const vec3&    pos,
-                                      const vec3&    direction,
-                                      const Color&   color,
-                                      float          multiplier,
-                                      float          fov,
-                                      float          beginAttenuation,
-                                      float          endAttentuation)
+SpotLight* LightManager::addSpotLight()
 {
     ObjectHandle lightHandle(LightFactory::getInstance()->createSpotLight());
     SpotLight* light(LightFactory::getInstance()->getSpotLight(lightHandle));
     m_SpotLightVector.push_back(lightHandle);
 
-    light->setPosition(pos);
-    light->setColor(color);
-    light->setMultiplier(multiplier);
-    light->setDirection(-direction);
-    light->setFov(fov);
-    light->setAttenuation(beginAttenuation, endAttentuation);
-
-    return lightHandle;
+    return light;
 }
 DirectionalLight* LightManager::setDirectionalLight(const vec3&  direction,
                                                const Color& color,

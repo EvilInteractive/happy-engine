@@ -23,6 +23,8 @@
 #pragma once
 
 #include "Game.h"
+#include "IShapeDrawable.h"
+#include "Random.h"
 
 namespace he {
     namespace tools {
@@ -36,13 +38,15 @@ namespace he {
         class Window;
         class Scene;
         class View;
+        class ModelMesh;
+        class CameraPerspective;
     }
 }
 
 namespace ht {
 class FlyCamera;
 
-class MainGame : public he::ge::Game
+class MainGame : public he::ge::Game, public he::gfx::IShapeDrawable
 {
 public:
     MainGame();
@@ -52,7 +56,11 @@ public:
     virtual void load();
     virtual void tick(float dTime);
 
+    virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
+
 private:
+    void fillDebugMeshes();
+
     he::tools::FPSGraph* m_FpsGraph;
 
     bool m_SpinShadows;
@@ -66,6 +74,19 @@ private:
 
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
+
+    he::gfx::ModelMesh* m_DebugMesh;
+
+    static he::Random s_Random;
+    struct MovingEntityRandomness
+    {
+        he::vec3 a;
+        he::vec3 b;
+        he::vec3 c;
+    };
+    std::vector<MovingEntityRandomness> m_MovingEntityRandomness;
+    std::vector<he::ge::Entity*> m_MovingEntityList;
+    float m_MovingEntityFase;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

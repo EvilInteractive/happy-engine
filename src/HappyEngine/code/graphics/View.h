@@ -68,6 +68,7 @@ public:
     CameraPerspective* getCamera() const { return m_Camera; }
 
     Renderer2D* get2DRenderer() const { return m_2DRenderer; }
+    ShapeRenderer* getShapeRenderer() const { return m_ShapeRenderer; }
 
     const Scene* getScene() const { return m_Scene; }
     const RenderSettings& getSettings() const { return m_Settings; }
@@ -76,6 +77,10 @@ public:
 
     event0<void> SettingsChanged;
     event0<void> ViewportSizeChanged;
+
+    // DEBUG
+    std::vector<vec3>& getDebugVertices() { return m_DebugVertices; }
+    std::vector<uint>& getDebugIndices() { return m_DebugIndices; }
 
     // INTERNAL
     void draw();
@@ -117,6 +122,8 @@ private:
 
     // Debug
     bool m_RenderDebugTextures;
+    std::vector<vec3> m_DebugVertices;
+    std::vector<uint> m_DebugIndices;
 
     // Events
     he::eventCallback0<void> m_WindowResizedCallback;
