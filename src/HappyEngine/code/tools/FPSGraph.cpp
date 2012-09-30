@@ -53,9 +53,8 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 
 FPSGraph::~FPSGraph()
 {
+    setView(nullptr);
     m_pFont->release();
-    m_View->get2DRenderer()->detachFromRender(this);
-    m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
 }
 
 /* GENERAL */
@@ -369,8 +368,11 @@ void FPSGraph::setView( gfx::View* view )
         m_View->get2DRenderer()->detachFromRender(this);
     }
     m_View = view;
-    m_View->get2DRenderer()->attachToRender(this);
-    m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
+    if (m_View != nullptr)
+    {
+        m_View->get2DRenderer()->attachToRender(this);
+        m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
+    }
 
 }
 

@@ -49,7 +49,7 @@
 
 namespace hpc {
 
-MainGame::MainGame(): m_pFPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(2.0f), m_Ball(nullptr)
+MainGame::MainGame(): m_FPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(2.0f), m_Ball(nullptr)
 {
 }
 
@@ -66,7 +66,7 @@ MainGame::~MainGame()
     he::net::NetworkObjectFactory<Palet>::getInstance()->destroyAll();
     he::net::NetworkObjectFactory<Ball>::getInstance()->destroyAll();
 
-    delete m_pFPSGraph;
+    delete m_FPSGraph;
 
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeScene(m_Scene);
@@ -158,8 +158,9 @@ void MainGame::load()
     m_Scene->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1, 1, 1), 0.75f);
     m_Scene->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
-    m_pFPSGraph = NEW he::tools::FPSGraph();
-    m_pFPSGraph->setType(he::tools::FPSGraph::Type_ToConsole);
+    m_FPSGraph = NEW he::tools::FPSGraph();
+    m_FPSGraph->setType(he::tools::FPSGraph::Type_ToConsole);
+    m_FPSGraph->setView(m_View);
 
     m_BoardDimension = he::vec2(85, 47);
 
@@ -178,7 +179,7 @@ void MainGame::tick( float dTime )
     he::ge::Game::tick(dTime);
 
     PROFILER_BEGIN("Fps graph");
-    m_pFPSGraph->tick(dTime);
+    m_FPSGraph->tick(dTime);
     PROFILER_END();
 
     if (m_RestartTimer > 0.0f)

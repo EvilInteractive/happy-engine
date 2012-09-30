@@ -77,7 +77,6 @@ MainGame::MainGame()
 MainGame::~MainGame()
 {
     m_DebugMesh->release();
-    m_View2->get2DRenderer()->detachFromRender(m_FpsGraph);
     delete m_FpsGraph;
     delete m_pSkyBox;
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
@@ -176,7 +175,6 @@ void MainGame::load()
     m_FpsGraph->setView(m_View);
     m_FpsGraph->setPos(vec2(8, 8));
     m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
-    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
     m_View->getShapeRenderer()->attachToRenderer(this);
     m_View2->getShapeRenderer()->attachToRenderer(this);

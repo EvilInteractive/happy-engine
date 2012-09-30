@@ -74,7 +74,7 @@ private:
     float m_RestartTime;
     float m_RestartTimer;
 
-    he::tools::FPSGraph* m_pFPSGraph;
+    he::tools::FPSGraph* m_FPSGraph;
 
     he::vec2 m_BoardDimension;
     std::vector<Palet*> m_Palets;
