@@ -47,6 +47,7 @@
 
 #include "Texture2D.h"
 #include "ModelMesh.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace gfx {
@@ -107,7 +108,7 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
     
 
 
-    m_View->get2DRenderer()->attachToRender(this);
+    //m_View->get2DRenderer()->attachToRender(this);
 
     m_pQuad = CONTENT->getFullscreenQuad();
 }
@@ -115,7 +116,7 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 
 Deferred3DRenderer::~Deferred3DRenderer()
 {
-    m_View->get2DRenderer()->detachFromRender(this);
+    //m_View->get2DRenderer()->detachFromRender(this);
 
     m_pColorIllTexture->release();
     m_pSGTexture->release();
@@ -323,17 +324,18 @@ void Deferred3DRenderer::draw()
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
 }
-void Deferred3DRenderer::draw2D(Renderer2D* renderer)
+void Deferred3DRenderer::draw2D(Canvas2D* canvas)
 {
+    /*
     if (m_ShowDebugTextures)
-    {
-        renderer->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
-        renderer->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        renderer->drawTexture2DToScreen(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        renderer->drawTexture2DToScreen(m_CollectionRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+    {*/
+        canvas->getRenderer2D()->drawTexture2DToScreen(m_pColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        canvas->getRenderer2D()->drawTexture2DToScreen(m_pSGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        canvas->getRenderer2D()->drawTexture2DToScreen(m_pNormalTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        canvas->getRenderer2D()->drawTexture2DToScreen(m_CollectionRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
 
-        renderer->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
-    }
+        canvas->getRenderer2D()->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
+    //}
 }
 
 void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)

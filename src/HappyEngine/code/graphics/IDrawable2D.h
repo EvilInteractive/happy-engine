@@ -24,13 +24,15 @@
 
 namespace he {
 namespace gfx {
-class Renderer2D;
-class I2DDrawable
+
+class Canvas2D;
+
+class IDrawable2D
 {
 public:
-    virtual ~I2DDrawable() {};
+    virtual ~IDrawable2D() {};
 
-    virtual void draw2D(Renderer2D* renderer) = 0;
+    virtual void draw2D(Canvas2D* renderer) = 0;
 }; 
 
 } } //end namespace

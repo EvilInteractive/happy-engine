@@ -23,7 +23,7 @@
 #pragma once
 
 #include <typeinfo>
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 
@@ -51,7 +51,7 @@ namespace gfx {
 namespace tools {
 class ITypeHandler;
 
-class Console : public gfx::I2DDrawable
+class Console : public gfx::IDrawable2D
 {
 public:
 
@@ -63,7 +63,7 @@ public:
     void load();
     void tick();
     void setView(const gfx::View* view);
-    virtual void draw2D(gfx::Renderer2D* renderer); // auto called
+    virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
     void addMessage(const std::string& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
@@ -137,7 +137,6 @@ private:
 
     gfx::Font* m_pFont;
 
-    gfx::Canvas2D* m_Canvas2D;
     const gfx::View* m_View;
 
     /* DEFAULT COPY & ASSIGNMENT */

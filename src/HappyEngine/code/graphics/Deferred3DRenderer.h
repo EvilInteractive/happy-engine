@@ -28,7 +28,7 @@
 #include "DrawListContainer.h"
 #include "BufferLayout.h"
 #include "RenderSettings.h"
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -42,7 +42,7 @@ class ModelMesh;
 class RenderTarget;
 class Scene;
 
-class Deferred3DRenderer : public IRenderer, public I2DDrawable
+class Deferred3DRenderer : public IRenderer, public IDrawable2D
 {
 private:
     struct PostPointLightData
@@ -116,7 +116,7 @@ public:
     virtual void init(View* view, const RenderTarget* target);
 
     virtual void draw();
-    virtual void draw2D(Renderer2D* renderer);
+    virtual void draw2D(Canvas2D* canvas);
 
 private:
     static BufferLayout s_VertexLayoutFullscreenQuad;

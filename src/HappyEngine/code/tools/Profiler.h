@@ -22,7 +22,7 @@
 #define _HE_PROFILER_H_
 #pragma once
 
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
     namespace gui {
@@ -48,7 +48,7 @@ private:
 
 struct ProfileData;
 
-class Profiler : public gfx::I2DDrawable
+class Profiler : public gfx::IDrawable2D
 {
 public:
     static Profiler* getInstance();
@@ -60,7 +60,7 @@ public:
     void end();
 
     void setView(gfx::View* view);
-    virtual void draw2D(gfx::Renderer2D* renderer);
+    virtual void draw2D(gfx::Canvas2D* canvas);
     
 private:
     struct ProfileTreeNode;
@@ -77,8 +77,7 @@ private:
 
     ProfileTreeNode* m_CurrentNode;
 
-    gfx::Font* m_pFont;
-    gfx::Canvas2D* m_pCanvas2D;
+    gfx::Font* m_Font;
     gfx::View* m_View;
 
     uint m_Width;

@@ -77,7 +77,7 @@ MainGame::MainGame()
 MainGame::~MainGame()
 {
     m_DebugMesh->release();
-    m_View2->get2DRenderer()->detachFromRender(m_FpsGraph);
+    //m_View2->get2DRenderer()->detachFromRender(m_FpsGraph);
     delete m_FpsGraph;
     delete m_pSkyBox;
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
@@ -102,8 +102,8 @@ void MainGame::init()
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
-    m_View2 = GRAPHICS->createView();
-    m_Window2 = GRAPHICS->createWindow();
+    //m_View2 = GRAPHICS->createView();
+    //m_Window2 = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
     m_Window->setVSync(false);
@@ -130,7 +130,7 @@ void MainGame::load()
 
     settings.shadowSettings.shadowMult = 2;
 
-    settings.postSettings.shaderSettings.enableAO = false;
+    settings.postSettings.shaderSettings.enableAO = true;
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
@@ -144,7 +144,7 @@ void MainGame::load()
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
-
+    /*
 
     m_Window2->setResizable(true);
     m_Window2->setVSync(false);
@@ -156,21 +156,21 @@ void MainGame::load()
     m_View2->setWindow(m_Window2);
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View2->init(settings);
-
+    */
     //CONSOLE->setView(m_View2);
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
     flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
-
+    /*
     FlyCamera* flyCamera2 = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
     flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
-    flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
+    flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));*/
 
     m_View->setCamera("default");
-    m_View2->setCamera("default2");
+   // m_View2->setCamera("default2");
 
     m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setView(m_View);
@@ -178,8 +178,11 @@ void MainGame::load()
     m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
     m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
+    CONSOLE->setView(m_View);
+    //m_View->get2DRenderer()->attachToRender(CONSOLE);
+
     m_View->getShapeRenderer()->attachToRenderer(this);
-    m_View2->getShapeRenderer()->attachToRenderer(this);
+   // m_View2->getShapeRenderer()->attachToRenderer(this);
 
     #pragma endregion
 
@@ -304,6 +307,7 @@ void MainGame::fillDebugMeshes()
 void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
 {
     renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1));
-}
 
+    
+}
 } //end namespace

@@ -25,7 +25,7 @@
 #include "RenderSettings.h"
 #include "DrawListContainer.h"
 #include "DirectionalLight.h"
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -38,7 +38,7 @@ class RenderTarget;
 class View;
 class CameraOrtho;
 
-class ShadowCaster : public I2DDrawable
+class ShadowCaster : public IDrawable2D
 {
 public:
     ShadowCaster();
@@ -48,7 +48,7 @@ public:
     
     void render();
 
-    void draw2D(Renderer2D* renderer);
+    void draw2D(Canvas2D* canvas);
 
 private:
     void onSettingsChanged();

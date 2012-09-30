@@ -52,7 +52,6 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_CmdHistoryPos(0),
                         m_pScrollBar(nullptr),
                         m_Help(nullptr),
-                        m_Canvas2D(nullptr),
                         m_pFont(nullptr),
                         m_View(nullptr)
 {
@@ -115,17 +114,18 @@ void Console::load()
 }
 void Console::setView( const gfx::View* view )
 {
-    if (m_Canvas2D != nullptr)
+    /*
+    if (canvas != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
-        m_View->get2DRenderer()->removeCanvas(m_Canvas2D);
-        m_Canvas2D = nullptr;
-    }
+        m_View->get2DRenderer()->removeCanvas(canvas);
+        canvas = nullptr;
+    }*/
     m_View = view;
     if (view != nullptr)
     {
         m_View->get2DRenderer()->attachToRender(this);
-        m_Canvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
+        //canvas = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));*/
         m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
         m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
     }
@@ -145,16 +145,15 @@ Console::~Console()
     if (m_pFont != nullptr)
         m_pFont->release();
 
+    /*
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
     }
-
+    */
     delete m_pTextBox;
     delete m_pScrollBar;
     delete m_Help;
-    if (m_Canvas2D != nullptr)
-        delete m_Canvas2D;
 }
 
 void Console::processCommand(const std::string& command)
@@ -164,7 +163,7 @@ void Console::processCommand(const std::string& command)
     // remove spaces
     #if !GCC
     s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
-    #else
+    #else // !FIX! will be fixed when work on linux resumed
     #error What if GCC?
     #endif
 
@@ -356,17 +355,17 @@ void Console::tick()
     }
 }
 
-void Console::draw2D(gfx::Renderer2D* renderer)
+void Console::draw2D(gfx::Canvas2D* canvas)
 {
     if (m_bOpen)
     {
-        m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-        m_Canvas2D->fillRect(vec2(0,0), vec2(m_Canvas2D->getSize().x, 200));
+        canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
+        canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
 
-        m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
-        m_Canvas2D->strokeRect(vec2(0,0), vec2(m_Canvas2D->getSize().x, 200));
+        canvas->setStrokeColor(Color(0.19f,0.19f,0.19f));
+        canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
 
-        m_pTextBox->draw(m_Canvas2D);
+        m_pTextBox->draw(canvas);
 
         std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
 
@@ -409,7 +408,7 @@ void Console::draw2D(gfx::Renderer2D* renderer)
         uint k(0);
         std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
         {
-            m_Canvas2D->setFillColor(m_MsgColors[p.first]);
+            canvas->setFillColor(m_MsgColors[p.first]);
 
             text.clear();
             text.addLine(p.second);
@@ -418,15 +417,15 @@ void Console::draw2D(gfx::Renderer2D* renderer)
     //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
 //                            190.0f - (k * m_pFont->getLineSpacing())));
 
-            m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
+            canvas->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
 
             ++k;
         });
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
-            m_pScrollBar->draw(m_Canvas2D);
+            m_pScrollBar->draw(canvas);
 
-        m_Canvas2D->draw2D(renderer);
+        //canvas->draw2D(renderer);
     }
 }
 

@@ -42,8 +42,7 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_pFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 10)),
                         m_FPSGraphState(Type_ToConsole),
                         m_Pos(5.0f, 5.0f),
-                        m_View(nullptr),
-                        m_pCanvas2D(nullptr)
+                        m_View(nullptr)
 {
     CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
 
@@ -54,8 +53,6 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
 FPSGraph::~FPSGraph()
 {
     m_pFont->release();
-    m_View->get2DRenderer()->detachFromRender(this);
-    m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
 }
 
 /* GENERAL */
@@ -77,7 +74,7 @@ void FPSGraph::tick(float dTime, float interval)
     }
 }
 
-void FPSGraph::draw2D(gfx::Renderer2D* renderer)
+void FPSGraph::draw2D(gfx::Canvas2D* canvas)
 {
     HE_IF_ASSERT(m_View != nullptr, "Set view first with setView!")
     if (m_GameTime > m_Interval)
@@ -89,16 +86,16 @@ void FPSGraph::draw2D(gfx::Renderer2D* renderer)
                 break;
             }
             case Type_ToConsole:
-                drawToConsole(renderer);
+                drawToConsole(canvas);
                 break;
             case Type_TextOnly:
             {
-                drawTextOnly(renderer);
+                drawTextOnly(canvas);
                 break;
             }
             case Type_Full:
             {
-                drawFull(renderer);
+                drawFull(canvas);
                 break;
             }
         }
@@ -113,7 +110,7 @@ ushort FPSGraph::cap(float fps)
         return static_cast<ushort>(fps);
 }
 
-void FPSGraph::drawToConsole(gfx::Renderer2D* /*renderer*/)
+void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
 {
     if ((m_GameTime - m_TBase) < FLT_EPSILON)
     {
@@ -121,12 +118,12 @@ void FPSGraph::drawToConsole(gfx::Renderer2D* /*renderer*/)
     }
 }
 
-void FPSGraph::drawTextOnly(gfx::Renderer2D* renderer)
+void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 {
     //GUI->setAntiAliasing(false);
     //GUI->setColor(1.0f,1.0f,1.0f);
 
-    m_pCanvas2D->setFillColor(Color(1.0f,1.0f,1.0f));
+    canvas->setFillColor(Color(1.0f,1.0f,1.0f));
 
     gui::Text txt(m_pFont);
 
@@ -137,13 +134,13 @@ void FPSGraph::drawTextOnly(gfx::Renderer2D* renderer)
     sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
     txt.addLine(std::string(buff));
     
-    m_pCanvas2D->fillRect(m_Pos, vec2(128, 16));
-    m_pCanvas2D->fillText(txt, m_Pos);
+    canvas->fillRect(m_Pos, vec2(128, 16));
+    canvas->fillText(txt, m_Pos);
 
-    m_pCanvas2D->draw2D(renderer);
+    //m_pCanvas2D->draw2D(renderer);
 }
 
-void FPSGraph::drawFull(gfx::Renderer2D* /*renderer*/)
+void FPSGraph::drawFull(gfx::Canvas2D* /*canvas*/)
 {
     //if (m_FpsHistory.size() == 0)
     //    return;
@@ -363,15 +360,17 @@ void FPSGraph::setPos(const vec2& pos)
 
 void FPSGraph::setView( gfx::View* view )
 {
+    /*
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
         m_View->get2DRenderer()->detachFromRender(this);
-    }
+    }*/
     m_View = view;
+    /*
     m_View->get2DRenderer()->attachToRender(this);
     m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
-
+    */
 }
 
 } } //end namespace

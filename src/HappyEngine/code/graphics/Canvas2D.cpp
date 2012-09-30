@@ -35,6 +35,7 @@
 #include "Text.h"
 #include "Font.h"
 #include "GraphicsEngine.h"
+#include "RenderTarget.h"
 
 namespace he {
 namespace gfx {
@@ -125,7 +126,8 @@ Canvas2D::Canvas2D(const RectI& absoluteViewport) :
     m_RelativeViewport(0, 0, 0, 0),
     m_Position(static_cast<float>(absoluteViewport.x), static_cast<float>(absoluteViewport.y)),
     m_CanvasSize(static_cast<float>(absoluteViewport.width), static_cast<float>(absoluteViewport.height)),
-    m_View(nullptr)
+    m_View(nullptr),
+    m_Renderer2D(nullptr)
 {
     init();
 }
@@ -148,7 +150,8 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_Position(view->getViewport().x * relativeViewport.x, view->getViewport().y * relativeViewport.y),
     m_CanvasSize(view->getViewport().width * relativeViewport.width, view->getViewport().height * relativeViewport.height),
     m_View(view),
-    m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this))
+    m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this)),
+    m_Renderer2D(m_View->get2DRenderer())
 {
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();
@@ -347,19 +350,21 @@ void Canvas2D::clear()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Canvas2D::draw2D(Renderer2D* renderer)
+void Canvas2D::draw()
 {
     HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     // blit MS FBO to normal FBO
+    
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pBufferData->fbufferID);
     GL::heBindFbo(m_pBufferData->resolvedFbufferID);
 
     glBlitFramebuffer(  0, 0, (GLint)m_CanvasSize.x, (GLint)m_CanvasSize.y,
                         0, 0, (GLint)m_CanvasSize.x, (GLint)m_CanvasSize.y,
                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                        
 
     Texture2D* tex = ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd);
-    renderer->drawTexture2DToScreen(tex, m_Position);
+    m_Renderer2D->drawTexture2DToScreen(tex, m_Position);
 
     if (m_AutoClear)
     {
@@ -370,6 +375,9 @@ void Canvas2D::draw2D(Renderer2D* renderer)
 void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 {
     HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+
+    //GL::se m_pBufferData->context
+
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(true);
@@ -378,7 +386,8 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
 
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    m_Renderer2D->getRTG()->prepareForRendering();
+    //GL::heBindFbo(m_pBufferData->fbufferID);
 
     m_pBufferMesh->clear();
     m_pBufferMesh->addVertex(pos);
@@ -407,6 +416,7 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
 
+    //m_Renderer2D->getRTG()->prepareForRendering();
     GL::heBindFbo(m_pBufferData->fbufferID);
 
     m_pBufferMesh->clear();
@@ -434,8 +444,11 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     HE_ASSERT(txt.getFont()->isPreCached() == true, "Font needs to be precached!");
 
-    m_pFontEffect->begin();
     Texture2D* tex2D = txt.getFont()->getTextureAtlas();
+    m_Renderer2D->drawTexture2DToScreen(tex2D);
+
+    m_pFontEffect->begin();
+    
     m_pFontEffect->setDiffuseMap(tex2D);
     m_pFontEffect->setFontColor(m_FillColor);
     m_pFontEffect->setDepth(getNewDepth());
@@ -448,7 +461,8 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
 
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    m_Renderer2D->getRTG()->prepareForRendering();
+    //GL::heBindFbo(m_pBufferData->fbufferID);
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());
 
     bool hasBounds(txt.hasBounds());
@@ -592,7 +606,8 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
 
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    m_Renderer2D->getRTG()->prepareForRendering();
+    //GL::heBindFbo(m_pBufferData->fbufferID);
 
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);

@@ -23,7 +23,7 @@
 #pragma once
 
 #include "RenderSettings.h"
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -36,7 +36,7 @@ class ModelMesh;
 class View;
 class RenderTarget;
 
-class PostProcesser : public I2DDrawable
+class PostProcesser : public IDrawable2D
 {
 public:
     PostProcesser();
@@ -47,7 +47,7 @@ public:
     void setFogColor(const he::vec3& color);
 
     void draw();
-    virtual void draw2D(Renderer2D* renderer);
+    virtual void draw2D(Canvas2D* canvas);
 
 private:
     void onSettingsChanged(const RenderSettings& settings, bool force = false);

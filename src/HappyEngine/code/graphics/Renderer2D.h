@@ -30,7 +30,7 @@ class WebView;
 class Canvas2D;
 class Simple2DTextureEffect;
 class ModelMesh;
-class I2DDrawable;
+class IDrawable2D;
 
 class Renderer2D : public IRenderer
 {
@@ -43,6 +43,7 @@ public:
     /* GENERAL */
     Canvas2D* createCanvasAbsolute(const RectI& viewport);
     Canvas2D* createCanvasRelative(const RectF& viewportPercent);
+    Canvas2D* getDefaultCanvas() { return m_DefaultCanvas; }
     void removeCanvas(Canvas2D* canvas);
 
     WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
@@ -55,10 +56,11 @@ public:
                                 const RectF& regionToDraw = RectF());
 
     View* getView() const { return m_View; }
+    const RenderTarget* getRTG() const {return m_RenderTarget;}
 
     /* Attach */
-    void attachToRender(I2DDrawable* drawable);
-    void detachFromRender(I2DDrawable* drawable);
+    void attachToRender(IDrawable2D* drawable);
+    void detachFromRender(IDrawable2D* drawable);
 
     /* IRenderer */
     virtual void init(View* view, const RenderTarget* target);
@@ -72,10 +74,12 @@ private:
 
     std::vector<WebView*> m_WebViews;
     std::vector<Canvas2D*> m_Canvas2Ds;
-    std::vector<I2DDrawable*> m_Drawables;
+    std::vector<IDrawable2D*> m_Drawables;
 
     Simple2DTextureEffect* m_TextureEffect;
     ModelMesh* m_TextureQuad;
+
+    Canvas2D* m_DefaultCanvas;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

@@ -22,7 +22,7 @@
 #define _HE_WEBVIEW_H_
 #pragma once
 
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace Awesomium {
     class WebView;
@@ -32,7 +32,7 @@ namespace he {
 namespace gfx {
 class Texture2D;
 
-class WebView : public I2DDrawable
+class WebView : public IDrawable2D
 {
 public:
 
@@ -42,7 +42,7 @@ public:
     virtual ~WebView();
 
     /* GENERAL */
-    virtual void draw2D(Renderer2D* renderer);
+    virtual void draw2D(Canvas2D* canvas);
     void loadUrl(const std::string& url);   // for web
     void loadFile(const he::Path& path);    // for local
     void excecuteJavaScript(const std::string& script);

@@ -196,6 +196,7 @@ void Font::preCache(bool extendedCharacters)
     });
 
     m_Cached = true;
+    m_TextureAtlas->setLoadFinished();
 }
 
 uint Font::getPixelHeight() const

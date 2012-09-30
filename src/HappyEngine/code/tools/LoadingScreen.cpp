@@ -73,7 +73,7 @@ void LoadingScreen::tick()
     });*/
 }
 
-void LoadingScreen::draw2D(gfx::Renderer2D* renderer)
+void LoadingScreen::draw2D(gfx::Canvas2D* /*canvas*/)
 {
     //GUI->setColor(0.9f,0.9f,0.9f);
 
@@ -93,9 +93,9 @@ void LoadingScreen::draw2D(gfx::Renderer2D* renderer)
     ////GUI->setColor(1.0f,0.1f,0.1f);
     ////GUI->drawText(message, RectF(0,0,(float)GRAPHICS->getScreenWidth(),(float)GRAPHICS->getScreenHeight()),true);
 
-    const RectI& viewport(renderer->getView()->getViewport());
+/*    const RectI& viewport(renderer->getView()->getViewport());
     renderer->drawTexture2DToScreen(m_pLogo, vec2(	viewport.width / 2.0f - m_pLogo->getWidth() / 2.0f,
-                                                    viewport.height / 2.0f - m_pLogo->getHeight() / 2.0f));
+                                                    viewport.height / 2.0f - m_pLogo->getHeight() / 2.0f));*/
 
     //gui::Text loading("HAPPY ENGINE // LOADING", m_pFontLoading);
     //loading.setHorizontalAlignment(gui::Text::HAlignment_Left);

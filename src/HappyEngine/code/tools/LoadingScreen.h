@@ -22,7 +22,7 @@
 #define _HE_LOADING_SCREEN_H_
 #pragma once
 
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -31,7 +31,7 @@ namespace gfx {
 }
 namespace tools {
 
-class LoadingScreen : public gfx::I2DDrawable
+class LoadingScreen : public gfx::IDrawable2D
 {
 public:
 
@@ -41,7 +41,7 @@ public:
 
     /* GENERAL */
     void tick();
-    virtual void draw2D(gfx::Renderer2D* renderer);
+    virtual void draw2D(gfx::Canvas2D* canvas);
 
 private:
 

@@ -25,6 +25,7 @@
 #include "InstancingManager.h"
 #include "ContentManager.h"
 #include "Renderer2D.h"
+#include "Canvas2D.h"
 #include "CameraManager.h"
 #include "LightManager.h"
 #include "ShaderVar.h"
@@ -56,7 +57,7 @@ ShadowCaster::ShadowCaster(): m_ShowShadowDebug(true), m_ShadowSize(0), m_pQuad(
 
 ShadowCaster::~ShadowCaster()
 {
-    m_View->get2DRenderer()->detachFromRender(this);
+    //m_View->get2DRenderer()->detachFromRender(this);
     for (int i = 0; i < COUNT; ++i)
     {
         if (m_ShadowTexture[i] != nullptr)
@@ -83,7 +84,7 @@ ShadowCaster::~ShadowCaster()
 void ShadowCaster::init(View* view)
 {
     m_View = view;
-    m_View->get2DRenderer()->attachToRender(this);
+    //m_View->get2DRenderer()->attachToRender(this);
 
     m_RenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
 
@@ -352,20 +353,20 @@ void ShadowCaster::render()
 
 }
 
-void ShadowCaster::draw2D( Renderer2D* renderer )
+void ShadowCaster::draw2D(Canvas2D* canvas)
 {
     const Scene* scene(m_View->getScene());
     DirectionalLight* directionalLight(scene->getLightManager()->getDirectionalLight());
     if (m_ShowShadowDebug)
     {
         if (directionalLight->getShadowMap(0) != nullptr)
-            renderer->drawTexture2DToScreen(directionalLight->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), false, vec2(256, 256));
+            canvas->getRenderer2D()->drawTexture2DToScreen(directionalLight->getShadowMap(0), vec2(12 * 1 + 256 * 0, 12*3 + 144*2), false, vec2(256, 256));
         if (directionalLight->getShadowMap(1) != nullptr)
-            renderer->drawTexture2DToScreen(directionalLight->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), false, vec2(256, 256));
+            canvas->getRenderer2D()->drawTexture2DToScreen(directionalLight->getShadowMap(1), vec2(12 * 2 + 256 * 1, 12*3 + 144*2), false, vec2(256, 256));
         if (directionalLight->getShadowMap(2) != nullptr)
-            renderer->drawTexture2DToScreen(directionalLight->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), false, vec2(256, 256));
+            canvas->getRenderer2D()->drawTexture2DToScreen(directionalLight->getShadowMap(2), vec2(12 * 3 + 256 * 2, 12*3 + 144*2), false, vec2(256, 256));
         if (directionalLight->getShadowMap(3) != nullptr)
-            renderer->drawTexture2DToScreen(directionalLight->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), false, vec2(256, 256));
+            canvas->getRenderer2D()->drawTexture2DToScreen(directionalLight->getShadowMap(3), vec2(12 * 4 + 256 * 3, 12*3 + 144*2), false, vec2(256, 256));
     }
 }
 

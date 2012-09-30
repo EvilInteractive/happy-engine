@@ -68,12 +68,12 @@ struct Profiler::ProfileTreeNode
     }
 };
 
-Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_pCanvas2D(nullptr), m_View(nullptr)
+Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_Font(nullptr), m_View(nullptr)
 {
 }
 void Profiler::load()
 {
-    m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
+    m_Font = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
 }
 
 
@@ -81,13 +81,12 @@ void Profiler::load()
 Profiler::~Profiler()
 {
     if (m_View != nullptr)
-    {
+    {/*
         m_View->get2DRenderer()->detachFromRender(this);
-        m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
+        m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);*/
     }
-    if (m_pFont != nullptr)
-        m_pFont->release();
-    delete m_pCanvas2D;
+    if (m_Font != nullptr)
+        m_Font->release();
 }
 
 Profiler* Profiler::getInstance()
@@ -149,7 +148,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
     stream << "+ " + node.m_Name << buff;
     text.addLine(stream.str());
 
-    uint textWidth(static_cast<uint>(m_pFont->getStringWidth(stream.str())));
+    uint textWidth(static_cast<uint>(m_Font->getStringWidth(stream.str())));
     if (textWidth > m_Width)
         m_Width = textWidth;
 
@@ -158,12 +157,12 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
         drawProfileNode(treeNodePair.second, text, treeDepth + 1);
     });
 }
-void Profiler::draw2D(gfx::Renderer2D* renderer)
+void Profiler::draw2D(gfx::Canvas2D* canvas)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Width = 0;
     
-    gui::Text text(m_pFont);
+    gui::Text text(m_Font);
     text.addLine("----PROFILER------------------------------");
     std::for_each(m_Data.cbegin(), m_Data.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
     {     
@@ -171,27 +170,29 @@ void Profiler::draw2D(gfx::Renderer2D* renderer)
     });
     text.addLine("------------------------------------------");
 
-    float y((float)(text.getText().size() * m_pFont->getLineSpacing()));
+    float y((float)(text.getText().size() * m_Font->getLineSpacing()));
 
-    m_pCanvas2D->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
-    m_pCanvas2D->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
+    canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
+    canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
-    m_pCanvas2D->setFillColor(Color(1.0f, 1.0f, 1.0f));
-    m_pCanvas2D->fillText(text, vec2(4, 4));
+    canvas->setFillColor(Color(1.0f, 1.0f, 1.0f));
+    canvas->fillText(text, vec2(4, 4));
 
-    m_pCanvas2D->draw2D(renderer);
+    //m_pCanvas2D->draw2D(renderer);
 }
 
 void Profiler::setView( gfx::View* view )
 {
+    /*
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
         m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
-    }
+    }*/
     m_View = view;
+    /*
     m_View->get2DRenderer()->attachToRender(this);
-    m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
+    m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));*/
 }
 
 } } //end namespace

@@ -36,7 +36,7 @@
 #include "RenderTarget.h"
 #include "Texture2D.h"
 #include "View.h"
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -45,12 +45,15 @@ Renderer2D::Renderer2D() :
                             m_TextureEffect(NEW Simple2DTextureEffect()),
                             m_TextureQuad(nullptr),
                             m_View(nullptr),
-                            m_RenderTarget(nullptr)
+                            m_RenderTarget(nullptr),
+                            m_DefaultCanvas(nullptr)
 {
 }
 
 Renderer2D::~Renderer2D()
 {
+    removeCanvas(m_DefaultCanvas);
+
     delete m_TextureEffect;
     m_TextureQuad->release();
 }
@@ -107,12 +110,14 @@ void Renderer2D::removeWebView( WebView* webview )
 
 void Renderer2D::draw()
 {
-    m_RenderTarget->prepareForRendering(1);
+    m_RenderTarget->prepareForRendering();
 
-    std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](I2DDrawable* drawable)
+    std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](IDrawable2D* drawable)
     {
-        drawable->draw2D(this);
+        drawable->draw2D(m_DefaultCanvas);
     });
+
+    m_DefaultCanvas->draw();
 }
 
 void Renderer2D::init( View* view, const RenderTarget* target )
@@ -154,6 +159,8 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_TextureQuad->setLoaded();
+
+    m_DefaultCanvas = createCanvasRelative(RectF(0,0,1,1));
 }
 
 void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
@@ -217,14 +224,14 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
 
-void Renderer2D::attachToRender( I2DDrawable* drawable )
+void Renderer2D::attachToRender(IDrawable2D* drawable)
 {
     m_Drawables.push_back(drawable);
 }
 
-void Renderer2D::detachFromRender( I2DDrawable* drawable )
+void Renderer2D::detachFromRender(IDrawable2D* drawable)
 {
-    std::vector<I2DDrawable*>::iterator it(std::find(m_Drawables.begin(), m_Drawables.end(), drawable));
+    std::vector<IDrawable2D*>::iterator it(std::find(m_Drawables.begin(), m_Drawables.end(), drawable));
     HE_IF_ASSERT(it != m_Drawables.end(), "drawable not found in draw list")
     {
         *it = m_Drawables.back();

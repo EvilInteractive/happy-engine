@@ -22,8 +22,6 @@
 #define _HE_CANVAS2D_H_
 #pragma once
 
-#include "I2DDrawable.h"
-
 namespace he {
 namespace gfx {
 class View;
@@ -34,7 +32,7 @@ class Simple2DFontEffect;
 class ModelMesh;
 class Texture2D;
 
-class Canvas2D : public I2DDrawable
+class Canvas2D
 {
 public:
 
@@ -86,6 +84,8 @@ public:
     Data* getData() const;
     const vec2& getSize() const { return m_CanvasSize; }
 
+    Renderer2D* getRenderer2D() const { return m_Renderer2D; }
+
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
     void setFillColor(const Color& newColor);
@@ -99,7 +99,7 @@ public:
     
     /* DRAW METHODS */
     void clear();
-    virtual void draw2D(Renderer2D* renderer);
+    virtual void draw();
 
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
@@ -159,6 +159,8 @@ private:
     float m_PixelDepth;
 
     bool m_AutoClear;
+
+    Renderer2D* m_Renderer2D;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

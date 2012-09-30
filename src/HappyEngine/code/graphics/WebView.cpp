@@ -24,6 +24,7 @@
 #include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
 #include "Awesomium/WebCore.h"
+#include "Canvas2D.h"
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "Texture2D.h"
@@ -201,7 +202,7 @@ WebView::~WebView()
 }
 
 /* GENERAL */
-void WebView::draw2D(Renderer2D* renderer)
+void WebView::draw2D(Canvas2D* canvas)
 {
     if (m_WebView->surface())
     {
@@ -218,7 +219,7 @@ void WebView::draw2D(Renderer2D* renderer)
         }
     }
 
-    renderer->drawTexture2DToScreen(m_pRenderTexture, m_Position);
+    canvas->getRenderer2D()->drawTexture2DToScreen(m_pRenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)

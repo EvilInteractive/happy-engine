@@ -24,7 +24,7 @@
 
 #define BOOST_DISABLE_ASSERTS
 
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -34,7 +34,7 @@ namespace gfx {
 }
 namespace tools {
 
-class FPSGraph : public gfx::I2DDrawable
+class FPSGraph : public gfx::IDrawable2D
 {
 public:
     enum Type
@@ -52,7 +52,7 @@ public:
     /* GENERAL */
     void setView(gfx::View* view);
     void tick(float dTime, float interval = 0.5f);
-    virtual void draw2D(gfx::Renderer2D* renderer);
+    virtual void draw2D(gfx::Canvas2D* canvas);
 
     /* GETTERS */
     ushort getMaxFPS() const;
@@ -66,9 +66,9 @@ public:
 private:
 
     ushort cap(float fps);
-    void drawToConsole(gfx::Renderer2D* renderer);
-    void drawTextOnly(gfx::Renderer2D* renderer);
-    void drawFull(gfx::Renderer2D* renderer);
+    void drawToConsole(gfx::Canvas2D* canvas);
+    void drawTextOnly(gfx::Canvas2D* canvas);
+    void drawFull(gfx::Canvas2D* canvas);
 
     /* DATAMEMBERS */
     std::vector<ushort> m_FpsHistory;
@@ -86,8 +86,6 @@ private:
     int m_FPSGraphState;
 
     vec2 m_Pos;
-
-    gfx::Canvas2D* m_pCanvas2D;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

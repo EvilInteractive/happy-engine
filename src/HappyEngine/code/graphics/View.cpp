@@ -128,11 +128,15 @@ void View::init( const RenderSettings& settings )
     m_ShapeRenderer->init(this, m_IntermediateRenderTarget);
 
     if (settings.enableDeferred)
-        m_OpacRenderer = NEW Deferred3DRenderer();
+    {
+        Deferred3DRenderer* d3d;
+        m_OpacRenderer = d3d = NEW Deferred3DRenderer();
+        m_2DRenderer->attachToRender(d3d);
+    }
     else
         m_OpacRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Opac);
     m_OpacRenderer->init(this, m_IntermediateRenderTarget);
-
+   
     m_TransparentRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Blend);
     m_TransparentRenderer->init(this, m_IntermediateRenderTarget);
 
