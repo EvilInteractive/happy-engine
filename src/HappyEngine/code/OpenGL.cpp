@@ -101,11 +101,11 @@ uint GL::heGetBoundFbo()
 }
 void GL::heBindVao(uint vao)
 {
-    /*if (m_BoundVao != vao)
-    {*/
+    if (s_CurrentContext->m_BoundVao != vao)
+    {
         s_CurrentContext->m_BoundVao = vao;
         glBindVertexArray(vao);
-    //}
+    }
 }
 void GL::heBindTexture2D(uint samplerPos, uint tex)
 {

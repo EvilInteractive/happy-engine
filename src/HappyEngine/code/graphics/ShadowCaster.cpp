@@ -324,23 +324,23 @@ void ShadowCaster::render()
     //////////////////////////////////////////////////////////////////////////
     //                                 Blur                                 //
     //////////////////////////////////////////////////////////////////////////
-//     GL::heSetDepthWrite(false);
-//     GL::heSetDepthRead(false);
-//     m_pShadowBlurShaderPass[0]->bind();
-//     GL::heBindVao(m_pQuad->getVertexShadowArraysID());
-//     for (int i(1); i < COUNT; ++i)
-//     {      
-//         m_RenderTarget->prepareForRendering(1, i - 1);
-//         m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_ShadowTexture[i]);
-//         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-//     }
-//     m_pShadowBlurShaderPass[1]->bind();
-//     for (int i(COUNT - 1); i >= 1; --i)
-//     {         
-//         m_RenderTarget->prepareForRendering(1, i);
-//         m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_ShadowTexture[i - 1]);
-//         glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
-//     }
+    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(false);
+    m_pShadowBlurShaderPass[0]->bind();
+    GL::heBindVao(m_pQuad->getVertexShadowArraysID());
+    for (int i(1); i < COUNT; ++i)
+    {      
+        m_RenderTarget->prepareForRendering(1, i - 1);
+        m_pShadowBlurShaderPass[0]->setShaderVar(m_BlurShaderTexPosPass[0], m_ShadowTexture[i]);
+        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+    }
+    m_pShadowBlurShaderPass[1]->bind();
+    for (int i(COUNT - 1); i >= 1; --i)
+    {         
+        m_RenderTarget->prepareForRendering(1, i);
+        m_pShadowBlurShaderPass[1]->setShaderVar(m_BlurShaderTexPosPass[1], m_ShadowTexture[i - 1]);
+        glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+    }
 
     for (int i(0); i < COUNT - 1; ++i)
     {

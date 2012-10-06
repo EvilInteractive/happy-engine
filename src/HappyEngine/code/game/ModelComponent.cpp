@@ -32,7 +32,7 @@
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr), m_IsDynamic(false), m_IsAttached(false)
+ModelComponent::ModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr), m_IsAttached(false)
 {
 }
 
@@ -57,7 +57,7 @@ void ModelComponent::init(Entity* parent)
         m_IsAttached = true;
         m_ModelMesh->callbackOnceIfLoaded([&]()
         {
-            m_Parent->getScene()->attachToScene(this, m_IsDynamic);
+            m_Parent->getScene()->attachToScene(this);
         });
     }
 }
@@ -102,16 +102,10 @@ void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, 
 
         if (m_IsAttached == false && m_Parent != nullptr)
         {
-            m_Parent->getScene()->attachToScene(this, m_IsDynamic);
+            m_Parent->getScene()->attachToScene(this);
             m_IsAttached = true;
         }
     });
-}
-
-
-bool ModelComponent::isSleeping() const
-{
-    return m_Parent->isSleeping();
 }
 
 } } //end namespace

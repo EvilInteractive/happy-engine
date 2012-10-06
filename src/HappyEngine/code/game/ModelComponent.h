@@ -39,7 +39,7 @@ public:
     virtual ~ModelComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         EntityComponent                                 ///
+    ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* parent);
 
@@ -56,15 +56,11 @@ public:
     //////////////////////////////////////////////////////////////////////////
        
     void setModelMeshAndMaterial(const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName = "");
-    void setDynamic(bool dynamic) { m_IsDynamic = dynamic; } // call before init
-
-    virtual bool isSleeping() const;
 
 protected:
     Entity* m_Parent;
 
 private:
-    bool m_IsDynamic;
     bool m_IsAttached;
 
     gfx::ModelMesh* m_ModelMesh;
@@ -73,17 +69,6 @@ private:
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);
     ModelComponent& operator=(const ModelComponent&);
-};
-
-class StaticModelComponent : public ModelComponent
-{
-    virtual bool isDynamic() const { return false; };
-    virtual bool isSleeping() const { return true; }; 
-};
-class DynamicModelComponent : public ModelComponent
-{
-    virtual bool isDynamic() const { return true; };
-    virtual bool isSleeping() const; 
 };
 
 } } //end namespace

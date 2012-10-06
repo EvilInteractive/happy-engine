@@ -38,9 +38,8 @@ const mat44& Object3D::getLocalMatrix() const
 {
     if (m_LocalMatrixDirty)
     {
-        Object3D* _this(const_cast<Object3D*>(this)); // const_cast explanation see getWorldMatrix
-        _this->m_LocalMatrix = mat44::createWorld(m_LocalTranslate, m_LocalRotation, m_LocalScale);
-        _this->m_LocalMatrixDirty = 0;
+        m_LocalMatrix = mat44::createWorld(m_LocalTranslate, m_LocalRotation, m_LocalScale);
+        m_LocalMatrixDirty = 0;
     }
     return m_LocalMatrix;
 }
@@ -49,13 +48,12 @@ const mat44& Object3D::getWorldMatrix() const
 {
     if (m_WorldMatrixDirty)
     {
-        Object3D* _this(const_cast<Object3D*>(this)); // this const_cast is ugly I know, 
-        _this->m_WorldMatrixDirty = 0;                // but otherwise we can't use const anywhere where we want to use getWorldMatrix()..
-        _this->calculateWorldMatrix();                // and that would be even uglier
+        m_WorldMatrixDirty = 0;
+        calculateWorldMatrix();
     }
     return m_WorldMatrix;
 }
-void Object3D::calculateWorldMatrix()
+void Object3D::calculateWorldMatrix() const
 {
     if (m_Parent != nullptr)
         m_WorldMatrix = m_Parent->getWorldMatrix() * getLocalMatrix();

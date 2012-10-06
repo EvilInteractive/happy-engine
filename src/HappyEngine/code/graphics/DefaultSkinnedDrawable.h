@@ -51,7 +51,7 @@ public:
     virtual void drawShadow();
 
     virtual void detachFromScene();
-    virtual void attachToScene(Scene* scene, bool dynamic);
+    virtual void attachToScene(Scene* scene);
     virtual void setScene(Scene* scene);
     virtual Scene* getScene() const;
     virtual bool isAttachedToScene() const;

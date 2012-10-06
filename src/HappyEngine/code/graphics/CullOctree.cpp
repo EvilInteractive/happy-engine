@@ -295,7 +295,8 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
             m_ChildNodes[i]->draw(camera, drawFunction, checkChilderen);
         }
     }
-    std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
+    if (m_ObjectChilds.empty() == false)
+        std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
 }
 
 bool CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 

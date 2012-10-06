@@ -51,7 +51,7 @@
 #include "MessageBox.h"
 
 #define CONE_VERTICES 16
-#define NUM_MOVING_ENTITIES 50
+#define NUM_MOVING_ENTITIES 200
 
 namespace ht {
 
@@ -62,6 +62,7 @@ MainGame::MainGame()
     , m_pSkyBox(nullptr)
     , m_SpinShadows(false)
     , m_MovingEntityFase(0)
+    , m_ShowDebugMesh(true)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -130,7 +131,7 @@ void MainGame::load()
     settings.shadowSettings.shadowMult = 2;
 
     settings.postSettings.shaderSettings.enableAO = false;
-    settings.postSettings.shaderSettings.enableBloom = true;
+    settings.postSettings.shaderSettings.enableBloom = false;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
     settings.postSettings.shaderSettings.enableHDR = false;
@@ -202,11 +203,16 @@ void MainGame::load()
         ge::Entity* entity(NEW he::ge::Entity());
         entity->init(m_Scene);
         modelComp = NEW ge::ModelComponent();
-        modelComp->setDynamic(true);
         modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
         entity->addComponent(modelComp);
         m_MovingEntityList.push_back(entity);
         m_EntityList.push_back(entity);
+
+        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+        m_MovingEntityList[i]->setLocalTranslate(
+            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+                        pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+                        pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
     }
 
     #pragma endregion
@@ -249,6 +255,8 @@ void MainGame::load()
     #pragma endregion
     
     he::MessageBox::show("Load Completed", "Success!");
+
+    PROFILER->enable();
 }
 
 void MainGame::tick( float dTime )
@@ -259,14 +267,14 @@ void MainGame::tick( float dTime )
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
 
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    {
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
+//     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+//     {
+//         const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+//         m_MovingEntityList[i]->setLocalTranslate(
+//             he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+//                      pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+//                      pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+//     }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;
@@ -277,7 +285,8 @@ void MainGame::tick( float dTime )
         m_Scene->getLightManager()->getDirectionalLight()->setDirection(
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
-    fillDebugMeshes();
+    if (m_ShowDebugMesh)
+        fillDebugMeshes();
     m_FpsGraph->tick(dTime);
 }
 

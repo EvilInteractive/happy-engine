@@ -50,15 +50,21 @@ public:
     virtual void drawShadow();
 
     virtual void detachFromScene();
-    virtual void attachToScene(Scene* scene, bool dynamic);
+    virtual void attachToScene(Scene* scene);
     virtual void setScene(Scene* scene);
     virtual Scene* getScene() const;
     virtual bool isAttachedToScene() const;
+
+    virtual void nodeReevaluated() { m_NeedsReevalute = false; }
+    
+protected:
+    virtual void setWorldMatrixDirty(byte cause);
     
 private:
     bool m_CastsShadow;
     Scene* m_Scene;
     Bound m_Bound;
+    bool m_NeedsReevalute;
 
     //Disable default copy constructor and default assignment operator
     DefaultSingleDrawable(const DefaultSingleDrawable&);

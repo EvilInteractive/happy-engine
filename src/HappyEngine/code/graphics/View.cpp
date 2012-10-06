@@ -228,7 +228,6 @@ void View::draw()
         m_DebugVertices.clear();
 
         m_Window->prepareForRendering();
-        GL::reset();
         m_Scene->prepareForRendering();
         GRAPHICS->setActiveView(this);
         m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);

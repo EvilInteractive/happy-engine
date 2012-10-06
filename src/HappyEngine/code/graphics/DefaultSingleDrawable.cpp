@@ -29,7 +29,11 @@
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))), m_Scene(nullptr)
+DefaultSingleDrawable::DefaultSingleDrawable()
+    : m_CastsShadow(true)
+    , m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
+    , m_Scene(nullptr)
+    , m_NeedsReevalute(false)
 {
 }
 
@@ -81,12 +85,12 @@ void DefaultSingleDrawable::detachFromScene()
     }
 }
 
-void DefaultSingleDrawable::attachToScene( Scene* scene, bool dynamic )
+void DefaultSingleDrawable::attachToScene( Scene* scene )
 {
     HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
     {
         m_Scene = scene;
-        m_Scene->attachToScene(this, dynamic);
+        m_Scene->attachToScene(this);
     }
 }
 
@@ -113,12 +117,22 @@ const Bound& DefaultSingleDrawable::getBound() const
 void DefaultSingleDrawable::calculateBound()
 {
     HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
-    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octtree insertion will happen!");
+    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octree insertion will happen!");
     const AABB& aabb(getModelMesh()->getBound().getAABB());
     mat44 world(getWorldMatrix());
     AABB newAABB(world * aabb.getTopFrontLeft(),
                  world * aabb.getBottomBackRight());
     m_Bound.fromAABB(newAABB);
+}
+
+void DefaultSingleDrawable::setWorldMatrixDirty( byte cause )
+{
+    SingleDrawable::setWorldMatrixDirty(cause);
+    if (m_NeedsReevalute == false && isAttachedToScene())
+    {
+        m_NeedsReevalute = true;
+        m_Scene->doReevalute(this);
+    }
 }
 
 } } //end namespace

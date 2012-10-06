@@ -53,13 +53,11 @@ void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter
             blend = BlendFilter_Opac;
     }
 }
-void DrawListContainer::insert( IDrawable* drawable, bool autoReevalute )
+void DrawListContainer::insert( IDrawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);
     m_DrawList[blend]->insert(drawable);
-    if (autoReevalute)
-        m_Dynamics.push_back(drawable);
 }
 
 void DrawListContainer::remove( IDrawable* drawable )
@@ -90,16 +88,18 @@ void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera
 void DrawListContainer::prepareForRendering()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    std::for_each(m_Dynamics.cbegin(), m_Dynamics.cend(), [&](IDrawable* drawable)
+    if (m_Dynamics.empty() == false)
     {
-        if (drawable->isSleeping() == false)
+        std::for_each(m_Dynamics.cbegin(), m_Dynamics.cend(), [&](IDrawable* drawable)
         {
             BlendFilter blend;
             getContainerIndex(drawable, blend);
             drawable->calculateBound();
             m_DrawList[blend]->reevaluate(drawable);
-        }
-    });
+            drawable->nodeReevaluated();
+        });
+        m_Dynamics.clear();
+    }
 }
 
 void DrawListContainer::forceReevalute( IDrawable* drawable )
@@ -107,6 +107,11 @@ void DrawListContainer::forceReevalute( IDrawable* drawable )
     BlendFilter blend;
     getContainerIndex(drawable, blend);  
     m_DrawList[blend]->reevaluate(drawable);
+}
+
+void DrawListContainer::doReevalute( IDrawable* drawable )
+{
+    m_Dynamics.push_back(drawable);
 }
 
 } } //end namespace

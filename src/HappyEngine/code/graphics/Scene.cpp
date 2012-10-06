@@ -52,10 +52,15 @@ void Scene::forceReevalute( IDrawable* drawable )
     m_DrawList.forceReevalute(drawable);
 }
 
-void Scene::attachToScene( IDrawable* drawable, bool autoReevaluate )
+void Scene::doReevalute( IDrawable* drawable )
+{
+    m_DrawList.doReevalute(drawable);
+}
+
+void Scene::attachToScene( IDrawable* drawable )
 {
     drawable->calculateBound();
-    m_DrawList.insert(drawable, autoReevaluate);
+    m_DrawList.insert(drawable);
     drawable->setScene(this);
 }
 

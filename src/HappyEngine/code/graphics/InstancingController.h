@@ -61,15 +61,13 @@ public:
     virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
 
     virtual void detachFromScene();
-    // autoReevalute is ignored here, it is custom handled
-    virtual void attachToScene(Scene* scene, bool autoReevalute = false);
+    virtual void attachToScene(Scene* scene);
     virtual void setScene(Scene* scene);
     virtual Scene* getScene() const;
     virtual bool isAttachedToScene() const;
 
     virtual void calculateBound();
     virtual const Bound& getBound() const { return m_Bound; }
-    virtual bool isSleeping() const { return false; }; // is force handled in code
 
     virtual const ModelMesh* getModelMesh() const;
 
