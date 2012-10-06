@@ -88,7 +88,7 @@ struct Profiler::ProfileTreeNode
     }
 };
 
-Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_Canvas2D(nullptr), m_View(nullptr), m_State(Disabled)
+Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_View(nullptr), m_State(Disabled)
 {
     s_Stream.precision(2);
 }
@@ -104,11 +104,9 @@ Profiler::~Profiler()
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
-        m_View->get2DRenderer()->removeCanvas(m_Canvas2D);
     }
     if (m_pFont != nullptr)
         m_pFont->release();
-    delete m_Canvas2D;
 }
 
 Profiler* Profiler::getInstance()
@@ -210,7 +208,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
         drawProfileNode(treeNodePair.second, text, treeDepth + 1);
     });
 }
-void Profiler::draw2D(gfx::Renderer2D* renderer)
+void Profiler::draw2D(gfx::Canvas2D* canvas)
 {
     if (m_State == Disabled)
         return;
@@ -228,13 +226,11 @@ void Profiler::draw2D(gfx::Renderer2D* renderer)
 
     float y((float)(text.getText().size() * m_pFont->getLineSpacing()));
 
-    m_Canvas2D->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
-    m_Canvas2D->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
+    canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
+    canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
-    m_Canvas2D->setFillColor(Color(1.0f, 1.0f, 1.0f));
-    m_Canvas2D->fillText(text, vec2(4, 4));
-
-    m_Canvas2D->draw2D(renderer);
+    canvas->setFillColor(Color(1.0f, 1.0f, 1.0f));
+    canvas->fillText(text, vec2(4, 4));
 }
 
 void Profiler::setView( gfx::View* view )
@@ -242,11 +238,9 @@ void Profiler::setView( gfx::View* view )
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
-        m_View->get2DRenderer()->removeCanvas(m_Canvas2D);
     }
     m_View = view;
     m_View->get2DRenderer()->attachToRender(this);
-    m_Canvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));
 }
 
 void Profiler::enable()

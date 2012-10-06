@@ -22,7 +22,7 @@
 #define _HE_PROFILER_H_
 #pragma once
 
-#include "I2DDrawable.h"
+#include "IDrawable2D.h"
 
 namespace he {
     namespace gui {
@@ -48,7 +48,7 @@ private:
 
 struct ProfileData;
 
-class Profiler : public gfx::I2DDrawable
+class Profiler : public gfx::IDrawable2D
 {
     struct ProfileTreeNode;
 public:
@@ -68,7 +68,7 @@ public:
     bool isEnabled() { return m_State != Disabled; }
 
     void setView(gfx::View* view);
-    virtual void draw2D(gfx::Renderer2D* renderer);
+    virtual void draw2D(gfx::Canvas2D* canvas);
     
     typedef std::unordered_map<std::string, ProfileTreeNode> DataMap;
 private:
@@ -88,7 +88,6 @@ private:
     ProfileTreeNode* m_CurrentNode;
 
     gfx::Font* m_pFont;
-    gfx::Canvas2D* m_Canvas2D;
     gfx::View* m_View;
 
     enum State

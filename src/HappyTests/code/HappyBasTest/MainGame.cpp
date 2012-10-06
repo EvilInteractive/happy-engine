@@ -177,6 +177,8 @@ void MainGame::load()
     m_FpsGraph->setPos(vec2(8, 8));
     m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
 
+    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
+
     CONSOLE->setView(m_View);
     //m_View->get2DRenderer()->attachToRender(CONSOLE);
 

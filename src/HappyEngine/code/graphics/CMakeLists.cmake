@@ -5,7 +5,7 @@ set (CODE_GRAPHICS_NO_FILTER
             DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
             Hitregion.cpp                       Hitregion.h
             GLContext.h
-            I2DDrawable.h
+            IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h
             IDrawable.h    
