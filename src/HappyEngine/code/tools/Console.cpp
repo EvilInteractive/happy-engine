@@ -426,6 +426,8 @@ void Console::draw2D(gfx::Canvas2D* canvas)
             m_pScrollBar->draw(canvas);
 
         //canvas->draw2D(renderer);
+
+//        canvas->drawLineAA(vec2(200,200), vec2(500,600));
     }
 }
 

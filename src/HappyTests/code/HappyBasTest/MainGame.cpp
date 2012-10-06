@@ -87,10 +87,10 @@ MainGame::~MainGame()
 
     CONSOLE->setView(nullptr);
     GRAPHICS->removeView(m_View);
-    GRAPHICS->removeView(m_View2);
+    //GRAPHICS->removeView(m_View2);
 
     GRAPHICS->removeWindow(m_Window);
-    GRAPHICS->removeWindow(m_Window2);
+    //GRAPHICS->removeWindow(m_Window2);
 
     m_Scene->getCameraManager()->deleteAllCameras();
     GRAPHICS->removeScene(m_Scene);

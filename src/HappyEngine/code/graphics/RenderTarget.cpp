@@ -136,7 +136,7 @@ void RenderTarget::prepareForRendering() const
     prepareForRendering(m_DrawBufferCount);
 }
 
-void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset ) const
+void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset) const
 {
     HE_ASSERT(m_Context == GL::s_CurrentContext, "Access violation: wrong context is bound!");
     GL::heBindFbo(m_FboId);

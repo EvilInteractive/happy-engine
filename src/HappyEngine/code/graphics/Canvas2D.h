@@ -123,7 +123,8 @@ private:
 
     void viewResized();
     void resize(const vec2& newSize);
-    eventCallback0<void> m_ViewResizedHandler;
+    
+    //void drawLineAA(const vec2& pos1, const vec2& pos2);
 
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
@@ -161,6 +162,8 @@ private:
     bool m_AutoClear;
 
     Renderer2D* m_Renderer2D;
+
+    eventCallback0<void> m_ViewResizedHandler;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

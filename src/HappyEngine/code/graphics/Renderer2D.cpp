@@ -205,7 +205,7 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffect->setTCOffset(tcOffset);
     m_TextureEffect->setTCScale(tcScale);
     m_TextureEffect->setDepth(0.0f);
-
+    
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
