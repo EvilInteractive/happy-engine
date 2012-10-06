@@ -102,7 +102,7 @@ void MainGame::load()
 
     settings.shadowSettings.shadowMult = 2;
 
-    settings.postSettings.shaderSettings.enableAO = false;
+    settings.postSettings.shaderSettings.enableAO = true;
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;

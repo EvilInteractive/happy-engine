@@ -25,8 +25,11 @@
 #include "ICamera.h"
 #include "Cone.h"
 
+
 namespace he {
 namespace gfx {
+
+//#define OCTREE_PARANOID
 
 const float CullOctree::s_MinLeaveSize = 1.0f;
 
@@ -140,7 +143,9 @@ CullOctreeNode* CullOctreeNode::rootInsert( IDrawable* drawable )
     if (drawableBound.getSphere().getRadius() <= m_StrictBound.getSphere().getRadius() &&
         m_StrictBound.getAABB().isOtherInside(drawableBound.getSphere().getPosition()))
     {
+#ifdef OCTREE_PARANOID
         HE_ASSERT(m_LooseBound.isOtherInside(drawableBound), "Object not completely in loose bound!");
+#endif
         insert(drawable);
         return this;
     }
@@ -175,14 +180,18 @@ void CullOctreeNode::insert( IDrawable* drawable )
             for (uint i(0); i < 8; ++i)
             {
                 const Bound& strictBound(m_ChildNodes[i]->getStrictBound());
-                const Bound& looseBound(m_ChildNodes[i]->getLooseBound());
                 if (strictBound.getAABB().isOtherInside(drawableBound.getSphere().getPosition()) == false)
                     continue; // maybe it is in an other child
+#ifdef OCTREE_PARANOID
+                const Bound& looseBound(m_ChildNodes[i]->getLooseBound());
                 HE_ASSERT(looseBound.isOtherInside(drawableBound), "Object not completely in loose bound!");
+#endif OCTREE_PARANOID
                 m_ChildNodes[i]->insert(drawable);
                 return;
             }
+#ifdef OCTREE_PARANOID
             HE_ASSERT(false, "Object fits loosebound but is not in one of the childs!");
+#endif OCTREE_PARANOID
         }
     }
     if (m_Parent == nullptr)
@@ -198,7 +207,9 @@ void CullOctreeNode::rinsert( IDrawable* drawable )
     if (drawableBound.getSphere().getRadius() <= m_StrictBound.getSphere().getRadius() &&
         m_StrictBound.getAABB().isOtherInside(drawableBound.getSphere().getPosition()))
     {
+#ifdef OCTREE_PARANOID
         HE_ASSERT(m_LooseBound.isOtherInside(drawableBound), "Object not completely in loose bound!");
+#endif
         insert(drawable);
         return;
     }
@@ -216,7 +227,9 @@ void CullOctreeNode::reevaluate( IDrawable* drawable )
     if (drawableBound.getSphere().getRadius() <= m_StrictBound.getSphere().getRadius() &&
         m_StrictBound.getAABB().isOtherInside(drawableBound.getSphere().getPosition()))
     {
+#ifdef OCTREE_PARANOID
         HE_ASSERT(m_LooseBound.isOtherInside(drawableBound), "Object not completely in loose bound!");
+#endif
         return; // OK - (we do not handle shrinking)
     }
     else
