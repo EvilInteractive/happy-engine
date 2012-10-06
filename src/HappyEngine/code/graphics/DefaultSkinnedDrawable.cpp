@@ -78,12 +78,12 @@ void DefaultSkinnedDrawable::detachFromScene()
     }
 }
 
-void DefaultSkinnedDrawable::attachToScene( Scene* scene, bool dynamic )
+void DefaultSkinnedDrawable::attachToScene( Scene* scene )
 {
     HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
     {
         m_Scene = scene;
-        m_Scene->attachToScene(this, dynamic);
+        m_Scene->attachToScene(this);
     }
 }
 

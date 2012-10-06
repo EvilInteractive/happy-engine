@@ -54,7 +54,7 @@ public:
     virtual const Bound& getBound() const = 0;
 
     virtual void detachFromScene() = 0;
-    virtual void attachToScene(Scene* scene, bool autoReevalute) = 0;
+    virtual void attachToScene(Scene* scene) = 0;
     virtual void setScene(Scene* scene) = 0;
     virtual Scene* getScene() const = 0;
     virtual bool isAttachedToScene() const = 0;
@@ -65,15 +65,11 @@ public:
     virtual bool isSingle() const = 0;
     virtual bool isInstanced() const = 0;
     virtual bool isSkinned() const = 0;
-
-    // needs to reevaluate octree node every draw when autoReevalute == true
-    // if sleeping this object will be ignored when updating bounds
-    // Hint: set this value to physics->isSleeping()
-    virtual bool isSleeping() const = 0; 
-
+    
     //////////////////////////////////////////////////////////////////////////
     CullOctreeNode* getNode() const { return m_Node; };
     void setNode(CullOctreeNode* node) { m_Node = node; };
+    virtual void nodeReevaluated() {} // callback
 
 private:
     CullOctreeNode* m_Node;

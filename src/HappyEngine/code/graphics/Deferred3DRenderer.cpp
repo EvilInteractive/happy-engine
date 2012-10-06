@@ -56,7 +56,7 @@ BufferLayout Deferred3DRenderer::s_VertexLayoutFullscreenQuad = BufferLayout();
 
 Deferred3DRenderer::Deferred3DRenderer(): 
             m_pQuad(nullptr), 
-            m_ShowDebugTextures(true),
+            m_ShowDebugTextures(false),
             m_PointLightShader(nullptr),
             m_SpotLightShader(nullptr),
             m_AmbDirIllShader(nullptr),

@@ -17,4 +17,5 @@ src/HappyTools/*/build/*/*
 src/3thParty/dll/*
 src/3thParty/lib/*
 src/3thParty/installers/7zs/*.7z
+src/3thParty/installers/7zs/*/*
 src/build_install/*

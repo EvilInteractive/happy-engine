@@ -355,12 +355,12 @@ void InstancingController::detachFromScene()
     }
 }
 
-void InstancingController::attachToScene( Scene* scene, bool /*autoReevalute*/ )
+void InstancingController::attachToScene( Scene* scene )
 {
     HE_IF_ASSERT(isAttachedToScene() == false, "Drawable already attached to scene when attaching")
     {
         m_Scene = scene;
-        m_Scene->attachToScene(this, false);
+        m_Scene->attachToScene(this);
     }
 }
 

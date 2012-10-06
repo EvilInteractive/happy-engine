@@ -22,7 +22,7 @@
 #define _HE_PROFILER_H_
 #pragma once
 
-#include "IDrawable2D.h"
+#include "I2DDrawable.h"
 
 namespace he {
     namespace gui {
@@ -48,37 +48,57 @@ private:
 
 struct ProfileData;
 
-class Profiler : public gfx::IDrawable2D
+class Profiler : public gfx::I2DDrawable
 {
+    struct ProfileTreeNode;
 public:
     static Profiler* getInstance();
     static void dispose();
 
     void load();
 
+    void tick(); // resets frame counter
+
     void begin(const std::string& name);
     void end();
 
+    void enable();
+    void disable();
+
+    bool isEnabled() { return m_State != Disabled; }
+
     void setView(gfx::View* view);
-    virtual void draw2D(gfx::Canvas2D* canvas);
+    virtual void draw2D(gfx::Renderer2D* renderer);
     
+    typedef std::unordered_map<std::string, ProfileTreeNode> DataMap;
 private:
-    struct ProfileTreeNode;
 
     Profiler();
     virtual ~Profiler();
 
     static Profiler* s_Profiler;
+    static std::stringstream s_Stream;
 
     static const int MAX_DATA = 50;
-    std::map<std::string, ProfileTreeNode> m_Data;
+    DataMap m_Nodes;
 
+    void resetNode(ProfileTreeNode& node);
     void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth);
 
     ProfileTreeNode* m_CurrentNode;
 
-    gfx::Font* m_Font;
+    gfx::Font* m_pFont;
+    gfx::Canvas2D* m_Canvas2D;
     gfx::View* m_View;
+
+    enum State
+    {
+        Enabled,
+        Disabled,
+        Enabling,
+        Disabling
+    };
+    byte m_State;
 
     uint m_Width;
 
@@ -86,11 +106,20 @@ private:
     Profiler(const Profiler&);
     Profiler& operator=(const Profiler&);
 };
+
+#define ENABLE_PROFILING
+
 #define PROFILER he::tools::Profiler::getInstance()
 
+#ifdef ENABLE_PROFILING
 #define PROFILER_BEGIN(name) PROFILER->begin(name)
-#define PROFILER_END PROFILER->end
+#define PROFILER_END() PROFILER->end()
 #define HIERARCHICAL_PROFILE(name) he::tools::HierarchicalProfile __hierarchical_profile(name);
+#else
+#define PROFILER_BEGIN(name) {}
+#define PROFILER_END() {}
+#define HIERARCHICAL_PROFILE(name) {}
+#endif
 
 } } //end namespace
 

@@ -52,9 +52,10 @@ public:
     virtual ~Scene();
 
     // Drawlist
-    void attachToScene(IDrawable* drawable, bool autoReevaluate);
+    void attachToScene(IDrawable* drawable);
     void detachFromScene(IDrawable* drawable);
     void forceReevalute(IDrawable* drawable);
+    void doReevalute(IDrawable* drawable);
     void prepareForRendering();
     
     // Getters

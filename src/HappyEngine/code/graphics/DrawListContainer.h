@@ -50,9 +50,10 @@ public:
     void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc,
         std::vector<vec3>& vertices, std::vector<uint>& indices) const;
 
-    void insert(IDrawable* drawable, bool autoReevalute);
+    void insert(IDrawable* drawable);
     void remove(IDrawable* drawable);
     void forceReevalute(IDrawable* drawable);
+    void doReevalute(IDrawable* drawable);
     
 private:
 

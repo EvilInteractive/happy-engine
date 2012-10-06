@@ -180,7 +180,9 @@ void HappyEngine::start(ge::Game* pGame)
         m_pConsole->load();
         CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
 
+#ifdef ENABLE_PROFILING
         PROFILER->load();
+#endif
     }
 
 
@@ -204,6 +206,10 @@ void HappyEngine::start(ge::Game* pGame)
 }
 void HappyEngine::loop()
 {
+#ifdef ENABLE_PROFILING
+    PROFILER->tick();
+#endif
+
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
     boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);

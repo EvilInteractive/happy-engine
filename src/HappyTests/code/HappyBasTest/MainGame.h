@@ -87,6 +87,7 @@ private:
     std::vector<MovingEntityRandomness> m_MovingEntityRandomness;
     std::vector<he::ge::Entity*> m_MovingEntityList;
     float m_MovingEntityFase;
+    bool m_ShowDebugMesh;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
