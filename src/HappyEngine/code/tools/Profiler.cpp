@@ -187,6 +187,7 @@ void Profiler::begin( const std::string& name )
         else
         {
             m_CurrentNode = &it->second;
+            m_CurrentNode->m_Recurses = 1;
         }
 
         m_CurrentNode->start();
@@ -199,6 +200,7 @@ void Profiler::end()
         return;
 
     HE_ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
+    HE_ASSERT(m_CurrentNode->m_Recurses > 0, "Node not active?");
     --m_CurrentNode->m_Recurses;
     m_CurrentNode->stop();
     if (m_CurrentNode->m_Recurses == 0)
