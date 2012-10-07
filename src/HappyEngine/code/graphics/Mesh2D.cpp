@@ -121,9 +121,11 @@ void Mesh2D::createBuffer(bool outline)
             HE_ERROR("Failed to outline Mesh2D!");
         }
     }
+
+    GL::heBindVao(getBufferID());
     
     glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * 2 * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint), &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);

@@ -71,11 +71,13 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 
     //int samples = GL::getMaxMultiSamples();
 
-    glGenRenderbuffers(1, &pData->colorRbufferID);
-    glBindRenderbuffer(GL_RENDERBUFFER, pData->colorRbufferID);
+    //glGenRenderbuffers(1, &pData->colorRbufferID);
+    //glBindRenderbuffer(GL_RENDERBUFFER, pData->colorRbufferID);
     //glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pData->colorRbufferID);
+    //glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
+    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pData->colorRbufferID);
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pTexture->getID(), 0);
 
     glGenRenderbuffers(1, &pData->depthRbufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, pData->depthRbufferID);
@@ -83,7 +85,6 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, (GLsizei)size.x, (GLsizei)size.y);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pData->depthRbufferID);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pTexture->getID(), 0);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -104,8 +105,8 @@ void Canvas2D::resizeData( Data* data, const vec2& size )
 
     //int samples = GL::getMaxMultiSamples();
 
-    glBindRenderbuffer(GL_RENDERBUFFER, data->colorRbufferID);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
+    //glBindRenderbuffer(GL_RENDERBUFFER, data->colorRbufferID);
+    //glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
     //glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GL_RGBA8, (GLsizei)size.x, (GLsizei)size.y);
 
     glBindRenderbuffer(GL_RENDERBUFFER, data->depthRbufferID);
@@ -120,7 +121,7 @@ Canvas2D::Canvas2D(const RectI& absoluteViewport) :
     m_pBufferData(nullptr),
     m_pBufferMesh(NEW Mesh2D()),
     m_pColorEffect(NEW Simple2DEffect()),
-    m_pRenderTexture(ResourceFactory<Texture2D>::getInstance()->get(m_pBufferData->renderTextureHnd)),
+    m_pRenderTexture(nullptr),
     m_StackDepth(0),
     m_pTextureQuad(nullptr),
     m_pTextureEffect(NEW Simple2DTextureEffect()),
@@ -158,7 +159,7 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_CanvasSize(view->getViewport().width * relativeViewport.width, view->getViewport().height * relativeViewport.height),
     m_View(view),
     m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this)),
-    m_Renderer2D(m_View->get2DRenderer())
+    m_Renderer2D(view->get2DRenderer())
 {
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();
@@ -193,7 +194,7 @@ void Canvas2D::init()
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_pTextBuffer = ResourceFactory<Texture2D>::getInstance()->get(handle);
 
-    m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.0f, 10000.0f);
+    m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.01f, 10000.0f);
     m_TransformationStack.push_back(mat33::Identity);
 
     BufferLayout vLayout;
@@ -245,7 +246,7 @@ void Canvas2D::cleanup()
     GRAPHICS->setActiveContext(m_pBufferData->context);
     glDeleteFramebuffers(1, &m_pBufferData->fbufferID);
     glDeleteFramebuffers(1, &m_pBufferData->resolvedFbufferID);
-    glDeleteRenderbuffers(1, &m_pBufferData->colorRbufferID);
+    //glDeleteRenderbuffers(1, &m_pBufferData->colorRbufferID);
     glDeleteRenderbuffers(1, &m_pBufferData->depthRbufferID);
     glDeleteRenderbuffers(1, &m_pBufferData->resolvedRbufferID);
 
@@ -349,7 +350,10 @@ void Canvas2D::clear()
 {
     HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     GL::heBindFbo(m_pBufferData->fbufferID);
-    GL::heClearColor(Color(0.0f,0.0f,0.0f,0.0f));
+    GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, buffers);
+    GL::heClearColor(Color(0.0f,0.0f,1.0f,0.0f));
+    GL::heSetDepthWrite(true);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /*
@@ -376,7 +380,7 @@ void Canvas2D::draw()
 
     if (m_AutoClear)
     {
-        clear();
+        //clear();
     }
 }
 
@@ -391,11 +395,11 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    //GL::heBindFbo(m_pBufferData->fbufferID);
 
     m_pBufferMesh->clear();
     m_pBufferMesh->addVertex(pos);
@@ -421,11 +425,11 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    //GL::heBindFbo(m_pBufferData->fbufferID);
 
     m_pBufferMesh->clear();
     m_pBufferMesh->addVertex(pos);
@@ -433,14 +437,14 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     m_pBufferMesh->addVertex(pos + size);
     m_pBufferMesh->addVertex(pos + vec2(0, size.y));
     m_pBufferMesh->createBuffer();
-
+    
     m_pColorEffect->begin();
     m_pColorEffect->setColor(m_FillColor);
     m_pColorEffect->setWorldMatrix(m_OrthographicMatrix * getTransformation());
     m_pColorEffect->setDepth(getNewDepth());
 
     GL::heBindVao(m_pBufferMesh->getBufferID());
-    glDrawElements(GL_TRIANGLES, (GLsizei)m_pBufferMesh->getIndices().size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
@@ -466,11 +470,11 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    //GL::heBindFbo(m_pBufferData->fbufferID);
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());
 
     bool hasBounds(txt.hasBounds());
@@ -611,11 +615,11 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
-    GL::heBindFbo(m_pBufferData->fbufferID);
+    //GL::heBindFbo(m_pBufferData->fbufferID);
 
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);

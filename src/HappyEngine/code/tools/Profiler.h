@@ -79,8 +79,9 @@ private:
     static Profiler* s_Profiler;
     static std::stringstream s_Stream;
 
-    static const int MAX_DATA = 50;
-    DataMap m_Nodes;
+    // Double buffered data
+    DataMap* m_NodesFront;
+    DataMap* m_NodesBack;
 
     void resetNode(ProfileTreeNode& node);
     void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth);

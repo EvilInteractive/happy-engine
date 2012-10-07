@@ -24,7 +24,9 @@
 
 #include "Game.h"
 #include "IShapeDrawable.h"
+#include "IDrawable2D.h"
 #include "Random.h"
+
 
 namespace he {
     namespace tools {
@@ -40,13 +42,14 @@ namespace he {
         class View;
         class ModelMesh;
         class CameraPerspective;
+        class Texture2D;
     }
 }
 
 namespace ht {
 class FlyCamera;
 
-class MainGame : public he::ge::Game, public he::gfx::IShapeDrawable
+class MainGame : public he::ge::Game, public he::gfx::IShapeDrawable, public he::gfx::IDrawable2D
 {
 public:
     MainGame();
@@ -57,6 +60,7 @@ public:
     virtual void tick(float dTime);
 
     virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
+    virtual void draw2D(he::gfx::Canvas2D* renderer);
 
 private:
     void fillDebugMeshes();
@@ -76,6 +80,8 @@ private:
     he::gfx::SkyBox* m_pSkyBox;
 
     he::gfx::ModelMesh* m_DebugMesh;
+
+    const he::gfx::Texture2D* m_TestTexture;
 
     static he::Random s_Random;
     struct MovingEntityRandomness

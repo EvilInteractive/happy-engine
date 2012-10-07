@@ -110,13 +110,13 @@ void Renderer2D::removeWebView( WebView* webview )
 
 void Renderer2D::draw()
 {
-    m_RenderTarget->prepareForRendering();
-
+    m_DefaultCanvas->clear();
     std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](IDrawable2D* drawable)
     {
         drawable->draw2D(m_DefaultCanvas);
     });
 
+    m_RenderTarget->prepareForRendering();
     m_DefaultCanvas->draw();
 }
 
@@ -167,8 +167,6 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
                                         bool useBlending, const vec2& newDimensions,
                                         const RectF& regionToDraw)
 {
-    m_RenderTarget->prepareForRendering();
-
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
     vec2 size;

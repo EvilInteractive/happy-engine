@@ -367,9 +367,9 @@ void FPSGraph::setView( gfx::View* view )
         m_View->get2DRenderer()->detachFromRender(this);
     }*/
     m_View = view;
-    /*
+    
     m_View->get2DRenderer()->attachToRender(this);
-    m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
+    /*m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
     */
 }
 

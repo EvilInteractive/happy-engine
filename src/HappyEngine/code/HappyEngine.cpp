@@ -206,27 +206,28 @@ void HappyEngine::start(ge::Game* pGame)
 }
 void HappyEngine::loop()
 {
+    {
+        HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+
+        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
+        m_PrevTime = boost::chrono::high_resolution_clock::now();
+
+        float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
+
+        updateLoop(dTime);
+
+        if (m_SubEngines & SubEngine_Graphics)
+        {
+            drawLoop();
+        }
+        else
+        {
+            boost::this_thread::sleep(boost::posix_time::millisec(5));
+        }
+    }
 #ifdef ENABLE_PROFILING
     PROFILER->tick();
 #endif
-
-    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevTime);
-    m_PrevTime = boost::chrono::high_resolution_clock::now();
-
-    float dTime(elapsedTime.count() / static_cast<float>(boost::nano::den));
-
-    updateLoop(dTime);
-
-    if (m_SubEngines & SubEngine_Graphics)
-    {
-        drawLoop();
-    }
-    else
-    {
-        boost::this_thread::sleep(boost::posix_time::millisec(5));
-    }
 }
 void HappyEngine::updateLoop(float dTime)
 {

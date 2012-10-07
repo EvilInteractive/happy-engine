@@ -49,6 +49,7 @@
 #include "Renderer2D.h"
 #include "ShapeRenderer.h"
 #include "MessageBox.h"
+#include "Canvas2D.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -87,10 +88,10 @@ MainGame::~MainGame()
 
     CONSOLE->setView(nullptr);
     GRAPHICS->removeView(m_View);
-    //GRAPHICS->removeView(m_View2);
+    GRAPHICS->removeView(m_View2);
 
     GRAPHICS->removeWindow(m_Window);
-    //GRAPHICS->removeWindow(m_Window2);
+    GRAPHICS->removeWindow(m_Window2);
 
     m_Scene->getCameraManager()->deleteAllCameras();
     GRAPHICS->removeScene(m_Scene);
@@ -130,13 +131,13 @@ void MainGame::load()
 
     settings.shadowSettings.shadowMult = 2;
 
-    settings.postSettings.shaderSettings.enableAO = true;
+    settings.postSettings.shaderSettings.enableAO = false;
     settings.postSettings.shaderSettings.enableBloom = false;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = false;
-    settings.postSettings.shaderSettings.enableHDR = false;
+    settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
-    settings.postSettings.shaderSettings.enableVignette = true;
+    settings.postSettings.shaderSettings.enableVignette = false;
 
     CONTENT->setRenderSettings(settings);
 
@@ -144,49 +145,52 @@ void MainGame::load()
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
-    /*
+    
 
-    m_Window2->setResizable(true);
-    m_Window2->setVSync(false);
-    m_Window2->setWindowDimension(720, 720);
-    m_Window2->setWindowTitle("HappyBasTest - 2");
-    m_Window2->create();
-
-    m_View2->setScene(m_Scene);
-    m_View2->setWindow(m_Window2);
-    m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
-    m_View2->init(settings);
-    */
-    //CONSOLE->setView(m_View2);
+    //m_Window2->setResizable(true);
+    //m_Window2->setVSync(false);
+    //m_Window2->setWindowDimension(720, 720);
+    //m_Window2->setWindowTitle("HappyBasTest - 2");
+    //m_Window2->create();
+    //
+    //m_View2->setScene(m_Scene);
+    //m_View2->setWindow(m_Window2);
+    //m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    //m_View2->init(settings);
+    
+    CONSOLE->setView(m_View);
+    m_View->get2DRenderer()->attachToRender(this);
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
     flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
-    /*
-    FlyCamera* flyCamera2 = NEW FlyCamera();
-    m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
-    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
-    flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));*/
-
+    
+    //FlyCamera* flyCamera2 = NEW FlyCamera();
+    //m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
+    //flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
+    //flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
+    
     m_View->setCamera("default");
-   // m_View2->setCamera("default2");
-
+    //m_View2->setCamera("default2");
+    
     m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setView(m_View);
     m_FpsGraph->setPos(vec2(8, 8));
     m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
-
-    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
-
-    CONSOLE->setView(m_View);
+    //
+    //m_View->get2DRenderer()->attachToRender(m_FpsGraph);
+    
+    //CONSOLE->setView(m_View);
     //m_View->get2DRenderer()->attachToRender(CONSOLE);
 
-    m_View->getShapeRenderer()->attachToRenderer(this);
+    //m_View->getShapeRenderer()->attachToRenderer(this);
    // m_View2->getShapeRenderer()->attachToRenderer(this);
 
-    #pragma endregion
+    m_TestTexture = CONTENT->asyncLoadTexture("cube_diff.png");
 
+    #pragma endregion
+    
     #pragma region Scene
     ge::Entity* scene(NEW ge::Entity());
     scene->init(m_Scene);
@@ -221,7 +225,7 @@ void MainGame::load()
     }
 
     #pragma endregion
-
+    
     #pragma region Lights
     m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
     m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
@@ -246,7 +250,7 @@ void MainGame::load()
         scene->addComponent(modelComp);
     }
     #pragma endregion
-
+    /*
     #pragma region Camera Debug Shape
     ResourceFactory<gfx::ModelMesh>* meshFactory(ResourceFactory<gfx::ModelMesh>::getInstance());
     gfx::BufferLayout debugCameraLayout;
@@ -258,10 +262,11 @@ void MainGame::load()
     m_DebugMesh->setIndices(nullptr, 0, he::gfx::IndexStride_UInt, he::gfx::MeshUsage_Dynamic);
     m_DebugMesh->setLoaded();
     #pragma endregion
-    
+    */
     he::MessageBox::show("Load Completed", "Success!");
 
     PROFILER->enable();
+    PROFILER->setView(m_View);
 }
 
 void MainGame::tick( float dTime )
@@ -272,14 +277,14 @@ void MainGame::tick( float dTime )
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
 
-//     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-//     {
-//         const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-//         m_MovingEntityList[i]->setLocalTranslate(
-//             he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-//                      pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-//                      pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-//     }
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+        m_MovingEntityList[i]->setLocalTranslate(
+            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+    }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;
@@ -290,8 +295,8 @@ void MainGame::tick( float dTime )
         m_Scene->getLightManager()->getDirectionalLight()->setDirection(
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
-    if (m_ShowDebugMesh)
-        fillDebugMeshes();
+    //if (m_ShowDebugMesh)
+    //    fillDebugMeshes();
     m_FpsGraph->tick(dTime);
 }
 
@@ -315,8 +320,12 @@ void MainGame::fillDebugMeshes()
 
 void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
 {
-    renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1));
-
-    
+    renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1)); 
 }
+
+void MainGame::draw2D(he::gfx::Canvas2D* canvas)
+{
+    canvas->getRenderer2D()->drawTexture2DToScreen(m_TestTexture);
+}
+
 } //end namespace

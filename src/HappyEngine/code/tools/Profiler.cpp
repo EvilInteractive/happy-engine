@@ -62,6 +62,7 @@ struct Profiler::ProfileTreeNode
     double m_TotalFrameTime;
     double m_MaxTime;
     uint32 m_HitsPerFrame;
+    uint32 m_Recurses;
     std::string m_Name;
 
     ProfileData m_CurrentProfile;
@@ -77,7 +78,8 @@ struct Profiler::ProfileTreeNode
         m_CurrentProfile.endTime = boost::chrono::high_resolution_clock::now(); 
         double time = m_CurrentProfile.getDuration();
         m_MaxTime = std::max(m_MaxTime, time);
-        m_TotalFrameTime += time;
+        if (m_Recurses == 0)
+            m_TotalFrameTime += time;
         ++m_HitsPerFrame; 
     }
     void reset()    
@@ -88,7 +90,14 @@ struct Profiler::ProfileTreeNode
     }
 };
 
-Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_View(nullptr), m_State(Disabled)
+Profiler::Profiler()
+    : m_CurrentNode(nullptr), 
+      m_Width(0), 
+      m_pFont(nullptr), 
+      m_View(nullptr), 
+      m_State(Disabled),
+      m_NodesFront(NEW DataMap()),
+      m_NodesBack(NEW DataMap())
 {
     s_Stream.precision(2);
 }
@@ -107,6 +116,8 @@ Profiler::~Profiler()
     }
     if (m_pFont != nullptr)
         m_pFont->release();
+    delete m_NodesBack;
+    delete m_NodesFront;
 }
 
 Profiler* Profiler::getInstance()
@@ -145,9 +156,8 @@ void Profiler::tick()
         return;
     }
 
-    DataMap::iterator it(m_Nodes.begin());
-    for(; it != m_Nodes.end(); ++it)   
-        resetNode(it->second);  
+    std::swap(m_NodesFront, m_NodesBack);
+    m_NodesFront->clear();
 }
 
 void Profiler::begin( const std::string& name )
@@ -155,23 +165,32 @@ void Profiler::begin( const std::string& name )
     if (m_State == Disabled)
         return;
 
-    DataMap& currentBranch(m_CurrentNode != nullptr ? m_CurrentNode->m_Nodes : m_Nodes);
-    DataMap::iterator it(currentBranch.find(name));
-    if (it == currentBranch.end())
-    {
-        ProfileTreeNode node;
-        node.m_Name = name;
-        node.m_Parent = m_CurrentNode;
-        node.m_HitsPerFrame = 0;
-        node.m_TotalFrameTime = 0.0f;
-        m_CurrentNode = &(currentBranch[name] = node);
+    if (m_CurrentNode != nullptr && m_CurrentNode->m_Name == name)
+    { // recursive function
+        ++m_CurrentNode->m_Recurses;
     }
     else
     {
-        m_CurrentNode = &it->second;
-    }
+        DataMap& currentBranch(m_CurrentNode != nullptr ? m_CurrentNode->m_Nodes : *m_NodesFront);
+        DataMap::iterator it(currentBranch.find(name));
+        if (it == currentBranch.end())
+        {
+            ProfileTreeNode node;
+            node.m_Name = name;
+            node.m_Parent = m_CurrentNode;
+            node.m_HitsPerFrame = 0;
+            node.m_TotalFrameTime = 0.0f;
+            node.m_MaxTime = 0.0f;
+            node.m_Recurses = 1;
+            m_CurrentNode = &(currentBranch[name] = node);
+        }
+        else
+        {
+            m_CurrentNode = &it->second;
+        }
 
-    m_CurrentNode->start();
+        m_CurrentNode->start();
+    }
 }
 
 void Profiler::end()
@@ -180,23 +199,34 @@ void Profiler::end()
         return;
 
     HE_ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
+    --m_CurrentNode->m_Recurses;
     m_CurrentNode->stop();
-    m_CurrentNode = m_CurrentNode->m_Parent;
+    if (m_CurrentNode->m_Recurses == 0)
+    {
+        m_CurrentNode = m_CurrentNode->m_Parent;
+    }
 }
 void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth)
 {
+    HE_ASSERT(node.m_HitsPerFrame > 0, "Cannot have 0 hit!");
+    double totalFrameTime(node.m_TotalFrameTime);
     double avgFrameTime(node.m_TotalFrameTime / node.m_HitsPerFrame);
     double maxFrameTime(node.m_MaxTime);
-    
+
+    char totalBuf[10];
+    char avgBuf[10];
+    char maxBuf[10];
+    sprintf(totalBuf, "%02.3f\0", totalFrameTime);
+    sprintf(avgBuf, "%02.3f\0", avgFrameTime);
+    sprintf(maxBuf, "%02.3f\0", maxFrameTime);
+
     s_Stream.clear();
     s_Stream.str("");
     for (int i(0); i < treeDepth; ++i)
     {
-        /*if (i == treeDepth - 1)
-            stream << "|";*/
         s_Stream << "|----";
     }
-    s_Stream << "+ " + node.m_Name << ": avg: " << avgFrameTime << " max: " << maxFrameTime << " calls: " << node.m_HitsPerFrame;
+    s_Stream << "+ " + node.m_Name << ": tot: " << totalBuf << " avg: " << avgBuf << " max: " << maxBuf << " calls: " << node.m_HitsPerFrame;
     text.addLine(s_Stream.str());
 
     uint textWidth(static_cast<uint>(m_pFont->getStringWidth(s_Stream.str())));
@@ -218,7 +248,7 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
     
     gui::Text text(m_pFont);
     text.addLine("----PROFILER------------------------------");
-    std::for_each(m_Nodes.cbegin(), m_Nodes.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
+    std::for_each(m_NodesBack->cbegin(), m_NodesBack->cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
     {
         drawProfileNode(treeNodePair.second, text, 1);  
     });

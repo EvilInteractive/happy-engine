@@ -281,6 +281,7 @@ void CullOctreeNode::createChilds( CullOctreeNode* child, byte xIndex, byte yInd
 
 void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen ) const
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const vec3& cameraPosition(camera->getPosition());
     
     if (checkChilderen == true)
@@ -315,6 +316,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
 bool CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
     std::vector<vec3>& vertices, std::vector<uint>& indices ) const
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const vec3& cameraPosition(camera->getPosition());
 
     if (checkChilderen == true)

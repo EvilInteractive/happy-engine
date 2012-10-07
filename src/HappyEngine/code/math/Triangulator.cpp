@@ -21,9 +21,6 @@
 #include "HappyPCH.h" 
 
 #include "Triangulator.h"
-#include "HappyNew.h"
-#include "HappyTypes.h"
-#include <algorithm>
 
 namespace he {
 

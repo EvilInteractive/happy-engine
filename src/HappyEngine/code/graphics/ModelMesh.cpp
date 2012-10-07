@@ -178,6 +178,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, MeshUsage usage)
     });
     m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, m_VertexLayout.getSize(), posOffset));
 
+    GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, nullptr, usage);
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, pVertices, usage);
@@ -185,7 +186,8 @@ void ModelMesh::setVertices(const void* pVertices, uint num, MeshUsage usage)
 void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type, MeshUsage usage)
 {
     m_NumIndices = num;
-    
+
+    GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, nullptr, usage);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, usage);
