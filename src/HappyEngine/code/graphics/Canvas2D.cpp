@@ -36,6 +36,7 @@
 #include "Font.h"
 #include "GraphicsEngine.h"
 #include "RenderTarget.h"
+#include "MathFunctions.h"
 
 namespace he {
 namespace gfx {
@@ -129,13 +130,14 @@ Canvas2D::Canvas2D(const RectI& absoluteViewport) :
     m_pFontEffect(NEW Simple2DFontEffect()),
     m_FillColor(Color(1.0f,1.0f,1.0f)),
     m_StrokeColor(Color(1.0f,1.0f,1.0f)),
-    m_PixelDepth(9999.99f),
+    m_PixelDepth(4999.99f),
     m_AutoClear(true),
     m_RelativeViewport(0, 0, 0, 0),
     m_Position(static_cast<float>(absoluteViewport.x), static_cast<float>(absoluteViewport.y)),
     m_CanvasSize(static_cast<float>(absoluteViewport.width), static_cast<float>(absoluteViewport.height)),
     m_View(nullptr),
-    m_Renderer2D(nullptr)
+    m_Renderer2D(nullptr),
+    m_ExtraPixelDepth(0)
 {
     init();
 }
@@ -152,14 +154,15 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_pFontEffect(NEW Simple2DFontEffect()),
     m_FillColor(Color(1.0f,1.0f,1.0f)),
     m_StrokeColor(Color(1.0f,1.0f,1.0f)),
-    m_PixelDepth(9999.99f),
+    m_PixelDepth(4999.99f),
     m_AutoClear(true),
     m_RelativeViewport(relativeViewport),
     m_Position(view->getViewport().x * relativeViewport.x, view->getViewport().y * relativeViewport.y),
     m_CanvasSize(view->getViewport().width * relativeViewport.width, view->getViewport().height * relativeViewport.height),
     m_View(view),
     m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this)),
-    m_Renderer2D(view->get2DRenderer())
+    m_Renderer2D(view->get2DRenderer()),
+    m_ExtraPixelDepth(0)
 {
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();
@@ -259,7 +262,7 @@ float Canvas2D::getNewDepth()
 {
     m_PixelDepth -= 0.01f;
 
-    return m_PixelDepth;
+    return m_PixelDepth + m_ExtraPixelDepth;
 }
 
 /* GENERAL */
@@ -313,6 +316,11 @@ mat44 Canvas2D::getTransformation()
     return result.getMat44();
 }
 
+void Canvas2D::restoreDepth()
+{
+    m_ExtraPixelDepth = 0;
+}
+
 /* GETTERS */
 Canvas2D::Data* Canvas2D::getData() const
 {
@@ -343,6 +351,11 @@ void Canvas2D::setGlobalAlpha(float alpha)
 void Canvas2D::setAutoClearing(bool clearAfterDraw)
 {
     m_AutoClear = clearAfterDraw;
+}
+
+void Canvas2D::setDepth(short depth)
+{
+    m_ExtraPixelDepth = clamp<short>(depth, -4000, 4000);
 }
 
 /* DRAW METHODS */
@@ -395,8 +408,8 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
     //GL::heBindFbo(m_pBufferData->fbufferID);
@@ -425,8 +438,8 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
     //GL::heBindFbo(m_pBufferData->fbufferID);
@@ -457,21 +470,23 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     HE_ASSERT(txt.getFont()->isPreCached() == true, "Font needs to be precached!");
 
     Texture2D* tex2D = txt.getFont()->getTextureAtlas();
-    m_Renderer2D->drawTexture2DToScreen(tex2D);
 
     m_pFontEffect->begin();
     
     m_pFontEffect->setDiffuseMap(tex2D);
     m_pFontEffect->setFontColor(m_FillColor);
-    m_pFontEffect->setDepth(getNewDepth());
+
+    float dp(getNewDepth());
+
+    m_pFontEffect->setDepth(dp);
 
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
     //GL::heBindFbo(m_pBufferData->fbufferID);
@@ -615,8 +630,8 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     GL::heBlendEnabled(true);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
 
     //m_Renderer2D->getRTG()->prepareForRendering();
     //GL::heBindFbo(m_pBufferData->fbufferID);

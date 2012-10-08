@@ -359,6 +359,8 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 {
     if (m_bOpen)
     {
+        canvas->setDepth(-2000);
+
         canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
         canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
 
@@ -428,6 +430,8 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         //canvas->draw2D(renderer);
 
 //        canvas->drawLineAA(vec2(200,200), vec2(500,600));
+
+        canvas->restoreDepth();
     }
 }
 

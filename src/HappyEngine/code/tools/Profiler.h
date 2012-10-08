@@ -69,6 +69,8 @@ public:
 
     void setView(gfx::View* view);
     virtual void draw2D(gfx::Canvas2D* canvas);
+
+    void toggleProfiler();
     
     typedef std::unordered_map<std::string, ProfileTreeNode> DataMap;
 private:
@@ -101,6 +103,8 @@ private:
     byte m_State;
 
     uint m_Width;
+
+    bool m_Show;
 
     //Disable default copy constructor and default assignment operator
     Profiler(const Profiler&);

@@ -176,8 +176,7 @@ void MainGame::load()
     
     m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setView(m_View);
-    m_FpsGraph->setPos(vec2(8, 8));
-    m_FpsGraph->setType(tools::FPSGraph::Type_ToConsole);
+    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
     //
     //m_View->get2DRenderer()->attachToRender(m_FpsGraph);
     
@@ -265,7 +264,7 @@ void MainGame::load()
     */
     he::MessageBox::show("Load Completed", "Success!");
 
-    PROFILER->enable();
+    //PROFILER->enable();
     PROFILER->setView(m_View);
 }
 
@@ -277,6 +276,7 @@ void MainGame::tick( float dTime )
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
 
+    /*
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
         const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
@@ -284,7 +284,7 @@ void MainGame::tick( float dTime )
             he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
                      pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
                      pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
+    }*/
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;
@@ -323,9 +323,9 @@ void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
     renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1)); 
 }
 
-void MainGame::draw2D(he::gfx::Canvas2D* canvas)
+void MainGame::draw2D(he::gfx::Canvas2D* /*canvas*/)
 {
-    canvas->getRenderer2D()->drawTexture2DToScreen(m_TestTexture);
+    //canvas->getRenderer2D()->drawTexture2DToScreen(m_TestTexture);
 }
 
 } //end namespace
