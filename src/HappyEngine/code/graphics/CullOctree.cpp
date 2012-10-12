@@ -25,23 +25,25 @@
 #include "ICamera.h"
 #include "Cone.h"
 
+#include "CullOctreeNodeFactory.h"
 
 namespace he {
 namespace gfx {
 
 //#define OCTREE_PARANOID
 
-const float CullOctree::s_MinLeaveSize = 1.0f;
+const float CullOctree::s_MinLeaveSize = 4.0f;
 
 CullOctree::CullOctree( ):
-    m_Root(NEW CullOctreeNode())
+    m_Root(CullOctreeNodeFactory::getInstance()->getNode())
 {
 
 }
 
 CullOctree::~CullOctree()
 {
-    delete m_Root;
+    m_Root->doRemoveChilderen(false);
+    CullOctreeNodeFactory::getInstance()->releaseNode(m_Root);
 }
 
 void CullOctree::insert( IDrawable* obj )
@@ -63,9 +65,14 @@ void CullOctree::reevaluate( IDrawable* obj )
 
 void CullOctree::remove( IDrawable* obj )
 {
-    HE_IF_ASSERT(obj->getNode() != nullptr, "Obj is not attached to a tree")
+    CullOctreeNode* node(obj->getNode());
+    HE_IF_ASSERT(node != nullptr, "Obj is not attached to a tree")
     {
         obj->getNode()->remove(obj);
+        if (node->checkRemove())
+        {
+            node->doRemoveChilderen(true);
+        }
     }
 }
 
@@ -82,19 +89,33 @@ void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-CullOctreeNode::CullOctreeNode()
-    : m_Parent(nullptr), m_IsLeafe(false)
+void CullOctreeNode::create(uint32 poolIndex)
 {
+    m_PoolIndex = poolIndex;
+    reset();
+
     float strictSize(CullOctree::s_MinLeaveSize * 128); // needs to be power of two
     vec3 pos(strictSize / -2.0f);
 
     createBounds(pos, strictSize);
 
+    m_ObjectChilds = std::vector<IDrawable*>();
+
     he_memset(m_ChildNodes, 0, 8 * sizeof(CullOctreeNode*));
 }
-CullOctreeNode::CullOctreeNode(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex)
-    : m_Parent(parent), m_IsLeafe(false)
+
+void CullOctreeNode::reset()
 {
+    HE_ASSERT(m_ObjectChilds.size() == 0, "Object leak in octree!");
+    m_Parent = nullptr;
+    m_IsLeafe = false;
+}
+
+void CullOctreeNode::init(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex)
+{
+    m_Parent = parent;
+    m_IsLeafe = false;
+
     const AABB& parentAABB(m_Parent->m_StrictBound.getAABB());
     const vec3& tfl(parentAABB.getTopFrontLeft());
 
@@ -113,9 +134,10 @@ CullOctreeNode::CullOctreeNode(CullOctreeNode* parent, byte xIndex, byte yIndex,
     he_memset(m_ChildNodes, 0, 8 * sizeof(CullOctreeNode*));
 }
 
-CullOctreeNode::CullOctreeNode( const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex )
-    : m_Parent(nullptr), m_IsLeafe(false)
+void CullOctreeNode::init( const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex )
 {
+    m_Parent = nullptr;
+    m_IsLeafe = false;
     createBounds(pos, strictSize);
     createChilds(child, xIndex, yIndex, zIndex);
 }
@@ -130,13 +152,6 @@ void CullOctreeNode::createBounds( const vec3& pos, float strictSize )
     m_LooseBound.fromAABB(aabb);
 }
 
-CullOctreeNode::~CullOctreeNode()
-{
-    for (uint i(0); i < 8; ++i)
-    {
-        delete m_ChildNodes[i];
-    }
-}
 CullOctreeNode* CullOctreeNode::rootInsert( IDrawable* drawable )
 {
     const Bound& drawableBound(drawable->getBound());
@@ -158,8 +173,9 @@ CullOctreeNode* CullOctreeNode::rootInsert( IDrawable* drawable )
         parentPosition.x -= directiontHint.x < 0? parentSize / 2.0f : 0;
         parentPosition.y -= directiontHint.y < 0? parentSize / 2.0f : 0;
         parentPosition.z -= directiontHint.z < 0? parentSize / 2.0f : 0;
-        CullOctreeNode* newRoot(NEW CullOctreeNode(parentPosition, parentSize, this, 
-            directiontHint.x < 0? 1 : 0, directiontHint.y < 0? 1 : 0, directiontHint.z < 0? 1 : 0));
+        CullOctreeNode* newRoot(CullOctreeNodeFactory::getInstance()->getNode());
+        newRoot->init(parentPosition, parentSize, this, 
+            directiontHint.x < 0? 1 : 0, directiontHint.y < 0? 1 : 0, directiontHint.z < 0? 1 : 0);
         m_Parent = newRoot;
         return newRoot->rootInsert(drawable);
     }
@@ -239,12 +255,16 @@ void CullOctreeNode::reevaluate( IDrawable* drawable )
             m_Parent->rinsert(drawable);
         else
             rootInsert(drawable);
+        if (checkRemove())
+        {
+            doRemoveChilderen(true);
+        }
     }
 
 }
 void CullOctreeNode::remove( IDrawable* obj )
 {
-    HE_IF_ASSERT(std::find(m_ObjectChilds.begin(), m_ObjectChilds.end(), obj) != m_ObjectChilds.cend(), "Obj is not attached to this node")
+    HE_IF_ASSERT(std::find(m_ObjectChilds.begin(), m_ObjectChilds.end(), obj) != m_ObjectChilds.end(), "Obj is not attached to this node")
     {
         *std::find(m_ObjectChilds.begin(), m_ObjectChilds.end(), obj) = m_ObjectChilds.back();
         m_ObjectChilds.pop_back();
@@ -261,7 +281,9 @@ void CullOctreeNode::createChilds()
     for (byte y(0); y < 2; ++y)
     for (byte z(0); z < 2; ++z)
     {
-        m_ChildNodes[index++] = NEW CullOctreeNode(this, x, y, z);
+        CullOctreeNode* node(CullOctreeNodeFactory::getInstance()->getNode());
+        m_ChildNodes[index++] = node;
+        node->init(this, x, y, z);
     }
 }
 
@@ -273,7 +295,11 @@ void CullOctreeNode::createChilds( CullOctreeNode* child, byte xIndex, byte yInd
     for (byte z(0); z < 2; ++z)
     {
         if (x != xIndex || y != yIndex || z != zIndex)
-            m_ChildNodes[index++] = NEW CullOctreeNode(this, x, y, z);
+        {
+            CullOctreeNode* node(CullOctreeNodeFactory::getInstance()->getNode());
+            m_ChildNodes[index++] = node;
+            node->init(this, x, y, z);
+        }
         else
             m_ChildNodes[index++] = child;
     }
@@ -296,6 +322,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
                 return;
             case IntersectResult_Inside:
                 checkChilderen = false; // completely in -> all childeren are in as well
+                break;
             case IntersectResult_Intersecting:
                 break;
             }
@@ -313,7 +340,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
         std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
 }
 
-bool CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
+void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
     std::vector<vec3>& vertices, std::vector<uint>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
@@ -328,7 +355,7 @@ bool CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
             switch(camera->intersect(m_LooseBound))
             {
             case IntersectResult_Outside:
-                return false;
+                return;
             case IntersectResult_Inside:
                 checkChilderen = false; // completely in -> all childeren are in as well
             case IntersectResult_Intersecting:
@@ -337,21 +364,17 @@ bool CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
         }
     }
 
-    bool hasChilds(m_ObjectChilds.size() > 0);
     if (m_ChildNodes[0] != nullptr) // if first child is not nullptr then all other are not nullptr as well
     {
         for (uint i(0); i < 8; ++i)
         {
-            hasChilds |= m_ChildNodes[i]->drawAndCreateDebugMesh(camera, drawFunction, checkChilderen, vertices, indices);
+            m_ChildNodes[i]->drawAndCreateDebugMesh(camera, drawFunction, checkChilderen, vertices, indices);
         }
     }
-    if (hasChilds)
-    {
-        m_StrictBound.getAABB().generateIndices(indices, vertices.size());
-        m_StrictBound.getAABB().generateVertices(vertices);
+    if (m_ObjectChilds.empty() == false)
         std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
-    }
-    return hasChilds;
+    m_StrictBound.getAABB().generateIndices(indices, vertices.size());
+    m_StrictBound.getAABB().generateVertices(vertices);
 }
 
 CullOctreeNode* CullOctreeNode::getRoot()
@@ -360,6 +383,45 @@ CullOctreeNode* CullOctreeNode::getRoot()
         return this;
     else 
         return m_Parent->getRoot();
+}
+
+bool CullOctreeNode::checkRemove() const
+{
+    bool remove(m_ObjectChilds.empty());
+    if (remove == true)
+    {
+        return canRemoveChilderen();
+    }
+    return remove;
+}
+bool CullOctreeNode::canRemoveChilderen() const
+{
+    if (m_ChildNodes[0] != nullptr) // if first child is not nullptr then all other are not nullptr as well
+    {
+        for (uint i(0); i < 8; ++i)
+        {
+            if (m_ChildNodes[i]->checkRemove() == false)
+                return false;
+        }
+    }
+    return true;
+}
+
+void CullOctreeNode::doRemoveChilderen(bool checkParent)
+{
+    if (m_ChildNodes[0] != nullptr)
+    {
+        HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+        CullOctreeNodeFactory* factory(CullOctreeNodeFactory::getInstance());
+        for (uint i(0); i < 8; ++i)
+        {
+            m_ChildNodes[i]->doRemoveChilderen(false);
+            factory->releaseNode(m_ChildNodes[i]);
+            m_ChildNodes[i] = nullptr;
+        }
+    }
+    if (checkParent && m_Parent->canRemoveChilderen())
+        m_Parent->doRemoveChilderen(true);
 }
 
 } } //end namespace

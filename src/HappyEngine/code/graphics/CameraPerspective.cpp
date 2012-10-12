@@ -95,37 +95,50 @@ void CameraPerspective::setAspectRatio( float aspectRatio )
 
 he::IntersectResult CameraPerspective::intersect( const Bound& bound ) const
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const Sphere& camSphereBound(m_Bound.getSphere());
     const Cone& camConeBound(m_Bound.getCone());
     const Frustum& frustumBound(m_Bound.getFrustum());
     const Sphere& otherSphereBound(bound.getSphere());
 
     // Fast sphere - sphere test
-    if (camSphereBound.intersectTest(otherSphereBound) == false) 
-        return IntersectResult_Outside;
+    {
+        HIERARCHICAL_PROFILE("Sphere Test");
+        if (camSphereBound.intersectTest(otherSphereBound) == false) 
+            return IntersectResult_Outside;
+    }
 
-    // Fast cone - sphere test
-    if (camConeBound.intersectTest(otherSphereBound) == false) 
-        return IntersectResult_Outside;
+    {
+        HIERARCHICAL_PROFILE("Cone Test");
+        // Fast cone - sphere test
+        if (camConeBound.intersectTest(otherSphereBound) == false) 
+            return IntersectResult_Outside;
+    }
 
     // sphere frustum test
-    switch(frustumBound.intersect(otherSphereBound))
     {
-    case IntersectResult_Outside:
-        return IntersectResult_Outside;
-    case IntersectResult_Inside:
-        return IntersectResult_Inside;
-    case IntersectResult_Intersecting:
-        switch(frustumBound.intersect(bound.getAABB()))
+        HIERARCHICAL_PROFILE("Frustum Test");
+        switch(frustumBound.intersect(otherSphereBound))
         {
         case IntersectResult_Outside:
             return IntersectResult_Outside;
         case IntersectResult_Inside:
             return IntersectResult_Inside;
         case IntersectResult_Intersecting:
-            return IntersectResult_Intersecting;
+            {
+                HIERARCHICAL_PROFILE("Slow Frustum Test");
+                switch(frustumBound.intersect(bound.getAABB()))
+                {
+                case IntersectResult_Outside:
+                    return IntersectResult_Outside;
+                case IntersectResult_Inside:
+                    return IntersectResult_Inside;
+                case IntersectResult_Intersecting:
+                    return IntersectResult_Intersecting;
+                }
+            }
+            break;
         }
-        break;
     }
     HE_ASSERT(false, "Should never get here");
     return IntersectResult_Outside;

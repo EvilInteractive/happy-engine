@@ -33,6 +33,7 @@
 #include "View.h"
 #include "Scene.h"
 #include "Window.h"
+#include "CullOctreeNodeFactory.h"
 
 namespace he {
 
@@ -52,10 +53,12 @@ void StaticDataManager::init()
     gfx::SceneFactory::sdmInit();
     gfx::WindowFactory::sdmInit();
     gfx::LightFactory::sdmInit();
+    gfx::CullOctreeNodeFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gfx::Font>::destroy();
     ResourceFactory<gfx::Material>::destroy();

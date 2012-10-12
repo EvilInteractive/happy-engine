@@ -33,8 +33,9 @@ class ICamera;
 class CullOctreeNode
 {
 public:
-    CullOctreeNode();
-    ~CullOctreeNode();
+    void create(uint32 poolIndex); // pool create
+    void reset(); // pool reset
+    inline uint32 getPoolIndex() const { return m_PoolIndex; }
 
     inline const Bound& getStrictBound() const { return m_StrictBound; }
     inline const Bound& getLooseBound() const { return m_LooseBound; }
@@ -43,13 +44,19 @@ public:
     void remove(IDrawable* obj);
     void reevaluate(IDrawable* obj);
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen) const;
-    bool drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
+    void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
         std::vector<vec3>& vertices, std::vector<uint>& indices) const;
     CullOctreeNode* getRoot();
 
+    bool checkRemove() const;
+    bool canRemoveChilderen() const;
+    void doRemoveChilderen(bool checkParent);
+    const std::vector<IDrawable*>& getObjectChilds() const { return m_ObjectChilds; }
+
 private:
-    CullOctreeNode(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex); 
-    CullOctreeNode(const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
+    void init(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex);
+    void init(const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
+
     void createChilds();
     void createChilds(CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
     void rinsert(IDrawable* obj);
@@ -61,6 +68,7 @@ private:
     std::vector<IDrawable*> m_ObjectChilds;
     Bound m_StrictBound, m_LooseBound;
     bool m_IsLeafe;
+    uint32 m_PoolIndex;
 };
 
 class CullOctree

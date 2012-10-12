@@ -286,12 +286,12 @@ void Deferred3DRenderer::draw()
     ///                             DRAW                                   ///
     //////////////////////////////////////////////////////////////////////////
     const CameraPerspective* camera(m_View->getCamera());
-    //scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
-    scene->getDrawList().drawAndCreateDebugMesh(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+    scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+    //scene->getDrawList().drawAndCreateDebugMesh(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
     {
         d->applyMaterial(camera);
         d->draw();
-    }, m_View->getDebugVertices(), m_View->getDebugIndices());
+    }/*, m_View->getDebugVertices(), m_View->getDebugIndices()*/);
 
 
     //////////////////////////////////////////////////////////////////////////

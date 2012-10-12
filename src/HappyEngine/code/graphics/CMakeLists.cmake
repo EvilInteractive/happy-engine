@@ -53,6 +53,7 @@ set (CODE_GRAPHICS_RENDERING_FILTER
             CameraPerspective.cpp               CameraPerspective.h
             CameraBound.cpp                     CameraBound.h
             CullOctree.cpp                      CullOctree.h
+			CullOctreeNodeFactory.cpp			CullOctreeNodeFactory.h
             DynamicBuffer.cpp                   DynamicBuffer.h                     
             ICamera.h                        
             IRenderer.h

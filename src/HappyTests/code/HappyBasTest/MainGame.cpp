@@ -184,8 +184,8 @@ void MainGame::load()
     //CONSOLE->setView(m_View);
     //m_View->get2DRenderer()->attachToRender(CONSOLE);
 
-    //m_View->getShapeRenderer()->attachToRenderer(this);
-   // m_View2->getShapeRenderer()->attachToRenderer(this);
+    m_View->getShapeRenderer()->attachToRenderer(this);
+    //m_View2->getShapeRenderer()->attachToRenderer(this);
 
     m_TestTexture = CONTENT->asyncLoadTexture("cube_diff.png");
 
@@ -250,7 +250,7 @@ void MainGame::load()
         scene->addComponent(modelComp);
     }
     #pragma endregion
-    /*
+    
     #pragma region Camera Debug Shape
     ResourceFactory<gfx::ModelMesh>* meshFactory(ResourceFactory<gfx::ModelMesh>::getInstance());
     gfx::BufferLayout debugCameraLayout;
@@ -262,7 +262,7 @@ void MainGame::load()
     m_DebugMesh->setIndices(nullptr, 0, he::gfx::IndexStride_UInt, he::gfx::MeshUsage_Dynamic);
     m_DebugMesh->setLoaded();
     #pragma endregion
-    */
+    
     he::MessageBox::show("Load Completed", "Success!");
 
     PROFILER->enable();
@@ -277,14 +277,14 @@ void MainGame::tick( float dTime )
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
 
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    {
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
+//      for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+//      {
+//          const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+//          m_MovingEntityList[i]->setLocalTranslate(
+//              he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+//                       pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+//                       pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+//      }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
         m_SpinShadows = !m_SpinShadows;
@@ -295,8 +295,8 @@ void MainGame::tick( float dTime )
         m_Scene->getLightManager()->getDirectionalLight()->setDirection(
             (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
     }
-    //if (m_ShowDebugMesh)
-    //    fillDebugMeshes();
+    if (m_ShowDebugMesh)
+        fillDebugMeshes();
     m_FpsGraph->tick(dTime);
 }
 
