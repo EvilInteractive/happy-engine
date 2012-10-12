@@ -80,6 +80,8 @@ public:
     void save();
     void restore();
 
+    void restoreDepth();
+
     /* GETTERS */
     Data* getData() const;
     const vec2& getSize() const { return m_CanvasSize; }
@@ -96,6 +98,8 @@ public:
 
     void setAutoClearing(bool clearAfterDraw);
     void setPosition(const vec2& position) { m_Position = position; }
+
+    void setDepth(short depth);
     
     /* DRAW METHODS */
     void clear();
@@ -164,6 +168,8 @@ private:
     Renderer2D* m_Renderer2D;
 
     eventCallback0<void> m_ViewResizedHandler;
+
+    short m_ExtraPixelDepth;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

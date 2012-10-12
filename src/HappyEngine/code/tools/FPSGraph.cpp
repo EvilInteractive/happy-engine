@@ -123,6 +123,8 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
     //GUI->setAntiAliasing(false);
     //GUI->setColor(1.0f,1.0f,1.0f);
 
+    canvas->setDepth(-1900);
+
     canvas->setFillColor(Color(1.0f,1.0f,1.0f));
 
     gui::Text txt(m_pFont);
@@ -134,8 +136,10 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
     sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
     txt.addLine(std::string(buff));
     
-    canvas->fillRect(m_Pos, vec2(128, 16));
+    //canvas->fillRect(m_Pos, vec2(128, 16));
     canvas->fillText(txt, m_Pos);
+
+    canvas->restoreDepth();
 
     //m_pCanvas2D->draw2D(renderer);
 }
@@ -371,6 +375,8 @@ void FPSGraph::setView( gfx::View* view )
     m_View->get2DRenderer()->attachToRender(this);
     /*m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
     */
+
+    m_Pos.x = view->getViewport().width - 105.0f;
 }
 
 } } //end namespace

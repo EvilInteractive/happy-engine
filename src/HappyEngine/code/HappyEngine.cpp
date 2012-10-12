@@ -178,7 +178,7 @@ void HappyEngine::start(ge::Game* pGame)
         m_pGraphicsEngine->init();
         
         m_pConsole->load();
-        CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
+        //CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
 
 #ifdef ENABLE_PROFILING
         PROFILER->load();

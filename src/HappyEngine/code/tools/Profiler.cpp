@@ -97,13 +97,16 @@ Profiler::Profiler()
       m_View(nullptr), 
       m_State(Disabled),
       m_NodesFront(NEW DataMap()),
-      m_NodesBack(NEW DataMap())
+      m_NodesBack(NEW DataMap()),
+      m_Show(false)
 {
     s_Stream.precision(2);
 }
 void Profiler::load()
 {
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
+
+    CONSOLE->registerCmd(boost::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
 }
 
 
@@ -285,6 +288,20 @@ void Profiler::disable()
 {
     if (m_State != Disabled)
         m_State = Disabling;
+}
+
+void Profiler::toggleProfiler()
+{
+    if (m_Show == true)
+    {
+        disable();
+        m_View->get2DRenderer()->detachFromRender(this);
+    }
+    else
+    {
+        m_View->get2DRenderer()->attachToRender(this);
+        enable();
+    }
 }
 
 } } //end namespace
