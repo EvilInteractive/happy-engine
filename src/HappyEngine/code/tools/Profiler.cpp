@@ -113,7 +113,7 @@ void Profiler::load()
 
 Profiler::~Profiler()
 {
-    if (m_View != nullptr)
+    if (m_View != nullptr && m_Show == true)
     {
         m_View->get2DRenderer()->detachFromRender(this);
     }
@@ -165,7 +165,7 @@ void Profiler::tick()
 
 void Profiler::begin( const std::string& name )
 {
-    if (m_State == Disabled)
+    if (isEnabled() == false)
         return;
 
     if (m_CurrentNode != nullptr && m_CurrentNode->m_Name == name)
@@ -199,7 +199,7 @@ void Profiler::begin( const std::string& name )
 
 void Profiler::end()
 {
-    if (m_State == Disabled)
+    if (isEnabled() == false)
         return;
 
     HE_ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
@@ -245,7 +245,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
 }
 void Profiler::draw2D(gfx::Canvas2D* canvas)
 {
-    if (m_State == Disabled)
+    if (isEnabled() == false)
         return;
 
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
@@ -270,12 +270,7 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
 
 void Profiler::setView( gfx::View* view )
 {
-    if (m_View != nullptr)
-    {
-        m_View->get2DRenderer()->detachFromRender(this);
-    }
     m_View = view;
-    m_View->get2DRenderer()->attachToRender(this);
 }
 
 void Profiler::enable()
@@ -292,15 +287,18 @@ void Profiler::disable()
 
 void Profiler::toggleProfiler()
 {
+    HE_ASSERT(m_View != nullptr, "View not set!");
     if (m_Show == true)
     {
         disable();
         m_View->get2DRenderer()->detachFromRender(this);
+        m_Show = false;
     }
     else
     {
         m_View->get2DRenderer()->attachToRender(this);
         enable();
+        m_Show = true;
     }
 }
 

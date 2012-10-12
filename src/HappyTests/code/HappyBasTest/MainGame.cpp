@@ -54,6 +54,8 @@
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
 
+#define ENABLE_WINDOW2
+
 namespace ht {
 
 he::Random MainGame::s_Random(0);
@@ -88,10 +90,12 @@ MainGame::~MainGame()
 
     CONSOLE->setView(nullptr);
     GRAPHICS->removeView(m_View);
-    GRAPHICS->removeView(m_View2);
-
     GRAPHICS->removeWindow(m_Window);
+
+#ifdef ENABLE_WINDOW2
+    GRAPHICS->removeView(m_View2);
     GRAPHICS->removeWindow(m_Window2);
+#endif
 
     m_Scene->getCameraManager()->deleteAllCameras();
     GRAPHICS->removeScene(m_Scene);
@@ -103,8 +107,10 @@ void MainGame::init()
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
-    //m_View2 = GRAPHICS->createView();
-    //m_Window2 = GRAPHICS->createWindow();
+#ifdef ENABLE_WINDOW2
+    m_View2 = GRAPHICS->createView();
+    m_Window2 = GRAPHICS->createWindow();
+#endif
 
     m_Window->setResizable(true);
     m_Window->setVSync(false);
@@ -147,16 +153,18 @@ void MainGame::load()
     m_View->init(settings);
     
 
-    //m_Window2->setResizable(true);
-    //m_Window2->setVSync(false);
-    //m_Window2->setWindowDimension(720, 720);
-    //m_Window2->setWindowTitle("HappyBasTest - 2");
-    //m_Window2->create();
-    //
-    //m_View2->setScene(m_Scene);
-    //m_View2->setWindow(m_Window2);
-    //m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
-    //m_View2->init(settings);
+#ifdef ENABLE_WINDOW2
+    m_Window2->setResizable(true);
+    m_Window2->setVSync(false);
+    m_Window2->setWindowDimension(720, 720);
+    m_Window2->setWindowTitle("HappyBasTest - 2");
+    m_Window2->create();
+    
+    m_View2->setScene(m_Scene);
+    m_View2->setWindow(m_Window2);
+    m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    m_View2->init(settings);
+#endif
     
     CONSOLE->setView(m_View);
     m_View->get2DRenderer()->attachToRender(this);
@@ -165,14 +173,16 @@ void MainGame::load()
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
     flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
-    
-    //FlyCamera* flyCamera2 = NEW FlyCamera();
-    //m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
-    //flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
-    //flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
-    
     m_View->setCamera("default");
-    //m_View2->setCamera("default2");
+
+#ifdef ENABLE_WINDOW2
+    FlyCamera* flyCamera2 = NEW FlyCamera();
+    m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
+    flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
+    flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
+    m_View2->setCamera("default2");
+#endif
+    
     
     m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setView(m_View);
@@ -181,10 +191,12 @@ void MainGame::load()
     //m_View->get2DRenderer()->attachToRender(m_FpsGraph);
     
     //CONSOLE->setView(m_View);
-    //m_View->get2DRenderer()->attachToRender(CONSOLE);
+    m_View->get2DRenderer()->attachToRender(CONSOLE);
 
-    m_View->getShapeRenderer()->attachToRenderer(this);
-    //m_View2->getShapeRenderer()->attachToRenderer(this);
+    //m_View->getShapeRenderer()->attachToRenderer(this);
+#ifdef ENABLE_WINDOW2
+    m_View2->getShapeRenderer()->attachToRenderer(this);
+#endif
 
     m_TestTexture = CONTENT->asyncLoadTexture("cube_diff.png");
 
@@ -276,8 +288,8 @@ void MainGame::tick( float dTime )
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
 
-    /*
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    
+    /*for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
         const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
         m_MovingEntityList[i]->setLocalTranslate(

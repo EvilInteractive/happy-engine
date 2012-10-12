@@ -65,7 +65,7 @@ public:
     void enable();
     void disable();
 
-    bool isEnabled() { return m_State != Disabled; }
+    inline bool isEnabled() { return m_State != Disabled && m_State != Enabling; }
 
     void setView(gfx::View* view);
     virtual void draw2D(gfx::Canvas2D* canvas);

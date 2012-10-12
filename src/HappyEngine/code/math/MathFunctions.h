@@ -103,7 +103,7 @@ inline vec2 abs(const vec2& vector)
 {
     return vec2(::abs(vector.x), ::abs(vector.y));
 }
-inline float dot(const vec2& vector1, const vec2& vector2)
+__forceinline float dot(const vec2& vector1, const vec2& vector2)
 {
     return vector1.x * vector2.x + vector1.y * vector2.y;
 }
@@ -137,7 +137,7 @@ inline vec3 abs(const vec3& vector)
 {
     return vec3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
 }
-inline float dot(const vec3& vector1, const vec3& vector2)
+__forceinline float dot(const vec3& vector1, const vec3& vector2)
 {
     return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
 }

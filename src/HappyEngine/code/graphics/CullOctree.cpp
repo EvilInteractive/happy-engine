@@ -312,19 +312,29 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
     
     if (checkChilderen == true)
     {
+        HIERARCHICAL_PROFILE("checkChilderen");
         // if camera is inside bound
         if ( m_LooseBound.getAABB().isOtherInside(cameraPosition) == false )
         {
             // sphere frustum test
-            switch(camera->intersect(m_LooseBound))
+            switch(camera->intersect(m_StrictBound))
             {
             case IntersectResult_Outside:
-                return;
+                {
+                    HIERARCHICAL_PROFILE("Outside");
+                    return;
+                }
             case IntersectResult_Inside:
-                checkChilderen = false; // completely in -> all childeren are in as well
+                {
+                    HIERARCHICAL_PROFILE("Inside");
+                    checkChilderen = false; // completely in -> all childeren are in as well
+                }
                 break;
             case IntersectResult_Intersecting:
-                break;
+                {
+                    HIERARCHICAL_PROFILE("Intersecting");
+                    break;
+                }
             }
         }
     }
@@ -337,7 +347,10 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
         }
     }
     if (m_ObjectChilds.empty() == false)
+    {
+        HIERARCHICAL_PROFILE("draw objects");
         std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
+    }
 }
 
 void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
@@ -348,18 +361,31 @@ void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
 
     if (checkChilderen == true)
     {
+        HIERARCHICAL_PROFILE("checkChilderen");
+        m_StrictBound.getAABB().generateIndices(indices, vertices.size());
+        m_StrictBound.getAABB().generateVertices(vertices);
         // if camera is inside bound
         if ( m_LooseBound.getAABB().isOtherInside(cameraPosition) == false )
         {
             // sphere frustum test
-            switch(camera->intersect(m_LooseBound))
+            switch(camera->intersect(m_StrictBound))
             {
             case IntersectResult_Outside:
-                return;
+                {
+                    HIERARCHICAL_PROFILE("Outside");
+                    return;
+                }
             case IntersectResult_Inside:
-                checkChilderen = false; // completely in -> all childeren are in as well
-            case IntersectResult_Intersecting:
+                {
+                    HIERARCHICAL_PROFILE("Inside");
+                    checkChilderen = false; // completely in -> all childeren are in as well
+                }
                 break;
+            case IntersectResult_Intersecting:
+                {
+                    HIERARCHICAL_PROFILE("Intersecting");
+                    break;
+                }
             }
         }
     }
@@ -373,8 +399,6 @@ void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
     }
     if (m_ObjectChilds.empty() == false)
         std::for_each(m_ObjectChilds.cbegin(), m_ObjectChilds.cend(), drawFunction);
-    m_StrictBound.getAABB().generateIndices(indices, vertices.size());
-    m_StrictBound.getAABB().generateVertices(vertices);
 }
 
 CullOctreeNode* CullOctreeNode::getRoot()
@@ -420,7 +444,7 @@ void CullOctreeNode::doRemoveChilderen(bool checkParent)
             m_ChildNodes[i] = nullptr;
         }
     }
-    if (checkParent && m_Parent->canRemoveChilderen())
+    if (m_Parent != nullptr && checkParent && m_Parent->canRemoveChilderen())
         m_Parent->doRemoveChilderen(true);
 }
 
