@@ -20,6 +20,14 @@ p {
   background-color: #fff;
 }
 
+#editorCanvas {
+  width: 800px;
+  height: 400px;
+  position: relative;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
 #text {
   font-size: 24pt;
   text-align: center;

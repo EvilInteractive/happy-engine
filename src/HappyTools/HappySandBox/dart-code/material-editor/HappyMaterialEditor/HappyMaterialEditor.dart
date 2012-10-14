@@ -1,19 +1,36 @@
+#library("HappyMaterialEditor");
 
 #import('dart:html');
+#import('dart:math');
+#import('NodeView.dart');
 
 num rotatePos = 0;
 
-void main() {
-  query("#text").text = "Click me!";
+CanvasElement canvas;
+CanvasRenderingContext2D context;
+NodeView nodeView;
 
-  query("#text").on.click.add(rotateText);
+void main() 
+{  
+  canvas = query("#editorCanvas");
+  context = canvas.context2d;
+  
+  nodeView = new NodeView();
+  
+  canvas.on.mouseDown.add(nodeView.OnMousePressed);
+  canvas.on.mouseUp.add(nodeView.OnMouseReleased);
+  canvas.on.mouseMove.add(nodeView.OnMouseMove);
+  window.on.keyPress.add(nodeView.OnKeyPressed, true);
+  window.on.keyUp.add(nodeView.OnKeyReleased, true);
+  
+  window.requestAnimationFrame(tick);
+
 }
 
-void rotateText(Event event) {
-  rotatePos += 360;
-
-  var textElement = query("#text");
-
-  textElement.style.transition = "1s";
-  textElement.style.transform = "rotate(${rotatePos}deg)";
+bool tick(int time)
+{
+  context.clearRect(0,0,canvas.width,canvas.height);
+  nodeView.draw(context);
+  window.requestAnimationFrame(tick);
 }
+
