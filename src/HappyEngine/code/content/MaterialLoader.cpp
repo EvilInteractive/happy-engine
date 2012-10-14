@@ -301,7 +301,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         }
                         else
                         {
-                            HE_ERROR("Material: instancing unkown type %s", std::string(p.second.cbegin(), p.second.cend()));
+                            HE_ERROR("Material: instancing unknown type %s", std::string(p.second.cbegin(), p.second.cend()));
                         }
                         shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));  
                     });

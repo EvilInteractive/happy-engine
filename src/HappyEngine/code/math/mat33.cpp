@@ -47,21 +47,21 @@ mat33::~mat33()
 }
 
 /* STATIC CONSTRUCTORS */
-mat33 mat33::createTranslaton(const vec2& translation)
+mat33 mat33::createTranslation2D(const vec2& translation)
 {
     return mat33(1.0f, 0.0f, translation.x,
                     0.0f, 1.0f, translation.y,
                     0.0f, 1.0f, 0.0f );
 }
 
-mat33 mat33::createRotation(const float radians)
+mat33 mat33::createRotation2D(const float radians)
 {
     return mat33(cosf(radians), -sinf(radians), 0.0f,
                     sinf(radians), cosf(radians), 0.0f,
                     0.0f, 0.0f, 1.0f );
 }
 
-mat33 mat33::createScale(const vec2& scale)
+mat33 mat33::createScale2D(const vec2& scale)
 {
     return mat33(scale.x, 0.0f, 0.0f,
                     0.0f, scale.y, 0.0f,
@@ -91,6 +91,42 @@ mat44 mat33::getMat44() const
                     m_Matrix.column1.x, m_Matrix.column1.y, m_Matrix.column1.z, 0,
                     m_Matrix.column2.x, m_Matrix.column2.y, m_Matrix.column2.z, 0,
                     0, 0, 0, 1);
+}
+
+bool mat33::operator==( const mat33& other ) const
+{
+    return  m_Matrix.column0 == other.m_Matrix.column0 && 
+            m_Matrix.column1 == other.m_Matrix.column1 &&
+            m_Matrix.column2 == other.m_Matrix.column2;
+}
+
+bool mat33::operator!=( const mat33& other ) const
+{
+    return  m_Matrix.column0 != other.m_Matrix.column0 || 
+            m_Matrix.column1 != other.m_Matrix.column1 ||
+            m_Matrix.column2 != other.m_Matrix.column2;
+}
+
+float mat33::operator()( int row, int column ) const
+{
+    return m_Matrix(row, column);
+}
+
+float& mat33::operator()( int row, int column )
+{
+    return m_Matrix(row, column);
+}
+
+he::mat33 mat33::createRotation3D( const vec3& axis, float radians )
+{
+    float cosAlpha(cosf(radians));
+    float sinAlpha(sinf(radians));
+
+    return mat33(
+        cosAlpha + sqr(axis.x) * (1 - cosAlpha),                    axis.x * axis.y * (1 - cosAlpha) - axis.z * sinAlpha,       axis.x * axis.z * (1 - cosAlpha) + axis.y * sinAlpha,
+        axis.x * axis.y * (1 - cosAlpha) + axis.z * sinAlpha,       cosAlpha + sqr(axis.y) * (1 - cosAlpha),                    axis.y * axis.z * (1 - cosAlpha) - axis.x * sinAlpha,
+        axis.x * axis.z * (1 - cosAlpha) - axis.y * sinAlpha,       axis.y * axis.z * (1 - cosAlpha) + axis.x * sinAlpha,       cosAlpha + sqr(axis.z) * (1 - cosAlpha));
+
 }
 
 /* STATIC */

@@ -22,6 +22,8 @@
 
 #include "TriggerComponent.h"
 
+#include "PhysicsTrigger.h"
+
 #include "Entity.h"
 #include "Game.h"
 
@@ -29,24 +31,21 @@ namespace he {
 namespace ge {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-TriggerComponent::TriggerComponent() :  m_pTrigger(nullptr),
-                                        m_pParent(nullptr)
+TriggerComponent::TriggerComponent() :  m_Trigger(nullptr),
+                                        m_Parent(nullptr)
 {
 }
 
 TriggerComponent::~TriggerComponent()
 {
-    delete m_pTrigger;
-    GAME->removeFromTickList(this);
+    delete m_Trigger;
 }
 
 /* ICOMPONENT */
 void TriggerComponent::init(Entity* pParent)
 {
-    m_pParent = pParent;
-    m_pTrigger = NEW px::PhysicsTrigger(m_pParent->getWorldMatrix());
-
-    GAME->addToTickList(this);
+    m_Parent = pParent;
+    m_Trigger = NEW px::PhysicsTrigger(m_Parent->getWorldMatrix());
 }
 
 void TriggerComponent::serialize(SerializerStream& /*stream*/)
@@ -59,34 +58,36 @@ void TriggerComponent::deserialize(const SerializerStream& /*stream*/)
 
 }
 
-/* ITICKABLE */
-void TriggerComponent::tick(float /*dTime*/)
-{
-    m_pTrigger->setPose(m_pParent->getWorldMatrix());
-}
-
 /* GENERAL */
-void TriggerComponent::addShape(const px::IPhysicsShape* pShape, const mat44& localPose)
+void TriggerComponent::addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
+    const mat44& localPose)
 {
-    HE_ASSERT(m_pTrigger != nullptr, "attach component first to entity");
-
-    m_pTrigger->addTriggerShape(pShape, localPose);
+    HE_IF_ASSERT(m_Trigger != nullptr, "attach component first to entity")
+    {
+        m_Trigger->addTriggerShape(shape, collisionGroup, collisionGroupAgainst, localPose);
+    }
 }
 
 void TriggerComponent::addOnTriggerEnterCallBack(boost::function<void()> callback)
 {
-    m_pTrigger->addOnTriggerEnterCallBack(callback);
+    m_Trigger->addOnTriggerEnterCallBack(callback);
 }
 
 void TriggerComponent::addOnTriggerLeaveCallBack(boost::function<void()> callback)
 {
-    m_pTrigger->addOnTriggerLeaveCallBack(callback);
+    m_Trigger->addOnTriggerLeaveCallBack(callback);
 }
 
 /* GETTERS */
 px::PhysicsTrigger* TriggerComponent::getTrigger()
 {
-    return m_pTrigger;
+    return m_Trigger;
+}
+
+void TriggerComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
+    m_Trigger->setPose(m_WorldMatrix);
 }
 
 } } //end namespace

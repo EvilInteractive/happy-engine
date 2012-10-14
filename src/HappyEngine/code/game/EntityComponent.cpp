@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -16,36 +16,12 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 30/03/2012
-#include "HappyPongServerPCH.h" 
+//Created: 04/09/2012
+#include "HappyPCH.h"
+#include "EntityComponent.h"
+#include "NetworkSerializer.h"
 
-#include "Obstacle.h"
+namespace he {
+namespace ge {
 
-#include "Material.h"
-#include "Game.h"
-
-namespace hps {
-
-Obstacle::Obstacle(): 
-    m_Position(0, 0, 0), 
-    m_Radius(8.0f)
-{
-    setLocalTranslate(m_Position);
-}
-
-
-Obstacle::~Obstacle()
-{
-}
-
-float Obstacle::getRadius() const
-{
-    return m_Radius;
-}
-
-const he::vec3& Obstacle::getPosition() const
-{
-    return m_Position;
-}
-
-} //end namespace
+} } //end namespace

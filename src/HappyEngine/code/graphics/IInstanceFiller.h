@@ -32,7 +32,7 @@ class IInstanceFiller
 public:
     virtual ~IInstanceFiller() {}
     
-    virtual void fillInstancingBuffer(details::InstancingBuffer& buffer) = 0;
+    virtual void fillInstancingBuffer(details::InstancingBuffer& buffer) const = 0;
 };  
 
 } } //end namespace

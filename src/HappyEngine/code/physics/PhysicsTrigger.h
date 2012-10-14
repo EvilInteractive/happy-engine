@@ -22,13 +22,13 @@
 #define _HE_PHYSICS_TRIGGER_H_
 #pragma once
 
-#include "event.h"
-#include "PhysicsDynamicActor.h"
+#include "IPhysicsActor.h"
 
 namespace he {
 namespace px {
+class PhysicsDynamicActor;
 
-class PhysicsTrigger
+class PhysicsTrigger : public IPhysicsActor
 {
 public:
 
@@ -37,7 +37,14 @@ public:
     virtual ~PhysicsTrigger();
 
     /* GENERAL */
-    void addTriggerShape(const IPhysicsShape* shape, const mat44& localPose = mat44::Identity);
+    virtual physx::PxRigidActor* getInternalActor() const;
+    virtual void getTranslation(vec3& translation) const;
+    virtual void getRotation(mat33& rotation) const;
+    virtual void getPose(mat44& pose) const;
+
+
+    void addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup = 0xffffffff, 
+                         uint32 collisionAgainstGroup = 0xffffffff, const mat44& localPose = mat44::Identity);
 
     /* SETTERS */
     void setPose(const vec3& move, const vec3& axis, float angle);
@@ -49,8 +56,11 @@ public:
     void addOnTriggerEnterCallBack(const boost::function<void()>& callback);
     void addOnTriggerLeaveCallBack(const boost::function<void()>& callback);
 
+protected:
+    virtual uint getCompatibleShapes() const;
+
 private:
-    void addShape(physx::PxShape* shape);
+    void addShape(physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup);
 
     /* DATAMEMBERS */
     PhysicsDynamicActor* m_Actor;

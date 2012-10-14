@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,25 +15,34 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 23/06/2012
-#include "HappyPCH.h" 
+//Author:  
+//Created: //
 
-#include "NetworkObjectComponent.h"
+#ifndef _HE_EntityComponentFactory_H_
+#define _HE_EntityComponentFactory_H_
+#pragma once
 
-#include "RakPeer.h"
+#include "NetworkObjectFactory.h"
+#include "ObjectFactory.h"
 
 namespace he {
-namespace net {
+namespace ge {
 
-NetworkObjectComponent::NetworkObjectComponent()
+class EntityComponentFactory
 {
+public:
+    EntityComponentFactory();
+    virtual ~EntityComponentFactory();
 
-}
+    
 
+private:
 
-NetworkObjectComponent::~NetworkObjectComponent()
-{
-}
+    //Disable default copy constructor and default assignment operator
+    EntityComponentFactory(const EntityComponentFactory&);
+    EntityComponentFactory& operator=(const EntityComponentFactory&);
+};
 
 } } //end namespace
+
+#endif

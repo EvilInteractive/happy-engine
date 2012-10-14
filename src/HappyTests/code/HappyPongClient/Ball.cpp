@@ -44,13 +44,8 @@ Ball::Ball():
     reset();
 
     he::ge::ModelComponent* model(NEW he::ge::ModelComponent());
-    he::ObjectHandle ballMaterial(CONTENT->loadMaterial("pong/ball.material"));
-    model->setMaterial(ballMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("pong/ball.binobj", "M_Bal", model->getMaterial()->getCompatibleVertexLayout()));
-    model->setModelMesh(mesh->getHandle());
-    mesh->release();
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(ballMaterial);
-    model->setLocalTransform(he::mat44::createScale(100));
+    model->setModelMeshAndMaterial("pong/ball.material", "pong/ball.binobj");
+    model->setLocalScale(he::vec3(100, 100, 100));
     addComponent(model);
 
     m_LightFlashComponent = NEW LightFlashComponent();
@@ -58,7 +53,7 @@ Ball::Ball():
     m_LightFlashComponent->setAttenuation(1.0f, 50);
     m_LightFlashComponent->setMultiplier(0.5f);
     m_LightFlashComponent->setColor(he::Color(1.0f, 1.0f, 0.5f));
-    m_LightFlashComponent->setOffset(he::vec3(0.0f, 1.5f, 0));
+    m_LightFlashComponent->setLocalTranslate(he::vec3(0.0f, 1.5f, 0));
     m_LightFlashComponent->setFlashMultiplier(5);
     m_LightFlashComponent->setNormalMultiplier(0);
     m_LightFlashComponent->setFlashDuration(0.25f);
@@ -68,7 +63,7 @@ Ball::Ball():
     redLight->setAttenuation(1.0f, 50);
     redLight->setMultiplier(1.0f);
     redLight->setColor(he::Color(1.0f, 0.1f, 0.1f));
-    redLight->setOffset(he::vec3(0.0f, 1.5f, 0));
+    redLight->setLocalTranslate(he::vec3(0.0f, 1.5f, 0));
 
     m_MainGame->setActiveBall(this);
     GAME->addToTickList(this);
@@ -93,7 +88,7 @@ void Ball::tick( float dTime )
 {
     m_MoveTo += m_Velocity * dTime;
     m_Position = m_MoveTo;
-    setWorldMatrix(he::mat44::createTranslation(m_Position));
+    setLocalTranslate(m_Position);
 }
 
 const he::vec3& Ball::getPosition() const
@@ -111,40 +106,38 @@ float Ball::getRadius() const
     return m_Radius;
 }
 
-void Ball::serializeCreate( he::NetworkStream* /*stream*/ ) const
+void Ball::serializeCreate( he::net::NetworkStream* /*stream*/ ) const
 {
     HE_ASSERT(false, "will never happen");
 }
 
-bool Ball::deserializeCreate( he::NetworkStream* stream )
+bool Ball::deserializeCreate( he::net::NetworkStream* stream )
 {
     stream->Read(m_MoveTo);
     stream->Read(m_Velocity);
     m_Position = m_MoveTo;
-    return Entity::deserializeCreate(stream);
+    return true;
 }
 
-void Ball::serializeRemove( he::NetworkStream* stream ) const
+void Ball::serializeRemove( he::net::NetworkStream* /*stream*/ ) const
 {
-    Entity::serializeRemove(stream);
 }
 
-bool Ball::deserializeRemove( he::NetworkStream* stream )
+bool Ball::deserializeRemove( he::net::NetworkStream* /*stream*/ )
 {
-    return Entity::deserializeRemove(stream);
+    return true;
 }
 
-void Ball::serialize( he::net::NetworkSerializer& /*serializer*/ )
+void Ball::serialize(const he::net::NetworkSerializer& /*serializer*/ )
 {
     HE_ASSERT(false, "will never happen");
 }
 
-void Ball::deserialize( he::net::NetworkDeserializer& serializer )
+void Ball::deserialize(const he::net::NetworkDeserializer& serializer )
 {
     serializer.deserializeVariable(m_MoveTo);
     serializer.deserializeVariable(m_Velocity);
     m_LightFlashComponent->flash();
-    Entity::deserialize(serializer);
 }
 
 } //end namespace

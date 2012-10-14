@@ -29,6 +29,9 @@ class AmbientLight;
 class DirectionalLight;
 class BufferLayout;
 
+class SpotLight;
+class PointLight;
+
 class LightManager
 {
 public:
@@ -38,19 +41,8 @@ public:
     AmbientLight* setAmbientLight(const Color&    color, 
                                   float           multiplier);
 
-    ObjectHandle addPointLight(const vec3&   pos, 
-                              const Color&  color, 
-                              float         multiplier, 
-                              float         beginAttenuation, 
-                              float         endAttentuation);
-
-    ObjectHandle addSpotLight(const vec3&    pos, 
-                            const vec3&    direction, 
-                            const Color&   color, 
-                            float          multiplier,
-                            float          fov, //0 -> piOver2
-                            float          beginAttenuation, 
-                            float          endAttentuation);
+    ObjectHandle addPointLight();
+    ObjectHandle addSpotLight();
 
     DirectionalLight* setDirectionalLight(const vec3&   direction, 
                                           const Color&  color, 

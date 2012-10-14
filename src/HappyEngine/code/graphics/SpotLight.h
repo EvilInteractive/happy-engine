@@ -31,20 +31,23 @@ namespace gfx {
 class SpotLight : public DefaultSingleDrawable, public ILight
 {
 private:
-    vec3 m_Position;
     float m_Multiplier;
-    vec3 m_Direction;
-    float m_BeginAttenuation;
-    vec3 m_Color;
-    float m_EndAttenuation;
-    float m_CosCutoff;
 
-    mat44 m_mtxWorld;
-    void calculateWorld();
+    vec3 m_LocalDirection;
+    vec3 m_WorldDirection;
+
+    vec2 m_Attenuation;
+    vec2 m_ScaledAttenuation;
+
+    vec3 m_Color;
+    float m_CosCutoff;
 
     ModelMesh* m_LightVolume;
     ModelMesh* m_Model;
     Material* m_Material;
+
+protected:
+    virtual void calculateWorldMatrix(); // override Object3D
 
 public:
     SpotLight();
@@ -52,7 +55,6 @@ public:
     SpotLight(const SpotLight& other);
     SpotLight& operator=(const SpotLight& other);
 
-    void setPosition(const vec3& position);
     void setMultiplier(float multiplier);
     void setDirection(const vec3& direction);
     void setAttenuation(float begin, float end);
@@ -60,16 +62,20 @@ public:
     void setColor(const Color& color);
     void setFov(float angle);
 
-    const vec3& getPosition() const;
     float getMultiplier() const;
-    const vec3& getDirection() const;
+
+    const vec3& getLocalDirection() const;
+    const vec3& getWorldDirection() const;
+
     float getBeginAttenuation() const;
     float getEndAttenuation() const;
+    float getScaledBeginAttenuation() const;
+    float getScaledEndAttenuation() const;
+
     const vec3& getColor() const;
     float getCosCutoff() const;
     float getFov() const;
     
-    mat44 getWorldMatrix() const;
     const ModelMesh* getLightVolume() const;
 
     virtual bool getCastsShadow() const { return false; }

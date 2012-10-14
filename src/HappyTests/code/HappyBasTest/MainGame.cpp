@@ -79,29 +79,15 @@ void MainGame::load()
 
     ge::Entity* scene(NEW ge::Entity());
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
-    he::ObjectHandle sceneMaterial(CONTENT->loadMaterial("testScene3.material"));
-    modelComp->setMaterial(sceneMaterial);
-    he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene3.binobj", "M_Scene", modelComp->getMaterial()->getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testSceneBas/testSceneBas.binobj", "M_Ground", modelComp->getMaterial().getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial().getCompatibleVertexLayout()));
-    //he::gfx::ModelMesh* mesh(CONTENT->asyncLoadModelMesh("testScene5.binobj", "M_Terrain", modelComp->getMaterial().getCompatibleVertexLayout()));
-
-    modelComp->setModelMesh(mesh->getHandle());
-    //modelComp->setLocalTransform(he::mat44::createScale(100));
     scene->addComponent(modelComp);
-    mesh->release();
+    modelComp->setModelMeshAndMaterial("testScene3.material", "testScene3.binobj");
 
     modelComp = NEW ge::ModelComponent();
-    he::ObjectHandle sceneMaterial2(CONTENT->loadMaterial("testScene4.material"));
-    modelComp->setMaterial(sceneMaterial2);
-    mesh = CONTENT->asyncLoadModelMesh("testScene4.binobj", "Box008", modelComp->getMaterial()->getCompatibleVertexLayout());
-    modelComp->setModelMesh(mesh->getHandle());
-    modelComp->setLocalTransform(he::mat44::createTranslation(he::vec3(1, 1, 1)) * he::mat44::createRotation(vec3(0, 1, 0), he::pi) * he::mat44::createScale(100));
+    modelComp->setModelMeshAndMaterial("testScene4.material", "testScene4.binobj");
+    modelComp->setLocalTranslate(he::vec3(1, 1, 1));
+    modelComp->setLocalRotate(he::mat33::createRotation3D(vec3(0, 1, 0), he::pi));
+    modelComp->setLocalScale(vec3(100.0f, 100.0f, 100.0f));
     scene->addComponent(modelComp);
-    mesh->release();
-
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial);
-    he::ResourceFactory<he::gfx::Material>::getInstance()->release(sceneMaterial2);
 
     m_EntityList.push_back(scene);
 
@@ -111,16 +97,13 @@ void MainGame::load()
 
     ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
     scene->addComponent(pTempPointLightComp);
-    pTempPointLightComp->setOffset(vec3(8.822f, 6.739f, -20.068f));
-    pTempPointLightComp->setMultiplier(50.0f);
+    pTempPointLightComp->setLocalTranslate(vec3(0.0f, 20.0f, 0.0f));
+    pTempPointLightComp->setMultiplier(5.0f);
     pTempPointLightComp->setColor(Color((he::byte)126, 190, 255, 255));
     pTempPointLightComp->setAttenuation(0, 15);
 
     #pragma endregion
-
-    m_pSkyBox = NEW gfx::SkyBox();
-    m_pSkyBox->load("skybox/day/day.png");
-    GRAPHICS->addToDrawList(m_pSkyBox);
+    
 }
 
 void MainGame::tick( float dTime )

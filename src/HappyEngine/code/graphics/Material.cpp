@@ -118,7 +118,7 @@ ShaderVar* Material::getVar( const std::string& var )
 }
 
 
-void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera ) const
+void Material::apply( const SingleDrawable* pDrawable, const ICamera* pCamera ) const
 {
     HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
     {
@@ -159,8 +159,12 @@ void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera )
                         shader->setShaderVar(pVar->getId(), pCamera->getView()); 
                         break;             
                     case ShaderVarType_WorldPosition: 
-                        shader->setShaderVar(pVar->getId(), pDrawable->getWorldMatrix().getTranslation()); 
-                        break;
+                        {
+                            vec3 worldPos;
+                            pDrawable->getWorldMatrix().getTranslationComponent(worldPos);
+                            shader->setShaderVar(pVar->getId(), worldPos); 
+                            break;
+                        }
                     
                     case ShaderVarType_AmbientColor: 
                         shader->setShaderVar(pVar->getId(), vec4(GRAPHICS->getLightManager()->getAmbientLight()->color, GRAPHICS->getLightManager()->getAmbientLight()->multiplier)); 
@@ -204,7 +208,7 @@ void Material::apply( const ISingleDrawable* pDrawable, const ICamera* pCamera )
         });
     }
 }
-void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pCamera ) const
+void Material::apply( const InstancedDrawable* /*pDrawable*/, const ICamera* pCamera ) const
 {
     HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
     HE_IF_ASSERT(m_UsedForInstancing, "shader not capable for instancing!")
@@ -278,7 +282,7 @@ void Material::apply( const IInstancedDrawable* /*pDrawable*/, const ICamera* pC
         });
     }
 }
-void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera ) const
+void Material::apply( const SkinnedDrawable* pDrawable, const ICamera* pCamera ) const
 {
     HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
     {
@@ -322,8 +326,13 @@ void Material::apply( const ISkinnedDrawable* pDrawable, const ICamera* pCamera 
                         shader->setShaderVar(pVar->getId(), pDrawable->getBoneTransforms()); 
                         break;
 
-                    case ShaderVarType_WorldPosition: shader->setShaderVar(pVar->getId(), pDrawable->getWorldMatrix().getTranslation()); 
-                        break;
+                    case ShaderVarType_WorldPosition: 
+                        {
+                            vec3 worldPos;
+                            pDrawable->getWorldMatrix().getTranslationComponent(worldPos);
+                            shader->setShaderVar(pVar->getId(), worldPos); 
+                            break;
+                        }
 
                     case ShaderVarType_AmbientColor: 
                         shader->setShaderVar(pVar->getId(), vec4(GRAPHICS->getLightManager()->getAmbientLight()->color, GRAPHICS->getLightManager()->getAmbientLight()->multiplier)); 

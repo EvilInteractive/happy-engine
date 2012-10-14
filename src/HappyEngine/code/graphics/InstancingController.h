@@ -36,7 +36,7 @@ class IInstanceFiller;
 class ModelMesh;
 class Material;
 
-class InstancingController : public IInstancedDrawable
+class InstancingController : public InstancedDrawable
 {
 public:
     InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);

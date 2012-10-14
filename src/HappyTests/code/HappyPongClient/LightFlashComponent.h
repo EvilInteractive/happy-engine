@@ -26,7 +26,7 @@
 
 namespace hpc {
 
-class LightFlashComponent : public he::ge::PointLightComponent
+class LightFlashComponent : public he::ge::PointLightComponent, public he::ge::ITickable
 {
 public:
     LightFlashComponent();

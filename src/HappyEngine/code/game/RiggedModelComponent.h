@@ -22,17 +22,18 @@
 #define _HE_RIGGED_MODEL_COMPONENT_H_
 #pragma once
 
-#include "IComponent.h"
+#include "EntityComponent.h"
 #include "DefaultSkinnedDrawable.h"
 
 namespace he {
 namespace ge {
     
-class RiggedModelComponent : public gfx::DefaultSkinnedDrawable, public IComponent
+class SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
 {
+    IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSkinnedDrawable)
 public:
-    RiggedModelComponent();
-    virtual ~RiggedModelComponent();
+    SkinnedModelComponent();
+    virtual ~SkinnedModelComponent();
 
     struct BoneTransform
     {
@@ -42,7 +43,7 @@ public:
     };
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         IComponent                                 ///
+    ///                         EntityComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
 
@@ -57,14 +58,9 @@ public:
     virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const; 
     virtual const std::vector<mat44>& getBoneTransforms() const;
-    virtual mat44 getWorldMatrix() const;
     //////////////////////////////////////////////////////////////////////////
-        
-    void setLocalTransform(const mat44& mtxWorld);
-    const mat44& getLocalTransform() const;
-   
+           
     void setModelMesh(const ObjectHandle& modelHandle);
-
     void setMaterial(const ObjectHandle& material);
 
     BoneTransform getBone(const std::string& name) const;
@@ -75,20 +71,18 @@ protected:
 private:
     void modelLoadedCallback();
 
-    const gfx::ModelMesh* m_pModel;
+    const gfx::ModelMesh* m_ModelMesh;
     const gfx::Material* m_Material;
 
     std::vector<mat44> m_BoneTransform;
     std::map<std::string, BoneTransform> m_Bones;
-
-    mat44 m_mtxLocalTransform;
-    
-    Entity* m_pParent;
+        
+    Entity* m_Parent;
     
 
     //Disable default copy constructor and default assignment operator
-    RiggedModelComponent(const RiggedModelComponent&);
-    RiggedModelComponent& operator=(const RiggedModelComponent&);
+    SkinnedModelComponent(const SkinnedModelComponent&);
+    SkinnedModelComponent& operator=(const SkinnedModelComponent&);
 };
 
 } } //end namespace

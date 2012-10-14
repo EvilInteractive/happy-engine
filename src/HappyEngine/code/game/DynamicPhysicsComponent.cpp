@@ -20,17 +20,15 @@
 #include "HappyPCH.h" 
 
 #include "DynamicPhysicsComponent.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
 
 #include "Entity.h"
-#include "HappyEngine.h"
 #include "Game.h"
+#include "PhysicsDynamicActor.h"
 
 namespace he {
 namespace ge {
 
-DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
+DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr)
 {
 }
 
@@ -38,17 +36,14 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_pDynamicActor(nullptr)
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
     GAME->removeFromTickList(this);
-    delete m_pDynamicActor;
+    delete m_DynamicActor;
 }
 
-void DynamicPhysicsComponent::init( Entity* pParent )
+void DynamicPhysicsComponent::init( Entity* parent )
 {
-    m_pParent = pParent;
-    m_pDynamicActor = NEW px::PhysicsDynamicActor(m_pParent->getWorldMatrix());
+    m_Parent = parent;
+    m_DynamicActor = NEW px::PhysicsDynamicActor(m_Parent->getWorldMatrix());
     GAME->addToTickList(this);
-    
-    //if (HAPPYENGINE->isEditor())
-    //    m_pDynamicActor->setKeyframed(true);
 }
 
 void DynamicPhysicsComponent::serialize(SerializerStream& /*stream*/)
@@ -63,20 +58,30 @@ void DynamicPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
 
 void DynamicPhysicsComponent::tick( float /*dTime*/ )
 {
-    m_pParent->setWorldMatrix(m_pDynamicActor->getPose());
+    vec3 translation;
+    mat33 rotation;
+    m_DynamicActor->getTranslation(translation);
+    m_DynamicActor->getRotation(rotation);
+    m_Parent->setLocalTranslate(translation);
+    m_Parent->setLocalRotate(rotation);
 }
 
 
-void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass, 
+void DynamicPhysicsComponent::addShape(  const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, float mass, 
     uint32 collisionGroup, uint32 collisionGroupAgainst, const mat44& localPose )
 {
-    HE_ASSERT(m_pDynamicActor != nullptr, "attach component first to entity");
-    m_pDynamicActor->addShape(pShape, material, mass, collisionGroup, collisionGroupAgainst, localPose);
+    HE_ASSERT(m_DynamicActor != nullptr, "attach component first to entity");
+    m_DynamicActor->addShape(shape, material, mass, collisionGroup, collisionGroupAgainst, localPose);
 }
 
 px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
 {
-    return m_pDynamicActor;
+    return m_DynamicActor;
+}
+
+void DynamicPhysicsComponent::calculateWorldMatrix()
+{
+    Object3D::calculateWorldMatrix();
 }
 
 } } //end namespace

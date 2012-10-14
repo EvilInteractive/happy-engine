@@ -72,8 +72,9 @@ bool DefaultSkinnedDrawable::isInCamera( const ICamera* pCamera ) const
     if (isVisible() == false)
         return false;
 
-    float radius(max<float>(max<float>(getWorldMatrix()(0, 0), getWorldMatrix()(1, 1)), getWorldMatrix()(2, 2)) * getModelMesh()->getBoundingSphere().getRadius());
-    vec3 position(getWorldMatrix() * getModelMesh()->getBoundingSphere().getPosition());
+    const mat44& world(getWorldMatrix());
+    float radius(max<float>(max<float>(world(0, 0), world(1, 1)), world(2, 2)) * getModelMesh()->getBoundingSphere().getRadius());
+    vec3 position(world * getModelMesh()->getBoundingSphere().getPosition());
 
     shapes::Sphere sphere(position, radius);
 
@@ -82,7 +83,8 @@ bool DefaultSkinnedDrawable::isInCamera( const ICamera* pCamera ) const
 
 float DefaultSkinnedDrawable::getDrawPriority( const ICamera* pCamera ) const
 {
-    return FLT_MAX - lengthSqr(pCamera->getPosition() - vec3(getWorldMatrix()(0, 3), getWorldMatrix()(1, 3), getWorldMatrix()(2, 3)));
+    const mat44& world(getWorldMatrix());
+    return FLT_MAX - lengthSqr(pCamera->getPosition() - vec3(world(0, 3), world(1, 3), world(2, 3)));
 }
 
 void DefaultSkinnedDrawable::draw()

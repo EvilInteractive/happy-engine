@@ -25,106 +25,36 @@
 namespace he {
 namespace ge {
 
-Entity::Entity(): m_IsSerializeDataDirty(false)
+Entity::Entity()
 {
 }
 
 
 Entity::~Entity()
 {
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [](IComponent* pComponent)
+    std::for_each(m_Components.cbegin(), m_Components.cend(), [](EntityComponent* component)
     {
-        delete pComponent;
+        delete component;
     });
 }
 
-mat44 Entity::getWorldMatrix() const
+void Entity::addComponent( EntityComponent* component )
 {
-    return m_mtxWorld;
+    m_Components.push_back(component);
+    attach(component);
+    component->init(this);
 }
 
-void Entity::setWorldMatrix(const mat44& mtxWorld)
+void Entity::removeComponent( EntityComponent* component )
 {
-    m_mtxWorld = mtxWorld;
-}
-
-void Entity::addComponent( IComponent* pComponent )
-{
-    m_Components.push_back(pComponent);
-    pComponent->init(this);
-}
-
-void Entity::deleteComponent( IComponent* pComponent )
-{
-    m_Components.erase(std::remove(m_Components.begin(), m_Components.end(), pComponent), m_Components.end());
-    delete pComponent;
-}
-
-void Entity::serializeCreate( NetworkStream* stream ) const
-{
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [&stream](IComponent* component)
+    detach(component);
+    std::vector<EntityComponent*>::iterator it(std::find(m_Components.begin(), m_Components.end(), component));
+    HE_IF_ASSERT(it != m_Components.cend(), "Component not attached to Entity")
     {
-        component->serializeCreate(stream);
-    });
-}
-
-bool Entity::deserializeCreate( NetworkStream* stream )
-{
-    bool keep(true);
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [&keep,&stream](IComponent* component)
-    {
-        keep &= component->deserializeCreate(stream);
-    });
-    return keep;
-}
-
-void Entity::serializeRemove( NetworkStream* stream ) const
-{
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [&stream](IComponent* component)
-    {
-        component->serializeRemove(stream);
-    });
-}
-
-bool Entity::deserializeRemove( NetworkStream* stream )
-{
-    bool remove(true);
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [&remove,&stream](IComponent* component)
-    {
-        remove &= component->deserializeRemove(stream);
-    });
-    return remove;
-}
-
-bool Entity::isSerializeDataDirty() const
-{
-    if (m_IsSerializeDataDirty)
-        return true;
-
-    std::vector<IComponent*>::const_iterator it(m_Components.cbegin());
-    for (; it != m_Components.cend(); ++it)
-    {
-        if ((*it)->isSerializeDataDirty())
-            return true;
+        *it = m_Components.back();
+        m_Components.pop_back();
     }
-    return false;
 }
 
-void Entity::serialize( net::NetworkSerializer& serializer )
-{
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [&serializer](IComponent* component)
-    {
-        component->serialize(serializer);
-    });
-    m_IsSerializeDataDirty = false;
-}
-
-void Entity::deserialize( net::NetworkDeserializer& serializer )
-{
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [&serializer](IComponent* component)
-    {
-        component->deserialize(serializer);
-    });
-}
 
 } } //end namespace

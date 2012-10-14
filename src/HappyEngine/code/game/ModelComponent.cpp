@@ -25,43 +25,46 @@
 #include "ModelMesh.h"
 #include "Material.h"
 
+#include "ContentManager.h"
+#include "Model.h"
+
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_pModel(nullptr), m_pParent(nullptr), m_AttachedToScene(false), m_Material(nullptr)
+ModelComponent::ModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_AttachedToScene(false), m_Material(nullptr)
 {
 }
 
 
 ModelComponent::~ModelComponent()
 {
-    if (m_pModel != nullptr)
-        m_pModel->release();
+    if (m_ModelMesh != nullptr)
+        m_ModelMesh->release();
     if (m_AttachedToScene)
         GRAPHICS->removeFromDrawList(this);
     if (m_Material != nullptr)
         m_Material->release();
 }
 
-void ModelComponent::init(Entity* pParent)
+void ModelComponent::init(Entity* parent)
 {
-    m_pParent = pParent;
+    m_Parent = parent;
 
-    if (m_pModel != nullptr && m_AttachedToScene == false)
+    if (m_ModelMesh != nullptr && m_AttachedToScene == false)
     {
         GRAPHICS->addToDrawList(this);
         m_AttachedToScene = true;
     }
 }
 
-void ModelComponent::serialize(SerializerStream& stream)
+void ModelComponent::serialize(SerializerStream& /*stream*/)
 {
-    stream << m_mtxLocalTransform;
+    //Object3D::serialize(stream);
 }
 
-void ModelComponent::deserialize(const SerializerStream& stream)
+void ModelComponent::deserialize(const SerializerStream& /*stream*/)
 {
-    stream >> m_mtxLocalTransform;
+    //Object3D::deserialize(stream);
 }
 
 const gfx::Material* ModelComponent::getMaterial() const
@@ -71,47 +74,34 @@ const gfx::Material* ModelComponent::getMaterial() const
 
 const gfx::ModelMesh* ModelComponent::getModelMesh() const
 {
-    return m_pModel;
+    return m_ModelMesh;
 }
 
-mat44 ModelComponent::getWorldMatrix() const
+void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName )
 {
-    return m_pParent->getWorldMatrix() * m_mtxLocalTransform;
-}
+    he::ct::ContentManager* contentManager(CONTENT);
 
-void ModelComponent::setLocalTransform( const mat44& mtxWorld )
-{
-    m_mtxLocalTransform = mtxWorld;
-}
+    ObjectHandle materialHandle(contentManager->loadMaterial(materialAsset));
+    m_Material = he::ResourceFactory<he::gfx::Material>::getInstance()->get(materialHandle);
+    const gfx::BufferLayout& layout(m_Material->getCompatibleVertexLayout());
 
-const mat44& ModelComponent::getLocalTransform() const
-{
-    return m_mtxLocalTransform;
-}
-
-void ModelComponent::setModelMesh( const ObjectHandle& modelHandle, bool isPickable )
-{
-    if (m_pModel != nullptr)
+    he::gfx::Model* model(contentManager->asyncLoadModel(modelAsset, layout));
+    model->callbackOnceIfLoaded([&, model, meshName]()
     {
-        m_pModel->release();
-    }
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_pModel = ResourceFactory<gfx::ModelMesh>::getInstance()->get(modelHandle);
-    setPickable(isPickable);
-    if (m_AttachedToScene == false && m_pParent != nullptr)
-    {
-        GRAPHICS->addToDrawList(this);
-        m_AttachedToScene = true;
-    }
+        if (meshName == "")
+            m_ModelMesh = model->instantiateMesh(0);
+        else
+            m_ModelMesh = model->instantiateMesh(meshName);
+
+        model->release();
+
+        if (m_AttachedToScene == false && m_Parent != nullptr)
+        {
+            GRAPHICS->addToDrawList(this);
+            m_AttachedToScene = true;
+        }
+    });
 }
 
-void ModelComponent::setMaterial( const ObjectHandle& material )
-{
-    if (m_Material != nullptr)
-        m_Material->release();
-    m_Material = ResourceFactory<gfx::Material>::getInstance()->get(material);
-    if (m_Material != nullptr)
-        ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
-}
 
 } } //end namespace

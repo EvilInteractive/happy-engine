@@ -38,25 +38,25 @@
 #include <sstream>
 #include <cstdarg>
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
 #pragma warning (disable : 4244)
-#include "boost/thread.hpp"
+#include <boost/thread.hpp>
 #pragma warning (default : 4244)
-#include "boost/chrono.hpp"
-#include "boost/any.hpp"
-#include "boost/function.hpp"
-#include "boost/date_time.hpp"
+#include <boost/chrono.hpp>
+#include <boost/any.hpp>
+#include <boost/function.hpp>
+#include <boost/date_time.hpp>
 
-#include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 #undef MessageBox
 
 
-#include "GL/glew.h"
+#include <GL/glew.h>
 #include "OpenGL.h"
 
-#include "PxPhysicsAPI.h"
+#include <PxPhysicsAPI.h>
 
 #include "HappyTypes.h"
 #include "vec2.h"

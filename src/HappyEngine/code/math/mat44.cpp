@@ -17,6 +17,7 @@
 #include "HappyPCH.h" 
 
 #include "mat44.h"
+#include "mat33.h"
 
 #include "ICamera.h"
 
@@ -181,6 +182,14 @@ he::mat44 mat44::createWorld( const vec3& position, const vec3& forward, const v
         0,                 0,                   0,      1.0f);
 }
 
+he::mat44 mat44::createWorld( const vec3& translation, const mat33& rotation, const vec3& scale )
+{
+    return he::mat44(  rotation(0, 0) * scale.x, rotation(0, 1)          , rotation(0, 2)          , translation.x,
+                       rotation(1, 0)          , rotation(1, 1) * scale.y, rotation(1, 2)          , translation.y,
+                       rotation(2, 0)          , rotation(2, 1)          , rotation(2, 2) * scale.z, translation.z,
+                                              0,                        0,                        0,             1);
+}
+
 mat44 mat44::operator*(const mat44& mat) const
 {
     return mat44(m_Matrix * mat.m_Matrix);
@@ -215,10 +224,6 @@ const float* mat44::toFloatArray() const
     return &m_Matrix.column0.x;
 }
 
-vec3 mat44::getTranslation() const
-{
-    return vec3(m_Matrix.column3.x, m_Matrix.column3.y, m_Matrix.column3.z);
-}
 const physx::PxMat44& mat44::getPhyicsMatrix() const
 {
     return m_Matrix;
@@ -324,11 +329,24 @@ bool mat44::operator!=(const mat44& other) const
     return !operator==(other);
 }
 
+void mat44::getTranslationComponent( vec3& translation ) const
+{
+    translation.x = m_Matrix.column3.x; 
+    translation.y = m_Matrix.column3.y;
+    translation.z = m_Matrix.column3.z;
+}
+void mat44::getRotationComponent( mat33& rotation ) const
+{
+    for (byte row(0); row < 3; ++row)
+    for (byte col(0); col < 3; ++col)
+        rotation(row, col) = m_Matrix(row, col);
+}
+
 
 //Static
 const mat44 mat44::Identity = mat44(1, 0, 0, 0,
-                                       0, 1, 0, 0,
-                                       0, 0, 1, 0,
-                                       0, 0, 0, 1);
+                                    0, 1, 0, 0,
+                                    0, 0, 1, 0,
+                                    0, 0, 0, 1);
 
 } //end namespace
