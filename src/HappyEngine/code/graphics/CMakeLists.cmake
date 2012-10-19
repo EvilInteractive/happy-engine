@@ -98,7 +98,8 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 PostProcesser.cpp                   PostProcesser.h)
     
     set (CODE_GRAPHICS_RENDERING_SHADOW_FILTER
-                ShadowCaster.cpp                    ShadowCaster.h)
+                ShadowCaster.cpp                    ShadowCaster.h
+				ShadowCasterSpotlight.cpp			ShadowCasterSpotlight.h)
     
     
 foreach(f ${CODE_GRAPHICS_NO_FILTER}) 

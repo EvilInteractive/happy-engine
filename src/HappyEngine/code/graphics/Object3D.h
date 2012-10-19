@@ -113,7 +113,7 @@ protected:
     virtual void setWorldMatrixDirty(byte cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
     virtual void setLocalMatrixDirty(byte cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
 
-    virtual void calculateWorldMatrix() const;
+    virtual void calculateWorldMatrix();
 
     virtual IObject3D* getParent() const { return m_Parent; }
     virtual void setParent(IObject3D* parent) { m_Parent = parent; }

@@ -47,60 +47,62 @@ class Deferred3DRenderer : public IRenderer, public IDrawable2D
 private:
     struct PostPointLightData
     {
-        //Buffer
-        UniformBuffer* pLightBuffer;
-
         //LightBuffer
-        ShaderVariable<vec3> position;
-        ShaderVariable<float> multiplier;
-        ShaderVariable<vec3> color;
-        ShaderVariable<float> beginAttenuation;
-        ShaderVariable<float> endAttenuation;
+        uint position;
+        uint multiplier;
+        uint color;
+        uint beginAttenuation;
+        uint endAttenuation;
 
         //No Buffer
-        uint colorIllMap, normalMap, sgMap, depthMap;
+        uint colorIllMap, normalDepthMap, sgMap;
         uint wvp;
     };
     struct PostSpotLightData
     {
-        //Buffer
-        UniformBuffer* pLightBuffer;
-
         //LightBuffer
-        ShaderVariable<vec3> position;
-        ShaderVariable<float> multiplier;
-        ShaderVariable<vec3> direction;
-        ShaderVariable<float> beginAttenuation;
-        ShaderVariable<vec3> color;
-        ShaderVariable<float> endAttenuation;
-        ShaderVariable<float> cosCutOff;
+        uint position;
+        uint multiplier;
+        uint direction;
+        uint beginAttenuation;
+        uint color;
+        uint endAttenuation;
+        uint cosCutOff;
 
         //No Buffer
-        uint colorIllMap, normalMap, sgMap, depthMap;
+        uint colorIllMap, normalDepthMap, sgMap;
         uint wvp;
+    };
+    struct PostShadowSpotLightData
+    {
+        //LightBuffer
+        uint position;
+        uint multiplier;
+        uint direction;
+        uint beginAttenuation;
+        uint color;
+        uint endAttenuation;
+        uint cosCutOff;
+
+        //No Buffer
+        uint colorIllMap, normalDepthMap, sgMap;
+        uint wvp;
+
+        // Shadow
+        uint shadowMap;
+        uint shadowMatrix;
     };
     struct PostAmbDirIllLightData
     {
-        //Buffer
-        UniformBuffer* pLightBuffer;
-        UniformBuffer* pPerFrameBuffer;
-
-        //LightBuffer
-        ShaderVariable<vec4> ambColor;
-        ShaderVariable<vec4> dirColor;
-        ShaderVariable<vec3> dirDirection;
-        ShaderVariable<vec3> dirPosition;
-        ShaderVariable<vec2> dirNearFar;
-
-        //PerFrameBuffer
-        ShaderVariable<mat44> mtxDirLight0;
-        ShaderVariable<mat44> mtxDirLight1;
-        ShaderVariable<mat44> mtxDirLight2;
-        ShaderVariable<mat44> mtxDirLight3;
+        uint ambColor;
+        uint dirColor;
+        uint dirDirection;
+        uint dirPosition;
+        uint dirNearFar;
 
         //No Buffer
         uint shadowMap0, shadowMap1, shadowMap2, shadowMap3;
-        uint colorIllMap, normalMap, sgMap, depthMap, colorRamp;
+        uint colorIllMap, normalDepthMap, sgMap;
     };
     struct PostSharedData
     {
@@ -136,9 +138,9 @@ private:
     //////////////////////////////////////////////////////////////////////////
     // Collection FBO
     RenderTarget* m_CollectionRenderTarget;
-    Texture2D* m_pColorIllTexture;
-    Texture2D* m_pSGTexture;
-    const Texture2D* m_pNormalTexture;
+    Texture2D* m_ColorIllTexture;
+    Texture2D* m_SGTexture;
+    const Texture2D* m_NormalDepthTexture;
 
     // Render FBO
     View* m_View;
@@ -155,8 +157,9 @@ private:
     PostPointLightData m_PointLightData;
 
     //Spot light
-    Shader* m_SpotLightShader;
+    Shader* m_SpotLightShader, *m_ShadowSpotLightShader;
     PostSpotLightData m_SpotLightData;
+    PostShadowSpotLightData m_ShadowSpotLightData;
 
     //Amb&Dir&Ill light
     Shader* m_AmbDirIllShader;

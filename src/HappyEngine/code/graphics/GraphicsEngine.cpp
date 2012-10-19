@@ -1,4 +1,4 @@
-\//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -26,6 +26,8 @@
 #include "Window.h"
 #include "Scene.h"
 #include "View.h"
+
+#include "Light.h"
 
 #include "Awesomium/WebCore.h"
 #include "GLContext.h"
@@ -210,6 +212,22 @@ void GraphicsEngine::setActiveContext( GLContext* context )
         context->window->m_Window->setActive(true);
         GL::s_CurrentContext = context;
     }
+}
+
+he::ushort GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution )
+{
+    switch (resolution)
+    {
+    case ShadowResolution_None: return 0;
+    case ShadowResolution_32: return 32;
+    case ShadowResolution_64: return 64;
+    case ShadowResolution_128: return 128;
+    case ShadowResolution_256: return 256;
+    case ShadowResolution_512: return 512;
+    case ShadowResolution_1024: return 1024;
+    }
+    HE_ASSERT(false, "Unknown shadow resoultion");
+    return 0;
 }
 
 } } //end namespace

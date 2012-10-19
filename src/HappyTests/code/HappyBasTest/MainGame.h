@@ -26,6 +26,7 @@
 #include "IShapeDrawable.h"
 #include "IDrawable2D.h"
 #include "Random.h"
+#include "Text.h"
 
 
 namespace he {
@@ -43,6 +44,7 @@ namespace he {
         class ModelMesh;
         class CameraPerspective;
         class Texture2D;
+        class SpotLight;
     }
 }
 
@@ -94,6 +96,10 @@ private:
     std::vector<he::ge::Entity*> m_MovingEntityList;
     float m_MovingEntityFase;
     bool m_ShowDebugMesh;
+    
+    he::gui::Text m_DebugText;
+
+    he::gfx::SpotLight* m_DebugSpotLight;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

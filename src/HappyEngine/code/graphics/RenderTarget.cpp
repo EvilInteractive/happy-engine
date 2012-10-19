@@ -61,6 +61,24 @@ void RenderTarget::addTextureTarget( const Texture2D* tex2D )
     }
 }
 
+void RenderTarget::switchTextureTarget( uint index, const Texture2D* tex2D )
+{
+    HE_IF_ASSERT(index < m_TextureTargets.size(), "index out of range (%d - %d)", index, m_TextureTargets.size())
+    HE_IF_ASSERT(m_FboId != 0 && m_FboId != UINT_MAX, "Call init first or invalid fbo (m_Fbo == 0?)")
+    HE_IF_ASSERT(m_Context == GL::s_CurrentContext, "Access violation, wrong context is bound")
+    {
+        if (m_TextureTargets[index]->getID() != tex2D->getID())
+        {
+            ResourceFactory<Texture2D>* texFactory(ResourceFactory<Texture2D>::getInstance());
+            m_TextureTargets[index]->release();
+            texFactory->instantiate(tex2D->getHandle());
+            m_TextureTargets[index] = tex2D;
+            GL::heBindFbo(m_FboId);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D, tex2D->getID(), 0);
+        }
+    }
+}
+
 void RenderTarget::setDepthTarget( const Texture2D* tex2D )
 {
     HE_IF_ASSERT(m_DepthBuffer == UINT_MAX, "Depth was already assigned - ignoring")    
@@ -89,7 +107,7 @@ void RenderTarget::init()
     }
     else
     {
-        HE_IF_ASSERT((m_DepthTarget == nullptr && m_TextureTargets.size() == 0) == false, "Assign at least one TextureTarget when using a generated depth target")
+        HE_IF_ASSERT(m_Width != 0 && m_Height != 0, "Initing fbo with unknown size!")
         {
             if (m_FboId != UINT_MAX && m_FboId != 0)
                 glDeleteFramebuffers(1, &m_FboId);
@@ -140,17 +158,6 @@ void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset) con
 {
     HE_ASSERT(m_Context == GL::s_CurrentContext, "Access violation: wrong context is bound!");
     GL::heBindFbo(m_FboId);
-//     if (m_TextureTargets.size() > 0)
-//     {
-//         for (uint i(0); i < m_TextureTargets.size(); ++i)
-//         {
-//             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0);
-//         }
-//         for (uint i(0); i < numTextureTargets; ++i)
-//         {
-//             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureTargets[i + offset]->getID(), 0);
-//         }
-//     }
     glDrawBuffers(numTextureTargets, m_DrawBuffers + offset);
 }
 
@@ -182,6 +189,15 @@ void RenderTarget::removeAllTargets()
     m_Width = 0;
     m_Height = 0;
     m_DrawBufferCount = 0;
+}
+
+void RenderTarget::setSize( uint width, uint height )
+{
+    HE_IF_ASSERT(m_Width == 0 && m_Height == 0, "Size is already assigned, I cannot change this on the fly")
+    {
+        m_Width = width;
+        m_Height = height;
+    }
 }
 
 

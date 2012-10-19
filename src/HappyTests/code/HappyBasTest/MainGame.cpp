@@ -50,11 +50,13 @@
 #include "ShapeRenderer.h"
 #include "MessageBox.h"
 #include "Canvas2D.h"
+#include "SpotLight.h"
+#include "PointLight.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
 
-#define ENABLE_WINDOW2
+//#define ENABLE_WINDOW2
 
 namespace ht {
 
@@ -140,7 +142,7 @@ void MainGame::load()
     settings.postSettings.shaderSettings.enableAO = false;
     settings.postSettings.shaderSettings.enableBloom = false;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
-    settings.postSettings.shaderSettings.enableFog = false;
+    settings.postSettings.shaderSettings.enableFog = true;
     settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = false;
@@ -218,22 +220,22 @@ void MainGame::load()
     
     m_EntityList.push_back(scene);
 
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    {
-        ge::Entity* entity(NEW he::ge::Entity());
-        entity->init(m_Scene);
-        modelComp = NEW ge::ModelComponent();
-        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
-        entity->addComponent(modelComp);
-        m_MovingEntityList.push_back(entity);
-        m_EntityList.push_back(entity);
-
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-                        pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-                        pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
+    //for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    //{
+    //    ge::Entity* entity(NEW he::ge::Entity());
+    //    entity->init(m_Scene);
+    //    modelComp = NEW ge::ModelComponent();
+    //    modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
+    //    entity->addComponent(modelComp);
+    //    m_MovingEntityList.push_back(entity);
+    //    m_EntityList.push_back(entity);
+    //
+    //    const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+    //    m_MovingEntityList[i]->setLocalTranslate(
+    //        he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+    //                    pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+    //                    pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+    //}
 
     #pragma endregion
     
@@ -241,6 +243,7 @@ void MainGame::load()
     m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
     m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
 
+/*
     for (size_t i(0); i < 5; ++i)
     {
         vec3 direction(rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f);
@@ -259,7 +262,32 @@ void MainGame::load()
         modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
         modelComp->setLocalTranslate(pos);
         scene->addComponent(modelComp);
-    }
+    }*/
+
+    m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
+    m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
+    m_DebugSpotLight->setDirection(vec3(-0.70f, -0.67f, -0.27f));
+    m_DebugSpotLight->setMultiplier(3);
+    m_DebugSpotLight->setAttenuation(1.0f, 20.0f);
+    m_DebugSpotLight->setFov(he::piOverTwo);
+    m_DebugSpotLight->setColor(he::Color(1.0f, 0.4f, 0.4f));
+    m_DebugSpotLight->setShadowResolution(gfx::ShadowResolution_512);
+
+    he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
+    spotlight->setLocalTranslate(vec3(-35.32f, 6.04f, 31.85f));
+    spotlight->setDirection(vec3(0.80f, 0.13f, -0.58f));
+    spotlight->setMultiplier(5);
+    spotlight->setAttenuation(1.0f, 30.0f);
+    spotlight->setFov(he::piOverFour);
+    spotlight->setColor(he::Color(0.4f, 0.4f, 1.0f));
+    spotlight->setShadowResolution(gfx::ShadowResolution_128);
+
+    //he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
+    //pointlight->setLocalTranslate(vec3(-41.91f, 11.20f, 34.58f));
+    //pointlight->setMultiplier(3);
+    //pointlight->setAttenuation(1.0f, 10.0f);
+    //pointlight->setColor(he::Color(1.0f, 0.4f, 0.4f));
+
     #pragma endregion
     
     #pragma region Camera Debug Shape
@@ -274,6 +302,8 @@ void MainGame::load()
     m_DebugMesh->setLoaded();
     #pragma endregion
     
+    m_DebugText.setFont(CONTENT->getDefaultFont(14));
+    
     he::MessageBox::show("Load Completed", "Success!");
 
     //PROFILER->enable();
@@ -284,10 +314,15 @@ void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
 
-    m_MovingEntityFase += dTime;
+    m_MovingEntityFase += dTime / 2.0f;
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
 
+    m_DebugSpotLight->setLocalTranslate(he::vec3(-42.71f, 10.20f, 30.74f) + 
+        he::vec3(pow(cos(m_MovingEntityFase), 4) * 5, 
+                 pow(sin(m_MovingEntityFase), 3) * 3, 
+                 pow(cos(m_MovingEntityFase), 2) * 3));
+    m_DebugSpotLight->setLocalRotate(he::mat33::createRotation3D(he::vec3::up, m_MovingEntityFase));
     
     /*for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -299,14 +334,18 @@ void MainGame::tick( float dTime )
     }*/
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
-        m_SpinShadows = !m_SpinShadows;
-
-    if (m_SpinShadows)
     {
-        const he::mat44 rot(he::mat44::createRotation(he::vec3::up, dTime / 4.0f));
-        m_Scene->getLightManager()->getDirectionalLight()->setDirection(
-            (rot * he::vec4(m_Scene->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz());
+        he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
+        spotlight->setLocalTranslate(m_View->getCamera()->getPosition());
+        spotlight->setDirection(m_View->getCamera()->getLook());
+        spotlight->setMultiplier(s_Random.nextFloat(1.0f, 5.0));
+        spotlight->setAttenuation(1.0f, s_Random.nextFloat(10.0f, 20.0f));
+        spotlight->setFov(he::piOverFour * s_Random.nextFloat(0.5f, 4.0f));
+        he::vec3 color(he::normalize(he::vec3(s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1))));
+        spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
+        spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
     }
+
     if (m_ShowDebugMesh)
         fillDebugMeshes();
     m_FpsGraph->tick(dTime);
@@ -335,9 +374,24 @@ void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
     renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1)); 
 }
 
-void MainGame::draw2D(he::gfx::Canvas2D* /*canvas*/)
+void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 {
-    //canvas->getRenderer2D()->drawTexture2DToScreen(m_TestTexture);
+    he::gfx::CameraPerspective* camera(m_View->getCamera());
+    const he::vec3& position(camera->getPosition());
+    const he::vec3& look(camera->getLook());
+    
+    m_DebugText.clear();
+
+    char buff[100];
+    sprintf(buff, "Position: %.2f, %.2f, %.2f\0", position.x, position.y, position.z);
+    m_DebugText.addLine(buff);
+
+    sprintf(buff, "Look: %.2f, %.2f, %.2f\0", look.x, look.y, look.z);
+    m_DebugText.addLine(buff);
+
+    canvas->fillText(m_DebugText, he::vec2(12, 12));
+
+    canvas->getRenderer2D()->drawTexture2DToScreen(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), false, he::vec2(256, 256));
 }
 
 } //end namespace

@@ -24,9 +24,12 @@
 
 #include "DefaultSingleDrawable.h"
 #include "Light.h"
+#include "CameraPerspective.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
+class Texture2D;
 
 class SpotLight : public DefaultSingleDrawable, public Light
 {
@@ -34,10 +37,10 @@ private:
     float m_Multiplier;
 
     vec3 m_LocalDirection;
-    vec3 m_WorldDirection;
+    mutable vec3 m_WorldDirection;
 
     vec2 m_Attenuation;
-    vec2 m_ScaledAttenuation;
+    mutable vec2 m_ScaledAttenuation;
 
     vec3 m_Color;
     float m_CosCutoff;
@@ -46,14 +49,19 @@ private:
     ModelMesh* m_Model;
     Material* m_Material;
 
+    ShadowResolution m_ShadowResolution;
+    Texture2D* m_ShadowMap;
+    CameraPerspective m_ShadowCamera;
+    bool m_ShadowLookDirty;
+    bool m_ShadowLensDirty;
+
 protected:
     virtual void calculateWorldMatrix(); // override Object3D
+    virtual void setWorldMatrixDirty(byte cause); // override Object3D
 
 public:
     SpotLight();
     virtual ~SpotLight();
-    SpotLight(const SpotLight& other);
-    SpotLight& operator=(const SpotLight& other);
 
     void setMultiplier(float multiplier);
     void setDirection(const vec3& direction);
@@ -75,7 +83,13 @@ public:
     const vec3& getColor() const;
     float getCosCutoff() const;
     float getFov() const;
-    
+
+    void setShadowResolution(const ShadowResolution& resolution);
+    const ShadowResolution& getShadowResolution() const { return m_ShadowResolution; }
+    Texture2D* getShadowMap() const { return m_ShadowMap; }
+    const CameraPerspective& getShadowCamera() { return m_ShadowCamera;}
+    void prepareShadowCamera();
+
     const ModelMesh* getLightVolume() const;
 
     virtual bool getCastsShadow() const { return false; }
@@ -84,7 +98,10 @@ public:
     virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Spot; }
-    virtual bool isSleeping() const { return true; } 
+
+private:
+    SpotLight(const SpotLight& other);
+    SpotLight& operator=(const SpotLight& other);
 };
 
 } } //end namespace

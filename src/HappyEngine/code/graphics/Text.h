@@ -70,6 +70,7 @@ public:
     void setHorizontalAlignment(HAlignment alignment);
     void setVerticalAlignment(VAlignment alignment);
     void setBounds(const vec2& bounds = vec2());
+    void setFont(gfx::Font* font) { m_pFont = font; }
 
     /* GETTERS */
     const std::string& getLine(uint lineNumber) const;

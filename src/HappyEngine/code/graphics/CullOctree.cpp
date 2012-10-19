@@ -317,7 +317,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
         if ( m_LooseBound.getAABB().isOtherInside(cameraPosition) == false )
         {
             // sphere frustum test
-            switch(camera->intersect(m_StrictBound))
+            switch(camera->intersect(m_LooseBound))
             {
             case IntersectResult_Outside:
                 {
@@ -368,7 +368,7 @@ void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
         if ( m_LooseBound.getAABB().isOtherInside(cameraPosition) == false )
         {
             // sphere frustum test
-            switch(camera->intersect(m_StrictBound))
+            switch(camera->intersect(m_LooseBound))
             {
             case IntersectResult_Outside:
                 {

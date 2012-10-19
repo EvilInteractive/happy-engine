@@ -190,9 +190,9 @@ he::mat44 mat44::createWorld( const vec3& position, const vec3& forward, const v
 
 he::mat44 mat44::createWorld( const vec3& translation, const mat33& rotation, const vec3& scale )
 {
-    return he::mat44(  rotation(0, 0) * scale.x, rotation(0, 1)          , rotation(0, 2)          , translation.x,
-                       rotation(1, 0)          , rotation(1, 1) * scale.y, rotation(1, 2)          , translation.y,
-                       rotation(2, 0)          , rotation(2, 1)          , rotation(2, 2) * scale.z, translation.z,
+    return he::mat44(  rotation(0, 0) * scale.x, rotation(0, 1) * scale.y, rotation(0, 2) * scale.z, translation.x,
+                       rotation(1, 0) * scale.x, rotation(1, 1) * scale.y, rotation(1, 2) * scale.z, translation.y,
+                       rotation(2, 0) * scale.x, rotation(2, 1) * scale.y, rotation(2, 2) * scale.z, translation.z,
                                               0,                        0,                        0,             1);
 }
 

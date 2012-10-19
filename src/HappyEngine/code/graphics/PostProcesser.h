@@ -70,8 +70,7 @@ private:
         PV_ViewPortSize,
 
         PV_LumMap,
-        PV_NormalMap,
-        PV_DepthMap,
+        PV_NormalDepthMap,
         PV_ColorMap,
 
         PV_FogColor,

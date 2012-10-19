@@ -25,6 +25,18 @@
 namespace he {
 namespace gfx {
 
+enum ShadowResolution // note this is Normal quality, can be scaled up or down for other qualities
+{
+    ShadowResolution_None,
+    ShadowResolution_32,
+    ShadowResolution_64,  
+    ShadowResolution_128,  
+    ShadowResolution_256, 
+    ShadowResolution_512,  
+    ShadowResolution_1024,
+
+    ShadowResolution_MAX
+};
 enum LightType
 {
     LightType_Point,
@@ -36,8 +48,15 @@ class Light
 {
 DECLARE_OBJECT(Light)
 public:
+    Light(): m_VisibleLastFrame(false) {}
     virtual ~Light() {}
     virtual LightType getType() const { return LightType_Unkown; }
+
+    inline bool getVisibleLastFrame() const { return m_VisibleLastFrame; }
+    inline void setVisibleLastFrame(bool visible) { m_VisibleLastFrame = visible; }
+
+private:
+    bool m_VisibleLastFrame;
 };
 
 

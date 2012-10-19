@@ -31,7 +31,10 @@
 namespace he {
 namespace gfx {
 
-LightManager::LightManager(): m_AmbientLight(NEW AmbientLight()), m_DirectionalLight(NEW DirectionalLight())
+LightManager::LightManager(Scene* scene)
+    : m_AmbientLight(NEW AmbientLight())
+    , m_DirectionalLight(NEW DirectionalLight())
+    , m_Scene(scene)
 {
 }
 

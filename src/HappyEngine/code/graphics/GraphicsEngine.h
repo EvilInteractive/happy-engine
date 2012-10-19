@@ -42,6 +42,8 @@ class Window;
 class Scene;
 class View;
 
+enum ShadowResolution;
+
 class GraphicsEngine
 {
 public:
@@ -80,6 +82,8 @@ public:
     Window* getActiveWindow() const { return m_ActiveWindow; }
     const std::vector<ObjectHandle>& getAllWindows() const { return m_Windows; }
     const std::vector<GLContext*>& getContexts() const { return m_Contexts; } 
+
+    ushort getShadowMapSize(const ShadowResolution& resolution);
 
     View* getActiveView() const { return m_ActiveView; }
 

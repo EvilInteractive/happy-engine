@@ -50,11 +50,11 @@ layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
-layout(std140) uniform LightBuffer
-{
-    DirectionalLight dirLight;
-    AmbientLight ambLight;
-};
+//layout(std140) uniform LightBuffer
+//{
+uniform AmbientLight ambLight;
+uniform DirectionalLight dirLight;
+//};
 
 #if SHADOWS
 layout(std140) uniform PerFrameBuffer
@@ -72,11 +72,10 @@ uniform sampler2D shadowMap3;
 #endif
 
 uniform sampler2D colorIllMap;
-uniform sampler2D normalMap;
+uniform sampler2D normalDepthMap;
 #if SPECULAR
 uniform sampler2D sgMap;
 #endif
-uniform sampler2D depthMap;
 
 vec2 PCF9(in sampler2D sampler, in vec2 texCoord)
 {
@@ -145,20 +144,23 @@ float shadowCheck(in vec3 position, in vec3 lightDir, in vec3 normal, in sampler
 void main()
 {    	
     vec2 ndc = texCoord * 2.0f - 1.0f;
-    vec4 sg = texture(sgMap, texCoord);
-    
+	
+#if SPECULAR
+    vec4 sg = texture(sgMap, texCoord);    
     if (sg.a < 0.000001f)
         discard;
-        
-    vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
+#endif
+    
+    vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;       
+    vec3 position = getPosition( normalDepth.z, ndc, projParams );
 
     vec3 lightDir = normalize(dirLight.direction);
         
-    vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
+    vec3 normal = decodeNormal(normalDepth.xy);
     
     //Lambert
     float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
-    float halfLambert = dotLightNormal * 0.5f + 0.5f;
+    //float halfLambert = dotLightNormal * 0.5f + 0.5f;
     
     //Light
     //vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f)) * dirLight.color.rgb * dirLight.color.a;

@@ -32,10 +32,12 @@ class BufferLayout;
 class SpotLight;
 class PointLight;
 
+class Scene;
+
 class LightManager
 {
 public:
-    LightManager();
+    LightManager(Scene* scene);
     virtual ~LightManager();
 
     AmbientLight* setAmbientLight(const Color&    color, 
@@ -59,6 +61,7 @@ public:
     static const BufferLayout& getVertexLayoutLightVolume();
 
 private:
+    Scene* m_Scene;
 
     AmbientLight* m_AmbientLight;
     DirectionalLight* m_DirectionalLight;

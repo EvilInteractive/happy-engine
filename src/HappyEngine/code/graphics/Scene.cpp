@@ -32,12 +32,14 @@ namespace he {
 namespace gfx {
 IMPLEMENT_OBJECT(Scene)
 
+#pragma warning(disable:4355) // use of this in initializerlist
 Scene::Scene():
           m_CameraManager(NEW ge::CameraManager)
-        , m_LightManager(NEW LightManager)
+        , m_LightManager(NEW LightManager(this))
         , m_InstancingManager(NEW InstancingManager)
 {
 }
+#pragma warning(default:4355)
 
 
 Scene::~Scene()

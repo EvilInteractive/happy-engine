@@ -38,7 +38,9 @@ public:
 
     // Add all targets then call init
     void addTextureTarget(const Texture2D* tex2D);
+    void switchTextureTarget(uint index, const Texture2D* tex2D);
     void setDepthTarget(const Texture2D* tex2D);
+    void setDepthTarget(uint id) { m_DepthBuffer = id; }
     void setDepthTarget();
     void init();
 
@@ -46,9 +48,12 @@ public:
 
     const Texture2D* getTextureTarget(uint index) const;
     const Texture2D* getDepthTarget() const;
+    const uint getDepthBuffer() const { return m_DepthBuffer; }
 
     uint getWidth() const { return m_Width; }
     uint getHeight() const { return m_Height; }
+
+    void setSize(uint width, uint height);
 
     void clear(const Color& color) const;
 

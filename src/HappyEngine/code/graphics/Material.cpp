@@ -118,7 +118,7 @@ ShaderVar* Material::getVar( const std::string& var )
 }
 
 
-void Material::apply( const SingleDrawable* drawable, const ICamera* pCamera ) const
+void Material::apply( const SingleDrawable* drawable, const ICamera* camera ) const
 {
     HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
     {
@@ -144,19 +144,19 @@ void Material::apply( const SingleDrawable* drawable, const ICamera* pCamera ) c
                 switch (pVar->getType())
                 {      
                     case ShaderVarType_WorldViewProjection: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getViewProjection() * drawable->getWorldMatrix()); 
+                        shader->setShaderVar(pVar->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
                         break;
                     case ShaderVarType_ViewProjection: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getViewProjection()); 
+                        shader->setShaderVar(pVar->getId(), camera->getViewProjection()); 
                         break;
                     case ShaderVarType_World: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView() * drawable->getWorldMatrix()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
                         break;
                     case ShaderVarType_WorldView: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView() * drawable->getWorldMatrix()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
                         break;   
                     case ShaderVarType_View: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView()); 
                         break;             
                     case ShaderVarType_WorldPosition: 
                         {
@@ -173,33 +173,10 @@ void Material::apply( const SingleDrawable* drawable, const ICamera* pCamera ) c
                         shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
                         break;
                     case ShaderVarType_DirectionalDirection: 
-                        shader->setShaderVar(pVar->getId(), (pCamera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
+                        shader->setShaderVar(pVar->getId(), (camera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
                         break;
-
-                    case ShaderVarType_ShadowCascadeMatrix0: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(0)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix1: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(1)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix2: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(2)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix3: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(3)); 
-                        break;
-
-                    case ShaderVarType_ShadowCascade0: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(0)); 
-                        break;
-                    case ShaderVarType_ShadowCascade1: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(1)); 
-                        break;
-                    case ShaderVarType_ShadowCascade2: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(2)); 
-                        break;
-                    case ShaderVarType_ShadowCascade3: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(3)); 
+                    case ShaderVarType_NearFar: 
+                        shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
                         break;
 
                     default: HE_ASSERT(false, "unkown shaderVartype for single"); break;
@@ -208,7 +185,7 @@ void Material::apply( const SingleDrawable* drawable, const ICamera* pCamera ) c
         });
     }
 }
-void Material::apply( const InstancedDrawable* drawable, const ICamera* pCamera ) const
+void Material::apply( const InstancedDrawable* drawable, const ICamera* camera ) const
 {
     HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
     HE_IF_ASSERT(m_UsedForInstancing, "shader not capable for instancing!")
@@ -234,10 +211,10 @@ void Material::apply( const InstancedDrawable* drawable, const ICamera* pCamera 
                 switch (pVar->getType())
                 {      
                     case ShaderVarType_ViewProjection: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getViewProjection()); 
+                        shader->setShaderVar(pVar->getId(), camera->getViewProjection()); 
                         break;
                     case ShaderVarType_View: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView()); 
                         break;  
 
                     case ShaderVarType_AmbientColor: 
@@ -247,33 +224,11 @@ void Material::apply( const InstancedDrawable* drawable, const ICamera* pCamera 
                         shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
                         break;
                     case ShaderVarType_DirectionalDirection: 
-                        shader->setShaderVar(pVar->getId(), (pCamera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
+                        shader->setShaderVar(pVar->getId(), (camera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
                         break;
 
-                    case ShaderVarType_ShadowCascadeMatrix0: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(0)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix1: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(1)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix2: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(2)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix3: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(3)); 
-                        break;
-
-                    case ShaderVarType_ShadowCascade0: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(0)); 
-                        break;
-                    case ShaderVarType_ShadowCascade1: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(1)); 
-                        break;
-                    case ShaderVarType_ShadowCascade2: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(2)); 
-                        break;
-                    case ShaderVarType_ShadowCascade3: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(3)); 
+                    case ShaderVarType_NearFar: 
+                        shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
                         break;
 
                     default: HE_ASSERT(false, "unkown shaderVartype for instancing"); break;
@@ -282,7 +237,7 @@ void Material::apply( const InstancedDrawable* drawable, const ICamera* pCamera 
         });
     }
 }
-void Material::apply( const SkinnedDrawable* drawable, const ICamera* pCamera ) const
+void Material::apply( const SkinnedDrawable* drawable, const ICamera* camera ) const
 {
     HE_IF_ASSERT(m_ShaderHandle != ObjectHandle::unassigned, "set shader first!")
     {
@@ -308,19 +263,19 @@ void Material::apply( const SkinnedDrawable* drawable, const ICamera* pCamera ) 
                 switch (pVar->getType())
                 {      
                     case ShaderVarType_WorldViewProjection: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getViewProjection() * drawable->getWorldMatrix()); 
+                        shader->setShaderVar(pVar->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
                         break;
                     case ShaderVarType_ViewProjection: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getViewProjection()); 
+                        shader->setShaderVar(pVar->getId(), camera->getViewProjection()); 
                         break;
                     case ShaderVarType_View: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView()); 
                         break;  
                     case ShaderVarType_World: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView() * drawable->getWorldMatrix()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
                         break;
                     case ShaderVarType_WorldView: 
-                        shader->setShaderVar(pVar->getId(), pCamera->getView() * drawable->getWorldMatrix()); 
+                        shader->setShaderVar(pVar->getId(), camera->getView() * drawable->getWorldMatrix()); 
                         break;
                     case ShaderVarType_BoneTransforms: 
                         shader->setShaderVar(pVar->getId(), drawable->getBoneTransforms()); 
@@ -341,33 +296,11 @@ void Material::apply( const SkinnedDrawable* drawable, const ICamera* pCamera ) 
                         shader->setShaderVar(pVar->getId(), vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
                         break;
                     case ShaderVarType_DirectionalDirection: 
-                        shader->setShaderVar(pVar->getId(), (pCamera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
+                        shader->setShaderVar(pVar->getId(), (camera->getView() * vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
                         break;
 
-                    case ShaderVarType_ShadowCascadeMatrix0: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(0)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix1: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(1)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix2: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(2)); 
-                        break;
-                    case ShaderVarType_ShadowCascadeMatrix3: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMatrix(3)); 
-                        break;
-
-                    case ShaderVarType_ShadowCascade0: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(0)); 
-                        break;
-                    case ShaderVarType_ShadowCascade1: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(1)); 
-                        break;
-                    case ShaderVarType_ShadowCascade2: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(2)); 
-                        break;
-                    case ShaderVarType_ShadowCascade3: 
-                        shader->setShaderVar(pVar->getId(), drawable->getScene()->getLightManager()->getDirectionalLight()->getShadowMap(3)); 
+                    case ShaderVarType_NearFar: 
+                        shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
                         break;
 
                     default: HE_ASSERT(false, "unkown shaderVartype for skinning"); break;

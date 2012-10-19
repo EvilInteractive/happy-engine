@@ -48,8 +48,7 @@ View::View():
     m_TransparentRenderer(nullptr), m_ShapeRenderer(nullptr),
     m_PostProcesser(nullptr), m_2DRenderer(nullptr),
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
-    m_NormalRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
-    m_DepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())),
+    m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_RenderDebugTextures(false), 
     m_Window(nullptr), m_Scene(nullptr),
     m_IntermediateRenderTarget(nullptr),
@@ -57,8 +56,7 @@ View::View():
     m_WindowResizedCallback(boost::bind(&View::resize, this))
 {
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
-    m_NormalRenderMap->setName("View::m_NormalRenderMap");
-    m_DepthRenderMap->setName("View::m_DepthRenderMap");
+    m_NormalDepthRenderMap->setName("View::m_NormalRenderMap");
 
     GAME->addToTickList(this);
 }
@@ -80,8 +78,7 @@ View::~View()
     delete m_ShapeRenderer;
     delete m_2DRenderer;
     m_ColorRenderMap->release();
-    m_NormalRenderMap->release();
-    m_DepthRenderMap->release();
+    m_NormalDepthRenderMap->release();
 }
 
 void View::init( const RenderSettings& settings )
@@ -103,21 +100,16 @@ void View::init( const RenderSettings& settings )
         m_ColorRenderMap->setData(width, height, 0,
             gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
         
-        // Normal
-        m_NormalRenderMap->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest, 
-            gfx::Texture2D::TextureFormat_RG16, false);
-        m_NormalRenderMap->setData(width, height, 0, 
-            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte, 0 );
+        // Normal - Depth
+        m_NormalDepthRenderMap->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest, 
+            gfx::Texture2D::TextureFormat_RGB16, false);
+        m_NormalDepthRenderMap->setData(width, height, 0, 
+            gfx::Texture2D::BufferLayout_RGB, gfx::Texture2D::BufferType_Float, 0 );
     }
-    // Depth
-    m_DepthRenderMap->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest, 
-        gfx::Texture2D::TextureFormat_Depth32, false);
-    m_DepthRenderMap->setData(width, height, 0, 
-        gfx::Texture2D::BufferLayout_Depth, gfx::Texture2D::BufferType_Float, 0 );
     
     m_IntermediateRenderTarget->addTextureTarget(m_ColorRenderMap);
-    m_IntermediateRenderTarget->addTextureTarget(m_NormalRenderMap);
-    m_IntermediateRenderTarget->setDepthTarget(m_DepthRenderMap);
+    m_IntermediateRenderTarget->addTextureTarget(m_NormalDepthRenderMap);
+    m_IntermediateRenderTarget->setDepthTarget();
     m_IntermediateRenderTarget->init();
     m_OutputRenderTarget->init();
 
@@ -140,7 +132,7 @@ void View::init( const RenderSettings& settings )
     m_TransparentRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Blend);
     m_TransparentRenderer->init(this, m_IntermediateRenderTarget);
 
-    if (settings.lightingSettings.enableShadows)
+    //if (settings.lightingSettings.enableShadows)
     {
         m_ShadowCaster = NEW ShadowCaster();
         m_ShadowCaster->init(this);
@@ -204,12 +196,9 @@ void View::resize()
             gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
 
         // Normal
-        m_NormalRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
-            gfx::Texture2D::BufferLayout_RG, gfx::Texture2D::BufferType_Byte, 0 );
+        m_NormalDepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
+            gfx::Texture2D::BufferLayout_RGB, gfx::Texture2D::BufferType_Float, 0 );
     }
-    // Depth
-    m_DepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
-        gfx::Texture2D::BufferLayout_Depth, gfx::Texture2D::BufferType_Float, 0 );
     ViewportSizeChanged();
 }
 
@@ -237,12 +226,13 @@ void View::draw()
         m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
         m_Camera->prepareForRendering();
 
-        if (m_Settings.lightingSettings.enableShadows)
-            m_ShadowCaster->render();
+        //if (m_Settings.lightingSettings.enableShadows)
+        // Move to Scene
+            m_ShadowCaster->render(m_Scene);
 
         GL::heSetViewport(m_Viewport);
-        m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 1.0f));
-        m_OutputRenderTarget->clear(Color(1.0f, 0, 0, 1.0f));
+        m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
+        m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
         m_OpacRenderer->draw();
         m_TransparentRenderer->draw();
 

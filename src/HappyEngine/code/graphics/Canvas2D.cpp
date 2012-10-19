@@ -467,6 +467,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     vec2 linePos = pos;
 
+    HE_ASSERT(txt.getFont() != nullptr, "Text has no font set!");
     HE_ASSERT(txt.getFont()->isPreCached() == true, "Font needs to be precached!");
 
     Texture2D* tex2D = txt.getFont()->getTextureAtlas();

@@ -25,7 +25,7 @@
 #include "AutoExposure.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
-#include "CameraManager.h"
+#include "CameraPerspective.h"
 #include "Renderer2D.h"
 #include "Canvas2D.h"
 #include "View.h"
@@ -160,12 +160,10 @@ void PostProcesser::compileShader()
         shaderLayout, postDefines);
 
     m_PostShaderVars[PV_ColorMap]  = m_PostShader->getShaderSamplerId("colorMap"); 
-    if (settings.enableNormalEdgeDetect)
-        m_PostShaderVars[PV_NormalMap] = m_PostShader->getShaderSamplerId("normalMap");
+    if (settings.enableAO || settings.enableFog)
+        m_PostShaderVars[PV_NormalDepthMap] = m_PostShader->getShaderSamplerId("normalDepthMap");
     if (settings.enableFog)
         m_PostShaderVars[PV_FogColor] = m_PostShader->getShaderVarId("fogColor");
-    if (settings.enableFog || settings.enableAO || settings.enableDepthEdgeDetect)
-        m_PostShaderVars[PV_DepthMap] = m_PostShader->getShaderSamplerId("depthMap");
     if (settings.enableHDR)
         m_PostShaderVars[PV_LumMap] = m_PostShader->getShaderSamplerId("lumMap");
 
@@ -187,7 +185,7 @@ void PostProcesser::compileShader()
         //m_PostShaderVars[PV_SSAOIntensity] = m_pPostShader->getShaderVarId("intensity");
         //m_PostShaderVars[PV_SSAOScale] = m_pPostShader->getShaderVarId("scale");
         //m_PostShaderVars[PV_SSAOBias] = m_pPostShader->getShaderVarId("bias");
-        //m_PostShaderVars[PV_ProjParams] = m_pPostShader->getShaderVarId("projParams");
+        //m_PostShaderVars[PV_ProjParams] = m_PostShader->getShaderVarId("projParams");
         m_PostShaderVars[PV_ViewPortSize] = m_PostShader->getShaderVarId("viewPortSize");
     }
 }
@@ -196,8 +194,7 @@ void PostProcesser::compileShader()
 void PostProcesser::draw()
 {    
     const Texture2D* colorMap(m_ReadRenderTarget->getTextureTarget(0));
-    const Texture2D* normalMap(m_ReadRenderTarget->getTextureTarget(1));
-    const Texture2D* depthMap(m_ReadRenderTarget->getDepthTarget());
+    const Texture2D* normalDepthMap(m_ReadRenderTarget->getTextureTarget(1));
 
     const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
     if (settings.enableHDR)
@@ -238,12 +235,10 @@ void PostProcesser::draw()
     if (settings.enableHDR)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_LumMap], m_pAutoExposure->getLuminanceMap());
 
-    if (settings.enableNormalEdgeDetect)
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalMap], normalMap); 
+    if (settings.enableAO || settings.enableFog)
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalDepthMap], normalDepthMap); 
     if (settings.enableFog)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_FogColor], m_FogColor);
-    if (settings.enableFog || settings.enableAO || settings.enableDepthEdgeDetect)
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_DepthMap], depthMap);
 
     if (settings.enableAO)
     {
@@ -252,12 +247,12 @@ void PostProcesser::draw()
         //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOIntensity], m_Settings.ssaoSettings.intensity);
         //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOScale], m_Settings.ssaoSettings.scale);
         //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOBias], m_Settings.ssaoSettings.bias);
+        //m_PostShader->setShaderVar(m_PostShaderVars[PV_ProjParams], vec4(
+        //    m_View->getCamera()->getProjection()(0, 0),
+        //    m_View->getCamera()->getProjection()(1, 1),
+        //    m_View->getCamera()->getNearClip(),
+        //    m_View->getCamera()->getFarClip()));
 
-        /*m_pPostShader->setShaderVar(m_PostShaderVars[PV_ProjParams], vec4(
-            CAMERAMANAGER->getActiveCamera()->getProjection()(0, 0),
-            CAMERAMANAGER->getActiveCamera()->getProjection()(1, 1),
-            CAMERAMANAGER->getActiveCamera()->getProjection()(2, 2),
-            CAMERAMANAGER->getActiveCamera()->getProjection()(2, 3)));*/
         m_PostShader->setShaderVar(m_PostShaderVars[PV_ViewPortSize], 
             vec2((float)m_View->getViewport().width, (float)m_View->getViewport().height));
     }

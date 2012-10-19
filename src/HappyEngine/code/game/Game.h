@@ -20,8 +20,6 @@
 #pragma once
 
 #include "ITickable.h"
-#include <vector>
-#include <algorithm>
 
 namespace he {
 

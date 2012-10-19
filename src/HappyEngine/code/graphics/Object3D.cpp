@@ -49,11 +49,11 @@ const mat44& Object3D::getWorldMatrix() const
     if (m_WorldMatrixDirty)
     {
         m_WorldMatrixDirty = 0;
-        calculateWorldMatrix();
+        const_cast<Object3D*>(this)->calculateWorldMatrix();
     }
     return m_WorldMatrix;
 }
-void Object3D::calculateWorldMatrix() const
+void Object3D::calculateWorldMatrix()
 {
     if (m_Parent != nullptr)
         m_WorldMatrix = m_Parent->getWorldMatrix() * getLocalMatrix();

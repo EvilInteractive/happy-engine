@@ -37,7 +37,7 @@ private:
     float m_Multiplier;
     vec3 m_Color;
     vec2 m_Attenuation;
-    vec2 m_ScaledAttenuation;
+    mutable vec2 m_ScaledAttenuation;
 
     ModelMesh* m_LightVolume;
     ModelMesh* m_Model;

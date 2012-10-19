@@ -19,8 +19,9 @@
 
 vec3 getPosition(in float p_depth, in vec2 p_ndc, in vec4 p_projParams)
 { 
-    float depth = p_depth * 2.0f - 1.0f;
-    float linDepth = p_projParams.w / (depth - p_projParams.z);
+    //float depth = p_depth * 2.0f - 1.0f;
+    //float linDepth = p_projParams.w / (depth - p_projParams.z);
+	float linDepth = p_depth * (p_projParams.w - p_projParams.z) + p_projParams.z;
 
     return vec3((p_ndc * linDepth) / p_projParams.xy, linDepth);
 }

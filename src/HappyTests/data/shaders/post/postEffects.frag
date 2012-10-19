@@ -21,7 +21,7 @@
 
 #version 150 core
 #pragma optionNV(fastmath on)
-#pragma optionNV(fastprecision on)
+//#pragma optionNV(fastprecision on)
 #pragma optionNV(ifcvt none)
 #pragma optionNV(inline all)
 #pragma optionNV(strict on)
@@ -52,16 +52,15 @@ uniform float intensity;
 uniform float scale;
 uniform float bias;
 
-uniform vec4 projParams;
 uniform vec2 viewPortSize;
+uniform vec4 projParams;
 
 #endif
 /////////////////////////
 
 uniform sampler2D lumMap;
 
-uniform sampler2D normalMap;
-uniform sampler2D depthMap;
+uniform sampler2D normalDepthMap;
 
 uniform vec3 fogColor;
 
@@ -115,10 +114,10 @@ float getEdge(in sampler2D map, in vec2 texCoord)
 float readDepth(in vec2 coord)  
 {  
     //if (coord.x < 0 || coord.y < 0) return 1.0f;
-    const float nearZ = 1.0f;
-    const float farZ = 250.0f;  
-    float posZ = textureLod(depthMap, coord, 0).x;
-    return (2.0f * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));  
+    //const float nearZ = 1.0f;
+    //const float farZ = 250.0f;  
+   /* float posZ =*/ return textureLod(normalDepthMap, coord, 0).z;
+    //return (2.0f * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));  
 }   
 
 vec3 readColor(in vec2 coord)  
@@ -230,18 +229,10 @@ void main()
     color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
 #endif
 
-#if NORMAL_EDGE
-    color *= getEdge(normalMap, tex);
-#endif
-
-#if DEPTH_EDGE
-    //color *= getEdge(depthMap, tex);
-    color += 1-getEdge(depthMap, tex);
-#endif
-
 #if FOG
-    float beginFog = 0.997f;
-    float fog = max(0, texture(depthMap, tex).r - beginFog) * (1.0f / (1.0f - beginFog));
+    const float beginFog = 0.5f;
+	vec3 normalDepth = texture(normalDepthMap, tex).xyz;
+    float fog = max(0, normalDepth.z - beginFog) * (1.0f / (1.0f - beginFog));
 
     color = color * (1 - fog) + fogColor * (fog);
 #endif
@@ -252,5 +243,6 @@ void main()
     
     //color = color - gi;
     //color = vec3(ao);
+			
     outColor = vec4(color, 1.0f);
 }
