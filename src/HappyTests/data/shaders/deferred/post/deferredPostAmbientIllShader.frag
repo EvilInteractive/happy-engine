@@ -160,12 +160,13 @@ void main()
     
     //Lambert
     float dotLightNormal = clamp(dot(lightDir, normal), 0.0f, 1.0f);
-    //float halfLambert = dotLightNormal * 0.5f + 0.5f;
+    
+	float ambHalfLambert = clamp(dot(-lightDir, normal), 0.0f, 1.0f) * 0.5f + 0.5f;
     
     //Light
     //vec3 diffuseLight = pow(lambertRamp * halfLambert, vec3(0.3f)) * dirLight.color.rgb * dirLight.color.a;
     vec3 diffuseLight = dotLightNormal * dirLight.color.rgb * dirLight.color.a;
-    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb; 
+    vec3 ambientLight = ambLight.color.a * ambLight.color.rgb * ambHalfLambert; 
     
     //Shadow
     float shadow = 1;
