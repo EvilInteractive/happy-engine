@@ -75,7 +75,7 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    m_View = GRAPHICS->createView();
+    m_View = GRAPHICS->createView3D();
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
@@ -155,7 +155,7 @@ void MainGame::load()
     m_Scene->getCameraManager()->addCamera("default", camera);
     m_View->setCamera("default");
 
-    m_Scene->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1, 1, 1), 0.75f);
+    m_Scene->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1.0f, 1, 1), 0.75f);
     m_Scene->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
     m_FPSGraph = NEW he::tools::FPSGraph();
@@ -239,7 +239,7 @@ void MainGame::connectionSuccessful()
 
 void MainGame::connectionFailed()
 {
-    if (he::MessageBox::show("Connection Failed", "No connection could be established", "-  Retry  -", "-  Quit  -") == he::MessageBoxButton_Button1)
+    if (he::MessageBox::showExt("Connection Failed", "No connection could be established", he::MessageBoxIcon_Warning, "Retry", "Quit") == he::MessageBoxButton_Button1)
     {
         NETWORK->join();
     }
@@ -251,7 +251,7 @@ void MainGame::connectionFailed()
 
 void MainGame::connectionLost()
 {
-    he::MessageBox::show("Connection Lost", "Connection to the server lost", "-  Quit  -");
+    he::MessageBox::showExt("Connection Lost", "Connection to the server lost", he::MessageBoxIcon_Warning, "Quit");
     HAPPYENGINE->quit();
 }
 

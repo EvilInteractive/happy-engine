@@ -44,7 +44,7 @@ Forward3DRenderer::~Forward3DRenderer()
 {
 }
 
-void Forward3DRenderer::init( View* view, const RenderTarget* target)
+void Forward3DRenderer::init( View3D* view, const RenderTarget* target)
 {
     m_RenderTarget = target;
     m_View = view;

@@ -28,11 +28,11 @@ namespace he {
 namespace ge {
 
 Entity::Entity():
-    m_SleepEvaluaters(EventCombiner<bool>([](bool& inoutA, const bool& outB) -> bool
+    m_SleepEvaluaters([](bool& inoutA, const bool& outB) -> bool
     { 
         inoutA = outB; 
         return inoutA;
-    }, false))
+    }, false)
 {
 }
 

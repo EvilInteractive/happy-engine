@@ -30,7 +30,7 @@ Color::Color()
 Color::Color(float red, float green, float blue, float alpha): m_rgb(red, green, blue), m_a(alpha)
 {
 }
-Color::Color(byte red, byte green, byte blue, byte alpha) : m_rgb(red / 255.0f, green / 255.0f, blue / 255.0f), 
+Color::Color(uint8 red, uint8 green, uint8 blue, uint8 alpha) : m_rgb(red / 255.0f, green / 255.0f, blue / 255.0f), 
                                                             m_a(alpha / 255.0f)
 {
 }

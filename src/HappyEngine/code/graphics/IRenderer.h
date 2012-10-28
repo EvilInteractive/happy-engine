@@ -30,15 +30,26 @@ namespace gfx {
 class LightManager;
 class Texture2D;
 class View;
+class View3D;
 class RenderTarget;
 
-class IRenderer
+class IRenderer3D
 {
 public:
-    virtual ~IRenderer() {}
+    virtual ~IRenderer3D() {}
+
+    virtual void init(View3D* view, const RenderTarget* target) = 0;
+    
+    virtual void draw() = 0;
+};
+
+class IRenderer2D
+{
+public:
+    virtual ~IRenderer2D() {}
 
     virtual void init(View* view, const RenderTarget* target) = 0;
-    
+
     virtual void draw() = 0;
 };
 

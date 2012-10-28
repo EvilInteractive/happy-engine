@@ -47,9 +47,6 @@
 #include <boost/any.hpp>
 #include <boost/function.hpp>
 #include <boost/date_time.hpp>
-#pragma warning (disable : 4512) // assignment operator could not be generated
-#include <boost/signal.hpp>
-#pragma warning (default : 4512)
 
 #include <SFML/Window.hpp>
 

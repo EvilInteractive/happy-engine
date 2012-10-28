@@ -35,7 +35,7 @@ namespace he {
     namespace gfx {
         class Window;
         class Scene;
-        class View;
+        class View3D;
     }
 }
 
@@ -82,7 +82,7 @@ private:
     Ball* m_Ball;
 
     he::gfx::Window* m_Window;
-    he::gfx::View*   m_View;
+    he::gfx::View3D*   m_View;
     he::gfx::Scene*  m_Scene;
 
     std::vector<he::ge::Entity*> m_EntityList;

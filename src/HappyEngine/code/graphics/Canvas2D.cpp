@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+ //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -137,7 +137,8 @@ Canvas2D::Canvas2D(const RectI& absoluteViewport) :
     m_CanvasSize(static_cast<float>(absoluteViewport.width), static_cast<float>(absoluteViewport.height)),
     m_View(nullptr),
     m_Renderer2D(nullptr),
-    m_ExtraPixelDepth(0)
+    m_ExtraPixelDepth(0),
+    m_BlendStyle(BlendStyle_Alpha)
 {
     init();
 }
@@ -365,7 +366,7 @@ void Canvas2D::clear()
     GL::heBindFbo(m_pBufferData->fbufferID);
     GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, buffers);
-    GL::heClearColor(Color(0.0f,0.0f,1.0f,0.0f));
+    GL::heClearColor(Color(0.f, 0, 0, 0));
     GL::heSetDepthWrite(true);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -403,9 +404,7 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 
     //GL::se m_pBufferData->context
 
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
+    applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
@@ -433,9 +432,8 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
 void Canvas2D::fillRect(const vec2& pos, const vec2& size)
 {
     HE_ASSERT(m_pBufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
+
+    applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
@@ -481,9 +479,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     m_pFontEffect->setDepth(dp);
 
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
+    applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
@@ -502,7 +498,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
         // If there is set a boundingbox for text
         if (hasBounds)
         {
-            vec2 offset;
+            vec2 offset(0, 0);
 
             gui::Text::HAlignment h = txt.getHorizontalAlignment();
 
@@ -511,7 +507,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
                 case gui::Text::HAlignment_Left:
                     break;
                 case gui::Text::HAlignment_Center:
-                    offset.x += (txt.getFont()->getStringWidth(txt.getText()[i]) / 2);
+                    offset.x += (txt.getBounds().x / 2.0f - txt.getFont()->getStringWidth(txt.getText()[i]) / 2.0f);
                     break;
                 case gui::Text::HAlignment_Right:
                     offset.x += (txt.getBounds().x - txt.getFont()->getStringWidth(txt.getText()[i]));
@@ -525,7 +521,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
                 case gui::Text::VAlignment_Top:
                     break;
                 case gui::Text::VAlignment_Center:
-                    offset.y += ((txt.getFont()->getLineSpacing() * (txt.getText().size() - 1)) / 2);
+                    offset.y += (txt.getBounds().y / 2.0f - (txt.getFont()->getLineSpacing() * txt.getText().size()) / 2.0f);
                     break;
                 case gui::Text::VAlignment_Bottom:
                     offset.y += (txt.getBounds().y - (txt.getFont()->getLineSpacing() * txt.getText().size()));
@@ -626,9 +622,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     m_pTextureEffect->setTCScale(tcScale);
     m_pTextureEffect->setDepth(getNewDepth());
 
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(true);
+    applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
@@ -650,6 +644,26 @@ void Canvas2D::viewResized()
     resize(newSize);
     m_Position.x = viewport.x * m_RelativeViewport.x;
     m_Position.y = viewport.y * m_RelativeViewport.y;
+}
+
+void Canvas2D::applyBlend()
+{
+    switch (m_BlendStyle)
+    {
+    case BlendStyle_Opac:
+        GL::heBlendEnabled(false);
+        break;
+    case BlendStyle_Alpha:
+        GL::heBlendEnabled(true);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        break;
+    case BlendStyle_Add:
+        GL::heBlendEnabled(true);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_One);
+        break;
+    }
 }
 
 } }//end namespace

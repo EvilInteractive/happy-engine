@@ -49,8 +49,8 @@ bool happyAssert(bool isOk, const char* file, const char* func, int line, const 
                       "assert in function %s\n"
                       "in file %s on line %d\n", func, file, line);
     
-    if (MessageBox::show("Assert!", 
-        std::string(infoText) + buff, 
+    if (MessageBox::showExt("Assert!", 
+        std::string(infoText) + buff, MessageBoxIcon_ProgrammerAssert, 
         "-  Debug  -", "-  Skip  -") == MessageBoxButton_Button1)
     {
         #ifndef GCC

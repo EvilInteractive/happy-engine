@@ -66,8 +66,7 @@ ContentManager::ContentManager():
     m_FxPath(""),
 
     m_ParticleQuad(nullptr),
-    m_FullscreenQuad(nullptr),
-    m_pDefaultFont(nullptr)
+    m_FullscreenQuad(nullptr)
 {
     setContentDir(HAPPYENGINE->getRootDir().getAbsolutePath(Path("../data/")));
 }
@@ -78,10 +77,7 @@ ContentManager::~ContentManager()
         m_ParticleQuad->release();
     if (m_FullscreenQuad != nullptr)
         m_FullscreenQuad->release();
-
-    if (m_pDefaultFont != nullptr)
-        m_pDefaultFont->release();
-
+    
     // All content should be gone when getting here
     // loaders perform last garbage collect
     delete m_pMaterialLoader;
@@ -170,12 +166,7 @@ gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size)
 
 gfx::Font* ContentManager::getDefaultFont(ushort size)
 {
-    if (m_pDefaultFont == nullptr)
-    {
-        m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
-    }
-
-    return m_pDefaultFont;
+    return loadFont("Ubuntu-Bold.ttf", size);
 }
 
 //////////////////////////////////////////////////////////////////////////

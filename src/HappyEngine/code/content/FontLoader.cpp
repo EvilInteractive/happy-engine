@@ -89,6 +89,7 @@ gfx::Font* FontLoader::load(const std::string& path, ushort size)
         }
 
         gfx::Font* pFont = FACTORY->get(handle);
+        pFont->setName(stream.str());
         pFont->init(m_FTLibrary, face, size);
 
         m_AssetContainer.addAsset(stream.str(), handle);

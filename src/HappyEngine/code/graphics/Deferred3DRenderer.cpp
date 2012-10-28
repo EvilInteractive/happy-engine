@@ -79,7 +79,7 @@ Deferred3DRenderer::Deferred3DRenderer():
         Texture2D::TextureFormat_RGBA8, false);
 
 }
-void Deferred3DRenderer::init( View* view, const RenderTarget* target )
+void Deferred3DRenderer::init( View3D* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
     //CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");

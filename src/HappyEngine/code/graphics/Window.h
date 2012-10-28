@@ -60,7 +60,6 @@ public:
     void setWindowPosition(int x, int y);
     void setWindowDimension(uint width, uint height);
     void setVSync(bool enable);
-    void setBackgroundColor(const Color& color);
     void setCursorVisible(bool visible);
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create

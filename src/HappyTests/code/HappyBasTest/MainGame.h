@@ -40,7 +40,7 @@ namespace he {
         class SkyBox;
         class Window;
         class Scene;
-        class View;
+        class View3D;
         class ModelMesh;
         class CameraPerspective;
         class Texture2D;
@@ -72,11 +72,11 @@ private:
     bool m_SpinShadows;
 
     he::gfx::Window* m_Window;
-    he::gfx::View*   m_View;
+    he::gfx::View3D*   m_View;
     he::gfx::Scene*  m_Scene;
 
     he::gfx::Window* m_Window2;
-    he::gfx::View*   m_View2;
+    he::gfx::View3D*   m_View2;
 
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;

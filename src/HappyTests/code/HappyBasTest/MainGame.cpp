@@ -52,6 +52,7 @@
 #include "Canvas2D.h"
 #include "SpotLight.h"
 #include "PointLight.h"
+#include "Font.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -105,12 +106,12 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    m_View = GRAPHICS->createView();
+    m_View = GRAPHICS->createView3D();
     m_Scene = GRAPHICS->createScene();
     m_Window = GRAPHICS->createWindow();
 
 #ifdef ENABLE_WINDOW2
-    m_View2 = GRAPHICS->createView();
+    m_View2 = GRAPHICS->createView3D();
     m_Window2 = GRAPHICS->createWindow();
 #endif
 
@@ -140,12 +141,12 @@ void MainGame::load()
     settings.shadowSettings.shadowMult = 2;
 
     settings.postSettings.shaderSettings.enableAO = false;
-    settings.postSettings.shaderSettings.enableBloom = false;
+    settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = true;
     settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
-    settings.postSettings.shaderSettings.enableVignette = false;
+    settings.postSettings.shaderSettings.enableVignette = true;
 
     CONTENT->setRenderSettings(settings);
 
@@ -199,9 +200,7 @@ void MainGame::load()
 #ifdef ENABLE_WINDOW2
     m_View2->getShapeRenderer()->attachToRenderer(this);
 #endif
-
-    m_TestTexture = CONTENT->asyncLoadTexture("cube_diff.png");
-
+    
     #pragma endregion
     
     #pragma region Scene
@@ -240,8 +239,8 @@ void MainGame::load()
     #pragma endregion
     
     #pragma region Lights
-    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.8f, 0.5f, 1.0f), 1.0f);
+    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.6f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 0.0f);
 
 /*
     for (size_t i(0); i < 5; ++i)
@@ -267,7 +266,7 @@ void MainGame::load()
     m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
     m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
     m_DebugSpotLight->setDirection(vec3(-0.70f, -0.67f, -0.27f));
-    m_DebugSpotLight->setMultiplier(3);
+    m_DebugSpotLight->setMultiplier(2.0f);
     m_DebugSpotLight->setAttenuation(1.0f, 20.0f);
     m_DebugSpotLight->setFov(he::piOverTwo);
     m_DebugSpotLight->setColor(he::Color(1.0f, 0.4f, 0.4f));
@@ -276,7 +275,7 @@ void MainGame::load()
     he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
     spotlight->setLocalTranslate(vec3(-35.32f, 6.04f, 31.85f));
     spotlight->setDirection(vec3(0.80f, 0.13f, -0.58f));
-    spotlight->setMultiplier(5);
+    spotlight->setMultiplier(2.0f);
     spotlight->setAttenuation(1.0f, 30.0f);
     spotlight->setFov(he::piOverFour);
     spotlight->setColor(he::Color(0.4f, 0.4f, 1.0f));
@@ -302,11 +301,14 @@ void MainGame::load()
     m_DebugMesh->setLoaded();
     #pragma endregion
     
-    m_DebugText.setFont(CONTENT->getDefaultFont(14));
-    
-    he::MessageBox::show("Load Completed", "Success!");
+    gfx::Font* font(CONTENT->getDefaultFont(14));
+    m_DebugText.setFont(font);
+    font->release();
 
-    //PROFILER->enable();
+    he::MessageBox::showExt("Test Messagebox", 
+        "Hallo\n\nIk test even of deze messagebox wel goed werk\n\n* 1\n* 2\n* 3", MessageBoxIcon_Warning, 
+        "Het werkt!", "Ik weet het niet", "Werkt niet");
+    
     PROFILER->setView(m_View);
 }
 

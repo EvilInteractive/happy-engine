@@ -32,6 +32,13 @@ class Simple2DFontEffect;
 class ModelMesh;
 class Texture2D;
 
+enum BlendStyle
+{
+    BlendStyle_Opac,
+    BlendStyle_Alpha,
+    BlendStyle_Add
+};
+
 class Canvas2D
 {
 public:
@@ -91,6 +98,7 @@ public:
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
     void setFillColor(const Color& newColor);
+    void setBlendStyle(const BlendStyle& blendStyle) { m_BlendStyle = blendStyle; }
 
     void setLineWidth(float width);
 
@@ -127,6 +135,8 @@ private:
 
     void viewResized();
     void resize(const vec2& newSize);
+
+    void applyBlend();
     
     //void drawLineAA(const vec2& pos1, const vec2& pos2);
 
@@ -153,6 +163,7 @@ private:
     Texture2D* m_pRenderTexture;
     Texture2D* m_pTextBuffer;
 
+    BlendStyle m_BlendStyle;
 
     View* m_View;
     RectF m_RelativeViewport;

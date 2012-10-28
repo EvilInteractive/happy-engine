@@ -121,10 +121,18 @@ void GraphicsEngine::removeScene( Scene* scene )
     }
 }
 
-View* GraphicsEngine::createView()
+View2D* GraphicsEngine::createView2D()
 {
     ViewFactory* factory(ViewFactory::getInstance());
-    View* view(factory->get(factory->create()));
+    View2D* view(static_cast<View2D*>(factory->get(factory->createView2D())));
+    m_Views.push_back(view->getHandle());
+    return view;
+}
+
+View3D* GraphicsEngine::createView3D()
+{
+    ViewFactory* factory(ViewFactory::getInstance());
+    View3D* view(static_cast<View3D*>(factory->get(factory->createView3D())));
     m_Views.push_back(view->getHandle());
     return view;
 }
@@ -218,7 +226,6 @@ he::ushort GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution 
 {
     switch (resolution)
     {
-    case ShadowResolution_None: return 0;
     case ShadowResolution_32: return 32;
     case ShadowResolution_64: return 64;
     case ShadowResolution_128: return 128;
@@ -226,7 +233,7 @@ he::ushort GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution 
     case ShadowResolution_512: return 512;
     case ShadowResolution_1024: return 1024;
     }
-    HE_ASSERT(false, "Unknown shadow resoultion");
+    HE_ASSERT(false, "Unknown / Invalid shadow resolution");
     return 0;
 }
 

@@ -41,6 +41,8 @@ namespace gfx {
 class Window;
 class Scene;
 class View;
+class View2D;
+class View3D;
 
 enum ShadowResolution;
 
@@ -65,7 +67,8 @@ public:
     Scene* getScene(SceneID id);
     void removeScene(Scene* scene);
 
-    View* createView();
+    View2D* createView2D();
+    View3D* createView3D();
     void removeView(View* view);
 
     Window* createWindow();

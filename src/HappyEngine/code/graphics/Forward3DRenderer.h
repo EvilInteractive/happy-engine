@@ -32,7 +32,7 @@ class ModelMesh;
 class Texture2D;
 class RenderTarget;
 
-class Forward3DRenderer : public IRenderer
+class Forward3DRenderer : public IRenderer3D
 {
 public:
 
@@ -41,13 +41,13 @@ public:
     virtual ~Forward3DRenderer();
 
     /* GENERAL */
-    virtual void init( View* view, const RenderTarget* target);
+    virtual void init( View3D* view, const RenderTarget* target);
 
     virtual void draw();
 
 private:    
     const RenderTarget* m_RenderTarget;
-    View* m_View;
+    View3D* m_View;
     DrawListContainer::BlendFilter m_BlendFilter;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */

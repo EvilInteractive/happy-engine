@@ -32,7 +32,7 @@ class Simple2DTextureEffect;
 class ModelMesh;
 class IDrawable2D;
 
-class Renderer2D : public IRenderer
+class Renderer2D : public IRenderer2D
 {
 public:
 

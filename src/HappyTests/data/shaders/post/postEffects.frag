@@ -222,7 +222,8 @@ void main()
 #endif
 
 #if HDR  
-    color = tonemap(color, getExposure(lumMap));
+	float lum = getWhite(lumMap, 0.5f, 5.0f);
+    color = tonemap(color, vec3(1.0f, 0.8f, 0.6f) * lum);
 #endif
  
 #if VIGNETTE   

@@ -42,6 +42,10 @@ public:
     {
         ResourceFactory<T>::getInstance()->release(m_Handle);
     }
+    virtual void instantiate() const
+    {
+        ResourceFactory<T>::getInstance()->instantiate(m_Handle);
+    }
 
     void setName(const std::string& name)
     {

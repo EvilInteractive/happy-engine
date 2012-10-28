@@ -23,15 +23,17 @@
 #pragma once
 
 #include "Hitregion.h"
-#include "Font.h"
+#include "Text.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
     class Texture2D;
+    class Font;
 }
 namespace gui {
 
-class Button
+class Button : public gfx::IDrawable2D
 {
 public:
 
@@ -57,12 +59,12 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Button(TYPE type, const vec2& centerPos, const vec2& size);
+    Button();
     virtual ~Button();
 
     /* GENERAL */
     virtual void tick();
-    virtual void draw();
+    virtual void draw2D(gfx::Canvas2D* renderer);
 
     /* SETTERS */
     virtual void setSpriteSheet(const ObjectHandle& spriteSheet);
@@ -73,7 +75,12 @@ public:
     virtual void setState(STATE state);
     virtual void setActivationMode(ACTIVATION activationMode);
     virtual void setPosition(const vec2& centerPos);
+    virtual void setSize(const vec2& size);
+    virtual void setType(const TYPE& type);
     virtual void setText(const std::string& text, ushort fontSize = 12);
+    virtual void setColors(const Color& normal, const Color& hoover, const Color& down, const Color& disabled, const Color& border);
+
+    virtual const gui::Text& getText() const { return m_Text; }
 
     event0<void> OnClick;
 
@@ -87,8 +94,8 @@ public:
 protected:
 
     /* EXTRA */
-    virtual void drawColor();
-    virtual void drawSprites();
+    virtual void drawColor(gfx::Canvas2D* renderer);
+    virtual void drawSprites(gfx::Canvas2D* renderer);
     virtual void drawSpriteSheet();
 
     /* CALLBACK HANDLERS */
@@ -107,10 +114,11 @@ protected:
     std::vector<const gfx::Texture2D*> m_Sprites;
     const gfx::Texture2D* m_pSpriteSheet;
 
-    Hitregion* m_pHitregion;
+    Hitregion m_Hitregion;
 
-    std::string m_Text;
-    gfx::Font* m_pFont;
+    Color m_Colors[5];
+
+    gui::Text m_Text;
 
 private:
 

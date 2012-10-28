@@ -92,7 +92,7 @@ void ShapeRenderer::createBillboardQuad()
 }
 
 /* GENERAL */
-void ShapeRenderer::init(View* view, const RenderTarget* target)
+void ShapeRenderer::init(View3D* view, const RenderTarget* target)
 {
     m_View = view;
     m_RenderTarget = target;

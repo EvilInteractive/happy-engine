@@ -36,10 +36,10 @@ private:
     float m_a;
 
 public:
-	Color();
-	Color(float r, float g, float b, float a = 1.0f);
-	Color(byte r, byte g, byte b, byte a);
-	Color(const vec4& col);
+    Color();
+    Color(float r, float g, float b, float a = 1.0f);
+    Color(uint8 r, uint8 g, uint8 b, uint8 a = 255);
+    Color(const vec4& col);
     ~Color();
     //Default copy constructor and assignment operator are fine
 
