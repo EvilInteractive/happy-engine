@@ -29,9 +29,12 @@
 
 #include "Light.h"
 
+// warnings in awesomium lib
+#pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
 #include "GLContext.h"
-
+// warnings in awesomium lib
+#pragma warning(default:4100)
 
 namespace he {
 namespace gfx {

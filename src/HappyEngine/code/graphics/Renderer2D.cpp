@@ -20,6 +20,8 @@
 
 #include "HappyPCH.h" 
 
+// warnings in awesomium lib
+#pragma warning(disable:4100)
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
@@ -37,6 +39,8 @@
 #include "Texture2D.h"
 #include "View.h"
 #include "IDrawable2D.h"
+// warnings in awesomium lib
+#pragma warning(default:4100)
 
 namespace he {
 namespace gfx {

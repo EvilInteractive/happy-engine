@@ -20,6 +20,8 @@
 
 #include "HappyPCH.h" 
 
+// warnings in awesomium lib
+#pragma warning(disable:4100)
 #include "WebView.h"
 #include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
@@ -33,6 +35,7 @@
 #include "ControlsManager.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
+#pragma warning(default:4100)
 
 #define COMMON_ASCII_CHAR 128
 
@@ -71,6 +74,12 @@ WebView::WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput
 #pragma warning(default:4355)
 void WebView::init()
 {
+	// create buffer
+	m_Buffer = static_cast<byte*>(he_malloc(4));
+
+	// create webview
+	m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
+
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
     m_pRenderTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest,
