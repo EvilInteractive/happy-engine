@@ -22,6 +22,8 @@
 #define _HE_Path_H_
 #pragma once
 
+#include "boost/filesystem.hpp"
+
 namespace he {
 
 class Path
@@ -40,6 +42,7 @@ public:
     //return = C:/data/test.png => absolute
     Path getAbsolutePath(const Path& relativePath) const; 
 
+	static Path getWorkingPath();
 
 private:
     std::string m_Path;

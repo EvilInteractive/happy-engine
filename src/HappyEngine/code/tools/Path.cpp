@@ -88,4 +88,11 @@ Path& Path::operator+=( const std::string& str )
     return *this;
 }
 
+Path Path::getWorkingPath()
+{
+	boost::filesystem::path workDir(boost::filesystem::current_path());
+
+	return Path(workDir.string());
+}
+
 } //end namespace

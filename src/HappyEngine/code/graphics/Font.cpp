@@ -328,7 +328,7 @@ const Font::CharData* Font::getCharTextureData(byte chr) const
     HE_ASSERT(m_Init, "Init Font before using!");
     HE_ASSERT(m_Cached, "Precache Font before using!");
 
-    if (m_ExtendedChars && chr > 127)
+    if (!m_ExtendedChars && chr > 127)
     {
         return nullptr;
     }

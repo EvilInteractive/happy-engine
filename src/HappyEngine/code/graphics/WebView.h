@@ -24,6 +24,10 @@
 
 #include "IDrawable2D.h"
 
+#pragma warning(disable:4100)
+#include "Awesomium/WebCore.h"
+#pragma warning(default:4100)
+
 namespace Awesomium {
     class WebView;
 }
@@ -32,7 +36,7 @@ namespace he {
 namespace gfx {
 class Texture2D;
 
-class WebView : public IDrawable2D
+class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load
 {
 public:
 
@@ -54,8 +58,38 @@ public:
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
 
-    /* Setters */
+    /* SETTERS */
     void setPosition(const vec2& position) { m_Position = position; }
+
+	// webview load listeners
+	virtual void OnFailLoadingFrame(
+		Awesomium::WebView *  		caller,
+		int64  						frame_id,
+		bool  						is_main_frame,
+		const Awesomium::WebURL&  	url,
+		int  						error_code,
+		const Awesomium::WebString& error_desc 
+	);
+
+	virtual void OnFinishLoadingFrame(
+		Awesomium::WebView *  		caller,
+		int64  						frame_id,
+		bool  						is_main_frame,
+		const Awesomium::WebURL&  	url 
+	);
+
+	virtual void OnDocumentReady(
+		Awesomium::WebView *  		caller,
+		const Awesomium::WebURL &  	url 
+	);
+
+	virtual void OnBeginLoadingFrame(
+		Awesomium::WebView*			caller,
+		int64						frame_id,
+		bool						is_main_frame,
+		const Awesomium::WebURL&	url,
+		bool						is_error_page
+	);
 
 private:
     void init();

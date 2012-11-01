@@ -25,7 +25,6 @@
 #include "WebView.h"
 #include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
-#include "Awesomium/WebCore.h"
 #include "Canvas2D.h"
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
@@ -237,7 +236,7 @@ void WebView::loadUrl(const std::string& url)
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
     m_WebView->LoadURL(webUrl);
 
-	m_WebView->IsLoading();
+	m_WebView->set_load_listener(this);
 }
 
 void WebView::loadFile(const he::Path& /*path*/)
@@ -277,6 +276,7 @@ bool WebView::inputEnabled() const
     return m_bInputEnabled;
 }
 
+/* EXTRA */
 void WebView::onViewResized()
 {
     const RectI& viewport(m_View->getViewport());
@@ -301,6 +301,64 @@ void WebView::resize( const vec2& newSize )
             m_Size = newSize;
         //}
     }
+}
+
+void WebView::OnFailLoadingFrame(
+		Awesomium::WebView *  		/*caller*/,
+		int64  						/*frame_id*/,
+		bool  						/*is_main_frame*/,
+		const Awesomium::WebURL&  	url,
+		int  						/*error_code*/,
+		const Awesomium::WebString& error_desc 
+	)
+{
+	char* buff0 = new char[url.path().length()];
+	url.path().ToUTF8(buff0, url.path().length());
+
+	char* buff1 = new char[url.filename().length()];
+	url.filename().ToUTF8(buff1, url.filename().length());
+
+	char* buff2 = new char[error_desc.length()];
+	error_desc.ToUTF8(buff2, error_desc.length());
+
+	HE_WARNING("Failed to load url: '%s%s', '%s'", buff0, buff1, buff2);
+
+	delete[] buff0, buff1, buff2;
+}
+
+void WebView::OnFinishLoadingFrame(
+		Awesomium::WebView *  		/*caller*/,
+		int64  						/*frame_id*/,
+		bool  						/*is_main_frame*/,
+		const Awesomium::WebURL&  	url 
+	)
+{
+	char* buff0 = new char[url.path().length()];
+	url.path().ToUTF8(buff0, url.path().length());
+
+	char* buff1 = new char[url.filename().length()];
+	url.filename().ToUTF8(buff1, url.filename().length());
+
+	HE_INFO("Finished loading url: '%s%s'", buff0, buff1);
+
+	delete[] buff0, buff1;
+}
+
+void WebView::OnDocumentReady(
+		Awesomium::WebView *  		/*caller*/,
+		const Awesomium::WebURL &  	/*url */
+	)
+{
+}
+
+void WebView::OnBeginLoadingFrame(
+		Awesomium::WebView*			/*caller*/,
+		int64						/*frame_id*/,
+		bool						/*is_main_frame*/,
+		const Awesomium::WebURL&	/*url*/,
+		bool						/*is_error_page*/
+	)
+{
 }
 
 }} //end namespace

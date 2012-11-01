@@ -541,6 +541,10 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
             vec2 size;
 
             const Font::CharData* cData = txt.getFont()->getCharTextureData(txt.getText()[i][i2]);
+			// skip char if chardata is empty
+			if (cData == nullptr)
+				continue;
+
             const RectF& regionToDraw = cData->textureRegion;
 
             tcScale.x = regionToDraw.width / tex2D->getWidth();
