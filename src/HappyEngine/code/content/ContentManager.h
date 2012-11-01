@@ -115,13 +115,13 @@ public:
 
 private:
 
-    ModelLoader* m_pModelLoader;
-    TextureLoader* m_pTextureLoader;
-    LineLoader* m_pLineLoader;
-    PhysicsShapeLoader* m_pPhysicsShapeLoader;
-    FontLoader* m_pFontLoader;
-    ShaderLoader* m_pShaderLoader;
-    MaterialLoader* m_pMaterialLoader;
+    ModelLoader* m_ModelLoader;
+    TextureLoader* m_TextureLoader;
+    LineLoader* m_LineLoader;
+    PhysicsShapeLoader* m_PhysicsShapeLoader;
+    FontLoader* m_FontLoader;
+    ShaderLoader* m_ShaderLoader;
+    MaterialLoader* m_MaterialLoader;
 
     Path m_ContentRootDir;
     std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder,

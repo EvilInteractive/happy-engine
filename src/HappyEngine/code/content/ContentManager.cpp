@@ -38,13 +38,13 @@ namespace he {
 namespace ct {
 
 ContentManager::ContentManager(): 
-    m_pModelLoader(NEW ModelLoader()), 
-    m_pTextureLoader(NEW TextureLoader()),
-    m_pLineLoader(NEW LineLoader()), 
-    m_pPhysicsShapeLoader(NEW PhysicsShapeLoader()), 
-    m_pFontLoader(NEW FontLoader()),
-    m_pShaderLoader(NEW ShaderLoader()), 
-    m_pMaterialLoader(NEW MaterialLoader()), 
+    m_ModelLoader(NEW ModelLoader()), 
+    m_TextureLoader(NEW TextureLoader()),
+    m_LineLoader(NEW LineLoader()), 
+    m_PhysicsShapeLoader(NEW PhysicsShapeLoader()), 
+    m_FontLoader(NEW FontLoader()),
+    m_ShaderLoader(NEW ShaderLoader()), 
+    m_MaterialLoader(NEW MaterialLoader()), 
 
     m_TextureFolder("textures/"), 
     m_ModelFolder("models/"), 
@@ -80,96 +80,96 @@ ContentManager::~ContentManager()
     
     // All content should be gone when getting here
     // loaders perform last garbage collect
-    delete m_pMaterialLoader;
-    delete m_pShaderLoader;
-    delete m_pPhysicsShapeLoader;
-    delete m_pLineLoader;
-    delete m_pFontLoader;
-    delete m_pModelLoader;
-    delete m_pTextureLoader;
+    delete m_MaterialLoader;
+    delete m_ShaderLoader;
+    delete m_PhysicsShapeLoader;
+    delete m_LineLoader;
+    delete m_FontLoader;
+    delete m_ModelLoader;
+    delete m_TextureLoader;
 }
 
 
 void ContentManager::tick(float dTime) //checks for new load operations, if true start thread
 {
     PROFILER_BEGIN("Model Loader loop");
-    m_pModelLoader->tick(dTime);
+    m_ModelLoader->tick(dTime);
     PROFILER_END();
 
     PROFILER_BEGIN("Texture Loader loop");
-    m_pTextureLoader->tick(dTime);
+    m_TextureLoader->tick(dTime);
     PROFILER_END();
 }
 void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 {
-    m_pModelLoader->glThreadInvoke();
-    m_pTextureLoader->glThreadInvoke();
+    m_ModelLoader->glThreadInvoke();
+    m_TextureLoader->glThreadInvoke();
 }
 
 //////////////////////////////////////////////////////////////////////////
 gfx::Model* ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout);
+    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout);
 }
 gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
 {
-    return m_pModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
+    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
 }
 gfx::Model* ContentManager::loadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout);
+    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout);
 }
 gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
 {
-    return m_pModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
+    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
 }
 
 //////////////////////////////////////////////////////////////////////////
 const gfx::Texture2D* ContentManager::asyncLoadTexture2D(const std::string& asset)
 {
-    return m_pTextureLoader->asyncLoadTexture2D(m_TexturePath.str() + asset);
+    return m_TextureLoader->asyncLoadTexture2D(m_TexturePath.str() + asset);
 }
 const gfx::TextureCube* ContentManager::asyncLoadTextureCube( const std::string& asset )
 {
-    return m_pTextureLoader->asyncLoadTextureCube(m_TexturePath.str() + asset);
+    return m_TextureLoader->asyncLoadTextureCube(m_TexturePath.str() + asset);
 }
 const gfx::Texture2D* ContentManager::asyncMakeTexture2D(const Color& color)
 {
-    return m_pTextureLoader->asyncMakeTexture2D(color);
+    return m_TextureLoader->asyncMakeTexture2D(color);
 }
 const gfx::Texture2D* ContentManager::loadTexture2D(const std::string& path)
 {
-    return m_pTextureLoader->loadTexture2D(m_TexturePath.str()  + path);
+    return m_TextureLoader->loadTexture2D(m_TexturePath.str()  + path);
 }
 const gfx::TextureCube* ContentManager::loadTextureCube( const std::string& path )
 {
-    return m_pTextureLoader->loadTextureCube(m_TexturePath.str()  + path);
+    return m_TextureLoader->loadTextureCube(m_TexturePath.str()  + path);
 }
 const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
 {
-    return m_pTextureLoader->makeTexture2D(color);
+    return m_TextureLoader->makeTexture2D(color);
 }
 
 //////////////////////////////////////////////////////////////////////////
 gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
 {
-    return m_pLineLoader->loadLine(m_LinePath.str()  + asset);
+    return m_LineLoader->loadLine(m_LinePath.str()  + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
 ObjectHandle ContentManager::loadPhysicsConvex(const std::string& asset)
 {
-    return m_pPhysicsShapeLoader->loadConvex(m_PhysicsPath.str()  + asset);
+    return m_PhysicsShapeLoader->loadConvex(m_PhysicsPath.str()  + asset);
 }
 ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
 {
-    return m_pPhysicsShapeLoader->loadConcave(m_PhysicsPath.str() + asset);
+    return m_PhysicsShapeLoader->loadConcave(m_PhysicsPath.str() + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
 gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size)
 {
-    return m_pFontLoader->load(m_FontPath.str() + asset, size);
+    return m_FontLoader->load(m_FontPath.str() + asset, size);
 }
 
 gfx::Font* ContentManager::getDefaultFont(ushort size)
@@ -180,13 +180,13 @@ gfx::Font* ContentManager::getDefaultFont(ushort size)
 //////////////////////////////////////////////////////////////////////////
 ObjectHandle ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
 {
-    return m_pShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
+    return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
 }
 
 //////////////////////////////////////////////////////////////////////////
 ObjectHandle ContentManager::loadMaterial(const std::string& asset)
 {
-    return m_pMaterialLoader->load(m_MaterialPath.str() + asset);
+    return m_MaterialLoader->load(m_MaterialPath.str() + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -346,13 +346,13 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
 
 void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
 {
-    m_pMaterialLoader->setRenderSettings(settings);
-    m_pShaderLoader->setRenderSettings(settings);
+    m_MaterialLoader->setRenderSettings(settings);
+    m_ShaderLoader->setRenderSettings(settings);
 }
 
 bool ContentManager::isLoading() const
 {
-    if (m_pModelLoader->isLoading() || m_pTextureLoader->isLoading())
+    if (m_ModelLoader->isLoading() || m_TextureLoader->isLoading())
         return true;
     else
         return false;
