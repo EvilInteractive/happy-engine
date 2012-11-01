@@ -1,7 +1,7 @@
-set (CODE_CONTAINERS_FILES   ObjectFactory.h
-                    Resource.h
-                    ResourceFactory.h
-                    SlotPContainer.h)
+set (CODE_CONTAINERS_FILES  ObjectFactory.h
+                            Resource.h
+                            ResourceFactory.h
+                            SlotPContainer.h)
                         
 foreach(f ${CODE_CONTAINERS_FILES}) 
     LIST(APPEND HAPPYENGINE_CODE_CONTAINERS_SRCS code/containers/${f})

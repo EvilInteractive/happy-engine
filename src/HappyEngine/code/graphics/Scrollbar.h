@@ -48,6 +48,8 @@ public:
 	void setColors(	const Color& backgroundColor = Color(0.6f,0.6f,0.6f),
 					const Color& scrollbarColor = Color(0.6f,0.6f,0.8f),
 					const Color& edgeColor = Color(0.1f,0.1f,0.1f));
+    void setPosition(const vec2& pos);
+    void setSize(const vec2& size);
 
 	/* GETTERS */
 	float getBarPos() const;

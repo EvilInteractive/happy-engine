@@ -22,11 +22,14 @@
 #define _HE_DRAWLIST_CONTAINER_H_
 #pragma once
 
+#include "Bound.h"
+
 namespace he {
 namespace gfx {
 
 class IDrawable;
-class Camera;
+class ICamera;
+class CullOctree;
 
 class DrawListContainer
 {
@@ -34,43 +37,30 @@ public:
     DrawListContainer();
     virtual ~DrawListContainer();
 
-    enum Filter
+    enum BlendFilter
     {
-        F_Main_Opac = 1 << 0,
-        F_Main_Blended = 1 << 1,
-        F_Loc_AfterPost = 1 << 2,
-        F_Loc_BeforePost = 1 << 3,
-        F_Loc_Background = 1 << 4,
-        F_Sub_Single = 1 << 5,
-        F_Sub_Skinned = 1 << 6,
-        F_Sub_Instanced = 1 << 7,
+        BlendFilter_Opac,
+        BlendFilter_Blend,
+
+        BlendFilter_MAX
     };
-    void for_each(uint filter, const boost::function<void(IDrawable*)>& f) const;
 
-    void insert(IDrawable* pDrawable);
-    void remove(const IDrawable* pDrawable);
+    void prepareForRendering();
+    void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc) const;
+    void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc,
+        std::vector<vec3>& vertices, std::vector<uint>& indices) const;
 
-    typedef std::vector<IDrawable*> Container;
-
+    void insert(IDrawable* drawable);
+    void remove(IDrawable* drawable);
+    void forceReevalute(IDrawable* drawable);
+    void doReevalute(IDrawable* drawable);
+    
 private:
 
-    static const int BEFOREPOST_INDEX = 0;
-    static const int AFTERPOST_INDEX = 1;
-    static const int BACKGROUND_INDEX = 2;
-    static const int MAX_I0 = 3;
+    void getContainerIndex(const IDrawable* drawable, BlendFilter& main);
 
-    static const int OPAC_INDEX = 0;
-    static const int BLENDING_INDEX = 1;
-    static const int MAX_I1 = 2;
-
-    static const int SINGLE_INDEX = 0;
-    static const int SKINNED_INDEX = 1;
-    static const int INSTANCE_INDEX = 2;
-    static const int MAX_I2 = 3;
-
-    void getContainerIndex(const IDrawable* drawable, uint& i0, uint& i1, uint& i2);
-
-    Container m_DrawList[MAX_I0][MAX_I1][MAX_I2]; //Loc - Main - Sub
+    std::vector<IDrawable*> m_Dynamics;
+    CullOctree* m_DrawList[BlendFilter_MAX];
 
     //Disable default copy constructor and default assignment operator
     DrawListContainer(const DrawListContainer&);

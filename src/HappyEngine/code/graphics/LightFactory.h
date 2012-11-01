@@ -22,7 +22,7 @@
 #define _HE_LightFactory_H_
 #pragma once
 
-#include "ILight.h"
+#include "Light.h"
 #include "Singleton.h"
 
 namespace he {
@@ -31,7 +31,7 @@ namespace gfx {
 class PointLight;
 class SpotLight;
 
-class LightFactory : protected ObjectFactory<ILight>, public Singleton<LightFactory>
+class LightFactory : protected ObjectFactory<Light>, public Singleton<LightFactory>
 {
 public:
     LightFactory();
@@ -39,7 +39,7 @@ public:
 
     void destroyLight(const ObjectHandle& handle);
 
-    virtual ILight* get(const ObjectHandle& handle) const;
+    virtual Light* get(const ObjectHandle& handle) const;
     ObjectHandle createPointLight();
     ObjectHandle createSpotLight();
 

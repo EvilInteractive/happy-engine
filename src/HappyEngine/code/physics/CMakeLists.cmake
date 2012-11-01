@@ -5,7 +5,8 @@ set (CODE_PHYSICS_NO_FILTER
         PhysicsMaterial.cpp                        PhysicsMaterial.h
         PhysicsRagdoll.cpp                         PhysicsRagdoll.h
         PhysicsStaticActor.cpp                     PhysicsStaticActor.h
-        PhysicsTrigger.cpp                         PhysicsTrigger.h)
+        PhysicsTrigger.cpp                         PhysicsTrigger.h
+        PhysicsUserData.h)
         
 set (CODE_PHYSICS_JOINTS_FILTER
         IPhysicsJoint.h

@@ -24,7 +24,9 @@
 
 #include "Vertex.h"
 #include "BufferLayout.h"
-#include "ExtraForward3DRenderer.h"
+#include "ShapeRenderer.h"
+
+#include "ModelMesh.h"
 
 namespace he {
 namespace tools {
@@ -59,9 +61,9 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
 
     m_pModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
     m_pModelMesh->setName("Grid mesh 1");
-    m_pModelMesh->init();
-    m_pModelMesh->setVertices(&vertices[0], (uint)vertices.size(), layout);
-    m_pModelMesh->setIndices(&indices[0], (uint)indices.size(), gfx::IndexStride_UInt);
+    m_pModelMesh->init(layout, gfx::MeshDrawMode_Lines);
+    m_pModelMesh->setVertices(&vertices[0], (uint)vertices.size(), gfx::MeshUsage_Static);
+    m_pModelMesh->setIndices(&indices[0], (uint)indices.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
 
     std::vector<gfx::VertexPos> vertices2;
     std::vector<uint> indices2;
@@ -81,9 +83,9 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
 
     m_pModelMesh2 = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
     m_pModelMesh2->setName("Grid mesh 2");
-    m_pModelMesh2->init();
-    m_pModelMesh2->setVertices(&vertices2[0], (uint)vertices2.size(), layout);
-    m_pModelMesh2->setIndices(&indices2[0], (uint)indices2.size(), gfx::IndexStride_UInt);
+    m_pModelMesh2->init(layout, gfx::MeshDrawMode_Lines);
+    m_pModelMesh2->setVertices(&vertices2[0], (uint)vertices2.size(), gfx::MeshUsage_Static);
+    m_pModelMesh2->setIndices(&indices2[0], (uint)indices2.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
 }
 
 Grid::~Grid()
@@ -93,12 +95,12 @@ Grid::~Grid()
 }
 
 /* GENERAL */
-void Grid::draw()
+void Grid::drawShapes(gfx::ShapeRenderer* renderer)
 {
     mat44 world(mat44::createTranslation(m_Position));
 
-    HE3DX->drawSpline(m_pModelMesh, world, m_Color);
-    HE3DX->drawSpline(m_pModelMesh2, world, m_Color2);
+    renderer->drawMeshColor(m_pModelMesh, world, m_Color);
+    renderer->drawMeshColor(m_pModelMesh2, world, m_Color2);
 }
 
 /* SETTERS */

@@ -16,108 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 27/11/2011
-//Extended: Sebastiaan Sprengers
+//Created: 28/10/2012
 
 #ifndef _HE_EVENT_H_
 #define _HE_EVENT_H_
 #pragma once
 
 namespace he {
+namespace details {
 
-template<typename returnType>
-class event0
+template<typename T>
+bool defaultEventCombiner(T& inoutA, const T& inB)
 {
-private: 
-    typedef boost::function0<returnType> function;
+    inoutA = inB;
+    return false;
+}
 
-public:
-    event0() {}
-    ~event0() {}
+}
 
-    void operator+=(const function& func)
-    {
-        m_FuncList.push_back(func);
-    }
-    returnType operator()()
-    {
-        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [](const function& func)
-        {
-            func();
-        });
-    }
+#define ARGS 0
+#include "event_internal.h"
 
-    void clear()
-    {
-        m_FuncList.clear();
-    }
+#define ARGS 1
+#define TEMPLATE_EXTRA_ARGS typename Arg1Type
+#define DECL_PARAMS const Arg1Type& arg1
+#define PARAMS arg1
+#include "event_internal.h"
 
-private:
-    std::vector<function> m_FuncList;
-};
+#define ARGS 2
+#define TEMPLATE_EXTRA_ARGS typename Arg1Type, typename Arg2Type
+#define DECL_PARAMS const Arg1Type& arg1, const Arg2Type& arg2
+#define PARAMS arg1, arg2
+#include "event_internal.h"
 
-template<typename returnType, typename parameterType>
-class event1
-{
-private: 
-    typedef boost::function1<returnType, parameterType> function;
-
-public:
-    event1() {}
-    ~event1() {}
-
-    void operator+=(const function& func)
-    {
-        m_FuncList.push_back(func);
-    }
-    returnType operator()(parameterType par)
-    {
-        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [&](const function& func)
-        {
-            func(par);
-        });
-    }
-
-    void clear()
-    {
-        m_FuncList.clear();
-    }
-
-private:
-    std::vector<function> m_FuncList;
-};
-
-template<typename returnType, typename parameterType1, typename parameterType2>
-class event2
-{
-private: 
-    typedef boost::function2<returnType, parameterType1, parameterType2> function;
-
-public:
-    event2() {}
-    ~event2() {}
-
-    void operator+=(const function& func)
-    {
-        m_FuncList.push_back(func);
-    }
-    returnType operator()(parameterType1 par, parameterType2 par2)
-    {
-        std::for_each(m_FuncList.cbegin(), m_FuncList.cend(), [&](const function& func)
-        {
-            func(par, par2);
-        });
-    }
-
-    void clear()
-    {
-        m_FuncList.clear();
-    }
-
-private:
-    std::vector<function> m_FuncList;
-};
-
-} //end namespace
+}
 
 #endif

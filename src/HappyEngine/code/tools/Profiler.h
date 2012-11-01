@@ -22,7 +22,7 @@
 #define _HE_PROFILER_H_
 #pragma once
 
-#include "Font.h"
+#include "IDrawable2D.h"
 
 namespace he {
     namespace gui {
@@ -30,6 +30,8 @@ namespace he {
     }
     namespace gfx {
         class Canvas2D;
+        class View;
+        class Font;
     }
 namespace tools {
 
@@ -46,48 +48,82 @@ private:
 
 struct ProfileData;
 
-class Profiler
+class Profiler : public gfx::IDrawable2D
 {
+    struct ProfileTreeNode;
 public:
     static Profiler* getInstance();
     static void dispose();
 
     void load();
 
+    void tick(); // resets frame counter
+
     void begin(const std::string& name);
     void end();
 
-    void draw();
+    void enable();
+    void disable();
+
+    inline bool isEnabled() { return m_State != Disabled && m_State != Enabling; }
+
+    void setView(gfx::View* view);
+    virtual void draw2D(gfx::Canvas2D* canvas);
+
+    void toggleProfiler();
     
+    typedef std::unordered_map<std::string, ProfileTreeNode> DataMap;
 private:
-    struct ProfileTreeNode;
 
     Profiler();
     virtual ~Profiler();
 
     static Profiler* s_Profiler;
+    static std::stringstream s_Stream;
 
-    static const int MAX_DATA = 50;
-    std::map<std::string, ProfileTreeNode> m_Data;
+    // Double buffered data
+    DataMap* m_NodesFront;
+    DataMap* m_NodesBack;
 
+    void resetNode(ProfileTreeNode& node);
     void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth);
 
     ProfileTreeNode* m_CurrentNode;
 
     gfx::Font* m_pFont;
-    gfx::Canvas2D* m_pCanvas2D;
+    gfx::View* m_View;
+
+    enum State
+    {
+        Enabled,
+        Disabled,
+        Enabling,
+        Disabling
+    };
+    byte m_State;
 
     uint m_Width;
+
+    bool m_Show;
 
     //Disable default copy constructor and default assignment operator
     Profiler(const Profiler&);
     Profiler& operator=(const Profiler&);
 };
+
+#define ENABLE_PROFILING
+
 #define PROFILER he::tools::Profiler::getInstance()
 
+#ifdef ENABLE_PROFILING
 #define PROFILER_BEGIN(name) PROFILER->begin(name)
-#define PROFILER_END PROFILER->end
+#define PROFILER_END() PROFILER->end()
 #define HIERARCHICAL_PROFILE(name) he::tools::HierarchicalProfile __hierarchical_profile(name);
+#else
+#define PROFILER_BEGIN(name) {}
+#define PROFILER_END() {}
+#define HIERARCHICAL_PROFILE(name) {}
+#endif
 
 } } //end namespace
 

@@ -24,20 +24,30 @@
 #include "ContentManager.h"
 #include "ModelMesh.h"
 
+#include "Texture2D.h"
+
+#include "GraphicsEngine.h"
+
 namespace he {
 namespace gfx {
+
+#define MIN_BEGIN_ATTENUATION 0.1f
 
 SpotLight::SpotLight()
     : m_Multiplier(1.0f)
     , m_LocalDirection(0, -1, 0)
     , m_WorldDirection(0, -1, 0)
     , m_Attenuation(0.0f, 10.0f)
-    , m_ScaledAttenuation(0.0f, 10.0f)
+    , m_ScaledAttenuation(MIN_BEGIN_ATTENUATION, 10.0f)
     , m_Color(1.0f, 1.0f, 1.0f)
     , m_CosCutoff(0.5f)
     , m_Material(nullptr)
     , m_Model(nullptr)
     , m_LightVolume(nullptr)
+    , m_ShadowResolution(ShadowResolution_None)
+    , m_ShadowMap(nullptr)
+    , m_ShadowLensDirty(true)
+    , m_ShadowLookDirty(true)
 {
     m_Material = ResourceFactory<Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
     BufferLayout vertexLayout;
@@ -49,52 +59,6 @@ SpotLight::SpotLight()
     m_Model = m_LightVolume;
 }
 
-SpotLight::SpotLight( const SpotLight& other )
-    : m_Multiplier(other.m_Multiplier)
-    , m_LocalDirection(other.m_LocalDirection)
-    , m_WorldDirection(other.m_WorldDirection)
-    , m_Color(other.m_Color)
-    , m_Attenuation(other.m_Attenuation)
-    , m_ScaledAttenuation(other.m_ScaledAttenuation)
-    , m_CosCutoff(other.m_CosCutoff)
-
-    , m_Material(other.m_Material)
-
-    , m_LightVolume(other.m_LightVolume)
-    , m_Model(other.m_Model)
-{
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
-    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
-}
-SpotLight& SpotLight::operator=( const SpotLight& other )
-{
-    m_Multiplier = other.m_Multiplier;
-    m_LocalDirection = other.m_LocalDirection;
-    m_WorldDirection = other.m_WorldDirection;
-    m_Attenuation = other.m_Attenuation;
-    m_ScaledAttenuation = other.m_ScaledAttenuation;
-    m_Color = other.m_Color;
-    m_CosCutoff = other.m_CosCutoff;
-
-    if (m_Model != nullptr)
-        m_Model->release();
-    if (m_LightVolume != nullptr)
-        m_LightVolume->release();
-    if (m_Material != nullptr)
-        m_Material->release();
-
-    m_LightVolume = other.m_LightVolume;
-    m_Model = other.m_Model;
-    m_Material = other.m_Material;
-
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
-    ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_Model->getHandle());
-    ResourceFactory<gfx::Material>::getInstance()->instantiate(m_Material->getHandle());
-
-    return *this;
-}
-
 SpotLight::~SpotLight()
 {   
     if (m_Model != nullptr)
@@ -103,6 +67,8 @@ SpotLight::~SpotLight()
         m_LightVolume->release();
     if (m_Material != nullptr)
         m_Material->release();
+    if (m_ShadowMap != nullptr)
+        m_ShadowMap->release();
 }
 
 void SpotLight::setMultiplier(float multiplier)
@@ -137,7 +103,8 @@ void SpotLight::setColor(const Color& color)
 }
 void SpotLight::setFov(float angle)
 {
-    m_CosCutoff = sinf(angle/2.0f);
+    m_CosCutoff = cosf(angle/2.0f);
+    m_ShadowLensDirty = true;
 }
 
 float SpotLight::getMultiplier() const
@@ -193,7 +160,7 @@ const ModelMesh* SpotLight::getModelMesh() const
 
 float SpotLight::getFov() const
 {
-    return asinf(m_CosCutoff) * 2.0f;
+    return acosf(m_CosCutoff) * 2.0f;
 }
 
 void SpotLight::calculateWorldMatrix()
@@ -201,8 +168,62 @@ void SpotLight::calculateWorldMatrix()
     DefaultSingleDrawable::calculateWorldMatrix();
     vec4 direction(m_LocalDirection, 0);
     m_WorldDirection = normalize((m_WorldMatrix * direction).xyz());
-    float scale(m_WorldMatrix.getDeterminant());
-    m_ScaledAttenuation = m_Attenuation * scale;
+    float scale(length(vec4(m_WorldMatrix(0, 0), m_WorldMatrix(1, 0), m_WorldMatrix(2, 0), m_WorldMatrix(3, 0)))); // takes x as uniform scale
+    m_ScaledAttenuation = m_Attenuation * (scale / m_Attenuation.y);
+    m_ScaledAttenuation.x = std::max(m_Attenuation.x, MIN_BEGIN_ATTENUATION);
+}
+
+void SpotLight::setWorldMatrixDirty( byte cause )
+{
+    DefaultSingleDrawable::setWorldMatrixDirty(cause);
+    if ((cause & DirtyFlag_Scale) != 0)
+        m_ShadowLensDirty = true;
+    if ((cause & (~DirtyFlag_Scale)) != 0)
+        m_ShadowLookDirty = true;
+}
+
+void SpotLight::prepareShadowCamera()
+{
+    if (m_ShadowLookDirty == true)
+    {
+        vec3 position;
+        getWorldMatrix().getTranslationComponent(position);
+
+        const vec3& shadowLook(getWorldDirection());
+        m_ShadowCamera.lookAt(position, position + shadowLook, vec3::up);
+
+        m_ShadowLookDirty = false;
+    }
+    if (m_ShadowLensDirty == true)
+    {
+        m_ShadowCamera.setLens(1.0f, getFov(), getScaledBeginAttenuation(), getScaledEndAttenuation());
+        m_ShadowLensDirty = false;
+    }
+    m_ShadowCamera.prepareForRendering();
+}
+
+void SpotLight::setShadowResolution( const ShadowResolution& resolution )
+{
+    if (m_ShadowResolution != resolution)
+    {
+        m_ShadowResolution = resolution;
+        if (m_ShadowMap != nullptr && resolution == ShadowResolution_None)
+        {
+            m_ShadowMap->release();
+            m_ShadowMap = nullptr;
+        }
+        if (resolution != ShadowResolution_None)
+        {
+            if (m_ShadowMap == nullptr)
+            {
+                m_ShadowMap = ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create());
+                m_ShadowMap->setName("Spotlight shadowmap");
+                m_ShadowMap->init(Texture2D::WrapType_Clamp, Texture2D::FilterType_Linear, Texture2D::TextureFormat_R16, false);
+            }
+            ushort res(GRAPHICS->getShadowMapSize(resolution));
+            m_ShadowMap->setData(res, res, 0, Texture2D::BufferLayout_R, Texture2D::BufferType_Float);
+        }
+    }
 }
 
 } } //end namespace

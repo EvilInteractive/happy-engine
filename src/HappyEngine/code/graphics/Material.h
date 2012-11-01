@@ -23,6 +23,7 @@
 #pragma once
 
 #include "BufferLayout.h"
+#include "Resource.h"
 
 namespace he {
 namespace gfx {

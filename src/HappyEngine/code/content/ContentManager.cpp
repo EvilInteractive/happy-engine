@@ -1,3 +1,4 @@
+
 //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
@@ -31,6 +32,7 @@
 #include "FontLoader.h"
 #include "ShaderLoader.h"
 #include "Shader.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace ct {
@@ -71,20 +73,20 @@ ContentManager::ContentManager():
 
 ContentManager::~ContentManager()
 {
-    delete m_pModelLoader;
-    delete m_pTextureLoader;
-    delete m_pLineLoader;
-    delete m_pPhysicsShapeLoader;
-    delete m_pFontLoader;
-    delete m_pShaderLoader;
-    delete m_pMaterialLoader;
-
     if (m_ParticleQuad != nullptr)
         m_ParticleQuad->release();
     if (m_FullscreenQuad != nullptr)
         m_FullscreenQuad->release();
-
-    //m_pDefaultFont->release();
+    
+    // All content should be gone when getting here
+    // loaders perform last garbage collect
+    delete m_pMaterialLoader;
+    delete m_pShaderLoader;
+    delete m_pPhysicsShapeLoader;
+    delete m_pLineLoader;
+    delete m_pFontLoader;
+    delete m_pModelLoader;
+    delete m_pTextureLoader;
 }
 
 
@@ -164,12 +166,7 @@ gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size)
 
 gfx::Font* ContentManager::getDefaultFont(ushort size)
 {
-    if (m_pDefaultFont == nullptr)
-    {
-        m_pDefaultFont = loadFont("Ubuntu-Bold.ttf", size);
-    }
-
-    return m_pDefaultFont;
+    return loadFont("Ubuntu-Bold.ttf", size);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -329,9 +326,10 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         indices.push_back(0); indices.push_back(1); indices.push_back(2);
         indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
-        m_FullscreenQuad->init();
-        m_FullscreenQuad->setVertices(&vertices[0], 4, layout);
-        m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
+        m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_FullscreenQuad->setLoaded();
     }
 
     ResourceFactory<ModelMesh>::getInstance()->instantiate(m_FullscreenQuad->getHandle());
@@ -372,9 +370,14 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         indices.push_back(0); indices.push_back(1); indices.push_back(2);
         indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
-        m_ParticleQuad->init();
-        m_ParticleQuad->setVertices(&vertices[0], 4, layout);
-        m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+        ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
+        m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
+        m_ParticleQuad->setName("Particle quad");
+
+        m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
+        m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+        m_ParticleQuad->setLoaded();
     }
 
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_ParticleQuad->getHandle());

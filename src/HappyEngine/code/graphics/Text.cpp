@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "Text.h"
+#include "Font.h"
 #include "ContentManager.h"
 
 namespace he {
@@ -27,68 +28,91 @@ namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Text::Text(	gfx::Font* font,
-			OverFlowType overflow) :	m_pFont(font),
-										m_OverFlowType(overflow),
-										m_HAlignment(HAlignment_Left),
-										m_VAlignment(VAlignment_Top),
+            OverFlowType overflow) :	m_Font(font),
+                                        m_OverFlowType(overflow),
+                                        m_HAlignment(HAlignment_Left),
+                                        m_VAlignment(VAlignment_Top),
                                         m_Bounds(),
                                         m_HasBounds(false)
 {
+    m_Font->instantiate();
 }
 Text::Text(	const std::string& text,
-			gfx::Font* font,
-			OverFlowType overflow) :	m_pFont(font),
-										m_OverFlowType(overflow),
-										m_HAlignment(HAlignment_Left),
-										m_VAlignment(VAlignment_Top),
+            gfx::Font* font,
+            OverFlowType overflow) :	m_Font(font),
+                                        m_OverFlowType(overflow),
+                                        m_HAlignment(HAlignment_Left),
+                                        m_VAlignment(VAlignment_Top),
                                         m_Bounds(),
                                         m_HasBounds(false)
 {
-	addLine(text);
+    m_Font->instantiate();
+    addText(text);
 }
 
 Text::Text() :	m_OverFlowType(OverFlowType_Clip),
-				m_HAlignment(HAlignment_Left),
-				m_VAlignment(VAlignment_Top),
+                m_HAlignment(HAlignment_Left),
+                m_VAlignment(VAlignment_Top),
                 m_Bounds(),
                 m_HasBounds(false),
-                m_pFont(nullptr)
+                m_Font(nullptr)
 {
 
 }
 
 Text::~Text()
 {
+    if (m_Font != nullptr)
+        m_Font->release();
 }
 
 /* GENERAL */
+void Text::addText( const std::string& text )
+{
+    size_t start(0);
+    for (size_t end(0); end < text.size(); ++end)
+    {
+        if (text[end] == '\n')
+        {
+            addLine(text.substr(start, end - start));
+            start = end + 1;
+        }
+    }
+    addLine(text.substr(start, text.size() - start));
+}
+
 void Text::addLine(const std::string& string)
 {
-	m_Text.push_back(string);
+    m_Text.push_back(string);
 }
 
 void Text::clear()
 {
-	m_Text.clear();
+    m_Text.clear();
 }
 
 /* SETTERS */
 void Text::setLine(const std::string& string, uint lineNumber)
 {
-	if (lineNumber < m_Text.size())
-	{
-		m_Text[lineNumber] = string;
-	}
+    if (lineNumber < m_Text.size())
+    {
+        m_Text[lineNumber] = string;
+    }
 }
 
 void Text::setHorizontalAlignment(HAlignment alignment)
 {
-	m_HAlignment = alignment;
+    m_HAlignment = alignment;
 }
 
 void Text::setVerticalAlignment(VAlignment alignment)
 {
-	m_VAlignment = alignment;
+    m_VAlignment = alignment;
+}
+
+void Text::setOverFlowType( OverFlowType overFlowType )
+{
+    m_OverFlowType = overFlowType;
 }
 
 void Text::setBounds(const vec2& bounds)
@@ -107,17 +131,17 @@ void Text::setBounds(const vec2& bounds)
 /* GETTERS */
 const std::string& Text::getLine(uint lineNumber) const
 {
-	return m_Text[lineNumber];
+    return m_Text[lineNumber];
 }
 
 const std::vector<std::string>& Text::getText() const
 {
-	return m_Text;
+    return m_Text;
 }
 
 bool Text::isEmpty() const
 {
-	return m_Text.empty();
+    return m_Text.empty();
 }
 
 bool Text::hasBounds() const
@@ -127,27 +151,35 @@ bool Text::hasBounds() const
 
 Text::OverFlowType Text::getOverFlowType() const
 {
-	return m_OverFlowType;
+    return m_OverFlowType;
 }
 
 Text::HAlignment Text::getHorizontalAlignment() const
 {
-	return m_HAlignment;
+    return m_HAlignment;
 }
 
 Text::VAlignment Text::getVerticalAlignment() const
 {
-	return m_VAlignment;
+    return m_VAlignment;
 }
 
 gfx::Font* Text::getFont() const
 {
-	return m_pFont;
+    return m_Font;
 }
 
 const vec2& Text::getBounds() const
 {
     return m_Bounds;
+}
+
+void Text::setFont( gfx::Font* font )
+{
+    if (m_Font != nullptr)
+        m_Font->release();
+    m_Font = font;
+    m_Font->instantiate();
 }
 
 } } //end namespace

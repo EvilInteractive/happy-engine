@@ -29,25 +29,27 @@
 #include "SpotLight.h"
 #include "PointLight.h"
 
+#include "Scene.h"
+
 namespace he {
 namespace ge {
     
 #pragma region Pointlight
-PointLightComponent::PointLightComponent(): m_PointLight(nullptr), m_Handle(ObjectHandle::unassigned)
+PointLightComponent::PointLightComponent(): m_PointLight(nullptr)
 {
 }
 
 PointLightComponent::~PointLightComponent()
 {
     detach(m_PointLight);
-    GRAPHICS->getLightManager()->remove(m_Handle);
+    m_Parent->getScene()->getLightManager()->remove(m_PointLight->getHandle());
 }
 
 void PointLightComponent::init(Entity* parent)
 {
+    HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
-    m_Handle = GRAPHICS->getLightManager()->addPointLight();
-    m_PointLight = gfx::LightFactory::getInstance()->getPointLight(m_Handle);
+    m_PointLight =  m_Parent->getScene()->getLightManager()->addPointLight();
     attach(m_PointLight);
 }
 
@@ -110,7 +112,7 @@ const vec3& PointLightComponent::getColor() const
 #pragma endregion
 
 #pragma region SpotLight
-SpotLightComponent::SpotLightComponent(): m_SpotLight(nullptr), m_Handle(ObjectHandle::unassigned)
+SpotLightComponent::SpotLightComponent(): m_SpotLight(nullptr)
 {
 
 }
@@ -118,14 +120,14 @@ SpotLightComponent::SpotLightComponent(): m_SpotLight(nullptr), m_Handle(ObjectH
 SpotLightComponent::~SpotLightComponent()
 {
     detach(m_SpotLight);
-    GRAPHICS->getLightManager()->remove(m_Handle);
+     m_Parent->getScene()->getLightManager()->remove(m_SpotLight->getHandle());
 }
 
 void SpotLightComponent::init( Entity* parent )
 {
+    HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
-    m_Handle = GRAPHICS->getLightManager()->addSpotLight();
-    m_SpotLight = gfx::LightFactory::getInstance()->getSpotLight(m_Handle);
+    m_SpotLight =  m_Parent->getScene()->getLightManager()->addSpotLight();
     attach(m_SpotLight);
 }
 

@@ -20,15 +20,15 @@
 #include "HappyPCH.h" 
 
 #include "DefaultSkinnedDrawable.h"
-#include "DrawManager.h"
 #include "ICamera.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
 
 namespace he {
 namespace gfx {
 
-DefaultSkinnedDrawable::DefaultSkinnedDrawable()
+DefaultSkinnedDrawable::DefaultSkinnedDrawable(): m_CastsShadow(true), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))), m_Scene(nullptr)
 {
 }
 
@@ -49,42 +49,12 @@ void DefaultSkinnedDrawable::applyMaterial( const Material* customMaterial, cons
 
 bool DefaultSkinnedDrawable::getCastsShadow() const
 {
-    return m_castsShadow;
+    return m_CastsShadow;
 }
 
 void DefaultSkinnedDrawable::setCastsShadow( bool castShadow )
 {
-    m_castsShadow = castShadow;
-}
-
-bool DefaultSkinnedDrawable::isVisible() const
-{
-    return m_isVisible && getModelMesh()->isLoaded();
-}
-
-void DefaultSkinnedDrawable::setVisible( bool visible )
-{
-    m_isVisible = visible;
-}
-
-bool DefaultSkinnedDrawable::isInCamera( const ICamera* pCamera ) const
-{
-    if (isVisible() == false)
-        return false;
-
-    const mat44& world(getWorldMatrix());
-    float radius(max<float>(max<float>(world(0, 0), world(1, 1)), world(2, 2)) * getModelMesh()->getBoundingSphere().getRadius());
-    vec3 position(world * getModelMesh()->getBoundingSphere().getPosition());
-
-    shapes::Sphere sphere(position, radius);
-
-    return !DrawManager::viewClip(pCamera, sphere);
-}
-
-float DefaultSkinnedDrawable::getDrawPriority( const ICamera* pCamera ) const
-{
-    const mat44& world(getWorldMatrix());
-    return FLT_MAX - lengthSqr(pCamera->getPosition() - vec3(world(0, 3), world(1, 3), world(2, 3)));
+    m_CastsShadow = castShadow;
 }
 
 void DefaultSkinnedDrawable::draw()
@@ -98,5 +68,49 @@ void DefaultSkinnedDrawable::drawShadow()
     GL::heBindVao(getModelMesh()->getVertexShadowArraysID());
     glDrawElements(GL_TRIANGLES, getModelMesh()->getNumIndices(), getModelMesh()->getIndexType(), 0);
 }
+
+void DefaultSkinnedDrawable::detachFromScene()
+{
+    HE_IF_ASSERT(m_Scene != nullptr, "Object not attached to scene")
+    {
+        m_Scene->detachFromScene(this);
+        m_Scene = nullptr;
+    }
+}
+
+void DefaultSkinnedDrawable::attachToScene( Scene* scene )
+{
+    HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
+    {
+        m_Scene = scene;
+        m_Scene->attachToScene(this);
+    }
+}
+
+void DefaultSkinnedDrawable::setScene( Scene* scene )
+{
+    m_Scene = scene;
+}
+Scene* DefaultSkinnedDrawable::getScene() const
+{
+    return m_Scene;
+}
+
+bool DefaultSkinnedDrawable::isAttachedToScene() const
+{
+    return m_Scene != nullptr;
+}
+
+void DefaultSkinnedDrawable::calculateBound()
+{
+    HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
+    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octtree insertion will happen!");
+    const AABB& aabb(getModelMesh()->getBound().getAABB());
+    mat44 world(getWorldMatrix());
+    AABB newAABB(world * aabb.getTopFrontLeft(),
+                 world * aabb.getBottomBackRight());
+    m_Bound.fromAABB(newAABB);
+}
+
 
 } } //end namespace

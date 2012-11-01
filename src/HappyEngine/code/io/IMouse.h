@@ -22,28 +22,14 @@
 #define _HE_IMOUSE_H_
 #pragma once
 
-#include "vec2.h"
-#include "HappyTypes.h"
-
 namespace he {
 namespace io {
 
-enum MouseButton
-{
-    //MouseButton_None = 0,
-    MouseButton_Left = sf::Mouse::Left, 
-    MouseButton_Right = sf::Mouse::Right, 
-    MouseButton_Middle = sf::Mouse::Middle,
-    MouseButton_X1 = sf::Mouse::XButton1, 
-    MouseButton_X2 = sf::Mouse::XButton2
-};
 class IMouse
 {
 public:
     virtual ~IMouse() {}
-
-    virtual void tick(byte* mouseState, int scrollState, const vec2& mousePos) = 0;
-
+    
     virtual bool isButtonDown(MouseButton button) const = 0;
     virtual bool isButtonUp(MouseButton button) const = 0;
     virtual bool isButtonReleased(MouseButton button) const = 0; //true when it goes from down to up
@@ -53,14 +39,12 @@ public:
     virtual const vec2& getPosition() const = 0;
     virtual vec2 getMove() const = 0;
 
-    virtual void addOnButtonPressedListener(boost::function<void(MouseButton)> callback) const = 0;
-    virtual event1<void, MouseButton>& getOnButtonPressedListeners() = 0;
-    virtual void addOnButtonReleasedListener(boost::function<void(MouseButton)> callback) const = 0;
-    virtual event1<void, MouseButton>& getOnButtonReleasedListeners() = 0;
-    virtual void addOnMouseMovedListener(boost::function<void(const vec2&)> callback) const = 0;
-    virtual event1<void, const vec2&>& getOnMouseMovedListeners() = 0;
-    virtual void addOnMouseWheelMovedListener(boost::function<void(int)> callback) const = 0;
-    virtual event1<void, int>& getOnMouseWheelMovedListeners() = 0;
+    virtual void tick() = 0;
+
+    event1<void, MouseButton> MouseButtonPressed;
+    event1<void, MouseButton> MouseButtonReleased;
+    event1<void, const vec2&> MouseMoved;
+    event1<void, int>         MouseWheelMoved;
 };
 
 } } //end namespace

@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "ControlsManager.h"
-#include "HappyNew.h"
 #include "Mouse.h"
 #include "Keyboard.h"
 
@@ -28,123 +27,65 @@
 namespace he {
 namespace io {
 
-ControlsManager::ControlsManager(): m_pMouse(nullptr), m_pKeyboard(nullptr), m_bLocked(false), m_pLockedObject(nullptr)
+ControlsManager::ControlsManager(): m_Mouse(NEW Mouse), m_Keyboard(NEW Keyboard), m_Locked(false), m_LockedObject(nullptr)
 {
-    m_pMouse = NEW Mouse();
-    m_pKeyboard = NEW Keyboard();
-
-    m_pKeys = static_cast<byte*>(he_malloc(sf::Keyboard::KeyCount * sizeof(byte)));
-    m_pButtons = static_cast<byte*>(he_malloc(sf::Keyboard::KeyCount * sizeof(byte)));
-    memset(m_pKeys, FALSE, sf::Keyboard::KeyCount * sizeof(byte));
-    memset(m_pButtons, FALSE, sf::Keyboard::KeyCount * sizeof(byte));
 }
 
 ControlsManager::~ControlsManager()
 {
-    delete m_pKeyboard;
-    delete m_pMouse;
-
-    delete[] m_pKeys;
-    delete[] m_pButtons;
+    delete m_Keyboard;
+    delete m_Mouse;
 }
 
 void ControlsManager::tick()
 {
-    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    int scrollState(0);
-    vec2 mousePos(-1.0f,-1.0f);
-    std::vector<char> chars;
+    m_Keyboard->tick();
+    m_Mouse->tick();
+}
 
-    std::for_each(HAPPYENGINE->getEvents().cbegin(), HAPPYENGINE->getEvents().cend(), [&](sf::Event ev)
+IKeyboard* ControlsManager::getKeyboard() const
+{
+    return m_Keyboard;
+}
+IMouse* ControlsManager::getMouse() const
+{
+    return m_Mouse;
+}
+
+bool ControlsManager::getFocus(void* object)
+{
+    if (m_LockedObject == nullptr)
     {
-        switch(ev.type)
+        if (!m_Locked)
         {
-            case sf::Event::KeyPressed:
-                m_pKeyboard->getOnKeyPressedListeners()((Key)ev.key.code);
-                m_pKeys[ev.key.code] = TRUE;
-                break;
-            case sf::Event::KeyReleased:
-                m_pKeyboard->getOnKeyReleasedListeners()((Key)ev.key.code);
-                m_pKeys[ev.key.code] = FALSE;
-                break;
-            case sf::Event::MouseButtonPressed:
-                m_pMouse->getOnButtonPressedListeners()((MouseButton)ev.mouseButton.button);
-                m_pButtons[ev.mouseButton.button] = TRUE;
-                break;
-            case sf::Event::MouseButtonReleased:
-                m_pMouse->getOnButtonReleasedListeners()((MouseButton)ev.mouseButton.button);
-                m_pButtons[ev.mouseButton.button] = FALSE;
-                break;
-            case sf::Event::MouseWheelMoved:
-                m_pMouse->getOnMouseWheelMovedListeners()(ev.mouseWheel.delta);
-                scrollState = ev.mouseWheel.delta;
-                break;
-            case sf::Event::MouseMoved:
-                mousePos.x = static_cast<float>(ev.mouseMove.x);
-                mousePos.y = static_cast<float>(ev.mouseMove.y);
-                m_pMouse->getOnMouseMovedListeners()(mousePos);
-                break;
-            case sf::Event::TextEntered:
-                // ASCII only
-                if (ev.text.unicode < 128)
-                {
-                    chars.push_back((char)ev.text.unicode);
-                }
-                break;
-        }
-    });
-
-    m_pKeyboard->tick(m_pKeys, chars);
-    m_pMouse->tick(m_pButtons, scrollState, mousePos);
-}
-
-const IKeyboard* ControlsManager::getKeyboard() const
-{
-    return m_pKeyboard;
-}
-const IMouse* ControlsManager::getMouse() const
-{
-    return m_pMouse;
-}
-
-bool ControlsManager::getFocus(void* pObject) const
-{
-    if (m_pLockedObject == nullptr)
-    {
-        if (!m_bLocked)
-        {
-            ControlsManager* _this = const_cast<ControlsManager*>(this);
-            _this->m_bLocked = true;
-            _this->m_pLockedObject = pObject;
-
+            m_Locked = true;
+            m_LockedObject = object;
             return true;
         }
         else
             return false;
     }
-    else if (m_pLockedObject == pObject)
+    else if (m_LockedObject == object)
         return true;
     else
         return false;
 }
 
-void ControlsManager::returnFocus(void* pObject) const
+void ControlsManager::returnFocus(void* object)
 {
-    if (m_pLockedObject == pObject)
+    if (m_LockedObject == object)
     {
-        if (m_bLocked)
+        if (m_Locked)
         {
-            ControlsManager* _this = const_cast<ControlsManager*>(this);
-            _this->m_bLocked = false;
-
-            _this->m_pLockedObject = nullptr;
+            m_Locked = false;
+            m_LockedObject = nullptr;
         }
     }
 }
 
-bool ControlsManager::hasFocus(void* pObject) const
+bool ControlsManager::hasFocus(void* object) const
 {
-    if (m_pLockedObject == pObject)
+    if (m_LockedObject == object)
         return true;
     else
         return false;

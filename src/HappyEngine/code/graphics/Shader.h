@@ -22,6 +22,7 @@
 #pragma once
 
 #include "ShaderLayout.h"
+#include "Resource.h"
 
 namespace he {
 class mat44;

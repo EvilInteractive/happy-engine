@@ -28,6 +28,7 @@ namespace px {
 }
 namespace gfx {
     class ICamera;
+    class View;
 }
 
 struct RayCastResult
@@ -43,7 +44,7 @@ class Ray
 {
 public:
     Ray(const vec3& position, const vec3& direction, float maxDist = FLT_MAX);
-    Ray(const gfx::ICamera* camera, const vec2& screenCoord, float maxDist = FLT_MAX);
+    Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& viewCoord, float maxDist = FLT_MAX);
     virtual ~Ray();
 
     const vec3& getOrigin() const;

@@ -21,22 +21,70 @@
 #include "HappyPCH.h" 
 
 #include "Mesh2D.h"
+#include "Polygon.h"
+#include "GraphicsEngine.h"
 
 namespace he {
+namespace gfx {
 
-Mesh2D::Mesh2D() :  m_pPolygon(NEW Polygon()),
-                    m_WorldMatrix(mat44::Identity)
+#pragma warning(disable:4355) // use of this in initializer list
+Mesh2D::Mesh2D() :  
+    m_pPolygon(NEW Polygon()),
+    m_WorldMatrix(mat44::Identity),
+    m_ContextCreatedHandler(boost::bind(&Mesh2D::initVao, this, _1)),
+    m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1))
 {
     glGenBuffers(1, &m_VBOID);
     glGenBuffers(1, &m_IBOID);
-    glGenVertexArrays(1, &m_VAOID);
+
+    he_memset(m_VAOID, 0xffff, sizeof(VaoID) * MAX_VERTEX_ARRAY_OBJECTS);
+
+    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    {
+        initVao(context);
+    });
+    GRAPHICS->ContextCreated += m_ContextCreatedHandler;
+    GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
+}
+#pragma warning(default:4355)
+
+void Mesh2D::initVao( GLContext* context )
+{
+    GRAPHICS->setActiveContext(context);
+    HE_IF_ASSERT(m_VAOID[context->id] == UINT_MAX, "vao already assigned on context")
+    {
+        glGenVertexArrays(1, m_VAOID + context->id);
+        GL::heBindVao(m_VAOID[context->id]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(0);
+    }
+}
+
+void Mesh2D::destroyVao( GLContext* context )
+{
+    GRAPHICS->setActiveContext(context);
+    HE_IF_ASSERT(m_VAOID[context->id] != UINT_MAX, "vao not alive on context")
+    {
+        glDeleteVertexArrays(1, m_VAOID + context->id);
+        m_VAOID[context->id] = UINT_MAX;
+    }
 }
 
 Mesh2D::~Mesh2D()
 {
+    GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
+    GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
+    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    {
+        destroyVao(context);
+    });
+
     glDeleteBuffers(1, &m_VBOID);
     glDeleteBuffers(1, &m_IBOID);
-    glDeleteVertexArrays(1, &m_VAOID);
 
     delete m_pPolygon;
 }
@@ -74,38 +122,19 @@ void Mesh2D::createBuffer(bool outline)
         }
     }
 
-    GL::heBindVao(m_VAOID);
-
-    /*float* vertices = NEW float[m_pPolygon->getVertexCount() * 2];
-    uint* indices = NEW uint[m_pPolygon->getIndexCount()];
-
-    for (uint i(0); i < m_pPolygon->getVertexCount(); ++i)
-    {
-    vertices[i * 2] = m_pPolygon->getVertices()[i].x;
-    vertices[(i * 2) + 1] = m_pPolygon->getVertices()[i].y;
-    }
-
-    for (uint i(0); i < m_pPolygon->getIndexCount(); ++i)
-    {
-    indices[i] = m_pPolygon->getIndices()[i];
-    }*/
-
+    GL::heBindVao(getBufferID());
+    
     glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * 2 * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint), &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    GL::heBindVao(0);
 }
 
 /* GETTERS */
 uint Mesh2D::getBufferID() const
 {
-    return m_VAOID;
+    return m_VAOID[GL::s_CurrentContext->id];
 }
 
 const mat44& Mesh2D::getWorldMatrix() const
@@ -129,4 +158,5 @@ void Mesh2D::setWorldMatrix(const mat44& mat)
     m_WorldMatrix = mat;
 }
 
-} //end namespace
+
+} } //end namespace

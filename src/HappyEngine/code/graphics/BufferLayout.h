@@ -19,10 +19,6 @@
 #define _HE_VERTEXLAYOUT_H_
 #pragma once
 
-#include <string>
-#include <vector>
-
-#include "HappyTypes.h"
 
 namespace he {
 namespace gfx {

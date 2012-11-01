@@ -36,6 +36,7 @@ namespace px {
 
 class PhysicsConvexMesh : public Resource<PhysicsConvexMesh>
 {
+DECLARE_OBJECT(PhysicsConvexMesh)
 public:
     PhysicsConvexMesh();
     virtual ~PhysicsConvexMesh();

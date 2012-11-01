@@ -20,20 +20,20 @@
 #define _FLY_CAMERA_H_
 #pragma once
 
-#include "Camera.h"
+#include "CameraPerspective.h"
 
 namespace hs {
 
-class FlyCamera : public he::gfx::Camera
+class FlyCamera : public he::gfx::CameraPerspective
 {
 public:
     // CONSTRUCTOR - DESTRUCTOR
-    FlyCamera(int viewportWidth, int viewportHeight);
+    FlyCamera();
     virtual ~FlyCamera();
 
     // GENERAL
     virtual void tick(float dTime);
-
+    
     // SETTERS
     void moveable(bool bMoveable);
     void setMouseSensitivty(float sens = 100.0f);

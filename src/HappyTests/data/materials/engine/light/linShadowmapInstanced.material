@@ -1,0 +1,7 @@
+[Forward]
+shader = "shadow/linShadowMapInstanced.shader"
+
+[info]
+blending = false
+post = false
+shadow = false

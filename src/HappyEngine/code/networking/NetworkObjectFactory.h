@@ -49,12 +49,15 @@ public:
 template<typename T>
 class NetworkObjectFactory : public ObjectFactory<T>, public INetworkObjectFactory, public Singleton<NetworkObjectFactory<T>>
 {
+friend class Singleton<NetworkObjectFactory<T>>;
 public:
-    NetworkObjectFactory()
-    {
-        NETWORK->registerFactory(this);
-    }
     virtual ~NetworkObjectFactory() {}
+    
+    // TODO: should not be public, this class should always be inherited
+    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
+    {
+        ObjectFactory<T>::init(startSize, increaseSize, displayName);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // ObjectFactory
@@ -82,7 +85,7 @@ public:
             NETWORK->BroadcastDestruction(get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
         ObjectFactory<T>::destroyObject(handle);
     }
-    virtual void destroyAt(ObjectHandle::Type index)
+    virtual void destroyAt(ObjectHandle::IndexType index)
     {
         if (NETWORK->isConnected())
             NETWORK->BroadcastDestruction(getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
@@ -100,7 +103,13 @@ public:
         obj->setHandle(handle);
         return get(handle); 
     };
-    
+
+protected: 
+    NetworkObjectFactory()
+    {
+        NETWORK->registerFactory(this);
+    }
+
 private:
     NetworkObjectTypeID m_Id;
 

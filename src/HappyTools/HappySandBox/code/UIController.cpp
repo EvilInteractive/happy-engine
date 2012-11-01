@@ -25,22 +25,30 @@
 #include "Path.h"
 #include "WebView.h"
 #include "Renderer2D.h"
+#include "View.h"
 
 namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 UIController::UIController() :    m_GUIDirectory(""),
-                                    m_WebView(nullptr)
+                                  m_WebView(nullptr),
+                                  m_View(nullptr)
 {
 }
 UIController::~UIController()
 {
-    delete m_WebView;
+    if (m_View != nullptr && m_WebView != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(m_WebView);
+        m_View->get2DRenderer()->removeWebView(m_WebView);
+    }
 }
 
 /* GENERAL */
-void UIController::init()
+void UIController::init(he::gfx::View* view)
 {
+    m_View = view;
+
     // get program dir
     boost::filesystem::path bPath = boost::filesystem::initial_path();
     he::Path hPath(bPath.string());
@@ -49,16 +57,13 @@ void UIController::init()
     m_GUIDirectory = hPath.getAbsolutePath(he::Path("../../data/gui/")).str();
 
     // create webview for gui to load
-    m_WebView = GUI->createWebView(true); // fullscreen with user input enabled
+    m_WebView = m_View->get2DRenderer()->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
+    m_View->get2DRenderer()->attachToRender(m_WebView);
 }
 void UIController::load(const std::string& file)
 {
     m_WebView->loadUrl(m_GUIDirectory + file);
     m_WebView->setTransparent(true);
-}
-void UIController::draw()
-{
-    m_WebView->draw();
 }
 
 /* GETTERS */
@@ -66,5 +71,6 @@ he::gfx::WebView* UIController::getWebView() const
 {
     return m_WebView;
 }
+
 
 } //end namespace

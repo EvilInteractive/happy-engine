@@ -21,11 +21,18 @@
 #include "HappyPCH.h" 
 
 #include "Entity.h"
+#include "Scene.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace ge {
 
-Entity::Entity()
+Entity::Entity():
+    m_SleepEvaluaters([](bool& inoutA, const bool& outB) -> bool
+    { 
+        inoutA = outB; 
+        return inoutA;
+    }, false)
 {
 }
 
@@ -36,6 +43,17 @@ Entity::~Entity()
     {
         delete component;
     });
+}
+
+void Entity::init( gfx::Scene* scene )
+{
+    m_Scene = scene;
+}
+
+void Entity::init( Entity* parent )
+{
+    m_Parent = parent;
+    m_Scene = m_Parent->getScene();
 }
 
 void Entity::addComponent( EntityComponent* component )
@@ -56,5 +74,9 @@ void Entity::removeComponent( EntityComponent* component )
     }
 }
 
+bool Entity::isSleeping() const
+{
+    return m_SleepEvaluaters();
+}
 
 } } //end namespace

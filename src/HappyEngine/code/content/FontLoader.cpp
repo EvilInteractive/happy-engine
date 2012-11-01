@@ -22,11 +22,6 @@
 
 #include "FontLoader.h"
 
-#include <iostream>
-#include <sstream>
-
-#include "HappyNew.h"
-#include "HeAssert.h"
 #include "ResourceFactory.h"
 
 #define FACTORY ResourceFactory<gfx::Font>::getInstance()
@@ -35,7 +30,7 @@ namespace he {
 namespace ct {
 
 /* CONSTRUCTOR - DESTRUCTOR*/
-FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<ObjectHandle>())
+FontLoader::FontLoader()
 {
     FT_Error error(FT_Init_FreeType(&m_FTLibrary));
     HE_ASSERT(error == false,"Error creating freetype library!");
@@ -43,7 +38,7 @@ FontLoader::FontLoader():   m_pAssetContainer(NEW AssetContainer<ObjectHandle>()
 
 FontLoader::~FontLoader()
 {
-    delete m_pAssetContainer;
+    ResourceFactory<gfx::Font>::getInstance()->garbageCollect();
     FT_Done_FreeType(m_FTLibrary);
 }
 
@@ -53,9 +48,9 @@ gfx::Font* FontLoader::load(const std::string& path, ushort size)
     std::stringstream stream;
     stream << path << size;
 
-    if (m_pAssetContainer->isAssetPresent(stream.str()) && FACTORY->isAlive(m_pAssetContainer->getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
-        ObjectHandle handle(m_pAssetContainer->getAsset(stream.str()));
+        ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
         FACTORY->instantiate(handle);       
         return FACTORY->get(handle);
     }
@@ -94,9 +89,10 @@ gfx::Font* FontLoader::load(const std::string& path, ushort size)
         }
 
         gfx::Font* pFont = FACTORY->get(handle);
+        pFont->setName(stream.str());
         pFont->init(m_FTLibrary, face, size);
 
-        m_pAssetContainer->addAsset(stream.str(), handle);
+        m_AssetContainer.addAsset(stream.str(), handle);
 
         return pFont;
     }

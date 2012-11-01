@@ -27,23 +27,34 @@
 #include "EntityComponent.h"
 
 namespace he {
+namespace gfx {
+    class Scene;
+}
 namespace ge {
 
 class Entity : public EntityComponent, public Object3D
 {
 public:
+    DECLARE_RTTI(RTTI::Entity)
+
     Entity();
     virtual ~Entity();
     
     void addComponent(EntityComponent* component);      // Gives ownership to Entity
     void removeComponent(EntityComponent* component);   // Returns ownership to caller
 
+    virtual void init(gfx::Scene* scene);
+    gfx::Scene* getScene() const { return m_Scene; }
+     
     //////////////////////////////////////////////////////////////////////////
     /// EntityComponent
     //////////////////////////////////////////////////////////////////////////
     virtual void serialize(SerializerStream& /*stream*/) {};
     virtual void deserialize(const SerializerStream& /*stream*/) {};
 
+    bool isSleeping() const;
+    void addSleepEvaluator(const boost::function0<bool>& evaluater);
+    void removeSleepEvaluator(const boost::function0<bool>& evaluater);
 
     //////////////////////////////////////////////////////////////////////////
     /// Object3D (resolve ambiguity)
@@ -69,8 +80,10 @@ protected:
 
     virtual void calculateWorldMatrix() { Object3D::calculateWorldMatrix(); }
 
+    event0<bool> m_SleepEvaluaters;
+
 private:
-    virtual void init(Entity* parent) { m_Parent = parent; }
+    virtual void init(Entity* parent);
 
     // Made these methods private, use addComponent
     virtual void attach(IObject3D* child) { Object3D::attach(child); }
@@ -78,6 +91,7 @@ private:
 
     std::vector<EntityComponent*> m_Components;
     Entity* m_Parent;
+    gfx::Scene* m_Scene;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

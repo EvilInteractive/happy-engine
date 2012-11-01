@@ -29,16 +29,24 @@
 
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
+#include "Game.h"
 
 namespace he {
 namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
+#pragma warning(disable:4355) // use of this in initializer list
 InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_pModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
-    m_ManualMode(false), m_Name(name), m_Material(nullptr)
+    m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
+    m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
+    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1))
 {
+    he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+    he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+
     ResourceFactory<Material>::getInstance()->instantiate(material);
     m_Material = ResourceFactory<Material>::getInstance()->get(material);
     m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
@@ -48,49 +56,48 @@ InstancingController::InstancingController(const std::string& name, bool dynamic
     m_pModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
     ResourceFactory<ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&InstancingController::init, this));
 }
+#pragma warning(default:4355)
 
 
 InstancingController::~InstancingController()
 {
-    glDeleteVertexArrays(1, &m_Vao);
+    GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
+    GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
+    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    {
+        destroyVao(context);
+    });
     glDeleteBuffers(1, &m_GpuBuffer);
     m_pModelMesh->release();
     m_Material->release();
+    GAME->removeFromTickList(this);
+    if (isAttachedToScene())
+        detachFromScene();
 }
 
 
-void InstancingController::init()
+void InstancingController::initVao( GLContext* context )
 {
+    GRAPHICS->setActiveContext(context);
+    const BufferLayout::layout& vertexElements(m_pModelMesh->getVertexLayout().getElements());
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
-
-        glGenVertexArrays(1, &m_Vao);
-        GL::heBindVao(m_Vao);
+    HE_IF_ASSERT(m_Vao[context->id] == UINT_MAX, "vao already inited?")
+    {
+        glGenVertexArrays(1, m_Vao + context->id);
+        GL::heBindVao(m_Vao[context->id]);
         //////////////////////////////////////////////////////////////////////////
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
         glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOID());
-        BufferLayout::layout vertexElements(m_pModelMesh->getVertexLayout().getElements());
+        const BufferLayout::layout& vertexElements(m_pModelMesh->getVertexLayout().getElements());
         std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const BufferElement& e)
         {
             GLint components = 1;
             GLenum type = 0;
-            switch (e.getType())
-            {
-                case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
-                case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
-                case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
-                case BufferElement::Type_Float: type = GL_FLOAT; break;
-
-                case BufferElement::Type_Int: type = GL_INT; break;
-                case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
-                case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
-
-                #pragma warning(disable:4127)
-                default: HE_ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
-                #pragma warning(default:4127)
-            }
+            GL::getGLTypesFromBufferElement(e, components, type);
             glVertexAttribPointer(e.getElementIndex(), components, type, 
                 GL_FALSE, m_pModelMesh->getVertexLayout().getSize(), 
                 BUFFER_OFFSET(e.getByteOffset())); 
@@ -105,46 +112,43 @@ void InstancingController::init()
         //////////////////////////////////////////////////////////////////////////
         ///  Instance Buffer
         //////////////////////////////////////////////////////////////////////////
-        glGenBuffers(1, &m_GpuBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, m_GpuBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
         std::for_each(m_InstancingLayout.getElements().cbegin(), m_InstancingLayout.getElements().cend(), [&](const BufferElement& element)
         {
             GLint components(1);
             GLenum type(0);
-            switch (element.getType())
-            {
-                case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
-                case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
-                case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
-                case BufferElement::Type_Float: type = GL_FLOAT; break;
-
-                case BufferElement::Type_Int: type = GL_INT; break;
-                case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
-                case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
-
-                #pragma warning(disable:4127)
-                default: HE_ASSERT(false, "unknown/unsupported attribute type for instancing"); break;
-                #pragma warning(default:4127)
-            }
+            GL::getGLTypesFromBufferElement(element, components, type);
             glEnableVertexAttribArray(vertexElements.size() + element.getElementIndex());
             glVertexAttribPointer(vertexElements.size() + element.getElementIndex(), components, type, 
-                                  GL_FALSE, m_InstancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
+                GL_FALSE, m_InstancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
             glVertexAttribDivisor(vertexElements.size() + element.getElementIndex(), 1);
         });
-
+    }
     //////////////////////////////////////////////////////////////////////////
     ///  Shadow Draw
     //////////////////////////////////////////////////////////////////////////
-        glGenVertexArrays(1, &m_ShadowVao);
-        GL::heBindVao(m_ShadowVao);
+    HE_IF_ASSERT(m_ShadowVao[context->id] == UINT_MAX, "shadow vao already inited?")
+    {
+        uint posOffset(UINT_MAX);
+        BufferLayout::layout::const_iterator it(vertexElements.cbegin());
+        for(; it != vertexElements.cend(); ++it)
+        {
+            if (it->getUsage() == gfx::BufferElement::Usage_Position)
+            {
+                posOffset = it->getByteOffset();
+                break;
+            }
+        }
+
+        glGenVertexArrays(1, m_ShadowVao + context->id);
+        GL::heBindVao(m_ShadowVao[context->id]);
 
         //////////////////////////////////////////////////////////////////////////
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
-        glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOShadowID());
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), BUFFER_OFFSET(0)); 
+        glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOID());
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_pModelMesh->getVertexLayout().getSize(), BUFFER_OFFSET(posOffset)); 
         glEnableVertexAttribArray(0);
 
         //////////////////////////////////////////////////////////////////////////
@@ -168,19 +172,47 @@ void InstancingController::init()
         glVertexAttribDivisor(1 + 1, 1);
         glVertexAttribDivisor(1 + 2, 1);
         glVertexAttribDivisor(1 + 3, 1);
+    }
+}
+
+void InstancingController::destroyVao( GLContext* context )
+{
+    GRAPHICS->setActiveContext(context);
+    HE_IF_ASSERT(m_Vao[context->id] != UINT_MAX, "Vao not initialized or already destroyed")
+    {
+        glDeleteVertexArrays(1, m_Vao + context->id);
+        m_Vao[context->id] = UINT_MAX;
+    }
+    HE_IF_ASSERT(m_ShadowVao[context->id] != UINT_MAX, "Shadow Vao not initialized or already destroyed")
+    {
+        glDeleteVertexArrays(1, m_ShadowVao + context->id);
+        m_ShadowVao[context->id] = UINT_MAX;
+    }
+}
+void InstancingController::init()
+{
+    GAME->addToTickList(this);
+
+    //////////////////////////////////////////////////////////////////////////
+    ///  Instance Buffer
+    //////////////////////////////////////////////////////////////////////////
+    glGenBuffers(1, &m_GpuBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_GpuBuffer);
+    glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
 
-    GL::heBindVao(0);
-
-    GRAPHICS->addToDrawList(this);
+    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    {
+        initVao(context);
+    });
+    GRAPHICS->ContextCreated += m_ContextCreatedHandler;
+    GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
 }
 
 void InstancingController::updateBuffer()
 {
-    // only need to update once a frame
-    boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - m_PrevUpdateTime);
-
-    if ((m_Dynamic || m_NeedsUpdate) && elapsedTime.count() / static_cast<float>(boost::nano::den) * 1000 > 12.0f) //12ms ~62.5fps
+    if ((m_Dynamic || m_NeedsUpdate) && isAttachedToScene())
     {
         PROFILER_BEGIN("InstancingController::updateBuffer");
 
@@ -196,14 +228,21 @@ void InstancingController::updateBuffer()
         }
 
         m_CpuBuffer.reset();
+        AABB newBound;
         if (m_ManualMode == false)
         {
             DynamicBuffer b(m_InstancingLayout);
             he::for_each(m_Instances.cbegin(), m_Instances.cend(), [&](const IInstancible* pObj)
             {
-                //check for culling here
                 b.setBuffer(m_CpuBuffer.addItem());
                 pObj->fillInstancingBuffer(b);
+
+                // TODO: optimize this
+                const he::AABB& aabb(getModelMesh()->getBound().getAABB());
+                const mat44& world(pObj->getWorldMatrix());
+                AABB newAABB(world * aabb.getTopFrontLeft(),
+                             world * aabb.getBottomBackRight());
+                newBound.merge(newAABB);
             });
         }
         else
@@ -211,28 +250,28 @@ void InstancingController::updateBuffer()
             std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](const IInstanceFiller* pFiller)
             {
                 pFiller->fillInstancingBuffer(m_CpuBuffer);
+                newBound.merge(pFiller->getAABB());
             });
         }
+        m_Bound.fromAABB(newBound);
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_CpuBuffer.getSize(), m_CpuBuffer.getSize() > 0 ? m_CpuBuffer.getBuffer() : 0);
 
         m_NeedsUpdate = false;
         m_PrevUpdateTime = boost::chrono::high_resolution_clock::now();
         PROFILER_END();
+
+        getScene()->forceReevalute(this);
     }
 }
 
 void InstancingController::draw()
 {
-    updateBuffer();
-
-    GL::heBindVao(m_Vao);
+    GL::heBindVao(m_Vao[GL::s_CurrentContext->id]);
     glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 void InstancingController::drawShadow()
 {
-    updateBuffer();
-
-    GL::heBindVao(m_ShadowVao);
+    GL::heBindVao(m_ShadowVao[GL::s_CurrentContext->id]);
     glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 
@@ -285,16 +324,6 @@ void InstancingController::setCastsShadow( bool castShadow )
     m_CastShadows = castShadow;
 }
 
-bool InstancingController::isVisible() const
-{
-    return m_IsVisible;
-}
-
-void InstancingController::setVisible( bool visible )
-{
-    m_IsVisible = visible;
-}
-
 uint InstancingController::getCount() const
 {
     return m_CpuBuffer.getCount();
@@ -312,5 +341,48 @@ void InstancingController::removeManualFiller( const IInstanceFiller* pFiller )
     m_ManualCpuBufferFillers.erase(std::remove(m_ManualCpuBufferFillers.begin(), m_ManualCpuBufferFillers.end(),
         pFiller), m_ManualCpuBufferFillers.end());
 }
+
+void InstancingController::tick( float /*dTime*/ )
+{
+    updateBuffer();
+}
+
+void InstancingController::detachFromScene()
+{
+    HE_IF_ASSERT(isAttachedToScene() == true, "Drawable not attached to scene when detaching")
+    {
+        m_Scene->detachFromScene(this);
+    }
+}
+
+void InstancingController::attachToScene( Scene* scene )
+{
+    HE_IF_ASSERT(isAttachedToScene() == false, "Drawable already attached to scene when attaching")
+    {
+        m_Scene = scene;
+        m_Scene->attachToScene(this);
+    }
+}
+
+void InstancingController::setScene( Scene* scene )
+{
+    m_Scene = scene;
+}
+Scene* InstancingController::getScene() const
+{
+    return m_Scene;
+}
+
+bool InstancingController::isAttachedToScene() const
+{
+    return m_Scene != nullptr;
+}
+
+void InstancingController::calculateBound()
+{
+
+}
+
+
 
 } } //end namespace

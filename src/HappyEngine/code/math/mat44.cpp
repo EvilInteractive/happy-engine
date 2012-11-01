@@ -53,23 +53,29 @@ mat44::~mat44()
 //static constructors
 mat44 mat44::createPerspectiveRH(float fov, float viewWidth, float viewHeight, float zNear, float zFar)
 {
+    return createPerspectiveRH(fov, viewWidth / viewHeight, zNear, zFar);
+}
+
+he::mat44 mat44::createPerspectiveRH( float fov, float aspectRatio, float zNear, float zFar )
+{
     float _11 = cosf(fov * 0.5f) / sinf(fov * 0.5f);
-    float _00 = _11 * viewHeight / viewWidth;
+    float _00 = _11 * aspectRatio;
     return mat44(
-         _00, 0.0f, 0.0f                            , 0.0f,
+        _00, 0.0f, 0.0f                            , 0.0f,
         0.0f,  _11, 0.0f                            , 0.0f,
         0.0f, 0.0f, (zFar) / (zFar - zNear)         , (zFar * zNear) / (zFar - zNear),
         0.0f, 0.0f, -1.0f                           , 0.0f);
 }
+
 mat44 mat44::createPerspectiveLH(float fov, float viewWidth, float viewHeight, float zNear, float zFar)
 {
-    return createPerspectiveLH(fov, viewHeight / viewWidth, zNear, zFar);
+    return createPerspectiveLH(fov, viewWidth / viewHeight, zNear, zFar);
 }
 
 he::mat44 mat44::createPerspectiveLH( float fov, float aspectRatio, float zNear, float zFar )
 {
     float _11 = cosf(fov * 0.5f) / sinf(fov * 0.5f);
-    float _00 = _11 * aspectRatio;
+    float _00 = _11 / aspectRatio;
     return mat44(
          _00, 0.0f, 0.0f                     , 0.0f,
         0.0f,  _11, 0.0f                     , 0.0f,
@@ -184,9 +190,9 @@ he::mat44 mat44::createWorld( const vec3& position, const vec3& forward, const v
 
 he::mat44 mat44::createWorld( const vec3& translation, const mat33& rotation, const vec3& scale )
 {
-    return he::mat44(  rotation(0, 0) * scale.x, rotation(0, 1)          , rotation(0, 2)          , translation.x,
-                       rotation(1, 0)          , rotation(1, 1) * scale.y, rotation(1, 2)          , translation.y,
-                       rotation(2, 0)          , rotation(2, 1)          , rotation(2, 2) * scale.z, translation.z,
+    return he::mat44(  rotation(0, 0) * scale.x, rotation(0, 1) * scale.y, rotation(0, 2) * scale.z, translation.x,
+                       rotation(1, 0) * scale.x, rotation(1, 1) * scale.y, rotation(1, 2) * scale.z, translation.y,
+                       rotation(2, 0) * scale.x, rotation(2, 1) * scale.y, rotation(2, 2) * scale.z, translation.z,
                                               0,                        0,                        0,             1);
 }
 

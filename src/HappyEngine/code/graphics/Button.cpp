@@ -24,24 +24,35 @@
 #include "Texture2D.h"
 #include "ContentManager.h"
 #include "Rect.h"
+#include "Text.h"
 #include "ControlsManager.h"
 #include "Renderer2D.h"
+#include "IMouse.h"
+#include "Font.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Button::Button(TYPE type, const vec2& pos, const vec2& size) :	m_Type(type),
-                                                                m_Pos(pos),
-                                                                m_Size(size),
-                                                                m_State(STATE_NORMAL),
-                                                                m_ActivationType(ACTIVATION_MOUSE),
-                                                                m_pHitregion(nullptr),
-                                                                m_bClicked(false),
-                                                                m_Text(""),
-                                                                m_pSpriteSheet(nullptr)
+Button::Button() :	m_Type(TYPE_NORMAL),
+                    m_Pos(0, 0),
+                    m_Size(128, 64),
+                    m_State(STATE_NORMAL),
+                    m_ActivationType(ACTIVATION_MOUSE),
+                    m_bClicked(false),
+                    m_pSpriteSheet(nullptr),
+                    m_Hitregion(Hitregion::TYPE_RECTANGLE, vec2(0, 0), vec2(128, 64))
 {
-    m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE, pos, size);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Center);
+    m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
+    m_Text.setBounds(m_Size);
+    setColors(
+        Color(220ui8, 220, 220), 
+        Color(180ui8, 200, 220), 
+        Color(146ui8, 162, 179), 
+        Color(150ui8, 150, 150), 
+        Color(140ui8, 140, 140));
 }
 
 Button::~Button()
@@ -52,7 +63,6 @@ Button::~Button()
     {
         tex2D->release();
     });
-    delete m_pHitregion;
 }
 
 /* GENERAL */
@@ -64,7 +74,7 @@ void Button::tick()
 
         if (m_ActivationType == ACTIVATION_MOUSE)
         {
-            if (m_pHitregion->hitTest(CONTROLS->getMouse()->getPosition()))
+            if (m_Hitregion.hitTest(CONTROLS->getMouse()->getPosition()))
             {
                 if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
                     m_State = STATE_DOWN;
@@ -86,20 +96,20 @@ void Button::tick()
     }
 }
 
-void Button::draw()
+void Button::draw2D(gfx::Canvas2D* renderer)
 {
     switch (m_Type)
     {
         case TYPE_NORMAL:
         {
-            drawColor();
+            drawColor(renderer);
 
             break;
         }
 
         case TYPE_SPRITE:
         {
-            drawSprites();
+            drawSprites(renderer);
 
             break;
         }
@@ -142,17 +152,32 @@ void Button::setActivationMode(ACTIVATION activationMode)
 void Button::setPosition(const vec2& centerPos)
 {
     m_Pos = centerPos;
+    m_Hitregion.setPosition(m_Pos);
 }
 
 void Button::setText(const std::string& text, ushort fontSize)
 {
-    m_Text = text;
-    m_pFont = CONTENT->getDefaultFont(fontSize);
+    m_Text.clear();
+    m_Text.addLine(text);
+
+    if (m_Text.getFont() == nullptr || m_Text.getFont()->getPixelHeight() != fontSize)
+    {
+        gfx::Font* font(CONTENT->getDefaultFont(fontSize));
+        m_Text.setFont(font);
+        font->release();
+    }
 }
 
-void Button::addOnClickListener(boost::function<void()> callback)
+void Button::setSize( const vec2& size )
 {
-    m_OnClickEvent += callback;
+    m_Size = size;
+    m_Text.setBounds(m_Size);
+    m_Hitregion.setSize(m_Size);
+}
+
+void Button::setType( const TYPE& type )
+{
+    m_Type = type;
 }
 
 /* GETTERS */
@@ -194,67 +219,74 @@ bool Button::isClicked() const
 }
 
 /* EXTRA */
-void Button::drawColor()
+void Button::drawColor(gfx::Canvas2D* renderer)
 {
     switch (m_State)
     {
         case STATE_NORMAL:
         {
-            //GUI->setColor(220.0f/255,220.0f/255,220.0f/255);
-
+            renderer->setFillColor(m_Colors[0]);
             break;
         }
 
         case STATE_HOVER:
         {
-            //GUI->setColor(180.0f/255,200.0f/255,220.0f/255);		
-
+            renderer->setFillColor(m_Colors[1]);		
             break;
         }
 
         case STATE_DOWN:
         {
-            //GUI->setColor(146.0f/255,162.0f/255,179.0f/255);
-
+            renderer->setFillColor(m_Colors[2]);
             break;
         }
 
         case STATE_DISABLED:
         {
-            //GUI->setColor(150.0f/255,150.0f/255,150.0f/255);
-
+            renderer->setFillColor(m_Colors[3]);
             break;
         }
     }
 
-    //GUI->fillShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
+    renderer->fillRect(m_Pos - m_Size / 2, m_Size);
 
-    //GUI->setColor(140.0f/255,140.0f/255,140.0f/255);
-    //GUI->drawShape2D(gui::Rectangle2D(m_Pos - m_Size/2, m_Size), true);
+    renderer->setBlendStyle(gfx::BlendStyle_Add);
+    renderer->setFillColor(Color(0.1f, 0.1f, 0.1f));
+    renderer->fillRect(m_Pos - m_Size / 2.0f, vec2(m_Size.x, m_Size.y / 2));
+    renderer->setBlendStyle(gfx::BlendStyle_Alpha);
 
-    if (m_pFont != nullptr)
-    {
-        gui::Text txt(m_Text, m_pFont);
+    renderer->setStrokeColor(m_Colors[4]);
+    renderer->strokeRect(m_Pos - m_Size / 2, m_Size);
 
-        //GUI->setColor(0.25f,0.25f,0.25f);
-        txt.setHorizontalAlignment(gui::Text::HAlignment_Center);
-        txt.setVerticalAlignment(gui::Text::VAlignment_Center);
-        //GUI->drawText(txt, RectF(m_Pos.x - m_Size.x/2, m_Pos.y - m_Size.y/2, m_Size.x, m_Size.y));
-    }
+    renderer->setFillColor(Color(0.25f, 0.25f, 0.25f));
+    renderer->fillText(m_Text, m_Pos - m_Size / 2.0f);
+
 }
 
-void Button::drawSprites()
+void Button::drawSprites(gfx::Canvas2D* /*renderer*/)
 {
+    HE_ASSERT(false, "Not Implemented!");
 }
 
 void Button::drawSpriteSheet()
 {
+    HE_ASSERT(false, "Not Implemented!");
 }
 
 /* CALLBACK HANDLERS */
 void Button::clicked()
 {
-    m_OnClickEvent();
+    OnClick();
 }
+
+void Button::setColors( const Color& normal, const Color& hoover, const Color& down, const Color& disabled, const Color& border )
+{
+    m_Colors[0] = normal;
+    m_Colors[1] = hoover;
+    m_Colors[2] = down;
+    m_Colors[3] = disabled;
+    m_Colors[4] = border;
+}
+
 
 } } //end namespace

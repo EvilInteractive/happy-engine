@@ -22,7 +22,161 @@
 #include "MessageBox.h"
 #include "GraphicsEngine.h"
 
+#include "Window.h"
+#include "View.h"
+#include "RenderSettings.h"
+
+#include "Text.h"
+#include "Button.h"
+#include "Font.h"
+#include "ContentManager.h"
+
+#include "ControlsManager.h"
+#include "IMouse.h"
+
+#include "Renderer2D.h"
+#include "Canvas2D.h"
+
+#include "IDrawable2D.h"
+#include "Texture2D.h"
+
 namespace he {
+
+#define BORDER 12.0f
+#define SMALL_MARGE 6.0f
+#define MEDIUM_MARGE 8.0f
+#define FONT_SIZE 12
+#define TEXT_MARGIN 3
+#define BUTTON_MARGE 45.0f
+const vec2 iconSize(96, 96);
+const vec2 iconPos(BORDER, BORDER);
+const vec2 windowSize(512, 256);
+const vec2 buttonSize(128, 30);
+const vec2 textboxPos(iconPos.x + iconSize.x + SMALL_MARGE, BORDER);
+const vec2 textboxSize(windowSize - textboxPos - vec2(BORDER, MEDIUM_MARGE*2 + buttonSize.y));
+const vec2 buttonBoxPos(BORDER, iconPos.y + iconSize.y + SMALL_MARGE);
+const vec2 buttonBoxSize(iconSize.x, windowSize.y - buttonBoxPos.y - MEDIUM_MARGE*2 - buttonSize.y);
+
+namespace details {
+class MessageboxDrawer : public gfx::IDrawable2D
+{
+public:
+    gui::Button m_Buttons[3];
+    gui::Text   m_TextBlock;
+    uint8       m_ButtonCount;
+    const gfx::Texture2D* m_Icon;
+
+    MessageboxDrawer(const std::string& message, MessageBoxIcon icon,
+        const std::string& button1, const std::string& button2, const std::string& button3):
+            m_TextBlock()
+    {
+        switch (icon)
+        {
+        case MessageBoxIcon_Info:
+            m_Icon = CONTENT->loadTexture("engine/messagebox/info.png");
+            break;
+        case MessageBoxIcon_Warning:
+            m_Icon = CONTENT->loadTexture("engine/messagebox/warning.png");
+            break;
+        case MessageBoxIcon_Error:
+            m_Icon = CONTENT->loadTexture("engine/messagebox/error.png");
+            break;
+        case MessageBoxIcon_Success:
+            m_Icon = CONTENT->loadTexture("engine/messagebox/success.png");
+            break;
+        case MessageBoxIcon_ProgrammerAssert:
+            m_Icon = CONTENT->loadTexture("engine/messagebox/assert_programmer.png");
+            break;
+        case MessageBoxIcon_ArtAssert:
+            m_Icon = CONTENT->loadTexture("engine/messagebox/assert_artist.png");
+            break;
+        }
+
+        m_ButtonCount = 1;
+        if (button3 != "")
+            m_ButtonCount = 3;
+        else if (button2 != "")
+            m_ButtonCount = 2;
+
+        gfx::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", FONT_SIZE));
+        m_TextBlock.addText(message);
+        m_TextBlock.setFont(font);
+        m_TextBlock.setOverFlowType(gui::Text::OverFlowType_Wrap);
+        m_TextBlock.setBounds(textboxSize - vec2(TEXT_MARGIN*2, TEXT_MARGIN*2));
+        font->release();
+
+        for (byte i(0); i < m_ButtonCount; ++i)
+        {
+            if (i == 0)
+                m_Buttons[i].setText(button1, FONT_SIZE);
+            else if (i == 1)
+                m_Buttons[i].setText(button2, FONT_SIZE);
+            else
+                m_Buttons[i].setText(button3, FONT_SIZE);
+            m_Buttons[i].setSize(buttonSize);
+
+            vec2 pos(BORDER, windowSize.y - MEDIUM_MARGE - buttonSize.y);
+            pos += buttonSize / 2;
+            if (m_ButtonCount == 3)
+            {
+                if (i == 1)
+                    pos.x = windowSize.x / 2;
+                else if (i == 2)
+                    pos.x = windowSize.x - BORDER - buttonSize.x / 2;              
+            }
+            else if (m_ButtonCount == 2)
+            {
+                if (i == 0)
+                    pos.x = windowSize.x / 3;
+                else
+                    pos.x = windowSize.x / 3 * 2;
+            }
+            else if (m_ButtonCount == 1)
+            {
+                pos.x = windowSize.x / 2;
+            }
+            m_Buttons[i].setPosition(pos);
+            m_Buttons[i].setType(gui::Button::TYPE_NORMAL);
+            m_Buttons[i].setActivationMode(gui::Button::ACTIVATION_MOUSE);
+            
+        }
+    }
+    virtual ~MessageboxDrawer()
+    {
+        m_Icon->release();
+    }
+
+    virtual void draw2D(gfx::Canvas2D* renderer) 
+    {
+        renderer->setFillColor(Color(243ui8, 249, 253));
+        renderer->fillRect(vec2(0, 0), windowSize);
+
+        renderer->setFillColor(Color(197ui8, 209, 217));
+        renderer->fillRect(textboxPos, textboxSize);
+        renderer->fillRect(buttonBoxPos, buttonBoxSize);
+        renderer->fillRect(iconPos, iconSize);
+
+        renderer->setStrokeColor(Color(26ui8, 68, 95));
+        renderer->strokeRect(textboxPos, textboxSize);
+        renderer->strokeRect(buttonBoxPos, buttonBoxSize);
+        renderer->strokeRect(iconPos, iconSize);
+
+        renderer->drawImage(m_Icon, iconPos, iconSize);
+
+        renderer->setFillColor(Color(0ui8, 0, 0));
+        renderer->fillText(m_TextBlock, textboxPos + vec2(TEXT_MARGIN, TEXT_MARGIN));
+        for (byte i(0); i < m_ButtonCount; ++i)
+        {
+            m_Buttons[i].draw2D(renderer);
+        }
+    }
+};
+}
+
+
+boost::mutex MessageBox::s_Mutex;
+MessageBoxButton MessageBox::s_Result(MessageBoxButton_None);
+
 
 MessageBox::MessageBox()
 {
@@ -33,174 +187,84 @@ MessageBox::~MessageBox()
 {
 }
 
-MessageBoxButton MessageBox::show(const std::string& caption, const std::string& message,
+MessageBoxButton MessageBox::showExt(const std::string& caption, const std::string& message, MessageBoxIcon icon,
                     const std::string& button1, const std::string& button2, const std::string& button3)
 {
-    #define MARGE 8 
-    #define MESSAGE_BUTTON_MARGE 16
-    #define BUTTON_TEXT_MARGE 8
-    #define BUTTON_SPACING 32
-    #define BUTTON_COLOR sf::Color(128, 128, 128, 255)
-    #define BUTTON_HIGHLIGHT_COLOR sf::Color(200, 200, 200, 255)
-
-    byte buttonCount(1);
-    if (button3 != "")
-        buttonCount = 3;
-    else if (button2 != "")
-        buttonCount = 2;
-
-    sf::Text buttonText[3];
-    sf::RectangleShape buttonRect[3];
-    float buttonWidth(0), buttonHeight(0);
-    for (byte i(0); i < buttonCount; ++i)
+    MessageBoxButton result(MessageBoxButton_None);
+    if (s_Mutex.try_lock())
     {
-        if (i == 0)
-            buttonText[i].setString(button1);
-        else if (i == 1)
-            buttonText[i].setString(button2);
-        else
-            buttonText[i].setString(button3);
-        buttonText[i].setCharacterSize(14);
-        buttonText[i].setColor(sf::Color(0, 0, 0, 255));
+        //////////////////////////////////////////////////////////////////////////
+        // Init
+        //////////////////////////////////////////////////////////////////////////
+        gfx::Window* window(GRAPHICS->createWindow());
+        gfx::View2D* view(GRAPHICS->createView2D());
 
-        sf::FloatRect buttonTextSize(buttonText[i].getGlobalBounds());
-        buttonWidth = he::max(buttonWidth, buttonTextSize.width);
-        buttonHeight = he::max(buttonHeight, buttonTextSize.height);
-    }
-    buttonWidth += BUTTON_TEXT_MARGE * 2;
-    buttonHeight += BUTTON_TEXT_MARGE * 2;
+        window->setResizable(false);
+        window->setWindowDimension(static_cast<uint>(windowSize.x), static_cast<uint>(windowSize.y));
+        vec2 mousePos(CONTROLS->getMouse()->getPosition());
+        window->setWindowPosition(static_cast<int>(mousePos.x), static_cast<int>(mousePos.y));
+        window->setVSync(true);
+        window->setCursorVisible(true);
+        window->setWindowTitle(caption);
+        he::eventCallback0<void> closeCallback([]()
+        { 
+            s_Result = MessageBoxButton_Escape; 
+        });
+        window->Closed += closeCallback;
+        window->create();
 
-    sf::Text text(message);
-    text.setCharacterSize(14);
-    text.setColor(sf::Color(0, 0, 0, 255));
-    text.setPosition(MARGE, MARGE);
-    sf::FloatRect textSize(text.getGlobalBounds());
+        view->setWindow(window);
+        view->setRelativeViewport(RectF(0, 0, 1, 1));
+        view->init(gfx::RenderSettings());
 
-    float windowWidth(max(textSize.width, buttonWidth + (buttonCount - 1) * BUTTON_SPACING) + 2 * MARGE);
-    float windowHeight(textSize.height + MARGE*2 + MESSAGE_BUTTON_MARGE + buttonHeight);
+        details::MessageboxDrawer drawer(message, icon, button1, button2, button3);
+        view->get2DRenderer()->attachToRender(&drawer);
 
-    sf::Vector2f buttonSize(buttonWidth, buttonHeight);
-    for (byte i(0); i < buttonCount; ++i)
-    {
-        buttonRect[i].setSize(buttonSize);
-        buttonRect[i].setOutlineThickness(1.0f);
-        buttonRect[i].setOutlineColor(sf::Color(0, 0, 0, 255));
-        buttonRect[i].setFillColor(BUTTON_COLOR);
-        sf::FloatRect buttonTextSize(buttonText[i].getGlobalBounds());
-        if (buttonCount == 1 || (buttonCount == 3 && i == 1))
-        { //center align
-            buttonText[i].setPosition(
-                windowWidth / 2.0f - buttonTextSize.width / 2.0f, 
-                windowHeight - MARGE - buttonHeight / 2.0f - buttonTextSize.height / 2.0f);
-            buttonRect[i].setPosition(
-                windowWidth / 2.0f - buttonWidth / 2.0f, 
-                windowHeight - MARGE - buttonHeight);
-        }
-        else if (i == 0)
-        { //left align
-            buttonText[i].setPosition(
-                MARGE + buttonWidth / 2.0f - buttonTextSize.width / 2.0f, 
-                windowHeight - MARGE - buttonHeight / 2.0f - buttonTextSize.height / 2.0f);
-            buttonRect[i].setPosition(
-                MARGE, 
-                windowHeight - MARGE - buttonHeight);
-        }
-        else
-        { //right align
-            buttonText[i].setPosition(
-                windowWidth - MARGE - buttonWidth / 2.0f - buttonTextSize.width / 2.0f, 
-                windowHeight - MARGE - buttonHeight / 2.0f - buttonTextSize.height / 2.0f);
-            buttonRect[i].setPosition(
-                windowWidth - MARGE - buttonWidth, 
-                windowHeight - MARGE - buttonHeight);
-        }
-    }
-
-    sf::RenderWindow window(sf::VideoMode(static_cast<uint>(windowWidth), static_cast<uint>(windowHeight)), 
-        caption, sf::Style::Titlebar | sf::Style::Close);
-    window.setVerticalSyncEnabled(true);
-    
-    MessageBoxButton result(MessageBoxButton_Escape);
-    
-    window.setActive();
-    while (window.isOpen())
-    {
-        sf::Event event0;
-        while (window.pollEvent(event0))
+        for (byte i(0); i < drawer.m_ButtonCount; ++i)
         {
-            if (event0.type == sf::Event::Closed)
-            {
-                window.close();
-                result = MessageBoxButton_Escape;
-                break;
-            }
-            else if (event0.type == sf::Event::KeyPressed)
-            {
-                if (event0.key.code == sf::Keyboard::Escape)
-                {
-                    window.close();
-                    result = MessageBoxButton_Escape;
-                    break;
-                }
-            }
-            else if (event0.type == sf::Event::MouseButtonPressed)
-            {
-                if (event0.key.code == sf::Mouse::Left)
-                {
-                    for (byte i(0); i < buttonCount; ++i)
-                    {
-                        int x(event0.mouseButton.x);
-                        int y(event0.mouseButton.y);
-                        sf::FloatRect rect(buttonRect[i].getGlobalBounds());
-                        if (x > rect.left && x < rect.left + rect.width &&
-                            y > rect.top && y < rect.top + rect.height)
-                        {
-                            window.close();
-                            if (i == 0)
-                                result = MessageBoxButton_Button1;
-                            else if (i == 1)
-                                result = MessageBoxButton_Button2;
-                            else
-                                result = MessageBoxButton_Button3;
-                            break;
-                        }
-                    }
-                }
-            }
-            else if (event0.type == sf::Event::MouseMoved)
-            {
-                for (byte i(0); i < buttonCount; ++i)
-                {
-                    int x(event0.mouseMove.x);
-                    int y(event0.mouseMove.y);
-                    sf::FloatRect rect(buttonRect[i].getGlobalBounds());
-                    if (x > rect.left && x < rect.left + rect.width &&
-                        y > rect.top && y < rect.top + rect.height)
-                    {
-                        buttonRect[i].setFillColor(BUTTON_HIGHLIGHT_COLOR);
-                    }
-                    else
-                    {
-                        buttonRect[i].setFillColor(BUTTON_COLOR);
-                    }
-                }
-            }
+            he::eventCallback0<void> clickCallback([i]()
+            { 
+                s_Result = (MessageBoxButton)(MessageBoxButton_Button1 + i); 
+            });
+            drawer.m_Buttons[i].OnClick += clickCallback;
         }
-        window.clear(sf::Color(220, 218, 220, 255));
-        window.draw(text);
-        for (byte i(0); i < buttonCount; ++i)
-        {
-            window.draw(buttonRect[i]);
-            window.draw(buttonText[i]);
-        }
-        window.display();
-    }
-    window.setActive(false);
-    if (GRAPHICS != nullptr && GRAPHICS->getWindow() != nullptr)
-        GRAPHICS->getWindow()->setActive(true);
 
+        //////////////////////////////////////////////////////////////////////////
+        // Loop
+        //////////////////////////////////////////////////////////////////////////
+        window->prepareForRendering();
+        while (s_Result == MessageBoxButton_None)
+        {
+            CONTROLS->getMouse()->tick();
+
+            window->doEvents(1/30.0f);
+
+            for (byte i(0); i < drawer.m_ButtonCount; ++i)
+            {
+                drawer.m_Buttons[i].tick();
+            }
+            view->draw();
+        }
+
+        //////////////////////////////////////////////////////////////////////////
+        // Cleanup
+        //////////////////////////////////////////////////////////////////////////
+        view->get2DRenderer()->detachFromRender(&drawer);
+
+        window->Closed -= closeCallback;
+        window->close();
+
+        GRAPHICS->removeView(view);
+        GRAPHICS->removeWindow(window);
+
+        result = s_Result;
+        s_Result = MessageBoxButton_None;
+
+        s_Mutex.unlock();
+    }
     return result;
 }
+
 
 
 } //end namespace

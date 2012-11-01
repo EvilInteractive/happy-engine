@@ -42,7 +42,6 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* pParent);
 
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
@@ -59,12 +58,12 @@ public:
     float getEndAttenuation() const;
     const vec3& getColor() const;
 
+protected:
+    virtual void init(Entity* pParent);
 
 private:    
     Entity* m_Parent;   
     gfx::PointLight* m_PointLight;
-
-    ObjectHandle m_Handle;
 
     //Disable default copy constructor and default assignment operator
     PointLightComponent(const PointLightComponent&);
@@ -106,8 +105,6 @@ public:
 private:
     Entity* m_Parent;
     gfx::SpotLight* m_SpotLight;
-
-    ObjectHandle m_Handle;
 
     //Disable default copy constructor and default assignment operator
     SpotLightComponent(const SpotLightComponent&);

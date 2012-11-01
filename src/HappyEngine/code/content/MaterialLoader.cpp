@@ -39,87 +39,88 @@ MaterialLoader::MaterialLoader()
 
 MaterialLoader::~MaterialLoader()
 {
+    ResourceFactory<gfx::Material>::getInstance()->garbageCollect();
     m_AssetContainer.removeAllAssets();
 }
 
-BlendEquation blendEquationFromString(const std::string& str)
+gfx::BlendEquation blendEquationFromString(const std::string& str)
 {
     if (str == "ADD")
     {
-        return BlendEquation_Add;
+        return gfx::BlendEquation_Add;
     }
     else if (str == "SUBTRACT")
     {
-        return BlendEquation_Subtract;
+        return gfx::BlendEquation_Subtract;
     }
     else if (str == "REVERSE_SUBTRACT" || str == "INVERSE_SUBTRACT")
     {
-        return BlendEquation_ReverseSubtract;
+        return gfx::BlendEquation_ReverseSubtract;
     }
     else if (str == "MIN")
     {
-        return BlendEquation_Min;
+        return gfx::BlendEquation_Min;
     }
     else if (str == "MAX")
     {
-        return BlendEquation_Max;
+        return gfx::BlendEquation_Max;
     }
     else 
     {
         HE_ERROR("unknown blendEquationFromString: %s", str.c_str());
-        return BlendEquation_Add;
+        return gfx::BlendEquation_Add;
     }
 }
-BlendFunc blendFuncFromString(const std::string& str)
+gfx::BlendFunc blendFuncFromString(const std::string& str)
 {
     if (str == "ZERO")
     {
-        return BlendFunc_Zero;
+        return gfx::BlendFunc_Zero;
     }
     else if (str == "ONE")
     {
-        return BlendFunc_One;
+        return gfx::BlendFunc_One;
     }
     else if (str == "SRC_COLOR")
     {
-        return BlendFunc_SrcColor;
+        return gfx::BlendFunc_SrcColor;
     }
     else if (str == "INV_SRC_COLOR" || str == "ONE_MIN_SRC_COLOR")
     {
-        return BlendFunc_OneMinusSrcColor;
+        return gfx::BlendFunc_OneMinusSrcColor;
     }
     else if (str == "DEST_COLOR")
     {
-        return BlendFunc_DestColor;
+        return gfx::BlendFunc_DestColor;
     }
     else if (str == "INV_DEST_COLOR" || str == "ONE_MIN_DEST_COLOR")
     {
-        return BlendFunc_OneMinusDestColor;
+        return gfx::BlendFunc_OneMinusDestColor;
     }
     else if (str == "SRC_ALPHA")
     {
-        return BlendFunc_SrcAlpha;
+        return gfx::BlendFunc_SrcAlpha;
     }
     else if (str == "INV_SRC_ALPHA" || str == "ONE_MIN_SRC_ALPHA" )
     {
-        return BlendFunc_OneMinusSrcAlpha;
+        return gfx::BlendFunc_OneMinusSrcAlpha;
     }
     else if (str == "DEST_ALPHA")
     {
-        return BlendFunc_DestAlpha;
+        return gfx::BlendFunc_DestAlpha;
     }
     else if (str == "INV_DEST_ALPHA" || str == "ONE_MIN_DEST_ALPHA" )
     {
-        return BlendFunc_OneMinusDestAlpha;
+        return gfx::BlendFunc_OneMinusDestAlpha;
     }
     else if (str == "SRC_ALPHA_SAT")
     {
-        return BlendFunc_SrcAlphaSaturate;
+        return gfx::BlendFunc_SrcAlphaSaturate;
     }
     else 
     {
         HE_ERROR("unknown blendFuncFromString: %s", str.c_str());
-        return BlendFunc_One;
+        return gfx::BlendFunc_One;
     }
 }
 
@@ -182,9 +183,9 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         {
                             if (p.second == L"GBUFFER_COLOR")
                                 shaderOutputs[0] = std::string(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_SGI")
+                            else if (p.second == L"GBUFFER_SG")
                                 shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_NORMAL")
+                            else if (p.second == L"GBUFFER_NORMALDEPTH")
                                 shaderOutputs[2] = std::string(p.first.cbegin(), p.first.cend());
                             else
                                 HE_ASSERT(false, "unknow semantic");
@@ -197,7 +198,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         {
                             if (p.second == L"GBUFFER_COLOR")
                                 shaderOutputs[0] = std::string(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_NORMAL")
+                            else if (p.second == L"GBUFFER_NORMALDEPTH")
                                 shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
                             else
                                 HE_ASSERT(false, "unknow semantic");
@@ -316,8 +317,8 @@ ObjectHandle MaterialLoader::load(const std::string& path)
 
                 // [info]
                 bool isBlended(false);
-                BlendEquation blendEq(BlendEquation_Add);
-                BlendFunc srcBlend(BlendFunc_One), destBlend(BlendFunc_Zero);
+                gfx::BlendEquation blendEq(gfx::BlendEquation_Add);
+                gfx::BlendFunc srcBlend(gfx::BlendFunc_One), destBlend(gfx::BlendFunc_Zero);
                 bool post(true);
                 if (reader.containsRoot(L"info"))
                 {
@@ -392,55 +393,10 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                                 NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalDirection));
                         }
 
-                        // Shadow
-                        else if (node.second == L"SHADOW_CASCADE_MATRIX0")
+                        else if (node.second == L"NEARFAR")
                         {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix0));
-                        }
-                        else if (node.second == L"SHADOW_CASCADE_MATRIX1")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix1));
-                        }
-                        else if (node.second == L"SHADOW_CASCADE_MATRIX2")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix2));
-                        }
-                        else if (node.second == L"SHADOW_CASCADE_MATRIX3")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ShadowCascadeMatrix3));
-                        }
-
-                        else if (node.second == L"SHADOW_CASCADE0")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade0));
-                        }
-                        else if (node.second == L"SHADOW_CASCADE1")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade1));
-                        }
-                        else if (node.second == L"SHADOW_CASCADE2")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade2));
-                        }
-                        else if (node.second == L"SHADOW_CASCADE3")
-                        {
-                            if (m_RenderSettings.enableShadows)
-                                material->registerVar(
-                                    NEW gfx::ShaderGlobalVar(pShader->getShaderSamplerId(name), name, gfx::ShaderVarType_ShadowCascade3));
+                            material->registerVar(
+                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_NearFar));
                         }
 
                         // Skinning

@@ -19,15 +19,16 @@
 #define _HE_HAPPYPCH_H_
 #pragma once
 
-#pragma message("-------------------------------------------")
-#pragma message("HappyEngine: Compiling precompiled headers.")
-#pragma message("-------------------------------------------\n")
+#pragma message("-------------------------------------------------")
+#pragma message("-- HappyEngine: Compiling precompiled headers. --")
+#pragma message("-------------------------------------------------\n")
 
 #define __HE_FUNCTION__ __FUNCTION__
 #include <cstdlib>
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <deque>
 #include <queue>
 #include <set>
@@ -48,15 +49,12 @@
 #include <boost/date_time.hpp>
 
 #include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 
 #undef MessageBox
 
+#define glewGetContext() (&he::gfx::GL::s_CurrentContext->internalContext)
 
 #include <GL/glew.h>
-#include "OpenGL.h"
-
-#include <PxPhysicsAPI.h>
 
 #include "HappyTypes.h"
 #include "vec2.h"
@@ -65,6 +63,11 @@
 #include "mat44.h"
 #include "mat33.h"
 #include "Color.h"
+#include "Rect.h"
+
+#include "PxPhysicsAPI.h"
+
+#include "RTTI.h"
 
 #include "Logger.h"
 #include "HappyInfo.h"
@@ -76,12 +79,18 @@
 #include "MathConstants.h"
 #include "MathFunctions.h"
 
+#include "GLContext.h"
+#include "OpenGL.h"
+
+#include "ObjectFactory.h"
+
 #include "Profiler.h"
 
 #include "event.h"
 #include "Path.h"
 
 #include "Keys.h"
+#include "MouseButtons.h"
 
 #include "HappyEngine.h"
 #include "Console.h"

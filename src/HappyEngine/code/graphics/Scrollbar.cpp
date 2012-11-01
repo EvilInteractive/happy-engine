@@ -21,10 +21,9 @@
 #include "HappyPCH.h"
 
 #include "Scrollbar.h"
-#include "HappyNew.h"
-#include "HappyEngine.h"
 #include "ControlsManager.h"
 #include "Renderer2D.h"
+#include "IMouse.h"
 
 namespace he {
 namespace gui {
@@ -135,6 +134,18 @@ void Scrollbar::setColors(	const Color& backgroundColor,
 float Scrollbar::getBarPos() const
 {
 	return m_BarPos;
+}
+
+void Scrollbar::setPosition( const vec2& pos )
+{
+    m_Pos = pos;
+    m_pHitregion->setPosition(vec2(m_Pos.x + m_Size.x / 2, m_Pos.y + (m_ScrollbarHeight / 2)));
+}
+
+void Scrollbar::setSize( const vec2& size )
+{
+    m_Size = size;
+    m_pHitregion->setSize(vec2(size.x - 2, m_ScrollbarHeight));
 }
 
 } } //end namespace

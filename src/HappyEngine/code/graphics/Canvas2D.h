@@ -22,19 +22,22 @@
 #define _HE_CANVAS2D_H_
 #pragma once
 
-#include "Color.h"
-#include "vec2.h"
-#include "Text.h"
-#include "mat33.h"
-#include "HappyTypes.h"
-#include "Mesh2D.h"
-#include "Simple2DEffect.h"
-#include "Simple2DTextureEffect.h"
-#include "Simple2DFontEffect.h"
-#include "ModelMesh.h"
-
 namespace he {
 namespace gfx {
+class View;
+class Mesh2D;
+class Simple2DEffect;
+class Simple2DTextureEffect;
+class Simple2DFontEffect;
+class ModelMesh;
+class Texture2D;
+
+enum BlendStyle
+{
+    BlendStyle_Opac,
+    BlendStyle_Alpha,
+    BlendStyle_Add
+};
 
 class Canvas2D
 {
@@ -55,6 +58,7 @@ public:
         uint fbufferID;
         uint colorRbufferID;
         uint depthRbufferID;
+        GLContext* context;
     };
 
     struct DrawingState
@@ -67,10 +71,12 @@ public:
     };
 
     /* STATIC */
-    static Data* create(const vec2& size);
+    static Data* create(GLContext* context, const vec2& size);
+    static void resizeData(Data* data, const vec2& size);
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2D(Data* pData, const vec2& size);
+    Canvas2D(const RectI& absoluteViewport);
+    Canvas2D(View* view, const RectF& relativeViewport);
     virtual ~Canvas2D();
 
     /* GENERAL */
@@ -81,38 +87,34 @@ public:
     void save();
     void restore();
 
+    void restoreDepth();
+
     /* GETTERS */
     Data* getData() const;
+    const vec2& getSize() const { return m_CanvasSize; }
+
+    Renderer2D* getRenderer2D() const { return m_Renderer2D; }
 
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
     void setFillColor(const Color& newColor);
+    void setBlendStyle(const BlendStyle& blendStyle) { m_BlendStyle = blendStyle; }
 
     void setLineWidth(float width);
 
     void setGlobalAlpha(float alpha);
 
     void setAutoClearing(bool clearAfterDraw);
+    void setPosition(const vec2& position) { m_Position = position; }
+
+    void setDepth(short depth);
     
     /* DRAW METHODS */
     void clear();
-    void draw(const vec2& pos = vec2(0,0));
+    virtual void draw();
 
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
-
-    void strokeArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
-    void fillArc(const vec2& pos, float radius, float startAngle, float endAngle, bool antiClockwise);
-
-    void beginPath();
-    void closePath();
-    void moveTo(const vec2& pos);
-    void lineTo(const vec2& pos);
-    void arcTo(float radius, float startAngle, float endAngle, bool antiClockwise);
-    void quadraticCurveTo(const vec2& cp, const vec2& pos);
-    void bezierCurveTo(const vec2& cp1, const vec2& cp2, const vec2& pos);
-    void fill();
-    void stroke();
 
     void fillText(const gui::Text& txt, const vec2& pos);
 
@@ -130,6 +132,13 @@ private:
     void cleanup();
     mat44 getTransformation();
     float getNewDepth();
+
+    void viewResized();
+    void resize(const vec2& newSize);
+
+    void applyBlend();
+    
+    //void drawLineAA(const vec2& pos1, const vec2& pos2);
 
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
@@ -154,14 +163,24 @@ private:
     Texture2D* m_pRenderTexture;
     Texture2D* m_pTextBuffer;
 
+    BlendStyle m_BlendStyle;
+
+    View* m_View;
+    RectF m_RelativeViewport;
     vec2 m_CanvasSize;
-    bool m_FullScreen;
+    vec2 m_Position;
 
     ModelMesh* m_pTextureQuad;
 
     float m_PixelDepth;
 
     bool m_AutoClear;
+
+    Renderer2D* m_Renderer2D;
+
+    eventCallback0<void> m_ViewResizedHandler;
+
+    short m_ExtraPixelDepth;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

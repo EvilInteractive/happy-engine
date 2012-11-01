@@ -4,6 +4,9 @@ set (CODE_GRAPHICS_NO_FILTER
             DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
             DefaultSkinnedDrawable.cpp          DefaultSkinnedDrawable.h
             Hitregion.cpp                       Hitregion.h
+            GLContext.h
+            IDrawable2D.h
+            IShapeDrawable.h
             Object3D.cpp                        Object3D.h
             IDrawable.h    
             IPickable.h 
@@ -22,7 +25,7 @@ set (CODE_GRAPHICS_GUI_FILTER
 set (CODE_GRAPHICS_LIGHT_FILTER
             AmbientLight.cpp                    AmbientLight.h
             DirectionalLight.cpp                DirectionalLight.h                   
-            ILight.h
+            Light.cpp                           Light.h
             LightFactory.cpp                    LightFactory.h
             LightManager.cpp                    LightManager.h
             PointLight.cpp                      PointLight.h
@@ -46,11 +49,18 @@ set (CODE_GRAPHICS_PICKING_FILTER
             Picker.cpp                          Picker.h)
             
 set (CODE_GRAPHICS_RENDERING_FILTER
-            Camera.cpp                          Camera.h
-            DynamicBuffer.cpp                   DynamicBuffer.h
-            GraphicsEngine.cpp                  GraphicsEngine.h                      
+            CameraOrtho.cpp                     CameraOrtho.h
+            CameraPerspective.cpp               CameraPerspective.h
+            CameraBound.cpp                     CameraBound.h
+            CullOctree.cpp                      CullOctree.h
+			CullOctreeNodeFactory.cpp			CullOctreeNodeFactory.h
+            DynamicBuffer.cpp                   DynamicBuffer.h                     
             ICamera.h                        
-            IRenderer.h)
+            IRenderer.h
+            RenderTarget.cpp                    RenderTarget.h
+            Scene.cpp                           Scene.h
+            View.cpp                            View.h
+            Window.cpp                          Window.h)
             
     set (CODE_GRAPHICS_RENDERING_2D_FILTER
                 Canvas2D.cpp                        Canvas2D.h
@@ -59,14 +69,14 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 Simple2DFontEffect.cpp              Simple2DFontEffect.h
                 Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
                 WebView.cpp                         WebView.h
-				WebListener.cpp					WebListener.h)
+				WebListener.cpp					    WebListener.h)
                 
     set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
                 Deferred3DRenderer.cpp              Deferred3DRenderer.h)
                 
     set (CODE_GRAPHICS_RENDERING_FORWARD_FILTER
                 BillboardEffect.cpp                 BillboardEffect.h
-                ExtraForward3DRenderer.cpp          ExtraForward3DRenderer.h
+                ShapeRenderer.cpp                   ShapeRenderer.h
                 Forward3DRenderer.cpp               Forward3DRenderer.h
                 SimpleColorEffect.cpp               SimpleColorEffect.h)
                 
@@ -79,7 +89,7 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 
     set (CODE_GRAPHICS_RENDERING_MANAGER_FILTER
                 DrawListContainer.cpp               DrawListContainer.h
-                DrawManager.cpp                     DrawManager.h
+                GraphicsEngine.cpp                  GraphicsEngine.h 
                 RenderSettings.h)
                 
     set (CODE_GRAPHICS_RENDERING_POST_FILTER
@@ -88,7 +98,8 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 PostProcesser.cpp                   PostProcesser.h)
     
     set (CODE_GRAPHICS_RENDERING_SHADOW_FILTER
-                ShadowCaster.cpp                    ShadowCaster.h)
+                ShadowCaster.cpp                    ShadowCaster.h
+				ShadowCasterSpotlight.cpp			ShadowCasterSpotlight.h)
     
     
 foreach(f ${CODE_GRAPHICS_NO_FILTER}) 

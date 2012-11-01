@@ -21,16 +21,17 @@
 #include "MathFunctions.h"
 #include "ControlsManager.h"
 #include "GraphicsEngine.h"
+#include "IKeyboard.h"
+#include "IMouse.h"
 
 namespace ht {
 
 // CONSTRUCTOR - DESTRUCTOR
-FlyCamera::FlyCamera(int viewportWidth, int viewportHeight) :	Camera(viewportWidth, viewportHeight),
-                                                                m_bMoveable(true),
-                                                                m_Speed(10.0f),
-                                                                m_FastForward(20.0f),
-                                                                m_PreviousMousePos(0,0),
-                                                                m_MouseSensitivity(100.0f)
+FlyCamera::FlyCamera() :	m_bMoveable(true),
+                            m_Speed(10.0f),
+                            m_FastForward(20.0f),
+                            m_PreviousMousePos(0,0),
+                            m_MouseSensitivity(100.0f)
 {
 }
 
@@ -55,14 +56,14 @@ void FlyCamera::tick(float dTime)
         if (CONTROLS->hasFocus(this))
         {
             if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
-                dir += m_vLookWorld;
+                dir += m_LookWorld;
             if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Q))
-                dir -= m_vRightWorld;
+                dir -= m_RightWorld;
 
             if (CONTROLS->getKeyboard()->isKeyDown(io::Key_S))
-                dir -= m_vLookWorld;
+                dir -= m_LookWorld;
             if (CONTROLS->getKeyboard()->isKeyDown(io::Key_D))
-                dir += m_vRightWorld;
+                dir += m_RightWorld;
 
             // fast forward
             if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
@@ -74,18 +75,8 @@ void FlyCamera::tick(float dTime)
         float finalSpeed = m_Speed;
         if (bRunning) finalSpeed *= m_FastForward;
 
-        m_vPosWorld += dir * finalSpeed * dTime;
+        m_PosWorld += dir * finalSpeed * dTime;
     }
-
-    /*float angle = static_cast<float>((CONTROLS->getMouse()-> / 120) / 200.0f);
-
-    if (angle != 0)
-    {
-        m_Speed += angle*200;
-
-        if (m_Speed < 2)
-            m_Speed = 2;
-    }*/
 
     if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right) && CONTROLS->hasFocus(this))
     {
@@ -94,25 +85,23 @@ void FlyCamera::tick(float dTime)
         float pitch = mouseMovement.y / m_MouseSensitivity;
         float yAngle = mouseMovement.x / m_MouseSensitivity;
 
-        mat44 R(mat44::createRotation(m_vRightWorld, -pitch));
-        m_vLookWorld = normalize(R * m_vLookWorld);
-        m_vUpWorld = normalize(R * m_vUpWorld);
+        mat44 R(mat44::createRotation(m_RightWorld, -pitch));
+        m_LookWorld = normalize(R * m_LookWorld);
+        m_UpWorld = normalize(R * m_UpWorld);
 
         R = mat44::createRotation(vec3(0,1,0), -yAngle);
-        m_vLookWorld = normalize(R * m_vLookWorld);
-        m_vRightWorld = normalize(R * m_vRightWorld);
-        m_vUpWorld = -normalize(cross(m_vLookWorld, m_vRightWorld));
+        m_LookWorld = normalize(R * m_LookWorld);
+        m_RightWorld = normalize(R * m_RightWorld);
+        m_UpWorld = -normalize(cross(m_LookWorld, m_RightWorld));
     }
     else
         m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
 
     CONTROLS->returnFocus(this);
 
-    m_AspectRatio = GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth();
-
-    buildProjectionMatrix();
-    buildViewMatrix();
+    m_RegenViewMatrix = true;
 }
+
 
 // SETTERS
 void FlyCamera::moveable(bool bMoveable)

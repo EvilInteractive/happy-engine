@@ -23,6 +23,11 @@
 #pragma once
 
 #include "Game.h"
+#include "IShapeDrawable.h"
+#include "IDrawable2D.h"
+#include "Random.h"
+#include "Text.h"
+
 
 namespace he {
     namespace tools {
@@ -33,12 +38,20 @@ namespace he {
     }
     namespace gfx {
         class SkyBox;
+        class Window;
+        class Scene;
+        class View3D;
+        class ModelMesh;
+        class CameraPerspective;
+        class Texture2D;
+        class SpotLight;
     }
 }
 
 namespace ht {
+class FlyCamera;
 
-class MainGame : public he::ge::Game
+class MainGame : public he::ge::Game, public he::gfx::IShapeDrawable, public he::gfx::IDrawable2D
 {
 public:
     MainGame();
@@ -47,15 +60,46 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void drawGui();
+
+    virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
+    virtual void draw2D(he::gfx::Canvas2D* renderer);
 
 private:
-    he::tools::FPSGraph* m_pFPSGraph;
+    void fillDebugMeshes();
+
+    he::tools::FPSGraph* m_FpsGraph;
 
     bool m_SpinShadows;
 
+    he::gfx::Window* m_Window;
+    he::gfx::View3D*   m_View;
+    he::gfx::Scene*  m_Scene;
+
+    he::gfx::Window* m_Window2;
+    he::gfx::View3D*   m_View2;
+
     std::vector<he::ge::Entity*> m_EntityList;
     he::gfx::SkyBox* m_pSkyBox;
+
+    he::gfx::ModelMesh* m_DebugMesh;
+
+    const he::gfx::Texture2D* m_TestTexture;
+
+    static he::Random s_Random;
+    struct MovingEntityRandomness
+    {
+        he::vec3 a;
+        he::vec3 b;
+        he::vec3 c;
+    };
+    std::vector<MovingEntityRandomness> m_MovingEntityRandomness;
+    std::vector<he::ge::Entity*> m_MovingEntityList;
+    float m_MovingEntityFase;
+    bool m_ShowDebugMesh;
+    
+    he::gui::Text m_DebugText;
+
+    he::gfx::SpotLight* m_DebugSpotLight;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

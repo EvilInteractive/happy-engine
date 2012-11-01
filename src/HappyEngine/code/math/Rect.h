@@ -53,7 +53,9 @@ public:
 	RectI(int x, int y, int width, int height);
     explicit RectI(const RectF& rect);
     ~RectI();
-    //Default copy constructor and assignment operator are fine
+
+    RectI(const RectI& rect);
+    RectI& operator=(const RectI& other);
 
 	bool operator==(const RectI& r) const;
 	bool operator!=(const RectI& r) const;

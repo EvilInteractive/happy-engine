@@ -63,6 +63,14 @@ RectI::RectI(const RectF& rect): x(static_cast<int>(rect.x)),
                                  height(static_cast<int>(rect.height))
 {
 }
+
+RectI::RectI( const RectI& rect ): x(rect.x), 
+                                   y(rect.y), 
+                                   width(rect.width), 
+                                   height(rect.height)
+{
+}
+
 RectI::~RectI()
 {
 }
@@ -73,7 +81,13 @@ bool RectI::operator==(const RectI& r) const
 
 bool RectI::operator!=(const RectI& r) const
 {
-    return !(*this == r);
+    return x != r.x || y != r.y || width != r.width || height != r.height;
+}
+
+RectI& RectI::operator=( const RectI& other )
+{
+    he_memcpy(this, &other, sizeof(RectI));
+    return *this;
 }
 
 } //end namespace

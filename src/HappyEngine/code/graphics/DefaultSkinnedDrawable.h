@@ -23,6 +23,7 @@
 #pragma once
 
 #include "IDrawable.h"
+#include "Bound.h"
 
 namespace he {
 namespace gfx {
@@ -40,22 +41,27 @@ public:
     virtual const ModelMesh* getModelMesh() const = 0;
     virtual const std::vector<mat44>& getBoneTransforms() const = 0;
 
+    virtual void calculateBound();
+    virtual const Bound& getBound() const { return m_Bound; }
+
     virtual bool getCastsShadow() const;
     virtual void setCastsShadow(bool castShadow);
-
-    virtual bool isVisible() const;
-    virtual void setVisible(bool visible);
-
-    virtual bool isInCamera(const ICamera* pCamera) const; 
-    virtual float getDrawPriority(const ICamera* pCamera) const;
 
     virtual void draw();
     virtual void drawShadow();
 
-private:
+    virtual void detachFromScene();
+    virtual void attachToScene(Scene* scene);
+    virtual void setScene(Scene* scene);
+    virtual Scene* getScene() const;
+    virtual bool isAttachedToScene() const;
 
-    bool m_isVisible;
-    bool m_castsShadow;
+protected:
+    Bound m_Bound;
+
+private:
+    bool m_CastsShadow;
+    Scene* m_Scene;
 
     //Disable default copy constructor and default assignment operator
     DefaultSkinnedDrawable(const DefaultSkinnedDrawable&);

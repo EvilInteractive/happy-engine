@@ -125,9 +125,7 @@ private:
                 m_ShaderFolder, m_MaterialFolder, m_FxFolder;
     Path m_TexturePath, m_ModelPath, m_LinePath, m_PhysicsPath, m_FontPath,
                 m_ShaderPath, m_MaterialPath, m_FxPath;
-
-    gfx::Font* m_pDefaultFont;
-
+    
     gfx::ModelMesh* m_ParticleQuad;
     gfx::ModelMesh* m_FullscreenQuad;
 

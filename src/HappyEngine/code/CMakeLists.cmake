@@ -14,6 +14,7 @@ include (code/physics/CMakeLists.cmake)
 include (code/tools/CMakeLists.cmake)
                                     
 set (CODE_FILES     event.h
+					event_internal.h
                     HappyEngine.h           HappyEngine.cpp
                     HappyMemory.h
                     HappyNew.h
@@ -21,6 +22,7 @@ set (CODE_FILES     event.h
                     HappyTypes.h            HappyTypes.cpp
                     MessageBox.h            MessageBox.cpp
                     OpenGL.h                OpenGL.cpp
+                    RTTI.h
                     Singleton.h             Singleton.cpp
                     StaticDataManager.h     StaticDataManager.cpp)
                         

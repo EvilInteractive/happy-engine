@@ -28,7 +28,9 @@
 
 namespace he {
 namespace ge {
-    
+
+class ModelComponent;
+
 class ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
@@ -37,7 +39,7 @@ public:
     virtual ~ModelComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         EntityComponent                                 ///
+    ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* parent);
 
@@ -55,14 +57,14 @@ public:
        
     void setModelMeshAndMaterial(const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName = "");
 
-private:
-    const gfx::ModelMesh* m_ModelMesh;
-    const gfx::Material* m_Material;
-    
+protected:
     Entity* m_Parent;
 
-    bool m_AttachedToScene;
-    
+private:
+    bool m_IsAttached;
+
+    gfx::ModelMesh* m_ModelMesh;
+    const gfx::Material* m_Material;
 
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);

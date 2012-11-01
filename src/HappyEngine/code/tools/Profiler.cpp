@@ -24,14 +24,16 @@
 
 #include "ContentManager.h"
 
-#include "boost/chrono.hpp"
+#include "Font.h"
 #include "Text.h"
 #include "Canvas2D.h"
+#include "View.h"
 
 namespace he {
 namespace tools {
 
 Profiler* Profiler::s_Profiler = nullptr;
+std::stringstream Profiler::s_Stream;
 
 HierarchicalProfile::HierarchicalProfile(const char* name)
 {
@@ -57,33 +59,68 @@ struct ProfileData
 struct Profiler::ProfileTreeNode
 {
     ProfileTreeNode* m_Parent;
-    std::deque<ProfileData> m_Data;
+    double m_TotalFrameTime;
+    double m_MaxTime;
+    uint32 m_HitsPerFrame;
+    uint32 m_Recurses;
     std::string m_Name;
-    std::map<std::string, ProfileTreeNode> m_Nodes;
 
-    bool operator<(const ProfileTreeNode& node) const
+    ProfileData m_CurrentProfile;
+
+    Profiler::DataMap m_Nodes;
+
+    void start() 
+    { 
+        m_CurrentProfile.startTime = boost::chrono::high_resolution_clock::now(); 
+    }
+    void stop() 
+    { 
+        m_CurrentProfile.endTime = boost::chrono::high_resolution_clock::now(); 
+        double time = m_CurrentProfile.getDuration();
+        m_MaxTime = std::max(m_MaxTime, time);
+        if (m_Recurses == 0)
+            m_TotalFrameTime += time;
+        ++m_HitsPerFrame; 
+    }
+    void reset()    
     {
-        return m_Name < node.m_Name;
+        m_HitsPerFrame = 0;
+        m_MaxTime = 0.0;
+        m_TotalFrameTime = 0.0;
     }
 };
 
-Profiler::Profiler(): m_CurrentNode(nullptr), m_Width(0), m_pFont(nullptr), m_pCanvas2D(nullptr)
+Profiler::Profiler()
+    : m_CurrentNode(nullptr), 
+      m_Width(0), 
+      m_pFont(nullptr), 
+      m_View(nullptr), 
+      m_State(Disabled),
+      m_NodesFront(NEW DataMap()),
+      m_NodesBack(NEW DataMap()),
+      m_Show(false)
 {
+    s_Stream.precision(2);
 }
 void Profiler::load()
 {
-    //GUI->createLayer("profiler", 1);
     m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
-    m_pCanvas2D = GUI->createCanvas();
+
+    CONSOLE->registerCmd(boost::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
 }
 
 
 
 Profiler::~Profiler()
 {
+    if (m_View != nullptr && m_Show == true)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+    }
     if (m_pFont != nullptr)
         m_pFont->release();
-    delete m_pCanvas2D;
+    delete m_NodesBack;
+    delete m_NodesFront;
 }
 
 Profiler* Profiler::getInstance()
@@ -99,53 +136,105 @@ void Profiler::dispose()
     s_Profiler = nullptr;
 }
 
+
+void Profiler::resetNode( ProfileTreeNode& node )
+{
+    node.reset();
+    DataMap::iterator it(node.m_Nodes.begin());
+    for(; it != node.m_Nodes.end(); ++it)   
+        resetNode(it->second); 
+}
+void Profiler::tick()
+{
+    HE_ASSERT(m_CurrentNode == nullptr, "No node should be active!");
+
+    if (m_State == Disabled)
+        return;
+
+    if (m_State == Enabling)
+        m_State = Enabled;
+    if (m_State == Disabling)
+    {
+        m_State = Disabled;
+        return;
+    }
+
+    std::swap(m_NodesFront, m_NodesBack);
+    m_NodesFront->clear();
+}
+
 void Profiler::begin( const std::string& name )
 {
-    std::map<std::string, ProfileTreeNode>& currentBranch(m_CurrentNode != nullptr ? m_CurrentNode->m_Nodes : m_Data);
-    
-    if (currentBranch.find(name) == currentBranch.cend())
-    {
-        ProfileTreeNode node;
-        node.m_Name = name;
-        node.m_Parent = m_CurrentNode;
-        currentBranch[name] = node;
-    }
-    m_CurrentNode = &currentBranch[name];
+    if (isEnabled() == false)
+        return;
 
-    if (m_CurrentNode->m_Data.size() == MAX_DATA)
-        m_CurrentNode->m_Data.pop_front();
-    m_CurrentNode->m_Data.push_back(ProfileData());
-    m_CurrentNode->m_Data.back().startTime = boost::chrono::high_resolution_clock::now();
+    if (m_CurrentNode != nullptr && m_CurrentNode->m_Name == name)
+    { // recursive function
+        ++m_CurrentNode->m_Recurses;
+    }
+    else
+    {
+        DataMap& currentBranch(m_CurrentNode != nullptr ? m_CurrentNode->m_Nodes : *m_NodesFront);
+        DataMap::iterator it(currentBranch.find(name));
+        if (it == currentBranch.end())
+        {
+            ProfileTreeNode node;
+            node.m_Name = name;
+            node.m_Parent = m_CurrentNode;
+            node.m_HitsPerFrame = 0;
+            node.m_TotalFrameTime = 0.0f;
+            node.m_MaxTime = 0.0f;
+            node.m_Recurses = 1;
+            m_CurrentNode = &(currentBranch[name] = node);
+        }
+        else
+        {
+            m_CurrentNode = &it->second;
+            m_CurrentNode->m_Recurses = 1;
+        }
+
+        m_CurrentNode->start();
+    }
 }
 
 void Profiler::end()
 {
+    if (isEnabled() == false)
+        return;
+
     HE_ASSERT(m_CurrentNode != nullptr, "called PROFILER_END to many times?");
-    m_CurrentNode->m_Data.back().endTime = boost::chrono::high_resolution_clock::now();
-    m_CurrentNode = m_CurrentNode->m_Parent;
+    HE_ASSERT(m_CurrentNode->m_Recurses > 0, "Node not active?");
+    --m_CurrentNode->m_Recurses;
+    m_CurrentNode->stop();
+    if (m_CurrentNode->m_Recurses == 0)
+    {
+        m_CurrentNode = m_CurrentNode->m_Parent;
+    }
 }
 void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth)
 {
-    double avgTime(0.0);
-    std::for_each(node.m_Data.cbegin(), node.m_Data.cend()-1, [&](const ProfileData& data)
-    {
-        avgTime += data.getDuration() * 1000;
-    });
-    char buff[16];
-    std::sprintf(buff, ": %07.2f ms\0", avgTime / node.m_Data.size());
+    HE_ASSERT(node.m_HitsPerFrame > 0, "Cannot have 0 hit!");
+    double totalFrameTime(node.m_TotalFrameTime);
+    double avgFrameTime(node.m_TotalFrameTime / node.m_HitsPerFrame);
+    double maxFrameTime(node.m_MaxTime);
 
-    std::stringstream stream;
+    char totalBuf[10];
+    char avgBuf[10];
+    char maxBuf[10];
+    sprintf(totalBuf, "%02.3f\0", totalFrameTime);
+    sprintf(avgBuf, "%02.3f\0", avgFrameTime);
+    sprintf(maxBuf, "%02.3f\0", maxFrameTime);
+
+    s_Stream.clear();
+    s_Stream.str("");
     for (int i(0); i < treeDepth; ++i)
     {
-        /*if (i == treeDepth - 1)
-            stream << "|";*/
-        stream << "|----";
+        s_Stream << "|----";
     }
+    s_Stream << "+ " + node.m_Name << ": tot: " << totalBuf << " avg: " << avgBuf << " max: " << maxBuf << " calls: " << node.m_HitsPerFrame;
+    text.addLine(s_Stream.str());
 
-    stream << "+ " + node.m_Name << buff;
-    text.addLine(stream.str());
-
-    uint textWidth(static_cast<uint>(m_pFont->getStringWidth(stream.str())));
+    uint textWidth(static_cast<uint>(m_pFont->getStringWidth(s_Stream.str())));
     if (textWidth > m_Width)
         m_Width = textWidth;
 
@@ -154,28 +243,63 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
         drawProfileNode(treeNodePair.second, text, treeDepth + 1);
     });
 }
-void Profiler::draw()
+void Profiler::draw2D(gfx::Canvas2D* canvas)
 {
+    if (isEnabled() == false)
+        return;
+
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Width = 0;
     
     gui::Text text(m_pFont);
     text.addLine("----PROFILER------------------------------");
-    std::for_each(m_Data.cbegin(), m_Data.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
-    {     
+    std::for_each(m_NodesBack->cbegin(), m_NodesBack->cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
+    {
         drawProfileNode(treeNodePair.second, text, 1);  
     });
     text.addLine("------------------------------------------");
 
     float y((float)(text.getText().size() * m_pFont->getLineSpacing()));
 
-    m_pCanvas2D->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
-    m_pCanvas2D->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
+    canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
+    canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
-    m_pCanvas2D->setFillColor(Color(1.0f, 1.0f, 1.0f));
-    m_pCanvas2D->fillText(text, vec2(4, 4));
+    canvas->setFillColor(Color(1.0f, 1.0f, 1.0f));
+    canvas->fillText(text, vec2(4, 4));
+}
 
-    m_pCanvas2D->draw();
+void Profiler::setView( gfx::View* view )
+{
+    m_View = view;
+}
+
+void Profiler::enable()
+{
+    if (m_State != Enabled)
+        m_State = Enabling;
+}
+
+void Profiler::disable()
+{
+    if (m_State != Disabled)
+        m_State = Disabling;
+}
+
+void Profiler::toggleProfiler()
+{
+    HE_ASSERT(m_View != nullptr, "View not set!");
+    if (m_Show == true)
+    {
+        disable();
+        m_View->get2DRenderer()->detachFromRender(this);
+        m_Show = false;
+    }
+    else
+    {
+        m_View->get2DRenderer()->attachToRender(this);
+        enable();
+        m_Show = true;
+    }
 }
 
 } } //end namespace

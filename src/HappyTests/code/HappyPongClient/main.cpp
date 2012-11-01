@@ -33,19 +33,17 @@ int main( int /*argc*/, char** /*args[]*/ )
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    HAPPYENGINE->init(he::SubEngine_Graphics   | 
-                      he::SubEngine_Content    | 
-                      he::SubEngine_2DRenderer | 
-                      he::SubEngine_Controls   | 
+    HAPPYENGINE->init(he::SubEngine_Graphics   |
                       he::SubEngine_Networking |
                       he::SubEngine_Audio      );
     CONTENT->setContentDir(he::Path("../../data"));
 
     hpc::HPCStaticDataManager::init();
 
-    hpc::MainGame::sdmInit();
-    HAPPYENGINE->start(hpc::MainGame::getInstance());
-    hpc::MainGame::sdmDestroy();
+    {
+        hpc::MainGame game;
+        HAPPYENGINE->start(&game);
+    }
 
     hpc::HPCStaticDataManager::destroy();
 

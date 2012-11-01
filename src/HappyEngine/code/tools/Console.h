@@ -22,8 +22,8 @@
 #define _HE_CONSOLE_H_
 #pragma once
 
-#include "Font.h"
 #include <typeinfo>
+#include "IDrawable2D.h"
 
 namespace he {
 
@@ -44,11 +44,14 @@ namespace gui {
 
 namespace gfx {
     class Canvas2D;
+    class Font;
+    class View;
 }
 
 namespace tools {
 class ITypeHandler;
-class Console
+
+class Console : public gfx::IDrawable2D
 {
 public:
 
@@ -59,7 +62,8 @@ public:
     /* GENERAL */
     void load();
     void tick();
-    void draw();
+    void setView(const gfx::View* view);
+    virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
     void addMessage(const std::string& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
@@ -67,7 +71,8 @@ public:
     template <typename T>
     void registerVar(T* pVar, const std::string& varKey)
     {
-        if (m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend())
+        const char* type(typeid(T).name());
+        HE_IF_ASSERT(m_TypeHandlers.find(type) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", type)
         {
             if (m_ValueContainer.find(varKey) != m_ValueContainer.end())
             {
@@ -80,13 +85,6 @@ public:
             {
                 m_ValueContainer[varKey] = pVar;
             }
-        }
-        else
-        {
-            std::stringstream str;
-            str << "Type handler for '" << typeid(T).name() << "'not specfied!";
-
-            HE_ASSERT(false, str.str().c_str());
         }
     }
 
@@ -139,7 +137,7 @@ private:
 
     gfx::Font* m_pFont;
 
-    gfx::Canvas2D* m_Canvas2D;
+    const gfx::View* m_View;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

@@ -41,16 +41,7 @@ enum ShaderVarType
     ShaderVarType_AmbientColor,
     ShaderVarType_DirectionalColor,
     ShaderVarType_DirectionalDirection,
-
-    ShaderVarType_ShadowCascadeMatrix0,
-    ShaderVarType_ShadowCascadeMatrix1,
-    ShaderVarType_ShadowCascadeMatrix2,
-    ShaderVarType_ShadowCascadeMatrix3,
-
-    ShaderVarType_ShadowCascade0,
-    ShaderVarType_ShadowCascade1,
-    ShaderVarType_ShadowCascade2,
-    ShaderVarType_ShadowCascade3,
+    ShaderVarType_NearFar,
 
     ShaderVarType_User
 };

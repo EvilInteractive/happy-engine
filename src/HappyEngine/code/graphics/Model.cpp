@@ -21,6 +21,7 @@
 #include "HappyPCH.h" 
 
 #include "Model.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace gfx {
@@ -47,7 +48,7 @@ bool Model::canBeGarbageCollected()
     // only GC if all meshes are referenced just by this instance
     bool block(std::any_of(cbegin(), cend(), [](ModelMesh* mesh)
     {
-        return ResourceFactory<ModelMesh>::getInstance()->getRefCount(mesh->getHandle()) == 1;
+        return ResourceFactory<ModelMesh>::getInstance()->getRefCount(mesh->getHandle()) > 1;
     }));
     return !block;
 }
@@ -133,7 +134,8 @@ void Model::callbackOnceIfLoaded( const boost::function<void()>& callback )
     }
     else
     {
-        m_LoadedCallback += callback;
+        eventCallback0<void> handler(callback);
+        m_LoadedCallback += handler;
         m_LoadedMutex.unlock();
     }
 }

@@ -20,212 +20,115 @@
 
 #include "HappyPCH.h" 
 
+// warnings in awesomium lib
+#pragma warning(disable:4100)
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "Renderer2D.h"
 #include "ControlsManager.h"
+#include "IMouse.h"
+#include "IKeyboard.h"
 #include "Vertex.h"
-
-#define COMMON_ASCII_CHAR 128
+#include "Simple2DTextureEffect.h"
+#include "Awesomium/WebCore.h"
+#include "ModelMesh.h"
+#include "Canvas2D.h"
+#include "WebView.h"
+#include "RenderTarget.h"
+#include "Texture2D.h"
+#include "View.h"
+#include "IDrawable2D.h"
+// warnings in awesomium lib
+#pragma warning(default:4100)
 
 namespace he {
 namespace gfx {
 
-Renderer2D::Renderer2D() :  m_WebCore(nullptr),
+Renderer2D::Renderer2D() :
                             m_TextureEffect(NEW Simple2DTextureEffect()),
-                            m_TextureQuad(nullptr)
+                            m_TextureQuad(nullptr),
+                            m_View(nullptr),
+                            m_RenderTarget(nullptr),
+                            m_DefaultCanvas(nullptr)
 {
 }
 
 Renderer2D::~Renderer2D()
 {
-    if (m_WebCore != nullptr)
-    {
-        Awesomium::WebCore::Shutdown();
-    }
+    removeCanvas(m_DefaultCanvas);
 
     delete m_TextureEffect;
     m_TextureQuad->release();
 }
 
 /* GENERAL */
-Canvas2D* Renderer2D::createCanvas(const vec2& size)
+Canvas2D* Renderer2D::createCanvasAbsolute(const RectI& viewport)
 {
-    vec2 dim = size;;
-
-    if (size.x <= 0 || size.y <= 0)
+    HE_ASSERT(viewport.width > 0 && viewport.height > 0, "viewport width and height must be > 0");
+    Canvas2D* canvas(NEW Canvas2D(viewport));
+    m_Canvas2Ds.push_back(canvas);
+    return canvas;
+}
+Canvas2D* Renderer2D::createCanvasRelative(const RectF& percent)
+{
+    HE_ASSERT(percent.width > 0 && percent.height > 0, "viewport width and height must be > 0");
+    Canvas2D* canvas(NEW Canvas2D(m_View, percent));
+    m_Canvas2Ds.push_back(canvas);
+    return canvas;
+}
+void Renderer2D::removeCanvas( Canvas2D* canvas )
+{
+    std::vector<Canvas2D*>::iterator it(std::find(m_Canvas2Ds.begin(), m_Canvas2Ds.end(), canvas));
+    HE_IF_ASSERT(it != m_Canvas2Ds.cend(), "Canvas is not a member of this Renderer2D!")
     {
-        dim.x = (float)GRAPHICS->getScreenWidth();
-        dim.y = (float)GRAPHICS->getScreenHeight();
+        *it = m_Canvas2Ds.back();
+        m_Canvas2Ds.pop_back();
+        delete canvas;
     }
-
-    Canvas2D::Data* data = Canvas2D::create(dim);
-
-    if (data == nullptr)
-    {
-        HE_ERROR("Failed to create Canvas2D!");
-        return nullptr;
-    }
-
-    return NEW Canvas2D(data, dim);
 }
 
-WebView* Renderer2D::createWebView(bool enableUserInput, const vec2& size)
+
+WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
-    if (m_WebCore == nullptr)
-    {
-        m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
-    }
-
-    vec2 dim = size;
-    bool f = false;
-
-    if (size == vec2(0,0))
-    {
-        dim.x = (float)GRAPHICS->getScreenWidth();
-        dim.y = (float)GRAPHICS->getScreenHeight();
-
-        f = true;
-    }
-
-    Awesomium::WebView* pView = m_WebCore->CreateWebView((int)dim.x, (int)dim.y);
-
-    WebView* web = NEW WebView(pView, enableUserInput, f);
+    WebView* web(NEW WebView(viewport, enableUserInput));
     m_WebViews.push_back(web);
-
-    if (enableUserInput)
-    {
-        Awesomium::WebView* w = web->getAWEView();
-
-        CONTROLS->getKeyboard()->addOnKeyPressedListener([&, w](io::Key key)
-        {
-            if (w != nullptr)
-            {
-                Awesomium::WebKeyboardEvent keyEvent;
-
-                uint chr = io::getWebKeyFromKey(key);
-
-                keyEvent.virtual_key_code = chr;
-                char* buf = new char[20];
-
-                Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buf);
-                strcpy(keyEvent.key_identifier, buf);
-
-                delete[] buf;
-
-                keyEvent.modifiers = 0;
-                keyEvent.native_key_code = 0;
-                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
-
-                w->InjectKeyboardEvent(keyEvent);
-
-                // if it is an ASCII char
-                if (chr < COMMON_ASCII_CHAR)
-                {
-                    // if it is a letter
-                    if (chr >= 65 && chr <= 90)
-                    {
-                        if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
-                            CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
-                        {
-                            chr += 32; // to lowercase ASCII
-                        }
-                    }
-
-                    keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
-                    keyEvent.text[0] = (wchar16)chr;
-                    keyEvent.unmodified_text[0] = (wchar16)chr;
-                    keyEvent.native_key_code = chr;
-
-                    w->InjectKeyboardEvent(keyEvent);
-                }
-            }
-        });
-
-        CONTROLS->getKeyboard()->addOnKeyReleasedListener([&, w](io::Key key)
-        {
-            if (w != nullptr)
-            {
-                Awesomium::WebKeyboardEvent keyEvent;
-
-                char* buf = new char[20];
-                keyEvent.virtual_key_code = io::getWebKeyFromKey(key);
-
-                Awesomium::GetKeyIdentifierFromVirtualKeyCode(keyEvent.virtual_key_code, &buf);
-                strcpy(keyEvent.key_identifier, buf);
-
-                delete[] buf;
-
-                keyEvent.modifiers = 0;
-                keyEvent.native_key_code = 0;
-                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyUp;
-
-                w->InjectKeyboardEvent(keyEvent);
-            }
-        });
-
-        CONTROLS->getMouse()->addOnButtonPressedListener([&, w](io::MouseButton but)
-        {
-            if (w != nullptr)
-            {
-                if (but == io::MouseButton_Left)
-                    w->InjectMouseDown(Awesomium::kMouseButton_Left);
-                else if (but == io::MouseButton_Right)
-                    w->InjectMouseDown(Awesomium::kMouseButton_Right);
-                else if (but == io::MouseButton_Middle)
-                    w->InjectMouseDown(Awesomium::kMouseButton_Middle);
-            }
-        });
-
-        CONTROLS->getMouse()->addOnButtonReleasedListener([&, w](io::MouseButton but)
-        {
-            if (w != nullptr)
-            {
-                if (but == io::MouseButton_Left)
-                    w->InjectMouseUp(Awesomium::kMouseButton_Left);
-                else if (but == io::MouseButton_Right)
-                    w->InjectMouseUp(Awesomium::kMouseButton_Right);
-                else if (but == io::MouseButton_Middle)
-                    w->InjectMouseUp(Awesomium::kMouseButton_Middle);
-            }
-        });
-
-        CONTROLS->getMouse()->addOnMouseMovedListener([&, w](const vec2& pos)
-        {
-            if (w != nullptr)
-            {
-                w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
-            }
-        });
-
-        CONTROLS->getMouse()->addOnMouseWheelMovedListener([&, w](int move)
-        {
-            if (w != nullptr)
-            {
-                w->InjectMouseWheel(move * 30, 0);
-            }
-        });
-    }
-
     return web;
 }
-
-void Renderer2D::tick()
+WebView* Renderer2D::createWebViewRelative(const RectF& viewportPercent, bool enableUserInput)
 {
-    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    if (m_WebCore != nullptr)
+    WebView* web(NEW WebView(m_View, viewportPercent, enableUserInput));
+    m_WebViews.push_back(web);
+    return web;
+}
+void Renderer2D::removeWebView( WebView* webview )
+{
+    std::vector<WebView*>::iterator it(std::find(m_WebViews.begin(), m_WebViews.end(), webview));
+    HE_IF_ASSERT(it != m_WebViews.cend(), "Canvas is not a member of this Renderer2D!")
     {
-        m_WebCore->Update();
+        *it = m_WebViews.back();
+        m_WebViews.pop_back();
+        delete webview;
     }
 }
 
 void Renderer2D::draw()
 {
+    m_DefaultCanvas->clear();
+    std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](IDrawable2D* drawable)
+    {
+        drawable->draw2D(m_DefaultCanvas);
+    });
+
+    m_RenderTarget->prepareForRendering();
+    m_DefaultCanvas->draw();
 }
 
-void Renderer2D::init()
+void Renderer2D::init( View* view, const RenderTarget* target )
 {
+    m_View = view;
+    m_RenderTarget = target;
+
     m_TextureEffect->load();
 
     BufferLayout vLayout;
@@ -234,7 +137,7 @@ void Renderer2D::init()
 
     // model texturequad
     m_TextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_TextureQuad->init();
+    m_TextureQuad->init(vLayout, gfx::MeshDrawMode_Triangles);
 
     std::vector<VertexPosTex2D> vertices;
     vertices.push_back(
@@ -257,8 +160,11 @@ void Renderer2D::init()
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
-    m_TextureQuad->setVertices(&vertices[0], 4, vLayout);
-    m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte);
+    m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+    m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_TextureQuad->setLoaded();
+
+    m_DefaultCanvas = createCanvasRelative(RectF(0,0,1,1));
 }
 
 void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
@@ -291,7 +197,8 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     }
 
     mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
-    mat44 orthographicMatrix = mat44::createOrthoLH(0.0f, (float)GRAPHICS->getScreenWidth(), 0.0f, (float)GRAPHICS->getScreenHeight(), 0.0f, 100.0f);
+    mat44 orthographicMatrix = mat44::createOrthoLH(0.0f, 
+        static_cast<float>(m_View->getViewport().width), 0.0f, static_cast<float>(m_View->getViewport().height), 0.0f, 100.0f);
 
     m_TextureEffect->begin();
     m_TextureEffect->setWorldMatrix(orthographicMatrix * world);
@@ -300,8 +207,9 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     m_TextureEffect->setTCOffset(tcOffset);
     m_TextureEffect->setTCScale(tcScale);
     m_TextureEffect->setDepth(0.0f);
-
-    GL::heSetDepthFunc(DepthFunc_Always);
+    
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     if (useBlending == true)
     {
@@ -314,10 +222,23 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
         GL::heBlendEnabled(false);
     }
 
-    GL::heBindFbo(0);
-
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+}
+
+void Renderer2D::attachToRender(IDrawable2D* drawable)
+{
+    m_Drawables.push_back(drawable);
+}
+
+void Renderer2D::detachFromRender(IDrawable2D* drawable)
+{
+    std::vector<IDrawable2D*>::iterator it(std::find(m_Drawables.begin(), m_Drawables.end(), drawable));
+    HE_IF_ASSERT(it != m_Drawables.end(), "drawable not found in draw list")
+    {
+        *it = m_Drawables.back();
+        m_Drawables.pop_back();
+    }
 }
 
 } } //end namespace

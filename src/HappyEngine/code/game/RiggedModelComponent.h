@@ -53,7 +53,7 @@ public:
     
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         ISkinnedDrawable                           ///
+    ///                     DefaultSkinnedDrawable                         ///
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const; 

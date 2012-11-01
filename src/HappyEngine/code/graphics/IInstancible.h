@@ -23,17 +23,18 @@
 #pragma once
 
 namespace he {
+class Bound;
 namespace gfx {
 
 class DynamicBuffer;
-class IInstancible
+class IInstancible : public IObject3D
 {
 public:
     virtual ~IInstancible() {}
     
     virtual void fillInstancingBuffer(DynamicBuffer& buffer) const = 0;
-};  
+}; 
 
-} } //end namespace
+}}  //end namespace
 
 #endif

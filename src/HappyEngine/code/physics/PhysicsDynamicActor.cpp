@@ -146,6 +146,12 @@ physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const
     return m_Actor;
 }
 
+bool PhysicsDynamicActor::isSleeping() const
+{
+    return m_Actor->isSleeping();
+}
+
+
 he::uint PhysicsDynamicActor::getCompatibleShapes() const
 {
     return PhysicsShapeType_DynamicCompatible;

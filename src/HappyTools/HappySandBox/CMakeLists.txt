@@ -13,7 +13,7 @@ include (${HappyEngine_SOURCE_DIR}/HappyEngine/code/CIncludeLists.cmake)
 include_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/code)
 link_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
 
-# include + link 3thParth
+# include + link 3rdParty
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
 IncludeThirdParty()
 

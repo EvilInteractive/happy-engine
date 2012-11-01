@@ -26,6 +26,7 @@
 
 namespace he {
 namespace px {
+IMPLEMENT_OBJECT(PhysicsConvexShape)
 
 PhysicsConvexShape::PhysicsConvexShape(const ObjectHandle& convexMesh, const vec3& scale): 
         m_ConvexMesh(convexMesh), m_Scale(scale)

@@ -16,23 +16,19 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 22/10/2011
+//Created: 13/10/2012
 
 #ifndef _HE_SHADOW_CASTER_H_
 #define _HE_SHADOW_CASTER_H_
 #pragma once
 
-#include "RenderSettings.h"
-#include "DrawListContainer.h"
-#include "DirectionalLight.h"
+#include "ShadowCasterSpotlight.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
-
-class Shader;
-class Texture2D;
-class ModelMesh;
-class Material;
+class View;
+class Scene;
 
 class ShadowCaster
 {
@@ -40,32 +36,12 @@ public:
     ShadowCaster();
     virtual ~ShadowCaster();
 
-    void init(const RenderSettings& settings);
-    void setSettings(const RenderSettings& settings);
-    
-    void render(const DrawListContainer& elements, DirectionalLight* directionalLight);
+    void init(View* view);
+
+    void render(Scene* scene);
 
 private:
-
-    uint m_FboId;
-
-    const static int COUNT = DirectionalLight::CASCADES + 1;
-    Texture2D* m_pShadowTexture[COUNT]; //first = blur temp
-    uint m_DepthRenderbuff;
-    
-    Material* m_MatSingle;
-    Material* m_MatSkinned;
-    Material* m_MatInstanced;
-
-    const static int s_ShadowBlurPasses = 2;
-    Shader* m_pShadowBlurShaderPass[s_ShadowBlurPasses];
-    uint m_BlurShaderTexPosPass[s_ShadowBlurPasses];
-
-    ModelMesh* m_pQuad;
-
-    ushort m_ShadowSize;
-
-    bool m_ShowShadowDebug;
+    ShadowCasterSpotLight m_SpotLightShadowRenderers[ShadowResolution_MAX - 1];
 
     //Disable default copy constructor and default assignment operator
     ShadowCaster(const ShadowCaster&);

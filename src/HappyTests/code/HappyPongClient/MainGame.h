@@ -32,13 +32,18 @@ namespace he {
     namespace ge {
         class Entity;
     }
+    namespace gfx {
+        class Window;
+        class Scene;
+        class View3D;
+    }
 }
 
 namespace hpc {
 class Palet;
 class Obstacle;
 class Ball;
-class MainGame : public he::ge::Game, public he::Singleton<MainGame>
+class MainGame : public he::ge::Game
 {
 public:
     MainGame();
@@ -59,6 +64,8 @@ public:
 
     void setActiveBall(Ball* ball);
 
+    he::gfx::Scene* getActiveScene() const { return m_Scene; }
+
 private:
     void connectionSuccessful();
     void connectionFailed();
@@ -67,13 +74,16 @@ private:
     float m_RestartTime;
     float m_RestartTimer;
 
-    he::tools::FPSGraph* m_pFPSGraph;
+    he::tools::FPSGraph* m_FPSGraph;
 
     he::vec2 m_BoardDimension;
     std::vector<Palet*> m_Palets;
     std::vector<Obstacle*> m_Obstacles;
     Ball* m_Ball;
 
+    he::gfx::Window* m_Window;
+    he::gfx::View3D*   m_View;
+    he::gfx::Scene*  m_Scene;
 
     std::vector<he::ge::Entity*> m_EntityList;
 

@@ -37,6 +37,8 @@
 
 #include "Scrollbar.h"
 #include "TextBox.h"
+#include "View.h"
+#include "Text.h"
 
 namespace he {
 namespace tools {
@@ -50,8 +52,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_CmdHistoryPos(0),
                         m_pScrollBar(nullptr),
                         m_Help(nullptr),
-                        m_Canvas2D(nullptr),
-                        m_pFont(nullptr)
+                        m_pFont(nullptr),
+                        m_View(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -82,8 +84,6 @@ Console::Console() :	m_Shortcut(io::Key_C),
 }
 void Console::load()
 {
-    m_Canvas2D = GUI->createCanvas();
-
     m_pFont = CONTENT->loadFont("Inconsolata.otf", 10);
 
     m_Help = new gui::Text(m_pFont);
@@ -92,8 +92,11 @@ void Console::load()
     m_Help->addLine("'listcmds' (displays registered commands)");
     m_Help->addLine("******** HELP ********");
 
+    m_pScrollBar = NEW gui::Scrollbar(
+        vec2(1280-20, 0), vec2(20,200), 50.0f);
+
     m_pTextBox = NEW gui::TextBox(
-        RectF(0,200,static_cast<float>(GRAPHICS->getScreenWidth()), 20),
+        RectF(0,200,1280, 20),
         "Enter command...", 10, "Inconsolata.otf");
 
     m_pTextBox->setColors(
@@ -104,13 +107,30 @@ void Console::load()
 
     m_CmdHistory.push_back("");
 
-    m_pScrollBar = NEW gui::Scrollbar(
-        vec2(static_cast<float>(GRAPHICS->getScreenWidth()) - 20.0f, 0.0f), vec2(20,200), 50.0f);
 
     m_pScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getLineSpacing());
 }
+void Console::setView( const gfx::View* view )
+{
+    /*
+    if (canvas != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+        m_View->get2DRenderer()->removeCanvas(canvas);
+        canvas = nullptr;
+    }*/
+    m_View = view;
+    if (view != nullptr)
+    {
+        m_View->get2DRenderer()->attachToRender(this);
+        //canvas = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));*/
+        m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
+        m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
+    }
+}
+
 
 Console::~Console()
 {
@@ -125,10 +145,15 @@ Console::~Console()
     if (m_pFont != nullptr)
         m_pFont->release();
 
+    /*
+    if (m_View != nullptr)
+    {
+        m_View->get2DRenderer()->detachFromRender(this);
+    }
+    */
     delete m_pTextBox;
     delete m_pScrollBar;
     delete m_Help;
-    delete m_Canvas2D;
 }
 
 void Console::processCommand(const std::string& command)
@@ -138,6 +163,8 @@ void Console::processCommand(const std::string& command)
     // remove spaces
     #if !GCC
     s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    #else // !FIX! will be fixed when work on linux resumed
+    #error What if GCC?
     #endif
 
     // console commands
@@ -265,12 +292,15 @@ void Console::tick()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_pTextBox->hasFocus())
     {
-        m_bOpen =! m_bOpen;
-        m_pTextBox->resetText();
-
-        if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+        HE_IF_ASSERT(m_View != nullptr, "set View first with setView!")
         {
-            addMessage(m_HelpCommand, CMSG_TYPE_INFO);
+            m_bOpen =! m_bOpen;
+            m_pTextBox->resetText();
+
+            if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+            {
+                addMessage(m_HelpCommand, CMSG_TYPE_INFO);
+            }
         }
     }
 
@@ -325,17 +355,19 @@ void Console::tick()
     }
 }
 
-void Console::draw()
+void Console::draw2D(gfx::Canvas2D* canvas)
 {
     if (m_bOpen)
     {
-        m_Canvas2D->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-        m_Canvas2D->fillRect(vec2(0,0), vec2(vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
+        canvas->setDepth(-2000);
 
-        m_Canvas2D->setStrokeColor(Color(0.19f,0.19f,0.19f));
-        m_Canvas2D->strokeRect(vec2(0,0), vec2(vec2(static_cast<float>(GRAPHICS->getScreenWidth()), 200)));
+        canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
+        canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
 
-        m_pTextBox->draw(m_Canvas2D);
+        canvas->setStrokeColor(Color(0.19f,0.19f,0.19f));
+        canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
+
+        m_pTextBox->draw(canvas);
 
         std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
 
@@ -378,24 +410,28 @@ void Console::draw()
         uint k(0);
         std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
         {
-            m_Canvas2D->setFillColor(m_MsgColors[p.first]);
+            canvas->setFillColor(m_MsgColors[p.first]);
 
             text.clear();
             text.addLine(p.second);
 
             //GUI->drawText(	text, RectF(5,5,
- //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
+    //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
 //                            190.0f - (k * m_pFont->getLineSpacing())));
 
-            m_Canvas2D->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
+            canvas->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
 
             ++k;
         });
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
-            m_pScrollBar->draw(m_Canvas2D);
+            m_pScrollBar->draw(canvas);
 
-        m_Canvas2D->draw();
+        //canvas->draw2D(renderer);
+
+//        canvas->drawLineAA(vec2(200,200), vec2(500,600));
+
+        canvas->restoreDepth();
     }
 }
 
@@ -430,14 +466,7 @@ void Console::addMessage(const std::string& msg, CMSG_TYPE type)
 
 void Console::registerCmd(boost::function<void()> command, const std::string& cmdKey)
 {
-    if (m_FunctionContainer.find(cmdKey) != m_FunctionContainer.end())
-    {
-        std::stringstream str;
-        str << "Command: '" << cmdKey << "' already registered!";
-
-        HE_ASSERT(false, str.str().c_str());
-    }
-    else
+    HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {
         m_FunctionContainer[cmdKey] = command;
     }
@@ -445,13 +474,9 @@ void Console::registerCmd(boost::function<void()> command, const std::string& cm
 
 void Console::addTypeHandler(ITypeHandler* typeHandler)
 {
-    if (m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend())
+    HE_IF_ASSERT(m_TypeHandlers.find(typeHandler->getType()) == m_TypeHandlers.cend(), "Type handler for '%s' already added!", typeHandler->getType().c_str())
     {
         m_TypeHandlers[typeHandler->getType()] = typeHandler;
-    }
-    else
-    {
-        HE_ASSERT(false, "Type handler for '%s' already added!", typeHandler->getType().c_str());
     }
 }
 

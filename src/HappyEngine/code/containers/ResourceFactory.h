@@ -27,8 +27,12 @@
 namespace he {
    
 template<typename T>
+class Resource;
+
+template<typename T>
 class ResourceFactory : public ObjectFactory<T>
 {
+template<typename T> friend class Resource;
 public:
 
     //////////////////////////////////////////////////////////////////////////
@@ -54,7 +58,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void garbageCollect()
     {
-        for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
+        for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
         {
             if (m_RefCounter[i] == 0 && isAliveAt(i) && getAt(i)->canBeGarbageCollected())
             {
@@ -63,22 +67,25 @@ public:
         }
     }
 
-    void instantiate(const ObjectHandle& handle)
-    {
-        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", m_DisplayName.c_str());
-        ++m_RefCounter[handle.index];
-    }
-    void release(const ObjectHandle& handle)
-    {
-        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): releasing unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", m_DisplayName.c_str(), get(handle)->getName().c_str());
-        --m_RefCounter[handle.index];
-    }
-
     uint getRefCount(const ObjectHandle& handle)
     {
         return m_RefCounter[handle.index];
+    }
+
+    void instantiate(const ObjectHandle& handle)
+    {
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", m_DisplayName.c_str());
+        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", m_DisplayName.c_str());
+        ++m_RefCounter[handle.index];
+    }
+
+    void release(const ObjectHandle& handle)
+    {
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): releasing unassigned handle", m_DisplayName.c_str());
+        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", m_DisplayName.c_str(), get(handle)->getName().c_str());
+        --m_RefCounter[handle.index];
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -87,7 +94,6 @@ public:
     virtual ObjectHandle create()
     {
         ObjectHandle handle(ObjectFactory<T>::create());
-        get(handle)->setHandle(handle);
         instantiate(handle);
         return handle;
     }
@@ -109,7 +115,7 @@ protected:
     {
         ObjectFactory<T>::destroyObject(handle);
     }
-    virtual void destroyAt(ObjectHandle::Type index)
+    virtual void destroyAt(ObjectHandle::IndexType index)
     {
         ObjectFactory<T>::destroyAt(index);
     }
@@ -133,8 +139,7 @@ private:
     }
     virtual ~ResourceFactory() 
     {
-        garbageCollect();
-        for (ObjectHandle::Type i(0); i < m_RefCounter.size(); ++i)
+        for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
         {
             if (m_RefCounter[i] != 0)
             {

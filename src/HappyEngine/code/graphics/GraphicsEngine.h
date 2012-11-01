@@ -23,18 +23,28 @@
 #define _HE_GRAPHICS_ENGINE_H_
 #pragma once
 
-#include "Rect.h"
-#include "RenderSettings.h"
+#include "SlotPContainer.h"
+
+namespace Awesomium {
+    class WebCore;
+}
+
+namespace sf {
+namespace priv {
+    class GlContext;
+}
+}
 
 namespace he {
 namespace gfx {
 
-class DrawManager;
-class InstancingManager;
-class Picker;
-class IDrawable;
-class Deferred3DRenderer;
-class LightManager;
+class Window;
+class Scene;
+class View;
+class View2D;
+class View3D;
+
+enum ShadowResolution;
 
 class GraphicsEngine
 {
@@ -46,66 +56,62 @@ public:
 
     /* GENERAL */
     void init();
+    void destroy();
+    void tick(float dTime);
+    void draw();
 
-    // only init picking when needed, because it requires extra FBO & shader
-    void initPicking();
 
-    void clearAll() const;
-    void clearColor() const;
-    void clearDepth() const;
+    // View depends on window and scene!
+    // Always delete view first!
+    Scene* createScene();
+    Scene* getScene(SceneID id);
+    void removeScene(Scene* scene);
 
-    void addToDrawList(IDrawable* pDrawable);
-    void removeFromDrawList(IDrawable* pDrawable);
-    InstancingManager* getInstancingManager() const;
+    View2D* createView2D();
+    View3D* createView3D();
+    void removeView(View* view);
 
-    void drawScene();
-    void present() const;
-    
-    uint pick(const vec2& screenPoint);
-    uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
+    Window* createWindow();
+    void removeWindow(Window* window);
+    bool registerContext(GLContext* context);
+    void unregisterContext(GLContext* context);
 
     /* SETTERS */
-    void setWindowTitle(const std::string& caption);
-    void setScreenPosition(int x, int y);
-    void setScreenDimension(uint width, uint height);
-    void setViewport(const RectI& viewport);
-    void setVSync(bool enable);
-    void setBackgroundColor(const Color& color);
+    void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
+    void setActiveContext(GLContext* context);
+    void setActiveView(View* view) { m_ActiveView = view; } // Internal use
     
     /* GETTERS */
-    void getScreenPosition(int& x, int& y) const;
-    const RectI& getScreenRect() const;
-    uint getScreenWidth() const;
-    uint getScreenHeight() const;
-    const RectI& getViewport() const;
-    LightManager* getLightManager() const;
-    const RenderSettings& getSettings() const;
-    const DrawManager* getDrawManager() const;
-    sf::Window* getWindow() const;
-    const RenderSettings& getRenderSettings() const;
+    Window* getActiveWindow() const { return m_ActiveWindow; }
+    const std::vector<ObjectHandle>& getAllWindows() const { return m_Windows; }
+    const std::vector<GLContext*>& getContexts() const { return m_Contexts; } 
+
+    ushort getShadowMapSize(const ShadowResolution& resolution);
+
+    View* getActiveView() const { return m_ActiveView; }
+
+    Awesomium::WebCore* getWebCore() const { return m_WebCore; }
+
+    // Events
+    he::event1<void, GLContext*> ContextCreated;
+    he::event1<void, GLContext*> ContextRemoved;
 
 private:
-    void initWindow();
+    GLContext m_FallBackContext;
+    sf::Context* m_FallBackSfContext;
 
     /* DATAMEMBERS */
-    sf::Window* m_pMainWindow;
-    //void* m_GLContext; ----- needed?
+    std::vector<ObjectHandle> m_Scenes;
+    std::vector<ObjectHandle> m_Views;
+    std::vector<ObjectHandle> m_Windows;
 
-    RectI m_Viewport;
-    RectI m_ScreenRect;
+    Window* m_ActiveWindow;
+    View* m_ActiveView;
 
-    bool m_VSyncEnabled;
-    std::string m_WindowTitle;
+    Awesomium::WebCore* m_WebCore;
 
-    Color m_ClearColor;
-    InstancingManager* m_pInstancingManager;
-
-    DrawManager* m_pDrawManager;
-    LightManager* m_pLightManager;
-
-    RenderSettings m_Settings;
-    
-    Picker* m_pPicker;
+    std::queue<uint> m_FreeContexts;
+    std::vector<GLContext*> m_Contexts;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

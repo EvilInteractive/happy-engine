@@ -20,16 +20,15 @@
 #include "HappyPCH.h" 
 
 #include "FPSGraph.h"
-#include "HappyEngine.h"
-#include "vec2.h"
 #include "ContentManager.h"
 #include "Console.h"
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "Renderer2D.h"
-
-#include <algorithm>
-#include <string>
+#include "Text.h"
+#include "Canvas2D.h"
+#include "View.h"
+#include "Font.h"
 
 namespace he {
 namespace tools {
@@ -41,22 +40,19 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(0.5f),
                         m_pFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 10)),
-                        m_FPSGraphState(2)
+                        m_FPSGraphState(Type_ToConsole),
+                        m_Pos(5.0f, 5.0f),
+                        m_View(nullptr)
 {
     CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
 
-    setPos(vec2(GRAPHICS->getViewport().width - 115.0f, 5.0f));
-
     m_FpsHistory.reserve(300);
-
-    m_pCanvas2D = GUI->createCanvas();
 }
 
 
 FPSGraph::~FPSGraph()
 {
     m_pFont->release();
-    delete m_pCanvas2D;
 }
 
 /* GENERAL */
@@ -78,27 +74,28 @@ void FPSGraph::tick(float dTime, float interval)
     }
 }
 
-void FPSGraph::draw()
+void FPSGraph::draw2D(gfx::Canvas2D* canvas)
 {
+    HE_IF_ASSERT(m_View != nullptr, "Set view first with setView!")
     if (m_GameTime > m_Interval)
     {
         switch (m_FPSGraphState)
         {
-            case 0:
+            case Type_Hide:
             {
                 break;
             }
-            case 1:
-                drawToConsole();
+            case Type_ToConsole:
+                drawToConsole(canvas);
                 break;
-            case 2:
+            case Type_TextOnly:
             {
-                drawTextOnly();
+                drawTextOnly(canvas);
                 break;
             }
-            case 3:
+            case Type_Full:
             {
-                drawFull();
+                drawFull(canvas);
                 break;
             }
         }
@@ -113,22 +110,23 @@ ushort FPSGraph::cap(float fps)
         return static_cast<ushort>(fps);
 }
 
-void FPSGraph::drawToConsole()
+void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
 {
-    if ((m_GameTime - m_TBase) >= m_Interval)
+    if ((m_GameTime - m_TBase) < FLT_EPSILON)
     {
         HE_INFO("Fps: %d", (int)m_CurrentFPS);
     }
 }
 
-void FPSGraph::drawTextOnly()
+void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 {
     //GUI->setAntiAliasing(false);
     //GUI->setColor(1.0f,1.0f,1.0f);
 
-    m_pCanvas2D->setFillColor(Color(1.0f,1.0f,1.0f));
+    canvas->setDepth(-1900);
 
-    // replaced stringstream by sprintf -> stringstream is very slow
+    canvas->setFillColor(Color(1.0f,1.0f,1.0f));
+
     gui::Text txt(m_pFont);
 
     char buff[64];
@@ -138,12 +136,15 @@ void FPSGraph::drawTextOnly()
     sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
     txt.addLine(std::string(buff));
     
-    m_pCanvas2D->fillText(txt, m_Pos);
+    //canvas->fillRect(m_Pos, vec2(128, 16));
+    canvas->fillText(txt, m_Pos);
 
-    m_pCanvas2D->draw();
+    canvas->restoreDepth();
+
+    //m_pCanvas2D->draw2D(renderer);
 }
 
-void FPSGraph::drawFull()
+void FPSGraph::drawFull(gfx::Canvas2D* /*canvas*/)
 {
     //if (m_FpsHistory.size() == 0)
     //    return;
@@ -351,14 +352,31 @@ ushort FPSGraph::getAverageFPS() const
 }
 
 /* SETTERS */
-void FPSGraph::setType(int type)
+void FPSGraph::setType(Type type)
 {
     m_FPSGraphState = type;
 }
 
-void FPSGraph::setPos(vec2 pos)
+void FPSGraph::setPos(const vec2& pos)
 {
     m_Pos = pos;
+}
+
+void FPSGraph::setView( gfx::View* view )
+{
+    /*
+    if (m_View != nullptr)
+    {
+        m_View->get2DRenderer()->removeCanvas(m_pCanvas2D);
+        m_View->get2DRenderer()->detachFromRender(this);
+    }*/
+    m_View = view;
+    
+    m_View->get2DRenderer()->attachToRender(this);
+    /*m_pCanvas2D = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1)); // TODO: is inefficient to use a fullscreen canvas
+    */
+
+    m_Pos.x = view->getViewport().width - 105.0f;
 }
 
 } } //end namespace

@@ -24,14 +24,17 @@
 
 #include "EntityComponent.h"
 #include "Object3D.h"
-#include "IPickable.h"
 #include "IInstancible.h"
 
 namespace he {
+namespace gfx {
+    class InstancingController;
+}
 namespace ge {
     
-class InstancedModelComponent : public EntityComponent, public gfx::IInstancible
+class InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
 {
+    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     InstancedModelComponent();
     virtual ~InstancedModelComponent();
@@ -52,7 +55,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
 
     void setController(const std::string& key);
-    const std::string& getController() const;
+    const std::string& getControllerKey() const;
 
 private:
     std::string m_ControllerKey;

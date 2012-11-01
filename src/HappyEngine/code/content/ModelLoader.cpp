@@ -23,13 +23,9 @@
 #include "HappyPCH.h" 
 
 #include "ModelLoader.h"
-#include "HappyNew.h"
 #include "BinObjLoader.h"
 #include "ObjLoader.h"
-#include "HappyEngine.h"
-#include "Console.h"
-
-#include <vector>
+#include "ModelMesh.h"
 
 namespace he {
 namespace ct {
@@ -43,6 +39,8 @@ ModelLoader::ModelLoader(): m_isModelThreadRunning(false)
 ModelLoader::~ModelLoader()
 {
     m_EmptyMesh->release();
+    ResourceFactory<gfx::Model>::getInstance()->garbageCollect();
+    ResourceFactory<gfx::ModelMesh>::getInstance()->garbageCollect();
 }
 
 void ModelLoader::tick(float /*dTime*/)
@@ -136,10 +134,11 @@ bool ModelLoader::createModel( ModelLoadData& data )
             model->addMesh(handle);
         }
 
-        mesh->init();
+        mesh->init(data.vertexLayout, gfx::MeshDrawMode_Triangles);
         mesh->setBones(data.loader->getBones(i));
-        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), data.vertexLayout);
-        mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
+        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), gfx::MeshUsage_Static);
+        mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i), gfx::MeshUsage_Static);
+        mesh->setLoaded();
 
         mesh->release();
     }

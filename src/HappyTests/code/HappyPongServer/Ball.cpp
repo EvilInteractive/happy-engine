@@ -29,6 +29,8 @@
 
 namespace hps {
 
+IMPLEMENT_OBJECT(Ball)
+
 Ball::Ball(): 
     m_Position(0, 0, 0), 
     m_Velocity(0, 0, 0), 

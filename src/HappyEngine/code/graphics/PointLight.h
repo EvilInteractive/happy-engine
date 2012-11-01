@@ -23,7 +23,7 @@
 #pragma once
 
 #include "DefaultSingleDrawable.h"
-#include "ILight.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
@@ -31,13 +31,13 @@ namespace gfx {
 class ModelMesh;
 class Material;
 
-class PointLight : public DefaultSingleDrawable, public ILight
+class PointLight : public DefaultSingleDrawable, public Light
 {
 private:
     float m_Multiplier;
     vec3 m_Color;
     vec2 m_Attenuation;
-    vec2 m_ScaledAttenuation;
+    mutable vec2 m_ScaledAttenuation;
 
     ModelMesh* m_LightVolume;
     ModelMesh* m_Model;
@@ -72,6 +72,7 @@ public:
     virtual const ModelMesh* getModelMesh() const;
 
     virtual LightType getType() const { return LightType_Point; }
+    virtual bool isSleeping() const { return true; } 
 };
 
 } } //end namespace

@@ -42,11 +42,9 @@ SkinnedModelComponent::~SkinnedModelComponent()
         m_Material->release();
 }
 
-void SkinnedModelComponent::init( Entity* pParent )
+void SkinnedModelComponent::init( Entity* parent )
 {
-    m_Parent = pParent;
-    setVisible(false);
-    GRAPHICS->addToDrawList(this);
+    m_Parent = parent;
 }
 
 void SkinnedModelComponent::serialize(SerializerStream& /*stream*/)
@@ -96,7 +94,7 @@ void SkinnedModelComponent::modelLoadedCallback()
 
     if (m_BoneTransform.size() > 0)
     {
-        setVisible(true);
+
         onModelLoaded();
     }
     else

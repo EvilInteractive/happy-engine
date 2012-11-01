@@ -80,8 +80,8 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    virtual void setHandle(const ObjectHandle& handle) { m_Handle = handle; }
-    virtual const ObjectHandle& getHandle() const { return m_Handle; }
+    virtual void setHandle(const ObjectHandle& handle) = 0;
+    virtual const ObjectHandle& getHandle() const = 0;
 
     // Call this just after creation, synced in serializeCreate!
     virtual void setOwner(const NetworkID& id) { creatingSystemGUID = id; }
@@ -93,7 +93,6 @@ protected:
 
 private:
     RakNet::VariableDeltaSerializer m_VariableDeltaSerializer;
-    ObjectHandle m_Handle;
     bool m_Serialize;
 };
 

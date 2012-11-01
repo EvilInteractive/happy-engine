@@ -30,6 +30,7 @@ namespace hps {
 class MainGame;
 class Palet : public he::ge::Entity, public he::ge::ITickable, public he::net::NetworkObject<Palet>
 {
+DECLARE_OBJECT(Palet)
 public:
     Palet();
     virtual ~Palet();

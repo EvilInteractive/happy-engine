@@ -62,6 +62,7 @@ public:
     virtual ~Text();
 
     /* GENERAL */
+    void addText(const std::string& text);
     void addLine(const std::string& string);
     void clear();
 
@@ -70,6 +71,8 @@ public:
     void setHorizontalAlignment(HAlignment alignment);
     void setVerticalAlignment(VAlignment alignment);
     void setBounds(const vec2& bounds = vec2());
+    void setFont(gfx::Font* font);
+    void setOverFlowType(OverFlowType overFlowType);
 
     /* GETTERS */
     const std::string& getLine(uint lineNumber) const;
@@ -97,7 +100,7 @@ private:
     HAlignment m_HAlignment;
     VAlignment m_VAlignment;
 
-    gfx::Font* m_pFont;
+    gfx::Font* m_Font;
 
     vec2 m_Bounds;
     bool m_HasBounds;

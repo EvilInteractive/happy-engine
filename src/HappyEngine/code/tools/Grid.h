@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "IShapeDrawable.h"
 
 namespace he {
 namespace gfx {
@@ -30,7 +31,7 @@ namespace gfx {
 }
 namespace tools {
 
-class Grid : public he::ge::Entity
+class Grid : public he::ge::Entity, public gfx::IShapeDrawable
 {
 public:
 
@@ -39,7 +40,7 @@ public:
     virtual ~Grid();
 
     /* GENERAL */
-    void draw();
+    virtual void drawShapes(gfx::ShapeRenderer* renderer);
 
     /* SETTERS */
     void setPosition(const vec3& pos);

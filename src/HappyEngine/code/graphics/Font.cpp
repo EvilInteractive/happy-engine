@@ -63,6 +63,7 @@ void Font::init(FT_Library lib, FT_Face face, ushort size)
     m_TextureAtlas = ResourceFactory<Texture2D>::getInstance()->get(hnd);
     m_TextureAtlas->init(gfx::Texture2D::WrapType_Repeat,  gfx::Texture2D::FilterType_Nearest, 
         gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT5, false);
+    m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
 
     m_Init = true;
 
@@ -196,6 +197,7 @@ void Font::preCache(bool extendedCharacters)
     });
 
     m_Cached = true;
+    m_TextureAtlas->setLoadFinished();
 }
 
 uint Font::getPixelHeight() const

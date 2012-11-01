@@ -22,26 +22,26 @@
 #define _HE_SPHERE_H_
 #pragma once
 
-#include "vec3.h"
-#include <vector>
-#include "HappyTypes.h"
-
 namespace he {
-
-namespace shapes {
-
+    
 class Sphere
 {
 public:
     Sphere();
     Sphere(const vec3& pos, float radius);
-    virtual ~Sphere();
     //default copy and assignment are fine
 
-    const vec3& getPosition() const;
-    float getRadius() const;
+    inline const vec3& getPosition() const { return m_Position; }
+    inline float getRadius() const { return m_Radius; }
 
-    static Sphere getBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset);
+    inline void setPosition(const vec3& pos) { m_Position = pos; }
+    inline void setRadius(float radius) { m_Radius = radius; }
+    
+    bool intersectTest(const Sphere& other) const;
+    bool isOtherInside(const Sphere& other) const;
+    IntersectResult intersect(const Sphere& other) const;
+
+    static Sphere calculateBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset);
 
 private:
 
@@ -49,6 +49,6 @@ private:
     float m_Radius;
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

@@ -27,6 +27,7 @@
 
 namespace he {
 namespace px {
+IMPLEMENT_OBJECT(PhysicsConvexMesh)
 
 PhysicsConvexMesh::PhysicsConvexMesh()
 {

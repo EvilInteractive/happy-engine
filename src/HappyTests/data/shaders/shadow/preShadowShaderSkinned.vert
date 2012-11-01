@@ -27,7 +27,7 @@ uniform mat4 matWV;
 uniform mat4 matWVP;
 uniform mat4[32] matBones;
 
-out vec4 passPos;
+out float passDepth;
 
 void main()
 {    
@@ -37,7 +37,7 @@ void main()
     position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
     position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
     position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
-    passPos = matWV * vec4(position.xyz, 1.0f);
+    passDepth = (matWV * vec4(position.xyz, 1.0f)).z;
     gl_Position = matWVP * vec4(position.xyz, 1.0f);
 }
 

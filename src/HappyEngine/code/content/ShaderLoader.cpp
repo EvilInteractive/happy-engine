@@ -36,6 +36,7 @@ ShaderLoader::ShaderLoader()
 
 ShaderLoader::~ShaderLoader()
 {
+    ResourceFactory<gfx::Shader>::getInstance()->garbageCollect();
 }
 
 ObjectHandle ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
@@ -55,11 +56,11 @@ ObjectHandle ShaderLoader::load(const std::string& vsPath, const std::string& fs
     {
         gfx::Shader* shader(factory->get(factory->create()));
         std::set<std::string> defines;
-        if (m_RenderSettings.enableShadows)
+        if (m_RenderSettings.lightingSettings.enableShadows)
             defines.insert("SHADOWS");
-        if (m_RenderSettings.enableSpecular)
+        if (m_RenderSettings.lightingSettings.enableSpecular)
             defines.insert("SPECULAR");
-        if (m_RenderSettings.enableNormalMap)
+        if (m_RenderSettings.lightingSettings.enableNormalMap)
             defines.insert("NORMALMAP");
 
         shader->initFromFile(vsPath, fsPath, shaderLayout, defines, outputs);

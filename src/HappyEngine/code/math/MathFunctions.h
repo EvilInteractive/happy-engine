@@ -103,7 +103,7 @@ inline vec2 abs(const vec2& vector)
 {
     return vec2(::abs(vector.x), ::abs(vector.y));
 }
-inline float dot(const vec2& vector1, const vec2& vector2)
+__forceinline float dot(const vec2& vector1, const vec2& vector2)
 {
     return vector1.x * vector2.x + vector1.y * vector2.y;
 }
@@ -137,7 +137,7 @@ inline vec3 abs(const vec3& vector)
 {
     return vec3(::abs(vector.x), ::abs(vector.y), ::abs(vector.z));
 }
-inline float dot(const vec3& vector1, const vec3& vector2)
+__forceinline float dot(const vec3& vector1, const vec3& vector2)
 {
     return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
 }
@@ -176,22 +176,28 @@ inline const vec3& max(const vec3& a, const vec3& b)
 {
     return lengthSqr(a) >= lengthSqr(b)? a : b;
 }
+inline void minPerComponent(const vec3& a, const vec3& b, vec3& outVec)
+{
+    outVec.x = min<float>(a.x, b.x);
+    outVec.y = min<float>(a.y, b.y);
+    outVec.z = min<float>(a.z, b.z);
+}
+inline void maxPerComponent(const vec3& a, const vec3& b, vec3& outVec)
+{
+    outVec.x = max<float>(a.x, b.x);
+    outVec.y = max<float>(a.y, b.y);
+    outVec.z = max<float>(a.z, b.z);
+}
 inline vec3 minPerComponent(const vec3& a, const vec3& b)
 {
     vec3 minP;
-    minP.x = min<float>(a.x, b.x);
-    minP.y = min<float>(a.y, b.y);
-    minP.z = min<float>(a.z, b.z);
-
+    minPerComponent(a, b, minP);
     return minP;
 }
 inline vec3 maxPerComponent(const vec3& a, const vec3& b)
 {
     vec3 maxP;
-    maxP.x = max<float>(a.x, b.x);
-    maxP.y = max<float>(a.y, b.y);
-    maxP.z = max<float>(a.z, b.z);
-
+    maxPerComponent(a, b, maxP);
     return maxP;
 }
 

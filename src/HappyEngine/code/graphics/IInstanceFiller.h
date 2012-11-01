@@ -23,6 +23,7 @@
 #pragma once
 
 namespace he {
+class AABB;
 namespace gfx {
 namespace details {
 class InstancingBuffer;
@@ -33,6 +34,7 @@ public:
     virtual ~IInstanceFiller() {}
     
     virtual void fillInstancingBuffer(details::InstancingBuffer& buffer) const = 0;
+    virtual const AABB& getAABB() const = 0;
 };  
 
 } } //end namespace

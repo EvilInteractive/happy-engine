@@ -23,6 +23,7 @@
 #pragma once
 
 #include "RenderSettings.h"
+#include "IDrawable2D.h"
 
 namespace he {
 namespace gfx {
@@ -32,24 +33,25 @@ class Bloom;
 class AutoExposure;
 class Texture2D;
 class ModelMesh;
+class View;
+class RenderTarget;
 
-class PostProcesser
+class PostProcesser : public IDrawable2D
 {
 public:
     PostProcesser();
     virtual ~PostProcesser();
 
-    void init(const RenderSettings& settings);
-    void setSettings(const RenderSettings& settings);
+    void init(View* view, const RenderTarget* writeTarget, const RenderTarget* readTarget);
 
     void setFogColor(const he::vec3& color);
 
-    void onScreenResized();
-
-    void draw(const Texture2D* pColorMap, const Texture2D* pNormalMap, const Texture2D* pDepthMap);
-    void drawDebugTextures() const;
+    void draw();
+    virtual void draw2D(Canvas2D* canvas);
 
 private:
+    void onSettingsChanged(const RenderSettings& settings, bool force = false);
+    void compileShader();
 
     enum PostShaderVar
     {
@@ -68,8 +70,7 @@ private:
         PV_ViewPortSize,
 
         PV_LumMap,
-        PV_NormalMap,
-        PV_DepthMap,
+        PV_NormalDepthMap,
         PV_ColorMap,
 
         PV_FogColor,
@@ -77,6 +78,9 @@ private:
         MAX_POST_SHADER_VARS
     };
 
+    View* m_View;
+    const RenderTarget* m_WriteRenderTarget;
+    const RenderTarget* m_ReadRenderTarget;
     RenderSettings m_Settings;
 
     Bloom* m_pBloom;

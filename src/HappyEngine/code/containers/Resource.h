@@ -29,6 +29,7 @@ namespace he {
 template<typename T>
 class Resource
 {
+DECLARE_OBJECT(Resource<T>)
 public:
     Resource()
     {
@@ -41,14 +42,9 @@ public:
     {
         ResourceFactory<T>::getInstance()->release(m_Handle);
     }
-
-    const ObjectHandle& getHandle() const
+    virtual void instantiate() const
     {
-        return m_Handle;
-    }
-    void setHandle(const ObjectHandle& handle)
-    {
-        m_Handle = handle;
+        ResourceFactory<T>::getInstance()->instantiate(m_Handle);
     }
 
     void setName(const std::string& name)
@@ -67,13 +63,16 @@ public:
 
 private:
 
-    ObjectHandle m_Handle;
     std::string m_Name;
 
     // disabled assignment operator
     Resource& operator=(const Resource&);
     Resource(const Resource&);
 };
+
+
+template<typename T>
+IMPLEMENT_OBJECT(Resource<T>)
 
 } //end namespace
 

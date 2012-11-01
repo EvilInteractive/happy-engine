@@ -129,11 +129,11 @@ protected:
     IObject3D* m_Parent;
     std::vector<IObject3D*> m_Childs;
 
-    byte m_LocalMatrixDirty : 4;
-    byte m_WorldMatrixDirty : 4;
+    mutable byte m_LocalMatrixDirty : 4;
+    mutable byte m_WorldMatrixDirty : 4;
 
-    mat44 m_WorldMatrix;
-    mat44 m_LocalMatrix;
+    mutable mat44 m_WorldMatrix;
+    mutable mat44 m_LocalMatrix;
 
     vec3  m_LocalTranslate;
     mat33 m_LocalRotation;

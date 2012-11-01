@@ -26,12 +26,15 @@
 #include "SpotLight.h"
 #include "AmbientLight.h"
 #include "DirectionalLight.h"
-#include "ILight.h"
+#include "Light.h"
 
 namespace he {
 namespace gfx {
 
-LightManager::LightManager(): m_AmbientLight(NEW AmbientLight()), m_DirectionalLight(NEW DirectionalLight())
+LightManager::LightManager(Scene* scene)
+    : m_AmbientLight(NEW AmbientLight())
+    , m_DirectionalLight(NEW DirectionalLight())
+    , m_Scene(scene)
 {
 }
 
@@ -51,20 +54,21 @@ AmbientLight* LightManager::setAmbientLight(const Color& color,
 
     return m_AmbientLight;
 }
-ObjectHandle LightManager::addPointLight()
+PointLight* LightManager::addPointLight()
 {
     ObjectHandle lightHandle(LightFactory::getInstance()->createPointLight());
-    //PointLight* light(LightFactory::getInstance()->getPointLight(lightHandle));
+    PointLight* light(LightFactory::getInstance()->getPointLight(lightHandle));
     m_PointLightVector.push_back(lightHandle);
 
-    return lightHandle;
+    return light;
 }
-ObjectHandle LightManager::addSpotLight()
+SpotLight* LightManager::addSpotLight()
 {
     ObjectHandle lightHandle(LightFactory::getInstance()->createSpotLight());
-    //SpotLight* light(LightFactory::getInstance()->getSpotLight(lightHandle));
+    SpotLight* light(LightFactory::getInstance()->getSpotLight(lightHandle));
     m_SpotLightVector.push_back(lightHandle);
-    return lightHandle;
+
+    return light;
 }
 DirectionalLight* LightManager::setDirectionalLight(const vec3&  direction,
                                                const Color& color,
@@ -110,7 +114,7 @@ void LightManager::removeAllLights()
 }
 void LightManager::remove(const ObjectHandle& lightHandle)
 {
-    ILight* light(LightFactory::getInstance()->get(lightHandle));
+    Light* light(LightFactory::getInstance()->get(lightHandle));
     if (light->getType() == LightType_Point)
     {
         m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), lightHandle), m_PointLightVector.end());

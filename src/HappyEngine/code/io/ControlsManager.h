@@ -22,11 +22,10 @@
 #define _HE_CONTROLS_MANAGER_H_
 #pragma once
 
-#include "IKeyboard.h"
-#include "IMouse.h"
-
 namespace he {
 namespace io {
+class IMouse;
+class IKeyboard;
 
 class ControlsManager
 {
@@ -36,23 +35,20 @@ public:
 
     void tick();
 
-    const IKeyboard* getKeyboard() const;
-    const IMouse* getMouse() const;
+    IKeyboard* getKeyboard() const;
+    IMouse* getMouse() const;
 
-    bool getFocus(void* pObject) const;
-    void returnFocus(void* pObject) const;
-    bool hasFocus(void* pObject) const;
+    bool getFocus(void* object);
+    void returnFocus(void* object);
+    bool hasFocus(void* object) const;
 
 private:
 
-    IKeyboard* m_pKeyboard;
-    IMouse* m_pMouse;
+    IKeyboard* m_Keyboard;
+    IMouse* m_Mouse;
 
-    bool m_bLocked;
-    void* m_pLockedObject;
-
-    byte* m_pKeys;
-    byte* m_pButtons;
+    bool m_Locked;
+    void* m_LockedObject;
 
     //Disable default copy constructor and default assignment operator
     ControlsManager(const ControlsManager&);

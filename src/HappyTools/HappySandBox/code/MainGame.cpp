@@ -34,6 +34,10 @@
 #include "UIController.h"
 #include "UIBind.h"
 
+#include "Window.h"
+#include "Scene.h"
+#include "View.h"
+
 //#include "boost/filesystem.hpp"
 
 namespace hs {
@@ -46,7 +50,6 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
 
 MainGame::~MainGame()
 {
-    CAMERAMANAGER->deleteAllCameras();
     delete m_FPSGraph;
     delete m_UIController;
     delete m_UIBind;
@@ -54,31 +57,69 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    GRAPHICS->setVSync(false);
-    GRAPHICS->setScreenDimension(1280, 720);
-    GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
+    m_Scene = GRAPHICS->createScene();
+    m_View = GRAPHICS->createView3D();
+    m_Window = GRAPHICS->createWindow();
+
+    m_Window->setResizable(true);
+    m_Window->setVSync(true);
+    m_Window->setWindowDimension(1280, 720);
+    m_Window->setWindowTitle("Happy Sandbox");
+    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    m_Window->Closed += quitHandler;
+    m_Window->create();
 }
 
 void MainGame::load()
 {
     using namespace he;
     
+    he::gfx::RenderSettings settings;
+    settings.enableDeferred = true;
+    settings.enablePost = true;
+
+    settings.lightingSettings.enableLighting = true;
+    settings.lightingSettings.enableNormalMap = true;
+    settings.lightingSettings.enableShadows = false;
+    settings.lightingSettings.enableSpecular = true;
+
+    settings.shadowSettings.shadowMult = 2;
+
+    settings.postSettings.shaderSettings.enableAO = false;
+    settings.postSettings.shaderSettings.enableBloom = true;
+    settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
+    settings.postSettings.shaderSettings.enableFog = true;
+    settings.postSettings.shaderSettings.enableHDR = true;
+    settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
+    settings.postSettings.shaderSettings.enableVignette = true;
+
+    CONTENT->setRenderSettings(settings);
+
+    m_View->setScene(m_Scene);
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    m_View->init(settings);
+
+    CONSOLE->setView(m_View);
+
     /* CAMERA */
-    CAMERAMANAGER->addCamera("default", NEW FlyCamera(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    CAMERAMANAGER->setActiveCamera("default");
-    CAMERAMANAGER->getActiveCamera()->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
-    CAMERAMANAGER->getActiveCamera()->lookAt(vec3(5, 2, 4), vec3::zero, vec3::up);
+    FlyCamera* flyCamera = NEW FlyCamera();
+    m_Scene->getCameraManager()->addCamera("default", flyCamera);
+    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
+    flyCamera->lookAt(vec3(5, 2, 4), vec3::zero, vec3::up);
+    m_View->setCamera("default");
 
     /* GUÏ */
     m_FPSGraph = NEW tools::FPSGraph();
     //m_pFPSGraph->setType(1);
 
     m_UIController = NEW UIController();
-    m_UIController->init();
+    m_UIController->init(m_View);
 
     m_UIBind = NEW UIBind(m_UIController);
     // test
-    m_UIBind->bindObjectMethodToCallback("HE", "test", [](){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
+    he::eventCallback0<void> callbackTest([](){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
+    m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);
 
     m_UIController->load("main.html");
 }
@@ -87,12 +128,6 @@ void MainGame::tick(float dTime)
 {
     he::ge::Game::tick(dTime);
     m_FPSGraph->tick(dTime);
-}
-
-void MainGame::drawGui()
-{
-    m_UIController->draw();
-    m_FPSGraph->draw();
 }
 
 } //end namespace

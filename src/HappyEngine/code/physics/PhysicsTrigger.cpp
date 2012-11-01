@@ -48,8 +48,7 @@ PhysicsTrigger::~PhysicsTrigger()
 }
 
 /* GENERAL */
-void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup /*= 0xffffffff*/, 
-                                     uint32 collisionAgainstGroup /*= 0xffffffff*/, const mat44& localPose)
+void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose)
 {
     px::PhysicsMaterial mat(0, 0, 0);
     std::vector<physx::PxShape*> shapes;
@@ -70,11 +69,12 @@ void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uin
     shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
     shape->userData = this;
 
-    physx::PxFilterData sFilter;
-    sFilter.word0 = collisionGroup;
-    sFilter.word1 = collisionAgainstGroup;
+    physx::PxFilterData filter;
+    filter.word0 = collisionGroup;
+    filter.word1 = collisionAgainstGroup;
 
-    shape->setSimulationFilterData(sFilter);
+    shape->setQueryFilterData(filter);
+    shape->setSimulationFilterData(filter);
 }
 
 
@@ -88,27 +88,6 @@ void PhysicsTrigger::setPose(const vec3& move, const vec3& axis, float angle)
 void PhysicsTrigger::setPose(const mat44& pose)
 {
     m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
-}
-
-/* CALLBACKS */
-void PhysicsTrigger::onTriggerEnter(physx::PxShape* /*pShape*/)
-{
-    m_OnTriggerEnterEvent();
-}
-
-void PhysicsTrigger::onTriggerLeave(physx::PxShape* /*pShape*/)
-{
-    m_OnTriggerLeaveEvent();
-}
-
-void PhysicsTrigger::addOnTriggerEnterCallBack(const boost::function<void()>& callback)
-{
-    m_OnTriggerEnterEvent += callback;
-}
-
-void PhysicsTrigger::addOnTriggerLeaveCallBack(const boost::function<void()>& callback)
-{
-    m_OnTriggerLeaveEvent += callback;
 }
 
 he::uint PhysicsTrigger::getCompatibleShapes() const
@@ -134,6 +113,23 @@ void PhysicsTrigger::getRotation( mat33& rotation ) const
 void PhysicsTrigger::getPose( mat44& pose ) const
 {
     m_Actor->getPose(pose);
+}
+
+const PhysicsUserData& PhysicsTrigger::getUserData()
+{
+    return m_Actor->getUserData();
+}
+
+void PhysicsTrigger::onTriggerEnter( physx::PxShape* shape )
+{
+    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    OnTriggerEnter(actor);
+}
+
+void PhysicsTrigger::onTriggerLeave( physx::PxShape* shape )
+{
+    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    OnTriggerLeave(actor);
 }
 
 } } //end namespace

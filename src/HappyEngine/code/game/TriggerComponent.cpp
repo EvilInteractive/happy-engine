@@ -26,6 +26,7 @@
 
 #include "Entity.h"
 #include "Game.h"
+#include "PhysicsUserData.h"
 
 namespace he {
 namespace ge {
@@ -42,10 +43,40 @@ TriggerComponent::~TriggerComponent()
 }
 
 /* ICOMPONENT */
-void TriggerComponent::init(Entity* pParent)
+void TriggerComponent::init(Entity* parent)
 {
-    m_Parent = pParent;
+    HE_ASSERT(parent != nullptr, "The parent of this component can not be nullptr!");
+    m_Parent = parent;
     m_Trigger = NEW px::PhysicsTrigger(m_Parent->getWorldMatrix());
+    m_Trigger->setUserData(m_Parent);
+    
+    he::eventCallback1<void, px::IPhysicsActor*> onEnterHandler([&](px::IPhysicsActor* actor)
+    {
+        const px::PhysicsUserData& data(actor->getUserData());
+        if (RTTI::isA(data.getRTTI(), Entity::getRTTI()))
+        {
+            OnTriggerEnter(static_cast<Entity*>(data.getData()));
+        }
+        //else
+        //{
+        //   Should we handle this?
+        //}
+    });
+    he::eventCallback1<void, px::IPhysicsActor*> onLeaveHandler([&](px::IPhysicsActor* actor)
+    {
+        const px::PhysicsUserData& data(actor->getUserData());
+        if (data.getRTTI() == Entity::getRTTI())
+        {
+            OnTriggerLeave(static_cast<Entity*>(data.getData()));
+        }
+        //else
+        //{
+        //   Should we handle this?
+        //}
+    });
+
+    m_Trigger->OnTriggerEnter += onEnterHandler;
+    m_Trigger->OnTriggerLeave += onLeaveHandler;
 }
 
 void TriggerComponent::serialize(SerializerStream& /*stream*/)
@@ -66,22 +97,6 @@ void TriggerComponent::addShape(const px::IPhysicsShape* shape, uint32 collision
     {
         m_Trigger->addTriggerShape(shape, collisionGroup, collisionGroupAgainst, localPose);
     }
-}
-
-void TriggerComponent::addOnTriggerEnterCallBack(boost::function<void()> callback)
-{
-    m_Trigger->addOnTriggerEnterCallBack(callback);
-}
-
-void TriggerComponent::addOnTriggerLeaveCallBack(boost::function<void()> callback)
-{
-    m_Trigger->addOnTriggerLeaveCallBack(callback);
-}
-
-/* GETTERS */
-px::PhysicsTrigger* TriggerComponent::getTrigger()
-{
-    return m_Trigger;
 }
 
 void TriggerComponent::calculateWorldMatrix()

@@ -20,157 +20,177 @@
 #include "HappyPCH.h" 
 
 #include "ModelMesh.h"
+#include "GraphicsEngine.h"
 
 namespace he {
 namespace gfx {
 
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
-    
-ModelMesh::ModelMesh(): m_NumVertices(0), m_NumIndices(0), m_isLoaded(false), m_isVisible(true)
+   
+#pragma warning(disable:4355) // use of this in initializer list
+ModelMesh::ModelMesh(): 
+    m_NumVertices(0), 
+    m_NumIndices(0), 
+    m_IsLoaded(false), 
+    m_isVisible(true),
+    m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
+    m_ContextCreatedHandler(boost::bind(&ModelMesh::initVAO, this, _1)),
+    m_ContextRemovedHandler(boost::bind(&ModelMesh::destroyVAO, this, _1)),
+    m_DrawMode(MeshDrawMode_Triangles),
+    m_IndexVboID(UINT_MAX),
+    m_VertexVboID(UINT_MAX)
 {
+    he_memset(m_VaoID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+    he_memset(m_VaoShadowID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
 }
+#pragma warning(default:4355) // use of this in initializer list
 
 
 ModelMesh::~ModelMesh()
 {
-    glDeleteVertexArrays(1, m_VaoID);
-    glDeleteVertexArrays(1, m_VaoShadowID);
-    glDeleteBuffers(1, m_VertexVboID);
-    glDeleteBuffers(1, m_VertexVboShadowID);
-    glDeleteBuffers(1, m_IndexVboID);
+    GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
+    GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
+    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    {
+        destroyVAO(context);
+    });
+    if (m_VertexVboID != UINT_MAX)
+        glDeleteBuffers(1, &m_VertexVboID);
+    if (m_IndexVboID != UINT_MAX)
+        glDeleteBuffers(1, &m_IndexVboID);
 }
 
-void ModelMesh::init()
+void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
 {
-    glGenVertexArrays(1, &m_VaoID[0]);
-    glGenVertexArrays(1, &m_VaoShadowID[0]);
+    HE_IF_ASSERT(m_VertexVboID == UINT_MAX, "Only init ModelMesh once!")
+    {
+        m_VertexLayout = vertexLayout;
+        m_DrawMode = mode;
+        glGenBuffers(1, &m_IndexVboID);
+        glGenBuffers(1, &m_VertexVboID);
+        const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+        std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+        {
+            initVAO(context);
+        });
+        GRAPHICS->ContextCreated += m_ContextCreatedHandler;
+        GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
+    }
 }
+
+void ModelMesh::initVAO( GLContext* context )
+{
+    GRAPHICS->setActiveContext(context);
+    const BufferLayout::layout& elements(m_VertexLayout.getElements());
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Normal                                 ///
+    //////////////////////////////////////////////////////////////////////////
+    HE_IF_ASSERT(m_VaoID[context->id] == UINT_MAX, "vao already inited?")
+    {
+        glGenVertexArrays(1, m_VaoID + context->id);
+        GL::heBindVao(m_VaoID[context->id]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
+
+        std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
+        {
+            GLint components = 1;
+            GLenum type = 0;
+            GL::getGLTypesFromBufferElement(e, components, type);
+            glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, m_VertexLayout.getSize(), 
+                BUFFER_OFFSET(e.getByteOffset())); 
+            glEnableVertexAttribArray(e.getElementIndex());
+        });
+    }
+    //////////////////////////////////////////////////////////////////////////
+    ///                             Shadow                                 ///
+    //////////////////////////////////////////////////////////////////////////
+    HE_IF_ASSERT(m_VaoShadowID[context->id] == UINT_MAX, "shadow vao already inited?")
+    {
+        uint posOffset = UINT_MAX;
+        uint boneIdOffset = UINT_MAX;
+        uint boneWeightOffset = UINT_MAX;
+        std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
+        {
+            if (e.getUsage() == gfx::BufferElement::Usage_Position)
+            {
+                posOffset = e.getByteOffset();
+            }
+            else if (e.getUsage() == gfx::BufferElement::Usage_BoneIDs)
+            {
+                boneIdOffset = e.getByteOffset();
+            }
+            else if (e.getUsage() == gfx::BufferElement::Usage_BoneWeights)
+            {
+                boneWeightOffset = e.getByteOffset();
+            }
+        });
+
+        glGenVertexArrays(1, m_VaoShadowID + context->id);
+        GL::heBindVao(m_VaoShadowID[context->id]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
+        if (boneIdOffset == UINT_MAX)
+        {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(posOffset)); 
+            glEnableVertexAttribArray(0);
+        }
+        else
+        {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(posOffset)); 
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(boneIdOffset)); 
+            glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(boneWeightOffset)); 
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(2);
+        }
+    }
+}
+void ModelMesh::destroyVAO( GLContext* context )
+{
+    GRAPHICS->setActiveContext(context);
+    HE_IF_ASSERT(m_VaoID[context->id] != UINT_MAX, "Vao not initialized or already destroyed")
+    {
+        glDeleteVertexArrays(1, m_VaoID + context->id);
+        m_VaoID[context->id] = UINT_MAX;
+    }
+    HE_IF_ASSERT(m_VaoShadowID[context->id] != UINT_MAX, "Shadow Vao not initialized or already destroyed")
+    {
+        glDeleteVertexArrays(1, m_VaoShadowID + context->id);
+        m_VaoShadowID[context->id] = UINT_MAX;
+    }
+}
+
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
-void ModelMesh::setVertices(const void* pVertices, uint num, const BufferLayout& vertexLayout)
+void ModelMesh::setVertices(const void* pVertices, uint num, MeshUsage usage)
 {
-    HE_ASSERT(m_NumVertices == 0, "you can only set the vertices once, use DynamicModelMesh instead");
     m_NumVertices = num;
-    m_VertexLayout = vertexLayout;
 
     uint posOffset = UINT_MAX;
-    uint boneIdOffset = UINT_MAX;
-    uint boneWeightOffset = UINT_MAX;
-    std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const BufferElement& e)
+    std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
     {
         if (e.getUsage() == gfx::BufferElement::Usage_Position)
         {
             posOffset = e.getByteOffset();
         }
-        else if (e.getUsage() == gfx::BufferElement::Usage_BoneIDs)
-        {
-            boneIdOffset = e.getByteOffset();
-        }
-        else if (e.getUsage() == gfx::BufferElement::Usage_BoneWeights)
-        {
-            boneWeightOffset = e.getByteOffset();
-        }
     });
-    m_BoundingSphere = shapes::Sphere::getBoundingSphere(pVertices, num, vertexLayout.getSize(), posOffset);
+    m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, m_VertexLayout.getSize(), posOffset));
 
-    GL::heBindVao(m_VaoID[0]);
-
-    BufferLayout::layout elements(vertexLayout.getElements());
-
-    glGenBuffers(1, m_VertexVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertexLayout.getSize() * num, pVertices, GL_STATIC_DRAW);
-
-    std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
-    {
-        GLint components = 1;
-        GLenum type = 0;
-        switch (e.getType())
-        {
-            case BufferElement::Type_Vec2: type = GL_FLOAT; components = 2; break;
-            case BufferElement::Type_Vec3: type = GL_FLOAT; components = 3; break;
-            case BufferElement::Type_Vec4: type = GL_FLOAT; components = 4; break;
-            case BufferElement::Type_Float: type = GL_FLOAT; break;
-
-            case BufferElement::Type_Int: type = GL_INT; break;
-            case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
-            case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
-            
-            #pragma warning(disable:4127)
-            default: HE_ASSERT(false, "unknown type"); break;
-            #pragma warning(default:4127)
-        }
-        glVertexAttribPointer(e.getElementIndex(), components, type, GL_FALSE, vertexLayout.getSize(), 
-            BUFFER_OFFSET(e.getByteOffset())); 
-        glEnableVertexAttribArray(e.getElementIndex());
-    });
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                             Shadow                                 ///
-    //////////////////////////////////////////////////////////////////////////
-    if (boneIdOffset == UINT_MAX)
-    {
-        std::vector<vec3> shadowVertices(num);
-        const char* charPointCloud = static_cast<const char*>(pVertices);
-        for(uint i = 0; i < num; ++i)
-        {
-            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getSize() * i + posOffset));
-            shadowVertices[i] = p;
-        }
-
-        GL::heBindVao(m_VaoShadowID[0]);
-        glGenBuffers(1, m_VertexVboShadowID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboShadowID[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * num, &shadowVertices[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), BUFFER_OFFSET(0)); 
-        glEnableVertexAttribArray(0);
-    }
-    else
-    {
-        std::vector<ShadowSkinnedVertex> shadowVertices(num);
-        const char* charPointCloud = static_cast<const char*>(pVertices);
-        for(uint i = 0; i < num; ++i)
-        {
-            const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + vertexLayout.getSize() * i + posOffset));
-            shadowVertices[i].pos = p;
-            const vec4& bId(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getSize() * i + boneIdOffset));
-            shadowVertices[i].boneId = bId;
-            const vec4& bW(*reinterpret_cast<const vec4*>(charPointCloud + vertexLayout.getSize() * i + boneWeightOffset));
-            shadowVertices[i].boneWeight = bW;
-        }
-
-        GL::heBindVao(m_VaoShadowID[0]);
-        glGenBuffers(1, m_VertexVboShadowID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboShadowID[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ShadowSkinnedVertex) * num, &shadowVertices[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ShadowSkinnedVertex), BUFFER_OFFSET(0)); 
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ShadowSkinnedVertex), BUFFER_OFFSET(12)); 
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(ShadowSkinnedVertex), BUFFER_OFFSET(28)); 
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-    }
-
-
-    //unbind
-    GL::heBindVao(0);
-
-    if (m_NumIndices > 0)
-        setLoaded();
+    GL::heBindVao(getVertexArraysID());
+    glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
+    glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, nullptr, usage);
+    glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, pVertices, usage);
 }
-void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
+void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type, MeshUsage usage)
 {
-    HE_ASSERT(m_NumIndices == 0, "you can only set the indices once, use DynamicModelMesh instead");
     m_NumIndices = num;
-    
-    GL::heBindVao(m_VaoID[0]);
-    glGenBuffers(1, m_IndexVboID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
 
-    GL::heBindVao(m_VaoShadowID[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, GL_STATIC_DRAW);
+    GL::heBindVao(getVertexArraysID());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, nullptr, usage);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, usage);
 
     switch (type)
     {
@@ -179,40 +199,6 @@ void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type)
         case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
         default: HE_ASSERT(false, "unknown type: %d", type); break;
     }
-
-    if (m_NumVertices > 0)
-        setLoaded();
-    //unbind
-    GL::heBindVao(0);
-}
-
-uint ModelMesh::getVertexArraysID() const
-{
-    return m_VaoID[0];
-}
-
-uint ModelMesh::getNumVertices() const
-{
-    return m_NumVertices;
-}
-uint ModelMesh::getNumIndices() const
-{
-    return m_NumIndices;
-}
-
-uint ModelMesh::getIndexType() const
-{
-    return m_IndexType;
-}
-
-const shapes::Sphere& ModelMesh::getBoundingSphere() const
-{
-    return m_BoundingSphere;
-}
-
-he::uint ModelMesh::getVertexShadowArraysID() const
-{
-    return m_VaoShadowID[0];
 }
 
 void ModelMesh::setBones( const std::vector<Bone>& boneList )
@@ -220,59 +206,29 @@ void ModelMesh::setBones( const std::vector<Bone>& boneList )
     m_BoneList = boneList;
 }
 
-const std::vector<Bone>& ModelMesh::getBones() const
-{
-    return m_BoneList;
-}
-
-bool ModelMesh::isLoaded() const
-{
-    return m_isLoaded;
-}
-
 void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
 {
     m_LoadMutex.lock();
-    if (m_isLoaded)
+    if (m_IsLoaded)
     {
         m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
         callback();
     }
     else
     {
-        Loaded += callback;
+        eventCallback0<void> handler(callback);
+        Loaded += handler;
         m_LoadMutex.unlock();
     }
 }
 
 void ModelMesh::setLoaded()
 {
-    m_isLoaded = true;
+    m_IsLoaded = true;
     m_LoadMutex.lock();
     Loaded();
     Loaded.clear();
     m_LoadMutex.unlock();
 }
-
-uint ModelMesh::getVBOID() const
-{
-    return m_VertexVboID[0];
-}
-
-uint ModelMesh::getVBOShadowID() const
-{
-    return m_VertexVboShadowID[0];
-}
-
-uint ModelMesh::getVBOIndexID() const
-{
-    return m_IndexVboID[0];
-}
-
-const BufferLayout& ModelMesh::getVertexLayout() const
-{
-    return m_VertexLayout;
-}
-
 
 } } //end namespace

@@ -40,9 +40,14 @@ UIBind::~UIBind()
 /* GENERAL */
 void UIBind::bindObjectMethodToCallback(const std::string& object,
                                         const std::string& method,
-                                        boost::function<void()> callBack)
+                                        he::eventCallback0<void>& callBack)
 {
-    m_WebListener->setObjectCallback(object, method, callBack);
+    m_WebListener->addObjectCallback(object, method, callBack);
+}
+
+void UIBind::unbindObjectMethodToCallback( const std::string& object, const std::string& method, const he::eventCallback0<void>& callBack )
+{
+    m_WebListener->removeObjectCallback(object, method, callBack);
 }
 
 } //end namespace

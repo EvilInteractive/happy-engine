@@ -24,6 +24,7 @@
 #include "GraphicsEngine.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
 
 #include "ContentManager.h"
 #include "Model.h"
@@ -31,7 +32,7 @@
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_AttachedToScene(false), m_Material(nullptr)
+ModelComponent::ModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr), m_IsAttached(false)
 {
 }
 
@@ -40,20 +41,24 @@ ModelComponent::~ModelComponent()
 {
     if (m_ModelMesh != nullptr)
         m_ModelMesh->release();
-    if (m_AttachedToScene)
-        GRAPHICS->removeFromDrawList(this);
+    if (isAttachedToScene())
+        detachFromScene();
     if (m_Material != nullptr)
         m_Material->release();
 }
 
 void ModelComponent::init(Entity* parent)
 {
+    HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
 
-    if (m_ModelMesh != nullptr && m_AttachedToScene == false)
+    if (m_ModelMesh != nullptr && m_IsAttached == false)
     {
-        GRAPHICS->addToDrawList(this);
-        m_AttachedToScene = true;
+        m_IsAttached = true;
+        m_ModelMesh->callbackOnceIfLoaded([&]()
+        {
+            m_Parent->getScene()->attachToScene(this);
+        });
     }
 }
 
@@ -95,13 +100,12 @@ void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, 
 
         model->release();
 
-        if (m_AttachedToScene == false && m_Parent != nullptr)
+        if (m_IsAttached == false && m_Parent != nullptr)
         {
-            GRAPHICS->addToDrawList(this);
-            m_AttachedToScene = true;
+            m_Parent->getScene()->attachToScene(this);
+            m_IsAttached = true;
         }
     });
 }
-
 
 } } //end namespace

@@ -26,12 +26,10 @@
 #include "ITickable.h"
 
 namespace he {
-
 namespace px {
     class PhysicsTrigger;
     class IPhysicsShape;
 }
-
 namespace ge {
 
 class TriggerComponent : public EntityComponent, public Object3D
@@ -49,11 +47,10 @@ public:
     /* GENERAL */
     void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
         const mat44& localPose = mat44::Identity);
-    void addOnTriggerEnterCallBack(boost::function<void()> callback);
-    void addOnTriggerLeaveCallBack(boost::function<void()> callback);
 
-    /* GETTERS */
-    px::PhysicsTrigger* getTrigger();
+    /* EVENTS */
+    event1<void, Entity*> OnTriggerEnter;
+    event1<void, Entity*> OnTriggerLeave;
 
 protected:
     virtual void init(Entity* parent);

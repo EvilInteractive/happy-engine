@@ -22,50 +22,64 @@
 #define _HE_RENDERER2D_H_
 #pragma once
 
-#include "Canvas2D.h"
-#include "WebView.h"
-#include "Awesomium/WebCore.h"
-#include "Texture2D.h"
-#include "Simple2DTextureEffect.h"
-#include "ModelMesh.h"
+#include "IRenderer.h"
 
 namespace he {
 namespace gfx {
+class WebView;
+class Canvas2D;
+class Simple2DTextureEffect;
+class ModelMesh;
+class IDrawable2D;
 
-class Renderer2D
+class Renderer2D : public IRenderer2D
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
+    /* CONSTRUCTOR - DESTRUCTOR */
     Renderer2D();
     virtual ~Renderer2D();
 
-	/* GENERAL */
-    Canvas2D* createCanvas(const vec2& size = vec2());
-    WebView* createWebView(bool enableUserInput = false, const vec2& size = vec2());
+    /* GENERAL */
+    Canvas2D* createCanvasAbsolute(const RectI& viewport);
+    Canvas2D* createCanvasRelative(const RectF& viewportPercent);
+    Canvas2D* getDefaultCanvas() { return m_DefaultCanvas; }
+    void removeCanvas(Canvas2D* canvas);
 
-    void tick();
-    void draw();
-
-    void init();
-
+    WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
+    WebView* createWebViewRelative(const RectF& viewportPercent, bool enableUserInput = false);
+    void removeWebView(WebView* webview);
+ 
     void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos = vec2(),
                                 bool useBlending = true,
                                 const vec2& newDimensions = vec2(),
                                 const RectF& regionToDraw = RectF());
 
+    View* getView() const { return m_View; }
+    const RenderTarget* getRTG() const {return m_RenderTarget;}
+
+    /* Attach */
+    void attachToRender(IDrawable2D* drawable);
+    void detachFromRender(IDrawable2D* drawable);
+
+    /* IRenderer */
+    virtual void init(View* view, const RenderTarget* target);
+    virtual void draw();
+
 private:
 
-    /* EXTRA */
-
-	/* DATAMEMBERS */
-    Awesomium::WebCore* m_WebCore;
+    /* DATAMEMBERS */
+    View* m_View;
+    const RenderTarget* m_RenderTarget;
 
     std::vector<WebView*> m_WebViews;
     std::vector<Canvas2D*> m_Canvas2Ds;
+    std::vector<IDrawable2D*> m_Drawables;
 
     Simple2DTextureEffect* m_TextureEffect;
     ModelMesh* m_TextureQuad;
+
+    Canvas2D* m_DefaultCanvas;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

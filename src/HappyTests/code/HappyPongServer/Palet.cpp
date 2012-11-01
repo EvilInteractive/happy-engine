@@ -36,6 +36,8 @@
 
 namespace hps {
 
+IMPLEMENT_OBJECT(Palet)
+
 Palet::Palet(): 
     m_Speed(50.0f), 
     m_PaletDim(1.0f, 5.0f),

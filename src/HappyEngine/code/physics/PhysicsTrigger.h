@@ -23,6 +23,7 @@
 #pragma once
 
 #include "IPhysicsActor.h"
+#include "PhysicsDynamicActor.h"
 
 namespace he {
 namespace px {
@@ -50,11 +51,20 @@ public:
     void setPose(const vec3& move, const vec3& axis, float angle);
     void setPose(const mat44& pose);
 
+    /* USERDATA */
+    virtual const PhysicsUserData& getUserData();
+    template<typename T>
+    void setUserData(T* rttiType)
+    {
+        m_Actor->setUserData<T>(rttiType);
+    }
+
     /* CALLBACKS */
     void onTriggerEnter(physx::PxShape* shape);
     void onTriggerLeave(physx::PxShape* shape);
-    void addOnTriggerEnterCallBack(const boost::function<void()>& callback);
-    void addOnTriggerLeaveCallBack(const boost::function<void()>& callback);
+
+    event1<void, IPhysicsActor*> OnTriggerEnter;
+    event1<void, IPhysicsActor*> OnTriggerLeave;
 
 protected:
     virtual uint getCompatibleShapes() const;
@@ -65,8 +75,6 @@ private:
     /* DATAMEMBERS */
     PhysicsDynamicActor* m_Actor;
 
-    event0<void> m_OnTriggerEnterEvent;
-    event0<void> m_OnTriggerLeaveEvent;
 
     /* DEFAULT COPY & ASSIGNENT */
     PhysicsTrigger(const PhysicsTrigger&);

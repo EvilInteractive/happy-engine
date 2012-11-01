@@ -39,18 +39,16 @@ layout(shared) uniform SharedBuffer
 {
     vec4 projParams;
 };
-layout(std140) uniform LightBuffer
-{
-    PointLight light;
-};
+
+
+uniform PointLight light;
 
 
 uniform sampler2D colorIllMap;
-uniform sampler2D normalMap;
+uniform sampler2D normalDepthMap;
 #if SPECULAR
 uniform sampler2D sgMap;
 #endif
-uniform sampler2D depthMap;
 
 
 void main()
@@ -58,7 +56,8 @@ void main()
     vec2 ndc = passPos.xy / passPos.z;
     vec2 texCoord = ndc * 0.5f + 0.5f;
     
-    vec3 position = getPosition( texture(depthMap, texCoord).x, ndc, projParams );
+    vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;
+    vec3 position = getPosition( normalDepth.z, ndc, projParams );
 
     vec3 lightDir = light.position - position;
     float lightDist = length(lightDir);
@@ -66,9 +65,10 @@ void main()
     if (lightDist > light.endAttenuation) //pixel is too far from light
         discard;
 
+    // Normalize calculated light dir
     lightDir /= lightDist;
     
-    vec3 normal = decodeNormal(texture(normalMap, texCoord).xy);
+    vec3 normal = decodeNormal(normalDepth.xy);
     
     float dotLightNormal = dot(lightDir, normal);
 
@@ -86,6 +86,6 @@ void main()
 
     vec4 color = texture(colorIllMap, texCoord);
     outColor = vec4(
-          (dotLightNormal * color.rgb + vec3(spec, spec, spec) * 20) *
+          (dotLightNormal * color.rgb + vec3(spec, spec, spec)) *
           light.color * light.multiplier * attenuationValue, 1.0f);
 }

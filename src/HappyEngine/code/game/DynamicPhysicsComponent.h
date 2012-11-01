@@ -52,7 +52,7 @@ public:
     virtual void tick(float dTime);
     //////////////////////////////////////////////////////////////////////////
     
-    void addShape( const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, float mass, 
+    void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, float mass, 
         uint32 collisionGroup, uint32 collisionGroupAgainst, const mat44& localPose = mat44::Identity);
 
     px::PhysicsDynamicActor* getDynamicActor() const;

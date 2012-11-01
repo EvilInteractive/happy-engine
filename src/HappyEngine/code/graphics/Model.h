@@ -23,16 +23,11 @@
 #define _HE_MODEL_H_
 #pragma once
 
-#include "BufferLayout.h"
-#include "ModelMesh.h"
-#include "BufferLayout.h"
-
-#include "Sphere.h"
 #include "Resource.h"
 
 namespace he {
 namespace gfx {
-
+class ModelMesh;
 class Model : public Resource<Model>
 {
 public:
@@ -67,8 +62,6 @@ private:
 
     std::vector<ModelMesh*> m_Meshes;
     bool m_IsLoaded;
-
-    shapes::Sphere m_BoundingSphere;
 
     //Disable default copy constructor and default assignment operator
     Model(const Model&);

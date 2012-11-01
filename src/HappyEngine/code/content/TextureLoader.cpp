@@ -44,6 +44,7 @@ TextureLoader::TextureLoader(): m_isLoadThreadRunning(false)
 
 TextureLoader::~TextureLoader()
 {
+    FACTORY->garbageCollect();
 }
 
 

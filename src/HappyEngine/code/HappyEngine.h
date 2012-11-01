@@ -25,7 +25,7 @@ namespace he {
 namespace gfx {
     class GraphicsEngine;
     class HappyQtWidget;
-    class ExtraForward3DRenderer;
+    class ShapeRenderer;
     class Renderer2D;
 }
 namespace io {
@@ -42,7 +42,6 @@ namespace net {
 }
 namespace tools {
     class Console;
-    class LoadingScreen;
 }
 namespace sfx {
     class SoundEngine;
@@ -59,12 +58,9 @@ namespace ge {
 #define PHYSICS HAPPYENGINE->getPhysics()
 #define CONTENT HAPPYENGINE->getContentManager()
 #define NETWORK HAPPYENGINE->getNetworkManager()
-#define GUI HAPPYENGINE->getRenderer2D()
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
-#define CAMERAMANAGER HAPPYENGINE->getCameraManager()
-#define HE3DX HAPPYENGINE->get3DRenderer()
 
 namespace he {
 enum SubEngine
@@ -73,11 +69,8 @@ enum SubEngine
     SubEngine_Graphics = 1 << 0,
     SubEngine_Physics = 1 << 1,
     SubEngine_Networking = 1 << 2,
-    SubEngine_Controls = 1 << 3,
-    SubEngine_Content = 1 << 4,
-    SubEngine_2DRenderer = 1 << 5,
-    SubEngine_Audio = 1 << 6,
-    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6
+    SubEngine_Audio = 1 << 3,
+    SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3
 };
 
 class HappyEngine
@@ -93,27 +86,22 @@ public:
     static HappyEngine* getPointer();
 
     void quit();
-
-    const std::vector<sf::Event>& getEvents() const;
-
+    
     void audioLoop();
 
     //root dir
-    void setRootDir(const Path& rootDir);
-    const Path& getRootDir() const; //includes trailing slash
+    void setRootDir(const Path& rootDir) { m_RootDir = rootDir; }
+    const Path& getRootDir() const { return m_RootDir; } //includes trailing slash
 
     //subengines
-    gfx::GraphicsEngine* getGraphicsEngine() const;
-    const io::ControlsManager* getControls() const;
-    px::PhysicsEngine* getPhysics() const;
-    ct::ContentManager* getContentManager() const;
-    net::NetworkManager* getNetworkManager() const;
-    gfx::Renderer2D* getRenderer2D() const;
-    tools::Console* getConsole() const;
-    sfx::SoundEngine* getSoundEngine() const;
-    ge::Game* getGame() const;
-    ge::CameraManager* getCameraManager() const;
-    gfx::ExtraForward3DRenderer* get3DRenderer() const;
+    gfx::GraphicsEngine* getGraphicsEngine() const { return m_pGraphicsEngine; }
+    io::ControlsManager* getControls() const { return m_pControlsManager; }
+    px::PhysicsEngine* getPhysics() const { return m_pPhysicsEngine; }
+    ct::ContentManager* getContentManager() const { return m_pContentManager; }
+    net::NetworkManager* getNetworkManager() const { return m_pNetworkManager; }
+    tools::Console* getConsole() const { return m_pConsole; }
+    sfx::SoundEngine* getSoundEngine() const { return m_pSoundEngine; }
+    ge::Game* getGame() const { return m_pGame; }
 
     static const Random& getRandom() { return s_Random; }
 
@@ -124,17 +112,10 @@ private:
     static Random s_Random;
 
     void initSubEngines(int subengines);
-
-    void drawLoadingScreen();
-
-    tools::LoadingScreen* m_pLoadingScreen;
-
+    
     ge::Game* m_pGame;
-    ge::CameraManager* m_pCameraManager;
 
     gfx::GraphicsEngine* m_pGraphicsEngine;
-    gfx::Renderer2D* m_pRenderer2D;
-    gfx::ExtraForward3DRenderer* m_p3DRenderer;
 
     io::ControlsManager* m_pControlsManager;
     px::PhysicsEngine* m_pPhysicsEngine;
@@ -151,17 +132,13 @@ private:
 
     int m_SubEngines;
 
-    std::vector<sf::Event> m_Events;
     boost::thread m_AudioThread;
 
     boost::chrono::high_resolution_clock::time_point m_PrevTime;
-
-    sf::Window* m_pMainWindow;
-
+    
     // Methods
     void initWindow();
     void loop();
-private:
     void updateLoop(float dTime);
     void drawLoop();
     void cleanup();

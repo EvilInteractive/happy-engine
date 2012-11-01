@@ -34,32 +34,23 @@ class Keyboard : public IKeyboard
 public:
     Keyboard();
     virtual ~Keyboard();
-
-    virtual void tick(byte* pKeyState, const std::vector<char>& chars);
-
+    
     virtual bool isKeyUp(Key key) const;
     virtual bool isKeyDown(Key key) const;
 
     virtual bool isKeyPressed(Key key) const;           //true when state goes from up to down
-    virtual bool isKeyPressed(KeyScanCode code) const;
     virtual bool isKeyReleased(Key key) const;          //true when state goes from down to up
-    virtual bool isKeyReleased(KeyScanCode code) const;
+    
+    virtual const char& getTextCharEntered() const;
 
-    virtual void addOnKeyPressedListener(boost::function<void(Key)> callback) const;
-    virtual event1<void, Key>& getOnKeyPressedListeners();
-    virtual void addOnKeyReleasedListener(boost::function<void(Key)> callback) const;
-    virtual event1<void, Key>& getOnKeyReleasedListeners();
-
-    virtual const std::vector<char>& getTextEntered() const;
+    virtual void tick();
 
 private:
-    byte* m_CurrentKeyState;
-    byte* m_PrevKeyState;
+    const static int s_ArraySize = io::Key_MAX / 8 + 1;
+    byte m_CurrentKeyState[s_ArraySize];
+    byte m_PrevKeyState[s_ArraySize];
 
-    event1<void, Key> m_OnKeyPressedListeners;
-    event1<void, Key> m_OnKeyReleasedListeners;
-
-    std::vector<char> m_TextEntered;
+    char m_TextCharEntered;
 
     //Disable default copy constructor and default assignment operator
     Keyboard(const Keyboard&);

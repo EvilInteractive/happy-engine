@@ -27,21 +27,34 @@
 namespace he {
 enum MessageBoxButton
 {
+    MessageBoxButton_None,
     MessageBoxButton_Escape,
     MessageBoxButton_Button1,
     MessageBoxButton_Button2,
     MessageBoxButton_Button3
+};
+enum MessageBoxIcon
+{
+    MessageBoxIcon_Info,
+    MessageBoxIcon_Warning,
+    MessageBoxIcon_Error,
+    MessageBoxIcon_Success,
+    MessageBoxIcon_ProgrammerAssert,
+    MessageBoxIcon_ArtAssert
 };
 class MessageBox
 {
 public:
     virtual ~MessageBox();
 
-    static MessageBoxButton show(const std::string& caption, const std::string& message,
+    static MessageBoxButton showExt(const std::string& caption, const std::string& message, MessageBoxIcon icon,
         const std::string& button1="Ok", const std::string& button2="", const std::string& button3="");
 
 private:
     MessageBox();
+
+    static boost::mutex s_Mutex;
+    static MessageBoxButton s_Result;
 
     //Disable default copy constructor and default assignment operator
     MessageBox(const MessageBox&);

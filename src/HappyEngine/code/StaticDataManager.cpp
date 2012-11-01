@@ -30,11 +30,16 @@
 #include "LightFactory.h"
 #include "Shader.h"
 #include "Material.h"
+#include "View.h"
+#include "Scene.h"
+#include "Window.h"
+#include "CullOctreeNodeFactory.h"
 
 namespace he {
 
 void StaticDataManager::init()
 {
+    details::ObjectFactoryTypeManager::sdmInit();
     tools::Logger::sdmInit();
     ResourceFactory<gfx::Material>::init(64, 64, "MaterialFactory");
     ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
@@ -44,11 +49,16 @@ void StaticDataManager::init()
     ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
     ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
+    gfx::ViewFactory::sdmInit();
+    gfx::SceneFactory::sdmInit();
+    gfx::WindowFactory::sdmInit();
     gfx::LightFactory::sdmInit();
+    gfx::CullOctreeNodeFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gfx::Font>::destroy();
     ResourceFactory<gfx::Material>::destroy();
@@ -58,7 +68,11 @@ void StaticDataManager::destroy()
     ResourceFactory<gfx::Shader>::destroy();
     ResourceFactory<px::PhysicsConvexMesh>::destroy();
     ResourceFactory<px::PhysicsConcaveMesh>::destroy();
+    gfx::ViewFactory::sdmDestroy();
+    gfx::SceneFactory::sdmDestroy();
+    gfx::WindowFactory::sdmDestroy();
     tools::Logger::sdmDestroy();
+    details::ObjectFactoryTypeManager::sdmDestroy();
 }
 
 } //end namespace

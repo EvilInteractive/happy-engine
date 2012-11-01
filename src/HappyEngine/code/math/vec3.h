@@ -39,6 +39,7 @@ public:
 
     vec3();
     explicit vec3(const physx::PxVec3& vec);
+    explicit vec3(float val);
     vec3(float x, float y, float z);
     vec3(const vec2& xy, float z);
     ~vec3();

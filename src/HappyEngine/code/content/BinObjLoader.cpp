@@ -25,6 +25,7 @@
 #include "BufferLayout.h"
 #include "Model.h"
 #include "Bone.h"
+#include "ModelMesh.h"
 
 namespace he {
 namespace ct {

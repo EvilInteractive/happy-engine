@@ -20,16 +20,20 @@
 #include "HappyPCH.h" 
 
 #include "DefaultSingleDrawable.h"
-#include "DrawManager.h"
 #include "ICamera.h"
 
 #include "ModelMesh.h"
 #include "Material.h"
+#include "Scene.h"
 
 namespace he {
 namespace gfx {
 
-DefaultSingleDrawable::DefaultSingleDrawable(): m_isVisible(true), m_castsShadow(true)
+DefaultSingleDrawable::DefaultSingleDrawable()
+    : m_CastsShadow(true)
+    , m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
+    , m_Scene(nullptr)
+    , m_NeedsReevalute(false)
 {
 }
 
@@ -50,54 +54,85 @@ void DefaultSingleDrawable::applyMaterial( const Material* customMaterial, const
 
 bool DefaultSingleDrawable::getCastsShadow() const
 {
-    return m_castsShadow;
+    return m_CastsShadow;
 }
 
 void DefaultSingleDrawable::setCastsShadow( bool castShadow )
 {
-    m_castsShadow = castShadow;
-}
-
-bool DefaultSingleDrawable::isVisible() const
-{
-    return m_isVisible && getModelMesh()->isLoaded();
-}
-
-void DefaultSingleDrawable::setVisible( bool visible )
-{
-    m_isVisible = visible;
-}
-
-bool DefaultSingleDrawable::isInCamera( const ICamera* pCamera ) const
-{
-    if (isVisible() == false)
-        return false;
-
-    const mat44& world(getWorldMatrix());
-    float radius(max<float>(max<float>(world(0, 0), world(1, 1)), world(2, 2)) * getModelMesh()->getBoundingSphere().getRadius());
-    vec3 position(world * getModelMesh()->getBoundingSphere().getPosition());
-
-    shapes::Sphere sphere(position, radius);
-
-    return DrawManager::viewClip(pCamera, sphere) == false;
-}
-
-float DefaultSingleDrawable::getDrawPriority( const ICamera* pCamera ) const
-{
-    const mat44& world(getWorldMatrix());
-    return FLT_MAX - lengthSqr(pCamera->getPosition() - vec3(world(0, 3), world(1, 3), world(2, 3)));
+    m_CastsShadow = castShadow;
 }
 
 void DefaultSingleDrawable::draw()
 {
-    GL::heBindVao(getModelMesh()->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, getModelMesh()->getNumIndices(), getModelMesh()->getIndexType(), 0);
+    const ModelMesh* mesh(getModelMesh());
+    GL::heBindVao(mesh->getVertexArraysID());
+    glDrawElements(mesh->getDrawMode(), mesh->getNumIndices(), mesh->getIndexType(), 0);
 }
 
 void DefaultSingleDrawable::drawShadow()
 {
-    GL::heBindVao(getModelMesh()->getVertexShadowArraysID());
-    glDrawElements(GL_TRIANGLES, getModelMesh()->getNumIndices(), getModelMesh()->getIndexType(), 0);
+    const ModelMesh* mesh(getModelMesh());
+    GL::heBindVao(mesh->getVertexShadowArraysID());
+    glDrawElements(mesh->getDrawMode(), mesh->getNumIndices(), mesh->getIndexType(), 0);
+}
+
+void DefaultSingleDrawable::detachFromScene()
+{
+    HE_IF_ASSERT(m_Scene != nullptr, "Object not attached to scene")
+    {
+        m_Scene->detachFromScene(this);
+        m_Scene = nullptr;
+    }
+}
+
+void DefaultSingleDrawable::attachToScene( Scene* scene )
+{
+    HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
+    {
+        m_Scene = scene;
+        m_Scene->attachToScene(this);
+    }
+}
+
+void DefaultSingleDrawable::setScene( Scene* scene )
+{
+    m_Scene = scene;
+}
+
+Scene* DefaultSingleDrawable::getScene() const
+{
+    return m_Scene;
+}
+
+bool DefaultSingleDrawable::isAttachedToScene() const
+{
+    return m_Scene != nullptr;
+}
+
+const Bound& DefaultSingleDrawable::getBound() const
+{
+    return m_Bound;
+}
+
+void DefaultSingleDrawable::calculateBound()
+{
+    HE_ASSERT(getModelMesh() != nullptr, "ModelMesh is nullptr when getting bound");
+    HE_ASSERT(getModelMesh()->isLoaded(), "ModelMesh is not loaded when getting bound, wrong octree insertion will happen!");
+    const AABB& aabb(getModelMesh()->getBound().getAABB());
+    mat44 world(getWorldMatrix());
+    AABB newAABB(world * aabb.getTopFrontLeft(),
+                 world * aabb.getBottomBackRight());
+    m_Bound.fromAABB(newAABB);
+}
+
+void DefaultSingleDrawable::setWorldMatrixDirty( byte cause )
+{
+    SingleDrawable::setWorldMatrixDirty(cause);
+    if (m_NeedsReevalute == false && isAttachedToScene())
+    {
+        m_NeedsReevalute = true;
+        m_Scene->doReevalute(this);
+    }
 }
 
 } } //end namespace
