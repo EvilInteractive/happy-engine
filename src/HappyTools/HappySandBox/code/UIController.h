@@ -22,9 +22,12 @@
 #define _HS_UI_CONTROLLER_H_
 #pragma once
 
+#include "IDrawable2D.h"
+
 namespace he {
     namespace gfx {
         class WebView;
+        class View;
     }
 }
 
@@ -39,9 +42,8 @@ public:
     virtual ~UIController();
 
     /* GENERAL */
-    void init();
+    void init(he::gfx::View* view);
     void load(const std::string& file);
-    void draw();
 
     /* GETTERS */
     he::gfx::WebView* getWebView() const;
@@ -52,9 +54,13 @@ private:
     std::string m_GUIDirectory;
     he::gfx::WebView* m_WebView;
 
+    he::gfx::View* m_View;
+
     /* DEFAULT COPY & ASSIGNMENT */
     UIController(const UIController&);
     UIController& operator=(const UIController&);
+
+
 };
 
 } //end namespace

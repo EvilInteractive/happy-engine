@@ -23,21 +23,23 @@
 #pragma once
 
 #include "Game.h"
+#include "IDrawable2D.h"
 
 namespace he {
     namespace tools {
         class FPSGraph;
     }
     namespace gfx {
-        class WebView;
-        class Canvas2D;
         class Font;
+        class View2D;
+        class Window;
+        class WebView;
     }
 }
 
 namespace ht {
 
-class MainGame : public he::ge::Game
+class MainGame : public he::ge::Game, public he::gfx::IDrawable2D
 {
 public:
     MainGame();
@@ -46,15 +48,16 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void drawGui();
+    virtual void draw2D(he::gfx::Canvas2D* canvas);
 
 private:
 
     /* DATAMEMBERS */
     he::tools::FPSGraph* m_FpsGraph;
-    he::gfx::WebView* m_pWebView;
-    he::gfx::Canvas2D* m_pCanvas;
-    he::gfx::Font* m_pFont;
+    he::gfx::Window* m_Window;
+    he::gfx::View2D*   m_View;
+    he::gfx::Font* m_Font;
+    he::gfx::WebView* m_WebView;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

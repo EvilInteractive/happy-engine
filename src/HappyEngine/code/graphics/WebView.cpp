@@ -74,11 +74,11 @@ WebView::WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput
 #pragma warning(default:4355)
 void WebView::init()
 {
-	// create buffer
-	m_Buffer = static_cast<byte*>(he_malloc(4));
+    // create buffer
+    m_Buffer = static_cast<byte*>(he_malloc(4));
 
-	// create webview
-	m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
+    // create webview
+    m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
 
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
@@ -290,10 +290,13 @@ void WebView::resize( const vec2& newSize )
         if (m_WebView != nullptr)
             m_WebView->Resize((int)newSize.x, (int)newSize.y);
         else
-            m_WebView = GRAPHICS->getWebCore()-> CreateWebView((int)newSize.x, (int)newSize.y);
+            m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
         Awesomium::BitmapSurface* surface(static_cast<Awesomium::BitmapSurface*>(m_WebView->surface()));
-        m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, surface->width() * 4 * surface->height()));
-        m_Size = newSize;
+        HE_IF_ASSERT(surface != nullptr, "Awesomium::BitmapSurface is nullptr!")
+        {
+            m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, surface->width() * 4 * surface->height()));
+            m_Size = newSize;
+        }
     }
 }
 

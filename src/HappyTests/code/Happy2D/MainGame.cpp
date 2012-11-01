@@ -32,45 +32,65 @@
 #include "Canvas2D.h"
 #include "Font.h"
 
+#include "View.h"
+#include "Window.h"
+
 namespace ht {
 
-MainGame::MainGame(): m_FpsGraph(nullptr), m_pWebView(nullptr), m_pCanvas(nullptr), m_pFont(nullptr)
+MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m_Font(nullptr), m_WebView(nullptr)
 {
 }
 
 
 MainGame::~MainGame()
 {
-    m_pFont->release();
+    if (m_WebView != nullptr)
+        m_View->get2DRenderer()->removeWebView(m_WebView);
 
-    delete m_pWebView;
-    delete m_pCanvas;
+    m_View->get2DRenderer()->detachFromRender(m_FpsGraph);
+    m_View->get2DRenderer()->detachFromRender(this);
+
+    m_Font->release();
     delete m_FpsGraph;
+
+    GRAPHICS->removeView(m_View);
+    GRAPHICS->removeWindow(m_Window);
 }
 
 void MainGame::init()
 {
-    GRAPHICS->setVSync(false);
-    GRAPHICS->setScreenDimension(1280, 720);
-    GRAPHICS->setViewport(he::RectI(0, 0, 1280, 720));
+    m_View = GRAPHICS->createView2D();
+    m_Window = GRAPHICS->createWindow();
+
+    m_Window->setResizable(true);
+    m_Window->setVSync(true);
+    m_Window->setWindowDimension(1280, 720);
+    m_Window->setWindowTitle("Happy2D");
+    he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
+    m_Window->Closed += quitHandler;
+    m_Window->create();
 }
 
 void MainGame::load()
 {
-    //CAMERAMANAGER->addCamera("default", NEW he::gfx::CameraPerspective(GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-    //CAMERAMANAGER->setActiveCamera("default");
+    he::gfx::RenderSettings settings;
+    CONTENT->setRenderSettings(settings);
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+    m_View->init(settings);
 
-    //m_pWebView = GUI_NEW->createWebView(true);
-    //m_pWebView->loadUrl("http://www.google.be");
-    //m_pWebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
-    //m_pWebView->loadUrl("http://www.youtube.be");
+    m_WebView = m_View->get2DRenderer()->createWebViewRelative(he::RectF(0, 0, 1.0f, 1.0f), true);
+    m_WebView->loadUrl("http://www.google.be");
+    //m_WebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
+    //m_WebView->loadUrl("http://www.youtube.be");
+
+    m_View->get2DRenderer()->attachToRender(this);
 
     m_FpsGraph = NEW he::tools::FPSGraph();
-    //m_FpsGraph->setType(1);
+    m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
+    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
 
-    m_pFont = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
-
-    m_pCanvas = GUI->createCanvas();
+    m_Font = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
 }
 
 void MainGame::tick( float dTime )
@@ -79,26 +99,9 @@ void MainGame::tick( float dTime )
     m_FpsGraph->tick(dTime);
 }
 
-void MainGame::drawGui()
+void MainGame::draw2D( he::gfx::Canvas2D* canvas )
 {
-    //m_pWebView->draw();
-
-    //m_pCanvas->save();
-    //m_pCanvas->scale(he::vec2(2,2));
-    //m_pCanvas->translate(he::vec2(500,200));
-    //m_pCanvas->setFillColor(he::Color(0.8f,0.2f,0.0f));
-    //m_pCanvas->fillRect(he::vec2(450,250), he::vec2(100,100));
-    //m_pCanvas->restore();
-
-    //m_pCanvas->setFillColor(he::Color(0.2f,0.5f,0.8f));
-    //m_pCanvas->fillText(he::gui::Text("Testing blie bloe bla Qede", m_pFont), he::vec2(250,300));
-    
-    //m_pCanvas->drawImage(m_pFont->getTextureAtlas(), he::vec2(0,0));//, he::vec2(20,20), he::RectF(320,5,20,20));
-    m_pCanvas->drawImage(m_pFont->getTextureAtlas(), he::vec2(20, 20));
-
-    m_pCanvas->draw();
-
-    m_FpsGraph->draw();
+    canvas->drawImage(m_Font->getTextureAtlas(), he::vec2(20, 20));
 }
 
 } //end namespace

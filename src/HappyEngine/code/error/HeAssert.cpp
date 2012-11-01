@@ -35,7 +35,6 @@ bool happyAssert(bool isOk, const char* file, const char* func, int line, const 
     LOG(tools::LogType_ProgrammerAssert, "assert in function %s", func);
     LOG(tools::LogType_ProgrammerAssert, "", file, line);
 
-
     va_list argList;
     va_start(argList, message);
     char buff[1024];
@@ -45,12 +44,14 @@ bool happyAssert(bool isOk, const char* file, const char* func, int line, const 
     va_end(argList);
 
     char infoText[1000];
-    sprintf(infoText, "    **ASSERTION FAILURE!**\n"
-                      "assert in function %s\n"
-                      "in file %s on line %d\n", func, file, line);
+    sprintf(infoText, "** ASSERTION FAILURE! **\n"
+        "Assert in function:\n    %s\n"
+        "In file: \n    %s\n"
+        "On line: %d\n\n"
+        "Message:\n%s", func, file, line, buff);
     
     if (MessageBox::showExt("Assert!", 
-        std::string(infoText) + buff, MessageBoxIcon_ProgrammerAssert, 
+        infoText, MessageBoxIcon_ProgrammerAssert, 
         "-  Debug  -", "-  Skip  -") == MessageBoxButton_Button1)
     {
         #ifndef GCC

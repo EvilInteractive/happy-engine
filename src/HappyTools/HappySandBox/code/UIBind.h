@@ -42,7 +42,10 @@ public:
     /* GENERAL */
     void bindObjectMethodToCallback(const std::string& object,
                                     const std::string& method,
-                                    boost::function<void()> callBack);
+                                    he::eventCallback0<void>& callBack);
+    void unbindObjectMethodToCallback(const std::string& object,
+                                      const std::string& method,
+                                      const he::eventCallback0<void>& callBack);
 
 private:
 

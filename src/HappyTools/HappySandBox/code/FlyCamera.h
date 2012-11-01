@@ -28,12 +28,12 @@ class FlyCamera : public he::gfx::CameraPerspective
 {
 public:
     // CONSTRUCTOR - DESTRUCTOR
-    FlyCamera(int viewportWidth, int viewportHeight);
+    FlyCamera();
     virtual ~FlyCamera();
 
     // GENERAL
     virtual void tick(float dTime);
-
+    
     // SETTERS
     void moveable(bool bMoveable);
     void setMouseSensitivty(float sens = 100.0f);

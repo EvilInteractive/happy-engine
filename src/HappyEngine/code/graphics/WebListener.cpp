@@ -82,7 +82,7 @@ void WebListener::addObjectCallback(const std::string& object,
 }
 void WebListener::removeObjectCallback(const std::string& object,
     const std::string& method,
-    eventCallback0<void>& callBack)
+    const eventCallback0<void>& callBack)
 {
     // check if jsobject already exists
     std::vector<JSObject*>::iterator it(std::find_if(m_Objects.begin(), m_Objects.end(), [&object](JSObject* obj)

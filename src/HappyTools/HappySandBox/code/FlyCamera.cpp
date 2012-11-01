@@ -20,19 +20,18 @@
 #include "FlyCamera.h"
 #include "MathFunctions.h"
 #include "ControlsManager.h"
+#include "GraphicsEngine.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
-#include "GraphicsEngine.h"
 
 namespace hs {
 
 // CONSTRUCTOR - DESTRUCTOR
-FlyCamera::FlyCamera(int viewportWidth, int viewportHeight) :	CameraPerspective(viewportWidth, viewportHeight),
-                                                                m_bMoveable(true),
-                                                                m_Speed(10.0f),
-                                                                m_FastForward(20.0f),
-                                                                m_PreviousMousePos(0,0),
-                                                                m_MouseSensitivity(100.0f)
+FlyCamera::FlyCamera() :	m_bMoveable(true),
+                            m_Speed(10.0f),
+                            m_FastForward(20.0f),
+                            m_PreviousMousePos(0,0),
+                            m_MouseSensitivity(100.0f)
 {
 }
 
@@ -78,7 +77,7 @@ void FlyCamera::tick(float dTime)
 
         m_PosWorld += dir * finalSpeed * dTime;
     }
-    
+
     if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right) && CONTROLS->hasFocus(this))
     {
         vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
@@ -100,12 +99,9 @@ void FlyCamera::tick(float dTime)
 
     CONTROLS->returnFocus(this);
 
-    // TODO: seeb
-    //m_AspectRatio = GRAPHICS->getScreenHeight() / (float)GRAPHICS->getScreenWidth();
-
-    buildProjectionMatrix();
-    buildViewMatrix();
+    m_RegenViewMatrix = true;
 }
+
 
 // SETTERS
 void FlyCamera::moveable(bool bMoveable)

@@ -45,7 +45,7 @@ public:
                            eventCallback0<void>& callBack);
     void removeObjectCallback(const std::string& object,
                               const std::string& method,
-                              eventCallback0<void>& callBack);
+                              const eventCallback0<void>& callBack);
 
     virtual void OnMethodCall(Awesomium::WebView* caller,
                               unsigned int remote_object_id,
@@ -90,7 +90,7 @@ private:
             }
             event->add(callback);
         }
-        void removeCallback(const Awesomium::WebString& method, eventCallback0<void>& callback)
+        void removeCallback(const Awesomium::WebString& method, const eventCallback0<void>& callback)
         {
             Container::const_iterator it(m_MethodCallBacks.find(method));
             HE_IF_ASSERT(it != m_MethodCallBacks.cend(), "Removing callback from non existing method")

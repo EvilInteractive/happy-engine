@@ -28,6 +28,11 @@ namespace he {
     namespace tools {
         class FPSGraph;
     }
+    namespace gfx {
+        class Window;
+        class View3D;
+        class Scene;
+    }
 }
 
 namespace hs {
@@ -43,11 +48,14 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void drawGui();
 
 private:
 
     he::tools::FPSGraph* m_FPSGraph;
+
+    he::gfx::Window* m_Window;
+    he::gfx::Scene*  m_Scene;
+    he::gfx::View3D* m_View;
 
     UIController* m_UIController;
     UIBind* m_UIBind;

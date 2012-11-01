@@ -32,7 +32,7 @@ class IDrawable2D
 public:
     virtual ~IDrawable2D() {};
 
-    virtual void draw2D(Canvas2D* renderer) = 0;
+    virtual void draw2D(Canvas2D* canvas) = 0;
 }; 
 
 } } //end namespace
