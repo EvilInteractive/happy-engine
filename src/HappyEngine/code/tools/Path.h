@@ -22,8 +22,6 @@
 #define _HE_Path_H_
 #pragma once
 
-#include "boost/filesystem.hpp"
-
 namespace he {
 
 class Path

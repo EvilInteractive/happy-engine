@@ -21,6 +21,8 @@
 
 #include "Path.h"
 
+#include "boost/filesystem.hpp"
+
 namespace he {
 
 Path::Path( const std::string& path ): m_Path(path)
