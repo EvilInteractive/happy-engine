@@ -163,7 +163,8 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_View(view),
     m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this)),
     m_Renderer2D(view->get2DRenderer()),
-    m_ExtraPixelDepth(0)
+    m_ExtraPixelDepth(0),
+    m_BlendStyle(BlendStyle_Alpha)
 {
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();

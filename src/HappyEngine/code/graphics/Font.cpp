@@ -44,10 +44,10 @@ Font::Font() :  m_FTLibrary(nullptr),
 
 Font::~Font()
 {
-    /*if (m_Face != 0)
+    if (m_Face != 0)
     {
         FT_Done_Face(m_Face);
-    }*/
+    }
 
     m_TextureAtlas->release();
 }

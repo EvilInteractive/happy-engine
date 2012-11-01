@@ -205,6 +205,7 @@ WebView::~WebView()
         mouse->MouseMoved -= m_MouseMoveHandler;
         mouse->MouseWheelMoved -= m_MouseScrollHandler;
     }
+
     he_free(m_Buffer);
     m_WebView->Destroy();
     m_pRenderTexture->release();
@@ -228,13 +229,15 @@ void WebView::draw2D(Canvas2D* canvas)
         }
     }
 
-    canvas->getRenderer2D()->drawTexture2DToScreen(m_pRenderTexture, m_Position);
+	canvas->drawImage(m_pRenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
     m_WebView->LoadURL(webUrl);
+
+	m_WebView->IsLoading();
 }
 
 void WebView::loadFile(const he::Path& /*path*/)
@@ -291,12 +294,12 @@ void WebView::resize( const vec2& newSize )
             m_WebView->Resize((int)newSize.x, (int)newSize.y);
         else
             m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
-        Awesomium::BitmapSurface* surface(static_cast<Awesomium::BitmapSurface*>(m_WebView->surface()));
-        HE_IF_ASSERT(surface != nullptr, "Awesomium::BitmapSurface is nullptr!")
-        {
-            m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, surface->width() * 4 * surface->height()));
+        //Awesomium::BitmapSurface* surface(static_cast<Awesomium::BitmapSurface*>(m_WebView->surface()));
+        //HE_IF_ASSERT(surface != nullptr, "Awesomium::BitmapSurface is nullptr!")
+        //{
+            m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
             m_Size = newSize;
-        }
+        //}
     }
 }
 

@@ -82,7 +82,7 @@ Deferred3DRenderer::Deferred3DRenderer():
 void Deferred3DRenderer::init( View3D* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
-    //CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
+    CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
     m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
@@ -337,16 +337,16 @@ void Deferred3DRenderer::draw()
 }
 void Deferred3DRenderer::draw2D(Canvas2D* canvas)
 {
-    /*
+    
     if (m_ShowDebugTextures)
-    {*/
+    {
         canvas->getRenderer2D()->drawTexture2DToScreen(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
         canvas->getRenderer2D()->drawTexture2DToScreen(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
         canvas->getRenderer2D()->drawTexture2DToScreen(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
         //canvas->getRenderer2D()->drawTexture2DToScreen(m_CollectionRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
 
         canvas->getRenderer2D()->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
-    //}
+    }
 }
 
 void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
