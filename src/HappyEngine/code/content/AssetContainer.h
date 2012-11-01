@@ -45,6 +45,16 @@ public:
     {
         return m_Map.find(key) != m_Map.end();
     }
+    bool isAssetPresent(const U &key, T& value) const
+    {
+        std::map<U, T>::const_iterator it(m_Map.find(key));
+        if (it != m_Map.cend())
+        {
+            value = it->second;
+            return true;
+        }
+        return false;
+    }
     void addAsset(const U &key, const T& asset)
     {        
         //CONSOLE->addMessage("adding asset: " + key, CMSG_TYPE_ENGINE);

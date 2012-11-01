@@ -218,10 +218,10 @@ void SpotLight::setShadowResolution( const ShadowResolution& resolution )
             {
                 m_ShadowMap = ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create());
                 m_ShadowMap->setName("Spotlight shadowmap");
-                m_ShadowMap->init(Texture2D::WrapType_Clamp, Texture2D::FilterType_Linear, Texture2D::TextureFormat_R16, false);
+                m_ShadowMap->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_R16, false);
             }
             ushort res(GRAPHICS->getShadowMapSize(resolution));
-            m_ShadowMap->setData(res, res, 0, Texture2D::BufferLayout_R, Texture2D::BufferType_Float);
+            m_ShadowMap->setData(res, res, 0, TextureBufferLayout_R, TextureBufferType_Float);
         }
     }
 }

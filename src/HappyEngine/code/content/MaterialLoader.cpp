@@ -412,9 +412,9 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                             const gfx::Texture2D* tex; 
                             vec4 testColorMap(reader.readVector4(L"TEXTURE2D", node.first, vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN)));
                             if (testColorMap == vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN))
-                                tex = CONTENT->asyncLoadTexture(reader.readString(L"TEXTURE2D", node.first, ""));
+                                tex = CONTENT->asyncLoadTexture2D(reader.readString(L"TEXTURE2D", node.first, ""));
                             else
-                                tex = CONTENT->asyncMakeTexture(Color(testColorMap));
+                                tex = CONTENT->asyncMakeTexture2D(Color(testColorMap));
 
                             material->registerVar(
                                 NEW gfx::ShaderUserVar<const gfx::Texture2D*>(

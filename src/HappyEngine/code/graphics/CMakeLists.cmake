@@ -11,6 +11,7 @@ set (CODE_GRAPHICS_NO_FILTER
             IDrawable.h    
             IPickable.h 
             SkyBox.cpp                          SkyBox.h
+			Texture.cpp							Texture.h
             Texture2D.cpp                       Texture2D.h
             TextureCube.cpp                     TextureCube.h
             Vertex.cpp                          Vertex.h)

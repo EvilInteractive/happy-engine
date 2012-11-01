@@ -178,7 +178,7 @@ void PostProcesser::compileShader()
         m_pRandomNormals->release();
     if (settings.enableAO)
     {
-        m_pRandomNormals = CONTENT->asyncLoadTexture("engine/noise.png");
+        m_pRandomNormals = CONTENT->asyncLoadTexture2D("engine/noise.png");
 
         m_PostShaderVars[PV_SSAORandomNormals] = m_PostShader->getShaderSamplerId("noiseMap");
         //m_PostShaderVars[PV_SSAORadius] = m_pPostShader->getShaderVarId("radius");

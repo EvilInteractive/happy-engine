@@ -73,22 +73,22 @@ public:
         switch (icon)
         {
         case MessageBoxIcon_Info:
-            m_Icon = CONTENT->loadTexture("engine/messagebox/info.png");
+            m_Icon = CONTENT->loadTexture2D("engine/messagebox/info.png");
             break;
         case MessageBoxIcon_Warning:
-            m_Icon = CONTENT->loadTexture("engine/messagebox/warning.png");
+            m_Icon = CONTENT->loadTexture2D("engine/messagebox/warning.png");
             break;
         case MessageBoxIcon_Error:
-            m_Icon = CONTENT->loadTexture("engine/messagebox/error.png");
+            m_Icon = CONTENT->loadTexture2D("engine/messagebox/error.png");
             break;
         case MessageBoxIcon_Success:
-            m_Icon = CONTENT->loadTexture("engine/messagebox/success.png");
+            m_Icon = CONTENT->loadTexture2D("engine/messagebox/success.png");
             break;
         case MessageBoxIcon_ProgrammerAssert:
-            m_Icon = CONTENT->loadTexture("engine/messagebox/assert_programmer.png");
+            m_Icon = CONTENT->loadTexture2D("engine/messagebox/assert_programmer.png");
             break;
         case MessageBoxIcon_ArtAssert:
-            m_Icon = CONTENT->loadTexture("engine/messagebox/assert_artist.png");
+            m_Icon = CONTENT->loadTexture2D("engine/messagebox/assert_artist.png");
             break;
         }
 

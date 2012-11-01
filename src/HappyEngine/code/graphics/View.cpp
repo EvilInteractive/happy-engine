@@ -191,11 +191,11 @@ void View3D::init( const RenderSettings& settings )
         {
             // Color
             m_ColorRenderMap->setData(m_Viewport.width, m_Viewport.height, 0,
-                gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
+                gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0 );
 
             // Normal
             m_NormalDepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
-                gfx::Texture2D::BufferLayout_RGB, gfx::Texture2D::BufferType_Float, 0 );
+                gfx::TextureBufferLayout_RGB, gfx::TextureBufferType_Float, 0 );
         }
     });
     ViewportSizeChanged += resizeCallback;
@@ -210,16 +210,16 @@ void View3D::init( const RenderSettings& settings )
     if (m_Settings.enablePost)
     {
         // Color
-        m_ColorRenderMap->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest,
-            m_Settings.postSettings.shaderSettings.enableHDR ? gfx::Texture2D::TextureFormat_RGBA16F : gfx::Texture2D::TextureFormat_RGBA8, false);
+        m_ColorRenderMap->init(gfx::TextureWrapType_Clamp,  gfx::TextureFilterType_Nearest,
+            m_Settings.postSettings.shaderSettings.enableHDR ? gfx::TextureFormat_RGBA16F : gfx::TextureFormat_RGBA8, false);
         m_ColorRenderMap->setData(width, height, 0,
-            gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0 );
+            gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0 );
 
         // Normal - Depth
-        m_NormalDepthRenderMap->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest, 
-            gfx::Texture2D::TextureFormat_RGB16, false);
+        m_NormalDepthRenderMap->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest, 
+            gfx::TextureFormat_RGB16, false);
         m_NormalDepthRenderMap->setData(width, height, 0, 
-            gfx::Texture2D::BufferLayout_RGB, gfx::Texture2D::BufferType_Float, 0 );
+            gfx::TextureBufferLayout_RGB, gfx::TextureBufferType_Float, 0 );
     }
 
     m_IntermediateRenderTarget->addTextureTarget(m_ColorRenderMap);

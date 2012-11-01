@@ -82,8 +82,8 @@ void WebView::init()
 
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
-    m_pRenderTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Nearest,
-        gfx::Texture2D::TextureFormat_RGBA8, false);
+    m_pRenderTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest,
+        gfx::TextureFormat_RGBA8, false);
 
     if (m_bInputEnabled)
     {
@@ -224,7 +224,7 @@ void WebView::draw2D(Canvas2D* canvas)
             m_pRenderTexture->setData(
                 pSurface->width(), pSurface->height(), 
                 m_Buffer, 
-                gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0);
+                gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
         }
     }
 

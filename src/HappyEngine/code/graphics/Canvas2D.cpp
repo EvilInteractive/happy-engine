@@ -51,8 +51,8 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     pData->renderTextureHnd = ResourceFactory<Texture2D>::getInstance()->create();
     Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
 
-    pTexture->init(gfx::Texture2D::WrapType_Clamp, gfx::Texture2D::FilterType_Linear, gfx::Texture2D::TextureFormat_RGBA8, false);
-    pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);   
+    pTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Linear, gfx::TextureFormat_RGBA8, false);
+    pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
     pTexture->setLoadFinished();
 
     // create final FBO & RB
@@ -102,7 +102,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 void Canvas2D::resizeData( Data* data, const vec2& size )
 {
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(data->renderTextureHnd));
-    texture->setData((uint)size.x, (uint)size.y, 0, gfx::Texture2D::BufferLayout_RGBA, gfx::Texture2D::BufferType_Byte, 0);   
+    texture->setData((uint)size.x, (uint)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
 
     //int samples = GL::getMaxMultiSamples();
 
@@ -163,7 +163,8 @@ Canvas2D::Canvas2D( View* view, const RectF& relativeViewport ) :
     m_View(view),
     m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this)),
     m_Renderer2D(view->get2DRenderer()),
-    m_ExtraPixelDepth(0)
+    m_ExtraPixelDepth(0),
+    m_BlendStyle(BlendStyle_Alpha)
 {
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();

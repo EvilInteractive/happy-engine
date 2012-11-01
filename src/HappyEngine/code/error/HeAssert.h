@@ -29,57 +29,30 @@ namespace he {
 namespace err {
 namespace details {
 
+enum AssertType
+{
+    AssertType_Code,
+    AssertType_Art
+};
+
 #if _DEBUG || TEST
-bool happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, ...);
+bool happyAssert(bool isOk, AssertType type, const char* file, const char* func, int line, const char* message, ...);
 #endif
 
 static int s_scope = 0;
 
 } } } //end namespace
-////
-
-//#if _DEBUG || TEST
-//#define HE_ASSERT \
-//if (he::err::details::s_scope < 0) {} \
-//else \
-//    struct HappyAssert \
-//    { \
-//        static int getLine(int line = __LINE__) \
-//        { \
-//            return line; \
-//        } \
-//        static const char* getFunc(const char* func = __HE_FUNCTION__) \
-//        { \
-//            return func; \
-//        } \
-//        explicit HappyAssert(bool isOk, const char* message = "", ...) \
-//        { \
-//            va_list arg_list;\
-//            va_start(arg_list, message);\
-//            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getFunc(), HappyAssert::getLine(), message, arg_list); \
-//            va_end(arg_list);\
-//        } \
-//        explicit HappyAssert(void* isOk) \
-//        { \
-//            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getFunc(), HappyAssert::getLine()); \
-//        } \
-//        explicit HappyAssert(int isOk) \
-//        { \
-//            he::err::details::happyAssert(isOk, __FILE__, HappyAssert::getFunc(), HappyAssert::getLine()); \
-//        } \
-//    } myAssert = HappyAssert
-//#else
-//#define HE_ASSERT(...) {}
-//#endif
-
 
 #if _DEBUG || TEST
-#define HE_ASSERT(isOk, message, ...) he::err::details::happyAssert(isOk, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__)
-#define HE_IF_ASSERT(isOk, message, ...) if (he::err::details::happyAssert(isOk, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__) == true)
+#define HE_ASSERT(isOk, message, ...) he::err::details::happyAssert(isOk, he::err::details::AssertType_Code, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__)
+#define HE_IF_ASSERT(isOk, message, ...) if (he::err::details::happyAssert(isOk, he::err::details::AssertType_Code, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__) == true)
+#define HE_ART_ASSERT(isOk, message, ...) he::err::details::happyAssert(isOk, he::err::details::AssertType_Art, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__)
+#define HE_IF_ART_ASSERT(isOk, message, ...) if (he::err::details::happyAssert(isOk, he::err::details::AssertType_Art, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__) == true)
 #else
-#define HE_ASSERT(isOk, message, ...) {}
-#define HE_IF_ASSERT(isOk, message, ...) {}            // faster version
-//#define HE_IF_ASSERT(isOk, message, args) if (isOk)  // safe version
+#define HE_ASSERT(...) {}
+#define HE_IF_ASSERT(...) {}
+#define HE_ART_ASSERT(...) {}
+#define HE_IF_ART_ASSERT(isOk, message, args) if (isOk)
 #endif
 
 #pragma warning(default:4127)

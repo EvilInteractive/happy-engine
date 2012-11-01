@@ -61,10 +61,10 @@ void Picker::initialize()
 //     int width = GRAPHICS->getScreenWidth(), 
 //         height = GRAPHICS->getScreenHeight();
 // 
-//     m_pIDTexture->init(gfx::Texture2D::WrapType_Clamp,  gfx::Texture2D::FilterType_Nearest, 
-//         gfx::Texture2D::TextureFormat_RGBA8, false);
+//     m_pIDTexture->init(gfx::TextureWrapType_Clamp,  gfx::TextureFilterType_Nearest, 
+//         gfx::TextureFormat_RGBA8, false);
 //     m_pIDTexture->setData(width, height, 0, 
-//         gfx::Texture2D::BufferLayout_BGRA, gfx::Texture2D::BufferType_Byte, 0);
+//         gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
 
     glGenRenderbuffers(1, &m_DepthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderBuffer);

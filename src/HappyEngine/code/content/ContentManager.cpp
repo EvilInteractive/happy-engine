@@ -125,21 +125,29 @@ gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& asset, const st
 }
 
 //////////////////////////////////////////////////////////////////////////
-const gfx::Texture2D* ContentManager::asyncLoadTexture(const std::string& asset)
+const gfx::Texture2D* ContentManager::asyncLoadTexture2D(const std::string& asset)
 {
-    return m_pTextureLoader->asyncLoadTexture(m_TexturePath.str() + asset);
+    return m_pTextureLoader->asyncLoadTexture2D(m_TexturePath.str() + asset);
 }
-const gfx::Texture2D* ContentManager::asyncMakeTexture(const Color& color)
+const gfx::TextureCube* ContentManager::asyncLoadTextureCube( const std::string& asset )
 {
-    return m_pTextureLoader->asyncMakeTexture(color);
+    return m_pTextureLoader->asyncLoadTextureCube(m_TexturePath.str() + asset);
 }
-const gfx::Texture2D* ContentManager::loadTexture(const std::string& path)
+const gfx::Texture2D* ContentManager::asyncMakeTexture2D(const Color& color)
 {
-    return m_pTextureLoader->loadTexture(m_TexturePath.str()  + path);
+    return m_pTextureLoader->asyncMakeTexture2D(color);
 }
-const gfx::Texture2D* ContentManager::makeTexture(const Color& color)
+const gfx::Texture2D* ContentManager::loadTexture2D(const std::string& path)
 {
-    return m_pTextureLoader->makeTexture(color);
+    return m_pTextureLoader->loadTexture2D(m_TexturePath.str()  + path);
+}
+const gfx::TextureCube* ContentManager::loadTextureCube( const std::string& path )
+{
+    return m_pTextureLoader->loadTextureCube(m_TexturePath.str()  + path);
+}
+const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
+{
+    return m_pTextureLoader->makeTexture2D(color);
 }
 
 //////////////////////////////////////////////////////////////////////////

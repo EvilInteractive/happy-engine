@@ -26,21 +26,23 @@
 namespace he {
 namespace err {
 namespace details {
-bool happyAssert(bool isOk, const char* file, const char* func, int line, const char* message, ...)
+bool happyAssert(bool isOk, AssertType type, const char* file, const char* func, int line, const char* message, ...)
 {
     if (isOk == true)
         return true;
+
+    tools::LogType logType(type == AssertType_Code? tools::LogType_ProgrammerAssert : tools::LogType_ArtAssert);
     
-    LOG(tools::LogType_ProgrammerAssert, "**ASSERTION FAILURE!**");
-    LOG(tools::LogType_ProgrammerAssert, "assert in function %s", func);
-    LOG(tools::LogType_ProgrammerAssert, "", file, line);
+    LOG(logType, "**ASSERTION FAILURE!**");
+    LOG(logType, "assert in function %s", func);
+    LOG(logType, "", file, line);
 
     va_list argList;
     va_start(argList, message);
     char buff[1024];
     memset(buff, 0, 1024);
     vsnprintf(buff, 1024, message, argList);
-    LOG(tools::LogType_ProgrammerAssert, message, argList);
+    LOG(logType, message, argList);
     va_end(argList);
 
     char infoText[1000];
@@ -50,9 +52,9 @@ bool happyAssert(bool isOk, const char* file, const char* func, int line, const 
         "On line: %d\n\n"
         "Message:\n%s", func, file, line, buff);
     
-    if (MessageBox::showExt("Assert!", 
-        infoText, MessageBoxIcon_ProgrammerAssert, 
-        "-  Debug  -", "-  Skip  -") == MessageBoxButton_Button1)
+    if (MessageBox::showExt(type == AssertType_Code? "Assert!" : "Art Assert!", 
+        infoText, type == AssertType_Code? MessageBoxIcon_ProgrammerAssert : MessageBoxIcon_ArtAssert, 
+        "Debug", "Skip", "Ignore") == MessageBoxButton_Button1)
     {
         #ifndef GCC
         __debugbreak();

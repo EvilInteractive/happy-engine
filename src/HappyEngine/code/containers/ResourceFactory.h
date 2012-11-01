@@ -29,8 +29,17 @@ namespace he {
 template<typename T>
 class Resource;
 
+class IResourceFactory
+{
+public:
+    virtual ObjectHandle create() = 0;
+    virtual bool isAlive(const ObjectHandle& handle) const = 0;
+    virtual void instantiate(const ObjectHandle& handle) = 0;
+    virtual void release(const ObjectHandle& handle) = 0;
+};
+
 template<typename T>
-class ResourceFactory : public ObjectFactory<T>
+class ResourceFactory : public IResourceFactory,  public ObjectFactory<T>
 {
 template<typename T> friend class Resource;
 public:
@@ -72,7 +81,7 @@ public:
         return m_RefCounter[handle.index];
     }
 
-    void instantiate(const ObjectHandle& handle)
+    virtual void instantiate(const ObjectHandle& handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", m_DisplayName.c_str());
         HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
@@ -91,6 +100,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// Overrides ObjectFactory<T>
     //////////////////////////////////////////////////////////////////////////
+    virtual bool isAlive(const ObjectHandle& handle) const { return ObjectFactory<T>::isAlive(handle); }
     virtual ObjectHandle create()
     {
         ObjectHandle handle(ObjectFactory<T>::create());

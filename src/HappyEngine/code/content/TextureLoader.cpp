@@ -30,9 +30,11 @@
 #include "IL/ilu.h"
 
 #include "Texture2D.h"
+#include "TextureCube.h"
 #include "ResourceFactory.h"
 
-#define FACTORY ResourceFactory<gfx::Texture2D>::getInstance()
+#define FACTORY_2D ResourceFactory<gfx::Texture2D>::getInstance()
+#define FACTORY_CUBE ResourceFactory<gfx::TextureCube>::getInstance()
 
 namespace he {
 namespace ct {
@@ -44,7 +46,8 @@ TextureLoader::TextureLoader(): m_isLoadThreadRunning(false)
 
 TextureLoader::~TextureLoader()
 {
-    FACTORY->garbageCollect();
+    FACTORY_2D->garbageCollect();
+    FACTORY_CUBE->garbageCollect();
 }
 
 
@@ -86,20 +89,20 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
     }
 }
 
-const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
+const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY->isAlive(m_AssetContainer.getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY_2D->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
         ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY->instantiate(handle);       
-        return FACTORY->get(handle);
+        FACTORY_2D->instantiate(handle);       
+        return FACTORY_2D->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY->create());
-        FACTORY->get(handle)->setName(stream.str());
+        ObjectHandle handle(FACTORY_2D->create());
+        FACTORY_2D->get(handle)->setName(stream.str());
 
         TextureLoadData data;
         data.path = stream.str();
@@ -112,73 +115,22 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture(const Color& color)
 
         m_AssetContainer.addAsset(stream.str(), handle);
 
-        return FACTORY->get(handle);
+        return FACTORY_2D->get(handle);
     }
 }
-const gfx::Texture2D* TextureLoader::asyncLoadTexture(const std::string& path)
-{
-    if (m_AssetContainer.isAssetPresent(path) && FACTORY->isAlive(m_AssetContainer.getAsset(path)))
-    {
-        ObjectHandle handle(m_AssetContainer.getAsset(path));
-        FACTORY->instantiate(handle); 
-        return FACTORY->get(handle);
-    }
-    else
-    {
-        ObjectHandle handle(FACTORY->create());
-
-        TextureLoadData data;
-        data.path = path;
-        data.tex = handle;
-
-        m_TextureLoadQueueMutex.lock();
-        m_TextureLoadQueue.push(data);
-        m_TextureLoadQueueMutex.unlock();
-
-        m_AssetContainer.addAsset(path, handle);
-
-        return FACTORY->get(handle);
-    }
-}
-const gfx::Texture2D* TextureLoader::loadTexture(const std::string& path)
-{
-    if (m_AssetContainer.isAssetPresent(path) && FACTORY->isAlive(m_AssetContainer.getAsset(path)))
-    {
-        ObjectHandle handle(m_AssetContainer.getAsset(path));
-        FACTORY->instantiate(handle); 
-        return FACTORY->get(handle);
-    }
-    else
-    {
-        ObjectHandle handle(FACTORY->create());
-        m_AssetContainer.addAsset(path, handle);
-
-        TextureLoadData data;
-        data.path = path;
-        data.tex = handle;
-
-        if (loadData(data))
-        {
-            createTexture(data);
-        }
-
-        return FACTORY->get(handle);
-    }
-}
-
-const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
+const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
 {
     std::stringstream stream;
     stream << "__" << (int)color.rByte() << " " << (int)color.gByte() << " " << (int)color.bByte() << " " << (int)color.aByte();
-    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY->isAlive(m_AssetContainer.getAsset(stream.str())))
+    if (m_AssetContainer.isAssetPresent(stream.str()) && FACTORY_2D->isAlive(m_AssetContainer.getAsset(stream.str())))
     {
         ObjectHandle handle(m_AssetContainer.getAsset(stream.str()));
-        FACTORY->instantiate(handle); 
-        return FACTORY->get(handle);
+        FACTORY_2D->instantiate(handle); 
+        return FACTORY_2D->get(handle);
     }
     else
     {
-        ObjectHandle handle(FACTORY->create());
+        ObjectHandle handle(FACTORY_2D->create());
         m_AssetContainer.addAsset(stream.str(), handle);
 
         TextureLoadData data;
@@ -190,38 +142,125 @@ const gfx::Texture2D* TextureLoader::makeTexture(const Color& color)
 
         createTexture(data);
 
-        return FACTORY->get(handle);
+        return FACTORY_2D->get(handle);
     }
+}
+const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const std::string& path)
+{
+    ResourceFactory<gfx::Texture2D>* factory(FACTORY_2D);
+    return factory->get(asyncLoadTexture(path, factory));
+}
+const gfx::Texture2D* TextureLoader::loadTexture2D(const std::string& path)
+{
+    ResourceFactory<gfx::Texture2D>* factory(FACTORY_2D);
+    return factory->get(loadTexture(path, factory));
+}
+const gfx::TextureCube* TextureLoader::asyncLoadTextureCube(const std::string& path)
+{
+    ResourceFactory<gfx::TextureCube>* factory(FACTORY_CUBE);
+    return factory->get(asyncLoadTexture(path, factory));
+}
+const gfx::TextureCube* TextureLoader::loadTextureCube(const std::string& path)
+{
+    ResourceFactory<gfx::TextureCube>* factory(FACTORY_CUBE);
+    return factory->get(loadTexture(path, factory));
+}
+
+he::ObjectHandle TextureLoader::loadTexture( const std::string& path, IResourceFactory* factory )
+{
+    ObjectHandle handle;
+    if (m_AssetContainer.isAssetPresent(path, handle) && factory->isAlive(handle))
+    {
+        factory->instantiate(handle); 
+    }
+    else
+    {
+        handle = factory->create();
+        m_AssetContainer.addAsset(path, handle);
+
+        TextureLoadData data;
+        data.path = path;
+        data.tex = handle;
+
+        if (loadData(data))
+        {
+            createTexture(data);
+        }
+    }
+    return handle;
+}
+he::ObjectHandle TextureLoader::asyncLoadTexture( const std::string& path, IResourceFactory* factory )
+{
+    ObjectHandle handle;
+    if (m_AssetContainer.isAssetPresent(path, handle) && factory->isAlive(handle))
+    {
+        factory->instantiate(handle); 
+    }
+    else
+    {
+        handle = factory->create();
+
+        TextureLoadData data;
+        data.path = path;
+        data.tex = handle;
+
+        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueue.push(data);
+        m_TextureLoadQueueMutex.unlock();
+
+        m_AssetContainer.addAsset(path, handle);
+    }
+    return handle;
 }
 
 bool TextureLoader::createTexture( const TextureLoadData& data )
 {
-    gfx::Texture2D* tex2D(FACTORY->get(data.tex));
+    if (data.tex.type == gfx::Texture2D::s_ObjectType)
+        return createTexture2D(data);
+    else if (data.tex.type == gfx::TextureCube::s_ObjectType)
+        return createTextureCube(data);
+    HE_ASSERT(false, "Unsupported object type id!");
+    return false;
+}
+bool TextureLoader::createTexture2D( const TextureLoadData& data )
+{
+    bool succes(true);
+
+    gfx::Texture2D* tex2D(FACTORY_2D->get(data.tex));
 
     if (tex2D->getName() == "")
         tex2D->setName(data.path);
 
-    tex2D->init(gfx::Texture2D::WrapType_Repeat, gfx::Texture2D::FilterType_Anisotropic_16x, 
-                data.textureFormat, true);
+    tex2D->init(gfx::TextureWrapType_Repeat, gfx::TextureFilterType_Anisotropic_16x, 
+        data.textureFormat, true);
 
-    std::for_each(data.mipData.cbegin(), data.mipData.cend(), [&](const TextureLoadMipData& mipData)
+    if (data.faces > 0)
     {
-        if (mipData.isCompressed == false)
+        HE_ART_ASSERT(data.faces == 1, "Loading texture as 2D texture but is actually a Cube texture, %s", data.path.c_str());
+        std::for_each(data.mipData[0].cbegin(), data.mipData[0].cend(), [&](const TextureLoadMipData& mipData)
         {
-            tex2D->setData(mipData.width, mipData.height, mipData.data,
-                mipData.format, mipData.type, mipData.mipLevel);
-        }
-        else
+            if (mipData.isCompressed == false)
+            {
+                tex2D->setData(mipData.width, mipData.height, mipData.data,
+                    mipData.format, mipData.type, mipData.mipLevel);
+            }
+            else
+            {
+                tex2D->setCompressedData(mipData.width, mipData.height, mipData.data, 
+                    mipData.bufferSize, mipData.mipLevel );
+            }
+            if (mipData.isDataDirty)
+                he_free(mipData.data);
+        });
+        if (data.mipData[0].size() == 1)
         {
-            tex2D->setCompressedData(mipData.width, mipData.height, mipData.data, 
-                mipData.bufferSize, mipData.mipLevel );
+            tex2D->generateMipMaps();
         }
-        if (mipData.isDataDirty)
-            he_free(mipData.data);
-    });
-    if (data.mipData.size() == 1)
+    }
+    else
     {
-        tex2D->generateMipMaps();
+        HE_ERROR("Error loaded image with 0 face, %s", data.path.c_str());
+        succes = false;
     }
 
     if (data.isILimage == true)
@@ -230,16 +269,65 @@ bool TextureLoader::createTexture( const TextureLoadData& data )
     }
 
     tex2D->setLoadFinished();
-    HE_INFO("Texture create completed: %s", data.path.c_str());
-
-    return true;
+    HE_INFO("Texture2D create completed: %s", data.path.c_str());
+    return succes;
 }
+bool TextureLoader::createTextureCube( const TextureLoadData& data )
+{
+    bool succes(true);
+    gfx::TextureCube* texCube(FACTORY_CUBE->get(data.tex));
+
+    if (texCube->getName() == "")
+        texCube->setName(data.path);
+
+    texCube->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Anisotropic_16x, data.textureFormat, true);
+
+    if (data.faces > 0)
+    {
+        HE_ART_ASSERT(data.faces == 6, "Loading Cube texture with not enough faces, face supplied: %d, %s", data.faces, data.path.c_str());
+        for (uint8 face(0); face < data.faces; ++face)
+        {
+            std::for_each(data.mipData[face].cbegin(), data.mipData[face].cend(), [&](const TextureLoadMipData& mipData)
+            {
+                if (mipData.isCompressed == false)
+                {
+                    texCube->setData(mipData.width, mipData.height, (gfx::TextureCube::Face)face, mipData.data,
+                        mipData.format, mipData.type, mipData.mipLevel);
+                }
+                else
+                {
+                    texCube->setCompressedData(mipData.width, mipData.height, (gfx::TextureCube::Face)face, mipData.data, 
+                        mipData.bufferSize, mipData.mipLevel );
+                }
+                if (mipData.isDataDirty)
+                    he_free(mipData.data);
+            });
+            HE_ART_ASSERT(data.mipData[face].size() > 1, "TextureCube face does not have any mipmaps! %s", data.path.c_str());
+        }
+    }
+    else
+    {
+        HE_ERROR("Error loaded image with 0 face, %s", data.path.c_str());
+        succes = false;
+    }
+
+    if (data.isILimage == true)
+    {
+        ilDeleteImage(data.ilImageId);
+    }
+
+    texCube->setLoadFinished();
+    HE_INFO("TextureCube create completed: %s", data.path.c_str());
+    return succes;
+}
+
 
 bool TextureLoader::loadData( TextureLoadData& data )
 {
     data.ilImageId = ilGenImage();
     data.isILimage = true;
-    data.textureFormat = gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT5;
+    data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
+    data.faces = 0;
     ilBindImage(data.ilImageId);
     if (ilLoadImage(data.path.c_str()))
     {
@@ -253,9 +341,9 @@ bool TextureLoader::loadData( TextureLoadData& data )
         else if (dxtcFormat == IL_DXT1)
         {
             if (channels == 4)
-                data.textureFormat = gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT1;
+                data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT1;
             else if (channels == 3)
-                data.textureFormat = gfx::Texture2D::TextureFormat_Compressed_RGB8_DXT1;
+                data.textureFormat = gfx::TextureFormat_Compressed_RGB8_DXT1;
             else
             {
                 HE_ERROR("Unsupported channel count (%d) for DXT1 compression - %s", channels, data.path);
@@ -264,7 +352,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
         }
         else if (dxtcFormat == IL_DXT3)
         {
-            data.textureFormat = gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT3;
+            data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT3;
             if (channels != 4)
             {
                 HE_ERROR("Unsupported channel count (%d) for DXT3 compression - %s", channels, data.path);
@@ -273,7 +361,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
         }
         else if (dxtcFormat == IL_DXT5)
         {
-            data.textureFormat = gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT5;
+            data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
             if (channels != 4)
             {
                 HE_ERROR("Unsupported channel count (%d) for DXT5 compression - %s", channels, data.path);
@@ -287,46 +375,55 @@ bool TextureLoader::loadData( TextureLoadData& data )
         }
 
         ILuint numMipMaps(ilGetInteger(IL_NUM_MIPMAPS));
-        for (byte mip(0); mip <= numMipMaps; ++mip) // <= : 0 = normal, 1+ are mipmaps
+        ILuint numFaces(ilGetInteger(IL_NUM_FACES));
+        data.faces = static_cast<uint8>(numFaces);
+        for (uint8 face(0); face < numFaces; ++numFaces)
         {
-            ilBindImage(data.ilImageId); // reset image else mip counter is relative to previous
-            ilActiveMipmap(mip);
-
-            data.mipData.push_back(TextureLoadMipData());
-            TextureLoadMipData& mipData(data.mipData.back());
-
-            mipData.mipLevel = mip;
-            mipData.isCompressed = isCompressed;
-            mipData.width = ilGetInteger(IL_IMAGE_WIDTH);
-            mipData.height = ilGetInteger(IL_IMAGE_HEIGHT);
-
-            if (isCompressed)
+            HE_IF_ASSERT(face < TextureLoadData::MAX_CUBE_FACES, "More than %d faces in texture!", TextureLoadData::MAX_CUBE_FACES)
             {
-                mipData.bufferSize = ilGetDXTCData(nullptr, 0, dxtcFormat);
-                mipData.data = static_cast<byte*>(he_malloc(mipData.bufferSize));
-                mipData.isDataDirty = true;
-                if (ilGetDXTCData(mipData.data, mipData.bufferSize, dxtcFormat) == 0)
+                for (uint8 mip(0); mip <= numMipMaps; ++mip) // <= : 0 = normal, 1+ are mipmaps
                 {
-                    HE_ERROR("Could not compress texture - %s", data.path);
-                    he_free(mipData.data);
-                    mipData.isDataDirty = false;
-                    handleILError(data.path);
-                    return false;
-                }
-            }
-            else
-            {
-                if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
-                {
-                    mipData.data = ilGetData();
-                    mipData.format = gfx::Texture2D::BufferLayout_BGRA;
-                    mipData.type = gfx::Texture2D::BufferType_Byte;
-                    mipData.isDataDirty = false;
-                }
-                else
-                {
-                    handleILError(data.path);
-                    return false;
+                    ilBindImage(data.ilImageId); // reset image else mip counter is relative to previous
+                    ilActiveFace(face);
+                    ilActiveMipmap(mip);
+
+                    data.mipData[face].push_back(TextureLoadMipData());
+                    TextureLoadMipData& mipData(data.mipData[face].back());
+
+                    mipData.mipLevel = mip;
+                    mipData.isCompressed = isCompressed;
+                    mipData.width = ilGetInteger(IL_IMAGE_WIDTH);
+                    mipData.height = ilGetInteger(IL_IMAGE_HEIGHT);
+
+                    if (isCompressed)
+                    {
+                        mipData.bufferSize = ilGetDXTCData(nullptr, 0, dxtcFormat);
+                        mipData.data = static_cast<byte*>(he_malloc(mipData.bufferSize));
+                        mipData.isDataDirty = true;
+                        if (ilGetDXTCData(mipData.data, mipData.bufferSize, dxtcFormat) == 0)
+                        {
+                            HE_ERROR("Could not compress texture - %s", data.path);
+                            he_free(mipData.data);
+                            mipData.isDataDirty = false;
+                            handleILError(data.path);
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE))
+                        {
+                            mipData.data = ilGetData();
+                            mipData.format = gfx::TextureBufferLayout_BGRA;
+                            mipData.type = gfx::TextureBufferType_Byte;
+                            mipData.isDataDirty = false;
+                        }
+                        else
+                        {
+                            handleILError(data.path);
+                            return false;
+                        }
+                    }
                 }
             }
         }
@@ -340,22 +437,22 @@ bool TextureLoader::loadData( TextureLoadData& data )
         return false;
     }
 }
-
 bool TextureLoader::makeData( TextureLoadData& data )
 {
     data.ilImageId = 0;
     data.isILimage = false;
-    data.textureFormat = gfx::Texture2D::TextureFormat_Compressed_RGBA8_DXT5;
+    data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
+    data.faces = 1;
 
     for (byte mip(0); mip < 4; ++mip)
     {
-        data.mipData.push_back(TextureLoadMipData());
-        TextureLoadMipData& mipData(data.mipData.back());
+        data.mipData[0].push_back(TextureLoadMipData());
+        TextureLoadMipData& mipData(data.mipData[0].back());
 
         mipData.width = static_cast<uint>(pow(2.0f, mip));
         mipData.height = mipData.width;
-        mipData.format = gfx::Texture2D::BufferLayout_BGRA;
-        mipData.type = gfx::Texture2D::BufferType_Byte;
+        mipData.format = gfx::TextureBufferLayout_BGRA;
+        mipData.type = gfx::TextureBufferType_Byte;
         mipData.isCompressed = false;
         mipData.mipLevel = 4 - mip - 1;
         uint pixels(mipData.width * mipData.height);

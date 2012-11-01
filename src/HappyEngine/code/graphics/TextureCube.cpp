@@ -23,60 +23,121 @@
 
 namespace he {
 namespace gfx {
-//
-//uint TextureCube::s_Count = 0;
-//
-//TextureCube::TextureCube(): m_Id(UINT_MAX), m_isInitialized(false)
-//{
-//    ++s_Count;
-//}
-//
-//void TextureCube::init(uint tex)
-//{
-//    if (m_Id != UINT_MAX)
-//        glDeleteTextures(1, &m_Id);
-//    m_Id = tex;
-//    m_CallbackMutex.lock();
-//    m_isInitialized = true;
-//    Loaded();
-//    m_CallbackMutex.unlock();
-//}
-//
-//bool TextureCube::isInitialized() const
-//{
-//    return m_isInitialized;
-//}
-//
-//TextureCube::~TextureCube()
-//{
-//    glDeleteTextures(1, &m_Id);
-//    --s_Count;
-//}
-//
-//uint TextureCube::getTextureCount()
-//{
-//    return s_Count;
-//}
-//
-//
-uint TextureCube::getID() const
+
+TextureCube::TextureCube()
+: m_HasMipMaps(false)
+, m_Width(0)
+, m_Height(0)
+, m_Id(UINT_MAX)
+, m_FilterType(TextureFilterType_None)
+, m_WrapType(TextureWrapType_Repeat)
+, m_TextureFormat(TextureFormat_Compressed_RGBA8_DXT5)
+, m_IsLoadDone(false)
 {
-    return m_Id;
+
 }
-//
-//void TextureCube::callbackIfLoaded( const boost::function<void()>& callback )
-//{
-//    m_CallbackMutex.lock();
-//    if (m_isInitialized)
-//    {
-//        m_CallbackMutex.unlock();
-//        callback();
-//    }
-//    else
-//    {
-//        Loaded += callback;
-//        m_CallbackMutex.unlock();
-//    }
-//}
-//
+
+TextureCube::~TextureCube()
+{
+    if (m_Id != UINT_MAX)
+    {
+        glDeleteTextures(1, &m_Id);
+    }
+}
+
+void TextureCube::init( TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps )
+{
+    HE_IF_ASSERT(m_Id == UINT_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
+    {
+        // Create
+        glGenTextures(1, &m_Id);
+        HE_ASSERT(m_Id != UINT_MAX, "Texture create failed");
+
+        m_TextureFormat = textureFormat;
+        m_HasMipMaps = willHaveMipMaps;
+
+        // Bind
+        GL::heBindTextureCube(0, m_Id);
+
+        //Filter
+        m_FilterType = filter;
+        details::setTextureFilterToBoundTexture(filter, GL_TEXTURE_CUBE_MAP, m_HasMipMaps);
+
+        // Wrap
+        m_WrapType = wrapType;
+        GLenum wrap(details::getInternalTextureWrapType(m_WrapType));
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, wrap);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, wrap);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, wrap);
+    }
+}
+
+void TextureCube::setData( uint width, uint height, const Face& face, const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, byte mipLevel /*= 0*/ )
+{
+    HE_IF_ASSERT(m_Id != UINT_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
+    {
+        if (mipLevel == 0)
+        {
+            m_Width = width;
+            m_Height = height;
+        }
+
+        // Bind
+        GL::heBindTextureCube(0, m_Id);
+
+        // Data
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mipLevel, details::getInternalTextureFormat(m_TextureFormat), 
+            width, height, 0, details::getInternalTextureBufferLayout(bufferLayout), 
+            details::getInternalTextureBufferType(bufferType), pData);
+    }
+}
+
+void TextureCube::setCompressedData( uint width, uint height, const Face& face, const void* data, uint imageSizeInBytes, byte mipLevel /*= 0*/ )
+{
+    HE_IF_ASSERT(m_Id != UINT_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
+    {
+        if (mipLevel == 0)
+        {
+            m_Width = width;
+            m_Height = height;
+        }
+
+        // Bind
+        GL::heBindTexture2D(0, m_Id);
+
+        //Data
+        glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mipLevel, details::getInternalTextureFormat(m_TextureFormat), 
+            width, height, 0, imageSizeInBytes, data);
+#if _DEBUG
+        err::glCheckForErrors(true);
+#endif
+    }
+}
+
+void TextureCube::setLoadFinished()
+{
+    m_CallbackMutex.lock();
+    m_IsLoadDone = true;
+    Loaded();
+    Loaded.clear();
+    m_CallbackMutex.unlock();
+}
+
+void TextureCube::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
+{
+    TextureCube* _this(const_cast<TextureCube*>(this));
+    _this->m_CallbackMutex.lock();
+    if (m_IsLoadDone)
+    {
+        _this->m_CallbackMutex.unlock();
+        callback();
+    }
+    else
+    {
+        eventCallback0<void> handler(callback);
+        _this->Loaded += handler;
+        _this->m_CallbackMutex.unlock();
+    }
+}
+
 } } //end namespace

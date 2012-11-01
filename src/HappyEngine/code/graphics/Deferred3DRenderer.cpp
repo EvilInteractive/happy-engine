@@ -69,14 +69,14 @@ Deferred3DRenderer::Deferred3DRenderer():
     ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
     m_ColorIllTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
     m_ColorIllTexture->setName("Deferred3DRenderer::m_pColorIllTexture");
-    m_ColorIllTexture->init(Texture2D::WrapType_Clamp, Texture2D::FilterType_Nearest, 
-        Texture2D::TextureFormat_RGBA8, false);
+    m_ColorIllTexture->init(TextureWrapType_Clamp, TextureFilterType_Nearest, 
+        TextureFormat_RGBA8, false);
 
     handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_SGTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
     m_SGTexture->setName("Deferred3DRenderer::m_pSGTexture");
-    m_SGTexture->init(Texture2D::WrapType_Clamp, Texture2D::FilterType_Nearest, 
-        Texture2D::TextureFormat_RGBA8, false);
+    m_SGTexture->init(TextureWrapType_Clamp, TextureFilterType_Nearest, 
+        TextureFormat_RGBA8, false);
 
 }
 void Deferred3DRenderer::init( View3D* view, const RenderTarget* target )
@@ -268,11 +268,11 @@ void Deferred3DRenderer::onViewResized()
     //Collection Textures - just SGI and color others are shared
     // Color
     m_ColorIllTexture->setData(width, height, 0, 
-        Texture2D::BufferLayout_BGRA, Texture2D::BufferType_Byte, 0 );
+        TextureBufferLayout_BGRA, TextureBufferType_Byte, 0 );
 
     // SG
     m_SGTexture->setData(width, height, 0, 
-        Texture2D::BufferLayout_BGRA, Texture2D::BufferType_Byte, 0 );
+        TextureBufferLayout_BGRA, TextureBufferType_Byte, 0 );
 
 }
 

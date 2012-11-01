@@ -22,7 +22,8 @@
 #define _HE_TEXTURE_CUBE_H_
 #pragma once
 
-#include "Shader.h"
+#include "Resource.h"
+#include "Texture.h"
 
 namespace he {
 namespace gfx {
@@ -31,32 +32,57 @@ namespace gfx {
 class TextureCube : public Resource<TextureCube>
 {
 public:
-//    TextureCube();
-//    virtual ~TextureCube();
-//
-//    void init(uint tex);
-//
-//    bool isInitialized() const;
-//
-     uint getID() const;
-//
-//    void callbackIfLoaded(const boost::function<void()>& callback);
-//
-//    static uint getTextureCount();
-//
-//private:
-//    boost::mutex m_CallbackMutex;
-//    event0<void> Loaded;
-//    
-     uint m_Id;
-//
-//    static uint s_Count;
-//
-//    bool m_isInitialized;
-//
-//    //Disable default copy constructor and default assignment operator
-//    TextureCube(const TextureCube&);
-//    TextureCube& operator=(const TextureCube&);
+    enum Face
+    {
+        Face_PositiveX,
+        Face_NegativeX,
+        Face_PositiveY,
+        Face_NegativeY,
+        Face_PositiveZ,
+        Face_NegativeZ
+    };
+
+    TextureCube();
+    virtual ~TextureCube();
+
+    void init(TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps);
+
+    void setData(uint width, uint height, const Face& face,
+        const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, byte mipLevel = 0);
+
+    void setCompressedData(uint width, uint height, const Face& face, 
+        const void* data, uint imageSizeInBytes, byte mipLevel = 0);
+
+    void setLoadFinished();
+    bool isInitialized() const { return m_Id != UINT_MAX; }
+
+    void generateMipMaps() const;
+
+    uint getID() const { return m_Id; }  
+    uint getWidth() const { return m_Width; }
+    uint getHeight() const { return m_Height; }
+    TextureFormat getTextureFormat() const { return m_TextureFormat; }
+    TextureWrapType getWrapType() const { return m_WrapType; }
+    TextureFilterType getFilterType() const { return m_FilterType; }
+    bool HasMipMaps() const { return m_HasMipMaps; }
+
+    void callbackOnceIfLoaded(const boost::function<void()>& callback) const;
+
+private:
+    boost::mutex m_CallbackMutex;
+    event0<void> Loaded;
+    bool m_IsLoadDone;
+   
+    uint m_Id;
+    uint m_Width, m_Height;
+    TextureFormat m_TextureFormat;
+    TextureWrapType m_WrapType;
+    TextureFilterType m_FilterType;
+    bool m_HasMipMaps;
+
+    //Disable default copy constructor and default assignment operator
+    TextureCube(const TextureCube&);
+    TextureCube& operator=(const TextureCube&);
 };
 
 } } //end namespace

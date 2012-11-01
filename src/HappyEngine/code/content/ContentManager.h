@@ -31,6 +31,7 @@ namespace gfx {
     class Model;
     class ModelMesh;
     class Texture2D;
+    class TextureCube;
     class ShaderLayout;
 }
 
@@ -59,10 +60,12 @@ public:
     gfx::ModelMesh* getFullscreenQuad();
     gfx::ModelMesh* getParticleQuad();
 
-    const gfx::Texture2D* asyncLoadTexture(const std::string& path);
-    const gfx::Texture2D* asyncMakeTexture(const Color& color);
-    const gfx::Texture2D* loadTexture(const std::string& path);
-    const gfx::Texture2D* makeTexture(const Color& color);
+    const gfx::Texture2D* asyncLoadTexture2D(const std::string& path);
+    const gfx::TextureCube* asyncLoadTextureCube(const std::string& path);
+    const gfx::Texture2D* asyncMakeTexture2D(const Color& color);
+    const gfx::Texture2D* loadTexture2D(const std::string& path);
+    const gfx::TextureCube* loadTextureCube(const std::string& path);
+    const gfx::Texture2D* makeTexture2D(const Color& color);
 
     gfx::Line::pointer loadLine(const std::string& path);
 

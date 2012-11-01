@@ -67,8 +67,8 @@ void ShadowCasterSpotLight::init(View* view, ShadowResolution shadowSize)
 
     ResourceFactory<Texture2D>* textureFactory(ResourceFactory<Texture2D>::getInstance());
     Texture2D* dummyTexture(textureFactory->get(textureFactory->create()));
-    dummyTexture->init(Texture2D::WrapType_Clamp, Texture2D::FilterType_Linear, Texture2D::TextureFormat_R16, false);
-    dummyTexture->setData(size, size, nullptr, Texture2D::BufferLayout_R, Texture2D::BufferType_Float);
+    dummyTexture->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_R16, false);
+    dummyTexture->setData(size, size, nullptr, TextureBufferLayout_R, TextureBufferType_Float);
 
     m_RenderTarget->addTextureTarget(dummyTexture); // dummy target
     dummyTexture->release();

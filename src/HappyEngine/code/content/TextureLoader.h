@@ -25,9 +25,15 @@
 #pragma once
 
 #include "AssetContainer.h"
-#include "Texture2D.h"
+#include "Texture.h"
 
 namespace he {
+    class IResourceFactory;
+
+namespace gfx{
+    class Texture2D;
+    class TextureCube;
+}
 namespace ct {
 
 class TextureLoader
@@ -42,16 +48,20 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    const gfx::Texture2D* asyncLoadTexture(const std::string& path);
-    const gfx::Texture2D* asyncMakeTexture(const Color& color);
+    const gfx::Texture2D* asyncLoadTexture2D(const std::string& path);
+    const gfx::TextureCube* asyncLoadTextureCube(const std::string& path);
+    const gfx::Texture2D* asyncMakeTexture2D(const Color& color);
 
-    const gfx::Texture2D* loadTexture(const std::string& path);
-    const gfx::Texture2D* makeTexture(const Color& color);
+    const gfx::Texture2D* loadTexture2D(const std::string& path);
+    const gfx::TextureCube* loadTextureCube(const std::string& path);
+    const gfx::Texture2D* makeTexture2D(const Color& color);
 
     /* GETTERS */
     bool isLoading() const;
 
 private:
+    ObjectHandle asyncLoadTexture(const std::string& path, IResourceFactory* factory);
+    ObjectHandle loadTexture(const std::string& path, IResourceFactory* factory);
 
     struct TextureLoadMipData
     {
@@ -62,15 +72,18 @@ private:
         byte mipLevel;
         bool isDataDirty;
         bool isCompressed;
-        gfx::Texture2D::BufferLayout format;
-        gfx::Texture2D::BufferType type;
+        gfx::TextureBufferLayout format;
+        gfx::TextureBufferType type;
     };
     struct TextureLoadData
     {
+        const static int MAX_CUBE_FACES = 6;
         std::string path;
-        std::vector<TextureLoadMipData> mipData;
 
-        gfx::Texture2D::TextureFormat textureFormat;
+        uint8 faces;
+        std::vector<TextureLoadMipData> mipData[MAX_CUBE_FACES];
+
+        gfx::TextureFormat textureFormat;
 
         uint ilImageId;
         bool isILimage;
@@ -86,6 +99,8 @@ private:
     bool loadData(TextureLoadData& data);
     bool makeData(TextureLoadData& data);
     bool createTexture(const TextureLoadData& data);
+    bool createTexture2D(const TextureLoadData& data);
+    bool createTextureCube(const TextureLoadData& data);
 
     /* DATAMEMBERS */
     std::queue<TextureLoadData> m_TextureLoadQueue;
