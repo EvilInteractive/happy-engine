@@ -25,6 +25,8 @@
 #include "GraphicsEngine.h"
 #include "CameraManager.h"
 #include "ControlsManager.h"
+#include "Canvas2D.h"
+#include "Renderer2D.h"
 
 #include "FlyCamera.h"
 #include "FPSGraph.h"
@@ -37,6 +39,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "View.h"
+#include "MessageBox.h"
 
 //#include "boost/filesystem.hpp"
 
@@ -53,6 +56,14 @@ MainGame::~MainGame()
     delete m_FPSGraph;
     delete m_UIController;
     delete m_UIBind;
+
+	CONSOLE->setView(nullptr);
+
+	m_Scene->getCameraManager()->deleteAllCameras();
+
+	GRAPHICS->removeScene(m_Scene);
+	GRAPHICS->removeView(m_View);
+	GRAPHICS->removeWindow(m_Window);
 }
 
 void MainGame::init()
@@ -102,6 +113,8 @@ void MainGame::load()
 
     CONSOLE->setView(m_View);
 
+	//m_View->get2DRenderer()->attachToRender(this);
+
     /* CAMERA */
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
@@ -109,14 +122,15 @@ void MainGame::load()
     flyCamera->lookAt(vec3(5, 2, 4), vec3::zero, vec3::up);
     m_View->setCamera("default");
 
-    /* GUÏ */
+    /* GUI */
     m_FPSGraph = NEW tools::FPSGraph();
-    //m_pFPSGraph->setType(1);
+	m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
 
     m_UIController = NEW UIController();
     m_UIController->init(m_View);
 
     m_UIBind = NEW UIBind(m_UIController);
+
     // test
     he::eventCallback0<void> callbackTest([](){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
     m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);
@@ -126,8 +140,22 @@ void MainGame::load()
 
 void MainGame::tick(float dTime)
 {
+	he::gfx::CameraPerspective* camera(m_View->getCamera());
+    const he::vec3& position(camera->getPosition());
+
+	m_UIController->updateSceneInfo(position);
+
     he::ge::Game::tick(dTime);
     m_FPSGraph->tick(dTime);
+}
+
+void MainGame::draw2D(he::gfx::Canvas2D* /*canvas*/)
+{
+	/*
+	canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
+	canvas->fillRect(he::vec2(200,200), he::vec2(50,50));*/
+
+	//m_UIController->draw2D(canvas);
 }
 
 } //end namespace

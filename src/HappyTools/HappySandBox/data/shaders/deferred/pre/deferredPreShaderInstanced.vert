@@ -28,15 +28,20 @@ in mat4 inWorld;
 out vec2 passTexCoord;
 out vec3 passNormal;
 out vec3 passTangent;
+out float passDepth;
 
 uniform mat4 matVP;
 uniform mat4 matV;
 
 void main()
 {
-    gl_Position = matVP * inWorld * vec4(inPosition, 1.0f);
     passTexCoord = inTexCoord;
     mat4 matVW = matV * inWorld;
     passNormal = (matVW * vec4(inNormal, 0.0f)).xyz;
     passTangent = (matVW * vec4(inTangent, 0.0f)).xyz;
+
+    vec4 position = inWorld * vec4(inPosition, 1.0f);
+    passDepth = position.z;
+
+    gl_Position = matVP * position;
 }

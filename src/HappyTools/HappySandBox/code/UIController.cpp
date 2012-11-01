@@ -21,11 +21,13 @@
 #include "HappySandBoxPCH.h" 
 
 #include "UIController.h"
-#include "boost/filesystem.hpp"
 #include "Path.h"
 #include "WebView.h"
 #include "Renderer2D.h"
 #include "View.h"
+#include "Canvas2D.h"
+#include "Font.h"
+#include "ContentManager.h"
 
 namespace hs {
 
@@ -49,16 +51,18 @@ void UIController::init(he::gfx::View* view)
 {
     m_View = view;
 
-    // get program dir
-    boost::filesystem::path bPath = boost::filesystem::initial_path();
-    he::Path hPath(bPath.string());
-
     // get gui dir
-    m_GUIDirectory = hPath.getAbsolutePath(he::Path("../../data/gui/")).str();
+    m_GUIDirectory = he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str();
 
     // create webview for gui to load
     m_WebView = m_View->get2DRenderer()->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
+
+	m_View->get2DRenderer()->attachToRender(this);
     m_View->get2DRenderer()->attachToRender(m_WebView);
+	
+	he::gfx::Font* font(CONTENT->getDefaultFont(10));
+    m_SceneInfo.setFont(font);
+    font->release();
 }
 void UIController::load(const std::string& file)
 {
@@ -66,11 +70,29 @@ void UIController::load(const std::string& file)
     m_WebView->setTransparent(true);
 }
 
+void UIController::draw2D(he::gfx::Canvas2D* canvas)
+{
+	canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
+	canvas->fillRect(he::vec2(5,5),he::vec2(1,1));
+	canvas->fillText(m_SceneInfo, he::vec2(50,30));
+}
+
+void UIController::updateSceneInfo(const he::vec3& camPos)
+{
+	m_CamPos = camPos;
+
+	m_SceneInfo.clear();
+
+	char buff[100];
+    sprintf(buff, "Camera Position: %.2f, %.2f, %.2f\0", m_CamPos.x, m_CamPos.y, m_CamPos.z);
+
+	m_SceneInfo.addLine(buff);
+}
+
 /* GETTERS */
 he::gfx::WebView* UIController::getWebView() const
 {
     return m_WebView;
 }
-
 
 } //end namespace

@@ -17,16 +17,40 @@
 //
 //Author: Bastian Damman
 
-float getExposure(in sampler2D lumMap)
+struct ToneMapData
 {
-    return clamp(textureLod(lumMap, vec2(0.5f, 0.5f), 0).r, 0.01f, 2.0f);
-}
-vec3 tonemap(in vec3 hdr, float exposure)
-{
-    hdr = hdr / exposure;
+	float shoulderStrength;
+	float linearStrength;
+	float linearAngle;
+	float toeStrength;
+	float toeNumerator;
+	float toeDenominator;
+	float exposureBias;
+};
 
-    vec3 ldr = clamp(vec3(1) - hdr, 0.0f, 1.0f);
-    ldr *= ldr;
-    ldr = max((hdr * 0.25f) + 0.75f, vec3(1.0f)) - ldr;
-    return pow(ldr * 0.5f, vec3(2.2f));
+float getWhite(in sampler2D lumMap, in float min, in float max)
+{
+    return clamp(textureLod(lumMap, vec2(0.5f, 0.5f), 0).r, min, max);
+}
+vec3 tonemapFunc(in vec3 x, in ToneMapData data)
+{
+	return ((x * (data.shoulderStrength * x + data.linearAngle * data.linearStrength) + data.toeStrength * data.toeNumerator) / 
+			(x * (data.shoulderStrength * x + data.linearStrength) + data.toeStrength * data.toeDenominator)) - data.toeNumerator / data.toeDenominator;
+}
+vec3 tonemap(in vec3 hdr, in vec3 whitePoint)
+{
+	vec3 ldr = hdr;
+	
+	ToneMapData data;
+	data.shoulderStrength = 0.22f;
+	data.linearStrength = 0.30f;
+	data.linearAngle = 0.10f;
+	data.toeStrength = 0.01f;
+	data.toeNumerator = 0.30f;
+	data.toeDenominator = 11.2f;
+	data.exposureBias = 1.0f;
+	
+	ldr = tonemapFunc(ldr*data.exposureBias, data) / whitePoint;
+	
+	return ldr;
 }

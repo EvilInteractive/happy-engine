@@ -24,13 +24,15 @@
 #include "WebView.h"
 #include "Awesomium/JSValue.h"
 #include "Awesomium/WebView.h"
+#include "Awesomium/STLHelpers.h"
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-WebListener::WebListener() : m_WebView(nullptr)
+WebListener::WebListener(WebView* view) : m_WebView(view)
 {
+	m_WebView->getAWEView()->set_js_method_handler(this);
 }
 
 WebListener::~WebListener()
@@ -44,28 +46,25 @@ WebListener::~WebListener()
 }
 
 /* GENERAL */
-void WebListener::attachToView(WebView* view)
-{
-    view->getAWEView()->set_js_method_handler(this);
-    m_WebView = view;
-}
 void WebListener::addObjectCallback(const std::string& object,
                                     const std::string& method,
                                     eventCallback0<void>& callBack)
 {
     // check if jsobject already exists
-    bool objectExists(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
+	auto it(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
     {
         return obj->getObjectName() == object;
-    }) != m_Objects.cend());
+    }));
+
+    bool objectExists(it != m_Objects.cend());
 
     // create new js object if it doesn't already exists
     if (objectExists == false)
     {
         Awesomium::JSValue val = m_WebView->getAWEView()->CreateGlobalJavascriptObject(
-            Awesomium::WebString::CreateFromUTF8(object.c_str(), strlen(object.c_str())));
+            Awesomium::WSLit(object.c_str()));
 
-        Awesomium::WebString aweMethod = Awesomium::WebString::CreateFromUTF8(method.c_str(), strlen(method.c_str()));
+        Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
         Awesomium::JSObject& obj = val.ToObject();
 
@@ -73,26 +72,34 @@ void WebListener::addObjectCallback(const std::string& object,
         jsObject->addCallback(aweMethod, callBack);
 
         m_Objects.push_back(jsObject);
-    }
 
-    // TODO: seeb i don't think this line is correct, why always the last in the list? what if objectExists == true
-    // set method on object
-    m_Objects.back()->getAweObject().SetCustomMethod(
-        Awesomium::WebString::CreateFromUTF8(method.c_str(), strlen(method.c_str())), false);
+		// set method on object
+		jsObject->getAweObject().SetCustomMethod(
+			aweMethod, false);
+    }
+	else
+	{
+		Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
+
+		(*it)->addCallback(aweMethod, callBack);
+
+		(*it)->getAweObject().SetCustomMethod(
+			aweMethod, false);
+	}
 }
 void WebListener::removeObjectCallback(const std::string& object,
     const std::string& method,
     const eventCallback0<void>& callBack)
 {
     // check if jsobject already exists
-    std::vector<JSObject*>::iterator it(std::find_if(m_Objects.begin(), m_Objects.end(), [&object](JSObject* obj)
+    auto it(std::find_if(m_Objects.begin(), m_Objects.end(), [&object](JSObject* obj)
     {
         return obj->getObjectName() == object;
     }));
 
     HE_IF_ASSERT(it != m_Objects.end(), "object ('%s') not found to remove callback from", object.c_str())
     {
-        Awesomium::WebString aweMethod = Awesomium::WebString::CreateFromUTF8(method.c_str(), strlen(method.c_str()));
+        Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
         (*it)->removeCallback(aweMethod, callBack);
     }
 }

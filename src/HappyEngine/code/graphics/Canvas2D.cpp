@@ -480,6 +480,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     m_pFontEffect->setDepth(dp);
 
+	m_BlendStyle = BlendStyle_Alpha;
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
@@ -614,7 +615,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
 
     mat44 world(mat44::createTranslation(vec3(pos.x + size.x/2, pos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
 
-    save();
+    //save();
 
     //scale(vec2(size.x, size.y));
     //translate(vec2(pos.x + size.x/2, pos.y + size.y/2));
@@ -627,6 +628,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     m_pTextureEffect->setTCScale(tcScale);
     m_pTextureEffect->setDepth(getNewDepth());
 
+	m_BlendStyle = BlendStyle_Alpha;
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
@@ -639,7 +641,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     GL::heBindVao(m_pTextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_pTextureQuad->getNumIndices(), m_pTextureQuad->getIndexType(), 0);
 
-    restore();
+    //restore();
 }
 
 void Canvas2D::viewResized()

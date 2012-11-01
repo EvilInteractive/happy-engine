@@ -35,11 +35,10 @@ class WebListener : public Awesomium::JSMethodHandler
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebListener();
+    WebListener(WebView* view);
     virtual ~WebListener();
 
     /* GENERAL */
-    void attachToView(WebView* view);
     void addObjectCallback(const std::string& object,
                            const std::string& method,
                            eventCallback0<void>& callBack);

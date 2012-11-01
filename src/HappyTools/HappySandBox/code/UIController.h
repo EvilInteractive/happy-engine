@@ -23,17 +23,19 @@
 #pragma once
 
 #include "IDrawable2D.h"
+#include "Text.h"
 
 namespace he {
     namespace gfx {
         class WebView;
         class View;
+		class Canvas2D;
     }
 }
 
 namespace hs {
 
-class UIController
+class UIController : public he::gfx::IDrawable2D
 {
 public:
 
@@ -44,6 +46,8 @@ public:
     /* GENERAL */
     void init(he::gfx::View* view);
     void load(const std::string& file);
+	void draw2D(he::gfx::Canvas2D* canvas);
+	void updateSceneInfo(const he::vec3& camPos);
 
     /* GETTERS */
     he::gfx::WebView* getWebView() const;
@@ -52,9 +56,13 @@ private:
 
     /* DATAMEMBERS */
     std::string m_GUIDirectory;
-    he::gfx::WebView* m_WebView;
 
+    he::gfx::WebView* m_WebView;
     he::gfx::View* m_View;
+
+	he::vec3 m_CamPos;
+
+	he::gui::Text m_SceneInfo;
 
     /* DEFAULT COPY & ASSIGNMENT */
     UIController(const UIController&);

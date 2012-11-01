@@ -315,15 +315,12 @@ void WebView::OnFailLoadingFrame(
 	char* buff0 = new char[url.path().length()];
 	url.path().ToUTF8(buff0, url.path().length());
 
-	char* buff1 = new char[url.filename().length()];
-	url.filename().ToUTF8(buff1, url.filename().length());
-
 	char* buff2 = new char[error_desc.length()];
 	error_desc.ToUTF8(buff2, error_desc.length());
 
-	HE_WARNING("Failed to load url: '%s%s', '%s'", buff0, buff1, buff2);
+	HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-	delete[] buff0, buff1, buff2;
+	delete[] buff0, buff2;
 }
 
 void WebView::OnFinishLoadingFrame(
@@ -336,12 +333,9 @@ void WebView::OnFinishLoadingFrame(
 	char* buff0 = new char[url.path().length()];
 	url.path().ToUTF8(buff0, url.path().length());
 
-	char* buff1 = new char[url.filename().length()];
-	url.filename().ToUTF8(buff1, url.filename().length());
+	HE_INFO("Finished loading url: '%s'", buff0);
 
-	HE_INFO("Finished loading url: '%s%s'", buff0, buff1);
-
-	delete[] buff0, buff1;
+	delete[] buff0;
 }
 
 void WebView::OnDocumentReady(

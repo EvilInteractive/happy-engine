@@ -28,9 +28,8 @@ namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 UIBind::UIBind(UIController* uiController) : m_UIController(uiController),
-                                             m_WebListener(NEW he::gfx::WebListener())
+                                             m_WebListener(NEW he::gfx::WebListener(m_UIController->getWebView()))
 {
-    m_WebListener->attachToView(m_UIController->getWebView());
 }
 
 UIBind::~UIBind()

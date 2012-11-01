@@ -19,38 +19,14 @@
 
 #version 150 core
 
-in vec4 passPos;
+in vec3 passPos;
 
-uniform vec2 inLightNearFar;
+uniform vec2 lightNearFar;
 
-out vec2 outShadow;
+out float outShadow;
   
-/*vec4 DistributePrecision(vec2 moments)
-{
-    float factorInv = 1.0f / 256.0f;
-    
-    // Split precision
-    vec2 intPart;
-    vec2 fracPart = modf(moments * 256.0f, intPart);
-    // Compose outputs to make reconstruction cheap.
-    return vec4(intPart * factorInv, fracPart);
-}*/
-
-vec2 ComputeMoments(in float depth)
-{
-    vec2 moments;
-    moments.x = depth;
-    
-    float dx = dFdx(depth);
-    float dy = dFdy(depth);
-    
-    moments.y = depth*depth + 0.25f * (dx*dx + dy*dy);
-    return moments;
-}
-
 void main()
 {
-    float depth = (passPos.z - inLightNearFar.x) / inLightNearFar.y;
-    //outShadow = DistributePrecision(ComputeMoments(depth));
-    outShadow = ComputeMoments(depth);
+    float depth = (length(passPos) - lightNearFar.x) / (lightNearFar.y - lightNearFar.x);
+    outShadow = clamp(depth, 0, 1);
 }

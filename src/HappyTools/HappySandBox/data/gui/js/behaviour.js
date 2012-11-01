@@ -90,7 +90,7 @@ var MenuBehaviour = (function()
 			}
 		});
 		
-		//$('#testButton').on('click', HE.test());
+		$('#buttonExit').on('click', HE.exit());
 	}
 	
 	return pub;
