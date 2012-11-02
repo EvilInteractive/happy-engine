@@ -375,9 +375,9 @@ bool TextureLoader::loadData( TextureLoadData& data )
         }
 
         ILuint numMipMaps(ilGetInteger(IL_NUM_MIPMAPS));
-        ILuint numFaces(ilGetInteger(IL_NUM_FACES));
+        ILuint numFaces(ilGetInteger(IL_NUM_FACES) + 1);
         data.faces = static_cast<uint8>(numFaces);
-        for (uint8 face(0); face < numFaces; ++numFaces)
+        for (uint8 face(0); face < numFaces; ++face)
         {
             HE_IF_ASSERT(face < TextureLoadData::MAX_CUBE_FACES, "More than %d faces in texture!", TextureLoadData::MAX_CUBE_FACES)
             {

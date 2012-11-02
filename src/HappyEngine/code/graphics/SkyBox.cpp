@@ -29,16 +29,14 @@
 #include "Material.h"
 #include "TextureCube.h"
 
+#include "Entity.h"
+#include "ModelComponent.h"
 
 namespace he {
 namespace gfx {
 
-SkyBox::SkyBox(): m_IsVisible(false), m_LoadedCount(0), m_pCubeMap(NEW TextureCube()), m_pCube(nullptr), m_Material(nullptr)
+SkyBox::SkyBox(): m_CubeMap(nullptr), m_Cube(nullptr), m_Material(nullptr)
 {
-    for (int i(0); i < 6; ++i)
-    {
-        m_CubeFaces[i] = nullptr;
-    }
 }
 
 
@@ -49,182 +47,70 @@ SkyBox::~SkyBox()
 
 void SkyBox::unload()
 {
-    for (int i(0); i < 6; ++i)
+    if (m_CubeMap != nullptr)
     {
-        if (m_CubeFaces[i] != nullptr)
-            m_CubeFaces[i]->release();
+        m_CubeMap->release();
+        m_CubeMap = nullptr;
     }
-    if (m_pCube != nullptr)
-        m_pCube->release();
+    if (m_Cube != nullptr)
+    {
+        m_Cube->release();
+        m_Cube = nullptr;
+    }
     if (m_Material != nullptr)
+    {
         m_Material->release();
+        m_Material = nullptr;
+    }
 }
 
 void SkyBox::load( const std::string& /*asset*/ )
 {
-    //unload();
+    //m_CubeMap = CONTENT->asyncLoadTextureCube(asset);
+    //////////////////////////////////////////////////////////////////////////
+    /// Load Model
+    //////////////////////////////////////////////////////////////////////////
+    m_Cube = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_Cube->setName("skybox");
+    std::vector<vec3> vertices;
+    vertices.push_back(vec3(-1,  1, -1));
+    vertices.push_back(vec3( 1,  1, -1));
+    vertices.push_back(vec3(-1, -1, -1));
+    vertices.push_back(vec3( 1, -1, -1));
 
-    ////////////////////////////////////////////////////////////////////////////
-    ///// Load Textures
-    ////////////////////////////////////////////////////////////////////////////    
-    //uint extPos(asset.rfind('.'));
-    //std::string name(asset.substr(0, extPos));
-    //std::string ext(asset.substr(extPos));
+    vertices.push_back(vec3(-1,  1,  1));
+    vertices.push_back(vec3( 1,  1,  1));
+    vertices.push_back(vec3(-1, -1,  1));
+    vertices.push_back(vec3( 1, -1,  1));
 
-    //m_CubeFaces[Cube_Back] = CONTENT->asyncLoadTexture(name + "_back" + ext, true);
-    //m_CubeFaces[Cube_Back]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
-    //m_CubeFaces[Cube_Front] = CONTENT->asyncLoadTexture(name + "_front" + ext, true);
-    //m_CubeFaces[Cube_Front]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    std::vector<byte> indices;
+    indices.push_back(0); indices.push_back(1); indices.push_back(2); //front
+    indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
-    //m_CubeFaces[Cube_Bottom] = CONTENT->asyncLoadTexture(name + "_bottom" + ext, true);
-    //m_CubeFaces[Cube_Bottom]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
-    //m_CubeFaces[Cube_Top] = CONTENT->asyncLoadTexture(name + "_top" + ext, true);
-    //m_CubeFaces[Cube_Top]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    indices.push_back(5); indices.push_back(4); indices.push_back(7); //back
+    indices.push_back(4); indices.push_back(6); indices.push_back(7);
 
-    //m_CubeFaces[Cube_Left] = CONTENT->asyncLoadTexture(name + "_left" + ext, true);
-    //m_CubeFaces[Cube_Left]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
-    //m_CubeFaces[Cube_Right] = CONTENT->asyncLoadTexture(name + "_right" + ext, true);
-    //m_CubeFaces[Cube_Right]->callbackOnceIfLoaded(boost::bind(&SkyBox::faceLoaded, this));
+    indices.push_back(4); indices.push_back(0); indices.push_back(6); //left
+    indices.push_back(0); indices.push_back(2); indices.push_back(6);
 
+    indices.push_back(1); indices.push_back(5); indices.push_back(3); //right
+    indices.push_back(5); indices.push_back(7); indices.push_back(3);
 
+    indices.push_back(4); indices.push_back(5); indices.push_back(0); //top
+    indices.push_back(5); indices.push_back(1); indices.push_back(0);
 
-    ////////////////////////////////////////////////////////////////////////////
-    ///// Load Model
-    ////////////////////////////////////////////////////////////////////////////
-    //m_pCube = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    //m_pCube->setName("skybox");
-    //std::vector<vec3> vertices;
-    //vertices.push_back(vec3(-1,  1, -1));
-    //vertices.push_back(vec3( 1,  1, -1));
-    //vertices.push_back(vec3(-1, -1, -1));
-    //vertices.push_back(vec3( 1, -1, -1));
+    indices.push_back(3); indices.push_back(7); indices.push_back(2); //bottom
+    indices.push_back(7); indices.push_back(6); indices.push_back(2);
 
-    //vertices.push_back(vec3(-1,  1,  1));
-    //vertices.push_back(vec3( 1,  1,  1));
-    //vertices.push_back(vec3(-1, -1,  1));
-    //vertices.push_back(vec3( 1, -1,  1));
+    BufferLayout layout;
+    layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
+    m_Cube->init(layout, MeshDrawMode_Triangles);
+    m_Cube->setVertices(vertices.data(), vertices.size(), MeshUsage_Static);
+    m_Cube->setIndices(indices.data(), indices.size(), IndexStride_Byte, MeshUsage_Static);
+    m_Cube->setLoaded();
 
-    //std::vector<byte> indices;
-    //indices.push_back(0); indices.push_back(1); indices.push_back(2); //front
-    //indices.push_back(1); indices.push_back(3); indices.push_back(2);
+    m_Material = he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material"));
 
-    //indices.push_back(5); indices.push_back(4); indices.push_back(7); //back
-    //indices.push_back(4); indices.push_back(6); indices.push_back(7);
-
-    //indices.push_back(4); indices.push_back(0); indices.push_back(6); //left
-    //indices.push_back(0); indices.push_back(2); indices.push_back(6);
-
-    //indices.push_back(1); indices.push_back(5); indices.push_back(3); //right
-    //indices.push_back(5); indices.push_back(7); indices.push_back(3);
-
-    //indices.push_back(4); indices.push_back(5); indices.push_back(0); //top
-    //indices.push_back(5); indices.push_back(1); indices.push_back(0);
-
-    //indices.push_back(3); indices.push_back(7); indices.push_back(2); //bottom
-    //indices.push_back(7); indices.push_back(6); indices.push_back(2);
-
-    //BufferLayout layout;
-    //layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
-    //m_pCube->init();
-    //m_pCube->setVertices(vertices.data(), vertices.size(), layout);\
-    //m_pCube->setIndices(indices.data(), indices.size(), IndexStride_Byte);
-    //m_pCube->setLoaded();
-
-    ////////////////////////////////////////////////////////////////////////////
-    ///// Load Shader
-    ////////////////////////////////////////////////////////////////////////////
-    //ShaderLayout shaderLayout;
-    //shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
-    //Shader* pShader = ResourceFactory<Shader>::getInstance()->get(
-    //    CONTENT->loadShader("forward/skybox.vert", "forward/skybox.frag", shaderLayout, std::vector<std::string>()));
-
-    ////////////////////////////////////////////////////////////////////////////
-    ///// Load Material
-    ////////////////////////////////////////////////////////////////////////////
-    //BufferLayout instancingLayout;
-    //m_Material = ResourceFactory<Material>::getInstance()->get(ResourceFactory<Material>::getInstance()->create());
-    //m_Material->setShader(pShader->getHandle(), layout, instancingLayout);
-    //m_Material->registerVar(
-    //    NEW gfx::ShaderGlobalVar(pShader->getShaderVarId("matVP"), "matVP", gfx::ShaderVarType_ViewProjection));
-    //m_Material->registerVar(
-    //    NEW gfx::ShaderUserVar<gfx::TextureCube::pointer>(
-    //    pShader->getShaderSamplerId("cubeMap"), "cubeMap", m_pCubeMap));
-
-    //m_Material->setIsBlended(false);
-    //m_Material->setNoPost(true);
-    //m_Material->setIsBackground(true);
-
-    //pShader->release();
 }
-void SkyBox::faceLoaded()
-{
-    //if (++m_LoadedCount == 6)
-    //{
-    //    HE_ASSERT(m_pCubeMap->isInitialized() == false, "cube map already initialized");
-
-    //    uint cubeMapId;
-    //    glGenTextures(1, &cubeMapId);
-    //    m_pCubeMap->init(cubeMapId);
-    //    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapId);
-    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    //    for (int i(0); i < 6; ++i)
-    //    {
-    //        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, 512, 512, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_CubeFaces[i]->getPixelsIfAvailable());
-    //        m_CubeFaces[i]->release();
-    //        m_CubeFaces[i] = nullptr;
-    //    }
-
-    //    m_IsVisible = true;
-    //}
-}
-
-
-const ModelMesh* SkyBox::getModelMesh() const
-{
-    return m_pCube;
-}
-
-void SkyBox::applyMaterial( const ICamera* pCamera ) const
-{
-    m_Material->apply(this, pCamera);
-}
-
-void SkyBox::applyMaterial( const Material* customMaterial, const ICamera* pCamera ) const
-{
-    customMaterial->apply(this, pCamera);
-}
-
-const Material* SkyBox::getMaterial() const
-{
-    return m_Material;
-}
-
-void SkyBox::draw()
-{
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-    GL::heSetCullFace(true);
-    GL::heBindVao(m_pCube->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_pCube->getNumIndices(), m_pCube->getIndexType(), 0);
-    GL::heSetCullFace(false);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-}
-
-bool SkyBox::isVisible() const
-{
-    return m_IsVisible;
-}
-
-bool SkyBox::isInCamera( const ICamera* /*pCamera*/ ) const
-{
-    return m_IsVisible;
-}
-
 
 } } //end namespace

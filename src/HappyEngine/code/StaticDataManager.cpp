@@ -22,6 +22,7 @@
 #include "StaticDataManager.h"
 #include "ResourceFactory.h"
 #include "Texture2D.h"
+#include "TextureCube.h"
 #include "Model.h"
 #include "ModelMesh.h"
 #include "Font.h"
@@ -43,6 +44,7 @@ void StaticDataManager::init()
     tools::Logger::sdmInit();
     ResourceFactory<gfx::Material>::init(64, 64, "MaterialFactory");
     ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
+    ResourceFactory<gfx::TextureCube>::init(5, 5, "TextureCubeFactory");
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
     ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
@@ -62,6 +64,7 @@ void StaticDataManager::destroy()
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gfx::Font>::destroy();
     ResourceFactory<gfx::Material>::destroy();
+    ResourceFactory<gfx::TextureCube>::destroy();
     ResourceFactory<gfx::Texture2D>::destroy();
     ResourceFactory<gfx::Model>::destroy();
     ResourceFactory<gfx::ModelMesh>::destroy();

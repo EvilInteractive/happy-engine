@@ -68,11 +68,14 @@ public:
     void setDepthWriteEnabled(bool enable);
     void setDepthReadEnabled(bool enable);
 
+    void setCullFrontFace(bool enable);
+
 private:
 
     BlendEquation m_BlendEquation;
     BlendFunc m_SourceBlend, m_DestBlend;
     bool m_IsBlended, m_UsedForInstancing, m_NoPost, m_IsBackground;
+    bool m_CullFrontFace;
 
     ObjectHandle m_ShaderHandle;
     std::vector<ShaderVar*> m_ShaderVar;

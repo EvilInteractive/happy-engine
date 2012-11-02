@@ -77,6 +77,11 @@ private:
     };
     struct TextureLoadData
     {
+        TextureLoadData()
+        {
+            for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
+                mipData[i] = std::vector<TextureLoadMipData>(0);
+        }
         const static int MAX_CUBE_FACES = 6;
         std::string path;
 

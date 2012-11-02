@@ -24,6 +24,7 @@
 
 #include "Shader.h"
 #include "Texture2D.h"
+#include "TextureCube.h"
 
 namespace he {
 namespace gfx {
@@ -138,6 +139,40 @@ public:
 
 private:
     const Texture2D* m_Data;
+};
+template<>
+class ShaderUserVar<const TextureCube*> : public ShaderVar
+{
+public:
+    ShaderUserVar(uint id, const std::string& name, const TextureCube* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    {
+        ResourceFactory<TextureCube>::getInstance()->instantiate(m_Data->getHandle());
+    }
+    virtual ~ShaderUserVar()
+    {
+        m_Data->release();
+    }
+
+    const TextureCube* getData() const { return m_Data; }
+    void setData(const TextureCube* data) 
+    { 
+        m_Data->release();
+        m_Data = data; 
+        ResourceFactory<TextureCube>::getInstance()->instantiate(m_Data->getHandle());
+    }
+
+    virtual void assignData(Shader* shader)
+    {
+        shader->setShaderVar(m_Id, m_Data);
+    }
+
+    virtual ShaderVar* copy()
+    {
+        return NEW ShaderUserVar<const TextureCube*>(m_Id, m_Name, m_Data);
+    }
+
+private:
+    const TextureCube* m_Data;
 };
 
 } } //end namespace

@@ -320,6 +320,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                 gfx::BlendEquation blendEq(gfx::BlendEquation_Add);
                 gfx::BlendFunc srcBlend(gfx::BlendFunc_One), destBlend(gfx::BlendFunc_Zero);
                 bool post(true);
+                bool cullFrontFace(false);
                 if (reader.containsRoot(L"info"))
                 {
                     isBlended = reader.readBool(L"info", L"blending", false);
@@ -330,10 +331,12 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         destBlend = blendFuncFromString(reader.readString(L"info", L"destBlend", "ZERO"));
                     }
                     post = reader.readBool(L"info", L"post", true);
+                    cullFrontFace = reader.readBool(L"info", L"cullFrontFace", false);
                 }
 
                 material->setIsBlended(isBlended, blendEq, srcBlend, destBlend);
                 material->setNoPost(!post);
+                material->setCullFrontFace(cullFrontFace);
                 material->setShader(pShader->getHandle(), vertexLayout, instancingLayout);
 
 
@@ -418,6 +421,17 @@ ObjectHandle MaterialLoader::load(const std::string& path)
 
                             material->registerVar(
                                 NEW gfx::ShaderUserVar<const gfx::Texture2D*>(
+                                pShader->getShaderSamplerId(name), name, tex));
+                            tex->release();
+                        }
+                        // Texture Cube
+                        else if (node.second == L"TEXTURECUBE")
+                        {
+                            const gfx::TextureCube* tex( 
+                                CONTENT->asyncLoadTextureCube(reader.readString(L"TEXTURECUBE", node.first, "")));
+
+                            material->registerVar(
+                                NEW gfx::ShaderUserVar<const gfx::TextureCube*>(
                                 pShader->getShaderSamplerId(name), name, tex));
                             tex->release();
                         }

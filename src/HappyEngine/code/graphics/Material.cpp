@@ -36,7 +36,7 @@ namespace he {
 namespace gfx {
 
 Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(false), m_IsBackground(false),
-    m_DepthRead(true), m_DepthWrite(true), m_ShaderHandle(ObjectHandle::unassigned)
+    m_DepthRead(true), m_DepthWrite(true), m_ShaderHandle(ObjectHandle::unassigned), m_CullFrontFace(false)
 {
 }
 
@@ -49,42 +49,6 @@ Material::~Material()
     if (m_ShaderHandle != ObjectHandle::unassigned)
         ResourceFactory<Shader>::getInstance()->release(m_ShaderHandle);
 }
-
-
-//Material* Material::operator=(const Material* other)
-//{
-//    m_BlendEquation = other.m_BlendEquation;
-//    m_SourceBlend = other.m_SourceBlend;
-//    m_DestBlend = other.m_DestBlend;
-//    m_IsBlended = other.m_IsBlended;
-//    m_UsedForInstancing = other.m_UsedForInstancing;
-//    m_NoPost = other.m_NoPost;
-//    m_IsBackground = other.m_IsBackground;
-//
-//    m_DepthRead = other.m_DepthRead;
-//    m_DepthWrite = other.m_DepthWrite;
-//
-//    m_CompatibleVL = other.m_CompatibleVL;
-//    m_CompatibleIL = other.m_CompatibleIL;
-//
-//    if (m_ShaderHandle != ObjectHandle::unassigned)
-//        ResourceFactory<Shader>::getInstance()->release(m_ShaderHandle);
-//    m_ShaderHandle = other.m_ShaderHandle;
-//    if (m_ShaderHandle != ObjectHandle::unassigned)
-//        ResourceFactory<Shader>::getInstance()->instantiate(m_ShaderHandle);
-//    
-//    std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [](ShaderVar* var)
-//    {
-//        delete var;
-//    });
-//    m_ShaderVar.clear();
-//    std::for_each(other.m_ShaderVar.cbegin(), other.m_ShaderVar.cend(), [&](ShaderVar* var)
-//    {
-//        m_ShaderVar.push_back(var->copy());
-//    });
-//
-//    return *this;
-//}
 
 void Material::registerVar(ShaderVar* var)
 {
@@ -129,6 +93,8 @@ void Material::apply( const SingleDrawable* drawable, const ICamera* camera ) co
         }
         GL::heSetDepthRead(m_DepthRead);
         GL::heSetDepthWrite(m_DepthWrite);
+
+        GL::heSetCullFace(m_CullFrontFace);
 
         Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
 
@@ -198,6 +164,8 @@ void Material::apply( const InstancedDrawable* drawable, const ICamera* camera )
         GL::heSetDepthRead(m_DepthRead);
         GL::heSetDepthWrite(m_DepthWrite);
 
+        GL::heSetCullFace(m_CullFrontFace);
+
         Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
         shader->bind();
         std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](ShaderVar* pVar)
@@ -249,6 +217,8 @@ void Material::apply( const SkinnedDrawable* drawable, const ICamera* camera ) c
 
         GL::heSetDepthRead(m_DepthRead);
         GL::heSetDepthWrite(m_DepthWrite);
+
+        GL::heSetCullFace(m_CullFrontFace);
 
         Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
         shader->bind();
@@ -383,6 +353,11 @@ void Material::setDepthWriteEnabled( bool enable )
 void Material::setDepthReadEnabled( bool enable )
 {
     m_DepthRead = enable;
+}
+
+void Material::setCullFrontFace( bool enable )
+{
+    m_CullFrontFace = enable;
 }
 
 

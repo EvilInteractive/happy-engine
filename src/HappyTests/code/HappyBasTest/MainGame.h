@@ -79,7 +79,7 @@ private:
     he::gfx::View3D*   m_View2;
 
     std::vector<he::ge::Entity*> m_EntityList;
-    he::gfx::SkyBox* m_pSkyBox;
+    he::gfx::SkyBox* m_SkyBox;
 
     he::gfx::ModelMesh* m_DebugMesh;
 

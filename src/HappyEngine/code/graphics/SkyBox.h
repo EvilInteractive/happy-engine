@@ -22,7 +22,7 @@
 #define _HE_SKYBOX_H_
 #pragma once
 
-#include "IDrawable.h"
+#include "DefaultSingleDrawable.h"
 #include "TextureCube.h"
 
 namespace he {
@@ -33,64 +33,28 @@ class TextureCube;
 class ModelMesh;
 class Material;
 
-class SkyBox : public SingleDrawable
+class SkyBox : public DefaultSingleDrawable
 {
 public:
     SkyBox();
     virtual ~SkyBox();
 
     void load(const std::string& asset);
-
-    //////////////////////////////////////////////////////////////////////////
-    /// SingleDrawable
-    /////////////////////////////////////////////////////////////////////////
-    virtual const Material* getMaterial() const;
-    virtual void applyMaterial(const ICamera* pCamera) const;
-    virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
-
-    virtual const ModelMesh* getModelMesh() const;
-
-    virtual bool getCastsShadow() const { return false; }
-    virtual void setCastsShadow(bool /*castShadow*/) { }
-
-    virtual bool isVisible() const;
-    virtual void setVisible(bool /*visible*/) { }
-
-    virtual bool isInCamera(const ICamera* pCamera) const;
-    virtual float getDrawPriority(const ICamera* /*pCamera*/) const { return 0; } 
-
-    virtual void draw();
-    virtual void drawShadow() {}
-
-private:
-
-    enum Face
-    {
-        Cube_Left,
-        Cube_Right,
-
-        Cube_Bottom,
-        Cube_Top,
-
-        Cube_Back,
-        Cube_Front,
-    };
-
-    void faceLoaded();
-
     void unload();
 
-    ModelMesh* m_pCube;
-    TextureCube* m_pCubeMap;
-    const Texture2D* m_CubeFaces[6];
+    virtual const Material* getMaterial() const { return m_Material; }
+    virtual const ModelMesh* getModelMesh() const { return m_Cube; }
+
+private:
+    ModelMesh* m_Cube;
+    const TextureCube* m_CubeMap;
     Material* m_Material;
     
-    bool m_IsVisible;
-    byte m_LoadedCount;
-
     //Disable default copy constructor and default assignment operator
     SkyBox(const SkyBox&);
     SkyBox& operator=(const SkyBox&);
+
+
 };
 
 } } //end namespace

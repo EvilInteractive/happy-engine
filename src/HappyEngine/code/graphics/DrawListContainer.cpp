@@ -47,7 +47,7 @@ void DrawListContainer::getContainerIndex(const IDrawable* drawable, BlendFilter
     const gfx::Material* material(drawable->getMaterial());
     HE_IF_ASSERT(material != nullptr, "Material is nullptr!")
     {
-        if (material->isBlended())
+        if (material->isBlended() || material->noPost())
             blend = BlendFilter_Blend;
         else
             blend = BlendFilter_Opac;

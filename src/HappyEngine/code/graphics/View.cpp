@@ -232,7 +232,7 @@ void View3D::init( const RenderSettings& settings )
     m_2DRenderer->init(this, m_OutputRenderTarget);
 
     m_ShapeRenderer = NEW ShapeRenderer();
-    m_ShapeRenderer->init(this, m_IntermediateRenderTarget);
+    m_ShapeRenderer->init(this, m_OutputRenderTarget);
 
     if (settings.enableDeferred)
     {
@@ -286,14 +286,16 @@ void View3D::draw()
         GL::heSetViewport(m_Viewport);
         m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
         m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
+
         m_OpacRenderer->draw();
+        // Draw skybox here
         m_TransparentRenderer->draw();
 
         m_ShapeRenderer->draw();
 
         if (m_Settings.enablePost)
             m_PostProcesser->draw();
-
+        
         m_2DRenderer->draw();
 
         m_Window->present();

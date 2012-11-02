@@ -1,0 +1,11 @@
+[Forward]
+shader = "skyboxShader.shader"
+
+[TEXTURECUBE]
+cubeMap = "engine/cubemaps/defaultSky.dds"
+
+[info]
+blending = false
+post = false
+shadow = false
+cullFrontFace = true

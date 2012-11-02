@@ -201,10 +201,7 @@ void main()
     vec2 tex = vec2(1 - texCoord.x, texCoord.y);
 
     vec4 sampleColor = textureLod(colorMap, tex, 0.0f);
-    
-    if (sampleColor.a < 0.01f)
-        discard;
-    
+        
     vec3 color = sampleColor.rgb;
     
 #if BLOOM
@@ -213,12 +210,16 @@ void main()
     color += texture(blur2, tex).rgb * 0.25f;  
     color += texture(blur3, tex).rgb * 0.25f;  
 #endif
+	bool post = sampleColor.a > 0.01f;
 
 #if AO
-    float ao;
-    vec3 gi; 
-    getAoAndGi(tex, ao, gi);
-    color = color + gi * 5;
+    float ao = 1.0f;
+	if (post)
+	{
+		vec3 gi; 
+		getAoAndGi(tex, ao, gi);
+		color = color + gi * 5;
+	}
 #endif
 
 #if HDR  
@@ -230,6 +231,8 @@ void main()
     color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
 #endif
 
+	if (post)
+	{
 #if FOG
     const float beginFog = 0.5f;
 	vec3 normalDepth = texture(normalDepthMap, tex).xyz;
@@ -241,7 +244,7 @@ void main()
 #if AO
     color *= ao;
 #endif
-    
+    }
     //color = color - gi;
     //color = vec3(ao);
 			
