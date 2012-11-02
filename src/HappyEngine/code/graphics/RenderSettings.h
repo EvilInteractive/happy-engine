@@ -99,8 +99,12 @@ struct LightingSettings
 struct RenderSettings
 {
 public:
+    RenderSettings(): enableDeferred(true), enablePost(true), skybox("engine/cubemaps/defaultSky.dds")
+    {}
     bool enableDeferred;
     bool enablePost; 
+
+    std::string skybox;
     
     LightingSettings lightingSettings;
     PostSettings postSettings;

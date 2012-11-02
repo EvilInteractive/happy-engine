@@ -74,6 +74,7 @@ public:
         , m_SupportTextureCompression(false)
     {
         he_memset(m_BoundTex2D, 0xff, MAX_SAMPLERS * sizeof(uint));
+        he_memset(m_BoundTexCube, 0xff, MAX_SAMPLERS * sizeof(uint));
         he_memset(m_BoundUbo, 0xff, MAX_UBO * sizeof(uint));
     }
 
@@ -102,6 +103,7 @@ private:
     uint m_BoundUbo[MAX_UBO];
     static const int MAX_SAMPLERS = 31;
     uint m_BoundTex2D[MAX_SAMPLERS];
+    uint m_BoundTexCube[MAX_SAMPLERS];
     uint m_ActiveTex;
 
     // Blending

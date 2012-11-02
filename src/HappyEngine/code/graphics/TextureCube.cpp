@@ -103,7 +103,7 @@ void TextureCube::setCompressedData( uint width, uint height, const Face& face, 
         }
 
         // Bind
-        GL::heBindTexture2D(0, m_Id);
+        GL::heBindTextureCube(0, m_Id);
 
         //Data
         glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mipLevel, details::getInternalTextureFormat(m_TextureFormat), 

@@ -126,10 +126,19 @@ void GL::heBindTexture2D(uint tex)
     s_CurrentContext->m_BoundTex2D[0] = tex;
     glBindTexture(GL_TEXTURE_2D, tex);
 }
-void GL::heBindTextureCube( uint texPos, uint tex )
+void GL::heBindTextureCube( uint samplerPos, uint tex )
 {
-    glActiveTexture(GL_TEXTURE0 + texPos);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+    HE_ASSERT(samplerPos < GLContext::MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
+    if (s_CurrentContext->m_BoundTexCube[samplerPos] != tex)
+    {
+        if (s_CurrentContext->m_ActiveTex != samplerPos)
+        {
+            glActiveTexture(GL_TEXTURE0 + samplerPos);
+            s_CurrentContext->m_ActiveTex = samplerPos;
+        }
+        s_CurrentContext->m_BoundTex2D[samplerPos] = tex;
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+    }
 }
 
 void GL::heBindUniformBuffer( uint uboId, uint bufferId )
@@ -247,6 +256,7 @@ void GL::reset()
     s_CurrentContext->m_BoundVao = UINT_MAX;
 
     he_memset(s_CurrentContext->m_BoundTex2D, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint));
+    he_memset(s_CurrentContext->m_BoundTexCube, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint));
     he_memset(s_CurrentContext->m_BoundUbo, 0xff, GLContext::MAX_UBO * sizeof(uint));
 
     s_CurrentContext->m_Viewport.x = -1;

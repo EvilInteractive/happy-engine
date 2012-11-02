@@ -230,21 +230,11 @@ void Deferred3DRenderer::compileShaders()
     m_AmbDirIllLightData.ambColor = m_AmbDirIllShader->getShaderVarId("ambLight.color");
     m_AmbDirIllLightData.dirColor = m_AmbDirIllShader->getShaderVarId("dirLight.color");
     m_AmbDirIllLightData.dirDirection = m_AmbDirIllShader->getShaderVarId("dirLight.direction");
-    m_AmbDirIllLightData.dirPosition = m_AmbDirIllShader->getShaderVarId("dirLight.position");
-    m_AmbDirIllLightData.dirNearFar = m_AmbDirIllShader->getShaderVarId("dirLight.nearFar");
 
     m_AmbDirIllLightData.colorIllMap  = m_AmbDirIllShader->getShaderSamplerId("colorIllMap");
     m_AmbDirIllLightData.normalDepthMap  = m_AmbDirIllShader->getShaderSamplerId("normalDepthMap");
     if (m_Settings.enableSpecular)
         m_AmbDirIllLightData.sgMap  = m_AmbDirIllShader->getShaderSamplerId("sgMap");
-    
-    if (m_Settings.enableShadows)
-    {
-        m_AmbDirIllLightData.shadowMap0 = m_AmbDirIllShader->getShaderSamplerId("shadowMap0");
-        m_AmbDirIllLightData.shadowMap1 = m_AmbDirIllShader->getShaderSamplerId("shadowMap1");
-        m_AmbDirIllLightData.shadowMap2 = m_AmbDirIllShader->getShaderSamplerId("shadowMap2");
-        m_AmbDirIllLightData.shadowMap3 = m_AmbDirIllShader->getShaderSamplerId("shadowMap3");
-    }
 }
 
 void Deferred3DRenderer::onSettingChanged()
@@ -362,9 +352,7 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.ambColor, vec4(ambLight->color, ambLight->multiplier));
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.dirColor, vec4(dirLight->getColor(), dirLight->getMultiplier()));
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.dirDirection, normalize((m_View->getCamera()->getView() * vec4(dirLight->getDirection(), 0.0f)).xyz()));
-    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.dirPosition, (m_View->getCamera()->getView() * vec4(dirLight->getShadowPosition(), 1.0f)).xyz());
-    m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.dirNearFar, dirLight->getShadowNearFar());
-
+  
     m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.colorIllMap, m_ColorIllTexture);
     if (m_Settings.enableSpecular)
         m_AmbDirIllShader->setShaderVar(m_AmbDirIllLightData.sgMap,   m_SGTexture);

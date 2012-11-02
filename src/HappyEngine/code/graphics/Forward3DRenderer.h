@@ -31,6 +31,7 @@ class Shader;
 class ModelMesh;
 class Texture2D;
 class RenderTarget;
+class ICamera;
 
 class Forward3DRenderer : public IRenderer3D
 {
@@ -44,6 +45,9 @@ public:
     virtual void init( View3D* view, const RenderTarget* target);
 
     virtual void draw();
+
+    event1<void, const ICamera*> PreDraw;
+    event1<void, const ICamera*> PostDraw;
 
 private:    
     const RenderTarget* m_RenderTarget;

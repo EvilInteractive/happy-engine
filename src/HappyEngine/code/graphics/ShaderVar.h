@@ -112,7 +112,7 @@ class ShaderUserVar<const Texture2D*> : public ShaderVar
 public:
     ShaderUserVar(uint id, const std::string& name, const Texture2D* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
-        ResourceFactory<Texture2D>::getInstance()->instantiate(m_Data->getHandle());
+        m_Data->instantiate();
     }
     virtual ~ShaderUserVar()
     {
@@ -124,7 +124,7 @@ public:
     { 
         m_Data->release();
         m_Data = data; 
-        ResourceFactory<Texture2D>::getInstance()->instantiate(m_Data->getHandle());
+        m_Data->instantiate();
     }
 
     virtual void assignData(Shader* shader)
@@ -146,7 +146,7 @@ class ShaderUserVar<const TextureCube*> : public ShaderVar
 public:
     ShaderUserVar(uint id, const std::string& name, const TextureCube* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
-        ResourceFactory<TextureCube>::getInstance()->instantiate(m_Data->getHandle());
+        m_Data->instantiate();
     }
     virtual ~ShaderUserVar()
     {
@@ -158,7 +158,7 @@ public:
     { 
         m_Data->release();
         m_Data = data; 
-        ResourceFactory<TextureCube>::getInstance()->instantiate(m_Data->getHandle());
+        m_Data->instantiate();
     }
 
     virtual void assignData(Shader* shader)

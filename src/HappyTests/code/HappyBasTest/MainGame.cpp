@@ -35,7 +35,6 @@
 #include "ContentManager.h"
 
 #include "LightManager.h"
-#include "SkyBox.h"
 
 #include "LightComponent.h"
 #include "DirectionalLight.h"
@@ -65,7 +64,6 @@ he::Random MainGame::s_Random(0);
 
 MainGame::MainGame()
     : m_FpsGraph(nullptr)
-    , m_SkyBox(nullptr)
     , m_SpinShadows(false)
     , m_MovingEntityFase(0)
     , m_ShowDebugMesh(true)
@@ -85,7 +83,6 @@ MainGame::~MainGame()
 {
     m_DebugMesh->release();
     delete m_FpsGraph;
-    delete m_SkyBox;
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
         delete entity;     
@@ -304,10 +301,6 @@ void MainGame::load()
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
-
-    m_SkyBox = NEW he::gfx::SkyBox();
-    m_SkyBox->load("");
-    m_SkyBox->attachToScene(m_Scene);
 
     he::MessageBox::showExt("Test Messagebox", 
         "Hallo\n\nIk test even of deze messagebox wel goed werk\n\n* 1\n* 2\n* 3", MessageBoxIcon_Warning, 

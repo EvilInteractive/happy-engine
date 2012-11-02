@@ -31,6 +31,7 @@
 
 #include "Entity.h"
 #include "ModelComponent.h"
+#include "ShaderVar.h"
 
 namespace he {
 namespace gfx {
@@ -64,9 +65,8 @@ void SkyBox::unload()
     }
 }
 
-void SkyBox::load( const std::string& /*asset*/ )
+void SkyBox::load( const std::string& asset )
 {
-    //m_CubeMap = CONTENT->asyncLoadTextureCube(asset);
     //////////////////////////////////////////////////////////////////////////
     /// Load Model
     //////////////////////////////////////////////////////////////////////////
@@ -110,6 +110,13 @@ void SkyBox::load( const std::string& /*asset*/ )
     m_Cube->setLoaded();
 
     m_Material = he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material"));
+    ShaderUserVar<const TextureCube*>* cubeMap(static_cast<ShaderUserVar<const gfx::TextureCube*>*>(m_Material->getVar("cubeMap")));
+    if (cubeMap != nullptr)
+    {
+        const TextureCube* cube(CONTENT->asyncLoadTextureCube(asset));
+        cubeMap->setData(cube);
+        cube->release();
+    }
 
 }
 

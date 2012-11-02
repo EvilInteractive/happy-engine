@@ -31,6 +31,7 @@ namespace gfx {
 class Scene;
 class Window;
 class IRenderer3D;
+class Forward3DRenderer;
 class ShadowCaster;
 class PostProcesser;
 class RenderTarget;
@@ -41,6 +42,7 @@ class CameraPerspective;
 class View;
 class View2D;
 class View3D;
+class SkyBox;
 
 class ViewFactory: public ObjectFactory<View>, public Singleton<ViewFactory>
 {
@@ -164,6 +166,7 @@ private:
 
     // Scene
     gfx::Scene*  m_Scene;
+    gfx::SkyBox* m_SkyBox;
 
     // Render Textures
     Texture2D* m_ColorRenderMap;
@@ -173,7 +176,7 @@ private:
 
     // Renderers
     IRenderer3D* m_OpacRenderer;
-    IRenderer3D* m_TransparentRenderer;
+    Forward3DRenderer* m_TransparentRenderer;
     ShapeRenderer* m_ShapeRenderer;
     Renderer2D* m_2DRenderer;
 

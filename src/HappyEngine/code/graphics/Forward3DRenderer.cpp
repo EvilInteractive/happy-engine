@@ -53,21 +53,29 @@ void Forward3DRenderer::init( View3D* view, const RenderTarget* target)
 void Forward3DRenderer::draw()
 {
     const Scene* scene(m_View->getScene());
+    const CameraPerspective* camera(m_View->getCamera());
     m_RenderTarget->prepareForRendering();
 
-    GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
+
+    PreDraw(camera);
+
+    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    GL::heSetDepthRead(true);
+    GL::heSetDepthWrite(true);
+    GL::heSetCullFace(false);
     GL::heBlendEnabled(m_BlendFilter == DrawListContainer::BlendFilter_Blend);
 
     const DrawListContainer& drawList(scene->getDrawList());
-    const CameraPerspective* camera(m_View->getCamera());
     drawList.draw(m_BlendFilter, camera, [&camera](IDrawable* drawable)
     {
         drawable->applyMaterial(camera);
         drawable->draw();
     }); 
+
+    PostDraw(camera);
 }
 
 

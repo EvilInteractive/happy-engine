@@ -36,6 +36,7 @@
 #include "GraphicsEngine.h"
 #include "CameraPerspective.h"
 #include "Game.h"
+#include "SkyBox.h"
 
 namespace he {
 namespace gfx {
@@ -168,6 +169,7 @@ View3D::~View3D()
 {
     GAME->removeFromTickList(this);
 
+    delete m_SkyBox;
     delete m_IntermediateRenderTarget;
     delete m_OutputRenderTarget;
     delete m_OpacRenderer;
@@ -257,6 +259,18 @@ void View3D::init( const RenderSettings& settings )
         m_PostProcesser = NEW PostProcesser();
         m_PostProcesser->init(this, m_OutputRenderTarget, m_IntermediateRenderTarget);
     }
+
+    if (m_Settings.skybox != "")
+    {
+        m_SkyBox = NEW gfx::SkyBox();
+        m_SkyBox->load(m_Settings.skybox);
+        eventCallback1<void, const ICamera*> skyBoxDrawCallback([this](const ICamera* camera)
+        {
+            m_SkyBox->applyMaterial(camera);
+            m_SkyBox->draw();
+        });
+        m_TransparentRenderer->PreDraw +=skyBoxDrawCallback;
+    }
 }
 
 void View3D::setScene( Scene* scene )
@@ -317,7 +331,7 @@ void View3D::tick( float dTime )
 
 #pragma endregion
 
-
+//////////////////////////////////////////////////////////////////////////
 ObjectHandle ViewFactory::createView3D()
 {
     return registerObject(NEW View3D());

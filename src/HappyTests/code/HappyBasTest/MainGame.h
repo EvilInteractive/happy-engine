@@ -37,7 +37,6 @@ namespace he {
         class Entity;
     }
     namespace gfx {
-        class SkyBox;
         class Window;
         class Scene;
         class View3D;
@@ -79,7 +78,6 @@ private:
     he::gfx::View3D*   m_View2;
 
     std::vector<he::ge::Entity*> m_EntityList;
-    he::gfx::SkyBox* m_SkyBox;
 
     he::gfx::ModelMesh* m_DebugMesh;
 

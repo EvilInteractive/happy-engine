@@ -92,9 +92,9 @@ Path& Path::operator+=( const std::string& str )
 
 Path Path::getWorkingPath()
 {
-	boost::filesystem::path workDir(boost::filesystem::current_path());
+    boost::filesystem::path workDir(boost::filesystem::current_path());
 
-	return Path(workDir.string());
+    return Path(workDir.string());
 }
 
 } //end namespace
