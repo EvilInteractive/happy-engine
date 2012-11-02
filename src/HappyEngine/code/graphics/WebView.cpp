@@ -25,7 +25,6 @@
 #include "WebView.h"
 #include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
-#include "Awesomium/WebCore.h"
 #include "Canvas2D.h"
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
@@ -205,6 +204,7 @@ WebView::~WebView()
         mouse->MouseMoved -= m_MouseMoveHandler;
         mouse->MouseWheelMoved -= m_MouseScrollHandler;
     }
+
     he_free(m_Buffer);
     m_WebView->Destroy();
     m_pRenderTexture->release();
@@ -228,13 +228,15 @@ void WebView::draw2D(Canvas2D* canvas)
         }
     }
 
-    canvas->getRenderer2D()->drawTexture2DToScreen(m_pRenderTexture, m_Position);
+	canvas->drawImage(m_pRenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
     m_WebView->LoadURL(webUrl);
+
+	m_WebView->set_load_listener(this);
 }
 
 void WebView::loadFile(const he::Path& /*path*/)
@@ -274,6 +276,7 @@ bool WebView::inputEnabled() const
     return m_bInputEnabled;
 }
 
+/* EXTRA */
 void WebView::onViewResized()
 {
     const RectI& viewport(m_View->getViewport());
@@ -291,13 +294,65 @@ void WebView::resize( const vec2& newSize )
             m_WebView->Resize((int)newSize.x, (int)newSize.y);
         else
             m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
-        Awesomium::BitmapSurface* surface(static_cast<Awesomium::BitmapSurface*>(m_WebView->surface()));
-        HE_IF_ASSERT(surface != nullptr, "Awesomium::BitmapSurface is nullptr!")
-        {
-            m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, surface->width() * 4 * surface->height()));
+        //Awesomium::BitmapSurface* surface(static_cast<Awesomium::BitmapSurface*>(m_WebView->surface()));
+        //HE_IF_ASSERT(surface != nullptr, "Awesomium::BitmapSurface is nullptr!")
+        //{
+            m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
             m_Size = newSize;
-        }
+        //}
     }
+}
+
+void WebView::OnFailLoadingFrame(
+		Awesomium::WebView *  		/*caller*/,
+		int64  						/*frame_id*/,
+		bool  						/*is_main_frame*/,
+		const Awesomium::WebURL&  	url,
+		int  						/*error_code*/,
+		const Awesomium::WebString& error_desc 
+	)
+{
+	char* buff0 = new char[url.path().length()];
+	url.path().ToUTF8(buff0, url.path().length());
+
+	char* buff2 = new char[error_desc.length()];
+	error_desc.ToUTF8(buff2, error_desc.length());
+
+	HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
+
+	delete[] buff0, buff2;
+}
+
+void WebView::OnFinishLoadingFrame(
+		Awesomium::WebView *  		/*caller*/,
+		int64  						/*frame_id*/,
+		bool  						/*is_main_frame*/,
+		const Awesomium::WebURL&  	url 
+	)
+{
+	char* buff0 = new char[url.path().length()];
+	url.path().ToUTF8(buff0, url.path().length());
+
+	HE_INFO("Finished loading url: '%s'", buff0);
+
+	delete[] buff0;
+}
+
+void WebView::OnDocumentReady(
+		Awesomium::WebView *  		/*caller*/,
+		const Awesomium::WebURL &  	/*url */
+	)
+{
+}
+
+void WebView::OnBeginLoadingFrame(
+		Awesomium::WebView*			/*caller*/,
+		int64						/*frame_id*/,
+		bool						/*is_main_frame*/,
+		const Awesomium::WebURL&	/*url*/,
+		bool						/*is_error_page*/
+	)
+{
 }
 
 }} //end namespace

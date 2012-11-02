@@ -18,34 +18,76 @@
 </div>
 
 <div id="propertyPanel">
-    <!--<div class="header"><span class="text">Properties</span></div>-->
     <ul id="propertyList">
-        <li><span class="property">transform</span>
-            <ul>
-                <li>Position:</li>
-                <li>
-                    <form id="position">
-                        X<input type="text" name="posX" class="tb"/>Y<input type="text" name="posY" class="tb center"/>Z<input type="text" name="posZ" class="tb"/>
-                    </form>
-                </li>
-            </ul>        
-            <ul>
-                <li>Rotation:</li>
-                <li>
-                    <form id="rotation">
-                        X<input type="text" name="rotX" class="tb"/>Y<input type="text" name="rotY" class="tb center"/>Z<input type="text" name="rotZ" class="tb"/>
-                    </form>
-                </li>
+        <!--
+        <li class="dropdown"><span class="property">transform</span>
+            <ul class="dropdownContent">
+                <ul>
+                    <li>Position:</li>
+                    <li>
+                        <form id="position">
+                            X<input type="text" name="posX" class="tb"/>Y<input type="text" name="posY" class="tb center"/>Z<input type="text" name="posZ" class="tb"/>
+                        </form>
+                    </li>
+                </ul>        
+                <ul>
+                    <li>Rotation:</li>
+                    <li>
+                        <form id="rotation">
+                            X<input type="text" name="rotX" class="tb"/>Y<input type="text" name="rotY" class="tb center"/>Z<input type="text" name="rotZ" class="tb"/>
+                        </form>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Scale:</li>
+                    <li>
+                        <form id="scale">
+                            X<input type="text" name="scaX" class="tb"/>Y<input type="text" name="scaY" class="tb center"/>Z<input type="text" name="scaZ" class="tb"/>
+                        </form>
+                    </li>
+                </ul>
             </ul>
-            <ul>
-                <li>Scale:</li>
-                <li>
-                    <form id="scale">
-                        X<input type="text" name="scaX" class="tb"/>Y<input type="text" name="scaY" class="tb center"/>Z<input type="text" name="scaZ" class="tb"/>
-                    </form>
-                </li>
-            </ul>
-        </li>
+        </li>-->
+        
+        <ul class="property">
+            <li id="one" class="properties"><a href="#one">properties</a>
+                <ul class="propertyContent">
+                    <li><a href="#">Name</a>
+                        <div class="propertySubContent">
+                            <form id="name">
+                                <input type="text" name="entityName" class="tbFullWidth"/>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li id="two" class="transform"><a href="#two">transform</a>
+                <ul class="propertyContent">
+                    <li><a href="#">Position</a>
+                        <div class="propertySubContent">
+                            <form id="position">
+                                X<input type="text" name="posX" class="tb"/>Y<input type="text" name="posY" class="tb center"/>Z<input type="text" name="posZ" class="tb"/>
+                            </form>
+                        </div>
+                    </li>
+                    <li><a href="#">Rotation</a>
+                        <div class="propertySubContent">
+                            <form id="rotation">
+                                X<input type="text" name="posX" class="tb"/>Y<input type="text" name="posY" class="tb center"/>Z<input type="text" name="posZ" class="tb"/>
+                            </form>
+                        </div>
+                    </li>
+                    <li><a href="#">Scale</a>
+                        <div class="propertySubContent">
+                            <form id="scale">
+                                X<input type="text" name="posX" class="tb"/>Y<input type="text" name="posY" class="tb center"/>Z<input type="text" name="posZ" class="tb"/>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        
     </ul>
 </div>
 
@@ -59,9 +101,10 @@
     </ul>
 </div>
 
+<!--
 <div id="infoBar">
     <div id="infoText">InfoText: TODO</div>
-</div>
+</div>-->
 
 <ul id="menuBar">
     <li><a class="first" id="menuButton0" href="#">File</a>
@@ -71,7 +114,7 @@
             <li><a href="#">Save</a></li>
             <li><a href="#">Save as</a></li>
             <li class="divider"></li>
-            <li><a href="#">Exit</a></li>
+            <li id="buttonExit"><a href="#">Exit</a></li>
             <li class="divider"></li>
             <li><a href="#" onclick="HE.test();">Test</a></li>
         </ul>        

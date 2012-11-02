@@ -25,11 +25,11 @@ in mat4 inWorld;
 uniform mat4 matV;
 uniform mat4 matVP;
 
-out vec4 passPos;
+out float passDepth;
 
 void main()
 {
     vec4 world = inWorld * vec4(inPosition, 1.0f);
-    passPos = matV * world;
+    passDepth = (matV * world).z;
     gl_Position = matVP * world;
 }

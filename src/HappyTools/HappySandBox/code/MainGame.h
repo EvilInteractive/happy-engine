@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Game.h"
+#include "IDrawable2D.h"
 
 namespace he {
     namespace tools {
@@ -32,6 +33,7 @@ namespace he {
         class Window;
         class View3D;
         class Scene;
+		class Canvas2D;
     }
 }
 
@@ -39,7 +41,7 @@ namespace hs {
     class UIController;
     class UIBind;
 
-class MainGame : public he::ge::Game
+class MainGame : public he::ge::Game, public he::gfx::IDrawable2D
 {
 public:
     MainGame();
@@ -48,6 +50,7 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
+	virtual void draw2D(he::gfx::Canvas2D* canvas);
 
 private:
 

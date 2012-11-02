@@ -40,6 +40,7 @@ public:
     //return = C:/data/test.png => absolute
     Path getAbsolutePath(const Path& relativePath) const; 
 
+	static Path getWorkingPath();
 
 private:
     std::string m_Path;

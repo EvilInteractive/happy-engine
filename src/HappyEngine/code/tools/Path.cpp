@@ -21,6 +21,8 @@
 
 #include "Path.h"
 
+#include "boost/filesystem.hpp"
+
 namespace he {
 
 Path::Path( const std::string& path ): m_Path(path)
@@ -86,6 +88,13 @@ Path& Path::operator+=( const std::string& str )
 {
     m_Path += str;
     return *this;
+}
+
+Path Path::getWorkingPath()
+{
+	boost::filesystem::path workDir(boost::filesystem::current_path());
+
+	return Path(workDir.string());
 }
 
 } //end namespace

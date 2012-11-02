@@ -29,6 +29,7 @@ in vec4 inBoneWeight;
 out vec2 passTexCoord;
 out vec3 passNormal;
 out vec3 passTangent;
+out float passDepth;
 
 uniform mat4 matWVP;
 uniform mat4 matWorldView;
@@ -39,11 +40,6 @@ void main()
 {    
     ivec4 boneId = ivec4(inBoneId);
     
-    vec4 position = matBones[boneId.x] * vec4(inPosition, 1.0f) * inBoneWeight.x;
-    position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
-    position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
-    position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
-    gl_Position = matWVP * vec4(position.xyz, 1.0f);
     
     passTexCoord = inTexCoord;
     
@@ -58,6 +54,16 @@ void main()
     tangent += matBones[boneId.z] * vec4(inTangent, 0.0f) * inBoneWeight.z;
     tangent += matBones[boneId.w] * vec4(inTangent, 0.0f) * inBoneWeight.w; 
     passTangent = (matWorldView * tangent).xyz;
+
+    vec4 position = matBones[boneId.x] * vec4(inPosition, 1.0f) * inBoneWeight.x;
+    position += matBones[boneId.y] * vec4(inPosition, 1.0f) * inBoneWeight.y;
+    position += matBones[boneId.z] * vec4(inPosition, 1.0f) * inBoneWeight.z;
+    position += matBones[boneId.w] * vec4(inPosition, 1.0f) * inBoneWeight.w; 
+
+    vec4 positionWorldView = matWorldView * position;
+    passDepth = positionWorldView.z;
+
+    gl_Position = matWVP * vec4(position.xyz, 1.0f);
 }
 
 

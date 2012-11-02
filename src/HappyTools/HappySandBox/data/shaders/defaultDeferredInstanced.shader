@@ -17,8 +17,9 @@ matVP = VIEWPROJECTION
 diffuseMap = TEXTURE2D
 normalMap = TEXTURE2D
 specGlossIllMap = TEXTURE2D
+camNearFar = NEARFAR
 
 [out]
 outColor = GBUFFER_COLOR
-outSGI = GBUFFER_SGI
-outNormal = GBUFFER_NORMAL
+outSG = GBUFFER_SG
+outNormalDepth = GBUFFER_NORMALDEPTH

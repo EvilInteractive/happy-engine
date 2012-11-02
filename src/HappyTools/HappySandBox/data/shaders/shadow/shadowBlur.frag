@@ -20,7 +20,7 @@
 
 #version 150 core
 #pragma optionNV(fastmath on)
-#pragma optionNV(fastprecision on)
+//#pragma optionNV(fastprecision on)
 #pragma optionNV(ifcvt none)
 #pragma optionNV(inline all)
 #pragma optionNV(strict on)

@@ -19,7 +19,7 @@
 
 #version 150 core
 #pragma optionNV(fastmath on)
-#pragma optionNV(fastprecision on)
+//#pragma optionNV(fastprecision on)
 #pragma optionNV(ifcvt none)
 #pragma optionNV(inline all)
 #pragma optionNV(strict on)
@@ -30,14 +30,16 @@
 in vec2 passTexCoord;
 in vec3 passNormal;
 in vec3 passTangent;
+in float passDepth;
 
 out vec4 outColor;
-out vec2 outNormal;
-out vec4 outSGI;
+out vec3 outNormalDepth;
+out vec4 outSG;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D specGlossIllMap;
+uniform vec2 camNearFar;
 
 vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
 {
@@ -45,7 +47,7 @@ vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)
     tangent = normalize(tangent);
     normal = normalize(normal);
 
-    vec3 binormal = normalize(cross(tangent, normal));
+    vec3 binormal = cross(tangent, normal);
 
     mat3 assenstelsel = mat3(binormal, tangent, normal);
 
@@ -66,7 +68,8 @@ void main()
     
     outColor = vec4(color.rgb, specGlossIll.b);
 
-    outNormal = encodeNormal(calcNormal(passNormal, passTangent, normal));
+    outNormalDepth.xy = encodeNormal(calcNormal(passNormal, passTangent, normal));
+    outNormalDepth.z = (passDepth - camNearFar.x) / (camNearFar.y - camNearFar.x);
 
-    outSGI = vec4(specGlossIll.rg, 0.0f, 1.0f);
+    outSG = vec4(specGlossIll.rg, 0.0f, 1.0f);
 }

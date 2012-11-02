@@ -44,10 +44,10 @@ Font::Font() :  m_FTLibrary(nullptr),
 
 Font::~Font()
 {
-    /*if (m_Face != 0)
+    if (m_Face != 0)
     {
         FT_Done_Face(m_Face);
-    }*/
+    }
 
     m_TextureAtlas->release();
 }
@@ -328,7 +328,7 @@ const Font::CharData* Font::getCharTextureData(byte chr) const
     HE_ASSERT(m_Init, "Init Font before using!");
     HE_ASSERT(m_Cached, "Precache Font before using!");
 
-    if (m_ExtendedChars && chr > 127)
+    if (!m_ExtendedChars && chr > 127)
     {
         return nullptr;
     }
