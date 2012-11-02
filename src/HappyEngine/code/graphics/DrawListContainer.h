@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Bound.h"
+//#define USE_OCTREE
 
 namespace he {
 namespace gfx {
@@ -60,7 +61,11 @@ private:
     void getContainerIndex(const IDrawable* drawable, BlendFilter& main);
 
     std::vector<IDrawable*> m_Dynamics;
+#ifdef USE_OCTREE
     CullOctree* m_DrawList[BlendFilter_MAX];
+#else
+    std::vector<IDrawable*> m_DrawList[BlendFilter_MAX];
+#endif
 
     //Disable default copy constructor and default assignment operator
     DrawListContainer(const DrawListContainer&);

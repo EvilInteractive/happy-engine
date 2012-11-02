@@ -228,7 +228,7 @@ void WebView::draw2D(Canvas2D* canvas)
         }
     }
 
-	canvas->drawImage(m_pRenderTexture, m_Position);
+    canvas->drawImage(m_pRenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)
@@ -236,7 +236,7 @@ void WebView::loadUrl(const std::string& url)
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
     m_WebView->LoadURL(webUrl);
 
-	m_WebView->set_load_listener(this);
+    m_WebView->set_load_listener(this);
 }
 
 void WebView::loadFile(const he::Path& /*path*/)
@@ -304,54 +304,54 @@ void WebView::resize( const vec2& newSize )
 }
 
 void WebView::OnFailLoadingFrame(
-		Awesomium::WebView *  		/*caller*/,
-		int64  						/*frame_id*/,
-		bool  						/*is_main_frame*/,
-		const Awesomium::WebURL&  	url,
-		int  						/*error_code*/,
-		const Awesomium::WebString& error_desc 
-	)
+        Awesomium::WebView *  		/*caller*/,
+        int64  						/*frame_id*/,
+        bool  						/*is_main_frame*/,
+        const Awesomium::WebURL&  	url,
+        int  						/*error_code*/,
+        const Awesomium::WebString& error_desc 
+    )
 {
-	char* buff0 = NEW char[url.path().length()];
-	url.path().ToUTF8(buff0, url.path().length());
+    char* buff0 = NEW char[url.path().length()];
+    url.path().ToUTF8(buff0, url.path().length());
 
-	char* buff2 = NEW char[error_desc.length()];
-	error_desc.ToUTF8(buff2, error_desc.length());
+    char* buff2 = NEW char[error_desc.length()];
+    error_desc.ToUTF8(buff2, error_desc.length());
 
-	HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
+    HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-	delete[] buff0, buff2;
+    delete[] buff0, buff2;
 }
 
 void WebView::OnFinishLoadingFrame(
-		Awesomium::WebView *  		/*caller*/,
-		int64  						/*frame_id*/,
-		bool  						/*is_main_frame*/,
-		const Awesomium::WebURL&  	url 
-	)
+        Awesomium::WebView *  		/*caller*/,
+        int64  						/*frame_id*/,
+        bool  						/*is_main_frame*/,
+        const Awesomium::WebURL&  	url 
+    )
 {
-	char* buff0 = NEW char[url.path().length()];
-	url.path().ToUTF8(buff0, url.path().length());
+    char* buff0 = NEW char[url.path().length()];
+    url.path().ToUTF8(buff0, url.path().length());
 
-	HE_INFO("Finished loading url: '%s'", buff0);
+    HE_INFO("Finished loading url: '%s'", buff0);
 
-	delete[] buff0;
+    delete[] buff0;
 }
 
 void WebView::OnDocumentReady(
-		Awesomium::WebView *  		/*caller*/,
-		const Awesomium::WebURL &  	/*url */
-	)
+        Awesomium::WebView *  		/*caller*/,
+        const Awesomium::WebURL &  	/*url */
+    )
 {
 }
 
 void WebView::OnBeginLoadingFrame(
-		Awesomium::WebView*			/*caller*/,
-		int64						/*frame_id*/,
-		bool						/*is_main_frame*/,
-		const Awesomium::WebURL&	/*url*/,
-		bool						/*is_error_page*/
-	)
+        Awesomium::WebView*			/*caller*/,
+        int64						/*frame_id*/,
+        bool						/*is_main_frame*/,
+        const Awesomium::WebURL&	/*url*/,
+        bool						/*is_error_page*/
+    )
 {
 }
 

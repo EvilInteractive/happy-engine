@@ -71,8 +71,8 @@ MainGame::MainGame()
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
         MovingEntityRandomness r;
-        r.a = he::vec3(s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100));
-        r.b = he::vec3(s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100), s_Random.nextFloat(10, 100));
+        r.a = he::vec3(s_Random.nextFloat(-50, 50), s_Random.nextFloat(0, 50), s_Random.nextFloat(-50, 50));
+        r.b = he::vec3(s_Random.nextFloat(-50, 50), s_Random.nextFloat(0, 50), s_Random.nextFloat(-50, 50));
         r.c = he::vec3((float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5));
         m_MovingEntityRandomness.push_back(r);
     }
@@ -187,13 +187,9 @@ void MainGame::load()
     m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setView(m_View);
     m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
-    //
-    //m_View->get2DRenderer()->attachToRender(m_FpsGraph);
-    
-    //CONSOLE->setView(m_View);
+
     m_View->get2DRenderer()->attachToRender(CONSOLE);
 
-    //m_View->getShapeRenderer()->attachToRenderer(this);
 #ifdef ENABLE_WINDOW2
     m_View2->getShapeRenderer()->attachToRenderer(this);
 #endif
@@ -216,49 +212,28 @@ void MainGame::load()
     
     m_EntityList.push_back(scene);
 
-    //for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    //{
-    //    ge::Entity* entity(NEW he::ge::Entity());
-    //    entity->init(m_Scene);
-    //    modelComp = NEW ge::ModelComponent();
-    //    modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
-    //    entity->addComponent(modelComp);
-    //    m_MovingEntityList.push_back(entity);
-    //    m_EntityList.push_back(entity);
-    //
-    //    const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-    //    m_MovingEntityList[i]->setLocalTranslate(
-    //        he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-    //                    pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-    //                    pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    //}
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    {
+        ge::Entity* entity(NEW he::ge::Entity());
+        entity->init(m_Scene);
+        modelComp = NEW ge::ModelComponent();
+        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
+        entity->addComponent(modelComp);
+        m_MovingEntityList.push_back(entity);
+        m_EntityList.push_back(entity);
+
+        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
+        m_MovingEntityList[i]->setLocalTranslate(
+            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
+            pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
+            pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+    }
 
     #pragma endregion
     
     #pragma region Lights
     m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.6f);
     m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 0.0f);
-
-/*
-    for (size_t i(0); i < 5; ++i)
-    {
-        vec3 direction(rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f, rand() / (float)RAND_MAX * 2.0f - 1.0f);
-        direction = normalize(direction);
-        float len(33.0f);
-        vec3 pos(direction * len + vec3(20, 20, 20));
-
-        ge::PointLightComponent* pTempPointLightComp(NEW ge::PointLightComponent());
-        scene->addComponent(pTempPointLightComp);
-        pTempPointLightComp->setLocalTranslate(pos);
-        pTempPointLightComp->setMultiplier(0.5f);
-        pTempPointLightComp->setColor(Color((he::byte)(rand()%255), 128, 255, 255));
-        pTempPointLightComp->setAttenuation(0, 15);
-
-        modelComp = NEW ge::ModelComponent();
-        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
-        modelComp->setLocalTranslate(pos);
-        scene->addComponent(modelComp);
-    }*/
 
     m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
     m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
@@ -278,11 +253,11 @@ void MainGame::load()
     spotlight->setColor(he::Color(0.4f, 0.4f, 1.0f));
     spotlight->setShadowResolution(gfx::ShadowResolution_128);
 
-    //he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
-    //pointlight->setLocalTranslate(vec3(-41.91f, 11.20f, 34.58f));
-    //pointlight->setMultiplier(3);
-    //pointlight->setAttenuation(1.0f, 10.0f);
-    //pointlight->setColor(he::Color(1.0f, 0.4f, 0.4f));
+    he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
+    pointlight->setLocalTranslate(vec3(-41.91f, 11.20f, 34.58f));
+    pointlight->setMultiplier(3.0f);
+    pointlight->setAttenuation(1.0f, 10.0f);
+    pointlight->setColor(he::Color(1.0f, 0.4f, 0.4f));
 
     #pragma endregion
     
@@ -301,10 +276,6 @@ void MainGame::load()
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
-
-    he::MessageBox::showExt("Test Messagebox", 
-        "Hallo\n\nIk test even of deze messagebox wel goed werk\n\n* 1\n* 2\n* 3", MessageBoxIcon_Warning, 
-        "Het werkt!", "Ik weet het niet", "Werkt niet");
     
     PROFILER->setView(m_View);
 }
@@ -323,14 +294,14 @@ void MainGame::tick( float dTime )
                  pow(cos(m_MovingEntityFase), 2) * 3));
     m_DebugSpotLight->setLocalRotate(he::mat33::createRotation3D(he::vec3::up, m_MovingEntityFase));
     
-    /*for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
         const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
         m_MovingEntityList[i]->setLocalTranslate(
             he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
                      pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
                      pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }*/
+    }
 
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
     {

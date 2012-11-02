@@ -128,7 +128,7 @@ void Console::setView( const gfx::View* view )
         //canvas = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));*/
         m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
         m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
-		m_pScrollBar->setBarPos(1.0f);
+        m_pScrollBar->setBarPos(1.0f);
     }
 }
 
@@ -360,7 +360,7 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 {
     if (m_bOpen)
     {
-		canvas->setBlendStyle(gfx::BlendStyle_Alpha);
+        canvas->setBlendStyle(gfx::BlendStyle_Alpha);
 
         canvas->setDepth(-2000);
 

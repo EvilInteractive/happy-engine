@@ -51,7 +51,7 @@ public:
     bool checkRemove() const;
     bool canRemoveChilderen() const;
     void doRemoveChilderen(bool checkParent);
-    const std::vector<IDrawable*>& getObjectChilds() const { return m_ObjectChilds; }
+    uint16 getNumObjectChilds() const { return m_NumObjectChilds; }
 
 private:
     void init(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex);
@@ -65,7 +65,8 @@ private:
 
     CullOctreeNode* m_ChildNodes[8];
     CullOctreeNode* m_Parent;
-    std::vector<IDrawable*> m_ObjectChilds;
+    IDrawable** m_ObjectChilds;
+    uint16 m_NumObjectChilds, m_ObjectChildsCapacity;
     Bound m_StrictBound, m_LooseBound;
     bool m_IsLeafe;
     uint32 m_PoolIndex;

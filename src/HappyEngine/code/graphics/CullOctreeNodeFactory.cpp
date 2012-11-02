@@ -79,8 +79,9 @@ CullOctreeNode* CullOctreeNodeFactory::getNode()
 void CullOctreeNodeFactory::releaseNode( CullOctreeNode* node )
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    HE_ASSERT(node->getObjectChilds().size() == 0, "Object leak in octree!");
+    HE_ASSERT(node->getNumObjectChilds() == 0, "Object leak in octree!");
     m_FreeNodes.push(node->getPoolIndex());
+    node->reset();
 }
 
 } } //end namespace
