@@ -86,7 +86,7 @@ void Console::load()
 {
     m_pFont = CONTENT->loadFont("Inconsolata.otf", 10);
 
-    m_Help = new gui::Text(m_pFont);
+    m_Help = NEW gui::Text(m_pFont);
     m_Help->addLine("******** HELP ********");
     m_Help->addLine("'listvars' (displays registered variables and their type)");
     m_Help->addLine("'listcmds' (displays registered commands)");

@@ -312,10 +312,10 @@ void WebView::OnFailLoadingFrame(
 		const Awesomium::WebString& error_desc 
 	)
 {
-	char* buff0 = new char[url.path().length()];
+	char* buff0 = NEW char[url.path().length()];
 	url.path().ToUTF8(buff0, url.path().length());
 
-	char* buff2 = new char[error_desc.length()];
+	char* buff2 = NEW char[error_desc.length()];
 	error_desc.ToUTF8(buff2, error_desc.length());
 
 	HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
@@ -330,7 +330,7 @@ void WebView::OnFinishLoadingFrame(
 		const Awesomium::WebURL&  	url 
 	)
 {
-	char* buff0 = new char[url.path().length()];
+	char* buff0 = NEW char[url.path().length()];
 	url.path().ToUTF8(buff0, url.path().length());
 
 	HE_INFO("Finished loading url: '%s'", buff0);

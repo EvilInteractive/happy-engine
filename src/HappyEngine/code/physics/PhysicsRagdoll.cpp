@@ -104,7 +104,7 @@ PhysicsRagdoll::~PhysicsRagdoll()
 void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material, 
                                 uint32 collisionGroup, uint32 collisionGroupAgainst)
 {
-    (*ppActor) = new PhysicsDynamicActor(mat44::createTranslation(m_StartPosition) * part.bonePose);
+    (*ppActor) = NEW PhysicsDynamicActor(mat44::createTranslation(m_StartPosition) * part.bonePose);
     PHYSICS->getScene()->removeActor(*(*ppActor)->getInternalActor());
     m_pAggregate->addActor(*(*ppActor)->getInternalActor());
     (*ppActor)->getInternalActor()->setSolverIterationCounts(8, 2);
