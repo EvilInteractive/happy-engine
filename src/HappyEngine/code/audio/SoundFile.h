@@ -32,9 +32,9 @@ namespace sfx {
 struct SoundFileProperties
 {
 	std::string filePath;
-	uint samplesCount;
-	uint channelsCount;
-	uint samplerate;
+	uint32 samplesCount;
+	uint32 channelsCount;
+	uint32 samplerate;
 
 };
 
@@ -49,8 +49,8 @@ public:
 	/* GENERAL */
 	bool open();
 	void close();
-	void seek(uint timeOffset);
-	uint read(short* pData, uint nrSamples);
+	void seek(uint32 timeOffset);
+	uint32 read(short* pData, uint32 nrSamples);
 
 	/* GETTERS */
 	SoundFileProperties getProperties() const;
@@ -66,9 +66,9 @@ private:
 
 	std::string m_FilePath;
 
-	uint m_NrSamples;
-	uint m_Samplerate;
-	uint m_ChannelsCount;
+	uint32 m_NrSamples;
+	uint32 m_Samplerate;
+	uint32 m_ChannelsCount;
 };
 
 } } //end namespace

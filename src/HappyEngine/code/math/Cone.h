@@ -55,7 +55,7 @@ public:
         outBuffer.push_back(indexOffset); outBuffer.push_back(indexOffset + circleVertices);
         outBuffer.push_back(indexOffset + circleVertices); outBuffer.push_back(indexOffset + 1); 
     }
-    void generateConeVertices(uint circleVertices, std::vector<vec3>& outBuffer) const;
+    void generateConeVertices(uint32 circleVertices, std::vector<vec3>& outBuffer) const;
 
 private:
 

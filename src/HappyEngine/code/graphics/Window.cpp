@@ -193,12 +193,12 @@ void Window::getWindowPosition( int& x, int& y ) const
     y = m_Window->getPosition().y;
 }
 
-he::uint Window::getWindowWidth() const
+he::uint32 Window::getWindowWidth() const
 {
     return m_Window->getSize().x;
 }
 
-he::uint Window::getWindowHeight() const
+he::uint32 Window::getWindowHeight() const
 {
     return m_Window->getSize().y;
 }
@@ -216,7 +216,7 @@ void Window::setWindowPosition( int x, int y )
     m_WindowRect.y = y;
 }
 
-void Window::setWindowDimension( uint width, uint height )
+void Window::setWindowDimension( uint32 width, uint32 height )
 {
     m_Window->setSize(sf::Vector2u(width, height));
     m_WindowRect.width = static_cast<int>(width);

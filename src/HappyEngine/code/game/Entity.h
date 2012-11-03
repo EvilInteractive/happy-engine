@@ -75,8 +75,8 @@ protected:
     virtual IObject3D* getParent() const { return Object3D::getParent(); } 
     virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
 
-    virtual void setWorldMatrixDirty(byte cause) { Object3D::setWorldMatrixDirty(cause); } 
-    virtual void setLocalMatrixDirty(byte cause) { Object3D::setLocalMatrixDirty(cause); } 
+    virtual void setWorldMatrixDirty(uint8 cause) { Object3D::setWorldMatrixDirty(cause); } 
+    virtual void setLocalMatrixDirty(uint8 cause) { Object3D::setLocalMatrixDirty(cause); } 
 
     virtual void calculateWorldMatrix() { Object3D::calculateWorldMatrix(); }
 

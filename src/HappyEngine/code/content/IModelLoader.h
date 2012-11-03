@@ -37,17 +37,17 @@ public:
   
     virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
 
-    virtual uint getNumMeshes() const = 0;
-    virtual const std::string& getMeshName(uint mesh) const = 0;
+    virtual uint32 getNumMeshes() const = 0;
+    virtual const std::string& getMeshName(uint32 mesh) const = 0;
 
-    virtual const void* getVertices(uint mesh) const = 0;
-    virtual uint getNumVertices(uint mesh) const = 0;
+    virtual const void* getVertices(uint32 mesh) const = 0;
+    virtual uint32 getNumVertices(uint32 mesh) const = 0;
 
-    virtual const std::vector<gfx::Bone>& getBones(uint mesh) const = 0;
+    virtual const std::vector<gfx::Bone>& getBones(uint32 mesh) const = 0;
 
-    virtual const void* getIndices(uint mesh) const = 0;
-    virtual gfx::IndexStride getIndexStride(uint mesh) const = 0;
-    virtual uint getNumIndices(uint mesh) const = 0;
+    virtual const void* getIndices(uint32 mesh) const = 0;
+    virtual gfx::IndexStride getIndexStride(uint32 mesh) const = 0;
+    virtual uint32 getNumIndices(uint32 mesh) const = 0;
 };
 
 } } } //end namespace

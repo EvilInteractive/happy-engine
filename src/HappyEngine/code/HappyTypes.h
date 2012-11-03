@@ -26,12 +26,7 @@
 #include "BitStream.h"
 
 namespace he {
-
-typedef unsigned long ulong;
-typedef unsigned int uint;
-typedef unsigned short ushort;
-typedef unsigned char byte;
-
+    
 typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;

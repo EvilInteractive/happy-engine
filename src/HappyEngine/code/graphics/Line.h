@@ -38,17 +38,17 @@ public:
     virtual ~Line();
 
     void setVertices(const std::vector<vec3>& vert);
-    void setIndices(const std::vector<ushort>& ind);
+    void setIndices(const std::vector<uint16>& ind);
 
     const std::vector<vec3>& getVertices() const;
-    const std::vector<ushort>& getIndices() const;
+    const std::vector<uint16>& getIndices() const;
 
     typedef boost::shared_ptr<Line> pointer;
 
 private:
 
     std::vector<vec3> m_Vertices;
-    std::vector<ushort> m_Indices;
+    std::vector<uint16> m_Indices;
 
     //Disable default copy constructor and default assignment operator
     Line(const Line&);

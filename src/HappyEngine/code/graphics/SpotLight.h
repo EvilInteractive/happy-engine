@@ -57,7 +57,7 @@ private:
 
 protected:
     virtual void calculateWorldMatrix(); // override Object3D
-    virtual void setWorldMatrixDirty(byte cause); // override Object3D
+    virtual void setWorldMatrixDirty(uint8 cause); // override Object3D
 
 public:
     SpotLight();

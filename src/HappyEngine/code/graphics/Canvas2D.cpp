@@ -52,7 +52,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     Texture2D* pTexture = ResourceFactory<Texture2D>::getInstance()->get(pData->renderTextureHnd);
 
     pTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Linear, gfx::TextureFormat_RGBA8, false);
-    pTexture->setData((uint)size.x, (uint)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
+    pTexture->setData((uint32)size.x, (uint32)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
     pTexture->setLoadFinished();
 
     // create final FBO & RB
@@ -102,7 +102,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 void Canvas2D::resizeData( Data* data, const vec2& size )
 {
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(data->renderTextureHnd));
-    texture->setData((uint)size.x, (uint)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
+    texture->setData((uint32)size.x, (uint32)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
 
     //int samples = GL::getMaxMultiSamples();
 
@@ -227,7 +227,7 @@ void Canvas2D::init()
         VertexPosTex2D(vec2(0.5f, -0.5f),
         vec2(1, 1)));
 
-    std::vector<byte> indices;
+    std::vector<uint8> indices;
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 
@@ -310,7 +310,7 @@ mat44 Canvas2D::getTransformation()
 
     mat33 result = mat33::Identity;
 
-    for (ushort i(0); i < m_StackDepth; ++i)
+    for (uint16 i(0); i < m_StackDepth; ++i)
     {
         result = m_TransformationStack[i] * result;
     }
@@ -493,7 +493,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     bool hasBounds(txt.hasBounds());
 
-    for (uint i(0); i < txt.getText().size(); ++i)
+    for (uint32 i(0); i < txt.getText().size(); ++i)
     {
         linePos.y = pos.y + (txt.getFont()->getLineSpacing() * i);
 
@@ -535,7 +535,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
         vec2 glyphPos = linePos;
 
-        for (uint i2(0); i2 < txt.getText()[i].size(); ++i2)
+        for (uint32 i2(0); i2 < txt.getText()[i].size(); ++i2)
         {
             vec2 tcOffset(0.0f,0.0f);
             vec2 tcScale(1.0f,1.0f);

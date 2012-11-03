@@ -167,12 +167,12 @@ ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Font* ContentManager::loadFont(const std::string& asset, ushort size)
+gfx::Font* ContentManager::loadFont(const std::string& asset, uint16 size)
 {
     return m_FontLoader->load(m_FontPath.str() + asset, size);
 }
 
-gfx::Font* ContentManager::getDefaultFont(ushort size)
+gfx::Font* ContentManager::getDefaultFont(uint16 size)
 {
     return loadFont("Ubuntu-Bold.ttf", size);
 }
@@ -330,7 +330,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
         vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
 
-        std::vector<byte> indices;
+        std::vector<uint8> indices;
         indices.push_back(0); indices.push_back(1); indices.push_back(2);
         indices.push_back(1); indices.push_back(3); indices.push_back(2);
 
@@ -374,7 +374,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         vertices.push_back(VertexPos(vec3(-1, -1, 0.0f)));
         vertices.push_back(VertexPos(vec3(1, -1, 0.0f)));
 
-        std::vector<byte> indices;
+        std::vector<uint8> indices;
         indices.push_back(0); indices.push_back(1); indices.push_back(2);
         indices.push_back(1); indices.push_back(3); indices.push_back(2);
 

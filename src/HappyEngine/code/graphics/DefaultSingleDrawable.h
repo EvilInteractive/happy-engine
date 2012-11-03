@@ -58,7 +58,7 @@ public:
     virtual void nodeReevaluated() { m_NeedsReevalute = false; }
     
 protected:
-    virtual void setWorldMatrixDirty(byte cause);
+    virtual void setWorldMatrixDirty(uint8 cause);
     
 private:
     bool m_CastsShadow;

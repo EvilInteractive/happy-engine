@@ -33,9 +33,9 @@ namespace gfx {
 
 enum IndexStride
 {
-    IndexStride_Byte = sizeof(byte),
-    IndexStride_UShort = sizeof(ushort),
-    IndexStride_UInt = sizeof(uint)
+    IndexStride_Byte = sizeof(uint8),
+    IndexStride_UShort = sizeof(uint16),
+    IndexStride_UInt = sizeof(uint32)
 };
 
 enum MeshUsage
@@ -60,8 +60,8 @@ public:
     virtual ~ModelMesh();
 
     void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
-    void setVertices(const void* pVertices, uint num, MeshUsage usage);
-    void setIndices(const void* pIndices, uint num, IndexStride type, MeshUsage usage);
+    void setVertices(const void* pVertices, uint32 num, MeshUsage usage);
+    void setIndices(const void* pIndices, uint32 num, IndexStride type, MeshUsage usage);
     void setBones(const std::vector<Bone>& boneList);
     void setLoaded();
 
@@ -70,14 +70,14 @@ public:
 
     inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->id]; } 
     inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->id]; }
-    inline uint getVBOID() const { return m_VertexVboID; }
-    inline uint getVBOIndexID() const { return m_IndexVboID; }
+    inline uint32 getVBOID() const { return m_VertexVboID; }
+    inline uint32 getVBOIndexID() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
 
-    inline uint getNumVertices() const { return m_NumVertices; }
-    inline uint getNumIndices() const { return m_NumIndices; }
+    inline uint32 getNumVertices() const { return m_NumVertices; }
+    inline uint32 getNumIndices() const { return m_NumIndices; }
 
-    inline uint getIndexType() const { return m_IndexType; }
+    inline uint32 getIndexType() const { return m_IndexType; }
     inline const BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
     inline bool isLoaded() const { return m_IsLoaded; }
@@ -104,14 +104,14 @@ private:
 
     VaoID m_VaoID[MAX_VERTEX_ARRAY_OBJECTS];
     VaoID m_VaoShadowID[MAX_VERTEX_ARRAY_OBJECTS];
-    uint m_VertexVboID;
-    uint m_IndexVboID;
+    uint32 m_VertexVboID;
+    uint32 m_IndexVboID;
 
-    uint m_NumVertices;
-    uint m_NumIndices;
+    uint32 m_NumVertices;
+    uint32 m_NumIndices;
 
     BufferLayout m_VertexLayout;
-    uint m_IndexType;
+    uint32 m_IndexType;
 
     bool m_isVisible;
     bool m_IsLoaded;

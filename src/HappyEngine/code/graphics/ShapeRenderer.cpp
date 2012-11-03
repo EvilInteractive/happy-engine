@@ -82,7 +82,7 @@ void ShapeRenderer::createBillboardQuad()
         VertexPosTex(vec3(0.5f, -0.5f,0.0f),
         vec2(1, 0)));
 
-    std::vector<byte> indices;
+    std::vector<uint8> indices;
     indices.push_back(0); indices.push_back(1); indices.push_back(2);
     indices.push_back(1); indices.push_back(3); indices.push_back(2);
 

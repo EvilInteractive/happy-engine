@@ -29,7 +29,7 @@ namespace he {
 namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Sound3D::Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type) :	m_Source(source),
+Sound3D::Sound3D(uint32 source, uint32 buffer, uint32 soundFile, SOUND_TYPE type) :	m_Source(source),
                                                                                 m_Buffer(buffer),
                                                                                 m_SoundFile(soundFile),
                                                                                 m_Type(type),
@@ -99,15 +99,15 @@ void Sound3D::setMaximumVolume(float volume)
 }
 
 /* GETTERS */
-uint Sound3D::getSource() const
+uint32 Sound3D::getSource() const
 {
     return m_Source;
 }
-uint Sound3D::getBuffer() const
+uint32 Sound3D::getBuffer() const
 {
     return m_Buffer;
 }
-uint Sound3D::getSoundFile() const
+uint32 Sound3D::getSoundFile() const
 {
     return m_SoundFile;
 }

@@ -90,7 +90,7 @@ void PhysicsTrigger::setPose(const mat44& pose)
     m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
-he::uint PhysicsTrigger::getCompatibleShapes() const
+he::uint32 PhysicsTrigger::getCompatibleShapes() const
 {
     return PhysicsShapeType_TriggerCompatible;
 }

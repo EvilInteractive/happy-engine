@@ -42,7 +42,7 @@ namespace gfx {
 GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr),
     m_FallBackContext(nullptr), m_FallBackSfContext(nullptr)
 {
-    for (uint i(0); i < MAX_OPENGL_CONTEXT; ++i)
+    for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
         m_FreeContexts.push(i);
     }
@@ -225,7 +225,7 @@ void GraphicsEngine::setActiveContext( GLContext* context )
     }
 }
 
-he::ushort GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution )
+he::uint16 GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution )
 {
     switch (resolution)
     {

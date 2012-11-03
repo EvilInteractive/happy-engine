@@ -29,7 +29,7 @@ namespace he {
 namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Sound2D::Sound2D(uint source, uint buffer, uint soundFile, SOUND_TYPE type) :	m_Source(source),
+Sound2D::Sound2D(uint32 source, uint32 buffer, uint32 soundFile, SOUND_TYPE type) :	m_Source(source),
                                                                                 m_Buffer(buffer),
                                                                                 m_SoundFile(soundFile),
                                                                                 m_Type(type),
@@ -71,15 +71,15 @@ void Sound2D::setPitch(float pitch)
 }
 
 /* GETTERS */
-uint Sound2D::getSource() const
+uint32 Sound2D::getSource() const
 {
     return m_Source;
 }
-uint Sound2D::getBuffer() const
+uint32 Sound2D::getBuffer() const
 {
     return m_Buffer;
 }
-uint Sound2D::getSoundFile() const
+uint32 Sound2D::getSoundFile() const
 {
     return m_SoundFile;
 }

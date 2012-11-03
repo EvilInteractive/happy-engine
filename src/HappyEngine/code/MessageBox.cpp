@@ -105,7 +105,7 @@ public:
         m_TextBlock.setBounds(textboxSize - vec2(TEXT_MARGIN*2, TEXT_MARGIN*2));
         font->release();
 
-        for (byte i(0); i < m_ButtonCount; ++i)
+        for (uint8 i(0); i < m_ButtonCount; ++i)
         {
             if (i == 0)
                 m_Buttons[i].setText(button1, FONT_SIZE);
@@ -165,7 +165,7 @@ public:
 
         renderer->setFillColor(Color(0ui8, 0, 0));
         renderer->fillText(m_TextBlock, textboxPos + vec2(TEXT_MARGIN, TEXT_MARGIN));
-        for (byte i(0); i < m_ButtonCount; ++i)
+        for (uint8 i(0); i < m_ButtonCount; ++i)
         {
             m_Buttons[i].draw2D(renderer);
         }
@@ -200,7 +200,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
         gfx::View2D* view(GRAPHICS->createView2D());
 
         window->setResizable(false);
-        window->setWindowDimension(static_cast<uint>(windowSize.x), static_cast<uint>(windowSize.y));
+        window->setWindowDimension(static_cast<uint32>(windowSize.x), static_cast<uint32>(windowSize.y));
         vec2 mousePos(CONTROLS->getMouse()->getPosition());
         window->setWindowPosition(static_cast<int>(mousePos.x), static_cast<int>(mousePos.y));
         window->setVSync(true);
@@ -220,7 +220,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
         details::MessageboxDrawer drawer(message, icon, button1, button2, button3);
         view->get2DRenderer()->attachToRender(&drawer);
 
-        for (byte i(0); i < drawer.m_ButtonCount; ++i)
+        for (uint8 i(0); i < drawer.m_ButtonCount; ++i)
         {
             he::eventCallback0<void> clickCallback([i]()
             { 
@@ -239,7 +239,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
 
             window->doEvents(1/30.0f);
 
-            for (byte i(0); i < drawer.m_ButtonCount; ++i)
+            for (uint8 i(0); i < drawer.m_ButtonCount; ++i)
             {
                 drawer.m_Buttons[i].tick();
             }

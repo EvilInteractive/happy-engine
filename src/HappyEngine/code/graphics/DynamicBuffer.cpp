@@ -33,43 +33,43 @@ DynamicBuffer::~DynamicBuffer()
 {
 }
 
-void DynamicBuffer::setValue( uint element, float value )
+void DynamicBuffer::setValue( uint32 element, float value )
 {
     HE_ASSERT(sizeof(float) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
     he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(float));
 }
 
-void DynamicBuffer::setValue( uint element, int value )
+void DynamicBuffer::setValue( uint32 element, int value )
 {
     HE_ASSERT(sizeof(int) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
     he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(int));
 }
 
-void DynamicBuffer::setValue( uint element, uint value )
+void DynamicBuffer::setValue( uint32 element, uint32 value )
 {
-    HE_ASSERT(sizeof(uint) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
-    he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(uint));
+    HE_ASSERT(sizeof(uint32) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
+    he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(uint32));
 }
 
-void DynamicBuffer::setValue( uint element, const vec2& value )
+void DynamicBuffer::setValue( uint32 element, const vec2& value )
 {
     HE_ASSERT(sizeof(vec2) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
     he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(vec2));
 }
 
-void DynamicBuffer::setValue( uint element, const vec3& value )
+void DynamicBuffer::setValue( uint32 element, const vec3& value )
 {
     HE_ASSERT(sizeof(vec3) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
     he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(vec3));
 }
 
-void DynamicBuffer::setValue( uint element, const vec4& value )
+void DynamicBuffer::setValue( uint32 element, const vec4& value )
 {
     HE_ASSERT(sizeof(vec4) == m_Layout.getElements()[element].getSize(), "Element is not the right size in bytes!");
     he_memcpy(m_Buffer + m_Layout.getElements()[element].getByteOffset(), &value, sizeof(vec4));
 }
 
-void DynamicBuffer::setValue( uint element, const mat44& value )
+void DynamicBuffer::setValue( uint32 element, const mat44& value )
 {
     HE_ASSERT(m_Layout.getElements().size() > element + 3, "No mat44 should be place here");
     HE_ASSERT(sizeof(vec4) == m_Layout.getElements()[element+0].getSize(), "Element is not the right size in bytes!");

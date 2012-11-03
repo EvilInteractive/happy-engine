@@ -90,10 +90,10 @@ public:
                 m_BottomBackRight.z >= other.z);
     }
 
-    static AABB calculateBoundingAABB(const void* pointCloud, uint num, uint stride, uint posOffset);
+    static AABB calculateBoundingAABB(const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset);
 
     void generateVertices(std::vector<vec3>& outBuffer) const;
-    void generateIndices(std::vector<uint>& outBuffer, uint offset) const;
+    void generateIndices(std::vector<uint32>& outBuffer, uint32 offset) const;
 
 private:
     vec3 m_TopFrontLeft; 

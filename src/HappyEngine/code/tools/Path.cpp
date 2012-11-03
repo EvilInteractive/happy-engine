@@ -27,7 +27,7 @@ namespace he {
 
 Path::Path( const std::string& path ): m_Path(path)
 {
-    for (uint i(0); i < m_Path.size(); ++i)
+    for (uint32 i(0); i < m_Path.size(); ++i)
     {
         if (m_Path[i] == '\\')
             m_Path[i] = '/';

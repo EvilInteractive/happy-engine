@@ -43,10 +43,10 @@ public:
     void createBuffer(bool outline = false);
 
     /* GETTERS */
-    uint getBufferID() const;
+    uint32 getBufferID() const;
     const mat44& getWorldMatrix() const;
     const std::vector<vec2>& getVertices() const;
-    const std::vector<uint>& getIndices() const;
+    const std::vector<uint32>& getIndices() const;
 
     /* SETTERS */
     void setWorldMatrix(const mat44& mat);
@@ -58,8 +58,8 @@ private:
     /* DATAMEMBERS */
     Polygon* m_pPolygon;
     mat44 m_WorldMatrix;
-    uint m_VBOID;
-    uint m_IBOID;
+    uint32 m_VBOID;
+    uint32 m_IBOID;
     VaoID m_VAOID[MAX_VERTEX_ARRAY_OBJECTS];
 
     eventCallback1<void, GLContext*> m_ContextCreatedHandler;

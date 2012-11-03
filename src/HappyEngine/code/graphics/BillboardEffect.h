@@ -49,9 +49,9 @@ public:
 private:
 	gfx::Shader* m_pShader;
 
-	uint m_ShaderWVPPos;
-	uint m_ShaderDiffTexPos;
-	uint m_ShaderTCScalePos;
+	uint32 m_ShaderWVPPos;
+	uint32 m_ShaderDiffTexPos;
+	uint32 m_ShaderTCScalePos;
 
     //Disable default copy constructor and default assignment operator
     BillboardEffect(const BillboardEffect&);

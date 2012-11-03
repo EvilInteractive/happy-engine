@@ -34,7 +34,7 @@ class Sound2D : public ISound
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Sound2D(uint source, uint buffer, uint soundFile, SOUND_TYPE type);
+    Sound2D(uint32 source, uint32 buffer, uint32 soundFile, SOUND_TYPE type);
 
     virtual ~Sound2D();
 
@@ -49,9 +49,9 @@ public:
     void setPitch(float pitch = 1.0f); // 1 = normal pitch
 
     /* GETTERS */
-    uint getSource() const;
-    uint getBuffer() const;
-    uint getSoundFile() const;
+    uint32 getSource() const;
+    uint32 getBuffer() const;
+    uint32 getSoundFile() const;
     SOUND_STATE getState() const;
     SOUND_TYPE getType() const;
 
@@ -67,9 +67,9 @@ public:
 private:
 
     /* DATAMEMBERS */
-    uint m_SoundFile;
-    uint m_Buffer;
-    uint m_Source;
+    uint32 m_SoundFile;
+    uint32 m_Buffer;
+    uint32 m_Source;
 
     SOUND_TYPE m_Type;
 

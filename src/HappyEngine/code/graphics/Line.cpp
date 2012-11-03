@@ -38,7 +38,7 @@ void Line::setVertices(const std::vector<vec3>& vert)
 {
     m_Vertices = vert;
 }
-void Line::setIndices(const std::vector<ushort>& ind)
+void Line::setIndices(const std::vector<uint16>& ind)
 {
     m_Indices = ind;
 }
@@ -47,7 +47,7 @@ const std::vector<vec3>& Line::getVertices() const
 {
     return m_Vertices;
 }
-const std::vector<ushort>& Line::getIndices() const
+const std::vector<uint16>& Line::getIndices() const
 {
     return m_Indices;
 }

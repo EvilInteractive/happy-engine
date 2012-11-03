@@ -24,7 +24,7 @@
 
 namespace he {
 
-typedef uint RTTItype;
+typedef uint32 RTTItype;
 
 #define DECLARE_RTTI(rtti) static he::RTTItype getRTTI() { return rtti; }
 class RTTI

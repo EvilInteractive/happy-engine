@@ -47,22 +47,22 @@ public:
         Usage_Instancing,
         Usage_Other
     };
-    BufferElement(uint elementIndex, Type type, Usage usage, uint size, uint byteOffset);
+    BufferElement(uint32 elementIndex, Type type, Usage usage, uint32 size, uint32 byteOffset);
     virtual ~BufferElement() {}
     //default copy constructor and assignment operator are fine
 
-    uint getElementIndex() const;
-    uint getSize() const; 
-    uint getByteOffset() const; 
+    uint32 getElementIndex() const;
+    uint32 getSize() const; 
+    uint32 getByteOffset() const; 
     Type getType() const;
     Usage getUsage() const;
 
 private:
-    uint m_ElementIndex;
+    uint32 m_ElementIndex;
     Type m_Type;
     Usage m_Usage;
-    uint m_Size;
-    uint m_ByteOffset;
+    uint32 m_Size;
+    uint32 m_ByteOffset;
 };
 
 class BufferLayout
@@ -77,12 +77,12 @@ public:
     void addElement(const BufferElement& element);
 
     const layout& getElements() const;
-    uint getSize() const;
+    uint32 getSize() const;
 
 
 private:
     layout m_Layout;
-    uint m_Size;
+    uint32 m_Size;
 };
 
 } } //end namespace

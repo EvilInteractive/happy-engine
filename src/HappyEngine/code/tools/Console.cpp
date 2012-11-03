@@ -110,7 +110,7 @@ void Console::load()
 
     m_pScrollBar->setBarPos(1.0f);
 
-    m_MaxMessagesInWindow = static_cast<uint>(190 / m_pFont->getLineSpacing());
+    m_MaxMessagesInWindow = static_cast<uint32>(190 / m_pFont->getLineSpacing());
 }
 void Console::setView( const gfx::View* view )
 {
@@ -322,7 +322,7 @@ void Console::tick()
             }
             else
             {
-                m_CmdHistoryPos = (uint)m_CmdHistory.size() - 1;
+                m_CmdHistoryPos = (uint32)m_CmdHistory.size() - 1;
             }
         }
         else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Up))
@@ -346,7 +346,7 @@ void Console::tick()
             if (m_CmdHistory[m_CmdHistory.size() - 1] != m_pTextBox->getString())
             {
                 m_CmdHistory.push_back(m_pTextBox->getString());
-                m_CmdHistoryPos = (uint)m_CmdHistory.size() - 1;
+                m_CmdHistoryPos = (uint32)m_CmdHistory.size() - 1;
             }
 
             m_pTextBox->resetText();
@@ -380,14 +380,14 @@ void Console::draw2D(gfx::Canvas2D* canvas)
                 msgHistory.push_back(p);
         });
 
-        uint startPos(0);
+        uint32 startPos(0);
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
         {
-            startPos = static_cast<uint>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
+            startPos = static_cast<uint32>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
         }
 
-        uint i(startPos);
+        uint32 i(startPos);
 
         std::vector<std::pair<CMSG_TYPE, std::string> > msg;
 
@@ -410,7 +410,7 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         text.setHorizontalAlignment(gui::Text::HAlignment_Left);
         text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
-        uint k(0);
+        uint32 k(0);
         std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
         {
             canvas->setFillColor(m_MsgColors[p.first]);
@@ -509,7 +509,7 @@ void Console::setMessageColors(	const Color& infoColor,
     m_MsgColors[CMSG_TYPE_COMMAND] = commandColor;
 }
 
-void Console::setMaxMsgHistory(uint maxMessages)
+void Console::setMaxMsgHistory(uint32 maxMessages)
 {
     m_MaxMessages = maxMessages;
 }

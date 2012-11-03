@@ -76,7 +76,7 @@ public:
         }
     }
 
-    uint getRefCount(const ObjectHandle& handle)
+    uint32 getRefCount(const ObjectHandle& handle)
     {
         return m_RefCounter[handle.index];
     }
@@ -158,7 +158,7 @@ private:
         }
     }
 
-    std::vector<uint> m_RefCounter;
+    std::vector<uint32> m_RefCounter;
 
     //Disable default copy constructor and default assignment operator
     ResourceFactory(const ResourceFactory&);

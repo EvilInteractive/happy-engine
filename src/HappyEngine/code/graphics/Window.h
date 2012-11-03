@@ -58,7 +58,7 @@ public:
     // Setters
     void setWindowTitle(const std::string& caption);
     void setWindowPosition(int x, int y);
-    void setWindowDimension(uint width, uint height);
+    void setWindowDimension(uint32 width, uint32 height);
     void setVSync(bool enable);
     void setCursorVisible(bool visible);
     void setFullscreen(bool fullscreen);
@@ -66,8 +66,8 @@ public:
 
     // Getters
     void getWindowPosition(int& x, int& y) const;
-    uint getWindowWidth() const;
-    uint getWindowHeight() const;
+    uint32 getWindowWidth() const;
+    uint32 getWindowHeight() const;
     GLContext* getContext() { return &m_Context; }  
 
     // Events

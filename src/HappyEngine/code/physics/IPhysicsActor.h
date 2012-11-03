@@ -51,7 +51,7 @@ public:
     virtual void teleport(const mat44& pose);
 
 protected:
-    virtual uint getCompatibleShapes() const = 0;
+    virtual uint32 getCompatibleShapes() const = 0;
     // return true if successful
     virtual bool createShape(std::vector<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
                              const PhysicsMaterial& material, const mat44& localPose = mat44::Identity);

@@ -100,9 +100,9 @@ private:
         Enabling,
         Disabling
     };
-    byte m_State;
+    uint8 m_State;
 
-    uint m_Width;
+    uint32 m_Width;
 
     bool m_Show;
 

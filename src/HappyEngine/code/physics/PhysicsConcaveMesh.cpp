@@ -44,9 +44,9 @@ void PhysicsConcaveMesh::load( const io::BinaryStream& stream )
 {
     HE_ASSERT(m_InternalMeshes.size() == 0, "PhysicsConcaveMesh %s already loaded!", getName().c_str());
 
-    byte numConcave(stream.readByte());
+    uint8 numConcave(stream.readByte());
 
-    for (byte i(0); i < numConcave; ++i)
+    for (uint8 i(0); i < numConcave; ++i)
     {
         stream.readString(); // Name not used..
         m_InternalMeshes.push_back(

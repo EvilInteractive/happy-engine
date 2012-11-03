@@ -24,7 +24,7 @@
 
 namespace he {
 
-Random::Random(uint seed): 
+Random::Random(uint32 seed): 
     m_RandomEngine(seed),
     m_Generator(m_RandomEngine, boost::uniform_real<double>(0.0, 1.0)),
     m_Seed(seed)
@@ -48,11 +48,11 @@ double Random::nextDouble(double begin, double max) const
     return begin + const_cast<Random*>(this)->m_Generator() * (max - begin);
 }
 
-uint Random::getSeed() const
+uint32 Random::getSeed() const
 {
     return m_Seed;
 }
-void Random::setSeed(uint seed)
+void Random::setSeed(uint32 seed)
 {
     m_Seed = seed;
     m_RandomEngine.seed(seed);

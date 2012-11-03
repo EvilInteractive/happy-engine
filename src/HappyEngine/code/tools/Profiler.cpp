@@ -234,7 +234,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
     s_Stream << "+ " + node.m_Name << ": tot: " << totalBuf << " avg: " << avgBuf << " max: " << maxBuf << " calls: " << node.m_HitsPerFrame;
     text.addLine(s_Stream.str());
 
-    uint textWidth(static_cast<uint>(m_pFont->getStringWidth(s_Stream.str())));
+    uint32 textWidth(static_cast<uint32>(m_pFont->getStringWidth(s_Stream.str())));
     if (textWidth > m_Width)
         m_Width = textWidth;
 

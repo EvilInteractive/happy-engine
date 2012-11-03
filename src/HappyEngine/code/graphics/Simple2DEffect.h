@@ -50,10 +50,10 @@ private:
 
     Shader* m_Shader;
 
-    uint m_ShaderWVPPos;
-    uint m_ShaderColorPos;
-    uint m_ShaderDepthPos;
-    uint m_ShaderBlendPos;
+    uint32 m_ShaderWVPPos;
+    uint32 m_ShaderColorPos;
+    uint32 m_ShaderDepthPos;
+    uint32 m_ShaderBlendPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

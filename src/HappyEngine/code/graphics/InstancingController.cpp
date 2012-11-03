@@ -130,7 +130,7 @@ void InstancingController::initVao( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     HE_IF_ASSERT(m_ShadowVao[context->id] == UINT_MAX, "shadow vao already inited?")
     {
-        uint posOffset(UINT_MAX);
+        uint32 posOffset(UINT_MAX);
         BufferLayout::layout::const_iterator it(vertexElements.cbegin());
         for(; it != vertexElements.cend(); ++it)
         {
@@ -277,12 +277,12 @@ void InstancingController::drawShadow()
 
 
 
-uint InstancingController::addInstance(const IInstancible* pObj)
+uint32 InstancingController::addInstance(const IInstancible* pObj)
 {
     m_NeedsUpdate = true;
     return m_Instances.insert(pObj);
 }
-uint InstancingController::addInstance()
+uint32 InstancingController::addInstance()
 {
     HE_ASSERT(m_ManualCpuBufferFillers.empty() == false, "Only valid in manual mode");
     m_NeedsUpdate = true;
@@ -290,7 +290,7 @@ uint InstancingController::addInstance()
 }
 
 
-void InstancingController::removeInstance( uint id )
+void InstancingController::removeInstance( uint32 id )
 {
     m_Instances.remove(id);
     m_NeedsUpdate = true;
@@ -324,7 +324,7 @@ void InstancingController::setCastsShadow( bool castShadow )
     m_CastShadows = castShadow;
 }
 
-uint InstancingController::getCount() const
+uint32 InstancingController::getCount() const
 {
     return m_CpuBuffer.getCount();
 }

@@ -64,13 +64,13 @@ void MainGame::init()
 
 void MainGame::load()
 {
-    he::ushort port(0);
+    he::uint16 port(0);
 
     he::io::IniReader reader;
     reader.open("net.cfg");
     if (reader.isOpen())
     {
-        port = static_cast<he::ushort>(reader.readInt(L"Net", L"port"));
+        port = static_cast<he::uint16>(reader.readInt(L"Net", L"port"));
     }
     else
     {
@@ -158,7 +158,7 @@ void MainGame::createNewPaddle( const he::net::NetworkID& id )
 }
 void MainGame::unregisterPaddle( const he::net::NetworkID& id )
 {
-    for (he::uint i(0); i < m_Palets.size(); ++i)
+    for (he::uint32 i(0); i < m_Palets.size(); ++i)
     {
         if (m_Palets[i]->getOwner() == id)
         {
@@ -189,7 +189,7 @@ const std::vector<Obstacle*>& MainGame::getObstacles() const
     return m_Obstacles;
 }
 
-void MainGame::addPoint( he::byte /*player*/ )
+void MainGame::addPoint( he::uint8 /*player*/ )
 {
     //m_Palets[player]->addPoint();
 }

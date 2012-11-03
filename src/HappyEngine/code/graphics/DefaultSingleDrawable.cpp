@@ -125,7 +125,7 @@ void DefaultSingleDrawable::calculateBound()
     m_Bound.fromAABB(newAABB);
 }
 
-void DefaultSingleDrawable::setWorldMatrixDirty( byte cause )
+void DefaultSingleDrawable::setWorldMatrixDirty( uint8 cause )
 {
     SingleDrawable::setWorldMatrixDirty(cause);
     if (m_NeedsReevalute == false && isAttachedToScene())

@@ -72,7 +72,7 @@ void TextureCube::init( TextureWrapType wrapType, TextureFilterType filter, Text
     }
 }
 
-void TextureCube::setData( uint width, uint height, const Face& face, const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, byte mipLevel /*= 0*/ )
+void TextureCube::setData( uint32 width, uint32 height, const Face& face, const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel /*= 0*/ )
 {
     HE_IF_ASSERT(m_Id != UINT_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
     {
@@ -92,7 +92,7 @@ void TextureCube::setData( uint width, uint height, const Face& face, const void
     }
 }
 
-void TextureCube::setCompressedData( uint width, uint height, const Face& face, const void* data, uint imageSizeInBytes, byte mipLevel /*= 0*/ )
+void TextureCube::setCompressedData( uint32 width, uint32 height, const Face& face, const void* data, uint32 imageSizeInBytes, uint8 mipLevel /*= 0*/ )
 {
     HE_IF_ASSERT(m_Id != UINT_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
     {

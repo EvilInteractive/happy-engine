@@ -51,9 +51,9 @@ bool SoundFile::open()
 	if (!m_pSoundFile)
 		return false;
 
-	m_ChannelsCount = static_cast<uint>(fileInfo.channels);
-	m_NrSamples = static_cast<uint>(fileInfo.frames) * m_ChannelsCount;
-	m_Samplerate = static_cast<uint>(fileInfo.samplerate);
+	m_ChannelsCount = static_cast<uint32>(fileInfo.channels);
+	m_NrSamples = static_cast<uint32>(fileInfo.frames) * m_ChannelsCount;
+	m_Samplerate = static_cast<uint32>(fileInfo.samplerate);
 
 	return true;
 }
@@ -73,7 +73,7 @@ void SoundFile::close()
 	}
 }
 
-void SoundFile::seek(uint timeOffset)
+void SoundFile::seek(uint32 timeOffset)
 {
 	if (!m_pSoundFile)
 		return;
@@ -82,13 +82,13 @@ void SoundFile::seek(uint timeOffset)
 	sf_seek(m_pSoundFile, frameOffset, SEEK_SET);
 }
 
-uint SoundFile::read(short* pData, uint nrSamples)
+uint32 SoundFile::read(short* pData, uint32 nrSamples)
 {
 	if (!m_pSoundFile)
 		open();
 
-	uint readSamples(0);
-	readSamples = static_cast<uint>(sf_read_short(m_pSoundFile, pData, static_cast<sf_count_t>(nrSamples)));
+	uint32 readSamples(0);
+	readSamples = static_cast<uint32>(sf_read_short(m_pSoundFile, pData, static_cast<sf_count_t>(nrSamples)));
 
 	return readSamples;
 }

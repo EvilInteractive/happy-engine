@@ -85,7 +85,7 @@ void Object3D::detach( IObject3D* child )
     }
 }
 
-void Object3D::setWorldMatrixDirty(byte cause)
+void Object3D::setWorldMatrixDirty(uint8 cause)
 {
     if ( (m_WorldMatrixDirty & cause) != cause)
     {
@@ -97,7 +97,7 @@ void Object3D::setWorldMatrixDirty(byte cause)
     }
 }
 
-void Object3D::setLocalMatrixDirty(byte cause)
+void Object3D::setLocalMatrixDirty(uint8 cause)
 {
     m_LocalMatrixDirty |= cause;
     setWorldMatrixDirty(cause);

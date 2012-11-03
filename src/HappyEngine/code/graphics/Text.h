@@ -67,7 +67,7 @@ public:
     void clear();
 
     /* SETTERS */
-    void setLine(const std::string& string, uint lineNumber);
+    void setLine(const std::string& string, uint32 lineNumber);
     void setHorizontalAlignment(HAlignment alignment);
     void setVerticalAlignment(VAlignment alignment);
     void setBounds(const vec2& bounds = vec2());
@@ -75,7 +75,7 @@ public:
     void setOverFlowType(OverFlowType overFlowType);
 
     /* GETTERS */
-    const std::string& getLine(uint lineNumber) const;
+    const std::string& getLine(uint32 lineNumber) const;
     const std::vector<std::string>& getText() const;
 
     bool isEmpty() const;

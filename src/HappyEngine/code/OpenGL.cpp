@@ -87,7 +87,7 @@ void GL::heSetWindingFrontFace(bool cw)
 }
 
 //Binding
-void GL::heBindFbo(uint fbo)
+void GL::heBindFbo(uint32 fbo)
 {
     if (s_CurrentContext->m_BoundFbo != fbo)
     {
@@ -95,11 +95,11 @@ void GL::heBindFbo(uint fbo)
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
 }
-uint GL::heGetBoundFbo()
+uint32 GL::heGetBoundFbo()
 {
     return s_CurrentContext->m_BoundFbo;
 }
-void GL::heBindVao(uint vao)
+void GL::heBindVao(uint32 vao)
 {
     if (s_CurrentContext->m_BoundVao != vao)
     {
@@ -107,7 +107,7 @@ void GL::heBindVao(uint vao)
         glBindVertexArray(vao);
     }
 }
-void GL::heBindTexture2D(uint samplerPos, uint tex)
+void GL::heBindTexture2D(uint32 samplerPos, uint32 tex)
 {
     HE_ASSERT(samplerPos < GLContext::MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
     if (s_CurrentContext->m_BoundTex2D[samplerPos] != tex)
@@ -121,12 +121,12 @@ void GL::heBindTexture2D(uint samplerPos, uint tex)
         glBindTexture(GL_TEXTURE_2D, tex);
     }
 }
-void GL::heBindTexture2D(uint tex)
+void GL::heBindTexture2D(uint32 tex)
 {
     s_CurrentContext->m_BoundTex2D[0] = tex;
     glBindTexture(GL_TEXTURE_2D, tex);
 }
-void GL::heBindTextureCube( uint samplerPos, uint tex )
+void GL::heBindTextureCube( uint32 samplerPos, uint32 tex )
 {
     HE_ASSERT(samplerPos < GLContext::MAX_SAMPLERS, "samplerPos must be < MAX_SAMPLERS!");
     if (s_CurrentContext->m_BoundTexCube[samplerPos] != tex)
@@ -141,7 +141,7 @@ void GL::heBindTextureCube( uint samplerPos, uint tex )
     }
 }
 
-void GL::heBindUniformBuffer( uint uboId, uint bufferId )
+void GL::heBindUniformBuffer( uint32 uboId, uint32 bufferId )
 {
     if (s_CurrentContext->m_BoundUbo[uboId] != bufferId)
     {
@@ -255,9 +255,9 @@ void GL::reset()
     s_CurrentContext->m_BoundFbo = UINT_MAX;
     s_CurrentContext->m_BoundVao = UINT_MAX;
 
-    he_memset(s_CurrentContext->m_BoundTex2D, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint));
-    he_memset(s_CurrentContext->m_BoundTexCube, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint));
-    he_memset(s_CurrentContext->m_BoundUbo, 0xff, GLContext::MAX_UBO * sizeof(uint));
+    he_memset(s_CurrentContext->m_BoundTex2D, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint32));
+    he_memset(s_CurrentContext->m_BoundTexCube, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint32));
+    he_memset(s_CurrentContext->m_BoundUbo, 0xff, GLContext::MAX_UBO * sizeof(uint32));
 
     s_CurrentContext->m_Viewport.x = -1;
     s_CurrentContext->m_Viewport.y = -1;

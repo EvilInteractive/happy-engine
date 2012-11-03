@@ -65,11 +65,11 @@ private:
 
     struct TextureLoadMipData
     {
-        uint width;
-        uint height;
-        byte* data;
-        uint bufferSize;
-        byte mipLevel;
+        uint32 width;
+        uint32 height;
+        uint8* data;
+        uint32 bufferSize;
+        uint8 mipLevel;
         bool isDataDirty;
         bool isCompressed;
         gfx::TextureBufferLayout format;
@@ -90,7 +90,7 @@ private:
 
         gfx::TextureFormat textureFormat;
 
-        uint ilImageId;
+        uint32 ilImageId;
         bool isILimage;
 
         Color color;

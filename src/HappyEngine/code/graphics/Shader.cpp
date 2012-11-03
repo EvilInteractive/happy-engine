@@ -27,8 +27,8 @@
 namespace he {
 namespace gfx {
 
-uint Shader::s_CurrentBoundShader = 0;
-uint UniformBuffer::s_UniformBufferCount = 0;
+uint32 Shader::s_CurrentBoundShader = 0;
+uint32 UniformBuffer::s_UniformBufferCount = 0;
 
 Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 {
@@ -36,7 +36,7 @@ Shader::Shader() : m_Id(0), m_VsId(0), m_FsId(0)
 
 Shader::~Shader()
 {
-    std::for_each(m_UniformBufferMap.cbegin(), m_UniformBufferMap.cend(), [](const std::pair<uint, UniformBuffer*>& p)
+    std::for_each(m_UniformBufferMap.cbegin(), m_UniformBufferMap.cend(), [](const std::pair<uint32, UniformBuffer*>& p)
     {
         delete p.second;
     });
@@ -54,7 +54,7 @@ bool validateShader(GLuint shaderID, const std::string& file)
     glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
     if (compiled == GL_FALSE)
     {
-        const uint BUFFER_SIZE = 512;
+        const uint32 BUFFER_SIZE = 512;
         char buffer[BUFFER_SIZE];
         GLsizei length = 0;
 
@@ -74,7 +74,7 @@ bool validateProgram(GLuint programID)
 
     if (linkStatus == GL_FALSE)
     {
-        const uint BUFFER_SIZE = 512;
+        const uint32 BUFFER_SIZE = 512;
         char buffer[BUFFER_SIZE];
         GLsizei length = 0;
 
@@ -183,7 +183,7 @@ bool Shader::initFromMem( const std::string& vs, const std::string& fs, const Sh
         glBindAttribLocation(m_Id, e.getElementIndex(), e.getShaderVariableName().c_str());
     });
 
-    for (uint i = 0; i < outputs.size(); ++i)
+    for (uint32 i = 0; i < outputs.size(); ++i)
     {
         glBindFragDataLocation(m_Id, i, outputs[i].c_str());
     }
@@ -204,9 +204,9 @@ void Shader::bind()
     }
 }
 
-uint Shader::getBufferId( const std::string& name ) const
+uint32 Shader::getBufferId( const std::string& name ) const
 {
-    uint loc(glGetUniformBlockIndex(m_Id, name.c_str()));
+    uint32 loc(glGetUniformBlockIndex(m_Id, name.c_str()));
     if (loc == -1)
     {
         HE_ERROR("Uniform buffer: '%s' not found!", name.c_str());
@@ -215,9 +215,9 @@ uint Shader::getBufferId( const std::string& name ) const
     return loc;
 }
 
-uint Shader::getShaderVarId(const std::string& name) const
+uint32 Shader::getShaderVarId(const std::string& name) const
 {
-    uint loc(glGetUniformLocation(m_Id, name.c_str()));
+    uint32 loc(glGetUniformLocation(m_Id, name.c_str()));
     if (loc == -1)
     {
         HE_ERROR("Shader var: '%s' not found!", name.c_str());
@@ -225,17 +225,17 @@ uint Shader::getShaderVarId(const std::string& name) const
     }
     return loc;
 }
-uint Shader::getShaderSamplerId(const std::string& name)
+uint32 Shader::getShaderSamplerId(const std::string& name)
 {
-    std::map<std::string, uint>::const_iterator loc(m_SamplerLocationMap.find(name));
+    std::map<std::string, uint32>::const_iterator loc(m_SamplerLocationMap.find(name));
     if (loc != m_SamplerLocationMap.cend())
     {
         return loc->second;
     }
     else
     {
-        uint texLoc(getShaderVarId(name));
-        uint samplerIndex(m_SamplerLocationMap.size());
+        uint32 texLoc(getShaderVarId(name));
+        uint32 samplerIndex(m_SamplerLocationMap.size());
         bind();
         glUniform1i(texLoc, samplerIndex);
         m_SamplerLocationMap[name] = samplerIndex;
@@ -243,65 +243,65 @@ uint Shader::getShaderSamplerId(const std::string& name)
     }
 }
 
-void Shader::setShaderVar(uint id, int value) const
+void Shader::setShaderVar(uint32 id, int value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1i(id, value);
 }
-void Shader::setShaderVar(uint id, uint value) const
+void Shader::setShaderVar(uint32 id, uint32 value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1ui(id, value);
 }
-void Shader::setShaderVar(uint id, float value) const
+void Shader::setShaderVar(uint32 id, float value) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform1f(id, value);
 }
-void Shader::setShaderVar(uint id, const vec2& vec) const
+void Shader::setShaderVar(uint32 id, const vec2& vec) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform2f(id, vec.x, vec.y);
 }
-void Shader::setShaderVar(uint id, const vec3& vec) const
+void Shader::setShaderVar(uint32 id, const vec3& vec) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform3f(id, vec.x, vec.y, vec.z);
 }
-void Shader::setShaderVar(uint id, const vec4& vec) const
+void Shader::setShaderVar(uint32 id, const vec4& vec) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniform4f(id, vec.x, vec.y, vec.z, vec.w);
 }
-void Shader::setShaderVar(uint id, const mat44& matrix) const
+void Shader::setShaderVar(uint32 id, const mat44& matrix) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniformMatrix4fv(id, 1, GL_FALSE, matrix.toFloatArray());
 }
-void Shader::setShaderVar(uint id, const std::vector<mat44>& matrixArray) const
+void Shader::setShaderVar(uint32 id, const std::vector<mat44>& matrixArray) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
     glUniformMatrix4fv(id, matrixArray.size(), GL_FALSE, matrixArray[0].toFloatArray());
 }
-void Shader::setShaderVar(uint id, const gfx::Texture2D* tex2D) const
+void Shader::setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTexture2D(id, tex2D->getID());
 }
-void Shader::setShaderVar( uint id, const gfx::TextureCube* texCube ) const
+void Shader::setShaderVar( uint32 id, const gfx::TextureCube* texCube ) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     GL::heBindTextureCube(id, texCube->getID());
 }
 
 
-void Shader::setBuffer( uint id, UniformBuffer* buffer )
+void Shader::setBuffer( uint32 id, UniformBuffer* buffer )
 {
     glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
 }
 
-UniformBuffer* Shader::setBuffer( uint id )
+UniformBuffer* Shader::setBuffer( uint32 id )
 {
     UniformBuffer* buffer(NEW UniformBuffer(m_Id, id));
     glUniformBlockBinding(m_Id, id, buffer->m_BufferId);

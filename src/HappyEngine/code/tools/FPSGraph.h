@@ -55,9 +55,9 @@ public:
     virtual void draw2D(gfx::Canvas2D* canvas);
 
     /* GETTERS */
-    ushort getMaxFPS() const;
-    ushort getMinFPS() const;
-    ushort getAverageFPS() const;
+    uint16 getMaxFPS() const;
+    uint16 getMinFPS() const;
+    uint16 getAverageFPS() const;
 
     /* SETTERS */
     void setType(Type type);
@@ -65,20 +65,20 @@ public:
 
 private:
 
-    ushort cap(float fps);
+    uint16 cap(float fps);
     void drawToConsole(gfx::Canvas2D* canvas);
     void drawTextOnly(gfx::Canvas2D* canvas);
     void drawFull(gfx::Canvas2D* canvas);
 
     /* DATAMEMBERS */
-    std::vector<ushort> m_FpsHistory;
+    std::vector<uint16> m_FpsHistory;
 
     float m_GameTime;
     float m_TBase;
     float m_CurrentDTime;
     float m_Interval;
 
-    ushort m_CurrentFPS;
+    uint16 m_CurrentFPS;
     
     gfx::Font* m_pFont;
     gfx::View* m_View;

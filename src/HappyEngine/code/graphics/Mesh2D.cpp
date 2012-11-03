@@ -128,11 +128,11 @@ void Mesh2D::createBuffer(bool outline)
     glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint), &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint32), &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);
 }
 
 /* GETTERS */
-uint Mesh2D::getBufferID() const
+uint32 Mesh2D::getBufferID() const
 {
     return m_VAOID[GL::s_CurrentContext->id];
 }
@@ -147,7 +147,7 @@ const std::vector<vec2>& Mesh2D::getVertices() const
     return m_pPolygon->getVertices();
 }
 
-const std::vector<uint>& Mesh2D::getIndices() const
+const std::vector<uint32>& Mesh2D::getIndices() const
 {
     return m_pPolygon->getIndices();
 }

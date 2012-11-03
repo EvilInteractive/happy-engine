@@ -102,7 +102,7 @@ public:
                             const Color& engineColor = Color(0.0f,1.0f,0.0f),
                             const Color& commandColor = Color(0.0f,0.5f,1.0f));
     // * Sets the max messages to keep in console history, 0 == no limit. *
-    void setMaxMsgHistory(uint maxMessages = 0);
+    void setMaxMsgHistory(uint32 maxMessages = 0);
     void toggleShowMessages(CMSG_TYPE type, bool show);
 
 private:
@@ -123,9 +123,9 @@ private:
 
     io::Key m_Shortcut;
 
-    uint m_MaxMessages;
-    uint m_CmdHistoryPos;
-    uint m_MaxMessagesInWindow;
+    uint32 m_MaxMessages;
+    uint32 m_CmdHistoryPos;
+    uint32 m_MaxMessagesInWindow;
 
     bool m_bOpen;
 

@@ -49,25 +49,25 @@ enum ShaderVarType
 class ShaderVar
 {
 public:
-    ShaderVar(uint id, const std::string& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
+    ShaderVar(uint32 id, const std::string& name, ShaderVarType type): m_Id(id), m_Type(type), m_Name(name) {}
     virtual ~ShaderVar() {}
 
     virtual void assignData(Shader* pShader) = 0;
     virtual ShaderVar* copy() = 0;
 
     virtual ShaderVarType getType() { return m_Type; }
-    uint getId() const { return m_Id; }
+    uint32 getId() const { return m_Id; }
     const std::string& getName() const { return m_Name; }
 
 protected:
-    uint m_Id;
+    uint32 m_Id;
     std::string m_Name;
     ShaderVarType m_Type;
 };
 class ShaderGlobalVar : public ShaderVar
 {
 public:
-    ShaderGlobalVar(uint id, const std::string& name, ShaderVarType type): ShaderVar(id ,name, type)
+    ShaderGlobalVar(uint32 id, const std::string& name, ShaderVarType type): ShaderVar(id ,name, type)
     {
     }
     virtual ~ShaderGlobalVar() {}
@@ -85,7 +85,7 @@ template<typename T>
 class ShaderUserVar : public ShaderVar
 {
 public:
-    ShaderUserVar(uint id, const std::string& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint32 id, const std::string& name, const T& data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
     }
     virtual ~ShaderUserVar() {}
@@ -110,7 +110,7 @@ template<>
 class ShaderUserVar<const Texture2D*> : public ShaderVar
 {
 public:
-    ShaderUserVar(uint id, const std::string& name, const Texture2D* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint32 id, const std::string& name, const Texture2D* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
         m_Data->instantiate();
     }
@@ -144,7 +144,7 @@ template<>
 class ShaderUserVar<const TextureCube*> : public ShaderVar
 {
 public:
-    ShaderUserVar(uint id, const std::string& name, const TextureCube* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
+    ShaderUserVar(uint32 id, const std::string& name, const TextureCube* data): ShaderVar(id, name, ShaderVarType_User), m_Data(data)
     {
         m_Data->instantiate();
     }

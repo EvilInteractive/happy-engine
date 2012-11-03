@@ -332,7 +332,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
     if (ilLoadImage(data.path.c_str()))
     {
         ILuint dxtcFormat(ilGetInteger(IL_DXTC_DATA_FORMAT));
-        uint channels(ilGetInteger(IL_IMAGE_CHANNELS));
+        uint32 channels(ilGetInteger(IL_IMAGE_CHANNELS));
         bool isCompressed(true);
         if (dxtcFormat == IL_DXT_NO_COMP)
         {
@@ -398,7 +398,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
                     if (isCompressed)
                     {
                         mipData.bufferSize = ilGetDXTCData(nullptr, 0, dxtcFormat);
-                        mipData.data = static_cast<byte*>(he_malloc(mipData.bufferSize));
+                        mipData.data = static_cast<uint8*>(he_malloc(mipData.bufferSize));
                         mipData.isDataDirty = true;
                         if (ilGetDXTCData(mipData.data, mipData.bufferSize, dxtcFormat) == 0)
                         {
@@ -444,21 +444,21 @@ bool TextureLoader::makeData( TextureLoadData& data )
     data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
     data.faces = 1;
 
-    for (byte mip(0); mip < 4; ++mip)
+    for (uint8 mip(0); mip < 4; ++mip)
     {
         data.mipData[0].push_back(TextureLoadMipData());
         TextureLoadMipData& mipData(data.mipData[0].back());
 
-        mipData.width = static_cast<uint>(pow(2.0f, mip));
+        mipData.width = static_cast<uint32>(pow(2.0f, mip));
         mipData.height = mipData.width;
         mipData.format = gfx::TextureBufferLayout_BGRA;
         mipData.type = gfx::TextureBufferType_Byte;
         mipData.isCompressed = false;
         mipData.mipLevel = 4 - mip - 1;
-        uint pixels(mipData.width * mipData.height);
-        mipData.data = NEW byte[mipData.width * mipData.height * 4];
+        uint32 pixels(mipData.width * mipData.height);
+        mipData.data = NEW uint8[mipData.width * mipData.height * 4];
         mipData.isDataDirty = true;
-        for (uint i = 0; i < pixels * 4; i += 4)
+        for (uint32 i = 0; i < pixels * 4; i += 4)
         {
             mipData.data[i]   = data.color.bByte();
             mipData.data[i+1] = data.color.gByte();

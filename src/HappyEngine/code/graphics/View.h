@@ -140,7 +140,7 @@ public:
 
     // Debug
     std::vector<vec3>& getDebugVertices() { return m_DebugVertices; }
-    std::vector<uint>& getDebugIndices() { return m_DebugIndices; }
+    std::vector<uint32>& getDebugIndices() { return m_DebugIndices; }
 
     // Camera
     void setCamera(const std::string& camera);
@@ -189,7 +189,7 @@ private:
     // Debug
     bool m_RenderDebugTextures;
     std::vector<vec3> m_DebugVertices;
-    std::vector<uint> m_DebugIndices;
+    std::vector<uint32> m_DebugIndices;
 
 };
 

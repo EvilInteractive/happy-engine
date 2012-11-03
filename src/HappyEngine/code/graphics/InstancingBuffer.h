@@ -30,30 +30,30 @@ class InstancingBuffer
 {
 public:
     InstancingBuffer();
-    InstancingBuffer(uint itemSize, uint maxItems);
+    InstancingBuffer(uint32 itemSize, uint32 maxItems);
     virtual ~InstancingBuffer();
     InstancingBuffer& operator=(const InstancingBuffer&);
 
-    void resize(uint newSize);
+    void resize(uint32 newSize);
 
     char* addItem();
     void reset();
 
     char* getBuffer() const;
 
-    uint getSize() const;
-    uint getSizeCapacity() const;
-    uint getCountCapacity() const;
-    uint getCount() const;
+    uint32 getSize() const;
+    uint32 getSizeCapacity() const;
+    uint32 getCountCapacity() const;
+    uint32 getCount() const;
 
 private:
 
     char* m_Buffer;
     char* m_End;
 
-    uint m_Size;
-    uint m_ItemSize;
-    uint m_Count;
+    uint32 m_Size;
+    uint32 m_ItemSize;
+    uint32 m_Count;
 
     //Disable default copy constructor
     InstancingBuffer(const InstancingBuffer&);

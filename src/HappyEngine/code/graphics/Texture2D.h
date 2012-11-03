@@ -38,19 +38,19 @@ public:
 
     void init(TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps);
 
-    void setData(uint width, uint height, 
-        const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, byte mipLevel = 0);
+    void setData(uint32 width, uint32 height, 
+        const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel = 0);
 
-    void setCompressedData(uint width, uint height, const void* data, uint imageSizeInBytes, byte mipLevel = 0);
+    void setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
     
     void setLoadFinished();
     bool isLoaded() const { return m_IsLoadDone; }
 
     void generateMipMaps() const;
 
-    uint getID() const { return m_Id; }
-    uint getWidth() const { return m_Width; }
-    uint getHeight() const { return m_Height; }
+    uint32 getID() const { return m_Id; }
+    uint32 getWidth() const { return m_Width; }
+    uint32 getHeight() const { return m_Height; }
     TextureFormat getTextureFormat() const { return m_TextureFormat; }
     TextureWrapType getWrapType() const { return m_WrapType; }
     TextureFilterType getFilterType() const { return m_FilterType; }
@@ -64,14 +64,14 @@ private:
     boost::mutex m_CallbackMutex;
     event0<void> Loaded;
 
-    uint m_Width, m_Height;
+    uint32 m_Width, m_Height;
 
     TextureFormat m_TextureFormat;    
     TextureWrapType m_WrapType;
     TextureFilterType m_FilterType;
     bool m_HasMipMaps;
 
-    uint m_Id;
+    uint32 m_Id;
     
     bool m_IsLoadDone;
 

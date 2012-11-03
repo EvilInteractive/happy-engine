@@ -65,7 +65,7 @@ void FPSGraph::tick(float dTime, float interval)
     {
         m_TBase = m_GameTime;
 
-        ushort fps(cap(1 / dTime));
+        uint16 fps(cap(1 / dTime));
 
         m_CurrentFPS = fps;
         m_CurrentDTime = dTime;
@@ -102,12 +102,12 @@ void FPSGraph::draw2D(gfx::Canvas2D* canvas)
     }
 }
 
-ushort FPSGraph::cap(float fps)
+uint16 FPSGraph::cap(float fps)
 {
    /* if (fps > 250.0f)
         return 250;
     else*/
-        return static_cast<ushort>(fps);
+        return static_cast<uint16>(fps);
 }
 
 void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
@@ -294,10 +294,10 @@ void FPSGraph::drawFull(gfx::Canvas2D* /*canvas*/)
 }
 
 /* GETTERS */
-ushort FPSGraph::getMaxFPS() const
+uint16 FPSGraph::getMaxFPS() const
 {
-    ushort maxFPS(0);
-    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](ushort FPS)
+    uint16 maxFPS(0);
+    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint16 FPS)
     {
         if (FPS > maxFPS)
             maxFPS = FPS;
@@ -306,10 +306,10 @@ ushort FPSGraph::getMaxFPS() const
     return maxFPS;
 }
 
-ushort FPSGraph::getMinFPS() const
+uint16 FPSGraph::getMinFPS() const
 {
-    ushort minFPS(0xffff);
-    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](ushort FPS)
+    uint16 minFPS(0xffff);
+    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint16 FPS)
     {
         if (FPS < minFPS)
             minFPS = FPS;
@@ -318,21 +318,21 @@ ushort FPSGraph::getMinFPS() const
     return minFPS;
 }
 
-ushort FPSGraph::getAverageFPS() const
+uint16 FPSGraph::getAverageFPS() const
 {
     if (m_FpsHistory.size() == 0)
         return 0;
 
-    uint i(0);
+    uint32 i(0);
         
     if ((m_FpsHistory.size() * m_Interval) > 60)
     {
-        i = static_cast<uint>(m_FpsHistory.size() - (60 / m_Interval));
+        i = static_cast<uint32>(m_FpsHistory.size() - (60 / m_Interval));
     }
 
-    uint j((uint)m_FpsHistory.size());
+    uint32 j((uint32)m_FpsHistory.size());
 
-    uint avFPS(0);
+    uint32 avFPS(0);
 
     for (; i < j ; ++i)
     {
@@ -341,14 +341,14 @@ ushort FPSGraph::getAverageFPS() const
 
     if ((m_FpsHistory.size() * m_Interval) > 60)
     {
-        avFPS /= static_cast<uint>(60 / m_Interval);
+        avFPS /= static_cast<uint32>(60 / m_Interval);
     }
     else
     {
-        avFPS /= (uint)m_FpsHistory.size();
+        avFPS /= (uint32)m_FpsHistory.size();
     }
 
-    return (ushort)avFPS;
+    return (uint16)avFPS;
 }
 
 /* SETTERS */

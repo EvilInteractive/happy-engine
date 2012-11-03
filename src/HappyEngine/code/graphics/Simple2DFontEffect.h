@@ -47,12 +47,12 @@ public:
 private:
     gfx::Shader* m_Shader;
 
-    uint m_ShaderWVPPos;
-    uint m_ShaderDiffTexPos;
-    uint m_ShaderDepthPos;
-    uint m_ShaderFontColorPos;
-    uint m_ShaderTCOffsetPos;
-    uint m_ShaderTCScalePos;
+    uint32 m_ShaderWVPPos;
+    uint32 m_ShaderDiffTexPos;
+    uint32 m_ShaderDepthPos;
+    uint32 m_ShaderFontColorPos;
+    uint32 m_ShaderTCOffsetPos;
+    uint32 m_ShaderTCScalePos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DFontEffect(const Simple2DFontEffect&);

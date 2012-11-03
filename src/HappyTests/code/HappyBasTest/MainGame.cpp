@@ -328,11 +328,11 @@ void MainGame::fillDebugMeshes()
     gfx::CameraPerspective* camera(m_View->getCamera());
     
     const Frustum& frustum(camera->getBound().getFrustum());
-    Frustum::generateFrustumIndices<uint>(m_View->getDebugIndices(), (uint)m_View->getDebugVertices().size());
+    Frustum::generateFrustumIndices<uint32>(m_View->getDebugIndices(), (uint32)m_View->getDebugVertices().size());
     frustum.generateFrustumPoints(m_View->getDebugVertices());
 
     const Cone& cone(camera->getBound().getCone());
-    Cone::generateConeIndices<uint>(CONE_VERTICES, (uint)m_View->getDebugVertices().size(), m_View->getDebugIndices());
+    Cone::generateConeIndices<uint32>(CONE_VERTICES, (uint32)m_View->getDebugVertices().size(), m_View->getDebugIndices());
     cone.generateConeVertices(CONE_VERTICES, m_View->getDebugVertices());
 
     m_DebugMesh->setVertices(m_View->getDebugVertices().data(), m_View->getDebugVertices().size(), gfx::MeshUsage_Dynamic);

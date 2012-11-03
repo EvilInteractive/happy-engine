@@ -50,7 +50,7 @@ public:
     const he::vec2& getBoardDimension() const;
     Ball* getBall() const;
 
-    void addPoint(he::byte player);
+    void addPoint(he::uint8 player);
     void restart(bool timeout);
 
 

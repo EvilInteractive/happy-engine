@@ -47,53 +47,53 @@ public:
 
     virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
-    virtual uint getNumMeshes() const;
-    virtual const std::string& getMeshName(uint mesh) const;
+    virtual uint32 getNumMeshes() const;
+    virtual const std::string& getMeshName(uint32 mesh) const;
 
-    virtual const void* getVertices(uint mesh) const;
-    virtual uint getNumVertices(uint mesh) const;
+    virtual const void* getVertices(uint32 mesh) const;
+    virtual uint32 getNumVertices(uint32 mesh) const;
 
-    virtual const std::vector<gfx::Bone>& getBones(uint /*mesh*/) const { return m_NoBones; } //No bones in a OBJ
+    virtual const std::vector<gfx::Bone>& getBones(uint32 /*mesh*/) const { return m_NoBones; } //No bones in a OBJ
 
-    virtual const void* getIndices(uint mesh) const;
-    virtual gfx::IndexStride getIndexStride(uint mesh) const;
-    virtual uint getNumIndices(uint mesh) const;
+    virtual const void* getIndices(uint32 mesh) const;
+    virtual gfx::IndexStride getIndexStride(uint32 mesh) const;
+    virtual uint32 getNumIndices(uint32 mesh) const;
 
 
 private:
     struct Range
     {
-        uint begin;
-        uint end;
+        uint32 begin;
+        uint32 end;
     };
 
     bool read(const std::string& path);
-    void flushCreateGroup(uint group);
+    void flushCreateGroup(uint32 group);
     void create(bool allowByteIndices);
-    void addIndex(uint index, uint group);
+    void addIndex(uint32 index, uint32 group);
     void fill(void* pdata, const gfx::BufferLayout& vertLayout) const;
 
     std::vector<vec3> m_PositionData;
     std::vector<vec2> m_TextureData;
     std::vector<vec3> m_NormalData;
-    std::vector<std::vector<std::vector<uint>>> m_FaceData;
+    std::vector<std::vector<std::vector<uint32>>> m_FaceData;
     std::vector<Range> m_FaceDataMeshRange;
     std::vector<std::string> m_GroupData;
 
     std::vector<InternalVertex> m_VertexData;
     std::vector<Range> m_VertexMeshRange;
-    std::map<std::string, uint> m_IndexMap;
+    std::map<std::string, uint32> m_IndexMap;
 
     std::vector<Range> m_IndexMeshRange;
-    std::vector<byte> m_IndicesByte;
-    std::vector<ushort> m_IndicesUShort;
-    std::vector<uint> m_IndicesUInt;
+    std::vector<uint8> m_IndicesByte;
+    std::vector<uint16> m_IndicesUShort;
+    std::vector<uint32> m_IndicesUInt;
 
     void* m_Vertices;
     gfx::BufferLayout m_VertexLayout;
 
-    uint m_NumVertices;
-    std::vector<uint> m_NumIndices;
+    uint32 m_NumVertices;
+    std::vector<uint32> m_NumIndices;
     std::vector<gfx::IndexStride> m_IndexStride;
 
     std::vector<gfx::Bone> m_NoBones;

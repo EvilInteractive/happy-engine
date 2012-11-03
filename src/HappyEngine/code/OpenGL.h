@@ -27,7 +27,7 @@ namespace gfx {
 
 #define MAX_OPENGL_CONTEXT 10
 #define MAX_VERTEX_ARRAY_OBJECTS MAX_OPENGL_CONTEXT
-typedef uint VaoID;
+typedef uint32 VaoID;
 
 //http://www.opengl.org/sdk/docs/man3/xhtml/glDepthFunc.xml
 enum DepthFunc
@@ -109,13 +109,13 @@ public:
     static void heSetWindingFrontFace(bool cw);
 
     // Binding
-    static void heBindFbo(uint fbo);
-    static uint heGetBoundFbo();
-    static void heBindVao(uint vao);
-    static void heBindTexture2D(uint tex);
-    static void heBindTexture2D(uint texPos, uint tex);
-    static void heBindTextureCube(uint texPos, uint tex);
-    static void heBindUniformBuffer(uint uboId, uint bufferId);
+    static void heBindFbo(uint32 fbo);
+    static uint32 heGetBoundFbo();
+    static void heBindVao(uint32 vao);
+    static void heBindTexture2D(uint32 tex);
+    static void heBindTexture2D(uint32 texPos, uint32 tex);
+    static void heBindTextureCube(uint32 texPos, uint32 tex);
+    static void heBindUniformBuffer(uint32 uboId, uint32 bufferId);
 
     // Blending
     static void heBlendEnabled(bool enabled);

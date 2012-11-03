@@ -66,12 +66,12 @@ IntersectResult Sphere::intersect(const Sphere& other) const
     return IntersectResult_Outside;
 }
 
-Sphere Sphere::calculateBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset)
+Sphere Sphere::calculateBoundingSphere(const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset)
 {
     vec3 min(FLT_MAX, FLT_MAX, FLT_MAX), 
          max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
     const char* charPointCloud = static_cast<const char*>(pointCloud);
-    for(uint i = 0; i < num; ++i)
+    for(uint32 i = 0; i < num; ++i)
     {
         const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
         he::minPerComponent(min, p, min);

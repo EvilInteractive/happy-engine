@@ -343,8 +343,8 @@ void mat44::getTranslationComponent( vec3& translation ) const
 }
 void mat44::getRotationComponent( mat33& rotation ) const
 {
-    for (byte row(0); row < 3; ++row)
-    for (byte col(0); col < 3; ++col)
+    for (uint8 row(0); row < 3; ++row)
+    for (uint8 col(0); col < 3; ++col)
         rotation(row, col) = m_Matrix(row, col);
 }
 

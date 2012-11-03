@@ -35,7 +35,7 @@ class Sound3D : public ISound
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Sound3D(uint source, uint buffer, uint soundFile, SOUND_TYPE type);
+    Sound3D(uint32 source, uint32 buffer, uint32 soundFile, SOUND_TYPE type);
 
     virtual ~Sound3D();
 
@@ -58,9 +58,9 @@ public:
     void setMaximumVolume(float volume = 1.0f);
 
     /* GETTERS */
-    uint getSource() const;
-    uint getBuffer() const;
-    uint getSoundFile() const;
+    uint32 getSource() const;
+    uint32 getBuffer() const;
+    uint32 getSoundFile() const;
     SOUND_STATE getState() const;
     SOUND_TYPE getType() const;
 
@@ -84,9 +84,9 @@ public:
 private:
 
     /* DATAMEMBERS */
-    uint m_SoundFile;
-    uint m_Buffer;
-    uint m_Source;
+    uint32 m_SoundFile;
+    uint32 m_Buffer;
+    uint32 m_Source;
 
     SOUND_TYPE m_Type;
 

@@ -53,7 +53,7 @@ NetworkManager::~NetworkManager()
         disconnect();
 }
 
-void NetworkManager::host(ushort port)
+void NetworkManager::host(uint16 port)
 {
     HE_IF_ASSERT(m_RakPeer == nullptr, "Call host or join only once! Or call disconnect first!")
     {
@@ -72,7 +72,7 @@ void NetworkManager::host(ushort port)
     }
 }
 
-void NetworkManager::join(const std::string& ip, ushort port)
+void NetworkManager::join(const std::string& ip, uint16 port)
 {
     HE_IF_ASSERT(m_RakPeer == nullptr, "Call host or join only once! Or call disconnect first!")
     {

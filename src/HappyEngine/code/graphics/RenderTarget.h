@@ -38,22 +38,22 @@ public:
 
     // Add all targets then call init
     void addTextureTarget(const Texture2D* tex2D);
-    void switchTextureTarget(uint index, const Texture2D* tex2D);
+    void switchTextureTarget(uint32 index, const Texture2D* tex2D);
     void setDepthTarget(const Texture2D* tex2D);
-    void setDepthTarget(uint id) { m_DepthBuffer = id; }
+    void setDepthTarget(uint32 id) { m_DepthBuffer = id; }
     void setDepthTarget();
     void init();
 
     void removeAllTargets();
 
-    const Texture2D* getTextureTarget(uint index) const;
+    const Texture2D* getTextureTarget(uint32 index) const;
     const Texture2D* getDepthTarget() const;
-    const uint getDepthBuffer() const { return m_DepthBuffer; }
+    const uint32 getDepthBuffer() const { return m_DepthBuffer; }
 
-    uint getWidth() const { return m_Width; }
-    uint getHeight() const { return m_Height; }
+    uint32 getWidth() const { return m_Width; }
+    uint32 getHeight() const { return m_Height; }
 
-    void setSize(uint width, uint height);
+    void setSize(uint32 width, uint32 height);
 
     void clear(const Color& color) const;
 
@@ -61,21 +61,21 @@ public:
     // used to disable targets while rendering
     // if we have 3 targets and pass down 2,0 in this function only 0 and 1 will be bound
     // if (2, 1) only 1 and 2 will be bound
-    void prepareForRendering(uint numTextureTargets, uint offset = 0) const;
+    void prepareForRendering(uint32 numTextureTargets, uint32 offset = 0) const;
 
     const static int MAX_TEXTURE_TARGETS = 8;
 
 private:
-    uint m_FboId;
-    uint m_DepthBuffer;
+    uint32 m_FboId;
+    uint32 m_DepthBuffer;
     const Texture2D* m_DepthTarget;
 
     std::vector<const Texture2D*> m_TextureTargets;
 
-    uint m_DrawBuffers[MAX_TEXTURE_TARGETS];
-    uint m_DrawBufferCount;
+    uint32 m_DrawBuffers[MAX_TEXTURE_TARGETS];
+    uint32 m_DrawBufferCount;
 
-    uint m_Width, m_Height;
+    uint32 m_Width, m_Height;
     GLContext* m_Context;
 
     //Disable default copy constructor and default assignment operator

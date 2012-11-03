@@ -46,9 +46,9 @@ void PhysicsConvexMesh::load( const io::BinaryStream& stream )
 {
     HE_ASSERT(m_InternalMeshes.size() == 0, "PhysicsConvexMesh %s already loaded!", getName().c_str());
 
-    byte numConvex(stream.readByte());
+    uint8 numConvex(stream.readByte());
 
-    for (byte i(0); i < numConvex; ++i)
+    for (uint8 i(0); i < numConvex; ++i)
     {
         stream.readString(); // Not used
         m_InternalMeshes.push_back(

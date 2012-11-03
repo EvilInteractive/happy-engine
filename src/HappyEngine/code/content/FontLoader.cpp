@@ -43,7 +43,7 @@ FontLoader::~FontLoader()
 }
 
 /* GENERAL */
-gfx::Font* FontLoader::load(const std::string& path, ushort size)
+gfx::Font* FontLoader::load(const std::string& path, uint16 size)
 {
     std::stringstream stream;
     stream << path << size;

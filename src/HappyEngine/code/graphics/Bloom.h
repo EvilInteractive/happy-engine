@@ -38,7 +38,7 @@ public:
 
     void init(View* view, bool hdr);
 
-    const Texture2D* getBloom(byte level) const;
+    const Texture2D* getBloom(uint8 level) const;
 
     void render( const Texture2D* pTexture, const Texture2D* pLumMap = nullptr );
 
@@ -47,22 +47,22 @@ private:
     void cleanTextures();
     void cleanShaders();
 
-    std::vector<uint> m_FboId[2];
+    std::vector<uint32> m_FboId[2];
     std::vector<Texture2D*> m_Texture[2];
     
     Shader* m_pDownSampleBrightPassShader;
-    uint m_DownSampleBrightPassMap;
-    uint m_DownSampleBrightPassLumMap;
+    uint32 m_DownSampleBrightPassMap;
+    uint32 m_DownSampleBrightPassLumMap;
 
     Shader* m_pDownSampleShader;
-    uint m_DownSampleMap;
+    uint32 m_DownSampleMap;
 
     const static int s_BlurPasses = 2;
     Shader* m_pBlurShaderPass[s_BlurPasses];
-    uint m_BlurMapPos[s_BlurPasses];
-    uint m_BlurTexelSize[s_BlurPasses];
+    uint32 m_BlurMapPos[s_BlurPasses];
+    uint32 m_BlurTexelSize[s_BlurPasses];
         
-    const byte m_DownSamples;
+    const uint8 m_DownSamples;
 
     bool m_Hdr;
 

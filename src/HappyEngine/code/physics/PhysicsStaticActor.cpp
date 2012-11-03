@@ -128,7 +128,7 @@ physx::PxRigidActor* PhysicsStaticActor::getInternalActor() const
     return m_Actor;
 }
 
-he::uint PhysicsStaticActor::getCompatibleShapes() const
+he::uint32 PhysicsStaticActor::getCompatibleShapes() const
 {
     return PhysicsShapeType_StaticCompatible;
 }

@@ -57,8 +57,8 @@ protected:
     virtual IObject3D* getParent() const = 0;
     virtual void setParent(IObject3D* parent) = 0;
 
-    virtual void setWorldMatrixDirty(byte cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
-    virtual void setLocalMatrixDirty(byte cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setWorldMatrixDirty(uint8 cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setLocalMatrixDirty(uint8 cause) = 0; // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
 
     virtual void calculateWorldMatrix() = 0;
 };
@@ -83,8 +83,8 @@ protected:\
 virtual IObject3D* getParent() const { return X::getParent(); } \
 virtual void setParent(IObject3D* parent) { X::setParent(parent); } \
 \
-virtual void setWorldMatrixDirty(byte cause) { X::setWorldMatrixDirty(cause); } \
-virtual void setLocalMatrixDirty(byte cause) { X::setLocalMatrixDirty(cause); } \
+virtual void setWorldMatrixDirty(uint8 cause) { X::setWorldMatrixDirty(cause); } \
+virtual void setLocalMatrixDirty(uint8 cause) { X::setLocalMatrixDirty(cause); } \
 \
 virtual void calculateWorldMatrix() { X::calculateWorldMatrix(); }
 
@@ -110,8 +110,8 @@ public:
     virtual void detach(IObject3D* child);
 
 protected:
-    virtual void setWorldMatrixDirty(byte cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
-    virtual void setLocalMatrixDirty(byte cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setWorldMatrixDirty(uint8 cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
+    virtual void setLocalMatrixDirty(uint8 cause); // sets all childs to dirty as well, if dirty it presumes all childs are already dirty
 
     virtual void calculateWorldMatrix();
 
@@ -129,8 +129,8 @@ protected:
     IObject3D* m_Parent;
     std::vector<IObject3D*> m_Childs;
 
-    mutable byte m_LocalMatrixDirty : 4;
-    mutable byte m_WorldMatrixDirty : 4;
+    mutable uint8 m_LocalMatrixDirty : 4;
+    mutable uint8 m_WorldMatrixDirty : 4;
 
     mutable mat44 m_WorldMatrix;
     mutable mat44 m_LocalMatrix;

@@ -37,7 +37,7 @@ struct BinObjLoader::InternalVertex
     vec2 tex;
     vec3 norm;
     vec3 tan;
-    byte boneID[gfx::Bone::MAX_BONEWEIGHTS];
+    uint8 boneID[gfx::Bone::MAX_BONEWEIGHTS];
     float boneWeight[gfx::Bone::MAX_BONEWEIGHTS];
 
     InternalVertex(): pos(), tex(), norm(), tan()
@@ -88,7 +88,7 @@ bool BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLa
     });
     m_Vertices.clear();
 
-    for (uint i = 0; i < m_VertexData.size(); ++i)
+    for (uint32 i = 0; i < m_VertexData.size(); ++i)
     {
         void* pVert(he_malloc(vertLayout.getSize() * m_VertexData[i].size()));
         HE_ASSERT(pVert != nullptr, "not enough memory!");
@@ -116,19 +116,19 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
     if (stream.open(path, io::BinaryStream::Read) == false)
         return false;
     
-    uint meshes(stream.readDword());
+    uint32 meshes(stream.readDword());
 
-    for(uint i = 0; i < meshes; ++i)
+    for(uint32 i = 0; i < meshes; ++i)
     {
         m_MeshName.push_back(stream.readString());
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Bones                                  ///
         //////////////////////////////////////////////////////////////////////////
-        uint numBones(stream.readByte());
+        uint32 numBones(stream.readByte());
         m_BoneData.push_back(std::vector<gfx::Bone>());
         m_BoneData.back().reserve(numBones);
-        for (uint iBone = 0; iBone < numBones; ++iBone)
+        for (uint32 iBone = 0; iBone < numBones; ++iBone)
         {
             gfx::Bone bone;
             bone.m_Name = stream.readString();
@@ -139,7 +139,7 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
         //////////////////////////////////////////////////////////////////////////
         ///                             Vertices                               ///
         //////////////////////////////////////////////////////////////////////////
-        uint numVertices(stream.readDword());
+        uint32 numVertices(stream.readDword());
         m_VertexData.push_back(std::vector<InternalVertex>(numVertices));
         stream.read(&m_VertexData.back()[0], numVertices * sizeof(InternalVertex));
 
@@ -186,7 +186,7 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
             weightOff = element.getByteOffset();
     });
     
-    for (uint i = 0; i < m_VertexData.size(); ++i)
+    for (uint32 i = 0; i < m_VertexData.size(); ++i)
     {
         //optimazation for struct == internal struct
         if (sizeof(InternalVertex) == vertLayout.getSize())
@@ -199,7 +199,7 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
         } 
 
         char* pCharData = static_cast<char*>(m_Vertices[i]);
-        uint count(0);
+        uint32 count(0);
         std::for_each(m_VertexData[i].cbegin(), m_VertexData[i].cend(), [&](const InternalVertex& vert)
         {
             if (pOff != -1)
@@ -233,37 +233,37 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
     }
 }
 
-const void* BinObjLoader::getVertices(uint mesh) const
+const void* BinObjLoader::getVertices(uint32 mesh) const
 {
     return m_Vertices[mesh];
 }
-const void* BinObjLoader::getIndices(uint mesh) const 
+const void* BinObjLoader::getIndices(uint32 mesh) const 
 {
     return m_Indices[mesh];
 }
-gfx::IndexStride BinObjLoader::getIndexStride(uint mesh) const
+gfx::IndexStride BinObjLoader::getIndexStride(uint32 mesh) const
 {
     return m_IndexStride[mesh];
 }
-uint BinObjLoader::getNumVertices(uint mesh) const
+uint32 BinObjLoader::getNumVertices(uint32 mesh) const
 {
     return m_VertexData[mesh].size();
 }
-uint BinObjLoader::getNumIndices(uint mesh) const
+uint32 BinObjLoader::getNumIndices(uint32 mesh) const
 {
     return m_NumIndices[mesh];
 }
 
-uint BinObjLoader::getNumMeshes() const
+uint32 BinObjLoader::getNumMeshes() const
 {
     return m_MeshName.size();
 }
-const std::string& BinObjLoader::getMeshName(uint mesh) const
+const std::string& BinObjLoader::getMeshName(uint32 mesh) const
 {
     return m_MeshName[mesh];
 }
 
-const std::vector<gfx::Bone>& BinObjLoader::getBones( uint mesh ) const
+const std::vector<gfx::Bone>& BinObjLoader::getBones( uint32 mesh ) const
 {
     HE_ASSERT(mesh < m_BoneData.size(), "mesh outside array");
     return m_BoneData[mesh];

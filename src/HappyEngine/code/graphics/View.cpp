@@ -205,7 +205,7 @@ void View3D::init( const RenderSettings& settings )
     m_IntermediateRenderTarget = NEW RenderTarget(m_Window->getContext());
     m_OutputRenderTarget = NEW RenderTarget(m_Window->getContext());
 
-    uint width(m_Viewport.width), 
+    uint32 width(m_Viewport.width), 
         height(m_Viewport.height);
 
     m_Settings.postSettings.shaderSettings.enableHDR = m_Settings.postSettings.shaderSettings.enableHDR && m_Settings.enablePost;

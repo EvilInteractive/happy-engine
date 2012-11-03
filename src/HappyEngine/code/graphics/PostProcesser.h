@@ -87,7 +87,7 @@ private:
     AutoExposure* m_pAutoExposure;
 
     Shader* m_PostShader;
-    uint m_PostShaderVars[MAX_POST_SHADER_VARS];
+    uint32 m_PostShaderVars[MAX_POST_SHADER_VARS];
 
     const Texture2D* m_pRandomNormals;
 

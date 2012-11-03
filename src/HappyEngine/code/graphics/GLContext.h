@@ -73,9 +73,9 @@ public:
         , m_MaxAnisotropicFilteringSupport(0.0f)
         , m_SupportTextureCompression(false)
     {
-        he_memset(m_BoundTex2D, 0xff, MAX_SAMPLERS * sizeof(uint));
-        he_memset(m_BoundTexCube, 0xff, MAX_SAMPLERS * sizeof(uint));
-        he_memset(m_BoundUbo, 0xff, MAX_UBO * sizeof(uint));
+        he_memset(m_BoundTex2D, 0xff, MAX_SAMPLERS * sizeof(uint32));
+        he_memset(m_BoundTexCube, 0xff, MAX_SAMPLERS * sizeof(uint32));
+        he_memset(m_BoundUbo, 0xff, MAX_UBO * sizeof(uint32));
     }
 
     GLEWContextStruct internalContext;
@@ -98,13 +98,13 @@ private:
     bool m_CullCWFrontFace;
 
     // Binding
-    uint m_BoundFbo, m_BoundVao;
+    uint32 m_BoundFbo, m_BoundVao;
     static const int MAX_UBO = 50;
-    uint m_BoundUbo[MAX_UBO];
+    uint32 m_BoundUbo[MAX_UBO];
     static const int MAX_SAMPLERS = 31;
-    uint m_BoundTex2D[MAX_SAMPLERS];
-    uint m_BoundTexCube[MAX_SAMPLERS];
-    uint m_ActiveTex;
+    uint32 m_BoundTex2D[MAX_SAMPLERS];
+    uint32 m_BoundTexCube[MAX_SAMPLERS];
+    uint32 m_ActiveTex;
 
     // Blending
     bool m_BlendEnabled;

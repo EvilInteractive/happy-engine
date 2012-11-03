@@ -47,8 +47,8 @@ public:
 
 private:
     const static int s_ArraySize = io::Key_MAX / 8 + 1;
-    byte m_CurrentKeyState[s_ArraySize];
-    byte m_PrevKeyState[s_ArraySize];
+    uint8 m_CurrentKeyState[s_ArraySize];
+    uint8 m_PrevKeyState[s_ArraySize];
 
     char m_TextCharEntered;
 

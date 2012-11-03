@@ -53,7 +53,7 @@ Font::~Font()
 }
 
 /* GENERAL */
-void Font::init(FT_Library lib, FT_Face face, ushort size)
+void Font::init(FT_Library lib, FT_Face face, uint16 size)
 {
     m_FTLibrary = lib;
     m_Face = face;
@@ -83,10 +83,10 @@ void Font::preCache(bool extendedCharacters)
 
     // normal chars -> ABC def 012 %=- (first 127 ASCII)
     // or with extended chars -> ιθη§ (256 ASCII)
-    byte nrChars = (extendedCharacters == true) ? (byte)255 : (byte)128;
+    uint8 nrChars = (extendedCharacters == true) ? (uint8)255 : (uint8)128;
     vec2 texSize;
 
-    std::vector<byte*> glyphBuffers;
+    std::vector<uint8*> glyphBuffers;
     std::vector<vec2> glyphSizes;
     std::vector<float> glyphTop;
 
@@ -100,7 +100,7 @@ void Font::preCache(bool extendedCharacters)
 
     // render each char to buffers
     // note: first 32 chars are not significant
-    for (byte chr(32); chr < nrChars; ++chr)
+    for (uint8 chr(32); chr < nrChars; ++chr)
     {
         // load character glyphs
         FT_ULong c(chr);
@@ -132,7 +132,7 @@ void Font::preCache(bool extendedCharacters)
 
         // use RGBA instead of R (1 channel)
         // gpu's like 4 byte packing better
-        glyphBuffers[chr] = NEW byte[width * height * 4];
+        glyphBuffers[chr] = NEW uint8[width * height * 4];
 
         for (int h(0); h < height; ++h)
         {
@@ -156,14 +156,14 @@ void Font::preCache(bool extendedCharacters)
     vec2 penPos;
 
     // create final buffer for texture atlas
-    byte* texBuffer = NEW byte[(uint)texSize.x * (uint)texSize.y * 4];
+    uint8* texBuffer = NEW uint8[(uint32)texSize.x * (uint32)texSize.y * 4];
 
     // fill with 0
-    for (uint i(0); i < (uint)texSize.x * (uint)texSize.y * 4; ++i)
+    for (uint32 i(0); i < (uint32)texSize.x * (uint32)texSize.y * 4; ++i)
         texBuffer[i] = 0;
 
     // put each glyph into buffer
-    for (byte i(32); i < nrChars; ++i)
+    for (uint8 i(32); i < nrChars; ++i)
     {
         penPos.y = texSize.y - maxHeight - glyphTop[i];
 
@@ -171,8 +171,8 @@ void Font::preCache(bool extendedCharacters)
         for (int i2 = 0; i2 < (int)glyphSizes[i].y; ++i2)
         {
             // use the awesome he_memcpy for copying
-            he_memcpy( texBuffer + (((int)penPos.y + i2) * (int)texSize.x + (int)penPos.x) * sizeof(byte) * 4, 
-                       glyphBuffers[i] + (i2 * (int)glyphSizes[i].x) * sizeof(byte) * 4, (int)glyphSizes[i].x * sizeof(byte) * 4);
+            he_memcpy( texBuffer + (((int)penPos.y + i2) * (int)texSize.x + (int)penPos.x) * sizeof(uint8) * 4, 
+                       glyphBuffers[i] + (i2 * (int)glyphSizes[i].x) * sizeof(uint8) * 4, (int)glyphSizes[i].x * sizeof(uint8) * 4);
         }
 
         //glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)penPos.x, (GLint)penPos.y, (GLsizei)glyphSizes[i].x, (GLsizei)glyphSizes[i].y, GL_RGBA, GL_UNSIGNED_BYTE, glyphBuffers[i]);
@@ -184,13 +184,13 @@ void Font::preCache(bool extendedCharacters)
 
     // upload data to texture with compression, no noticeable quality difference
     //GL::heBindTexture2D(m_TextureAtlas->getID());
-    m_TextureAtlas->setData((uint)texSize.x, (uint)texSize.y, 
+    m_TextureAtlas->setData((uint32)texSize.x, (uint32)texSize.y, 
         texBuffer, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);
 
     // delete CPU buffer, data is on GPU now
     delete texBuffer;
 
-    std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](byte* pBuffer)
+    std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](uint8* pBuffer)
     {
         delete pBuffer;
         pBuffer = nullptr;
@@ -200,14 +200,14 @@ void Font::preCache(bool extendedCharacters)
     m_TextureAtlas->setLoadFinished();
 }
 
-uint Font::getPixelHeight() const
+uint32 Font::getPixelHeight() const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
 
     return m_CharSize;
 }
 
-uint Font::getLineSpacing() const
+uint32 Font::getLineSpacing() const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
 
@@ -215,7 +215,7 @@ uint Font::getLineSpacing() const
     return m_Face->size->metrics.height >> 6;
 }
 
-uint Font::getLineHeight() const
+uint32 Font::getLineHeight() const
 {
     return m_LineHeight;
 }
@@ -228,7 +228,7 @@ float Font::getStringWidth(const std::string& string) const
 
     if (m_Cached)
     {
-        for (uint i(0); i < string.size(); ++i)
+        for (uint32 i(0); i < string.size(); ++i)
         {
             penPos.x += m_CharTextureData[string[i]].advance.x;
 
@@ -248,7 +248,7 @@ float Font::getStringWidth(const std::string& string) const
 
         int maxHeight(0);
 
-        for (uint i(0); i < string.size(); ++i)
+        for (uint32 i(0); i < string.size(); ++i)
         {
             // load character glyphs
             FT_ULong c(string[i]);
@@ -274,7 +274,7 @@ float Font::getStringWidth(const std::string& string) const
 
         FT_Vector kerning;
 
-        for (uint i(0); i < string.size(); ++i)
+        for (uint32 i(0); i < string.size(); ++i)
         {
             penPos.y = maxHeight - glyphAdvance[i].y;
             penPos.x += glyphAdvance[i].x;
@@ -323,7 +323,7 @@ Texture2D* Font::getTextureAtlas() const
     return m_TextureAtlas;
 }
 
-const Font::CharData* Font::getCharTextureData(byte chr) const
+const Font::CharData* Font::getCharTextureData(uint8 chr) const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
     HE_ASSERT(m_Cached, "Precache Font before using!");

@@ -48,61 +48,61 @@ private:
     struct PostPointLightData
     {
         //LightBuffer
-        uint position;
-        uint multiplier;
-        uint color;
-        uint beginAttenuation;
-        uint endAttenuation;
+        uint32 position;
+        uint32 multiplier;
+        uint32 color;
+        uint32 beginAttenuation;
+        uint32 endAttenuation;
 
         //No Buffer
-        uint colorIllMap, normalDepthMap, sgMap;
-        uint wvp;
+        uint32 colorIllMap, normalDepthMap, sgMap;
+        uint32 wvp;
     };
     struct PostSpotLightData
     {
         //LightBuffer
-        uint position;
-        uint multiplier;
-        uint direction;
-        uint beginAttenuation;
-        uint color;
-        uint endAttenuation;
-        uint cosCutOff;
+        uint32 position;
+        uint32 multiplier;
+        uint32 direction;
+        uint32 beginAttenuation;
+        uint32 color;
+        uint32 endAttenuation;
+        uint32 cosCutOff;
 
         //No Buffer
-        uint colorIllMap, normalDepthMap, sgMap;
-        uint wvp;
+        uint32 colorIllMap, normalDepthMap, sgMap;
+        uint32 wvp;
     };
     struct PostShadowSpotLightData
     {
         //LightBuffer
-        uint position;
-        uint multiplier;
-        uint direction;
-        uint beginAttenuation;
-        uint color;
-        uint endAttenuation;
-        uint cosCutOff;
+        uint32 position;
+        uint32 multiplier;
+        uint32 direction;
+        uint32 beginAttenuation;
+        uint32 color;
+        uint32 endAttenuation;
+        uint32 cosCutOff;
 
         //No Buffer
-        uint colorIllMap, normalDepthMap, sgMap;
-        uint wvp;
+        uint32 colorIllMap, normalDepthMap, sgMap;
+        uint32 wvp;
 
         // Shadow
-        uint shadowMap;
-        uint shadowMatrix;
+        uint32 shadowMap;
+        uint32 shadowMatrix;
     };
     struct PostAmbDirIllLightData
     {
-        uint ambColor;
-        uint dirColor;
-        uint dirDirection;
-        uint dirPosition;
-        uint dirNearFar;
+        uint32 ambColor;
+        uint32 dirColor;
+        uint32 dirDirection;
+        uint32 dirPosition;
+        uint32 dirNearFar;
 
         //No Buffer
-        uint shadowMap0, shadowMap1, shadowMap2, shadowMap3;
-        uint colorIllMap, normalDepthMap, sgMap;
+        uint32 shadowMap0, shadowMap1, shadowMap2, shadowMap3;
+        uint32 colorIllMap, normalDepthMap, sgMap;
     };
     struct PostSharedData
     {

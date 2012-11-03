@@ -69,8 +69,8 @@ void Texture2D::init( TextureWrapType wrapType, TextureFilterType filter, Textur
     }
 }
 
-void Texture2D::setData( uint width, uint height, 
-    const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, byte mipLevel)
+void Texture2D::setData( uint32 width, uint32 height, 
+    const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel)
 {
     HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {
@@ -90,7 +90,7 @@ void Texture2D::setData( uint width, uint height,
     }
 }
 
-void Texture2D::setCompressedData(uint width, uint height, const void* data, uint imageSizeInBytes, byte mipLevel)
+void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel)
 {
     HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {

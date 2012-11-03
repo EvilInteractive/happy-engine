@@ -40,17 +40,17 @@ const SerializerStream& SerializerStream::operator>>(bool& b) const
     b = m_Stream.readByte() == 0?false:true;
     return *this;
 }
-const SerializerStream& SerializerStream::operator>>(byte& b) const
+const SerializerStream& SerializerStream::operator>>(uint8& b) const
 {
     b = m_Stream.readByte();
     return *this;
 }
-const SerializerStream& SerializerStream::operator>>(ushort& us) const
+const SerializerStream& SerializerStream::operator>>(uint16& us) const
 {
     us = m_Stream.readWord();
     return *this;
 }
-const SerializerStream& SerializerStream::operator>>(uint& ui) const
+const SerializerStream& SerializerStream::operator>>(uint32& ui) const
 {
     ui = m_Stream.readDword();
     return *this;
@@ -105,17 +105,17 @@ SerializerStream& SerializerStream::operator<<(bool b)
     m_Stream.writeByte(b?1:0);
     return *this;
 }
-SerializerStream& SerializerStream::operator<<(byte b)
+SerializerStream& SerializerStream::operator<<(uint8 b)
 {
     m_Stream.writeByte(b);
     return *this;
 }
-SerializerStream& SerializerStream::operator<<(ushort us)
+SerializerStream& SerializerStream::operator<<(uint16 us)
 {
     m_Stream.writeWord(us);
     return *this;
 }
-SerializerStream& SerializerStream::operator<<(uint ui)
+SerializerStream& SerializerStream::operator<<(uint32 ui)
 {
     m_Stream.writeDword(ui);
     return *this;

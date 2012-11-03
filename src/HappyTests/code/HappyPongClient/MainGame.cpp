@@ -117,14 +117,14 @@ void MainGame::load()
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
-    he::ushort port(0);
+    he::uint16 port(0);
     std::string ip("");
 
     he::io::IniReader reader;
     reader.open("net.cfg");
     if (reader.isOpen())
     {
-        port = static_cast<he::ushort>(reader.readInt(L"Net", L"port"));
+        port = static_cast<he::uint16>(reader.readInt(L"Net", L"port"));
         ip = reader.readString(L"Net", L"ip");
     }
     else
@@ -211,7 +211,7 @@ const std::vector<Obstacle*>& MainGame::getObstacles() const
     return m_Obstacles;
 }
 
-void MainGame::addPoint( he::byte player )
+void MainGame::addPoint( he::uint8 player )
 {
     m_Palets[player]->addPoint();
 }

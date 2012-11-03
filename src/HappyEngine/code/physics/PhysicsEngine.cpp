@@ -109,7 +109,7 @@ void PhysicsEngine::createScene()
 
     if(!sceneDesc.cpuDispatcher)
     {
-        uint useThreads(he::max<uint>(1, boost::thread::hardware_concurrency() - 1));
+        uint32 useThreads(he::max<uint32>(1, boost::thread::hardware_concurrency() - 1));
         HE_INFO("PhysX using Cpu - %d threads", useThreads);
         m_CpuDispatcher = physx::PxDefaultCpuDispatcherCreate(useThreads);
 

@@ -34,9 +34,9 @@ public:
     virtual ~SerializerStream();
 
     const SerializerStream& operator>>(bool& b) const;
-    const SerializerStream& operator>>(byte& b) const;
-    const SerializerStream& operator>>(ushort& us) const;
-    const SerializerStream& operator>>(uint& ui) const;
+    const SerializerStream& operator>>(uint8& b) const;
+    const SerializerStream& operator>>(uint16& us) const;
+    const SerializerStream& operator>>(uint32& ui) const;
     const SerializerStream& operator>>(float& f) const;
     const SerializerStream& operator>>(double& d) const;
 
@@ -52,9 +52,9 @@ public:
     //////////////////////////////////////////////////////////////////////////
 
     SerializerStream& operator<<(bool b);
-    SerializerStream& operator<<(byte b);
-    SerializerStream& operator<<(ushort us);
-    SerializerStream& operator<<(uint ui);
+    SerializerStream& operator<<(uint8 b);
+    SerializerStream& operator<<(uint16 us);
+    SerializerStream& operator<<(uint32 ui);
     SerializerStream& operator<<(float f);
     SerializerStream& operator<<(double d);
 

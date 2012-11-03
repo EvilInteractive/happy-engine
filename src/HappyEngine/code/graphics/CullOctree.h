@@ -45,7 +45,7 @@ public:
     void reevaluate(IDrawable* obj);
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen) const;
     void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
-        std::vector<vec3>& vertices, std::vector<uint>& indices) const;
+        std::vector<vec3>& vertices, std::vector<uint32>& indices) const;
     CullOctreeNode* getRoot();
 
     bool checkRemove() const;
@@ -54,11 +54,11 @@ public:
     uint16 getNumObjectChilds() const { return m_NumObjectChilds; }
 
 private:
-    void init(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex);
-    void init(const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
+    void init(CullOctreeNode* parent, uint8 xIndex, uint8 yIndex, uint8 zIndex);
+    void init(const vec3& pos, float strictSize, CullOctreeNode* child, uint8 xIndex, uint8 yIndex, uint8 zIndex);
 
     void createChilds();
-    void createChilds(CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex);
+    void createChilds(CullOctreeNode* child, uint8 xIndex, uint8 yIndex, uint8 zIndex);
     void rinsert(IDrawable* obj);
     void createBounds(const vec3& pos, float strictSize);
     void insert(IDrawable* drawable);
@@ -85,7 +85,7 @@ public:
 
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction) const;
     void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, 
-        std::vector<vec3>& vertices, std::vector<uint>& indices) const;
+        std::vector<vec3>& vertices, std::vector<uint32>& indices) const;
 
     const static float s_MinLeaveSize;
 

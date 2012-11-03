@@ -38,12 +38,12 @@ public:
 
 	bool parse(const std::string& values, boost::any& pValueToAssign) const
 	{
-		uint i;
+		uint32 i;
 
 		if (sscanf(values.c_str(), "%u", &i) != 1)
 			return false;
 	
-		uint& pI = *boost::any_cast<uint*>(pValueToAssign);
+		uint32& pI = *boost::any_cast<uint32*>(pValueToAssign);
 
 		pI = i;
 
@@ -52,7 +52,7 @@ public:
 
 	std::string getType() const
 	{
-		return typeid(uint).name();
+		return typeid(uint32).name();
 	}
 
     //Disable default copy constructor and default assignment operator

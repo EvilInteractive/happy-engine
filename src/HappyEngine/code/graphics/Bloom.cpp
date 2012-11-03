@@ -43,10 +43,10 @@ Bloom::Bloom(): m_DownSamples(4),
                 m_ViewportSizeChangedHandler(boost::bind(&Bloom::resize, this)),
                 m_View(nullptr)
 {
-    for (uint i(0); i < s_BlurPasses; ++i)
+    for (uint32 i(0); i < s_BlurPasses; ++i)
     {
         m_pBlurShaderPass[i] = nullptr;	
-        std::for_each(m_FboId[i].begin(), m_FboId[i].end(), [](uint& id)
+        std::for_each(m_FboId[i].begin(), m_FboId[i].end(), [](uint32& id)
         {
             id = UINT_MAX;
         });
@@ -66,7 +66,7 @@ void Bloom::cleanTextures()
 {
     for (int pass(0); pass < s_BlurPasses; ++pass)
     {
-        for (uint i(0); i < m_Texture[pass].size(); ++i)
+        for (uint32 i(0); i < m_Texture[pass].size(); ++i)
         {
             if ( m_Texture[pass][i] != nullptr)
             {
@@ -74,7 +74,7 @@ void Bloom::cleanTextures()
                 m_Texture[pass][i] = nullptr;
             }
         }
-        std::for_each(m_FboId[pass].begin(), m_FboId[pass].end(), [](uint& id)
+        std::for_each(m_FboId[pass].begin(), m_FboId[pass].end(), [](uint32& id)
         {
             if (id != UINT_MAX)
             {
@@ -241,7 +241,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
 
     //DownSample further
     m_pDownSampleShader->bind();
-    for (uint fboId = 1; fboId < m_FboId[0].size(); ++fboId)
+    for (uint32 fboId = 1; fboId < m_FboId[0].size(); ++fboId)
     {
         GL::heBindFbo(m_FboId[0][fboId]);
         m_pDownSampleShader->setShaderVar(m_DownSampleMap, m_Texture[0][fboId - 1]);
@@ -254,7 +254,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
     for (int pass = 0; pass < 2; ++pass)
     {
         m_pBlurShaderPass[pass]->bind();
-        for (uint fboId = 1; fboId < m_FboId[pass].size(); ++fboId)
+        for (uint32 fboId = 1; fboId < m_FboId[pass].size(); ++fboId)
         {
             GL::heBindFbo(m_FboId[pass == 0?1:0][fboId]);
             m_pBlurShaderPass[pass]->setShaderVar(m_BlurMapPos[pass], m_Texture[pass][fboId]);
@@ -265,7 +265,7 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
     GL::heSetViewport(oldViewport);
 }
 
-const Texture2D* Bloom::getBloom( byte level ) const
+const Texture2D* Bloom::getBloom( uint8 level ) const
 {
     return m_Texture[0][level];
 }

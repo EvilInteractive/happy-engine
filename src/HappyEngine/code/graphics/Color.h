@@ -53,10 +53,10 @@ public:
     const vec3& rgb() const;
     vec4 rgba() const;
 
-    byte rByte() const;
-    byte gByte() const;
-    byte bByte() const;
-    byte aByte() const;
+    uint8 rByte() const;
+    uint8 gByte() const;
+    uint8 bByte() const;
+    uint8 aByte() const;
     
     //-----------------------------------------//
     //                SETTERS                  //
@@ -68,10 +68,10 @@ public:
     void rgb(const vec3& rgb);
     void rgba(const vec4& rgba);
 
-    void r(byte r);
-    void g(byte g);
-    void b(byte b);
-    void a(byte a);
+    void r(uint8 r);
+    void g(uint8 g);
+    void b(uint8 b);
+    void a(uint8 a);
 
 
     //-----------------------------------------//

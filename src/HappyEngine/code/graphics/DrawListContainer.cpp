@@ -33,7 +33,7 @@ namespace gfx {
 DrawListContainer::DrawListContainer()
 {
 #ifdef USE_OCTREE
-    for (uint blend(0); blend < BlendFilter_MAX; ++blend)
+    for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         m_DrawList[blend] = NEW CullOctree();
 #endif
 }
@@ -42,10 +42,10 @@ DrawListContainer::DrawListContainer()
 DrawListContainer::~DrawListContainer()
 {
 #ifdef USE_OCTREE
-    for (uint blend(0); blend < BlendFilter_MAX; ++blend)
+    for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         delete m_DrawList[blend];
 #else
-    for (uint blend(0); blend < BlendFilter_MAX; ++blend)
+    for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         HE_ASSERT(m_DrawList[blend].empty() == true, "Drawlist not empty @shutdown");
 #endif
 }
@@ -109,7 +109,7 @@ void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const bo
     });
 #endif
 }
-void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, std::vector<vec3>& vertices, std::vector<uint>& indices ) const
+void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, std::vector<vec3>& vertices, std::vector<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 #ifdef USE_OCTREE

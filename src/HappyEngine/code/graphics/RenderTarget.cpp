@@ -61,7 +61,7 @@ void RenderTarget::addTextureTarget( const Texture2D* tex2D )
     }
 }
 
-void RenderTarget::switchTextureTarget( uint index, const Texture2D* tex2D )
+void RenderTarget::switchTextureTarget( uint32 index, const Texture2D* tex2D )
 {
     HE_IF_ASSERT(index < m_TextureTargets.size(), "index out of range (%d - %d)", index, m_TextureTargets.size())
     HE_IF_ASSERT(m_FboId != 0 && m_FboId != UINT_MAX, "Call init first or invalid fbo (m_Fbo == 0?)")
@@ -115,7 +115,7 @@ void RenderTarget::init()
             glGenFramebuffers(1, &m_FboId);
             GL::heBindFbo(m_FboId);
 
-            for (uint i(0); i < m_TextureTargets.size(); ++i)
+            for (uint32 i(0); i < m_TextureTargets.size(); ++i)
             {
                 m_DrawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureTargets[i]->getID(), 0);
@@ -154,14 +154,14 @@ void RenderTarget::prepareForRendering() const
     prepareForRendering(m_DrawBufferCount);
 }
 
-void RenderTarget::prepareForRendering( uint numTextureTargets, uint offset) const
+void RenderTarget::prepareForRendering( uint32 numTextureTargets, uint32 offset) const
 {
     HE_ASSERT(m_Context == GL::s_CurrentContext, "Access violation: wrong context is bound!");
     GL::heBindFbo(m_FboId);
     glDrawBuffers(numTextureTargets, m_DrawBuffers + offset);
 }
 
-const Texture2D* RenderTarget::getTextureTarget(uint index) const
+const Texture2D* RenderTarget::getTextureTarget(uint32 index) const
 {
     HE_ASSERT(index < m_TextureTargets.size(), "Index out of bounds");
     return m_TextureTargets[index];
@@ -191,7 +191,7 @@ void RenderTarget::removeAllTargets()
     m_DrawBufferCount = 0;
 }
 
-void RenderTarget::setSize( uint width, uint height )
+void RenderTarget::setSize( uint32 width, uint32 height )
 {
     HE_IF_ASSERT(m_Width == 0 && m_Height == 0, "Size is already assigned, I cannot change this on the fly")
     {

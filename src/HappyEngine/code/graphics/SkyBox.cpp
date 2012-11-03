@@ -83,7 +83,7 @@ void SkyBox::load( const std::string& asset )
     vertices.push_back(vec3(-1, -1,  1));
     vertices.push_back(vec3( 1, -1,  1));
 
-    std::vector<byte> indices;
+    std::vector<uint8> indices;
     indices.push_back(0); indices.push_back(1); indices.push_back(2); //front
     indices.push_back(1); indices.push_back(3); indices.push_back(2);
 

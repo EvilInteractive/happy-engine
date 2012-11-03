@@ -29,31 +29,31 @@ namespace he {
 namespace ct {
 namespace models {
 
-std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
-                                             uint posOff, uint texOff, uint normOff, uint vertStride,
-                                             const void* pIndices, uint numIndices, gfx::IndexStride indexStride)
+std::vector<vec3> calculateTangents(const void* pVertices, uint32 numVertices,
+                                             uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
+                                             const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride)
 {
     std::vector<vec3> tan1(numVertices, vec3(0, 0, 0));
     std::vector<vec3> returnTan(numVertices, vec3(0, 0, 0));
 
     const char* pCharVertices(static_cast<const char*>(pVertices));
 
-    const byte* pIndicesByte(nullptr); 
-    const ushort* pIndicesUShort(nullptr); 
-    const uint* pIndicesUInt(nullptr); 
+    const uint8* pIndicesByte(nullptr); 
+    const uint16* pIndicesUShort(nullptr); 
+    const uint32* pIndicesUInt(nullptr); 
     
     if (indexStride == gfx::IndexStride_Byte)
-        pIndicesByte = static_cast<const byte*>(pIndices);
+        pIndicesByte = static_cast<const uint8*>(pIndices);
     else if (indexStride == gfx::IndexStride_UShort)
-        pIndicesUShort = static_cast<const ushort*>(pIndices);
+        pIndicesUShort = static_cast<const uint16*>(pIndices);
     else if (indexStride == gfx::IndexStride_UInt)
-        pIndicesUInt = static_cast<const uint*>(pIndices);
+        pIndicesUInt = static_cast<const uint32*>(pIndices);
     else
         HE_ASSERT(false, "unkown index stride: %d", indexStride);
     
-    for (uint i = 0; i < numIndices; i += 3) //per triangle
+    for (uint32 i = 0; i < numIndices; i += 3) //per triangle
     {
-        uint i1(0), i2(0), i3(0);
+        uint32 i1(0), i2(0), i3(0);
         if (indexStride == gfx::IndexStride_Byte)
         {
             i1 = pIndicesByte[i];
@@ -109,7 +109,7 @@ std::vector<vec3> calculateTangents(const void* pVertices, uint numVertices,
         tan1[i3] += sdir;
     }
 
-    for (uint i = 0; i < numVertices; ++i)
+    for (uint32 i = 0; i < numVertices; ++i)
     {
         const vec3& n = *reinterpret_cast<const vec3*>(pCharVertices + (i * vertStride + normOff));
         const vec3& t = tan1[i];

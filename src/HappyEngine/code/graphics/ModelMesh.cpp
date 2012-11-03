@@ -108,9 +108,9 @@ void ModelMesh::initVAO( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     HE_IF_ASSERT(m_VaoShadowID[context->id] == UINT_MAX, "shadow vao already inited?")
     {
-        uint posOffset = UINT_MAX;
-        uint boneIdOffset = UINT_MAX;
-        uint boneWeightOffset = UINT_MAX;
+        uint32 posOffset = UINT_MAX;
+        uint32 boneIdOffset = UINT_MAX;
+        uint32 boneWeightOffset = UINT_MAX;
         std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
         {
             if (e.getUsage() == gfx::BufferElement::Usage_Position)
@@ -164,11 +164,11 @@ void ModelMesh::destroyVAO( GLContext* context )
 
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
-void ModelMesh::setVertices(const void* pVertices, uint num, MeshUsage usage)
+void ModelMesh::setVertices(const void* pVertices, uint32 num, MeshUsage usage)
 {
     m_NumVertices = num;
 
-    uint posOffset = UINT_MAX;
+    uint32 posOffset = UINT_MAX;
     std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
     {
         if (e.getUsage() == gfx::BufferElement::Usage_Position)
@@ -183,7 +183,7 @@ void ModelMesh::setVertices(const void* pVertices, uint num, MeshUsage usage)
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, nullptr, usage);
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, pVertices, usage);
 }
-void ModelMesh::setIndices(const void* pIndices, uint num, IndexStride type, MeshUsage usage)
+void ModelMesh::setIndices(const void* pIndices, uint32 num, IndexStride type, MeshUsage usage)
 {
     m_NumIndices = num;
 

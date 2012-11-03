@@ -63,9 +63,9 @@ public:
         float arclength(0);
         T p0(getPoint(t0));
         float approxLength(length(getPoint(t1) - p0));
-        uint precision = static_cast<uint>(max<float>(approxLength * (ARCLENGTH_PRECISION / 100.0f), 2));
+        uint32 precision = static_cast<uint32>(max<float>(approxLength * (ARCLENGTH_PRECISION / 100.0f), 2));
 
-        for (uint i = 1; i <= precision; ++i)
+        for (uint32 i = 1; i <= precision; ++i)
         {
             T p1(getPoint(lerp(t0, t1, (float)i / precision)));
             arclength += length(p1 - p0);
@@ -123,7 +123,7 @@ private:
     T m_P0, m_P1, m_P2, m_P3;
 
     float m_DistanceTravelled;
-    uint m_PrevDistLookupIndex;
+    uint32 m_PrevDistLookupIndex;
 
     float m_TotalDistance;
 

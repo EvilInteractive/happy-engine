@@ -25,7 +25,7 @@ namespace he {
 namespace gfx {
 namespace details {
 
-InstancingBuffer::InstancingBuffer(uint itemSize, uint maxItems): 
+InstancingBuffer::InstancingBuffer(uint32 itemSize, uint32 maxItems): 
             m_Size(itemSize * maxItems), m_Count(0), m_ItemSize(itemSize)
 {
     m_Buffer = static_cast<char*>(he_malloc(m_Size));
@@ -59,7 +59,7 @@ InstancingBuffer::~InstancingBuffer()
     he_free(m_Buffer);
 }
 
-void InstancingBuffer::resize( uint newSize )
+void InstancingBuffer::resize( uint32 newSize )
 {
     if (m_Size != newSize)
     {
@@ -87,20 +87,20 @@ void InstancingBuffer::reset()
     m_Count = 0;
 }
 
-uint InstancingBuffer::getSize() const
+uint32 InstancingBuffer::getSize() const
 {
     return m_Count * m_ItemSize;
 }
-uint InstancingBuffer::getSizeCapacity() const
+uint32 InstancingBuffer::getSizeCapacity() const
 {
     return m_Size;
 }
 
-uint InstancingBuffer::getCount() const
+uint32 InstancingBuffer::getCount() const
 {
     return m_Count;
 }
-uint InstancingBuffer::getCountCapacity() const
+uint32 InstancingBuffer::getCountCapacity() const
 {
     return m_Size / m_ItemSize;
 }

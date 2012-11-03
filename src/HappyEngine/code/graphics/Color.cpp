@@ -72,21 +72,21 @@ vec4 Color::rgba() const
 }
 
 
-byte Color::rByte() const
+uint8 Color::rByte() const
 {
-    return static_cast<byte>(clamp(m_rgb.x * 255.0f, 0.0f, 255.0f));
+    return static_cast<uint8>(clamp(m_rgb.x * 255.0f, 0.0f, 255.0f));
 }
-byte Color::gByte() const
+uint8 Color::gByte() const
 {
-    return static_cast<byte>(clamp(m_rgb.y * 255, 0.0f, 255.0f));
+    return static_cast<uint8>(clamp(m_rgb.y * 255, 0.0f, 255.0f));
 }
-byte Color::bByte() const
+uint8 Color::bByte() const
 {
-    return static_cast<byte>(clamp(m_rgb.z * 255, 0.0f, 255.0f));
+    return static_cast<uint8>(clamp(m_rgb.z * 255, 0.0f, 255.0f));
 }
-byte Color::aByte() const
+uint8 Color::aByte() const
 {
-    return static_cast<byte>(clamp(m_a * 255, 0.0f, 255.0f));
+    return static_cast<uint8>(clamp(m_a * 255, 0.0f, 255.0f));
 }
     
 //-----------------------------------------//
@@ -118,19 +118,19 @@ void Color::rgba(const vec4& rgba)
     m_a = rgba.w;
 }
 
-void Color::r(byte r)
+void Color::r(uint8 r)
 {
     m_rgb.x = r / 255.0f;
 }
-void Color::g(byte g)
+void Color::g(uint8 g)
 {
     m_rgb.y = g / 255.0f;
 }
-void Color::b(byte b)
+void Color::b(uint8 b)
 {
     m_rgb.z = b / 255.0f;
 }
-void Color::a(byte a)
+void Color::a(uint8 a)
 {
     m_a = a / 255.0f;
 }

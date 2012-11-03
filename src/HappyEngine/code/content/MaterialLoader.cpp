@@ -208,8 +208,8 @@ ObjectHandle MaterialLoader::load(const std::string& path)
 
                 // [inPerVertex]
                 gfx::ShaderLayout shaderLayout;
-                uint count(0);
-                uint offset(0);
+                uint32 count(0);
+                uint32 offset(0);
                 const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"inPerVertex"));
                 std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                 {
@@ -297,8 +297,8 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         }
                         else if (p.second == L"UINT")
                         {
-                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_UInt, gfx::BufferElement::Usage_Instancing, sizeof(uint), offset));
-                            offset += sizeof(uint);
+                            instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_UInt, gfx::BufferElement::Usage_Instancing, sizeof(uint32), offset));
+                            offset += sizeof(uint32);
                         }
                         else
                         {
@@ -474,8 +474,8 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         else if (node.second == L"UINT")
                         {
                             material->registerVar(
-                                NEW gfx::ShaderUserVar<uint>(pShader->getShaderVarId(name), name, 
-                                static_cast<uint>(reader.readInt(L"UINT", node.first, 0)))
+                                NEW gfx::ShaderUserVar<uint32>(pShader->getShaderVarId(name), name, 
+                                static_cast<uint32>(reader.readInt(L"UINT", node.first, 0)))
                                 );
                         }
                         else

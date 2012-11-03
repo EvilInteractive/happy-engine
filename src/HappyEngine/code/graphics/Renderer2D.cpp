@@ -156,7 +156,7 @@ void Renderer2D::init( View* view, const RenderTarget* target )
         VertexPosTex2D(vec2(0.5f, -0.5f),
         vec2(1, 1)));
 
-    std::vector<byte> indices;
+    std::vector<uint8> indices;
     indices.push_back(2); indices.push_back(1); indices.push_back(0);
     indices.push_back(1); indices.push_back(2); indices.push_back(3);
 

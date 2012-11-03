@@ -86,7 +86,7 @@ public:
     const std::vector<ObjectHandle>& getAllWindows() const { return m_Windows; }
     const std::vector<GLContext*>& getContexts() const { return m_Contexts; } 
 
-    ushort getShadowMapSize(const ShadowResolution& resolution);
+    uint16 getShadowMapSize(const ShadowResolution& resolution);
 
     View* getActiveView() const { return m_ActiveView; }
 
@@ -110,7 +110,7 @@ private:
 
     Awesomium::WebCore* m_WebCore;
 
-    std::queue<uint> m_FreeContexts;
+    std::queue<uint32> m_FreeContexts;
     std::vector<GLContext*> m_Contexts;
 
     /* DEFAULT COPY & ASSIGNMENT */

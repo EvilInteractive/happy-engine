@@ -31,15 +31,15 @@ namespace gfx {
 class ShaderLayoutElement
 {
 public:
-    ShaderLayoutElement(uint elementIndex, const std::string& nameInShader);
+    ShaderLayoutElement(uint32 elementIndex, const std::string& nameInShader);
     virtual ~ShaderLayoutElement() {}
     //default copy constructor and assignment operator are fine
 
-    uint getElementIndex() const;
+    uint32 getElementIndex() const;
     const std::string& getShaderVariableName() const;
 
 private:
-    uint m_ElementIndex;
+    uint32 m_ElementIndex;
     std::string m_NameInShader;
 };
 
@@ -58,7 +58,7 @@ public:
 
 private:
     layout m_Layout;
-    uint m_VertexSize;
+    uint32 m_VertexSize;
 };
 
 } } //end namespace

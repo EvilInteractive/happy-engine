@@ -64,8 +64,8 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
         }
     });
 
-    uint ifblocks = 0;
-    uint discardBlock = 0;
+    uint32 ifblocks = 0;
+    uint32 discardBlock = 0;
     std::for_each(lines.cbegin(), lines.cend(), [&](const std::string& line)
     {        
         if (line.find("#endif") != std::string::npos)

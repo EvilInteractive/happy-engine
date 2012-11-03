@@ -39,7 +39,7 @@ ShadowCaster::~ShadowCaster()
 
 void ShadowCaster::init(View* view)
 {
-    for (uint i(1); i < ShadowResolution_MAX; ++i)
+    for (uint32 i(1); i < ShadowResolution_MAX; ++i)
     {
         m_SpotLightShadowRenderers[i - 1].init(view, (ShadowResolution)i);
     }

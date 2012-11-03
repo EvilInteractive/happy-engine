@@ -44,7 +44,7 @@ he::IntersectResult Plane::intersect( const AABB& box ) const
     vec3 dim(box.getBottomBackRight() - tfl);
     vec3 checkPoint(tfl);
 
-    uint insideCounter(0);
+    uint32 insideCounter(0);
     if (isPointInFrontOfPlane(checkPoint))
         ++insideCounter;
 

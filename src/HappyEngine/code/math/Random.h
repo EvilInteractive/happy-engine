@@ -31,19 +31,19 @@ namespace he {
 class Random
 {
 public:
-    explicit Random(uint seed = time(nullptr));
+    explicit Random(uint32 seed = time(nullptr));
     virtual ~Random();
 
     int nextInt(int min, int max) const;
     float nextFloat(float min, float max) const;
     double nextDouble(double min, double max) const;
 
-    uint getSeed() const;
-    void setSeed(uint seed);
+    uint32 getSeed() const;
+    void setSeed(uint32 seed);
 
 private:
 
-    uint m_Seed;
+    uint32 m_Seed;
 
     boost::mt19937 m_RandomEngine;
     boost::variate_generator<boost::mt19937&, boost::uniform_real<double>> m_Generator;

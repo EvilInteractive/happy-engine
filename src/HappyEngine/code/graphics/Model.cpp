@@ -58,11 +58,11 @@ void Model::addMesh(const ObjectHandle& handle)
     ResourceFactory<ModelMesh>::getInstance()->instantiate(handle);
     m_Meshes.push_back(ResourceFactory<ModelMesh>::getInstance()->get(handle));
 }
-uint Model::getNumMeshes() const
+uint32 Model::getNumMeshes() const
 {
     return m_Meshes.size();
 }
-ModelMesh* Model::instantiateMesh(uint index) const
+ModelMesh* Model::instantiateMesh(uint32 index) const
 {
     HE_ASSERT(index < m_Meshes.size(), "Model::instantiateMesh: index out of range: %d", index);
     ModelMesh* mesh(m_Meshes[index]);

@@ -53,11 +53,11 @@ public:
         {}
 
         ObjectHandle renderTextureHnd;
-        uint resolvedFbufferID;
-        uint resolvedRbufferID;
-        uint fbufferID;
-        uint colorRbufferID;
-        uint depthRbufferID;
+        uint32 resolvedFbufferID;
+        uint32 resolvedRbufferID;
+        uint32 fbufferID;
+        uint32 colorRbufferID;
+        uint32 depthRbufferID;
         GLContext* context;
     };
 
@@ -142,7 +142,7 @@ private:
 
     /* DATAMEMBERS */
     std::vector<mat33> m_TransformationStack;
-    ushort m_StackDepth;
+    uint16 m_StackDepth;
 
     mat44 m_OrthographicMatrix;
 

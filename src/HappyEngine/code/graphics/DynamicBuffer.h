@@ -33,15 +33,15 @@ public:
     DynamicBuffer(const BufferLayout& bufferLayout);
     virtual ~DynamicBuffer();
 
-    void setValue(uint element, float value);
-    void setValue(uint element, int value);
-    void setValue(uint element, uint value);
+    void setValue(uint32 element, float value);
+    void setValue(uint32 element, int value);
+    void setValue(uint32 element, uint32 value);
 
-    void setValue(uint element, const vec2& value);
-    void setValue(uint element, const vec3& value);
-    void setValue(uint element, const vec4& value);
+    void setValue(uint32 element, const vec2& value);
+    void setValue(uint32 element, const vec3& value);
+    void setValue(uint32 element, const vec4& value);
 
-    void setValue(uint element, const mat44& value);
+    void setValue(uint32 element, const mat44& value);
 
     const void* getBuffer() const;
     void setBuffer(char* pBuffer);

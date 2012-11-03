@@ -40,7 +40,7 @@ public:
     virtual ~FontLoader();
 
     /* GENERAL */
-    gfx::Font* load(const std::string& path, ushort size);
+    gfx::Font* load(const std::string& path, uint16 size);
 
 private:
 

@@ -77,12 +77,12 @@ bool ObjLineLoader::read(const std::string& path)
         else if (line[0] == 'l')
         {
             std::stringstream stream;
-            std::vector<ushort>& indices(m_Indices); //fix for_each scope loss
+            std::vector<uint16>& indices(m_Indices); //fix for_each scope loss
             std::for_each(line.cbegin() + 2, line.cend(), [&](char c)
             {
                 if (c == ' ')
                 {
-                    ushort i;
+                    uint16 i;
                     stream >> i;
                     indices.push_back(i);
                     stream.clear();
@@ -94,7 +94,7 @@ bool ObjLineLoader::read(const std::string& path)
                 }
             });
 
-            ushort i;
+            uint16 i;
             stream >> i;
             indices.push_back(i);
         }
@@ -105,7 +105,7 @@ const std::vector<vec3>& ObjLineLoader::getPoints() const
 {
     return m_PointData;
 }
-const std::vector<ushort>& ObjLineLoader::getIndices() const
+const std::vector<uint16>& ObjLineLoader::getIndices() const
 {
     return m_Indices;
 }

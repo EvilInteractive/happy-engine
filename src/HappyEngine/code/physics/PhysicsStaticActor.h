@@ -63,7 +63,7 @@ public:
     }
 
 protected:
-    virtual uint getCompatibleShapes() const;
+    virtual uint32 getCompatibleShapes() const;
 
 private:
     void addShape(physx::PxShape* shape, uint32 collisionGroup);

@@ -41,7 +41,7 @@ public:
     bool isOtherInside(const Sphere& other) const;
     IntersectResult intersect(const Sphere& other) const;
 
-    static Sphere calculateBoundingSphere(const void* pointCloud, uint num, uint stride, uint posOffset);
+    static Sphere calculateBoundingSphere(const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset);
 
 private:
 

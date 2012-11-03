@@ -59,7 +59,7 @@ public:
 
 private:
     std::string m_ControllerKey;
-    uint m_InstanceId;
+    uint32 m_InstanceId;
 
     Entity* m_Parent; 
 

@@ -44,16 +44,16 @@ public:
 
     /* GETTERS */
     const std::vector<vec2>& getVertices() const;
-    const std::vector<uint>& getIndices() const;
+    const std::vector<uint32>& getIndices() const;
 
     bool isTriangulated() const;
     bool hitTest(const vec2& hitPoint) const;
 
     float getArea() const;
 
-    uint getVertexCount() const;
-    uint getIndexCount() const;
-    uint getTriangleCount() const;
+    uint32 getVertexCount() const;
+    uint32 getIndexCount() const;
+    uint32 getTriangleCount() const;
 
     /* OPERATORS */
     bool operator==(const Polygon& p) const;
@@ -67,7 +67,7 @@ private:
 
     /* DATAMEMBERS */
     std::vector<vec2> m_Vertices;
-    std::vector<uint> m_Indices;
+    std::vector<uint32> m_Indices;
 };
 
 } //end namespace

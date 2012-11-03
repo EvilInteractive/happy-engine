@@ -37,29 +37,29 @@ public:
     ~SlotPContainer() {}
     //default copy OK
 
-    uint insert(const T& obj)
+    uint32 insert(const T& obj)
     {
         if (m_FreeSlots.size() > 0)
         {
-            uint id(m_FreeSlots.front());
+            uint32 id(m_FreeSlots.front());
             m_FreeSlots.pop();
             m_MemPool[id] = obj;
             return id;
         }
         else
         {
-            uint id(m_MemPool.size());
+            uint32 id(m_MemPool.size());
             m_MemPool.push_back(obj);
             return id;
         }
     }
-    const T& get(uint id)
+    const T& get(uint32 id)
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
-    T remove(uint id)
+    T remove(uint32 id)
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
 
@@ -70,24 +70,24 @@ public:
 
         return pObj;
     }
-    uint getId(const T& obj)
+    uint32 getId(const T& obj)
     {
         HE_ASSERT(obj != nullptr, "object == nullptr");
 
-        for (uint i(0); i < m_MemPool.size(); ++i)
+        for (uint32 i(0); i < m_MemPool.size(); ++i)
             if (m_MemPool[i] == obj)
                 return i;
         HE_ASSERT(false, "object not present in container");
         return 0;
     }
 
-    T& operator[](uint id)
+    T& operator[](uint32 id)
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
-    const T& operator[](uint id) const
+    const T& operator[](uint32 id) const
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
@@ -149,7 +149,7 @@ public:
         return const_iterator<T>(m_MemPool.cend(), m_MemPool.cend());
     }
 
-    uint size()
+    uint32 size()
     {
         return m_MemPool.size() - m_FreeSlots.size();
     }
@@ -157,7 +157,7 @@ public:
 private:
     
     std::vector<T> m_MemPool;
-    std::queue<uint> m_FreeSlots;
+    std::queue<uint32> m_FreeSlots;
 
     //disable default assignment operator
     SlotPContainer& operator=(const SlotPContainer&);

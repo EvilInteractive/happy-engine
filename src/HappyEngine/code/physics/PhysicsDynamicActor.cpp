@@ -152,7 +152,7 @@ bool PhysicsDynamicActor::isSleeping() const
 }
 
 
-he::uint PhysicsDynamicActor::getCompatibleShapes() const
+he::uint32 PhysicsDynamicActor::getCompatibleShapes() const
 {
     return PhysicsShapeType_DynamicCompatible;
 }

@@ -66,7 +66,7 @@ bool Polygon::outline()
 
     m_Indices.clear();
 
-    for (uint i(0); i < m_Vertices.size(); ++i)
+    for (uint32 i(0); i < m_Vertices.size(); ++i)
     {
         m_Indices.push_back(i);
     }
@@ -101,7 +101,7 @@ const std::vector<vec2>& Polygon::getVertices() const
     return m_Vertices;
 }
 
-const std::vector<uint>& Polygon::getIndices() const
+const std::vector<uint32>& Polygon::getIndices() const
 {
     return m_Indices;
 }
@@ -115,7 +115,7 @@ bool Polygon::hitTest(const vec2& hitPoint) const
 {
     if (m_Indices.size() != 0)
     {
-        for (uint i(0); i < m_Indices.size(); i += 3)
+        for (uint32 i(0); i < m_Indices.size(); i += 3)
         {
             if (Triangulator::hitTestTriangle(	m_Vertices[m_Indices[i]],
                                                 m_Vertices[m_Indices[i + 1]],
@@ -135,20 +135,20 @@ float Polygon::getArea() const
     return Triangulator::calculateArea(m_Vertices);
 }
 
-uint Polygon::getVertexCount() const
+uint32 Polygon::getVertexCount() const
 {
-    return (uint)m_Vertices.size();
+    return (uint32)m_Vertices.size();
 }
 
-uint Polygon::getIndexCount() const
+uint32 Polygon::getIndexCount() const
 {
-    return (uint)m_Indices.size();
+    return (uint32)m_Indices.size();
 }
 
-uint Polygon::getTriangleCount() const
+uint32 Polygon::getTriangleCount() const
 {
     if (isTriangulated())
-        return (uint)m_Indices.size() / 3;
+        return (uint32)m_Indices.size() / 3;
     else
         return 0;
 }
@@ -159,7 +159,7 @@ bool Polygon::operator==(const Polygon& p) const
     if (p.getVertexCount() != getVertexCount())
         return false;
 
-    for (uint i(0); i < getVertexCount(); ++i)
+    for (uint32 i(0); i < getVertexCount(); ++i)
     {
         if (m_Vertices[i] != p.getVertices()[i])
             return false;

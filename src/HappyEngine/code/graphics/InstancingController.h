@@ -45,10 +45,10 @@ public:
     InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
     virtual ~InstancingController();
 
-    uint addInstance(const IInstancible* pObj); //return id
-    uint addInstance(); //return id // only for manual mode
-    void removeInstance(uint id);
-    virtual uint getCount() const;
+    uint32 addInstance(const IInstancible* pObj); //return id
+    uint32 addInstance(); //return id // only for manual mode
+    void removeInstance(uint32 id);
+    virtual uint32 getCount() const;
 
     void addManualFiller(IInstanceFiller* pFiller);
     void removeManualFiller(const IInstanceFiller* pFiller);
@@ -94,8 +94,8 @@ private:
     std::string m_Name;
 
     details::InstancingBuffer m_CpuBuffer;
-    uint  m_GpuBuffer;
-    uint  m_BufferCapacity;
+    uint32  m_GpuBuffer;
+    uint32  m_BufferCapacity;
 
     VaoID m_Vao[MAX_VERTEX_ARRAY_OBJECTS];
     VaoID m_ShadowVao[MAX_VERTEX_ARRAY_OBJECTS];

@@ -79,7 +79,7 @@ void Picker::initialize()
 
     m_bInitialized = true;
 }
-uint Picker::pick(const vec2& /*screenPoint*/)
+uint32 Picker::pick(const vec2& /*screenPoint*/)
 {
     HE_ASSERT(m_bInitialized, "Initialize picker before using!");
     HE_ASSERT(false, "TODO");
@@ -166,7 +166,7 @@ uint Picker::pick(const vec2& /*screenPoint*/)
     return UINT_MAX;
 }
 
-uint Picker::pick(const vec2& /*screenPoint*/, const std::vector<IDrawable*>& /*drawList*/)
+uint32 Picker::pick(const vec2& /*screenPoint*/, const std::vector<IDrawable*>& /*drawList*/)
 {
     HE_ASSERT(m_bInitialized, "Initialize picker before using!");
     HE_ASSERT(false, "TODO");

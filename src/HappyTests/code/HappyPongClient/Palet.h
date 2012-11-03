@@ -75,7 +75,7 @@ private:
     LightFlashComponent* m_LightFlashComponent;
     LightFlashComponent* m_LightFlashAddPointComponent;
 
-    he::byte m_Player;
+    he::uint8 m_Player;
     bool m_Ai;
     float m_AiActionTime;
 

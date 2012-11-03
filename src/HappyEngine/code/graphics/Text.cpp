@@ -92,7 +92,7 @@ void Text::clear()
 }
 
 /* SETTERS */
-void Text::setLine(const std::string& string, uint lineNumber)
+void Text::setLine(const std::string& string, uint32 lineNumber)
 {
     if (lineNumber < m_Text.size())
     {
@@ -129,7 +129,7 @@ void Text::setBounds(const vec2& bounds)
 }
 
 /* GETTERS */
-const std::string& Text::getLine(uint lineNumber) const
+const std::string& Text::getLine(uint32 lineNumber) const
 {
     return m_Text[lineNumber];
 }

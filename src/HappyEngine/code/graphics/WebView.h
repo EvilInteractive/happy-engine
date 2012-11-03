@@ -106,7 +106,7 @@ private:
     vec2 m_Size;
     RectF m_ViewportPercent;
 
-    byte* m_Buffer;
+    uint8* m_Buffer;
 
     // View
     View* m_View;

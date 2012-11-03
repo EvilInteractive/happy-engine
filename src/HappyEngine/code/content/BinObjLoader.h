@@ -39,17 +39,17 @@ public:
 
     virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
-    virtual uint getNumMeshes() const;
-    virtual const std::string& getMeshName(uint mesh) const;
+    virtual uint32 getNumMeshes() const;
+    virtual const std::string& getMeshName(uint32 mesh) const;
     
-    virtual const std::vector<gfx::Bone>& getBones(uint mesh) const;
+    virtual const std::vector<gfx::Bone>& getBones(uint32 mesh) const;
 
-    virtual const void* getVertices(uint mesh) const;
-    virtual uint getNumVertices(uint mesh) const;
+    virtual const void* getVertices(uint32 mesh) const;
+    virtual uint32 getNumVertices(uint32 mesh) const;
 
-    virtual const void* getIndices(uint mesh) const;
-    virtual gfx::IndexStride getIndexStride(uint mesh) const;
-    virtual uint getNumIndices(uint mesh) const;
+    virtual const void* getIndices(uint32 mesh) const;
+    virtual gfx::IndexStride getIndexStride(uint32 mesh) const;
+    virtual uint32 getNumIndices(uint32 mesh) const;
 
 
 private:
@@ -64,7 +64,7 @@ private:
     std::vector<void*> m_Vertices;
     std::vector<void*> m_Indices;
 
-    std::vector<uint> m_NumIndices;
+    std::vector<uint32> m_NumIndices;
     std::vector<gfx::IndexStride> m_IndexStride;
 
     //Disable default copy constructor and default assignment operator

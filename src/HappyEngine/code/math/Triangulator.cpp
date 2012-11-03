@@ -24,7 +24,7 @@
 
 namespace he {
 
-bool Triangulator::triangulatePolygon(const std::vector<vec2>& vertices, std::vector<uint>& indices)
+bool Triangulator::triangulatePolygon(const std::vector<vec2>& vertices, std::vector<uint32>& indices)
 {
     int n = (int)vertices.size();
     if ( n < 3 ) return false;
@@ -41,9 +41,9 @@ bool Triangulator::triangulatePolygon(const std::vector<vec2>& vertices, std::ve
     }
 }
 
-void Triangulator::triangulateConvex(const std::vector<vec2>& vertices, std::vector<uint>& indices)
+void Triangulator::triangulateConvex(const std::vector<vec2>& vertices, std::vector<uint32>& indices)
 {
-    for (uint i(0); i < vertices.size() - 2; ++i)
+    for (uint32 i(0); i < vertices.size() - 2; ++i)
     {
         indices.push_back(0);
         indices.push_back(i + 1);
@@ -51,7 +51,7 @@ void Triangulator::triangulateConvex(const std::vector<vec2>& vertices, std::vec
     }
 }
 
-bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint>& indices)
+bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint32>& indices)
 {
     int n = (int)vertices.size();
     int* V = NEW int[n]; // TODO: seeb cache this buffer as a member, enlarge if needed
@@ -148,7 +148,7 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
     vec2 t1,t2,t3;
     std::vector<vec2> tri;
 
-    for (uint c(0); c < vertices.size(); ++c)
+    for (uint32 c(0); c < vertices.size(); ++c)
     {
         t1 = vertices[a];
         t2 = vertices[b];

@@ -48,8 +48,8 @@ public:
 
     void setMaxConnections(uint8 count);
 
-    void host(ushort port = 30000);
-    void join(const std::string& ip = "localhost", ushort port = 30000);
+    void host(uint16 port = 30000);
+    void join(const std::string& ip = "localhost", uint16 port = 30000);
     void disconnect();
     void tick(float dTime);
     bool isConnected() const;

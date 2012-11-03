@@ -44,7 +44,7 @@ public:
     /* CONSTRUCTOR - DESTRUCTOR */
     TextBox(	RectF posSize,
                 const std::string& defaultString = std::string(""),
-                ushort fontSize = 12,
+                uint16 fontSize = 12,
                 const std::string& customFont = std::string("Ubuntu-Regular.ttf"));
     virtual ~TextBox();
 
@@ -92,11 +92,11 @@ private:
 
     std::map<std::string, Color> m_Colors; // TODO: seeb: change with enum and normal array please, no need for slow map
 
-    uint m_CursorPos;
+    uint32 m_CursorPos;
 
     boost::timer m_BlinkTimer;
-    uint m_BackSpaceTimer;
-    uint m_BackSpaceDelayTimer;
+    uint32 m_BackSpaceTimer;
+    uint32 m_BackSpaceDelayTimer;
 
     std::vector<io::Key> m_CharacterKeyCodes;
 

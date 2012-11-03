@@ -34,7 +34,7 @@ IntersectResult Frustum::intersect( const Sphere& sphere ) const
 {
     float distance(0.0f);
 
-    for(uint i(0); i < 6; ++i) 
+    for(uint32 i(0); i < 6; ++i) 
     {
         distance = dot(m_Plane[i].getNormal(), sphere.getPosition()) - m_Plane[i].getDistance();
 
@@ -52,7 +52,7 @@ IntersectResult Frustum::intersect( const AABB& aabb ) const
 {
     int totalPointsInside(0);
     
-    for (uint plane(0); plane < 6; ++plane)
+    for (uint32 plane(0); plane < 6; ++plane)
     {
         switch (m_Plane[plane].intersect(aabb))
         { 

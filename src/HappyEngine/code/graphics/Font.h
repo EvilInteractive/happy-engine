@@ -50,19 +50,19 @@ public:
     virtual ~Font();
     
     /* GENERAL */
-    void init(FT_Library lib, FT_Face face, ushort size);
+    void init(FT_Library lib, FT_Face face, uint16 size);
     void preCache(bool extendedCharacters = false);
 
     /* GETTERS */
-    uint getPixelHeight() const;
-    uint getLineSpacing() const;
-    uint getLineHeight() const;
+    uint32 getPixelHeight() const;
+    uint32 getLineSpacing() const;
+    uint32 getLineHeight() const;
     float getStringWidth(const std::string& string) const;
 
     int getKerning(char first, char second) const;
 
     Texture2D* getTextureAtlas() const;
-    const CharData* getCharTextureData(byte chr) const;
+    const CharData* getCharTextureData(uint8 chr) const;
 
     bool isPreCached() const;
 
@@ -77,8 +77,8 @@ private:
     FT_Library m_FTLibrary;
     FT_Face m_Face;
 
-    ushort m_CharSize;
-    uint m_LineHeight;
+    uint16 m_CharSize;
+    uint32 m_LineHeight;
 
     bool m_Cached;
     bool m_ExtendedChars;

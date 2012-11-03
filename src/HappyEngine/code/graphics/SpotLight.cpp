@@ -173,7 +173,7 @@ void SpotLight::calculateWorldMatrix()
     m_ScaledAttenuation.x = std::max(m_Attenuation.x, MIN_BEGIN_ATTENUATION);
 }
 
-void SpotLight::setWorldMatrixDirty( byte cause )
+void SpotLight::setWorldMatrixDirty( uint8 cause )
 {
     DefaultSingleDrawable::setWorldMatrixDirty(cause);
     if ((cause & DirtyFlag_Scale) != 0)
@@ -220,7 +220,7 @@ void SpotLight::setShadowResolution( const ShadowResolution& resolution )
                 m_ShadowMap->setName("Spotlight shadowmap");
                 m_ShadowMap->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_R16, false);
             }
-            ushort res(GRAPHICS->getShadowMapSize(resolution));
+            uint16 res(GRAPHICS->getShadowMapSize(resolution));
             m_ShadowMap->setData(res, res, 0, TextureBufferLayout_R, TextureBufferType_Float);
         }
     }

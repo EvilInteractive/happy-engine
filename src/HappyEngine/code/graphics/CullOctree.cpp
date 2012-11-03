@@ -81,7 +81,7 @@ void CullOctree::draw( const ICamera* camera, boost::function1<void, IDrawable*>
     m_Root->draw(camera, drawFunction, true);
 }
 
-void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, std::vector<vec3>& vertices, std::vector<uint>& indices ) const
+void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, std::vector<vec3>& vertices, std::vector<uint32>& indices ) const
 {
     m_Root->drawAndCreateDebugMesh(camera, drawFunction, true, vertices, indices);
 }
@@ -114,7 +114,7 @@ void CullOctreeNode::reset()
     m_NumObjectChilds = 0;
 }
 
-void CullOctreeNode::init(CullOctreeNode* parent, byte xIndex, byte yIndex, byte zIndex)
+void CullOctreeNode::init(CullOctreeNode* parent, uint8 xIndex, uint8 yIndex, uint8 zIndex)
 {
     m_Parent = parent;
     m_IsLeafe = false;
@@ -137,7 +137,7 @@ void CullOctreeNode::init(CullOctreeNode* parent, byte xIndex, byte yIndex, byte
     he_memset(m_ChildNodes, 0, 8 * sizeof(CullOctreeNode*));
 }
 
-void CullOctreeNode::init( const vec3& pos, float strictSize, CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex )
+void CullOctreeNode::init( const vec3& pos, float strictSize, CullOctreeNode* child, uint8 xIndex, uint8 yIndex, uint8 zIndex )
 {
     m_Parent = nullptr;
     m_IsLeafe = false;
@@ -196,7 +196,7 @@ void CullOctreeNode::insert( IDrawable* drawable )
         // since all child's have same size, checking the first one is enough
         if (drawableBound.getSphere().getRadius() <= m_ChildNodes[0]->getStrictBound().getSphere().getRadius())
         {
-            for (uint i(0); i < 8; ++i)
+            for (uint32 i(0); i < 8; ++i)
             {
                 const Bound& strictBound(m_ChildNodes[i]->getStrictBound());
                 if (strictBound.getAABB().isOtherInside(drawableBound.getSphere().getPosition()) == false)
@@ -287,10 +287,10 @@ void CullOctreeNode::createChilds()
 {
     if (m_IsLeafe)
         return;
-    byte index(0);
-    for (byte x(0); x < 2; ++x)
-    for (byte y(0); y < 2; ++y)
-    for (byte z(0); z < 2; ++z)
+    uint8 index(0);
+    for (uint8 x(0); x < 2; ++x)
+    for (uint8 y(0); y < 2; ++y)
+    for (uint8 z(0); z < 2; ++z)
     {
         CullOctreeNode* node(CullOctreeNodeFactory::getInstance()->getNode());
         m_ChildNodes[index++] = node;
@@ -298,12 +298,12 @@ void CullOctreeNode::createChilds()
     }
 }
 
-void CullOctreeNode::createChilds( CullOctreeNode* child, byte xIndex, byte yIndex, byte zIndex )
+void CullOctreeNode::createChilds( CullOctreeNode* child, uint8 xIndex, uint8 yIndex, uint8 zIndex )
 {
-    byte index(0);
-    for (byte x(0); x < 2; ++x)
-    for (byte y(0); y < 2; ++y)
-    for (byte z(0); z < 2; ++z)
+    uint8 index(0);
+    for (uint8 x(0); x < 2; ++x)
+    for (uint8 y(0); y < 2; ++y)
+    for (uint8 z(0); z < 2; ++z)
     {
         if (x != xIndex || y != yIndex || z != zIndex)
         {
@@ -352,7 +352,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
 
     if (m_ChildNodes[0] != nullptr) // if first child is not nullptr then all other are not nullptr as well
     {
-        for (uint i(0); i < 8; ++i)
+        for (uint32 i(0); i < 8; ++i)
         {
             m_ChildNodes[i]->draw(camera, drawFunction, checkChilderen);
         }
@@ -367,7 +367,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
 }
 
 void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
-    std::vector<vec3>& vertices, std::vector<uint>& indices ) const
+    std::vector<vec3>& vertices, std::vector<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const vec3& cameraPosition(camera->getPosition());
@@ -405,7 +405,7 @@ void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
 
     if (m_ChildNodes[0] != nullptr) // if first child is not nullptr then all other are not nullptr as well
     {
-        for (uint i(0); i < 8; ++i)
+        for (uint32 i(0); i < 8; ++i)
         {
             m_ChildNodes[i]->drawAndCreateDebugMesh(camera, drawFunction, checkChilderen, vertices, indices);
         }
@@ -439,7 +439,7 @@ bool CullOctreeNode::canRemoveChilderen() const
 {
     if (m_ChildNodes[0] != nullptr) // if first child is not nullptr then all other are not nullptr as well
     {
-        for (uint i(0); i < 8; ++i)
+        for (uint32 i(0); i < 8; ++i)
         {
             if (m_ChildNodes[i]->checkRemove() == false)
                 return false;
@@ -454,7 +454,7 @@ void CullOctreeNode::doRemoveChilderen(bool checkParent)
     {
         HIERARCHICAL_PROFILE(__HE_FUNCTION__);
         CullOctreeNodeFactory* factory(CullOctreeNodeFactory::getInstance());
-        for (uint i(0); i < 8; ++i)
+        for (uint32 i(0); i < 8; ++i)
         {
             m_ChildNodes[i]->doRemoveChilderen(false);
             factory->releaseNode(m_ChildNodes[i]);

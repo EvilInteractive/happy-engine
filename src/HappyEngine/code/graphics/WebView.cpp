@@ -74,7 +74,7 @@ WebView::WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput
 void WebView::init()
 {
     // create buffer
-    m_Buffer = static_cast<byte*>(he_malloc(4));
+    m_Buffer = static_cast<uint8*>(he_malloc(4));
 
     // create webview
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
@@ -94,7 +94,7 @@ void WebView::init()
         {
             Awesomium::WebKeyboardEvent keyEvent;
 
-            uint chr = io::getWebKeyFromKey(key);
+            uint32 chr = io::getWebKeyFromKey(key);
 
             keyEvent.virtual_key_code = chr;
 
@@ -295,7 +295,7 @@ void WebView::resize( const vec2& newSize )
         else
             m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
 
-        m_Buffer = static_cast<byte*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
+        m_Buffer = static_cast<uint8*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
         m_Size = newSize;
     }
 }

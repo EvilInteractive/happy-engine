@@ -34,8 +34,8 @@ struct Bone
     std::string m_Name;
     mat44 m_BaseTransform;
 
-    static const byte MAX_BONES = 64;
-    static const byte MAX_BONEWEIGHTS = 4;
+    static const uint8 MAX_BONES = 64;
+    static const uint8 MAX_BONEWEIGHTS = 4;
 };
 
 } } //end namespace

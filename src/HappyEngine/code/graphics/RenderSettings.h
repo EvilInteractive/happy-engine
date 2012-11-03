@@ -74,7 +74,7 @@ struct PostSettings
 };  
 struct ShadowSettings
 {
-    byte shadowMult;
+    uint8 shadowMult;
 };
 struct LightingSettings
 {

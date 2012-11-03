@@ -41,8 +41,8 @@ public:
     /* GENERAL */
     void initialize();
     // returns ID of mesh in drawlist which is picked, or UINT_MAX if none
-    uint pick(const vec2& screenPoint);
-    uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
+    uint32 pick(const vec2& screenPoint);
+    uint32 pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
 
     void drawDebug() const;
 
@@ -51,8 +51,8 @@ private:
     /* DATAMEMBERS */
     PickEffect* m_pPickEffect;
 
-    uint m_RenderFboID;
-    uint m_DepthRenderBuffer;
+    uint32 m_RenderFboID;
+    uint32 m_DepthRenderBuffer;
     Texture2D* m_pIDTexture;
 
     bool m_bInitialized;

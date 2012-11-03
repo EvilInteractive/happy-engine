@@ -57,7 +57,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     //
     //////////////////////////////////////////////////////////////////////////
-    void init(MainGame* ge, he::byte player, bool ai);
+    void init(MainGame* ge, he::uint8 player, bool ai);
     
     const he::vec2& getDimension() const;
     const he::vec3& getPosition() const;
@@ -71,7 +71,7 @@ private:
 
     const he::vec2 m_PaletDim;
     
-    he::byte m_Player;
+    he::uint8 m_Player;
     bool m_Ai;
 
     MainGame* m_Game;

@@ -49,7 +49,7 @@ Palet::Palet():
 {        
     GAME->addToTickList(this);
 }
-void Palet::init( MainGame* ge, he::byte player, bool ai)
+void Palet::init( MainGame* ge, he::uint8 player, bool ai)
 {
     m_Game = ge;
     m_Player = player;

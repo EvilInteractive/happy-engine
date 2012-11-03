@@ -61,8 +61,8 @@ protected:
     virtual IObject3D* getParent() const = 0;
     virtual void setParent(IObject3D* parent) = 0;
 
-    virtual void setWorldMatrixDirty(byte cause) = 0;
-    virtual void setLocalMatrixDirty(byte cause) = 0;
+    virtual void setWorldMatrixDirty(uint8 cause) = 0;
+    virtual void setLocalMatrixDirty(uint8 cause) = 0;
 
     virtual void calculateWorldMatrix() = 0;
     ////////////////////////////////////////////////////////////////////////// 

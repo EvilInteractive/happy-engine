@@ -40,8 +40,8 @@ class SoundEngine
 {
 public:
 
-    static const uint STREAM_BUFFER_SIZE = 4096;
-    static const uint STREAM_BUFFERS = 4;
+    static const uint32 STREAM_BUFFER_SIZE = 4096;
+    static const uint32 STREAM_BUFFERS = 4;
 
     /* CONSTRUCTOR - DESTRUCTOR */
     SoundEngine();
@@ -68,21 +68,21 @@ public:
     vec3 getListenerVelocity() const;
     void getListenerOrientation(vec3* forward, vec3* up) const;
 
-    ALuint getALSource(uint source) const;
-    const std::vector<ALuint>& getALBuffer(uint buffer) const;
-    SoundFile& getSoundFile(uint soundFile);
+    ALuint getALSource(uint32 source) const;
+    const std::vector<ALuint>& getALBuffer(uint32 buffer) const;
+    SoundFile& getSoundFile(uint32 soundFile);
 
     float getPlayTime(ISound* pSound);
 
 private:
 
     void shutdown();
-    void emptyBuffers(uint source);
+    void emptyBuffers(uint32 source);
 
     bool streamSound(SoundFile& stream, ALuint buffer, bool toMono = false);
     void convertToMono(const std::vector<short>& dataStereo, std::vector<short>& dataMono);
     
-    ALenum getALFormatFromChannels(uint channels) const;
+    ALenum getALFormatFromChannels(uint32 channels) const;
 
     /* DATAMEMBERS */
     std::vector<ISound*> m_SoundBank;

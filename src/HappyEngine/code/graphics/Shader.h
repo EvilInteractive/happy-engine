@@ -95,7 +95,7 @@ public:
 
     void getShaderVar(const std::string& name, ShaderVariableBase& outVar) const
     {
-        uint index;
+        uint32 index;
         const char* c_name(name.c_str());
         glGetUniformIndices(m_ProgramId, 1, &c_name, &index);
 
@@ -112,7 +112,7 @@ public:
     }
 
 private:
-    UniformBuffer(uint programId, uint bufferPos): m_ProgramId(programId), m_BufferId(s_UniformBufferCount++)
+    UniformBuffer(uint32 programId, uint32 bufferPos): m_ProgramId(programId), m_BufferId(s_UniformBufferCount++)
     {
         int blockSize;
         glGetActiveUniformBlockiv(programId, bufferPos, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
@@ -127,12 +127,12 @@ private:
         he_free(m_Buffer);
     }
 
-    static uint s_UniformBufferCount;
+    static uint32 s_UniformBufferCount;
 
-    uint m_GlBuffer;
+    uint32 m_GlBuffer;
 
-    uint m_ProgramId;
-    uint m_BufferId;
+    uint32 m_ProgramId;
+    uint32 m_BufferId;
 };
 
 class Shader : public Resource<Shader>
@@ -151,37 +151,37 @@ public:
 
     void bind();
 
-    uint getShaderVarId(const std::string& name) const;
-    uint getBufferId(const std::string& name) const;
-    uint getBufferVarId(uint bufferId, const std::string& name) const;
-    uint getShaderSamplerId(const std::string& name);
+    uint32 getShaderVarId(const std::string& name) const;
+    uint32 getBufferId(const std::string& name) const;
+    uint32 getBufferVarId(uint32 bufferId, const std::string& name) const;
+    uint32 getShaderSamplerId(const std::string& name);
 
-    UniformBuffer* setBuffer(uint id); //create new buffer
-    void setBuffer(uint id, UniformBuffer* pBuffer); //used to share buffer
+    UniformBuffer* setBuffer(uint32 id); //create new buffer
+    void setBuffer(uint32 id, UniformBuffer* pBuffer); //used to share buffer
 
-    void setShaderVar(uint id, int value) const;
-    void setShaderVar(uint id, uint value) const;
-    void setShaderVar(uint id, float value) const;
-    void setShaderVar(uint id, const vec2& vec) const;
-    void setShaderVar(uint id, const vec3& vec) const;
-    void setShaderVar(uint id, const vec4& vec) const;
-    void setShaderVar(uint id, const mat44& matrix) const;
-    void setShaderVar(uint id, const std::vector<mat44>& matrixArray) const;
-    void setShaderVar(uint id, const gfx::Texture2D* tex2D) const;
-    void setShaderVar(uint id, const gfx::TextureCube* texCube) const;
+    void setShaderVar(uint32 id, int value) const;
+    void setShaderVar(uint32 id, uint32 value) const;
+    void setShaderVar(uint32 id, float value) const;
+    void setShaderVar(uint32 id, const vec2& vec) const;
+    void setShaderVar(uint32 id, const vec3& vec) const;
+    void setShaderVar(uint32 id, const vec4& vec) const;
+    void setShaderVar(uint32 id, const mat44& matrix) const;
+    void setShaderVar(uint32 id, const std::vector<mat44>& matrixArray) const;
+    void setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const;
+    void setShaderVar(uint32 id, const gfx::TextureCube* texCube) const;
     
 private:
-    uint m_Id;
-    uint m_VsId;
-    uint m_FsId;
+    uint32 m_Id;
+    uint32 m_VsId;
+    uint32 m_FsId;
 
-    std::map<std::string, uint> m_SamplerLocationMap;
-    std::map<uint, UniformBuffer*> m_UniformBufferMap;
+    std::map<std::string, uint32> m_SamplerLocationMap;
+    std::map<uint32, UniformBuffer*> m_UniformBufferMap;
 
     std::string m_FragShaderName;
     std::string m_VertShaderName;
 
-    static uint s_CurrentBoundShader;
+    static uint32 s_CurrentBoundShader;
 
     //Disable default copy constructor and default assignment operator
     Shader(const Shader&);

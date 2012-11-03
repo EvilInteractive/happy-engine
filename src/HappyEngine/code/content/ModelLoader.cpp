@@ -112,14 +112,14 @@ bool ModelLoader::createModel( ModelLoadData& data )
     m_WaitListMutex.lock();
 
     gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
-    uint notLoadedMeshes(model->getNumMeshes());
-    for (uint i = 0; i < data.loader->getNumMeshes(); ++i)
+    uint32 notLoadedMeshes(model->getNumMeshes());
+    for (uint32 i = 0; i < data.loader->getNumMeshes(); ++i)
     {
         const std::string& meshName(data.loader->getMeshName(i));
         gfx::ModelMesh* mesh(nullptr);
         if (notLoadedMeshes > 0)
         {
-            for (uint iNotLoaded = 0; iNotLoaded < notLoadedMeshes; ++iNotLoaded)
+            for (uint32 iNotLoaded = 0; iNotLoaded < notLoadedMeshes; ++iNotLoaded)
             {
                 mesh = model->instantiateMesh(meshName);
                 if (mesh != nullptr)

@@ -47,9 +47,9 @@ public:
 private:
 
     Shader* m_LumShader;
-    uint m_HDRmapPos;
-    uint m_PrevLumMapPos;
-    uint m_DTimePos;
+    uint32 m_HDRmapPos;
+    uint32 m_PrevLumMapPos;
+    uint32 m_DTimePos;
     
     float m_DTime;
     float m_ExposureSpeed;
@@ -57,7 +57,7 @@ private:
     Texture2D* m_pLumTexture[2]; //double buffered
     bool m_FirstBuffer;
 
-    uint m_FboID;
+    uint32 m_FboID;
 
     ModelMesh* m_pQuad;
 

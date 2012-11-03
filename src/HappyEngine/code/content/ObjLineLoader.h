@@ -43,13 +43,13 @@ public:
     virtual bool load(const std::string& path);
 
     virtual const std::vector<vec3>& getPoints() const;
-    virtual const std::vector<ushort>& getIndices() const;
+    virtual const std::vector<uint16>& getIndices() const;
 
 private:
     bool read(const std::string& path);
 
     std::vector<vec3> m_PointData;
-    std::vector<ushort> m_Indices;
+    std::vector<uint16> m_Indices;
 
     //Disable default copy constructor and default assignment operator
     ObjLineLoader(const ObjLineLoader&);

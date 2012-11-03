@@ -251,8 +251,8 @@ void Deferred3DRenderer::onViewResized()
     //////////////////////////////////////////////////////////////////////////
     ///                          LOAD RENDER TARGETS                       ///
     //////////////////////////////////////////////////////////////////////////
-    uint width(m_View->getViewport().width); 
-    uint height(m_View->getViewport().height);
+    uint32 width(m_View->getViewport().width); 
+    uint32 height(m_View->getViewport().height);
 
 
     //Collection Textures - just SGI and color others are shared

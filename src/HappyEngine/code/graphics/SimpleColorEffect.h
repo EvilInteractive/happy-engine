@@ -50,9 +50,9 @@ private:
     /* DATAMEMBERS */
     Shader* m_Shader;
 
-    uint m_ShaderVPPos;
-    uint m_ShaderWPos;
-    uint m_ShaderColorPos;
+    uint32 m_ShaderVPPos;
+    uint32 m_ShaderWPos;
+    uint32 m_ShaderColorPos;
 
     /* DEFAULT COPY & ASSIGNMENT */
     SimpleColorEffect(const SimpleColorEffect&);

@@ -56,7 +56,7 @@ bool BinObjLineLoader::read(const std::string& path)
     stream.read(&m_PointData[0], m_PointData.size() * sizeof(vec3));
 
     m_Indices.resize(stream.readDword());
-    stream.read(&m_Indices[0], m_Indices.size() * sizeof(ushort));
+    stream.read(&m_Indices[0], m_Indices.size() * sizeof(uint16));
 
     return true;
 }
@@ -66,7 +66,7 @@ const std::vector<vec3>& BinObjLineLoader::getPoints() const
 {
     return m_PointData;
 }
-const std::vector<ushort>& BinObjLineLoader::getIndices() const
+const std::vector<uint16>& BinObjLineLoader::getIndices() const
 {
     return m_Indices;
 }

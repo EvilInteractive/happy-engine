@@ -47,9 +47,9 @@ public:
     bool open(const std::string& path, OpenType openType);
     void close();
 
-    virtual		byte			readByte()								const;
-    virtual		ushort			readWord()								const;
-    virtual		uint			readDword()								const;
+    virtual		uint8			readByte()								const;
+    virtual		uint16			readWord()								const;
+    virtual		uint32			readDword()								const;
     virtual		int			    readInt32()								const;
     virtual		float			readFloat()								const;
     virtual		double			readDouble()							const;
@@ -67,9 +67,9 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual		void		    writeByte(byte b);
-    virtual		void		    writeWord(ushort w);
-    virtual		void		    writeDword(uint d);
+    virtual		void		    writeByte(uint8 b);
+    virtual		void		    writeWord(uint16 w);
+    virtual		void		    writeDword(uint32 d);
     virtual		void		    writeFloat(float f);
     virtual		void		    writeDouble(double d);
 

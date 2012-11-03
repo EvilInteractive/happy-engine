@@ -23,7 +23,7 @@
 
 namespace he {
 
-AABB AABB::calculateBoundingAABB( const void* pointCloud, uint num, uint stride, uint posOffset )
+AABB AABB::calculateBoundingAABB( const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset )
 {
     if (num < 2)
         return AABB(vec3(0, 0, 0), vec3(0, 0, 0));
@@ -31,7 +31,7 @@ AABB AABB::calculateBoundingAABB( const void* pointCloud, uint num, uint stride,
          max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
     const char* charPointCloud = static_cast<const char*>(pointCloud);
-    for(uint i = 0; i < num; ++i)
+    for(uint32 i = 0; i < num; ++i)
     {
         const vec3& p(*reinterpret_cast<const vec3*>(charPointCloud + stride * i + posOffset));
         he::minPerComponent(min, p, min);
@@ -54,7 +54,7 @@ void AABB::generateVertices( std::vector<vec3>& outBuffer ) const
     outBuffer.push_back(m_TopFrontLeft + vec3(diff.x, diff.y, diff.z));
 }
 
-void AABB::generateIndices( std::vector<uint>& outBuffer, uint offset ) const
+void AABB::generateIndices( std::vector<uint32>& outBuffer, uint32 offset ) const
 {
     // Front
     outBuffer.push_back(offset + 0); outBuffer.push_back(offset + 1);

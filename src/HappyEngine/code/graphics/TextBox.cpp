@@ -32,7 +32,7 @@ namespace gui {
 /* CONSTRUCTOR - DESTRUCTOR */
 TextBox::TextBox(RectF posSize,
                  const std::string& defaultString,
-                 ushort fontSize,
+                 uint16 fontSize,
                  const std::string& customFont) :	m_Rect(posSize),
                                                     m_DefaultString(defaultString),
                                                     m_bActive(true),
@@ -138,17 +138,17 @@ void TextBox::tick()
         if (CONTROLS->getKeyboard()->isKeyUp(io::Key_Backspace))
         {
             m_BackspaceDown = false;
-            m_BackSpaceTimer = (uint)(m_BlinkTimer.elapsed() * 10);
+            m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);
             m_BackSpaceDelayTimer = 0;
         }
-        else if ((uint)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer > 0 && m_BackSpaceDelayTimer >= 5)
+        else if ((uint32)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer > 0 && m_BackSpaceDelayTimer >= 5)
         {
-            m_BackSpaceTimer = (uint)(m_BlinkTimer.elapsed() * 10);
+            m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);
             m_BackspaceDown = false;
         }
         else if (m_BackSpaceDelayTimer < 5)
         {
-            m_BackSpaceDelayTimer = (uint)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
+            m_BackSpaceDelayTimer = (uint32)(m_BlinkTimer.elapsed() * 10) - m_BackSpaceTimer;
         }
 
         if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return)/* ||
@@ -215,7 +215,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
                 if (cursorText != "")
                 {
-                    uint cursorX((uint)m_pFont->getStringWidth(cursorText));
+                    uint32 cursorX((uint32)m_pFont->getStringWidth(cursorText));
                     cursorX -= 1;
 
                     cursorRect.x += cursorX;
@@ -293,7 +293,7 @@ void TextBox::setFocus(bool focus)
 void TextBox::setString(const std::string& string)
 {
     m_String = string;
-    m_CursorPos = (uint)string.size();
+    m_CursorPos = (uint32)string.size();
 }
 
 void TextBox::setColors(	const Color& backgroundColor,
