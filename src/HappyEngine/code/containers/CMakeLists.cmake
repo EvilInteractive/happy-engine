@@ -1,4 +1,7 @@
-set (CODE_CONTAINERS_FILES  ObjectFactory.h
+set (CODE_CONTAINERS_FILES  
+							Creator.h
+							List.h
+							ObjectFactory.h
                             Resource.h
                             ResourceFactory.h
                             SlotPContainer.h)

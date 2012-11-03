@@ -191,6 +191,8 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
                     const std::string& button1, const std::string& button2, const std::string& button3)
 {
     MessageBoxButton result(MessageBoxButton_None);
+    if (GRAPHICS == nullptr)
+        return result;
     if (s_Mutex.try_lock())
     {
         //////////////////////////////////////////////////////////////////////////

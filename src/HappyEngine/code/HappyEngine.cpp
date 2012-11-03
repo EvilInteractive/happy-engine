@@ -73,7 +73,8 @@ void HappyEngine::cleanup()
 
     m_AudioThread.join(); // wait for audiothread to finish
 
-    m_pGraphicsEngine->destroy();
+    if (m_pGraphicsEngine != nullptr)
+        m_pGraphicsEngine->destroy();
 
     //dispose/delete all sub engines here
     delete m_pConsole;

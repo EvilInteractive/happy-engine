@@ -59,7 +59,8 @@ void GraphicsEngine::destroy()
     SceneFactory::getInstance()->destroyAll();
     WindowFactory::getInstance()->destroyAll();
 
-    Awesomium::WebCore::Shutdown();
+    if (m_WebCore != nullptr)
+        Awesomium::WebCore::Shutdown();
 }
 
 void GraphicsEngine::init()

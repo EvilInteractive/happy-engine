@@ -30,4 +30,6 @@
 #define NEW new
 #endif
 
+#define PNEW(mem) new(mem)
+
 #endif
