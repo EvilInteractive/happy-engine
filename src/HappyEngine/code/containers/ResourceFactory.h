@@ -153,12 +153,12 @@ private:
         {
             if (m_RefCounter[i] != 0)
             {
-                HE_WARNING("%s: resource %s has %d references open!", m_DisplayName.c_str(), getAt(i)->getName().c_str(), (int)m_RefCounter[i]);
+                HE_WARNING("%s: resource %s has %d references open!", m_DisplayName.c_str(), getAt(i)->getName().c_str(), m_RefCounter[i]);
             }
         }
     }
 
-    std::vector<uint32> m_RefCounter;
+    he::PrimitiveList<uint32> m_RefCounter;
 
     //Disable default copy constructor and default assignment operator
     ResourceFactory(const ResourceFactory&);

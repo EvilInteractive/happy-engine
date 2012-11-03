@@ -89,21 +89,21 @@ namespace details
         }
         void add(Callback& func)
         {
-            HE_IF_ASSERT(func.m_Connection == UINT16_MAX, "Callback already connected to an EVENTBASE! Ignoring connection")
+            HE_IF_ASSERT(func.m_Connection == UINT16_MAX, "Callback already connected to an events! Ignoring connection")
             {
                 if (m_FreeConnections.empty())
                     enlargePool();
                 uint16 con(m_FreeConnections.front());
                 m_FreeConnections.pop();
                 func.m_Connection = con;
-                m_Connections.push_back(con);
+                m_Connections.add(con);
                 m_CallbackPool[con] = func.m_Function;
             }
         }
         void enlargePool()
         {
             const uint16 step = 1;                          
-            HE_ASSERT(m_CallbackPool.size() + step < UINT16_MAX, "Fatal error - to many connected EVENTBASEs!");        
+            HE_ASSERT(m_CallbackPool.size() + step < UINT16_MAX, "Fatal error - to many connected events!");        
             for (uint16 i(static_cast<uint16>(m_CallbackPool.size())); i < m_CallbackPool.size() + step; ++i)            
                 m_FreeConnections.push(i);
             m_CallbackPool.resize(m_CallbackPool.size() + step);
@@ -112,12 +112,12 @@ namespace details
         {
             if (func.m_Connection == UINT16_MAX)
                 return;
-            std::vector<uint16>::iterator it(std::find(m_Connections.begin(), m_Connections.end(), func.m_Connection));
-            HE_IF_ASSERT(it != m_Connections.end(), "Callback not connected to this EVENTBASE!")
+            size_t index(0);
+            bool found(m_Connections.find(func.m_Connection, index));
+            if (found == true)
             {
-                m_FreeConnections.push(*it);
-                *it = m_Connections.back();
-                m_Connections.pop_back();
+                m_FreeConnections.push(func.m_Connection);
+                m_Connections.removeAt(index);
             }
         }
         bool empty() const { return m_Connections.empty(); }
@@ -132,8 +132,8 @@ namespace details
         }
 
     protected:
-        std::vector<Function> m_CallbackPool;
-        std::vector<uint16> m_Connections;
+        he::ObjectList<Function> m_CallbackPool;
+        he::PrimitiveList<uint16> m_Connections;
         std::queue<uint16> m_FreeConnections;
 
         EVENTBASE(const EVENTBASE&);
@@ -160,8 +160,8 @@ public:
     }
     ReturnType execute(DECL_PARAMS) const
     {
-        std::vector<uint16>::const_iterator it(m_Connections.cbegin());
-        std::vector<uint16>::const_iterator last(m_Connections.cend());
+        he::PrimitiveList<uint16>::const_iterator it(m_Connections.cbegin());
+        he::PrimitiveList<uint16>::const_iterator last(m_Connections.cend());
 
         if (it == last)
             return m_DefaultValue;
@@ -193,8 +193,8 @@ public:
 
     void execute(DECL_PARAMS) const
     {
-        std::vector<uint16>::const_iterator it(m_Connections.cbegin());
-        std::vector<uint16>::const_iterator last(m_Connections.cend());
+        he::PrimitiveList<uint16>::const_iterator it(m_Connections.cbegin());
+        he::PrimitiveList<uint16>::const_iterator last(m_Connections.cend());
 
         if (it == last)
             return;

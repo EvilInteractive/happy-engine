@@ -50,7 +50,7 @@ ModelMesh::~ModelMesh()
 {
     GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
     GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
-    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
     std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
     {
         destroyVAO(context);
@@ -69,7 +69,7 @@ void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
         m_DrawMode = mode;
         glGenBuffers(1, &m_IndexVboID);
         glGenBuffers(1, &m_VertexVboID);
-        const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+        const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
         std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
         {
             initVAO(context);

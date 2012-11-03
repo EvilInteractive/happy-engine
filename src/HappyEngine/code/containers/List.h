@@ -51,6 +51,7 @@ public:
     inline void orderedRemoveAt(size_t index); // memmove
     inline void clear();
 
+    inline bool contains(const T& element) const; // O(n)
     inline bool find(const T& element, size_t& outIndex) const; // O(n)
     inline bool rfind(const T& element, size_t& outIndex) const; // O(n)
     inline bool binFind(const T& element, const Sorter& sorter, size_t& outIndex) const; // O(log(n))  binary search - only on sorted lists
@@ -60,6 +61,7 @@ public:
 
     inline const T& back() const;
     inline const T& front() const;
+    inline bool empty() const { return m_Size == 0; }
 
     inline T& operator[](size_t index);
     inline const T& operator[](size_t index) const;
@@ -109,7 +111,7 @@ he::List<T, Creator>::List(): m_Size(0), m_Capacity(1), m_Buffer(static_cast<T*>
 template<typename T, typename Creator> inline
 he::List<T, Creator>::~List()
 {
-    Creator::destroyArray(m_Buffer, m_Size);
+    Creator::destroyArray(m_Buffer, m_Capacity);
     he_free(m_Buffer);
 }
 
@@ -211,6 +213,12 @@ void he::List<T, Creator>::clear()
     m_Size = 0;
 }
 //////////////////////////////////////////////////////////////////////////
+template<typename T, typename Creator>
+bool he::List<T, Creator>::contains( const T& element ) const
+{
+    size_t i(0);
+    return find(element, i);
+}
 template<typename T, typename Creator> inline
 bool he::List<T, Creator>::find( const T& element, size_t& outIndex ) const
 {

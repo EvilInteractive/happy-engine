@@ -95,6 +95,7 @@ struct ObjectHandle
     ObjectType  type;
 
     ObjectHandle(): index(0), salt(0), type(UNASSIGNED_TYPE)  {}
+    ~ObjectHandle() {}
 
     bool operator==(const ObjectHandle& other) const
     {

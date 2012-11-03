@@ -63,7 +63,7 @@ InstancingController::~InstancingController()
 {
     GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
     GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
-    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
     std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
     {
         destroyVao(context);
@@ -201,7 +201,7 @@ void InstancingController::init()
     glBufferData(GL_ARRAY_BUFFER, m_CpuBuffer.getSizeCapacity(), 0, m_Dynamic?GL_STREAM_DRAW:GL_STATIC_DRAW);
 
 
-    const std::vector<GLContext*>& contexts(GRAPHICS->getContexts());
+    const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
     std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
     {
         initVao(context);

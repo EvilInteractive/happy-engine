@@ -83,8 +83,8 @@ public:
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
-    const std::vector<ObjectHandle>& getAllWindows() const { return m_Windows; }
-    const std::vector<GLContext*>& getContexts() const { return m_Contexts; } 
+    const he::ObjectList<ObjectHandle>& getAllWindows() const { return m_Windows; }
+    const he::PrimitiveList<GLContext*>& getContexts() const { return m_Contexts; } 
 
     uint16 getShadowMapSize(const ShadowResolution& resolution);
 
@@ -101,9 +101,9 @@ private:
     sf::Context* m_FallBackSfContext;
 
     /* DATAMEMBERS */
-    std::vector<ObjectHandle> m_Scenes;
-    std::vector<ObjectHandle> m_Views;
-    std::vector<ObjectHandle> m_Windows;
+    he::ObjectList<ObjectHandle> m_Scenes;
+    he::ObjectList<ObjectHandle> m_Views;
+    he::ObjectList<ObjectHandle> m_Windows;
 
     Window* m_ActiveWindow;
     View* m_ActiveView;
@@ -111,7 +111,7 @@ private:
     Awesomium::WebCore* m_WebCore;
 
     std::queue<uint32> m_FreeContexts;
-    std::vector<GLContext*> m_Contexts;
+    he::PrimitiveList<GLContext*> m_Contexts;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

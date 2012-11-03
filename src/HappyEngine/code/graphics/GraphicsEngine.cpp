@@ -103,8 +103,7 @@ Scene* GraphicsEngine::createScene()
 {
     SceneFactory* factory(SceneFactory::getInstance());
     Scene* scene(factory->get(factory->create()));
-    m_Scenes.push_back(scene->getHandle());
-    //scene->setId(m_Scenes.insert(scene->getHandle()));
+    m_Scenes.add(scene->getHandle());
     return scene;
 }
 
@@ -116,11 +115,10 @@ Scene* GraphicsEngine::getScene( SceneID /*id*/ )
 
 void GraphicsEngine::removeScene( Scene* scene )
 {
-    HE_IF_ASSERT(std::find(m_Scenes.cbegin(), m_Scenes.cend(), scene->getHandle()) != m_Scenes.cend(), "Scene does not exist in the scene list")
+    HE_IF_ASSERT(m_Scenes.contains(scene->getHandle()), "Scene does not exist in the scene list")
     {
         SceneFactory* factory(SceneFactory::getInstance());
-        *std::find(m_Scenes.begin(), m_Scenes.end(), scene->getHandle()) = m_Scenes.back();
-        m_Scenes.pop_back();
+        m_Scenes.remove(scene->getHandle());
         factory->destroyObject(scene->getHandle());
     }
 }
@@ -129,7 +127,7 @@ View2D* GraphicsEngine::createView2D()
 {
     ViewFactory* factory(ViewFactory::getInstance());
     View2D* view(static_cast<View2D*>(factory->get(factory->createView2D())));
-    m_Views.push_back(view->getHandle());
+    m_Views.add(view->getHandle());
     return view;
 }
 
@@ -137,17 +135,16 @@ View3D* GraphicsEngine::createView3D()
 {
     ViewFactory* factory(ViewFactory::getInstance());
     View3D* view(static_cast<View3D*>(factory->get(factory->createView3D())));
-    m_Views.push_back(view->getHandle());
+    m_Views.add(view->getHandle());
     return view;
 }
 
 void GraphicsEngine::removeView( View* view )
 {
-    HE_IF_ASSERT(std::find(m_Views.cbegin(), m_Views.cend(), view->getHandle()) != m_Views.cend(), "View does not exist in the view list")
+    HE_IF_ASSERT(m_Views.contains(view->getHandle()), "View does not exist in the view list")
     {
         ViewFactory* factory(ViewFactory::getInstance());
-        *std::find(m_Views.begin(), m_Views.end(), view->getHandle()) = m_Views.back();
-        m_Views.pop_back();
+        m_Views.remove(view->getHandle());
         factory->destroyObject(view->getHandle());
     }
 }
@@ -156,17 +153,16 @@ Window* GraphicsEngine::createWindow()
 {
     WindowFactory* factory(WindowFactory::getInstance());
     Window* window(factory->get(factory->create()));
-    m_Windows.push_back(window->getHandle());
+    m_Windows.add(window->getHandle());
     return window;
 }
 
 void GraphicsEngine::removeWindow( Window* window )
 {
-    HE_IF_ASSERT(std::find(m_Windows.cbegin(), m_Windows.cend(), window->getHandle()) != m_Windows.cend(), "Window does not exist in the window list")
+    HE_IF_ASSERT(m_Windows.contains(window->getHandle()), "Window does not exist in the window list")
     {
         WindowFactory* factory(WindowFactory::getInstance());
-        *std::find(m_Windows.begin(), m_Windows.end(), window->getHandle()) = m_Windows.back();
-        m_Windows.pop_back();
+        m_Windows.remove(window->getHandle());
         factory->destroyObject(window->getHandle());
     }
 }
@@ -174,7 +170,7 @@ void GraphicsEngine::removeWindow( Window* window )
 void GraphicsEngine::draw()
 {
     ViewFactory* factory(ViewFactory::getInstance());
-    std::for_each(m_Views.cbegin(), m_Views.cend(), [factory](const ObjectHandle& view)
+    m_Views.forEach([factory](const ObjectHandle& view)
     {
         factory->get(view)->draw();
     });
@@ -191,7 +187,7 @@ bool GraphicsEngine::registerContext( GLContext* context )
     if (m_FreeContexts.empty() == false)
     {
         context->id = m_FreeContexts.front();
-        m_Contexts.push_back(context);
+        m_Contexts.add(context);
         m_FreeContexts.pop();
         setActiveContext(context);
         ContextCreated(context);
@@ -206,8 +202,7 @@ void GraphicsEngine::unregisterContext( GLContext* context )
     HE_IF_ASSERT(context->id != UINT_MAX, "Context has not been registered or is already unregistered")
     {
         m_FreeContexts.push(context->id);
-        *std::find(m_Contexts.begin(), m_Contexts.end(), context) = m_Contexts.back();
-        m_Contexts.pop_back();
+        m_Contexts.remove(context);
         setActiveContext(context);
         ContextRemoved(context);
         context->window->m_Window->setActive(false);

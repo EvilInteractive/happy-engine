@@ -22,11 +22,6 @@
 #define _HE_SLOT_P_CONTAINER_H_
 #pragma once
 
-#include <vector>
-#include <queue>
-#include "HappyTypes.h"
-#include "HeAssert.h"
-
 namespace he {
 
 template<typename T>
@@ -49,7 +44,7 @@ public:
         else
         {
             uint32 id(m_MemPool.size());
-            m_MemPool.push_back(obj);
+            m_MemPool.add(obj);
             return id;
         }
     }
@@ -97,7 +92,7 @@ public:
     template<typename R>
     class const_iterator
     {
-    public: typedef typename std::vector<R>::const_iterator _iterator;
+    public: typedef typename he::ObjectList<R>::const_iterator _iterator;
     private:
         _iterator m_It;
         _iterator m_EndIt;
@@ -131,11 +126,7 @@ public:
         }
         const R& operator*()
         {
-            return m_It.operator*();
-        }
-        const R*& operator->()
-        {
-            return m_It.operator->();
+            return *m_It;
         }
 
     };
@@ -156,7 +147,7 @@ public:
 
 private:
     
-    std::vector<T> m_MemPool;
+    he::ObjectList<T> m_MemPool;
     std::queue<uint32> m_FreeSlots;
 
     //disable default assignment operator

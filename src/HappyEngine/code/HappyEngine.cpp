@@ -239,7 +239,7 @@ void HappyEngine::updateLoop(float dTime)
         m_pControlsManager->tick();
 
         PROFILER_BEGIN("SFML poll events");
-        const std::vector<ObjectHandle>& windows(GRAPHICS->getAllWindows());
+        const he::ObjectList<ObjectHandle>& windows(GRAPHICS->getAllWindows());
         gfx::WindowFactory* windowFactory(gfx::WindowFactory::getInstance());
         std::for_each(windows.cbegin(), windows.cend(), [&dTime,windowFactory](const ObjectHandle& window)
         {
