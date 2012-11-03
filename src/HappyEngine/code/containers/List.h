@@ -38,7 +38,7 @@ public:
     virtual ~List();
 
     inline void add(const T& element); // amortized O(1)
-    inline void add(const List<T, Creator>& list); // amortized O(n) (n = parameter list count)
+    inline void append(const List<T, Creator>& list); // amortized O(n) (n = parameter list count)
     inline void insert(const T& element, size_t index); // O(n)
     
     inline void reserve(size_t capacity);
@@ -121,7 +121,7 @@ void he::List<T, Creator>::add( const T& element )
     m_Buffer[m_Size++] = element;
 }
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::add( const List<T, Creator>& list )
+void he::List<T, Creator>::append( const List<T, Creator>& list )
 {
     if (m_Size + list.size() > m_Capacity)
         reserve(m_Size + list.size());
@@ -156,7 +156,8 @@ void he::List<T, Creator>::reserve( size_t capacity )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::resize( size_t size )
 {
-    HE_ASSERT(m_Capacity < size, "Resizing is going out of bounds! Capacity:%d, new size:%d", m_Capacity, size);
+    if (m_Capacity < size)
+        reserve(size);
     m_Size = size;
 }
 template<typename T, typename Creator> inline

@@ -45,6 +45,9 @@ namespace he {
         class Texture2D;
         class SpotLight;
     }
+    namespace sfx {
+        class Sound2D;
+    }
 }
 
 namespace ht {
@@ -82,6 +85,8 @@ private:
     he::gfx::ModelMesh* m_DebugMesh;
 
     const he::gfx::Texture2D* m_TestTexture;
+
+    he::sfx::Sound2D* m_BackgroundSound;
 
     static he::Random s_Random;
     struct MovingEntityRandomness

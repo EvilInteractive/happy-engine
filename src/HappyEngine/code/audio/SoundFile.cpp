@@ -21,110 +21,120 @@
 #include "HappyPCH.h" 
 
 #include "SoundFile.h"
-#include "HappyNew.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace sfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
+SoundFile::SoundFile() :	
+    m_FilePath(""),
+    m_SoundFile(nullptr),
+    m_NrSamples(0),
+    m_Samplerate(0),
+    m_ChannelsCount(0)
+{
+}
+
 SoundFile::SoundFile(const std::string& filePath) :	m_FilePath(filePath),
-													m_pSoundFile(nullptr),
-													m_NrSamples(0),
-													m_Samplerate(0),
-													m_ChannelsCount(0)
+                                                    m_SoundFile(nullptr),
+                                                    m_NrSamples(0),
+                                                    m_Samplerate(0),
+                                                    m_ChannelsCount(0)
 {
 }
 
 SoundFile::~SoundFile()
 {
-	close();
+    close();
 }
 
 /* GENERAL */
 bool SoundFile::open()
 {
-	close();
+    close();
 
-	SF_INFO fileInfo;
-	m_pSoundFile = sf_open(m_FilePath.c_str(), SFM_READ, &fileInfo);
+    SF_INFO fileInfo;
+    std::string fullPath(CONTENT->getContentDir().str() + "audio/" + m_FilePath);
+    m_SoundFile = sf_open(fullPath.c_str(), SFM_READ, &fileInfo);
 
-	if (!m_pSoundFile)
-		return false;
+    if (!m_SoundFile)
+        return false;
 
-	m_ChannelsCount = static_cast<uint32>(fileInfo.channels);
-	m_NrSamples = static_cast<uint32>(fileInfo.frames) * m_ChannelsCount;
-	m_Samplerate = static_cast<uint32>(fileInfo.samplerate);
+    m_ChannelsCount = static_cast<uint32>(fileInfo.channels);
+    m_NrSamples = static_cast<uint32>(fileInfo.frames) * m_ChannelsCount;
+    m_Samplerate = static_cast<uint32>(fileInfo.samplerate);
 
-	return true;
+    return true;
 }
 
 void SoundFile::close()
 {
-	if (m_pSoundFile)
-	{
-		int err(sf_close(m_pSoundFile));
+    if (m_SoundFile)
+    {
+        int err(sf_close(m_SoundFile));
 
-		std::string errMsg("Can't close file: ");
-		errMsg += getProperties().filePath;
+        std::string errMsg("Can't close file: ");
+        errMsg += getProperties().filePath;
 
-		HE_ASSERT(err == 0, errMsg.c_str());
+        HE_ASSERT(err == 0, errMsg.c_str());
 
-		m_pSoundFile = nullptr;
-	}
+        m_SoundFile = nullptr;
+    }
 }
 
 void SoundFile::seek(uint32 timeOffset)
 {
-	if (!m_pSoundFile)
-		return;
+    if (!m_SoundFile)
+        return;
 
-	sf_count_t frameOffset = static_cast<sf_count_t>(timeOffset * m_Samplerate / 1000);
-	sf_seek(m_pSoundFile, frameOffset, SEEK_SET);
+    sf_count_t frameOffset = static_cast<sf_count_t>(timeOffset * m_Samplerate / 1000);
+    sf_seek(m_SoundFile, frameOffset, SEEK_SET);
 }
 
 uint32 SoundFile::read(short* pData, uint32 nrSamples)
 {
-	if (!m_pSoundFile)
-		open();
+    if (!m_SoundFile)
+        open();
 
-	uint32 readSamples(0);
-	readSamples = static_cast<uint32>(sf_read_short(m_pSoundFile, pData, static_cast<sf_count_t>(nrSamples)));
+    uint32 readSamples(0);
+    readSamples = static_cast<uint32>(sf_read_short(m_SoundFile, pData, static_cast<sf_count_t>(nrSamples)));
 
-	return readSamples;
+    return readSamples;
 }
 
 /* GETTERS */
 SoundFileProperties SoundFile::getProperties() const
 {
-	SoundFileProperties prop;
+    SoundFileProperties prop;
 
-	prop.filePath = m_FilePath;
-	prop.channelsCount = m_ChannelsCount;
-	prop.samplerate = m_Samplerate;
-	prop.samplesCount = m_NrSamples;
+    prop.filePath = m_FilePath;
+    prop.channelsCount = m_ChannelsCount;
+    prop.samplerate = m_Samplerate;
+    prop.samplesCount = m_NrSamples;
 
-	return prop;
+    return prop;
 }
 
 /* DEFAULT COPY & ASSIGNMENT */
 SoundFile::SoundFile(const SoundFile& second)
 {
-	m_pSoundFile = second.m_pSoundFile;
-	m_FilePath = second.m_FilePath;
-	m_NrSamples = second.m_NrSamples;
-	m_Samplerate = second.m_Samplerate;
-	m_ChannelsCount = second.m_ChannelsCount;
+    m_SoundFile = second.m_SoundFile;
+    m_FilePath = second.m_FilePath;
+    m_NrSamples = second.m_NrSamples;
+    m_Samplerate = second.m_Samplerate;
+    m_ChannelsCount = second.m_ChannelsCount;
 }
 
 SoundFile& SoundFile::operator=(const SoundFile& second)
 {
-	m_pSoundFile = second.m_pSoundFile;
-	m_FilePath = second.m_FilePath;
-	m_NrSamples = second.m_NrSamples;
-	m_Samplerate = second.m_Samplerate;
-	m_ChannelsCount = second.m_ChannelsCount;
+    m_SoundFile = second.m_SoundFile;
+    m_FilePath = second.m_FilePath;
+    m_NrSamples = second.m_NrSamples;
+    m_Samplerate = second.m_Samplerate;
+    m_ChannelsCount = second.m_ChannelsCount;
 
-	return *this;
+    return *this;
 }
 
 } } //end namespace

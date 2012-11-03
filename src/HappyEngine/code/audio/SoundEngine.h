@@ -43,6 +43,14 @@ public:
     static const uint32 STREAM_BUFFER_SIZE = 4096;
     static const uint32 STREAM_BUFFERS = 4;
 
+    struct AudioBuffer
+    {
+        ALuint buffers[STREAM_BUFFERS];
+
+        AudioBuffer() { he_memset(buffers, 0, sizeof(ALuint) * STREAM_BUFFERS); }
+        ~AudioBuffer() {}
+    };
+
     /* CONSTRUCTOR - DESTRUCTOR */
     SoundEngine();
     virtual ~SoundEngine();
@@ -69,7 +77,7 @@ public:
     void getListenerOrientation(vec3* forward, vec3* up) const;
 
     ALuint getALSource(uint32 source) const;
-    const std::vector<ALuint>& getALBuffer(uint32 buffer) const;
+    const AudioBuffer& getALBuffer(uint32 buffer) const;
     SoundFile& getSoundFile(uint32 soundFile);
 
     float getPlayTime(ISound* pSound);
@@ -80,15 +88,15 @@ private:
     void emptyBuffers(uint32 source);
 
     bool streamSound(SoundFile& stream, ALuint buffer, bool toMono = false);
-    void convertToMono(const std::vector<short>& dataStereo, std::vector<short>& dataMono);
+    void convertToMono(const he::PrimitiveList<short>& dataStereo, he::PrimitiveList<short>& dataMono);
     
     ALenum getALFormatFromChannels(uint32 channels) const;
 
     /* DATAMEMBERS */
-    std::vector<ISound*> m_SoundBank;
-    std::vector<std::vector<ALuint>> m_SoundBuffers;
-    std::vector<ALuint> m_SoundSources;
-    std::vector<SoundFile> m_SoundFiles;
+    he::PrimitiveList<ISound*> m_SoundBank;
+    he::ObjectList<AudioBuffer> m_SoundBuffers;
+    he::PrimitiveList<ALuint> m_SoundSources;
+    he::ObjectList<SoundFile> m_SoundFiles;
     std::map<ISound*, float> m_SoundTime;
 
     ALCcontext* m_pALContext;

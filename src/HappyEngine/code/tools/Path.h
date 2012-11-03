@@ -32,7 +32,7 @@ public:
     Path& operator=(const Path& other);
     virtual ~Path();
 
-    const std::string& str() const;
+    const std::string& str() const; // include trailing slash
 
     //ex:
     //Root = C:/Test/
@@ -40,7 +40,7 @@ public:
     //return = C:/data/test.png => absolute
     Path getAbsolutePath(const Path& relativePath) const; 
 
-	static Path getWorkingPath();
+    static Path getWorkingPath();
 
 private:
     std::string m_Path;

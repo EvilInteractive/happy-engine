@@ -52,6 +52,8 @@
 #include "SpotLight.h"
 #include "PointLight.h"
 #include "Font.h"
+#include "SoundEngine.h"
+#include "Sound2D.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -67,6 +69,7 @@ MainGame::MainGame()
     , m_SpinShadows(false)
     , m_MovingEntityFase(0)
     , m_ShowDebugMesh(true)
+    , m_BackgroundSound(nullptr)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -277,6 +280,15 @@ void MainGame::load()
     m_DebugText.setFont(font);
     font->release();
     
+    m_BackgroundSound = AUDIO->loadSound2D("stuff.wav", true);
+    CONSOLE->registerCmd([this]()
+    { 
+        if (m_BackgroundSound->getState() != sfx::SOUND_STATE_PLAYING)
+            m_BackgroundSound->play();
+        else
+            m_BackgroundSound->pause();
+    }, "toggle_sound");
+
     PROFILER->setView(m_View);
 }
 

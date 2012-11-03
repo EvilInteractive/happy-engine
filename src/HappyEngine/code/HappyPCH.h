@@ -26,7 +26,6 @@
 #define __HE_FUNCTION__ __FUNCTION__
 #include <cstdlib>
 #include <string>
-#include <vector>
 #include <map>
 #include <unordered_map>
 #include <deque>
@@ -78,6 +77,8 @@
 #include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
+
+#include "List.h"
 
 #include "GLContext.h"
 #include "OpenGL.h"

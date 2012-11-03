@@ -27,34 +27,34 @@
 namespace he {
 namespace sfx {
 
-	enum SOUND_STATE
-	{
-		SOUND_STATE_PLAYING,
-		SOUND_STATE_STOPPED,
-		SOUND_STATE_PAUSED
-	};
+    enum SOUND_STATE
+    {
+        SOUND_STATE_PLAYING,
+        SOUND_STATE_STOPPED,
+        SOUND_STATE_PAUSED
+    };
 
-	enum SOUND_TYPE
-	{
-		SOUND_TYPE_STATIC,
-		SOUND_TYPE_STREAM
-	};
+    enum SOUND_TYPE
+    {
+        SOUND_TYPE_STATIC,
+        SOUND_TYPE_STREAM
+    };
 
 class ISound
 {
 public:
 
-	virtual ~ISound() {}
+    virtual ~ISound() {}
 
-	virtual void play(bool forceRestart) = 0;
-	virtual void stop() = 0;
-	virtual uint32 getSource() const = 0;
-	virtual uint32 getBuffer() const = 0;
-	virtual uint32 getSoundFile() const = 0;
-	virtual bool getLooping() const = 0;
-	virtual float getLength() const = 0;
-	virtual SOUND_STATE getState() const = 0;
-	virtual SOUND_TYPE getType() const = 0;
+    virtual void play(bool forceRestart) = 0;
+    virtual void stop() = 0;
+    virtual uint32 getSource() const = 0;
+    virtual uint32 getBuffer() const = 0;
+    virtual uint32 getSoundFile() const = 0;
+    virtual bool getLooping() const = 0;
+    virtual float getLength() const = 0;
+    virtual SOUND_STATE getState() const = 0;
+    virtual SOUND_TYPE getType() const = 0;
     virtual bool getToMono() const = 0;
 
 };

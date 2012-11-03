@@ -31,10 +31,10 @@ namespace sfx {
 
 struct SoundFileProperties
 {
-	std::string filePath;
-	uint32 samplesCount;
-	uint32 channelsCount;
-	uint32 samplerate;
+    std::string filePath;
+    uint32 samplesCount;
+    uint32 channelsCount;
+    uint32 samplerate;
 
 };
 
@@ -42,33 +42,34 @@ class SoundFile
 {
 public:
 
-	/* CONSTRUCTOR - DESTRUCTOR */
-	SoundFile(const std::string& filePath);
+    /* CONSTRUCTOR - DESTRUCTOR */
+    SoundFile();
+    SoundFile(const std::string& filePath);
     virtual ~SoundFile();
 
-	/* GENERAL */
-	bool open();
-	void close();
-	void seek(uint32 timeOffset);
-	uint32 read(short* pData, uint32 nrSamples);
+    /* GENERAL */
+    bool open();
+    void close();
+    void seek(uint32 timeOffset);
+    uint32 read(short* pData, uint32 nrSamples);
 
-	/* GETTERS */
-	SoundFileProperties getProperties() const;
+    /* GETTERS */
+    SoundFileProperties getProperties() const;
 
-	/* DEFAULT COPY & ASSIGNMENT */
-	SoundFile(const SoundFile& second);
-	SoundFile& operator=(const SoundFile& second);
+    /* DEFAULT COPY & ASSIGNMENT */
+    SoundFile(const SoundFile& second);
+    SoundFile& operator=(const SoundFile& second);
 
 private:
 
-	/* DATAMEMBERS */
-	SNDFILE* m_pSoundFile;
+    /* DATAMEMBERS */
+    SNDFILE* m_SoundFile;
 
-	std::string m_FilePath;
+    std::string m_FilePath;
 
-	uint32 m_NrSamples;
-	uint32 m_Samplerate;
-	uint32 m_ChannelsCount;
+    uint32 m_NrSamples;
+    uint32 m_Samplerate;
+    uint32 m_ChannelsCount;
 };
 
 } } //end namespace
