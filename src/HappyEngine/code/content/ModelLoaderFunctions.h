@@ -31,9 +31,10 @@ namespace he {
 namespace ct {
 namespace models {
 
-std::vector<vec3> calculateTangents(const void* pVertices, uint32 numVertices,
-                                             uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
-                                             const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride);
+void calculateTangents( const void* pVertices, uint32 numVertices,
+                        uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
+                        const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride,
+                        he::PrimitiveList<vec3>& outTangents);
 
 } } } //end namespace
 

@@ -92,24 +92,24 @@ bool ObjLoader::read(const std::string& path)
         {
             vec3 v;
             sscanf(line.c_str(), "v %f %f %f", &v.x, &v.y, &v.z);
-            m_PositionData.push_back(v);
+            m_PositionData.add(v);
         }
         else if (line[0] == 'v' && line[1] == 't')
         {
             vec2 t;
             sscanf(line.c_str(), "vt %f %f", &t.x, &t.y);
-            m_TextureData.push_back(t);
+            m_TextureData.add(t);
         }
         else if (line[0] == 'v' && line[1] == 'n')
         {
             vec3 n;
             sscanf(line.c_str(), "vn %f %f %f", &n.x, &n.y, &n.z);
-            m_NormalData.push_back(n);
+            m_NormalData.add(n);
         }
         else if (line[0] == 'g')
         {
             std::string name(line.substr(2));
-            m_GroupData.push_back(name);
+            m_GroupData.add(name);
             if (m_GroupData.size() > 1)
             {
                 Range r;
@@ -118,23 +118,17 @@ bool ObjLoader::read(const std::string& path)
                 else
                     r.begin = 0;
                 r.end = m_FaceData.size();
-                m_FaceDataMeshRange.push_back(r);
+                m_FaceDataMeshRange.add(r);
             }
         }
         else if (line[0] == 'f')
         {
-            std::vector<std::vector<uint32>> data;
-            for (int i = 0; i < 3; ++i)
-            {
-                std::vector<uint32> temp(3);
-                temp.resize(3);
-                data.push_back(temp);
-            }
+            FaceData data;
 
-            sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &data[0][0], &data[0][1], &data[0][2],
-                                                                   &data[1][0], &data[1][1], &data[1][2],
-                                                                   &data[2][0], &data[2][1], &data[2][2]);
-            m_FaceData.push_back(data);
+            sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &data.data[0][0], &data.data[0][1], &data.data[0][2],
+                                                                 &data.data[1][0], &data.data[1][1], &data.data[1][2],
+                                                                 &data.data[2][0], &data.data[2][1], &data.data[2][2]);
+            m_FaceData.add(data);
         }
     });
     Range r;
@@ -143,7 +137,7 @@ bool ObjLoader::read(const std::string& path)
     else
         r.begin = 0;
     r.end = m_FaceData.size();
-    m_FaceDataMeshRange.push_back(r);
+    m_FaceDataMeshRange.add(r);
 
     return true;
 }
@@ -162,7 +156,7 @@ void ObjLoader::flushCreateGroup(uint32 group)
     }
     r.begin = r.end - m_NumIndices[group];
     //std::cout << "begin: " << r.begin << ", end: " << r.end << ", num: " << m_NumIndices[group] << ", group: " << group << ", stride: " << m_IndexStride[group] << "\n";
-    m_IndexMeshRange.push_back(r);
+    m_IndexMeshRange.add(r);
 
     //Vertex Range
     if (m_VertexMeshRange.size() != 0)
@@ -170,7 +164,7 @@ void ObjLoader::flushCreateGroup(uint32 group)
     else
         r.begin = 0;
     r.end = m_VertexData.size();
-    m_VertexMeshRange.push_back(r);
+    m_VertexMeshRange.add(r);
 }
 void ObjLoader::create(bool allowByteIndices)
 {
@@ -183,21 +177,21 @@ void ObjLoader::create(bool allowByteIndices)
     m_NumVertices = 0;
     m_IndexStride.clear();
 
-    std::for_each(m_FaceDataMeshRange.cbegin(), m_FaceDataMeshRange.cend(), [&](const Range& range)
+    m_FaceDataMeshRange.forEach([&](const Range& range)
     {
         uint32 numIndices((range.end - range.begin) * 3);
-        m_NumIndices.push_back(numIndices);
+        m_NumIndices.add(numIndices);
         if (numIndices < UCHAR_MAX && allowByteIndices)
         {
-            m_IndexStride.push_back(gfx::IndexStride_Byte);
+            m_IndexStride.add(gfx::IndexStride_Byte);
         }
         else if (numIndices < USHRT_MAX)
         {
-            m_IndexStride.push_back(gfx::IndexStride_UShort);
+            m_IndexStride.add(gfx::IndexStride_UShort);
         }
         else if (numIndices < UINT_MAX)
         {
-            m_IndexStride.push_back(gfx::IndexStride_UInt);
+            m_IndexStride.add(gfx::IndexStride_UInt);
         }
         else
         {
@@ -207,7 +201,7 @@ void ObjLoader::create(bool allowByteIndices)
 
     uint32 faceCount(0);
     uint32 group(0);
-    std::for_each(m_FaceData.cbegin(), m_FaceData.cend(), [&](const std::vector<std::vector<uint32>>& face)
+    m_FaceData.forEach([&](const FaceData& face)
     {
         if (m_FaceDataMeshRange[group].end == faceCount)
         {
@@ -219,17 +213,17 @@ void ObjLoader::create(bool allowByteIndices)
         for (int i = 0; i < 3; ++i)
         {
             std::stringstream stream;
-            stream << face[i][0] << " " << face[i][1] << " " << face[i][2];
+            stream << face.data[i][0] << " " << face.data[i][1] << " " << face.data[i][2];
             std::map<std::string, uint32>::const_iterator index(m_IndexMap.find(stream.str()));
             if (index == m_IndexMap.cend())
             {
                 addIndex(m_VertexData.size(), group);
                 m_IndexMap[stream.str()] = m_VertexData.size();
-                m_VertexData.push_back(
+                m_VertexData.add(
                     ObjLoader::InternalVertex(
-                        vec3(m_PositionData[face[i][0] - 1]),
-                        vec2(m_TextureData[face[i][1] - 1]),
-                        vec3(m_NormalData[face[i][2] - 1])));
+                        vec3(m_PositionData[face.data[i][0] - 1]),
+                        vec2(m_TextureData[face.data[i][1] - 1]),
+                        vec3(m_NormalData[face.data[i][2] - 1])));
                 ++m_NumVertices;
             }
             else
@@ -269,9 +263,9 @@ void ObjLoader::addIndex(uint32 index, uint32 group)
         index -= m_VertexMeshRange.back().end;
     switch (m_IndexStride[group])
     {
-        case gfx::IndexStride_Byte:   m_IndicesByte.push_back(static_cast<uint8>(index)); break;
-        case gfx::IndexStride_UShort: m_IndicesUShort.push_back(static_cast<uint16>(index)); break;
-        case gfx::IndexStride_UInt:   m_IndicesUInt.push_back(index); break;
+        case gfx::IndexStride_Byte:   m_IndicesByte.add(static_cast<uint8>(index)); break;
+        case gfx::IndexStride_UShort: m_IndicesUShort.add(static_cast<uint16>(index)); break;
+        case gfx::IndexStride_UInt:   m_IndicesUInt.add(index); break;
         default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[group]); break;
     }
 }
@@ -282,7 +276,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) con
     int nOff = -1;
     int tanOff = -1;
 
-    std::for_each(vertLayout.getElements().cbegin(), vertLayout.getElements().cend(), [&](const gfx::BufferElement& element)
+    vertLayout.getElements().forEach([&](const gfx::BufferElement& element)
     {
         if (element.getUsage() == gfx::BufferElement::Usage_Position)
             pOff = element.getByteOffset();
@@ -307,7 +301,7 @@ void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) con
     char* pCharData = static_cast<char*>(pVertexData);
     uint32 count = 0;
     uint32 bytecount(0);
-    std::for_each(m_VertexData.cbegin(), m_VertexData.cend(), [&](const InternalVertex& vert)
+    m_VertexData.forEach([&](const InternalVertex& vert)
     {
         if (pOff != -1)
         {
@@ -335,13 +329,14 @@ void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) con
         {
             std::cout << "    calculating tan's of " << m_GroupData[i] << " start: " << m_VertexMeshRange[i].begin << " num: " << m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin <<
                 "vdSize: " << m_VertexData.size() << ", vmrSize" << m_VertexMeshRange.size() << "\n";
-            std::vector<vec3> tangents(calculateTangents(&m_VertexData[m_VertexMeshRange[i].begin],
-                                                                   m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin,
-                                                                   0, 12, 20, sizeof(InternalVertex),
-                                                                   getIndices(i), getNumIndices(i), getIndexStride(i)));
+            he::PrimitiveList<vec3> tangents(m_NumVertices);
+            calculateTangents( &m_VertexData[m_VertexMeshRange[i].begin],
+                                m_VertexMeshRange[i].end - m_VertexMeshRange[i].begin,
+                                0, 12, 20, sizeof(InternalVertex),
+                                getIndices(i), getNumIndices(i), getIndexStride(i), tangents);
             std::cout << "    FILL";
             count = 0;
-            std::for_each(tangents.cbegin(), tangents.cend(), [&](const vec3& tan)
+            tangents.forEach([&](const vec3& tan)
             {
                 *reinterpret_cast<vec3*>(&pCharData[(m_VertexMeshRange[i].begin + count++) * vertLayout.getSize() + tanOff]) = tan;
                 bytecount += 12;

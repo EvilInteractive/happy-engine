@@ -38,9 +38,10 @@ public:
         vec2 tex;
         vec3 norm;
 
+        InternalVertex(){}
         InternalVertex(const vec3& p, const vec2& t, const vec3& n):
-                            pos(p), tex(t), norm(n)
-        {}       
+                            pos(p), tex(t), norm(n) {}       
+        ~InternalVertex(){}
     };
     ObjLoader();
     virtual ~ObjLoader();
@@ -73,28 +74,32 @@ private:
     void addIndex(uint32 index, uint32 group);
     void fill(void* pdata, const gfx::BufferLayout& vertLayout) const;
 
-    std::vector<vec3> m_PositionData;
-    std::vector<vec2> m_TextureData;
-    std::vector<vec3> m_NormalData;
-    std::vector<std::vector<std::vector<uint32>>> m_FaceData;
-    std::vector<Range> m_FaceDataMeshRange;
-    std::vector<std::string> m_GroupData;
+    he::PrimitiveList<vec3> m_PositionData;
+    he::PrimitiveList<vec2> m_TextureData;
+    he::PrimitiveList<vec3> m_NormalData;
+    struct FaceData
+    {
+        uint32 data[3][3];
+    };
+    he::PrimitiveList<FaceData> m_FaceData;
+    he::PrimitiveList<Range> m_FaceDataMeshRange;
+    he::ObjectList<std::string> m_GroupData;
 
-    std::vector<InternalVertex> m_VertexData;
-    std::vector<Range> m_VertexMeshRange;
+    he::ObjectList<InternalVertex> m_VertexData;
+    he::PrimitiveList<Range> m_VertexMeshRange;
     std::map<std::string, uint32> m_IndexMap;
 
-    std::vector<Range> m_IndexMeshRange;
-    std::vector<uint8> m_IndicesByte;
-    std::vector<uint16> m_IndicesUShort;
-    std::vector<uint32> m_IndicesUInt;
+    he::PrimitiveList<Range> m_IndexMeshRange;
+    he::PrimitiveList<uint8> m_IndicesByte;
+    he::PrimitiveList<uint16> m_IndicesUShort;
+    he::PrimitiveList<uint32> m_IndicesUInt;
 
     void* m_Vertices;
     gfx::BufferLayout m_VertexLayout;
 
     uint32 m_NumVertices;
-    std::vector<uint32> m_NumIndices;
-    std::vector<gfx::IndexStride> m_IndexStride;
+    he::PrimitiveList<uint32> m_NumIndices;
+    he::PrimitiveList<gfx::IndexStride> m_IndexStride;
 
     he::ObjectList<gfx::Bone> m_NoBones;
 

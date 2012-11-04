@@ -298,15 +298,15 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         m_FullscreenQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
         m_FullscreenQuad->setName("Full screen quad");
 
-        std::vector<VertexPos> vertices;
-        vertices.push_back(VertexPos(vec3(-1, 1, 1.0f)));
-        vertices.push_back(VertexPos(vec3(1, 1, 1.0f)));
-        vertices.push_back(VertexPos(vec3(-1, -1, 1.0f)));
-        vertices.push_back(VertexPos(vec3(1, -1, 1.0f)));
+        he::ObjectList<VertexPos> vertices(4);
+        vertices.add(VertexPos(vec3(-1, 1, 1.0f)));
+        vertices.add(VertexPos(vec3(1, 1, 1.0f)));
+        vertices.add(VertexPos(vec3(-1, -1, 1.0f)));
+        vertices.add(VertexPos(vec3(1, -1, 1.0f)));
 
-        std::vector<uint8> indices;
-        indices.push_back(0); indices.push_back(1); indices.push_back(2);
-        indices.push_back(1); indices.push_back(3); indices.push_back(2);
+        he::PrimitiveList<uint8> indices(6);
+        indices.add(0); indices.add(1); indices.add(2);
+        indices.add(1); indices.add(3); indices.add(2);
 
         m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
@@ -342,15 +342,15 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         BufferLayout layout;
         layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
-        std::vector<VertexPos> vertices;
-        vertices.push_back(VertexPos(vec3(-1, 1, 0.0f)));
-        vertices.push_back(VertexPos(vec3(1, 1, 0.0f)));
-        vertices.push_back(VertexPos(vec3(-1, -1, 0.0f)));
-        vertices.push_back(VertexPos(vec3(1, -1, 0.0f)));
+        he::ObjectList<VertexPos> vertices(4);
+        vertices.add(VertexPos(vec3(-1, 1, 0.0f)));
+        vertices.add(VertexPos(vec3(1, 1, 0.0f)));
+        vertices.add(VertexPos(vec3(-1, -1, 0.0f)));
+        vertices.add(VertexPos(vec3(1, -1, 0.0f)));
 
-        std::vector<uint8> indices;
-        indices.push_back(0); indices.push_back(1); indices.push_back(2);
-        indices.push_back(1); indices.push_back(3); indices.push_back(2);
+        he::PrimitiveList<uint8> indices(6);
+        indices.add(0); indices.add(1); indices.add(2);
+        indices.add(1); indices.add(3); indices.add(2);
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);

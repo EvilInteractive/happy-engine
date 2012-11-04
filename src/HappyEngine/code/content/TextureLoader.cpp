@@ -237,7 +237,7 @@ bool TextureLoader::createTexture2D( const TextureLoadData& data )
     if (data.faces > 0)
     {
         HE_ART_ASSERT(data.faces == 1, "Loading texture as 2D texture but is actually a Cube texture, %s", data.path.c_str());
-        std::for_each(data.mipData[0].cbegin(), data.mipData[0].cend(), [&](const TextureLoadMipData& mipData)
+        data.mipData[0].forEach([&](const TextureLoadMipData& mipData)
         {
             if (mipData.isCompressed == false)
             {
@@ -287,7 +287,7 @@ bool TextureLoader::createTextureCube( const TextureLoadData& data )
         HE_ART_ASSERT(data.faces == 6, "Loading Cube texture with not enough faces, face supplied: %d, %s", data.faces, data.path.c_str());
         for (uint8 face(0); face < data.faces; ++face)
         {
-            std::for_each(data.mipData[face].cbegin(), data.mipData[face].cend(), [&](const TextureLoadMipData& mipData)
+            data.mipData[face].forEach([&](const TextureLoadMipData& mipData)
             {
                 if (mipData.isCompressed == false)
                 {
@@ -387,7 +387,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
                     ilActiveFace(face);
                     ilActiveMipmap(mip);
 
-                    data.mipData[face].push_back(TextureLoadMipData());
+                    data.mipData[face].add(TextureLoadMipData());
                     TextureLoadMipData& mipData(data.mipData[face].back());
 
                     mipData.mipLevel = mip;
@@ -446,7 +446,7 @@ bool TextureLoader::makeData( TextureLoadData& data )
 
     for (uint8 mip(0); mip < 4; ++mip)
     {
-        data.mipData[0].push_back(TextureLoadMipData());
+        data.mipData[0].add(TextureLoadMipData());
         TextureLoadMipData& mipData(data.mipData[0].back());
 
         mipData.width = static_cast<uint32>(pow(2.0f, mip));

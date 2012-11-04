@@ -3,7 +3,6 @@ set (CODE_CONTENT_NO_FILTER
                         ContentManager.cpp                  ContentManager.h
 	)
 set (CODE_CONTENT_MODEL_FILTER
-                        BinObjLineLoader.cpp                BinObjLineLoader.h
                         BinObjLoader.cpp                    BinObjLoader.h
                         IModelLoader.h                      
                         ModelLoader.cpp                     ModelLoader.h

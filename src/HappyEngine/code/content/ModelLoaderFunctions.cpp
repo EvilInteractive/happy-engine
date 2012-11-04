@@ -29,25 +29,26 @@ namespace he {
 namespace ct {
 namespace models {
 
-std::vector<vec3> calculateTangents(const void* pVertices, uint32 numVertices,
-                                             uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
-                                             const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride)
+void calculateTangents( const void* pVertices, uint32 numVertices,
+                        uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
+                        const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride,
+                        he::PrimitiveList<vec3>& outTangents)
 {
-    std::vector<vec3> tan1(numVertices, vec3(0, 0, 0));
-    std::vector<vec3> returnTan(numVertices, vec3(0, 0, 0));
+    he::PrimitiveList<vec3> tan1(numVertices);
+    tan1.resize(numVertices);
 
     const char* pCharVertices(static_cast<const char*>(pVertices));
 
-    const uint8* pIndicesByte(nullptr); 
-    const uint16* pIndicesUShort(nullptr); 
-    const uint32* pIndicesUInt(nullptr); 
+    const uint8* indicesByte(nullptr); 
+    const uint16* indicesUShort(nullptr); 
+    const uint32* indicesUInt(nullptr); 
     
     if (indexStride == gfx::IndexStride_Byte)
-        pIndicesByte = static_cast<const uint8*>(pIndices);
+        indicesByte = static_cast<const uint8*>(pIndices);
     else if (indexStride == gfx::IndexStride_UShort)
-        pIndicesUShort = static_cast<const uint16*>(pIndices);
+        indicesUShort = static_cast<const uint16*>(pIndices);
     else if (indexStride == gfx::IndexStride_UInt)
-        pIndicesUInt = static_cast<const uint32*>(pIndices);
+        indicesUInt = static_cast<const uint32*>(pIndices);
     else
         HE_ASSERT(false, "unkown index stride: %d", indexStride);
     
@@ -56,21 +57,21 @@ std::vector<vec3> calculateTangents(const void* pVertices, uint32 numVertices,
         uint32 i1(0), i2(0), i3(0);
         if (indexStride == gfx::IndexStride_Byte)
         {
-            i1 = pIndicesByte[i];
-            i2 = pIndicesByte[i + 1];
-            i3 = pIndicesByte[i + 2];
+            i1 = indicesByte[i];
+            i2 = indicesByte[i + 1];
+            i3 = indicesByte[i + 2];
         }
         else if (indexStride == gfx::IndexStride_UShort)
         {
-            i1 = pIndicesUShort[i];
-            i2 = pIndicesUShort[i + 1];
-            i3 = pIndicesUShort[i + 2];
+            i1 = indicesUShort[i];
+            i2 = indicesUShort[i + 1];
+            i3 = indicesUShort[i + 2];
         }
         else if (indexStride == gfx::IndexStride_UInt)
         {
-            i1 = pIndicesUInt[i];
-            i2 = pIndicesUInt[i + 1];
-            i3 = pIndicesUInt[i + 2];
+            i1 = indicesUInt[i];
+            i2 = indicesUInt[i + 1];
+            i3 = indicesUInt[i + 2];
         }
 
         const vec3& v1 = *reinterpret_cast<const vec3*>(pCharVertices + (i1 * vertStride + posOff));
@@ -114,10 +115,8 @@ std::vector<vec3> calculateTangents(const void* pVertices, uint32 numVertices,
         const vec3& n = *reinterpret_cast<const vec3*>(pCharVertices + (i * vertStride + normOff));
         const vec3& t = tan1[i];
 
-        returnTan[i] = normalize(t - n * dot(n, t));
+        outTangents.add(normalize(t - n * dot(n, t)));
     }
-
-    return returnTan;
 }
 
 } } } //end namespace

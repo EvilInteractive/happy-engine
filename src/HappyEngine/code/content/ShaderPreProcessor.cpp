@@ -49,12 +49,12 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
     std::stringstream stream;
 
     std::stringstream linesStream;
-    std::vector<std::string> lines;
+    he::ObjectList<std::string> lines;
     std::for_each(code.cbegin(), code.cend(), [&](const char& c)
     {
         if (c == '\n')
         {
-            lines.push_back(linesStream.str());
+            lines.add(linesStream.str());
             linesStream.clear();
             linesStream.str("");
         }
@@ -66,7 +66,7 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
 
     uint32 ifblocks = 0;
     uint32 discardBlock = 0;
-    std::for_each(lines.cbegin(), lines.cend(), [&](const std::string& line)
+    lines.forEach([&](const std::string& line)
     {        
         if (line.find("#endif") != std::string::npos)
         {

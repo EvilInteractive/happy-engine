@@ -65,6 +65,7 @@ private:
 
     struct TextureLoadMipData
     {
+        ~TextureLoadMipData() {}
         uint32 width;
         uint32 height;
         uint8* data;
@@ -77,24 +78,41 @@ private:
     };
     struct TextureLoadData
     {
+        const static int MAX_CUBE_FACES = 6;
+
         TextureLoadData()
         {
-            for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
-                mipData[i] = std::vector<TextureLoadMipData>(0);
         }
-        const static int MAX_CUBE_FACES = 6;
+        TextureLoadData(const TextureLoadData& other)
+        {
+            this->operator=(other);
+        }
+        TextureLoadData& operator=(const TextureLoadData& other)
+        {
+            path = other.path;
+            faces = other.faces;
+            for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
+            {
+                mipData[i].clear();
+                mipData[i].append(other.mipData[i]);
+            }
+            textureFormat = other.textureFormat;
+            ilImageId = other.ilImageId;
+            isILimage = other.isILimage;
+            color = other.color;
+            tex = other.tex;
+
+            return *this;
+        }
+        ~TextureLoadData() {}
+
         std::string path;
-
         uint8 faces;
-        std::vector<TextureLoadMipData> mipData[MAX_CUBE_FACES];
-
+        he::ObjectList<TextureLoadMipData> mipData[MAX_CUBE_FACES];
         gfx::TextureFormat textureFormat;
-
         uint32 ilImageId;
         bool isILimage;
-
         Color color;
-
         ObjectHandle tex;
     };
 
