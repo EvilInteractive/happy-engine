@@ -52,11 +52,11 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
 void PhysicsDynamicActor::addShape( const IPhysicsShape* shape, const PhysicsMaterial& material, float mass, 
     uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose/* = mat44::Identity*/ )
 {
-    std::vector<physx::PxShape*> shapes;
+    he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, material, localPose))
     {
         PHYSICS->lock();
-        std::for_each(shapes.cbegin(), shapes.cend(), [&](physx::PxShape* pxShape)
+        shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
         });

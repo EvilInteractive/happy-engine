@@ -39,7 +39,7 @@ Entity::Entity():
 
 Entity::~Entity()
 {
-    std::for_each(m_Components.cbegin(), m_Components.cend(), [](EntityComponent* component)
+    m_Components.forEach([](EntityComponent* component)
     {
         delete component;
     });
@@ -58,7 +58,7 @@ void Entity::init( Entity* parent )
 
 void Entity::addComponent( EntityComponent* component )
 {
-    m_Components.push_back(component);
+    m_Components.add(component);
     attach(component);
     component->init(this);
 }
@@ -66,11 +66,9 @@ void Entity::addComponent( EntityComponent* component )
 void Entity::removeComponent( EntityComponent* component )
 {
     detach(component);
-    std::vector<EntityComponent*>::iterator it(std::find(m_Components.begin(), m_Components.end(), component));
-    HE_IF_ASSERT(it != m_Components.cend(), "Component not attached to Entity")
+    HE_IF_ASSERT(m_Components.contains(component), "Component not attached to Entity")
     {
-        *it = m_Components.back();
-        m_Components.pop_back();
+        m_Components.remove(component);
     }
 }
 

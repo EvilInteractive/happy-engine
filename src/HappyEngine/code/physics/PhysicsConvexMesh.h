@@ -43,11 +43,11 @@ public:
 
     void load(const io::BinaryStream& stream);
 
-    const std::vector<physx::PxConvexMesh*>& getInternalMeshes() const;
+    const he::PrimitiveList<physx::PxConvexMesh*>& getInternalMeshes() const;
 
 private:
 
-    std::vector<physx::PxConvexMesh*> m_InternalMeshes;
+    he::PrimitiveList<physx::PxConvexMesh*> m_InternalMeshes;
 
     //Disable default copy constructor and default assignment operator
     PhysicsConvexMesh(const PhysicsConvexMesh&);

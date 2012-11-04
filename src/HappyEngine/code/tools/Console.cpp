@@ -50,7 +50,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_pTextBox(nullptr),
                         m_MsgHistory(0),
                         m_CmdHistoryPos(0),
-                        m_pScrollBar(nullptr),
+                        m_ScrollBar(nullptr),
                         m_Help(nullptr),
                         m_pFont(nullptr),
                         m_View(nullptr)
@@ -92,7 +92,7 @@ void Console::load()
     m_Help->addLine("'listcmds' (displays registered commands)");
     m_Help->addLine("******** HELP ********");
 
-    m_pScrollBar = NEW gui::Scrollbar(
+    m_ScrollBar = NEW gui::Scrollbar(
         vec2(1280-20, 0), vec2(20,200), 50.0f);
 
     m_pTextBox = NEW gui::TextBox(
@@ -105,10 +105,10 @@ void Console::load()
         Color(0.8f,0.8f,0.8f),
         Color(0.19f,0.19f,0.19f));
 
-    m_CmdHistory.push_back("");
+    m_CmdHistory.add("");
 
 
-    m_pScrollBar->setBarPos(1.0f);
+    m_ScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint32>(190 / m_pFont->getLineSpacing());
 }
@@ -126,9 +126,9 @@ void Console::setView( const gfx::View* view )
     {
         m_View->get2DRenderer()->attachToRender(this);
         //canvas = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));*/
-        m_pScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
+        m_ScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
         m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
-        m_pScrollBar->setBarPos(1.0f);
+        m_ScrollBar->setBarPos(1.0f);
     }
 }
 
@@ -153,7 +153,7 @@ Console::~Console()
     }
     */
     delete m_pTextBox;
-    delete m_pScrollBar;
+    delete m_ScrollBar;
     delete m_Help;
 }
 
@@ -310,7 +310,7 @@ void Console::tick()
         m_pTextBox->tick();
 
         if (m_MsgHistory.size() > m_MaxMessagesInWindow)
-            m_pScrollBar->tick();
+            m_ScrollBar->tick();
 
         if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
         {
@@ -345,13 +345,13 @@ void Console::tick()
 
             if (m_CmdHistory[m_CmdHistory.size() - 1] != m_pTextBox->getString())
             {
-                m_CmdHistory.push_back(m_pTextBox->getString());
+                m_CmdHistory.add(m_pTextBox->getString());
                 m_CmdHistoryPos = (uint32)m_CmdHistory.size() - 1;
             }
 
             m_pTextBox->resetText();
 
-            m_pScrollBar->setBarPos(1.0f);
+            m_ScrollBar->setBarPos(1.0f);
         }
     }
 }
@@ -372,37 +372,37 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 
         m_pTextBox->draw(canvas);
 
-        std::vector<std::pair<CMSG_TYPE, std::string> > msgHistory;
+        he::ObjectList<std::pair<CMSG_TYPE, std::string>> msgHistory;
 
-        std::for_each(m_MsgHistory.cbegin(), m_MsgHistory.cend(), [&] (std::pair<CMSG_TYPE, std::string> p)
+        m_MsgHistory.forEach([&](const std::pair<CMSG_TYPE, std::string>& p)
         {
             if (m_ShowMessageTypes[p.first] == true)
-                msgHistory.push_back(p);
+                msgHistory.add(p);
         });
 
         uint32 startPos(0);
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
         {
-            startPos = static_cast<uint32>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_pScrollBar->getBarPos());
+            startPos = static_cast<uint32>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos());
         }
 
         uint32 i(startPos);
 
-        std::vector<std::pair<CMSG_TYPE, std::string> > msg;
+        he::ObjectList<std::pair<CMSG_TYPE, std::string> > msg;
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
         {
             for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
             {
-                msg.push_back(msgHistory[i]);
+                msg.add(msgHistory[i]);
             }
         }
         else
         {
             for (; i < msgHistory.size(); ++i)
             {
-                msg.push_back(msgHistory[i]);
+                msg.add(msgHistory[i]);
             }
         }
 
@@ -411,7 +411,7 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
         uint32 k(0);
-        std::for_each(msg.crbegin(), msg.crend(), [&](std::pair<CMSG_TYPE, std::string> p)
+        msg.rForEach([&](const std::pair<CMSG_TYPE, std::string>& p)
         {
             canvas->setFillColor(m_MsgColors[p.first]);
 
@@ -428,7 +428,7 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         });
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
-            m_pScrollBar->draw(canvas);
+            m_ScrollBar->draw(canvas);
 
         //canvas->draw2D(renderer);
 
@@ -443,27 +443,27 @@ void Console::addMessage(const gui::Text& msg, CMSG_TYPE type)
     std::for_each(msg.getText().cbegin(), msg.getText().cend(), [&](std::string str)
     {
         if (type == CMSG_TYPE_COMMAND)
-            m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, "] " + str));
+            m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, "] " + str));
         else
-            m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, str));
+            m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, str));
     });
 
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
     {
-        m_MsgHistory.erase(m_MsgHistory.begin());
+        m_MsgHistory.orderedRemoveAt(0);
     }
 }
 
 void Console::addMessage(const std::string& msg, CMSG_TYPE type)
 {
     if (type == CMSG_TYPE_COMMAND)
-        m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, "] " + msg));
+        m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, "] " + msg));
     else
-        m_MsgHistory.push_back(std::pair<CMSG_TYPE, std::string>(type, msg));
+        m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, msg));
 
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
     {
-        m_MsgHistory.erase(m_MsgHistory.begin());
+        m_MsgHistory.orderedRemoveAt(0);
     }
 }
 

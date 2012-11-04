@@ -54,8 +54,8 @@ private:
     Color m_Color;
     Color m_Color2;
 
-    gfx::ModelMesh* m_pModelMesh;
-    gfx::ModelMesh* m_pModelMesh2;
+    gfx::ModelMesh* m_ModelMesh;
+    gfx::ModelMesh* m_ModelMesh2;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Grid(const Grid&);

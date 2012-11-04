@@ -75,6 +75,8 @@ public:
 
     inline void forEach(const boost::function1<void, const T&>& func) const;
     inline void forEach(const boost::function1<void, T&>& func);
+    inline void rForEach(const boost::function1<void, const T&>& func) const;
+    inline void rForEach(const boost::function1<void, T&>& func);
 
     const static int CAPACITY_INCREMENT = 5;
     
@@ -381,6 +383,24 @@ void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
     iterator end(end());
     for (; it != end; ++it)
         func(*it);
+}
+//////////////////////////////////////////////////////////////////////////
+template<typename T, typename Creator> inline
+void he::List<T, Creator>::rForEach( const boost::function1<void, const T&>& func ) const
+{    
+    const_iterator it(cend());
+    const_iterator end(cbegin());
+    for (; it != end; --it)
+        func(*(it - 1));
+}
+//////////////////////////////////////////////////////////////////////////
+template<typename T, typename Creator> inline
+void he::List<T, Creator>::rForEach( const boost::function1<void, T&>& func )
+{    
+    iterator it(end());
+    iterator end(begin());
+    for (; it != end; --it)
+        func(*(it - 1));
 }
 
 

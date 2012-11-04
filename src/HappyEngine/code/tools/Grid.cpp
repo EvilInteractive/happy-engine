@@ -38,60 +38,60 @@ Grid::Grid(const vec3& pos, float size, float tileSize) :	m_Position(pos),
     gfx::BufferLayout layout;
     layout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, 12, 0));
 
-    std::vector<gfx::VertexPos> vertices;
-    std::vector<uint32> indices;
+    he::ObjectList<gfx::VertexPos> vertices;
+    he::PrimitiveList<uint32> indices;
 
     uint32 steps(static_cast<uint32>(size / tileSize));
 
     uint32 index(0);
     for (uint32 i(0); i <= steps; ++i)
     {
-        vertices.push_back(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
-        vertices.push_back(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
+        vertices.add(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
+        vertices.add(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (i * tileSize))));
 
-        indices.push_back(index++);
-        indices.push_back(index++);
+        indices.add(index++);
+        indices.add(index++);
 
-        vertices.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z - (size / 2))));
-        vertices.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z + (size / 2))));
+        vertices.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z - (size / 2))));
+        vertices.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (i * tileSize), pos.y, pos.z + (size / 2))));
 
-        indices.push_back(index++);
-        indices.push_back(index++);
+        indices.add(index++);
+        indices.add(index++);
     }
 
-    m_pModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    m_pModelMesh->setName("Grid mesh 1");
-    m_pModelMesh->init(layout, gfx::MeshDrawMode_Lines);
-    m_pModelMesh->setVertices(&vertices[0], (uint32)vertices.size(), gfx::MeshUsage_Static);
-    m_pModelMesh->setIndices(&indices[0], (uint32)indices.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
+    m_ModelMesh = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_ModelMesh->setName("Grid mesh 1");
+    m_ModelMesh->init(layout, gfx::MeshDrawMode_Lines);
+    m_ModelMesh->setVertices(&vertices[0], (uint32)vertices.size(), gfx::MeshUsage_Static);
+    m_ModelMesh->setIndices(&indices[0], (uint32)indices.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
 
-    std::vector<gfx::VertexPos> vertices2;
-    std::vector<uint32> indices2;
+    he::ObjectList<gfx::VertexPos> vertices2;
+    he::PrimitiveList<uint32> indices2;
 
     index = 0;
-    vertices2.push_back(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
-    vertices2.push_back(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
+    vertices2.add(gfx::VertexPos(vec3(pos.x - (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
+    vertices2.add(gfx::VertexPos(vec3(pos.x + (size/2), pos.y, pos.z - (size / 2) + (steps/2 * tileSize))));
 
-    indices2.push_back(index++);
-    indices2.push_back(index++);
+    indices2.add(index++);
+    indices2.add(index++);
 
-    vertices2.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z - (size / 2))));
-    vertices2.push_back(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z + (size / 2))));
+    vertices2.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z - (size / 2))));
+    vertices2.add(gfx::VertexPos(vec3(pos.x - (size / 2) + (steps/2 * tileSize), pos.y, pos.z + (size / 2))));
 
-    indices2.push_back(index++);
-    indices2.push_back(index++);
+    indices2.add(index++);
+    indices2.add(index++);
 
-    m_pModelMesh2 = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
-    m_pModelMesh2->setName("Grid mesh 2");
-    m_pModelMesh2->init(layout, gfx::MeshDrawMode_Lines);
-    m_pModelMesh2->setVertices(&vertices2[0], (uint32)vertices2.size(), gfx::MeshUsage_Static);
-    m_pModelMesh2->setIndices(&indices2[0], (uint32)indices2.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
+    m_ModelMesh2 = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
+    m_ModelMesh2->setName("Grid mesh 2");
+    m_ModelMesh2->init(layout, gfx::MeshDrawMode_Lines);
+    m_ModelMesh2->setVertices(&vertices2[0], (uint32)vertices2.size(), gfx::MeshUsage_Static);
+    m_ModelMesh2->setIndices(&indices2[0], (uint32)indices2.size(), gfx::IndexStride_UInt, gfx::MeshUsage_Static);
 }
 
 Grid::~Grid()
 {
-    m_pModelMesh->release();
-    m_pModelMesh2->release();
+    m_ModelMesh->release();
+    m_ModelMesh2->release();
 }
 
 /* GENERAL */
@@ -99,8 +99,8 @@ void Grid::drawShapes(gfx::ShapeRenderer* renderer)
 {
     mat44 world(mat44::createTranslation(m_Position));
 
-    renderer->drawMeshColor(m_pModelMesh, world, m_Color);
-    renderer->drawMeshColor(m_pModelMesh2, world, m_Color2);
+    renderer->drawMeshColor(m_ModelMesh, world, m_Color);
+    renderer->drawMeshColor(m_ModelMesh2, world, m_Color2);
 }
 
 /* SETTERS */

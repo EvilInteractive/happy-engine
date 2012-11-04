@@ -89,7 +89,7 @@ private:
     virtual void attach(IObject3D* child) { Object3D::attach(child); }
     virtual void detach(IObject3D* child) { Object3D::detach(child); }
 
-    std::vector<EntityComponent*> m_Components;
+    he::PrimitiveList<EntityComponent*> m_Components;
     Entity* m_Parent;
     gfx::Scene* m_Scene;
 

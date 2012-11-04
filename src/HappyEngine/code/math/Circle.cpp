@@ -38,11 +38,11 @@ Circle::~Circle()
 
 const vec2& Circle::getPosition() const
 {
-	return m_Position;
+    return m_Position;
 }
 float Circle::getRadius() const
 {
-	return m_Radius;
+    return m_Radius;
 }
 
 std::pair<float, float> Circle::fx(float x) const
@@ -62,41 +62,38 @@ bool Circle::isOnCircle(const vec2& point) const
     return (fabs(sqr(point.x - m_Position.x) + sqr(point.y - m_Position.y) - sqr(m_Radius)) < 0.0001f);
 }
 
-std::vector<vec2> Circle::intersect(const Circle& other) const
+void Circle::intersect(const Circle& other, he::PrimitiveList<vec2>& outIntersections) const
 {
     float d(length(m_Position - other.getPosition()));
 
-	if (d > m_Radius + other.m_Radius)
-	{
-		return std::vector<vec2>();
-	}
-	else if (d < fabs(m_Radius - other.m_Radius))
-	{
-		return std::vector<vec2>();
-	}
-	else
-	{
-		//line connecting 2 points = 
-		const float& x1(m_Position.x), 
-					 x2(other.m_Position.x), 
-					 y1(m_Position.y), 
-					 y2(other.m_Position.y), 
-					 r1(m_Radius), 
-					 r2(other.m_Radius);
-		float d2(lengthSqr(other.m_Position - m_Position));
+    if (d > m_Radius + other.m_Radius)
+    {
+        return;
+    }
+    else if (d < fabs(m_Radius - other.m_Radius))
+    {
+        return;
+    }
+    else
+    {
+        //line connecting 2 points = 
+        const float& x1(m_Position.x), 
+                     x2(other.m_Position.x), 
+                     y1(m_Position.y), 
+                     y2(other.m_Position.y), 
+                     r1(m_Radius), 
+                     r2(other.m_Radius);
+        float d2(lengthSqr(other.m_Position - m_Position));
 
-		float xPart1( (x2 + x1) / 2.0f + ((x2 - x1) * (sqr(r1) - sqr(r2))) / (2.0f * d2));
-		float xPart2( ((y2 - y1) / (2.0f * d2)) * sqrtf( (sqr(r1 + r2) - d2) * (d2 - sqr(r2 - r1))));
+        float xPart1( (x2 + x1) / 2.0f + ((x2 - x1) * (sqr(r1) - sqr(r2))) / (2.0f * d2));
+        float xPart2( ((y2 - y1) / (2.0f * d2)) * sqrtf( (sqr(r1 + r2) - d2) * (d2 - sqr(r2 - r1))));
 
-		float yPart1( (y2 + y1) / 2.0f + ((y2 - y1) * (sqr(r1) - sqr(r2))) / (2.0f * d2));
-		float yPart2( ((x2 - x1) / (2.0f * d2)) * sqrtf( (sqr(r1 + r2) - d2) * (d2 - sqr(r2 - r1))));
+        float yPart1( (y2 + y1) / 2.0f + ((y2 - y1) * (sqr(r1) - sqr(r2))) / (2.0f * d2));
+        float yPart2( ((x2 - x1) / (2.0f * d2)) * sqrtf( (sqr(r1 + r2) - d2) * (d2 - sqr(r2 - r1))));
 
-		std::vector<vec2> ret;
-		ret.push_back( vec2(xPart1 + xPart2, yPart1 - yPart2) );
-		ret.push_back( vec2(xPart1 - xPart2, yPart1 + yPart2) );
-		
-		return ret;
-	}
+        outIntersections.add( vec2(xPart1 + xPart2, yPart1 - yPart2) );
+        outIntersections.add( vec2(xPart1 - xPart2, yPart1 + yPart2) );
+    }
 }
 
 } } //end namespace

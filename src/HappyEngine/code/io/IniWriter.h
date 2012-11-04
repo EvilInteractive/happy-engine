@@ -39,7 +39,7 @@ private:
     typedef std::map<std::wstring,std::vector<std::pair<std::wstring, std::wstring>>> IniWriteData;
 
 public:
-	IniWriter();
+    IniWriter();
     virtual ~IniWriter();
 
     void open(const std::string& path);

@@ -39,7 +39,7 @@ public:
     details::NetworkObjectBase* createObject(const NetworkObjectTypeID& id);
 
 private:
-    std::vector<INetworkObjectFactory*> m_Factories;
+    he::PrimitiveList<INetworkObjectFactory*> m_Factories;
 
     //Disable default copy constructor and default assignment operator
     NetworkObjectFactoryManager(const NetworkObjectFactoryManager&);

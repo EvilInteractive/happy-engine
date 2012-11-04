@@ -51,11 +51,11 @@ PhysicsTrigger::~PhysicsTrigger()
 void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose)
 {
     px::PhysicsMaterial mat(0, 0, 0);
-    std::vector<physx::PxShape*> shapes;
+    he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, mat, localPose))
     {
         PHYSICS->lock();
-        std::for_each(shapes.cbegin(), shapes.cend(), [&](physx::PxShape* pxShape)
+        shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, collisionGroup, collisionAgainstGroup);
         });

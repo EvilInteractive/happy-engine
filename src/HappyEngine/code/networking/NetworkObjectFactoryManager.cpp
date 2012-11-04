@@ -40,7 +40,7 @@ void NetworkObjectFactoryManager::registerFactory( INetworkObjectFactory* factor
     HE_IF_ASSERT(factory->getId() == NetworkObjectTypeID::unassigned, "factory already registered!")
     {
         factory->setId(static_cast<uint16>(m_Factories.size()));
-        m_Factories.push_back(factory);
+        m_Factories.add(factory);
     }
 }
 

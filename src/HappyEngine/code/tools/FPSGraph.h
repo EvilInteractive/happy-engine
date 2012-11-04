@@ -71,7 +71,7 @@ private:
     void drawFull(gfx::Canvas2D* canvas);
 
     /* DATAMEMBERS */
-    std::vector<uint16> m_FpsHistory;
+    he::PrimitiveList<uint16> m_FpsHistory;
 
     float m_GameTime;
     float m_TBase;
@@ -80,7 +80,7 @@ private:
 
     uint16 m_CurrentFPS;
     
-    gfx::Font* m_pFont;
+    gfx::Font* m_Font;
     gfx::View* m_View;
 
     int m_FPSGraphState;

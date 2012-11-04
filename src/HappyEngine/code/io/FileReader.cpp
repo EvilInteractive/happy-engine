@@ -84,20 +84,16 @@ std::string FileReader::readToEnd()
 
     return file.str();
 }
-std::vector<std::string> FileReader::readToEndSplit()
+void FileReader::readToEndSplit(he::ObjectList<std::string>& outList)
 {
     HE_ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open errors? or did you open it for unicode?");
-
-    std::vector<std::string> file;
-
+    
     while (m_fstream.eof() == false)
     {
         std::string line;
         std::getline(m_fstream, line);
-        file.push_back(line);
+        outList.add(line);
     }
-
-    return file;
 }
 
 std::wstring FileReader::readLineW()
@@ -121,19 +117,16 @@ std::wstring FileReader::readToEndW()
 
     return file.str();
 }
-std::vector<std::wstring> FileReader::readToEndSplitW()
+void FileReader::readToEndSplitW(he::ObjectList<std::wstring>& outList)
 {    
     HE_ASSERT(m_Wfstream.is_open(), "unicode file reader is not open, did you check for open errors? or did you open it for ASCII?");
-    std::vector<std::wstring> file;
 
     while (m_Wfstream.eof() == false)
     {
         std::wstring line;
         std::getline(m_Wfstream, line);
-        file.push_back(line);
+        outList.add(line);
     }
-
-    return file;
 }
 
 } } //end namespace

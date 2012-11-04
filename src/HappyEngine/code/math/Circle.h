@@ -38,12 +38,12 @@ public:
 
     std::pair<float, float> fx(float x) const;
     std::pair<float, float> fy(float y) const;
-    std::vector<vec2> intersect(const Circle& other) const;
+    void intersect(const Circle& other, he::PrimitiveList<vec2>& outIntersections) const;
 
     bool isOnCircle(const vec2& point) const;
 
-	const vec2& getPosition() const;
-	float getRadius() const;
+    const vec2& getPosition() const;
+    float getRadius() const;
 
 private:
 

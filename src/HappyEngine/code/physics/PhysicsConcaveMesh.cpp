@@ -34,7 +34,7 @@ PhysicsConcaveMesh::PhysicsConcaveMesh()
 
 PhysicsConcaveMesh::~PhysicsConcaveMesh()
 {
-    std::for_each(m_InternalMeshes.cbegin(), m_InternalMeshes.cend(), [](physx::PxTriangleMesh* mesh)
+    m_InternalMeshes.forEach([](physx::PxTriangleMesh* mesh)
     {
         mesh->release();
     });
@@ -49,13 +49,13 @@ void PhysicsConcaveMesh::load( const io::BinaryStream& stream )
     for (uint8 i(0); i < numConcave; ++i)
     {
         stream.readString(); // Name not used..
-        m_InternalMeshes.push_back(
+        m_InternalMeshes.add(
             PHYSICS->getSDK()->createTriangleMesh(const_cast<io::BinaryStream&>(stream))
         );
     }
 }
 
-const std::vector<physx::PxTriangleMesh*>& PhysicsConcaveMesh::getInternalMeshes() const
+const he::PrimitiveList<physx::PxTriangleMesh*>& PhysicsConcaveMesh::getInternalMeshes() const
 {
     return m_InternalMeshes;
 }

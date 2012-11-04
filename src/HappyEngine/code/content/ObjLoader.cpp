@@ -75,10 +75,10 @@ bool ObjLoader::read(const std::string& path)
     using namespace std;
 
     io::FileReader reader;
-    vector<string> objData;
+    he::ObjectList<std::string> objData;
     if (reader.open(path, io::FileReader::OpenType_ASCII))
     {
-        objData = reader.readToEndSplit();
+        reader.readToEndSplit(objData);
         reader.close();
     }
     else

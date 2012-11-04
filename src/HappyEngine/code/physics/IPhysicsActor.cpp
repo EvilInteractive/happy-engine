@@ -37,7 +37,7 @@
 namespace he {
 namespace px {
 
-bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
+bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
                                 const PhysicsMaterial& material, const mat44& localPose /*= mat44::Identity*/ )
 {
     physx::PxShape* pxShape(nullptr);
@@ -53,7 +53,7 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                 pxShape = actor->createShape(
                     physx::PxBoxGeometry(boxShape->getDimension().x / 2.0f, boxShape->getDimension().y / 2.0f, boxShape->getDimension().z / 2.0f), 
                     *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
-                outShapeList.push_back(pxShape);
+                outShapeList.add(pxShape);
                 return true;
             }
         case PhysicsShapeType_Sphere:
@@ -62,7 +62,7 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                 pxShape = actor->createShape(
                     physx::PxSphereGeometry(sphereShape->getRadius()), 
                     *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
-                outShapeList.push_back(pxShape);
+                outShapeList.add(pxShape);
                 return true;
             }
         case PhysicsShapeType_Capsule:
@@ -71,7 +71,7 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                 pxShape = actor->createShape(
                     physx::PxCapsuleGeometry(capsuleShape->getRadius(), capsuleShape->getHeight() / 2.0f), 
                     *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
-                outShapeList.push_back(pxShape);
+                outShapeList.add(pxShape);
                 return true;
             }
             break;
@@ -80,11 +80,11 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                 const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(shape));
                 if (convexShape->getConvexMesh() != ObjectHandle::unassigned) // load failed
                 {
-                    const std::vector<physx::PxConvexMesh*>& meshes(
+                    const he::PrimitiveList<physx::PxConvexMesh*>& meshes(
                         ResourceFactory<PhysicsConvexMesh>::getInstance()->get(
                         convexShape->getConvexMesh())->getInternalMeshes());
 
-                    std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxConvexMesh* mesh)
+                    meshes.forEach([&](physx::PxConvexMesh* mesh)
                     {
                         physx::PxVec3 scale;
                         convexShape->getScale().toPxVec3(&scale);
@@ -93,7 +93,7 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                             physx::PxConvexMeshGeometry(mesh, 
                             physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
                             *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
-                        outShapeList.push_back(pxShape);
+                        outShapeList.add(pxShape);
                     });
                     return true;
                 }
@@ -104,11 +104,11 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                 const PhysicsConcaveShape* concaveShape(static_cast<const PhysicsConcaveShape*>(shape));
                 if (concaveShape->getConcaveMesh() != ObjectHandle::unassigned) // load failed
                 {
-                    const std::vector<physx::PxTriangleMesh*>& meshes(
+                    const he::PrimitiveList<physx::PxTriangleMesh*>& meshes(
                         ResourceFactory<PhysicsConcaveMesh>::getInstance()->get(
                         concaveShape->getConcaveMesh())->getInternalMeshes());
 
-                    std::for_each(meshes.cbegin(), meshes.cend(), [&](physx::PxTriangleMesh* mesh)
+                    meshes.forEach([&](physx::PxTriangleMesh* mesh)
                     {
                         physx::PxVec3 scale;
                         concaveShape->getScale().toPxVec3(&scale);
@@ -117,7 +117,7 @@ bool IPhysicsActor::createShape(std::vector<physx::PxShape*>& outShapeList, cons
                             physx::PxTriangleMeshGeometry(mesh, 
                             physx::PxMeshScale(scale, physx::PxQuat::createIdentity())),
                             *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
-                        outShapeList.push_back(pxShape);
+                        outShapeList.add(pxShape);
                     });
                     return true;
                 }

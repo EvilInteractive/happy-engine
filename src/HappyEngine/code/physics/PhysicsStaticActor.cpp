@@ -68,11 +68,11 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
 void PhysicsStaticActor::addShape( const IPhysicsShape* shape, const PhysicsMaterial& material, 
                                    uint32 collisionGroup, const mat44& localPose)
 {
-    std::vector<physx::PxShape*> shapes;
+    he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, material, localPose))
     {
         PHYSICS->lock();
-        std::for_each(shapes.cbegin(), shapes.cend(), [&](physx::PxShape* pxShape)
+        shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, collisionGroup);
         });

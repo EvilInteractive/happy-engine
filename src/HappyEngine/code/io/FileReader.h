@@ -43,11 +43,11 @@ public:
 
     std::string readLine();
     std::string readToEnd();
-    std::vector<std::string> readToEndSplit();
+    void readToEndSplit(he::ObjectList<std::string>& outList);
 
     std::wstring readLineW();
     std::wstring readToEndW();
-    std::vector<std::wstring> readToEndSplitW();
+    void readToEndSplitW(he::ObjectList<std::wstring>& outList);
 
     bool eof() const;
 

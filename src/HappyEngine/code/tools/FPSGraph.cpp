@@ -39,20 +39,18 @@ FPSGraph::FPSGraph() :	m_GameTime(0.0f),
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(0.5f),
-                        m_pFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 10)),
+                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 10)),
                         m_FPSGraphState(Type_ToConsole),
                         m_Pos(5.0f, 5.0f),
-                        m_View(nullptr)
+                        m_View(nullptr),
+                        m_FpsHistory(300)
 {
     CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
-
-    m_FpsHistory.reserve(300);
 }
-
 
 FPSGraph::~FPSGraph()
 {
-    m_pFont->release();
+    m_Font->release();
 }
 
 /* GENERAL */
@@ -70,7 +68,7 @@ void FPSGraph::tick(float dTime, float interval)
         m_CurrentFPS = fps;
         m_CurrentDTime = dTime;
 
-        m_FpsHistory.push_back(fps);
+        m_FpsHistory.add(fps);
     }
 }
 
@@ -127,7 +125,7 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 
     canvas->setFillColor(Color(1.0f,1.0f,1.0f));
 
-    gui::Text txt(m_pFont);
+    gui::Text txt(m_Font);
 
     char buff[64];
     sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
@@ -297,7 +295,7 @@ void FPSGraph::drawFull(gfx::Canvas2D* /*canvas*/)
 uint16 FPSGraph::getMaxFPS() const
 {
     uint16 maxFPS(0);
-    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint16 FPS)
+    m_FpsHistory.forEach([&](uint16 FPS)
     {
         if (FPS > maxFPS)
             maxFPS = FPS;
@@ -309,7 +307,7 @@ uint16 FPSGraph::getMaxFPS() const
 uint16 FPSGraph::getMinFPS() const
 {
     uint16 minFPS(0xffff);
-    std::for_each(m_FpsHistory.cbegin(), m_FpsHistory.cend(), [&](uint16 FPS)
+    m_FpsHistory.forEach([&](uint16 FPS)
     {
         if (FPS < minFPS)
             minFPS = FPS;

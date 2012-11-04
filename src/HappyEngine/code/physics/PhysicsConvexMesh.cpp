@@ -36,7 +36,7 @@ PhysicsConvexMesh::PhysicsConvexMesh()
 
 PhysicsConvexMesh::~PhysicsConvexMesh()
 {
-    std::for_each(m_InternalMeshes.cbegin(), m_InternalMeshes.cend(), [](physx::PxConvexMesh* mesh)
+    m_InternalMeshes.forEach([](physx::PxConvexMesh* mesh)
     {
         mesh->release();
     });
@@ -51,13 +51,13 @@ void PhysicsConvexMesh::load( const io::BinaryStream& stream )
     for (uint8 i(0); i < numConvex; ++i)
     {
         stream.readString(); // Not used
-        m_InternalMeshes.push_back(
+        m_InternalMeshes.add(
             PHYSICS->getSDK()->createConvexMesh(const_cast<io::BinaryStream&>(stream)) // sorry for the const_cast
         );
     }
 }
 
-const std::vector<physx::PxConvexMesh*>& PhysicsConvexMesh::getInternalMeshes() const
+const he::PrimitiveList<physx::PxConvexMesh*>& PhysicsConvexMesh::getInternalMeshes() const
 {
     return m_InternalMeshes;
 }

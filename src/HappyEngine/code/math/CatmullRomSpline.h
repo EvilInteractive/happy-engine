@@ -38,15 +38,14 @@ public:
     static const int LOOKUPSIZE = 20;
     static const int ARCLENGTH_PRECISION = 400; //per 100 units ==> 400 = 4 iteration per unit
 
-	CatmullRomSpline(const T& p0, const T& p1, const T& p2, const T& p3):
+    CatmullRomSpline(const T& p0, const T& p1, const T& p2, const T& p3):
         m_DistanceTravelled(0.0f), m_PrevDistLookupIndex(0), m_TotalDistance(0.0f),
-        m_P0(p0), m_P1(p1), m_P2(p2), m_P3(p3)
+        m_P0(p0), m_P1(p1), m_P2(p2), m_P3(p3), m_DistTrelation(LOOKUPSIZE + 1)
     {
-        m_DistTrelation.reserve(LOOKUPSIZE + 1); //+0
-        m_DistTrelation.push_back(std::make_pair(0.0f, 0.0f));
+        m_DistTrelation.add(std::make_pair(0.0f, 0.0f));
         for (int i = 1; i <= LOOKUPSIZE; ++i)
         {
-            m_DistTrelation.push_back(std::make_pair(
+            m_DistTrelation.add(std::make_pair(
                 m_DistTrelation[i - 1].first + 
                 arcLength((i - 1.0f)/LOOKUPSIZE, (float)i/LOOKUPSIZE), (float)i/LOOKUPSIZE));
         }
@@ -127,7 +126,7 @@ private:
 
     float m_TotalDistance;
 
-    std::vector<std::pair<float, float>> m_DistTrelation;
+    he::ObjectList<std::pair<float, float>> m_DistTrelation;
     
     CatmullRomSpline(const CatmullRomSpline& other):        
         m_P0(other.m_P0), m_P1(other.m_P1),  

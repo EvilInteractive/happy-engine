@@ -42,50 +42,44 @@ public:
     {
         if (m_RemoveTickList.size() > 0)
         {
-            std::vector<ITickable*>::iterator it(m_TickList.begin());
-            for(; it != m_TickList.end() && m_RemoveTickList.size() > 0; )
+            for(size_t tickIndex(0); tickIndex < m_TickList.size() && m_RemoveTickList.size() > 0; )
             {
-                std::vector<ITickable*>::iterator removeIt(std::find(m_RemoveTickList.begin(), m_RemoveTickList.end(), *it));
-                if (removeIt != m_RemoveTickList.end())
+                size_t removeIndex(0);
+                if (m_RemoveTickList.find(m_TickList[tickIndex], removeIndex))
                 {
-                    *it = m_TickList.back();
-                    m_TickList.pop_back();
-                    *removeIt = m_RemoveTickList.back();
-                    m_RemoveTickList.pop_back();
+                    m_TickList.removeAt(tickIndex);
+                    m_RemoveTickList.removeAt(removeIndex);
                 }
                 else
                 {
-                    ++it;
+                    ++tickIndex;
                 }
             }
             m_RemoveTickList.clear();
         }
         if (m_NewTickList.size() > 0)
         {
-            std::for_each(m_NewTickList.cbegin(), m_NewTickList.cend(), [&](ITickable* pObj)
-            {
-                m_TickList.push_back(pObj);
-            });
+            m_TickList.append(m_NewTickList);
             m_NewTickList.clear();
         }
-        std::for_each(m_TickList.cbegin(), m_TickList.cend(), [&dTime](ITickable* pObj)
+        m_TickList.forEach([&dTime](ITickable* pObj)
         {
             pObj->tick(dTime);
         });
     }
     virtual void addToTickList(ITickable* pObj)
     {
-        m_NewTickList.push_back(pObj);
+        m_NewTickList.add(pObj);
     }
     virtual void removeFromTickList(ITickable* pObj)
     {
-        m_RemoveTickList.push_back(pObj);
+        m_RemoveTickList.add(pObj);
     }
     
 private:
-    std::vector<ITickable*> m_TickList;
-    std::vector<ITickable*> m_NewTickList;
-    std::vector<ITickable*> m_RemoveTickList;
+    he::PrimitiveList<ITickable*> m_TickList;
+    he::PrimitiveList<ITickable*> m_NewTickList;
+    he::PrimitiveList<ITickable*> m_RemoveTickList;
 };
 
 } } //end namespace

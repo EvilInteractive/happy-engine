@@ -53,7 +53,7 @@ public:
 protected:
     virtual uint32 getCompatibleShapes() const = 0;
     // return true if successful
-    virtual bool createShape(std::vector<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
+    virtual bool createShape(he::PrimitiveList<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
                              const PhysicsMaterial& material, const mat44& localPose = mat44::Identity);
 
 };

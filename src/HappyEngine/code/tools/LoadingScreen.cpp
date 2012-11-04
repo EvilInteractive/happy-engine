@@ -31,9 +31,9 @@
 namespace he {
 namespace tools {
 
-LoadingScreen::LoadingScreen() :    m_pFontLoading(CONTENT->getDefaultFont(14)),
-                                    m_pFontMessage(CONTENT->getDefaultFont(32)),
-                                    m_pLogo(CONTENT->loadTexture2D("engine/he_logo.png"))
+LoadingScreen::LoadingScreen() :    m_FontLoading(CONTENT->getDefaultFont(14)),
+                                    m_FontMessage(CONTENT->getDefaultFont(32)),
+                                    m_Logo(CONTENT->loadTexture2D("engine/he_logo.png"))
 {
     /*SnowFlake temp;
     for (uint i(0); i < 250; ++i)
@@ -46,19 +46,19 @@ LoadingScreen::LoadingScreen() :    m_pFontLoading(CONTENT->getDefaultFont(14)),
         temp.speed.x = -(((rand() % 10) + 5) / 100.0f);
         temp.speed.y = (rand() % 10 + 5) / 100.0f;
 
-        m_SnowFlakes.push_back(temp);
+        m_SnowFlakes.add(temp);
     }*/
 }
 
 LoadingScreen::~LoadingScreen()
 {
-    m_pLogo->release();
+    m_Logo->release();
 }
 
 /* GENERAL */
 void LoadingScreen::tick()
 {
-    /*std::for_each(m_SnowFlakes.begin(), m_SnowFlakes.end(), [&](SnowFlake s)
+    /*m_SnowFlakes.forEach([&](const SnowFlake& s)
     {
         s.pos += s.speed;
 
@@ -81,7 +81,7 @@ void LoadingScreen::draw2D(gfx::Canvas2D* /*canvas*/)
 
     ////GUI->setColor(1.0f,1.0f,1.0f);
 
-    /*std::for_each(m_SnowFlakes.cbegin(), m_SnowFlakes.cend(), [](SnowFlake s)
+    /*m_SnowFlakes.forEach([](SnowFlake s)
     {
         //GUI->fillShape2D(gui::Ellipse2D(s.pos,vec2(s.size,s.size),8), true);
     });*/

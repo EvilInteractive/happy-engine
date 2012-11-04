@@ -54,12 +54,12 @@ private:
     };
 
     /* DATAMEMBERS */
-    std::vector<SnowFlake> m_SnowFlakes;
+    he::ObjectList<SnowFlake> m_SnowFlakes;
 
-    gfx::Font* m_pFontLoading;
-    gfx::Font* m_pFontMessage;
+    gfx::Font* m_FontLoading;
+    gfx::Font* m_FontMessage;
 
-    const gfx::Texture2D* m_pLogo;
+    const gfx::Texture2D* m_Logo;
 
     /* DEFAULT COPY & ASSIGNMENT */
     LoadingScreen(const LoadingScreen&);

@@ -117,8 +117,8 @@ private:
     std::map<std::string, boost::function<void()> > m_FunctionContainer;
     std::map<CMSG_TYPE, Color> m_MsgColors;
     std::map<std::string, ITypeHandler*> m_TypeHandlers;
-    std::vector<std::pair<CMSG_TYPE, std::string> > m_MsgHistory;
-    std::vector<std::string> m_CmdHistory;
+    he::ObjectList<std::pair<CMSG_TYPE, std::string> > m_MsgHistory;
+    he::ObjectList<std::string> m_CmdHistory;
     std::map<CMSG_TYPE, bool> m_ShowMessageTypes;
 
     io::Key m_Shortcut;
@@ -131,7 +131,7 @@ private:
 
     gui::TextBox* m_pTextBox;
     gui::Text* m_Help;
-    gui::Scrollbar* m_pScrollBar;
+    gui::Scrollbar* m_ScrollBar;
 
     std::string m_HelpCommand;
 
