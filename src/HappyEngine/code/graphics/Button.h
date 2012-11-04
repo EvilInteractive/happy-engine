@@ -111,7 +111,7 @@ protected:
     STATE m_State;
     ACTIVATION m_ActivationType;
 
-    std::vector<const gfx::Texture2D*> m_Sprites;
+    he::PrimitiveList<const gfx::Texture2D*> m_Sprites;
     const gfx::Texture2D* m_pSpriteSheet;
 
     Hitregion m_Hitregion;

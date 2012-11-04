@@ -38,7 +38,7 @@ TextBox::TextBox(RectF posSize,
                                                     m_bActive(true),
                                                     m_String(""),
                                                     m_bHasFocus(false),
-                                                    m_pHitrect(nullptr),
+                                                    m_Hitrect(nullptr),
                                                     m_CursorPos(0),
                                                     m_Cursor("|"),
                                                     m_bEntered(false),
@@ -47,25 +47,25 @@ TextBox::TextBox(RectF posSize,
                                                     m_BackSpaceTimer(0),
                                                     m_BackSpaceDelayTimer(0)
 {
-    m_pFont = CONTENT->loadFont(customFont, fontSize);
+    m_Font = CONTENT->loadFont(customFont, fontSize);
 
-    m_pHitrect = NEW gui::Hitregion(
+    m_Hitrect = NEW gui::Hitregion(
         gui::Hitregion::TYPE_RECTANGLE,
         vec2(posSize.x + (posSize.width/2.0f), posSize.y + (posSize.height/2.0f)),
         vec2(posSize.width, posSize.height));
 
-    m_Colors["background"] = Color(0.9f,0.9f,0.9f);
-    m_Colors["text"] = Color(0.2f,0.2f,0.2f);
-    m_Colors["focus"] = Color(0.0f,0.75f,1.0f);
-    m_Colors["edge"] = Color(0.1f,0.1f,0.1f);
+    m_Colors[TextBoxColor_Background] = Color(0.9f,0.9f,0.9f);
+    m_Colors[TextBoxColor_Text] = Color(0.2f,0.2f,0.2f);
+    m_Colors[TextBoxColor_Focus] = Color(0.0f,0.75f,1.0f);
+    m_Colors[TextBoxColor_Edge] = Color(0.1f,0.1f,0.1f);
 
     m_BlinkTimer.restart();
 }
 
 TextBox::~TextBox()
 {
-    m_pFont->release();
-    delete m_pHitrect;
+    m_Font->release();
+    delete m_Hitrect;
 }
 
 /* GENERAL */
@@ -73,7 +73,7 @@ void TextBox::tick()
 {
     if (CONTROLS->getMouse()->isButtonPressed(io::MouseButton_Left))
     {
-        if (m_pHitrect->hitTest(CONTROLS->getMouse()->getPosition()))
+        if (m_Hitrect->hitTest(CONTROLS->getMouse()->getPosition()))
         {
             m_bHasFocus = true;
             CONTROLS->getFocus(this);
@@ -165,7 +165,7 @@ void TextBox::tick()
 
 void TextBox::draw(gfx::Canvas2D* canvas)
 {
-    gui::Text text(m_pFont);
+    gui::Text text(m_Font);
     text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
@@ -173,19 +173,19 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
     if (m_bActive)
     {
-        canvas->setFillColor(m_Colors["background"]);
+        canvas->setFillColor(m_Colors[TextBoxColor_Background]);
         canvas->fillRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
-        canvas->setStrokeColor(m_Colors["edge"]);
+        canvas->setStrokeColor(m_Colors[TextBoxColor_Edge]);
         canvas->strokeRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
         if (m_bHasFocus)
         {
-            canvas->setStrokeColor(m_Colors["focus"]);
+            canvas->setStrokeColor(m_Colors[TextBoxColor_Focus]);
             canvas->strokeRect(vec2(m_Rect.x + 1 , m_Rect.y + 1), vec2(m_Rect.width - 2, m_Rect.height - 2));
         }
 
-        canvas->setFillColor(m_Colors["text"]);
+        canvas->setFillColor(m_Colors[TextBoxColor_Text]);
 
         if (m_String == "")
         {
@@ -215,7 +215,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
                 if (cursorText != "")
                 {
-                    uint32 cursorX((uint32)m_pFont->getStringWidth(cursorText));
+                    uint32 cursorX((uint32)m_Font->getStringWidth(cursorText));
                     cursorX -= 1;
 
                     cursorRect.x += cursorX;
@@ -301,10 +301,10 @@ void TextBox::setColors(	const Color& backgroundColor,
                             const Color& focusColor,
                             const Color& edgeColor)
 {
-    m_Colors["background"] = backgroundColor;
-    m_Colors["text"] = textColor;
-    m_Colors["focus"] = focusColor;
-    m_Colors["edge"] = edgeColor;
+    m_Colors[TextBoxColor_Background] = backgroundColor;
+    m_Colors[TextBoxColor_Text] = textColor;
+    m_Colors[TextBoxColor_Focus] = focusColor;
+    m_Colors[TextBoxColor_Edge] = edgeColor;
 }
 
 void TextBox::setSize( const vec2& size )

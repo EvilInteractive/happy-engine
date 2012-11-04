@@ -86,9 +86,9 @@ void Font::preCache(bool extendedCharacters)
     uint8 nrChars = (extendedCharacters == true) ? (uint8)255 : (uint8)128;
     vec2 texSize;
 
-    std::vector<uint8*> glyphBuffers;
-    std::vector<vec2> glyphSizes;
-    std::vector<float> glyphTop;
+    he::PrimitiveList<uint8*> glyphBuffers;
+    he::PrimitiveList<vec2> glyphSizes;
+    he::PrimitiveList<float> glyphTop;
 
     glyphBuffers.resize(nrChars);
     glyphSizes.resize(nrChars);
@@ -190,7 +190,7 @@ void Font::preCache(bool extendedCharacters)
     // delete CPU buffer, data is on GPU now
     delete texBuffer;
 
-    std::for_each(glyphBuffers.begin(), glyphBuffers.end(), [](uint8* pBuffer)
+    glyphBuffers.forEach([](uint8* pBuffer)
     {
         delete pBuffer;
         pBuffer = nullptr;
@@ -240,8 +240,8 @@ float Font::getStringWidth(const std::string& string) const
     }
     else
     {
-        std::vector<vec2> glyphSizes;
-        std::vector<vec2> glyphAdvance;
+        he::PrimitiveList<vec2> glyphSizes;
+        he::PrimitiveList<vec2> glyphAdvance;
 
         glyphSizes.resize(string.size());
         glyphAdvance.resize(string.size());

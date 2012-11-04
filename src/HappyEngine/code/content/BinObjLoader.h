@@ -22,6 +22,7 @@
 #define _HE_BINOBJ_LOADER_H_
 #pragma once
 
+#include "Bone.h"
 #include "IModelLoader.h"
 
 namespace he {
@@ -31,8 +32,35 @@ namespace models {
 class BinObjLoader : public IModelLoader
 {
 public:
-    struct InternalVertex;
-    struct InternalVertexNoBones;
+    struct InternalVertex
+    {
+        vec3 pos;
+        vec2 tex;
+        vec3 norm;
+        vec3 tan;
+        uint8 boneID[gfx::Bone::MAX_BONEWEIGHTS];
+        float boneWeight[gfx::Bone::MAX_BONEWEIGHTS];
+
+        InternalVertex(): pos(), tex(), norm(), tan()
+        {
+            for (int i = 0; i < gfx::Bone::MAX_BONEWEIGHTS; ++i)
+            {
+                boneID[i] = 0;
+                boneWeight[i] = 0.0f;
+            }
+        } 
+    };
+    struct InternalVertexNoBones
+    {
+        vec3 pos;
+        vec2 tex;
+        vec3 norm;
+        vec3 tan;
+
+        InternalVertexNoBones(): pos(), tex(), norm(), tan()
+        {
+        } 
+    };
 
     BinObjLoader();
     virtual ~BinObjLoader();
@@ -42,7 +70,7 @@ public:
     virtual uint32 getNumMeshes() const;
     virtual const std::string& getMeshName(uint32 mesh) const;
     
-    virtual const std::vector<gfx::Bone>& getBones(uint32 mesh) const;
+    virtual const he::ObjectList<gfx::Bone>& getBones(uint32 mesh) const;
 
     virtual const void* getVertices(uint32 mesh) const;
     virtual uint32 getNumVertices(uint32 mesh) const;
@@ -56,16 +84,16 @@ private:
     bool read(const std::string& path, bool allowByteIndices);
     void fill(const gfx::BufferLayout& vertLayout) const;
 
-    std::vector<std::vector<InternalVertex>> m_VertexData;
-    std::vector<std::vector<gfx::Bone>> m_BoneData;
+    he::PrimitiveList<he::ObjectList<InternalVertex>*> m_VertexData;
+    he::PrimitiveList<he::ObjectList<gfx::Bone>*> m_BoneData;
     
-    std::vector<std::string> m_MeshName;
+    he::ObjectList<std::string> m_MeshName;
 
-    std::vector<void*> m_Vertices;
-    std::vector<void*> m_Indices;
+    he::PrimitiveList<void*> m_Vertices;
+    he::PrimitiveList<void*> m_Indices;
 
-    std::vector<uint32> m_NumIndices;
-    std::vector<gfx::IndexStride> m_IndexStride;
+    he::PrimitiveList<uint32> m_NumIndices;
+    he::PrimitiveList<gfx::IndexStride> m_IndexStride;
 
     //Disable default copy constructor and default assignment operator
     BinObjLoader(const BinObjLoader&);

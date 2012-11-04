@@ -62,11 +62,11 @@ public:
     void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
     void setVertices(const void* pVertices, uint32 num, MeshUsage usage);
     void setIndices(const void* pIndices, uint32 num, IndexStride type, MeshUsage usage);
-    void setBones(const std::vector<Bone>& boneList);
+    void setBones(const he::ObjectList<Bone>& boneList);
     void setLoaded();
 
     // Getters
-    inline const std::vector<Bone>& getBones() const { return m_BoneList; }
+    inline const he::ObjectList<Bone>& getBones() const { return m_BoneList; }
 
     inline VaoID getVertexArraysID() const { return m_VaoID[GL::s_CurrentContext->id]; } 
     inline VaoID getVertexShadowArraysID() const { return m_VaoShadowID[GL::s_CurrentContext->id]; }
@@ -118,7 +118,7 @@ private:
 
     Bound m_Bound;
 
-    std::vector<Bone> m_BoneList;
+    he::ObjectList<Bone> m_BoneList;
 
     MeshDrawMode m_DrawMode;
 

@@ -83,7 +83,7 @@ void Text::addText( const std::string& text )
 
 void Text::addLine(const std::string& string)
 {
-    m_Text.push_back(string);
+    m_Text.add(string);
 }
 
 void Text::clear()
@@ -134,7 +134,7 @@ const std::string& Text::getLine(uint32 lineNumber) const
     return m_Text[lineNumber];
 }
 
-const std::vector<std::string>& Text::getText() const
+const he::ObjectList<std::string>& Text::getText() const
 {
     return m_Text;
 }

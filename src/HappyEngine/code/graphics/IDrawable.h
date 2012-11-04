@@ -102,7 +102,7 @@ class SkinnedDrawable : public Object3D, public IDrawable
 public:
     virtual ~SkinnedDrawable() {}
 
-    virtual const std::vector<mat44>& getBoneTransforms() const = 0;
+    virtual const he::PrimitiveList<mat44>& getBoneTransforms() const = 0;
     
     virtual bool isSingle() const { return true; }
     virtual bool isInstanced() const { return false; }

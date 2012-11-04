@@ -75,7 +75,7 @@ private:
     /* DATAMEMBERS */
     RectF m_Rect;
 
-    gfx::Font* m_pFont;
+    gfx::Font* m_Font;
 
     std::string m_DefaultString;
     std::string m_String;
@@ -88,9 +88,18 @@ private:
 
     bool m_BackspaceDown;
 
-    gui::Hitregion* m_pHitrect;
+    gui::Hitregion* m_Hitrect;
 
-    std::map<std::string, Color> m_Colors; // TODO: seeb: change with enum and normal array please, no need for slow map
+    enum TextBoxColor
+    {
+        TextBoxColor_Background,
+        TextBoxColor_Text,
+        TextBoxColor_Focus,
+        TextBoxColor_Edge,
+
+        TextBoxColor_MAX
+    };
+    Color m_Colors[TextBoxColor_MAX];
 
     uint32 m_CursorPos;
 
@@ -98,7 +107,7 @@ private:
     uint32 m_BackSpaceTimer;
     uint32 m_BackSpaceDelayTimer;
 
-    std::vector<io::Key> m_CharacterKeyCodes;
+    he::PrimitiveList<io::Key> m_CharacterKeyCodes;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     TextBox(const TextBox&);

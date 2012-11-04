@@ -34,7 +34,7 @@ public:
     typedef T const* const_iterator;
     typedef boost::function2<int, const T&, const T&> Sorter;
 
-    List();
+    explicit List(size_t capacity = 0);
     virtual ~List();
 
     inline void add(const T& element); // amortized O(1)
@@ -61,6 +61,8 @@ public:
 
     inline const T& back() const;
     inline const T& front() const;
+    inline T& back();
+    inline T& front();
     inline bool empty() const { return m_Size == 0; }
 
     inline T& operator[](size_t index);
@@ -92,18 +94,24 @@ private:
 template<typename T>
 class PrimitiveList : public List<T, PrimitiveCreator<T>> 
 {
+public:
+    explicit PrimitiveList(size_t capacity = 0): List(capacity) {}
+    virtual ~PrimitiveList() {}
 };
 
 template<typename T>
 class ObjectList : public List<T, ObjectCreator<T>> 
 {
+public:
+    explicit ObjectList(size_t capacity = 0): List(capacity) {}
+    virtual ~ObjectList() {}
 };
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T, typename Creator> inline
-he::List<T, Creator>::List(): m_Size(0), m_Capacity(1), m_Buffer(static_cast<T*>(he_malloc(sizeof(T))))
+he::List<T, Creator>::List(size_t capacity = 0): m_Size(0), m_Capacity(capacity), m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
 {
     Creator::createArray(m_Buffer, m_Capacity);
 }
@@ -326,6 +334,18 @@ const T& he::List<T, Creator>::front() const
 
 template<typename T, typename Creator> inline
 const T& he::List<T, Creator>::back() const
+{
+    HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
+    return m_Buffer[m_Size - 1];
+}
+template<typename T, typename Creator>
+T& he::List<T, Creator>::front()
+{
+    HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
+    return m_Buffer[0];
+}
+template<typename T, typename Creator>
+T& he::List<T, Creator>::back()
 {
     HE_ASSERT(m_Size > 0, "No elements in List! Index out of bounds exception");
     return m_Buffer[m_Size - 1];

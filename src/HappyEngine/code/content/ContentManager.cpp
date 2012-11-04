@@ -25,10 +25,8 @@
 
 #include "TextureLoader.h"
 #include "ModelLoader.h"
-#include "LineLoader.h"
 #include "PhysicsShapeLoader.h"
 #include "MaterialLoader.h"
-#include "LineLoader.h"
 #include "FontLoader.h"
 #include "ShaderLoader.h"
 #include "Shader.h"
@@ -40,7 +38,6 @@ namespace ct {
 ContentManager::ContentManager(): 
     m_ModelLoader(NEW ModelLoader()), 
     m_TextureLoader(NEW TextureLoader()),
-    m_LineLoader(NEW LineLoader()), 
     m_PhysicsShapeLoader(NEW PhysicsShapeLoader()), 
     m_FontLoader(NEW FontLoader()),
     m_ShaderLoader(NEW ShaderLoader()), 
@@ -48,7 +45,6 @@ ContentManager::ContentManager():
 
     m_TextureFolder("textures/"), 
     m_ModelFolder("models/"), 
-    m_LineFolder("lines/"), 
     m_PhysicsFolder("physics/"), 
     m_FontFolder("fonts/"),
     m_ShaderFolder("shaders/"), 
@@ -58,7 +54,6 @@ ContentManager::ContentManager():
     m_ContentRootDir(""),
     m_TexturePath(""), 
     m_ModelPath(""), 
-    m_LinePath(""), 
     m_PhysicsPath(""), 
     m_FontPath(""),
     m_ShaderPath(""), 
@@ -83,7 +78,6 @@ ContentManager::~ContentManager()
     delete m_MaterialLoader;
     delete m_ShaderLoader;
     delete m_PhysicsShapeLoader;
-    delete m_LineLoader;
     delete m_FontLoader;
     delete m_ModelLoader;
     delete m_TextureLoader;
@@ -151,12 +145,6 @@ const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Line::pointer ContentManager::loadLine(const std::string& asset)
-{
-    return m_LineLoader->loadLine(m_LinePath.str()  + asset);
-}
-
-//////////////////////////////////////////////////////////////////////////
 ObjectHandle ContentManager::loadPhysicsConvex(const std::string& asset)
 {
     return m_PhysicsShapeLoader->loadConvex(m_PhysicsPath.str()  + asset);
@@ -178,7 +166,7 @@ gfx::Font* ContentManager::getDefaultFont(uint16 size)
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+ObjectHandle ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs)
 {
     return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
 }
@@ -195,7 +183,6 @@ void ContentManager::setContentDir(const Path& path)
     m_ContentRootDir = path;
     setFontFolder(getFontFolder());
     setFxFolder(getFxFolder());
-    setLineFolder(getLineFolder());
     setMaterialFolder(getMaterialFolder());
     setModelFolder(getModelFolder());
     setPhysicsFolder(getPhysicsFolder());
@@ -211,11 +198,6 @@ void ContentManager::setModelFolder(const std::string& folder)
 {
     m_ModelFolder = folder;
     m_ModelPath = m_ContentRootDir.getAbsolutePath(folder);
-}
-void ContentManager::setLineFolder(const std::string& folder)
-{
-    m_LineFolder = folder;
-    m_LinePath = m_ContentRootDir.getAbsolutePath(folder);
 }
 void ContentManager::setPhysicsFolder(const std::string& folder)
 {
@@ -254,10 +236,6 @@ const std::string& ContentManager::getModelFolder() const
 {
     return m_ModelFolder;
 }
-const std::string& ContentManager::getLineFolder() const
-{
-    return m_LineFolder;
-}
 const std::string& ContentManager::getPhysicsFolder() const
 {
     return m_PhysicsFolder;
@@ -285,10 +263,6 @@ const Path& ContentManager::getTextureFolderPath() const
 const Path& ContentManager::getModelFolderPath() const
 {
     return m_ModelPath;
-}
-const Path& ContentManager::getLineFolderPath() const
-{
-    return m_LinePath;
 }
 const Path& ContentManager::getPhysicsFolderPath() const
 {

@@ -5,11 +5,9 @@ set (CODE_CONTENT_NO_FILTER
 set (CODE_CONTENT_MODEL_FILTER
                         BinObjLineLoader.cpp                BinObjLineLoader.h
                         BinObjLoader.cpp                    BinObjLoader.h
-                        IModelLoader.h                      LineLoader.cpp
-                        LineLoader.h
+                        IModelLoader.h                      
                         ModelLoader.cpp                     ModelLoader.h
                         ModelLoaderFunctions.cpp            ModelLoaderFunctions.h
-                        ObjLineLoader.cpp                   ObjLineLoader.h
                         ObjLoader.cpp                       ObjLoader.h
 	)
 set (CODE_CONTENT_TEXTURE_FILTER

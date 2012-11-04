@@ -20,10 +20,7 @@
 #pragma once
 
 #include "BufferLayout.h"
-#include "Line.h"
-
 #include "RenderSettings.h"
-
 #include "Material.h"
 
 namespace he {
@@ -39,7 +36,6 @@ namespace ct {
 class ModelLoader;
 class TextureLoader;
 class PhysicsShapeLoader;
-class LineLoader;
 class FontLoader;
 class ShaderLoader;
 class MaterialLoader;
@@ -66,23 +62,20 @@ public:
     const gfx::Texture2D* loadTexture2D(const std::string& path);
     const gfx::TextureCube* loadTextureCube(const std::string& path);
     const gfx::Texture2D* makeTexture2D(const Color& color);
-
-    gfx::Line::pointer loadLine(const std::string& path);
-
+    
     ObjectHandle loadPhysicsConvex(const std::string& path);
     ObjectHandle loadPhysicsConcave(const std::string& path);
 
     gfx::Font* loadFont(const std::string& path, uint16 size);
     gfx::Font* getDefaultFont(uint16 size = 12);
 
-    ObjectHandle loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
+    ObjectHandle loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs);
    
     ObjectHandle loadMaterial(const std::string& path);
 
     void setContentDir(const Path& path);
     void setTextureFolder(const std::string& folder);
     void setModelFolder(const std::string& folder);
-    void setLineFolder(const std::string& folder);
     void setPhysicsFolder(const std::string& folder);
     void setFontFolder(const std::string& folder);
     void setShaderFolder(const std::string& folder);
@@ -93,7 +86,6 @@ public:
 
     const Path& getTextureFolderPath() const;
     const Path& getModelFolderPath() const;
-    const Path& getLineFolderPath() const;
     const Path& getPhysicsFolderPath() const;
     const Path& getFontFolderPath() const;
     const Path& getShaderFolderPath() const;
@@ -102,7 +94,6 @@ public:
 
     const std::string& getTextureFolder() const;
     const std::string& getModelFolder() const;
-    const std::string& getLineFolder() const;
     const std::string& getPhysicsFolder() const;
     const std::string& getFontFolder() const;
     const std::string& getShaderFolder() const;
@@ -117,16 +108,15 @@ private:
 
     ModelLoader* m_ModelLoader;
     TextureLoader* m_TextureLoader;
-    LineLoader* m_LineLoader;
     PhysicsShapeLoader* m_PhysicsShapeLoader;
     FontLoader* m_FontLoader;
     ShaderLoader* m_ShaderLoader;
     MaterialLoader* m_MaterialLoader;
 
     Path m_ContentRootDir;
-    std::string m_TextureFolder, m_ModelFolder, m_LineFolder, m_PhysicsFolder, m_FontFolder,
+    std::string m_TextureFolder, m_ModelFolder, m_PhysicsFolder, m_FontFolder,
                 m_ShaderFolder, m_MaterialFolder, m_FxFolder;
-    Path m_TexturePath, m_ModelPath, m_LinePath, m_PhysicsPath, m_FontPath,
+    Path m_TexturePath, m_ModelPath, m_PhysicsPath, m_FontPath,
                 m_ShaderPath, m_MaterialPath, m_FxPath;
     
     gfx::ModelMesh* m_ParticleQuad;

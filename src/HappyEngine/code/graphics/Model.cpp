@@ -56,7 +56,7 @@ bool Model::canBeGarbageCollected()
 void Model::addMesh(const ObjectHandle& handle)
 {
     ResourceFactory<ModelMesh>::getInstance()->instantiate(handle);
-    m_Meshes.push_back(ResourceFactory<ModelMesh>::getInstance()->get(handle));
+    m_Meshes.add(ResourceFactory<ModelMesh>::getInstance()->get(handle));
 }
 uint32 Model::getNumMeshes() const
 {
@@ -72,7 +72,7 @@ ModelMesh* Model::instantiateMesh(uint32 index) const
 
 ModelMesh* Model::instantiateMesh( const std::string& name ) const
 {
-    std::vector<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* pMesh)
+    he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* pMesh)
     {
         return pMesh->getName() == name;
     }));
@@ -102,11 +102,11 @@ Model* Model::instantiateMeshesWithPrefix( const std::string& prefix ) const
     return model;
 }
 
-std::vector<ModelMesh*>::const_iterator Model::cbegin() const
+he::PrimitiveList<ModelMesh*>::const_iterator Model::cbegin() const
 {
     return m_Meshes.cbegin();
 }
-std::vector<ModelMesh*>::const_iterator Model::cend() const
+he::PrimitiveList<ModelMesh*>::const_iterator Model::cend() const
 {
     return m_Meshes.cend();
 }

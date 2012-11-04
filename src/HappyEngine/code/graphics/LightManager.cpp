@@ -58,7 +58,7 @@ PointLight* LightManager::addPointLight()
 {
     ObjectHandle lightHandle(LightFactory::getInstance()->createPointLight());
     PointLight* light(LightFactory::getInstance()->getPointLight(lightHandle));
-    m_PointLightVector.push_back(lightHandle);
+    m_PointLightList.add(lightHandle);
 
     return light;
 }
@@ -66,7 +66,7 @@ SpotLight* LightManager::addSpotLight()
 {
     ObjectHandle lightHandle(LightFactory::getInstance()->createSpotLight());
     SpotLight* light(LightFactory::getInstance()->getSpotLight(lightHandle));
-    m_SpotLightVector.push_back(lightHandle);
+    m_SpotLightList.add(lightHandle);
 
     return light;
 }
@@ -85,13 +85,13 @@ AmbientLight* LightManager::getAmbientLight() const
 {
     return m_AmbientLight;
 }
-const std::vector<ObjectHandle>& LightManager::getPointLights() const
+const he::ObjectList<ObjectHandle>& LightManager::getPointLights() const
 {
-    return m_PointLightVector;
+    return m_PointLightList;
 }
-const std::vector<ObjectHandle>& LightManager::getSpotLights() const
+const he::ObjectList<ObjectHandle>& LightManager::getSpotLights() const
 {
-    return m_SpotLightVector;
+    return m_SpotLightList;
 }
 DirectionalLight* LightManager::getDirectionalLight() const
 {
@@ -101,27 +101,27 @@ DirectionalLight* LightManager::getDirectionalLight() const
 void LightManager::removeAllLights()
 {
     LightFactory* lightFactory(LightFactory::getInstance());
-    std::for_each(m_PointLightVector.cbegin(), m_PointLightVector.cend(), [&lightFactory](const ObjectHandle& handle)
+    m_PointLightList.forEach([&lightFactory](const ObjectHandle& handle)
     {
         lightFactory->destroyLight(handle);
     });
-    std::for_each(m_SpotLightVector.cbegin(), m_SpotLightVector.cend(), [&lightFactory](const ObjectHandle& handle)
+    m_SpotLightList.forEach([&lightFactory](const ObjectHandle& handle)
     {
         lightFactory->destroyLight(handle);
     });
-    m_PointLightVector.clear();
-    m_SpotLightVector.clear();
+    m_PointLightList.clear();
+    m_SpotLightList.clear();
 }
 void LightManager::remove(const ObjectHandle& lightHandle)
 {
     Light* light(LightFactory::getInstance()->get(lightHandle));
     if (light->getType() == LightType_Point)
     {
-        m_PointLightVector.erase(std::remove(m_PointLightVector.begin(), m_PointLightVector.end(), lightHandle), m_PointLightVector.end());
+        m_PointLightList.remove(lightHandle);
     }
     else
     {
-        m_SpotLightVector.erase(std::remove(m_SpotLightVector.begin(), m_SpotLightVector.end(), lightHandle), m_SpotLightVector.end());
+        m_SpotLightList.remove(lightHandle);
     }
     LightFactory::getInstance()->destroyLight(lightHandle);
 }

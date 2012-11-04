@@ -38,7 +38,6 @@
 #include <sstream>
 #include <cstdarg>
 
-#include <boost/shared_ptr.hpp>
 #pragma warning (disable : 4244)
 #include <boost/thread.hpp>
 #pragma warning (default : 4244)

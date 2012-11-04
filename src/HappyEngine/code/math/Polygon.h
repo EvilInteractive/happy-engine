@@ -22,10 +22,6 @@
 #define _HE_POLYGON_H_
 #pragma once
 
-#include "vec2.h"
-#include "HappyTypes.h"
-#include <vector>
-
 namespace he {
 
 class Polygon
@@ -43,8 +39,8 @@ public:
     void clear();
 
     /* GETTERS */
-    const std::vector<vec2>& getVertices() const;
-    const std::vector<uint32>& getIndices() const;
+    const he::PrimitiveList<vec2>& getVertices() const;
+    const he::PrimitiveList<uint32>& getIndices() const;
 
     bool isTriangulated() const;
     bool hitTest(const vec2& hitPoint) const;
@@ -66,8 +62,8 @@ public:
 private:
 
     /* DATAMEMBERS */
-    std::vector<vec2> m_Vertices;
-    std::vector<uint32> m_Indices;
+    he::PrimitiveList<vec2> m_Vertices;
+    he::PrimitiveList<uint32> m_Indices;
 };
 
 } //end namespace

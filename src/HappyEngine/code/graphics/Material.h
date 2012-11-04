@@ -78,7 +78,7 @@ private:
     bool m_CullFrontFace;
 
     ObjectHandle m_ShaderHandle;
-    std::vector<ShaderVar*> m_ShaderVar;
+    he::PrimitiveList<ShaderVar*> m_ShaderVars;
 
     bool m_DepthRead, m_DepthWrite;
 

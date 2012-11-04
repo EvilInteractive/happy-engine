@@ -100,13 +100,13 @@ bool validateProgram(GLuint programID)
 }
 bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout)
 {
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), std::vector<std::string>());
+    return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), he::ObjectList<std::string>());
 }
-bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs)
+bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs)
 {
     return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), outputs);
 }
-bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
+bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
@@ -142,13 +142,13 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
 
 bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName)
 {
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), std::vector<std::string>());
+    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), he::ObjectList<std::string>());
 }
-bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName , const std::vector<std::string>& outputs)
+bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName , const he::ObjectList<std::string>& outputs)
 {
     return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), outputs);
 }
-bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const std::vector<std::string>& outputs)
+bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs)
 {
     bool succes = true;
 
@@ -278,7 +278,7 @@ void Shader::setShaderVar(uint32 id, const mat44& matrix) const
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     glUniformMatrix4fv(id, 1, GL_FALSE, matrix.toFloatArray());
 }
-void Shader::setShaderVar(uint32 id, const std::vector<mat44>& matrixArray) const
+void Shader::setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray) const
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");

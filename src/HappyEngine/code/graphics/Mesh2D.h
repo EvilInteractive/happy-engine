@@ -45,8 +45,8 @@ public:
     /* GETTERS */
     uint32 getBufferID() const;
     const mat44& getWorldMatrix() const;
-    const std::vector<vec2>& getVertices() const;
-    const std::vector<uint32>& getIndices() const;
+    const he::PrimitiveList<vec2>& getVertices() const;
+    const he::PrimitiveList<uint32>& getIndices() const;
 
     /* SETTERS */
     void setWorldMatrix(const mat44& mat);
@@ -56,7 +56,7 @@ private:
     void destroyVao(GLContext* context);
 
     /* DATAMEMBERS */
-    Polygon* m_pPolygon;
+    Polygon* m_Polygon;
     mat44 m_WorldMatrix;
     uint32 m_VBOID;
     uint32 m_IBOID;

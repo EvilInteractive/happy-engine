@@ -32,16 +32,16 @@ class Triangulator
 {
 public:
 
-	static bool triangulatePolygon(const std::vector<vec2>& vertices, std::vector<uint32>& indices);
-	static float calculateArea(const std::vector<vec2>& vertices);
-	static bool hitTestTriangle(const vec2& p1, const vec2& p2, const vec2& p3, const vec2& hitPoint);
-    static bool isConvex(const std::vector<vec2>& vertices);
+    static bool triangulatePolygon(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices);
+    static float calculateArea(const he::PrimitiveList<vec2>& vertices);
+    static bool hitTestTriangle(const vec2& p1, const vec2& p2, const vec2& p3, const vec2& hitPoint);
+    static bool isConvex(const he::PrimitiveList<vec2>& vertices);
 
 private:
 
-	static bool snip(const std::vector<vec2>& contour, int u, int v, int w, int n, int* V);
-    static void triangulateConvex(const std::vector<vec2>& vertices, std::vector<uint32>& indices);
-    static bool triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint32>& indices);
+    static bool snip(const he::PrimitiveList<vec2>& contour, int u, int v, int w, int n, int* V);
+    static void triangulateConvex(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices);
+    static bool triangulateConcave(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices);
     static int sign(float x) { return x < 0 ? -1 : 1; }
 };
 

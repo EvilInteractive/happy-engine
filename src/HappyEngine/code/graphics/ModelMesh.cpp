@@ -201,9 +201,10 @@ void ModelMesh::setIndices(const void* pIndices, uint32 num, IndexStride type, M
     }
 }
 
-void ModelMesh::setBones( const std::vector<Bone>& boneList )
+void ModelMesh::setBones( const he::ObjectList<Bone>& boneList )
 {
-    m_BoneList = boneList;
+    m_BoneList.clear();
+    m_BoneList.append(boneList);
 }
 
 void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )

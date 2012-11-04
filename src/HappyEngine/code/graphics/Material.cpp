@@ -42,7 +42,7 @@ Material::Material(): m_UsedForInstancing(false), m_IsBlended(false), m_NoPost(f
 
 Material::~Material()
 {
-    std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [](ShaderVar* var)
+    m_ShaderVars.forEach([](ShaderVar* var)
     {
         delete var;
     });
@@ -53,7 +53,7 @@ Material::~Material()
 void Material::registerVar(ShaderVar* var)
 {
     HE_ASSERT(!m_UsedForInstancing || (var->getType() == ShaderVarType_View ||var->getType() == ShaderVarType_ViewProjection || var->getType() >= ShaderVarType_AmbientColor), "ShaderVarType not supported for instancing");
-    m_ShaderVar.push_back(var);
+    m_ShaderVars.add(var);
 }
 
 void Material::setShader(const ObjectHandle& shaderHandle, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout)
@@ -69,8 +69,8 @@ void Material::setShader(const ObjectHandle& shaderHandle, const BufferLayout& c
 }
 ShaderVar* Material::getVar( const std::string& var )
 {
-    std::vector<ShaderVar*>::const_iterator it(m_ShaderVar.cbegin());
-    for (; it != m_ShaderVar.cend(); ++it)
+    he::PrimitiveList<ShaderVar*>::const_iterator it(m_ShaderVars.cbegin());
+    for (; it != m_ShaderVars.cend(); ++it)
     {
         if ((*it)->getName() == var)
         {          
@@ -99,7 +99,7 @@ void Material::apply( const SingleDrawable* drawable, const ICamera* camera ) co
         Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
 
         shader->bind();
-        std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](ShaderVar* pVar)
+        m_ShaderVars.forEach([&](ShaderVar* pVar)
         {
             if (pVar->getType() == ShaderVarType_User)
             {
@@ -168,7 +168,7 @@ void Material::apply( const InstancedDrawable* drawable, const ICamera* camera )
 
         Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
         shader->bind();
-        std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](ShaderVar* pVar)
+        m_ShaderVars.forEach([&](ShaderVar* pVar)
         {
             if (pVar->getType() == ShaderVarType_User)
             {
@@ -222,7 +222,7 @@ void Material::apply( const SkinnedDrawable* drawable, const ICamera* camera ) c
 
         Shader* shader(ResourceFactory<Shader>::getInstance()->get(m_ShaderHandle));
         shader->bind();
-        std::for_each(m_ShaderVar.cbegin(), m_ShaderVar.cend(), [&](ShaderVar* pVar)
+        m_ShaderVars.forEach([&](ShaderVar* pVar)
         {
             if (pVar->getType() == ShaderVarType_User)
             {

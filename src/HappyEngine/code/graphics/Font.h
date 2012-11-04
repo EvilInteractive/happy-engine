@@ -83,7 +83,7 @@ private:
     bool m_Cached;
     bool m_ExtendedChars;
     Texture2D* m_TextureAtlas;
-    std::vector<CharData> m_CharTextureData;
+    he::PrimitiveList<CharData> m_CharTextureData;
 
     bool m_Init;
 

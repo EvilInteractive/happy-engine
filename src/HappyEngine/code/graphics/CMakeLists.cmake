@@ -40,7 +40,6 @@ set (CODE_GRAPHICS_MATERIAL_FILTER
             
 set (CODE_GRAPHICS_MODEL_FILTER
             Bone.cpp                            Bone.h
-            Line.cpp                            Line.h
             Mesh2D.cpp                          Mesh2D.h
             Model.cpp                           Model.h
             ModelMesh.cpp                       ModelMesh.h)

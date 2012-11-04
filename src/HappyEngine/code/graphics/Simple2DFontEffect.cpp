@@ -46,8 +46,8 @@ void Simple2DFontEffect::load()
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    std::vector<std::string> shaderOutputs;
-    shaderOutputs.push_back("outColor");
+    he::ObjectList<std::string> shaderOutputs;
+    shaderOutputs.add("outColor");
     const std::string& folder(CONTENT->getShaderFolderPath().str());
     bool compiled = m_Shader->initFromFile(folder + "2D/simple2DFontShader.vert", 
                                             folder + "2D/simple2DFontShader.frag", layout, shaderOutputs);

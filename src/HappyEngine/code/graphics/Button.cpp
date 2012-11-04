@@ -133,10 +133,10 @@ void Button::setSprites(	const ObjectHandle& normalSprite,
     ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(downSprite);
     ResourceFactory<gfx::Texture2D>::getInstance()->instantiate(disabledSprite);
 
-    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(normalSprite));
-    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(hoverSprite));
-    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(downSprite));
-    m_Sprites.push_back(ResourceFactory<gfx::Texture2D>::getInstance()->get(disabledSprite));
+    m_Sprites.add(ResourceFactory<gfx::Texture2D>::getInstance()->get(normalSprite));
+    m_Sprites.add(ResourceFactory<gfx::Texture2D>::getInstance()->get(hoverSprite));
+    m_Sprites.add(ResourceFactory<gfx::Texture2D>::getInstance()->get(downSprite));
+    m_Sprites.add(ResourceFactory<gfx::Texture2D>::getInstance()->get(disabledSprite));
 }
 
 void Button::setState(STATE state)

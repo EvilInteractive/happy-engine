@@ -52,8 +52,8 @@ public:
 
     AmbientLight* getAmbientLight() const;
     DirectionalLight* getDirectionalLight() const;
-    const std::vector<ObjectHandle>& getPointLights() const;
-    const std::vector<ObjectHandle>& getSpotLights() const;
+    const he::ObjectList<ObjectHandle>& getPointLights() const;
+    const he::ObjectList<ObjectHandle>& getSpotLights() const;
 
     void removeAllLights();
     void remove(const ObjectHandle& light);
@@ -66,8 +66,8 @@ private:
     AmbientLight* m_AmbientLight;
     DirectionalLight* m_DirectionalLight;
 
-    std::vector<ObjectHandle> m_PointLightVector;
-    std::vector<ObjectHandle> m_SpotLightVector;
+    he::ObjectList<ObjectHandle> m_PointLightList;
+    he::ObjectList<ObjectHandle> m_SpotLightList;
 
     //Disable default copy constructor and default assignment operator
     LightManager(const LightManager&);

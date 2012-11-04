@@ -82,7 +82,7 @@ void SkinnedModelComponent::modelLoadedCallback()
     std::for_each(m_ModelMesh->getBones().cbegin(), m_ModelMesh->getBones().cend(), [&](const gfx::Bone& bone)
     {
         //m_BoneTransform.push_back(bone.m_BaseTransform);
-        m_BoneTransform.push_back(mat44::Identity);
+        m_BoneTransform.add(mat44::Identity);
 
         BoneTransform transform;
         transform.m_ToOrigTransform = bone.m_BaseTransform;
@@ -113,7 +113,7 @@ void SkinnedModelComponent::setMaterial( const ObjectHandle& material )
         ResourceFactory<gfx::Material>::getInstance()->instantiate(material);
 }
 
-const std::vector<mat44>& SkinnedModelComponent::getBoneTransforms() const
+const he::PrimitiveList<mat44>& SkinnedModelComponent::getBoneTransforms() const
 {
     return m_BoneTransform;
 }

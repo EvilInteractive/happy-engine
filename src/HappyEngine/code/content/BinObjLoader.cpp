@@ -31,48 +31,26 @@ namespace he {
 namespace ct {
 namespace models {
 
-struct BinObjLoader::InternalVertex
-{
-    vec3 pos;
-    vec2 tex;
-    vec3 norm;
-    vec3 tan;
-    uint8 boneID[gfx::Bone::MAX_BONEWEIGHTS];
-    float boneWeight[gfx::Bone::MAX_BONEWEIGHTS];
-
-    InternalVertex(): pos(), tex(), norm(), tan()
-    {
-        for (int i = 0; i < gfx::Bone::MAX_BONEWEIGHTS; ++i)
-        {
-            boneID[i] = 0;
-            boneWeight[i] = 0.0f;
-        }
-    } 
-};
-struct BinObjLoader::InternalVertexNoBones
-{
-    vec3 pos;
-    vec2 tex;
-    vec3 norm;
-    vec3 tan;
-
-    InternalVertexNoBones(): pos(), tex(), norm(), tan()
-    {
-    } 
-};
-
-BinObjLoader::BinObjLoader(): m_NumIndices(0)
+BinObjLoader::BinObjLoader()
 {
 }
 
 
 BinObjLoader::~BinObjLoader()
 {
-    std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
+    m_BoneData.forEach([&](he::ObjectList<gfx::Bone>* bones)
+    {
+        delete bones;
+    });
+    m_VertexData.forEach([&](he::ObjectList<InternalVertex>* vertexData)
+    {
+        delete vertexData;
+    });
+    m_Vertices.forEach([&](void* pVert)
     {
         he_free(pVert);
     });
-    std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
+    m_Indices.forEach([&](void* pInd)
     {
         he_free(pInd);
     });
@@ -81,8 +59,8 @@ bool BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLa
 {
     if (read(path, allowByteIndices) == false)
         return false;
-    
-    std::for_each(m_Vertices.begin(), m_Vertices.end(), [&](void* pVert)
+
+    m_Vertices.forEach([&](void* pVert)
     {
         he_free(pVert);
     });
@@ -90,9 +68,9 @@ bool BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLa
 
     for (uint32 i = 0; i < m_VertexData.size(); ++i)
     {
-        void* pVert(he_malloc(vertLayout.getSize() * m_VertexData[i].size()));
+        void* pVert(he_malloc(vertLayout.getSize() * m_VertexData[i]->size()));
         HE_ASSERT(pVert != nullptr, "not enough memory!");
-        m_Vertices.push_back(pVert);
+        m_Vertices.add(pVert);
     }
     
     fill(vertLayout);
@@ -108,6 +86,15 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
         he_free(pInd);
     });
     m_Indices.clear();
+    m_BoneData.forEach([&](he::ObjectList<gfx::Bone>* bones)
+    {
+        delete bones;
+    });
+    m_BoneData.clear();
+    m_VertexData.forEach([&](he::ObjectList<InternalVertex>* vertexData)
+    {
+        delete vertexData;
+    });
     m_VertexData.clear();
 
     using namespace std;
@@ -120,43 +107,44 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
 
     for(uint32 i = 0; i < meshes; ++i)
     {
-        m_MeshName.push_back(stream.readString());
+        m_MeshName.add(stream.readString());
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Bones                                  ///
         //////////////////////////////////////////////////////////////////////////
         uint32 numBones(stream.readByte());
-        m_BoneData.push_back(std::vector<gfx::Bone>());
-        m_BoneData.back().reserve(numBones);
+        m_BoneData.add(NEW he::ObjectList<gfx::Bone>());
+        m_BoneData.back()->reserve(numBones);
         for (uint32 iBone = 0; iBone < numBones; ++iBone)
         {
             gfx::Bone bone;
             bone.m_Name = stream.readString();
             bone.m_BaseTransform = stream.readMatrix();
-            m_BoneData.back().push_back(bone);
+            m_BoneData.back()->add(bone);
         }
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Vertices                               ///
         //////////////////////////////////////////////////////////////////////////
         uint32 numVertices(stream.readDword());
-        m_VertexData.push_back(std::vector<InternalVertex>(numVertices));
-        stream.read(&m_VertexData.back()[0], numVertices * sizeof(InternalVertex));
+        m_VertexData.add(NEW he::ObjectList<InternalVertex>((size_t)numVertices));
+        m_VertexData.back()->resize(numVertices);
+        stream.read(&(m_VertexData.back()->front()), numVertices * sizeof(InternalVertex));
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Indices                                ///
         //////////////////////////////////////////////////////////////////////////
-        m_NumIndices.push_back(stream.readDword());
+        m_NumIndices.add(stream.readDword());
         gfx::IndexStride stride(static_cast<gfx::IndexStride>(stream.readByte()));
         if (stride == gfx::IndexStride_Byte && allowByteIndices == false)
-            m_IndexStride.push_back(gfx::IndexStride_UShort);
+            m_IndexStride.add(gfx::IndexStride_UShort);
         else
-            m_IndexStride.push_back(stride);
+            m_IndexStride.add(stride);
         
         void* pInd = he_malloc(stride * m_NumIndices.back());
         HE_ASSERT(pInd != nullptr, "not enough memory!");
         stream.read(pInd, stride * m_NumIndices.back());
-        m_Indices.push_back(pInd);
+        m_Indices.add(pInd);
     }
     return true;
 }
@@ -193,14 +181,14 @@ void BinObjLoader::fill(const gfx::BufferLayout& vertLayout) const
         {
             if (pOff == 0 && tOff == 12 && nOff == 20 && tanOff == 32 && boneOff == 44 && weightOff == 44 + gfx::Bone::MAX_BONES * 1)
             {
-                he_memcpy(m_Vertices[i], &m_VertexData[i][0], m_VertexData[i].size() * vertLayout.getSize());
+                he_memcpy(m_Vertices[i], &m_VertexData[i]->front(), m_VertexData[i]->size() * vertLayout.getSize());
                 break;
             }
         } 
 
         char* pCharData = static_cast<char*>(m_Vertices[i]);
         uint32 count(0);
-        std::for_each(m_VertexData[i].cbegin(), m_VertexData[i].cend(), [&](const InternalVertex& vert)
+        m_VertexData[i]->forEach([&](const InternalVertex& vert)
         {
             if (pOff != -1)
             {
@@ -247,7 +235,7 @@ gfx::IndexStride BinObjLoader::getIndexStride(uint32 mesh) const
 }
 uint32 BinObjLoader::getNumVertices(uint32 mesh) const
 {
-    return m_VertexData[mesh].size();
+    return m_VertexData[mesh]->size();
 }
 uint32 BinObjLoader::getNumIndices(uint32 mesh) const
 {
@@ -263,10 +251,10 @@ const std::string& BinObjLoader::getMeshName(uint32 mesh) const
     return m_MeshName[mesh];
 }
 
-const std::vector<gfx::Bone>& BinObjLoader::getBones( uint32 mesh ) const
+const he::ObjectList<gfx::Bone>& BinObjLoader::getBones( uint32 mesh ) const
 {
     HE_ASSERT(mesh < m_BoneData.size(), "mesh outside array");
-    return m_BoneData[mesh];
+    return *m_BoneData[mesh];
 }
 
 } } } //end namespace

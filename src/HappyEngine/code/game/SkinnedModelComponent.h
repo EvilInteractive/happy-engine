@@ -57,7 +57,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual const gfx::Material* getMaterial() const;
     virtual const gfx::ModelMesh* getModelMesh() const; 
-    virtual const std::vector<mat44>& getBoneTransforms() const;
+    virtual const he::PrimitiveList<mat44>& getBoneTransforms() const;
     //////////////////////////////////////////////////////////////////////////
            
     void setModelMesh(const ObjectHandle& modelHandle);
@@ -74,7 +74,7 @@ private:
     const gfx::ModelMesh* m_ModelMesh;
     const gfx::Material* m_Material;
 
-    std::vector<mat44> m_BoneTransform;
+    he::PrimitiveList<mat44> m_BoneTransform;
     std::map<std::string, BoneTransform> m_Bones;
         
     Entity* m_Parent;

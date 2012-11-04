@@ -364,7 +364,7 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
 void Deferred3DRenderer::postPointLights(const Scene* scene)
 {
     LightManager* lightManager(scene->getLightManager());
-    const std::vector<ObjectHandle>& lights(lightManager->getPointLights());
+    const he::ObjectList<ObjectHandle>& lights(lightManager->getPointLights());
 
     const LightFactory* lightFactory(LightFactory::getInstance());
 
@@ -380,7 +380,7 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
 
     const CameraPerspective& camera(*m_View->getCamera());
     vec3 position;
-    std::for_each(lights.cbegin(), lights.cend(), [&](const ObjectHandle& lightHandle)
+    lights.forEach([&](const ObjectHandle& lightHandle)
     {
         PointLight* light(lightFactory->getPointLight(lightHandle));
 
@@ -417,7 +417,7 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
 void Deferred3DRenderer::postSpotLights(const Scene* scene)
 {
     LightManager* pLightManager(scene->getLightManager());
-    const std::vector<ObjectHandle>& lights(pLightManager->getSpotLights());
+    const he::ObjectList<ObjectHandle>& lights(pLightManager->getSpotLights());
 
     const LightFactory* lightFactory(LightFactory::getInstance());
 
@@ -449,7 +449,7 @@ void Deferred3DRenderer::postSpotLights(const Scene* scene)
             m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.normalDepthMap,   m_NormalDepthTexture);
         }
 
-        std::vector<ObjectHandle>::const_iterator it(lights.cbegin());
+        he::ObjectList<ObjectHandle>::const_iterator it(lights.cbegin());
         for (; it != lights.cend(); ++it)
         {
             SpotLight* light(lightFactory->getSpotLight(*it));

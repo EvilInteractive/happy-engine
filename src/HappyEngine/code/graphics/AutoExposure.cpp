@@ -88,8 +88,8 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    std::vector<std::string> shaderOutputs;
-    shaderOutputs.push_back("outColor");
+    he::ObjectList<std::string> shaderOutputs;
+    shaderOutputs.add("outColor");
 
     m_LumShader = ResourceFactory<gfx::Shader>::getInstance()->get(
         CONTENT->loadShader("shared/postShaderQuad.vert", 

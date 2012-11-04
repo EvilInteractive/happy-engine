@@ -21,10 +21,7 @@
 #include "HappyPCH.h" 
 
 #include "Polygon.h"
-#include "HappyNew.h"
 #include "Triangulator.h"
-
-#include <algorithm>
 
 namespace he {
 
@@ -39,14 +36,16 @@ Polygon::~Polygon()
 
 Polygon::Polygon(const Polygon& p)
 {
-    m_Vertices = p.m_Vertices;
-    m_Indices = p.m_Indices;
+    m_Vertices.append(p.m_Vertices);
+    m_Indices.append(p.m_Indices);
 }
 
 Polygon& Polygon::operator=(const Polygon& p)
 {
-    m_Vertices = p.m_Vertices;
-    m_Indices = p.m_Indices;
+    m_Vertices.clear();
+    m_Indices.clear();
+    m_Vertices.append(p.m_Vertices);
+    m_Indices.append(p.m_Indices);
 
     return *this;
 }
@@ -54,8 +53,7 @@ Polygon& Polygon::operator=(const Polygon& p)
 /* GENERAL */
 void Polygon::addPoint(const vec2& p)
 {
-    m_Vertices.push_back(p);
-
+    m_Vertices.add(p);
     m_Indices.clear();
 }
 
@@ -68,7 +66,7 @@ bool Polygon::outline()
 
     for (uint32 i(0); i < m_Vertices.size(); ++i)
     {
-        m_Indices.push_back(i);
+        m_Indices.add(i);
     }
 
     return true;
@@ -96,12 +94,12 @@ void Polygon::clear()
 }
 
 /* GETTERS */
-const std::vector<vec2>& Polygon::getVertices() const
+const he::PrimitiveList<vec2>& Polygon::getVertices() const
 {
     return m_Vertices;
 }
 
-const std::vector<uint32>& Polygon::getIndices() const
+const he::PrimitiveList<uint32>& Polygon::getIndices() const
 {
     return m_Indices;
 }

@@ -170,7 +170,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     return material->getHandle();
                 }
 
-                std::vector<std::string> shaderOutputs;
+                he::ObjectList<std::string> shaderOutputs;
 
                 // [out]
                 if (shaderReader.containsRoot(L"out"))

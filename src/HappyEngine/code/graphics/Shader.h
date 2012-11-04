@@ -142,12 +142,12 @@ public:
     virtual ~Shader();
 
     bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout);
-    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::vector<std::string>& outputs);
-    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
+    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs);
+    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs = he::ObjectList<std::string>());
     
     bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName);
-    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::vector<std::string>& outputs);
-    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const std::vector<std::string>& outputs = std::vector<std::string>());
+    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const he::ObjectList<std::string>& outputs);
+    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs = he::ObjectList<std::string>());
 
     void bind();
 
@@ -166,7 +166,7 @@ public:
     void setShaderVar(uint32 id, const vec3& vec) const;
     void setShaderVar(uint32 id, const vec4& vec) const;
     void setShaderVar(uint32 id, const mat44& matrix) const;
-    void setShaderVar(uint32 id, const std::vector<mat44>& matrixArray) const;
+    void setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray) const;
     void setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const;
     void setShaderVar(uint32 id, const gfx::TextureCube* texCube) const;
     

@@ -20,7 +20,6 @@
 #include "HappyPCH.h" 
 
 #include "ShaderLayout.h"
-#include "HappyNew.h"
 
 namespace he {
 namespace gfx {
@@ -52,7 +51,7 @@ ShaderLayout::~ShaderLayout()
 
 void ShaderLayout::addElement(const ShaderLayoutElement& element)
 {
-    m_Layout.push_back(element);
+    m_Layout.add(element);
 }
 
 const ShaderLayout::layout& ShaderLayout::getElements() const

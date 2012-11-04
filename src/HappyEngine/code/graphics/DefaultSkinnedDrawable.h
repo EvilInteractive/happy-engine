@@ -39,7 +39,7 @@ public:
     virtual void applyMaterial(const Material* customMaterial, const ICamera* pCamera) const;
 
     virtual const ModelMesh* getModelMesh() const = 0;
-    virtual const std::vector<mat44>& getBoneTransforms() const = 0;
+    virtual const he::PrimitiveList<mat44>& getBoneTransforms() const = 0;
 
     virtual void calculateBound();
     virtual const Bound& getBound() const { return m_Bound; }

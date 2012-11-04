@@ -24,7 +24,7 @@
 
 namespace he {
 
-bool Triangulator::triangulatePolygon(const std::vector<vec2>& vertices, std::vector<uint32>& indices)
+bool Triangulator::triangulatePolygon(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices)
 {
     int n = (int)vertices.size();
     if ( n < 3 ) return false;
@@ -41,17 +41,17 @@ bool Triangulator::triangulatePolygon(const std::vector<vec2>& vertices, std::ve
     }
 }
 
-void Triangulator::triangulateConvex(const std::vector<vec2>& vertices, std::vector<uint32>& indices)
+void Triangulator::triangulateConvex(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices)
 {
     for (uint32 i(0); i < vertices.size() - 2; ++i)
     {
-        indices.push_back(0);
-        indices.push_back(i + 1);
-        indices.push_back(i + 2);
+        indices.add(0);
+        indices.add(i + 1);
+        indices.add(i + 2);
     }
 }
 
-bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::vector<uint32>& indices)
+bool Triangulator::triangulateConcave(const he::PrimitiveList<vec2>& vertices, he::PrimitiveList<uint32>& indices)
 {
     int n = (int)vertices.size();
     int* V = NEW int[n]; // TODO: seeb cache this buffer as a member, enlarge if needed
@@ -83,9 +83,9 @@ bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::ve
 
             a = V[u]; b = V[v]; c = V[w];
 
-            indices.push_back(a);
-            indices.push_back(b);
-            indices.push_back(c);
+            indices.add(a);
+            indices.add(b);
+            indices.add(c);
 
             m++;
 
@@ -100,7 +100,7 @@ bool Triangulator::triangulateConcave(const std::vector<vec2>& vertices, std::ve
     return true;
 }
 
-float Triangulator::calculateArea(const std::vector<vec2>& vertices)
+float Triangulator::calculateArea(const he::PrimitiveList<vec2>& vertices)
 {
     int n((int)vertices.size());
     float A(0.0f);
@@ -132,7 +132,7 @@ bool Triangulator::hitTestTriangle(const vec2& p1, const vec2& p2, const vec2& p
     return (cross.z >= 0.0f && cross.y >= 0.0f && cross.x >= 0.0f);
 }
 
-bool Triangulator::isConvex(const std::vector<vec2>& vertices)
+bool Triangulator::isConvex(const he::PrimitiveList<vec2>& vertices)
 {
     if (vertices.size() < 3)
         return false;
@@ -146,7 +146,7 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
     int b((int)vertices.size() - 2);
 
     vec2 t1,t2,t3;
-    std::vector<vec2> tri;
+    he::PrimitiveList<vec2> tri;
 
     for (uint32 c(0); c < vertices.size(); ++c)
     {
@@ -155,9 +155,9 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
         t3 = vertices[c];
 
         tri.clear();
-        tri.push_back(t1);
-        tri.push_back(t2);
-        tri.push_back(t3);
+        tri.add(t1);
+        tri.add(t2);
+        tri.add(t3);
 
         if (sign(calculateArea(tri)) != winding)
             return false;
@@ -169,7 +169,7 @@ bool Triangulator::isConvex(const std::vector<vec2>& vertices)
     return true;
 }
 
-bool Triangulator::snip(const std::vector<vec2>& vertices, int u, int v, int w, int n, int* V)
+bool Triangulator::snip(const he::PrimitiveList<vec2>& vertices, int u, int v, int w, int n, int* V)
 {
     vec2 a, b, c, p;
 

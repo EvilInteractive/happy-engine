@@ -31,6 +31,7 @@ namespace gfx {
 class ShaderLayoutElement
 {
 public:
+    ShaderLayoutElement(): m_ElementIndex(UINT32_MAX), m_NameInShader("ERROR") {}
     ShaderLayoutElement(uint32 elementIndex, const std::string& nameInShader);
     virtual ~ShaderLayoutElement() {}
     //default copy constructor and assignment operator are fine
@@ -46,11 +47,11 @@ private:
 class ShaderLayout
 {
 public:
-	ShaderLayout();
+    ShaderLayout();
     virtual ~ShaderLayout();
     //default copy constructor and default assignment operator are OK
     
-    typedef std::vector<ShaderLayoutElement> layout;
+    typedef he::ObjectList<ShaderLayoutElement> layout;
 
     void addElement(const ShaderLayoutElement& element);
 

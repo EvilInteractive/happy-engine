@@ -29,7 +29,7 @@ namespace gfx {
 
 #pragma warning(disable:4355) // use of this in initializer list
 Mesh2D::Mesh2D() :  
-    m_pPolygon(NEW Polygon()),
+    m_Polygon(NEW Polygon()),
     m_WorldMatrix(mat44::Identity),
     m_ContextCreatedHandler(boost::bind(&Mesh2D::initVao, this, _1)),
     m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1))
@@ -40,7 +40,7 @@ Mesh2D::Mesh2D() :
     he_memset(m_VAOID, 0xffff, sizeof(VaoID) * MAX_VERTEX_ARRAY_OBJECTS);
 
     const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    contexts.forEach([&](GLContext* context)
     {
         initVao(context);
     });
@@ -78,7 +78,7 @@ Mesh2D::~Mesh2D()
     GRAPHICS->ContextCreated -= m_ContextCreatedHandler;
     GRAPHICS->ContextRemoved -= m_ContextRemovedHandler;
     const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
-    std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
+    contexts.forEach([&](GLContext* context)
     {
         destroyVao(context);
     });
@@ -86,37 +86,37 @@ Mesh2D::~Mesh2D()
     glDeleteBuffers(1, &m_VBOID);
     glDeleteBuffers(1, &m_IBOID);
 
-    delete m_pPolygon;
+    delete m_Polygon;
 }
 
 /* GENERAL */
 void Mesh2D::addVertex(const vec2& point)
 {
-    m_pPolygon->addPoint(point);
+    m_Polygon->addPoint(point);
 }
 
 void Mesh2D::clear()
 {
-    m_pPolygon->clear();
+    m_Polygon->clear();
 }
 
 bool Mesh2D::triangulate()
 {
-    return m_pPolygon->triangulate();
+    return m_Polygon->triangulate();
 }
 
 void Mesh2D::createBuffer(bool outline)
 {
     if (outline == false)
     {
-        if (m_pPolygon->triangulate() == false)
+        if (m_Polygon->triangulate() == false)
         {
             HE_ERROR("Failed to triangulate Mesh2D!");
         }
     }
     else
     {
-        if (m_pPolygon->outline() == false)
+        if (m_Polygon->outline() == false)
         {
             HE_ERROR("Failed to outline Mesh2D!");
         }
@@ -125,10 +125,10 @@ void Mesh2D::createBuffer(bool outline)
     GL::heBindVao(getBufferID());
     
     glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_pPolygon->getVertexCount() * sizeof(vec2), &m_pPolygon->getVertices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_Polygon->getVertexCount() * sizeof(vec2), &m_Polygon->getVertices()[0], GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_pPolygon->getIndexCount() * sizeof(uint32), &m_pPolygon->getIndices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Polygon->getIndexCount() * sizeof(uint32), &m_Polygon->getIndices()[0], GL_STREAM_DRAW);
 }
 
 /* GETTERS */
@@ -142,14 +142,14 @@ const mat44& Mesh2D::getWorldMatrix() const
     return m_WorldMatrix;
 }
 
-const std::vector<vec2>& Mesh2D::getVertices() const
+const he::PrimitiveList<vec2>& Mesh2D::getVertices() const
 {
-    return m_pPolygon->getVertices();
+    return m_Polygon->getVertices();
 }
 
-const std::vector<uint32>& Mesh2D::getIndices() const
+const he::PrimitiveList<uint32>& Mesh2D::getIndices() const
 {
-    return m_pPolygon->getIndices();
+    return m_Polygon->getIndices();
 }
 
 /* SETTERS */

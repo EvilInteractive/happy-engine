@@ -50,7 +50,7 @@ void ShadowCaster::render(Scene* scene)
     LightManager* lightMan(scene->getLightManager());
     LightFactory* lightFactory(LightFactory::getInstance());
     
-    std::vector<ObjectHandle> spotLights(lightMan->getSpotLights());
+    const he::ObjectList<ObjectHandle>& spotLights(lightMan->getSpotLights());
     std::for_each(spotLights.cbegin(), spotLights.cend(), [&](const ObjectHandle& handle)
     {
         SpotLight* light(lightFactory->getSpotLight(handle));

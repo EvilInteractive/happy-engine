@@ -43,7 +43,7 @@ public:
     virtual const void* getVertices(uint32 mesh) const = 0;
     virtual uint32 getNumVertices(uint32 mesh) const = 0;
 
-    virtual const std::vector<gfx::Bone>& getBones(uint32 mesh) const = 0;
+    virtual const he::ObjectList<gfx::Bone>& getBones(uint32 mesh) const = 0;
 
     virtual const void* getIndices(uint32 mesh) const = 0;
     virtual gfx::IndexStride getIndexStride(uint32 mesh) const = 0;

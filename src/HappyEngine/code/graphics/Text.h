@@ -76,7 +76,7 @@ public:
 
     /* GETTERS */
     const std::string& getLine(uint32 lineNumber) const;
-    const std::vector<std::string>& getText() const;
+    const he::ObjectList<std::string>& getText() const;
 
     bool isEmpty() const;
     bool hasBounds() const;
@@ -93,7 +93,7 @@ public:
 private:
 
     /* DATAMEMBERS */
-    std::vector<std::string> m_Text;
+    he::ObjectList<std::string> m_Text;
 
     OverFlowType m_OverFlowType;
 
