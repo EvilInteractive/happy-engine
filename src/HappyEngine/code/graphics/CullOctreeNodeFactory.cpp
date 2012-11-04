@@ -33,7 +33,7 @@ CullOctreeNodeFactory::CullOctreeNodeFactory()
 
 CullOctreeNodeFactory::~CullOctreeNodeFactory()
 {
-    std::for_each(m_Buffers.begin(), m_Buffers.end(), [](CullOctreeNode* buffer)
+    m_Buffers.forEach([](CullOctreeNode* buffer)
     {
         he_free(buffer);
     });
@@ -45,7 +45,7 @@ void CullOctreeNodeFactory::addBuffer()
     he_memset(buffer, 0, sizeof(CullOctreeNode) * BUFFER_SIZE);
     
     uint32 bufferIndex(static_cast<uint32>(m_Buffers.size()));
-    m_Buffers.push_back(buffer);
+    m_Buffers.add(buffer);
 
     uint32 shiftBufferIndex((bufferIndex << 16) & 0xffff0000);
     for (uint32 i(0); i < BUFFER_SIZE; ++i)

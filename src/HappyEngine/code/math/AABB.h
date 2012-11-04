@@ -92,8 +92,8 @@ public:
 
     static AABB calculateBoundingAABB(const void* pointCloud, uint32 num, uint32 stride, uint32 posOffset);
 
-    void generateVertices(std::vector<vec3>& outBuffer) const;
-    void generateIndices(std::vector<uint32>& outBuffer, uint32 offset) const;
+    void generateVertices(he::PrimitiveList<vec3>& outBuffer) const;
+    void generateIndices(he::PrimitiveList<uint32>& outBuffer, uint32 offset) const;
 
 private:
     vec3 m_TopFrontLeft; 

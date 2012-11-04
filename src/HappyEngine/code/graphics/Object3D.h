@@ -127,7 +127,7 @@ protected:
     };
 
     IObject3D* m_Parent;
-    std::vector<IObject3D*> m_Childs;
+    he::PrimitiveList<IObject3D*> m_Childs;
 
     mutable uint8 m_LocalMatrixDirty : 4;
     mutable uint8 m_WorldMatrixDirty : 4;

@@ -72,9 +72,9 @@ private:
     View* m_View;
     const RenderTarget* m_RenderTarget;
 
-    std::vector<WebView*> m_WebViews;
-    std::vector<Canvas2D*> m_Canvas2Ds;
-    std::vector<IDrawable2D*> m_Drawables;
+    he::PrimitiveList<WebView*> m_WebViews;
+    he::PrimitiveList<Canvas2D*> m_Canvas2Ds;
+    he::PrimitiveList<IDrawable2D*> m_Drawables;
 
     Simple2DTextureEffect* m_TextureEffect;
     ModelMesh* m_TextureQuad;

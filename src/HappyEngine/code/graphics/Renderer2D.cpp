@@ -67,23 +67,21 @@ Canvas2D* Renderer2D::createCanvasAbsolute(const RectI& viewport)
 {
     HE_ASSERT(viewport.width > 0 && viewport.height > 0, "viewport width and height must be > 0");
     Canvas2D* canvas(NEW Canvas2D(viewport));
-    m_Canvas2Ds.push_back(canvas);
+    m_Canvas2Ds.add(canvas);
     return canvas;
 }
 Canvas2D* Renderer2D::createCanvasRelative(const RectF& percent)
 {
     HE_ASSERT(percent.width > 0 && percent.height > 0, "viewport width and height must be > 0");
     Canvas2D* canvas(NEW Canvas2D(m_View, percent));
-    m_Canvas2Ds.push_back(canvas);
+    m_Canvas2Ds.add(canvas);
     return canvas;
 }
 void Renderer2D::removeCanvas( Canvas2D* canvas )
 {
-    std::vector<Canvas2D*>::iterator it(std::find(m_Canvas2Ds.begin(), m_Canvas2Ds.end(), canvas));
-    HE_IF_ASSERT(it != m_Canvas2Ds.cend(), "Canvas is not a member of this Renderer2D!")
+    HE_IF_ASSERT(m_Canvas2Ds.contains(canvas) == true, "Canvas is not a member of this Renderer2D!")
     {
-        *it = m_Canvas2Ds.back();
-        m_Canvas2Ds.pop_back();
+        m_Canvas2Ds.remove(canvas);
         delete canvas;
     }
 }
@@ -92,22 +90,20 @@ void Renderer2D::removeCanvas( Canvas2D* canvas )
 WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
     WebView* web(NEW WebView(viewport, enableUserInput));
-    m_WebViews.push_back(web);
+    m_WebViews.add(web);
     return web;
 }
 WebView* Renderer2D::createWebViewRelative(const RectF& viewportPercent, bool enableUserInput)
 {
     WebView* web(NEW WebView(m_View, viewportPercent, enableUserInput));
-    m_WebViews.push_back(web);
+    m_WebViews.add(web);
     return web;
 }
 void Renderer2D::removeWebView( WebView* webview )
 {
-    std::vector<WebView*>::iterator it(std::find(m_WebViews.begin(), m_WebViews.end(), webview));
-    HE_IF_ASSERT(it != m_WebViews.cend(), "Canvas is not a member of this Renderer2D!")
+    HE_IF_ASSERT(m_WebViews.contains(webview), "Canvas is not a member of this Renderer2D!")
     {
-        *it = m_WebViews.back();
-        m_WebViews.pop_back();
+        m_WebViews.remove(webview);
         delete webview;
     }
 }
@@ -115,7 +111,7 @@ void Renderer2D::removeWebView( WebView* webview )
 void Renderer2D::draw()
 {
     m_DefaultCanvas->clear();
-    std::for_each(m_Drawables.cbegin(), m_Drawables.cend(), [this](IDrawable2D* drawable)
+    m_Drawables.forEach([this](IDrawable2D* drawable)
     {
         drawable->draw2D(m_DefaultCanvas);
     });
@@ -139,26 +135,26 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_TextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_TextureQuad->init(vLayout, gfx::MeshDrawMode_Triangles);
 
-    std::vector<VertexPosTex2D> vertices;
-    vertices.push_back(
+    he::ObjectList<VertexPosTex2D> vertices(4);
+    vertices.add(
         VertexPosTex2D(vec2(-0.5f, 0.5f),
         vec2(0, 0)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex2D(vec2(0.5f, 0.5f),
         vec2(1, 0)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex2D(vec2(-0.5f, -0.5f),
         vec2(0, 1)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex2D(vec2(0.5f, -0.5f),
         vec2(1, 1)));
 
-    std::vector<uint8> indices;
-    indices.push_back(2); indices.push_back(1); indices.push_back(0);
-    indices.push_back(1); indices.push_back(2); indices.push_back(3);
+    he::PrimitiveList<uint8> indices(6);
+    indices.add(2); indices.add(1); indices.add(0);
+    indices.add(1); indices.add(2); indices.add(3);
 
     m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
@@ -228,16 +224,14 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
 
 void Renderer2D::attachToRender(IDrawable2D* drawable)
 {
-    m_Drawables.push_back(drawable);
+    m_Drawables.add(drawable);
 }
 
 void Renderer2D::detachFromRender(IDrawable2D* drawable)
 {
-    std::vector<IDrawable2D*>::iterator it(std::find(m_Drawables.begin(), m_Drawables.end(), drawable));
-    HE_IF_ASSERT(it != m_Drawables.end(), "drawable not found in draw list")
+    HE_IF_ASSERT(m_Drawables.contains(drawable), "drawable not found in draw list")
     {
-        *it = m_Drawables.back();
-        m_Drawables.pop_back();
+        m_Drawables.remove(drawable);
     }
 }
 

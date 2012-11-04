@@ -33,8 +33,8 @@ public:
     vec3 position;
     vec4 color;
 
-	VertexPosCol();
-	VertexPosCol(const vec3& pos, const vec4& col);
+    VertexPosCol();
+    VertexPosCol(const vec3& pos, const vec4& col);
     ~VertexPosCol();
     //default copy constructor and assignment operator are fine
 };
@@ -44,8 +44,8 @@ struct VertexPos
 public:
     vec3 position;
 
-	VertexPos();
-	VertexPos(const vec3& pos);
+    VertexPos();
+    VertexPos(const vec3& pos);
     ~VertexPos();
     //default copy constructor and assignment operator are fine
 };
@@ -55,8 +55,8 @@ struct VertexPos2D
 public:
     vec2 position;
 
-	VertexPos2D();
-	VertexPos2D(const vec2& pos);
+    VertexPos2D();
+    VertexPos2D(const vec2& pos);
     ~VertexPos2D();
     //default copy constructor and assignment operator are fine
 };
@@ -67,8 +67,8 @@ public:
     vec2 position;
     vec4 color;
 
-	VertexPosCol2D();
-	VertexPosCol2D(const vec2& pos, const vec4& col);
+    VertexPosCol2D();
+    VertexPosCol2D(const vec2& pos, const vec4& col);
     ~VertexPosCol2D();
     //default copy constructor and assignment operator are fine
 };
@@ -79,8 +79,8 @@ public:
     vec3 position;
     vec2 textureCoord;
 
-	VertexPosTex();
-	VertexPosTex(const vec3& pos, const vec2& tex);
+    VertexPosTex();
+    VertexPosTex(const vec3& pos, const vec2& tex);
     ~VertexPosTex();
     //default copy constructor and assignment operator are fine
 };
@@ -91,8 +91,8 @@ public:
     vec2 position;
     vec2 textureCoord;
 
-	VertexPosTex2D();
-	VertexPosTex2D(const vec2& pos, const vec2& tex);
+    VertexPosTex2D();
+    VertexPosTex2D(const vec2& pos, const vec2& tex);
     ~VertexPosTex2D();
     //default copy constructor and assignment operator are fine
 };
@@ -105,8 +105,8 @@ public:
     vec3 normal;
     vec3 tangent;
 
-	VertexPTNT();
-	VertexPTNT(const vec3& pos, const vec2& tex, const vec3& norm, const vec3& tan);
+    VertexPTNT();
+    VertexPTNT(const vec3& pos, const vec2& tex, const vec3& norm, const vec3& tan);
     ~VertexPTNT() {}
     //default copy constructor and assignment operator are fine
 };

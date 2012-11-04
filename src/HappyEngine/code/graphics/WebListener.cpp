@@ -32,7 +32,7 @@ namespace gfx {
 /* CONSTRUCTOR - DESTRUCTOR */
 WebListener::WebListener(WebView* view) : m_WebView(view)
 {
-	m_WebView->getAWEView()->set_js_method_handler(this);
+    m_WebView->getAWEView()->set_js_method_handler(this);
 }
 
 WebListener::~WebListener()
@@ -51,7 +51,7 @@ void WebListener::addObjectCallback(const std::string& object,
                                     eventCallback0<void>& callBack)
 {
     // check if jsobject already exists
-	auto it(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
+    auto it(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
     {
         return obj->getObjectName() == object;
     }));
@@ -71,21 +71,21 @@ void WebListener::addObjectCallback(const std::string& object,
         JSObject* jsObject(NEW JSObject(obj, object));
         jsObject->addCallback(aweMethod, callBack);
 
-        m_Objects.push_back(jsObject);
+        m_Objects.add(jsObject);
 
-		// set method on object
-		jsObject->getAweObject().SetCustomMethod(
-			aweMethod, false);
+        // set method on object
+        jsObject->getAweObject().SetCustomMethod(
+            aweMethod, false);
     }
-	else
-	{
-		Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
+    else
+    {
+        Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
-		(*it)->addCallback(aweMethod, callBack);
+        (*it)->addCallback(aweMethod, callBack);
 
-		(*it)->getAweObject().SetCustomMethod(
-			aweMethod, false);
-	}
+        (*it)->getAweObject().SetCustomMethod(
+            aweMethod, false);
+    }
 }
 void WebListener::removeObjectCallback(const std::string& object,
     const std::string& method,
@@ -112,7 +112,7 @@ void WebListener::OnMethodCall(Awesomium::WebView* caller,
     if (caller == m_WebView->getAWEView())
     {
         // call correct callback on method of jsobject
-        std::for_each(m_Objects.cbegin(), m_Objects.cend(), [&](JSObject* jsObject)
+        m_Objects.forEach([&](JSObject* jsObject)
         {
             if (jsObject->getAweObject().remote_id() == remote_object_id)
             {

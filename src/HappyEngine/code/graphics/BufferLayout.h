@@ -47,6 +47,7 @@ public:
         Usage_Instancing,
         Usage_Other
     };
+    BufferElement();
     BufferElement(uint32 elementIndex, Type type, Usage usage, uint32 size, uint32 byteOffset);
     virtual ~BufferElement() {}
     //default copy constructor and assignment operator are fine
@@ -68,11 +69,13 @@ private:
 class BufferLayout
 {
 public:
-    typedef std::vector<BufferElement> layout;
+    typedef he::ObjectList<BufferElement> layout;
 
     BufferLayout();
+    BufferLayout(const BufferLayout& other);
+    BufferLayout& operator=(const BufferLayout& other);
     virtual ~BufferLayout();
-    //default copy constructor and assignment operator are fine
+
 
     void addElement(const BufferElement& element);
 

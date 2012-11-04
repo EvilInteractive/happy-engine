@@ -53,9 +53,9 @@ private:
     
     ShadowResolution m_Resolution;
 
-    std::vector<IDrawable*> m_SingleDrawables;
-    std::vector<IDrawable*> m_SkinnedDrawables;
-    std::vector<IDrawable*> m_InstancedDrawables;
+    he::PrimitiveList<IDrawable*> m_SingleDrawables;
+    he::PrimitiveList<IDrawable*> m_SkinnedDrawables;
+    he::PrimitiveList<IDrawable*> m_InstancedDrawables;
 
     //Disable default copy constructor and default assignment operator
     ShadowCasterSpotLight(const ShadowCasterSpotLight&);

@@ -46,7 +46,7 @@ Bloom::Bloom(): m_DownSamples(4),
     for (uint32 i(0); i < s_BlurPasses; ++i)
     {
         m_pBlurShaderPass[i] = nullptr;	
-        std::for_each(m_FboId[i].begin(), m_FboId[i].end(), [](uint32& id)
+        m_FboId[i].forEach([](uint32& id)
         {
             id = UINT_MAX;
         });
@@ -74,7 +74,7 @@ void Bloom::cleanTextures()
                 m_Texture[pass][i] = nullptr;
             }
         }
-        std::for_each(m_FboId[pass].begin(), m_FboId[pass].end(), [](uint32& id)
+        m_FboId[pass].forEach([](uint32& id)
         {
             if (id != UINT_MAX)
             {
@@ -218,9 +218,6 @@ void Bloom::render( const Texture2D* pTexture, const Texture2D* pLumMap )
 {
     HE_ASSERT(m_Hdr == true && pLumMap != nullptr || m_Hdr == false && pLumMap == nullptr, "no valid lumMap provided");
 
-    //GL::heClearColor(Color(1.0f, 1.0f, 1.0f, 1.0f));   
-    //GL::heBlendFunc(BlendFunc_Zero, BlendFunc_One);
-    //GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(false);
     GL::heSetCullFace(false);
     GL::heSetDepthWrite(false);

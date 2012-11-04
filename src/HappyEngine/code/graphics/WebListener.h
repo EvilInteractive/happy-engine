@@ -114,7 +114,7 @@ private:
 
     /* DATAMEMBERS */
     WebView* m_WebView;
-    std::vector<JSObject*> m_Objects;
+    he::PrimitiveList<JSObject*> m_Objects;
 
     /* DEFAULT COPY & ASSIGNMENT */
     WebListener(const WebListener&);

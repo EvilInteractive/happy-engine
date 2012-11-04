@@ -100,11 +100,11 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
             if (drawable->getCastsShadow() == true)
             {
                 if (drawable->isSkinned())
-                    m_SkinnedDrawables.push_back(drawable);
+                    m_SkinnedDrawables.add(drawable);
                 else if (drawable->isSingle())
-                    m_SingleDrawables.push_back(drawable);
+                    m_SingleDrawables.add(drawable);
                 else
-                    m_InstancedDrawables.push_back(drawable);
+                    m_InstancedDrawables.add(drawable);
             }
         });
     }
@@ -125,7 +125,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
 
         if (m_InstancedDrawables.empty() == false)
         {
-            std::for_each(m_InstancedDrawables.cbegin(), m_InstancedDrawables.cend(), [&](IDrawable* drawable)
+            m_InstancedDrawables.forEach([&](IDrawable* drawable)
             {
                 m_MatInstanced->apply(static_cast<InstancedDrawable*>(drawable), cam);
                 drawable->drawShadow();
@@ -133,7 +133,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         }
         if (m_SingleDrawables.empty() == false)
         {
-            std::for_each(m_SingleDrawables.cbegin(), m_SingleDrawables.cend(), [&](IDrawable* drawable)
+            m_SingleDrawables.forEach([&](IDrawable* drawable)
             {
                 m_MatSingle->apply(static_cast<SingleDrawable*>(drawable), cam);
                 drawable->drawShadow();
@@ -141,7 +141,7 @@ void ShadowCasterSpotLight::render(Scene* scene, SpotLight* light)
         }
         if (m_SkinnedDrawables.empty() == false)
         {
-            std::for_each(m_SkinnedDrawables.cbegin(), m_SkinnedDrawables.cend(), [&](IDrawable* drawable)
+            m_SkinnedDrawables.forEach([&](IDrawable* drawable)
             {
                 m_MatSkinned->apply(static_cast<SkinnedDrawable*>(drawable), cam);
                 drawable->drawShadow();

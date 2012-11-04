@@ -81,7 +81,7 @@ void CullOctree::draw( const ICamera* camera, boost::function1<void, IDrawable*>
     m_Root->draw(camera, drawFunction, true);
 }
 
-void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, std::vector<vec3>& vertices, std::vector<uint32>& indices ) const
+void CullOctree::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     m_Root->drawAndCreateDebugMesh(camera, drawFunction, true, vertices, indices);
 }
@@ -367,7 +367,7 @@ void CullOctreeNode::draw( const ICamera* camera, boost::function1<void, IDrawab
 }
 
 void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
-    std::vector<vec3>& vertices, std::vector<uint32>& indices ) const
+    he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const vec3& cameraPosition(camera->getPosition());

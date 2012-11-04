@@ -139,8 +139,8 @@ public:
     virtual void init(const RenderSettings& settings);
 
     // Debug
-    std::vector<vec3>& getDebugVertices() { return m_DebugVertices; }
-    std::vector<uint32>& getDebugIndices() { return m_DebugIndices; }
+    he::PrimitiveList<vec3>& getDebugVertices() { return m_DebugVertices; }
+    he::PrimitiveList<uint32>& getDebugIndices() { return m_DebugIndices; }
 
     // Camera
     void setCamera(const std::string& camera);
@@ -188,8 +188,8 @@ private:
 
     // Debug
     bool m_RenderDebugTextures;
-    std::vector<vec3> m_DebugVertices;
-    std::vector<uint32> m_DebugIndices;
+    he::PrimitiveList<vec3> m_DebugVertices;
+    he::PrimitiveList<uint32> m_DebugIndices;
 
 };
 

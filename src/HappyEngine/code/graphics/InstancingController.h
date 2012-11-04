@@ -50,7 +50,7 @@ public:
     void removeInstance(uint32 id);
     virtual uint32 getCount() const;
 
-    void addManualFiller(IInstanceFiller* pFiller);
+    void addManualFiller(const IInstanceFiller* pFiller);
     void removeManualFiller(const IInstanceFiller* pFiller);
     
     //////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ private:
 
     boost::chrono::high_resolution_clock::time_point m_PrevUpdateTime;
 
-    std::vector<IInstanceFiller*> m_ManualCpuBufferFillers;
+    he::PrimitiveList<const IInstanceFiller*> m_ManualCpuBufferFillers;
 
     Scene* m_Scene;
 

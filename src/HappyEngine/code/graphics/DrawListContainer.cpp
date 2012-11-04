@@ -69,8 +69,8 @@ void DrawListContainer::insert( IDrawable* drawable )
 #ifdef USE_OCTREE
     m_DrawList[blend]->insert(drawable);
 #else
-    HE_IF_ASSERT(std::find(m_DrawList[blend].begin(), m_DrawList[blend].end(), drawable) == m_DrawList[blend].end(), "Drawable already attached")
-    m_DrawList[blend].push_back(drawable);
+    HE_IF_ASSERT(m_DrawList[blend].contains(drawable) == false, "Drawable already attached")
+        m_DrawList[blend].add(drawable);
 #endif
 }
 
@@ -81,19 +81,9 @@ void DrawListContainer::remove( IDrawable* drawable )
 #ifdef USE_OCTREE
     m_DrawList[blend]->remove(drawable);
 #else
-    std::vector<IDrawable*>::iterator it(std::find(m_DrawList[blend].begin(), m_DrawList[blend].end(), drawable));
-    if (it != m_DrawList[blend].cend())
-    {
-        (*it) = m_DrawList[blend].back();
-        m_DrawList[blend].pop_back();
-    }
+    m_DrawList[blend].remove(drawable);
 #endif
-    std::vector<IDrawable*>::iterator dynIt(std::find(m_Dynamics.begin(), m_Dynamics.end(), drawable));
-    if (dynIt != m_Dynamics.cend())
-    {
-        (*dynIt) = m_Dynamics.back();
-        m_Dynamics.pop_back();
-    }
+    m_Dynamics.remove(drawable);
 }
 
 void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc ) const
@@ -109,7 +99,7 @@ void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const bo
     });
 #endif
 }
-void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, std::vector<vec3>& vertices, std::vector<uint32>& indices ) const
+void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 #ifdef USE_OCTREE
@@ -126,7 +116,7 @@ void DrawListContainer::prepareForRendering()
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_Dynamics.empty() == false)
     {
-        std::for_each(m_Dynamics.cbegin(), m_Dynamics.cend(), [&](IDrawable* drawable)
+        m_Dynamics.forEach([&](IDrawable* drawable)
         {
             BlendFilter blend;
             getContainerIndex(drawable, blend);
@@ -153,7 +143,7 @@ void DrawListContainer::forceReevalute( IDrawable* drawable )
 
 void DrawListContainer::doReevalute( IDrawable* drawable )
 {
-    m_Dynamics.push_back(drawable);
+    m_Dynamics.add(drawable);
 }
 
 } } //end namespace

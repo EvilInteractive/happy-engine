@@ -70,7 +70,7 @@ private:
     uint32 m_DepthBuffer;
     const Texture2D* m_DepthTarget;
 
-    std::vector<const Texture2D*> m_TextureTargets;
+    he::PrimitiveList<const Texture2D*> m_TextureTargets;
 
     uint32 m_DrawBuffers[MAX_TEXTURE_TARGETS];
     uint32 m_DrawBufferCount;

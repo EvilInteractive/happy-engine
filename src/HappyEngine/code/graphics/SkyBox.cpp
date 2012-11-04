@@ -72,41 +72,41 @@ void SkyBox::load( const std::string& asset )
     //////////////////////////////////////////////////////////////////////////
     m_Cube = ResourceFactory<gfx::ModelMesh>::getInstance()->get(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
     m_Cube->setName("skybox");
-    std::vector<vec3> vertices;
-    vertices.push_back(vec3(-1,  1, -1));
-    vertices.push_back(vec3( 1,  1, -1));
-    vertices.push_back(vec3(-1, -1, -1));
-    vertices.push_back(vec3( 1, -1, -1));
+    he::PrimitiveList<vec3> vertices(8);
+    vertices.add(vec3(-1,  1, -1));
+    vertices.add(vec3( 1,  1, -1));
+    vertices.add(vec3(-1, -1, -1));
+    vertices.add(vec3( 1, -1, -1));
 
-    vertices.push_back(vec3(-1,  1,  1));
-    vertices.push_back(vec3( 1,  1,  1));
-    vertices.push_back(vec3(-1, -1,  1));
-    vertices.push_back(vec3( 1, -1,  1));
+    vertices.add(vec3(-1,  1,  1));
+    vertices.add(vec3( 1,  1,  1));
+    vertices.add(vec3(-1, -1,  1));
+    vertices.add(vec3( 1, -1,  1));
 
-    std::vector<uint8> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2); //front
-    indices.push_back(1); indices.push_back(3); indices.push_back(2);
+    he::PrimitiveList<uint8> indices(36);
+    indices.add(0); indices.add(1); indices.add(2); //front
+    indices.add(1); indices.add(3); indices.add(2);
 
-    indices.push_back(5); indices.push_back(4); indices.push_back(7); //back
-    indices.push_back(4); indices.push_back(6); indices.push_back(7);
+    indices.add(5); indices.add(4); indices.add(7); //back
+    indices.add(4); indices.add(6); indices.add(7);
 
-    indices.push_back(4); indices.push_back(0); indices.push_back(6); //left
-    indices.push_back(0); indices.push_back(2); indices.push_back(6);
+    indices.add(4); indices.add(0); indices.add(6); //left
+    indices.add(0); indices.add(2); indices.add(6);
 
-    indices.push_back(1); indices.push_back(5); indices.push_back(3); //right
-    indices.push_back(5); indices.push_back(7); indices.push_back(3);
+    indices.add(1); indices.add(5); indices.add(3); //right
+    indices.add(5); indices.add(7); indices.add(3);
 
-    indices.push_back(4); indices.push_back(5); indices.push_back(0); //top
-    indices.push_back(5); indices.push_back(1); indices.push_back(0);
+    indices.add(4); indices.add(5); indices.add(0); //top
+    indices.add(5); indices.add(1); indices.add(0);
 
-    indices.push_back(3); indices.push_back(7); indices.push_back(2); //bottom
-    indices.push_back(7); indices.push_back(6); indices.push_back(2);
+    indices.add(3); indices.add(7); indices.add(2); //bottom
+    indices.add(7); indices.add(6); indices.add(2);
 
     BufferLayout layout;
     layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
     m_Cube->init(layout, MeshDrawMode_Triangles);
-    m_Cube->setVertices(vertices.data(), vertices.size(), MeshUsage_Static);
-    m_Cube->setIndices(indices.data(), indices.size(), IndexStride_Byte, MeshUsage_Static);
+    m_Cube->setVertices(&vertices[0], vertices.size(), MeshUsage_Static);
+    m_Cube->setIndices(&indices[0], indices.size(), IndexStride_Byte, MeshUsage_Static);
     m_Cube->setLoaded();
 
     m_Material = he::ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/sky.material"));

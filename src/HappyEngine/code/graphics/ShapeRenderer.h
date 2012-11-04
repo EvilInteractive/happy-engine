@@ -75,7 +75,7 @@ private:
     mat44 m_BillboardMatrix;
     mat44 m_ViewProjection;
 
-    std::vector<IShapeDrawable*> m_Drawables;
+    he::PrimitiveList<IShapeDrawable*> m_Drawables;
     
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     ShapeRenderer(const ShapeRenderer&);

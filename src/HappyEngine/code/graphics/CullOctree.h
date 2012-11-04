@@ -45,7 +45,7 @@ public:
     void reevaluate(IDrawable* obj);
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen) const;
     void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, bool checkChilderen, 
-        std::vector<vec3>& vertices, std::vector<uint32>& indices) const;
+        he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
     CullOctreeNode* getRoot();
 
     bool checkRemove() const;
@@ -85,7 +85,7 @@ public:
 
     void draw(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction) const;
     void drawAndCreateDebugMesh(const ICamera* camera, boost::function1<void, IDrawable*> drawFunction, 
-        std::vector<vec3>& vertices, std::vector<uint32>& indices) const;
+        he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
 
     const static float s_MinLeaveSize;
 

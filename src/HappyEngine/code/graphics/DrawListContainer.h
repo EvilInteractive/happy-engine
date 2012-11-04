@@ -49,7 +49,7 @@ public:
     void prepareForRendering();
     void draw(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc) const;
     void drawAndCreateDebugMesh(BlendFilter blend, const ICamera* camera, const boost::function1<void, IDrawable*>& drawFunc,
-        std::vector<vec3>& vertices, std::vector<uint32>& indices) const;
+        he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices) const;
 
     void insert(IDrawable* drawable);
     void remove(IDrawable* drawable);
@@ -60,11 +60,11 @@ private:
 
     void getContainerIndex(const IDrawable* drawable, BlendFilter& main);
 
-    std::vector<IDrawable*> m_Dynamics;
+    he::PrimitiveList<IDrawable*> m_Dynamics;
 #ifdef USE_OCTREE
     CullOctree* m_DrawList[BlendFilter_MAX];
 #else
-    std::vector<IDrawable*> m_DrawList[BlendFilter_MAX];
+    he::PrimitiveList<IDrawable*> m_DrawList[BlendFilter_MAX];
 #endif
 
     //Disable default copy constructor and default assignment operator

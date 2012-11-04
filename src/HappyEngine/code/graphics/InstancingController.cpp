@@ -247,10 +247,10 @@ void InstancingController::updateBuffer()
         }
         else
         {
-            std::for_each(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), [&](const IInstanceFiller* pFiller)
+            m_ManualCpuBufferFillers.forEach([&](const IInstanceFiller* filler)
             {
-                pFiller->fillInstancingBuffer(m_CpuBuffer);
-                newBound.merge(pFiller->getAABB());
+                filler->fillInstancingBuffer(m_CpuBuffer);
+                newBound.merge(filler->getAABB());
             });
         }
         m_Bound.fromAABB(newBound);
@@ -329,17 +329,18 @@ uint32 InstancingController::getCount() const
     return m_CpuBuffer.getCount();
 }
 
-void InstancingController::addManualFiller( IInstanceFiller* pFiller )
+void InstancingController::addManualFiller( const IInstanceFiller* filler )
 {
-    HE_ASSERT(std::find(m_ManualCpuBufferFillers.cbegin(), m_ManualCpuBufferFillers.cend(), pFiller) == m_ManualCpuBufferFillers.cend(), "filler is already bound to this controller");
-    m_ManualMode = true;
-    m_ManualCpuBufferFillers.push_back(pFiller);
+    HE_IF_ASSERT(m_ManualCpuBufferFillers.contains(filler) == false, "filler is already bound to this controller")
+    {
+        m_ManualMode = true;
+        m_ManualCpuBufferFillers.add(filler);
+    }
 }
 
-void InstancingController::removeManualFiller( const IInstanceFiller* pFiller )
+void InstancingController::removeManualFiller( const IInstanceFiller* filler )
 {
-    m_ManualCpuBufferFillers.erase(std::remove(m_ManualCpuBufferFillers.begin(), m_ManualCpuBufferFillers.end(),
-        pFiller), m_ManualCpuBufferFillers.end());
+    m_ManualCpuBufferFillers.remove(filler);
 }
 
 void InstancingController::tick( float /*dTime*/ )

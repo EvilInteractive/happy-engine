@@ -74,9 +74,9 @@ bool Cone::intersectTest( const Sphere& sphere ) const
     return false;
 }
 
-void Cone::generateConeVertices( uint32 circleVertices, std::vector<vec3>& outBuffer ) const
+void Cone::generateConeVertices( uint32 circleVertices, he::PrimitiveList<vec3>& outBuffer ) const
 {
-    outBuffer.push_back(m_Position);
+    outBuffer.add(m_Position);
 
     vec3 centerCircle(m_Position + m_Axis * m_Length);
     float radius(tan(m_Fov / 2.0f) * m_Length);
@@ -86,7 +86,7 @@ void Cone::generateConeVertices( uint32 circleVertices, std::vector<vec3>& outBu
     for (uint32 i(0); i < circleVertices; ++i)
     {
         float angle(he::twoPi / circleVertices * i);
-        outBuffer.push_back(centerCircle + up * (radius * cos(angle)) + right * (radius * sin(angle)));
+        outBuffer.add(centerCircle + up * (radius * cos(angle)) + right * (radius * sin(angle)));
     }
 }
 

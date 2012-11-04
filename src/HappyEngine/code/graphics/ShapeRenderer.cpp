@@ -65,26 +65,26 @@ void ShapeRenderer::createBillboardQuad()
     m_pBillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_pBillboardQuad->init(m_VertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
 
-    std::vector<VertexPosTex> vertices;
-    vertices.push_back(
+    he::ObjectList<VertexPosTex> vertices(4);
+    vertices.add(
         VertexPosTex(vec3(-0.5f, 0.5f,0.0f),
         vec2(0, 1)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex(vec3(0.5f, 0.5f,0.0f),
         vec2(1, 1)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex(vec3(-0.5f, -0.5f,0.0f),
         vec2(0, 0)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex(vec3(0.5f, -0.5f,0.0f),
         vec2(1, 0)));
 
-    std::vector<uint8> indices;
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
-    indices.push_back(1); indices.push_back(3); indices.push_back(2);
+    he::PrimitiveList<uint8> indices(6);
+    indices.add(0); indices.add(1); indices.add(2);
+    indices.add(1); indices.add(3); indices.add(2);
 
     m_pBillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
     m_pBillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
@@ -181,16 +181,14 @@ void ShapeRenderer::draw()
 
 void ShapeRenderer::attachToRenderer( IShapeDrawable* drawable )
 {
-    m_Drawables.push_back(drawable);
+    m_Drawables.add(drawable);
 }
 
 void ShapeRenderer::detachFromRenderer( IShapeDrawable* drawable )
 {
-    std::vector<IShapeDrawable*>::iterator it(std::find(m_Drawables.begin(), m_Drawables.end(), drawable));
-    HE_IF_ASSERT(it != m_Drawables.end(), "drawable not found in draw list")
+    HE_IF_ASSERT(m_Drawables.contains(drawable), "drawable not found in draw list")
     {
-        *it = m_Drawables.back();
-        m_Drawables.pop_back();
+        m_Drawables.remove(drawable);
     }
 }
 

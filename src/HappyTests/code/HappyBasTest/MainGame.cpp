@@ -347,8 +347,8 @@ void MainGame::fillDebugMeshes()
     Cone::generateConeIndices<uint32>(CONE_VERTICES, (uint32)m_View->getDebugVertices().size(), m_View->getDebugIndices());
     cone.generateConeVertices(CONE_VERTICES, m_View->getDebugVertices());
 
-    m_DebugMesh->setVertices(m_View->getDebugVertices().data(), m_View->getDebugVertices().size(), gfx::MeshUsage_Dynamic);
-    m_DebugMesh->setIndices(m_View->getDebugIndices().data(), m_View->getDebugIndices().size(), gfx::IndexStride_UInt, gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setVertices(&m_View->getDebugVertices()[0], m_View->getDebugVertices().size(), gfx::MeshUsage_Dynamic);
+    m_DebugMesh->setIndices(&m_View->getDebugIndices()[0], m_View->getDebugIndices().size(), gfx::IndexStride_UInt, gfx::MeshUsage_Dynamic);
 }
 
 void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )

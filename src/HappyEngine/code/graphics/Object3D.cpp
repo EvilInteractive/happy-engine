@@ -65,7 +65,7 @@ void Object3D::calculateWorldMatrix()
 void Object3D::attach( IObject3D* child )
 {
     HE_ASSERT(child->getParent() == nullptr, "Attaching child which is already attached somewhere!");
-    m_Childs.push_back(child);
+    m_Childs.add(child);
     child->setParent(this);
     child->setWorldMatrixDirty(DirtyFlag_Link);
 }
@@ -74,11 +74,9 @@ void Object3D::detach( IObject3D* child )
 {
     HE_IF_ASSERT(child->getParent() == this, "detaching child which parent is not me")
     {
-        std::vector<IObject3D*>::iterator it(std::find(m_Childs.begin(), m_Childs.end(), child));
-        HE_IF_ASSERT(it != m_Childs.end(), "detaching child which is not in my child list")
+        HE_IF_ASSERT(m_Childs.contains(child), "detaching child which is not in my child list")
         {
-            *it = m_Childs.back();
-            m_Childs.pop_back();
+            m_Childs.remove(child);
             child->setParent(nullptr);
             child->setWorldMatrixDirty(DirtyFlag_Link);
         }
@@ -90,7 +88,7 @@ void Object3D::setWorldMatrixDirty(uint8 cause)
     if ( (m_WorldMatrixDirty & cause) != cause)
     {
         m_WorldMatrixDirty |= cause;
-        std::for_each(m_Childs.cbegin(), m_Childs.cend(), [&cause](IObject3D* obj)
+        m_Childs.forEach([&cause](IObject3D* obj)
         {
             obj->setWorldMatrixDirty(cause);
         });

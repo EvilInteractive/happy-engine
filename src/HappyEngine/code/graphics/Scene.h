@@ -67,7 +67,7 @@ public:
     // Visual Picking
     //void initPicking(); // only init picking when needed, because it requires extra FBO & shader
     //uint pick(const vec2& screenPoint);
-    //uint pick(const vec2& screenPoint, const std::vector<IDrawable*>& drawList);
+    //uint pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
     
 private:  
     // Managers

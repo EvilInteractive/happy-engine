@@ -84,10 +84,10 @@ uint32 Picker::pick(const vec2& /*screenPoint*/)
     HE_ASSERT(m_bInitialized, "Initialize picker before using!");
     HE_ASSERT(false, "TODO");
 
-//     std::vector<uint> ID1;
+//     he::PrimitiveList<uint> ID1;
 // 
 //     // cull drawlist
-//     std::vector<IDrawable*> culledDrawList;
+//     he::PrimitiveList<IDrawable*> culledDrawList;
 // 
 //     uint i(0);
 //     GRAPHICS->getDrawManager()->getDrawList().for_each(DrawListContainer::F_Loc_BeforePost   | 
@@ -107,8 +107,8 @@ uint32 Picker::pick(const vec2& /*screenPoint*/)
 //     });
 // 
 //     // create list with items to be picked
-//     std::vector<IDrawable*> pickList;
-//     std::vector<uint> ID2;
+//     he::PrimitiveList<IDrawable*> pickList;
+//     he::PrimitiveList<uint> ID2;
 // 
 //     i = 0;
 //     std::sort(culledDrawList.begin(), culledDrawList.end());
@@ -166,14 +166,14 @@ uint32 Picker::pick(const vec2& /*screenPoint*/)
     return UINT_MAX;
 }
 
-uint32 Picker::pick(const vec2& /*screenPoint*/, const std::vector<IDrawable*>& /*drawList*/)
+uint32 Picker::pick(const vec2& /*screenPoint*/, const he::PrimitiveList<IDrawable*>& /*drawList*/)
 {
     HE_ASSERT(m_bInitialized, "Initialize picker before using!");
     HE_ASSERT(false, "TODO");
-//     std::vector<uint> ID1;
+//     he::PrimitiveList<uint> ID1;
 // 
 //     // cull drawlist
-//     std::vector<IDrawable*> culledDrawList;
+//     he::PrimitiveList<IDrawable*> culledDrawList;
 // 
 //     uint i(0);                                                    
 //     std::for_each(drawList.cbegin(),drawList.cend(), [&](IDrawable* pDrawable)
@@ -188,8 +188,8 @@ uint32 Picker::pick(const vec2& /*screenPoint*/, const std::vector<IDrawable*>& 
 //     });
 // 
 //     // create list with items to be picked
-//     std::vector<IDrawable*> pickList;
-//     std::vector<uint> ID2;
+//     he::PrimitiveList<IDrawable*> pickList;
+//     he::PrimitiveList<uint> ID2;
 // 
 //     i = 0;
 //     std::sort(culledDrawList.begin(), culledDrawList.end());

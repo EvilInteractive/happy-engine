@@ -41,38 +41,38 @@ AABB AABB::calculateBoundingAABB( const void* pointCloud, uint32 num, uint32 str
     return AABB(min, max);
 }
 
-void AABB::generateVertices( std::vector<vec3>& outBuffer ) const
+void AABB::generateVertices( he::PrimitiveList<vec3>& outBuffer ) const
 {
     vec3 diff(m_BottomBackRight - m_TopFrontLeft);
-    outBuffer.push_back(m_TopFrontLeft + vec3(0, 0, 0));
-    outBuffer.push_back(m_TopFrontLeft + vec3(diff.x, 0, 0));
-    outBuffer.push_back(m_TopFrontLeft + vec3(0, diff.y, 0));
-    outBuffer.push_back(m_TopFrontLeft + vec3(diff.x, diff.y, 0));
-    outBuffer.push_back(m_TopFrontLeft + vec3(0, 0, diff.z));
-    outBuffer.push_back(m_TopFrontLeft + vec3(diff.x, 0, diff.z));
-    outBuffer.push_back(m_TopFrontLeft + vec3(0, diff.y, diff.z));
-    outBuffer.push_back(m_TopFrontLeft + vec3(diff.x, diff.y, diff.z));
+    outBuffer.add(m_TopFrontLeft + vec3(0, 0, 0));
+    outBuffer.add(m_TopFrontLeft + vec3(diff.x, 0, 0));
+    outBuffer.add(m_TopFrontLeft + vec3(0, diff.y, 0));
+    outBuffer.add(m_TopFrontLeft + vec3(diff.x, diff.y, 0));
+    outBuffer.add(m_TopFrontLeft + vec3(0, 0, diff.z));
+    outBuffer.add(m_TopFrontLeft + vec3(diff.x, 0, diff.z));
+    outBuffer.add(m_TopFrontLeft + vec3(0, diff.y, diff.z));
+    outBuffer.add(m_TopFrontLeft + vec3(diff.x, diff.y, diff.z));
 }
 
-void AABB::generateIndices( std::vector<uint32>& outBuffer, uint32 offset ) const
+void AABB::generateIndices( he::PrimitiveList<uint32>& outBuffer, uint32 offset ) const
 {
     // Front
-    outBuffer.push_back(offset + 0); outBuffer.push_back(offset + 1);
-    outBuffer.push_back(offset + 0); outBuffer.push_back(offset + 2);
-    outBuffer.push_back(offset + 1); outBuffer.push_back(offset + 3);
-    outBuffer.push_back(offset + 2); outBuffer.push_back(offset + 3);
+    outBuffer.add(offset + 0); outBuffer.add(offset + 1);
+    outBuffer.add(offset + 0); outBuffer.add(offset + 2);
+    outBuffer.add(offset + 1); outBuffer.add(offset + 3);
+    outBuffer.add(offset + 2); outBuffer.add(offset + 3);
 
     // Back
-    outBuffer.push_back(offset + 4); outBuffer.push_back(offset + 5);
-    outBuffer.push_back(offset + 4); outBuffer.push_back(offset + 6);
-    outBuffer.push_back(offset + 5); outBuffer.push_back(offset + 7);
-    outBuffer.push_back(offset + 6); outBuffer.push_back(offset + 7);
+    outBuffer.add(offset + 4); outBuffer.add(offset + 5);
+    outBuffer.add(offset + 4); outBuffer.add(offset + 6);
+    outBuffer.add(offset + 5); outBuffer.add(offset + 7);
+    outBuffer.add(offset + 6); outBuffer.add(offset + 7);
 
     // Connection
-    outBuffer.push_back(offset + 0); outBuffer.push_back(offset + 4);
-    outBuffer.push_back(offset + 1); outBuffer.push_back(offset + 5);
-    outBuffer.push_back(offset + 2); outBuffer.push_back(offset + 6);
-    outBuffer.push_back(offset + 3); outBuffer.push_back(offset + 7);
+    outBuffer.add(offset + 0); outBuffer.add(offset + 4);
+    outBuffer.add(offset + 1); outBuffer.add(offset + 5);
+    outBuffer.add(offset + 2); outBuffer.add(offset + 6);
+    outBuffer.add(offset + 3); outBuffer.add(offset + 7);
 }
 
 } //end namespace

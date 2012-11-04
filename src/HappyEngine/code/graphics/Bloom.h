@@ -47,8 +47,8 @@ private:
     void cleanTextures();
     void cleanShaders();
 
-    std::vector<uint32> m_FboId[2];
-    std::vector<Texture2D*> m_Texture[2];
+    he::PrimitiveList<uint32> m_FboId[2];
+    he::PrimitiveList<Texture2D*> m_Texture[2];
     
     Shader* m_pDownSampleBrightPassShader;
     uint32 m_DownSampleBrightPassMap;

@@ -45,17 +45,17 @@ public:
 
     // circleVertices: MIN: 3
     template<typename T>
-    static void generateConeIndices(T circleVertices, T indexOffset, std::vector<T>& outBuffer)
+    static void generateConeIndices(T circleVertices, T indexOffset, he::PrimitiveList<T>& outBuffer)
     {
         for (T i(1); i < circleVertices; ++i)
         {
-            outBuffer.push_back(indexOffset); outBuffer.push_back(indexOffset + i);
-            outBuffer.push_back(indexOffset + i); outBuffer.push_back(indexOffset + i + 1);
+            outBuffer.add(indexOffset); outBuffer.add(indexOffset + i);
+            outBuffer.add(indexOffset + i); outBuffer.add(indexOffset + i + 1);
         }
-        outBuffer.push_back(indexOffset); outBuffer.push_back(indexOffset + circleVertices);
-        outBuffer.push_back(indexOffset + circleVertices); outBuffer.push_back(indexOffset + 1); 
+        outBuffer.add(indexOffset); outBuffer.add(indexOffset + circleVertices);
+        outBuffer.add(indexOffset + circleVertices); outBuffer.add(indexOffset + 1); 
     }
-    void generateConeVertices(uint32 circleVertices, std::vector<vec3>& outBuffer) const;
+    void generateConeVertices(uint32 circleVertices, he::PrimitiveList<vec3>& outBuffer) const;
 
 private:
 

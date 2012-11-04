@@ -200,7 +200,7 @@ void Canvas2D::init()
     m_pTextBuffer = ResourceFactory<Texture2D>::getInstance()->get(handle);
 
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_CanvasSize.x, 0.0f, m_CanvasSize.y, 0.01f, 10000.0f);
-    m_TransformationStack.push_back(mat33::Identity);
+    m_TransformationStack.add(mat33::Identity);
 
     BufferLayout vLayout;
     vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
@@ -210,26 +210,26 @@ void Canvas2D::init()
     m_pTextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
     m_pTextureQuad->init(vLayout, gfx::MeshDrawMode_Triangles);
 
-    std::vector<VertexPosTex2D> vertices;
-    vertices.push_back(
+    he::ObjectList<VertexPosTex2D> vertices(4);
+    vertices.add(
         VertexPosTex2D(vec2(-0.5f, 0.5f),
         vec2(0, 0)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex2D(vec2(0.5f, 0.5f),
         vec2(1, 0)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex2D(vec2(-0.5f, -0.5f),
         vec2(0, 1)));
 
-    vertices.push_back(
+    vertices.add(
         VertexPosTex2D(vec2(0.5f, -0.5f),
         vec2(1, 1)));
 
-    std::vector<uint8> indices;
-    indices.push_back(2); indices.push_back(1); indices.push_back(0);
-    indices.push_back(1); indices.push_back(2); indices.push_back(3);
+    he::PrimitiveList<uint8> indices(6);
+    indices.add(2); indices.add(1); indices.add(0);
+    indices.add(1); indices.add(2); indices.add(3);
 
     m_pTextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
     m_pTextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
@@ -291,7 +291,7 @@ void Canvas2D::save()
     }
 
     ++m_StackDepth;
-    m_TransformationStack.push_back(mat33::Identity);
+    m_TransformationStack.add(mat33::Identity);
 }
 
 void Canvas2D::restore()
@@ -299,7 +299,7 @@ void Canvas2D::restore()
     if (m_StackDepth >= 0)
     {
         --m_StackDepth;
-        m_TransformationStack.pop_back();
+        m_TransformationStack.removeAt(m_TransformationStack.size() - 1);
     }
 }
 
@@ -480,7 +480,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
     m_pFontEffect->setDepth(dp);
 
-	m_BlendStyle = BlendStyle_Alpha;
+    m_BlendStyle = BlendStyle_Alpha;
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
@@ -542,9 +542,9 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
             vec2 size;
 
             const Font::CharData* cData = txt.getFont()->getCharTextureData(txt.getText()[i][i2]);
-			// skip char if chardata is empty
-			if (cData == nullptr)
-				continue;
+            // skip char if chardata is empty
+            if (cData == nullptr)
+                continue;
 
             const RectF& regionToDraw = cData->textureRegion;
 
@@ -628,7 +628,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     m_pTextureEffect->setTCScale(tcScale);
     m_pTextureEffect->setDepth(getNewDepth());
 
-	m_BlendStyle = BlendStyle_Alpha;
+    m_BlendStyle = BlendStyle_Alpha;
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);

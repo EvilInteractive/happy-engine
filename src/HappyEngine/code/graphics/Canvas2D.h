@@ -141,7 +141,7 @@ private:
     //void drawLineAA(const vec2& pos1, const vec2& pos2);
 
     /* DATAMEMBERS */
-    std::vector<mat33> m_TransformationStack;
+    he::PrimitiveList<mat33> m_TransformationStack;
     uint16 m_StackDepth;
 
     mat44 m_OrthographicMatrix;

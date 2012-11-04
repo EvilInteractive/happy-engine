@@ -71,24 +71,24 @@ IntersectResult Frustum::intersect( const AABB& aabb ) const
     return IntersectResult_Intersecting;
 }
 
-void Frustum::generateFrustumPoints( std::vector<vec3>& pointBuffer ) const
+void Frustum::generateFrustumPoints( he::PrimitiveList<vec3>& pointBuffer ) const
 {
     // 0 : FTL 
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
     // 1 : FTR  
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_RightClipPlane]));    
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_RightClipPlane]));    
     // 2 : FBL
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));      
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));      
     // 3 : FBR      
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_NearClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
     // 4 : BTL
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
     // 5 : BTR
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_TopClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
     // 6 : BBL
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_LeftClipPlane]));
     // 7 : BBR
-    pointBuffer.push_back(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
+    pointBuffer.add(Plane::getIntersectionPoint(m_Plane[FrustumPlane_FarClipPlane], m_Plane[FrustumPlane_BottomClipPlane], m_Plane[FrustumPlane_RightClipPlane]));
 }
 
 } //end namespace

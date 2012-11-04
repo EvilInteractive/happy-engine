@@ -55,7 +55,7 @@ void RenderTarget::addTextureTarget( const Texture2D* tex2D )
     HE_IF_ASSERT(m_Width == 0 || m_Width == tex2D->getWidth() && m_Height == tex2D->getHeight(), "Textures assigned to a RenderTarget must be of equal size!")
     {
         ResourceFactory<Texture2D>::getInstance()->instantiate(tex2D->getHandle());
-        m_TextureTargets.push_back(tex2D);
+        m_TextureTargets.add(tex2D);
         m_Width = tex2D->getWidth();
         m_Height = tex2D->getHeight();
     }
@@ -174,7 +174,7 @@ const Texture2D* RenderTarget::getDepthTarget() const
 
 void RenderTarget::removeAllTargets()
 {
-    std::for_each(m_TextureTargets.cbegin(), m_TextureTargets.cend(), [](const Texture2D* tex)
+    m_TextureTargets.forEach([](const Texture2D* tex)
     {
         tex->release();
     });

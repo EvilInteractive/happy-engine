@@ -29,6 +29,14 @@ BufferElement::BufferElement(uint32 elementIndex, Type type, Usage usage, uint32
 {
     HE_ASSERT(m_Size != 0, "element size == 0");
 }
+
+BufferElement::BufferElement():
+    m_ElementIndex(0), m_Type(Type_Int), m_Usage(Usage_Other),
+    m_Size(0), m_ByteOffset(0)
+{
+
+}
+
 uint32 BufferElement::getElementIndex() const
 {
     return m_ElementIndex;
@@ -55,13 +63,29 @@ BufferElement::Usage BufferElement::getUsage() const
 BufferLayout::BufferLayout(): m_Size(0)
 {
 }
+
+BufferLayout::BufferLayout(const BufferLayout& other ): m_Size(other.m_Size), m_Layout(other.m_Layout.size())
+{
+    m_Layout.append(other.m_Layout);
+}
+
+BufferLayout& BufferLayout::operator=( const BufferLayout& other )
+{
+    m_Size = other.m_Size;
+    m_Layout.clear();
+    m_Layout.reserve(other.m_Layout.size());
+    m_Layout.append(other.m_Layout);
+
+    return *this;
+}
+
 BufferLayout::~BufferLayout()
 {
 }
 
 void BufferLayout::addElement(const BufferElement& element)
 {
-    m_Layout.push_back(element);
+    m_Layout.add(element);
     m_Size += element.getSize();
 }
 

@@ -74,6 +74,7 @@ public:
     inline const_iterator cend() const { return m_Buffer + m_Size; }
 
     inline void forEach(const boost::function1<void, const T&>& func) const;
+    inline void forEach(const boost::function1<void, T&>& func);
 
     const static int CAPACITY_INCREMENT = 5;
     
@@ -98,7 +99,6 @@ public:
     explicit PrimitiveList(size_t capacity = 0): List(capacity) {}
     virtual ~PrimitiveList() {}
 };
-
 template<typename T>
 class ObjectList : public List<T, ObjectCreator<T>> 
 {
@@ -370,6 +370,15 @@ void he::List<T, Creator>::forEach( const boost::function1<void, const T&>& func
 {    
     const_iterator it(cbegin());
     const_iterator end(cend());
+    for (; it != end; ++it)
+        func(*it);
+}
+//////////////////////////////////////////////////////////////////////////
+template<typename T, typename Creator> inline
+void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
+{    
+    iterator it(begin());
+    iterator end(end());
     for (; it != end; ++it)
         func(*it);
 }
