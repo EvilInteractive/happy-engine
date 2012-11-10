@@ -62,7 +62,7 @@ public:
     /* GENERAL */
     void load();
     void tick();
-    void setView(const gfx::View* view);
+    void setView(gfx::View* view);
     virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
@@ -93,7 +93,6 @@ public:
     void addTypeHandler(ITypeHandler* typeHandler);
     void flushMessageHistory();
 
-
     /* SETTERS */
     void setKeyboardShortcut(io::Key key);
     void setMessageColors(	const Color& infoColor = Color(1.0f,1.0f,1.0f),
@@ -111,6 +110,7 @@ private:
     void displayHelp();
     void displayVars();
     void displayCmds();
+	void onResize();
 
     /* DATAMEMBERS */
     std::map<std::string, boost::any> m_ValueContainer;
@@ -137,7 +137,7 @@ private:
 
     gfx::Font* m_pFont;
 
-    const gfx::View* m_View;
+    gfx::View* m_View;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

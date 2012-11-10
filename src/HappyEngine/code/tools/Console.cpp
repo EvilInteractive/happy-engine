@@ -81,6 +81,11 @@ Console::Console() :	m_Shortcut(io::Key_C),
     m_ShowMessageTypes[CMSG_TYPE_ENGINE] = true;
 
     registerVar<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
+
+	// console commands
+	registerCmd(boost::bind(&he::tools::Console::displayHelp, this), "help");
+	registerCmd(boost::bind(&he::tools::Console::displayVars, this), "listvars");
+	registerCmd(boost::bind(&he::tools::Console::displayCmds, this), "listcmds");
 }
 void Console::load()
 {
@@ -107,31 +112,30 @@ void Console::load()
 
     m_CmdHistory.add("");
 
-
     m_ScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint32>(190 / m_pFont->getLineSpacing());
 }
-void Console::setView( const gfx::View* view )
+void Console::setView(gfx::View* view )
 {
-    /*
-    if (canvas != nullptr)
-    {
-        m_View->get2DRenderer()->detachFromRender(this);
-        m_View->get2DRenderer()->removeCanvas(canvas);
-        canvas = nullptr;
-    }*/
-    m_View = view;
+    m_View = view;;
     if (view != nullptr)
     {
         m_View->get2DRenderer()->attachToRender(this);
-        //canvas = m_View->get2DRenderer()->createCanvasRelative(RectF(0, 0, 1, 1));*/
+
         m_ScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
         m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
         m_ScrollBar->setBarPos(1.0f);
+
+		he::eventCallback0<void> resizeHandler(boost::bind(&he::tools::Console::onResize, this));
+		m_View->ViewportSizeChanged += resizeHandler;
     }
 }
 
+void Console::onResize()
+{
+
+}
 
 Console::~Console()
 {
@@ -146,12 +150,12 @@ Console::~Console()
     if (m_pFont != nullptr)
         m_pFont->release();
 
-    /*
+    
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
-    }
-    */
+	}
+    
     delete m_pTextBox;
     delete m_ScrollBar;
     delete m_Help;
@@ -168,26 +172,7 @@ void Console::processCommand(const std::string& command)
     #error What if GCC?
     #endif
 
-    // console commands
-    if (s == "help")
-    {
-        addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
-
-        displayHelp();
-    }
-    else if (s == "listvars")
-    {
-        addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
-
-        displayVars();
-    }
-    else if (s == "listcmds")
-    {
-        addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
-
-        displayCmds();
-    }
-    else if (s.find('=') != -1)
+    if (s.find('=') != -1)
     {
         // get keyword (variable to change)
         std::string keyWord(s.substr(0, s.find('=')));
@@ -418,10 +403,6 @@ void Console::draw2D(gfx::Canvas2D* canvas)
             text.clear();
             text.addLine(p.second);
 
-            //GUI->drawText(	text, RectF(5,5,
-    //                           static_cast<float>(GRAPHICS->getScreenWidth() - 10),
-//                            190.0f - (k * m_pFont->getLineSpacing())));
-
             canvas->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
 
             ++k;
@@ -429,10 +410,6 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 
         if (msgHistory.size() > m_MaxMessagesInWindow)
             m_ScrollBar->draw(canvas);
-
-        //canvas->draw2D(renderer);
-
-//        canvas->drawLineAA(vec2(200,200), vec2(500,600));
 
         canvas->restoreDepth();
     }

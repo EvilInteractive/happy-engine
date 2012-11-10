@@ -158,7 +158,8 @@ View3D::View3D():
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_RenderDebugTextures(false), m_Scene(nullptr),
     m_IntermediateRenderTarget(nullptr),
-    m_OutputRenderTarget(nullptr)
+    m_OutputRenderTarget(nullptr),
+	m_SkyBox(nullptr)
 {
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
     m_NormalDepthRenderMap->setName("View::m_NormalRenderMap");
