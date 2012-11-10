@@ -31,9 +31,10 @@ namespace he {
     }
     namespace gfx {
         class Font;
-        class View2D;
+        class View;
         class Window;
         class WebView;
+        class Renderer2D;
     }
 }
 
@@ -55,7 +56,8 @@ private:
     /* DATAMEMBERS */
     he::tools::FPSGraph* m_FpsGraph;
     he::gfx::Window* m_Window;
-    he::gfx::View2D*   m_View;
+    he::gfx::View*   m_View;
+    he::gfx::Renderer2D* m_Renderer;
     he::gfx::Font* m_Font;
     he::gfx::WebView* m_WebView;
 

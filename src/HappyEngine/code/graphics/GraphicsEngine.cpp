@@ -32,15 +32,14 @@
 // warnings in awesomium lib
 #pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
-#include "GLContext.h"
-// warnings in awesomium lib
 #pragma warning(default:4100)
+#include "GLContext.h"
 
 namespace he {
 namespace gfx {
 
 GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr),
-    m_FallBackContext(nullptr), m_FallBackSfContext(nullptr)
+    m_DefaultContext(nullptr), m_DefaultSfContext(nullptr)
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -51,7 +50,7 @@ GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m
 
 GraphicsEngine::~GraphicsEngine()
 {
-    delete m_FallBackSfContext;
+    delete m_DefaultSfContext;
 }
 void GraphicsEngine::destroy()
 {
@@ -67,9 +66,8 @@ void GraphicsEngine::init()
 {
     using namespace err;
     
-    m_FallBackSfContext = NEW sf::Context();
-    m_FallBackSfContext->setActive(true);
-    GL::s_CurrentContext = &m_FallBackContext;
+    m_DefaultSfContext = NEW sf::Context();
+    registerContext(&m_DefaultContext);
     GL::init();
 
     m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
@@ -123,22 +121,13 @@ void GraphicsEngine::removeScene( Scene* scene )
     }
 }
 
-View2D* GraphicsEngine::createView2D()
+View* GraphicsEngine::createView()
 {
     ViewFactory* factory(ViewFactory::getInstance());
-    View2D* view(static_cast<View2D*>(factory->get(factory->createView2D())));
+    View* view(static_cast<View*>(factory->get(factory->create())));
     m_Views.add(view->getHandle());
     return view;
 }
-
-View3D* GraphicsEngine::createView3D()
-{
-    ViewFactory* factory(ViewFactory::getInstance());
-    View3D* view(static_cast<View3D*>(factory->get(factory->createView3D())));
-    m_Views.add(view->getHandle());
-    return view;
-}
-
 void GraphicsEngine::removeView( View* view )
 {
     HE_IF_ASSERT(m_Views.contains(view->getHandle()), "View does not exist in the view list")
@@ -169,10 +158,18 @@ void GraphicsEngine::removeWindow( Window* window )
 
 void GraphicsEngine::draw()
 {
-    ViewFactory* factory(ViewFactory::getInstance());
-    m_Views.forEach([factory](const ObjectHandle& view)
+    setActiveContext(&m_DefaultContext);
+    SceneFactory* sceneFactory(SceneFactory::getInstance());
+    m_Scenes.forEach([sceneFactory](const ObjectHandle& sceneHandle)
     {
-        factory->get(view)->draw();
+        Scene* scene(sceneFactory->get(sceneHandle));
+        if (scene->getActive())
+            scene->prepareForRendering();
+    });
+    ViewFactory* viewFactory(ViewFactory::getInstance());
+    m_Views.forEach([viewFactory](const ObjectHandle& view)
+    {
+        viewFactory->get(view)->draw();
     });
 }
 
@@ -183,7 +180,7 @@ void GraphicsEngine::tick( float /*dTime*/ )
 
 bool GraphicsEngine::registerContext( GLContext* context )
 {
-    HE_IF_ASSERT(context->id == UINT_MAX, "Context is already registered")
+    HE_IF_ASSERT(context->id == UINT32_MAX, "Context is already registered")
     if (m_FreeContexts.empty() == false)
     {
         context->id = m_FreeContexts.front();
@@ -199,16 +196,15 @@ bool GraphicsEngine::registerContext( GLContext* context )
 
 void GraphicsEngine::unregisterContext( GLContext* context )
 {
-    HE_IF_ASSERT(context->id != UINT_MAX, "Context has not been registered or is already unregistered")
+    HE_IF_ASSERT(context->id != UINT32_MAX, "Context has not been registered or is already unregistered")
     {
         m_FreeContexts.push(context->id);
         m_Contexts.remove(context);
         setActiveContext(context);
         ContextRemoved(context);
         context->window->m_Window->setActive(false);
-        context->id = UINT_MAX;
-        m_FallBackSfContext->setActive(true);
-        GL::s_CurrentContext = &m_FallBackContext;
+        context->id = UINT32_MAX;
+        setActiveContext(&m_DefaultContext);
     }
 }
 
@@ -216,7 +212,10 @@ void GraphicsEngine::setActiveContext( GLContext* context )
 {
     if (GL::s_CurrentContext != context)
     {
-        context->window->m_Window->setActive(true);
+        if (context == &m_DefaultContext)
+            m_DefaultSfContext->setActive(true);
+        else
+            context->window->m_Window->setActive(true);
         GL::s_CurrentContext = context;
     }
 }

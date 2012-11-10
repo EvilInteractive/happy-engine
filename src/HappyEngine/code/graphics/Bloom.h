@@ -50,15 +50,15 @@ private:
     he::PrimitiveList<uint32> m_FboId[2];
     he::PrimitiveList<Texture2D*> m_Texture[2];
     
-    Shader* m_pDownSampleBrightPassShader;
+    Shader* m_DownSampleBrightPassShader;
     uint32 m_DownSampleBrightPassMap;
     uint32 m_DownSampleBrightPassLumMap;
 
-    Shader* m_pDownSampleShader;
+    Shader* m_DownSampleShader;
     uint32 m_DownSampleMap;
 
     const static int s_BlurPasses = 2;
-    Shader* m_pBlurShaderPass[s_BlurPasses];
+    Shader* m_BlurShaderPass[s_BlurPasses];
     uint32 m_BlurMapPos[s_BlurPasses];
     uint32 m_BlurTexelSize[s_BlurPasses];
         

@@ -84,7 +84,7 @@ void InstancingController::initVao( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_Vao[context->id] == UINT_MAX, "vao already inited?")
+    HE_IF_ASSERT(m_Vao[context->id] == UINT32_MAX, "vao already inited?")
     {
         glGenVertexArrays(1, m_Vao + context->id);
         GL::heBindVao(m_Vao[context->id]);
@@ -128,9 +128,9 @@ void InstancingController::initVao( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///  Shadow Draw
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_ShadowVao[context->id] == UINT_MAX, "shadow vao already inited?")
+    HE_IF_ASSERT(m_ShadowVao[context->id] == UINT32_MAX, "shadow vao already inited?")
     {
-        uint32 posOffset(UINT_MAX);
+        uint32 posOffset(UINT32_MAX);
         BufferLayout::layout::const_iterator it(vertexElements.cbegin());
         for(; it != vertexElements.cend(); ++it)
         {
@@ -178,15 +178,15 @@ void InstancingController::initVao( GLContext* context )
 void InstancingController::destroyVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_Vao[context->id] != UINT_MAX, "Vao not initialized or already destroyed")
+    HE_IF_ASSERT(m_Vao[context->id] != UINT32_MAX, "Vao not initialized or already destroyed")
     {
         glDeleteVertexArrays(1, m_Vao + context->id);
-        m_Vao[context->id] = UINT_MAX;
+        m_Vao[context->id] = UINT32_MAX;
     }
-    HE_IF_ASSERT(m_ShadowVao[context->id] != UINT_MAX, "Shadow Vao not initialized or already destroyed")
+    HE_IF_ASSERT(m_ShadowVao[context->id] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
     {
         glDeleteVertexArrays(1, m_ShadowVao + context->id);
-        m_ShadowVao[context->id] = UINT_MAX;
+        m_ShadowVao[context->id] = UINT32_MAX;
     }
 }
 void InstancingController::init()

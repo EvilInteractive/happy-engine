@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,38 +16,21 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 14/10/2011
+//Created: 09/11/2012
+#include "HappyPCH.h" 
 
-#version 150 core
+#include "GLSLShaderGenerator.h"
 
-noperspective in vec2 texCoord;
+namespace he {
+namespace ct {
 
-out vec4 outColor;
-
-uniform sampler2D map;
-#if HDR
-#if BRIGHTPASS
-uniform sampler2D lumMap;
-#include "shared/tonemap.frag"
-#endif
-#endif
-
-void main()
+GLSLShaderGenerator::GLSLShaderGenerator()
 {
-    vec3 color = texture(map, texCoord).rgb;
-    
-#if BRIGHTPASS
-    float ex = 0.1f;
-#if HDR
-    ex = getWhite(lumMap, 1.0f, 5.0f);
-#endif
-    color /= ex;
-    color -= vec3(1.0f, 1.0f, 1.0f);
-    color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
-    color *= ex;
-#endif
-
-    outColor = vec4(color, 1.0f);
 }
 
 
+GLSLShaderGenerator::~GLSLShaderGenerator()
+{
+}
+
+} } //end namespace

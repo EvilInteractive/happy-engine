@@ -77,10 +77,10 @@ he::mat44 mat44::createPerspectiveLH( float fov, float aspectRatio, float zNear,
     float _11 = cosf(fov * 0.5f) / sinf(fov * 0.5f);
     float _00 = _11 / aspectRatio;
     return mat44(
-         _00, 0.0f, 0.0f                     , 0.0f,
+        _00, 0.0f, 0.0f                     , 0.0f,
         0.0f,  _11, 0.0f                     , 0.0f,
         0.0f, 0.0f, (zFar) / (zFar - zNear)  , -(zFar * zNear) / (zFar - zNear),
-        0.0f, 0.0f, 1.0f                     , 0.0f);
+        0.0f, 0.0f,  1.0f                     , 0.0f);
 }
 
 mat44 mat44::createOrthoLH(float left, float right, float top, float bottom, float zNear, float zFar)
@@ -102,8 +102,8 @@ mat44 mat44::createOrthoRH(float left, float right, float top, float bottom, flo
 mat44 mat44::createLookAtLH(const vec3& eye, const vec3& target, const vec3& up)
 {
     vec3 zaxis(normalize(target - eye));
-    vec3 xaxis(normalize(cross(normalize(up), zaxis)));
-    vec3 yaxis(cross(zaxis, xaxis));
+    vec3 xaxis(normalize(cross(zaxis, normalize(up))));
+    vec3 yaxis(cross(xaxis, zaxis));
 
     return mat44(
            xaxis.x,  xaxis.y,  xaxis.z, -dot(xaxis, eye),

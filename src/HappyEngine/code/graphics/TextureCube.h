@@ -54,7 +54,7 @@ public:
         const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
 
     void setLoadFinished();
-    bool isInitialized() const { return m_Id != UINT_MAX; }
+    bool isInitialized() const { return m_Id != UINT32_MAX; }
 
     void generateMipMaps() const;
 

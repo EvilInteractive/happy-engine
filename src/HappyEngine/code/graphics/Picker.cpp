@@ -160,10 +160,10 @@ uint32 Picker::pick(const vec2& /*screenPoint*/)
 //     he_memcpy(&id, packedID, 4);
 // 
 //     if (id == 0)
-//         return UINT_MAX;
+//         return UINT32_MAX;
 //     else
 //         return ID2[(id - 1)];
-    return UINT_MAX;
+    return UINT32_MAX;
 }
 
 uint32 Picker::pick(const vec2& /*screenPoint*/, const he::PrimitiveList<IDrawable*>& /*drawList*/)
@@ -241,10 +241,10 @@ uint32 Picker::pick(const vec2& /*screenPoint*/, const he::PrimitiveList<IDrawab
 //     he_memcpy(&id, packedID, 4);
 // 
 //     if (id == 0)
-//         return UINT_MAX;
+//         return UINT32_MAX;
 //     else
 //         return ID2[(id - 1)];
-    return UINT_MAX;
+    return UINT32_MAX;
 }
 
 void Picker::drawDebug() const

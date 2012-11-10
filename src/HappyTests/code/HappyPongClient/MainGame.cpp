@@ -46,10 +46,17 @@
 #include "Window.h"
 #include "Scene.h"
 #include "View.h"
+#include "DefaultRenderPipeline.h"
+#include "Renderer2D.h"
 
 namespace hpc {
 
-MainGame::MainGame(): m_FPSGraph(nullptr), m_RestartTimer(0.0f), m_RestartTime(2.0f), m_Ball(nullptr)
+MainGame::MainGame()
+    : m_FPSGraph(nullptr)
+    , m_RestartTimer(0.0f)
+    , m_RestartTime(2.0f)
+    , m_Ball(nullptr)
+    , m_RenderPipeline(nullptr)
 {
 }
 
@@ -58,6 +65,10 @@ MainGame::~MainGame()
 {
     if (NETWORK->isConnected())
         NETWORK->disconnect();
+
+    m_RenderPipeline->get2DRenderer()->detachFromRender(m_FPSGraph);
+    CONSOLE->detachFromRenderer();
+    PROFILER->detachFromRenderer();
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
@@ -68,6 +79,7 @@ MainGame::~MainGame()
 
     delete m_FPSGraph;
 
+    delete m_RenderPipeline;
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeScene(m_Scene);
     GRAPHICS->removeWindow(m_Window);
@@ -75,8 +87,7 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    m_View = GRAPHICS->createView3D();
-    m_Scene = GRAPHICS->createScene();
+    m_View = GRAPHICS->createView();
     m_Window = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
@@ -112,7 +123,11 @@ void MainGame::load()
 
     CONTENT->setRenderSettings(settings);
 
-    m_View->setScene(m_Scene);
+    m_Scene = GRAPHICS->createScene();
+
+    m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
+    m_RenderPipeline->init(m_View, m_Scene, settings);
+
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
@@ -153,14 +168,16 @@ void MainGame::load()
     camera->setLens((float)viewport.width / viewport.height, he::piOverFour, 10.0f, 1000);
     camera->lookAt(he::vec3(0.010f, 67.5f, 0.01f), he::vec3::zero, he::vec3(0, 0, 1));
     m_Scene->getCameraManager()->addCamera("default", camera);
-    m_View->setCamera("default");
+    m_View->setCamera(camera);
 
     m_Scene->getLightManager()->setDirectionalLight(he::normalize(he::vec3(0.3f, 1.0f, 1.0f)), he::Color(1.0f, 1, 1), 0.75f);
     m_Scene->getLightManager()->setAmbientLight(he::Color(0.8f, 0.8f, 1), 0.25f);
 
     m_FPSGraph = NEW he::tools::FPSGraph();
-    m_FPSGraph->setType(he::tools::FPSGraph::Type_ToConsole);
-    m_FPSGraph->setView(m_View);
+    m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
+    CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
+    PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
 
     m_BoardDimension = he::vec2(85, 47);
 
@@ -190,10 +207,6 @@ void MainGame::tick( float dTime )
             restart(false);
         }
     }
-}
-
-void MainGame::drawGui()
-{
 }
 
 const std::vector<Palet*>& MainGame::getPalets() const

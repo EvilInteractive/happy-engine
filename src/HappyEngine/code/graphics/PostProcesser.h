@@ -46,6 +46,8 @@ public:
 
     void setFogColor(const he::vec3& color);
 
+    void setDebugRenderer(Renderer2D* renderer);
+
     void draw();
     virtual void draw2D(Canvas2D* canvas);
 
@@ -83,17 +85,19 @@ private:
     const RenderTarget* m_ReadRenderTarget;
     RenderSettings m_Settings;
 
-    Bloom* m_pBloom;
-    AutoExposure* m_pAutoExposure;
+    Renderer2D* m_DebugRenderer;
+
+    Bloom* m_Bloom;
+    AutoExposure* m_AutoExposure;
 
     Shader* m_PostShader;
     uint32 m_PostShaderVars[MAX_POST_SHADER_VARS];
 
-    const Texture2D* m_pRandomNormals;
+    const Texture2D* m_RandomNormals;
 
     bool m_ShowDebugTextures;
 
-    ModelMesh* m_pQuad;
+    ModelMesh* m_Quad;
 
     vec3 m_FogColor;
 

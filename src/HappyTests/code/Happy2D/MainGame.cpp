@@ -37,7 +37,7 @@
 
 namespace ht {
 
-MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m_Font(nullptr), m_WebView(nullptr)
+MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m_Renderer(nullptr), m_Font(nullptr), m_WebView(nullptr)
 {
 }
 
@@ -45,21 +45,22 @@ MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m
 MainGame::~MainGame()
 {
     if (m_WebView != nullptr)
-        m_View->get2DRenderer()->removeWebView(m_WebView);
+        m_Renderer->removeWebView(m_WebView);
 
-    m_View->get2DRenderer()->detachFromRender(m_FpsGraph);
-    m_View->get2DRenderer()->detachFromRender(this);
+    m_Renderer->detachFromRender(m_FpsGraph);
+    m_Renderer->detachFromRender(this);
 
     m_Font->release();
     delete m_FpsGraph;
 
+    delete m_Renderer;
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeWindow(m_Window);
 }
 
 void MainGame::init()
 {
-    m_View = GRAPHICS->createView2D();
+    m_View = GRAPHICS->createView();
     m_Window = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
@@ -75,20 +76,24 @@ void MainGame::load()
 {
     he::gfx::RenderSettings settings;
     CONTENT->setRenderSettings(settings);
+
+    m_Renderer = NEW he::gfx::Renderer2D;
+    m_View->addRenderPlugin(m_Renderer);
+
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
-    m_WebView = m_View->get2DRenderer()->createWebViewRelative(he::RectF(0, 0, 1.0f, 1.0f), true);
+    m_WebView = m_Renderer->createWebViewRelative(he::RectF(0, 0, 1.0f, 1.0f), true);
     m_WebView->loadUrl("http://www.google.be");
     //m_WebView->loadUrl("http://www.sebastiaansprengers.be/snake/");
     //m_WebView->loadUrl("http://www.youtube.be");
 
-    m_View->get2DRenderer()->attachToRender(this);
+    m_Renderer->attachToRender(this);
 
     m_FpsGraph = NEW he::tools::FPSGraph();
     m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
-    m_View->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_Renderer->attachToRender(m_FpsGraph);
 
     m_Font = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
 }

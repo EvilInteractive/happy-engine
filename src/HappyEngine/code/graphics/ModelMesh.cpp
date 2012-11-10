@@ -37,8 +37,8 @@ ModelMesh::ModelMesh():
     m_ContextCreatedHandler(boost::bind(&ModelMesh::initVAO, this, _1)),
     m_ContextRemovedHandler(boost::bind(&ModelMesh::destroyVAO, this, _1)),
     m_DrawMode(MeshDrawMode_Triangles),
-    m_IndexVboID(UINT_MAX),
-    m_VertexVboID(UINT_MAX)
+    m_IndexVboID(UINT32_MAX),
+    m_VertexVboID(UINT32_MAX)
 {
     he_memset(m_VaoID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
     he_memset(m_VaoShadowID, 0xff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
@@ -53,17 +53,18 @@ ModelMesh::~ModelMesh()
     const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
     std::for_each(contexts.cbegin(), contexts.cend(), [&](GLContext* context)
     {
-        destroyVAO(context);
+        if (m_VaoID[context->id] != UINT32_MAX)
+            destroyVAO(context);
     });
-    if (m_VertexVboID != UINT_MAX)
+    if (m_VertexVboID != UINT32_MAX)
         glDeleteBuffers(1, &m_VertexVboID);
-    if (m_IndexVboID != UINT_MAX)
+    if (m_IndexVboID != UINT32_MAX)
         glDeleteBuffers(1, &m_IndexVboID);
 }
 
 void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
 {
-    HE_IF_ASSERT(m_VertexVboID == UINT_MAX, "Only init ModelMesh once!")
+    HE_IF_ASSERT(m_VertexVboID == UINT32_MAX, "Only init ModelMesh once!")
     {
         m_VertexLayout = vertexLayout;
         m_DrawMode = mode;
@@ -86,7 +87,7 @@ void ModelMesh::initVAO( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///                             Normal                                 ///
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoID[context->id] == UINT_MAX, "vao already inited?")
+    HE_IF_ASSERT(m_VaoID[context->id] == UINT32_MAX, "vao already inited?")
     {
         glGenVertexArrays(1, m_VaoID + context->id);
         GL::heBindVao(m_VaoID[context->id]);
@@ -106,11 +107,11 @@ void ModelMesh::initVAO( GLContext* context )
     //////////////////////////////////////////////////////////////////////////
     ///                             Shadow                                 ///
     //////////////////////////////////////////////////////////////////////////
-    HE_IF_ASSERT(m_VaoShadowID[context->id] == UINT_MAX, "shadow vao already inited?")
+    HE_IF_ASSERT(m_VaoShadowID[context->id] == UINT32_MAX, "shadow vao already inited?")
     {
-        uint32 posOffset = UINT_MAX;
-        uint32 boneIdOffset = UINT_MAX;
-        uint32 boneWeightOffset = UINT_MAX;
+        uint32 posOffset = UINT32_MAX;
+        uint32 boneIdOffset = UINT32_MAX;
+        uint32 boneWeightOffset = UINT32_MAX;
         std::for_each(elements.cbegin(), elements.cend(), [&](const BufferElement& e)
         {
             if (e.getUsage() == gfx::BufferElement::Usage_Position)
@@ -131,7 +132,7 @@ void ModelMesh::initVAO( GLContext* context )
         GL::heBindVao(m_VaoShadowID[context->id]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
         glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
-        if (boneIdOffset == UINT_MAX)
+        if (boneIdOffset == UINT32_MAX)
         {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_VertexLayout.getSize(), BUFFER_OFFSET(posOffset)); 
             glEnableVertexAttribArray(0);
@@ -150,15 +151,15 @@ void ModelMesh::initVAO( GLContext* context )
 void ModelMesh::destroyVAO( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VaoID[context->id] != UINT_MAX, "Vao not initialized or already destroyed")
+    HE_IF_ASSERT(m_VaoID[context->id] != UINT32_MAX, "Vao not initialized or already destroyed")
     {
         glDeleteVertexArrays(1, m_VaoID + context->id);
-        m_VaoID[context->id] = UINT_MAX;
+        m_VaoID[context->id] = UINT32_MAX;
     }
-    HE_IF_ASSERT(m_VaoShadowID[context->id] != UINT_MAX, "Shadow Vao not initialized or already destroyed")
+    HE_IF_ASSERT(m_VaoShadowID[context->id] != UINT32_MAX, "Shadow Vao not initialized or already destroyed")
     {
         glDeleteVertexArrays(1, m_VaoShadowID + context->id);
-        m_VaoShadowID[context->id] = UINT_MAX;
+        m_VaoShadowID[context->id] = UINT32_MAX;
     }
 }
 
@@ -168,7 +169,7 @@ void ModelMesh::setVertices(const void* pVertices, uint32 num, MeshUsage usage)
 {
     m_NumVertices = num;
 
-    uint32 posOffset = UINT_MAX;
+    uint32 posOffset = UINT32_MAX;
     std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
     {
         if (e.getUsage() == gfx::BufferElement::Usage_Position)

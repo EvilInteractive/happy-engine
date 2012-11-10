@@ -52,7 +52,7 @@ Mesh2D::Mesh2D() :
 void Mesh2D::initVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VAOID[context->id] == UINT_MAX, "vao already assigned on context")
+    HE_IF_ASSERT(m_VAOID[context->id] == UINT32_MAX, "vao already assigned on context")
     {
         glGenVertexArrays(1, m_VAOID + context->id);
         GL::heBindVao(m_VAOID[context->id]);
@@ -66,10 +66,10 @@ void Mesh2D::initVao( GLContext* context )
 void Mesh2D::destroyVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    HE_IF_ASSERT(m_VAOID[context->id] != UINT_MAX, "vao not alive on context")
+    HE_IF_ASSERT(m_VAOID[context->id] != UINT32_MAX, "vao not alive on context")
     {
         glDeleteVertexArrays(1, m_VAOID + context->id);
-        m_VAOID[context->id] = UINT_MAX;
+        m_VAOID[context->id] = UINT32_MAX;
     }
 }
 

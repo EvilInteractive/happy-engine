@@ -34,33 +34,33 @@ namespace hs {
 /* CONSTRUCTOR - DESTRUCTOR */
 UIController::UIController() :    m_GUIDirectory(""),
                                   m_WebView(nullptr),
-                                  m_View(nullptr)
+                                  m_Renderer(nullptr)
 {
 }
 UIController::~UIController()
 {
-    if (m_View != nullptr && m_WebView != nullptr)
+    if (m_Renderer != nullptr && m_WebView != nullptr)
     {
-        m_View->get2DRenderer()->detachFromRender(m_WebView);
-        m_View->get2DRenderer()->removeWebView(m_WebView);
+        m_Renderer->detachFromRender(m_WebView);
+        m_Renderer->removeWebView(m_WebView);
     }
 }
 
 /* GENERAL */
-void UIController::init(he::gfx::View* view)
+void UIController::init(he::gfx::Renderer2D* renderer)
 {
-    m_View = view;
+    m_Renderer = renderer;
 
     // get gui dir
     m_GUIDirectory = he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str();
 
     // create webview for gui to load
-    m_WebView = m_View->get2DRenderer()->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
+    m_WebView = m_Renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
 
-	m_View->get2DRenderer()->attachToRender(this);
-    m_View->get2DRenderer()->attachToRender(m_WebView);
-	
-	he::gfx::Font* font(CONTENT->getDefaultFont(10));
+    m_Renderer->attachToRender(this);
+    m_Renderer->attachToRender(m_WebView);
+    
+    he::gfx::Font* font(CONTENT->getDefaultFont(10));
     m_SceneInfo.setFont(font);
     font->release();
 }
@@ -72,21 +72,21 @@ void UIController::load(const std::string& file)
 
 void UIController::draw2D(he::gfx::Canvas2D* canvas)
 {
-	canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
-	canvas->fillRect(he::vec2(5,5),he::vec2(1,1));
-	canvas->fillText(m_SceneInfo, he::vec2(50,30));
+    canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
+    canvas->fillRect(he::vec2(5,5),he::vec2(1,1));
+    canvas->fillText(m_SceneInfo, he::vec2(50,30));
 }
 
 void UIController::updateSceneInfo(const he::vec3& camPos)
 {
-	m_CamPos = camPos;
+    m_CamPos = camPos;
 
-	m_SceneInfo.clear();
+    m_SceneInfo.clear();
 
-	char buff[100];
+    char buff[100];
     sprintf(buff, "Camera Position: %.2f, %.2f, %.2f\0", m_CamPos.x, m_CamPos.y, m_CamPos.z);
 
-	m_SceneInfo.addLine(buff);
+    m_SceneInfo.addLine(buff);
 }
 
 /* GETTERS */

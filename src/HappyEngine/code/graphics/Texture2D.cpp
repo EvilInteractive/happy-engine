@@ -25,7 +25,7 @@ namespace he {
 namespace gfx {
     
 Texture2D::Texture2D(): 
-    m_Id(UINT_MAX), 
+    m_Id(UINT32_MAX), 
     m_Width(0), 
     m_Height(0), 
     m_IsLoadDone(false),
@@ -38,7 +38,7 @@ Texture2D::Texture2D():
 
 Texture2D::~Texture2D()
 {
-    if (m_Id != UINT_MAX)
+    if (m_Id != UINT32_MAX)
     {
         glDeleteTextures(1, &m_Id);
     }
@@ -46,11 +46,11 @@ Texture2D::~Texture2D()
 
 void Texture2D::init( TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps )
 {
-    HE_IF_ASSERT(m_Id == UINT_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id == UINT32_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
     {
         // Create
         glGenTextures(1, &m_Id);
-        HE_ASSERT(m_Id != UINT_MAX, "Texture create failed");
+        HE_ASSERT(m_Id != UINT32_MAX, "Texture create failed");
 
         m_TextureFormat = textureFormat;
         m_HasMipMaps = willHaveMipMaps;
@@ -72,7 +72,7 @@ void Texture2D::init( TextureWrapType wrapType, TextureFilterType filter, Textur
 void Texture2D::setData( uint32 width, uint32 height, 
     const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel)
 {
-    HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {
         if (mipLevel == 0)
         {
@@ -92,7 +92,7 @@ void Texture2D::setData( uint32 width, uint32 height,
 
 void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel)
 {
-    HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     {
         if (mipLevel == 0)
         {
@@ -123,7 +123,7 @@ void Texture2D::setLoadFinished()
 
 void Texture2D::generateMipMaps() const
 {
-    HE_IF_ASSERT(m_Id != UINT_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
     HE_IF_ASSERT(m_HasMipMaps == true, "Texture2D has not been initialized with the has mipmap flag!: %s", getName().c_str())
     {
         GL::heBindTexture2D(m_Id);

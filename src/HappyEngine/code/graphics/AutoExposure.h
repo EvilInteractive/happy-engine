@@ -54,12 +54,12 @@ private:
     float m_DTime;
     float m_ExposureSpeed;
 
-    Texture2D* m_pLumTexture[2]; //double buffered
+    Texture2D* m_LumTexture[2]; //double buffered
     bool m_FirstBuffer;
 
     uint32 m_FboID;
 
-    ModelMesh* m_pQuad;
+    ModelMesh* m_Quad;
 
     bool m_bOnce;
 

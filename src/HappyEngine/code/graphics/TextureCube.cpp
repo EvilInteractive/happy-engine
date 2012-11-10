@@ -28,7 +28,7 @@ TextureCube::TextureCube()
 : m_HasMipMaps(false)
 , m_Width(0)
 , m_Height(0)
-, m_Id(UINT_MAX)
+, m_Id(UINT32_MAX)
 , m_FilterType(TextureFilterType_None)
 , m_WrapType(TextureWrapType_Repeat)
 , m_TextureFormat(TextureFormat_Compressed_RGBA8_DXT5)
@@ -39,7 +39,7 @@ TextureCube::TextureCube()
 
 TextureCube::~TextureCube()
 {
-    if (m_Id != UINT_MAX)
+    if (m_Id != UINT32_MAX)
     {
         glDeleteTextures(1, &m_Id);
     }
@@ -47,11 +47,11 @@ TextureCube::~TextureCube()
 
 void TextureCube::init( TextureWrapType wrapType, TextureFilterType filter, TextureFormat textureFormat, bool willHaveMipMaps )
 {
-    HE_IF_ASSERT(m_Id == UINT_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id == UINT32_MAX, "Texture2D is being initialized twice: %s", getName().c_str())
     {
         // Create
         glGenTextures(1, &m_Id);
-        HE_ASSERT(m_Id != UINT_MAX, "Texture create failed");
+        HE_ASSERT(m_Id != UINT32_MAX, "Texture create failed");
 
         m_TextureFormat = textureFormat;
         m_HasMipMaps = willHaveMipMaps;
@@ -74,7 +74,7 @@ void TextureCube::init( TextureWrapType wrapType, TextureFilterType filter, Text
 
 void TextureCube::setData( uint32 width, uint32 height, const Face& face, const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel /*= 0*/ )
 {
-    HE_IF_ASSERT(m_Id != UINT_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
     {
         if (mipLevel == 0)
         {
@@ -94,7 +94,7 @@ void TextureCube::setData( uint32 width, uint32 height, const Face& face, const 
 
 void TextureCube::setCompressedData( uint32 width, uint32 height, const Face& face, const void* data, uint32 imageSizeInBytes, uint8 mipLevel /*= 0*/ )
 {
-    HE_IF_ASSERT(m_Id != UINT_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "TextureCube has not been initialized!: %s", getName().c_str())
     {
         if (mipLevel == 0)
         {

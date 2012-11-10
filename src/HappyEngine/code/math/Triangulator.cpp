@@ -46,8 +46,8 @@ void Triangulator::triangulateConvex(const he::PrimitiveList<vec2>& vertices, he
     for (uint32 i(0); i < vertices.size() - 2; ++i)
     {
         indices.add(0);
-        indices.add(i + 1);
         indices.add(i + 2);
+        indices.add(i + 1);
     }
 }
 
@@ -84,8 +84,8 @@ bool Triangulator::triangulateConcave(const he::PrimitiveList<vec2>& vertices, h
             a = V[u]; b = V[v]; c = V[w];
 
             indices.add(a);
-            indices.add(b);
             indices.add(c);
+            indices.add(b);
 
             m++;
 

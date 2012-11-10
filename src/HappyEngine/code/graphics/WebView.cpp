@@ -327,12 +327,11 @@ void WebView::OnFinishLoadingFrame(
         const Awesomium::WebURL&  	url 
     )
 {
-    char* buff0 = NEW char[url.path().length()];
-    url.path().ToUTF8(buff0, url.path().length());
+    char buff0[200];
+    HE_ASSERT(200 > url.path().length(), "Output buffer to small!");
+    url.path().ToUTF8(buff0, std::max(url.path().length(), 200ui32));
 
     HE_INFO("Finished loading url: '%s'", buff0);
-
-    delete[] buff0;
 }
 
 void WebView::OnDocumentReady(

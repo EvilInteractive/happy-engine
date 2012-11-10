@@ -31,11 +31,12 @@ namespace he {
     }
     namespace ge {
         class Entity;
+        class DefaultRenderPipeline;
     }
     namespace gfx {
         class Window;
         class Scene;
-        class View3D;
+        class View;
     }
 }
 
@@ -52,7 +53,6 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void drawGui();
 
     const std::vector<Palet*>& getPalets() const;
     const std::vector<Obstacle*>& getObstacles() const;
@@ -82,8 +82,9 @@ private:
     Ball* m_Ball;
 
     he::gfx::Window* m_Window;
-    he::gfx::View3D*   m_View;
+    he::gfx::View*   m_View;
     he::gfx::Scene*  m_Scene;
+    he::ge::DefaultRenderPipeline* m_RenderPipeline;
 
     std::vector<he::ge::Entity*> m_EntityList;
 

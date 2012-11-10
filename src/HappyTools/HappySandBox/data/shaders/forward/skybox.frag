@@ -28,5 +28,5 @@ uniform samplerCube cubeMap;
 
 void main()
 {
-    outColor = vec4(texture(cubeMap, passPosition).rgb, 1.0f);
+    outColor = vec4(texture(cubeMap, passPosition).rgb * 5, 0.0f);
 }

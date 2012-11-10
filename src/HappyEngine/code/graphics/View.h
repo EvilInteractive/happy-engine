@@ -30,7 +30,7 @@ namespace he {
 namespace gfx {
 class Scene;
 class Window;
-class IRenderer3D;
+class IRenderer;
 class Forward3DRenderer;
 class ShadowCaster;
 class PostProcesser;
@@ -40,8 +40,6 @@ class Texture2D;
 class ShapeRenderer;
 class CameraPerspective;
 class View;
-class View2D;
-class View3D;
 class SkyBox;
 
 class ViewFactory: public ObjectFactory<View>, public Singleton<ViewFactory>
@@ -52,47 +50,62 @@ class ViewFactory: public ObjectFactory<View>, public Singleton<ViewFactory>
 
 public:
     virtual ~ViewFactory() { }
-
-    ObjectHandle createView3D();
-    ObjectHandle createView2D();
-
+    
 private:
-    // Disable
-    virtual ObjectHandle create() { HE_ASSERT(false, "DO NOT USE"); return ObjectHandle::unassigned; }
 };
 
-class View
+class View : public ge::ITickable
 {
-DECLARE_OBJECT(View)
-    friend class ObjectFactory<View>;
-protected:
-    View();
+    DECLARE_OBJECT(View)
 public:
+    View();
     virtual ~View();
 
+    // Init
     virtual void init(const RenderSettings& settings);
+    const RenderSettings& getSettings() const { return m_Settings; }
 
+    // PLugin
+    virtual void addRenderPlugin(IRenderer* renderer);
+    
+    // Window
     void setAbsoluteViewport(const RectI& viewport);
     void setRelativeViewport(const RectF& viewportPercentage);
     const RectI& getViewport() const { return m_Viewport; }
 
     void setWindow(Window* window);
     Window* getWindow() const { return m_Window; }
-
-    virtual Renderer2D* get2DRenderer() const { HE_ASSERT(false, "Pure virtual method call"); return nullptr; }
-
-    const RenderSettings& getSettings() const { return m_Settings; }
-
+    
     event0<void> SettingsChanged;
     event0<void> ViewportSizeChanged;
 
-    // INTERNAL
-    virtual void draw() {};
+    PostProcesser* getPostProcessor() const { return m_PostProcesser; }
 
-protected:
+    // Camera
+    void setCamera(CameraPerspective* camera);
+    CameraPerspective* getCamera() const { return m_Camera; }
+    
+    // Update / Draw
+    virtual void tick( float dTime );
+    virtual void draw();
+
+private:
     void resize();
     void calcViewportFromPercentage();
 
+    // Camera
+    CameraPerspective* m_Camera;
+    
+    // Render Textures
+    Texture2D* m_ColorRenderMap;
+    Texture2D* m_NormalDepthRenderMap;
+    RenderTarget* m_IntermediateRenderTarget;
+    RenderTarget* m_OutputRenderTarget;
+    
+    // Post
+    PostProcesser* m_PostProcesser;
+
+    // Settings
     RectI m_Viewport;
     RectF m_ViewportPercentage;
     bool m_UsePercentage;
@@ -100,96 +113,12 @@ protected:
     gfx::Window* m_Window;
 
     RenderSettings m_Settings;
-    
+
+    he::PrimitiveList<IRenderer*> m_PrePostRenderPlugins;
+    he::PrimitiveList<IRenderer*> m_PostPostRenderPlugins;
+
     // Events
     he::eventCallback0<void> m_WindowResizedCallback;
-
-    //Disable default copy constructor and default assignment operator
-    View(const View&);
-    View& operator=(const View&);
-
-};
-
-class View2D : public View
-{
-    friend class ViewFactory;
-private:
-    View2D();
-public:
-    virtual ~View2D();
-
-    virtual void init(const RenderSettings& settings);
-    virtual Renderer2D* get2DRenderer() const { return m_2DRenderer; }
-
-    virtual void draw();
-private:
-    Renderer2D* m_2DRenderer;
-    RenderTarget* m_OutputRenderTarget;
-};
-
-class View3D : public View, public ge::ITickable
-{
-    friend class ViewFactory;
-private:
-    View3D();
-public:
-    virtual ~View3D();
-
-    // Init
-    virtual void init(const RenderSettings& settings);
-
-    // Debug
-    he::PrimitiveList<vec3>& getDebugVertices() { return m_DebugVertices; }
-    he::PrimitiveList<uint32>& getDebugIndices() { return m_DebugIndices; }
-
-    // Camera
-    void setCamera(const std::string& camera);
-    CameraPerspective* getCamera() const { return m_Camera; }
-
-    // Renderers
-    virtual Renderer2D* get2DRenderer() const { return m_2DRenderer; }
-    ShapeRenderer* getShapeRenderer() const { return m_ShapeRenderer; }
-
-    // Scene
-    void setScene(Scene* scene);
-    const Scene* getScene() const { return m_Scene; }
-
-
-    // Update / Draw
-    virtual void tick( float dTime );
-    virtual void draw();
-
-private:
-    // Camera
-    CameraPerspective* m_Camera;
-    std::string m_CameraId;
-
-    // Scene
-    gfx::Scene*  m_Scene;
-    gfx::SkyBox* m_SkyBox;
-
-    // Render Textures
-    Texture2D* m_ColorRenderMap;
-    Texture2D* m_NormalDepthRenderMap;
-    RenderTarget* m_IntermediateRenderTarget;
-    RenderTarget* m_OutputRenderTarget;
-
-    // Renderers
-    IRenderer3D* m_OpacRenderer;
-    Forward3DRenderer* m_TransparentRenderer;
-    ShapeRenderer* m_ShapeRenderer;
-    Renderer2D* m_2DRenderer;
-
-    // Shadow
-    ShadowCaster* m_ShadowCaster;
-
-    // Post
-    PostProcesser* m_PostProcesser;
-
-    // Debug
-    bool m_RenderDebugTextures;
-    he::PrimitiveList<vec3> m_DebugVertices;
-    he::PrimitiveList<uint32> m_DebugIndices;
 
 };
 

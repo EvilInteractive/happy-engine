@@ -92,7 +92,7 @@ void ShapeRenderer::createBillboardQuad()
 }
 
 /* GENERAL */
-void ShapeRenderer::init(View3D* view, const RenderTarget* target)
+void ShapeRenderer::init(View* view, const RenderTarget* target)
 {
     m_View = view;
     m_RenderTarget = target;
@@ -160,7 +160,7 @@ void ShapeRenderer::drawBillboard(const Texture2D* tex2D, const vec3& pos)
     glDrawElements(GL_TRIANGLES, m_pBillboardQuad->getNumIndices(), m_pBillboardQuad->getIndexType(), 0);
 }
 
-void ShapeRenderer::draw()
+void ShapeRenderer::render()
 {
     GL::heBlendEnabled(true);
     GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);

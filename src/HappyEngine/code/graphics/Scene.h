@@ -36,6 +36,8 @@ class InstancingManager;
 class Picker;
 class IDrawable;
 class Scene;
+class ShadowCaster;
+class SkyBox;
 
 class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
 {
@@ -69,6 +71,13 @@ public:
     //uint pick(const vec2& screenPoint);
     //uint pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
     
+    // Active
+    void setActive(bool active) { m_Active =  active; }
+    bool getActive() const { return m_Active; }
+
+    // Skybox
+    void loadSkybox(const std::string& asset);
+
 private:  
     // Managers
     LightManager* m_LightManager;
@@ -77,6 +86,11 @@ private:
     DrawListContainer m_DrawList;
     
     Picker* m_Picker;
+
+    ShadowCaster* m_ShadowCaster;
+    SkyBox* m_SkyBox;
+
+    bool m_Active;
 
     //Disable default copy constructor and default assignment operator
     Scene(const Scene&);

@@ -29,7 +29,7 @@ namespace he {
     namespace gfx {
         class WebView;
         class View;
-		class Canvas2D;
+        class Canvas2D;
     }
 }
 
@@ -44,10 +44,10 @@ public:
     virtual ~UIController();
 
     /* GENERAL */
-    void init(he::gfx::View* view);
+    void init(he::gfx::Renderer2D* renderer);
     void load(const std::string& file);
-	void draw2D(he::gfx::Canvas2D* canvas);
-	void updateSceneInfo(const he::vec3& camPos);
+    void draw2D(he::gfx::Canvas2D* canvas);
+    void updateSceneInfo(const he::vec3& camPos);
 
     /* GETTERS */
     he::gfx::WebView* getWebView() const;
@@ -58,11 +58,11 @@ private:
     std::string m_GUIDirectory;
 
     he::gfx::WebView* m_WebView;
-    he::gfx::View* m_View;
+    he::gfx::Renderer2D* m_Renderer;
 
-	he::vec3 m_CamPos;
+    he::vec3 m_CamPos;
 
-	he::gui::Text m_SceneInfo;
+    he::gui::Text m_SceneInfo;
 
     /* DEFAULT COPY & ASSIGNMENT */
     UIController(const UIController&);

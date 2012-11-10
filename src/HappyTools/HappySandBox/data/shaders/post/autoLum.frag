@@ -36,19 +36,7 @@ float getLum(in vec3 col)
 
 void main()
 {
-	float lum = 0;
-	lum += getLum(textureLod(hdrMap, vec2(0.1f, 0.5f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.9f, 0.5f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.1f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.9f), 2).rgb);
-
-	lum += getLum(textureLod(hdrMap, vec2(0.3f, 0.3f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.3f, 0.7f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.7f, 0.3f), 2).rgb);
-	lum += getLum(textureLod(hdrMap, vec2(0.7f, 0.7f), 2).rgb);
-
-	lum += getLum(textureLod(hdrMap, vec2(0.5f, 0.5f), 2).rgb);
-	lum /= 9.0f;
+	float lum = getLum(texture(hdrMap, texCoord).rgb);
 	
 	outColor = max(0.01f, (lum * dTime + textureLod(prevLumMap, vec2(0.5f, 0.5f), 0).r * (1-dTime)));
 }

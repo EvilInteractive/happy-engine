@@ -234,10 +234,11 @@ void GL::init()
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetWindingFrontFace(true);
+    GL::heSetWindingFrontFace(false);
     GL::heSetCullFace(false);
     glEnable(GL_CULL_FACE);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    glDisable(GL_SCISSOR_TEST);
 
     if (glewGetContext()->__GLEW_EXT_texture_filter_anisotropic == GL_TRUE)
     {
@@ -252,8 +253,8 @@ void GL::init()
 }
 void GL::reset()
 {
-    s_CurrentContext->m_BoundFbo = UINT_MAX;
-    s_CurrentContext->m_BoundVao = UINT_MAX;
+    s_CurrentContext->m_BoundFbo = UINT32_MAX;
+    s_CurrentContext->m_BoundVao = UINT32_MAX;
 
     he_memset(s_CurrentContext->m_BoundTex2D, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint32));
     he_memset(s_CurrentContext->m_BoundTexCube, 0xff, GLContext::MAX_SAMPLERS * sizeof(uint32));
@@ -265,7 +266,7 @@ void GL::reset()
     s_CurrentContext->m_Viewport.height = -1;
 
 
-    s_CurrentContext->m_ActiveTex = UINT_MAX;
+    s_CurrentContext->m_ActiveTex = UINT32_MAX;
 }
 
 void GL::heSetViewport( const RectI& viewport )

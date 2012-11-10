@@ -42,7 +42,7 @@ class ModelMesh;
 class RenderTarget;
 class Scene;
 
-class Deferred3DRenderer : public IRenderer3D, public IDrawable2D
+class Deferred3DRenderer : public IRenderer, public IDrawable2D
 {
 private:
     struct PostPointLightData
@@ -115,9 +115,15 @@ public:
     Deferred3DRenderer();
     virtual ~Deferred3DRenderer();
 
-    virtual void init(View3D* view, const RenderTarget* target);
+    virtual void init(View* view, const RenderTarget* target);
 
-    virtual void draw();
+    void setScene(Scene* scene) { m_Scene = scene; }
+    Scene* getScene() const { return m_Scene; }
+
+    virtual RenderPass getRenderPass() const { return RenderPass_Opac; }
+    virtual uint8 getRenderPriority() const { return 50ui8; }
+
+    virtual void render();
     virtual void draw2D(Canvas2D* canvas);
 
 private:
@@ -127,9 +133,9 @@ private:
     void onSettingChanged();
     void compileShaders();
 
-    void postAmbDirIllLight(const Scene* scene);
-    void postPointLights(const Scene* scene);
-    void postSpotLights(const Scene* scene);
+    void postAmbDirIllLight();
+    void postPointLights();
+    void postSpotLights();
 
 
 
@@ -143,7 +149,8 @@ private:
     const Texture2D* m_NormalDepthTexture;
 
     // Render FBO
-    View3D* m_View;
+    View* m_View;
+    Scene* m_Scene;
     const RenderTarget* m_OutputRenderTarget;
     
     //////////////////////////////////////////////////////////////////////////

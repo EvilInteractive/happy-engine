@@ -44,6 +44,8 @@ public:
     void setDepthTarget();
     void init();
 
+    uint32 getFboId() { return m_FboId; }
+
     void removeAllTargets();
 
     const Texture2D* getTextureTarget(uint32 index) const;
@@ -54,6 +56,7 @@ public:
     uint32 getHeight() const { return m_Height; }
 
     void setSize(uint32 width, uint32 height);
+    void resizeDepthBuffer(uint32 width, uint32 height);
 
     void clear(const Color& color) const;
 
