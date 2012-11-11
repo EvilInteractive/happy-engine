@@ -50,7 +50,6 @@ public:
     virtual ~FPSGraph();
 
     /* GENERAL */
-    void setView(gfx::View* view);
     void tick(float dTime, float interval = 0.5f);
     virtual void draw2D(gfx::Canvas2D* canvas);
 
@@ -81,7 +80,6 @@ private:
     uint16 m_CurrentFPS;
     
     gfx::Font* m_Font;
-    gfx::View* m_View;
 
     int m_FPSGraphState;
 

@@ -22,37 +22,33 @@
 #define _HE_IRENDERER_H_
 #pragma once
 
-#include "DrawListContainer.h"
-
 namespace he {
 namespace gfx {
 
-class LightManager;
-class Texture2D;
 class View;
-class View3D;
 class RenderTarget;
 
-class IRenderer3D
+enum RenderPass
 {
-public:
-    virtual ~IRenderer3D() {}
-
-    virtual void init(View3D* view, const RenderTarget* target) = 0;
-    
-    virtual void draw() = 0;
+    RenderPass_Opac,
+    RenderPass_Translucent,
+    RenderPass_AfterPost,
+    RenderPass_Gui
 };
 
-class IRenderer2D
+class IRenderer
 {
 public:
-    virtual ~IRenderer2D() {}
+    virtual ~IRenderer() {}
 
     virtual void init(View* view, const RenderTarget* target) = 0;
 
-    virtual void draw() = 0;
-};
+    virtual RenderPass getRenderPass() const = 0;
+    virtual uint8 getRenderPriority() const = 0; // highest = first 
+    
+    virtual void render() = 0;
 
+};
 
 } } //end namespace
 

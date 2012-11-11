@@ -40,7 +40,7 @@ public:
 
     /* GENERAL */
     void initialize();
-    // returns ID of mesh in drawlist which is picked, or UINT_MAX if none
+    // returns ID of mesh in drawlist which is picked, or UINT32_MAX if none
     uint32 pick(const vec2& screenPoint);
     uint32 pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
 

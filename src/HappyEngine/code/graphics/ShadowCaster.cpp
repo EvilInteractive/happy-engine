@@ -37,11 +37,11 @@ ShadowCaster::~ShadowCaster()
 {
 }
 
-void ShadowCaster::init(View* view)
+void ShadowCaster::init()
 {
     for (uint32 i(1); i < ShadowResolution_MAX; ++i)
     {
-        m_SpotLightShadowRenderers[i - 1].init(view, (ShadowResolution)i);
+        m_SpotLightShadowRenderers[i - 1].init((ShadowResolution)i);
     }
 }
 

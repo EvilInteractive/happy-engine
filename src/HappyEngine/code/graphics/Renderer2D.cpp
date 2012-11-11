@@ -20,8 +20,6 @@
 
 #include "HappyPCH.h" 
 
-// warnings in awesomium lib
-#pragma warning(disable:4100)
 #include "Renderer2D.h"
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
@@ -31,7 +29,10 @@
 #include "IKeyboard.h"
 #include "Vertex.h"
 #include "Simple2DTextureEffect.h"
+// warnings in awesomium lib
+#pragma warning(disable:4100)
 #include "Awesomium/WebCore.h"
+#pragma warning(default:4100)
 #include "ModelMesh.h"
 #include "Canvas2D.h"
 #include "WebView.h"
@@ -39,8 +40,6 @@
 #include "Texture2D.h"
 #include "View.h"
 #include "IDrawable2D.h"
-// warnings in awesomium lib
-#pragma warning(default:4100)
 
 namespace he {
 namespace gfx {
@@ -73,7 +72,7 @@ Canvas2D* Renderer2D::createCanvasAbsolute(const RectI& viewport)
 Canvas2D* Renderer2D::createCanvasRelative(const RectF& percent)
 {
     HE_ASSERT(percent.width > 0 && percent.height > 0, "viewport width and height must be > 0");
-    Canvas2D* canvas(NEW Canvas2D(m_View, percent));
+    Canvas2D* canvas(NEW Canvas2D(this, percent));
     m_Canvas2Ds.add(canvas);
     return canvas;
 }
@@ -108,7 +107,7 @@ void Renderer2D::removeWebView( WebView* webview )
     }
 }
 
-void Renderer2D::draw()
+void Renderer2D::render()
 {
     m_DefaultCanvas->clear();
     m_Drawables.forEach([this](IDrawable2D* drawable)
@@ -153,8 +152,8 @@ void Renderer2D::init( View* view, const RenderTarget* target )
         vec2(1, 1)));
 
     he::PrimitiveList<uint8> indices(6);
-    indices.add(2); indices.add(1); indices.add(0);
-    indices.add(1); indices.add(2); indices.add(3);
+    indices.add(0); indices.add(1); indices.add(2);
+    indices.add(1); indices.add(3); indices.add(2);
 
     m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);

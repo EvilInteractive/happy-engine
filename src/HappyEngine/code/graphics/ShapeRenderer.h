@@ -37,7 +37,7 @@ class View;
 class RenderTarget;
 class IShapeDrawable;
 
-class ShapeRenderer : public IRenderer3D
+class ShapeRenderer : public IRenderer
 {
 public:
 
@@ -46,8 +46,10 @@ public:
     virtual ~ShapeRenderer();
 
     /* GENERAL */
-    virtual void init(View3D* view, const RenderTarget* target);
-    virtual void draw();
+    virtual void init(View* view, const RenderTarget* target);
+    virtual RenderPass getRenderPass() const { return RenderPass_AfterPost; }
+    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual void render();
 
     void attachToRenderer(IShapeDrawable* drawable);
     void detachFromRenderer(IShapeDrawable* drawable);
@@ -69,7 +71,7 @@ private:
     BufferLayout m_VertexLayoutBillboard;
     BillboardEffect* m_pBillboardEffect;
 
-    View3D* m_View;
+    View* m_View;
     const RenderTarget* m_RenderTarget;
 
     mat44 m_BillboardMatrix;

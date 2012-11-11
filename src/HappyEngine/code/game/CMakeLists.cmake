@@ -1,5 +1,6 @@
 set (CODE_GAME_NO_FILTER    
                         CameraManager.cpp                       CameraManager.h
+						DefaultRenderPipeline.cpp				DefaultRenderPipeline.h
                         Entity.cpp                              Entity.h
                         Game.h
                         ITickable.h

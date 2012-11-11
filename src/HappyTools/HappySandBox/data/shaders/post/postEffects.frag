@@ -140,12 +140,12 @@ float compareDepths(in float depth1, in float depth2)
     return max(0.2f, gauss);  
 }  
 
-vec3 calcAO(in vec2 tex, in float depth, in float dw, in float dh, inout float ao)  
+vec3 calcAO(in vec2 texCoord, in float depth, in float dw, in float dh, inout float ao)  
 {  
     float temp = 0;
     vec3 bleed = vec3(0.0f, 0.0f, 0.0f);
-    float coordw = tex.x + dw / depth;
-    float coordh = tex.y + dh / depth;
+    float coordw = texCoord.x + dw / depth;
+    float coordh = texCoord.y + dh / depth;
 
     //if (coordw < 1.0f && coordw > 0.0f && coordh < 1.0f && coordh > 0.0f)
     //{
@@ -157,27 +157,27 @@ vec3 calcAO(in vec2 tex, in float depth, in float dw, in float dh, inout float a
     return temp * bleed;  
 }   
      
-void getAoAndGi(in vec2 tex, out float out_ao, out vec3 out_gi)  
+void getAoAndGi(in vec2 texCoord, out float out_ao, out vec3 out_gi)  
 {  
     float pw = 1.0f / viewPortSize.x * 0.5f;
     float ph = 1.0f / viewPortSize.y * 0.5f;
 
     //randomization texture:
     vec2 noiseTextureSize = vec2(64, 64);
-    vec3 random = textureLod(noiseMap, tex * viewPortSize.xy / noiseTextureSize, 0).xyz * 2.0f - 1.0f;
+    vec3 random = textureLod(noiseMap, texCoord * viewPortSize.xy / noiseTextureSize, 0).xyz * 2.0f - 1.0f;
 
     //initialize stuff:
-    float depth = readDepth(tex);
+    float depth = readDepth(texCoord);
     vec3 gi = vec3(0.0f, 0.0f, 0.0f);  
     float ao = 0.0f;
 
     for(int i = 0; i < 8; ++i) 
     {  
         //calculate color bleeding and ao:
-        gi += calcAO(tex, depth,  pw,  ph, ao);  
-        gi += calcAO(tex, depth,  pw, -ph, ao);  
-        gi += calcAO(tex, depth, -pw,  ph, ao);  
-        gi += calcAO(tex, depth, -pw, -ph, ao); 
+        gi += calcAO(texCoord, depth,  pw,  ph, ao);  
+        gi += calcAO(texCoord, depth,  pw, -ph, ao);  
+        gi += calcAO(texCoord, depth, -pw,  ph, ao);  
+        gi += calcAO(texCoord, depth, -pw, -ph, ao); 
      
         //sample jittering:
         pw += random.x * 0.0005f;
@@ -198,41 +198,42 @@ void getAoAndGi(in vec2 tex, out float out_ao, out vec3 out_gi)
 
 void main()
 {
-    vec2 tex = vec2(1 - texCoord.x, texCoord.y);
-
-    vec4 sampleColor = textureLod(colorMap, tex, 0.0f);
-    
-    if (sampleColor.a < 0.01f)
-        discard;
-    
+    vec4 sampleColor = textureLod(colorMap, texCoord, 0.0f);
+        
     vec3 color = sampleColor.rgb;
     
 #if BLOOM
-    color += texture(blur0, tex).rgb * 0.25f;  
-    color += texture(blur1, tex).rgb * 0.25f;  
-    color += texture(blur2, tex).rgb * 0.25f;  
-    color += texture(blur3, tex).rgb * 0.25f;  
+    color += texture(blur0, texCoord).rgb * 0.25f;  
+    color += texture(blur1, texCoord).rgb * 0.25f;  
+    color += texture(blur2, texCoord).rgb * 0.25f;  
+    color += texture(blur3, texCoord).rgb * 0.25f;  
 #endif
+	bool post = sampleColor.a > 0.01f;
 
 #if AO
-    float ao;
-    vec3 gi; 
-    getAoAndGi(tex, ao, gi);
-    color = color + gi * 5;
+    float ao = 1.0f;
+	if (post)
+	{
+		vec3 gi; 
+		getAoAndGi(texCoord, ao, gi);
+		color = color + gi * 5;
+	}
 #endif
 
 #if HDR  
-	float lum = getWhite(lumMap, 0.5f, 5.0f);
-    color = tonemap(color, vec3(1.0f, 0.8f, 0.6f) * lum);
+	float lum = getWhite(lumMap, 1.0f, 10.0f);
+    color = tonemap(color, vec3(1.0f, 1.0f, 1.0f) * lum);
 #endif
  
 #if VIGNETTE   
-    color *= vignette(tex * 2.0f - 1.0f, 0.9f, 2.0f);
+    color *= vignette(texCoord * 2.0f - 1.0f, 0.9f, 2.0f);
 #endif
 
+	if (post)
+	{
 #if FOG
     const float beginFog = 0.5f;
-	vec3 normalDepth = texture(normalDepthMap, tex).xyz;
+	vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;
     float fog = max(0, normalDepth.z - beginFog) * (1.0f / (1.0f - beginFog));
 
     color = color * (1 - fog) + fogColor * (fog);
@@ -241,7 +242,7 @@ void main()
 #if AO
     color *= ao;
 #endif
-    
+    }
     //color = color - gi;
     //color = vec3(ao);
 			

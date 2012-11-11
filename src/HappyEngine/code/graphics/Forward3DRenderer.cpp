@@ -1,3 +1,4 @@
+
 //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
@@ -21,61 +22,65 @@
 #include "HappyPCH.h" 
 
 #include "Forward3DRenderer.h"
-#include "Scene.h"
 #include "RenderTarget.h"
 #include "CameraPerspective.h"
 #include "IDrawable.h"
-#include "CameraManager.h"
 #include "View.h"
+#include "Scene.h"
 
 namespace he {
 namespace gfx {
 
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-Forward3DRenderer::Forward3DRenderer(DrawListContainer::BlendFilter blend): 
+Forward3DRenderer::Forward3DRenderer(const RenderPass pass, bool addSceneRenderer): 
             m_RenderTarget(nullptr),
             m_View(nullptr),
-            m_BlendFilter(blend)
+            m_Scene(nullptr),
+            m_RenderPass(pass)
 {
+    if (addSceneRenderer)
+    {
+        const DrawListContainer::BlendFilter blendFilter(m_RenderPass == RenderPass_Opac? DrawListContainer::BlendFilter_Opac : DrawListContainer::BlendFilter_Blend);
+        he::eventCallback1<void, const ICamera*> sceneRender([this, blendFilter](const ICamera* camera)
+        {
+            HE_IF_ASSERT(m_Scene != nullptr, "Assign a scene to the renderer before rendering!")
+            {
+                const DrawListContainer& drawList(m_Scene->getDrawList());
+                drawList.draw(blendFilter, camera, [&camera](IDrawable* drawable)
+                {
+                    drawable->applyMaterial(camera);
+                    drawable->draw();
+                }); 
+            }
+        });
+        PostRender += sceneRender;
+    }
 }
 
 Forward3DRenderer::~Forward3DRenderer()
 {
 }
 
-void Forward3DRenderer::init( View3D* view, const RenderTarget* target)
+void Forward3DRenderer::init( View* view, const RenderTarget* target)
 {
     m_RenderTarget = target;
     m_View = view;
 }
 
-void Forward3DRenderer::draw()
+void Forward3DRenderer::render()
 {
-    const Scene* scene(m_View->getScene());
-    const CameraPerspective* camera(m_View->getCamera());
+    const ICamera* camera(m_View->getCamera());
     m_RenderTarget->prepareForRendering();
-
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-
-    PreDraw(camera);
-
+        
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
     GL::heSetCullFace(false);
-    GL::heBlendEnabled(m_BlendFilter == DrawListContainer::BlendFilter_Blend);
+    GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
 
-    const DrawListContainer& drawList(scene->getDrawList());
-    drawList.draw(m_BlendFilter, camera, [&camera](IDrawable* drawable)
-    {
-        drawable->applyMaterial(camera);
-        drawable->draw();
-    }); 
-
-    PostDraw(camera);
+    PreRender(camera);
+    PostRender(camera);
 }
 
 

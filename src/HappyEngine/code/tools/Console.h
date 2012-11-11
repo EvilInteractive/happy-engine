@@ -43,9 +43,8 @@ namespace gui {
 }
 
 namespace gfx {
-    class Canvas2D;
     class Font;
-    class View;
+    class Renderer2D;
 }
 
 namespace tools {
@@ -62,7 +61,12 @@ public:
     /* GENERAL */
     void load();
     void tick();
+<<<<<<< HEAD
     void setView(gfx::View* view);
+=======
+    void attachToRenderer(gfx::Renderer2D* renderer);
+    void detachFromRenderer();
+>>>>>>> ee2f9f5f021567dd95180aeaa5168b57a14f90ec
     virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
@@ -74,21 +78,14 @@ public:
         const char* type(typeid(T).name());
         HE_IF_ASSERT(m_TypeHandlers.find(type) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", type)
         {
-            if (m_ValueContainer.find(varKey) != m_ValueContainer.end())
-            {
-                std::stringstream str;
-                str << "Variable: '" << varKey << "' already registered!";
-
-                HE_ASSERT(false, str.str().c_str());
-            }
-            else
+            HE_IF_ASSERT(m_ValueContainer.find(varKey) == m_ValueContainer.end(), "Variable: '%s' already registered!", varKey.c_str())
             {
                 m_ValueContainer[varKey] = pVar;
             }
         }
     }
 
-    void registerCmd(boost::function<void()> command, const std::string& cmdKey);
+    void registerCmd(const boost::function<void()>& command, const std::string& cmdKey);
 
     void addTypeHandler(ITypeHandler* typeHandler);
     void flushMessageHistory();
@@ -127,17 +124,16 @@ private:
     uint32 m_CmdHistoryPos;
     uint32 m_MaxMessagesInWindow;
 
-    bool m_bOpen;
+    bool m_IsOpen;
 
-    gui::TextBox* m_pTextBox;
+    gui::TextBox* m_TextBox;
     gui::Text* m_Help;
     gui::Scrollbar* m_ScrollBar;
 
     std::string m_HelpCommand;
 
-    gfx::Font* m_pFont;
-
-    gfx::View* m_View;
+    gfx::Font* m_Font;
+    gfx::Renderer2D* m_Renderer;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);

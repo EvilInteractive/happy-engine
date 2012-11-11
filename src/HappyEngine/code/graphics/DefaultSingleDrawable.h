@@ -59,11 +59,11 @@ public:
     
 protected:
     virtual void setWorldMatrixDirty(uint8 cause);
+    Bound m_Bound;
     
 private:
     bool m_CastsShadow;
     Scene* m_Scene;
-    Bound m_Bound;
     bool m_NeedsReevalute;
 
     //Disable default copy constructor and default assignment operator

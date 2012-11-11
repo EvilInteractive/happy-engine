@@ -32,27 +32,34 @@ class ModelMesh;
 class Texture2D;
 class RenderTarget;
 class ICamera;
+class Scene;
 
-class Forward3DRenderer : public IRenderer3D
+class Forward3DRenderer : public IRenderer
 {
 public:
 
     /* CONSTRUCTOR - DESCTRUCTOR */
-    Forward3DRenderer(DrawListContainer::BlendFilter blend);
+    Forward3DRenderer(const RenderPass pass, bool addSceneRenderer);
     virtual ~Forward3DRenderer();
 
     /* GENERAL */
-    virtual void init( View3D* view, const RenderTarget* target);
+    void setScene(const Scene* scene) { m_Scene = scene; }
+    const Scene* getScene() const { return m_Scene; }
 
-    virtual void draw();
+    /* IRENDERER */
+    virtual void init( View* view, const RenderTarget* target);
+    virtual RenderPass getRenderPass() const { return m_RenderPass; }
+    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual void render();
 
-    event1<void, const ICamera*> PreDraw;
-    event1<void, const ICamera*> PostDraw;
+    he::event1<void, const ICamera*> PreRender;
+    he::event1<void, const ICamera*> PostRender;
 
 private:    
     const RenderTarget* m_RenderTarget;
-    View3D* m_View;
-    DrawListContainer::BlendFilter m_BlendFilter;
+    View* m_View;
+    const Scene* m_Scene;
+    RenderPass m_RenderPass;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Forward3DRenderer(const Forward3DRenderer&);

@@ -29,11 +29,14 @@ namespace he {
     namespace tools {
         class FPSGraph;
     }
+    namespace ge {
+        class DefaultRenderPipeline;
+    }
     namespace gfx {
         class Window;
-        class View3D;
+        class View;
         class Scene;
-		class Canvas2D;
+        class Canvas2D;
     }
 }
 
@@ -50,7 +53,7 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-	virtual void draw2D(he::gfx::Canvas2D* canvas);
+    virtual void draw2D(he::gfx::Canvas2D* canvas);
 
 private:
 
@@ -58,7 +61,8 @@ private:
 
     he::gfx::Window* m_Window;
     he::gfx::Scene*  m_Scene;
-    he::gfx::View3D* m_View;
+    he::gfx::View* m_View;
+    he::ge::DefaultRenderPipeline* m_RenderPipeline;
 
     UIController* m_UIController;
     UIBind* m_UIBind;

@@ -45,6 +45,8 @@ public:
     virtual const Material* getMaterial() const { return m_Material; }
     virtual const ModelMesh* getModelMesh() const { return m_Cube; }
 
+    virtual void calculateBound() {}
+
 private:
     ModelMesh* m_Cube;
     const TextureCube* m_CubeMap;

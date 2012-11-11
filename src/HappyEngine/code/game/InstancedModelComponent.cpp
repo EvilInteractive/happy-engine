@@ -30,7 +30,7 @@
 namespace he {
 namespace ge {
 
-InstancedModelComponent::InstancedModelComponent(): m_InstanceId(UINT_MAX), m_ControllerKey(""), m_Parent(nullptr)
+InstancedModelComponent::InstancedModelComponent(): m_InstanceId(UINT32_MAX), m_ControllerKey(""), m_Parent(nullptr)
 {
 }
 
@@ -77,7 +77,7 @@ void InstancedModelComponent::setController( const std::string& key )
                 controller->removeInstance(m_InstanceId);
             }
         }
-        m_InstanceId = UINT_MAX;
+        m_InstanceId = UINT32_MAX;
     }
     m_ControllerKey = key;
     if (key != "" && m_Parent != nullptr)

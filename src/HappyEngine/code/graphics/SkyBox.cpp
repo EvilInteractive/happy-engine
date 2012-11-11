@@ -36,8 +36,13 @@
 namespace he {
 namespace gfx {
 
-SkyBox::SkyBox(): m_CubeMap(nullptr), m_Cube(nullptr), m_Material(nullptr)
+SkyBox::SkyBox()
+    : m_CubeMap(nullptr)
+    , m_Cube(nullptr)
+    , m_Material(nullptr)
 {
+    const float largeNumber(1000000000);
+    m_Bound.fromAABB(AABB(vec3(-largeNumber, -largeNumber, -largeNumber), vec3(largeNumber, largeNumber, largeNumber)));
 }
 
 

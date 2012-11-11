@@ -36,7 +36,7 @@ public:
     ShadowCaster();
     virtual ~ShadowCaster();
 
-    void init(View* view);
+    void init();
 
     void render(Scene* scene);
 

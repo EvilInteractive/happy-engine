@@ -45,16 +45,12 @@ public:
 
     struct Data
     {
-        Data() : resolvedFbufferID(UINT_MAX),
-                 resolvedRbufferID(UINT_MAX),
-                 fbufferID(UINT_MAX),
-                 colorRbufferID(UINT_MAX),
-                 depthRbufferID(UINT_MAX)
+        Data() : fbufferID(UINT32_MAX),
+                 colorRbufferID(UINT32_MAX),
+                 depthRbufferID(UINT32_MAX)
         {}
 
         ObjectHandle renderTextureHnd;
-        uint32 resolvedFbufferID;
-        uint32 resolvedRbufferID;
         uint32 fbufferID;
         uint32 colorRbufferID;
         uint32 depthRbufferID;
@@ -76,7 +72,7 @@ public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
     Canvas2D(const RectI& absoluteViewport);
-    Canvas2D(View* view, const RectF& relativeViewport);
+    Canvas2D(Renderer2D* parent, const RectF& relativeViewport);
     virtual ~Canvas2D();
 
     /* GENERAL */
@@ -92,9 +88,7 @@ public:
     /* GETTERS */
     Data* getData() const;
     const vec2& getSize() const { return m_CanvasSize; }
-
-    Renderer2D* getRenderer2D() const { return m_Renderer2D; }
-
+    
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
     void setFillColor(const Color& newColor);
@@ -152,16 +146,16 @@ private:
     float m_LineWidth;
     float m_GlobalAlpha;
 
-    Data* m_pBufferData;
+    Data* m_BufferData;
 
-    Mesh2D* m_pBufferMesh;
+    Mesh2D* m_BufferMesh;
 
-    Simple2DEffect* m_pColorEffect;
-    Simple2DTextureEffect* m_pTextureEffect;
-    Simple2DFontEffect* m_pFontEffect;
+    Simple2DEffect* m_ColorEffect;
+    Simple2DTextureEffect* m_TextureEffect;
+    Simple2DFontEffect* m_FontEffect;
 
-    Texture2D* m_pRenderTexture;
-    Texture2D* m_pTextBuffer;
+    Texture2D* m_RenderTexture;
+    Texture2D* m_TextBuffer;
 
     BlendStyle m_BlendStyle;
 
@@ -170,17 +164,15 @@ private:
     vec2 m_CanvasSize;
     vec2 m_Position;
 
-    ModelMesh* m_pTextureQuad;
+    ModelMesh* m_TextureQuad;
 
     float m_PixelDepth;
 
     bool m_AutoClear;
 
-    Renderer2D* m_Renderer2D;
-
     eventCallback0<void> m_ViewResizedHandler;
 
-    short m_ExtraPixelDepth;
+    int16 m_ExtraPixelDepth;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

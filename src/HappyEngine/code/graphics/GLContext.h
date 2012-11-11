@@ -36,7 +36,7 @@ class GLContext
 friend GL;
 public:
     GLContext(Window* window_)
-        : id(UINT_MAX)
+        : id(UINT32_MAX)
         , window(window_) 
 
         // Clear

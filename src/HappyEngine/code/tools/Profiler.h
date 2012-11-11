@@ -29,7 +29,7 @@ namespace he {
         class Text;
     }
     namespace gfx {
-        class Canvas2D;
+        class Renderer2D;
         class View;
         class Font;
     }
@@ -67,7 +67,8 @@ public:
 
     inline bool isEnabled() { return m_State != Disabled && m_State != Enabling; }
 
-    void setView(gfx::View* view);
+    void attachToRenderer(gfx::Renderer2D* renderer);
+    void detachFromRenderer();
     virtual void draw2D(gfx::Canvas2D* canvas);
 
     void toggleProfiler();
@@ -90,8 +91,8 @@ private:
 
     ProfileTreeNode* m_CurrentNode;
 
-    gfx::Font* m_pFont;
-    gfx::View* m_View;
+    gfx::Font* m_Font;
+    gfx::Renderer2D* m_Renderer;
 
     enum State
     {
@@ -103,8 +104,6 @@ private:
     uint8 m_State;
 
     uint32 m_Width;
-
-    bool m_Show;
 
     //Disable default copy constructor and default assignment operator
     Profiler(const Profiler&);

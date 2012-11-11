@@ -305,8 +305,8 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         vertices.add(VertexPos(vec3(1, -1, 1.0f)));
 
         he::PrimitiveList<uint8> indices(6);
-        indices.add(0); indices.add(1); indices.add(2);
-        indices.add(1); indices.add(3); indices.add(2);
+        indices.add(1); indices.add(0); indices.add(2);
+        indices.add(1); indices.add(2); indices.add(3);
 
         m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
         m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
@@ -349,8 +349,8 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         vertices.add(VertexPos(vec3(1, -1, 0.0f)));
 
         he::PrimitiveList<uint8> indices(6);
-        indices.add(0); indices.add(1); indices.add(2);
-        indices.add(1); indices.add(3); indices.add(2);
+        indices.add(1); indices.add(0); indices.add(2);
+        indices.add(1); indices.add(2); indices.add(3);
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_ParticleQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);

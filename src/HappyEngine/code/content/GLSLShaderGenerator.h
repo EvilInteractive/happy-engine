@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,38 +16,30 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 14/10/2011
+//Created: 04/11/2012
 
-#version 150 core
+#ifndef _HE_GLSLShaderGenerator_H_
+#define _HE_GLSLShaderGenerator_H_
+#pragma once
 
-noperspective in vec2 texCoord;
+#include "IShaderGenerator.h"
 
-out vec4 outColor;
+namespace he {
+namespace ct {
 
-uniform sampler2D map;
-#if HDR
-#if BRIGHTPASS
-uniform sampler2D lumMap;
-#include "shared/tonemap.frag"
-#endif
-#endif
-
-void main()
+class GLSLShaderGenerator : public IShaderGenerator
 {
-    vec3 color = texture(map, texCoord).rgb;
-    
-#if BRIGHTPASS
-    float ex = 0.1f;
-#if HDR
-    ex = getWhite(lumMap, 1.0f, 5.0f);
+public:
+    GLSLShaderGenerator();
+    virtual ~GLSLShaderGenerator();
+
+private:
+
+    //Disable default copy constructor and default assignment operator
+    GLSLShaderGenerator(const GLSLShaderGenerator&);
+    GLSLShaderGenerator& operator=(const GLSLShaderGenerator&);
+};
+
+} } //end namespace
+
 #endif
-    color /= ex;
-    color -= vec3(1.0f, 1.0f, 1.0f);
-    color = vec3(max(color.r, 0.0f), max(color.g, 0.0f), max(color.b, 0.0f));
-    color *= ex;
-#endif
-
-    outColor = vec4(color, 1.0f);
-}
-
-

@@ -199,7 +199,9 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
         // Init
         //////////////////////////////////////////////////////////////////////////
         gfx::Window* window(GRAPHICS->createWindow());
-        gfx::View2D* view(GRAPHICS->createView2D());
+        gfx::View* view(GRAPHICS->createView());
+        gfx::Renderer2D* renderer(NEW gfx::Renderer2D());
+        view->addRenderPlugin(renderer);
 
         window->setResizable(false);
         window->setWindowDimension(static_cast<uint32>(windowSize.x), static_cast<uint32>(windowSize.y));
@@ -220,7 +222,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
         view->init(gfx::RenderSettings());
 
         details::MessageboxDrawer drawer(message, icon, button1, button2, button3);
-        view->get2DRenderer()->attachToRender(&drawer);
+        renderer->attachToRender(&drawer);
 
         for (uint8 i(0); i < drawer.m_ButtonCount; ++i)
         {
@@ -251,11 +253,12 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
         //////////////////////////////////////////////////////////////////////////
         // Cleanup
         //////////////////////////////////////////////////////////////////////////
-        view->get2DRenderer()->detachFromRender(&drawer);
+        renderer->detachFromRender(&drawer);
 
         window->Closed -= closeCallback;
         window->close();
 
+        delete renderer;
         GRAPHICS->removeView(view);
         GRAPHICS->removeWindow(window);
 

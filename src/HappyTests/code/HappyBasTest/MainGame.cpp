@@ -43,6 +43,7 @@
 #include "Scene.h"
 #include "View.h"
 #include "Window.h"
+#include "DefaultRenderPipeline.h"
 
 #include "IKeyboard.h"
 #include "Renderer2D.h"
@@ -54,6 +55,7 @@
 #include "Font.h"
 #include "SoundEngine.h"
 #include "Sound2D.h"
+#include "PostProcesser.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -68,8 +70,11 @@ MainGame::MainGame()
     : m_FpsGraph(nullptr)
     , m_SpinShadows(false)
     , m_MovingEntityFase(0)
-    , m_ShowDebugMesh(true)
     , m_BackgroundSound(nullptr)
+    , m_Window(nullptr), m_Window2(nullptr)
+    , m_View(nullptr), m_View2(nullptr)
+    , m_Scene(nullptr)
+    , m_RenderPipeline(nullptr), m_RenderPipeline2(nullptr)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -84,20 +89,26 @@ MainGame::MainGame()
 
 MainGame::~MainGame()
 {
-    m_DebugMesh->release();
+    m_RenderPipeline->get2DRenderer()->detachFromRender(m_FpsGraph);
+    m_RenderPipeline->get2DRenderer()->detachFromRender(this);
+    CONSOLE->detachFromRenderer();
+    PROFILER->detachFromRenderer();
+
     delete m_FpsGraph;
+
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
         delete entity;     
     });
 
-    CONSOLE->setView(nullptr);
+    delete m_RenderPipeline;
     GRAPHICS->removeView(m_View);
     GRAPHICS->removeWindow(m_Window);
 
 #ifdef ENABLE_WINDOW2
     GRAPHICS->removeView(m_View2);
     GRAPHICS->removeWindow(m_Window2);
+    delete m_RenderPipeline2;
 #endif
 
     m_Scene->getCameraManager()->deleteAllCameras();
@@ -106,8 +117,7 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    m_View = GRAPHICS->createView3D();
-    m_Scene = GRAPHICS->createScene();
+    m_View = GRAPHICS->createView();
     m_Window = GRAPHICS->createWindow();
 
 #ifdef ENABLE_WINDOW2
@@ -147,14 +157,19 @@ void MainGame::load()
     settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
+    settings.postSettings.hdrSettings.exposureSpeed = 0.5f;
 
     CONTENT->setRenderSettings(settings);
 
-    m_View->setScene(m_Scene);
+    m_Scene = GRAPHICS->createScene();
+    m_Scene->loadSkybox("engine/cubemaps/defaultSky.dds");
+
+    m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
+    m_RenderPipeline->init(m_View, m_Scene, settings);
+
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
-    
 
 #ifdef ENABLE_WINDOW2
     m_Window2->setResizable(true);
@@ -162,36 +177,38 @@ void MainGame::load()
     m_Window2->setWindowDimension(720, 720);
     m_Window2->setWindowTitle("HappyBasTest - 2");
     m_Window2->create();
-    
-    m_View2->setScene(m_Scene);
+
+    m_View2 = NEW he::ge::DefaultRenderPipeline();
+    m_View2->init(m_View, m_Scene, settings);
     m_View2->setWindow(m_Window2);
     m_View2->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View2->init(settings);
 #endif
     
-    CONSOLE->setView(m_View);
-    m_View->get2DRenderer()->attachToRender(this);
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
     flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
-    m_View->setCamera("default");
+    m_View->setCamera(flyCamera);
 
 #ifdef ENABLE_WINDOW2
     FlyCamera* flyCamera2 = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default2", flyCamera2);
     flyCamera2->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 1000.0f);
     flyCamera2->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
-    m_View2->setCamera("default2");
+    m_View2->setCamera(flyCamera2);
 #endif
     
     
     m_FpsGraph = NEW tools::FPSGraph();
-    m_FpsGraph->setView(m_View);
     m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
 
-    m_View->get2DRenderer()->attachToRender(CONSOLE);
+    CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
+    PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
+    m_RenderPipeline->get2DRenderer()->attachToRender(this);
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_View->getPostProcessor()->setDebugRenderer(m_RenderPipeline->get2DRenderer());
 
 #ifdef ENABLE_WINDOW2
     m_View2->getShapeRenderer()->attachToRenderer(this);
@@ -236,12 +253,12 @@ void MainGame::load()
     
     #pragma region Lights
     m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.6f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 0.0f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 2.0f);
 
     m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
     m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
     m_DebugSpotLight->setDirection(vec3(-0.70f, -0.67f, -0.27f));
-    m_DebugSpotLight->setMultiplier(2.0f);
+    m_DebugSpotLight->setMultiplier(10.0f);
     m_DebugSpotLight->setAttenuation(1.0f, 20.0f);
     m_DebugSpotLight->setFov(he::piOverTwo);
     m_DebugSpotLight->setColor(he::Color(1.0f, 0.4f, 0.4f));
@@ -264,18 +281,6 @@ void MainGame::load()
 
     #pragma endregion
     
-    #pragma region Camera Debug Shape
-    ResourceFactory<gfx::ModelMesh>* meshFactory(ResourceFactory<gfx::ModelMesh>::getInstance());
-    gfx::BufferLayout debugCameraLayout;
-    debugCameraLayout.addElement(gfx::BufferElement(0, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), 0));
-    m_DebugMesh = meshFactory->get(meshFactory->create());
-    m_DebugMesh->setName("Debug Mesh");
-    m_DebugMesh->init(debugCameraLayout, he::gfx::MeshDrawMode_Lines);
-    m_DebugMesh->setVertices(nullptr, 0, he::gfx::MeshUsage_Dynamic);
-    m_DebugMesh->setIndices(nullptr, 0, he::gfx::IndexStride_UInt, he::gfx::MeshUsage_Dynamic);
-    m_DebugMesh->setLoaded();
-    #pragma endregion
-    
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
@@ -289,7 +294,6 @@ void MainGame::load()
             m_BackgroundSound->pause();
     }, "toggle_sound");
 
-    PROFILER->setView(m_View);
 }
 
 void MainGame::tick( float dTime )
@@ -328,32 +332,12 @@ void MainGame::tick( float dTime )
         spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
     }
 
-    if (m_ShowDebugMesh)
-        fillDebugMeshes();
     m_FpsGraph->tick(dTime);
 }
 
-void MainGame::fillDebugMeshes()
+void MainGame::drawShapes( he::gfx::ShapeRenderer* /*renderer*/ )
 {
-    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    using namespace he;
-    gfx::CameraPerspective* camera(m_View->getCamera());
-    
-    const Frustum& frustum(camera->getBound().getFrustum());
-    Frustum::generateFrustumIndices<uint32>(m_View->getDebugIndices(), (uint32)m_View->getDebugVertices().size());
-    frustum.generateFrustumPoints(m_View->getDebugVertices());
 
-    const Cone& cone(camera->getBound().getCone());
-    Cone::generateConeIndices<uint32>(CONE_VERTICES, (uint32)m_View->getDebugVertices().size(), m_View->getDebugIndices());
-    cone.generateConeVertices(CONE_VERTICES, m_View->getDebugVertices());
-
-    m_DebugMesh->setVertices(&m_View->getDebugVertices()[0], m_View->getDebugVertices().size(), gfx::MeshUsage_Dynamic);
-    m_DebugMesh->setIndices(&m_View->getDebugIndices()[0], m_View->getDebugIndices().size(), gfx::IndexStride_UInt, gfx::MeshUsage_Dynamic);
-}
-
-void MainGame::drawShapes( he::gfx::ShapeRenderer* renderer )
-{
-    renderer->drawMeshColor(m_DebugMesh, he::mat44::Identity, he::Color(1.0f, 0, 0, 1)); 
 }
 
 void MainGame::draw2D(he::gfx::Canvas2D* canvas)
@@ -373,7 +357,8 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 
     canvas->fillText(m_DebugText, he::vec2(12, 12));
 
-    canvas->getRenderer2D()->drawTexture2DToScreen(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), false, he::vec2(256, 256));
+    canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
+    canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
 }
 
 } //end namespace

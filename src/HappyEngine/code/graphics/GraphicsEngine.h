@@ -41,8 +41,6 @@ namespace gfx {
 class Window;
 class Scene;
 class View;
-class View2D;
-class View3D;
 
 enum ShadowResolution;
 
@@ -67,8 +65,7 @@ public:
     Scene* getScene(SceneID id);
     void removeScene(Scene* scene);
 
-    View2D* createView2D();
-    View3D* createView3D();
+    View* createView();
     void removeView(View* view);
 
     Window* createWindow();
@@ -80,6 +77,7 @@ public:
     void setActiveWindow(Window* window) { m_ActiveWindow = window; } // Internal use
     void setActiveContext(GLContext* context);
     void setActiveView(View* view) { m_ActiveView = view; } // Internal use
+    GLContext* getDefaultContext() { return &m_DefaultContext; }
     
     /* GETTERS */
     Window* getActiveWindow() const { return m_ActiveWindow; }
@@ -97,8 +95,8 @@ public:
     he::event1<void, GLContext*> ContextRemoved;
 
 private:
-    GLContext m_FallBackContext;
-    sf::Context* m_FallBackSfContext;
+    GLContext m_DefaultContext;
+    sf::Context* m_DefaultSfContext;
 
     /* DATAMEMBERS */
     he::ObjectList<ObjectHandle> m_Scenes;

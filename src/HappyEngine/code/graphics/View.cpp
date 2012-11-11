@@ -41,151 +41,64 @@
 namespace he {
 namespace gfx {
 IMPLEMENT_OBJECT(View)
+    
+int rendererSorter(const IRenderer* a, const IRenderer* b)
+{
+    RenderPass aPass(a->getRenderPass());
+    RenderPass bPass(b->getRenderPass());
 
-#pragma warning(disable:4355) //'this' : used in base member initializer list
-#pragma region View
+    if (aPass < bPass) return -1;
+    else if (aPass > bPass) return 1;
+    else
+    {
+        int aPriority(a->getRenderPriority());
+        int bPriority(b->getRenderPriority());
+        if (aPriority < bPriority) return -1;
+        else if (aPriority > bPriority) return 1;
+        else return 0;
+    }
+}
+
+#pragma warning(disable:4355) // this in initializer list
 View::View(): 
     m_Viewport(0, 0, 0, 0),
+    m_ViewportPercentage(0, 0, 1, 1),
+    m_UsePercentage(true),
     m_Window(nullptr),
-    m_WindowResizedCallback(boost::bind(&View::resize, this))
-{
-
-}
-#pragma warning(default:4355) 
-View::~View()
-{
-    if (m_Window != nullptr)
-        m_Window->Resized -= m_WindowResizedCallback;
-}
-
-void View::setWindow( Window* window )
-{
-    HE_ASSERT(window != nullptr, "active window can not be nullptr!");
-    if (m_Window != nullptr)
-        m_Window->Resized -= m_WindowResizedCallback;
-    m_Window = window;
-    m_Window->Resized += m_WindowResizedCallback;
-}
-
-void View::init( const RenderSettings& settings )
-{
-    m_Settings = settings;
-}
-
-void View::setAbsoluteViewport( const RectI& viewport )
-{
-    m_Viewport = viewport;
-    m_UsePercentage = false;
-    ViewportSizeChanged();
-}
-
-void View::setRelativeViewport( const RectF& viewportPercentage )
-{
-    m_ViewportPercentage = viewportPercentage;
-    m_UsePercentage = true;
-    if (m_Window != nullptr)
-    {
-        calcViewportFromPercentage();
-        ViewportSizeChanged();
-    }
-}
-
-void View::resize()
-{
-    calcViewportFromPercentage();
-
-    ViewportSizeChanged();
-}
-
-void View::calcViewportFromPercentage()
-{
-    HE_IF_ASSERT(m_Window != nullptr, "Window must first be set!")
-    {
-        m_Viewport.x      = static_cast<int>(m_Window->getWindowWidth()  * m_ViewportPercentage.x);
-        m_Viewport.y      = static_cast<int>(m_Window->getWindowHeight() * m_ViewportPercentage.y);
-        m_Viewport.width  = static_cast<int>(m_Window->getWindowWidth()  * m_ViewportPercentage.width);
-        m_Viewport.height = static_cast<int>(m_Window->getWindowHeight() * m_ViewportPercentage.height);
-    }
-}
-
-#pragma endregion
-
-#pragma region View2D
-
-View2D::View2D(): View(), 
-    m_2DRenderer(nullptr),
-    m_OutputRenderTarget(nullptr)
-{
-
-}
-
-View2D::~View2D()
-{
-    delete m_2DRenderer;
-    delete m_OutputRenderTarget;
-}
-
-void View2D::init( const RenderSettings& settings )
-{
-    View::init(settings);
-
-    m_OutputRenderTarget = NEW RenderTarget(m_Window->getContext());
-    m_OutputRenderTarget->init();
-
-    m_2DRenderer = NEW Renderer2D();
-    m_2DRenderer->init(this, m_OutputRenderTarget);
-}
-
-void View2D::draw()
-{
-    if (m_Window->isOpen())
-    {
-        m_OutputRenderTarget->prepareForRendering();
-        m_OutputRenderTarget->clear(Color(128ui8, 128, 128));
-        m_2DRenderer->draw();
-        m_Window->present();
-    }
-}
-
-#pragma endregion
-
-#pragma region View3D
-View3D::View3D(): 
-    m_ShadowCaster(nullptr), m_OpacRenderer(nullptr), 
-    m_TransparentRenderer(nullptr), m_ShapeRenderer(nullptr),
-    m_PostProcesser(nullptr), m_2DRenderer(nullptr),
+    m_WindowResizedCallback(boost::bind(&View::resize, this)),
+    m_PostProcesser(nullptr),
     m_ColorRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
-    m_RenderDebugTextures(false), m_Scene(nullptr),
     m_IntermediateRenderTarget(nullptr),
     m_OutputRenderTarget(nullptr),
-	m_SkyBox(nullptr)
+m_Camera(nullptr),
+m_SkyBox(nullptr)
 {
+    if (m_Window != nullptr)
+        m_Window->Resized -= m_WindowResizedCallback;
+
     m_ColorRenderMap->setName("View::m_ColorRenderMap");
     m_NormalDepthRenderMap->setName("View::m_NormalRenderMap");
 
     GAME->addToTickList(this);
 }
-View3D::~View3D()
+#pragma warning(default:4355)
+
+View::~View()
 {
     GAME->removeFromTickList(this);
 
-    delete m_SkyBox;
     delete m_IntermediateRenderTarget;
     delete m_OutputRenderTarget;
-    delete m_OpacRenderer;
-    delete m_TransparentRenderer;
     delete m_PostProcesser;
-    delete m_ShadowCaster;
-    delete m_ShapeRenderer;
-    delete m_2DRenderer;
 
     m_ColorRenderMap->release();
     m_NormalDepthRenderMap->release();
 }
-void View3D::init( const RenderSettings& settings )
+
+void View::init( const RenderSettings& settings )
 {
-    View::init(settings);
+    m_Settings = settings;
 
     HE_ASSERT(ViewportSizeChanged.empty() == true, "Do not register events before View::init"); // we want to be first in line
     he::eventCallback0<void> resizeCallback([&]()
@@ -199,6 +112,8 @@ void View3D::init( const RenderSettings& settings )
             // Normal
             m_NormalDepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
                 gfx::TextureBufferLayout_RGB, gfx::TextureBufferType_Float, 0 );
+
+            m_IntermediateRenderTarget->resizeDepthBuffer(m_Viewport.width, m_Viewport.height);
         }
     });
     ViewportSizeChanged += resizeCallback;
@@ -231,116 +146,118 @@ void View3D::init( const RenderSettings& settings )
     m_IntermediateRenderTarget->init();
     m_OutputRenderTarget->init();
 
-    m_2DRenderer = NEW Renderer2D();
-    m_2DRenderer->init(this, m_OutputRenderTarget);
-
-    m_ShapeRenderer = NEW ShapeRenderer();
-    m_ShapeRenderer->init(this, m_OutputRenderTarget);
-
-    if (settings.enableDeferred)
+    m_PrePostRenderPlugins.sort(&rendererSorter);
+    m_PostPostRenderPlugins.sort(&rendererSorter);
+    m_PrePostRenderPlugins.forEach([this](IRenderer* renderer)
     {
-        Deferred3DRenderer* d3d;
-        m_OpacRenderer = d3d = NEW Deferred3DRenderer();
-        m_2DRenderer->attachToRender(d3d);
-    }
-    else
-        m_OpacRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Opac);
-    m_OpacRenderer->init(this, m_IntermediateRenderTarget);
-
-    m_TransparentRenderer = NEW Forward3DRenderer(DrawListContainer::BlendFilter_Blend);
-    m_TransparentRenderer->init(this, m_IntermediateRenderTarget);
-
-    //if (settings.lightingSettings.enableShadows)
+        renderer->init(this, m_IntermediateRenderTarget);
+    });
+    m_PostPostRenderPlugins.forEach([this](IRenderer* renderer)
     {
-        m_ShadowCaster = NEW ShadowCaster();
-        m_ShadowCaster->init(this);
-    }
+        renderer->init(this, m_OutputRenderTarget);
+    });
+
     if (m_Settings.enablePost)
     {
         m_PostProcesser = NEW PostProcesser();
         m_PostProcesser->init(this, m_OutputRenderTarget, m_IntermediateRenderTarget);
     }
+}
 
-    if (m_Settings.skybox != "")
+//  Plugin  //////////////////////////////////////////////////////////////
+void View::addRenderPlugin( IRenderer* renderer )
+{
+    if (renderer->getRenderPass() < RenderPass_AfterPost)
+        m_PrePostRenderPlugins.add(renderer);
+    else
+        m_PostPostRenderPlugins.add(renderer);
+}
+
+//  Window  //////////////////////////////////////////////////////////////
+void View::setWindow( Window* window )
+{
+    HE_ASSERT(window != nullptr, "active window can not be nullptr!");
+    if (m_Window != nullptr)
+        m_Window->Resized -= m_WindowResizedCallback;
+    m_Window = window;
+    m_Window->Resized += m_WindowResizedCallback;
+}
+void View::setAbsoluteViewport( const RectI& viewport )
+{
+    m_Viewport = viewport;
+    m_UsePercentage = false;
+    ViewportSizeChanged();
+}
+void View::setRelativeViewport( const RectF& viewportPercentage )
+{
+    m_ViewportPercentage = viewportPercentage;
+    m_UsePercentage = true;
+    if (m_Window != nullptr)
     {
-        m_SkyBox = NEW gfx::SkyBox();
-        m_SkyBox->load(m_Settings.skybox);
-        eventCallback1<void, const ICamera*> skyBoxDrawCallback([this](const ICamera* camera)
-        {
-            m_SkyBox->applyMaterial(camera);
-            m_SkyBox->draw();
-        });
-        m_TransparentRenderer->PreDraw +=skyBoxDrawCallback;
+        calcViewportFromPercentage();
+        ViewportSizeChanged();
+    }
+}
+void View::resize()
+{
+    calcViewportFromPercentage();
+
+    ViewportSizeChanged();
+}
+void View::calcViewportFromPercentage()
+{
+    HE_IF_ASSERT(m_Window != nullptr, "Window must first be set!")
+    {
+        m_Viewport.x      = static_cast<int>(m_Window->getWindowWidth()  * m_ViewportPercentage.x);
+        m_Viewport.y      = static_cast<int>(m_Window->getWindowHeight() * m_ViewportPercentage.y);
+        m_Viewport.width  = static_cast<int>(m_Window->getWindowWidth()  * m_ViewportPercentage.width);
+        m_Viewport.height = static_cast<int>(m_Window->getWindowHeight() * m_ViewportPercentage.height);
     }
 }
 
-void View3D::setScene( Scene* scene )
+
+void View::setCamera( CameraPerspective* camera )
 {
-    m_Scene = scene;
-    if (m_CameraId != "")
-        m_Camera = m_Scene->getCameraManager()->getCamera(m_CameraId);
+    m_Camera = camera;
 }
 
-void View3D::draw()
+void View::tick( float dTime )
+{
+    if (m_Camera != nullptr && m_Window == GRAPHICS->getActiveWindow()) // not a good way but good for now
+        m_Camera->tick(dTime);
+}
+
+void View::draw()
 {
     if (m_Window->isOpen())
     {
-        m_DebugIndices.clear();
-        m_DebugVertices.clear();
-
         m_Window->prepareForRendering();
-        m_Scene->prepareForRendering(); // Not a good way, scene can be attached to multiple views
         GRAPHICS->setActiveView(this);
-        m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
-        m_Camera->prepareForRendering();
-
-        //if (m_Settings.lightingSettings.enableShadows)
-        // Move to Scene
-            m_ShadowCaster->render(m_Scene);
+        if (m_Camera != nullptr)
+        {
+            m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
+            m_Camera->prepareForRendering();
+        }
 
         GL::heSetViewport(m_Viewport);
         m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
         m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
 
-        m_OpacRenderer->draw();
-        // Draw skybox here
-        m_TransparentRenderer->draw();
-
-        m_ShapeRenderer->draw();
+        m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 
         if (m_Settings.enablePost)
             m_PostProcesser->draw();
-        
-        m_2DRenderer->draw();
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
+        m_OutputRenderTarget->prepareForRendering();
+        glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+        m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 
         m_Window->present();
     }
 }
 
-void View3D::setCamera( const std::string& camera )
-{
-    m_CameraId = camera;
-    if (m_Scene != nullptr)
-        m_Camera = m_Scene->getCameraManager()->getCamera(m_CameraId);
-}
-
-void View3D::tick( float dTime )
-{
-    if (m_Window == GRAPHICS->getActiveWindow()) // not a good way but good for now
-        m_Camera->tick(dTime);
-}
-
-#pragma endregion
-
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ViewFactory::createView3D()
-{
-    return registerObject(NEW View3D());
-}
-
-ObjectHandle ViewFactory::createView2D()
-{
-    return registerObject(NEW View2D());
-}
 
 } } //end namespace

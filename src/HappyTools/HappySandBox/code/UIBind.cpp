@@ -34,6 +34,7 @@ UIBind::UIBind(UIController* uiController) : m_UIController(uiController),
 
 UIBind::~UIBind()
 {
+    delete m_WebListener;
 }
 
 /* GENERAL */

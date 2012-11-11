@@ -64,6 +64,7 @@ Deferred3DRenderer::Deferred3DRenderer():
             m_CollectionRenderTarget(nullptr),
             m_OutputRenderTarget(nullptr),
             m_View(nullptr),
+            m_Scene(nullptr),
             m_NormalDepthTexture(nullptr)
 {
     ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
@@ -79,7 +80,7 @@ Deferred3DRenderer::Deferred3DRenderer():
         TextureFormat_RGBA8, false);
 
 }
-void Deferred3DRenderer::init( View3D* view, const RenderTarget* target )
+void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
     CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
@@ -107,10 +108,6 @@ void Deferred3DRenderer::init( View3D* view, const RenderTarget* target )
     m_CollectionRenderTarget->setDepthTarget(target->getDepthBuffer());
     m_CollectionRenderTarget->init();
     
-
-
-    //m_View->get2DRenderer()->attachToRender(this);
-
     m_pQuad = CONTENT->getFullscreenQuad();
 }
 
@@ -254,7 +251,6 @@ void Deferred3DRenderer::onViewResized()
     uint32 width(m_View->getViewport().width); 
     uint32 height(m_View->getViewport().height);
 
-
     //Collection Textures - just SGI and color others are shared
     // Color
     m_ColorIllTexture->setData(width, height, 0, 
@@ -264,11 +260,13 @@ void Deferred3DRenderer::onViewResized()
     m_SGTexture->setData(width, height, 0, 
         TextureBufferLayout_BGRA, TextureBufferType_Byte, 0 );
 
+    m_CollectionRenderTarget->resizeDepthBuffer(width, height);
+
 }
 
-void Deferred3DRenderer::draw()
+void Deferred3DRenderer::render()
 {
-    const Scene* scene(m_View->getScene());
+    HE_ASSERT(m_Scene != nullptr, "Scene is nullptr, assign a scene first!");
 
     //////////////////////////////////////////////////////////////////////////
     ///                             BEGIN                                  ///
@@ -281,19 +279,19 @@ void Deferred3DRenderer::draw()
     GL::heBlendFunc(BlendFunc_One, BlendFunc_Zero);
     GL::heBlendEquation(BlendEquation_Add);
     GL::heBlendEnabled(false);
-    m_CollectionRenderTarget->clear(he::Color(0.0f, 0, 0, 0));
+    GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
+    m_CollectionRenderTarget->clear(he::Color(0.0f, 1, 0, 0));
 
 
     //////////////////////////////////////////////////////////////////////////
     ///                             DRAW                                   ///
     //////////////////////////////////////////////////////////////////////////
     const CameraPerspective* camera(m_View->getCamera());
-    scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
-    //scene->getDrawList().drawAndCreateDebugMesh(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+    m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
     {
         d->applyMaterial(camera);
         d->draw();
-    }/*, m_View->getDebugVertices(), m_View->getDebugIndices()*/);
+    });
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -314,37 +312,32 @@ void Deferred3DRenderer::draw()
         camera->getFarClip()));
     m_SharedShaderData.pSharedBuffer->setShaderVar(m_SharedShaderData.projParams);
 
-    m_PointLightShader->bind();
-    postPointLights(scene);           
- 
-    postSpotLights(scene);
-
-    m_AmbDirIllShader->bind();
-    postAmbDirIllLight(scene);
+    postPointLights();           
+    postSpotLights();
+    postAmbDirIllLight();
 
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
 }
 void Deferred3DRenderer::draw2D(Canvas2D* canvas)
 {
-    
     if (m_ShowDebugTextures)
     {
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        //canvas->getRenderer2D()->drawTexture2DToScreen(m_CollectionRenderTarget->getDepthTarget(),      vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
-
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
+        canvas->setBlendStyle(gfx::BlendStyle_Opac);
+        canvas->drawImage(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
+        canvas->drawImage(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
+        canvas->drawImage(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
+        canvas->drawImage(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), vec2(256, 144));
     }
 }
 
-void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
+void Deferred3DRenderer::postAmbDirIllLight()
 {
+    m_AmbDirIllShader->bind();
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    LightManager* lightManager(scene->getLightManager());
+    LightManager* lightManager(m_Scene->getLightManager());
 
     const AmbientLight* ambLight(lightManager->getAmbientLight());
     const DirectionalLight* dirLight(lightManager->getDirectionalLight());
@@ -361,15 +354,17 @@ void Deferred3DRenderer::postAmbDirIllLight(const Scene* scene)
     GL::heBindVao(m_pQuad->getVertexArraysID());       
     glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
 }
-void Deferred3DRenderer::postPointLights(const Scene* scene)
+void Deferred3DRenderer::postPointLights()
 {
-    LightManager* lightManager(scene->getLightManager());
+    LightManager* lightManager(m_Scene->getLightManager());
     const he::ObjectList<ObjectHandle>& lights(lightManager->getPointLights());
 
     const LightFactory* lightFactory(LightFactory::getInstance());
 
     if (lights.size() == 0 || lightFactory->getPointLight(lights.back())->getLightVolume()->isLoaded() == false)
         return;
+
+    m_PointLightShader->bind();
 
     m_PointLightShader->setShaderVar(m_PointLightData.colorIllMap, m_ColorIllTexture);
     if (m_Settings.enableSpecular)
@@ -414,9 +409,9 @@ void Deferred3DRenderer::postPointLights(const Scene* scene)
     GL::heSetCullFace(false);
 }
 
-void Deferred3DRenderer::postSpotLights(const Scene* scene)
+void Deferred3DRenderer::postSpotLights()
 {
-    LightManager* pLightManager(scene->getLightManager());
+    LightManager* pLightManager(m_Scene->getLightManager());
     const he::ObjectList<ObjectHandle>& lights(pLightManager->getSpotLights());
 
     const LightFactory* lightFactory(LightFactory::getInstance());

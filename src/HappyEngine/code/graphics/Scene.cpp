@@ -28,6 +28,9 @@
 #include "InstancingManager.h"
 #include "LightManager.h"
 
+#include "ShadowCaster.h"
+#include "SkyBox.h"
+
 namespace he {
 namespace gfx {
 IMPLEMENT_OBJECT(Scene)
@@ -37,16 +40,38 @@ Scene::Scene():
           m_CameraManager(NEW ge::CameraManager)
         , m_LightManager(NEW LightManager(this))
         , m_InstancingManager(NEW InstancingManager)
+        , m_Active(true)
+        , m_ShadowCaster(NEW ShadowCaster)
+        , m_SkyBox(nullptr)
 {
+    m_ShadowCaster->init();
 }
 #pragma warning(default:4355)
 
 
 Scene::~Scene()
 {
+    if (m_SkyBox != nullptr)
+        detachFromScene(m_SkyBox);
+    delete m_SkyBox;
+    delete m_ShadowCaster;
     delete m_LightManager;
     delete m_InstancingManager;
     delete m_CameraManager;
+}
+
+void Scene::loadSkybox( const std::string& asset )
+{
+    if (m_SkyBox == nullptr)
+    {
+        m_SkyBox = NEW SkyBox();
+        m_SkyBox->load(asset);
+        attachToScene(m_SkyBox);
+    }
+    else
+    {
+        m_SkyBox->load(asset);
+    }
 }
 
 void Scene::forceReevalute( IDrawable* drawable )
@@ -75,6 +100,8 @@ void Scene::detachFromScene( IDrawable* drawable )
 void Scene::prepareForRendering()
 {
     m_DrawList.prepareForRendering();
+    m_ShadowCaster->render(this);
 }
+
 
 } } //end namespace

@@ -46,14 +46,14 @@ namespace tools {
 /* CONSTRUCTOR - DESTRUCTOR */
 Console::Console() :	m_Shortcut(io::Key_C),
                         m_MaxMessages(0),
-                        m_bOpen(false),
-                        m_pTextBox(nullptr),
+                        m_IsOpen(false),
+                        m_TextBox(nullptr),
                         m_MsgHistory(0),
                         m_CmdHistoryPos(0),
                         m_ScrollBar(nullptr),
                         m_Help(nullptr),
-                        m_pFont(nullptr),
-                        m_View(nullptr)
+                        m_Font(nullptr),
+                        m_Renderer(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -89,9 +89,9 @@ Console::Console() :	m_Shortcut(io::Key_C),
 }
 void Console::load()
 {
-    m_pFont = CONTENT->loadFont("Inconsolata.otf", 10);
+    m_Font = CONTENT->loadFont("Inconsolata.otf", 10);
 
-    m_Help = NEW gui::Text(m_pFont);
+    m_Help = NEW gui::Text(m_Font);
     m_Help->addLine("******** HELP ********");
     m_Help->addLine("'listvars' (displays registered variables and their type)");
     m_Help->addLine("'listcmds' (displays registered commands)");
@@ -100,11 +100,11 @@ void Console::load()
     m_ScrollBar = NEW gui::Scrollbar(
         vec2(1280-20, 0), vec2(20,200), 50.0f);
 
-    m_pTextBox = NEW gui::TextBox(
+    m_TextBox = NEW gui::TextBox(
         RectF(0,200,1280, 20),
         "Enter command...", 10, "Inconsolata.otf");
 
-    m_pTextBox->setColors(
+    m_TextBox->setColors(
         Color(0.3f,0.3f,0.3f,0.9f),
         Color(1.0f,1.0f,1.0f),
         Color(0.8f,0.8f,0.8f),
@@ -115,26 +115,6 @@ void Console::load()
     m_ScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint32>(190 / m_pFont->getLineSpacing());
-}
-void Console::setView(gfx::View* view )
-{
-    m_View = view;;
-    if (view != nullptr)
-    {
-        m_View->get2DRenderer()->attachToRender(this);
-
-        m_ScrollBar->setPosition(vec2(static_cast<float>(m_View->getViewport().width) - 20.0f, 0.0f));
-        m_pTextBox->setSize(vec2(static_cast<float>(m_View->getViewport().width), 20));
-        m_ScrollBar->setBarPos(1.0f);
-
-		he::eventCallback0<void> resizeHandler(boost::bind(&he::tools::Console::onResize, this));
-		m_View->ViewportSizeChanged += resizeHandler;
-    }
-}
-
-void Console::onResize()
-{
-
 }
 
 Console::~Console()
@@ -147,16 +127,16 @@ Console::~Console()
 
     m_TypeHandlers.clear();
 
-    if (m_pFont != nullptr)
-        m_pFont->release();
+    if (m_Font != nullptr)
+        m_Font->release();
 
     
     if (m_View != nullptr)
     {
         m_View->get2DRenderer()->detachFromRender(this);
-	}
-    
-    delete m_pTextBox;
+    }
+	
+    delete m_TextBox;
     delete m_ScrollBar;
     delete m_Help;
 }
@@ -188,7 +168,7 @@ void Console::processCommand(const std::string& command)
             {
                 if (m_TypeHandlers[type]->parse(values, m_ValueContainer[keyWord]))
                 {
-                    addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
+                    addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
                 }
                 else
                 {
@@ -207,7 +187,7 @@ void Console::processCommand(const std::string& command)
     }
     else if (m_FunctionContainer.find(s) != m_FunctionContainer.end()) // check if it's a command
     {
-        addMessage(m_pTextBox->getString(), CMSG_TYPE_COMMAND);
+        addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
 
         // execute command
         m_FunctionContainer[s]();
@@ -276,30 +256,32 @@ void Console::displayCmds()
 void Console::tick()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_pTextBox->hasFocus())
+    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_TextBox->hasFocus())
     {
-        HE_IF_ASSERT(m_View != nullptr, "set View first with setView!")
-        {
-            m_bOpen =! m_bOpen;
-            m_pTextBox->resetText();
+        m_IsOpen = !m_IsOpen;
+        m_TextBox->resetText();
 
-            if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
-            {
-                addMessage(m_HelpCommand, CMSG_TYPE_INFO);
-            }
+        if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+        {
+            addMessage(m_HelpCommand, CMSG_TYPE_INFO);
         }
+
+        if (m_IsOpen)
+            m_Renderer->attachToRender(this);
+        else
+            m_Renderer->detachFromRender(this);
     }
 
-    if (m_bOpen)
+    if (m_IsOpen)
     {
-        m_pTextBox->tick();
+        m_TextBox->tick();
 
         if (m_MsgHistory.size() > m_MaxMessagesInWindow)
             m_ScrollBar->tick();
 
         if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Down))
         {
-            m_pTextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
+            m_TextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
 
             if (m_CmdHistoryPos > 0)
             {
@@ -312,7 +294,7 @@ void Console::tick()
         }
         else if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Up))
         {
-            m_pTextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
+            m_TextBox->setString(m_CmdHistory[m_CmdHistoryPos]);
 
             if (m_CmdHistoryPos < m_CmdHistory.size() - 1)
             {
@@ -324,17 +306,17 @@ void Console::tick()
             }
         }
 
-        if (m_pTextBox->entered())
+        if (m_TextBox->entered())
         {
-            processCommand(m_pTextBox->getString());;
+            processCommand(m_TextBox->getString());;
 
-            if (m_CmdHistory[m_CmdHistory.size() - 1] != m_pTextBox->getString())
+            if (m_CmdHistory[m_CmdHistory.size() - 1] != m_TextBox->getString())
             {
-                m_CmdHistory.add(m_pTextBox->getString());
+                m_CmdHistory.add(m_TextBox->getString());
                 m_CmdHistoryPos = (uint32)m_CmdHistory.size() - 1;
             }
 
-            m_pTextBox->resetText();
+            m_TextBox->resetText();
 
             m_ScrollBar->setBarPos(1.0f);
         }
@@ -343,76 +325,73 @@ void Console::tick()
 
 void Console::draw2D(gfx::Canvas2D* canvas)
 {
-    if (m_bOpen)
+    canvas->setBlendStyle(gfx::BlendStyle_Alpha);
+
+    canvas->setDepth(-2000);
+
+    canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
+    canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
+
+    canvas->setStrokeColor(Color(0.19f,0.19f,0.19f));
+    canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
+
+    m_TextBox->draw(canvas);
+
+    he::ObjectList<std::pair<CMSG_TYPE, std::string>> msgHistory;
+
+    m_MsgHistory.forEach([&](const std::pair<CMSG_TYPE, std::string>& p)
     {
-        canvas->setBlendStyle(gfx::BlendStyle_Alpha);
+        if (m_ShowMessageTypes[p.first] == true)
+            msgHistory.add(p);
+    });
 
-        canvas->setDepth(-2000);
+    uint32 startPos(0);
 
-        canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-        canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
-
-        canvas->setStrokeColor(Color(0.19f,0.19f,0.19f));
-        canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
-
-        m_pTextBox->draw(canvas);
-
-        he::ObjectList<std::pair<CMSG_TYPE, std::string>> msgHistory;
-
-        m_MsgHistory.forEach([&](const std::pair<CMSG_TYPE, std::string>& p)
-        {
-            if (m_ShowMessageTypes[p.first] == true)
-                msgHistory.add(p);
-        });
-
-        uint32 startPos(0);
-
-        if (msgHistory.size() > m_MaxMessagesInWindow)
-        {
-            startPos = static_cast<uint32>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos());
-        }
-
-        uint32 i(startPos);
-
-        he::ObjectList<std::pair<CMSG_TYPE, std::string> > msg;
-
-        if (msgHistory.size() > m_MaxMessagesInWindow)
-        {
-            for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
-            {
-                msg.add(msgHistory[i]);
-            }
-        }
-        else
-        {
-            for (; i < msgHistory.size(); ++i)
-            {
-                msg.add(msgHistory[i]);
-            }
-        }
-
-        gui::Text text(m_pFont);
-        text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-        text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
-
-        uint32 k(0);
-        msg.rForEach([&](const std::pair<CMSG_TYPE, std::string>& p)
-        {
-            canvas->setFillColor(m_MsgColors[p.first]);
-
-            text.clear();
-            text.addLine(p.second);
-
-            canvas->fillText(text, vec2(5, 182.0f - (k * m_pFont->getLineSpacing())));
-
-            ++k;
-        });
-
-        if (msgHistory.size() > m_MaxMessagesInWindow)
-            m_ScrollBar->draw(canvas);
-
-        canvas->restoreDepth();
+    if (msgHistory.size() > m_MaxMessagesInWindow)
+    {
+        startPos = static_cast<uint32>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos());
     }
+
+    uint32 i(startPos);
+
+    he::ObjectList<std::pair<CMSG_TYPE, std::string> > msg;
+
+    if (msgHistory.size() > m_MaxMessagesInWindow)
+    {
+        for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
+        {
+            msg.add(msgHistory[i]);
+        }
+    }
+    else
+    {
+        for (; i < msgHistory.size(); ++i)
+        {
+            msg.add(msgHistory[i]);
+        }
+    }
+
+    gui::Text text(m_Font);
+    text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+
+    uint32 k(0);
+    msg.rForEach([&](const std::pair<CMSG_TYPE, std::string>& p)
+    {
+        canvas->setFillColor(m_MsgColors[p.first]);
+
+        text.clear();
+        text.addLine(p.second);
+
+        canvas->fillText(text, vec2(5, 182.0f - (k * m_Font->getLineSpacing())));
+
+        ++k;
+    });
+
+    if (msgHistory.size() > m_MaxMessagesInWindow)
+        m_ScrollBar->draw(canvas);
+
+    canvas->restoreDepth();
 }
 
 void Console::addMessage(const gui::Text& msg, CMSG_TYPE type)
@@ -444,7 +423,7 @@ void Console::addMessage(const std::string& msg, CMSG_TYPE type)
     }
 }
 
-void Console::registerCmd(boost::function<void()> command, const std::string& cmdKey)
+void Console::registerCmd(const boost::function<void()>& command, const std::string& cmdKey)
 {
     HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {
@@ -494,6 +473,36 @@ void Console::setMaxMsgHistory(uint32 maxMessages)
 void Console::toggleShowMessages(CMSG_TYPE type, bool show)
 {
     m_ShowMessageTypes[type] = show;
+}
+
+void Console::attachToRenderer( gfx::Renderer2D* renderer )
+{
+    HE_IF_ASSERT(m_Renderer == nullptr, "Console already attached to a renderer")
+    {
+        m_Renderer = renderer;
+
+        gfx::View* view(renderer->getView());
+        m_ScrollBar->setPosition(vec2(static_cast<float>(view->getViewport().width) - 20.0f, 0.0f));
+        m_TextBox->setSize(vec2(static_cast<float>(view->getViewport().width), 20));
+        m_ScrollBar->setBarPos(1.0f);
+
+        if (m_IsOpen)
+        {
+            m_Renderer->attachToRender(this);
+        }
+    }
+}
+
+void Console::detachFromRenderer()
+{
+    HE_IF_ASSERT(m_Renderer != nullptr, "Console not attached to a renderer")
+    {
+        if (m_IsOpen)
+        {
+            m_Renderer->detachFromRender(this);
+        }
+        m_Renderer = nullptr;
+    }
 }
 
 } } //end namespace

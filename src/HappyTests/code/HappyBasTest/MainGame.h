@@ -35,11 +35,12 @@ namespace he {
     }
     namespace ge {
         class Entity;
+        class DefaultRenderPipeline;
     }
     namespace gfx {
         class Window;
         class Scene;
-        class View3D;
+        class View;
         class ModelMesh;
         class CameraPerspective;
         class Texture2D;
@@ -67,23 +68,21 @@ public:
     virtual void draw2D(he::gfx::Canvas2D* renderer);
 
 private:
-    void fillDebugMeshes();
-
     he::tools::FPSGraph* m_FpsGraph;
 
     bool m_SpinShadows;
 
     he::gfx::Window* m_Window;
-    he::gfx::View3D*   m_View;
+    he::gfx::View*   m_View;
+    he::ge::DefaultRenderPipeline* m_RenderPipeline;
     he::gfx::Scene*  m_Scene;
 
     he::gfx::Window* m_Window2;
-    he::gfx::View3D*   m_View2;
+    he::ge::DefaultRenderPipeline* m_RenderPipeline2;
+    he::gfx::View*   m_View2;
 
     std::vector<he::ge::Entity*> m_EntityList;
-
-    he::gfx::ModelMesh* m_DebugMesh;
-
+    
     const he::gfx::Texture2D* m_TestTexture;
 
     he::sfx::Sound2D* m_BackgroundSound;
@@ -98,7 +97,6 @@ private:
     std::vector<MovingEntityRandomness> m_MovingEntityRandomness;
     std::vector<he::ge::Entity*> m_MovingEntityList;
     float m_MovingEntityFase;
-    bool m_ShowDebugMesh;
     
     he::gui::Text m_DebugText;
 

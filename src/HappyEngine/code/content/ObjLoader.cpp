@@ -189,7 +189,7 @@ void ObjLoader::create(bool allowByteIndices)
         {
             m_IndexStride.add(gfx::IndexStride_UShort);
         }
-        else if (numIndices < UINT_MAX)
+        else if (numIndices < UINT32_MAX)
         {
             m_IndexStride.add(gfx::IndexStride_UInt);
         }

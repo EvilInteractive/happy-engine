@@ -41,7 +41,7 @@ public:
     ShadowCasterSpotLight();
     virtual ~ShadowCasterSpotLight();
         
-    void init(View* view, ShadowResolution resolution);
+    void init(ShadowResolution resolution);
     void render(Scene* scene, SpotLight* spotlight);
 
 private:

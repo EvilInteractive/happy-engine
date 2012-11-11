@@ -93,18 +93,17 @@ struct Profiler::ProfileTreeNode
 Profiler::Profiler()
     : m_CurrentNode(nullptr), 
       m_Width(0), 
-      m_pFont(nullptr), 
-      m_View(nullptr), 
+      m_Font(nullptr), 
+      m_Renderer(nullptr), 
       m_State(Disabled),
       m_NodesFront(NEW DataMap()),
-      m_NodesBack(NEW DataMap()),
-      m_Show(false)
+      m_NodesBack(NEW DataMap())
 {
     s_Stream.precision(2);
 }
 void Profiler::load()
 {
-    m_pFont = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
+    m_Font = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
 
     CONSOLE->registerCmd(boost::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
 }
@@ -113,12 +112,9 @@ void Profiler::load()
 
 Profiler::~Profiler()
 {
-    if (m_View != nullptr && m_Show == true)
-    {
-        m_View->get2DRenderer()->detachFromRender(this);
-    }
-    if (m_pFont != nullptr)
-        m_pFont->release();
+    disable();
+    if (m_Font != nullptr)
+        m_Font->release();
     delete m_NodesBack;
     delete m_NodesFront;
 }
@@ -152,7 +148,9 @@ void Profiler::tick()
         return;
 
     if (m_State == Enabling)
+    {
         m_State = Enabled;
+    }
     if (m_State == Disabling)
     {
         m_State = Disabled;
@@ -234,7 +232,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
     s_Stream << "+ " + node.m_Name << ": tot: " << totalBuf << " avg: " << avgBuf << " max: " << maxBuf << " calls: " << node.m_HitsPerFrame;
     text.addLine(s_Stream.str());
 
-    uint32 textWidth(static_cast<uint32>(m_pFont->getStringWidth(s_Stream.str())));
+    uint32 textWidth(static_cast<uint32>(m_Font->getStringWidth(s_Stream.str())));
     if (textWidth > m_Width)
         m_Width = textWidth;
 
@@ -251,7 +249,7 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     m_Width = 0;
     
-    gui::Text text(m_pFont);
+    gui::Text text(m_Font);
     text.addLine("----PROFILER------------------------------");
     std::for_each(m_NodesBack->cbegin(), m_NodesBack->cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
     {
@@ -259,7 +257,7 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
     });
     text.addLine("------------------------------------------");
 
-    float y((float)(text.getText().size() * m_pFont->getLineSpacing()));
+    float y((float)(text.getText().size() * m_Font->getLineSpacing()));
 
     canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
     canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
@@ -268,37 +266,56 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
     canvas->fillText(text, vec2(4, 4));
 }
 
-void Profiler::setView( gfx::View* view )
+void Profiler::attachToRenderer( gfx::Renderer2D* renderer )
 {
-    m_View = view;
+    HE_IF_ASSERT(m_Renderer == nullptr, "Profiler already attached to a renderer")
+    {
+        m_Renderer = renderer;
+        if (m_State == Enabled || m_State == Enabling)
+            m_Renderer->attachToRender(this);
+    }
+}
+
+void Profiler::detachFromRenderer()
+{
+    HE_IF_ASSERT(m_Renderer != nullptr, "Profiler not attached to a renderer")
+    {
+        if (m_State == Enabled || m_State == Enabling)
+            m_Renderer->detachFromRender(this);
+        m_Renderer = nullptr;
+    }
 }
 
 void Profiler::enable()
 {
-    if (m_State != Enabled)
+    if (m_State != Enabled || m_State != Enabling)
+    {
         m_State = Enabling;
+        if (m_Renderer != nullptr)
+            m_Renderer->attachToRender(this);
+    }
 }
 
 void Profiler::disable()
 {
-    if (m_State != Disabled)
+    if (m_State != Disabled || m_State != Disabling)
+    {
         m_State = Disabling;
+        if (m_Renderer != nullptr)
+            m_Renderer->detachFromRender(this);
+    }
 }
 
 void Profiler::toggleProfiler()
 {
-    HE_ASSERT(m_View != nullptr, "View not set!");
-    if (m_Show == true)
+    HE_ASSERT(m_Renderer != nullptr, "Profiler renderer not set!");
+    if (m_State == Enabled || m_State == Enabling)
     {
         disable();
-        m_View->get2DRenderer()->detachFromRender(this);
-        m_Show = false;
     }
-    else
+    else if (m_State == Disabled || m_State == Disabling)
     {
-        m_View->get2DRenderer()->attachToRender(this);
         enable();
-        m_Show = true;
     }
 }
 

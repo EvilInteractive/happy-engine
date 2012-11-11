@@ -31,8 +31,9 @@ class Canvas2D;
 class Simple2DTextureEffect;
 class ModelMesh;
 class IDrawable2D;
+class Texture2D;
 
-class Renderer2D : public IRenderer2D
+class Renderer2D : public IRenderer
 {
 public:
 
@@ -64,7 +65,9 @@ public:
 
     /* IRenderer */
     virtual void init(View* view, const RenderTarget* target);
-    virtual void draw();
+    virtual RenderPass getRenderPass() const { return RenderPass_Gui; }
+    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual void render();
 
 private:
 

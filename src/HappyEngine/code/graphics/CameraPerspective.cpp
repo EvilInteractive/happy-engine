@@ -55,7 +55,7 @@ void CameraPerspective::lookAt(const vec3 &pos, const vec3 &target, const vec3 &
     lookAt = normalize(lookAt);
 
     vec3 right = normalize(cross(lookAt, up));
-    vec3 newUp = cross(up, right);
+    vec3 newUp = cross(right, lookAt);
 
     m_PosWorld = pos;
     m_RightWorld = right;

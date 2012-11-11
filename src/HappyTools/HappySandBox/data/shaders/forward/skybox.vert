@@ -27,6 +27,6 @@ uniform mat4 matVP;
 
 void main()
 {
-    passPosition = inPosition.xyz * vec3(1, -1, 1);
+    passPosition = inPosition.xyz;
     gl_Position = (matVP * vec4(inPosition, 0.0f)).xyww;
 }

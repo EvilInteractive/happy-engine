@@ -29,6 +29,7 @@
 #include "Renderer2D.h"
 #include "Canvas2D.h"
 #include "View.h"
+#include "Window.h"
 
 #include "ModelMesh.h"
 #include "RenderTarget.h"
@@ -39,13 +40,14 @@ namespace gfx {
 
 PostProcesser::PostProcesser(): 
     m_PostShader(nullptr), 
-    m_pBloom(nullptr), 
-    m_pAutoExposure(nullptr), 
-    m_pRandomNormals(nullptr),
-    m_pQuad(nullptr),
-    m_ShowDebugTextures(false),
+    m_Bloom(nullptr), 
+    m_AutoExposure(nullptr), 
+    m_RandomNormals(nullptr),
+    m_Quad(nullptr),
+    m_ShowDebugTextures(true),
     m_FogColor(0.2f, 0.4f, 0.6f),
-    m_View(nullptr)
+    m_View(nullptr),
+    m_DebugRenderer(nullptr)
 {
 }
 
@@ -54,14 +56,14 @@ PostProcesser::~PostProcesser()
 {
     if (m_PostShader != nullptr)
         m_PostShader->release();
-    delete m_pBloom;
-    delete m_pAutoExposure;
+    delete m_Bloom;
+    delete m_AutoExposure;
 
-    if (m_pRandomNormals != nullptr)
-        m_pRandomNormals->release();
+    if (m_RandomNormals != nullptr)
+        m_RandomNormals->release();
 
-    if (m_pQuad != nullptr)
-        m_pQuad->release();
+    if (m_Quad != nullptr)
+        m_Quad->release();
    
 //    m_View->get2DRenderer()->detachFromRender(this);
 }
@@ -77,14 +79,10 @@ void PostProcesser::init( View* view, const RenderTarget* writeTarget, const Ren
 
         eventCallback0<void> handler([&](){ onSettingsChanged(m_View->getSettings(), false); });
         m_View->SettingsChanged += handler;  // this is safe because PostProcessor is a member of View
-
-//        m_View->get2DRenderer()->attachToRender(this);
-        
-        m_pQuad = CONTENT->getFullscreenQuad();
+                
+        m_Quad = CONTENT->getFullscreenQuad();
         
         onSettingsChanged(m_View->getSettings(), true);
-
-        //CONSOLE->registerVar(&m_ShowDebugTextures, "debugPostTex");
     }
 }
 
@@ -94,25 +92,26 @@ void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool forc
     
     if (force || settings.postSettings.shaderSettings.enableBloom != m_Settings.postSettings.shaderSettings.enableBloom)
     {
-        delete m_pBloom;
+        delete m_Bloom;
         if (settings.postSettings.shaderSettings.enableBloom)
         {
-            m_pBloom = NEW Bloom();
-            m_pBloom->init(m_View, settings.postSettings.shaderSettings.enableHDR);
+            m_Bloom = NEW Bloom();
+            m_Bloom->init(m_View, settings.postSettings.shaderSettings.enableHDR);
         }
         else
-            m_pBloom = nullptr;
+            m_Bloom = nullptr;
     }
     if (force || settings.postSettings.shaderSettings.enableHDR != m_Settings.postSettings.shaderSettings.enableHDR)
     {
-        delete m_pAutoExposure;
+        delete m_AutoExposure;
         if (settings.postSettings.shaderSettings.enableHDR)
         {
-            m_pAutoExposure = NEW AutoExposure();
-            m_pAutoExposure->init(settings.postSettings.hdrSettings);
+            m_AutoExposure = NEW AutoExposure();
+            GRAPHICS->setActiveContext(m_View->getWindow()->getContext());
+            m_AutoExposure->init(settings.postSettings.hdrSettings);
         }
         else 
-            m_pAutoExposure = nullptr;
+            m_AutoExposure = nullptr;
     }
 
     m_Settings = settings;
@@ -174,18 +173,13 @@ void PostProcesser::compileShader()
         m_PostShaderVars[PV_Bloom2] = m_PostShader->getShaderSamplerId("blur2");
         m_PostShaderVars[PV_Bloom3] = m_PostShader->getShaderSamplerId("blur3");
     }
-    if (m_pRandomNormals != nullptr)
-        m_pRandomNormals->release();
+    if (m_RandomNormals != nullptr)
+        m_RandomNormals->release();
     if (settings.enableAO)
     {
-        m_pRandomNormals = CONTENT->asyncLoadTexture2D("engine/noise.png");
+        m_RandomNormals = CONTENT->asyncLoadTexture2D("engine/noise.png");
 
         m_PostShaderVars[PV_SSAORandomNormals] = m_PostShader->getShaderSamplerId("noiseMap");
-        //m_PostShaderVars[PV_SSAORadius] = m_pPostShader->getShaderVarId("radius");
-        //m_PostShaderVars[PV_SSAOIntensity] = m_pPostShader->getShaderVarId("intensity");
-        //m_PostShaderVars[PV_SSAOScale] = m_pPostShader->getShaderVarId("scale");
-        //m_PostShaderVars[PV_SSAOBias] = m_pPostShader->getShaderVarId("bias");
-        //m_PostShaderVars[PV_ProjParams] = m_PostShader->getShaderVarId("projParams");
         m_PostShaderVars[PV_ViewPortSize] = m_PostShader->getShaderVarId("viewPortSize");
     }
 }
@@ -200,7 +194,7 @@ void PostProcesser::draw()
     if (settings.enableHDR)
     {
         PROFILER_BEGIN("Auto Exposure");
-        m_pAutoExposure->calculate(colorMap);
+        m_AutoExposure->calculate(colorMap);
         PROFILER_END();
     }
     
@@ -209,9 +203,9 @@ void PostProcesser::draw()
     {
         PROFILER_BEGIN("Bloom");
         if (settings.enableHDR)
-            m_pBloom->render(colorMap, m_pAutoExposure->getLuminanceMap());
+            m_Bloom->render(colorMap, m_AutoExposure->getLuminanceMap());
         else
-            m_pBloom->render(colorMap);
+            m_Bloom->render(colorMap);
         PROFILER_END();
     }
 
@@ -227,13 +221,13 @@ void PostProcesser::draw()
     m_PostShader->setShaderVar(m_PostShaderVars[PV_ColorMap], colorMap);
     if (settings.enableBloom)
     {
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom0], m_pBloom->getBloom(0));
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom1], m_pBloom->getBloom(1));
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom2], m_pBloom->getBloom(2));
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom3], m_pBloom->getBloom(3));
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom0], m_Bloom->getBloom(0));
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom1], m_Bloom->getBloom(1));
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom2], m_Bloom->getBloom(2));
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_Bloom3], m_Bloom->getBloom(3));
     }
     if (settings.enableHDR)
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_LumMap], m_pAutoExposure->getLuminanceMap());
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_LumMap], m_AutoExposure->getLuminanceMap());
 
     if (settings.enableAO || settings.enableFog)
         m_PostShader->setShaderVar(m_PostShaderVars[PV_NormalDepthMap], normalDepthMap); 
@@ -242,39 +236,40 @@ void PostProcesser::draw()
 
     if (settings.enableAO)
     {
-        m_PostShader->setShaderVar(m_PostShaderVars[PV_SSAORandomNormals], m_pRandomNormals);
-        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAORadius], m_Settings.ssaoSettings.radius);
-        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOIntensity], m_Settings.ssaoSettings.intensity);
-        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOScale], m_Settings.ssaoSettings.scale);
-        //m_pPostShader->setShaderVar(m_PostShaderVars[PV_SSAOBias], m_Settings.ssaoSettings.bias);
-        //m_PostShader->setShaderVar(m_PostShaderVars[PV_ProjParams], vec4(
-        //    m_View->getCamera()->getProjection()(0, 0),
-        //    m_View->getCamera()->getProjection()(1, 1),
-        //    m_View->getCamera()->getNearClip(),
-        //    m_View->getCamera()->getFarClip()));
-
+        m_PostShader->setShaderVar(m_PostShaderVars[PV_SSAORandomNormals], m_RandomNormals);
         m_PostShader->setShaderVar(m_PostShaderVars[PV_ViewPortSize], 
             vec2((float)m_View->getViewport().width, (float)m_View->getViewport().height));
     }
 
-    GL::heBindVao(m_pQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_pQuad->getNumIndices(), m_pQuad->getIndexType(), 0);
+    GL::heBindVao(m_Quad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_Quad->getNumIndices(), m_Quad->getIndexType(), 0);
 }
 
 void PostProcesser::draw2D(Canvas2D* canvas)
 {
     if (m_ShowDebugTextures)
     {
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_pBloom->getBloom(0), vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_pBloom->getBloom(1), vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_pBloom->getBloom(2), vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
-        canvas->getRenderer2D()->drawTexture2DToScreen(m_pBloom->getBloom(3), vec2(12 * 4 + 256 * 3, 12), false, vec2(256, 144));
+        canvas->setBlendStyle(gfx::BlendStyle_Opac);
+        float height(72.0f);
+        float aspect(m_Bloom->getBloom(0)->getWidth() / (float)m_Bloom->getBloom(0)->getHeight());
+        float width(aspect * height);
+        canvas->drawImage(m_Bloom->getBloom(0), vec2(12 * 1 + width * 0, height), vec2(width, height));
+        canvas->drawImage(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), vec2(width, height));
+        canvas->drawImage(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), vec2(width, height));
+        canvas->drawImage(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), vec2(width, height));
+        canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
     }
 }
 
 void PostProcesser::setFogColor( const he::vec3& color )
 {
     m_FogColor = color;
+}
+
+void PostProcesser::setDebugRenderer( Renderer2D* renderer )
+{
+    m_DebugRenderer = renderer;
+    m_DebugRenderer->attachToRender(this);
 }
 
 
