@@ -143,8 +143,8 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
     if (hdr)
     {
         m_DownSampleBrightPassLumMap = m_DownSampleBrightPassShader->getShaderSamplerId("lumMap");
-        m_DownSampleBrightPassToneMapData = m_DownSampleBrightPassShader->getBufferId("SharedToneMapBuffer");
-        m_DownSampleBrightPassShader->setBuffer(m_DownSampleBrightPassToneMapData, m_ToneMapBuffer);
+        //m_DownSampleBrightPassToneMapData = m_DownSampleBrightPassShader->getBufferId("SharedToneMapBuffer");
+        //m_DownSampleBrightPassShader->setBuffer(m_DownSampleBrightPassToneMapData, m_ToneMapBuffer);
     }
 
     m_DownSampleShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());

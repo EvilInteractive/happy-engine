@@ -39,7 +39,7 @@ void main()
 #if BRIGHTPASS
     float ex = 0.1f;
 #if HDR
-    ex = getWhite(lumMap, 1.0f, 5.0f);
+    ex = getWhite(lumMap, 1.0f, 4.0f);
 #endif
     color /= ex;
     color -= vec3(1.0f, 1.0f, 1.0f);

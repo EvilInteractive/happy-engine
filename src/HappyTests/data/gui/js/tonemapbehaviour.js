@@ -1,6 +1,6 @@
 $(function()
 {
-    var nrSliders = 4;
+    var nrSliders = 7;
     var open = true;
     var dragging = false;
     var mousepos = {x:0,y:0};

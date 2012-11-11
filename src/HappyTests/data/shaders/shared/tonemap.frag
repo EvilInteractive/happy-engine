@@ -45,7 +45,7 @@ vec3 tonemap(in vec3 hdr, in vec3 whitePoint)
 {
 	vec3 ldr = hdr;
 		
-	ldr = tonemapFunc(ldr*toneMapData.exposureBias, toneMapData) / whitePoint;
+	ldr = tonemapFunc(ldr*toneMapData.exposureBias, toneMapData) / tonemapFunc(whitePoint, toneMapData);
 	
 	return ldr;
 }

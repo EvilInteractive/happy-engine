@@ -270,7 +270,8 @@ void PostProcesser::draw2D(Canvas2D* canvas)
         canvas->drawImage(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), vec2(width, height));
         canvas->drawImage(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), vec2(width, height));
         canvas->drawImage(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), vec2(width, height));
-        canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
+        if (m_Settings.postSettings.shaderSettings.enableHDR)
+            canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
     }
 }
 

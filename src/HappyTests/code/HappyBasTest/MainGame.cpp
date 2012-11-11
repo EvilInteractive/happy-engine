@@ -264,7 +264,7 @@ void MainGame::load()
     m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
     m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
     m_DebugSpotLight->setDirection(vec3(-0.70f, -0.67f, -0.27f));
-    m_DebugSpotLight->setMultiplier(10.0f);
+    m_DebugSpotLight->setMultiplier(2.0f);
     m_DebugSpotLight->setAttenuation(1.0f, 20.0f);
     m_DebugSpotLight->setFov(he::piOverTwo);
     m_DebugSpotLight->setColor(he::Color(1.0f, 0.4f, 0.4f));
@@ -280,10 +280,10 @@ void MainGame::load()
     spotlight->setShadowResolution(gfx::ShadowResolution_128);
 
     he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
-    pointlight->setLocalTranslate(vec3(-41.91f, 11.20f, 34.58f));
+    pointlight->setLocalTranslate(vec3(-49.02f, 8.08f, 31.07f));
     pointlight->setMultiplier(3.0f);
     pointlight->setAttenuation(1.0f, 10.0f);
-    pointlight->setColor(he::Color(1.0f, 0.4f, 0.4f));
+    pointlight->setColor(he::Color(0.01f, 0.01f, 1.0f));
 
     #pragma endregion
     
@@ -372,12 +372,13 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     sprintf(buff, "Look: %.2f, %.2f, %.2f\0", look.x, look.y, look.z);
     m_DebugText.addLine(buff);
 
-    canvas->fillText(m_DebugText, he::vec2(12, 12));
 
     canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
     canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
 
     m_ToneMapGui->draw2D(canvas);
+
+    canvas->fillText(m_DebugText, he::vec2(12, 12));
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)
@@ -389,11 +390,39 @@ void MainGame::updateToneMapData(const Awesomium::JSArray& args)
     {
         case 0:
         {
-            float i = value;
-            ++i;
+            m_View->getPostProcessor()->getToneMapDataForEdit().shoulderStrength = value;
             break;
         }
-        //...
+        case 1:
+        {
+            m_View->getPostProcessor()->getToneMapDataForEdit().linearStrength = value;
+            break;
+        }
+        case 2:
+        {
+            m_View->getPostProcessor()->getToneMapDataForEdit().linearAngle = value;
+            break;
+        }
+        case 3:
+        {
+            m_View->getPostProcessor()->getToneMapDataForEdit().toeStrength = value;
+            break;
+        }
+        case 4:
+        {
+            m_View->getPostProcessor()->getToneMapDataForEdit().toeNumerator = value;
+            break;
+        }
+        case 5:
+        {
+            m_View->getPostProcessor()->getToneMapDataForEdit().toeDenominator = value;
+            break;
+        }
+        case 6:
+        {
+            m_View->getPostProcessor()->getToneMapDataForEdit().exposureBias = value;
+            break;
+        }
     }
 }
 

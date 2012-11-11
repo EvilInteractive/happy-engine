@@ -221,7 +221,7 @@ void main()
 #endif
 
 #if HDR  
-	float lum = getWhite(lumMap, 1.0f, 10.0f);
+	float lum = getWhite(lumMap, 1.0f, 4.0f);
     color = tonemap(color, vec3(1.0f, 1.0f, 1.0f) * lum);
 #endif
  

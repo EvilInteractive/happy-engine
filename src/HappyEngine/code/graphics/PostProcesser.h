@@ -40,13 +40,13 @@ class UniformBuffer;
 struct ToneMapData
 {
     ToneMapData()
-    : shoulderStrength(0.15f)
-    , linearStrength(0.50f)
-    , linearAngle(0.10f)
-    , toeStrength(0.20f)
-    , toeNumerator(0.02f)
-    , toeDenominator(0.30f)
-    , exposureBias(3.0f)
+    : shoulderStrength(0.2f)
+    , linearStrength(0.52f)
+    , linearAngle(1.14f)
+    , toeStrength(0.81f)
+    , toeNumerator(0.04f)
+    , toeDenominator(1.1f)
+    , exposureBias(0.55f)
     {}
 
     float shoulderStrength;
