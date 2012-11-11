@@ -71,8 +71,7 @@ View::View():
     m_NormalDepthRenderMap(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create())), 
     m_IntermediateRenderTarget(nullptr),
     m_OutputRenderTarget(nullptr),
-m_Camera(nullptr),
-m_SkyBox(nullptr)
+    m_Camera(nullptr)
 {
     if (m_Window != nullptr)
         m_Window->Resized -= m_WindowResizedCallback;

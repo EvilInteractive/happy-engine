@@ -61,12 +61,10 @@ public:
     /* GENERAL */
     void load();
     void tick();
-<<<<<<< HEAD
-    void setView(gfx::View* view);
-=======
+
     void attachToRenderer(gfx::Renderer2D* renderer);
     void detachFromRenderer();
->>>>>>> ee2f9f5f021567dd95180aeaa5168b57a14f90ec
+
     virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
     void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);

@@ -114,7 +114,7 @@ void Console::load()
 
     m_ScrollBar->setBarPos(1.0f);
 
-    m_MaxMessagesInWindow = static_cast<uint32>(190 / m_pFont->getLineSpacing());
+    m_MaxMessagesInWindow = static_cast<uint32>(190 / m_Font->getLineSpacing());
 }
 
 Console::~Console()
@@ -129,12 +129,6 @@ Console::~Console()
 
     if (m_Font != nullptr)
         m_Font->release();
-
-    
-    if (m_View != nullptr)
-    {
-        m_View->get2DRenderer()->detachFromRender(this);
-    }
 	
     delete m_TextBox;
     delete m_ScrollBar;
