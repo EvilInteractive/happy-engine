@@ -81,6 +81,11 @@ Console::Console() :	m_Shortcut(io::Key_C),
     m_ShowMessageTypes[CMSG_TYPE_ENGINE] = true;
 
     registerVar<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
+
+	// console commands
+	registerCmd(boost::bind(&he::tools::Console::displayHelp, this), "help");
+	registerCmd(boost::bind(&he::tools::Console::displayVars, this), "listvars");
+	registerCmd(boost::bind(&he::tools::Console::displayCmds, this), "listcmds");
 }
 void Console::load()
 {
@@ -107,7 +112,6 @@ void Console::load()
 
     m_CmdHistory.add("");
 
-
     m_ScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint32>(190 / m_Font->getLineSpacing());
@@ -125,13 +129,7 @@ Console::~Console()
 
     if (m_Font != nullptr)
         m_Font->release();
-
-    /*
-    if (m_View != nullptr)
-    {
-        m_View->get2DRenderer()->detachFromRender(this);
-    }
-    */
+	
     delete m_TextBox;
     delete m_ScrollBar;
     delete m_Help;
@@ -148,26 +146,7 @@ void Console::processCommand(const std::string& command)
     #error What if GCC?
     #endif
 
-    // console commands
-    if (s == "help")
-    {
-        addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
-
-        displayHelp();
-    }
-    else if (s == "listvars")
-    {
-        addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
-
-        displayVars();
-    }
-    else if (s == "listcmds")
-    {
-        addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
-
-        displayCmds();
-    }
-    else if (s.find('=') != -1)
+    if (s.find('=') != -1)
     {
         // get keyword (variable to change)
         std::string keyWord(s.substr(0, s.find('=')));

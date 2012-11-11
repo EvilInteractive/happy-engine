@@ -97,6 +97,7 @@ void MainGame::load()
     he::gfx::RenderSettings settings;
     settings.enableDeferred = true;
     settings.enablePost = true;
+	settings.skybox = "";
 
     settings.lightingSettings.enableLighting = true;
     settings.lightingSettings.enableNormalMap = true;
@@ -138,6 +139,8 @@ void MainGame::load()
 
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());
+
+	m_FPSGraph->setView(m_View);
 
     m_UIBind = NEW UIBind(m_UIController);
 
