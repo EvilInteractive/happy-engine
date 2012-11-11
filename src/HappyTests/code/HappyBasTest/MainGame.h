@@ -27,7 +27,7 @@
 #include "IDrawable2D.h"
 #include "Random.h"
 #include "Text.h"
-
+#include "Awesomium\JSValue.h"
 
 namespace he {
     namespace tools {
@@ -45,6 +45,8 @@ namespace he {
         class CameraPerspective;
         class Texture2D;
         class SpotLight;
+        class WebView;
+        class WebListener;
     }
     namespace sfx {
         class Sound2D;
@@ -66,6 +68,8 @@ public:
 
     virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
     virtual void draw2D(he::gfx::Canvas2D* renderer);
+
+    void updateToneMapData(const Awesomium::JSArray& args);
 
 private:
     he::tools::FPSGraph* m_FpsGraph;
@@ -101,6 +105,10 @@ private:
     he::gui::Text m_DebugText;
 
     he::gfx::SpotLight* m_DebugSpotLight;
+
+    //gui
+    he::gfx::WebView* m_ToneMapGui;
+    he::gfx::WebListener* m_ToneMapGuiListener;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

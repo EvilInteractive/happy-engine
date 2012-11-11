@@ -147,7 +147,7 @@ void MainGame::load()
     m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
     // test
-    he::eventCallback0<void> callbackTest([](){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
+    he::eventCallback1<void, const Awesomium::JSArray&> callbackTest([](const Awesomium::JSArray& /*args*/){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
     m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);
 
     m_UIController->load("main.html");

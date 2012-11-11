@@ -69,7 +69,8 @@ set (CODE_GRAPHICS_RENDERING_FILTER
                 Simple2DFontEffect.cpp              Simple2DFontEffect.h
                 Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
                 WebView.cpp                         WebView.h
-				WebListener.cpp					    WebListener.h)
+				WebListener.cpp					    WebListener.h
+				JSObject.h)
                 
     set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
                 Deferred3DRenderer.cpp              Deferred3DRenderer.h)

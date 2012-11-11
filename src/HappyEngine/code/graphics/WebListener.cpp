@@ -47,15 +47,15 @@ WebListener::~WebListener()
 
 /* GENERAL */
 void WebListener::addObjectCallback(const std::string& object,
-                                    const std::string& method,
-                                    eventCallback0<void>& callBack)
+                        const std::string& method,
+                        eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
     auto it(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
     {
         return obj->getObjectName() == object;
     }));
-
+        
     bool objectExists(it != m_Objects.cend());
 
     // create new js object if it doesn't already exists
@@ -72,24 +72,17 @@ void WebListener::addObjectCallback(const std::string& object,
         jsObject->addCallback(aweMethod, callBack);
 
         m_Objects.add(jsObject);
-
-        // set method on object
-        jsObject->getAweObject().SetCustomMethod(
-            aweMethod, false);
     }
     else
     {
         Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
         (*it)->addCallback(aweMethod, callBack);
-
-        (*it)->getAweObject().SetCustomMethod(
-            aweMethod, false);
-    }
+    };
 }
 void WebListener::removeObjectCallback(const std::string& object,
-    const std::string& method,
-    const eventCallback0<void>& callBack)
+                            const std::string& method,
+                            const eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
     auto it(std::find_if(m_Objects.begin(), m_Objects.end(), [&object](JSObject* obj)
@@ -107,7 +100,7 @@ void WebListener::removeObjectCallback(const std::string& object,
 void WebListener::OnMethodCall(Awesomium::WebView* caller,
                                unsigned int remote_object_id,
                                const Awesomium::WebString& method_name,
-                               const Awesomium::JSArray& /*args*/)
+                               const Awesomium::JSArray& args)
 {
     if (caller == m_WebView->getAWEView())
     {
@@ -116,7 +109,7 @@ void WebListener::OnMethodCall(Awesomium::WebView* caller,
         {
             if (jsObject->getAweObject().remote_id() == remote_object_id)
             {
-                jsObject->executeCallback(method_name);
+                jsObject->executeCallback(method_name, args);
             }            
         });
     }

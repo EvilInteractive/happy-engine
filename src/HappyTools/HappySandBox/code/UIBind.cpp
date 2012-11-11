@@ -40,12 +40,14 @@ UIBind::~UIBind()
 /* GENERAL */
 void UIBind::bindObjectMethodToCallback(const std::string& object,
                                         const std::string& method,
-                                        he::eventCallback0<void>& callBack)
+                                        he::eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     m_WebListener->addObjectCallback(object, method, callBack);
 }
 
-void UIBind::unbindObjectMethodToCallback( const std::string& object, const std::string& method, const he::eventCallback0<void>& callBack )
+void UIBind::unbindObjectMethodToCallback(const std::string& object,
+                                          const std::string& method,
+                                          he::eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     m_WebListener->removeObjectCallback(object, method, callBack);
 }

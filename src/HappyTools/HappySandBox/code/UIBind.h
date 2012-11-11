@@ -22,6 +22,10 @@
 #define _HS_UI_BIND_H_
 #pragma once
 
+#include "Awesomium/JSObject.h"
+#include "Awesomium/JSValue.h"
+#include "event.h"
+
 namespace he{
     namespace gfx {
         class WebListener;
@@ -42,10 +46,10 @@ public:
     /* GENERAL */
     void bindObjectMethodToCallback(const std::string& object,
                                     const std::string& method,
-                                    he::eventCallback0<void>& callBack);
+                                    he::eventCallback1<void, const Awesomium::JSArray&>& callBack);
     void unbindObjectMethodToCallback(const std::string& object,
                                       const std::string& method,
-                                      const he::eventCallback0<void>& callBack);
+                                      he::eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
 private:
 

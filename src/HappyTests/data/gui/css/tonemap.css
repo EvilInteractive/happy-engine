@@ -1,0 +1,55 @@
+body
+{
+    margin: 0;
+    padding: 0;
+
+    font: normal 12px sans-serif;
+    color: #fff;
+
+    overflow: hidden;
+
+    background-color: transparent;
+}
+
+#wrapper
+{
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#content
+{
+    position: absolute;
+
+    left: 50px;
+    top: 200px;
+
+    width: 300px;
+    /*height: 500px;*/
+
+    background: rgba(30,30,30,0.8);
+
+    padding: 10px;
+
+    border-radius: 5px;
+    border: 1px solid #111;
+}
+
+.slider
+{
+    width: 100%;
+}
+
+.label
+{
+    color: #ccc;
+}
+
+#header
+{
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #888;
+}

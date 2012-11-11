@@ -56,6 +56,8 @@
 #include "SoundEngine.h"
 #include "Sound2D.h"
 #include "PostProcesser.h"
+#include "WebView.h"
+#include "WebListener.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -75,6 +77,7 @@ MainGame::MainGame()
     , m_View(nullptr), m_View2(nullptr)
     , m_Scene(nullptr)
     , m_RenderPipeline(nullptr), m_RenderPipeline2(nullptr)
+    , m_ToneMapGui(nullptr), m_ToneMapGuiListener(nullptr)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -95,6 +98,9 @@ MainGame::~MainGame()
     PROFILER->detachFromRenderer();
 
     delete m_FpsGraph;
+    
+    delete m_ToneMapGui;
+    delete m_ToneMapGuiListener;
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
@@ -294,6 +300,17 @@ void MainGame::load()
             m_BackgroundSound->pause();
     }, "toggle_sound");
 
+    m_ToneMapGui = m_RenderPipeline->get2DRenderer()->createWebViewRelative(he::RectF(0,0,1,1), true);
+
+    std::string guiPath(he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str());
+    
+    m_ToneMapGui->loadUrl(guiPath + "tonemap.html");
+    m_ToneMapGui->setTransparent(true);
+
+    m_ToneMapGuiListener = NEW he::gfx::WebListener(m_ToneMapGui);
+
+    he::eventCallback1<void, const Awesomium::JSArray&> updateHandler(boost::bind(&ht::MainGame::updateToneMapData,this,_1));
+    m_ToneMapGuiListener->addObjectCallback("HE", "updateTonemapData", updateHandler);
 }
 
 void MainGame::tick( float dTime )
@@ -359,6 +376,25 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 
     canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
     canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
+
+    m_ToneMapGui->draw2D(canvas);
+}
+
+void MainGame::updateToneMapData(const Awesomium::JSArray& args)
+{
+    int var(args[0].ToInteger());
+    float value((float)args[1].ToDouble());
+
+    switch(var)
+    {
+        case 0:
+        {
+            float i = value;
+            ++i;
+            break;
+        }
+        //...
+    }
 }
 
 } //end namespace
