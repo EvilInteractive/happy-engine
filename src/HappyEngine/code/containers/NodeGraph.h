@@ -16,35 +16,44 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 03/11/2012
+//Created: 11/11/2012
 
-#ifndef _HUT_MainGame_H_
-#define _HUT_MainGame_H_
+#ifndef _HE_NodeGraph_H_
+#define _HE_NodeGraph_H_
 #pragma once
 
-#include "Game.h"
+#include "NodeGraphError.h"
 
-namespace hut {
+namespace he {
+template<typename TInput, typename TOutput>
+class NodeGraphNode;
 
-class MainGame : public he::ge::Game
+template<typename TInput, typename TOutput>
+class NodeGraph
 {
 public:
-    MainGame();
-    virtual ~MainGame();
+    NodeGraph(): m_CurrentMarchId(0) {}
+    ~NodeGraph() {}
 
-    virtual void init();
-    virtual void load();
-    virtual void tick(float dTime);
+    void addRootNode(NodeGraphNode<TInput, TOutput>* node);
+    void removeRootNode(NodeGraphNode<TInput, TOutput>* node);
+
+    void evalute(he::ObjectList<NodeGraphError<TInput, TOutput>>& errorList);
+    void evaluteFrom(NodeGraphNode<TInput, TOutput>* node, he::ObjectList<NodeGraphError<TInput, TOutput>>& errorList);
 
 private:
-    void nodeGraphUnitTest();
-    void listUnitTest();
+
+    he::PrimitiveList<NodeGraphNode<TInput, TOutput>*> m_RootNodes;
+
+    uint8 m_CurrentMarchId;
 
     //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    NodeGraph(const NodeGraph&);
+    NodeGraph& operator=(const NodeGraph&);
 };
 
 } //end namespace
+
+#include "NodeGraph.inl"
 
 #endif

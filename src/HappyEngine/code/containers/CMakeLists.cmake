@@ -1,6 +1,9 @@
 set (CODE_CONTAINERS_FILES  
 							Creator.h
 							List.h
+							NodeGraph.inl			NodeGraph.h
+							NodeGraphError.h
+							NodeGraphNode.inl		NodeGraphNode.h
 							ObjectFactory.h
                             Resource.h
                             ResourceFactory.h

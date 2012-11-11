@@ -194,7 +194,7 @@ void MainGame::load()
   
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
-    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
+    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 300.0f);
     flyCamera->lookAt(vec3(), vec3(1, 0, 0), vec3(0, 1, 0));
     m_View->setCamera(flyCamera);
 
