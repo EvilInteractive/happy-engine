@@ -120,6 +120,7 @@ Deferred3DRenderer::~Deferred3DRenderer()
     m_SGTexture->release();
 
     delete m_CollectionRenderTarget;
+    delete m_SharedShaderData.sharedBuffer;
     
     m_pQuad->release();
 
@@ -174,12 +175,12 @@ void Deferred3DRenderer::compileShaders()
     m_ShadowSpotLightShader->initFromFile(folder + "deferred/post/deferredPostShader.vert", folder + "deferred/post/deferredPostSLShader.frag", shaderLayout, shaderDefines);
 
     //SharedBuffer
-    m_SharedShaderData.pSharedBuffer = m_PointLightShader->setBuffer(m_PointLightShader->getBufferId("SharedBuffer"));
-    m_SpotLightShader->setBuffer(m_SpotLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
-    m_ShadowSpotLightShader->setBuffer(m_ShadowSpotLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
-    m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("SharedBuffer"), m_SharedShaderData.pSharedBuffer);
-
-    m_SharedShaderData.pSharedBuffer->getShaderVar("projParams", m_SharedShaderData.projParams);
+    delete m_SharedShaderData.sharedBuffer;
+    m_SharedShaderData.sharedBuffer = NEW UniformBuffer(sizeof(vec4));
+    m_PointLightShader->setBuffer(m_PointLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.sharedBuffer);
+    m_SpotLightShader->setBuffer(m_SpotLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.sharedBuffer);
+    m_ShadowSpotLightShader->setBuffer(m_ShadowSpotLightShader->getBufferId("SharedBuffer"), m_SharedShaderData.sharedBuffer);
+    m_AmbDirIllShader->setBuffer(m_AmbDirIllShader->getBufferId("SharedBuffer"), m_SharedShaderData.sharedBuffer);
 
     //----PL----------------------------------------------------------------------
     m_PointLightData.position = m_PointLightShader->getShaderVarId("light.position");
@@ -305,12 +306,12 @@ void Deferred3DRenderer::render()
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    m_SharedShaderData.projParams.set(vec4(
+    m_SharedShaderData.projParams = vec4(
         camera->getProjection()(0, 0),
         camera->getProjection()(1, 1),
         camera->getNearClip(),
-        camera->getFarClip()));
-    m_SharedShaderData.pSharedBuffer->setShaderVar(m_SharedShaderData.projParams);
+        camera->getFarClip());
+    m_SharedShaderData.sharedBuffer->uploadData(&m_SharedShaderData.projParams, sizeof(vec4));
 
     postPointLights();           
     postSpotLights();

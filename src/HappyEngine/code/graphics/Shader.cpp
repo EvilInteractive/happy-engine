@@ -295,7 +295,6 @@ void Shader::setShaderVar( uint32 id, const gfx::TextureCube* texCube ) const
     GL::heBindTextureCube(id, texCube->getID());
 }
 
-
 void Shader::setBuffer( uint32 id, UniformBuffer* buffer )
 {
     glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
@@ -303,7 +302,9 @@ void Shader::setBuffer( uint32 id, UniformBuffer* buffer )
 
 UniformBuffer* Shader::setBuffer( uint32 id )
 {
-    UniformBuffer* buffer(NEW UniformBuffer(m_Id, id));
+    int blockSize;
+    glGetActiveUniformBlockiv(m_Id, id, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+    UniformBuffer* buffer(NEW UniformBuffer(blockSize));
     glUniformBlockBinding(m_Id, id, buffer->m_BufferId);
     m_UniformBufferMap[buffer->m_BufferId] = buffer;
     return buffer;

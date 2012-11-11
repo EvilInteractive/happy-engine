@@ -47,7 +47,8 @@ PostProcesser::PostProcesser():
     m_ShowDebugTextures(true),
     m_FogColor(0.2f, 0.4f, 0.6f),
     m_View(nullptr),
-    m_DebugRenderer(nullptr)
+    m_DebugRenderer(nullptr),
+    m_ToneMapUniformBuffer(nullptr)
 {
 }
 
@@ -58,6 +59,7 @@ PostProcesser::~PostProcesser()
         m_PostShader->release();
     delete m_Bloom;
     delete m_AutoExposure;
+    delete m_ToneMapUniformBuffer;
 
     if (m_RandomNormals != nullptr)
         m_RandomNormals->release();
@@ -90,13 +92,19 @@ void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool forc
 {
     bool recompileShader(force || settings.postSettings.shaderSettings != m_Settings.postSettings.shaderSettings);
     
+    delete m_ToneMapUniformBuffer;
+    if (settings.postSettings.shaderSettings.enableHDR)
+    {
+        m_ToneMapUniformBuffer = NEW UniformBuffer(sizeof(ToneMapData));
+    }
+
     if (force || settings.postSettings.shaderSettings.enableBloom != m_Settings.postSettings.shaderSettings.enableBloom)
     {
         delete m_Bloom;
         if (settings.postSettings.shaderSettings.enableBloom)
         {
             m_Bloom = NEW Bloom();
-            m_Bloom->init(m_View, settings.postSettings.shaderSettings.enableHDR);
+            m_Bloom->init(m_View, settings.postSettings.shaderSettings.enableHDR, m_ToneMapUniformBuffer);
         }
         else
             m_Bloom = nullptr;
@@ -164,7 +172,11 @@ void PostProcesser::compileShader()
     if (settings.enableFog)
         m_PostShaderVars[PV_FogColor] = m_PostShader->getShaderVarId("fogColor");
     if (settings.enableHDR)
+    {
         m_PostShaderVars[PV_LumMap] = m_PostShader->getShaderSamplerId("lumMap");
+        m_PostShaderVars[PV_ToneMapData] = m_PostShader->getBufferId("SharedToneMapBuffer");
+        m_PostShader->setBuffer(m_PostShaderVars[PV_ToneMapData], m_ToneMapUniformBuffer);
+    }
 
     if (settings.enableBloom)
     {
@@ -193,6 +205,7 @@ void PostProcesser::draw()
     const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
     if (settings.enableHDR)
     {
+        m_ToneMapUniformBuffer->uploadData(&m_ToneMapData, sizeof(ToneMapData));
         PROFILER_BEGIN("Auto Exposure");
         m_AutoExposure->calculate(colorMap);
         PROFILER_END();

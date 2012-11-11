@@ -27,6 +27,10 @@ struct ToneMapData
 	float toeDenominator;
 	float exposureBias;
 };
+layout(shared) uniform SharedToneMapBuffer
+{
+	ToneMapData toneMapData;
+};
 
 float getWhite(in sampler2D lumMap, in float min, in float max)
 {
@@ -40,17 +44,8 @@ vec3 tonemapFunc(in vec3 x, in ToneMapData data)
 vec3 tonemap(in vec3 hdr, in vec3 whitePoint)
 {
 	vec3 ldr = hdr;
-	
-	ToneMapData data;
-	data.shoulderStrength = 0.22f;
-	data.linearStrength = 0.30f;
-	data.linearAngle = 0.10f;
-	data.toeStrength = 0.01f;
-	data.toeNumerator = 0.30f;
-	data.toeDenominator = 11.2f;
-	data.exposureBias = 1.0f;
-	
-	ldr = tonemapFunc(ldr*data.exposureBias, data) / whitePoint;
+		
+	ldr = tonemapFunc(ldr*toneMapData.exposureBias, toneMapData) / whitePoint;
 	
 	return ldr;
 }

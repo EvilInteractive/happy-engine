@@ -35,6 +35,28 @@ class Texture2D;
 class ModelMesh;
 class View;
 class RenderTarget;
+class UniformBuffer;
+
+struct ToneMapData
+{
+    ToneMapData()
+    : shoulderStrength(0.15f)
+    , linearStrength(0.50f)
+    , linearAngle(0.10f)
+    , toeStrength(0.20f)
+    , toeNumerator(0.02f)
+    , toeDenominator(0.30f)
+    , exposureBias(3.0f)
+    {}
+
+    float shoulderStrength;
+    float linearStrength;
+    float linearAngle;
+    float toeStrength;
+    float toeNumerator;
+    float toeDenominator;
+    float exposureBias;
+};
 
 class PostProcesser : public IDrawable2D
 {
@@ -45,6 +67,8 @@ public:
     void init(View* view, const RenderTarget* writeTarget, const RenderTarget* readTarget);
 
     void setFogColor(const he::vec3& color);
+    const ToneMapData& getToneMapData() const { return m_ToneMapData; }
+    ToneMapData& getToneMapDataForEdit() { return m_ToneMapData; }
 
     void setDebugRenderer(Renderer2D* renderer);
 
@@ -76,6 +100,7 @@ private:
         PV_ColorMap,
 
         PV_FogColor,
+        PV_ToneMapData,
 
         MAX_POST_SHADER_VARS
     };
@@ -89,6 +114,7 @@ private:
 
     Bloom* m_Bloom;
     AutoExposure* m_AutoExposure;
+    UniformBuffer* m_ToneMapUniformBuffer;
 
     Shader* m_PostShader;
     uint32 m_PostShaderVars[MAX_POST_SHADER_VARS];
@@ -100,6 +126,7 @@ private:
     ModelMesh* m_Quad;
 
     vec3 m_FogColor;
+    ToneMapData m_ToneMapData;
 
     //Disable default copy constructor and default assignment operator
     PostProcesser(const PostProcesser&);

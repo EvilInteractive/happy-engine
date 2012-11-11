@@ -106,9 +106,10 @@ private:
     };
     struct PostSharedData
     {
-        UniformBuffer* pSharedBuffer;
+        PostSharedData(): sharedBuffer(nullptr) {}
+        UniformBuffer* sharedBuffer;
         // SharedBuffer
-        ShaderVariable<vec4> projParams;
+        vec4 projParams;
     };
 
 public:

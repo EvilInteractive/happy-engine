@@ -87,52 +87,37 @@ private:
 class UniformBuffer
 {
 friend class Shader;
+private:
+    static uint32 s_UniformBufferCount;
+
 public:
+    UniformBuffer(size_t sizeInBytes): m_BufferId(s_UniformBufferCount++), m_BufferSize(sizeInBytes)
+    {
+        void* m_Buffer = he_malloc(sizeInBytes);
+        he_memset(m_Buffer, 0, sizeInBytes);
+
+        glGenBuffers(1, &m_GlBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
+        glBufferData(GL_UNIFORM_BUFFER, sizeInBytes, m_Buffer, GL_STREAM_DRAW);
+
+        he_free(m_Buffer);
+    }
     ~UniformBuffer()
     {
         glDeleteBuffers(1, &m_GlBuffer);
     }
 
-    void getShaderVar(const std::string& name, ShaderVariableBase& outVar) const
+    void uploadData(void* data, size_t sizeInBytes, size_t offsetInBytes = 0)
     {
-        uint32 index;
-        const char* c_name(name.c_str());
-        glGetUniformIndices(m_ProgramId, 1, &c_name, &index);
-
-        glGetActiveUniformsiv(m_ProgramId, 1, &index, GL_UNIFORM_OFFSET, &outVar.m_Offset);
-    }
-    void setShaderVar(ShaderVariableBase& var)
-    {
-        if (var.m_Update == true)
-        {
-            GL::heBindUniformBuffer(m_BufferId, m_GlBuffer);
-            glBufferSubData(GL_UNIFORM_BUFFER, var.m_Offset, var.m_Size, var.data());
-            var.m_Update = false;
-        }
+        HE_ASSERT(sizeInBytes + offsetInBytes <= m_BufferSize, "Uniformbuffer going out of bounds!");
+        GL::heBindUniformBuffer(m_BufferId, m_GlBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, offsetInBytes, sizeInBytes, data);
     }
 
 private:
-    UniformBuffer(uint32 programId, uint32 bufferPos): m_ProgramId(programId), m_BufferId(s_UniformBufferCount++)
-    {
-        int blockSize;
-        glGetActiveUniformBlockiv(programId, bufferPos, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-
-        void* m_Buffer = he_malloc(blockSize);
-        he_memset(m_Buffer, 0, blockSize);
-
-        glGenBuffers(1, &m_GlBuffer);
-        glBindBuffer(GL_UNIFORM_BUFFER, m_GlBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, blockSize, m_Buffer, GL_DYNAMIC_DRAW);
-
-        he_free(m_Buffer);
-    }
-
-    static uint32 s_UniformBufferCount;
-
     uint32 m_GlBuffer;
-
-    uint32 m_ProgramId;
     uint32 m_BufferId;
+    size_t m_BufferSize;
 };
 
 class Shader : public Resource<Shader>

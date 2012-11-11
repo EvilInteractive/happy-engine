@@ -29,6 +29,7 @@ class Texture2D;
 class ModelMesh;
 class Shader;
 class View;
+class UniformBuffer;
 
 class Bloom
 {
@@ -36,7 +37,7 @@ public:
     Bloom();
     virtual ~Bloom();
 
-    void init(View* view, bool hdr);
+    void init(View* view, bool hdr, UniformBuffer* toneMapBuffer);
 
     const Texture2D* getBloom(uint8 level) const;
 
@@ -53,6 +54,8 @@ private:
     Shader* m_DownSampleBrightPassShader;
     uint32 m_DownSampleBrightPassMap;
     uint32 m_DownSampleBrightPassLumMap;
+    uint32 m_DownSampleBrightPassToneMapData;
+    UniformBuffer* m_ToneMapBuffer;
 
     Shader* m_DownSampleShader;
     uint32 m_DownSampleMap;
