@@ -23,6 +23,9 @@
 #include "List.h"
 #include "Random.h"
 
+#include "NodeGraph.h"
+#include "NodeGraphNode.h"
+
 namespace hut {
 
 MainGame::MainGame()
@@ -40,6 +43,170 @@ void MainGame::init()
 
 void MainGame::load()
 {
+    //listUnitTest();
+    nodeGraphUnitTest();
+    HAPPYENGINE->quit();
+}
+
+void MainGame::tick( float dTime )
+{
+    he::ge::Game::tick(dTime);
+}
+
+void MainGame::nodeGraphUnitTest()
+{
+#pragma region GraphClasses
+    enum Type
+    {
+        Type_Int,
+        Type_Float,
+    };
+    enum NodeType
+    {
+        NodeType_ConstInt,
+        NodeType_AddInt,
+        NodeType_PrintInt,
+    };
+    struct InputOutput
+    {
+        InputOutput(): type(Type_Int), name("Error"), data(nullptr), dataSize(0) {}
+        ~InputOutput() { he_free(data); }
+        InputOutput(const InputOutput& other): type(other.type), name(other.name), data(he_malloc(other.dataSize)), dataSize(other.dataSize) 
+        { setData(other.data, other.dataSize); }
+        InputOutput& operator=(const InputOutput& other)
+        {
+            type = other.type;
+            name = other.name;
+            setData(other.dataSize);
+            setData(other.data, other.dataSize);
+            return *this;
+        }
+        Type type;
+        std::string name;
+        void* data;
+        size_t dataSize;
+        void setData(size_t size)
+        {
+            he_free(data);
+            dataSize = size;
+            data = he_malloc(dataSize);
+            he_memset(data, 0, dataSize);
+        }
+        void setData(void* copyData, size_t size)
+        {
+            HE_ASSERT(size <= dataSize, "Invalid set data");
+            he_memcpy(data, copyData, size);
+        }
+    };
+    class NodeBase : public he::NodeGraphNode<InputOutput, InputOutput> 
+    { 
+    public:
+        virtual ~NodeBase() {} 
+
+        virtual bool evaluate(he::NodeGraphError<InputOutput, InputOutput>& error) = 0;
+        virtual bool canConnect(const InputOutput& fromOutput, const InputOutput& toInput, he::NodeGraphError<InputOutput, InputOutput>& /*error*/) const
+        {
+            return fromOutput.type == toInput.type;
+        }
+        virtual NodeType getType() = 0;
+    };
+    struct IntNode : public NodeBase
+    {
+        IntNode(int val): value(val) 
+        {
+            InputOutput conn;
+            conn.name = "Int";
+            conn.type = Type_Int;
+            conn.setData(sizeof(int));
+            addOutput(conn);
+        } 
+        virtual ~IntNode() {}
+
+        virtual bool evaluate(he::NodeGraphError<InputOutput, InputOutput>& /*error*/)
+        {
+            getOutput(0).setData(&value, sizeof(int));
+            return true;
+        }
+        virtual NodeType getType() { return NodeType_ConstInt; }
+
+        int value;
+    };
+    struct AddNode : public NodeBase
+    {
+        AddNode()
+        {
+            InputOutput conn;
+            conn.name = "Int";
+            conn.type = Type_Int;
+            conn.setData(sizeof(int));
+            addOutput(conn);
+            addInput(conn);
+            addInput(conn);
+        } 
+        virtual ~AddNode() {}
+
+        virtual bool evaluate(he::NodeGraphError<InputOutput, InputOutput>& /*error*/)
+        {
+            int a = *static_cast<int*>(getInputConnection(0).node->getOutput(getInputConnection(0).connecter).data);
+            int b = *static_cast<int*>(getInputConnection(1).node->getOutput(getInputConnection(1).connecter).data);
+            int out = a + b;
+            std::cout << a << " + " << b;
+            getOutput(0).setData(&out, sizeof(int));
+
+            return true;
+        }
+        virtual NodeType getType() { return NodeType_AddInt; }
+    };
+    struct PrintIntNode : public NodeBase
+    {
+        PrintIntNode()
+        {
+            InputOutput conn;
+            conn.name = "Int";
+            conn.type = Type_Int;
+            conn.setData(sizeof(int));
+            addInput(conn);
+        } 
+        virtual ~PrintIntNode() {}
+
+        virtual bool evaluate(he::NodeGraphError<InputOutput, InputOutput>& /*error*/)
+        {
+            int a = *static_cast<int*>(getInputConnection(0).node->getOutput(getInputConnection(0).connecter).data);
+            std::cout << " = " << a << "\n";
+            return true;
+        }
+        virtual NodeType getType() { return NodeType_PrintInt; }
+    };
+#pragma endregion
+    
+    he::NodeGraph<InputOutput, InputOutput> graph;
+
+    IntNode const1(5);
+    IntNode const2(10);
+    IntNode const3(2);
+    AddNode addNode1;
+    AddNode addNode2;
+    PrintIntNode printNode1;
+    PrintIntNode printNode2;
+
+    he::NodeGraphError<InputOutput, InputOutput> error;
+    addNode1.connectToInput(&const1, 0, 0, error);
+    addNode1.connectToInput(&const2, 0, 1, error);
+    addNode2.connectToInput(&addNode1, 0, 0, error);
+    addNode2.connectToInput(&const3, 0, 1, error);
+    printNode1.connectToInput(&addNode1, 0, 0, error);
+    printNode2.connectToInput(&addNode2, 0, 0, error);
+    graph.addRootNode(&printNode1);
+    graph.addRootNode(&printNode2);
+    he::ObjectList<he::NodeGraphError<InputOutput, InputOutput>> errors;
+    graph.evalute(errors);
+
+    HE_ASSERT(errors.size() == 0, "Errors occurred");
+
+}
+
+void MainGame::listUnitTest()
+{   
     // Primitive List
     {
         he::Random rand;
@@ -151,13 +318,6 @@ void MainGame::load()
             list.add(TestStruct(i));
         }
     }
-
-    HAPPYENGINE->quit();
-}
-
-void MainGame::tick( float dTime )
-{
-    he::ge::Game::tick(dTime);
 }
 
 } //end namespace

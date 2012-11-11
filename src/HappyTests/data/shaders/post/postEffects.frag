@@ -232,9 +232,9 @@ void main()
 	if (post)
 	{
 #if FOG
-    const float beginFog = 0.5f;
+    const float beginFog = 0.2f;
 	vec3 normalDepth = texture(normalDepthMap, texCoord).xyz;
-    float fog = max(0, normalDepth.z - beginFog) * (1.0f / (1.0f - beginFog));
+    float fog = max(0.01f, normalDepth.z - beginFog) / (1.0f - beginFog);
 
     color = color * (1 - fog) + fogColor * (fog);
 #endif
