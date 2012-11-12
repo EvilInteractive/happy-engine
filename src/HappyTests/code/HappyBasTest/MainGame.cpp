@@ -299,7 +299,9 @@ void MainGame::load()
         else
             m_BackgroundSound->pause();
     }, "toggle_sound");
+    
 
+    /******* TONEMAP GUI *******/
     m_ToneMapGui = m_RenderPipeline->get2DRenderer()->createWebViewRelative(he::RectF(0,0,1,1), true);
 
     std::string guiPath(he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str());
@@ -311,6 +313,17 @@ void MainGame::load()
 
     he::eventCallback1<void, const Awesomium::JSArray&> updateHandler(boost::bind(&ht::MainGame::updateToneMapData,this,_1));
     m_ToneMapGuiListener->addObjectCallback("HE", "updateTonemapData", updateHandler);
+
+    // when gui loaded set slider val
+    he::eventCallback0<void> onGuiLoaded([&]()
+    {
+        Awesomium::JSArray args;
+        args.Push(Awesomium::JSValue(0));
+        args.Push(Awesomium::JSValue(0.55));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+    });
+
+    m_ToneMapGui->OnUrlLoaded += onGuiLoaded;
 }
 
 void MainGame::tick( float dTime )

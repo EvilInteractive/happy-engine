@@ -49,7 +49,7 @@ public:
     virtual void draw2D(Canvas2D* canvas);
     void loadUrl(const std::string& url);   // for web
     void loadFile(const he::Path& path);    // for local
-    void excecuteJavaScript(const std::string& script);
+    void executeJavaScript(const std::string& script);
     void focus();
     void unfocus();
     void setTransparent(bool transparent);
@@ -60,6 +60,9 @@ public:
 
     /* SETTERS */
     void setPosition(const vec2& position) { m_Position = position; }
+
+    /* EVENTS */
+    event0<void> OnUrlLoaded;
 
 	// webview load listeners
 	virtual void OnFailLoadingFrame(

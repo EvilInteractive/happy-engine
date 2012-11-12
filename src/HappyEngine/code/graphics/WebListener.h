@@ -47,6 +47,11 @@ public:
                               const std::string& method,
                               const eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
+    void executeFunction(const std::string& object,
+                        const std::string& method,
+                        const Awesomium::JSArray& args);
+
+    // method handler
     virtual void OnMethodCall(Awesomium::WebView* caller,
                               unsigned int remote_object_id,
                               const Awesomium::WebString& method_name,

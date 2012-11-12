@@ -82,6 +82,10 @@ public:
             m_MethodCallBacks[method]->execute(args);
         }
 	}
+    void executeFunction(const Awesomium::WebString& method, const Awesomium::JSArray& args)
+    {
+        m_AweObject.Invoke(method, args);
+    }
 
 private:
 	std::string m_ObjectName;

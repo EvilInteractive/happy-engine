@@ -78,3 +78,9 @@ $(function()
 
     updateContentPos();
 });
+
+function setSliderValue(id, value)
+{
+	$('#slider' + id).val(value);
+	$('#slider' + id + 'val').html(value);
+}

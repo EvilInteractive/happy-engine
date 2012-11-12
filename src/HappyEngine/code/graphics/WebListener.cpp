@@ -97,6 +97,57 @@ void WebListener::removeObjectCallback(const std::string& object,
     }
 }
 
+void WebListener::executeFunction(const std::string& object,
+                                    const std::string& method,
+                                    const Awesomium::JSArray& args)
+{
+    // global js object for global functions
+    std::string objName("window");
+    Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
+
+    if (object != "window" && object != "")
+    {
+        objName = object;
+
+        // check if jsobject already exists
+        auto it(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&objName](JSObject* obj)
+        {
+            return obj->getObjectName() == objName;
+        }));
+        
+        bool objectExists(it != m_Objects.cend());
+
+        // create new js object if it doesn't already exists
+        if (objectExists == false)
+        {
+            Awesomium::JSValue val = m_WebView->getAWEView()->CreateGlobalJavascriptObject(
+                Awesomium::WSLit(objName.c_str()));
+
+            Awesomium::JSObject& obj = val.ToObject();
+
+            JSObject* jsObject(NEW JSObject(obj, objName));
+
+            m_Objects.add(jsObject);
+
+            jsObject->executeFunction(aweMethod, args);
+        }
+        else
+        {
+            (*it)->executeFunction(aweMethod, args);
+        };
+    }
+    else
+    {
+        Awesomium::JSValue window(
+            m_WebView->getAWEView()->ExecuteJavascriptWithResult(
+            Awesomium::WSLit("window"), Awesomium::WSLit("")));
+
+        Awesomium::JSObject& obj = window.ToObject();
+
+        obj.Invoke(aweMethod, args);
+    }
+}
+
 void WebListener::OnMethodCall(Awesomium::WebView* caller,
                                unsigned int remote_object_id,
                                const Awesomium::WebString& method_name,

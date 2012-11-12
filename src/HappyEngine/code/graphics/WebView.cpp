@@ -244,7 +244,7 @@ void WebView::loadFile(const he::Path& /*path*/)
     //m_WebView->LoadURL()
 }
 
-void WebView::excecuteJavaScript(const std::string& /*script*/)
+void WebView::executeJavaScript(const std::string& /*script*/)
 {
     //Awesomium::WebString string(script.c_str());
     //m_WebView->ExecuteJavascriptWithResult(string);
@@ -332,6 +332,8 @@ void WebView::OnFinishLoadingFrame(
     url.path().ToUTF8(buff0, std::max(url.path().length(), 200ui32));
 
     HE_INFO("Finished loading url: '%s'", buff0);
+
+    OnUrlLoaded();
 }
 
 void WebView::OnDocumentReady(
