@@ -10,7 +10,7 @@ $(function()
     {
         $('#slider' + i).on('change', function(e)
         {
-            $('#' + e.target.id + 'val').html(this.value);
+            $('#' + e.target.id + 'val').html(Math.floor(this.value * 10000) / 10000);
             HE.updateTonemapData(e.target.id.substr(6,1), this.value);
         });
     }
@@ -69,6 +69,14 @@ $(function()
             mousepos.y = e.clientY;
         }
     });
+	
+	// disable scrolling by middle mouse
+	$(document).on('mousedown', function(e)
+	{
+		// middlemouse
+		if (e.which === 2)
+			e.preventDefault();
+	});
 
     function updateContentPos()
     {

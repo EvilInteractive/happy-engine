@@ -107,7 +107,7 @@ void TextBox::tick()
             if (m_BackspaceDown == false)
             {
                 // remove char before cursor
-                if (m_String.size() > 0)
+                if (m_String.size() > 0 && m_CursorPos > 0)
                 {
                     m_String.erase(m_CursorPos - 1, 1);
 

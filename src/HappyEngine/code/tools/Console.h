@@ -133,6 +133,9 @@ private:
     gfx::Font* m_Font;
     gfx::Renderer2D* m_Renderer;
 
+    vec2 m_ViewportSize;
+    eventCallback0<void> m_ResizeHandler;
+
     /* DEFAULT COPY & ASSIGNMENT */
     Console(const Console&);
     Console& operator=(const Console&);

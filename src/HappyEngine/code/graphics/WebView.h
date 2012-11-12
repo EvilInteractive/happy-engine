@@ -41,8 +41,8 @@ class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebView(const RectI& viewport, bool bEnableUserInput);
-    WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput);
+    WebView(const RectI& viewport, bool enableUserInput);
+    WebView(View* view, const RectF& viewportPercent, bool enableUserInput);
     virtual ~WebView();
 
     /* GENERAL */
@@ -102,9 +102,9 @@ private:
     /* DATAMEMBERS */
     Awesomium::WebView* m_WebView;
 
-    bool m_bInputEnabled;
+    bool m_InputEnabled;
     
-    Texture2D* m_pRenderTexture;
+    Texture2D* m_RenderTexture;
     vec2 m_Position;
     vec2 m_Size;
     RectF m_ViewportPercent;

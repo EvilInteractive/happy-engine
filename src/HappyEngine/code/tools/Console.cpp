@@ -53,7 +53,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_ScrollBar(nullptr),
                         m_Help(nullptr),
                         m_Font(nullptr),
-                        m_Renderer(nullptr)
+                        m_Renderer(nullptr),
+                        m_ViewportSize(20,20)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -476,6 +477,9 @@ void Console::attachToRenderer( gfx::Renderer2D* renderer )
         m_Renderer = renderer;
 
         gfx::View* view(renderer->getView());
+        m_ResizeHandler = eventCallback0<void>(boost::bind(&he::tools::Console::onResize, this));
+        view->ViewportSizeChanged += m_ResizeHandler;
+
         m_ScrollBar->setPosition(vec2(static_cast<float>(view->getViewport().width) - 20.0f, 0.0f));
         m_TextBox->setSize(vec2(static_cast<float>(view->getViewport().width), 20));
         m_ScrollBar->setBarPos(1.0f);
@@ -495,8 +499,21 @@ void Console::detachFromRenderer()
         {
             m_Renderer->detachFromRender(this);
         }
+
+        gfx::View* view(m_Renderer->getView());
+        view->ViewportSizeChanged -= m_ResizeHandler;
+
         m_Renderer = nullptr;
     }
+}
+
+void Console::onResize()
+{
+    m_ViewportSize.x = static_cast<float>(m_Renderer->getView()->getViewport().width);
+    m_ViewportSize.y = static_cast<float>(m_Renderer->getView()->getViewport().height);
+
+    m_TextBox->setSize(vec2(m_ViewportSize.x, 20.f));
+    m_ScrollBar->setPosition(vec2(m_ViewportSize.x - 20, 0));
 }
 
 } } //end namespace

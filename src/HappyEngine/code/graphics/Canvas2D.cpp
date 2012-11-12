@@ -80,7 +80,8 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
 
     return data;
 }
-void Canvas2D::resizeData( Data* data, const vec2& size )
+
+void Canvas2D::resizeData(Data* data, const vec2& size)
 {
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(data->renderTextureHnd));
     texture->setData((uint32)size.x, (uint32)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
@@ -88,7 +89,6 @@ void Canvas2D::resizeData( Data* data, const vec2& size )
     glBindRenderbuffer(GL_RENDERBUFFER, data->depthRbufferID);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, (GLsizei)size.x, (GLsizei)size.y);
 }
-
 
 /* CONSTRUCTOR - DESTRUCTOR */
 #pragma warning(disable:4355) // this pointer in member initialize list
@@ -155,7 +155,6 @@ Canvas2D::~Canvas2D()
 
     if (m_View != nullptr)
         m_View->ViewportSizeChanged -= m_ViewResizedHandler;
-
 }
 
 /* EXTRA */
@@ -208,7 +207,7 @@ void Canvas2D::init()
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_TextureQuad->setLoaded();
 }
-void Canvas2D::resize( const vec2& newSize )
+void Canvas2D::resize(const vec2& newSize)
 {
     if (m_CanvasSize != newSize)
     {

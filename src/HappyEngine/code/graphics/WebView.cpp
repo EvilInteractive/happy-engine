@@ -41,10 +41,10 @@
 namespace he {
 namespace gfx {
 
-WebView::WebView(const RectI& viewport, bool bEnableUserInput) :   
+WebView::WebView(const RectI& viewport, bool enableUserInput) :   
 m_WebView(nullptr),
-    m_bInputEnabled(bEnableUserInput),
-    m_pRenderTexture(nullptr),
+    m_InputEnabled(enableUserInput),
+    m_RenderTexture(nullptr),
     m_Position(static_cast<float>(viewport.x), static_cast<float>(viewport.y)),
     m_Size(-1, -1),
     m_View(nullptr),
@@ -55,10 +55,10 @@ m_WebView(nullptr),
     resize(vec2(static_cast<float>(viewport.width), static_cast<float>(viewport.height)));
 }
 #pragma warning(disable:4355) // this is initializer list
-WebView::WebView(View* view, const RectF& viewportPercent, bool bEnableUserInput) :   
+WebView::WebView(View* view, const RectF& viewportPercent, bool enableUserInput) :   
     m_WebView(nullptr),
-    m_bInputEnabled(bEnableUserInput),
-    m_pRenderTexture(nullptr),
+    m_InputEnabled(enableUserInput),
+    m_RenderTexture(nullptr),
     m_Position(0, 0),
     m_Size(-1, -1),
     m_View(view),
@@ -80,18 +80,22 @@ void WebView::init()
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
 
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
-    m_pRenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
-    m_pRenderTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest,
+    m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+    m_RenderTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest,
         gfx::TextureFormat_RGBA8, false);
 
-    if (m_bInputEnabled)
+    if (m_InputEnabled)
     {
         io::IKeyboard* keyboard(CONTROLS->getKeyboard());
         io::IMouse* mouse(CONTROLS->getMouse());
 
         Awesomium::WebView* w(m_WebView);
-        m_KeyPressedHandler = eventCallback1<void, io::Key>([w](io::Key key)
+        m_KeyPressedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
+            // check if we cant get focus
+            if (CONTROLS->getFocus(this) == false)
+                return;
+
             Awesomium::WebKeyboardEvent keyEvent;
 
             uint32 chr = io::getWebKeyFromKey(key);
@@ -129,10 +133,16 @@ void WebView::init()
 
                 w->InjectKeyboardEvent(keyEvent);
             }
+
+            CONTROLS->returnFocus(this);
         });
 
-        m_KeyReleasedHandler = eventCallback1<void, io::Key>([w](io::Key key)
+        m_KeyReleasedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
+            // check if we cant get focus
+            if (CONTROLS->getFocus(this) == false)
+                return;
+
             Awesomium::WebKeyboardEvent keyEvent;
 
             char buf[20];
@@ -147,10 +157,16 @@ void WebView::init()
             keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyUp;
 
             w->InjectKeyboardEvent(keyEvent);
+
+            CONTROLS->returnFocus(this);
         });
 
-        m_MouseButtonPressedHandler = eventCallback1<void, io::MouseButton>([w](io::MouseButton but)
+        m_MouseButtonPressedHandler = eventCallback1<void, io::MouseButton>([w,this](io::MouseButton but)
         {
+            // check if we cant get focus
+            if (CONTROLS->getFocus(this) == false)
+                return;
+
             if (but == io::MouseButton_Left)
                 w->InjectMouseDown(Awesomium::kMouseButton_Left);
             else if (but == io::MouseButton_Right)
@@ -159,24 +175,40 @@ void WebView::init()
                 w->InjectMouseDown(Awesomium::kMouseButton_Middle);
         });
 
-        m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([w](io::MouseButton but)
+        m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([w,this](io::MouseButton but)
         {
+            // check if we cant get focus
+            if (CONTROLS->getFocus(this) == false)
+                return;
+
             if (but == io::MouseButton_Left)
                 w->InjectMouseUp(Awesomium::kMouseButton_Left);
             else if (but == io::MouseButton_Right)
                 w->InjectMouseUp(Awesomium::kMouseButton_Right);
             else if (but == io::MouseButton_Middle)
                 w->InjectMouseUp(Awesomium::kMouseButton_Middle);
+
+            CONTROLS->returnFocus(this);
         });
 
-        m_MouseMoveHandler = eventCallback1<void, const vec2&>([w](const vec2& pos)
+        m_MouseMoveHandler = eventCallback1<void, const vec2&>([w,this](const vec2& pos)
         {
+            // check if we cant get focus
+            if (CONTROLS->getFocus(this) == false)
+                return;
+
             w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
         });
 
-        m_MouseScrollHandler = eventCallback1<void, int>([w](int move)
+        m_MouseScrollHandler = eventCallback1<void, int>([w,this](int move)
         {
+            // check if we cant get focus
+            if (CONTROLS->getFocus(this) == false)
+                return;
+
             w->InjectMouseWheel(move * 30, 0);
+
+            CONTROLS->returnFocus(this);
         });
 
         keyboard->KeyPressed += m_KeyPressedHandler;
@@ -193,7 +225,7 @@ WebView::~WebView()
 {
     if (m_View != nullptr)
         m_View->ViewportSizeChanged -= m_ViewResizedHandler;
-    if (m_bInputEnabled)
+    if (m_InputEnabled)
     {
         io::IKeyboard* keyboard(CONTROLS->getKeyboard());
         io::IMouse* mouse(CONTROLS->getMouse());
@@ -207,7 +239,7 @@ WebView::~WebView()
 
     he_free(m_Buffer);
     m_WebView->Destroy();
-    m_pRenderTexture->release();
+    m_RenderTexture->release();
 }
 
 /* GENERAL */
@@ -221,14 +253,14 @@ void WebView::draw2D(Canvas2D* canvas)
         {
             pSurface->CopyTo(m_Buffer, pSurface->width() * 4, 4, false, true);
 
-            m_pRenderTexture->setData(
+            m_RenderTexture->setData(
                 pSurface->width(), pSurface->height(), 
                 m_Buffer, 
                 gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
         }
     }
 
-    canvas->drawImage(m_pRenderTexture, m_Position);
+    canvas->drawImage(m_RenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)
@@ -273,7 +305,7 @@ Awesomium::WebView* WebView::getAWEView() const
 
 bool WebView::inputEnabled() const
 {
-    return m_bInputEnabled;
+    return m_InputEnabled;
 }
 
 /* EXTRA */

@@ -140,6 +140,7 @@ void Scrollbar::setPosition( const vec2& pos )
 {
     m_Pos = pos;
     m_pHitregion->setPosition(vec2(m_Pos.x + m_Size.x / 2, m_Pos.y + (m_ScrollbarHeight / 2)));
+    setBarPos(m_BarPos);
 }
 
 void Scrollbar::setSize( const vec2& size )

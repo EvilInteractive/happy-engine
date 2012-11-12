@@ -5,8 +5,8 @@ var MenuBehaviour = (function()
 	var pub = {};
 	
 	// private vars
-	var menuButtons = new Array();
-	var dropdownMenus = new Array();
+	var menuButtons = [];
+	var dropdownMenus = [];
 
 	// change to add menuButtons
 	var nrButtons = 4;
@@ -89,8 +89,17 @@ var MenuBehaviour = (function()
 				}
 			}
 		});
-		
-		$('#buttonExit').on('click', HE.exit());
+
+        // disable scrolling by middle mouse
+        $(document).on('mousedown', function(e)
+        {
+            // middlemouse
+            if (e.which === 2)
+                e.preventDefault();
+        });
+
+        // disable selection by dragging
+        //$('#propertyPanel').draggable = false;
 	}
 	
 	return pub;
