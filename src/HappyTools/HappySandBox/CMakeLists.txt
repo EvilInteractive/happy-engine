@@ -15,16 +15,22 @@ link_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
 
 # include + link 3rdParty
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
+if (WIN32)
 IncludeThirdParty()
+endif()
 
 # add HappySandbox executable
 add_executable (HappySandBox ${HAPPYSANDBOX_SRCS})
 
 # link thirdparty
+if (WIN32)
 LinkThirdParty(HappySandBox)
+endif()
 
 # Copy thirdparty dll's
+if (WIN32)
 CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/bin)
+endif()
 
 # link HappyEngine
 target_link_libraries(HappySandBox HappyEngine)

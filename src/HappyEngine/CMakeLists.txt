@@ -12,7 +12,7 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
 include (${HappyEngine_SOURCE_DIR}/3thParty/CMakeLists.cmake)
 if (APPLE)
 IncludeThirdPartyOSX()
-else()
+elseif(WIN32)
 IncludeThirdParty()
 endif()
 
