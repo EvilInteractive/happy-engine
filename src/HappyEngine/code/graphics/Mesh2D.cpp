@@ -28,22 +28,24 @@ namespace he {
 namespace gfx {
 
 #pragma warning(disable:4355) // use of this in initializer list
-Mesh2D::Mesh2D() :  
+Mesh2D::Mesh2D(bool staticDraw) :  
     m_Polygon(NEW Polygon()),
     m_WorldMatrix(mat44::Identity),
     m_ContextCreatedHandler(boost::bind(&Mesh2D::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1))
+    m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1)),
+    m_StaticDraw(staticDraw)
 {
     glGenBuffers(1, &m_VBOID);
     glGenBuffers(1, &m_IBOID);
 
-    he_memset(m_VAOID, 0xffff, sizeof(VaoID) * MAX_VERTEX_ARRAY_OBJECTS);
+    he_memset(m_VAOID, 0xffffffff, sizeof(VaoID) * MAX_VERTEX_ARRAY_OBJECTS);
 
     const he::PrimitiveList<GLContext*>& contexts(GRAPHICS->getContexts());
     contexts.forEach([&](GLContext* context)
     {
         initVao(context);
     });
+
     GRAPHICS->ContextCreated += m_ContextCreatedHandler;
     GRAPHICS->ContextRemoved += m_ContextRemovedHandler;
 }
@@ -123,12 +125,14 @@ void Mesh2D::createBuffer(bool outline)
     }
 
     GL::heBindVao(getBufferID());
+
+    GLenum drawType(m_StaticDraw == true ? GL_STATIC_DRAW : GL_STREAM_DRAW);
     
     glBindBuffer(GL_ARRAY_BUFFER, m_VBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_Polygon->getVertexCount() * sizeof(vec2), &m_Polygon->getVertices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_Polygon->getVertexCount() * sizeof(vec2), &m_Polygon->getVertices()[0], drawType);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Polygon->getIndexCount() * sizeof(uint32), &m_Polygon->getIndices()[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Polygon->getIndexCount() * sizeof(uint32), &m_Polygon->getIndices()[0], drawType);
 }
 
 /* GETTERS */
@@ -157,6 +161,5 @@ void Mesh2D::setWorldMatrix(const mat44& mat)
 {
     m_WorldMatrix = mat;
 }
-
 
 } } //end namespace

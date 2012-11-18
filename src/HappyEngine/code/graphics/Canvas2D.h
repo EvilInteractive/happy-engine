@@ -131,8 +131,6 @@ private:
     void resize(const vec2& newSize);
 
     void applyBlend();
-    
-    //void drawLineAA(const vec2& pos1, const vec2& pos2);
 
     /* DATAMEMBERS */
     he::PrimitiveList<mat33> m_TransformationStack;
