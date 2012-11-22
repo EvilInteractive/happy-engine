@@ -15,21 +15,306 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Sebastiaan Sprengers
+//Created: // 18/11/2012
+
 #include "HappyPCH.h" 
 
-#include "X.h"
-
+#include "Canvas2DRendererCairo.h"
+#include "Canvas2DBuffer.h"
+#include "Texture2D.h"
+#include "cairo\cairo.h"
+#include "MathConstants.h"
 namespace he {
+namespace gfx {
 
-X::X()
+/* CONSTRUCTOR - DESTRUCTOR */
+Canvas2DRendererCairo::Canvas2DRendererCairo(Canvas2DBuffer* canvasBuffer) :    m_CanvasBuffer(canvasBuffer),
+                                                                                m_RenderTexture(nullptr),
+                                                                                m_Cairo(nullptr),
+                                                                                m_CairoSurface(nullptr),
+                                                                                m_HandleDrawCalls(true),
+																				m_SurfaceDirty(false)
+{
+	int w = static_cast<int>(canvasBuffer->size.x);
+	int h = static_cast<int>(canvasBuffer->size.y);
+
+	m_RenderBuffer = static_cast<unsigned char*>(he_calloc(4 * w * h, sizeof(unsigned char)));
+
+	m_CairoSurface =
+		cairo_image_surface_create_for_data(m_RenderBuffer, CAIRO_FORMAT_ARGB32, w, h, 4 * w);
+
+    m_Cairo = cairo_create(m_CairoSurface);
+    cairo_set_line_cap(m_Cairo, CAIRO_LINE_CAP_ROUND);
+
+    m_DrawThread = boost::thread(&Canvas2DRendererCairo::handleDrawCalls, this);
+
+	ObjectHandle handle(ResourceFactory<Texture2D>::getInstance()->create());
+	m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+	m_RenderTexture->init(TextureWrapType_Clamp, TextureFilterType_Nearest, TextureFormat_RGBA8, false);
+
+    m_Size = vec2(canvasBuffer->size.x, canvasBuffer->size.y);
+}
+
+Canvas2DRendererCairo::~Canvas2DRendererCairo()
+{
+    // stop thread
+    m_HandleDrawCalls = false;
+    m_DrawThread.join();
+
+	he_free(m_RenderBuffer);
+    cairo_destroy(m_Cairo);
+    cairo_surface_destroy(m_CairoSurface);
+
+    m_RenderTexture->release();
+}
+
+/* GENERAL */
+void Canvas2DRendererCairo::blit()
+{
+    boost::mutex::scoped_lock lock(m_CairoLock);
+
+	m_RenderTexture->setData(
+		static_cast<uint32>(m_CanvasBuffer->size.x),
+		static_cast<uint32>(m_CanvasBuffer->size.y),
+		m_RenderBuffer,
+		TextureBufferLayout_BGRA,
+		TextureBufferType_Byte);
+
+	m_SurfaceDirty = false;
+}
+
+/* SETTERS */
+void Canvas2DRendererCairo::setLineWidth(float width)
+{
+	HE_ASSERT(width > 0, "Linewidth can't be smaller or equal to zero!");
+
+	boost::mutex::scoped_lock lock(m_QueueLock);
+
+	// queue drawcall
+	m_DrawCalls.push(boost::bind(
+		&cairo_set_line_width,
+		m_Cairo,
+		static_cast<double>(width)));
+}
+void Canvas2DRendererCairo::setColor(const Color& col)
+{
+	boost::mutex::scoped_lock lock(m_QueueLock);
+
+	if (col.a() == 1.0f)
+	{
+		// queue drawcall
+		m_DrawCalls.push(boost::bind(
+			&cairo_set_source_rgb,
+			m_Cairo,
+			static_cast<double>(col.r()),
+			static_cast<double>(col.g()),
+			static_cast<double>(col.b())));
+	}
+	else
+	{
+		// queue drawcall
+		m_DrawCalls.push(boost::bind(
+			&cairo_set_source_rgba,
+			m_Cairo,
+			static_cast<double>(col.r()),
+			static_cast<double>(col.g()),
+			static_cast<double>(col.b()),
+			static_cast<double>(col.a())));
+	}
+}
+
+/* GETTERS */
+void Canvas2DRendererCairo::clear()
+{
+	boost::mutex::scoped_lock lock(m_QueueLock);
+
+    m_DrawCalls.push(boost::bind(
+		&cairo_save,
+		m_Cairo));
+
+    m_DrawCalls.push(boost::bind(
+		&cairo_set_operator,
+		m_Cairo,
+        CAIRO_OPERATOR_CLEAR));
+
+	m_DrawCalls.push(boost::bind(
+		&cairo_paint,
+		m_Cairo));
+
+    m_DrawCalls.push(boost::bind(
+        &cairo_restore,
+		m_Cairo));
+
+	m_SurfaceDirty = true;
+}
+
+const Texture2D* Canvas2DRendererCairo::getRenderTexture(bool blitIfDirty)
+{
+	if (m_SurfaceDirty == true &&
+		blitIfDirty == true)
+	{
+		blit();
+	}
+
+	return m_RenderTexture;
+}
+
+bool Canvas2DRendererCairo::isRendering()
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    if (m_DrawCalls.size() > 0)
+        return true;
+    else
+        return false;
+}
+
+/* DRAW */
+void Canvas2DRendererCairo::moveTo(const vec2& pos)
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+        &cairo_move_to,
+        m_Cairo,
+        static_cast<double>(pos.x),
+        static_cast<double>(normalizeY(pos.y))));
+}
+void Canvas2DRendererCairo::lineTo(const vec2& pos)
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+        &cairo_line_to,
+        m_Cairo,
+        static_cast<double>(pos.x),
+        static_cast<double>(normalizeY(pos.y))));
+}
+
+void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
+{
+	HE_ASSERT(size.x > 0 && size.y > 0, "Size of rectangle can't be negative!");
+
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+        &cairo_rectangle,
+        m_Cairo,
+        static_cast<double>(pos.x),
+        static_cast<double>(normalizeY(pos.y) - size.y),
+        static_cast<double>(size.x),
+        static_cast<double>(size.y)));
+}
+void Canvas2DRendererCairo::circle(const vec2& pos, float radius)
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+		&cairo_arc,
+        m_Cairo,
+        static_cast<double>(pos.x),
+        static_cast<double>(normalizeY(pos.y)),
+        static_cast<double>(radius),
+        0.0,
+        static_cast<double>(twoPi)));
+
+	m_SurfaceDirty = true;
+}
+void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angle1, float angle2)
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+		&cairo_arc,
+        m_Cairo,
+        static_cast<double>(pos.x),
+        static_cast<double>(normalizeY(pos.y)),
+        static_cast<double>(radius),
+        static_cast<double>(angle1),
+        static_cast<double>(angle2)));
+
+	m_SurfaceDirty = true;
+}
+void Canvas2DRendererCairo::curveTo(const vec2& start, const vec2& middle, const vec2& end)
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+		&cairo_curve_to,
+        m_Cairo,
+        static_cast<double>(start.x),
+        static_cast<double>(normalizeY(start.y)),
+        static_cast<double>(middle.x),
+        static_cast<double>(normalizeY(middle.y)),
+        static_cast<double>(end.x),
+        static_cast<double>(normalizeY(end.y))));
+
+	m_SurfaceDirty = true;
+}
+    
+void Canvas2DRendererCairo::stroke()
+{
+	boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+		&cairo_stroke,
+        m_Cairo));
+
+	m_SurfaceDirty = true;
+}
+void Canvas2DRendererCairo::fill()
+{
+	boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+		&cairo_fill,
+        m_Cairo));
+
+	m_SurfaceDirty = true;
+}
+void Canvas2DRendererCairo::clip()
 {
 }
 
-
-X::~X()
+/* INTERNAL */
+float Canvas2DRendererCairo::normalizeY(float y)
 {
+    return (m_Size.y - y);
+}
+void Canvas2DRendererCairo::handleDrawCalls()
+{
+    boost::posix_time::milliseconds waitTime(boost::posix_time::milliseconds(1));
+    bool empty(true);
+
+    while (m_HandleDrawCalls)
+    {
+        m_QueueLock.lock();
+            empty = m_DrawCalls.empty();
+        m_QueueLock.unlock();
+
+        if (!empty)
+        {
+            m_CairoLock.lock();
+                // exec drawcall
+                m_DrawCalls.front()();
+            m_CairoLock.unlock();
+
+            m_QueueLock.lock();
+                m_DrawCalls.pop();
+            m_QueueLock.unlock();
+        }
+        else
+            boost::this_thread::sleep(waitTime);
+    }
 }
 
-} //end namespace
+}} //end namespace

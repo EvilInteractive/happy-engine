@@ -40,6 +40,7 @@
 #include "Texture2D.h"
 #include "View.h"
 #include "IDrawable2D.h"
+#include "Canvas2Dnew.h"
 
 namespace he {
 namespace gfx {
@@ -49,7 +50,8 @@ Renderer2D::Renderer2D() :
                             m_TextureQuad(nullptr),
                             m_View(nullptr),
                             m_RenderTarget(nullptr),
-                            m_DefaultCanvas(nullptr)
+                            m_DefaultCanvas(nullptr),
+                            m_CanvasNew(nullptr)
 {
 }
 
@@ -59,6 +61,8 @@ Renderer2D::~Renderer2D()
 
     delete m_TextureEffect;
     m_TextureQuad->release();
+
+    delete m_CanvasNew;
 }
 
 /* GENERAL */
@@ -117,6 +121,7 @@ void Renderer2D::render()
 
     m_RenderTarget->prepareForRendering();
     m_DefaultCanvas->draw();
+    m_CanvasNew->draw();
 }
 
 void Renderer2D::init( View* view, const RenderTarget* target )
@@ -160,6 +165,8 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_TextureQuad->setLoaded();
 
     m_DefaultCanvas = createCanvasRelative(RectF(0,0,1,1));
+    m_CanvasNew = NEW Canvas2Dnew(this, RectF(0,0,1,1));
+    m_CanvasNew->init();
 }
 
 void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
@@ -232,6 +239,11 @@ void Renderer2D::detachFromRender(IDrawable2D* drawable)
     {
         m_Drawables.remove(drawable);
     }
+}
+
+Canvas2Dnew* Renderer2D::getNewCanvas() const
+{
+    return m_CanvasNew;
 }
 
 } } //end namespace

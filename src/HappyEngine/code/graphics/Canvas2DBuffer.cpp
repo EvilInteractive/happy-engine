@@ -30,7 +30,8 @@ namespace gfx {
 Canvas2DBuffer::Canvas2DBuffer() :  frameBufferId(UINT32_MAX),
                                     depthRenderBufferId(UINT32_MAX),
                                     glContext(nullptr),
-                                    renderTextureHandle(ObjectHandle::unassigned)
+                                    renderTextureHandle(ObjectHandle::unassigned),
+                                    size(vec2(0,0))
 
 {
 }
@@ -56,6 +57,8 @@ Canvas2DBuffer::~Canvas2DBuffer()
 /* GENERAL */
 void Canvas2DBuffer::init(GLContext* context, const vec2& size)
 {
+    this->size = size;
+
     glContext = context;
     GRAPHICS->setActiveContext(glContext);
 
@@ -83,7 +86,7 @@ void Canvas2DBuffer::init(GLContext* context, const vec2& size)
     GLenum status(glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        HE_ERROR("Failed to init Canvas2DBuffer!");
+        HE_ASSERT(false, "Failed to init Canvas2DBuffer!");
         ResourceFactory<Texture2D>::getInstance()->release(renderTextureHandle);
         glContext = nullptr;
         frameBufferId = UINT32_MAX;

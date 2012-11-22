@@ -27,7 +27,10 @@
 
 namespace he {
 namespace gfx {
-    class Canvas2DBuffer;
+    struct Canvas2DBuffer;
+	class Renderer2D;
+    class Canvas2DRendererCairo;
+    class Texture2D;
 
 class Canvas2Dnew
 {
@@ -41,6 +44,7 @@ public:
     virtual ~Canvas2Dnew();
 
     /* GENERAL */
+	void init();
     // store render buffer to texture
     // this disables drawing to the canvas
     // and uploads buffer to gpu
@@ -48,42 +52,72 @@ public:
 
     /* GETTERS */
     // return render buffer data
-    Canvas2DBuffer* getCanvas2DBuffer();
+    Canvas2DBuffer* getCanvas2DBuffer() const;
 
     // return size of canvas in pixels
     const vec2& getPosition() const;
     const vec2& getSize() const;
 
+    uint16 getCanvasDepth() const;
+
     /* SETTERS */
     // set depth for the canvas in relation to the other canvas
-    void setCanvasDepth(int16 depth);
+    void setCanvasDepth(uint16 depth);
     void setDefaultCanvasDepth();
 
     // sets position in pixels on screen
     void setPosition(const vec2& position);
     void setSize(const vec2& size);
 
-    /* DRAWING */
+    // set colors
+    void setFillColor(const Color& fillColor);
+    void setStrokeColor(const Color& strokeColor);
+
+    // set linewidth
+    void setLineWidth(float width);
+
+    /* DRAW */
     // clear buffer to rgba(0,0,0,0)
     void clear();
     // draw to screen
     void draw();
+	// start the next path from this point
+	void moveTo(const vec2& pos);
+	// create a line in the path to this point
+	void lineTo(const vec2& pos);
+	// create a rectangle in the path
+	void rectangle(const vec2& pos, const vec2& size);
+	
+	// stroke the current path
+	void stroke();
+	// fill the current path
+	void fill();
 
 private:
 
     /* INTERNAL */
-    // creation
-    void init();
     // deletion
     void cleanup();
-
     // handler for resize
     void viewResized();
     // resize
     void resize();
 
     /* MEMBERS */
+	Renderer2D* m_Renderer2D;
     Canvas2DBuffer* m_BufferData;
+	Texture2D* m_RenderTexture;
+    Canvas2DRendererCairo* m_RendererCairo;
+
+	uint16 m_CanvasDepth;
+
+	vec2 m_Position;
+	vec2 m_Size;
+
+    Color m_FillColor;
+    Color m_StrokeColor;
+
+    float m_LineWidth;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2Dnew(const Canvas2Dnew&);

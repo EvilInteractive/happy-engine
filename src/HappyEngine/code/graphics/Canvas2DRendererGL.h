@@ -17,7 +17,7 @@
 //
 //Author:  
 //Created: //
-
+/*
 #ifndef _HE_X_H_
 #define _HE_X_H_
 #pragma once
@@ -40,3 +40,4 @@ private:
 } //end namespace
 
 #endif
+*/

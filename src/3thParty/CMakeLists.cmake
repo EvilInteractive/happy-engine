@@ -107,6 +107,7 @@ target_link_libraries(${target} debug glew32mxsd)
 target_link_libraries(${target} optimized glew32mxs)
 target_link_libraries(${target} libsndfile-1)
 target_link_libraries(${target} OpenAL32)
+target_link_libraries(${target} cairo)
 
 if (${BITNESS} EQUAL 32)
     set (arch x86)

@@ -45,6 +45,7 @@ public:
     uint32 frameBufferId;
     uint32 depthRenderBufferId;
     GLContext* glContext;
+    vec2 size;
 };
 
 }} //end namespace

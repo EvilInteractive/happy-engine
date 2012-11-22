@@ -15,28 +15,92 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Sebastiaan Sprengers
+//Created: 18/11/2012
 
-#ifndef _HE_X_H_
-#define _HE_X_H_
+#ifndef _HE_CANVAS2DRENDERERCAIRO_H_
+#define _HE_CANVAS2DRENDERERCAIRO_H_
 #pragma once
 
-namespace he {
+#include <queue>
+#include "boost\function.hpp"
+#include "boost\thread.hpp"
 
-class X
+/* FORWARD DECLARATIONS */
+struct _cairo_surface;
+struct _cairo;
+
+namespace he {
+namespace gfx {
+    struct Canvas2DBuffer;
+    class Texture2D;
+
+class Canvas2DRendererCairo
 {
 public:
-    X();
-    virtual ~X();
+
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Canvas2DRendererCairo(Canvas2DBuffer* canvasBuffer);
+    virtual ~Canvas2DRendererCairo();
+
+    /* GENERAL */
+    void blit();
+
+    /* SETTERS */
+    void setLineWidth(float width);
+    void setColor(const Color& col);
+	void setDirty(bool dirty = true);
+
+    /* GETTERS */
+	const Texture2D* getRenderTexture(bool blitIfDirty = true);
+	bool isSurfaceDirty() const;
+    bool isRendering();
+
+    /* DRAW */
+	void clear();
+
+    void moveTo(const vec2& pos);
+    void lineTo(const vec2& pos);
+
+    void rectangle(const vec2& pos, const vec2& size);
+    void circle(const vec2& pos, float radius);
+    void arc(const vec2& pos, float radius, float angle1, float angle2);
+    void curveTo(const vec2& start, const vec2& middle, const vec2& end);
+    
+    void stroke();
+    void fill();
+    void clip();
 
 private:
 
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
+    /* INTERNAL */
+    float normalizeY(float y);
+    void handleDrawCalls();
+
+    /* MEMBERS */
+    Canvas2DBuffer* m_CanvasBuffer;
+
+    _cairo_surface* m_CairoSurface;
+    _cairo* m_Cairo;
+
+	unsigned char* m_RenderBuffer;
+    Texture2D* m_RenderTexture;
+
+    std::queue<boost::function0<void> > m_DrawCalls;
+    boost::thread m_DrawThread;
+    boost::mutex m_CairoLock;
+    boost::mutex m_QueueLock;
+    bool m_HandleDrawCalls;
+
+	bool m_SurfaceDirty;
+
+    vec2 m_Size;
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    Canvas2DRendererCairo(const Canvas2DRendererCairo&);
+    Canvas2DRendererCairo& operator=(const Canvas2DRendererCairo&);
 };
 
-} //end namespace
+}} //end namespace
 
 #endif
