@@ -25,6 +25,7 @@
 #include <queue>
 #include "boost\function.hpp"
 #include "boost\thread.hpp"
+#include "List.h"
 
 /* FORWARD DECLARATIONS */
 struct _cairo_surface;
@@ -66,7 +67,9 @@ public:
     void circle(const vec2& pos, float radius);
     void arc(const vec2& pos, float radius, float angle1, float angle2);
     void curveTo(const vec2& start, const vec2& middle, const vec2& end);
-    
+    void newPath();
+    void closePath();
+
     void stroke();
     void fill();
     void clip();
@@ -74,7 +77,7 @@ public:
 private:
 
     /* INTERNAL */
-    float normalizeY(float y);
+    float normalizeAngle(float a);
     void handleDrawCalls();
 
     /* MEMBERS */
@@ -83,6 +86,7 @@ private:
     _cairo_surface* m_CairoSurface;
     _cairo* m_Cairo;
 
+    //List<unsigned char*> m_RenderBuffers;
 	unsigned char* m_RenderBuffer;
     Texture2D* m_RenderTexture;
 

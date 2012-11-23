@@ -25,6 +25,8 @@
 #include "Texture2D.h"
 #include "cairo\cairo.h"
 #include "MathConstants.h"
+#include "MathFunctions.h"
+
 namespace he {
 namespace gfx {
 
@@ -45,7 +47,7 @@ Canvas2DRendererCairo::Canvas2DRendererCairo(Canvas2DBuffer* canvasBuffer) :    
 		cairo_image_surface_create_for_data(m_RenderBuffer, CAIRO_FORMAT_ARGB32, w, h, 4 * w);
 
     m_Cairo = cairo_create(m_CairoSurface);
-    cairo_set_line_cap(m_Cairo, CAIRO_LINE_CAP_ROUND);
+    cairo_set_line_join(m_Cairo, CAIRO_LINE_JOIN_ROUND);
 
     m_DrawThread = boost::thread(&Canvas2DRendererCairo::handleDrawCalls, this);
 
@@ -180,7 +182,7 @@ void Canvas2DRendererCairo::moveTo(const vec2& pos)
         &cairo_move_to,
         m_Cairo,
         static_cast<double>(pos.x),
-        static_cast<double>(normalizeY(pos.y))));
+        static_cast<double>(pos.y)));
 }
 void Canvas2DRendererCairo::lineTo(const vec2& pos)
 {
@@ -191,7 +193,7 @@ void Canvas2DRendererCairo::lineTo(const vec2& pos)
         &cairo_line_to,
         m_Cairo,
         static_cast<double>(pos.x),
-        static_cast<double>(normalizeY(pos.y))));
+        static_cast<double>(pos.y)));
 }
 
 void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
@@ -205,7 +207,7 @@ void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
         &cairo_rectangle,
         m_Cairo,
         static_cast<double>(pos.x),
-        static_cast<double>(normalizeY(pos.y) - size.y),
+        static_cast<double>(pos.y),
         static_cast<double>(size.x),
         static_cast<double>(size.y)));
 }
@@ -218,12 +220,10 @@ void Canvas2DRendererCairo::circle(const vec2& pos, float radius)
 		&cairo_arc,
         m_Cairo,
         static_cast<double>(pos.x),
-        static_cast<double>(normalizeY(pos.y)),
+        static_cast<double>(pos.y),
         static_cast<double>(radius),
         0.0,
         static_cast<double>(twoPi)));
-
-	m_SurfaceDirty = true;
 }
 void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angle1, float angle2)
 {
@@ -234,12 +234,10 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angle1, flo
 		&cairo_arc,
         m_Cairo,
         static_cast<double>(pos.x),
-        static_cast<double>(normalizeY(pos.y)),
+        static_cast<double>(pos.y),
         static_cast<double>(radius),
-        static_cast<double>(angle1),
-        static_cast<double>(angle2)));
-
-	m_SurfaceDirty = true;
+        static_cast<double>(normalizeAngle(angle1)),
+        static_cast<double>(normalizeAngle(angle2))));
 }
 void Canvas2DRendererCairo::curveTo(const vec2& start, const vec2& middle, const vec2& end)
 {
@@ -250,13 +248,29 @@ void Canvas2DRendererCairo::curveTo(const vec2& start, const vec2& middle, const
 		&cairo_curve_to,
         m_Cairo,
         static_cast<double>(start.x),
-        static_cast<double>(normalizeY(start.y)),
+        static_cast<double>(start.y),
         static_cast<double>(middle.x),
-        static_cast<double>(normalizeY(middle.y)),
+        static_cast<double>(middle.y),
         static_cast<double>(end.x),
-        static_cast<double>(normalizeY(end.y))));
+        static_cast<double>(end.y)));
+}
+void Canvas2DRendererCairo::newPath()
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
 
-	m_SurfaceDirty = true;
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+        &cairo_new_path,
+        m_Cairo));
+}
+void Canvas2DRendererCairo::closePath()
+{
+    boost::mutex::scoped_lock lock(m_QueueLock);
+
+    // queue drawcall
+    m_DrawCalls.push(boost::bind(
+        &cairo_close_path,
+        m_Cairo));
 }
     
 void Canvas2DRendererCairo::stroke()
@@ -265,7 +279,7 @@ void Canvas2DRendererCairo::stroke()
 
     // queue drawcall
     m_DrawCalls.push(boost::bind(
-		&cairo_stroke,
+		&cairo_stroke_preserve,
         m_Cairo));
 
 	m_SurfaceDirty = true;
@@ -276,7 +290,7 @@ void Canvas2DRendererCairo::fill()
 
     // queue drawcall
     m_DrawCalls.push(boost::bind(
-		&cairo_fill,
+		&cairo_fill_preserve,
         m_Cairo));
 
 	m_SurfaceDirty = true;
@@ -286,9 +300,9 @@ void Canvas2DRendererCairo::clip()
 }
 
 /* INTERNAL */
-float Canvas2DRendererCairo::normalizeY(float y)
+float Canvas2DRendererCairo::normalizeAngle(float a)
 {
-    return (m_Size.y - y);
+    return (toRadians(a) * -1.0f);
 }
 void Canvas2DRendererCairo::handleDrawCalls()
 {
@@ -304,8 +318,10 @@ void Canvas2DRendererCairo::handleDrawCalls()
         if (!empty)
         {
             m_CairoLock.lock();
-                // exec drawcall
-                m_DrawCalls.front()();
+                m_QueueLock.lock();
+                    // exec drawcall
+                    m_DrawCalls.front()();
+                m_QueueLock.unlock();
             m_CairoLock.unlock();
 
             m_QueueLock.lock();

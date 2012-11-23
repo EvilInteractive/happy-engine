@@ -430,6 +430,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
 
+    GL::heBindFbo(m_BufferData->fbufferID);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
 
     bool hasBounds(txt.hasBounds());

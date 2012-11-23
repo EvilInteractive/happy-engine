@@ -15,29 +15,80 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
-/*
-#ifndef _HE_X_H_
-#define _HE_X_H_
+//Author:  Sebastiaan Sprengers
+//Created: 23/11/2012
+
+#ifndef _HE_CANVAS2DRENDERERGL_H_
+#define _HE_CANVAS2DRENDERERGL_H_
 #pragma once
 
 namespace he {
+namespace gfx {
+    struct Canvas2DBuffer;
+    class Texture2D;
+    class View;
+    class ModelMesh;
+    class Simple2DEffect;
+    class Simple2DTextureEffect;
+    class Simple2DFontEffect;
 
-class X
+class Canvas2DRendererGL
 {
 public:
-    X();
-    virtual ~X();
+
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* glContext);
+    virtual ~Canvas2DRendererGL();
+
+    /* GENERAL */
+    void init();
+
+    /* GETTERS */
+    const Texture2D* getRenderTexture() const;
+    bool isSurfaceDirty() const;
+
+    /* SETTERS */
+    void setFillColor(const Color& col);
+    void setDirty(bool dirty = true);
+
+    /* DRAW */
+    void clear();
+    void fillText(const gui::Text& text, const vec2& pos);
+    void drawImage( const Texture2D* tex2D, const vec2& pos,
+                    const vec2& newDimensions = vec2(0.0f,0.0f),
+                    const RectI regionToDraw = RectI(0,0,0,0));
 
 private:
 
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
+    /* STATIC */
+    static Simple2DEffect* s_ColorEffect;
+    static Simple2DTextureEffect* s_TextureEffect;
+    static Simple2DFontEffect* s_FontEffect;
+
+    static ObjectHandle s_TextureQuadHandle;
+
+    static uint16 s_Renderers;
+
+    /* MEMBERS */
+    vec2 m_Size;
+    mat44 m_OrthographicMatrix;
+
+    Color m_FillColor;
+
+    bool m_SurfaceDirty;
+
+    Canvas2DBuffer* m_CanvasBuffer;
+    Canvas2DBuffer* m_RenderBuffer;
+
+    ModelMesh* m_TextureQuad;
+
+    GLContext* m_Context;
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    Canvas2DRendererGL(const Canvas2DRendererGL&);
+    Canvas2DRendererGL& operator=(const Canvas2DRendererGL&);
 };
 
-} //end namespace
+} } //end namespace
 
 #endif
-*/

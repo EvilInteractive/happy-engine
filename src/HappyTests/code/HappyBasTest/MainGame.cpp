@@ -58,6 +58,8 @@
 #include "PostProcesser.h"
 #include "WebView.h"
 #include "WebListener.h"
+#include "Canvas2Dnew.h"
+#include "MathFunctions.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -209,6 +211,7 @@ void MainGame::load()
     
     m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
+    m_FpsGraph->setPos(he::vec2(15,140));
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
@@ -324,6 +327,23 @@ void MainGame::load()
     });
 
     m_ToneMapGui->OnUrlLoaded += onGuiLoaded;
+
+    he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
+    
+    he::vec2 pos(500,300);
+    he::vec2 size(200,200);
+    float radius(20.0f);
+
+    cvs->clear();
+
+    cvs->roundedRectangle(pos, size, radius);
+
+    cvs->setFillColor(he::Color(1.0f,0.0f,0.3f));
+    cvs->fill();
+
+    cvs->setLineWidth(20.0f);
+    cvs->setStrokeColor(he::Color(1.f,1.f,1.f,0.8f));
+    cvs->stroke();
 }
 
 void MainGame::tick( float dTime )
@@ -392,6 +412,29 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     m_ToneMapGui->draw2D(canvas);
 
     canvas->fillText(m_DebugText, he::vec2(12, 12));
+    
+    
+    he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
+    
+    he::vec2 pos(500,300);
+    he::vec2 size(200,200);
+    float radius(20.0f);
+
+    cvs->clear();
+
+    cvs->roundedRectangle(pos, size, radius);
+
+    cvs->setFillColor(he::Color(1.0f,0.0f,0.3f));
+    cvs->fill();
+
+    cvs->setLineWidth(20.0f);
+    cvs->setStrokeColor(he::Color(1.f,1.f,1.f,0.8f));
+    cvs->stroke();
+
+    cvs->setFillColor(he::Color(1.0f,1.0f,1.0f));
+    cvs->fillText(m_DebugText, he::vec2(500,500));
+
+    cvs->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(600, 500), he::vec2(128, 128));
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)

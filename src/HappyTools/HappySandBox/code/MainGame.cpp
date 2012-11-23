@@ -135,6 +135,8 @@ void MainGame::load()
     /* GUI */
     m_FPSGraph = NEW tools::FPSGraph();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
+    m_FPSGraph->setPos(he::vec2(50,50));
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());
@@ -144,8 +146,7 @@ void MainGame::load()
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
-    m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
-
+    
     // test
     he::eventCallback1<void, const Awesomium::JSArray&> callbackTest([](const Awesomium::JSArray& /*args*/){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
     m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);

@@ -28,7 +28,7 @@ namespace he {
 namespace gfx {
 
 Canvas2DBuffer::Canvas2DBuffer() :  frameBufferId(UINT32_MAX),
-                                    depthRenderBufferId(UINT32_MAX),
+                                    //depthRenderBufferId(UINT32_MAX),
                                     glContext(nullptr),
                                     renderTextureHandle(ObjectHandle::unassigned),
                                     size(vec2(0,0))
@@ -44,14 +44,14 @@ Canvas2DBuffer::~Canvas2DBuffer()
 
     ResourceFactory<Texture2D>::getInstance()->release(renderTextureHandle);
 
-    if (depthRenderBufferId != UINT32_MAX)
-        glDeleteRenderbuffers(1, &depthRenderBufferId);
-    if (depthRenderBufferId != UINT32_MAX)
+    /*if (depthRenderBufferId != UINT32_MAX)
+        glDeleteRenderbuffers(1, &depthRenderBufferId);*/
+    if (frameBufferId != UINT32_MAX)
         glDeleteFramebuffers(1, &frameBufferId);
 
     glContext = nullptr;
     frameBufferId = UINT32_MAX;
-    depthRenderBufferId = UINT32_MAX;
+    //depthRenderBufferId = UINT32_MAX;
 }
 
 /* GENERAL */
@@ -78,10 +78,10 @@ void Canvas2DBuffer::init(GLContext* context, const vec2& size)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->getID(), 0);
 
     // depth
-    glGenRenderbuffers(1, &depthRenderBufferId);
+    /*glGenRenderbuffers(1, &depthRenderBufferId);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBufferId);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBufferId);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBufferId);*/
 
     GLenum status(glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -90,8 +90,20 @@ void Canvas2DBuffer::init(GLContext* context, const vec2& size)
         ResourceFactory<Texture2D>::getInstance()->release(renderTextureHandle);
         glContext = nullptr;
         frameBufferId = UINT32_MAX;
-        depthRenderBufferId = UINT32_MAX;
+        //depthRenderBufferId = UINT32_MAX;
     }
+}
+
+void Canvas2DBuffer::clear()
+{
+    HE_ASSERT(glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+
+    GL::heBindFbo(frameBufferId);
+    GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, buffers);
+    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+    GL::heSetDepthWrite(false);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Canvas2DBuffer::resize(const vec2& size)
@@ -101,19 +113,19 @@ void Canvas2DBuffer::resize(const vec2& size)
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(renderTextureHandle));
     texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBufferId);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
+    //glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBufferId);
+    //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
 }
 
 void Canvas2DBuffer::store()
 {
     GRAPHICS->setActiveContext(glContext);
 
-    glDeleteRenderbuffers(1, &depthRenderBufferId);
+    //glDeleteRenderbuffers(1, &depthRenderBufferId);
     glDeleteFramebuffers(1, &frameBufferId);
 
     frameBufferId = UINT32_MAX;
-    depthRenderBufferId = UINT32_MAX;
+    //depthRenderBufferId = UINT32_MAX;
 }
 
 }} //end namespace

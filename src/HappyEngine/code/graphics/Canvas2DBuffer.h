@@ -37,13 +37,14 @@ public:
 
     /* GENERAL */
     void init(GLContext* context, const vec2& size);
+    void clear();
     void resize(const vec2& size);
     void store();
 
     /* DATA */
     ObjectHandle renderTextureHandle;
     uint32 frameBufferId;
-    uint32 depthRenderBufferId;
+    //uint32 depthRenderBufferId;
     GLContext* glContext;
     vec2 size;
 };

@@ -30,6 +30,7 @@ namespace gfx {
     struct Canvas2DBuffer;
 	class Renderer2D;
     class Canvas2DRendererCairo;
+    class Canvas2DRendererGL;
     class Texture2D;
 
 class Canvas2Dnew
@@ -87,11 +88,30 @@ public:
 	void lineTo(const vec2& pos);
 	// create a rectangle in the path
 	void rectangle(const vec2& pos, const vec2& size);
+    // create a rounded rectangle
+    void roundedRectangle(const vec2& pos, const vec2& size, float radius);
+    // create a circle
+    void circle(const vec2& pos, float radius);
+    // create an arc shape
+    void arc(const vec2& pos, float radius, float angle1, float angle2);
+    // create a curve
+    void curveTo(const vec2& start, const vec2& middle, const vec2& end);
+    // creates a new path
+    void newPath();
+    // closes current path
+    void closePath();
 	
 	// stroke the current path
 	void stroke();
 	// fill the current path
 	void fill();
+
+    // draw text
+    void fillText(const gui::Text& text, const vec2& pos);
+    // draw image
+    void drawImage(	const Texture2D* tex2D, const vec2& pos,
+                    const vec2& newDimensions = vec2(0.0f,0.0f),
+                    const RectI& regionToDraw = RectI(0,0,0,0));
 
 private:
 
@@ -107,7 +127,9 @@ private:
 	Renderer2D* m_Renderer2D;
     Canvas2DBuffer* m_BufferData;
 	Texture2D* m_RenderTexture;
+
     Canvas2DRendererCairo* m_RendererCairo;
+    Canvas2DRendererGL* m_RendererGL;
 
 	uint16 m_CanvasDepth;
 
