@@ -154,7 +154,7 @@ void Console::processCommand(const std::string& command)
 
         if (m_ValueContainer.find(keyWord) != m_ValueContainer.end())
         {
-            std::string values(command.substr(command.find('=') + 1, command.size() - 1));
+            std::string values(s.substr(s.find('=') + 1, s.size() - 1));
 
             std::string type(m_ValueContainer[keyWord].type().name());
             type = type.substr(0, type.size() - 2);

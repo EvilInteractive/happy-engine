@@ -173,6 +173,8 @@ void WebView::init()
                 w->InjectMouseDown(Awesomium::kMouseButton_Right);
             else if (but == io::MouseButton_Middle)
                 w->InjectMouseDown(Awesomium::kMouseButton_Middle);
+
+            CONTROLS->returnFocus(this);
         });
 
         m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([w,this](io::MouseButton but)
@@ -198,6 +200,8 @@ void WebView::init()
                 return;
 
             w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
+
+            CONTROLS->returnFocus(this);
         });
 
         m_MouseScrollHandler = eventCallback1<void, int>([w,this](int move)
