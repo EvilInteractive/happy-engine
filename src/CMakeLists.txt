@@ -28,6 +28,12 @@ else()
     set(PLATFORM "linux")
 endif()
 
+# Compiler flags
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
+    set(CMAKE_CXX_FLAGS "-std=c++0x")  ## Use new features
+endif()
+
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     SET(BITNESS "64")
 else()
