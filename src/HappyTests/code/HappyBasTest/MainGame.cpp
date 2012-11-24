@@ -321,8 +321,39 @@ void MainGame::load()
     he::eventCallback0<void> onGuiLoaded([&]()
     {
         Awesomium::JSArray args;
+        const he::gfx::ToneMapData& data(m_View->getPostProcessor()->getToneMapData());
         args.Push(Awesomium::JSValue(0));
-        args.Push(Awesomium::JSValue(0.55));
+        args.Push(Awesomium::JSValue(data.shoulderStrength));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(1));
+        args.Push(Awesomium::JSValue(data.linearStrength));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(2));
+        args.Push(Awesomium::JSValue(data.linearAngle));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(3));
+        args.Push(Awesomium::JSValue(data.toeStrength));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(4));
+        args.Push(Awesomium::JSValue(data.toeNumerator));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(5));
+        args.Push(Awesomium::JSValue(data.toeDenominator));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(6));
+        args.Push(Awesomium::JSValue(data.exposureBias));
         m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
     });
 

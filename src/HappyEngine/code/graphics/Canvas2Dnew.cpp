@@ -35,57 +35,57 @@ namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Canvas2Dnew::Canvas2Dnew(Renderer2D* parent,const RectF& relativeViewport) :
-	m_Renderer2D(parent),
-	m_BufferData(NEW Canvas2DBuffer()),
-	m_CanvasDepth(0x7fff),
-	m_RenderTexture(nullptr),
+    m_Renderer2D(parent),
+    m_BufferData(NEW Canvas2DBuffer()),
+    m_CanvasDepth(0x7fff),
+    m_RenderTexture(nullptr),
     m_RendererCairo(nullptr),
     m_RendererGL(nullptr),
     m_StrokeColor(Color(1.0f,1.0f,1.0f)),
     m_FillColor(Color(1.0f,1.0f,1.0f)),
     m_LineWidth(1.0f)
 {
-	m_Position = vec2(
-		(parent->getView()->getViewport().x * relativeViewport.x),
-		(parent->getView()->getViewport().y * relativeViewport.y));
+    m_Position = vec2(
+        (parent->getView()->getViewport().x * relativeViewport.x),
+        (parent->getView()->getViewport().y * relativeViewport.y));
 
-	m_Size = vec2(
-		(parent->getView()->getViewport().width * relativeViewport.width),
-		(parent->getView()->getViewport().height * relativeViewport.height));
+    m_Size = vec2(
+        (parent->getView()->getViewport().width * relativeViewport.width),
+        (parent->getView()->getViewport().height * relativeViewport.height));
 }
 
 Canvas2Dnew::Canvas2Dnew(Renderer2D* parent, const RectI& absoluteViewport) :
-	m_Renderer2D(parent),
-	m_BufferData(NEW Canvas2DBuffer()),
-	m_CanvasDepth(0x7fff),
-	m_RenderTexture(nullptr),
+    m_Renderer2D(parent),
+    m_BufferData(NEW Canvas2DBuffer()),
+    m_CanvasDepth(0x7fff),
+    m_RenderTexture(nullptr),
     m_RendererCairo(nullptr),
     m_RendererGL(nullptr),
     m_StrokeColor(Color(1.0f,1.0f,1.0f)),
     m_FillColor(Color(1.0f,1.0f,1.0f)),
     m_LineWidth(1.0f)
 {
-	m_Position = vec2(
-		static_cast<float>(absoluteViewport.x),
-		static_cast<float>(absoluteViewport.y));
+    m_Position = vec2(
+        static_cast<float>(absoluteViewport.x),
+        static_cast<float>(absoluteViewport.y));
 
-	m_Size = vec2(
-		static_cast<float>(absoluteViewport.width),
-		static_cast<float>(absoluteViewport.height));
+    m_Size = vec2(
+        static_cast<float>(absoluteViewport.width),
+        static_cast<float>(absoluteViewport.height));
 }
 
 Canvas2Dnew::~Canvas2Dnew()
 {
-	cleanup();
+    cleanup();
 }
 
 /* GENERAL */
 void Canvas2Dnew::init()
 {
-	m_BufferData->init(m_Renderer2D->getView()->getWindow()->getContext(), m_Size);
+    m_BufferData->init(m_Renderer2D->getView()->getWindow()->getContext(), m_Size);
 
     ResourceFactory<Texture2D>::getInstance()->instantiate(m_BufferData->renderTextureHandle);
-	m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle);
+    m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle);
 
     m_RendererCairo = NEW Canvas2DRendererCairo(m_BufferData);
     m_RendererGL = NEW Canvas2DRendererGL(m_BufferData, m_Renderer2D->getView()->getWindow()->getContext());

@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
     struct Canvas2DBuffer;
-	class Renderer2D;
+    class Renderer2D;
     class Canvas2DRendererCairo;
     class Canvas2DRendererGL;
     class Texture2D;
@@ -45,7 +45,7 @@ public:
     virtual ~Canvas2Dnew();
 
     /* GENERAL */
-	void init();
+    void init();
     // store render buffer to texture
     // this disables drawing to the canvas
     // and uploads buffer to gpu
@@ -82,12 +82,12 @@ public:
     void clear();
     // draw to screen
     void draw();
-	// start the next path from this point
-	void moveTo(const vec2& pos);
-	// create a line in the path to this point
-	void lineTo(const vec2& pos);
-	// create a rectangle in the path
-	void rectangle(const vec2& pos, const vec2& size);
+    // start the next path from this point
+    void moveTo(const vec2& pos);
+    // create a line in the path to this point
+    void lineTo(const vec2& pos);
+    // create a rectangle in the path
+    void rectangle(const vec2& pos, const vec2& size);
     // create a rounded rectangle
     void roundedRectangle(const vec2& pos, const vec2& size, float radius);
     // create a circle
@@ -100,11 +100,11 @@ public:
     void newPath();
     // closes current path
     void closePath();
-	
-	// stroke the current path
-	void stroke();
-	// fill the current path
-	void fill();
+    
+    // stroke the current path
+    void stroke();
+    // fill the current path
+    void fill();
 
     // draw text
     void fillText(const gui::Text& text, const vec2& pos);
@@ -124,17 +124,17 @@ private:
     void resize();
 
     /* MEMBERS */
-	Renderer2D* m_Renderer2D;
+    Renderer2D* m_Renderer2D;
     Canvas2DBuffer* m_BufferData;
-	Texture2D* m_RenderTexture;
+    Texture2D* m_RenderTexture;
 
     Canvas2DRendererCairo* m_RendererCairo;
     Canvas2DRendererGL* m_RendererGL;
 
-	uint16 m_CanvasDepth;
+    uint16 m_CanvasDepth;
 
-	vec2 m_Position;
-	vec2 m_Size;
+    vec2 m_Position;
+    vec2 m_Size;
 
     Color m_FillColor;
     Color m_StrokeColor;

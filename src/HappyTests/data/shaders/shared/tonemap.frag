@@ -27,7 +27,7 @@ struct ToneMapData
 	float toeDenominator;
 	float exposureBias;
 };
-layout(shared) uniform SharedToneMapBuffer
+layout(std140) uniform SharedToneMapBuffer
 {
 	ToneMapData toneMapData;
 };
