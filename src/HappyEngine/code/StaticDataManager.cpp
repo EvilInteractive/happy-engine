@@ -35,6 +35,7 @@
 #include "Scene.h"
 #include "Window.h"
 #include "CullOctreeNodeFactory.h"
+#include "ShaderGeneratorVariableFactory.h"
 
 namespace he {
 
@@ -56,10 +57,12 @@ void StaticDataManager::init()
     gfx::WindowFactory::sdmInit();
     gfx::LightFactory::sdmInit();
     gfx::CullOctreeNodeFactory::sdmInit();
+    ct::ShaderGeneratorVariableFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
     ResourceFactory<gfx::Font>::destroy();

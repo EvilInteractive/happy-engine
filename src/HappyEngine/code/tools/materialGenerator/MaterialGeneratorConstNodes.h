@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,29 +15,28 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author: Bastian Damman
+//Author:  
+//Created: //
 
-#version 150 core
+#ifndef _HE_X_H_
+#define _HE_X_H_
+#pragma once
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
-in vec3 inTangent;
+namespace he {
 
-out vec2 passTexCoord;
-out vec3 passNormal;
-out vec3 passTangent;
-out float passDepth;
-
-uniform mat4 matWVP;
-uniform mat4 matWorldView;
-
-void main()
+class X
 {
-    passTexCoord = inTexCoord;
-    passNormal = (matWorldView * vec4(inNormal, 0.0f)).xyz;
-    passTangent = (matWorldView * vec4(inTangent, 0.0f)).xyz;
-    passDepth = length((matWorldView * vec4(inPosition, 1.0f)).xyz);
+public:
+    X();
+    virtual ~X();
 
-    gl_Position = matWVP * vec4(inPosition, 1.0f);
-}
+private:
+
+    //Disable default copy constructor and default assignment operator
+    X(const X&);
+    X& operator=(const X&);
+};
+
+} //end namespace
+
+#endif

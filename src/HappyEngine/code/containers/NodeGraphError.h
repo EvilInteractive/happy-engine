@@ -40,9 +40,16 @@ struct NodeGraphError
     {
     }
 
-    void setMessage(const std::string& message)
+    void setMessage(const char* message, ...)
     {
-        m_ErrorMessage = message;
+        va_list argList;
+        va_start(argList, message);
+        char buff[1024];
+        memset(buff, 0, 1024);
+        vsnprintf(buff, 1024, message, argList);
+        va_end(argList);
+
+        m_ErrorMessage = buff;
     }
 
 private:

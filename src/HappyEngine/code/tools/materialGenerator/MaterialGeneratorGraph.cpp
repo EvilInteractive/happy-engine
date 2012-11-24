@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,29 +15,24 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author: Bastian Damman
+//Author:  Bastian Damman
+//Created: 23/11/2012
+#include "HappyPCH.h" 
 
-#version 150 core
+#include "MaterialGeneratorGraph.h"
+#include "ShaderGenerator.h"
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
-in vec3 inTangent;
+namespace he {
+namespace tools {
 
-out vec2 passTexCoord;
-out vec3 passNormal;
-out vec3 passTangent;
-out float passDepth;
-
-uniform mat4 matWVP;
-uniform mat4 matWorldView;
-
-void main()
+MaterialGeneratorGraph::MaterialGeneratorGraph(): m_Generator(NEW ct::ShaderGenerator)
 {
-    passTexCoord = inTexCoord;
-    passNormal = (matWorldView * vec4(inNormal, 0.0f)).xyz;
-    passTangent = (matWorldView * vec4(inTangent, 0.0f)).xyz;
-    passDepth = length((matWorldView * vec4(inPosition, 1.0f)).xyz);
-
-    gl_Position = matWVP * vec4(inPosition, 1.0f);
 }
+
+
+MaterialGeneratorGraph::~MaterialGeneratorGraph()
+{
+    delete m_Generator;
+}
+
+} } //end namespace

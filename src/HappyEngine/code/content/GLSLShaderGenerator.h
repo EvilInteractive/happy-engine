@@ -22,23 +22,8 @@
 #define _HE_GLSLShaderGenerator_H_
 #pragma once
 
-#include "IShaderGenerator.h"
-
 namespace he {
 namespace ct {
-
-class GLSLShaderGenerator : public IShaderGenerator
-{
-public:
-    GLSLShaderGenerator();
-    virtual ~GLSLShaderGenerator();
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    GLSLShaderGenerator(const GLSLShaderGenerator&);
-    GLSLShaderGenerator& operator=(const GLSLShaderGenerator&);
-};
 
 } } //end namespace
 

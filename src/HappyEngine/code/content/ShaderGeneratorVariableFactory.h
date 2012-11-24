@@ -16,12 +16,31 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 09/11/2012
-#include "HappyPCH.h" 
+//Created: 17/11/2012
 
-#include "GLSLShaderGenerator.h"
+#ifndef _HE_ShaderGeneratorVariableFactory_H_
+#define _HE_ShaderGeneratorVariableFactory_H_
+#pragma once
+
+#include "ShaderGeneratorVariable.h"
+#include "Singleton.h"
 
 namespace he {
 namespace ct {
 
+class ShaderGeneratorVariableFactory : public ObjectFactory<ShaderGeneratorVariable>, public Singleton<ShaderGeneratorVariableFactory>
+{
+public:
+    ShaderGeneratorVariableFactory();
+    virtual ~ShaderGeneratorVariableFactory();
+
+private:
+
+    //Disable default copy constructor and default assignment operator
+    ShaderGeneratorVariableFactory(const ShaderGeneratorVariableFactory&);
+    ShaderGeneratorVariableFactory& operator=(const ShaderGeneratorVariableFactory&);
+};
+
 } } //end namespace
+
+#endif

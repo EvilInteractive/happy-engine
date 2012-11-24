@@ -18,7 +18,9 @@ set (CODE_CONTENT_MATERIAL_FILTER
                         ShaderPreProcessor.cpp              ShaderPreProcessor.h
 	)
 set (CODE_CONTENT_MATERIAL_GENERATOR_FILTER
-						IShaderGenerator.h
+						ShaderGenerator.cpp					ShaderGenerator.h
+						ShaderGeneratorVariableFactory.cpp  ShaderGeneratorVariableFactory.h
+						ShaderGeneratorVariable.cpp			ShaderGeneratorVariable.h
 						GLSLShaderGenerator.cpp				GLSLShaderGenerator.h
 	)
 set (CODE_CONTENT_PHYSICS_FILTER

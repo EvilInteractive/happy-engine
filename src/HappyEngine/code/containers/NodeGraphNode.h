@@ -35,8 +35,12 @@ class NodeGraphConnection
 public:
     NodeGraphConnection(): node(nullptr), connecter(UINT8_MAX) {}
     ~NodeGraphConnection() {}
+
     NodeGraphNode<TInput, TOutput>* node;
     uint8 connecter;
+
+    const TOutput& getConnection() const { return node->getOutput(connecter); }
+    bool isConnected() const { return node != nullptr; }
 };
 
 template<typename TInput, typename TOutput>
