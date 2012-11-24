@@ -23,9 +23,7 @@
 #pragma once
 
 #include <queue>
-#include "boost\function.hpp"
 #include "boost\thread.hpp"
-#include "List.h"
 
 /* FORWARD DECLARATIONS */
 struct _cairo_surface;
@@ -65,7 +63,7 @@ public:
 
     void rectangle(const vec2& pos, const vec2& size);
     void circle(const vec2& pos, float radius);
-    void arc(const vec2& pos, float radius, float angle1, float angle2);
+    void arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd);
     void curveTo(const vec2& start, const vec2& middle, const vec2& end);
     void newPath();
     void closePath();

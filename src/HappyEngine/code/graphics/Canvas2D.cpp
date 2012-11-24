@@ -523,6 +523,7 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
                             const RectF& regionToDraw)
 {
     HE_ASSERT(m_BufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
     vec2 size;
@@ -564,6 +565,8 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
     
+    /* WEIRD BUG WHEN UNCOMMENTED */
+    //GL::heBindFbo(m_BufferData->fbufferID);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }

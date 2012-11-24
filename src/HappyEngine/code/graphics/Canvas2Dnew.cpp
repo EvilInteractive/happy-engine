@@ -28,6 +28,7 @@
 #include "Texture2D.h"
 #include "Canvas2DRendererCairo.h"
 #include "Canvas2DRendererGL.h"
+#include "MathFunctions.h"
 
 namespace he {
 namespace gfx {
@@ -192,19 +193,19 @@ void Canvas2Dnew::rectangle(const vec2& pos, const vec2& size)
 void Canvas2Dnew::roundedRectangle(const vec2& pos, const vec2& size, float radius)
 {
     m_RendererCairo->newPath();
-    m_RendererCairo->arc(he::vec2(pos.x + radius, pos.y + radius), radius, 180.0f, 90.0f);
-    m_RendererCairo->arc(he::vec2(pos.x - radius + size.x, pos.y + radius), radius, 90.0f, 0.0f);
-    m_RendererCairo->arc(he::vec2(pos.x - radius + size.x, pos.y - radius + size.y), radius, 0.0f, -90.0f);
-    m_RendererCairo->arc(he::vec2(pos.x + radius, pos.y - radius + size.y), radius, -90.0f, -180.0f);
+    m_RendererCairo->arc(he::vec2(pos.x + radius, pos.y + radius), radius, toRadians(180.0f), toRadians(90.0f));
+    m_RendererCairo->arc(he::vec2(pos.x - radius + size.x, pos.y + radius), radius, toRadians(90.0f), toRadians(0.0f));
+    m_RendererCairo->arc(he::vec2(pos.x - radius + size.x, pos.y - radius + size.y), radius, toRadians(0.0f), toRadians(-90.0f));
+    m_RendererCairo->arc(he::vec2(pos.x + radius, pos.y - radius + size.y), radius, toRadians(-90.0f), toRadians(-180.0f));
     m_RendererCairo->closePath();
 }
 void Canvas2Dnew::circle(const vec2& pos, float radius)
 {
     m_RendererCairo->circle(pos, radius);
 }
-void Canvas2Dnew::arc(const vec2& pos, float radius, float angle1, float angle2)
+void Canvas2Dnew::arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd)
 {
-    m_RendererCairo->arc(pos, radius, angle1, angle2);
+    m_RendererCairo->arc(pos, radius, angleRadStart, angleRadEnd);
 }
 void Canvas2Dnew::curveTo(const vec2& start, const vec2& middle, const vec2& end)
 {

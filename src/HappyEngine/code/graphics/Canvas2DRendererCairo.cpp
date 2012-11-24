@@ -225,7 +225,7 @@ void Canvas2DRendererCairo::circle(const vec2& pos, float radius)
         0.0,
         static_cast<double>(twoPi)));
 }
-void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angle1, float angle2)
+void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd)
 {
     boost::mutex::scoped_lock lock(m_QueueLock);
 
@@ -236,8 +236,8 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angle1, flo
         static_cast<double>(pos.x),
         static_cast<double>(pos.y),
         static_cast<double>(radius),
-        static_cast<double>(normalizeAngle(angle1)),
-        static_cast<double>(normalizeAngle(angle2))));
+        static_cast<double>(normalizeAngle(angleRadStart)),
+        static_cast<double>(normalizeAngle(angleRadEnd))));
 }
 void Canvas2DRendererCairo::curveTo(const vec2& start, const vec2& middle, const vec2& end)
 {
@@ -302,7 +302,7 @@ void Canvas2DRendererCairo::clip()
 /* INTERNAL */
 float Canvas2DRendererCairo::normalizeAngle(float a)
 {
-    return (toRadians(a) * -1.0f);
+    return (a * -1.0f);
 }
 void Canvas2DRendererCairo::handleDrawCalls()
 {
@@ -319,14 +319,13 @@ void Canvas2DRendererCairo::handleDrawCalls()
         {
             m_CairoLock.lock();
                 m_QueueLock.lock();
+
                     // exec drawcall
                     m_DrawCalls.front()();
+                    m_DrawCalls.pop();
+
                 m_QueueLock.unlock();
             m_CairoLock.unlock();
-
-            m_QueueLock.lock();
-                m_DrawCalls.pop();
-            m_QueueLock.unlock();
         }
         else
             boost::this_thread::sleep(waitTime);

@@ -93,7 +93,7 @@ public:
     // create a circle
     void circle(const vec2& pos, float radius);
     // create an arc shape
-    void arc(const vec2& pos, float radius, float angle1, float angle2);
+    void arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd);
     // create a curve
     void curveTo(const vec2& start, const vec2& middle, const vec2& end);
     // creates a new path
