@@ -47,7 +47,7 @@ TextBox::TextBox(RectF posSize,
                                                     m_BackSpaceTimer(0),
                                                     m_BackSpaceDelayTimer(0)
 {
-    m_Font = CONTENT->loadFont(customFont, fontSize);
+    m_Font = CONTENT->loadFont(customFont, fontSize, false);
 
     m_Hitrect = NEW gui::Hitregion(
         gui::Hitregion::TYPE_RECTANGLE,

@@ -51,7 +51,7 @@ Canvas2D::Data* Canvas2D::create(GLContext* context, const vec2& size)
     data->renderTextureHnd = ResourceFactory<Texture2D>::getInstance()->create();
     Texture2D* texture = ResourceFactory<Texture2D>::getInstance()->get(data->renderTextureHnd);
 
-    texture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Linear, gfx::TextureFormat_RGBA8, false);
+    texture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest, gfx::TextureFormat_RGBA8, false);
     texture->setData((uint32)size.x, (uint32)size.y, 0, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);   
     texture->setLoadFinished();
     
@@ -111,7 +111,8 @@ Canvas2D::Canvas2D(const RectI& absoluteViewport) :
     m_CanvasSize(static_cast<float>(absoluteViewport.width), static_cast<float>(absoluteViewport.height)),
     m_View(nullptr),
     m_ExtraPixelDepth(0),
-    m_BlendStyle(BlendStyle_Alpha)
+    m_BlendStyle(BlendStyle_Alpha),
+    m_Renderer2D(nullptr)
 {
     init();
 }
@@ -136,7 +137,8 @@ Canvas2D::Canvas2D( Renderer2D* parent, const RectF& relativeViewport ) :
     m_View(parent->getView()),
     m_ViewResizedHandler(boost::bind(&Canvas2D::viewResized, this)),
     m_ExtraPixelDepth(0),
-    m_BlendStyle(BlendStyle_Alpha)
+    m_BlendStyle(BlendStyle_Alpha),
+    m_Renderer2D(parent)
 {
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
     init();
@@ -346,8 +348,7 @@ void Canvas2D::draw()
     HE_ASSERT(m_BufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");                 
 
     Texture2D* tex = ResourceFactory<Texture2D>::getInstance()->get(m_BufferData->renderTextureHnd);
-    setBlendStyle(BlendStyle_Alpha);
-    drawImage(tex, m_Position); // drawception
+    m_Renderer2D->drawTexture2DToScreen(tex, m_Position);
 }
 
 void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
@@ -426,9 +427,11 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     setBlendStyle(BlendStyle_Alpha);
     applyBlend();
 
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthWrite(false);
 
     GL::heBindFbo(m_BufferData->fbufferID);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
@@ -559,14 +562,14 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     m_TextureEffect->setTCScale(tcScale);
     m_TextureEffect->setDepth(getNewDepth());
 
+    m_BlendStyle = BlendStyle_Alpha;
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
     GL::heSetDepthWrite(true);
-    
-    /* WEIRD BUG WHEN UNCOMMENTED */
-    //GL::heBindFbo(m_BufferData->fbufferID);
+
+    GL::heBindFbo(m_BufferData->fbufferID);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }

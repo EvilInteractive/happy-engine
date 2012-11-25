@@ -53,7 +53,7 @@ Font::~Font()
 }
 
 /* GENERAL */
-void Font::init(FT_Library lib, FT_Face face, uint16 size)
+void Font::init(FT_Library lib, FT_Face face, uint16 size, bool compress)
 {
     m_FTLibrary = lib;
     m_Face = face;
@@ -62,7 +62,7 @@ void Font::init(FT_Library lib, FT_Face face, uint16 size)
     ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
     m_TextureAtlas = ResourceFactory<Texture2D>::getInstance()->get(hnd);
     m_TextureAtlas->init(gfx::TextureWrapType_Repeat,  gfx::TextureFilterType_Nearest, 
-        gfx::TextureFormat_Compressed_RGBA8_DXT5, false);
+        compress == true ? gfx::TextureFormat_Compressed_RGBA8_DXT5 : gfx::TextureFormat_RGBA8, false);
     m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
 
     m_Init = true;

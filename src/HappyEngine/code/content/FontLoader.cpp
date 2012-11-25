@@ -43,7 +43,7 @@ FontLoader::~FontLoader()
 }
 
 /* GENERAL */
-gfx::Font* FontLoader::load(const std::string& path, uint16 size)
+gfx::Font* FontLoader::load(const std::string& path, uint16 size, bool compress)
 {
     std::stringstream stream;
     stream << path << size;
@@ -90,7 +90,7 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size)
 
         gfx::Font* pFont = FACTORY->get(handle);
         pFont->setName(stream.str());
-        pFont->init(m_FTLibrary, face, size);
+        pFont->init(m_FTLibrary, face, size, compress);
 
         m_AssetContainer.addAsset(stream.str(), handle);
 

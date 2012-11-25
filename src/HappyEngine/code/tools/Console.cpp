@@ -90,7 +90,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
 }
 void Console::load()
 {
-    m_Font = CONTENT->loadFont("Inconsolata.otf", 10);
+    // don't compress font because it is small and needs crispness
+    m_Font = CONTENT->loadFont("DejaVuSansMono.ttf", 8, false);
 
     m_Help = NEW gui::Text(m_Font);
     m_Help->addLine("******** HELP ********");
@@ -103,7 +104,7 @@ void Console::load()
 
     m_TextBox = NEW gui::TextBox(
         RectF(0,200,1280, 20),
-        "Enter command...", 10, "Inconsolata.otf");
+        "Enter command...", 8, "DejaVuSansMono.ttf");
 
     m_TextBox->setColors(
         Color(0.3f,0.3f,0.3f,0.9f),

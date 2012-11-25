@@ -50,7 +50,7 @@ public:
     virtual ~Font();
     
     /* GENERAL */
-    void init(FT_Library lib, FT_Face face, uint16 size);
+    void init(FT_Library lib, FT_Face face, uint16 size, bool compress = true);
     void preCache(bool extendedCharacters = false);
 
     /* GETTERS */

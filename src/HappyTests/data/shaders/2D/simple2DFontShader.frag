@@ -33,5 +33,5 @@ void main()
 	vec2 tC = vec2(passTexCoord.x, passTexCoord.y);
 	float alpha = texture2D(diffuseMap, (tC * texCoordScale) + texCoordOffset).r;	
 	
-	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha * fontColor.w * 1.5); // if blendmode = src-src_min_alpha multiply alpha 1.5	
+	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha * fontColor.w);
 }

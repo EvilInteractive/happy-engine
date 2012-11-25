@@ -113,7 +113,8 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
     GL::heBlendEnabled(true);
     GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+    // reduce text quality loss by alpha reduction
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);

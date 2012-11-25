@@ -172,6 +172,8 @@ private:
 
     int16 m_ExtraPixelDepth;
 
+    Renderer2D* m_Renderer2D;
+
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);
     Canvas2D& operator=(const Canvas2D&);

@@ -155,9 +155,9 @@ ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Font* ContentManager::loadFont(const std::string& asset, uint16 size)
+gfx::Font* ContentManager::loadFont(const std::string& asset, uint16 size, bool compress)
 {
-    return m_FontLoader->load(m_FontPath.str() + asset, size);
+    return m_FontLoader->load(m_FontPath.str() + asset, size, compress);
 }
 
 gfx::Font* ContentManager::getDefaultFont(uint16 size)

@@ -361,9 +361,9 @@ void MainGame::load()
 
     he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
     
-    he::vec2 pos(500,300);
-    he::vec2 size(200,200);
-    float radius(20.0f);
+    he::vec2 pos(1000,50);
+    he::vec2 size(20,20);
+    float radius(5.0f);
 
     cvs->clear();
 
@@ -372,7 +372,7 @@ void MainGame::load()
     cvs->setFillColor(he::Color(1.0f,0.0f,0.3f));
     cvs->fill();
 
-    cvs->setLineWidth(20.0f);
+    cvs->setLineWidth(2.0f);
     cvs->setStrokeColor(he::Color(1.f,1.f,1.f,0.8f));
     cvs->stroke();
 }
@@ -444,8 +444,8 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 
     canvas->fillText(m_DebugText, he::vec2(12, 12));
     
-    
-    he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
+    // NEW CANVAS TEST
+    /*he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
     
     he::vec2 pos(500,300);
     he::vec2 size(200,200);
@@ -465,7 +465,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     cvs->setFillColor(he::Color(1.0f,1.0f,1.0f));
     cvs->fillText(m_DebugText, he::vec2(500,500));
 
-    cvs->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(600, 500), he::vec2(128, 128));
+    cvs->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(600, 500), he::vec2(128, 128));*/
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)

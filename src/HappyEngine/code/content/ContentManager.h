@@ -66,7 +66,7 @@ public:
     ObjectHandle loadPhysicsConvex(const std::string& path);
     ObjectHandle loadPhysicsConcave(const std::string& path);
 
-    gfx::Font* loadFont(const std::string& path, uint16 size);
+    gfx::Font* loadFont(const std::string& path, uint16 size, bool compress = true);
     gfx::Font* getDefaultFont(uint16 size = 12);
 
     ObjectHandle loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs);

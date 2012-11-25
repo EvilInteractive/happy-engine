@@ -215,7 +215,7 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
 
     if (useBlending == true)
     {
-        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
         GL::heBlendEnabled(true);
     }
