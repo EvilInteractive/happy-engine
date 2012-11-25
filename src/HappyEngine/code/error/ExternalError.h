@@ -22,7 +22,7 @@
 #define _HE_EXTRERNAL_ERROR_H_
 #pragma once
 
-#include "PxPhysicsAPI.h"
+#include "foundation/PxErrorCallback.h"
 
 namespace he {
 namespace err {

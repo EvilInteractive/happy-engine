@@ -131,9 +131,7 @@ void PhysicsEngine::createScene()
         sceneDesc.gpuDispatcher = m_CudaContextManager->getGpuDispatcher();
     }
     #endif
-
-    //sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
-
+    
     m_Scene = m_PhysXSDK->createScene(sceneDesc);
     HE_ASSERT(m_Scene != nullptr, "createScene failed!");
 
@@ -165,11 +163,11 @@ PhysicsEngine::~PhysicsEngine()
     if (m_CudaContextManager != nullptr)
         m_CudaContextManager->release();
 
-    if (m_PxProfileZoneManager != nullptr)
-        m_PxProfileZoneManager->release();
-
     if (m_PhysXSDK != nullptr)
         m_PhysXSDK->release();
+
+    if (m_PxProfileZoneManager != nullptr)
+        m_PxProfileZoneManager->release();
 
     if (m_PhysXFoundation != nullptr)
         m_PhysXFoundation->release();
