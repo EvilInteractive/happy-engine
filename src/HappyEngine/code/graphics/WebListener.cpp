@@ -24,7 +24,9 @@
 #include "WebView.h"
 #include "Awesomium/JSValue.h"
 #include "Awesomium/WebView.h"
+#pragma warning(disable:4267) // conversion warning
 #include "Awesomium/STLHelpers.h"
+#pragma warning(default:4267)
 
 namespace he {
 namespace gfx {

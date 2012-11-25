@@ -233,16 +233,16 @@ gfx::IndexStride BinObjLoader::getIndexStride(uint32 mesh) const
 {
     return m_IndexStride[mesh];
 }
-uint32 BinObjLoader::getNumVertices(uint32 mesh) const
+size_t BinObjLoader::getNumVertices(uint32 mesh) const
 {
     return m_VertexData[mesh]->size();
 }
-uint32 BinObjLoader::getNumIndices(uint32 mesh) const
+size_t BinObjLoader::getNumIndices(uint32 mesh) const
 {
     return m_NumIndices[mesh];
 }
 
-uint32 BinObjLoader::getNumMeshes() const
+size_t BinObjLoader::getNumMeshes() const
 {
     return m_MeshName.size();
 }

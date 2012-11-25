@@ -119,10 +119,10 @@ void InstancingController::initVao( GLContext* context )
             GLint components(1);
             GLenum type(0);
             GL::getGLTypesFromBufferElement(element, components, type);
-            glEnableVertexAttribArray(vertexElements.size() + element.getElementIndex());
-            glVertexAttribPointer(vertexElements.size() + element.getElementIndex(), components, type, 
+            glEnableVertexAttribArray(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex());
+            glVertexAttribPointer(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), components, type, 
                 GL_FALSE, m_InstancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
-            glVertexAttribDivisor(vertexElements.size() + element.getElementIndex(), 1);
+            glVertexAttribDivisor(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), 1);
         });
     }
     //////////////////////////////////////////////////////////////////////////
@@ -280,13 +280,13 @@ void InstancingController::drawShadow()
 uint32 InstancingController::addInstance(const IInstancible* pObj)
 {
     m_NeedsUpdate = true;
-    return m_Instances.insert(pObj);
+    return static_cast<uint32>(m_Instances.insert(pObj));
 }
 uint32 InstancingController::addInstance()
 {
     HE_ASSERT(m_ManualCpuBufferFillers.empty() == false, "Only valid in manual mode");
     m_NeedsUpdate = true;
-    return m_Instances.insert(nullptr); // HACK: is a bit hacky
+    return static_cast<uint32>(m_Instances.insert(nullptr)); // HACK: is a bit hacky
 }
 
 

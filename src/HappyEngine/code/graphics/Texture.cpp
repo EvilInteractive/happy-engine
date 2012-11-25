@@ -127,9 +127,9 @@ GLenum getInternalTextureWrapType( TextureWrapType type )
 }
 
 
-he::uint32 calculatePixelSize( TextureBufferLayout bufferLayout, TextureBufferType bufferType )
+size_t calculatePixelSize( TextureBufferLayout bufferLayout, TextureBufferType bufferType )
 {
-    uint32 size(0);
+    size_t size(0);
     switch (bufferType)
     {
     case TextureBufferType_Byte:

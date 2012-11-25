@@ -235,7 +235,7 @@ uint32 Shader::getShaderSamplerId(const std::string& name)
     else
     {
         uint32 texLoc(getShaderVarId(name));
-        uint32 samplerIndex(m_SamplerLocationMap.size());
+        uint32 samplerIndex(static_cast<uint32>(m_SamplerLocationMap.size()));
         bind();
         glUniform1i(texLoc, samplerIndex);
         m_SamplerLocationMap[name] = samplerIndex;
@@ -282,7 +282,7 @@ void Shader::setShaderVar(uint32 id, const he::PrimitiveList<mat44>& matrixArray
 {
     HE_ASSERT(s_CurrentBoundShader == m_Id, "shader must be bound before using setShaderVar(...)");
     HE_ASSERT(matrixArray.size() > 0, "there must be at least one matrix in the array");
-    glUniformMatrix4fv(id, matrixArray.size(), GL_FALSE, matrixArray[0].toFloatArray());
+    glUniformMatrix4fv(id, static_cast<uint32>(matrixArray.size()), GL_FALSE, matrixArray[0].toFloatArray());
 }
 void Shader::setShaderVar(uint32 id, const gfx::Texture2D* tex2D) const
 {

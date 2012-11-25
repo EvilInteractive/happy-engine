@@ -34,21 +34,21 @@ public:
     typedef T const* const_iterator;
     typedef boost::function2<int, const T&, const T&> Sorter;
 
-    explicit List(size_t capacity = 0);
+    explicit List(const size_t capacity = 0);
     virtual ~List();
 
     inline void add(const T& element); // amortized O(1)
     inline void append(const List<T, Creator>& list); // amortized O(n) (n = parameter list count)
-    inline void insert(const T& element, size_t index); // O(n)
+    inline void insert(const T& element, const size_t index); // O(n)
     
-    inline void reserve(size_t capacity);
-    inline void resize(size_t size);
+    inline void reserve(const size_t capacity);
+    inline void resize(const size_t size);
     inline void trim();
 
     inline void remove(const T& element); // O(n)
-    inline void removeAt(size_t index); // O(1)
+    inline void removeAt(const size_t index); // O(1)
     inline void orderedRemove(const T& element); // O(n)
-    inline void orderedRemoveAt(size_t index); // memmove
+    inline void orderedRemoveAt(const size_t index); // memmove
     inline void clear();
 
     inline bool contains(const T& element) const; // O(n)
@@ -65,8 +65,8 @@ public:
     inline T& front();
     inline bool empty() const { return m_Size == 0; }
 
-    inline T& operator[](size_t index);
-    inline const T& operator[](size_t index) const;
+    inline T& operator[](const size_t index);
+    inline const T& operator[](const size_t index) const;
 
     inline iterator begin() { return m_Buffer; }
     inline iterator end() { return m_Buffer + m_Size; }
@@ -81,8 +81,8 @@ public:
     const static int CAPACITY_INCREMENT = 5;
     
 private:
-    void internalSort(int begin, int end, const Sorter& sorter);
-    bool internalBinFind(size_t begin, size_t end, const T& element, const Sorter& sorter, size_t& outIndex) const;
+    void internalSort(const int begin, const int end, const Sorter& sorter);
+    bool internalBinFind(const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex) const;
 
     size_t m_Capacity;
     size_t m_Size;
@@ -113,7 +113,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T, typename Creator> inline
-he::List<T, Creator>::List(size_t capacity = 0): m_Size(0), m_Capacity(capacity), m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
+he::List<T, Creator>::List(const size_t capacity = 0): m_Size(0), m_Capacity(capacity), m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
 {
     Creator::createArray(m_Buffer, m_Capacity);
 }
@@ -142,7 +142,7 @@ void he::List<T, Creator>::append( const List<T, Creator>& list )
     resize(m_Size + list.size());
 }
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::insert( const T& element, size_t index )
+void he::List<T, Creator>::insert( const T& element, const size_t index )
 {
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
@@ -152,7 +152,7 @@ void he::List<T, Creator>::insert( const T& element, size_t index )
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::reserve( size_t capacity )
+void he::List<T, Creator>::reserve( const size_t capacity )
 {
     HE_ASSERT(m_Size <= m_Capacity, "Warning reserving size smaller than used size");
     if (m_Capacity != capacity)
@@ -166,7 +166,7 @@ void he::List<T, Creator>::reserve( size_t capacity )
     }
 }
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::resize( size_t size )
+void he::List<T, Creator>::resize( const size_t size )
 {
     if (m_Capacity < size)
         reserve(size);
@@ -191,7 +191,7 @@ void he::List<T, Creator>::remove( const T& element )
     }
 }
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::removeAt( size_t index )
+void he::List<T, Creator>::removeAt( const size_t index )
 {
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
     {
@@ -209,7 +209,7 @@ void he::List<T, Creator>::orderedRemove( const T& element )
     }
 }
 template<typename T, typename Creator> inline
-void he::List<T, Creator>::orderedRemoveAt( size_t index )
+void he::List<T, Creator>::orderedRemoveAt( const size_t index )
 {
     HE_IF_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size)
     {
@@ -263,7 +263,7 @@ bool he::List<T, Creator>::binFind( const T& element, const Sorter& sorter, size
     return internalBinFind(0, m_Size, element, sorter, outIndex);
 }
 template<typename T, typename Creator>
-bool he::List<T, Creator>::internalBinFind( size_t begin, size_t end, const T& element, const Sorter& sorter, size_t& outIndex ) const
+bool he::List<T, Creator>::internalBinFind( const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex ) const
 {
     if (begin == end)
         return false;
@@ -292,7 +292,7 @@ void he::List<T, Creator>::sort( const Sorter& sorter )
     internalSort(0, static_cast<int>(m_Size - 1), sorter);
 }
 template<typename T, typename Creator>
-void he::List<T, Creator>::internalSort( int begin, int end, const Sorter& sorter )
+void he::List<T, Creator>::internalSort( const int begin, const int end, const Sorter& sorter )
 {
     T centerObject(m_Buffer[(begin + end) / 2]);
     int b(begin);
@@ -354,14 +354,14 @@ T& he::List<T, Creator>::back()
 }
 //////////////////////////////////////////////////////////////////////////
 template<typename T, typename Creator> inline
-T& he::List<T, Creator>::operator[]( size_t index )
+T& he::List<T, Creator>::operator[]( const size_t index )
 {
     HE_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size);
     return m_Buffer[index];
 }
 
 template<typename T, typename Creator> inline
-const T& he::List<T, Creator>::operator[]( size_t index ) const
+const T& he::List<T, Creator>::operator[]( const size_t index ) const
 {
     HE_ASSERT(index < m_Size, "Index out of bounds! getting %d from #%d elements", index, m_Size);
     return m_Buffer[index];

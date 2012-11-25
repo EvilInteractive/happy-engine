@@ -51,9 +51,9 @@ void BillboardEffect::load()
     he::ObjectList<std::string> shaderOutputs;
     shaderOutputs.add("outColor");
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    bool compiled = m_pShader->initFromFile(folder + "2D/billboardShader.vert", 
+    const bool compiled = m_pShader->initFromFile(folder + "2D/billboardShader.vert", 
                                             folder + "2D/billboardShader.frag", layout, shaderOutputs);
-    HE_ASSERT(compiled, "");
+    HE_ASSERT(compiled, ""); compiled;
 
     m_ShaderWVPPos = m_pShader->getShaderVarId("matWVP");
     m_ShaderDiffTexPos = m_pShader->getShaderSamplerId("diffuseMap");

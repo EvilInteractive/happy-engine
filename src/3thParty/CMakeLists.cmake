@@ -56,6 +56,11 @@ include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
 
 add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX )
+if (${BITNESS} EQUAL 64)
+	add_definitions(-DARCH_64)
+else()
+	add_definitions(-DARCH_32)
+endif()
 
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Assimp/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/lib/${PLATFORM}${BITNESS})

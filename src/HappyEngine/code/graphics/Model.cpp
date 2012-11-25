@@ -58,7 +58,7 @@ void Model::addMesh(const ObjectHandle& handle)
     ResourceFactory<ModelMesh>::getInstance()->instantiate(handle);
     m_Meshes.add(ResourceFactory<ModelMesh>::getInstance()->get(handle));
 }
-uint32 Model::getNumMeshes() const
+size_t Model::getNumMeshes() const
 {
     return m_Meshes.size();
 }

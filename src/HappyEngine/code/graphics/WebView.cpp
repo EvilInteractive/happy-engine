@@ -269,7 +269,7 @@ void WebView::draw2D(Canvas2D* canvas)
 
 void WebView::loadUrl(const std::string& url)
 {
-    Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), strlen(url.c_str())));
+    Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), static_cast<unsigned int>(strlen(url.c_str()))));
     m_WebView->LoadURL(webUrl);
 
     m_WebView->set_load_listener(this);

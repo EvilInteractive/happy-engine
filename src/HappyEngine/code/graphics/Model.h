@@ -42,7 +42,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// Model
     void addMesh(const ObjectHandle& handle);
-    uint32 getNumMeshes() const;
+    size_t getNumMeshes() const;
     ModelMesh* instantiateMesh(uint32 index) const;
     ModelMesh* instantiateMesh(const std::string& name) const;
     Model* instantiateMeshesWithPrefix(const std::string& prefix) const;

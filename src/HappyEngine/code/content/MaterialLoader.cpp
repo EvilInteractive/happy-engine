@@ -248,7 +248,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     {
                         HE_ERROR("Material: unknown attribute %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
                     } 
-                    shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));
+                    shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), std::string(p.first.cbegin(), p.first.cend())));
                 }); 
 
                 gfx::BufferLayout instancingLayout;
@@ -304,7 +304,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         {
                             HE_ERROR("Material: instancing unknown type %s", std::string(p.second.cbegin(), p.second.cend()));
                         }
-                        shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));  
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), std::string(p.first.cbegin(), p.first.cend())));  
                     });
                 }
 

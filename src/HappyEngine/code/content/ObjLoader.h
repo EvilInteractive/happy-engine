@@ -48,17 +48,17 @@ public:
 
     virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
-    virtual uint32 getNumMeshes() const;
+    virtual size_t getNumMeshes() const;
     virtual const std::string& getMeshName(uint32 mesh) const;
 
     virtual const void* getVertices(uint32 mesh) const;
-    virtual uint32 getNumVertices(uint32 mesh) const;
+    virtual size_t getNumVertices(uint32 mesh) const;
 
     virtual const he::ObjectList<gfx::Bone>& getBones(uint32 /*mesh*/) const { return m_NoBones; } //No bones in a OBJ
 
     virtual const void* getIndices(uint32 mesh) const;
     virtual gfx::IndexStride getIndexStride(uint32 mesh) const;
-    virtual uint32 getNumIndices(uint32 mesh) const;
+    virtual size_t getNumIndices(uint32 mesh) const;
 
 
 private:
@@ -97,7 +97,7 @@ private:
     void* m_Vertices;
     gfx::BufferLayout m_VertexLayout;
 
-    uint32 m_NumVertices;
+    size_t m_NumVertices;
     he::PrimitiveList<uint32> m_NumIndices;
     he::PrimitiveList<gfx::IndexStride> m_IndexStride;
 

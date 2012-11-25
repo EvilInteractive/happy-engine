@@ -67,43 +67,43 @@ void BinaryStream::close()
 uint8 BinaryStream::readByte() const
 {
     uint8 b(0);
-    size_t count(fread(&b, sizeof(uint8), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+    const size_t count(fread(&b, sizeof(uint8), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str()); count;
     return b;
 }
 uint16 BinaryStream::readWord() const
 {
     uint16 s(0);
-    size_t count(fread(&s, sizeof(uint16), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+    const size_t count(fread(&s, sizeof(uint16), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str()); count;
     return s;
 }
 uint32 BinaryStream::readDword() const
 {
     uint32 i(0);
-    size_t count(fread(&i, sizeof(uint32), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+    const size_t count(fread(&i, sizeof(uint32), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str()); count;
     return i;
 }
 int BinaryStream::readInt32() const
 {
     int i(0);
-    size_t count(fread(&i, sizeof(int32), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+    const size_t count(fread(&i, sizeof(int32), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str()); count;
     return i;
 }
 float BinaryStream::readFloat() const
 {
     float f(0);
-    size_t count(fread(&f, sizeof(float), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+    const size_t count(fread(&f, sizeof(float), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str()); count;
     return f;
 }
 double BinaryStream::readDouble() const
 {
     double d(0);
-    size_t count(fread(&d, sizeof(double), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str());
+    const size_t count(fread(&d, sizeof(double), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccesfull read operation in file: %s", m_FileName.c_str()); count;
     return d;
 }
 vec2 BinaryStream::readVector2() const
@@ -152,8 +152,8 @@ physx::PxU32 BinaryStream::read(void* buffer, physx::PxU32 size)	const
 {
     if (size > 0)
     {
-        size_t count(fread(buffer, size, 1, m_pFile));
-        HE_ASSERT(count == 1, "unsuccessful read operation in file: %s", m_FileName.c_str());
+        const size_t count(fread(buffer, size, 1, m_pFile));
+        HE_ASSERT(count == 1, "unsuccessful read operation in file: %s", m_FileName.c_str()); count;
     }
     return size;
 }
@@ -162,36 +162,36 @@ physx::PxU32 BinaryStream::read( void* buffer, physx::PxU32 size )
 {
     if (size > 0)
     {
-        size_t count(fread(buffer, size, 1, m_pFile));
-        HE_ASSERT(count == 1, "unsuccessful read operation in file: %s", m_FileName.c_str());
+        const size_t count(fread(buffer, size, 1, m_pFile));
+        HE_ASSERT(count == 1, "unsuccessful read operation in file: %s", m_FileName.c_str()); count;
     }
     return size;
 }
 
 void BinaryStream::writeByte(uint8 b)
 {
-    size_t count(fwrite(&b, sizeof(uint8), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
+    const size_t count(fwrite(&b, sizeof(uint8), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str()); count;
 }
 void BinaryStream::writeWord(uint16 w)
 {
-    size_t count(fwrite(&w, sizeof(uint16), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
+    const size_t count(fwrite(&w, sizeof(uint16), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str()); count;
 }
 void BinaryStream::writeDword(uint32 d)
 {
-    size_t count(fwrite(&d, sizeof(uint32), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
+    const size_t count(fwrite(&d, sizeof(uint32), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str()); count;
 }
 void BinaryStream::writeFloat(float f)
 {
-    size_t count(fwrite(&f, sizeof(float), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
+    const size_t count(fwrite(&f, sizeof(float), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str()); count;
 }
 void BinaryStream::writeDouble(double d)
 {
-    size_t count(fwrite(&d, sizeof(double), 1, m_pFile));
-    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
+    const size_t count(fwrite(&d, sizeof(double), 1, m_pFile));
+    HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str()); count;
 }
 
 void BinaryStream::writeVector2(const vec2& v)
@@ -213,13 +213,13 @@ void BinaryStream::writeMatrix(const mat44& m)
 
 void BinaryStream::writeString(const std::string& s)
 {
-    writeDword(s.size());
-    write(s.c_str(), sizeof(char) * s.size());
+    writeDword(static_cast<uint32>(s.size()));
+    write(s.c_str(), static_cast<uint32>(sizeof(char) * s.size()));
 }
 void BinaryStream::writeWString(const std::wstring& s)
 {
-    writeDword(s.size());
-    write(s.c_str(), sizeof(wchar_t) * s.size());
+    writeDword(static_cast<uint32>(s.size()));
+    write(s.c_str(), static_cast<uint32>(sizeof(wchar_t) * s.size()));
 }
 
 physx::PxU32 BinaryStream::write(const void* buffer, physx::PxU32 size)
