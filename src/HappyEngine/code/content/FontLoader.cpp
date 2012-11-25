@@ -32,8 +32,8 @@ namespace ct {
 /* CONSTRUCTOR - DESTRUCTOR*/
 FontLoader::FontLoader()
 {
-    FT_Error error(FT_Init_FreeType(&m_FTLibrary));
-    HE_ASSERT(error == false,"Error creating freetype library!");
+    const FT_Error error(FT_Init_FreeType(&m_FTLibrary));
+    HE_ASSERT(error == false,"Error creating freetype library!"); error;
 }
 
 FontLoader::~FontLoader()

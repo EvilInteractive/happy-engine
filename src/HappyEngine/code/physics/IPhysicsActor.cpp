@@ -42,6 +42,7 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
 {
     physx::PxShape* pxShape(nullptr);
     physx::PxRigidActor* actor(getInternalActor());
+    bool result(false);
 
     HE_IF_ASSERT((getCompatibleShapes() & shape->getType()) != 0, "Unsupported type for this kind of actor")
     {
@@ -54,8 +55,8 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
                     physx::PxBoxGeometry(boxShape->getDimension().x / 2.0f, boxShape->getDimension().y / 2.0f, boxShape->getDimension().z / 2.0f), 
                     *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
                 outShapeList.add(pxShape);
-                return true;
-            }
+                result = true;
+            } break;
         case PhysicsShapeType_Sphere:
             {
                 const PhysicsSphereShape* sphereShape(static_cast<const PhysicsSphereShape*>(shape));
@@ -63,8 +64,8 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
                     physx::PxSphereGeometry(sphereShape->getRadius()), 
                     *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
                 outShapeList.add(pxShape);
-                return true;
-            }
+                result = true;
+            } break;
         case PhysicsShapeType_Capsule:
             {
                 const PhysicsCapsuleShape* capsuleShape(static_cast<const PhysicsCapsuleShape*>(shape));
@@ -72,9 +73,8 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
                     physx::PxCapsuleGeometry(capsuleShape->getRadius(), capsuleShape->getHeight() / 2.0f), 
                     *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
                 outShapeList.add(pxShape);
-                return true;
-            }
-            break;
+                result = true;
+            } break;
         case PhysicsShapeType_Convex:
             {
                 const PhysicsConvexShape* convexShape(static_cast<const PhysicsConvexShape*>(shape));
@@ -95,10 +95,9 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
                             *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
                         outShapeList.add(pxShape);
                     });
-                    return true;
+                    result = true;
                 }
-                return false;
-            }
+            } break;
         case PhysicsShapeType_Concave:
             {
                 const PhysicsConcaveShape* concaveShape(static_cast<const PhysicsConcaveShape*>(shape));
@@ -119,17 +118,17 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
                             *material.getInternalMaterial(), physx::PxTransform(localPose.getPhyicsMatrix()));
                         outShapeList.add(pxShape);
                     });
-                    return true;
+                    result = true;
                 }
-                return false;
-            }
+            } break;
 
         default: 
-            HE_ASSERT(false, "Unknown type");
-            return false;
+            {
+                HE_ASSERT(false, "Unknown type %d", shape->getType());   
+            } break;
         }
     }
-    return false;
+    return result;
 }
 
 void IPhysicsActor::teleport( const mat44& pose )

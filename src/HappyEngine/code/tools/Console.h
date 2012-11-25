@@ -73,8 +73,7 @@ public:
     template <typename T>
     void registerVar(T* pVar, const std::string& varKey)
     {
-        const char* type(typeid(T).name());
-        HE_IF_ASSERT(m_TypeHandlers.find(type) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", type)
+        HE_IF_ASSERT(m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", typeid(T).name())
         {
             HE_IF_ASSERT(m_ValueContainer.find(varKey) == m_ValueContainer.end(), "Variable: '%s' already registered!", varKey.c_str())
             {
@@ -105,7 +104,7 @@ private:
     void displayHelp();
     void displayVars();
     void displayCmds();
-	void onResize();
+    void onResize();
 
     /* DATAMEMBERS */
     std::map<std::string, boost::any> m_ValueContainer;

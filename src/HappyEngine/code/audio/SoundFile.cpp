@@ -72,12 +72,12 @@ void SoundFile::close()
 {
     if (m_SoundFile)
     {
-        int err(sf_close(m_SoundFile));
+        const int err(sf_close(m_SoundFile));
 
         std::string errMsg("Can't close file: ");
         errMsg += getProperties().filePath;
 
-        HE_ASSERT(err == 0, errMsg.c_str());
+        HE_ASSERT(err == 0, errMsg.c_str()); err;
 
         m_SoundFile = nullptr;
     }

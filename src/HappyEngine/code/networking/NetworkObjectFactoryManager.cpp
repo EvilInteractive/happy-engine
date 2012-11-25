@@ -46,11 +46,12 @@ void NetworkObjectFactoryManager::registerFactory( INetworkObjectFactory* factor
 
 details::NetworkObjectBase* NetworkObjectFactoryManager::createObject( const NetworkObjectTypeID& id )
 {
+    details::NetworkObjectBase* result(nullptr);
     HE_IF_ASSERT(id.id < m_Factories.size(), "Invalid network ID!")
     {
-        return m_Factories[id.id]->createReplica();
+        result = m_Factories[id.id]->createReplica();
     }
-    return nullptr;
+    return result;
 }
 
 

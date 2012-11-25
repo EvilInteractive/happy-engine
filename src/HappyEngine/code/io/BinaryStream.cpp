@@ -226,8 +226,8 @@ physx::PxU32 BinaryStream::write(const void* buffer, physx::PxU32 size)
 {
     if (size > 0)
     {
-        size_t count(fwrite(buffer, size, 1, m_pFile));
-        HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str());
+        const size_t count(fwrite(buffer, size, 1, m_pFile));
+        HE_ASSERT(count == 1, "unsuccessful write operation in file: %s", m_FileName.c_str()); count;
     }
     return size;
 }
