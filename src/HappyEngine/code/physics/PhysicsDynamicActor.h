@@ -62,7 +62,8 @@ public:
 
     bool isSleeping() const;
 
-    virtual const PhysicsUserData& getUserData() { return m_UserData; }
+    virtual PhysicsUserDataContainerType getType() const { return PhysicsUserDataContainerType_Dynamic; }
+    virtual const PhysicsUserData& getUserData() const { return m_UserData; }
     template<typename T>
     void setUserData(T* rttiType)
     {

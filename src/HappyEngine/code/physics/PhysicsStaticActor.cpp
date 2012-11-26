@@ -44,6 +44,7 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* s
         pose.getPhyicsMatrix().column2.getXYZ()))));
     PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
+    m_Actor->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     addShape(shape, material);
 
@@ -60,6 +61,7 @@ PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
         pose.getPhyicsMatrix().column2.getXYZ()))));
     PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
+    m_Actor->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     PHYSICS->lock();
     PHYSICS->getScene()->addActor(*m_Actor);
@@ -84,7 +86,7 @@ void PhysicsStaticActor::addShape( physx::PxShape* shape, uint32 collisionGroup 
 {
     HE_ASSERT(shape != nullptr, "Shape creation failed");
 
-    shape->userData = static_cast<IPhysicsActor*>(this);
+    shape->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     physx::PxFilterData filter;
     filter.word0 = collisionGroup;

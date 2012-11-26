@@ -42,6 +42,8 @@ PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
                                   physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column1.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column2.getXYZ()))));
+    m_Actor->userData = static_cast<IPhysicsUserDataContainer*>(this);
+
     PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
 
@@ -68,7 +70,7 @@ void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass, uint32 co
 {
     HE_ASSERT(shape != nullptr, "Shape creation failed");
 
-    shape->userData = static_cast<IPhysicsActor*>(this);
+    shape->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     physx::PxRigidBodyExt::setMassAndUpdateInertia(*m_Actor, m_Actor->getMass() + mass);
     //physx::PxRigidBodyExt::updateMassAndInertia(*m_Actor, 1.0f);

@@ -84,6 +84,7 @@ public:
     physx::PxPhysics* getSDK() const;
     physx::PxScene* getScene() const;
     //PhysicsCarManager* getCarManager() const;
+    physx::PxControllerManager* getControllerManager() const { return m_ControllerManager; }
 
     RayCastResult raycast(const Ray& ray, uint32 collisionGroup = 0xffffffff) const;
 
@@ -102,6 +103,7 @@ private:
     physx::PxFoundation* m_PhysXFoundation;
     physx::PxScene* m_Scene;
     physx::PxProfileZoneManager* m_PxProfileZoneManager;
+    physx::PxControllerManager* m_ControllerManager;
 
     physx::PxErrorCallback* m_ErrorCallback;
     physx::PxAllocatorCallback* m_Allocator;
