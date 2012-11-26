@@ -75,7 +75,7 @@ public:
     }
     void executeCallback(const Awesomium::WebString& method, const Awesomium::JSArray& args)
     {
-        HE_IF_ASSERT(m_MethodCallBacks.find(method) != m_MethodCallBacks.cend(), "Executing non existing method");
+        HE_IF_ASSERT(m_MethodCallBacks.find(method) != m_MethodCallBacks.cend(), "Executing non existing method")
         {
             m_MethodCallBacks[method]->execute(args);
         }

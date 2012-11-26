@@ -37,7 +37,7 @@ void main()
     passTexCoord = inTexCoord;
     passNormal = (matWorldView * vec4(inNormal, 0.0f)).xyz;
     passTangent = (matWorldView * vec4(inTangent, 0.0f)).xyz;
-    passDepth = length((matWorldView * vec4(inPosition, 1.0f)).xyz);
+    passDepth = (matWorldView * vec4(inPosition, 1.0f)).z;
 
     gl_Position = matWVP * vec4(inPosition, 1.0f);
 }
