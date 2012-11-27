@@ -21,3 +21,4 @@ src/3thParty/installers/7zs/*/*
 src/build_install/*
 *.idea/
 src/build_install64/*
+*.cfg

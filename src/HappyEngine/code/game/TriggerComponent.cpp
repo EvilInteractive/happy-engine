@@ -65,7 +65,7 @@ void TriggerComponent::init(Entity* parent)
     he::eventCallback1<void, px::IPhysicsActor*> onLeaveHandler([&](px::IPhysicsActor* actor)
     {
         const px::PhysicsUserData& data(actor->getUserData());
-        if (data.getRTTI() == Entity::getRTTI())
+        if (RTTI::isA(data.getRTTI(), Entity::getRTTI()))
         {
             OnTriggerLeave(static_cast<Entity*>(data.getData()));
         }

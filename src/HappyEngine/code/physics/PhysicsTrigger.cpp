@@ -67,7 +67,7 @@ void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uin
     HE_ASSERT(shape != nullptr, "Trigger shape creation failed");
 
     shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
-    shape->userData = this;
+    shape->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     physx::PxFilterData filter;
     filter.word0 = collisionGroup;
@@ -115,7 +115,7 @@ void PhysicsTrigger::getPose( mat44& pose ) const
     m_Actor->getPose(pose);
 }
 
-const PhysicsUserData& PhysicsTrigger::getUserData()
+const PhysicsUserData& PhysicsTrigger::getUserData() const
 {
     return m_Actor->getUserData();
 }

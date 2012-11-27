@@ -37,13 +37,27 @@ class PhysicsUserData;
 class IPhysicsShape;
 class PhysicsMaterial;
 
-class IPhysicsActor
+enum PhysicsUserDataContainerType
+{
+    PhysicsUserDataContainerType_Dynamic,
+    PhysicsUserDataContainerType_Static,
+    PhysicsUserDataContainerType_Trigger,
+    PhysicsUserDataContainerType_Controller
+};
+
+class IPhysicsUserDataContainer
+{
+public:
+    virtual const PhysicsUserData& getUserData() const = 0;
+    virtual PhysicsUserDataContainerType getType() const = 0;
+};
+
+class IPhysicsActor : public IPhysicsUserDataContainer
 {
 public:
     virtual ~IPhysicsActor() {}
 
     virtual physx::PxRigidActor* getInternalActor() const = 0;
-    virtual const PhysicsUserData& getUserData() = 0;
     virtual void getTranslation(vec3& translation) const = 0;
     virtual void getRotation(mat33& rotation) const = 0;
     virtual void getPose(mat44& pose) const = 0;

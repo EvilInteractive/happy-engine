@@ -190,13 +190,13 @@ void SpotLight::prepareShadowCamera()
         getWorldMatrix().getTranslationComponent(position);
 
         const vec3& shadowLook(getWorldDirection());
-        m_ShadowCamera.lookAt(position, position + shadowLook, vec3::up);
+        m_ShadowCamera.lookAt(position, position + shadowLook, dot(vec3::up, shadowLook) < 0.1? vec3::forward : vec3::up);
 
         m_ShadowLookDirty = false;
     }
     if (m_ShadowLensDirty == true)
     {
-        m_ShadowCamera.setLens(1.0f, getFov(), getScaledBeginAttenuation(), getScaledEndAttenuation());
+        m_ShadowCamera.setLens(1.0f, getFov(), 1.0f, getScaledEndAttenuation());
         m_ShadowLensDirty = false;
     }
     m_ShadowCamera.prepareForRendering();

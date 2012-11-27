@@ -1,5 +1,6 @@
 set (CODE_PHYSICS_NO_FILTER
         IPhysicsActor.cpp                          IPhysicsActor.h
+		PhysicsCharacterController.cpp             PhysicsCharacterController.h
         PhysicsDynamicActor.cpp                    PhysicsDynamicActor.h
         PhysicsEngine.cpp                          PhysicsEngine.h
         PhysicsMaterial.cpp                        PhysicsMaterial.h

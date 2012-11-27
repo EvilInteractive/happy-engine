@@ -35,7 +35,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
                             m_Allocator(NEW HappyPhysicsAllocator()), m_ErrorCallback(NEW err::HappyPhysicsErrorCallback()),
                             m_Simulate(false), m_PxProfileZoneManager(nullptr),
                            /* m_pCarManager(NEW PhysicsCarManager()),*/ m_PhysXFoundation(nullptr), m_VisualDebuggerConnection(nullptr),
-                           m_Timer(0.0f)
+                           m_ControllerManager(nullptr), m_Timer(0.0f)
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -49,6 +49,8 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
     m_PxProfileZoneManager = &physx::PxProfileZoneManager::createProfileZoneManager(m_PhysXFoundation);
     HE_ASSERT(m_PxProfileZoneManager != nullptr, "Loading physx profileZoneManager unsuccessful");
     #endif
+
+    m_ControllerManager = PxCreateControllerManager(*m_PhysXFoundation);
 
     m_PhysXSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_PhysXFoundation,
                                     physx::PxTolerancesScale(), memDebug, m_PxProfileZoneManager);   
@@ -166,6 +168,9 @@ PhysicsEngine::~PhysicsEngine()
     if (m_PhysXSDK != nullptr)
         m_PhysXSDK->release();
 
+    if (m_ControllerManager != nullptr)
+        m_ControllerManager->release();
+
     if (m_PxProfileZoneManager != nullptr)
         m_PxProfileZoneManager->release();
 
@@ -279,19 +284,19 @@ void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*
     if (pairs->triggerShape->userData == nullptr)
         return;
 
-    PhysicsTrigger* pTrigger(static_cast<PhysicsTrigger*>(pairs->triggerShape->userData));
+    PhysicsTrigger* const trigger(static_cast<PhysicsTrigger*>(pairs->triggerShape->userData));
 
     switch (pairs->status)
     {
     case physx::PxPairFlag::eNOTIFY_TOUCH_FOUND:
         {
-            pTrigger->onTriggerEnter(pairs->otherShape);
+            trigger->onTriggerEnter(pairs->otherShape);
             break;
         }
 
     case physx::PxPairFlag::eNOTIFY_TOUCH_LOST:
         {
-            pTrigger->onTriggerLeave(pairs->otherShape);
+            trigger->onTriggerLeave(pairs->otherShape);
             break;
         }
     }

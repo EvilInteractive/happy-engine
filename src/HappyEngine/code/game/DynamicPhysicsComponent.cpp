@@ -36,7 +36,6 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr)
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
     GAME->removeFromTickList(this);
-    m_Parent->removeSleepEvaluator(boost::bind(&px::PhysicsDynamicActor::isSleeping, m_DynamicActor));
     delete m_DynamicActor;
 }
 
@@ -45,7 +44,6 @@ void DynamicPhysicsComponent::init( Entity* parent )
     HE_ASSERT(parent != nullptr, "Component must have a parent!");
     m_Parent = parent;
     m_DynamicActor = NEW px::PhysicsDynamicActor(m_Parent->getWorldMatrix());
-    m_Parent->addSleepEvaluator(boost::bind(&px::PhysicsDynamicActor::isSleeping, m_DynamicActor));
     GAME->addToTickList(this);
 }
 

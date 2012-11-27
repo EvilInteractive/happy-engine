@@ -63,6 +63,14 @@
 #include "Sprite.h"
 #include "Gui.h"
 
+#include "PhysicsEngine.h"
+#include "StaticPhysicsComponent.h"
+#include "PhysicsConcaveShape.h"
+#include "PhysicsConvexShape.h"
+#include "PhysicsBoxShape.h"
+#include "DynamicPhysicsComponent.h"
+#include "PhysicsDynamicActor.h"
+
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
 
@@ -97,6 +105,8 @@ MainGame::MainGame()
 
 MainGame::~MainGame()
 {
+    PHYSICS->stopSimulation();
+
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FpsGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
     CONSOLE->detachFromRenderer();
@@ -235,63 +245,44 @@ void MainGame::load()
     scene->init(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
     scene->addComponent(modelComp);
-    modelComp->setModelMeshAndMaterial("testScene3.material", "testScene3.binobj");
-
-    modelComp = NEW ge::ModelComponent();
-    modelComp->setModelMeshAndMaterial("testScene4.material", "testScene4.binobj");
-    modelComp->setLocalTranslate(he::vec3(1, 1, 1));
-    modelComp->setLocalRotate(he::mat33::createRotation3D(vec3(0, 1, 0), he::pi));
-    modelComp->setLocalScale(vec3(100.0f, 100.0f, 100.0f));
-    scene->addComponent(modelComp);
-    
+    modelComp->setModelMeshAndMaterial("testScene3.material", "testPlatformer/scene.binobj");    
     m_EntityList.push_back(scene);
-
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    {
-        ge::Entity* entity(NEW he::ge::Entity());
-        entity->init(m_Scene);
-        modelComp = NEW ge::ModelComponent();
-        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
-        entity->addComponent(modelComp);
-        m_MovingEntityList.push_back(entity);
-        m_EntityList.push_back(entity);
-
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-            pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-            pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
+    ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
+    scene->addComponent(physicsComp);
+    px::PhysicsConvexShape convexSceneShape(CONTENT->loadPhysicsConvex("testPlatformer/scene.pxcv"));
+    px::PhysicsConcaveShape concaveSceneShape(CONTENT->loadPhysicsConcave("testPlatformer/scene.pxcc"));
+    physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
+    physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
 
     #pragma endregion
     
     #pragma region Lights
-    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.6f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 2.0f);
+    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 0.0f);
 
     m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
-    m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
-    m_DebugSpotLight->setDirection(vec3(-0.70f, -0.67f, -0.27f));
-    m_DebugSpotLight->setMultiplier(2.0f);
-    m_DebugSpotLight->setAttenuation(1.0f, 20.0f);
-    m_DebugSpotLight->setFov(he::piOverTwo);
-    m_DebugSpotLight->setColor(he::Color(1.0f, 0.4f, 0.4f));
+    m_DebugSpotLight->setLocalTranslate(vec3(-81.985f, -5.572f, 58.675f));
+    m_DebugSpotLight->setDirection(vec3(0.0f, -0.809f, -0.5878f));
+    m_DebugSpotLight->setMultiplier(5.0f);
+    m_DebugSpotLight->setAttenuation(1.0f, 87.0f);
+    m_DebugSpotLight->setFov(he::piOverTwo + he::pi / 6);
+    m_DebugSpotLight->setColor(he::Color(1.0f, 1.0f, 1.0f));
     m_DebugSpotLight->setShadowResolution(gfx::ShadowResolution_512);
 
     he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
-    spotlight->setLocalTranslate(vec3(-35.32f, 6.04f, 31.85f));
-    spotlight->setDirection(vec3(0.80f, 0.13f, -0.58f));
+    spotlight->setLocalTranslate(vec3(-32.468f, 10.291f, 34.99f));
+    spotlight->setDirection(vec3(0.0f, -1.0f, 0.0f));
     spotlight->setMultiplier(2.0f);
-    spotlight->setAttenuation(1.0f, 30.0f);
-    spotlight->setFov(he::piOverFour);
-    spotlight->setColor(he::Color(0.4f, 0.4f, 1.0f));
-    spotlight->setShadowResolution(gfx::ShadowResolution_128);
+    spotlight->setAttenuation(1.0f, 20.0f);
+    spotlight->setFov(he::piOverTwo + he::pi / 6);
+    spotlight->setColor(he::Color(1.0f, 1.0f, 1.0f));
+    spotlight->setShadowResolution(gfx::ShadowResolution_256);
 
     he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
-    pointlight->setLocalTranslate(vec3(-49.02f, 8.08f, 31.07f));
-    pointlight->setMultiplier(3.0f);
-    pointlight->setAttenuation(1.0f, 10.0f);
-    pointlight->setColor(he::Color(0.01f, 0.01f, 1.0f));
+    pointlight->setLocalTranslate(vec3(-81.98f, 5.572f, 45.634f));
+    pointlight->setMultiplier(2.0f);
+    pointlight->setAttenuation(1.0f, 38.0f);
+    pointlight->setColor(he::Color(1.00f, 1.00f, 1.00f));
 
     #pragma endregion
     
@@ -376,6 +367,8 @@ void MainGame::load()
     creator->setColor(he::Color(1.0f,1.0f,1.0f));
     creator->fill();
     creator->renderSpriteAsync();
+
+    PHYSICS->startSimulation();
 }
 
 void MainGame::tick( float dTime )
@@ -385,22 +378,7 @@ void MainGame::tick( float dTime )
     m_MovingEntityFase += dTime / 2.0f;
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
-
-    m_DebugSpotLight->setLocalTranslate(he::vec3(-42.71f, 10.20f, 30.74f) + 
-        he::vec3(pow(cos(m_MovingEntityFase), 4) * 5, 
-                 pow(sin(m_MovingEntityFase), 3) * 3, 
-                 pow(cos(m_MovingEntityFase), 2) * 3));
-    m_DebugSpotLight->setLocalRotate(he::mat33::createRotation3D(he::vec3::up, m_MovingEntityFase));
     
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    {
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
-
     if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
     {
         he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
@@ -412,6 +390,22 @@ void MainGame::tick( float dTime )
         he::vec3 color(he::normalize(he::vec3(s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1))));
         spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
         spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
+    }
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
+    {
+        he::ge::Entity* bullet(NEW he::ge::Entity());
+        bullet->init(m_Scene);
+        bullet->setLocalTranslate(m_View->getCamera()->getPosition());
+        he::ge::ModelComponent* modelComp(NEW he::ge::ModelComponent());
+        modelComp->setLocalScale(he::vec3(0.5f));
+        bullet->addComponent(modelComp);
+        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");  
+        he::ge::DynamicPhysicsComponent* physicsComp(NEW he::ge::DynamicPhysicsComponent());
+        bullet->addComponent(physicsComp);
+        he::px::PhysicsBoxShape shape(he::vec3(1.0f, 1.0f, 1.0f));
+        physicsComp->addShape(&shape, he::px::PhysicsMaterial(1.0f, 0.8f, 0.3f), 1.0f, 0x00000001, 0xffffffff);
+        m_EntityList.push_back(bullet);
+        physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
     }
 
     m_FpsGraph->tick(dTime);
