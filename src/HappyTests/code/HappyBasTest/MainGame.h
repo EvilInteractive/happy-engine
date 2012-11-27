@@ -51,6 +51,9 @@ namespace he {
     namespace sfx {
         class Sound2D;
     }
+    namespace gui {
+        class Sprite;
+    }
 }
 
 namespace ht {
@@ -109,6 +112,8 @@ private:
     //gui
     he::gfx::WebView* m_ToneMapGui;
     he::gfx::WebListener* m_ToneMapGuiListener;
+
+    he::gui::Sprite* m_TestSprite;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

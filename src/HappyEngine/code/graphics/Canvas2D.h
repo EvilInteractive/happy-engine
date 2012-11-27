@@ -110,7 +110,7 @@ public:
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
 
-    void fillText(const gui::Text& txt, const vec2& pos);
+    void fillText(const he::gui::Text& txt, const vec2& pos);
 
     void drawImage(	const Texture2D* tex2D, const vec2& pos,
                     const vec2& newDimensions = vec2(0.0f,0.0f),

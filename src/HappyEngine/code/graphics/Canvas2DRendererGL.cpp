@@ -26,10 +26,12 @@
 #include "Simple2DEffect.h"
 #include "Simple2DFontEffect.h"
 #include "Simple2DTextureEffect.h"
+#include "NinePatchEffect.h"
 #include "ModelMesh.h"
 #include "Vertex.h"
 #include "Text.h"
 #include "Font.h"
+#include "Sprite.h"
 
 namespace he {
 namespace gfx {
@@ -38,16 +40,16 @@ namespace gfx {
 Simple2DEffect* Canvas2DRendererGL::s_ColorEffect = nullptr;
 Simple2DTextureEffect* Canvas2DRendererGL::s_TextureEffect = nullptr;
 Simple2DFontEffect* Canvas2DRendererGL::s_FontEffect = nullptr;
+NinePatchEffect* Canvas2DRendererGL::s_NinePatchEffect = nullptr;
 ObjectHandle Canvas2DRendererGL::s_TextureQuadHandle = ObjectHandle::unassigned;
 uint16 Canvas2DRendererGL::s_Renderers = 0;
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* glContext) :
     m_CanvasBuffer(canvasBuffer),
-    m_FillColor(Color(1.0f,1.0f,1.0f)),
+    m_Color(Color(1.0f,1.0f,1.0f)),
     m_SurfaceDirty(true),
     m_Size(vec2(0,0)),
-    m_RenderBuffer(NEW Canvas2DBuffer()),
     m_Context(glContext)
 {
     ++s_Renderers;
@@ -64,41 +66,27 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
         delete s_TextureEffect;
         delete s_ColorEffect;
         delete s_FontEffect;
+        delete s_NinePatchEffect;
     }
-
-    delete m_RenderBuffer;
 }
 
 /* GENERAL */
 
 /* GETTERS */
-const Texture2D* Canvas2DRendererGL::getRenderTexture() const
-{
-    return ResourceFactory<Texture2D>::getInstance()->get(m_RenderBuffer->renderTextureHandle);
-}
-
-bool Canvas2DRendererGL::isSurfaceDirty() const
-{
-    return m_SurfaceDirty;
-}
 
 /* SETTERS */
-void Canvas2DRendererGL::setFillColor(const Color& col)
+void Canvas2DRendererGL::setColor(const Color& col)
 {
-    if (m_FillColor != col)
+    if (m_Color != col)
     {
-        m_FillColor = col;
+        m_Color = col;
     }
 }
 
 /* DRAW */
-void Canvas2DRendererGL::clear()
-{
-    m_RenderBuffer->clear();
-}
 void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 {
-    HE_ASSERT(m_RenderBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
     HE_ASSERT(text.getFont() != nullptr, "Text has no font set!");
     HE_ASSERT(text.getFont()->isPreCached() == true, "Font needs to be precached!");
@@ -108,7 +96,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     s_FontEffect->begin();
     
     s_FontEffect->setDiffuseMap(tex2D);
-    s_FontEffect->setFontColor(m_FillColor);
+    s_FontEffect->setFontColor(m_Color);
     s_FontEffect->setDepth(0.5f);
 
     GL::heBlendEnabled(true);
@@ -119,7 +107,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    GL::heBindFbo(m_RenderBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
 
     vec2 linePos = pos;
@@ -209,7 +197,7 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
                                     const vec2& newDimensions,
                                     const RectI regionToDraw)
 {
-    HE_ASSERT(m_RenderBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
     vec2 tcOffset(0.0f,0.0f);
     vec2 tcScale(1.0f,1.0f);
@@ -253,7 +241,45 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
     
-    GL::heBindFbo(m_RenderBuffer->frameBufferId);
+    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindVao(m_TextureQuad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
+}
+void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
+                                    const vec2& size)
+{
+    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+
+    vec2 s(sprite->getSize());
+    RectF c(sprite->getCenter());
+
+    if (size != vec2(0.0f,0.0f))
+    {
+        //vec2 scale(size.x / s.x, size.y / s.y);
+        c.width = size.x - (s.x - c.width);
+        c.height = size.y - (s.y - c.height);
+
+        s = size;
+    }
+
+    mat44 world(mat44::createTranslation(vec3(pos.x + s.x/2, pos.y + s.y/2, 0.0f)) * mat44::createScale(s.x, s.y, 1.0f));
+    
+    s_NinePatchEffect->begin();
+    s_NinePatchEffect->setWorldMatrix(m_OrthographicMatrix * world);
+    s_NinePatchEffect->setCenter(c);
+    s_NinePatchEffect->setSize(s);
+    s_NinePatchEffect->setOriginalSize(sprite->getSize());
+    s_NinePatchEffect->setDiffuseMap(sprite->getRenderTexture());
+    s_NinePatchEffect->setDepth(0.5f);
+
+    GL::heBlendEnabled(true);
+    GL::heBlendEquation(BlendEquation_Add);
+    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
+    
+    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
@@ -262,8 +288,6 @@ void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
 void Canvas2DRendererGL::init()
 {
     m_Size = m_CanvasBuffer->size;
-
-    m_RenderBuffer->init(m_Context, m_Size);
 
     if (s_ColorEffect == nullptr)
     {
@@ -279,6 +303,11 @@ void Canvas2DRendererGL::init()
     {
         s_FontEffect = NEW Simple2DFontEffect();
         s_FontEffect->load();
+    }
+    if (s_NinePatchEffect == nullptr)
+    {
+        s_NinePatchEffect = NEW NinePatchEffect();
+        s_NinePatchEffect->load();
     }
 
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_Size.x, 0.0f, m_Size.y, 0.0f, 1.0f);

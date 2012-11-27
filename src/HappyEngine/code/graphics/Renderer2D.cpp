@@ -165,7 +165,7 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_TextureQuad->setLoaded();
 
     m_DefaultCanvas = createCanvasRelative(RectF(0,0,1,1));
-    m_CanvasNew = NEW Canvas2Dnew(this, RectF(0,0,1,1));
+    m_CanvasNew = NEW he::gui::Canvas2Dnew(this, RectF(0,0,1,1));
     m_CanvasNew->init();
 }
 
@@ -241,7 +241,7 @@ void Renderer2D::detachFromRender(IDrawable2D* drawable)
     }
 }
 
-Canvas2Dnew* Renderer2D::getNewCanvas() const
+he::gui::Canvas2Dnew* Renderer2D::getNewCanvas() const
 {
     return m_CanvasNew;
 }

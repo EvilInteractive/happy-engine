@@ -24,9 +24,11 @@
 namespace he {
 namespace gfx {
     class GraphicsEngine;
-    class HappyQtWidget;
     class ShapeRenderer;
     class Renderer2D;
+}
+namespace gui {
+    struct Gui;
 }
 namespace io {
     class ControlsManager;
@@ -61,6 +63,7 @@ namespace ge {
 #define CONSOLE HAPPYENGINE->getConsole()
 #define AUDIO HAPPYENGINE->getSoundEngine()
 #define GAME HAPPYENGINE->getGame()
+#define GUI HAPPYENGINE->getGui()
 
 namespace he {
 enum SubEngine
@@ -94,41 +97,43 @@ public:
     const Path& getRootDir() const { return m_RootDir; } //includes trailing slash
 
     //subengines
-    gfx::GraphicsEngine* getGraphicsEngine() const { return m_pGraphicsEngine; }
-    io::ControlsManager* getControls() const { return m_pControlsManager; }
-    px::PhysicsEngine* getPhysics() const { return m_pPhysicsEngine; }
-    ct::ContentManager* getContentManager() const { return m_pContentManager; }
-    net::NetworkManager* getNetworkManager() const { return m_pNetworkManager; }
-    tools::Console* getConsole() const { return m_pConsole; }
-    sfx::SoundEngine* getSoundEngine() const { return m_pSoundEngine; }
-    ge::Game* getGame() const { return m_pGame; }
+    gfx::GraphicsEngine* getGraphicsEngine() const { return m_GraphicsEngine; }
+    io::ControlsManager* getControls() const { return m_ControlsManager; }
+    px::PhysicsEngine* getPhysics() const { return m_PhysicsEngine; }
+    ct::ContentManager* getContentManager() const { return m_ContentManager; }
+    net::NetworkManager* getNetworkManager() const { return m_NetworkManager; }
+    tools::Console* getConsole() const { return m_Console; }
+    sfx::SoundEngine* getSoundEngine() const { return m_SoundEngine; }
+    ge::Game* getGame() const { return m_Game; }
+    gui::Gui* getGui() const { return m_Gui; }
 
     static const Random& getRandom() { return s_Random; }
 
 private:
     // Singleton design pattern
     HappyEngine();
-    static HappyEngine* s_pHappyEngine;
+    static HappyEngine* s_HappyEngine;
     static Random s_Random;
 
     void initSubEngines(int subengines);
     
-    ge::Game* m_pGame;
+    ge::Game* m_Game;
 
-    gfx::GraphicsEngine* m_pGraphicsEngine;
+    gfx::GraphicsEngine* m_GraphicsEngine;
 
-    io::ControlsManager* m_pControlsManager;
-    px::PhysicsEngine* m_pPhysicsEngine;
-    ct::ContentManager* m_pContentManager;
-    net::NetworkManager* m_pNetworkManager;
-    tools::Console* m_pConsole;
-    sfx::SoundEngine* m_pSoundEngine;
+    io::ControlsManager* m_ControlsManager;
+    px::PhysicsEngine* m_PhysicsEngine;
+    ct::ContentManager* m_ContentManager;
+    net::NetworkManager* m_NetworkManager;
+    tools::Console* m_Console;
+    sfx::SoundEngine* m_SoundEngine;
+    gui::Gui* m_Gui;
 
     Path m_RootDir;
 
     bool m_Quit;
-    bool m_bShowProfiler;
-    bool m_bGameLoading;
+    bool m_ShowProfiler;
+    bool m_GameLoading;
 
     int m_SubEngines;
 

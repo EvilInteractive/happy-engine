@@ -60,6 +60,8 @@
 #include "WebListener.h"
 #include "Canvas2Dnew.h"
 #include "MathFunctions.h"
+#include "Sprite.h"
+#include "Gui.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -80,6 +82,7 @@ MainGame::MainGame()
     , m_Scene(nullptr)
     , m_RenderPipeline(nullptr), m_RenderPipeline2(nullptr)
     , m_ToneMapGui(nullptr), m_ToneMapGuiListener(nullptr)
+    , m_TestSprite(nullptr)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -100,6 +103,8 @@ MainGame::~MainGame()
     PROFILER->detachFromRenderer();
 
     delete m_FpsGraph;
+
+    m_TestSprite->release();
     
     delete m_ToneMapGui;
     delete m_ToneMapGuiListener;
@@ -359,22 +364,18 @@ void MainGame::load()
 
     m_ToneMapGui->OnUrlLoaded += onGuiLoaded;
 
-    he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
-    
-    he::vec2 pos(1000,50);
-    he::vec2 size(20,20);
-    float radius(5.0f);
-
-    cvs->clear();
-
-    cvs->roundedRectangle(pos, size, radius);
-
-    cvs->setFillColor(he::Color(1.0f,0.0f,0.3f));
-    cvs->fill();
-
-    cvs->setLineWidth(2.0f);
-    cvs->setStrokeColor(he::Color(1.f,1.f,1.f,0.8f));
-    cvs->stroke();
+    he::gui::SpriteCreator* creator(GUI->Sprites);
+    m_TestSprite = creator->createSprite(he::vec2(200,200));
+    creator->roundedRectangle(he::vec2(0,0), he::vec2(200,200), 50.0f);
+    creator->setColor(he::Color(1.0f,0.0f,1.0f));
+    creator->fill();
+    creator->roundedRectangle(he::vec2(40,0), he::vec2(40,40), 10.0f);
+    creator->setColor(he::Color(1.0f,1.0f,1.0f));
+    creator->fill();
+    creator->roundedRectangle(he::vec2(120,0), he::vec2(40,40), 10.0f);
+    creator->setColor(he::Color(1.0f,1.0f,1.0f));
+    creator->fill();
+    creator->renderSpriteAsync();
 }
 
 void MainGame::tick( float dTime )
@@ -445,27 +446,8 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     canvas->fillText(m_DebugText, he::vec2(12, 12));
     
     // NEW CANVAS TEST
-    /*he::gfx::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
-    
-    he::vec2 pos(500,300);
-    he::vec2 size(200,200);
-    float radius(20.0f);
-
-    cvs->clear();
-
-    cvs->roundedRectangle(pos, size, radius);
-
-    cvs->setFillColor(he::Color(1.0f,0.0f,0.3f));
-    cvs->fill();
-
-    cvs->setLineWidth(20.0f);
-    cvs->setStrokeColor(he::Color(1.f,1.f,1.f,0.8f));
-    cvs->stroke();
-
-    cvs->setFillColor(he::Color(1.0f,1.0f,1.0f));
-    cvs->fillText(m_DebugText, he::vec2(500,500));
-
-    cvs->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(600, 500), he::vec2(128, 128));*/
+    he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
+    cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)

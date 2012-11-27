@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011  Bastian Damman, Sebastiaan Sprengers
 //
 //This file is part of HappyEngine.
 //
@@ -15,40 +15,25 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 17/11/2012
+//Author: Sebastiaan Sprengers
 
-// This struct holds the buffers for canvas2d
+#version 150 core
 
-#ifndef _HE_CANVAS2DBUFFER_H_
-#define _HE_CANVAS2DBUFFER_H_
-#pragma once
+in vec2 inPosition;
+in vec2 inTexCoord;
 
-namespace he {
-namespace gfx {
+out vec2 passTexCoord;
 
-struct Canvas2DBuffer
+uniform mat4 matWVP;
+uniform float depth;
+
+void main()
 {
-public:
+	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
+	
+	vec2 tC = inTexCoord;
 
-    /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2DBuffer();
-    ~Canvas2DBuffer();
-
-    /* GENERAL */
-    void init(GLContext* context, const vec2& size);
-    void clear();
-    void resize(const vec2& size);
-    void store();
-
-    /* DATA */
-    ObjectHandle renderTextureHandle;
-    uint32 frameBufferId;
-    //uint32 depthRenderBufferId;
-    GLContext* glContext;
-    vec2 size;
-};
-
-}} //end namespace
-
-#endif
+	tC = vec2(inTexCoord.x, 1.0f - inTexCoord.y);
+	
+	passTexCoord = tC;
+}
