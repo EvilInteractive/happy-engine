@@ -1,7 +1,6 @@
 set (CODE_TOOL_NO_FILTER
         FPSGraph.cpp                 FPSGraph.h
         Grid.cpp                     Grid.h
-        LoadingScreen.cpp            LoadingScreen.h
         Logger.cpp                   Logger.h
         Path.cpp                     Path.h
         Profiler.cpp                 Profiler.h

@@ -66,8 +66,8 @@ void Canvas2DBuffer::init(GLContext* context, const vec2& size)
     renderTextureHandle = ResourceFactory<Texture2D>::getInstance()->create();
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(renderTextureHandle));
 
-    texture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Linear, gfx::TextureFormat_RGBA8, false);
-    texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);
+    texture->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_RGBA8, false);
+    texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, TextureBufferLayout_RGBA, TextureBufferType_Byte, 0);
     texture->setLoadFinished();
 
     // FBO & RB

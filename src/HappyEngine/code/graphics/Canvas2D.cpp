@@ -403,7 +403,7 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
+void Canvas2D::fillText(const he::gui::Text& txt, const vec2& pos)
 {
     HE_ASSERT(m_BufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     PROFILER_BEGIN("Canvas2D::fillText");
@@ -427,7 +427,7 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
     setBlendStyle(BlendStyle_Alpha);
     applyBlend();
 
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    GL::heBlendFuncSeperate(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha, BlendFunc_One, BlendFunc_One);
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     GL::heSetDepthRead(true);
@@ -501,14 +501,14 @@ void Canvas2D::fillText(const gui::Text& txt, const vec2& pos)
 
             size = vec2(regionToDraw.width, regionToDraw.height);
 
-            mat44 world(mat44::createTranslation(vec3(glyphPos.x + size.x/2, glyphPos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+            if (i2 > 0)
+            {
+               glyphPos.x += txt.getFont()->getKerning(txt.getText()[i][i2 - 1], txt.getText()[i][i2]);
+            }
+
+            mat44 world(mat44::createTranslation(vec3(glyphPos.x + (size.x/2), glyphPos.y + (size.y/2), 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
 
             glyphPos.x += cData->advance.x;
-
-            if (i2 < txt.getText()[i].size() - 1)
-            {
-                glyphPos.x += txt.getFont()->getKerning(txt.getText()[i][i2], txt.getText()[i][i2 + 1]);
-            }
               
             m_FontEffect->setWorldMatrix(m_OrthographicMatrix * world);
             m_FontEffect->setTCOffset(tcOffset);

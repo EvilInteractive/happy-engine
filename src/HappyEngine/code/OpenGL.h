@@ -120,6 +120,10 @@ public:
     // Blending
     static void heBlendEnabled(bool enabled);
     static void heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor);
+    static void heBlendFuncSeperate(BlendFunc colorSrcFactor,
+                                    BlendFunc colorDestFactor,
+                                    BlendFunc alphaSrcFactor,
+                                    BlendFunc alphaDestFactor);
     static void heBlendEquation(BlendEquation eq);
     static void heBlendColor(const Color& color);
 

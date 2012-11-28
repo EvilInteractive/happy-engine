@@ -31,19 +31,15 @@
 #include "MathFunctions.h"
 
 namespace he {
-namespace gfx {
+namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Canvas2Dnew::Canvas2Dnew(Renderer2D* parent,const RectF& relativeViewport) :
+Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent,const RectF& relativeViewport) :
     m_Renderer2D(parent),
-    m_BufferData(NEW Canvas2DBuffer()),
+    m_BufferData(NEW gfx::Canvas2DBuffer()),
     m_CanvasDepth(0x7fff),
-    m_RenderTexture(nullptr),
-    m_RendererCairo(nullptr),
     m_RendererGL(nullptr),
-    m_StrokeColor(Color(1.0f,1.0f,1.0f)),
-    m_FillColor(Color(1.0f,1.0f,1.0f)),
-    m_LineWidth(1.0f)
+    m_Color(Color(1.0f,1.0f,1.0f))
 {
     m_Position = vec2(
         (parent->getView()->getViewport().x * relativeViewport.x),
@@ -54,16 +50,12 @@ Canvas2Dnew::Canvas2Dnew(Renderer2D* parent,const RectF& relativeViewport) :
         (parent->getView()->getViewport().height * relativeViewport.height));
 }
 
-Canvas2Dnew::Canvas2Dnew(Renderer2D* parent, const RectI& absoluteViewport) :
+Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent, const RectI& absoluteViewport) :
     m_Renderer2D(parent),
-    m_BufferData(NEW Canvas2DBuffer()),
+    m_BufferData(NEW gfx::Canvas2DBuffer()),
     m_CanvasDepth(0x7fff),
-    m_RenderTexture(nullptr),
-    m_RendererCairo(nullptr),
     m_RendererGL(nullptr),
-    m_StrokeColor(Color(1.0f,1.0f,1.0f)),
-    m_FillColor(Color(1.0f,1.0f,1.0f)),
-    m_LineWidth(1.0f)
+    m_Color(Color(1.0f,1.0f,1.0f))
 {
     m_Position = vec2(
         static_cast<float>(absoluteViewport.x),
@@ -84,17 +76,13 @@ void Canvas2Dnew::init()
 {
     m_BufferData->init(m_Renderer2D->getView()->getWindow()->getContext(), m_Size);
 
-    ResourceFactory<Texture2D>::getInstance()->instantiate(m_BufferData->renderTextureHandle);
-    m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle);
-
-    m_RendererCairo = NEW Canvas2DRendererCairo(m_BufferData);
-    m_RendererGL = NEW Canvas2DRendererGL(m_BufferData, m_Renderer2D->getView()->getWindow()->getContext());
+    m_RendererGL = NEW gfx::Canvas2DRendererGL(m_BufferData, m_Renderer2D->getView()->getWindow()->getContext());
     m_RendererGL->init();
 }
 
 /* GETTERS */
 
-Canvas2DBuffer* Canvas2Dnew::getCanvas2DBuffer() const
+gfx::Canvas2DBuffer* Canvas2Dnew::getCanvas2DBuffer() const
 {
     return m_BufferData;
 }
@@ -130,126 +118,50 @@ void Canvas2Dnew::setSize(const vec2& size)
 {
     m_Size = size;
 }
-void Canvas2Dnew::setFillColor(const Color& fillColor)
-{
-    if (m_FillColor != fillColor)
-    {
-        m_FillColor = fillColor;
-    }
-}
-void Canvas2Dnew::setStrokeColor(const Color& strokeColor)
-{
-    if (m_StrokeColor != strokeColor)
-    {
-        m_StrokeColor = strokeColor;
-    }
-}
 
-void Canvas2Dnew::setLineWidth(float width)
+void Canvas2Dnew::setColor(const Color& color)
 {
-    if (m_LineWidth != width)
-    {
-        m_LineWidth = width;
-        m_RendererCairo->setLineWidth(width);
-    }
+    m_Color = color;
 }
 
 /* DRAW */
 void Canvas2Dnew::clear()
 {
-    m_RendererCairo->clear();
-    m_RendererGL->clear();
+    m_BufferData->clear();
 }
 void Canvas2Dnew::draw()
 {
-    // wait if rendering is not finished
-    while (m_RendererCairo->isRendering()) {}
+    gfx::Texture2D* tex2D(ResourceFactory<gfx::Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle));
 
     m_Renderer2D->drawTexture2DToScreen(
-        m_RendererCairo->getRenderTexture(),
-        m_Position,
-        true,
-        he::vec2(
-        (float)m_RendererCairo->getRenderTexture()->getWidth(),
-        -(float)m_RendererCairo->getRenderTexture()->getHeight()));
-
-    m_Renderer2D->drawTexture2DToScreen(
-        m_RendererGL->getRenderTexture(),
+        tex2D,
         m_Position,
         true);
 }
-void Canvas2Dnew::moveTo(const vec2& pos)
-{
-    m_RendererCairo->moveTo(pos);
-}
-void Canvas2Dnew::lineTo(const vec2& pos)
-{
-    m_RendererCairo->lineTo(pos);
-}
-void Canvas2Dnew::rectangle(const vec2& pos, const vec2& size)
-{
-    m_RendererCairo->rectangle(pos, size);
-}
-void Canvas2Dnew::roundedRectangle(const vec2& pos, const vec2& size, float radius)
-{
-    m_RendererCairo->newPath();
-    m_RendererCairo->arc(he::vec2(pos.x + radius, pos.y + radius), radius, toRadians(180.0f), toRadians(90.0f));
-    m_RendererCairo->arc(he::vec2(pos.x - radius + size.x, pos.y + radius), radius, toRadians(90.0f), toRadians(0.0f));
-    m_RendererCairo->arc(he::vec2(pos.x - radius + size.x, pos.y - radius + size.y), radius, toRadians(0.0f), toRadians(-90.0f));
-    m_RendererCairo->arc(he::vec2(pos.x + radius, pos.y - radius + size.y), radius, toRadians(-90.0f), toRadians(-180.0f));
-    m_RendererCairo->closePath();
-}
-void Canvas2Dnew::circle(const vec2& pos, float radius)
-{
-    m_RendererCairo->circle(pos, radius);
-}
-void Canvas2Dnew::arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd)
-{
-    m_RendererCairo->arc(pos, radius, angleRadStart, angleRadEnd);
-}
-void Canvas2Dnew::curveTo(const vec2& start, const vec2& middle, const vec2& end)
-{
-    m_RendererCairo->curveTo(start, middle, end);
-}
-void Canvas2Dnew::newPath()
-{
-    m_RendererCairo->newPath();
-}
-void Canvas2Dnew::closePath()
-{
-    m_RendererCairo->closePath();
-}
 
-void Canvas2Dnew::stroke()
+void Canvas2Dnew::fillText(const Text& text, const vec2& pos)
 {
-    m_RendererCairo->setColor(m_StrokeColor);
-    m_RendererCairo->stroke();
-}
-void Canvas2Dnew::fill()
-{
-    m_RendererCairo->setColor(m_FillColor);
-    m_RendererCairo->fill();
-}
-
-void Canvas2Dnew::fillText(const gui::Text& text, const vec2& pos)
-{
-    m_RendererGL->setFillColor(m_FillColor);
+    m_RendererGL->setColor(m_Color);
     m_RendererGL->fillText(text, pos);
 }
 
-void Canvas2Dnew::drawImage(const Texture2D* tex2D, const vec2& pos,
+void Canvas2Dnew::drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
                             const vec2& newDimensions,
                             const RectI& regionToDraw)
 {
     m_RendererGL->drawImage(tex2D, pos, newDimensions, regionToDraw);
 }
 
+void Canvas2Dnew::drawSprite(const Sprite* sprite, const vec2& pos,
+                             const vec2& size)
+{
+    m_RendererGL->drawSprite(sprite, pos, size);
+}
+
 /* INTERNAL */
 void Canvas2Dnew::cleanup()
 {
-    m_RenderTexture->release();
     delete m_BufferData;
-    delete m_RendererCairo;
     delete m_RendererGL;
 }
 

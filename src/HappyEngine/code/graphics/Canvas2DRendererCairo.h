@@ -30,34 +30,37 @@ struct _cairo_surface;
 struct _cairo;
 
 namespace he {
+namespace gui {
+    class Sprite;
+}
 namespace gfx {
     struct Canvas2DBuffer;
     class Texture2D;
+
 
 class Canvas2DRendererCairo
 {
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2DRendererCairo(Canvas2DBuffer* canvasBuffer);
+    Canvas2DRendererCairo();
     virtual ~Canvas2DRendererCairo();
 
     /* GENERAL */
-    void blit();
+    void tick(float dTime);
+    void glThreadInvoke();
+
+    void addNewSprite(he::gui::Sprite* sprite);
+    void finishSprite();
 
     /* SETTERS */
     void setLineWidth(float width);
     void setColor(const Color& col);
-	void setDirty(bool dirty = true);
 
     /* GETTERS */
-	const Texture2D* getRenderTexture(bool blitIfDirty = true);
-	bool isSurfaceDirty() const;
-    bool isRendering();
 
     /* DRAW */
-	void clear();
-
+    void clear();
     void moveTo(const vec2& pos);
     void lineTo(const vec2& pos);
 
@@ -75,28 +78,51 @@ public:
 private:
 
     /* INTERNAL */
+    enum SpriteReadyState
+    {
+        SpriteReadyForRender =    0x01,
+        SpriteReadyForBlit =      0x02
+    };
+
+    struct SpriteData
+    {
+        SpriteData( const uint16& id,
+                    const vec2& size,
+                    Texture2D* tex2D,
+                    unsigned char* rBuff,
+                    _cairo_surface* surf,
+                    _cairo* cp) :
+                        id(id),
+                        size(size),
+                        texture2D(tex2D),
+                        renderBuffer(rBuff),
+                        cairoSurface(surf),
+                        cairoPaint(cp),
+                        readyState(0x00)
+        {}
+
+        uint16 id;
+        vec2 size;
+        std::queue<boost::function0<void> > drawCalls;
+        Texture2D* texture2D;
+        unsigned char* renderBuffer;
+        _cairo_surface* cairoSurface;
+        _cairo* cairoPaint;
+        char readyState;
+    };
+
+    void blit();
     float normalizeAngle(float a);
     void handleDrawCalls();
 
     /* MEMBERS */
-    Canvas2DBuffer* m_CanvasBuffer;
+    std::queue<SpriteData> m_SpriteList;
+    std::queue<SpriteData> m_SpriteListBlit;
 
-    _cairo_surface* m_CairoSurface;
-    _cairo* m_Cairo;
-
-    //List<unsigned char*> m_RenderBuffers;
-	unsigned char* m_RenderBuffer;
-    Texture2D* m_RenderTexture;
-
-    std::queue<boost::function0<void> > m_DrawCalls;
     boost::thread m_DrawThread;
-    boost::mutex m_CairoLock;
-    boost::mutex m_QueueLock;
-    bool m_HandleDrawCalls;
-
-	bool m_SurfaceDirty;
-
-    vec2 m_Size;
+    boost::mutex m_SpriteListLock;
+    boost::mutex m_SpriteListBlitLock;
+    boost::mutex m_RenderThreadLock;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2DRendererCairo(const Canvas2DRendererCairo&);

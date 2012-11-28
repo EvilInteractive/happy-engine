@@ -1,0 +1,139 @@
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//
+//This file is part of HappyEngine.
+//
+//    HappyEngine is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    HappyEngine is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
+//
+//Author:  Sebastiaan Sprengers
+//Created: 25/11/2012
+
+#include "HappyPCH.h" 
+
+#include "SpriteCreator.h"
+#include "Canvas2DRendererCairo.h"
+#include "Sprite.h"
+
+#define FACTORY ResourceFactory<gui::Sprite>::getInstance()
+
+namespace he {
+namespace gui {
+
+SpriteCreator::SpriteCreator() : m_Renderer(NEW gfx::Canvas2DRendererCairo()),
+                                 m_LineWidth(-1.0f)
+{
+}
+
+SpriteCreator::~SpriteCreator()
+{
+    delete m_Renderer;
+    FACTORY->garbageCollect();
+}
+
+/* GENERAL */
+void SpriteCreator::tick(float dTime)
+{
+    m_Renderer->tick(dTime);
+}
+void SpriteCreator::glThreadInvoke()
+{
+    m_Renderer->glThreadInvoke();
+}
+
+Sprite* SpriteCreator::createSprite(const vec2& size)
+{
+    ObjectHandle handle(FACTORY->create());
+    Sprite* sp(FACTORY->get(handle));
+
+    sp->init(size);
+    m_Renderer->addNewSprite(sp);
+
+    return sp;
+}
+void SpriteCreator::renderSpriteAsync()
+{
+    m_Renderer->finishSprite();
+}
+
+/* GETTERS */
+    
+/* SETTERS */
+void SpriteCreator::setColor(const Color& color)
+{
+    if (m_Color != color)
+    {
+        m_Renderer->setColor(color);
+        m_Color = color;
+    }
+}
+void SpriteCreator::setLineWidth(float width)
+{
+    if (m_LineWidth != width)
+    {
+        m_Renderer->setLineWidth(width);
+        m_LineWidth = width;
+    }
+}
+
+/* DRAW */
+void SpriteCreator::moveTo(const vec2& pos)
+{
+    m_Renderer->moveTo(pos);
+}
+void SpriteCreator::lineTo(const vec2& pos)
+{
+    m_Renderer->lineTo(pos);
+}
+void SpriteCreator::rectangle(const vec2& pos, const vec2& size)
+{
+    m_Renderer->rectangle(pos,size);
+}
+void SpriteCreator::roundedRectangle(const vec2& pos, const vec2& size, float radius)
+{
+    m_Renderer->newPath();
+    m_Renderer->arc(he::vec2(pos.x + radius, pos.y + radius), radius, toRadians(180.0f), toRadians(90.0f));
+    m_Renderer->arc(he::vec2(pos.x - radius + size.x, pos.y + radius), radius, toRadians(90.0f), toRadians(0.0f));
+    m_Renderer->arc(he::vec2(pos.x - radius + size.x, pos.y - radius + size.y), radius, toRadians(0.0f), toRadians(-90.0f));
+    m_Renderer->arc(he::vec2(pos.x + radius, pos.y - radius + size.y), radius, toRadians(-90.0f), toRadians(-180.0f));
+    m_Renderer->closePath();
+}
+void SpriteCreator::circle(const vec2& pos, float radius)
+{
+    m_Renderer->circle(pos,radius);
+}
+void SpriteCreator::arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd)
+{
+    m_Renderer->arc(pos,radius,angleRadStart,angleRadEnd);
+}
+void SpriteCreator::curveTo(const vec2& start, const vec2& middle, const vec2& end)
+{
+    m_Renderer->curveTo(start,middle,end);
+}
+void SpriteCreator::newPath()
+{
+    m_Renderer->newPath();
+}
+void SpriteCreator::closePath()
+{
+    m_Renderer->closePath();
+}
+void SpriteCreator::stroke()
+{
+    m_Renderer->stroke();
+}
+void SpriteCreator::fill()
+{
+    m_Renderer->fill();
+}
+
+}} //end namespace

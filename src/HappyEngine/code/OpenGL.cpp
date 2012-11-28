@@ -167,9 +167,30 @@ void GL::heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor)
 {
     if (srcFactor != s_CurrentContext->m_BlendSrc || destFactor != s_CurrentContext->m_BlendDest)
     {
+        s_CurrentContext->m_SepColBlendSrc = BlendFunc_Unassigned;
+
         s_CurrentContext->m_BlendSrc = srcFactor;
         s_CurrentContext->m_BlendDest = destFactor;
         glBlendFunc(srcFactor, destFactor);
+    }
+}
+void GL::heBlendFuncSeperate(BlendFunc colorSrcFactor,
+                             BlendFunc colorDestFactor,
+                             BlendFunc alphaSrcFactor,
+                             BlendFunc alphaDestFactor)
+{
+    if (colorSrcFactor != s_CurrentContext->m_SepColBlendSrc ||
+        colorSrcFactor != s_CurrentContext->m_SepColBlendSrc ||
+        colorSrcFactor != s_CurrentContext->m_SepColBlendSrc ||
+        colorSrcFactor != s_CurrentContext->m_SepColBlendSrc)
+    {
+        s_CurrentContext->m_BlendSrc = BlendFunc_Unassigned;
+
+        s_CurrentContext->m_SepColBlendSrc = colorSrcFactor;
+        s_CurrentContext->m_SepColBlendDest = colorDestFactor;
+        s_CurrentContext->m_SepAlBlendSrc = alphaSrcFactor;
+        s_CurrentContext->m_SepAlBlendDest = alphaDestFactor;
+        glBlendFuncSeparate(colorSrcFactor, colorDestFactor, alphaSrcFactor, alphaDestFactor);
     }
 }
 void GL::heBlendEquation( BlendEquation eq )

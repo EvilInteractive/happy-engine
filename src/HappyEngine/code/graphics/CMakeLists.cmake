@@ -21,7 +21,10 @@ set (CODE_GRAPHICS_GUI_FILTER
             Font.cpp                            Font.h
             Scrollbar.cpp                       Scrollbar.h
             Text.cpp                            Text.h
-            TextBox.cpp                         TextBox.h)
+            TextBox.cpp                         TextBox.h
+			Sprite.cpp							Sprite.h
+			SpriteCreator.cpp					SpriteCreator.h
+			Gui.h)
             
 set (CODE_GRAPHICS_LIGHT_FILTER
             AmbientLight.cpp                    AmbientLight.h
@@ -62,49 +65,50 @@ set (CODE_GRAPHICS_RENDERING_FILTER
             View.cpp                            View.h
             Window.cpp                          Window.h)
             
-    set (CODE_GRAPHICS_RENDERING_2D_FILTER
-                Canvas2D.cpp                        Canvas2D.h
-				Canvas2Dnew.cpp                     Canvas2Dnew.h
-				Canvas2DBuffer.cpp                  Canvas2DBuffer.h
-				Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
-				Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h
-                Renderer2D.cpp                      Renderer2D.h
-                Simple2DEffect.cpp                  Simple2DEffect.h
-                Simple2DFontEffect.cpp              Simple2DFontEffect.h
-                Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
-                WebView.cpp                         WebView.h
-				WebListener.cpp					    WebListener.h
-				JSObject.h)
-                
-    set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
-                Deferred3DRenderer.cpp              Deferred3DRenderer.h)
-                
-    set (CODE_GRAPHICS_RENDERING_FORWARD_FILTER
-                BillboardEffect.cpp                 BillboardEffect.h
-                ShapeRenderer.cpp                   ShapeRenderer.h
-                Forward3DRenderer.cpp               Forward3DRenderer.h
-                SimpleColorEffect.cpp               SimpleColorEffect.h)
-                
-    set (CODE_GRAPHICS_RENDERING_INSTANCING_FILTER                      
-                IInstanceFiller.h
-                IInstancible.h   
-                InstancingBuffer.cpp                InstancingBuffer.h
-                InstancingController.cpp            InstancingController.h
-                InstancingManager.cpp               InstancingManager.h)
-                
-    set (CODE_GRAPHICS_RENDERING_MANAGER_FILTER
-                DrawListContainer.cpp               DrawListContainer.h
-                GraphicsEngine.cpp                  GraphicsEngine.h 
-                RenderSettings.h)
-                
-    set (CODE_GRAPHICS_RENDERING_POST_FILTER
-                AutoExposure.cpp                    AutoExposure.h
-                Bloom.cpp                           Bloom.h
-                PostProcesser.cpp                   PostProcesser.h)
-    
-    set (CODE_GRAPHICS_RENDERING_SHADOW_FILTER
-                ShadowCaster.cpp                    ShadowCaster.h
-				ShadowCasterSpotlight.cpp			ShadowCasterSpotlight.h)
+set (CODE_GRAPHICS_RENDERING_2D_FILTER
+			Canvas2D.cpp                        Canvas2D.h
+			Canvas2Dnew.cpp                     Canvas2Dnew.h
+			Canvas2DBuffer.cpp                  Canvas2DBuffer.h
+			Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
+			Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h
+			Renderer2D.cpp                      Renderer2D.h
+			Simple2DEffect.cpp                  Simple2DEffect.h
+			Simple2DFontEffect.cpp              Simple2DFontEffect.h
+			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
+			WebView.cpp                         WebView.h
+			WebListener.cpp					    WebListener.h
+			JSObject.h
+			NinePatchEffect.cpp					NinePatchEffect.h)
+			
+set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
+			Deferred3DRenderer.cpp              Deferred3DRenderer.h)
+			
+set (CODE_GRAPHICS_RENDERING_FORWARD_FILTER
+			BillboardEffect.cpp                 BillboardEffect.h
+			ShapeRenderer.cpp                   ShapeRenderer.h
+			Forward3DRenderer.cpp               Forward3DRenderer.h
+			SimpleColorEffect.cpp               SimpleColorEffect.h)
+			
+set (CODE_GRAPHICS_RENDERING_INSTANCING_FILTER                      
+			IInstanceFiller.h
+			IInstancible.h   
+			InstancingBuffer.cpp                InstancingBuffer.h
+			InstancingController.cpp            InstancingController.h
+			InstancingManager.cpp               InstancingManager.h)
+			
+set (CODE_GRAPHICS_RENDERING_MANAGER_FILTER
+			DrawListContainer.cpp               DrawListContainer.h
+			GraphicsEngine.cpp                  GraphicsEngine.h 
+			RenderSettings.h)
+			
+set (CODE_GRAPHICS_RENDERING_POST_FILTER
+			AutoExposure.cpp                    AutoExposure.h
+			Bloom.cpp                           Bloom.h
+			PostProcesser.cpp                   PostProcesser.h)
+
+set (CODE_GRAPHICS_RENDERING_SHADOW_FILTER
+			ShadowCaster.cpp                    ShadowCaster.h
+			ShadowCasterSpotlight.cpp			ShadowCasterSpotlight.h)
     
     
 foreach(f ${CODE_GRAPHICS_NO_FILTER}) 

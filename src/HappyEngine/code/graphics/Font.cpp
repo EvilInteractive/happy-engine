@@ -104,31 +104,33 @@ void Font::preCache(bool extendedCharacters)
     {
         // load character glyphs
         FT_ULong c(chr);
-        FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
+        //FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
+        FT_UInt glyphIndex = FT_Get_Char_Index(m_Face, c);
 
         // render glyph
-        FT_Glyph glyph;
-        FT_Get_Glyph(m_Face->glyph, &glyph);
+        FT_GlyphSlot& glyph = m_Face->glyph;
+        //FT_Get_Glyph(m_Face->glyph, &glyph);
+        FT_Load_Glyph(m_Face, glyphIndex, FT_LOAD_RENDER);
 
         // normal -> 256 gray -> AA
-        FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-        FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
+        //FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
+        FT_Bitmap bmpGlyph = glyph->bitmap;
 
-        if (bmpGlyph->bitmap.rows > maxHeight)
-            maxHeight = bmpGlyph->bitmap.rows;
+        if (bmpGlyph.rows > maxHeight)
+            maxHeight = bmpGlyph.rows;
 
-        if (bmpGlyph->top > maxTop)
-            maxTop = bmpGlyph->top;
+        if (glyph->bitmap_top > maxTop)
+            maxTop = glyph->bitmap_top;
 
-        width = bmpGlyph->bitmap.width;
-        height = bmpGlyph->bitmap.rows;
+        width = bmpGlyph.width;
+        height = bmpGlyph.rows;
 
         texSize.x += (float)width;
         glyphSizes[chr] = vec2((float)width, (float)height);
 
         // 1 / 64 pixel -> weird format of freetype
-        m_CharTextureData[chr].advance = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); 
-        glyphTop[chr] = (float)(height - bmpGlyph->top);
+        m_CharTextureData[chr].advance = vec2((float)(glyph->metrics.horiAdvance >> 6), (float)glyph->bitmap_top); 
+        glyphTop[chr] = (float)(height - glyph->bitmap_top);
 
         // use RGBA instead of R (1 channel)
         // gpu's like 4 byte packing better
@@ -140,11 +142,11 @@ void Font::preCache(bool extendedCharacters)
             {
                 glyphBuffers[chr][4 * (w + (h * width))] = glyphBuffers[chr][(4 * (w + (h * width))) + 1] =
                 glyphBuffers[chr][(4 * (w + (h * width))) + 2] = glyphBuffers[chr][(4 * (w + (h * width))) + 3] =
-                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - h - 1))];
+                    bmpGlyph.buffer[w + (bmpGlyph.width * (height - h - 1))];
             }
         }
 
-        FT_Done_Glyph(glyph);
+        //FT_Done_Glyph(glyph);
     }
 
     m_LineHeight = maxHeight;

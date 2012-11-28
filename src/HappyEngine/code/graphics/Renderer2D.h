@@ -25,6 +25,9 @@
 #include "IRenderer.h"
 
 namespace he {
+namespace gui {
+class Canvas2Dnew;
+}
 namespace gfx {
 class WebView;
 class Canvas2D;
@@ -32,7 +35,6 @@ class Simple2DTextureEffect;
 class ModelMesh;
 class IDrawable2D;
 class Texture2D;
-class Canvas2Dnew;
 
 class Renderer2D : public IRenderer
 {
@@ -60,7 +62,7 @@ public:
     View* getView() const { return m_View; }
     const RenderTarget* getRTG() const {return m_RenderTarget;}
 
-    Canvas2Dnew* getNewCanvas() const;
+    gui::Canvas2Dnew* getNewCanvas() const;
 
     /* Attach */
     void attachToRender(IDrawable2D* drawable);
@@ -86,7 +88,7 @@ private:
     ModelMesh* m_TextureQuad;
 
     Canvas2D* m_DefaultCanvas;
-    Canvas2Dnew* m_CanvasNew;
+    he::gui::Canvas2Dnew* m_CanvasNew;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

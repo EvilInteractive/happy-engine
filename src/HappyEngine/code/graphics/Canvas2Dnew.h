@@ -25,13 +25,17 @@
 #define _HE_CANVAS2DNEW_H_
 #pragma once
 
+#include "Text.h"
+
 namespace he {
 namespace gfx {
     struct Canvas2DBuffer;
     class Renderer2D;
-    class Canvas2DRendererCairo;
-    class Canvas2DRendererGL;
     class Texture2D;
+    class Canvas2DRendererGL;
+}
+namespace gui {
+    class Sprite;
 
 class Canvas2Dnew
 {
@@ -40,8 +44,8 @@ public:
     /* CONSTRUCTOR - DESTRUCTOR */
     // create canvas and attach to parent 2d renderer
     // relative in percentages from 0.0f to 1.0f, absolute in pixels
-    Canvas2Dnew(Renderer2D* parent, const RectF& relativeViewport);
-    Canvas2Dnew(Renderer2D* parent, const RectI& absoluteViewport);
+    Canvas2Dnew(gfx::Renderer2D* parent, const RectF& relativeViewport);
+    Canvas2Dnew(gfx::Renderer2D* parent, const RectI& absoluteViewport);
     virtual ~Canvas2Dnew();
 
     /* GENERAL */
@@ -53,7 +57,7 @@ public:
 
     /* GETTERS */
     // return render buffer data
-    Canvas2DBuffer* getCanvas2DBuffer() const;
+    gfx::Canvas2DBuffer* getCanvas2DBuffer() const;
 
     // return size of canvas in pixels
     const vec2& getPosition() const;
@@ -70,48 +74,22 @@ public:
     void setPosition(const vec2& position);
     void setSize(const vec2& size);
 
-    // set colors
-    void setFillColor(const Color& fillColor);
-    void setStrokeColor(const Color& strokeColor);
-
-    // set linewidth
-    void setLineWidth(float width);
+    void setColor(const Color& color);
 
     /* DRAW */
     // clear buffer to rgba(0,0,0,0)
     void clear();
     // draw to screen
     void draw();
-    // start the next path from this point
-    void moveTo(const vec2& pos);
-    // create a line in the path to this point
-    void lineTo(const vec2& pos);
-    // create a rectangle in the path
-    void rectangle(const vec2& pos, const vec2& size);
-    // create a rounded rectangle
-    void roundedRectangle(const vec2& pos, const vec2& size, float radius);
-    // create a circle
-    void circle(const vec2& pos, float radius);
-    // create an arc shape
-    void arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd);
-    // create a curve
-    void curveTo(const vec2& start, const vec2& middle, const vec2& end);
-    // creates a new path
-    void newPath();
-    // closes current path
-    void closePath();
-    
-    // stroke the current path
-    void stroke();
-    // fill the current path
-    void fill();
 
     // draw text
-    void fillText(const gui::Text& text, const vec2& pos);
+    void fillText(const Text& text, const vec2& pos);
     // draw image
-    void drawImage(	const Texture2D* tex2D, const vec2& pos,
-                    const vec2& newDimensions = vec2(0.0f,0.0f),
-                    const RectI& regionToDraw = RectI(0,0,0,0));
+    void drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
+                   const vec2& size = vec2(0.0f,0.0f),
+                   const RectI& regionToDraw = RectI(0,0,0,0));
+    void drawSprite(const Sprite* sprite, const vec2& pos,
+                    const vec2& size = vec2(0.0f,0.0f));
 
 private:
 
@@ -124,22 +102,17 @@ private:
     void resize();
 
     /* MEMBERS */
-    Renderer2D* m_Renderer2D;
-    Canvas2DBuffer* m_BufferData;
-    Texture2D* m_RenderTexture;
+    gfx::Renderer2D* m_Renderer2D;
+    gfx::Canvas2DBuffer* m_BufferData;
 
-    Canvas2DRendererCairo* m_RendererCairo;
-    Canvas2DRendererGL* m_RendererGL;
+    gfx::Canvas2DRendererGL* m_RendererGL;
 
     uint16 m_CanvasDepth;
 
     vec2 m_Position;
     vec2 m_Size;
 
-    Color m_FillColor;
-    Color m_StrokeColor;
-
-    float m_LineWidth;
+    Color m_Color;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2Dnew(const Canvas2Dnew&);
