@@ -114,8 +114,6 @@ void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 
 Deferred3DRenderer::~Deferred3DRenderer()
 {
-    //m_View->get2DRenderer()->detachFromRender(this);
-
     m_ColorIllTexture->release();
     m_SGTexture->release();
 

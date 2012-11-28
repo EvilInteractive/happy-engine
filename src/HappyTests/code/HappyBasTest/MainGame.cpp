@@ -276,7 +276,7 @@ void MainGame::load()
     he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
     pointlight->setLocalTranslate(vec3(-81.98f, 5.572f, 45.634f));
     pointlight->setMultiplier(2.0f);
-    pointlight->setAttenuation(1.0f, 38.0f);
+    pointlight->setAttenuation(0.0f, 38.0f);
     pointlight->setColor(he::Color(1.00f, 1.00f, 1.00f));
 
     #pragma endregion
