@@ -30,32 +30,36 @@
 #include "CameraPerspective.h"
 
 #include "ExternalError.h"
+#include "Texture2D.h"
+#include "PickEffect.h"
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Picker::Picker() :	m_pPickEffect(NEW PickEffect()),
+Picker::Picker() :	m_PickEffect(NEW PickEffect()),
                     m_RenderFboID(0),
-                    m_bInitialized(false),
-                    m_pIDTexture(ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create()))
+                    m_Initialized(false),
+                    m_RenderTexture(nullptr),
+                    m_Scene(nullptr)
 {
-    m_pIDTexture->setName("Picker::m_pIDTexture");
+    m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create());
+    m_RenderTexture->setName("Picker::m_pIDTexture");
 }
 
 Picker::~Picker()
 {
-    delete m_pPickEffect;
-    m_pIDTexture->release();
+    delete m_PickEffect;
+    m_RenderTexture->release();
 
     glDeleteRenderbuffers(1, &m_DepthRenderBuffer);
     glDeleteFramebuffers(1, &m_RenderFboID);
 }
 
 /* GENERAL */
-void Picker::initialize()
+void Picker::init(View* view, Scene* scene)
 {
-    m_pPickEffect->load();
+    m_PickEffect->load();
 
     // TODO:
 //     int width = GRAPHICS->getScreenWidth(), 
@@ -73,15 +77,18 @@ void Picker::initialize()
     glGenFramebuffers(1, &m_RenderFboID);
     GL::heBindFbo(m_RenderFboID);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pIDTexture->getID(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RenderTexture->getID(), 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderBuffer);
     err::checkFboStatus("picker");
 
-    m_bInitialized = true;
+    m_View = view;
+    m_Scene = scene;
+
+    m_Initialized = true;
 }
 uint32 Picker::pick(const vec2& /*screenPoint*/)
 {
-    HE_ASSERT(m_bInitialized, "Initialize picker before using!");
+    HE_ASSERT(m_Initialized, "Initialize picker before using!");
     HE_ASSERT(false, "TODO");
 
 //     he::PrimitiveList<uint> ID1;
@@ -168,7 +175,7 @@ uint32 Picker::pick(const vec2& /*screenPoint*/)
 
 uint32 Picker::pick(const vec2& /*screenPoint*/, const he::PrimitiveList<IDrawable*>& /*drawList*/)
 {
-    HE_ASSERT(m_bInitialized, "Initialize picker before using!");
+    HE_ASSERT(m_Initialized, "Initialize picker before using!");
     HE_ASSERT(false, "TODO");
 //     he::PrimitiveList<uint> ID1;
 // 
@@ -251,5 +258,7 @@ void Picker::drawDebug() const
 {
     //GUI->drawTexture2D(m_pIDTexture, vec2(12, 12), vec2(640, 320));
 }
+
+/* SETTERS */
 
 } } //end namespace

@@ -168,10 +168,10 @@ void MainGame::load()
 
     settings.lightingSettings.enableLighting = true;
     settings.lightingSettings.enableNormalMap = true;
-    settings.lightingSettings.enableShadows = false;
+    settings.lightingSettings.enableShadows = true;
     settings.lightingSettings.enableSpecular = true;
 
-    settings.shadowSettings.shadowMult = 2;
+    settings.shadowSettings.shadowMult = 1;
 
     settings.postSettings.shaderSettings.enableAO = false;
     settings.postSettings.shaderSettings.enableBloom = true;
