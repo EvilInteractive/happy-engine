@@ -75,7 +75,6 @@ void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene
     m_TransparentRenderer = NEW gfx::Forward3DRenderer(gfx::RenderPass_Translucent, true);
     m_TransparentRenderer->setScene(scene);
     m_ShapeRenderer = NEW gfx::ShapeRenderer();
-    m_2DRenderer = NEW gfx::Renderer2D();
     m_Picker = NEW gfx::Picker();
     m_Picker->init(view, scene);
 
