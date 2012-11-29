@@ -28,51 +28,39 @@ uniform vec4 center;
 uniform vec2 size;
 uniform vec2 originalSize;
 
+vec2 remap(in vec2 value, in vec4 originalRange, in vec4 newRange)
+{
+    return (value - originalRange.xy) / (originalRange.zw - originalRange.xy) * (newRange.zw - newRange.xy) + newRange.xy;
+}
+
 void main()
 {
 	// for debug
     vec4 color = vec4(0.0,0.0,0.0,0.5); 
 	
-	vec2 scale;
-	scale.x = size.x / originalSize.x;
-	scale.y = size.y / originalSize.y;
-	
-	vec2 pos;
-	pos.x = passTexCoord.x * size.x;
-	pos.y = passTexCoord.y * size.y;
-	
-	vec2 origPos;
-	origPos.x = passTexCoord.x * scale.x;
-	origPos.y = passTexCoord.y * scale.y;
-	
-	// bottom left
-	if (pos.x < center.r && pos.y > center.g + center.a)
-	{
-		color = texture2D(diffuseMap, vec2(origPos.x, origPos.y - ((size.y - originalSize.y) / originalSize.y)));
-	}
-	// top left
-	else if (pos.x < center.r && pos.y < center.g)
-	{
-		color = texture2D(diffuseMap, origPos);
-	}
-	// bottom right
-	else if (pos.x > center.r + center.b && pos.y > center.g + center.a)
-	{
-		color = texture2D(diffuseMap, vec2(origPos.x - ((size.x - originalSize.x) / originalSize.x), origPos.y - ((size.y - originalSize.y) / originalSize.y)));
-	}
-	// top right
-	else if (pos.x > center.r + center.b && pos.y < center.g)
-	{
-		color = texture2D(diffuseMap, vec2(origPos.x - ((size.x - originalSize.x) / originalSize.x), origPos.y));
-	}
-	// top
-	else if (pos.x > center.r && pos.x < center.r + center.b && pos.y < center.g)
-	{
-		float sx = (center.b / size.x);
-		float ox = (center.r / size.x);
-
-		color = texture2D(diffuseMap, vec2((passTexCoord.x * sx) + ox, origPos.y));
-	}
-	
+    
+    vec2 texOffset = center.xy / size;
+    vec4 border = vec4(texOffset.xy, 1.0 - texOffset);
+    vec4 mask = step(border, passTexCoord.xyxy);
+    
+    vec2 border1 = center.xy;
+    vec2 border2 = size - border1 - center.zw;
+    
+    vec4 origBorder = vec4(center.xy, originalSize - border1 - border2);
+    vec4 newBorder = vec4(center.xy, center.zw);
+    
+    vec4 origPartBorder = vec4(
+            origBorder.xy * mask.xy + origBorder.zw * mask.zw,
+            origBorder.xy + origBorder.zw * mask.xy + origBorder.xy * mask.zw);
+    vec4 newPartBorder = vec4(
+            newBorder.xy * mask.xy + newBorder.zw * mask.zw,
+            newBorder.xy + newBorder.zw * mask.xy + newBorder.xy * mask.zw);
+            
+	origPartBorder /= originalSize.xyxy;
+	newPartBorder /= size.xyxy;
+    
+    vec2 texcoord = remap(passTexCoord, newPartBorder, origPartBorder);
+    color = texture2D(diffuseMap, texcoord);
+    
     outColor = color;
 }

@@ -30,10 +30,5 @@ uniform float depth;
 void main()
 {
 	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
-	
-	vec2 tC = inTexCoord;
-
-	tC = vec2(inTexCoord.x, 1.0f - inTexCoord.y);
-	
-	passTexCoord = tC;
+	passTexCoord = inTexCoord;
 }

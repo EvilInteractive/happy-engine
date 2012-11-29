@@ -38,12 +38,15 @@ DefaultRenderPipeline::DefaultRenderPipeline()
     , m_ShapeRenderer(nullptr)
     , m_2DRenderer(nullptr)
     , m_Picker(nullptr)
+    , m_IsDeferred(false)
 {
 }
 
 
 DefaultRenderPipeline::~DefaultRenderPipeline()
 {
+    if (m_IsDeferred == true)
+        m_2DRenderer->detachFromRender(static_cast<gfx::Deferred3DRenderer*>(m_OpacRenderer));
     delete m_OpacRenderer;
     delete m_TransparentRenderer;
     delete m_ShapeRenderer;
@@ -51,19 +54,23 @@ DefaultRenderPipeline::~DefaultRenderPipeline()
     delete m_Picker;
 }
 
-void DefaultRenderPipeline::init( gfx::View* view, gfx::Scene* scene, const gfx::RenderSettings& settings )
+void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene, const gfx::RenderSettings& settings )
 {
+    m_2DRenderer = NEW gfx::Renderer2D();
     if (settings.enableDeferred)
     {
-        gfx::Deferred3DRenderer* temp(NEW gfx::Deferred3DRenderer());
+        gfx::Deferred3DRenderer* const temp(NEW gfx::Deferred3DRenderer());
         temp->setScene(scene);
         m_OpacRenderer = temp;
+        m_2DRenderer->attachToRender(temp);
+        m_IsDeferred = true;
     }
     else
     {
-        gfx::Forward3DRenderer* temp(NEW gfx::Forward3DRenderer(gfx::RenderPass_Opac, true));
+        gfx::Forward3DRenderer* const temp(NEW gfx::Forward3DRenderer(gfx::RenderPass_Opac, true));
         temp->setScene(scene);
         m_OpacRenderer = temp;
+        m_IsDeferred = false;
     }
     m_TransparentRenderer = NEW gfx::Forward3DRenderer(gfx::RenderPass_Translucent, true);
     m_TransparentRenderer->setScene(scene);
