@@ -62,6 +62,8 @@
 #include "MathFunctions.h"
 #include "Sprite.h"
 #include "Gui.h"
+#include "Player.h"
+#include "PlayerThirdPersonCamera.h"
 
 #include "PhysicsEngine.h"
 #include "StaticPhysicsComponent.h"
@@ -91,6 +93,7 @@ MainGame::MainGame()
     , m_RenderPipeline(nullptr), m_RenderPipeline2(nullptr)
     , m_ToneMapGui(nullptr), m_ToneMapGuiListener(nullptr)
     , m_TestSprite(nullptr)
+    , m_Player(nullptr)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -106,6 +109,8 @@ MainGame::MainGame()
 MainGame::~MainGame()
 {
     PHYSICS->stopSimulation();
+
+    delete m_Player;
 
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FpsGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
@@ -285,6 +290,9 @@ void MainGame::load()
     pointlight->setColor(he::Color(1.00f, 1.00f, 1.00f));
 
     #pragma endregion
+
+    m_Player = NEW Player();
+    m_View->setCamera(m_Player->getCamera());
     
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
@@ -391,7 +399,7 @@ void MainGame::tick( float dTime )
         spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
         spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
     }
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Space))
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Lctrl))
     {
         he::ge::Entity* bullet(NEW he::ge::Entity());
         bullet->init(m_Scene);
@@ -440,8 +448,10 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     canvas->fillText(m_DebugText, he::vec2(12, 12));
     
     // NEW CANVAS TEST
-    he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
-    cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
+    //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
+    //cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
+
+    canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)

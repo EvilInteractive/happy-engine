@@ -44,6 +44,7 @@ public:
     bool getStandsOnFloor() const { return m_StandsOnFloor; }
 
     void setMoveSpeed(const vec3& moveSpeed);
+    void addSpeed(const vec3& speed);
 
     void tick(float dTime);
 

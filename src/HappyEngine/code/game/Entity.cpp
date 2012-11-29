@@ -27,12 +27,7 @@
 namespace he {
 namespace ge {
 
-Entity::Entity():
-    m_SleepEvaluaters([](bool& inoutA, const bool& outB) -> bool
-    { 
-        inoutA = outB; 
-        return inoutA;
-    }, false)
+Entity::Entity()
 {
 }
 
@@ -70,11 +65,6 @@ void Entity::removeComponent( EntityComponent* component )
     {
         m_Components.remove(component);
     }
-}
-
-bool Entity::isSleeping() const
-{
-    return m_SleepEvaluaters();
 }
 
 } } //end namespace

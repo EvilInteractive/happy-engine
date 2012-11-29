@@ -41,13 +41,16 @@ PhysicsCharacterController::PhysicsCharacterController()
     desc.nonWalkableMode = physx::PxCCTNonWalkableMode::eFORCE_SLIDING;
     desc.radius = 0.5f;
     desc.slopeLimit = cosf(piOverFour);
-    desc.stepOffset = 0.5f;
+    desc.stepOffset = 0.3f;
     desc.callback = this;
     desc.userData = static_cast<IPhysicsUserDataContainer*>(this);
+    PhysicsMaterial material(0.1f, 0.1f, 0.2f);
+    desc.material = material.getInternalMaterial();
 
     PhysicsEngine* physics(PHYSICS);
     m_Controller = static_cast<physx::PxCapsuleController*>(
         physics->getControllerManager()->createController(*physics->getSDK(), physics->getScene(), desc));
+    HE_ASSERT(m_Controller != nullptr, "Creation of character controller failed!");
 }
 
 
@@ -58,7 +61,7 @@ PhysicsCharacterController::~PhysicsCharacterController()
 
 void PhysicsCharacterController::setHeight( const float height )
 {
-    m_Controller->resize(height);
+    m_Controller->resize(height/2.0f);
 }
 
 void PhysicsCharacterController::setRadius( const float radius )
@@ -87,29 +90,34 @@ void PhysicsCharacterController::setMoveSpeed( const vec3& moveSpeed )
     m_MoveSpeed = moveSpeed;
 }
 
+void PhysicsCharacterController::addSpeed( const vec3& speed )
+{
+    m_Speed += speed;
+}
 
 void PhysicsCharacterController::tick( float dTime )
 {
-    m_Speed += m_Gravity;
-    vec3 speed(m_Speed + m_MoveSpeed);
+    m_Speed += m_Gravity * 10 * dTime;
+    const vec3 speed((m_Speed + m_MoveSpeed) * dTime);
 
     PxVec3 disp;
     speed.toPxVec3(&disp);
-    const uint32 moveResult(m_Controller->move(disp, 0.1f, dTime, m_Filters));
+    const uint32 moveResult(m_Controller->move(disp, 0.0001f, dTime, m_Filters));
 
     const PxExtendedVec3 pxFootPos(m_Controller->getFootPosition());
     m_Position.x = static_cast<float>(pxFootPos.x);
     m_Position.y = static_cast<float>(pxFootPos.y);
     m_Position.z = static_cast<float>(pxFootPos.z);
-
+    m_StandsOnFloor = false;
     if (moveResult & physx::PxControllerFlag::eCOLLISION_DOWN)
     {
+        m_StandsOnFloor = true;
         m_Speed.y = 0;
         HitFloor();
     }
     if (moveResult & physx::PxControllerFlag::eCOLLISION_UP)
     {
-        m_Speed.y = 0;
+        m_Speed.y = fabs(m_Speed.y);
         HitRoof();
     }
     if (moveResult & physx::PxControllerFlag::eCOLLISION_SIDES)

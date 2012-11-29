@@ -1,7 +1,10 @@
 set (HAPPYBASTEST_CODE_FILES_SRC_FILTER    
-        FlyCamera.cpp           FlyCamera.h
-        main.cpp
-        MainGame.cpp            MainGame.h)
+        FlyCamera.cpp                   FlyCamera.h
+        main.cpp        
+        MainGame.cpp                    MainGame.h
+        Player.cpp                      Player.h
+        PlayerMover.cpp                 PlayerMover.h
+        PlayerThirdPersonCamera.cpp     PlayerThirdPersonCamera.h)
 
 set (HAPPYBASTEST_CODE_FILES_PCH_FILTER    
         HappyBasTestPCH.cpp     HappyBasTestPCH.h)

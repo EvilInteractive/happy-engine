@@ -8,6 +8,7 @@ set (CODE_GAME_NO_FILTER
                         
                         
 set (CODE_GAME_COMPONENT_FILTER 
+                        CharacterPhysicsComponent.cpp           CharacterPhysicsComponent.h
                         DynamicPhysicsComponent.cpp             DynamicPhysicsComponent.h
                         InstancedModelComponent.cpp             InstancedModelComponent.h
                         LightComponent.cpp                      LightComponent.h

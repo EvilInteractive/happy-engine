@@ -58,6 +58,7 @@ namespace he {
 
 namespace ht {
 class FlyCamera;
+class Player;
 
 class MainGame : public he::ge::Game, public he::gfx::IShapeDrawable, public he::gfx::IDrawable2D
 {
@@ -71,6 +72,8 @@ public:
 
     virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
     virtual void draw2D(he::gfx::Canvas2D* renderer);
+
+    he::gfx::Scene* getScene() const { return m_Scene; }
 
     void updateToneMapData(const Awesomium::JSArray& args);
 
@@ -108,6 +111,8 @@ private:
     he::gui::Text m_DebugText;
 
     he::gfx::SpotLight* m_DebugSpotLight;
+
+    Player* m_Player;
 
     //gui
     he::gfx::WebView* m_ToneMapGui;

@@ -52,10 +52,6 @@ public:
     virtual void serialize(SerializerStream& /*stream*/) {};
     virtual void deserialize(const SerializerStream& /*stream*/) {};
 
-    bool isSleeping() const;
-    void addSleepEvaluator(const boost::function0<bool>& evaluater);
-    void removeSleepEvaluator(const boost::function0<bool>& evaluater);
-
     //////////////////////////////////////////////////////////////////////////
     /// Object3D (resolve ambiguity)
     //////////////////////////////////////////////////////////////////////////
@@ -79,9 +75,7 @@ protected:
     virtual void setLocalMatrixDirty(uint8 cause) { Object3D::setLocalMatrixDirty(cause); } 
 
     virtual void calculateWorldMatrix() { Object3D::calculateWorldMatrix(); }
-
-    event0<bool> m_SleepEvaluaters;
-
+    
 private:
     virtual void init(Entity* parent);
 

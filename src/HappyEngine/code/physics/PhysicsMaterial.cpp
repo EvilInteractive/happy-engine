@@ -27,18 +27,18 @@
 namespace he {
 namespace px {
 
-PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_pInternalMaterial(nullptr)
+PhysicsMaterial::PhysicsMaterial(float staticFriction, float dynamicFriction, float restitution): m_InternalMaterial(nullptr)
 {    
-    m_pInternalMaterial = PHYSICS->createMaterial(staticFriction, dynamicFriction, restitution);
-    HE_ASSERT(m_pInternalMaterial != nullptr, "px material creation failed");
+    m_InternalMaterial = PHYSICS->createMaterial(staticFriction, dynamicFriction, restitution);
+    HE_ASSERT(m_InternalMaterial != nullptr, "px material creation failed");
 }
 
-PhysicsMaterial::PhysicsMaterial(): m_pInternalMaterial(nullptr)
+PhysicsMaterial::PhysicsMaterial(): m_InternalMaterial(nullptr)
 {
 
 }
 
-PhysicsMaterial::PhysicsMaterial( physx::PxMaterial* pMaterial ): m_pInternalMaterial(pMaterial)
+PhysicsMaterial::PhysicsMaterial( physx::PxMaterial* pMaterial ): m_InternalMaterial(pMaterial)
 {
 
 }
@@ -49,7 +49,7 @@ PhysicsMaterial::~PhysicsMaterial()
 
 physx::PxMaterial* PhysicsMaterial::getInternalMaterial() const
 {
-    return m_pInternalMaterial;
+    return m_InternalMaterial;
 }
 
 } } //end namespace
