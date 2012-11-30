@@ -114,6 +114,7 @@ private:
     void blit();
     float normalizeAngle(float a);
     void handleDrawCalls();
+    void transformY();
 
     /* MEMBERS */
     std::queue<SpriteData> m_SpriteList;

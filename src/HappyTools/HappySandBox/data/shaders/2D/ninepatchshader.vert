@@ -19,19 +19,16 @@
 
 #version 150 core
 
-in vec2 passTexCoord;
+in vec2 inPosition;
+in vec2 inTexCoord;
 
-out vec4 outColor;
+out vec2 passTexCoord;
 
-uniform sampler2D diffuseMap;
-uniform vec4 fontColor;
-uniform vec2 texCoordOffset;
-uniform vec2 texCoordScale;
+uniform mat4 matWVP;
+uniform float depth;
 
 void main()
 {
-	vec2 tC = vec2(passTexCoord.x, passTexCoord.y);
-	float alpha = texture2D(diffuseMap, (tC * texCoordScale) + texCoordOffset).r;	
-	
-	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha * fontColor.w);
+	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
+	passTexCoord = inTexCoord;
 }

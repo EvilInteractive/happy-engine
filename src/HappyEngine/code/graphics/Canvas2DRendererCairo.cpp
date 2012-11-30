@@ -92,6 +92,7 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
     m_SpriteListLock.unlock();
 
     clear();
+    transformY();
 }
 void Canvas2DRendererCairo::finishSprite()
 {
@@ -450,6 +451,30 @@ void Canvas2DRendererCairo::handleDrawCalls()
         renderSprite = false;
         --spritesToRender;
     }
+}
+
+void Canvas2DRendererCairo::transformY()
+{
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
+
+    SpriteData& sData = m_SpriteList.back();
+
+    HE_ASSERT((sData.readyState &= SpriteReadyForRender) == false,
+        "Sprite is already marked for rendering, can't draw!");
+
+    sData.drawCalls.push(
+        boost::bind(
+        &cairo_scale,
+        sData.cairoPaint,
+        1.0,
+        -1.0));
+
+    sData.drawCalls.push(
+        boost::bind(
+        &cairo_translate,
+        sData.cairoPaint,
+        0.0,
+        static_cast<double>(-sData.size.y)));
 }
 
 }} //end namespace

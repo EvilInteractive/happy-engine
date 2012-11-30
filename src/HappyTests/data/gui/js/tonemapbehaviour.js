@@ -90,5 +90,5 @@ $(function()
 function setSliderValue(id, value)
 {
 	$('#slider' + id).val(value);
-	$('#slider' + id + 'val').html(value);
+	$('#slider' + id + 'val').html(Math.floor(value * 10000) / 10000);
 }
