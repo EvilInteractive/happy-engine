@@ -49,11 +49,11 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    FPSGraph(uint16 recordTime = 60);
+    FPSGraph(float interval = 0.5f, uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
-    void tick(float dTime, float interval = 0.5f);
+    void tick(float dTime);
     virtual void draw2D(gfx::Canvas2D* canvas);
 
     /* GETTERS */

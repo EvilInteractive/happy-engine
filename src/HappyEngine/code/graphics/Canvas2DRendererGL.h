@@ -64,6 +64,14 @@ public:
 
 private:
 
+    /* INTERNAL */
+    struct CharBufferData
+    {
+        mat44 wvp;
+        vec2 tcOffset;
+        vec2 tcScale;
+    };
+
     /* STATIC */
     static Simple2DEffect* s_ColorEffect;
     static Simple2DTextureEffect* s_TextureEffect;
@@ -87,6 +95,10 @@ private:
     ModelMesh* m_TextureQuad;
 
     GLContext* m_Context;
+
+    PrimitiveList<CharBufferData> m_CharBuffer;
+    uint32 m_BufferVAOID;
+    uint32 m_BufferID;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2DRendererGL(const Canvas2DRendererGL&);

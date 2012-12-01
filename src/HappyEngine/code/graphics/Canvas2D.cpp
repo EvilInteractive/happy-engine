@@ -403,8 +403,10 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Canvas2D::fillText(const he::gui::Text& txt, const vec2& pos)
+void Canvas2D::fillText(const he::gui::Text& /*txt*/, const vec2& /*pos*/)
 {
+    return;
+    /*
     HE_ASSERT(m_BufferData->context == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     PROFILER_BEGIN("Canvas2D::fillText");
 
@@ -518,7 +520,7 @@ void Canvas2D::fillText(const he::gui::Text& txt, const vec2& pos)
         }
     }
 
-    PROFILER_END();
+    PROFILER_END();*/
 }
 
 void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,

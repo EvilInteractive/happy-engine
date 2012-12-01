@@ -37,12 +37,12 @@ namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-FPSGraph::FPSGraph(uint16 recordTime) :
+FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_GameTime(0.0f),
                         m_TBase(0.0f),
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
-                        m_Interval(0.5f),
+                        m_Interval(interval),
                         m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 10, false)),
                         m_FPSGraphState(Type_TextOnly),
                         m_Pos(5.0f, 5.0f),
@@ -67,10 +67,9 @@ FPSGraph::~FPSGraph()
 }
 
 /* GENERAL */
-void FPSGraph::tick(float dTime, float interval)
+void FPSGraph::tick(float dTime)
 {
     m_GameTime += dTime;
-    m_Interval = interval;
 
     m_AcumulatedDTime += dTime;
     ++m_Ticks;
@@ -201,8 +200,8 @@ void FPSGraph::renderGraph()
     cr->setColor(Color(0.9f,0.9f,0.9f,0.8f));
     cr->fill();
 
-    PrimitiveList<vec2> poly0;
-    PrimitiveList<vec2> poly1;
+    PrimitiveList<vec2> poly0(60);
+    PrimitiveList<vec2> poly1(60);
 
     uint32 i(0);
                 

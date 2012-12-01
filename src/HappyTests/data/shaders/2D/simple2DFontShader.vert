@@ -21,14 +21,20 @@
 
 in vec2 inPosition;
 in vec2 inTexCoord;
+in mat4 matWVP;
+in vec2 tcOffset;
+in vec2 tcScale;
 
 out vec2 passTexCoord;
+out vec2 passTcOffset;
+out vec2 passTcScale;
 
-uniform mat4 matWVP;
 uniform float depth;
 
 void main()
 {
-	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
+	gl_Position = matWVP * vec4(inPosition, 0.5, 1.0);
 	passTexCoord = inTexCoord;
+	passTcOffset = tcOffset;
+	passTcScale = tcScale;
 }

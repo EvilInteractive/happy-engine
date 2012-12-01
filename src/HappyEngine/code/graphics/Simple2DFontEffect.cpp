@@ -44,6 +44,9 @@ void Simple2DFontEffect::load()
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
+    layout.addElement(ShaderLayoutElement(2, "matWVP"));
+    layout.addElement(ShaderLayoutElement(6, "tcOffset"));
+    layout.addElement(ShaderLayoutElement(7, "tcScale"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     he::ObjectList<std::string> shaderOutputs;
@@ -53,16 +56,16 @@ void Simple2DFontEffect::load()
                                             folder + "2D/simple2DFontShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, ""); compiled;
 
-    m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
+    //m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
     m_ShaderDiffTexPos = m_Shader->getShaderSamplerId("diffuseMap");
-    m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
+    //m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
     m_ShaderFontColorPos = m_Shader->getShaderVarId("fontColor");
-    m_ShaderTCOffsetPos = m_Shader->getShaderVarId("texCoordOffset");
-    m_ShaderTCScalePos = m_Shader->getShaderVarId("texCoordScale");
+    //m_ShaderTCOffsetPos = m_Shader->getShaderVarId("texCoordOffset");
+    //m_ShaderTCScalePos = m_Shader->getShaderVarId("texCoordScale");
 
-    m_Shader->bind();
-    mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
-    m_Shader->setShaderVar(m_ShaderWVPPos, MatWVP);
+    //m_Shader->bind();
+    //mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
+    //m_Shader->setShaderVar(m_ShaderWVPPos, MatWVP);
 }
 
 void Simple2DFontEffect::begin() const
