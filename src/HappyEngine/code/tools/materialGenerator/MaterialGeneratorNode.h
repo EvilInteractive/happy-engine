@@ -26,6 +26,9 @@
 #include "MaterialGeneratorNodeInOut.h"
 
 namespace he {
+namespace gfx {
+    class Canvas2D;
+}
 namespace tools {
 
 typedef NodeGraphNode<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> MaterialGeneratorNodeBase;
@@ -35,7 +38,7 @@ typedef NodeGraphConnection<MaterialGeneratorNodeInput, MaterialGeneratorNodeOut
 class MaterialGeneratorNode : public MaterialGeneratorNodeBase
 {
 public:
-    MaterialGeneratorNode();
+    MaterialGeneratorNode(const vec2& pos);
     virtual ~MaterialGeneratorNode();
 
     virtual bool evaluate(MaterialGeneratorError& error);
@@ -44,6 +47,8 @@ public:
                             const MaterialGeneratorNodeInput& toInput, MaterialGeneratorError& error) const;
 
     void addOverload(uint8 outputCount, uint8 inputCount, ...);
+
+    void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
 private:
     struct Overload
@@ -68,6 +73,8 @@ private:
 
     he::ObjectList<Overload> m_Overloads;
     uint8 m_SelectedOverload;
+
+    vec2 m_Position;
 
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;

@@ -198,7 +198,7 @@ void ModelMesh::setIndices(const void* pIndices, uint32 num, IndexStride type, M
         case IndexStride_Byte: m_IndexType = GL_UNSIGNED_BYTE; break;
         case IndexStride_UShort: m_IndexType = GL_UNSIGNED_SHORT; break;
         case IndexStride_UInt: m_IndexType = GL_UNSIGNED_INT; break;
-        default: HE_ASSERT(false, "unknown type: %d", type); break;
+        default: LOG(LogType_ProgrammerAssert, "unknown type: %d", type); break;
     }
 }
 

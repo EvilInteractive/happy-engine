@@ -72,6 +72,7 @@
 #include "PhysicsBoxShape.h"
 #include "DynamicPhysicsComponent.h"
 #include "PhysicsDynamicActor.h"
+#include "materialGenerator/MaterialGeneratorGraph.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -94,6 +95,7 @@ MainGame::MainGame()
     , m_ToneMapGui(nullptr), m_ToneMapGuiListener(nullptr)
     , m_TestSprite(nullptr)
     , m_Player(nullptr)
+    , m_MaterialGenerator(nullptr)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -109,6 +111,8 @@ MainGame::MainGame()
 MainGame::~MainGame()
 {
     PHYSICS->stopSimulation();
+
+    delete m_MaterialGenerator;
 
     delete m_Player;
 
@@ -253,8 +257,8 @@ void MainGame::load()
     m_EntityList.push_back(scene);
     ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
     scene->addComponent(physicsComp);
-    px::PhysicsConvexShape convexSceneShape(CONTENT->loadPhysicsConvex("testPlatformer/scene.pxcv"));
-    px::PhysicsConcaveShape concaveSceneShape(CONTENT->loadPhysicsConcave("testPlatformer/scene.pxcc"));
+    px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
+    px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");
     physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
     physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
 
@@ -293,6 +297,7 @@ void MainGame::load()
     m_Player = NEW Player();
     m_View->setCamera(m_Player->getCamera());
     
+    #pragma region GUI stuff
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
@@ -375,6 +380,10 @@ void MainGame::load()
     creator->setColor(he::Color(1.0f,1.0f,1.0f));
     creator->fill();
     creator->renderSpriteAsync();
+#pragma endregion
+
+    m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph;
+    m_MaterialGenerator->init();
 
     PHYSICS->startSimulation();
 }
@@ -387,7 +396,9 @@ void MainGame::tick( float dTime )
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
     
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
+    he::io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+
+    if (keyboard->isKeyPressed(he::io::Key_Return))
     {
         he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
         spotlight->setLocalTranslate(m_View->getCamera()->getPosition());
@@ -399,7 +410,7 @@ void MainGame::tick( float dTime )
         spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
         spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
     }
-    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Lctrl))
+    if (keyboard->isKeyDown(he::io::Key_Lctrl))
     {
         he::ge::Entity* bullet(NEW he::ge::Entity());
         bullet->init(m_Scene);
@@ -415,6 +426,14 @@ void MainGame::tick( float dTime )
         m_EntityList.push_back(bullet);
         physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
     }
+    if (keyboard->isKeyPressed(he::io::Key_F9))
+    {
+        if (m_MaterialGenerator->isOpen())
+            m_MaterialGenerator->close();
+        else
+            m_MaterialGenerator->open();
+    }
+
 
     m_FpsGraph->tick(dTime);
 }

@@ -152,7 +152,7 @@ void ObjLoader::flushCreateGroup(uint32 group)
         case gfx::IndexStride_Byte:   r.end = static_cast<uint32>(m_IndicesByte.size()); break;
         case gfx::IndexStride_UShort: r.end = static_cast<uint32>(m_IndicesUShort.size()); break;
         case gfx::IndexStride_UInt:   r.end = static_cast<uint32>(m_IndicesUInt.size()); break;
-        default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[group]); r.end = 0; break;
+        default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[group]); r.end = 0; break;
     }
     r.begin = r.end - m_NumIndices[group];
     //std::cout << "begin: " << r.begin << ", end: " << r.end << ", num: " << m_NumIndices[group] << ", group: " << group << ", stride: " << m_IndexStride[group] << "\n";
@@ -195,7 +195,7 @@ void ObjLoader::create(bool allowByteIndices)
         }
         else
         {
-            HE_ASSERT(false, "too many indices");
+            LOG(LogType_ProgrammerAssert, "too many indices");
         }
     });
 
@@ -266,7 +266,7 @@ void ObjLoader::addIndex(uint32 index, uint32 group)
         case gfx::IndexStride_Byte:   m_IndicesByte.add(static_cast<uint8>(index)); break;
         case gfx::IndexStride_UShort: m_IndicesUShort.add(static_cast<uint16>(index)); break;
         case gfx::IndexStride_UInt:   m_IndicesUInt.add(index); break;
-        default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[group]); break;
+        default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[group]); break;
     }
 }
 void ObjLoader::fill(void* pVertexData, const gfx::BufferLayout& vertLayout) const
@@ -365,7 +365,7 @@ const void* ObjLoader::getIndices(uint32 mesh) const
         case gfx::IndexStride_Byte:   return &m_IndicesByte[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UShort: return &m_IndicesUShort[m_IndexMeshRange[mesh].begin];
         case gfx::IndexStride_UInt:   return &m_IndicesUInt[m_IndexMeshRange[mesh].begin];
-        default: HE_ASSERT(false, "unknown type: %d", m_IndexStride[mesh]);  return 0;
+        default: LOG(LogType_ProgrammerAssert, "unknown type: %d", m_IndexStride[mesh]);  return 0;
     }
 }
 gfx::IndexStride ObjLoader::getIndexStride(uint32 mesh) const

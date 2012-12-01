@@ -219,7 +219,7 @@ bool TextureLoader::createTexture( const TextureLoadData& data )
         return createTexture2D(data);
     else if (data.tex.type == gfx::TextureCube::s_ObjectType)
         return createTextureCube(data);
-    HE_ASSERT(false, "Unsupported object type id!");
+    LOG(LogType_ProgrammerAssert, "Unsupported object type id!");
     return false;
 }
 bool TextureLoader::createTexture2D( const TextureLoadData& data )

@@ -317,7 +317,7 @@ void GL::getGLTypesFromBufferElement( const BufferElement& element, GLint& compo
     case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
     case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
 
-    default: HE_ASSERT(false, "unknown/unsupported BufferElement"); break;
+    default: LOG(LogType_ProgrammerAssert, "unknown/unsupported BufferElement"); break;
     }
 }
 

@@ -145,7 +145,7 @@ void Material::apply( const SingleDrawable* drawable, const ICamera* camera ) co
                         shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
                         break;
 
-                    default: HE_ASSERT(false, "unkown shaderVartype for single"); break;
+                    default: LOG(LogType_ProgrammerAssert, "unkown shaderVartype for single"); break;
                 }
             }
         });
@@ -199,7 +199,7 @@ void Material::apply( const InstancedDrawable* drawable, const ICamera* camera )
                         shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
                         break;
 
-                    default: HE_ASSERT(false, "unkown shaderVartype for instancing"); break;
+                    default: LOG(LogType_ProgrammerAssert, "unkown shaderVartype for instancing"); break;
                 }
             }
         });
@@ -273,7 +273,7 @@ void Material::apply( const SkinnedDrawable* drawable, const ICamera* camera ) c
                         shader->setShaderVar(pVar->getId(), vec2(camera->getNearClip(), camera->getFarClip())); 
                         break;
 
-                    default: HE_ASSERT(false, "unkown shaderVartype for skinning"); break;
+                    default: LOG(LogType_ProgrammerAssert, "unkown shaderVartype for skinning"); break;
                 }
             }
         });

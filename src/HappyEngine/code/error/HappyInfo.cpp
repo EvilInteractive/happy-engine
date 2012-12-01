@@ -30,21 +30,21 @@ void heInfo( const char* msg, ...)
 {
     va_list arg_list;
     va_start(arg_list, msg);
-    LOG(he::tools::LogType_Info, msg, arg_list);
+    LOG(he::LogType_Info, msg, arg_list);
     va_end(arg_list);
 }
 void heError( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
-    LOG(he::tools::LogType_Error, msg, arg_list);
+    LOG(he::LogType_Error, msg, arg_list);
     va_end(arg_list);
 }
 void heWarning( const char* msg, ...) 
 {
     va_list arg_list;
     va_start(arg_list, msg);
-    LOG(he::tools::LogType_Warning, msg, arg_list);
+    LOG(he::LogType_Warning, msg, arg_list);
     va_end(arg_list);
 }
 

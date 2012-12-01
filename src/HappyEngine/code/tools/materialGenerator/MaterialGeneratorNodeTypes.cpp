@@ -54,7 +54,7 @@ const char* materialGeneratorVariableTypeToString( const MaterialGeneratorVariab
             result = "TextureCube";
         } break;
     default:
-        HE_ASSERT(false, "Unknown MaterialGeneratorNodeType: %d", type);
+        LOG(LogType_ProgrammerAssert, "Unknown MaterialGeneratorNodeType: %d", type);
         break;
     }
     return result;

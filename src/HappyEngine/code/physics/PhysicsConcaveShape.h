@@ -33,6 +33,7 @@ class PhysicsConcaveShape : public IPhysicsShape
 public:
     PhysicsConcaveShape();
     explicit PhysicsConcaveShape(const ObjectHandle& concaveMesh, const vec3& scale = vec3::one);
+    explicit PhysicsConcaveShape(const std::string& concaveMesh, const vec3& scale = vec3::one);
     virtual ~PhysicsConcaveShape();
     PhysicsConcaveShape(const PhysicsConcaveShape& other);
     PhysicsConcaveShape& operator=(const PhysicsConcaveShape& other);

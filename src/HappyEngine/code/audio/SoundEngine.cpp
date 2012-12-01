@@ -175,12 +175,12 @@ void SoundEngine::initialize()
         {
             alcCloseDevice(m_pALDevice);
 
-            HE_ASSERT(false, "Creating OpenAL context failed!");
+            LOG(LogType_ProgrammerAssert, "Creating OpenAL context failed!");
         }
     }
     else
     {
-        HE_ASSERT(false,"Init OpenAL device failed!");
+        LOG(LogType_ProgrammerAssert, "Init OpenAL device failed!");
     }
 
     alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);

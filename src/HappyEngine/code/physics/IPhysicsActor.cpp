@@ -124,7 +124,7 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
 
         default: 
             {
-                HE_ASSERT(false, "Unknown type %d", shape->getType());   
+                LOG(LogType_ProgrammerAssert, "Unknown type %d", shape->getType());   
             } break;
         }
     }

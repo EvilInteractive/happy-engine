@@ -89,7 +89,7 @@ namespace details
         }
         void add(Callback& func)
         {
-            HE_IF_ASSERT(func.m_Connection == UINT16_MAX, "Callback already connected to an events! Ignoring connection")
+            HE_IF_ASSERT(func.m_Connection == UINT16_MAX, "Callback already connected to an event! Ignoring connection")
             {
                 if (m_FreeConnections.empty())
                     enlargePool();

@@ -79,7 +79,7 @@ bool vec3::operator<(const vec3& v) const //FOR std::MAP, it doesn't make any se
 
 void vec3::toPxVec3( physx::PxVec3* outVec ) const
 {
-    HE_ASSERT(sizeof(physx::PxVec3) == sizeof(vec3), "memcpy will fail, classes have different size");
+    HE_COMPILE_ASSERT(sizeof(physx::PxVec3) == sizeof(vec3), "memcpy will fail, classes have different size");
     he_memcpy(outVec, this, sizeof(vec3));
 }
 
