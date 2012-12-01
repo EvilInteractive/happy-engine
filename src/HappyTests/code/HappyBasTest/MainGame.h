@@ -32,6 +32,7 @@
 namespace he {
     namespace tools {
         class FPSGraph;
+        class MaterialGeneratorGraph;
     }
     namespace ge {
         class Entity;
@@ -113,6 +114,8 @@ private:
     he::gfx::SpotLight* m_DebugSpotLight;
 
     Player* m_Player;
+
+    he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
 
     //gui
     he::gfx::WebView* m_ToneMapGui;

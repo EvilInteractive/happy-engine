@@ -265,12 +265,12 @@ void Button::drawColor(gfx::Canvas2D* renderer)
 
 void Button::drawSprites(gfx::Canvas2D* /*renderer*/)
 {
-    HE_ASSERT(false, "Not Implemented!");
+    LOG(LogType_ProgrammerAssert, "Not Implemented!");
 }
 
 void Button::drawSpriteSheet()
 {
-    HE_ASSERT(false, "Not Implemented!");
+    LOG(LogType_ProgrammerAssert, "Not Implemented!");
 }
 
 /* CALLBACK HANDLERS */

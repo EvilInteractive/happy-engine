@@ -64,7 +64,7 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size, bool compress)
         if (error != 0)
         {
             HE_ERROR("Error loading font: %s", path.c_str());
-            HE_ASSERT(false, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font!");
             return nullptr;
         }
 
@@ -73,7 +73,7 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size, bool compress)
         if (error != 0)
         {
             HE_ERROR("Error loading font charmap: %s", path.c_str());
-            HE_ASSERT(false, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font!");
             return nullptr;
         }
 
@@ -84,7 +84,7 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size, bool compress)
         if (error != 0)
         {
             HE_ERROR("Error setting font size: %s", path.c_str());
-            HE_ASSERT(false, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font!");
             return nullptr;
         }
 

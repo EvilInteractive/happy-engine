@@ -209,7 +209,7 @@ void CullOctreeNode::insert( IDrawable* drawable )
                 return;
             }
 #ifdef OCTREE_PARANOID
-            HE_ASSERT(false, "Object fits loosebound but is not in one of the childs!");
+            LOG(LogType_ProgrammerAssert, "Object fits loosebound but is not in one of the childs!");
 #endif OCTREE_PARANOID
         }
     }

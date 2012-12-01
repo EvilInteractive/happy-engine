@@ -26,31 +26,14 @@
 namespace he {
 namespace err {
 namespace details {
-bool happyAssert(bool isOk, AssertType type, const char* file, const char* func, int line, const char* message, ...)
-{
-    if (isOk == true)
-        return true;
-
-    tools::LogType logType(type == AssertType_Code? tools::LogType_ProgrammerAssert : tools::LogType_ArtAssert);
-    
-    LOG(logType, "**ASSERTION FAILURE!**");
-    LOG(logType, "assert in function %s", func);
-    LOG(logType, "", file, line);
-
-    va_list argList;
-    va_start(argList, message);
-    char buff[1024];
-    memset(buff, 0, 1024);
-    vsnprintf(buff, 1024, message, argList);
-    LOG(logType, message, argList);
-    va_end(argList);
-
+void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message)
+{        
     char infoText[1000];
     sprintf(infoText, "** ASSERTION FAILURE! **\n"
         "Assert in function:\n    %s\n"
         "In file: \n    %s\n"
         "On line: %d\n\n"
-        "Message:\n%s", func, file, line, buff);
+        "Message:\n%s", func, file, line, message);
     
     if (MessageBox::showExt(type == AssertType_Code? "Assert!" : "Art Assert!", 
         infoText, type == AssertType_Code? MessageBoxIcon_ProgrammerAssert : MessageBoxIcon_ArtAssert, 
@@ -62,8 +45,6 @@ bool happyAssert(bool isOk, AssertType type, const char* file, const char* func,
         __builtin_trap();
         #endif
     }
-    
-    return false;
 }
 
 } } } //end namespace

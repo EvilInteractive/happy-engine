@@ -170,7 +170,7 @@ void ShaderGenerator::writeTypeName( const ShaderGeneratorVariableType type )
         case ShaderVariableType_Mat44: { m_ShaderFile << "mat4"; break; }
         case ShaderVariableType_Texture2D: { m_ShaderFile << "sampler2D"; break; }
         case ShaderVariableType_TextureCube: { m_ShaderFile << "samplerCube"; break; }
-        default: HE_ASSERT(false, "Unknown type! %d", type); break;
+        default: LOG(LogType_ProgrammerAssert, "Unknown type! %d", type); break;
     }
 }
 
@@ -220,7 +220,7 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
     {
     case ShaderGeneratorVariableOperationType_Constant:
     {
-        HE_ASSERT(false, "Should not get here");
+        LOG(LogType_ProgrammerAssert, "Should not get here");
     } break;
     // Operators
     GLSL_OPERATOR(ShaderGeneratorVariableOperationType_Add, "+" );
@@ -271,7 +271,7 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
 
     default:
         {
-            HE_ASSERT(false, "Unknown ShaderGeneratorVariableOperationType");
+            LOG(LogType_ProgrammerAssert, "Unknown ShaderGeneratorVariableOperationType");
         }
         break;
     }
@@ -363,7 +363,7 @@ void ShaderGenerator::writeConstant( const ShaderGeneratorVariable* const variab
         } break;
     default:
         {
-            HE_ASSERT(false, "Not implemented type");
+            LOG(LogType_ProgrammerAssert, "Not implemented type");
         }
     }
 }

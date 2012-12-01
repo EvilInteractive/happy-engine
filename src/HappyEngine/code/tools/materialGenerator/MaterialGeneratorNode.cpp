@@ -20,11 +20,13 @@
 #include "HappyPCH.h" 
 
 #include "MaterialGeneratorNode.h"
+#include "NodeGraphError.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace tools {
 
-MaterialGeneratorNode::MaterialGeneratorNode(): m_SelectedOverload(0), m_Overloads(1)
+MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos): m_SelectedOverload(0), m_Overloads(1), m_Position(pos)
 {
 }
 
@@ -51,7 +53,7 @@ bool MaterialGeneratorNode::canConnect( const MaterialGeneratorNodeOutput& fromO
 
 void MaterialGeneratorNode::addOverload( uint8 outputCount, uint8 inputCount, ... )
 {
-    HE_ASSERT(m_Overloads.size() != 0 && m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount, 
+    HE_ASSERT(m_Overloads.size() == 0 || (m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount), 
         "Incompatible amount of inputs or outputs supplied with overload:\n Outputs: %d/%d\n Inputs: %d/%d", 
         outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
 
@@ -151,6 +153,19 @@ bool MaterialGeneratorNode::findOverload( uint8& outOverload ) const
         }
     }
     return result;
+}
+
+void MaterialGeneratorNode::draw2D( gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
+{
+    const vec2 transformedPosition(transform * m_Position);
+    const vec2 size((transform * vec3(128, 96, 0)).xy());
+
+    if (transformedPosition.x + size.x / 2.0f > clipRect.x && transformedPosition.x - size.x / 2.0f < clipRect.x + clipRect.width && 
+        transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height)
+    {
+        canvas->setFillColor(Color(0.7f, 0.5f, 0.3f));
+        canvas->fillRect(transformedPosition, size);
+    }
 }
 
 } } //end namespace

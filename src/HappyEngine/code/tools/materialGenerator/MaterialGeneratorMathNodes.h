@@ -32,7 +32,7 @@ class MaterialGeneratorGraph;
 class className : public MaterialGeneratorNode\
 {\
 public:\
-    className(MaterialGeneratorGraph* const parent);\
+    className(MaterialGeneratorGraph* const parent, const vec2& pos);\
     virtual ~className() {}\
     \
     virtual bool evaluate(MaterialGeneratorError& error);\

@@ -72,7 +72,7 @@ public:
         for (size_t i(0); i < m_MemPool.size(); ++i)
             if (m_MemPool[i] == obj)
                 return i;
-        HE_ASSERT(false, "object not present in container");
+        LOG(LogType_ProgrammerAssert, "object not present in container");
         return 0;
     }
 

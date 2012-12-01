@@ -89,7 +89,7 @@ void Picker::init(View* view, Scene* scene)
 uint32 Picker::pick(const vec2& /*screenPoint*/)
 {
     HE_ASSERT(m_Initialized, "Initialize picker before using!");
-    HE_ASSERT(false, "TODO");
+    LOG(LogType_ProgrammerAssert, "TODO");
 
 //     he::PrimitiveList<uint> ID1;
 // 
@@ -176,7 +176,7 @@ uint32 Picker::pick(const vec2& /*screenPoint*/)
 uint32 Picker::pick(const vec2& /*screenPoint*/, const he::PrimitiveList<IDrawable*>& /*drawList*/)
 {
     HE_ASSERT(m_Initialized, "Initialize picker before using!");
-    HE_ASSERT(false, "TODO");
+    LOG(LogType_ProgrammerAssert, "TODO");
 //     he::PrimitiveList<uint> ID1;
 // 
 //     // cull drawlist

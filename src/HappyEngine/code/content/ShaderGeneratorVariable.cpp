@@ -107,7 +107,7 @@ void ShaderGeneratorVariable::setTypeFromOther( const ObjectHandle& handle )
 
 void ShaderGeneratorVariable::setTypeFromGlobal( const ShaderGeneratorGlobalVariableType /*type*/ )
 {
-    HE_ASSERT(false, "Not implemented");
+    LOG(LogType_ProgrammerAssert, "Not implemented");
 }
 
 float ShaderGeneratorVariable::getFloatData() const

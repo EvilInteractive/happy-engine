@@ -107,7 +107,7 @@ Scene* GraphicsEngine::createScene()
 
 Scene* GraphicsEngine::getScene( SceneID /*id*/ )
 {
-    HE_ASSERT(false, "not implemented");
+    LOG(LogType_ProgrammerAssert, "not implemented");
     return nullptr;
 }
 
@@ -190,7 +190,7 @@ bool GraphicsEngine::registerContext( GLContext* context )
         ContextCreated(context);
         return true;
     }
-    HE_ASSERT(false, "No free contexts available");
+    LOG(LogType_ProgrammerAssert, "No free contexts available");
     return false;
 }
 
@@ -231,7 +231,7 @@ he::uint16 GraphicsEngine::getShadowMapSize( const ShadowResolution& resolution 
     case ShadowResolution_512: return 512;
     case ShadowResolution_1024: return 1024;
     }
-    HE_ASSERT(false, "Unknown / Invalid shadow resolution");
+    LOG(LogType_ProgrammerAssert, "Unknown / Invalid shadow resolution");
     return 0;
 }
 

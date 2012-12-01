@@ -72,7 +72,7 @@ ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
         }
         else
         {
-            HE_ASSERT(false, "no loader defined for this extension");
+            LOG(LogType_ProgrammerAssert, "no loader defined for this extension");
             return ObjectHandle::unassigned;
         }
     }
@@ -107,7 +107,7 @@ ObjectHandle PhysicsShapeLoader::loadConcave(const std::string& path)
         }
         else
         {
-            HE_ASSERT(false, "no loader defined for this extension");
+            LOG(LogType_ProgrammerAssert, "no loader defined for this extension");
             return ObjectHandle::unassigned;
         }
     }

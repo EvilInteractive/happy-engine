@@ -22,10 +22,10 @@
 #define _HE_NodeGraphError_H_
 #pragma once
 
+#include "NodeGraphNode.h"
+
 namespace he {
 
-template<typename TInput, typename TOutput>
-class NodeGraphConnection;
 template<typename TInput, typename TOutput>
 class NodeGraphNode;
 

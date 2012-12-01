@@ -100,24 +100,27 @@ void View::init( const RenderSettings& settings )
     m_Settings = settings;
 
     HE_ASSERT(ViewportSizeChanged.empty() == true, "Do not register events before View::init"); // we want to be first in line
-    he::eventCallback0<void> resizeCallback([&]()
+    if (settings.enablePost)
     {
-        if (m_Settings.enablePost)
+        he::eventCallback0<void> resizeCallback([&]()
         {
-            // Color
-            m_ColorRenderMap->setData(m_Viewport.width, m_Viewport.height, 0,
-                gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0 );
+            if (m_Settings.enablePost)
+            {
+                // Color
+                m_ColorRenderMap->setData(m_Viewport.width, m_Viewport.height, 0,
+                    gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0 );
 
-            // Normal
-            m_NormalDepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
-                gfx::TextureBufferLayout_RGB, gfx::TextureBufferType_Float, 0 );
+                // Normal
+                m_NormalDepthRenderMap->setData(m_Viewport.width, m_Viewport.height, 0, 
+                    gfx::TextureBufferLayout_RGB, gfx::TextureBufferType_Float, 0 );
 
-            m_IntermediateRenderTarget->resizeDepthBuffer(m_Viewport.width, m_Viewport.height);
-        }
-    });
-    ViewportSizeChanged += resizeCallback;
+                m_IntermediateRenderTarget->resizeDepthBuffer(m_Viewport.width, m_Viewport.height);
+            }
+        });
+        ViewportSizeChanged += resizeCallback;
 
-    m_IntermediateRenderTarget = NEW RenderTarget(m_Window->getContext());
+        m_IntermediateRenderTarget = NEW RenderTarget(m_Window->getContext());
+    }
     m_OutputRenderTarget = NEW RenderTarget(m_Window->getContext());
 
     uint32 width(m_Viewport.width), 
@@ -137,30 +140,30 @@ void View::init( const RenderSettings& settings )
             gfx::TextureFormat_RGB16, false);
         m_NormalDepthRenderMap->setData(width, height, 0, 
             gfx::TextureBufferLayout_RGB, gfx::TextureBufferType_Float, 0 );
-    }
 
-    m_IntermediateRenderTarget->addTextureTarget(m_ColorRenderMap);
-    m_IntermediateRenderTarget->addTextureTarget(m_NormalDepthRenderMap);
-    m_IntermediateRenderTarget->setDepthTarget();
-    m_IntermediateRenderTarget->init();
+        m_IntermediateRenderTarget->addTextureTarget(m_ColorRenderMap);
+        m_IntermediateRenderTarget->addTextureTarget(m_NormalDepthRenderMap);
+        m_IntermediateRenderTarget->setDepthTarget();
+        m_IntermediateRenderTarget->init();
+    }
     m_OutputRenderTarget->init();
 
     m_PrePostRenderPlugins.sort(&rendererSorter);
     m_PostPostRenderPlugins.sort(&rendererSorter);
-    m_PrePostRenderPlugins.forEach([this](IRenderer* renderer)
+    m_PrePostRenderPlugins.forEach([this, &settings](IRenderer* renderer)
     {
-        renderer->init(this, m_IntermediateRenderTarget);
+        renderer->init(this, settings.enablePost? m_IntermediateRenderTarget : m_OutputRenderTarget);
     });
-    m_PostPostRenderPlugins.forEach([this](IRenderer* renderer)
-    {
-        renderer->init(this, m_OutputRenderTarget);
-    });
-
     if (m_Settings.enablePost)
     {
         m_PostProcesser = NEW PostProcesser();
         m_PostProcesser->init(this, m_OutputRenderTarget, m_IntermediateRenderTarget);
     }
+    m_PostPostRenderPlugins.forEach([this](IRenderer* renderer)
+    {
+        renderer->init(this, m_OutputRenderTarget);
+    });
+
 }
 
 //  Plugin  //////////////////////////////////////////////////////////////
@@ -239,7 +242,8 @@ void View::draw()
         }
 
         GL::heSetViewport(m_Viewport);
-        m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
+        if (m_IntermediateRenderTarget != nullptr)
+            m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
         m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
 
         m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
@@ -247,9 +251,12 @@ void View::draw()
         if (m_Settings.enablePost)
             m_PostProcesser->draw();
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
-        m_OutputRenderTarget->prepareForRendering();
-        glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        if (m_IntermediateRenderTarget != nullptr)
+        {
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
+            m_OutputRenderTarget->prepareForRendering();
+            glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        }
 
         m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 

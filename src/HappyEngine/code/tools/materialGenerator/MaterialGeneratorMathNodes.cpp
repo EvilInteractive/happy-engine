@@ -27,7 +27,8 @@ namespace he {
 namespace tools {
     
 #pragma region Abs
-MaterialGeneratorNodeAbs::MaterialGeneratorNodeAbs(MaterialGeneratorGraph* const parent): m_Parent(parent)
+MaterialGeneratorNodeAbs::MaterialGeneratorNodeAbs(MaterialGeneratorGraph* const parent, const vec2& pos)
+    : MaterialGeneratorNode(pos), m_Parent(parent)
 {
     addOverload(1, 1, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
@@ -54,7 +55,8 @@ bool MaterialGeneratorNodeAbs::evaluate( MaterialGeneratorError& error )
 #pragma endregion
 
 #pragma region Add
-MaterialGeneratorNodeAdd::MaterialGeneratorNodeAdd(MaterialGeneratorGraph* const parent): m_Parent(parent)
+MaterialGeneratorNodeAdd::MaterialGeneratorNodeAdd(MaterialGeneratorGraph* const parent, const vec2& pos)
+    : MaterialGeneratorNode(pos), m_Parent(parent)
 {
     addOverload(1, 2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);

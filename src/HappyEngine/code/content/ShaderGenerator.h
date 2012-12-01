@@ -165,19 +165,19 @@ private:
     virtual void writeHeader();
     virtual void writeOpenMain();
     virtual void writeCloseMain();
-    virtual void writeVertexOutput();
-    virtual void writeVertexInputVars();
-    virtual void writeVertexGlobalVars();
-    virtual void writeVertexPassVars();
-    virtual void writeFragmentGlobalVars();
-    virtual void writeFragmentOutput();
+    virtual void writeVertexOutput() { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeVertexInputVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeVertexGlobalVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeVertexPassVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeFragmentGlobalVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeFragmentOutput() { LOG(LogType_ProgrammerAssert, "Implement!"); }
     virtual void writeVariableDeclaration(const ShaderGeneratorVariable* const var);
     virtual void writeVariable(const ShaderGeneratorVariable* const var, const bool forceInline = false);
     virtual void writeConstant(const ShaderGeneratorVariable* const var);
-    virtual void writeFloat(const float value);
-    virtual void writeFloat2(const vec2& value);
-    virtual void writeFloat3(const vec3& value);
-    virtual void writeFloat4(const vec4& value);
+    virtual void writeFloat(const float /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeFloat2(const vec2& /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeFloat3(const vec3& /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
+    virtual void writeFloat4(const vec4& /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
     virtual void writeAssignment() { m_ShaderFile << " = "; }
     virtual void writeEndLine() { m_ShaderFile << ";"; }
     virtual void writeNewLine() { m_ShaderFile << "\n"; }

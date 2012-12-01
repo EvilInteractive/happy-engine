@@ -70,6 +70,7 @@
 #include "Logger.h"
 #include "HappyInfo.h"
 
+#include "Logger.h"
 #include "HeAssert.h"
 #include "ExternalError.h"
 #include "HappyMemory.h"

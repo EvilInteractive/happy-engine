@@ -58,7 +58,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
    
     if (!PxInitExtensions(*m_PhysXSDK))
     {
-        HE_ASSERT(false, "PxInitExtensions failed!");
+        LOG(LogType_ProgrammerAssert, "PxInitExtensions failed!");
     }
 
     if (m_PhysXSDK->getPvdConnectionManager() != nullptr)

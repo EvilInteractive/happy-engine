@@ -43,9 +43,10 @@ public:
 
     vec2 operator*(float a) const;
     vec2 operator/(float a) const;
-
     vec2 operator+(const vec2& v) const;
     vec2 operator-(const vec2& v) const;
+    vec2 operator*(const vec2& v) const;
+    vec2 operator/(const vec2& v) const;
 
     vec2& operator+=(const vec2& v);
     vec2& operator-=(const vec2& v);
