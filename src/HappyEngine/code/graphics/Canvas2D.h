@@ -88,6 +88,7 @@ public:
     /* GETTERS */
     Data* getData() const;
     const vec2& getSize() const { return m_CanvasSize; }
+    Renderer2D* getRenderer2D() const { return m_Renderer2D; }
     
     /* SETTERS */
     void setStrokeColor(const Color& newColor);

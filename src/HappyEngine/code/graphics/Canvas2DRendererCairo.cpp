@@ -32,7 +32,7 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Canvas2DRendererCairo::Canvas2DRendererCairo()
+Canvas2DRendererCairo::Canvas2DRendererCairo() : m_RenderThreadRunning(false)
 {
 }
 
@@ -46,12 +46,12 @@ Canvas2DRendererCairo::~Canvas2DRendererCairo()
 void Canvas2DRendererCairo::tick(float /*dTime*/)
 {
     // check thread is not running
-    if (m_RenderThreadLock.try_lock())
+    if (m_RenderThreadRunning == false)
     {
         // check for sprites to render
         if (m_SpriteList.empty() == false)
         {
-            m_RenderThreadLock.unlock();
+            m_RenderThreadRunning = true;
             m_DrawThread = boost::thread(boost::bind(&Canvas2DRendererCairo::handleDrawCalls, this));
         }
     }
@@ -63,6 +63,8 @@ void Canvas2DRendererCairo::glThreadInvoke()
 
 void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
 {
+    finishSprite();
+
     uint16 id(sprite->getID());
 
     vec2 size(sprite->getSize());
@@ -97,6 +99,10 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
 void Canvas2DRendererCairo::finishSprite()
 {
     boost::mutex::scoped_lock lock(m_SpriteListLock);
+
+    if (m_SpriteList.size() <= 0)
+        return;
+
     m_SpriteList.back().readyState |= SpriteReadyForRender;
 }
 
@@ -396,7 +402,7 @@ float Canvas2DRendererCairo::normalizeAngle(float a)
 void Canvas2DRendererCairo::handleDrawCalls()
 {
     // lock so main thread knows its running
-    boost::mutex::scoped_lock(m_RenderThreadLock);
+    //m_RenderThreadLock.lock();
 
     bool renderSprite(false);
     uint32 spritesToRender(0);
@@ -451,6 +457,10 @@ void Canvas2DRendererCairo::handleDrawCalls()
         renderSprite = false;
         --spritesToRender;
     }
+
+    //m_RenderThreadLock.unlock();
+
+    m_RenderThreadRunning = false;
 }
 
 void Canvas2DRendererCairo::transformY()

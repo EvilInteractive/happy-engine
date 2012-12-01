@@ -228,10 +228,9 @@ void MainGame::load()
     m_View2->setCamera(flyCamera2);
 #endif
     
-    
     m_FpsGraph = NEW tools::FPSGraph();
-    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
-    m_FpsGraph->setPos(he::vec2(15,140));
+    m_FpsGraph->setType(tools::FPSGraph::Type_Full);
+    m_FpsGraph->setPos(he::vec2(m_View->getViewport().width - 105.f, 5.f));
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
@@ -365,6 +364,7 @@ void MainGame::load()
 
     he::gui::SpriteCreator* creator(GUI->Sprites);
     m_TestSprite = creator->createSprite(he::vec2(200,200));
+    creator->setActiveSprite(m_TestSprite);
     creator->roundedRectangle(he::vec2(0,0), he::vec2(200,200), 50.0f);
     creator->setColor(he::Color(1.0f,0.0f,1.0f));
     creator->fill();
@@ -399,7 +399,7 @@ void MainGame::tick( float dTime )
         spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
         spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
     }
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Lctrl))
+    if (CONTROLS->getKeyboard()->isKeyDown(he::io::Key_Lctrl))
     {
         he::ge::Entity* bullet(NEW he::ge::Entity());
         bullet->init(m_Scene);
@@ -451,7 +451,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
     //cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
 
-    canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
+    //canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)

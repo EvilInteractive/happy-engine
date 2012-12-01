@@ -29,27 +29,41 @@
 #include "Canvas2D.h"
 #include "View.h"
 #include "Font.h"
+#include "Sprite.h"
+#include "Gui.h"
+#include "Canvas2Dnew.h"
 
 namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-FPSGraph::FPSGraph() :	m_GameTime(0.0f),
+FPSGraph::FPSGraph(uint16 recordTime) :
+                        m_GameTime(0.0f),
                         m_TBase(0.0f),
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(0.5f),
                         m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 10, false)),
-                        m_FPSGraphState(Type_ToConsole),
+                        m_FPSGraphState(Type_TextOnly),
                         m_Pos(5.0f, 5.0f),
-                        m_FpsHistory(300)
+                        m_FpsHistory(300),
+                        m_ActiveSprite(0),
+                        m_AcumulatedDTime(0.f),
+                        m_Ticks(0),
+                        m_RecordTime(recordTime)
 {
-    CONSOLE->registerVar<int>(&m_FPSGraphState, "s_fps_graph");
+    CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
+
+    m_Sprites[0] = GUI->Sprites->createSprite(vec2(100,40));
+    m_Sprites[1] = GUI->Sprites->createSprite(vec2(100,40));
 }
 
 FPSGraph::~FPSGraph()
 {
     m_Font->release();
+
+    m_Sprites[0]->release();
+    m_Sprites[1]->release();
 }
 
 /* GENERAL */
@@ -58,52 +72,73 @@ void FPSGraph::tick(float dTime, float interval)
     m_GameTime += dTime;
     m_Interval = interval;
 
+    m_AcumulatedDTime += dTime;
+    ++m_Ticks;
+
     if ((m_GameTime - m_TBase) >= m_Interval)
     {
         m_TBase = m_GameTime;
 
-        uint16 fps(cap(1 / dTime));
+        m_CurrentDTime = m_AcumulatedDTime / m_Ticks;
+
+        uint16 fps(cap(1 / (m_CurrentDTime)));
+
+        m_AcumulatedDTime = 0.f;
+        m_Ticks = 0;
 
         m_CurrentFPS = fps;
-        m_CurrentDTime = dTime;
-
         m_FpsHistory.add(fps);
+
+        if (m_FPSGraphState == Type_Full)
+        {
+            renderGraph();
+        }
+
+        // limit recording time to save memory
+        if (m_FpsHistory.size() * m_Interval > m_RecordTime)
+        {
+            m_FpsHistory.orderedRemoveAt(0);
+        }
     }
 }
 
 void FPSGraph::draw2D(gfx::Canvas2D* canvas)
 {
-    if (m_GameTime > m_Interval)
+    if (m_GameTime <= m_Interval)
+        return;
+
+    switch (m_FPSGraphState)
     {
-        switch (m_FPSGraphState)
+        case Type_Hide:
         {
-            case Type_Hide:
-            {
-                break;
-            }
-            case Type_ToConsole:
-                drawToConsole(canvas);
-                break;
-            case Type_TextOnly:
-            {
-                drawTextOnly(canvas);
-                break;
-            }
-            case Type_Full:
-            {
-                drawFull(canvas);
-                break;
-            }
+            break;
+        }
+        case Type_ToConsole:
+        {
+            drawToConsole(canvas);
+            break;
+        }
+        case Type_TextOnly:
+        {
+            drawTextOnly(canvas);
+            break;
+        }
+        case Type_Full:
+        {
+            drawFull(canvas);
+            break;
         }
     }
 }
 
-uint16 FPSGraph::cap(float fps)
+inline uint16 FPSGraph::cap(const float& fps) const
 {
-   /* if (fps > 250.0f)
-        return 250;
-    else*/
-        return static_cast<uint16>(fps);
+    return static_cast<uint16>(fps);
+}
+
+inline uint16 FPSGraph::cap(const uint32& fps) const
+{
+    return static_cast<uint16>(fps);
 }
 
 void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
@@ -116,9 +151,6 @@ void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
 
 void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 {
-    //GUI->setAntiAliasing(false);
-    //GUI->setColor(1.0f,1.0f,1.0f);
-
     canvas->setDepth(-1900);
 
     canvas->setFillColor(Color(1.0f,1.0f,1.0f));
@@ -131,162 +163,247 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 
     sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
     txt.addLine(std::string(buff));
-    
-    //canvas->fillRect(m_Pos, vec2(128, 16));
+
     canvas->fillText(txt, m_Pos);
 
     canvas->restoreDepth();
-
-    //m_pCanvas2D->draw2D(renderer);
 }
 
-void FPSGraph::drawFull(gfx::Canvas2D* /*canvas*/)
+void FPSGraph::drawFull(gfx::Canvas2D* canvas)
 {
-    //if (m_FpsHistory.size() == 0)
-    //    return;
+    if (m_FpsHistory.size() == 0)
+        return;
 
-    ////GUI->setAntiAliasing(false);
+    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
 
-    ////GUI->setColor(0.8f,0.8f,0.8f);
-    ////GUI->fillShape2D(gui::Rectangle2D(m_Pos, vec2(100, 40)), true);
+    cvs->drawSprite(m_Sprites[m_ActiveSprite],m_Pos);
 
-    //gui::Polygon2D poly;
-    //gui::Polygon2D poly2;
+    cvs->setColor(Color(1.0f,1.0f,1.0f));
 
-    //uint i(0);
-    //    
-    //if (m_FpsHistory.size() > 50)
-    //{
-    //    i = m_FpsHistory.size() - 51;
-    //}
+    gui::Text txt(m_Font);
 
-    //uint j(m_FpsHistory.size());
+    char buff[64];
+    sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
+    txt.addLine(std::string(buff));
 
-    //ushort k(0);
-    //ushort currentFPS(0);
-    ////ushort prevFPS(0);
+    sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
+    txt.addLine(std::string(buff));
+    
+    cvs->fillText(txt, m_Pos + vec2(0,43));
+}
 
-    //for (; i < j ; ++i)
-    //{
-    //    currentFPS = m_FpsHistory[i];
-    //    //prevFPS = m_FpsHistory[i - 1];
+void FPSGraph::renderGraph()
+{
+    gui::SpriteCreator* cr(GUI->Sprites);
 
-    //    if (currentFPS > 80)
-    //        currentFPS = 80;
+    cr->setActiveSprite(m_Sprites[m_ActiveSprite]);
+    cr->rectangle(vec2(0,0),vec2(100,40));
+    cr->setColor(Color(0.9f,0.9f,0.9f,0.8f));
+    cr->fill();
 
-    //    if (currentFPS < 2)
-    //        currentFPS = 2;
+    PrimitiveList<vec2> poly0;
+    PrimitiveList<vec2> poly1;
 
-    //    /*if (prevFPS > 80)
-    //    prevFPS = 80;*/
+    uint32 i(0);
+                
+    if (m_FpsHistory.size() > 50)
+    {
+        i = m_FpsHistory.size() - 51;
+    }
 
-    //    poly.addPoint(vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (currentFPS / 2)));
-    //    /*//GUI->drawShape2D(gui::Line2D(   vec2(m_Pos.x + 100.0f - ((k + 1) * 2), m_Pos.y + 40.0f - (currentFPS / 2)),
-    //                                    vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (prevFPS / 2))));*/
+    uint32 j(m_FpsHistory.size());
 
-    //    ++k;
-    //}
+    uint8 k(0);
+    uint16 currentFPS(0);
 
-    //if (poly.getPolygon().getVertexCount() < 50)
-    //{
-    //    poly.addPoint(vec2(m_Pos.x + 100.0f - ((poly.getPolygon().getVertexCount() - 1) * 2), m_Pos.y + 40.0f));
-    //}
-    //else
-    //{
-    //    poly.addPoint(vec2(m_Pos.x, m_Pos.y + 40.0f));
-    //}
+    cr->newPath();
 
-    //poly.addPoint(vec2(m_Pos.x + 100.0f, m_Pos.y + 40.0f));
+    for (; i < j ; ++i)
+    {
+        currentFPS = m_FpsHistory[i];
 
-    //if (m_FpsHistory.size() > 50)
-    //{
-    //    i = m_FpsHistory.size() - 51;
-    //}
-    //else
-    //{
-    //    i = 0;
-    //}
+        if (currentFPS > 80)
+            currentFPS = 80;
 
-    //k = 0;
-    //ushort currentDTime(0);
-    ////ushort prevDTime(0);
+        if (currentFPS < 2)
+            currentFPS = 2;
 
-    //for (; i < j ; ++i)
-    //{
-    //    currentDTime = static_cast<ushort>((1.0f / m_FpsHistory[i]) * 1000.0f);
-    //    //prevDTime = static_cast<ushort>((1.0f / m_FpsHistory[i - 1]) * 1000.0f);
+        if (k == 0)
+        {
+            poly0.add(vec2(105.0f - (k * 2), 40.0f - (currentFPS / 2)));
+        }
 
-    //    if (currentDTime > 80)
-    //        currentDTime = 80;
+        poly0.add(vec2(100.0f - (k * 2), 40.0f - (currentFPS / 2)));
 
-    //    if (currentDTime < 2)
-    //        currentDTime = 2;
+        ++k;
+    }
 
-    //    /*if (prevDTime > 80)
-    //    prevDTime = 80;*/
+    if (k < 50)
+    {
+        poly0.add(vec2(100.0f - ((k - 1) * 2), 45.0f));
+    }
+    else
+    {
+        poly0.add(vec2(-5.0f, 40.0f - (currentFPS / 2)));
+        poly0.add(vec2(-5.0f, 45.0f));
+    }
 
-    //    poly2.addPoint(vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (currentDTime / 2)));
-    //    /*//GUI->drawShape2D(gui::Line2D(   vec2(m_Pos.x + 100.0f - ((k + 1) * 2), m_Pos.y + 40.0f - (currentDTime / 2)),
-    //                                    vec2(m_Pos.x + 100.0f - (k * 2), m_Pos.y + 40.0f - (prevDTime / 2))));*/
-    //    ++k;
-    //}
+    poly0.add(vec2(105.0f, 45.0f));
 
-    //if (poly2.getPolygon().getVertexCount() < 50)
-    //{
-    //    poly2.addPoint(vec2(m_Pos.x + 100.0f - ((poly2.getPolygon().getVertexCount() - 1) * 2), m_Pos.y + 40.0f));
-    //}
-    //else
-    //{
-    //    poly2.addPoint(vec2(m_Pos.x, m_Pos.y + 40.0f));
-    //}
+    if (m_FpsHistory.size() > 50)
+    {
+        i = m_FpsHistory.size() - 51;
+    }
+    else
+    {
+        i = 0;
+    }
 
-    //poly2.addPoint(vec2(m_Pos.x + 100.0f, m_Pos.y + 40.0f));
+    k = 0;
+    uint16 currentDTime(0);
 
-    //if (m_CurrentFPS >= static_cast<ushort>(m_CurrentDTime * 1000.0f))
-    //{
-    //    //GUI->setColor(1.0f,0.7f,0.7f);
-    //    //GUI->fillShape2D(poly);
-    //    //GUI->setColor(1.0f,0.0f,0.0f);
-    //    //GUI->drawShape2D(poly);
-    //    //GUI->setColor(1.0f,0.9f,0.6f);
-    //    //GUI->fillShape2D(poly2);
-    //    //GUI->setColor(1.0f,1.0f,0.0f);
-    //    //GUI->drawShape2D(poly2);
-    //}
-    //else
-    //{
-    //    //GUI->setColor(1.0f,0.9f,0.6f);
-    //    //GUI->fillShape2D(poly2);
-    //    //GUI->setColor(1.0f,1.0f,0.0f);
-    //    //GUI->drawShape2D(poly2);
-    //    //GUI->setColor(1.0f,0.7f,0.7f);
-    //    //GUI->fillShape2D(poly);
-    //    //GUI->setColor(1.0f,0.0f,0.0f);
-    //    //GUI->drawShape2D(poly);
-    //}
+    for (; i < j ; ++i)
+    {
+        currentDTime = static_cast<uint16>((1.0f / m_FpsHistory[i]) * 1000.0f);
 
-    //ushort avFPS(getAverageFPS());
+        if (currentDTime > 80)
+            currentDTime = 80;
 
-    //if (avFPS > 80)
-    //    avFPS = 80;
+        if (currentDTime < 2)
+            currentDTime = 2;
 
-    ////GUI->setColor(0.0f,0.47f,1.0f);
-    ////GUI->fillShape2D(gui::Rectangle2D(  vec2(m_Pos.x, m_Pos.y + 39.0f - (avFPS / 2)),
-    //                                    vec2(10.0f, 3.0f)));
+        if (k == 0)
+        {
+            poly1.add(vec2(105.0f - (k * 2), 40.0f - (currentDTime / 2)));
+        }
 
-    ////GUI->setColor(0.1f,0.1f,0.1f);
-    ////GUI->drawShape2D(gui::Rectangle2D(m_Pos + vec2(0.0f, -1.0f), vec2(101, 41)), true);
+        poly1.add(vec2(100.0f - (k * 2), 40.0f - (currentDTime / 2)));
 
-    ////GUI->setColor(1.0f,1.0f,1.0f);
+        ++k;
+    }
 
-    //// replaced stringstream by sprintf -> stringstream is very slow
-    //char buff[64];
+    if (k < 50)
+    {
+        poly1.add(vec2(100.0f - ((k - 1) * 2), 45.0f));
+    }
+    else
+    {
+        poly1.add(vec2(-5.0f, 40.0f - (currentDTime / 2)));
+        poly1.add(vec2(-5.0f, 45.0f));
+    }
 
-    //sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    ////GUI->drawText(gui::Text(std::string(buff), m_pFont), vec2(m_Pos.x, m_Pos.y + 43.0f));
+    poly1.add(vec2(105.0f, 45.0f));
 
-    //sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    ////GUI->drawText(gui::Text(std::string(buff), m_pFont), vec2(m_Pos.x, m_Pos.y + 56.0f));
+    cr->setLineWidth(1.0f);
+    cr->newPath();
+
+    if (m_CurrentFPS >= static_cast<uint16>(m_CurrentDTime * 1000.0f))
+    {
+        i = 0;
+
+        poly0.forEach([&](vec2 p)
+        {
+            if (i == 0)
+            {
+                cr->moveTo(p);
+
+                ++i;
+            }
+            else
+            {
+                cr->lineTo(p);
+            }
+        });
+
+        cr->setColor(Color(1.0f,0.7f,0.7f,0.6f));
+        cr->fill();
+
+        cr->setColor(Color(1.0f,0.0f,0.0f,0.6f));
+        cr->stroke();
+
+        cr->newPath();
+        i = 0;
+
+        poly1.forEach([&](vec2 p)
+        {
+            if (i == 0)
+            {
+                cr->moveTo(p);
+
+                ++i;
+            }
+            else
+            {
+                cr->lineTo(p);
+            }
+        });
+
+        cr->setColor(Color(1.0f,0.9f,0.6f,0.6f));
+        cr->fill();
+
+        cr->setColor(Color(1.0f,1.0f,0.0f,0.6f));
+        cr->stroke();
+    }
+    else
+    {
+        i = 0;
+
+        poly1.forEach([&](vec2 p)
+        {
+            if (i == 0)
+            {
+                cr->moveTo(p);
+
+                ++i;
+            }
+            else
+            {
+                cr->lineTo(p);
+            }
+        });
+
+        cr->setColor(Color(1.0f,0.9f,0.6f,0.6f));
+        cr->fill();
+
+        cr->setColor(Color(1.0f,1.0f,0.0f,0.6f));
+        cr->stroke();
+
+        i = 0;
+        cr->newPath();
+
+        poly0.forEach([&](vec2 p)
+        {
+            if (i == 0)
+            {
+                cr->moveTo(p);
+
+                ++i;
+            }
+            else
+            {
+                cr->lineTo(p);
+            }
+        });
+
+        cr->setColor(Color(1.0f,0.7f,0.7f,0.6f));
+        cr->fill();
+
+        cr->setColor(Color(1.0f,0.0f,0.0f,0.6f));
+        cr->stroke(); 
+    }
+
+    cr->newPath();
+
+    cr->rectangle(vec2(0,0),vec2(100,40));
+    cr->setColor(Color(0.2f,0.2f,0.2f,0.6f));
+    cr->stroke();
+
+    cr->renderSpriteAsync();
+
+    ++m_ActiveSprite;
+
+    if (m_ActiveSprite > 1)
+        m_ActiveSprite = 0;
 }
 
 /* GETTERS */
@@ -304,7 +421,7 @@ uint16 FPSGraph::getMaxFPS() const
 
 uint16 FPSGraph::getMinFPS() const
 {
-    uint16 minFPS(0xffff);
+    uint16 minFPS(0xff);
     m_FpsHistory.forEach([&](uint16 FPS)
     {
         if (FPS < minFPS)
@@ -320,12 +437,6 @@ uint16 FPSGraph::getAverageFPS() const
         return 0;
 
     uint32 i(0);
-        
-    if ((m_FpsHistory.size() * m_Interval) > 60)
-    {
-        i = static_cast<uint32>(m_FpsHistory.size() - (60 / m_Interval));
-    }
-
     uint32 j((uint32)m_FpsHistory.size());
 
     uint32 avFPS(0);
@@ -335,16 +446,9 @@ uint16 FPSGraph::getAverageFPS() const
         avFPS += m_FpsHistory[i];
     }
 
-    if ((m_FpsHistory.size() * m_Interval) > 60)
-    {
-        avFPS /= static_cast<uint32>(60 / m_Interval);
-    }
-    else
-    {
-        avFPS /= (uint32)m_FpsHistory.size();
-    }
+    avFPS /= (uint32)m_FpsHistory.size();
 
-    return (uint16)avFPS;
+    return cap(avFPS);
 }
 
 /* SETTERS */

@@ -41,7 +41,7 @@ public:
 
     /* GENERAL */
     void init(const vec2& size);
-    void invalidate(const vec2& newSize = vec2(-1.f,-1.f));
+    void invalidate(const vec2& newSize = vec2(0.f,0.f));
 
     /* GETTERS */
     gfx::Texture2D* getRenderTexture() const;

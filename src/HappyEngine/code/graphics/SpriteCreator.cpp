@@ -68,6 +68,11 @@ void SpriteCreator::renderSpriteAsync()
 /* GETTERS */
     
 /* SETTERS */
+void SpriteCreator::setActiveSprite(Sprite* sprite)
+{
+    m_Renderer->addNewSprite(sprite);
+}
+
 void SpriteCreator::setColor(const Color& color)
 {
     if (m_Color != color)

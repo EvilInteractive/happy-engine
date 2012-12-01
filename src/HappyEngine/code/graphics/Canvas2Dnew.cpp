@@ -137,6 +137,8 @@ void Canvas2Dnew::draw()
         tex2D,
         m_Position,
         true);
+
+    clear();
 }
 
 void Canvas2Dnew::fillText(const Text& text, const vec2& pos)

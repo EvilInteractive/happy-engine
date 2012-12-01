@@ -94,12 +94,13 @@ void Sprite::invalidate(const vec2& newSize)
         gfx::TextureBufferType_Byte,
         0);
 
+    /*
     float thirdX(size.x / 3);
     float thirdY(size.y / 3);
     m_Center.x = thirdX;
     m_Center.y = thirdY;
     m_Center.width = thirdX;
-    m_Center.height = thirdY;
+    m_Center.height = thirdY;*/
 }
 
 /* GETTERS */

@@ -49,6 +49,8 @@ public:
     /* GETTERS */
     
     /* SETTERS */
+    void setActiveSprite(Sprite* sprite);
+
     // set colors
     void setColor(const Color& color);
 

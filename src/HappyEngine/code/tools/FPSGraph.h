@@ -32,6 +32,9 @@ namespace gfx {
     class Font;
     class View;
 }
+namespace gui {
+    class Sprite;
+}
 namespace tools {
 
 class FPSGraph : public gfx::IDrawable2D
@@ -46,7 +49,7 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    FPSGraph();
+    FPSGraph(uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
@@ -64,10 +67,14 @@ public:
 
 private:
 
-    uint16 cap(float fps);
+    /* INTERNAL */
+    inline uint16 cap(const float& fps) const;
+    inline uint16 cap(const uint32& fps) const;
     void drawToConsole(gfx::Canvas2D* canvas);
     void drawTextOnly(gfx::Canvas2D* canvas);
     void drawFull(gfx::Canvas2D* canvas);
+
+    void renderGraph();
 
     /* DATAMEMBERS */
     he::PrimitiveList<uint16> m_FpsHistory;
@@ -76,14 +83,20 @@ private:
     float m_TBase;
     float m_CurrentDTime;
     float m_Interval;
+    float m_AcumulatedDTime;
 
     uint16 m_CurrentFPS;
+    uint16 m_Ticks;
+    uint16 m_RecordTime;
     
     gfx::Font* m_Font;
 
     int m_FPSGraphState;
 
     vec2 m_Pos;
+
+    gui::Sprite* m_Sprites[2];
+    uint8 m_ActiveSprite;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);
