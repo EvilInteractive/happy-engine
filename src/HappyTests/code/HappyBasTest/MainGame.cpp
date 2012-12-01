@@ -253,8 +253,8 @@ void MainGame::load()
     m_EntityList.push_back(scene);
     ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
     scene->addComponent(physicsComp);
-    px::PhysicsConvexShape convexSceneShape(CONTENT->loadPhysicsConvex("testPlatformer/scene.pxcv"));
-    px::PhysicsConcaveShape concaveSceneShape(CONTENT->loadPhysicsConcave("testPlatformer/scene.pxcc"));
+    px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
+    px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");
     physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
     physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
 
@@ -293,6 +293,7 @@ void MainGame::load()
     m_Player = NEW Player();
     m_View->setCamera(m_Player->getCamera());
     
+    #pragma region GUI stuff
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
@@ -375,6 +376,7 @@ void MainGame::load()
     creator->setColor(he::Color(1.0f,1.0f,1.0f));
     creator->fill();
     creator->renderSpriteAsync();
+#pragma endregion
 
     PHYSICS->startSimulation();
 }

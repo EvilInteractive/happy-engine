@@ -23,6 +23,7 @@
 
 #include "PhysicsConcaveShape.h"
 #include "PhysicsConcaveMesh.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace px {
@@ -31,6 +32,10 @@ PhysicsConcaveShape::PhysicsConcaveShape(const ObjectHandle& concaveMesh, const 
         m_ConcaveMesh(concaveMesh), m_Scale(scale)
 { 
     ResourceFactory<PhysicsConcaveMesh>::getInstance()->instantiate(m_ConcaveMesh);
+}
+PhysicsConcaveShape::PhysicsConcaveShape(const std::string& asset, const vec3& scale): 
+        m_ConcaveMesh(CONTENT->loadPhysicsConcave(asset)), m_Scale(scale)
+{ 
 }
 
 PhysicsConcaveShape::PhysicsConcaveShape(): 
