@@ -59,7 +59,6 @@ public:
 
 private:
     layout m_Layout;
-    uint32 m_VertexSize;
 };
 
 } } //end namespace

@@ -20,8 +20,8 @@
 #version 150 core
 
 in vec2 passTexCoord;
-in vec2 passTcOffset;
-in vec2 passTcScale;
+//in vec2 passTcOffset;
+//in vec2 passTcScale;
 
 out vec4 outColor;
 
@@ -31,7 +31,8 @@ uniform vec4 fontColor;
 void main()
 {
 	vec2 tC = vec2(passTexCoord.x, passTexCoord.y);
-	float alpha = texture2D(diffuseMap, (tC * passTcScale) + passTcOffset).r;	
+	//float alpha = texture2D(diffuseMap, (tC * passTcScale) + passTcOffset).r;	
+    float alpha = 1.0f;
 	
-	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha * fontColor.w);
+	outColor = vec4(fontColor.x, fontColor.y * alpha, 1.0f, 1.0f);
 }

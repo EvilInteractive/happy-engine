@@ -68,8 +68,8 @@ private:
     struct CharBufferData
     {
         mat44 wvp;
-        vec2 tcOffset;
-        vec2 tcScale;
+        //vec2 tcOffset;
+        //vec2 tcScale;
     };
 
     /* STATIC */

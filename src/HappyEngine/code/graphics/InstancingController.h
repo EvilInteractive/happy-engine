@@ -43,6 +43,7 @@ class InstancingController : public InstancedDrawable, public ge::ITickable
 {
 public:
     InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
+    InstancingController(const std::string& name, bool dynamic, const std::string& materialAsset, const std::string& modelAsset);
     virtual ~InstancingController();
 
     uint32 addInstance(const IInstancible* pObj); //return id
@@ -101,7 +102,7 @@ private:
     VaoID m_ShadowVao[MAX_VERTEX_ARRAY_OBJECTS];
 
     BufferLayout m_InstancingLayout;
-    const ModelMesh* m_pModelMesh;
+    ModelMesh* m_ModelMesh;
     Material* m_Material;
 
     bool m_CastShadows;
@@ -114,6 +115,7 @@ private:
     he::PrimitiveList<const IInstanceFiller*> m_ManualCpuBufferFillers;
 
     Scene* m_Scene;
+    bool m_AttachedToScene;
 
     eventCallback1<void, GLContext*> m_ContextCreatedHandler;
     eventCallback1<void, GLContext*> m_ContextRemovedHandler;

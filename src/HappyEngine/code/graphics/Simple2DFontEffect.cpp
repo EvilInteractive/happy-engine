@@ -45,8 +45,8 @@ void Simple2DFontEffect::load()
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
     layout.addElement(ShaderLayoutElement(2, "matWVP"));
-    layout.addElement(ShaderLayoutElement(6, "tcOffset"));
-    layout.addElement(ShaderLayoutElement(7, "tcScale"));
+    //layout.addElement(ShaderLayoutElement(6, "tcOffset"));
+    //layout.addElement(ShaderLayoutElement(7, "tcScale"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     he::ObjectList<std::string> shaderOutputs;
@@ -87,9 +87,9 @@ void Simple2DFontEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) con
     m_Shader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
 }
 
-void Simple2DFontEffect::setDepth(float depth) const
+void Simple2DFontEffect::setDepth(float /*depth*/) const
 {
-    m_Shader->setShaderVar(m_ShaderDepthPos, depth);
+    //m_Shader->setShaderVar(m_ShaderDepthPos, depth);
 }
 
 void Simple2DFontEffect::setFontColor(const Color& col) const

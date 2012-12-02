@@ -27,6 +27,8 @@
 #include "ModelComponent.h"
 #include "Scene.h"
 #include "CameraManager.h"
+#include "LightComponent.h"
+#include "Light.h"
 
 namespace ht {
 
@@ -42,6 +44,16 @@ Player::Player()
     he::ge::ModelComponent* const model(NEW he::ge::ModelComponent);
     model->setModelMeshAndMaterial("testPlatformer/player.material", "testPlatformer/player2m.binobj");
     addComponent(model);
+
+    he::ge::SpotLightComponent* const spotLight(NEW he::ge::SpotLightComponent);
+    addComponent(spotLight);
+    spotLight->setAttenuation(1.0f, 20.0f);
+    spotLight->setDirection(he::vec3::forward);
+    spotLight->setFov(he::piOverTwo);
+    spotLight->setColor(he::Color(0.5f, 0.8f, 1.0f));
+    spotLight->setMultiplier(2.0f);
+    spotLight->setShadow(he::gfx::ShadowResolution_512);
+    spotLight->setLocalTranslate(he::vec3(0, 1, 0));
 
     scene->getCameraManager()->addCamera("player3thperson", m_Camera);
 }

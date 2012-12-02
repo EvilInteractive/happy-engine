@@ -1,8 +1,8 @@
 [Deferred]
-shader = "defaultDeferred.shader"
+shader = "defaultDeferredInstanced.shader"
 
 [Forward]
-shader = "defaultForward.shader"
+shader = "defaultForwardInstanced.shader"
 
 [TEXTURE2D]
 diffuseMap = "cube_diff.png"

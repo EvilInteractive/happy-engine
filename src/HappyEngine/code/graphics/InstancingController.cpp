@@ -32,6 +32,9 @@
 #include "Scene.h"
 #include "Game.h"
 
+#include "ContentManager.h"
+#include "Model.h"
+
 namespace he {
 namespace gfx {
 
@@ -39,10 +42,10 @@ namespace gfx {
 
 #pragma warning(disable:4355) // use of this in initializer list
 InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
-    m_Dynamic(dynamic), m_pModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
+    m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
-    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1))
+    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1)), m_AttachedToScene(false)
 {
     he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
     he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
@@ -53,9 +56,32 @@ InstancingController::InstancingController(const std::string& name, bool dynamic
     m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
 
     ResourceFactory<ModelMesh>::getInstance()->instantiate(modelHandle);
-    m_pModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
+    m_ModelMesh = ResourceFactory<ModelMesh>::getInstance()->get(modelHandle);
     ResourceFactory<ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&InstancingController::init, this));
 }
+
+InstancingController::InstancingController( const std::string& name, bool dynamic, const std::string& materialAsset, const std::string& modelAsset ):
+    m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
+    m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
+    m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
+    m_ContextRemovedHandler(boost::bind(&InstancingController::destroyVao, this, _1)), m_AttachedToScene(false)
+{
+        he_memset(m_Vao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+        he_memset(m_ShadowVao, 0xffff, MAX_VERTEX_ARRAY_OBJECTS * sizeof(VaoID));
+
+        m_Material = ResourceFactory<Material>::getInstance()->get(CONTENT->loadMaterial(materialAsset));
+        m_InstancingLayout = BufferLayout(m_Material->getCompatibleInstancingLayout());
+        m_CpuBuffer = details::InstancingBuffer(m_Material->getCompatibleInstancingLayout().getSize(), 32);
+
+        Model* model = CONTENT->asyncLoadModel(modelAsset, m_Material->getCompatibleVertexLayout());
+        model->callbackOnceIfLoaded([model, this]()
+        {
+            m_ModelMesh = model->instantiateMesh(0);
+            model->release();
+            this->init();
+        });
+}
+
 #pragma warning(default:4355)
 
 
@@ -69,7 +95,7 @@ InstancingController::~InstancingController()
         destroyVao(context);
     });
     glDeleteBuffers(1, &m_GpuBuffer);
-    m_pModelMesh->release();
+    m_ModelMesh->release();
     m_Material->release();
     GAME->removeFromTickList(this);
     if (isAttachedToScene())
@@ -80,7 +106,7 @@ InstancingController::~InstancingController()
 void InstancingController::initVao( GLContext* context )
 {
     GRAPHICS->setActiveContext(context);
-    const BufferLayout::layout& vertexElements(m_pModelMesh->getVertexLayout().getElements());
+    const BufferLayout::layout& vertexElements(m_ModelMesh->getVertexLayout().getElements());
     //////////////////////////////////////////////////////////////////////////
     ///  Regular Draw
     //////////////////////////////////////////////////////////////////////////
@@ -91,15 +117,15 @@ void InstancingController::initVao( GLContext* context )
         //////////////////////////////////////////////////////////////////////////
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
-        glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOID());
-        const BufferLayout::layout& vertexElements(m_pModelMesh->getVertexLayout().getElements());
+        glBindBuffer(GL_ARRAY_BUFFER, m_ModelMesh->getVBOID());
+        const BufferLayout::layout& vertexElements(m_ModelMesh->getVertexLayout().getElements());
         std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const BufferElement& e)
         {
             GLint components = 1;
             GLenum type = 0;
             GL::getGLTypesFromBufferElement(e, components, type);
             glVertexAttribPointer(e.getElementIndex(), components, type, 
-                GL_FALSE, m_pModelMesh->getVertexLayout().getSize(), 
+                GL_FALSE, m_ModelMesh->getVertexLayout().getSize(), 
                 BUFFER_OFFSET(e.getByteOffset())); 
             glEnableVertexAttribArray(e.getElementIndex());
         });
@@ -107,7 +133,7 @@ void InstancingController::initVao( GLContext* context )
         //////////////////////////////////////////////////////////////////////////
         ///  Index Buffer
         //////////////////////////////////////////////////////////////////////////
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_pModelMesh->getVBOIndexID());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ModelMesh->getVBOIndexID());
 
         //////////////////////////////////////////////////////////////////////////
         ///  Instance Buffer
@@ -147,14 +173,14 @@ void InstancingController::initVao( GLContext* context )
         //////////////////////////////////////////////////////////////////////////
         ///  Vertex Buffer
         //////////////////////////////////////////////////////////////////////////
-        glBindBuffer(GL_ARRAY_BUFFER, m_pModelMesh->getVBOID());
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_pModelMesh->getVertexLayout().getSize(), BUFFER_OFFSET(posOffset)); 
+        glBindBuffer(GL_ARRAY_BUFFER, m_ModelMesh->getVBOID());
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_ModelMesh->getVertexLayout().getSize(), BUFFER_OFFSET(posOffset)); 
         glEnableVertexAttribArray(0);
 
         //////////////////////////////////////////////////////////////////////////
         ///  Index Buffer
         //////////////////////////////////////////////////////////////////////////
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_pModelMesh->getVBOIndexID());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ModelMesh->getVBOIndexID());
 
         //////////////////////////////////////////////////////////////////////////
         ///  Instance Buffer
@@ -191,6 +217,12 @@ void InstancingController::destroyVao( GLContext* context )
 }
 void InstancingController::init()
 {
+    if (m_Scene != nullptr)
+    {
+        m_AttachedToScene = true;
+        m_Scene->attachToScene(this);
+    }
+
     GAME->addToTickList(this);
 
     //////////////////////////////////////////////////////////////////////////
@@ -267,12 +299,12 @@ void InstancingController::updateBuffer()
 void InstancingController::draw()
 {
     GL::heBindVao(m_Vao[GL::s_CurrentContext->id]);
-    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
+    glDrawElementsInstanced(GL_TRIANGLES, m_ModelMesh->getNumIndices(), m_ModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 void InstancingController::drawShadow()
 {
     GL::heBindVao(m_ShadowVao[GL::s_CurrentContext->id]);
-    glDrawElementsInstanced(GL_TRIANGLES, m_pModelMesh->getNumIndices(), m_pModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
+    glDrawElementsInstanced(GL_TRIANGLES, m_ModelMesh->getNumIndices(), m_ModelMesh->getIndexType(), BUFFER_OFFSET(0), m_CpuBuffer.getCount());
 }
 
 
@@ -302,7 +334,7 @@ const Material* InstancingController::getMaterial() const
 }
 const ModelMesh* InstancingController::getModelMesh() const
 {
-    return m_pModelMesh;
+    return m_ModelMesh;
 }
 
 void InstancingController::applyMaterial(const ICamera* pCamera) const
@@ -350,18 +382,27 @@ void InstancingController::tick( float /*dTime*/ )
 
 void InstancingController::detachFromScene()
 {
-    HE_IF_ASSERT(isAttachedToScene() == true, "Drawable not attached to scene when detaching")
+    HE_IF_ASSERT(m_Scene != nullptr, "Drawable not attached to scene when detaching")
     {
-        m_Scene->detachFromScene(this);
+        if (m_AttachedToScene)
+        {
+            m_Scene->detachFromScene(this);
+            m_Scene = nullptr;
+            m_AttachedToScene = false;
+        }
     }
 }
 
 void InstancingController::attachToScene( Scene* scene )
 {
-    HE_IF_ASSERT(isAttachedToScene() == false, "Drawable already attached to scene when attaching")
+    HE_IF_ASSERT(m_Scene == nullptr, "Drawable already attached to scene when attaching")
     {
         m_Scene = scene;
-        m_Scene->attachToScene(this);
+        if (m_AttachedToScene == false && m_ModelMesh != nullptr && m_ModelMesh->isLoaded())
+        {
+            m_AttachedToScene = true;
+            m_Scene->attachToScene(this);
+        }
     }
 }
 
@@ -376,7 +417,7 @@ Scene* InstancingController::getScene() const
 
 bool InstancingController::isAttachedToScene() const
 {
-    return m_Scene != nullptr;
+    return m_Scene != nullptr && m_AttachedToScene;
 }
 
 void InstancingController::calculateBound()
