@@ -123,8 +123,7 @@ private:
     boost::thread m_DrawThread;
     boost::mutex m_SpriteListLock;
     boost::mutex m_SpriteListBlitLock;
-    boost::mutex m_RenderThreadLock;
-    bool m_RenderThreadRunning;
+    bool m_HandleDrawCalls;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2DRendererCairo(const Canvas2DRendererCairo&);

@@ -346,7 +346,6 @@ void Canvas2DRendererGL::init()
         BufferLayout vLayout;
         vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
         vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
-        mesh->init(vLayout, gfx::MeshDrawMode_Triangles);
 
         he::ObjectList<VertexPosTex2D> vertices(4);
         vertices.add(
@@ -415,7 +414,7 @@ void Canvas2DRendererGL::init()
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(6, 1);
     glVertexAttribDivisor(7, 1);
 }
 

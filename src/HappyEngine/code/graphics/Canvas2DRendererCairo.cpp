@@ -32,29 +32,21 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Canvas2DRendererCairo::Canvas2DRendererCairo() : m_RenderThreadRunning(false)
+Canvas2DRendererCairo::Canvas2DRendererCairo() : m_HandleDrawCalls(true)
 {
+    m_DrawThread = boost::thread(boost::bind(&Canvas2DRendererCairo::handleDrawCalls, this));
 }
 
 Canvas2DRendererCairo::~Canvas2DRendererCairo()
 {
     // wait for thread to finish
+    m_HandleDrawCalls = false;
     m_DrawThread.join();
 }
 
 /* GENERAL */
 void Canvas2DRendererCairo::tick(float /*dTime*/)
 {
-    // check thread is not running
-    if (m_RenderThreadRunning == false)
-    {
-        // check for sprites to render
-        if (m_SpriteList.empty() == false)
-        {
-            m_RenderThreadRunning = true;
-            m_DrawThread = boost::thread(boost::bind(&Canvas2DRendererCairo::handleDrawCalls, this));
-        }
-    }
 }
 void Canvas2DRendererCairo::glThreadInvoke()
 {
@@ -401,66 +393,74 @@ float Canvas2DRendererCairo::normalizeAngle(float a)
 }
 void Canvas2DRendererCairo::handleDrawCalls()
 {
-    // lock so main thread knows its running
-    //m_RenderThreadLock.lock();
+    boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(10);
 
     bool renderSprite(false);
     uint32 spritesToRender(0);
 
-    m_SpriteListLock.lock();
-
-        spritesToRender = m_SpriteList.size();
-
-    m_SpriteListLock.unlock();
-
-    while (spritesToRender > 0)
+    while (m_HandleDrawCalls)
     {
+        renderSprite = false;
+        spritesToRender = 0;
+
         m_SpriteListLock.lock();
 
-            // check if needs to be rendered
-            SpriteData& data(m_SpriteList.front());
-            
-#pragma warning(disable:4800)
-            renderSprite = 
-                (data.readyState &= SpriteReadyForRender);
-#pragma warning(default:4800)
+            spritesToRender = m_SpriteList.size();
 
         m_SpriteListLock.unlock();
 
-        if (renderSprite)
+        if (spritesToRender > 0)
         {
-            // execute all the drawcalls for the sprite
-            while (data.drawCalls.empty() == false)
+            while (spritesToRender > 0)
             {
-                data.drawCalls.front()();
-                data.drawCalls.pop();
+                m_SpriteListLock.lock();
+
+                    // check if needs to be rendered
+                    SpriteData& data(m_SpriteList.front());
+            
+        #pragma warning(disable:4800)
+                    renderSprite = 
+                        (data.readyState &= SpriteReadyForRender);
+        #pragma warning(default:4800)
+
+                m_SpriteListLock.unlock();
+
+                if (renderSprite)
+                {
+                    // execute all the drawcalls for the sprite
+                    while (data.drawCalls.empty() == false)
+                    {
+                        data.drawCalls.front()();
+                        data.drawCalls.pop();
+                    }
+
+                    // set sprite ready for blitting
+                    data.readyState |= SpriteReadyForBlit;
+
+                    m_SpriteListBlitLock.lock();
+
+                        // push spritedata to blitting queue
+                        m_SpriteListBlit.push(data);
+
+                    m_SpriteListBlitLock.unlock();
+            
+                    m_SpriteListLock.lock();
+            
+                        // pop it off the regular queue
+                        m_SpriteList.pop();
+
+                    m_SpriteListLock.unlock();
+                }
+
+                renderSprite = false;
+                --spritesToRender;
             }
-
-            // set sprite ready for blitting
-            data.readyState |= SpriteReadyForBlit;
-
-            m_SpriteListBlitLock.lock();
-
-                // push spritedata to blitting queue
-                m_SpriteListBlit.push(data);
-
-            m_SpriteListBlitLock.unlock();
-            
-            m_SpriteListLock.lock();
-            
-                // pop it off the regular queue
-                m_SpriteList.pop();
-
-            m_SpriteListLock.unlock();
         }
-
-        renderSprite = false;
-        --spritesToRender;
+        else
+        {
+            boost::this_thread::sleep(waitTime);
+        }
     }
-
-    //m_RenderThreadLock.unlock();
-
-    m_RenderThreadRunning = false;
 }
 
 void Canvas2DRendererCairo::transformY()

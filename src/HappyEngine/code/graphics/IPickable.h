@@ -28,6 +28,8 @@ namespace gfx {
 class IPickable
 {
 public:
+
+    IPickable() : m_IsPickable(false) {}
     virtual ~IPickable() {} 
 
     virtual bool isPickable() const { return m_IsPickable; }
