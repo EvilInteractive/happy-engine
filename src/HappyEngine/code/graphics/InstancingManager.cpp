@@ -44,6 +44,12 @@ void InstancingManager::createController( const std::string& id, bool dynamic, c
     m_Controllers[id] = pController;
 }
 
+void InstancingManager::createController( const std::string& id, bool dynamic, const std::string& materialAsset, const std::string& modelAsset )
+{
+    InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset));
+    m_Controllers[id] = pController;
+}
+
 InstancingController* InstancingManager::getController( const std::string& id )
 {
     auto it(m_Controllers.find(id));

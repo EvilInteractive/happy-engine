@@ -37,6 +37,7 @@ public:
     virtual ~InstancingManager();
 
     void createController(const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
+    void createController(const std::string& id, bool dynamic, const std::string& materialAsset, const std::string& modelAsset);
     InstancingController* getController(const std::string& id);
 
 private:

@@ -100,26 +100,14 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
     Texture2D* tex2D = text.getFont()->getTextureAtlas();
 
-    s_FontEffect->begin();
-    
-    s_FontEffect->setDiffuseMap(tex2D);
-    s_FontEffect->setFontColor(m_Color);
-    s_FontEffect->setDepth(0.5f);
-
-    GL::heBlendEnabled(true);
-    GL::heBlendEquation(BlendEquation_Add);
-    // reduce text quality loss by alpha reduction
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
-    //GL::heBindVao(m_TextureQuad->getVertexArraysID());
-
     vec2 linePos = pos;
     bool hasBounds(text.hasBounds());
 
+    m_CharBuffer.clear();
+    size_t size(0);
+    for (uint32 i(0); i < text.getText().size(); ++i)
+        size += text.getText()[i].size();
+    m_CharBuffer.resize(size);
     for (uint32 i(0); i < text.getText().size(); ++i)
     {
         linePos.y = pos.y + (text.getFont()->getLineSpacing() * i);
@@ -192,12 +180,10 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
                 glyphPos.x += text.getFont()->getKerning(text.getText()[i][i2], text.getText()[i][i2 + 1]);
             }
 
-            m_CharBuffer.add(CharBufferData());
-
-            CharBufferData& c(m_CharBuffer.back());
+            CharBufferData& c(m_CharBuffer[i]);
             c.wvp = m_OrthographicMatrix * world;
-            c.tcOffset = tcOffset;
-            c.tcScale = tcScale;
+            //c.tcOffset = tcOffset;
+            //c.tcScale = tcScale;
               
             //s_FontEffect->setWorldMatrix(m_OrthographicMatrix * world);
             //s_FontEffect->setTCOffset(tcOffset);
@@ -207,17 +193,29 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         }
     }
 
-    GL::heBindVao(m_BufferVAOID);
 
     //glBindBuffer(GL_ARRAY_BUFFER, m_TextureQuad->getVBOID());
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureQuad->getVBOIndexID());
 
     glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_CharBuffer.size() * sizeof(CharBufferData) , &m_CharBuffer[0]);
+    glBufferData(GL_ARRAY_BUFFER, m_CharBuffer.size() * sizeof(CharBufferData), 0, GL_STREAM_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_CharBuffer.size() * sizeof(CharBufferData), &m_CharBuffer[0]);
 
+    s_FontEffect->begin();
+    s_FontEffect->setDiffuseMap(tex2D);
+    s_FontEffect->setFontColor(m_Color);
+    s_FontEffect->setDepth(0.5f);
+    GL::heBlendEnabled(false);
+    //GL::heBlendEquation(BlendEquation_Add);
+    // reduce text quality loss by alpha reduction
+    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
+
+    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+    GL::heBindVao(m_BufferVAOID);
     glDrawElementsInstanced(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), BUFFER_OFFSET(0), m_CharBuffer.size());
-
-    m_CharBuffer.clear();
 }
 void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
                                     const vec2& newDimensions,
@@ -313,6 +311,7 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
 /* INTERNAL */
 void Canvas2DRendererGL::init()
 {
+    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
     m_Size = m_CanvasBuffer->size;
 
     if (s_ColorEffect == nullptr)
@@ -346,7 +345,6 @@ void Canvas2DRendererGL::init()
         BufferLayout vLayout;
         vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
         vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
-        mesh->init(vLayout, gfx::MeshDrawMode_Triangles);
 
         he::ObjectList<VertexPosTex2D> vertices(4);
         vertices.add(
@@ -374,9 +372,7 @@ void Canvas2DRendererGL::init()
         mesh->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
         mesh->setLoaded();
 
-        ResourceFactory<ModelMesh>::getInstance()->instantiate(s_TextureQuadHandle);
-        m_TextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(s_TextureQuadHandle);
-        mesh->release();
+        m_TextureQuad = mesh;
     }
     else
     {
@@ -384,39 +380,63 @@ void Canvas2DRendererGL::init()
         m_TextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(s_TextureQuadHandle);
     }
 
+    BufferLayout instancingLayout;
+    uint32 offset(0);
+    uint32 count(0);
+    // Mat44
+    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
+    offset += sizeof(vec4);
+    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
+    offset += sizeof(vec4);
+    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
+    offset += sizeof(vec4);
+    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
+    offset += sizeof(vec4);
+    // Vec2
+    //instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec2, BufferElement::Usage_Instancing, sizeof(vec2), offset));
+    //offset += sizeof(vec2);
+    // Vec2
+    //instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec2, BufferElement::Usage_Instancing, sizeof(vec2), offset));
+    //offset += sizeof(vec2);
+
     // instance buffer
+    glGenBuffers(1, &m_BufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CharBufferData), 0, GL_STREAM_DRAW);
     glGenVertexArrays(1, &m_BufferVAOID);
     GL::heBindVao(m_BufferVAOID);
 
+    // Vertex Buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_TextureQuad->getVBOID());
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), 0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), BUFFER_OFFSET(sizeof(vec2)));
+    const BufferLayout::layout& vertexElements(m_TextureQuad->getVertexLayout().getElements());
+    std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const BufferElement& e)
+    {
+        GLint components = 1;
+        GLenum type = 0;
+        GL::getGLTypesFromBufferElement(e, components, type);
+        glVertexAttribPointer(e.getElementIndex(), components, type, 
+            GL_FALSE, m_TextureQuad->getVertexLayout().getSize(), 
+            BUFFER_OFFSET(e.getByteOffset())); 
+        glEnableVertexAttribArray(e.getElementIndex());
+    });
 
+    // Index Buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureQuad->getVBOIndexID());
 
-    glGenBuffers(1, &m_BufferID);
+    // Instance buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
 
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-    glEnableVertexAttribArray(5);
-    glEnableVertexAttribArray(6);
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 0)); 
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 1)); 
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 2)); 
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(mat44), BUFFER_OFFSET(sizeof(vec4) * 3)); 
-    glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), BUFFER_OFFSET(sizeof(vec4) * 4));
-    glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), BUFFER_OFFSET(sizeof(vec4) * 4) + sizeof(vec2));
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(7, 1);
+    instancingLayout.getElements().forEach([&](const BufferElement& element)
+    {
+        GLint components(1);
+        GLenum type(0);
+        GL::getGLTypesFromBufferElement(element, components, type);
+        glEnableVertexAttribArray(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex());
+        glVertexAttribPointer(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), components, type, 
+            GL_FALSE, instancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
+        glVertexAttribDivisor(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), 1);
+    });
+
 }
 
 } } //end namespace

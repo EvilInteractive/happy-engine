@@ -65,6 +65,9 @@
 #include "Player.h"
 #include "PlayerThirdPersonCamera.h"
 
+#include "InstancingController.h"
+#include "InstancingManager.h"
+#include "InstancedModelComponent.h"
 #include "PhysicsEngine.h"
 #include "StaticPhysicsComponent.h"
 #include "PhysicsConcaveShape.h"
@@ -262,6 +265,9 @@ void MainGame::load()
     physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
     physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
 
+    m_Scene->getInstancingManager()->createController("bullet", true, "cube.material", "cube.binobj");
+    m_Scene->getInstancingManager()->getController("bullet")->attachToScene(m_Scene);
+
     #pragma endregion
     
     #pragma region Lights
@@ -415,10 +421,10 @@ void MainGame::tick( float dTime )
         he::ge::Entity* bullet(NEW he::ge::Entity());
         bullet->init(m_Scene);
         bullet->setLocalTranslate(m_View->getCamera()->getPosition());
-        he::ge::ModelComponent* modelComp(NEW he::ge::ModelComponent());
+        he::ge::InstancedModelComponent* modelComp(NEW he::ge::InstancedModelComponent());
         modelComp->setLocalScale(he::vec3(0.5f));
         bullet->addComponent(modelComp);
-        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");  
+        modelComp->setController("bullet");  
         he::ge::DynamicPhysicsComponent* physicsComp(NEW he::ge::DynamicPhysicsComponent());
         bullet->addComponent(physicsComp);
         he::px::PhysicsBoxShape shape(he::vec3(1.0f, 1.0f, 1.0f));

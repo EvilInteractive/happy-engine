@@ -30,6 +30,7 @@
 #include "PointLight.h"
 
 #include "Scene.h"
+#include "Light.h"
 
 namespace he {
 namespace ge {
@@ -175,6 +176,12 @@ void SpotLightComponent::setFov( float angle )
     m_SpotLight->setFov(angle);
 }
 
+void SpotLightComponent::setShadow( const gfx::ShadowResolution shadow )
+{
+    HE_ASSERT(m_SpotLight != nullptr, "Attach light component first!");
+    m_SpotLight->setShadowResolution(shadow);
+}
+
 float SpotLightComponent::getMultiplier() const
 {
     HE_ASSERT(m_SpotLight != nullptr, "Attach light component first!");
@@ -215,6 +222,12 @@ float SpotLightComponent::getFov() const
 {
     HE_ASSERT(m_SpotLight != nullptr, "Attach light component first!");
     return m_SpotLight->getFov();
+}
+
+gfx::ShadowResolution SpotLightComponent::getShadow() const
+{
+    HE_ASSERT(m_SpotLight != nullptr, "Attach light component first!");
+    return m_SpotLight->getShadowResolution();
 }
 
 #pragma endregion

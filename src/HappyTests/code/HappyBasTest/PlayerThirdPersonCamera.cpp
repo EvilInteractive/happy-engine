@@ -73,6 +73,8 @@ void PlayerThirdPersonCamera::tick( float /*dTime*/ )
 
         const vec3 lookAtPos(m_Player->getCenterPosition());
         lookAt(lookAtPos - lookDir * CAM_DISTANCE, lookAtPos, upDir);
+
+        m_Player->setLocalRotate(mat33::createRotation3D(vec3::up, m_Yaw));
     }
     else
     {

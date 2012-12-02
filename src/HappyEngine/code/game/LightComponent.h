@@ -29,6 +29,7 @@ namespace he {
 namespace gfx {
     class PointLight;
     class SpotLight;
+    enum ShadowResolution;
 }
 namespace ge {
     
@@ -92,6 +93,7 @@ public:
     void setColor(const vec3& color);
     void setColor(const Color& color);
     void setFov(float angle);
+    void setShadow(const gfx::ShadowResolution shadow);
 
     float getMultiplier() const;
     const vec3& getDirection() const;
@@ -100,6 +102,7 @@ public:
     const vec3& getColor() const;
     float getCosCutoff() const;
     float getFov() const;
+    gfx::ShadowResolution getShadow() const;
 
 
 private:
