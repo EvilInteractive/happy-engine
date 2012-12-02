@@ -20,10 +20,9 @@
 #version 150 core
 in vec3 inPosition;
 
-uniform mat4 matVP;
-uniform mat4 matW;
+uniform mat4 matWVP;
 
 void main()
 {
-	gl_Position =  matVP * matW *  vec4(inPosition, 1.0f);
+	gl_Position =  matWVP *  vec4(inPosition, 1.0f);
 }

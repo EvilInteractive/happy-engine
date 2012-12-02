@@ -131,15 +131,24 @@ uint32 Picker::pick(const vec2& screenPoint)
  
         ++i;
     });
+
+    int height(m_View->getViewport().height);
+    int width(m_View->getViewport().width);
+
+    m_RenderTarget->prepareForRendering();
  
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(true);
     GL::heSetDepthRead(true);
- 
-    m_RenderTarget->prepareForRendering();
+    GL::heSetViewport(RectI(0, 0, width, height));
 
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_RenderTarget->clear(Color(0.0f,0.0f,0.0f,0.0f));
+
+    GL::heScissorEnabled(true);
+    GL::heScissorRect(RectI(
+        static_cast<int>(screenPoint.x - 5),
+        static_cast<int>(height - screenPoint.y - 5),
+        10,10));
      
     i = 1;
     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
@@ -153,12 +162,11 @@ uint32 Picker::pick(const vec2& screenPoint)
  
         ++i;
     });
- 
-    int width = m_View->getViewport().width;
-    int height = m_View->getViewport().height;
+
+    GL::heScissorEnabled(false);
  
     byte packedID[4];
-    glReadPixels(	width - static_cast<int>(screenPoint.x),
+    glReadPixels(	static_cast<int>(screenPoint.x),
                     height - static_cast<int>(screenPoint.y),
                     1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
  
@@ -208,15 +216,24 @@ uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& dr
  
         ++i;
     });
+
+    int height(m_View->getViewport().height);
+    int width(m_View->getViewport().width);
+
+    m_RenderTarget->prepareForRendering();
  
     GL::heBlendEnabled(false);
     GL::heSetDepthWrite(true);
     GL::heSetDepthRead(true);
- 
-    m_RenderTarget->prepareForRendering();
+    GL::heSetViewport(RectI(0, 0, width, height));
 
-    GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_RenderTarget->clear(Color(0.0f,0.0f,0.0f,0.0f));
+
+    GL::heScissorEnabled(true);
+    GL::heScissorRect(RectI(
+        static_cast<int>(screenPoint.x - 5),
+        static_cast<int>(height - screenPoint.y - 5),
+        10,10));
      
     i = 1;
     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
@@ -230,8 +247,8 @@ uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& dr
  
         ++i;
     });
- 
-    int height = m_View->getViewport().height;
+
+    GL::heScissorEnabled(false);
  
     byte packedID[4];
     glReadPixels(	static_cast<int>(screenPoint.x),
@@ -249,7 +266,7 @@ uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& dr
 
 void Picker::drawDebug(Canvas2D* canvas) const
 {
-    canvas->getRenderer2D()->drawTexture2DToScreen(m_RenderTexture, vec2(12,12), false, vec2(640,320));
+    canvas->getRenderer2D()->drawTexture2DToScreen(m_RenderTexture, vec2(0,0), false, vec2(m_View->getViewport().width * 1.0f, m_View->getViewport().height * 1.0f));
 }
 
 /* SETTERS */
