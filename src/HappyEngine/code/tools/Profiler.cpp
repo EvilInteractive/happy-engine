@@ -28,6 +28,7 @@
 #include "Text.h"
 #include "Canvas2D.h"
 #include "View.h"
+#include "Canvas2Dnew.h"
 
 namespace he {
 namespace tools {
@@ -104,6 +105,7 @@ Profiler::Profiler()
 void Profiler::load()
 {
     m_Font = CONTENT->loadFont("UbuntuMono-R.ttf", 11);
+    m_Text.setFont(m_Font);
 
     CONSOLE->registerCmd(boost::bind(&he::tools::Profiler::toggleProfiler, this), "toggle_profiler");
 }
@@ -219,9 +221,9 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
     char totalBuf[10];
     char avgBuf[10];
     char maxBuf[10];
-    sprintf(totalBuf, "%02.3f\0", totalFrameTime);
-    sprintf(avgBuf, "%02.3f\0", avgFrameTime);
-    sprintf(maxBuf, "%02.3f\0", maxFrameTime);
+    sprintf(totalBuf, "%02.4f\0", totalFrameTime);
+    sprintf(avgBuf, "%02.4f\0", avgFrameTime);
+    sprintf(maxBuf, "%02.4f\0", maxFrameTime);
 
     s_Stream.clear();
     s_Stream.str("");
@@ -245,25 +247,25 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
 {
     if (isEnabled() == false)
         return;
-
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+    m_Text.clear();
     m_Width = 0;
     
-    gui::Text text(m_Font);
-    text.addLine("----PROFILER------------------------------");
+    m_Text.addLine("----PROFILER------------------------------");
     std::for_each(m_NodesBack->cbegin(), m_NodesBack->cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
     {
-        drawProfileNode(treeNodePair.second, text, 1);  
+        drawProfileNode(treeNodePair.second, m_Text, 1);  
     });
-    text.addLine("------------------------------------------");
+    m_Text.addLine("------------------------------------------");
 
-    float y((float)(text.getText().size() * m_Font->getLineSpacing()));
+    float y((float)(m_Text.getText().size() * m_Font->getLineSpacing()));
 
+    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
     canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
     canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
-    canvas->setFillColor(Color(1.0f, 1.0f, 1.0f));
-    canvas->fillText(text, vec2(4, 4));
+    cvs->setColor(Color(1.0f, 1.0f, 1.0f));
+    cvs->fillText(m_Text, vec2(4, 4));
 }
 
 void Profiler::attachToRenderer( gfx::Renderer2D* renderer )

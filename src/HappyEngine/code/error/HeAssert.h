@@ -47,12 +47,12 @@ static int s_scope = 0;
 #define HE_IF_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ProgrammerAssert, message, ##__VA_ARGS__); } else 
 #define HE_ART_ASSERT(isOk, message, ...) if (!(isOk)) LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__)
 #define HE_IF_ART_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__); } else
-#define HE_COMPILE_ASSERT(isOk, message) static_assert(isOk, message)
 #else
 #define HE_ASSERT(...) {}
 #define HE_IF_ASSERT(...) {}
 #define HE_ART_ASSERT(...) {}
 #define HE_IF_ART_ASSERT(isOk, ...) if (isOk)
 #endif
+#define HE_COMPILE_ASSERT(isOk, message) static_assert(isOk, message)
 
 #endif

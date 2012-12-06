@@ -76,6 +76,8 @@ public:
     bool operator==(const mat44& other) const;
     bool operator!=(const mat44& other) const;
 
+    void transpose();
+
     //getters
     const float* toFloatArray() const;
     const physx::PxMat44& getPhyicsMatrix() const;

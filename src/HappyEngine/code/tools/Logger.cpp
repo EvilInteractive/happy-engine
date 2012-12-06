@@ -60,19 +60,24 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 
     std::string typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);
+    file; func; line;
     switch(type)
     {
         case LogType_ProgrammerAssert:  
         {
             typeString = "Programmer Assert"; 
             consoleType = CMSG_TYPE_ERROR;
+#ifdef _DEBUG
             he::err::details::happyAssert(err::details::AssertType_Code, file, func, line, buff);
+#endif
         } break;
         case LogType_ArtAssert:
         {
             typeString = "Art Assert"; 
             consoleType = CMSG_TYPE_ERROR;
+#ifdef _DEBUG
             he::err::details::happyAssert(err::details::AssertType_Art, file, func, line, buff);
+#endif
         } break;
         case LogType_Error:
             {

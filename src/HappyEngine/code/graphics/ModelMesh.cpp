@@ -165,19 +165,22 @@ void ModelMesh::destroyVAO( GLContext* context )
 
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
-void ModelMesh::setVertices(const void* pVertices, uint32 num, MeshUsage usage)
+void ModelMesh::setVertices(const void* pVertices, uint32 num, MeshUsage usage, bool calcBound)
 {
     m_NumVertices = num;
 
-    uint32 posOffset = UINT32_MAX;
-    std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
+    if (calcBound == true)
     {
-        if (e.getUsage() == gfx::BufferElement::Usage_Position)
+        uint32 posOffset = UINT32_MAX;
+        std::for_each(m_VertexLayout.getElements().cbegin(), m_VertexLayout.getElements().cend(), [&](const BufferElement& e)
         {
-            posOffset = e.getByteOffset();
-        }
-    });
-    m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, m_VertexLayout.getSize(), posOffset));
+            if (e.getUsage() == gfx::BufferElement::Usage_Position)
+            {
+                posOffset = e.getByteOffset();
+            }
+        });
+        m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, m_VertexLayout.getSize(), posOffset));
+    }
 
     GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);

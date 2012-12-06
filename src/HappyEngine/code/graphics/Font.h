@@ -62,7 +62,20 @@ public:
     int getKerning(char first, char second) const;
 
     Texture2D* getTextureAtlas() const;
-    const CharData* getCharTextureData(uint8 chr) const;
+    inline const CharData& getCharTextureData(const uint8 chr) const
+    {
+        HE_ASSERT(m_Init, "Init Font before using!");
+        HE_ASSERT(m_Cached, "Precache Font before using!");
+        uint8 useChr(63);
+
+        HE_IF_ART_ASSERT(chr <= 127 || m_ExtendedChars, "Font char %d out of range", chr)
+        {
+            useChr = chr;
+        }
+
+        return m_CharTextureData[useChr];
+    }
+
 
     bool isPreCached() const;
 

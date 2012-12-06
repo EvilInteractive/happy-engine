@@ -348,6 +348,11 @@ void mat44::getRotationComponent( mat33& rotation ) const
         rotation(row, col) = m_Matrix(row, col);
 }
 
+void mat44::transpose()
+{
+    m_Matrix = m_Matrix.getTranspose();
+}
+
 
 //Static
 const mat44 mat44::Identity = mat44(1, 0, 0, 0,

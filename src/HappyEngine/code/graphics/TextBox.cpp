@@ -25,6 +25,7 @@
 #include "ControlsManager.h"
 #include "IMouse.h"
 #include "Text.h"
+#include "Canvas2Dnew.h"
 
 namespace he {
 namespace gui {
@@ -169,6 +170,8 @@ void TextBox::draw(gfx::Canvas2D* canvas)
     text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
+    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
+
     RectF textRect(m_Rect.x + 4, m_Rect.y + 3, m_Rect.width - 8, m_Rect.height - 8);
 
     if (m_bActive)
@@ -185,7 +188,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
             canvas->strokeRect(vec2(m_Rect.x + 1 , m_Rect.y + 1), vec2(m_Rect.width - 2, m_Rect.height - 2));
         }
 
-        canvas->setFillColor(m_Colors[TextBoxColor_Text]);
+        cvs->setColor(m_Colors[TextBoxColor_Text]);
 
         if (m_String == "")
         {
@@ -194,7 +197,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
                 text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
                 text.addLine(m_DefaultString);
-                canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
+                cvs->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
             }
         }
         else
@@ -202,7 +205,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
             text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
             text.addLine(m_String);
-            canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
+            cvs->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
         }
 
         if (m_bHasFocus)
@@ -223,7 +226,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
                 text.clear();
                 text.addLine(m_Cursor);
-                canvas->fillText(text, vec2(cursorRect.x, cursorRect.y - 1));
+                cvs->fillText(text, vec2(cursorRect.x, cursorRect.y - 1));
             }
         }
     }

@@ -190,6 +190,15 @@ bool Shader::initFromMem( const std::string& vs, const std::string& fs, const Sh
 
     glLinkProgram(m_Id);
 
+    #ifdef _DEBUG
+    std::for_each(layout.cbegin(), layout.cend(), [&](const ShaderLayoutElement& e)
+    {
+        HE_ASSERT(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()) == (GLint)e.getElementIndex(), 
+            "Attribute (%s) bind failed! requested:%d - got:%d", e.getShaderVariableName().c_str(), e.getElementIndex(), glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
+    });
+    err::glCheckForErrors();
+    #endif
+
     succes = succes && validateProgram(m_Id);
 
     return succes;

@@ -23,6 +23,7 @@
 #pragma once
 
 #include "IDrawable2D.h"
+#include "Text.h"
 
 namespace he {
     namespace gui {
@@ -93,6 +94,7 @@ private:
 
     gfx::Font* m_Font;
     gfx::Renderer2D* m_Renderer;
+    gui::Text m_Text;
 
     enum State
     {

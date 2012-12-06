@@ -302,6 +302,7 @@ int Font::getKerning(char first, char second) const
 
     FT_Vector kerning;
 
+    int result(0);
     if (FT_HAS_KERNING(m_Face))
     {
         FT_UInt index1(FT_Get_Char_Index(m_Face, first));
@@ -309,12 +310,9 @@ int Font::getKerning(char first, char second) const
 
         FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
 
-        return (kerning.x / 64); // 1 / 64
+        result = kerning.x / 64; // 1 / 64
     }
-    else
-    {
-        return 0;
-    }
+    return result;
 }
 
 Texture2D* Font::getTextureAtlas() const
@@ -323,19 +321,6 @@ Texture2D* Font::getTextureAtlas() const
     HE_ASSERT(m_Cached, "Precache Font before using!");
 
     return m_TextureAtlas;
-}
-
-const Font::CharData* Font::getCharTextureData(uint8 chr) const
-{
-    HE_ASSERT(m_Init, "Init Font before using!");
-    HE_ASSERT(m_Cached, "Precache Font before using!");
-
-    if (!m_ExtendedChars && chr > 127)
-    {
-        return nullptr;
-    }
-
-    return &m_CharTextureData[chr];
 }
 
 bool Font::isPreCached() const

@@ -53,8 +53,7 @@ Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* 
     m_SurfaceDirty(true),
     m_Size(vec2(0,0)),
     m_Context(glContext),
-    m_BufferVAOID(UINT32_MAX),
-    m_BufferID(UINT32_MAX)
+    m_DynamicFontMesh(nullptr)
 {
     ++s_Renderers;
 }
@@ -64,6 +63,7 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
     --s_Renderers;
 
     m_TextureQuad->release();
+    m_DynamicFontMesh->release();
 
     if (s_Renderers == 0)
     {
@@ -73,8 +73,6 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
         delete s_NinePatchEffect;
     }
 
-    glDeleteBuffers(1, &m_BufferID);
-    glDeleteVertexArrays(1, &m_BufferVAOID);
 }
 
 /* GENERAL */
@@ -90,7 +88,6 @@ void Canvas2DRendererGL::setColor(const Color& col)
     }
 }
 
-/* DRAW */
 void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 {
     HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
@@ -103,31 +100,41 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     vec2 linePos = pos;
     bool hasBounds(text.hasBounds());
 
-    m_CharBuffer.clear();
+    m_CharVertexBuffer.clear();
+    m_CharIndexBuffer.clear();
+    const he::gfx::Font* const font(text.getFont());
+    const uint32 lineSpacing(font->getLineSpacing());
+    const gui::Text::HAlignment h = text.getHorizontalAlignment();
+    const he::ObjectList<std::string>& textLines(text.getText());
+    const size_t textLineCount(textLines.size());
+    const vec2 bounds(text.getBounds());
+    const uint32 texWidth(tex2D->getWidth());
+    const uint32 texHeight(tex2D->getHeight());
     size_t size(0);
-    for (uint32 i(0); i < text.getText().size(); ++i)
-        size += text.getText()[i].size();
-    m_CharBuffer.resize(size);
-    for (uint32 i(0); i < text.getText().size(); ++i)
+    for (uint32 i(0); i < textLineCount; ++i)
+        size += textLines[i].size();
+    m_CharVertexBuffer.resize(size * 4);
+    m_CharIndexBuffer.resize(size * 6);
+    size_t charCounter(0);
+    for (uint32 i(0); i < textLineCount; ++i)
     {
-        linePos.y = pos.y + (text.getFont()->getLineSpacing() * i);
+        const std::string& line(textLines[i]);
+        linePos.y = pos.y + (lineSpacing * i);
 
         // If there is set a boundingbox for text
         if (hasBounds)
         {
             vec2 offset(0, 0);
 
-            gui::Text::HAlignment h = text.getHorizontalAlignment();
-
             switch (h)
             {
                 case gui::Text::HAlignment_Left:
                     break;
                 case gui::Text::HAlignment_Center:
-                    offset.x += (text.getBounds().x / 2.0f - text.getFont()->getStringWidth(text.getText()[i]) / 2.0f);
+                    offset.x += (bounds.x / 2.0f - font->getStringWidth(line) / 2.0f);
                     break;
                 case gui::Text::HAlignment_Right:
-                    offset.x += (text.getBounds().x - text.getFont()->getStringWidth(text.getText()[i]));
+                    offset.x += (bounds.x - font->getStringWidth(line));
                     break;
             }
 
@@ -138,10 +145,10 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
                 case gui::Text::VAlignment_Top:
                     break;
                 case gui::Text::VAlignment_Center:
-                    offset.y += (text.getBounds().y / 2.0f - (text.getFont()->getLineSpacing() * text.getText().size()) / 2.0f);
+                    offset.y += bounds.y / 2.0f - (lineSpacing * textLineCount) / 2.0f;
                     break;
                 case gui::Text::VAlignment_Bottom:
-                    offset.y += (text.getBounds().y - (text.getFont()->getLineSpacing() * text.getText().size()));
+                    offset.y += bounds.y - (lineSpacing * textLineCount);
                     break;
             }
 
@@ -150,72 +157,72 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
         vec2 glyphPos = linePos;
 
-        for (uint32 i2(0); i2 < text.getText()[i].size(); ++i2)
+        const size_t charCount(line.size());
+        for (size_t i2(0); i2 < charCount; ++i2)
         {
-            vec2 tcOffset(0.0f,0.0f);
-            vec2 tcScale(1.0f,1.0f);
-            vec2 size;
+            const char character(line[i2]);
 
-            const Font::CharData* cData = text.getFont()->getCharTextureData(text.getText()[i][i2]);
-            // skip char if chardata is empty
-            if (cData == nullptr)
-                continue;
+            const Font::CharData& charData = font->getCharTextureData(character);
+            const RectF& regionToDraw = charData.textureRegion;
 
-            const RectF& regionToDraw = cData->textureRegion;
+            const vec2 tcScale(regionToDraw.width / texWidth, regionToDraw.height / texHeight);
+            const vec2 tcOffset(regionToDraw.x / texWidth, ((texHeight - regionToDraw.y) / texHeight) - tcScale.y);
 
-            tcScale.x = regionToDraw.width / tex2D->getWidth();
-            tcScale.y = regionToDraw.height / tex2D->getHeight();
+            const vec2 size(regionToDraw.width, regionToDraw.height);
 
-            tcOffset.x = regionToDraw.x / tex2D->getWidth();
-            tcOffset.y = ((tex2D->getHeight() - regionToDraw.y) / tex2D->getHeight()) - tcScale.y;
+            VertexPosTex2D& vertex0(m_CharVertexBuffer[charCounter * 4 + 0]);
+            VertexPosTex2D& vertex1(m_CharVertexBuffer[charCounter * 4 + 1]);
+            VertexPosTex2D& vertex2(m_CharVertexBuffer[charCounter * 4 + 2]);
+            VertexPosTex2D& vertex3(m_CharVertexBuffer[charCounter * 4 + 3]);
 
-            size = vec2(regionToDraw.width, regionToDraw.height);
+            vertex0.position = glyphPos + vec2(0, size.y);
+            vertex0.textureCoord = tcOffset;
+            vertex1.position = glyphPos + vec2(size.x, size.y);
+            vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
+            vertex2.position = glyphPos;
+            vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
+            vertex3.position = glyphPos + vec2( size.x, 0);
+            vertex3.textureCoord = tcOffset + tcScale;
 
-            mat44 world(mat44::createTranslation(vec3(glyphPos.x + size.x/2, glyphPos.y + size.y/2, 0.0f)) * mat44::createScale(size.x, size.y, 1.0f));
+            m_CharIndexBuffer[charCounter * 6 + 0] = charCounter * 4 + 0;
+            m_CharIndexBuffer[charCounter * 6 + 1] = charCounter * 4 + 1;
+            m_CharIndexBuffer[charCounter * 6 + 2] = charCounter * 4 + 2;
 
-            glyphPos.x += cData->advance.x;
+            m_CharIndexBuffer[charCounter * 6 + 3] = charCounter * 4 + 1;
+            m_CharIndexBuffer[charCounter * 6 + 4] = charCounter * 4 + 3;
+            m_CharIndexBuffer[charCounter * 6 + 5] = charCounter * 4 + 2;
+            
+            glyphPos.x += charData.advance.x;
 
-            if (i2 < text.getText()[i].size() - 1)
+            ++charCounter;
+            if (i2 < charCount - 1)
             {
-                glyphPos.x += text.getFont()->getKerning(text.getText()[i][i2], text.getText()[i][i2 + 1]);
+                glyphPos.x += font->getKerning(character, line[i2 + 1]);
             }
 
-            CharBufferData& c(m_CharBuffer[i]);
-            c.wvp = m_OrthographicMatrix * world;
-            //c.tcOffset = tcOffset;
-            //c.tcScale = tcScale;
-              
-            //s_FontEffect->setWorldMatrix(m_OrthographicMatrix * world);
-            //s_FontEffect->setTCOffset(tcOffset);
-            //s_FontEffect->setTCScale(tcScale);
-
-            //glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
         }
     }
+    HE_ASSERT(charCounter == size, "Incompatible charCounter and size");
 
-
-    //glBindBuffer(GL_ARRAY_BUFFER, m_TextureQuad->getVBOID());
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureQuad->getVBOIndexID());
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
-    glBufferData(GL_ARRAY_BUFFER, m_CharBuffer.size() * sizeof(CharBufferData), 0, GL_STREAM_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_CharBuffer.size() * sizeof(CharBufferData), &m_CharBuffer[0]);
-
+    m_DynamicFontMesh->setVertices(&m_CharVertexBuffer[0], size * 4, MeshUsage_Stream, false);
+    m_DynamicFontMesh->setIndices(&m_CharIndexBuffer[0], size * 6, IndexStride_UInt, MeshUsage_Stream);
+    
     s_FontEffect->begin();
     s_FontEffect->setDiffuseMap(tex2D);
     s_FontEffect->setFontColor(m_Color);
     s_FontEffect->setDepth(0.5f);
-    GL::heBlendEnabled(false);
-    //GL::heBlendEquation(BlendEquation_Add);
+    s_FontEffect->setWorldMatrix(m_OrthographicMatrix);
+    GL::heBlendEnabled(true);
+    GL::heBlendEquation(BlendEquation_Add);
     // reduce text quality loss by alpha reduction
-    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
-
+    
     GL::heBindFbo(m_CanvasBuffer->frameBufferId);
-    GL::heBindVao(m_BufferVAOID);
-    glDrawElementsInstanced(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), BUFFER_OFFSET(0), m_CharBuffer.size());
+    GL::heBindVao(m_DynamicFontMesh->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
 }
 void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
                                     const vec2& newDimensions,
@@ -337,10 +344,11 @@ void Canvas2DRendererGL::init()
 
     m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_Size.x, 0.0f, m_Size.y, 0.0f, 1.0f);
 
+    ResourceFactory<ModelMesh>* const modelMeshFactory(ResourceFactory<ModelMesh>::getInstance());
     if (s_TextureQuadHandle == ObjectHandle::unassigned)
     {
-        s_TextureQuadHandle = ResourceFactory<ModelMesh>::getInstance()->create();
-        ModelMesh* mesh(ResourceFactory<ModelMesh>::getInstance()->get(s_TextureQuadHandle));
+        s_TextureQuadHandle = modelMeshFactory->create();
+        ModelMesh* const mesh(modelMeshFactory->get(s_TextureQuadHandle));
 
         BufferLayout vLayout;
         vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
@@ -376,67 +384,20 @@ void Canvas2DRendererGL::init()
     }
     else
     {
-        ResourceFactory<ModelMesh>::getInstance()->instantiate(s_TextureQuadHandle);
-        m_TextureQuad = ResourceFactory<ModelMesh>::getInstance()->get(s_TextureQuadHandle);
+        modelMeshFactory->instantiate(s_TextureQuadHandle);
+        m_TextureQuad = modelMeshFactory->get(s_TextureQuadHandle);
     }
 
-    BufferLayout instancingLayout;
-    uint32 offset(0);
-    uint32 count(0);
-    // Mat44
-    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
-    offset += sizeof(vec4);
-    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
-    offset += sizeof(vec4);
-    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
-    offset += sizeof(vec4);
-    instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec4, BufferElement::Usage_Instancing, sizeof(vec4), offset));
-    offset += sizeof(vec4);
-    // Vec2
-    //instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec2, BufferElement::Usage_Instancing, sizeof(vec2), offset));
-    //offset += sizeof(vec2);
-    // Vec2
-    //instancingLayout.addElement(BufferElement(count++, BufferElement::Type_Vec2, BufferElement::Usage_Instancing, sizeof(vec2), offset));
-    //offset += sizeof(vec2);
+    m_DynamicFontMesh = modelMeshFactory->get(modelMeshFactory->create());
 
-    // instance buffer
-    glGenBuffers(1, &m_BufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CharBufferData), 0, GL_STREAM_DRAW);
-    glGenVertexArrays(1, &m_BufferVAOID);
-    GL::heBindVao(m_BufferVAOID);
+    BufferLayout vLayout;
+    vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
+    vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
 
-    // Vertex Buffer
-    glBindBuffer(GL_ARRAY_BUFFER, m_TextureQuad->getVBOID());
-    const BufferLayout::layout& vertexElements(m_TextureQuad->getVertexLayout().getElements());
-    std::for_each(vertexElements.cbegin(), vertexElements.cend(), [&](const BufferElement& e)
-    {
-        GLint components = 1;
-        GLenum type = 0;
-        GL::getGLTypesFromBufferElement(e, components, type);
-        glVertexAttribPointer(e.getElementIndex(), components, type, 
-            GL_FALSE, m_TextureQuad->getVertexLayout().getSize(), 
-            BUFFER_OFFSET(e.getByteOffset())); 
-        glEnableVertexAttribArray(e.getElementIndex());
-    });
-
-    // Index Buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureQuad->getVBOIndexID());
-
-    // Instance buffer
-    glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
-
-    instancingLayout.getElements().forEach([&](const BufferElement& element)
-    {
-        GLint components(1);
-        GLenum type(0);
-        GL::getGLTypesFromBufferElement(element, components, type);
-        glEnableVertexAttribArray(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex());
-        glVertexAttribPointer(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), components, type, 
-            GL_FALSE, instancingLayout.getSize(), BUFFER_OFFSET(element.getByteOffset())); 
-        glVertexAttribDivisor(static_cast<GLsizei>(vertexElements.size()) + element.getElementIndex(), 1);
-    });
-
+    m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
+    m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Stream, false);
+    m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Stream);
+    m_DynamicFontMesh->setLoaded();
 }
 
 } } //end namespace

@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Text.h"
+#include "Vertex.h"
 
 namespace he {
 namespace gui {
@@ -96,10 +97,10 @@ private:
 
     GLContext* m_Context;
 
-    PrimitiveList<CharBufferData> m_CharBuffer;
-    uint32 m_BufferVAOID;
-    uint32 m_BufferID;
-
+    PrimitiveList<VertexPosTex2D> m_CharVertexBuffer;
+    PrimitiveList<uint32> m_CharIndexBuffer;
+    ModelMesh* m_DynamicFontMesh;
+    
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2DRendererGL(const Canvas2DRendererGL&);
     Canvas2DRendererGL& operator=(const Canvas2DRendererGL&);

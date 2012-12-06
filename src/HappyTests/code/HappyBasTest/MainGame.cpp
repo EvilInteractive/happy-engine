@@ -451,6 +451,8 @@ void MainGame::drawShapes( he::gfx::ShapeRenderer* /*renderer*/ )
 
 void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 {
+    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
+
     he::gfx::CameraPerspective* camera(m_View->getCamera());
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
@@ -466,11 +468,11 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 
 
     canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
-    canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
+    cvs->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
 
     m_ToneMapGui->draw2D(canvas);
 
-    canvas->fillText(m_DebugText, he::vec2(12, 12));
+    cvs->fillText(m_DebugText, he::vec2(12, 12));
     
     // NEW CANVAS TEST
     //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();

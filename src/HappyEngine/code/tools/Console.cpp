@@ -25,6 +25,7 @@
 #include "ContentManager.h"
 #include "ControlsManager.h"
 #include "Renderer2D.h"
+#include "Canvas2Dnew.h"
 
 #include "BoolTypeHandler.h"
 #include "FloatTypeHandler.h"
@@ -83,15 +84,18 @@ Console::Console() :	m_Shortcut(io::Key_C),
 
     registerVar<bool>(&m_ShowMessageTypes[CMSG_TYPE_ENGINE], "c_show_msg_engine");
 
-	// console commands
-	registerCmd(boost::bind(&he::tools::Console::displayHelp, this), "help");
-	registerCmd(boost::bind(&he::tools::Console::displayVars, this), "listvars");
-	registerCmd(boost::bind(&he::tools::Console::displayCmds, this), "listcmds");
+    // console commands
+    registerCmd(boost::bind(&he::tools::Console::displayHelp, this), "help");
+    registerCmd(boost::bind(&he::tools::Console::displayVars, this), "listvars");
+    registerCmd(boost::bind(&he::tools::Console::displayCmds, this), "listcmds");
 }
 void Console::load()
 {
     // don't compress font because it is small and needs crispness
     m_Font = CONTENT->loadFont("DejaVuSansMono.ttf", 8, false);
+    m_Text.setFont(m_Font);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    m_Text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
     m_Help = NEW gui::Text(m_Font);
     m_Help->addLine("******** HELP ********");
@@ -131,7 +135,7 @@ Console::~Console()
 
     if (m_Font != nullptr)
         m_Font->release();
-	
+    
     delete m_TextBox;
     delete m_ScrollBar;
     delete m_Help;
@@ -321,6 +325,7 @@ void Console::tick()
 
 void Console::draw2D(gfx::Canvas2D* canvas)
 {
+    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
     canvas->setBlendStyle(gfx::BlendStyle_Alpha);
 
     canvas->setDepth(-2000);
@@ -367,19 +372,14 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         }
     }
 
-    gui::Text text(m_Font);
-    text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-    text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
-
     uint32 k(0);
+    m_Text.clear();
     msg.rForEach([&](const std::pair<CMSG_TYPE, std::string>& p)
     {
-        canvas->setFillColor(m_MsgColors[p.first]);
-
-        text.clear();
-        text.addLine(p.second);
-
-        canvas->fillText(text, vec2(5, 182.0f - (k * m_Font->getLineSpacing())));
+        cvs->setColor(m_MsgColors[p.first]);
+        m_Text.clear();
+        m_Text.addLine(p.second);
+        cvs->fillText(m_Text, vec2(5, 182.0f - (k * m_Font->getLineSpacing())));
 
         ++k;
     });
