@@ -30,6 +30,7 @@ namespace gfx {
     class Scene;
     class RenderTarget;
     class View;
+    class Canvas2D;
 
 class Picker
 {
@@ -45,16 +46,15 @@ public:
     uint32 pick(const vec2& screenPoint);
     uint32 pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
 
-    void drawDebug() const;
+    void drawDebug(Canvas2D* canvas) const;
 
 private:
 
     /* DATAMEMBERS */
     PickEffect* m_PickEffect;
 
-    uint32 m_RenderFboID;
-    uint32 m_DepthRenderBuffer;
     Texture2D* m_RenderTexture;
+    RenderTarget* m_RenderTarget;
 
     bool m_Initialized;
 

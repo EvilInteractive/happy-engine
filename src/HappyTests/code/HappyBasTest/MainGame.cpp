@@ -76,6 +76,8 @@
 #include "DynamicPhysicsComponent.h"
 #include "PhysicsDynamicActor.h"
 #include "materialGenerator/MaterialGeneratorGraph.h"
+#include "Mouse.h"
+#include "Picker.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -199,11 +201,12 @@ void MainGame::load()
     m_Scene = GRAPHICS->createScene();
     m_Scene->loadSkybox("engine/cubemaps/defaultSky.dds");
 
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
-    m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
 #ifdef ENABLE_WINDOW2
@@ -235,7 +238,7 @@ void MainGame::load()
     m_View2->setCamera(flyCamera2);
 #endif
     
-    m_FpsGraph = NEW tools::FPSGraph();
+    m_FpsGraph = NEW tools::FPSGraph(0.1f);
     m_FpsGraph->setType(tools::FPSGraph::Type_Full);
     m_FpsGraph->setPos(he::vec2(m_View->getViewport().width - 105.f, 5.f));
 
@@ -440,6 +443,13 @@ void MainGame::tick( float dTime )
             m_MaterialGenerator->open();
     }
 
+    if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
+    {
+        he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
+
+        if (i != UINT32_MAX)
+            ++i;
+    }
 
     m_FpsGraph->tick(dTime);
 }
@@ -473,6 +483,8 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     m_ToneMapGui->draw2D(canvas);
 
     cvs->fillText(m_DebugText, he::vec2(12, 12));
+
+    m_RenderPipeline->getPicker()->drawDebug(canvas);
     
     // NEW CANVAS TEST
     //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();

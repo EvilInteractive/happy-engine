@@ -146,4 +146,9 @@ void DrawListContainer::doReevalute( IDrawable* drawable )
     m_Dynamics.add(drawable);
 }
 
+const PrimitiveList<IDrawable*>* DrawListContainer::getList() const
+{
+    return &m_DrawList[0];
+}
+
 } } //end namespace

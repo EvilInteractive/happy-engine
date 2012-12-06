@@ -32,16 +32,22 @@
 #include "ExternalError.h"
 #include "Texture2D.h"
 #include "PickEffect.h"
+#include "RenderTarget.h"
+#include "View.h"
+#include "Scene.h"
+#include "Window.h"
+#include "IDrawable.h"
+#include "Canvas2D.h"
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 Picker::Picker() :	m_PickEffect(NEW PickEffect()),
-                    m_RenderFboID(0),
                     m_Initialized(false),
                     m_RenderTexture(nullptr),
-                    m_Scene(nullptr)
+                    m_Scene(nullptr),
+                    m_RenderTarget(nullptr)
 {
     m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create());
     m_RenderTexture->setName("Picker::m_pIDTexture");
@@ -51,9 +57,7 @@ Picker::~Picker()
 {
     delete m_PickEffect;
     m_RenderTexture->release();
-
-    glDeleteRenderbuffers(1, &m_DepthRenderBuffer);
-    glDeleteFramebuffers(1, &m_RenderFboID);
+    delete m_RenderTarget;
 }
 
 /* GENERAL */
@@ -61,202 +65,208 @@ void Picker::init(View* view, Scene* scene)
 {
     m_PickEffect->load();
 
-    // TODO:
-//     int width = GRAPHICS->getScreenWidth(), 
-//         height = GRAPHICS->getScreenHeight();
-// 
-//     m_pIDTexture->init(gfx::TextureWrapType_Clamp,  gfx::TextureFilterType_Nearest, 
-//         gfx::TextureFormat_RGBA8, false);
-//     m_pIDTexture->setData(width, height, 0, 
-//         gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
-
-    glGenRenderbuffers(1, &m_DepthRenderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderBuffer);
-    //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, width, height);
-
-    glGenFramebuffers(1, &m_RenderFboID);
-    GL::heBindFbo(m_RenderFboID);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RenderTexture->getID(), 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderBuffer);
-    err::checkFboStatus("picker");
-
     m_View = view;
     m_Scene = scene;
 
+    int width = view->getViewport().width,
+         height = view->getViewport().height;
+
+    m_RenderTexture->init(
+        TextureWrapType_Clamp,
+        TextureFilterType_Nearest,
+        TextureFormat_RGBA8,
+        false);
+    m_RenderTexture->setData(
+        width, height, 0,
+        TextureBufferLayout_BGRA,
+        TextureBufferType_Byte, 0);
+
+    m_RenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
+    m_RenderTarget->addTextureTarget(m_RenderTexture);
+    m_RenderTarget->setDepthTarget();
+    m_RenderTarget->init();
+
     m_Initialized = true;
 }
-uint32 Picker::pick(const vec2& /*screenPoint*/)
+uint32 Picker::pick(const vec2& screenPoint)
 {
     HE_ASSERT(m_Initialized, "Initialize picker before using!");
-    LOG(LogType_ProgrammerAssert, "TODO");
 
-//     he::PrimitiveList<uint> ID1;
-// 
-//     // cull drawlist
-//     he::PrimitiveList<IDrawable*> culledDrawList;
-// 
-//     uint i(0);
-//     GRAPHICS->getDrawManager()->getDrawList().for_each(DrawListContainer::F_Loc_BeforePost   | 
-//                                                       DrawListContainer::F_Loc_AfterPost    |
-//                                                       DrawListContainer::F_Main_Opac        |
-//                                                       DrawListContainer::F_Sub_Single       ,//|
-//                                                       //DrawListContainer::F_Sub_Skinned,                                                     
-//                                                       [&](IDrawable* pDrawable)
-//     {
-//         if (pDrawable->isInCamera(CAMERAMANAGER->getActiveCamera()))
-//         {
-//             culledDrawList.push_back(pDrawable);
-//             ID1.push_back(i);
-//         }
-// 
-//         ++i;
-//     });
-// 
-//     // create list with items to be picked
-//     he::PrimitiveList<IDrawable*> pickList;
-//     he::PrimitiveList<uint> ID2;
-// 
-//     i = 0;
-//     std::sort(culledDrawList.begin(), culledDrawList.end());
-//     std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
-//     {
-//         const gfx::IPickable* pPick(static_cast<gfx::IPickable*>(pDrawable));
-//         if (pPick != nullptr && pPick->isPickable())
-//         {
-//             pickList.push_back(pDrawable);
-//             ID2.push_back(ID1[i]);
-//         }
-// 
-//         ++i;
-//     });
-// 
-//     GL::heBlendEnabled(false);
-//     GL::heSetDepthWrite(true);
-//     GL::heSetDepthRead(true);
-// 
-//     GL::heBindFbo(m_RenderFboID);
-//     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
-//     glDrawBuffers(1, buffers);
-// 
-//     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-//     GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-//     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//     
-//     i = 1;
-//     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
-//     {
-//         byte packedID[4];
-//         he_memcpy(packedID, &i, 4);
-// 
-//         m_pPickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
-//         pDrawable->applyMaterial(m_pPickEffect->getMaterial(), CAMERAMANAGER->getActiveCamera());
-//         pDrawable->drawShadow();
-// 
-//         ++i;
-//     });
-// 
-//     //glGetError();
-// 
-//     byte packedID[4];
-//     glReadPixels(	GRAPHICS->getScreenWidth() - static_cast<int>(screenPoint.x),
-//                     GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
-//                     1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
-// 
-//     uint id(0);
-//     he_memcpy(&id, packedID, 4);
-// 
-//     if (id == 0)
-//         return UINT32_MAX;
-//     else
-//         return ID2[(id - 1)];
-    return UINT32_MAX;
+    PrimitiveList<uint32> ID1;
+ 
+    // cull drawlist
+    PrimitiveList<IDrawable*> culledDrawList;
+ 
+    uint32 i(0);
+
+    const PrimitiveList<IDrawable*>* drawList(m_Scene->getDrawList().getList());
+    for (uint8 ii(0); ii < DrawListContainer::BlendFilter_MAX; ++ii)
+    {
+        drawList[ii].forEach([&](IDrawable* drawable)
+        {
+            if (m_View->getCamera()->intersect(drawable->getBound()) != IntersectResult_Outside)
+            {
+                culledDrawList.add(drawable);
+                ID1.add(i);
+            }
+
+            ++i;
+        });
+    }
+ 
+    // create list with items to be picked
+    he::PrimitiveList<IDrawable*> pickList;
+    he::PrimitiveList<uint32> ID2;
+ 
+    i = 0;
+    std::sort(culledDrawList.begin(), culledDrawList.end());
+    std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* drawable)
+    {
+        const gfx::IPickable* pick(static_cast<gfx::IPickable*>(drawable));
+        if (pick != nullptr && pick->isPickable())
+        {
+            pickList.add(drawable);
+            ID2.add(ID1[i]);
+        }
+ 
+        ++i;
+    });
+
+    int height(m_View->getViewport().height);
+    int width(m_View->getViewport().width);
+
+    m_RenderTarget->prepareForRendering();
+ 
+    GL::heBlendEnabled(false);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
+    GL::heSetViewport(RectI(0, 0, width, height));
+
+    m_RenderTarget->clear(Color(0.0f,0.0f,0.0f,0.0f));
+
+    GL::heScissorEnabled(true);
+    GL::heScissorRect(RectI(
+        static_cast<int>(screenPoint.x - 5),
+        static_cast<int>(height - screenPoint.y - 5),
+        10,10));
+     
+    i = 1;
+    std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
+    {
+        byte packedID[4];
+        he_memcpy(packedID, &i, 4);
+ 
+        m_PickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
+        pDrawable->applyMaterial(m_PickEffect->getMaterial(), m_View->getCamera());
+        pDrawable->drawShadow();
+ 
+        ++i;
+    });
+
+    GL::heScissorEnabled(false);
+ 
+    byte packedID[4];
+    glReadPixels(	static_cast<int>(screenPoint.x),
+                    height - static_cast<int>(screenPoint.y),
+                    1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
+ 
+    uint32 id(0);
+    he_memcpy(&id, packedID, 4);
+ 
+    if (id == 0)
+        return UINT32_MAX;
+    else
+        return ID2[(id - 1)];
 }
 
-uint32 Picker::pick(const vec2& /*screenPoint*/, const he::PrimitiveList<IDrawable*>& /*drawList*/)
+uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& drawList)
 {
-    HE_ASSERT(m_Initialized, "Initialize picker before using!");
-    LOG(LogType_ProgrammerAssert, "TODO");
-//     he::PrimitiveList<uint> ID1;
-// 
-//     // cull drawlist
-//     he::PrimitiveList<IDrawable*> culledDrawList;
-// 
-//     uint i(0);                                                    
-//     std::for_each(drawList.cbegin(),drawList.cend(), [&](IDrawable* pDrawable)
-//     {
-//         /*if (pDrawable->isInCamera(CAMERAMANAGER->getActiveCamera()))
-//         {*/
-//             culledDrawList.push_back(pDrawable);
-//             ID1.push_back(i);
-//         //}
-// 
-//         ++i;
-//     });
-// 
-//     // create list with items to be picked
-//     he::PrimitiveList<IDrawable*> pickList;
-//     he::PrimitiveList<uint> ID2;
-// 
-//     i = 0;
-//     std::sort(culledDrawList.begin(), culledDrawList.end());
-//     std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* pDrawable)
-//     {
-//         const gfx::IPickable* pPick(static_cast<gfx::IPickable*>(pDrawable));
-//         if (pPick != nullptr && pPick->isPickable())
-//         {
-//             pickList.push_back(pDrawable);
-//             ID2.push_back(ID1[i]);
-//         }
-// 
-//         ++i;
-//     });
-// 
-//     GL::heBlendEnabled(false);
-//     GL::heSetDepthWrite(true);
-//     GL::heSetDepthRead(true);
-// 
-//     GL::heBindFbo(m_RenderFboID);
-//     const static GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
-//     glDrawBuffers(1, buffers);
-// 
-//     GRAPHICS->setViewport(he::RectI(0, 0, GRAPHICS->getScreenWidth(), GRAPHICS->getScreenHeight()));
-//     GL::heClearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-//     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-// 
-//     i = 1;
-//     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
-//     {
-//         byte packedID[4];
-//         he_memcpy(packedID, &i, 4);
-// 
-//         m_pPickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
-//         pDrawable->applyMaterial(m_pPickEffect->getMaterial(), CAMERAMANAGER->getActiveCamera());
-//         pDrawable->draw();
-// 
-//         ++i;
-//     });
-// 
-//     //glGetError();
-// 
-//     byte packedID[4];
-//     glReadPixels(	GRAPHICS->getScreenWidth() - static_cast<int>(screenPoint.x),
-//         GRAPHICS->getScreenHeight() - static_cast<int>(screenPoint.y),
-//         1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
-// 
-//     uint id(0);
-//     he_memcpy(&id, packedID, 4);
-// 
-//     if (id == 0)
-//         return UINT32_MAX;
-//     else
-//         return ID2[(id - 1)];
-    return UINT32_MAX;
+    PrimitiveList<uint32> ID1;
+ 
+    // cull drawlist
+    PrimitiveList<IDrawable*> culledDrawList;
+ 
+    uint32 i(0);
+
+    drawList.forEach([&](IDrawable* drawable)
+    {
+        if (m_View->getCamera()->intersect(drawable->getBound()) != IntersectResult_Outside)
+        {
+            culledDrawList.add(drawable);
+            ID1.add(i);
+        }
+
+        ++i;
+    });
+ 
+    // create list with items to be picked
+    he::PrimitiveList<IDrawable*> pickList;
+    he::PrimitiveList<uint32> ID2;
+ 
+    i = 0;
+    std::sort(culledDrawList.begin(), culledDrawList.end());
+    std::for_each(culledDrawList.cbegin(), culledDrawList.cend(), [&](IDrawable* drawable)
+    {
+        const gfx::IPickable* pick(static_cast<gfx::IPickable*>(drawable));
+        if (pick != nullptr && pick->isPickable())
+        {
+            pickList.add(drawable);
+            ID2.add(ID1[i]);
+        }
+ 
+        ++i;
+    });
+
+    int height(m_View->getViewport().height);
+    int width(m_View->getViewport().width);
+
+    m_RenderTarget->prepareForRendering();
+ 
+    GL::heBlendEnabled(false);
+    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(true);
+    GL::heSetViewport(RectI(0, 0, width, height));
+
+    m_RenderTarget->clear(Color(0.0f,0.0f,0.0f,0.0f));
+
+    GL::heScissorEnabled(true);
+    GL::heScissorRect(RectI(
+        static_cast<int>(screenPoint.x - 5),
+        static_cast<int>(height - screenPoint.y - 5),
+        10,10));
+     
+    i = 1;
+    std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
+    {
+        byte packedID[4];
+        he_memcpy(packedID, &i, 4);
+ 
+        m_PickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
+        pDrawable->applyMaterial(m_PickEffect->getMaterial(), m_View->getCamera());
+        pDrawable->drawShadow();
+ 
+        ++i;
+    });
+
+    GL::heScissorEnabled(false);
+ 
+    byte packedID[4];
+    glReadPixels(	static_cast<int>(screenPoint.x),
+                    height - static_cast<int>(screenPoint.y),
+                    1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
+ 
+    uint32 id(0);
+    he_memcpy(&id, packedID, 4);
+ 
+    if (id == 0)
+        return UINT32_MAX;
+    else
+        return ID2[(id - 1)];
 }
 
-void Picker::drawDebug() const
+void Picker::drawDebug(Canvas2D* canvas) const
 {
-    //GUI->drawTexture2D(m_pIDTexture, vec2(12, 12), vec2(640, 320));
+    canvas->getRenderer2D()->drawTexture2DToScreen(m_RenderTexture, vec2(0,0), false, vec2(m_View->getViewport().width * 1.0f, m_View->getViewport().height * 1.0f));
 }
 
 /* SETTERS */
