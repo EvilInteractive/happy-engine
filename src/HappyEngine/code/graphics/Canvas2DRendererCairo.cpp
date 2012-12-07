@@ -147,6 +147,36 @@ void Canvas2DRendererCairo::setColor(const Color& col)
 			static_cast<double>(col.a())));
 	}
 }
+void Canvas2DRendererCairo::setLineCap(gui::LINE_CAP cap)
+{
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
+
+    SpriteData& sData = m_SpriteList.back();
+
+    HE_ASSERT((sData.readyState &= SpriteReadyForRender) == false,
+        "Sprite is already marked for rendering, can't draw!");
+
+    sData.drawCalls.push(
+        boost::bind(
+		&cairo_set_line_cap,
+        sData.cairoPaint,
+		static_cast<cairo_line_cap_t>(cap)));
+}
+void Canvas2DRendererCairo::setLineJoin(gui::LINE_JOIN join)
+{
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
+
+    SpriteData& sData = m_SpriteList.back();
+
+    HE_ASSERT((sData.readyState &= SpriteReadyForRender) == false,
+        "Sprite is already marked for rendering, can't draw!");
+
+    sData.drawCalls.push(
+        boost::bind(
+		&cairo_set_line_join,
+        sData.cairoPaint,
+		static_cast<cairo_line_join_t>(join)));
+}
 
 /* DRAW */
 void Canvas2DRendererCairo::clear()
@@ -231,25 +261,6 @@ void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
         static_cast<double>(pos.y),
         static_cast<double>(size.x),
         static_cast<double>(size.y)));
-}
-void Canvas2DRendererCairo::circle(const vec2& pos, float radius)
-{
-    boost::mutex::scoped_lock lock(m_SpriteListLock);
-
-    SpriteData& sData = m_SpriteList.back();
-
-    HE_ASSERT((sData.readyState &= SpriteReadyForRender) == false,
-        "Sprite is already marked for rendering, can't draw!");
-
-    sData.drawCalls.push(
-        boost::bind(
-		&cairo_arc,
-        sData.cairoPaint,
-		static_cast<double>(pos.x),
-        static_cast<double>(pos.y),
-        static_cast<double>(radius),
-        0.0,
-        static_cast<double>(twoPi)));
 }
 void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd)
 {

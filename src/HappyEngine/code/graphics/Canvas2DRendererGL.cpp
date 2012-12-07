@@ -97,11 +97,12 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
     Texture2D* tex2D = text.getFont()->getTextureAtlas();
 
-    vec2 linePos = pos;
+    vec2 linePos(pos);
     bool hasBounds(text.hasBounds());
 
     m_CharVertexBuffer.clear();
     m_CharIndexBuffer.clear();
+
     const he::gfx::Font* const font(text.getFont());
     const uint32 lineSpacing(font->getLineSpacing());
     const gui::Text::HAlignment h = text.getHorizontalAlignment();
@@ -110,12 +111,18 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     const vec2 bounds(text.getBounds());
     const uint32 texWidth(tex2D->getWidth());
     const uint32 texHeight(tex2D->getHeight());
+
     size_t size(0);
+
     for (uint32 i(0); i < textLineCount; ++i)
+    {
         size += textLines[i].size();
+    }
+
     m_CharVertexBuffer.resize(size * 4);
     m_CharIndexBuffer.resize(size * 6);
     size_t charCounter(0);
+
     for (uint32 i(0); i < textLineCount; ++i)
     {
         const std::string& line(textLines[i]);
@@ -212,6 +219,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     s_FontEffect->setFontColor(m_Color);
     s_FontEffect->setDepth(0.5f);
     s_FontEffect->setWorldMatrix(m_OrthographicMatrix);
+
     GL::heBlendEnabled(true);
     GL::heBlendEquation(BlendEquation_Add);
     // reduce text quality loss by alpha reduction
@@ -222,6 +230,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     
     GL::heBindFbo(m_CanvasBuffer->frameBufferId);
     GL::heBindVao(m_DynamicFontMesh->getVertexArraysID());
+
     glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
 }
 void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,

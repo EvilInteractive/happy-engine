@@ -65,14 +65,6 @@ public:
 
 private:
 
-    /* INTERNAL */
-    struct CharBufferData
-    {
-        mat44 wvp;
-        //vec2 tcOffset;
-        //vec2 tcScale;
-    };
-
     /* STATIC */
     static Simple2DEffect* s_ColorEffect;
     static Simple2DTextureEffect* s_TextureEffect;

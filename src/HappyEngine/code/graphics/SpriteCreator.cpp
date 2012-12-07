@@ -29,8 +29,7 @@
 namespace he {
 namespace gui {
 
-SpriteCreator::SpriteCreator() : m_Renderer(NEW gfx::Canvas2DRendererCairo()),
-                                 m_LineWidth(-1.0f)
+SpriteCreator::SpriteCreator() : m_Renderer(NEW gfx::Canvas2DRendererCairo())
 {
 }
 
@@ -75,19 +74,21 @@ void SpriteCreator::setActiveSprite(Sprite* sprite)
 
 void SpriteCreator::setColor(const Color& color)
 {
-    if (m_Color != color)
-    {
-        m_Renderer->setColor(color);
-        m_Color = color;
-    }
+    m_Renderer->setColor(color);
 }
 void SpriteCreator::setLineWidth(float width)
 {
-    if (m_LineWidth != width)
-    {
-        m_Renderer->setLineWidth(width);
-        m_LineWidth = width;
-    }
+    m_Renderer->setLineWidth(width);
+}
+
+void SpriteCreator::setLineJoin(LINE_JOIN join)
+{
+    m_Renderer->setLineJoin(join);
+}
+
+void SpriteCreator::setLineCap(LINE_CAP cap)
+{
+    m_Renderer->setLineCap(cap);
 }
 
 /* DRAW */
@@ -114,7 +115,7 @@ void SpriteCreator::roundedRectangle(const vec2& pos, const vec2& size, float ra
 }
 void SpriteCreator::circle(const vec2& pos, float radius)
 {
-    m_Renderer->circle(pos,radius);
+    m_Renderer->arc(pos, radius, 0.0f, twoPi);
 }
 void SpriteCreator::arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd)
 {

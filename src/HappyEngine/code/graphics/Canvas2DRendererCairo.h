@@ -24,19 +24,33 @@
 
 #include <queue>
 #include "boost\thread.hpp"
+#include "cairo\cairo.h"
 
 /* FORWARD DECLARATIONS */
-struct _cairo_surface;
-struct _cairo;
+//struct _cairo_surface;
+//struct _cairo;
 
 namespace he {
 namespace gui {
     class Sprite;
+
+    enum LINE_JOIN
+    {
+        LINE_JOIN_MITER = CAIRO_LINE_JOIN_MITER,
+        LINE_JOIN_ROUND = CAIRO_LINE_JOIN_ROUND,
+        LINE_JOIN_BEVEL = CAIRO_LINE_JOIN_BEVEL
+    };
+
+    enum LINE_CAP
+    {
+        LINE_CAP_BUTT = CAIRO_LINE_CAP_BUTT,
+        LINE_CAP_ROUND = CAIRO_LINE_CAP_ROUND,
+        LINE_CAP_SQUARE = CAIRO_LINE_CAP_SQUARE
+    };
 }
 namespace gfx {
     struct Canvas2DBuffer;
     class Texture2D;
-
 
 class Canvas2DRendererCairo
 {
@@ -56,6 +70,8 @@ public:
     /* SETTERS */
     void setLineWidth(float width);
     void setColor(const Color& col);
+    void setLineCap(gui::LINE_CAP cap);
+    void setLineJoin(gui::LINE_JOIN join);
 
     /* GETTERS */
 
@@ -65,7 +81,6 @@ public:
     void lineTo(const vec2& pos);
 
     void rectangle(const vec2& pos, const vec2& size);
-    void circle(const vec2& pos, float radius);
     void arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd);
     void curveTo(const vec2& start, const vec2& middle, const vec2& end);
     void newPath();

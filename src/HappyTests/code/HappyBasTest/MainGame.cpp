@@ -238,9 +238,9 @@ void MainGame::load()
     m_View2->setCamera(flyCamera2);
 #endif
     
-    m_FpsGraph = NEW tools::FPSGraph(0.1f);
+    m_FpsGraph = NEW tools::FPSGraph();
     m_FpsGraph->setType(tools::FPSGraph::Type_Full);
-    m_FpsGraph->setPos(he::vec2(m_View->getViewport().width - 105.f, 5.f));
+    m_FpsGraph->setPos(he::vec2(m_View->getViewport().width - 115.f, 5.f));
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());

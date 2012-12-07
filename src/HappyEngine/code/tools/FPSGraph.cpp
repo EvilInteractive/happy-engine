@@ -43,24 +43,27 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(interval),
-                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 10, false)),
+                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 6, false)),
+                        m_FontSmall(CONTENT->loadFont("Ubuntu-Medium.ttf", 5, false)),
                         m_FPSGraphState(Type_TextOnly),
                         m_Pos(5.0f, 5.0f),
                         m_FpsHistory(300),
                         m_ActiveSprite(0),
                         m_AcumulatedDTime(0.f),
                         m_Ticks(0),
-                        m_RecordTime(recordTime)
+                        m_RecordTime(recordTime),
+                        m_CurrentScale(4.0f)
 {
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
-    m_Sprites[0] = GUI->Sprites->createSprite(vec2(100,40));
-    m_Sprites[1] = GUI->Sprites->createSprite(vec2(100,40));
+    m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,60));
+    m_Sprites[1] = GUI->Sprites->createSprite(vec2(110,60));
 }
 
 FPSGraph::~FPSGraph()
 {
     m_Font->release();
+    m_FontSmall->release();
 
     m_Sprites[0]->release();
     m_Sprites[1]->release();
@@ -175,20 +178,60 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
 
     gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
 
-    cvs->drawSprite(m_Sprites[m_ActiveSprite],m_Pos);
-
-    cvs->setColor(Color(1.0f,1.0f,1.0f));
+    cvs->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 
     gui::Text txt(m_Font);
 
-    char buff[64];
-    sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    txt.addLine(std::string(buff));
+    char buff[32];
+    sprintf(buff, "%u (%u)", m_CurrentFPS, getAverageFPS());
+    std::string buffS(buff);
 
-    sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    txt.addLine(std::string(buff));
+    txt.addLine(buffS);
+
+    cvs->setColor(Color((uint8)228,(uint8)211,(uint8)93));
+    cvs->fillText(txt, m_Pos + vec2(5,48));
+
+    txt.clear();
+    std::string mS(" - ");
+    txt.addLine(mS);
+
+    cvs->setColor(Color(1.0f,1.0f,1.0f));
+    cvs->fillText(txt, m_Pos + vec2(5,48) + vec2(m_Font->getStringWidth(buffS), 0));
+
+    txt.clear();
+
+    char buff0[32];
+    sprintf(buff0, "%.3f MS", m_CurrentDTime * 1000.0f);
+    txt.addLine(std::string(buff0));
     
-    cvs->fillText(txt, m_Pos + vec2(0,43));
+    cvs->setColor(Color((uint8)94,(uint8)195,(uint8)247));
+    cvs->fillText(txt, m_Pos + vec2(5,48) + vec2(m_Font->getStringWidth(buffS) + m_Font->getStringWidth(mS), 0));
+
+    gui::Text txt2(m_FontSmall);
+
+    cvs->setColor(Color(1.0f,1.0f,1.0f));
+
+    char buff2[8];
+    sprintf(buff2, "%.0f",  m_CurrentScale * 20 * 0.75f);
+    txt2.addLine(std::string(buff2));
+
+    cvs->fillText(txt2, m_Pos + vec2(5,9.0f));
+
+    txt2.clear();
+
+    char buff3[8];
+    sprintf(buff3, "%.0f",  m_CurrentScale * 20 * 0.25f);
+    txt2.addLine(std::string(buff3));
+    cvs->fillText(txt2, m_Pos + vec2(5,29.0f));
+}
+
+void FPSGraph::updateScale(uint16 currentMaxFpsInFrame)
+{
+    // cap
+    currentMaxFpsInFrame -= (currentMaxFpsInFrame % 20);
+    currentMaxFpsInFrame += 20;
+
+    m_CurrentScale = currentMaxFpsInFrame / 20.0f;
 }
 
 void FPSGraph::renderGraph()
@@ -196,8 +239,13 @@ void FPSGraph::renderGraph()
     gui::SpriteCreator* cr(GUI->Sprites);
 
     cr->setActiveSprite(m_Sprites[m_ActiveSprite]);
-    cr->rectangle(vec2(0,0),vec2(100,40));
-    cr->setColor(Color(0.9f,0.9f,0.9f,0.8f));
+
+    cr->setLineJoin(gui::LINE_JOIN_ROUND);
+
+    cr->newPath();
+
+    cr->rectangle(vec2(5,5),vec2(100,40));
+    cr->setColor(Color((uint8)50,(uint8)47,(uint8)54));
     cr->fill();
 
     PrimitiveList<vec2> poly0(60);
@@ -217,37 +265,36 @@ void FPSGraph::renderGraph()
 
     cr->newPath();
 
+    uint16 maxFpsInGraph(0);
+
     for (; i < j ; ++i)
     {
         currentFPS = m_FpsHistory[i];
 
-        if (currentFPS > 80)
-            currentFPS = 80;
-
-        if (currentFPS < 2)
-            currentFPS = 2;
+        if (currentFPS > maxFpsInGraph)
+            maxFpsInGraph = currentFPS;
 
         if (k == 0)
         {
-            poly0.add(vec2(105.0f - (k * 2), 40.0f - (currentFPS / 2)));
+            poly0.add(vec2(110.0f - (k * 2), 45.0f - (currentFPS / (m_CurrentScale / 2.0f))));
         }
 
-        poly0.add(vec2(100.0f - (k * 2), 40.0f - (currentFPS / 2)));
+        poly0.add(vec2(105.0f - (k * 2), 45.0f - (currentFPS / (m_CurrentScale / 2.0f))));
 
         ++k;
     }
 
     if (k < 50)
     {
-        poly0.add(vec2(100.0f - ((k - 1) * 2), 45.0f));
+        poly0.add(vec2(105.0f - ((k - 1) * 2), 50.0f));
     }
     else
     {
-        poly0.add(vec2(-5.0f, 40.0f - (currentFPS / 2)));
-        poly0.add(vec2(-5.0f, 45.0f));
+        poly0.add(vec2(0.0f, 45.0f - (currentFPS / (m_CurrentScale / 2.0f))));
+        poly0.add(vec2(0.0f, 50.0f));
     }
 
-    poly0.add(vec2(105.0f, 45.0f));
+    poly0.add(vec2(110.0f, 50.0f));
 
     if (m_FpsHistory.size() > 50)
     {
@@ -265,35 +312,34 @@ void FPSGraph::renderGraph()
     {
         currentDTime = static_cast<uint16>((1.0f / m_FpsHistory[i]) * 1000.0f);
 
-        if (currentDTime > 80)
-            currentDTime = 80;
-
-        if (currentDTime < 2)
-            currentDTime = 2;
+        if (currentDTime > maxFpsInGraph)
+            maxFpsInGraph = currentDTime;
 
         if (k == 0)
         {
-            poly1.add(vec2(105.0f - (k * 2), 40.0f - (currentDTime / 2)));
+            poly1.add(vec2(110.0f - (k * 2), 45.0f - (currentDTime / (m_CurrentScale / 2.0f))));
         }
 
-        poly1.add(vec2(100.0f - (k * 2), 40.0f - (currentDTime / 2)));
+        poly1.add(vec2(105.0f - (k * 2), 45.0f - (currentDTime / (m_CurrentScale / 2.0f))));
 
         ++k;
     }
 
     if (k < 50)
     {
-        poly1.add(vec2(100.0f - ((k - 1) * 2), 45.0f));
+        poly1.add(vec2(105.0f - ((k - 1) * 2), 50.0f));
     }
     else
     {
-        poly1.add(vec2(-5.0f, 40.0f - (currentDTime / 2)));
-        poly1.add(vec2(-5.0f, 45.0f));
+        poly1.add(vec2(0.0f, 45.0f - (currentDTime / (m_CurrentScale / 2.0f))));
+        poly1.add(vec2(0.0f, 50.0f));
     }
 
-    poly1.add(vec2(105.0f, 45.0f));
+    poly1.add(vec2(110.0f, 50.0f));
 
-    cr->setLineWidth(1.0f);
+    updateScale(maxFpsInGraph);
+
+    cr->setLineWidth(1.5f);
     cr->newPath();
 
     if (m_CurrentFPS >= static_cast<uint16>(m_CurrentDTime * 1000.0f))
@@ -314,10 +360,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color(1.0f,0.7f,0.7f,0.6f));
+        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93,(uint8)100));
         cr->fill();
 
-        cr->setColor(Color(1.0f,0.0f,0.0f,0.6f));
+        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93));//,0.6f));
         cr->stroke();
 
         cr->newPath();
@@ -337,10 +383,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color(1.0f,0.9f,0.6f,0.6f));
+        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247,(uint8)100));
         cr->fill();
 
-        cr->setColor(Color(1.0f,1.0f,0.0f,0.6f));
+        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247));//,0.6f));
         cr->stroke();
     }
     else
@@ -361,10 +407,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color(1.0f,0.9f,0.6f,0.6f));
+        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247,(uint8)100));
         cr->fill();
 
-        cr->setColor(Color(1.0f,1.0f,0.0f,0.6f));
+        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247));
         cr->stroke();
 
         i = 0;
@@ -384,18 +430,34 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color(1.0f,0.7f,0.7f,0.6f));
+        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93,(uint8)100));
         cr->fill();
 
-        cr->setColor(Color(1.0f,0.0f,0.0f,0.6f));
+        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93));
         cr->stroke(); 
     }
 
+    cr->setLineWidth(1.0f);
+
     cr->newPath();
 
-    cr->rectangle(vec2(0,0),vec2(100,40));
-    cr->setColor(Color(0.2f,0.2f,0.2f,0.6f));
-    cr->stroke();
+    //cr->rectangle(vec2(5,14),vec2(5,1));
+    cr->rectangle(vec2(5,24),vec2(5,1));
+    //cr->rectangle(vec2(5,34),vec2(5,1));
+    cr->rectangle(vec2(5,44),vec2(5,1));
+
+    cr->setColor(Color((uint8)231,(uint8)227,(uint8)242));
+
+    cr->fill();
+
+    cr->newPath();
+
+    cr->rectangle(vec2(0,0),vec2(110,5));
+    cr->rectangle(vec2(0,0),vec2(5,65));
+    cr->rectangle(vec2(105,0),vec2(5,65));
+    cr->rectangle(vec2(0,45),vec2(110,15));
+    cr->setColor(Color((uint8)30,(uint8)27,(uint8)34));
+    cr->fill();
 
     cr->renderSpriteAsync();
 

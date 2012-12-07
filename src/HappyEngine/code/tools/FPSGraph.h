@@ -49,7 +49,7 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    FPSGraph(float interval = 0.5f, uint16 recordTime = 60);
+    FPSGraph(float interval = 0.25f, uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
@@ -73,6 +73,7 @@ private:
     void drawToConsole(gfx::Canvas2D* canvas);
     void drawTextOnly(gfx::Canvas2D* canvas);
     void drawFull(gfx::Canvas2D* canvas);
+    void updateScale(uint16 currentMaxFpsInFrame);
 
     void renderGraph();
 
@@ -90,6 +91,7 @@ private:
     uint16 m_RecordTime;
     
     gfx::Font* m_Font;
+    gfx::Font* m_FontSmall;
 
     int m_FPSGraphState;
 
@@ -97,6 +99,8 @@ private:
 
     gui::Sprite* m_Sprites[2];
     uint8 m_ActiveSprite;
+
+    float m_CurrentScale;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

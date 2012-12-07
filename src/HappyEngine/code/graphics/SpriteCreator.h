@@ -22,13 +22,14 @@
 #define _HE_SPRITECREATOR_H_
 #pragma once
 
+#include "Canvas2DRendererCairo.h"
+
 namespace he {
 namespace gfx {
     class Canvas2DRendererCairo;
 }
 namespace gui {
     class Sprite;
-    
 
 class SpriteCreator
 {
@@ -56,6 +57,12 @@ public:
 
     // set linewidth
     void setLineWidth(float width);
+
+    // set line join type
+    void setLineJoin(LINE_JOIN join);
+
+    // set line cap type
+    void setLineCap(LINE_CAP cap);
 
     /* DRAW */
     // start the next path from this point
@@ -85,13 +92,7 @@ public:
 private:
 
     /* MEMBERS */
-    //PrimitiveList<Sprite*> m_Sprites;
-
-    //uint16 m_ActiveSpriteID;
-
     gfx::Canvas2DRendererCairo* m_Renderer;
-    Color m_Color;
-    float m_LineWidth;
 
     /* DEFAULT COPY & ASSIGNMENT */ 
     SpriteCreator(const SpriteCreator&);
