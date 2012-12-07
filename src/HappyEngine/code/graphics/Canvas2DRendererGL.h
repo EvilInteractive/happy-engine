@@ -64,6 +64,7 @@ public:
                     const vec2& size = vec2(0.0f,0.0f));
 
 private:
+    void addSentenceToTextBuffer(const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gfx::Font* const font);
 
     /* INTERNAL */
     struct CharBufferData

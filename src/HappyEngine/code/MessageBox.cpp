@@ -39,6 +39,7 @@
 
 #include "IDrawable2D.h"
 #include "Texture2D.h"
+#include "Canvas2Dnew.h"
 
 namespace he {
 
@@ -99,7 +100,7 @@ public:
             m_ButtonCount = 2;
 
         gfx::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", FONT_SIZE));
-        m_TextBlock.addText(message);
+        m_TextBlock.addText(message.c_str(), message.size());
         m_TextBlock.setFont(font);
         m_TextBlock.setOverFlowType(gui::Text::OverFlowType_Wrap);
         m_TextBlock.setBounds(textboxSize - vec2(TEXT_MARGIN*2, TEXT_MARGIN*2));
@@ -148,6 +149,7 @@ public:
 
     virtual void draw2D(gfx::Canvas2D* renderer) 
     {
+        gui::Canvas2Dnew* const cvs(renderer->getRenderer2D()->getNewCanvas());
         renderer->setFillColor(Color(243ui8, 249, 253));
         renderer->fillRect(vec2(0, 0), windowSize);
 
@@ -163,8 +165,8 @@ public:
 
         renderer->drawImage(m_Icon, iconPos, iconSize);
 
-        renderer->setFillColor(Color(0ui8, 0, 0));
-        renderer->fillText(m_TextBlock, textboxPos + vec2(TEXT_MARGIN, TEXT_MARGIN));
+        cvs->setColor(Color(0ui8, 0, 0));
+        cvs->fillText(m_TextBlock, textboxPos + vec2(TEXT_MARGIN, TEXT_MARGIN));
         for (uint8 i(0); i < m_ButtonCount; ++i)
         {
             m_Buttons[i].draw2D(renderer);

@@ -52,7 +52,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_MsgHistory(0),
                         m_CmdHistoryPos(0),
                         m_ScrollBar(nullptr),
-                        m_Help(nullptr),
+                        m_Help(""),
                         m_Font(nullptr),
                         m_Renderer(nullptr),
                         m_ViewportSize(20,20)
@@ -74,7 +74,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
     addTypeHandler(NEW Vec4TypeHandler());
     addTypeHandler(NEW StringTypeHandler());
 
-    addMessage(m_HelpCommand);
+    addMessage(m_Help.c_str());
 
     m_ShowMessageTypes[CMSG_TYPE_COMMAND] = true;
     m_ShowMessageTypes[CMSG_TYPE_INFO] = true;
@@ -97,11 +97,10 @@ void Console::load()
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
 
-    m_Help = NEW gui::Text(m_Font);
-    m_Help->addLine("******** HELP ********");
-    m_Help->addLine("'listvars' (displays registered variables and their type)");
-    m_Help->addLine("'listcmds' (displays registered commands)");
-    m_Help->addLine("******** HELP ********");
+    m_Help = "******** HELP ********\n"
+             "'listvars' (displays registered variables and their type)\n"
+             "'listcmds' (displays registered commands)\n"
+             "******** HELP ********";
 
     m_ScrollBar = NEW gui::Scrollbar(
         vec2(1280-20, 0), vec2(20,200), 50.0f);
@@ -138,7 +137,6 @@ Console::~Console()
     
     delete m_TextBox;
     delete m_ScrollBar;
-    delete m_Help;
 }
 
 void Console::processCommand(const std::string& command)
@@ -168,50 +166,50 @@ void Console::processCommand(const std::string& command)
             {
                 if (m_TypeHandlers[type]->parse(values, m_ValueContainer[keyWord]))
                 {
-                    addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
+                    addMessage(m_TextBox->getString().c_str(), CMSG_TYPE_COMMAND);
                 }
                 else
                 {
-                    addMessage("\"" + values + "\" can't be assigned to '" + keyWord + "' !", CMSG_TYPE_ERROR);
+                    HE_ERROR("\"%s\" can't be assigned to '%s'!", values.c_str(), keyWord.c_str());
                 }
             }
             else
             {
-                addMessage("no type handler specified for this keyword '" + keyWord + "' - type: " + type + "!", CMSG_TYPE_ERROR);
+                HE_ERROR("no type handler specified for this keyword '%s' - type:%s!", keyWord.c_str(), type.c_str());
             }
         }
         else
         {
-            addMessage("the keyword '" + keyWord + "' was not found!", CMSG_TYPE_ERROR);
+            HE_ERROR("the keyword '%s' was not found!", keyWord);
         }
     }
     else if (m_FunctionContainer.find(s) != m_FunctionContainer.end()) // check if it's a command
     {
-        addMessage(m_TextBox->getString(), CMSG_TYPE_COMMAND);
+        addMessage(m_TextBox->getString().c_str(), CMSG_TYPE_COMMAND);
 
         // execute command
         m_FunctionContainer[s]();
     }
     else
     {
-        addMessage("the command/variable '" + s + "' was not found!", CMSG_TYPE_ERROR);
+        HE_ERROR("the command/variable '%s' was not found!", s.c_str());
     }
 }
 
 void Console::displayHelp()
 {
-    addMessage(*m_Help, CMSG_TYPE_INFO);
+    addMessage(m_Help.c_str(), CMSG_TYPE_INFO);
 }
 
 void Console::displayVars()
 {
-    gui::Text txt;
+    std::stringstream stream;
 
-    txt.addLine("******** VARS ********");
+    stream << "******** VARS ********\n";
 
     if (m_ValueContainer.empty())
     {
-        txt.addLine("!no registered variables!");
+        stream << "!no registered variables!\n";
     }
     else
     {
@@ -220,36 +218,36 @@ void Console::displayVars()
             std::string type(p.second.type().name());
             type = type.substr(0, type.size() - 2);
 
-            txt.addLine("'" + p.first + "' (" + type + ")");
+            stream << "'" << p.first << "' (" << type << ")\n";
         });
     }
 
-    txt.addLine("******** VARS ********");
+    stream << "******** VARS ********";
 
-    addMessage(txt, CMSG_TYPE_INFO);
+    addMessage(stream.str().c_str(), CMSG_TYPE_INFO);
 }
 
 void Console::displayCmds()
 {
-    gui::Text txt;
+    std::stringstream stream;
 
-    txt.addLine("******** CMDS ********");
+    stream << "******** CMDS ********\n";
 
     if (m_FunctionContainer.empty())
     {
-        txt.addLine("!no registered commands!");
+        stream << "!no registered commands!\n";
     }
     else
     {
         std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<std::string, boost::function<void()> > p)
         {
-            txt.addLine("'" + p.first + "'");
+            stream << "'" << p.first << "'";
         });
     }
 
-    txt.addLine("******** CMDS ********");
+    stream << "******** CMDS ********";
 
-    addMessage(txt, CMSG_TYPE_INFO);
+    addMessage(stream.str().c_str(), CMSG_TYPE_INFO);
 }
 
 /* GENERAL */
@@ -263,7 +261,7 @@ void Console::tick()
 
         if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
         {
-            addMessage(m_HelpCommand, CMSG_TYPE_INFO);
+            addMessage(m_HelpCommand.c_str(), CMSG_TYPE_INFO);
         }
 
         if (m_IsOpen)
@@ -378,7 +376,7 @@ void Console::draw2D(gfx::Canvas2D* canvas)
     {
         cvs->setColor(m_MsgColors[p.first]);
         m_Text.clear();
-        m_Text.addLine(p.second);
+        m_Text.addLine(p.second.c_str());
         cvs->fillText(m_Text, vec2(5, 182.0f - (k * m_Font->getLineSpacing())));
 
         ++k;
@@ -390,26 +388,10 @@ void Console::draw2D(gfx::Canvas2D* canvas)
     canvas->restoreDepth();
 }
 
-void Console::addMessage(const gui::Text& msg, CMSG_TYPE type)
-{
-    std::for_each(msg.getText().cbegin(), msg.getText().cend(), [&](std::string str)
-    {
-        if (type == CMSG_TYPE_COMMAND)
-            m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, "] " + str));
-        else
-            m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, str));
-    });
-
-    if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
-    {
-        m_MsgHistory.orderedRemoveAt(0);
-    }
-}
-
-void Console::addMessage(const std::string& msg, CMSG_TYPE type)
+void Console::addMessage(const char* msg, CMSG_TYPE type)
 {
     if (type == CMSG_TYPE_COMMAND)
-        m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, "] " + msg));
+        m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, std::string("] ") + msg));
     else
         m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, msg));
 
@@ -439,7 +421,7 @@ void Console::flushMessageHistory()
 {
     m_MsgHistory.clear();
 
-    addMessage(m_HelpCommand);
+    addMessage(m_HelpCommand.c_str());
 }
 
 /* SETTERS */

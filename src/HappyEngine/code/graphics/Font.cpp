@@ -222,78 +222,29 @@ uint32 Font::getLineHeight() const
     return m_LineHeight;
 }
 
-float Font::getStringWidth(const std::string& string) const
+float Font::getStringWidth(const char* buff, const int len) const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
+    HE_ASSERT(m_Cached == true, "Font must be prechached!");
 
-    vec2 penPos;
+    float width(0.0f);
+    const size_t count(len == -1? strlen(buff) : len);
 
-    if (m_Cached)
+    for (uint32 i(0); i < count; ++i)
     {
-        for (uint32 i(0); i < string.size(); ++i)
+        width += m_CharTextureData[buff[i]].advance.x;
+
+        if (i < count - 1)
         {
-            penPos.x += m_CharTextureData[string[i]].advance.x;
-
-            if (i < (string.size() - 1))
-            {
-                penPos.x += getKerning(string[i], string[i] + 1);
-            }
-        }
-    }
-    else
-    {
-        he::PrimitiveList<vec2> glyphSizes;
-        he::PrimitiveList<vec2> glyphAdvance;
-
-        glyphSizes.resize(string.size());
-        glyphAdvance.resize(string.size());
-
-        int maxHeight(0);
-
-        for (uint32 i(0); i < string.size(); ++i)
-        {
-            // load character glyphs
-            FT_ULong c(string[i]);
-            FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
-
-            // render glyph
-            FT_Glyph glyph;
-            FT_Get_Glyph(m_Face->glyph, &glyph);
-
-            // normal -> 256 gray -> AA
-            FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-            FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
-
-            if (bmpGlyph->bitmap.rows > maxHeight)
-                maxHeight = bmpGlyph->bitmap.rows;
-
-            glyphSizes[i] = vec2((float)bmpGlyph->bitmap.width, (float)bmpGlyph->bitmap.rows);
-
-            glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); // 1 / 64
-
-            FT_Done_Glyph(glyph);
-        }
-
-        FT_Vector kerning;
-
-        for (uint32 i(0); i < string.size(); ++i)
-        {
-            penPos.y = maxHeight - glyphAdvance[i].y;
-            penPos.x += glyphAdvance[i].x;
-
-            if (FT_HAS_KERNING(m_Face) && i < string.size() - 1)
-            {
-                FT_UInt index1(FT_Get_Char_Index(m_Face, string[i]));
-                FT_UInt index2(FT_Get_Char_Index(m_Face, string[i + 1]));
-
-                FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
-
-                penPos.x += (kerning.x >> 6); // 1 / 64
-            }
+            width += getKerning(buff[i], buff[i] + 1);
         }
     }
 
-    return penPos.x;
+    return width;
+}
+float Font::getStringWidth(const std::string& string) const
+{
+    return getStringWidth(string.c_str(), string.size());
 }
 
 int Font::getKerning(char first, char second) const

@@ -52,6 +52,7 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_Ticks(0),
                         m_RecordTime(recordTime)
 {
+    m_Text.setFont(m_Font);
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
     m_Sprites[0] = GUI->Sprites->createSprite(vec2(100,40));
@@ -154,16 +155,11 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 
     canvas->setFillColor(Color(1.0f,1.0f,1.0f));
 
-    gui::Text txt(m_Font);
+    m_Text.clear();
+    m_Text.addTextExt("FPS: %u (%u)\n", m_CurrentFPS, getAverageFPS());
+    m_Text.addTextExt("DTime: %.3f ms", m_CurrentDTime * 1000.0f);
 
-    char buff[64];
-    sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    txt.addLine(std::string(buff));
-
-    sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    txt.addLine(std::string(buff));
-
-    canvas->fillText(txt, m_Pos);
+    canvas->fillText(m_Text, m_Pos);
 
     canvas->restoreDepth();
 }
@@ -179,16 +175,11 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
 
     cvs->setColor(Color(1.0f,1.0f,1.0f));
 
-    gui::Text txt(m_Font);
-
-    char buff[64];
-    sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    txt.addLine(std::string(buff));
-
-    sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    txt.addLine(std::string(buff));
+    m_Text.clear();
+    m_Text.addTextExt("FPS: %u (%u)\n", m_CurrentFPS, getAverageFPS());
+    m_Text.addTextExt("DTime: %.3f ms", m_CurrentDTime * 1000.0f);
     
-    cvs->fillText(txt, m_Pos + vec2(0,43));
+    cvs->fillText(m_Text, m_Pos + vec2(0,43));
 }
 
 void FPSGraph::renderGraph()

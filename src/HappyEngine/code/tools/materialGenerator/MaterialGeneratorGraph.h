@@ -64,9 +64,12 @@ public:
     bool isOpen() const;
 
 private:
-    vec2 mouseToWorldPos(const vec2& mousePos) const;
+    vec2 screenToWorldPos(const vec2& screenPos) const;
+    vec2 worldToScreenPos(const vec2& worldPos) const;
 
     ct::ShaderGenerator* m_Generator;
+
+    gui::Text m_DebugText;
     
     NodeGraph<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> m_NodeGraph;
     he::ObjectList<MaterialGeneratorNode*> m_NodeList;
@@ -78,8 +81,7 @@ private:
     gfx::Renderer2D* m_Renderer;
 
     State m_State;
-    vec2 m_StartDragOffset;
-    vec2 m_StartDragMousePos;
+    vec2 m_GrabWorldPos;
 
     vec2 m_Offset;
     float m_Scale;

@@ -23,6 +23,7 @@
 #include "ShaderGenerator.h"
 
 #include "GraphicsEngine.h"
+#include "ContentManager.h"
 #include "Game.h"
 #include "View.h"
 #include "Window.h"
@@ -38,8 +39,11 @@
 #include "IMouse.h"
 
 #include "MaterialGeneratorMathNodes.h"
+#include "Canvas2Dnew.h"
 
-#define SCROLL_MULT 0.5f
+#define ZOOM_STEP 0.1f
+#define ZOOM_MIN 0.1f
+#define ZOOM_MAX 10.0f
 
 namespace he {
 namespace tools {
@@ -52,14 +56,16 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_IsActive(false)
     , m_Offset(0, 0)
     , m_Scale(1.0f)
-    , m_StartDragMousePos(0, 0)
-    , m_StartDragOffset(0, 0)
+    , m_GrabWorldPos(0.0f, 0.0f)
     , m_State(State_Idle)
 {
     MaterialGeneratorNodeAdd* add(NEW MaterialGeneratorNodeAdd(this, vec2(12, 12)));
     m_NodeList.add(add);
     MaterialGeneratorNodeAdd* add2(NEW MaterialGeneratorNodeAdd(this, vec2(200, 300)));
     m_NodeList.add(add2);
+
+    he::gfx::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
+    m_DebugText.setFont(font);
 }
 
 
@@ -157,14 +163,13 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             if (mouse->isButtonPressed(io::MouseButton_Left) || mouse->isButtonPressed(io::MouseButton_Middle))
             {
                 m_State = State_Pan;
-                m_StartDragOffset = m_Offset;
-                m_StartDragMousePos = mouse->getPosition();
+                m_GrabWorldPos = screenToWorldPos(mouse->getPosition());
             }
         } break;
         case State_Pan:
         {
-            const vec2 diff((mouse->getPosition() - m_StartDragMousePos) / m_Scale);
-            m_Offset = m_StartDragOffset + diff; 
+            //const vec2 diff((mouse->getPosition() - m_StartDragMousePos) / m_Scale);
+            //m_Offset = m_StartDragOffset + diff; 
 
             if (mouse->isButtonReleased(io::MouseButton_Left) || mouse->isButtonReleased(io::MouseButton_Middle))
             {
@@ -177,10 +182,16 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         } break;
     }
     const int scroll(mouse->getScroll());
-    if (scroll > 0)
-        m_Scale *= mouse->getScroll() * SCROLL_MULT;
-    else if (scroll < 0)
-        m_Scale /= mouse->getScroll() * -SCROLL_MULT;
+    if (scroll != 0)
+    {
+        const vec2 mousePos(mouse->getPosition());
+        const vec2 mouseWorldPos(screenToWorldPos(mouse->getPosition()));
+        m_Scale += mouse->getScroll() * ZOOM_STEP;
+        m_Scale = he::clamp(m_Scale, ZOOM_MIN, ZOOM_MAX);
+        const vec2 wrongMouseWorldPos(screenToWorldPos(mousePos));
+        const vec2 offset(wrongMouseWorldPos - mouseWorldPos);
+        m_Offset += offset;
+    }
 }
 
 bool MaterialGeneratorGraph::isOpen() const
@@ -197,11 +208,23 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     {
         node->draw2D(canvas, transform, clipRect);
     });
+
+    // DEBUG
+    m_DebugText.clear();
+    m_DebugText.addTextExt("Zoom: %.2f\nOffset: %.2f, %.2f", m_Scale, m_Offset.x, m_Offset.y);
+    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
+    cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    cvs->fillText(m_DebugText, vec2(12, 12));
 }
 
-he::vec2 MaterialGeneratorGraph::mouseToWorldPos( const vec2& mousePos ) const
+he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const
 {
     return m_Offset + mousePos / m_Scale;
+}
+
+he::vec2 MaterialGeneratorGraph::worldToScreenPos( const vec2& worldPos ) const
+{
+    return (worldPos - m_Offset) * m_Scale;
 }
 
 } } //end namespace

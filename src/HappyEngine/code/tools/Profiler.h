@@ -60,7 +60,7 @@ public:
 
     void tick(); // resets frame counter
 
-    void begin(const std::string& name);
+    void begin(const char* name);
     void end();
 
     void enable();
@@ -74,23 +74,23 @@ public:
 
     void toggleProfiler();
     
-    typedef std::unordered_map<std::string, ProfileTreeNode> DataMap;
+    typedef he::ObjectList<ProfileTreeNode> DataMap;
 private:
 
     Profiler();
     virtual ~Profiler();
 
     static Profiler* s_Profiler;
-    static std::stringstream s_Stream;
 
     // Double buffered data
     DataMap* m_NodesFront;
     DataMap* m_NodesBack;
 
     void resetNode(ProfileTreeNode& node);
-    void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth);
+    void drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth, size_t& lines);
 
     ProfileTreeNode* m_CurrentNode;
+    ProfileTreeNode* m_PrevNode;
 
     gfx::Font* m_Font;
     gfx::Renderer2D* m_Renderer;

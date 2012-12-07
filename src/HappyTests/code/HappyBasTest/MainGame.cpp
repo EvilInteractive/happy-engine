@@ -445,10 +445,10 @@ void MainGame::tick( float dTime )
 
     if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
     {
-        he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
-
-        if (i != UINT32_MAX)
-            ++i;
+        //he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
+        //
+        //if (i != UINT32_MAX)
+        //    ++i;
     }
 
     m_FpsGraph->tick(dTime);
