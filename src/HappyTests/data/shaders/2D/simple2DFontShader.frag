@@ -20,14 +20,14 @@
 #version 150 core
 
 in vec2 passTexCoord;
+in vec3 passColor;
 
 out vec4 outColor;
 
 uniform sampler2D diffuseMap;
-uniform vec4 fontColor;
 
 void main()
 {
 	float alpha = texture2D(diffuseMap, passTexCoord).r;	
-	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha * fontColor.w);
+	outColor = vec4(passColor.xyz, alpha);
 }

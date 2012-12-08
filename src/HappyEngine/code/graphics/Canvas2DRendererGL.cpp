@@ -92,94 +92,125 @@ void Canvas2DRendererGL::setColor(const Color& col)
         m_Color = col;
     }
 }
-
+int atoix(char chr)
+{
+    int result(chr - 48);
+    if (chr >= 97) chr -= 32;
+    if (chr >= 65) result -= 7;
+    return result;
+}
 void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 {
-    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
-
-    HE_ASSERT(text.getFont() != nullptr, "Text has no font set!");
-    HE_ASSERT(text.getFont()->isPreCached() == true, "Font needs to be precached!");
-
-    const Texture2D* const tex2D(text.getFont()->getTextureAtlas());
-
-    vec2 linePos(pos);
-    bool hasBounds(text.hasBounds());
-
-    m_CharVertexBuffer.clear();
-    m_CharIndexBuffer.clear();
-
-    const he::gfx::Font* const font(text.getFont());
-    const uint32 lineSpacing(font->getLineSpacing());
-    const gui::Text::HAlignment h = text.getHorizontalAlignment();
-
-    const char* fullText(text.getText());
-    const size_t size(text.getTextSize());
-    const vec2 bounds(hasBounds? text.getBounds() : vec2(0, 0));
-    m_CharVertexBuffer.reserve(size * 4);
-    m_CharIndexBuffer.reserve(size * 6);
-
-    size_t lineCharStart(0);
-    size_t lineCounter(0);
-    for (uint32 i(0); i < size; ++i)
+    if (text.getTextSize() > 0)
     {
-        const char character(fullText[i]);
+        HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+        HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
-        if (character == '\n')
+        HE_ASSERT(text.getFont() != nullptr, "Text has no font set!");
+        HE_ASSERT(text.getFont()->isPreCached() == true, "Font needs to be precached!");
+
+        const Texture2D* const tex2D(text.getFont()->getTextureAtlas());
+
+        vec2 linePos(0, 0);
+        bool hasBounds(text.hasBounds());
+
+        m_CharVertexBuffer.clear();
+        m_CharIndexBuffer.clear();
+
+        const he::gfx::Font* const font(text.getFont());
+        const uint32 lineSpacing(font->getLineSpacing());
+        const gui::Text::HAlignment h = text.getHorizontalAlignment();
+
+        const char* fullText(text.getText());
+        const size_t size(text.getTextSize());
+        const vec2 bounds(hasBounds? text.getBounds() : vec2(0, 0));
+        m_CharVertexBuffer.reserve(size * 4);
+        m_CharIndexBuffer.reserve(size * 6);
+
+        size_t lineCharStart(0);
+        size_t lineCounter(0);
+        for (uint32 i(0); i < size; ++i)
         {
-            const size_t lineSize(i - lineCharStart);
+            const char character(fullText[i]);
+
+            if (character == '\n')
+            {
+                const size_t lineSize(i - lineCharStart);
+                if (lineSize > 0)
+                    addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+                lineCharStart = i + 1;
+                linePos.y += lineSpacing;
+                linePos.x = 0;
+                ++lineCounter;
+            }
+            else if (character == '&' && i + 3 < size)
+            {
+                if (i + 3 < size)
+                {
+                    const size_t lineSize(i - lineCharStart);
+                    if (lineSize > 0)
+                        linePos.x = addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+
+                    char cR(fullText[i + 1]);
+                    char cG(fullText[i + 2]);
+                    char cB(fullText[i + 3]);
+
+                    int r = atoix(cR);
+                    int g = atoix(cG);
+                    int b = atoix(cB);
+                    setColor(Color(r / 15.0f, g / 15.0f, b / 15.0f));
+
+                    i += 3;
+                    lineCharStart = i + 1;
+                }
+            }
+        }
+        if (lineCharStart < size)
+        {
+            const size_t lineSize(size - lineCharStart);
             if (lineSize > 0)
-                addSentenceToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
-            linePos.y += lineSpacing;
-            lineCharStart = i + 1;
-            ++lineCounter;
-        }        
-    }
-    if (lineCharStart < size)
-    {
-        const size_t lineSize(size - lineCharStart);
-        if (lineSize > 0)
-            addSentenceToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
-    }
+            {
+                addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+                ++lineCounter;
+            }
+        }
 
-    gui::Text::VAlignment v = text.getVerticalAlignment();
+        gui::Text::VAlignment v = text.getVerticalAlignment();
 
-    vec3 offset(0, 0, 0);
-    switch (v)
-    {
-    case gui::Text::VAlignment_Top:
-        break;
-    case gui::Text::VAlignment_Center:
-        offset.y -= bounds.y / 2.0f - (lineSpacing * lineCounter) / 2.0f;
-        break;
-    case gui::Text::VAlignment_Bottom:
-        offset.y -= bounds.y - (lineSpacing * lineCounter);
-        break;
-    }
+        vec3 offset(pos.x, pos.y, 0);
+        switch (v)
+        {
+        case gui::Text::VAlignment_Top:
+            break;
+        case gui::Text::VAlignment_Center:
+            offset.y -= bounds.y / 2.0f - (lineSpacing * lineCounter) / 2.0f;
+            break;
+        case gui::Text::VAlignment_Bottom:
+            offset.y -= bounds.y + (lineSpacing * lineCounter);
+            break;
+        }
 
-    m_DynamicFontMesh->setVertices(&m_CharVertexBuffer[0], m_CharVertexBuffer.size(), MeshUsage_Stream, false);
-    m_DynamicFontMesh->setIndices(&m_CharIndexBuffer[0], m_CharIndexBuffer.size(), IndexStride_UInt, MeshUsage_Stream);
+        m_DynamicFontMesh->setVertices(&m_CharVertexBuffer[0], m_CharVertexBuffer.size(), MeshUsage_Stream, false);
+        m_DynamicFontMesh->setIndices(&m_CharIndexBuffer[0], m_CharIndexBuffer.size(), IndexStride_UInt, MeshUsage_Stream);
     
-    s_FontEffect->begin();
-    s_FontEffect->setDiffuseMap(tex2D);
-    s_FontEffect->setFontColor(m_Color);
-    s_FontEffect->setDepth(0.5f);
-    s_FontEffect->setWorldMatrix(m_OrthographicMatrix * mat44::createTranslation(offset));
-	
-    GL::heBlendEnabled(true);
-    GL::heBlendEquation(BlendEquation_Add);
-    // reduce text quality loss by alpha reduction
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
+        s_FontEffect->begin();
+        s_FontEffect->setDiffuseMap(tex2D);
+        s_FontEffect->setWorldMatrix(m_OrthographicMatrix * mat44::createTranslation(offset));
     
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
-    GL::heBindVao(m_DynamicFontMesh->getVertexArraysID());
+        GL::heBlendEnabled(true);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heBlendFuncSeperate(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha, BlendFunc_One, BlendFunc_One);
 
-    glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
+        GL::heSetDepthRead(false);
+        GL::heSetDepthWrite(false);
+    
+        GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+        GL::heBindVao(m_DynamicFontMesh->getVertexArraysID());
+
+        glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
+    }
 }
-void Canvas2DRendererGL::addSentenceToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gfx::Font* const font )
+float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gfx::Font* const font )
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const Texture2D* const tex2D(font->getTextureAtlas());
@@ -216,19 +247,23 @@ void Canvas2DRendererGL::addSentenceToTextBuffer( const char* const buffer, cons
         const vec2 size(regionToDraw.width, regionToDraw.height);
 
         const size_t offset(charCount + i);
-        VertexPosTex2D& vertex0(m_CharVertexBuffer[offset * 4 + 0]);
-        VertexPosTex2D& vertex1(m_CharVertexBuffer[offset * 4 + 1]);
-        VertexPosTex2D& vertex2(m_CharVertexBuffer[offset * 4 + 2]);
-        VertexPosTex2D& vertex3(m_CharVertexBuffer[offset * 4 + 3]);
+        VertexText& vertex0(m_CharVertexBuffer[offset * 4 + 0]);
+        VertexText& vertex1(m_CharVertexBuffer[offset * 4 + 1]);
+        VertexText& vertex2(m_CharVertexBuffer[offset * 4 + 2]);
+        VertexText& vertex3(m_CharVertexBuffer[offset * 4 + 3]);
 
         vertex0.position = glyphPos + vec2(0, size.y);
         vertex0.textureCoord = tcOffset;
+        vertex0.color = m_Color.rgb();
         vertex1.position = glyphPos + vec2(size.x, size.y);
         vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
+        vertex1.color = m_Color.rgb();
         vertex2.position = glyphPos;
         vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
+        vertex2.color = m_Color.rgb();
         vertex3.position = glyphPos + vec2(size.x, 0);
         vertex3.textureCoord = tcOffset + tcScale;
+        vertex3.color = m_Color.rgb();
 
         m_CharIndexBuffer[offset * 6 + 0] = offset * 4 + 0;
         m_CharIndexBuffer[offset * 6 + 1] = offset * 4 + 1;
@@ -240,6 +275,7 @@ void Canvas2DRendererGL::addSentenceToTextBuffer( const char* const buffer, cons
 
         glyphPos.x += charData.advance.x;
     }
+    return glyphPos.x;
 }
 
 
@@ -412,6 +448,7 @@ void Canvas2DRendererGL::init()
     BufferLayout vLayout;
     vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
     vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
+    vLayout.addElement(BufferElement(2, BufferElement::Type_Vec3, BufferElement::Usage_Other, 12, 16));
 
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
     m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Stream, false);

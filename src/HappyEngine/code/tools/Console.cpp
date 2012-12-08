@@ -335,54 +335,21 @@ void Console::draw2D(gfx::Canvas2D* canvas)
     canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
 
     m_TextBox->draw(canvas);
+    
 
-    he::ObjectList<std::pair<CMSG_TYPE, std::string>> msgHistory;
-
-    m_MsgHistory.forEach([&](const std::pair<CMSG_TYPE, std::string>& p)
-    {
-        if (m_ShowMessageTypes[p.first] == true)
-            msgHistory.add(p);
-    });
-
-    uint32 startPos(0);
-
-    if (msgHistory.size() > m_MaxMessagesInWindow)
-    {
-        startPos = static_cast<uint32>((msgHistory.size() - 1 - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos());
-    }
-
-    uint32 i(startPos);
-
-    he::ObjectList<std::pair<CMSG_TYPE, std::string> > msg;
-
-    if (msgHistory.size() > m_MaxMessagesInWindow)
-    {
-        for (; i <= (startPos + m_MaxMessagesInWindow); ++i)
-        {
-            msg.add(msgHistory[i]);
-        }
-    }
-    else
-    {
-        for (; i < msgHistory.size(); ++i)
-        {
-            msg.add(msgHistory[i]);
-        }
-    }
-
-    uint32 k(0);
+    const size_t histroySize(m_MsgHistory.size());
+    uint32 startPos(static_cast<uint32>((histroySize - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos()));
+    
     m_Text.clear();
-    msg.rForEach([&](const std::pair<CMSG_TYPE, std::string>& p)
+    size_t maxMsg(startPos + m_MaxMessagesInWindow);
+    for (size_t i(startPos); i < maxMsg; ++i)
     {
-        cvs->setColor(m_MsgColors[p.first]);
-        m_Text.clear();
-        m_Text.addLine(p.second.c_str());
-        cvs->fillText(m_Text, vec2(5, 182.0f - (k * m_Font->getLineSpacing())));
+        m_Text.addText(m_MsgHistory[i].second.c_str(), m_MsgHistory[i].second.size());
+    }
 
-        ++k;
-    });
+    cvs->fillText(m_Text, vec2(5, 190));
 
-    if (msgHistory.size() > m_MaxMessagesInWindow)
+    if (m_MsgHistory.size() > m_MaxMessagesInWindow)
         m_ScrollBar->draw(canvas);
 
     canvas->restoreDepth();
@@ -390,10 +357,12 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 
 void Console::addMessage(const char* msg, CMSG_TYPE type)
 {
-    if (type == CMSG_TYPE_COMMAND)
-        m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, std::string("] ") + msg));
-    else
-        m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, msg));
+    char buff[1024];
+    Color col(m_MsgColors[type]);
+    sprintf(buff, "&%c%c%c%s%s\n", 
+        col.r16(), col.g16(), col.b16(), 
+        type == CMSG_TYPE_COMMAND? "] " : "", msg);
+    m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, buff));
 
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
     {

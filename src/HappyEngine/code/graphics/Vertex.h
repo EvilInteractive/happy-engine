@@ -96,6 +96,19 @@ public:
     ~VertexPosTex2D();
     //default copy constructor and assignment operator are fine
 };
+struct VertexText
+{
+public:
+    vec2 position;
+    vec2 textureCoord;
+    vec3 color;
+
+    VertexText() {}
+    VertexText(const vec2& pos, const vec2& tex, const vec3& col): 
+        position(pos), textureCoord(tex), color(col)  { }
+    ~VertexText() {}
+    //default copy constructor and assignment operator are fine
+};
 
 struct VertexPTNT
 {

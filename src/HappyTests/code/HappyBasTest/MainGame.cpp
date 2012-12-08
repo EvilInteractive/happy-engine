@@ -101,6 +101,7 @@ MainGame::MainGame()
     , m_TestSprite(nullptr)
     , m_Player(nullptr)
     , m_MaterialGenerator(nullptr)
+    , m_ColorTimer(0.0f)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -110,6 +111,15 @@ MainGame::MainGame()
         r.c = he::vec3((float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5));
         m_MovingEntityRandomness.push_back(r);
     }
+
+    for (he::uint8 r(0); r < 16; ++r)
+        m_Colors[r].r(static_cast<he::uint8>(r * 16));
+    for (he::uint8 g(0); g < 16; ++g)
+        m_Colors[g].g(static_cast<he::uint8>( (16 - g) * 16));
+    for (he::uint8 b(0); b < 8; ++b)
+        m_Colors[b].b(static_cast<he::uint8>(b * 2 * 16));
+    for (he::uint8 b(0); b < 8; ++b)
+        m_Colors[b + 8].b(static_cast<he::uint8>((8 - b) * 2 * 16));
 }
 
 
@@ -310,6 +320,12 @@ void MainGame::load()
     gfx::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
+
+    font = CONTENT->loadFont("MODES.TTF", 48) ;
+    m_BigText.setFont(font);
+    m_BigText.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    m_BigText.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+    font->release();
     
     m_BackgroundSound = AUDIO->loadSound2D("stuff.wav", true);
     CONSOLE->registerCmd([this]()
@@ -451,6 +467,23 @@ void MainGame::tick( float dTime )
         //    ++i;
     }
 
+
+    he::uint8 prevIndex(static_cast<he::uint8>(m_ColorTimer * 16));
+    m_ColorTimer += dTime;
+    he::uint8 newIndex(static_cast<he::uint8>(m_ColorTimer * 16));
+    if (prevIndex != newIndex)
+    {
+        for (he::uint8 c(0); c < 8; ++c)
+        {
+            he::uint8 index(newIndex + c);
+            if (index > 15)
+                index -= 15;
+            m_ShuffeledColor[c] = m_Colors[index];
+        }
+    }
+    if (m_ColorTimer > 1.0f)
+        m_ColorTimer -= static_cast<int>(m_ColorTimer);
+
     m_FpsGraph->tick(dTime);
 }
 
@@ -466,25 +499,30 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     he::gfx::CameraPerspective* camera(m_View->getCamera());
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
-    
-    m_DebugText.clear();
-
-    char buff[100];
-    sprintf(buff, "Position: %.2f, %.2f, %.2f\0", position.x, position.y, position.z);
-    m_DebugText.addLine(buff);
-
-    sprintf(buff, "Look: %.2f, %.2f, %.2f\0", look.x, look.y, look.z);
-    m_DebugText.addLine(buff);
-
-
-    canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
-    cvs->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
-
-    m_ToneMapGui->draw2D(canvas);
-
-    cvs->fillText(m_DebugText, he::vec2(12, 12));
+    const he::RectI& viewport(m_View->getViewport());
 
     m_RenderPipeline->getPicker()->drawDebug(canvas);
+
+    canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
+    canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
+    m_ToneMapGui->draw2D(canvas);
+    
+    m_DebugText.clear();
+    m_DebugText.addTextExt("&0F0Position:&FFF %.2f, %.2f, %.2f\n", position.x, position.y, position.z);
+    m_DebugText.addTextExt("&F00Look:&FFF %.2f, %.2f, %.2f\n", look.x, look.y, look.z);
+    cvs->fillText(m_DebugText, he::vec2(12, 12));
+
+    m_BigText.clear();
+    m_BigText.addTextExt("&%c%c%cF&%c%c%ca&%c%c%cb&%c%c%cu&%c%c%cl&%c%c%co&%c%c%cu&%c%c%cs\n",
+        m_ShuffeledColor[0].r16(), m_ShuffeledColor[0].g16(), m_ShuffeledColor[0].b16(),
+        m_ShuffeledColor[1].r16(), m_ShuffeledColor[1].g16(), m_ShuffeledColor[1].b16(),
+        m_ShuffeledColor[2].r16(), m_ShuffeledColor[2].g16(), m_ShuffeledColor[2].b16(),
+        m_ShuffeledColor[3].r16(), m_ShuffeledColor[3].g16(), m_ShuffeledColor[3].b16(),
+        m_ShuffeledColor[4].r16(), m_ShuffeledColor[4].g16(), m_ShuffeledColor[4].b16(),
+        m_ShuffeledColor[5].r16(), m_ShuffeledColor[5].g16(), m_ShuffeledColor[5].b16(),
+        m_ShuffeledColor[6].r16(), m_ShuffeledColor[6].g16(), m_ShuffeledColor[6].b16(),
+        m_ShuffeledColor[7].r16(), m_ShuffeledColor[7].g16(), m_ShuffeledColor[7].b16());
+    cvs->fillText(m_BigText, he::vec2(8.0f, viewport.height - 8.0f));
     
     // NEW CANVAS TEST
     //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();

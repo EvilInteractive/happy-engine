@@ -117,6 +117,11 @@ private:
 
     he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
 
+    he::Color m_Colors[16];
+    he::Color m_ShuffeledColor[8];
+    float m_ColorTimer;
+    he::gui::Text m_BigText;
+
     //gui
     he::gfx::WebView* m_ToneMapGui;
     he::gfx::WebListener* m_ToneMapGuiListener;

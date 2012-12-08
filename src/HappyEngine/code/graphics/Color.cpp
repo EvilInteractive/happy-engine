@@ -134,7 +134,32 @@ void Color::a(uint8 a)
 {
     m_a = a / 255.0f;
 }
-
+char itoax(const uint8 i)
+{
+    HE_ASSERT(i >= 0 && i < 16, "Invalid range %d", i);
+    char result;
+    if (i > 9)
+        result = (i - 10) + 65;
+    else
+        result = i + 48;
+    return result;
+}
+char Color::r16() const
+{
+    return itoax(rByte() / 16);
+}
+char Color::g16() const
+{
+    return itoax(gByte() / 16);
+}
+char Color::b16() const
+{
+    return itoax(bByte() / 16);
+}
+char Color::a16() const
+{
+    return itoax(aByte() / 16);
+}
 //-----------------------------------------//
 //                Operators                //
 //-----------------------------------------//
@@ -146,6 +171,5 @@ bool Color::operator!=(const Color& other) const
 {
     return m_a != other.m_a || m_rgb != other.m_rgb;
 }
-
 
 } //end namespace

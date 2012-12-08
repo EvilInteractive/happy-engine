@@ -57,7 +57,12 @@ public:
     uint8 gByte() const;
     uint8 bByte() const;
     uint8 aByte() const;
-    
+
+    char r16() const;
+    char g16() const;
+    char b16() const;
+    char a16() const;
+
     //-----------------------------------------//
     //                SETTERS                  //
     //-----------------------------------------//

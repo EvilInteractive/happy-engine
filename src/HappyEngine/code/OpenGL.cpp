@@ -167,7 +167,7 @@ void GL::heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor)
 {
     if (srcFactor != s_CurrentContext->m_BlendSrc || destFactor != s_CurrentContext->m_BlendDest)
     {
-        s_CurrentContext->m_SepColBlendSrc = BlendFunc_Unassigned;
+        s_CurrentContext->m_ColorBlendSrc = BlendFunc_Unassigned;
 
         s_CurrentContext->m_BlendSrc = srcFactor;
         s_CurrentContext->m_BlendDest = destFactor;
@@ -179,17 +179,17 @@ void GL::heBlendFuncSeperate(BlendFunc colorSrcFactor,
                              BlendFunc alphaSrcFactor,
                              BlendFunc alphaDestFactor)
 {
-    if (colorSrcFactor != s_CurrentContext->m_SepColBlendSrc ||
-        colorSrcFactor != s_CurrentContext->m_SepColBlendSrc ||
-        colorSrcFactor != s_CurrentContext->m_SepColBlendSrc ||
-        colorSrcFactor != s_CurrentContext->m_SepColBlendSrc)
+    if (colorSrcFactor  != s_CurrentContext->m_ColorBlendSrc  ||
+        colorDestFactor != s_CurrentContext->m_ColorBlendDest ||
+        alphaSrcFactor  != s_CurrentContext->m_AlphaBlendSrc  ||
+        alphaDestFactor != s_CurrentContext->m_AlphaBlendDest)
     {
         s_CurrentContext->m_BlendSrc = BlendFunc_Unassigned;
 
-        s_CurrentContext->m_SepColBlendSrc = colorSrcFactor;
-        s_CurrentContext->m_SepColBlendDest = colorDestFactor;
-        s_CurrentContext->m_SepAlBlendSrc = alphaSrcFactor;
-        s_CurrentContext->m_SepAlBlendDest = alphaDestFactor;
+        s_CurrentContext->m_ColorBlendSrc  = colorSrcFactor;
+        s_CurrentContext->m_ColorBlendDest = colorDestFactor;
+        s_CurrentContext->m_AlphaBlendSrc  = alphaSrcFactor;
+        s_CurrentContext->m_AlphaBlendDest = alphaDestFactor;
         glBlendFuncSeparate(colorSrcFactor, colorDestFactor, alphaSrcFactor, alphaDestFactor);
     }
 }

@@ -44,19 +44,18 @@ void Simple2DFontEffect::load()
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
+    layout.addElement(ShaderLayoutElement(2, "inColor"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
     he::ObjectList<std::string> shaderOutputs;
     shaderOutputs.add("outColor");
     const std::string& folder(CONTENT->getShaderFolderPath().str());
     const bool compiled = m_Shader->initFromFile(folder + "2D/simple2DFontShader.vert", 
-                                            folder + "2D/simple2DFontShader.frag", layout, shaderOutputs);
+                                                 folder + "2D/simple2DFontShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, ""); compiled;
 
     m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
     m_ShaderDiffTexPos = m_Shader->getShaderSamplerId("diffuseMap");
-    //m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
-    m_ShaderFontColorPos = m_Shader->getShaderVarId("fontColor");
 }
 
 void Simple2DFontEffect::begin() const
@@ -76,16 +75,6 @@ void Simple2DFontEffect::setWorldMatrix(const he::mat44& mat) const
 void Simple2DFontEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
     m_Shader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
-}
-
-void Simple2DFontEffect::setDepth(float /*depth*/) const
-{
-    //m_Shader->setShaderVar(m_ShaderDepthPos, depth);
-}
-
-void Simple2DFontEffect::setFontColor(const Color& col) const
-{
-    m_Shader->setShaderVar(m_ShaderFontColorPos, col.rgba());
 }
 
 } } //end namespace
