@@ -20,11 +20,11 @@
 #version 150 core
 
 out vec2 passTexCoord;
-out vec3 passColor;
+out vec4 passColor;
 
 in vec2 inPosition;
 in vec2 inTexCoord;
-in vec3 inColor;
+in vec4 inColor;
 
 uniform mat4 matWVP;
 

@@ -254,8 +254,10 @@ void MainGame::load()
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
+
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
-    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph, 5);
+
     m_View->getPostProcessor()->setDebugRenderer(m_RenderPipeline->get2DRenderer());
 
 #ifdef ENABLE_WINDOW2
@@ -321,10 +323,10 @@ void MainGame::load()
     m_DebugText.setFont(font);
     font->release();
 
-    font = CONTENT->loadFont("MODES.TTF", 48) ;
+    font = CONTENT->loadFont("MODES.TTF", 128) ;
     m_BigText.setFont(font);
     m_BigText.setHorizontalAlignment(gui::Text::HAlignment_Left);
-    m_BigText.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+    m_BigText.setVerticalAlignment(gui::Text::VAlignment_Top);
     font->release();
     
     m_BackgroundSound = AUDIO->loadSound2D("stuff.wav", true);
@@ -502,7 +504,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     he::gfx::CameraPerspective* camera(m_View->getCamera());
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
-    const he::RectI& viewport(m_View->getViewport());
+    //const he::RectI& viewport(m_View->getViewport());
 
     m_RenderPipeline->getPicker()->drawDebug(canvas);
 
@@ -525,7 +527,10 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
         m_ShuffeledColor[5].r16(), m_ShuffeledColor[5].g16(), m_ShuffeledColor[5].b16(),
         m_ShuffeledColor[6].r16(), m_ShuffeledColor[6].g16(), m_ShuffeledColor[6].b16(),
         m_ShuffeledColor[7].r16(), m_ShuffeledColor[7].g16(), m_ShuffeledColor[7].b16());
-    cvs->fillText(m_BigText, he::vec2(8.0f, viewport.height - 8.0f));
+    cvs->fillText(m_BigText, he::vec2(200,0));
+    cvs->fillText(m_BigText, he::vec2(200,180));
+    cvs->fillText(m_BigText, he::vec2(200,360));
+    cvs->fillText(m_BigText, he::vec2(200,540));
     
     // NEW CANVAS TEST
     //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();

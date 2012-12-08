@@ -32,6 +32,7 @@
 #include "Sprite.h"
 #include "Gui.h"
 #include "Canvas2Dnew.h"
+#include "SystemStats.h"
 
 namespace he {
 namespace tools {
@@ -51,15 +52,26 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_AcumulatedDTime(0.f),
                         m_Ticks(0),
                         m_RecordTime(recordTime),
-                        m_CurrentScale(4.0f)
+                        m_CurrentScale(4.0f),
+                        m_CurrentCPU(0.0f),
+                        m_ColorWhite(Color(1.0f,1.0f,1.0f)),
+                        m_ColorWhiteAlpha(Color(1.0f,1.0f,1.0f,0.6f)),
+                        m_ColorYellow(Color((uint8)228,(uint8)211,(uint8)93)),
+                        m_ColorYellowAlpha(Color((uint8)228,(uint8)211,(uint8)93,(uint8)100)),
+                        m_ColorBlue(Color((uint8)94,(uint8)195,(uint8)247)),
+                        m_ColorBlueAlpha(Color((uint8)94,(uint8)195,(uint8)247,(uint8)100)),
+                        m_ColorGrey(Color((uint8)50,(uint8)47,(uint8)54)),
+                        m_ColorDarkGrey(Color((uint8)30,(uint8)27,(uint8)34))
 {
     m_Text.setFont(m_Font);
     m_Text.setBounds(vec2(100,20));
 
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
-    m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,60));
-    m_Sprites[1] = GUI->Sprites->createSprite(vec2(110,60));
+    m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,82));
+    m_Sprites[1] = GUI->Sprites->createSprite(vec2(110,82));
+
+    SystemStats::init();
 }
 
 FPSGraph::~FPSGraph()
@@ -102,6 +114,8 @@ void FPSGraph::tick(float dTime)
         {
             m_FpsHistory.orderedRemoveAt(0);
         }
+
+        m_CurrentCPU = HESTATS->getCpuUsage();
     }
 }
 
@@ -154,17 +168,49 @@ void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
 
 void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 {
-    canvas->setDepth(-1900);
+    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
 
-    canvas->setFillColor(Color(1.0f,1.0f,1.0f));
+	m_Text.clear();
+	m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cvs->setColor(m_ColorYellow);
+    cvs->fillText(m_Text, m_Pos);
 
     m_Text.clear();
-    m_Text.addTextExt("FPS: %u (%u)\n", m_CurrentFPS, getAverageFPS());
-    m_Text.addTextExt("DTime: %.3f ms", m_CurrentDTime * 1000.0f);
+    m_Text.addTextExt("%.3f MS", m_CurrentDTime * 1000.0f);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+    
+    cvs->setColor(m_ColorBlue);
+    cvs->fillText(m_Text, m_Pos);
 
-    canvas->fillText(m_Text, m_Pos);
+    m_Text.clear();
+	m_Text.addTextExt("MEM");
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
-    canvas->restoreDepth();
+    cvs->setColor(m_ColorWhite);
+    cvs->fillText(m_Text, m_Pos + vec2(0,11));
+
+    m_Text.clear();
+	m_Text.addTextExt("%u - %u (%u)",
+        (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
+        (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
+        (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+
+    cvs->fillText(m_Text, m_Pos + vec2(0,11));
+
+    m_Text.clear();
+	m_Text.addTextExt("CPU");
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cvs->fillText(m_Text, m_Pos + vec2(0,22));
+
+    m_Text.clear();
+	m_Text.addTextExt("%.2f", m_CurrentCPU);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+
+    cvs->fillText(m_Text, m_Pos + vec2(0,22));
 }
 
 void FPSGraph::drawFull(gfx::Canvas2D* canvas)
@@ -177,20 +223,20 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
     cvs->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 
 	m_Text.clear();
-	m_Text.addTextExt("%u (%u)", m_CurrentFPS, getAverageFPS());
+	m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
-    cvs->setColor(Color((uint8)228,(uint8)211,(uint8)93));
+    cvs->setColor(m_ColorYellow);
     cvs->fillText(m_Text, m_Pos + vec2(5,48));
 
     m_Text.clear();
     m_Text.addTextExt("%.3f MS", m_CurrentDTime * 1000.0f);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
     
-    cvs->setColor(Color((uint8)94,(uint8)195,(uint8)247));
+    cvs->setColor(m_ColorBlue);
     cvs->fillText(m_Text, m_Pos + vec2(5,48));
 
-    cvs->setColor(Color(1.0f,1.0f,1.0f,0.6f));
+    cvs->setColor(m_ColorWhiteAlpha);
 
     m_Text.clear();
     m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.75f);
@@ -202,6 +248,34 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
     m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.25f);
 
     cvs->fillText(m_Text, m_Pos + vec2(5,29.0f));
+
+    m_Text.clear();
+	m_Text.addTextExt("MEM");
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cvs->setColor(m_ColorWhite);
+    cvs->fillText(m_Text, m_Pos + vec2(5,59));
+
+    m_Text.clear();
+	m_Text.addTextExt("%u - %u (%u)",
+        (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
+        (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
+        (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+
+    cvs->fillText(m_Text, m_Pos + vec2(5,59));
+
+    m_Text.clear();
+	m_Text.addTextExt("CPU");
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cvs->fillText(m_Text, m_Pos + vec2(5,70));
+
+    m_Text.clear();
+	m_Text.addTextExt("%.2f", m_CurrentCPU);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+
+    cvs->fillText(m_Text, m_Pos + vec2(5,70));
 }
 
 void FPSGraph::updateScale(uint16 currentMaxFpsInFrame)
@@ -224,7 +298,7 @@ void FPSGraph::renderGraph()
     cr->newPath();
 
     cr->rectangle(vec2(5,5),vec2(100,40));
-    cr->setColor(Color((uint8)50,(uint8)47,(uint8)54));
+    cr->setColor(m_ColorGrey);
     cr->fill();
 
     PrimitiveList<vec2> poly0(60);
@@ -339,10 +413,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93,(uint8)100));
+        cr->setColor(m_ColorYellowAlpha);
         cr->fill();
 
-        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93));//,0.6f));
+        cr->setColor(m_ColorYellow);//,0.6f));
         cr->stroke();
 
         cr->newPath();
@@ -362,10 +436,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247,(uint8)100));
+        cr->setColor(m_ColorBlueAlpha);
         cr->fill();
 
-        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247));//,0.6f));
+        cr->setColor(m_ColorBlue);
         cr->stroke();
     }
     else
@@ -386,10 +460,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247,(uint8)100));
+        cr->setColor(m_ColorBlueAlpha);
         cr->fill();
 
-        cr->setColor(Color((uint8)94,(uint8)195,(uint8)247));
+        cr->setColor(m_ColorBlue);
         cr->stroke();
 
         i = 0;
@@ -409,10 +483,10 @@ void FPSGraph::renderGraph()
             }
         });
 
-        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93,(uint8)100));
+        cr->setColor(m_ColorYellowAlpha);
         cr->fill();
 
-        cr->setColor(Color((uint8)228,(uint8)211,(uint8)93));
+        cr->setColor(m_ColorYellow);
         cr->stroke(); 
     }
 
@@ -420,12 +494,10 @@ void FPSGraph::renderGraph()
 
     cr->newPath();
 
-    //cr->rectangle(vec2(5,14),vec2(5,1));
     cr->rectangle(vec2(5,24),vec2(5,1));
-    //cr->rectangle(vec2(5,34),vec2(5,1));
     cr->rectangle(vec2(5,44),vec2(5,1));
 
-    cr->setColor(Color((uint8)231,(uint8)227,(uint8)242));
+    cr->setColor(m_ColorWhite);
 
     cr->fill();
 
@@ -434,9 +506,18 @@ void FPSGraph::renderGraph()
     cr->rectangle(vec2(0,0),vec2(110,5));
     cr->rectangle(vec2(0,0),vec2(5,65));
     cr->rectangle(vec2(105,0),vec2(5,65));
-    cr->rectangle(vec2(0,45),vec2(110,15));
-    cr->setColor(Color((uint8)30,(uint8)27,(uint8)34));
+    cr->rectangle(vec2(0,45),vec2(110,50));
+
+    cr->setColor(m_ColorDarkGrey);
     cr->fill();
+
+    cr->newPath();
+
+    cr->rectangle(vec2(0,0),vec2(110,82));
+
+    cr->setColor(Color((uint8)20,(uint8)20,(uint8)20));
+
+    cr->stroke();
 
     cr->renderSpriteAsync();
 

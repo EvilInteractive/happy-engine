@@ -101,10 +101,10 @@ struct VertexText
 public:
     vec2 position;
     vec2 textureCoord;
-    vec3 color;
+    vec4 color;
 
     VertexText() {}
-    VertexText(const vec2& pos, const vec2& tex, const vec3& col): 
+    VertexText(const vec2& pos, const vec2& tex, const vec4& col): 
         position(pos), textureCoord(tex), color(col)  { }
     ~VertexText() {}
     //default copy constructor and assignment operator are fine

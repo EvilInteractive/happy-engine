@@ -4,7 +4,8 @@ set (CODE_TOOL_NO_FILTER
         Logger.cpp                   Logger.h
         Path.cpp                     Path.h
         Profiler.cpp                 Profiler.h
-        StopWatch.cpp                StopWatch.h)
+        StopWatch.cpp                StopWatch.h
+		SystemStats.cpp				 SystemStats.h)
         
 set (CODE_TOOL_CONSOLE_FILTER
         BoolTypeHandler.h

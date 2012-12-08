@@ -158,6 +158,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
                     int r = atoix(cR);
                     int g = atoix(cG);
                     int b = atoix(cB);
+
                     setColor(Color(r / 15.0f, g / 15.0f, b / 15.0f));
 
                     i += 3;
@@ -254,16 +255,16 @@ float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const s
 
         vertex0.position = glyphPos + vec2(0, size.y);
         vertex0.textureCoord = tcOffset;
-        vertex0.color = m_Color.rgb();
+        vertex0.color = m_Color.rgba();
         vertex1.position = glyphPos + vec2(size.x, size.y);
         vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
-        vertex1.color = m_Color.rgb();
+        vertex1.color = m_Color.rgba();
         vertex2.position = glyphPos;
         vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
-        vertex2.color = m_Color.rgb();
+        vertex2.color = m_Color.rgba();
         vertex3.position = glyphPos + vec2(size.x, 0);
         vertex3.textureCoord = tcOffset + tcScale;
-        vertex3.color = m_Color.rgb();
+        vertex3.color = m_Color.rgba();
 
         m_CharIndexBuffer[offset * 6 + 0] = offset * 4 + 0;
         m_CharIndexBuffer[offset * 6 + 1] = offset * 4 + 1;
@@ -448,11 +449,11 @@ void Canvas2DRendererGL::init()
     BufferLayout vLayout;
     vLayout.addElement(BufferElement(0, BufferElement::Type_Vec2, BufferElement::Usage_Position, 8, 0));
     vLayout.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 8));
-    vLayout.addElement(BufferElement(2, BufferElement::Type_Vec3, BufferElement::Usage_Other, 12, 16));
+    vLayout.addElement(BufferElement(2, BufferElement::Type_Vec4, BufferElement::Usage_Other, 16, 16));
 
     m_DynamicFontMesh->init(vLayout, MeshDrawMode_Triangles);
-    m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Stream, false);
-    m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Stream);
+    m_DynamicFontMesh->setVertices(nullptr, 0, MeshUsage_Dynamic, false);
+    m_DynamicFontMesh->setIndices(nullptr, 0, IndexStride_UInt, MeshUsage_Dynamic);
     m_DynamicFontMesh->setLoaded();
 }
 

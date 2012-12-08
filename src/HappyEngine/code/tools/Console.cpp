@@ -95,7 +95,7 @@ void Console::load()
     m_Font = CONTENT->loadFont("DejaVuSansMono.ttf", 8, false);
     m_Text.setFont(m_Font);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-    m_Text.setVerticalAlignment(gui::Text::VAlignment_Bottom);
+    m_Text.setVerticalAlignment(gui::Text::VAlignment_Top);
 
     m_Help = "******** HELP ********\n"
              "'listvars' (displays registered variables and their type)\n"
@@ -259,13 +259,15 @@ void Console::tick()
         m_IsOpen = !m_IsOpen;
         m_TextBox->resetText();
 
-        if (m_MsgHistory[m_MsgHistory.size() - 1].second != m_HelpCommand)
+        std::string& s = m_MsgHistory[m_MsgHistory.size() - 1].second;
+
+        if (s != std::string("&FFF").append(m_HelpCommand))
         {
             addMessage(m_HelpCommand.c_str(), CMSG_TYPE_INFO);
         }
 
         if (m_IsOpen)
-            m_Renderer->attachToRender(this);
+            m_Renderer->attachToRender(this, 1);
         else
             m_Renderer->detachFromRender(this);
     }
@@ -300,7 +302,7 @@ void Console::tick()
             }
             else
             {
-                m_CmdHistoryPos =0;
+                m_CmdHistoryPos = 0;
             }
         }
 
@@ -336,18 +338,18 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 
     m_TextBox->draw(canvas);
     
-
-    const size_t histroySize(m_MsgHistory.size());
-    uint32 startPos(static_cast<uint32>((histroySize - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos()));
+    const size_t historySize(m_MsgHistory.size());
+    uint32 startPos(static_cast<uint32>((historySize - m_MaxMessagesInWindow) * m_ScrollBar->getBarPos()));
     
     m_Text.clear();
     size_t maxMsg(startPos + m_MaxMessagesInWindow);
+
     for (size_t i(startPos); i < maxMsg; ++i)
     {
-        m_Text.addText(m_MsgHistory[i].second.c_str(), m_MsgHistory[i].second.size());
+        m_Text.addTextExt("%s\n", m_MsgHistory[i].second.c_str());
     }
 
-    cvs->fillText(m_Text, vec2(5, 190));
+    cvs->fillText(m_Text, vec2(5, 5));
 
     if (m_MsgHistory.size() > m_MaxMessagesInWindow)
         m_ScrollBar->draw(canvas);
@@ -358,10 +360,18 @@ void Console::draw2D(gfx::Canvas2D* canvas)
 void Console::addMessage(const char* msg, CMSG_TYPE type)
 {
     char buff[1024];
+    
     Color col(m_MsgColors[type]);
-    sprintf(buff, "&%c%c%c%s%s\n", 
+
+    sprintf(buff, "&%c%c%c%s%s", 
         col.r16(), col.g16(), col.b16(), 
         type == CMSG_TYPE_COMMAND? "] " : "", msg);
+
+    size_t size(strlen(buff));
+
+    size = std::remove(buff, buff + size, '\n') - buff;
+    buff[size] = 0;
+
     m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, buff));
 
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
@@ -422,7 +432,7 @@ void Console::toggleShowMessages(CMSG_TYPE type, bool show)
     m_ShowMessageTypes[type] = show;
 }
 
-void Console::attachToRenderer( gfx::Renderer2D* renderer )
+void Console::attachToRenderer(gfx::Renderer2D* renderer)
 {
     HE_IF_ASSERT(m_Renderer == nullptr, "Console already attached to a renderer")
     {
@@ -438,7 +448,7 @@ void Console::attachToRenderer( gfx::Renderer2D* renderer )
 
         if (m_IsOpen)
         {
-            m_Renderer->attachToRender(this);
+            m_Renderer->attachToRender(this, 65000);
         }
     }
 }
