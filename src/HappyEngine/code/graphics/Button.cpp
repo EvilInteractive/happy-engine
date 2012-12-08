@@ -158,7 +158,7 @@ void Button::setPosition(const vec2& centerPos)
 void Button::setText(const std::string& text, uint16 fontSize)
 {
     m_Text.clear();
-    m_Text.addLine(text);
+    m_Text.addText(text.c_str());
 
     if (m_Text.getFont() == nullptr || m_Text.getFont()->getPixelHeight() != fontSize)
     {

@@ -29,5 +29,5 @@ uniform vec4 fontColor;
 void main()
 {
 	float alpha = texture2D(diffuseMap, passTexCoord).r;	
-	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha);
+	outColor = vec4(fontColor.x, fontColor.y, fontColor.z, alpha * fontColor.w);
 }

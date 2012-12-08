@@ -76,6 +76,11 @@ Canvas2DRendererGL::~Canvas2DRendererGL()
 }
 
 /* GENERAL */
+void Canvas2DRendererGL::resize()
+{
+    m_Size = m_CanvasBuffer->size;
+    m_OrthographicMatrix = mat44::createOrthoLH(0.0f, m_Size.x, 0.0f, m_Size.y, 0.0f, 1.0f);
+}
 
 /* GETTERS */
 
@@ -90,12 +95,13 @@ void Canvas2DRendererGL::setColor(const Color& col)
 
 void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 {
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
 
     HE_ASSERT(text.getFont() != nullptr, "Text has no font set!");
     HE_ASSERT(text.getFont()->isPreCached() == true, "Font needs to be precached!");
 
-    Texture2D* tex2D = text.getFont()->getTextureAtlas();
+    const Texture2D* const tex2D(text.getFont()->getTextureAtlas());
 
     vec2 linePos(pos);
     bool hasBounds(text.hasBounds());
@@ -106,120 +112,60 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     const he::gfx::Font* const font(text.getFont());
     const uint32 lineSpacing(font->getLineSpacing());
     const gui::Text::HAlignment h = text.getHorizontalAlignment();
-    const he::ObjectList<std::string>& textLines(text.getText());
-    const size_t textLineCount(textLines.size());
-    const vec2 bounds(text.getBounds());
-    const uint32 texWidth(tex2D->getWidth());
-    const uint32 texHeight(tex2D->getHeight());
 
-    size_t size(0);
+    const char* fullText(text.getText());
+    const size_t size(text.getTextSize());
+    const vec2 bounds(hasBounds? text.getBounds() : vec2(0, 0));
+    m_CharVertexBuffer.reserve(size * 4);
+    m_CharIndexBuffer.reserve(size * 6);
 
-    for (uint32 i(0); i < textLineCount; ++i)
+    size_t lineCharStart(0);
+    size_t lineCounter(0);
+    for (uint32 i(0); i < size; ++i)
     {
-        size += textLines[i].size();
+        const char character(fullText[i]);
+
+        if (character == '\n')
+        {
+            const size_t lineSize(i - lineCharStart);
+            if (lineSize > 0)
+                addSentenceToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+            linePos.y += lineSpacing;
+            lineCharStart = i + 1;
+            ++lineCounter;
+        }        
+    }
+    if (lineCharStart < size)
+    {
+        const size_t lineSize(size - lineCharStart);
+        if (lineSize > 0)
+            addSentenceToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
     }
 
-    m_CharVertexBuffer.resize(size * 4);
-    m_CharIndexBuffer.resize(size * 6);
-    size_t charCounter(0);
+    gui::Text::VAlignment v = text.getVerticalAlignment();
 
-    for (uint32 i(0); i < textLineCount; ++i)
+    vec3 offset(0, 0, 0);
+    switch (v)
     {
-        const std::string& line(textLines[i]);
-        linePos.y = pos.y + (lineSpacing * i);
-
-        // If there is set a boundingbox for text
-        if (hasBounds)
-        {
-            vec2 offset(0, 0);
-
-            switch (h)
-            {
-                case gui::Text::HAlignment_Left:
-                    break;
-                case gui::Text::HAlignment_Center:
-                    offset.x += (bounds.x / 2.0f - font->getStringWidth(line) / 2.0f);
-                    break;
-                case gui::Text::HAlignment_Right:
-                    offset.x += (bounds.x - font->getStringWidth(line));
-                    break;
-            }
-
-            gui::Text::VAlignment v = text.getVerticalAlignment();
-
-            switch (v)
-            {
-                case gui::Text::VAlignment_Top:
-                    break;
-                case gui::Text::VAlignment_Center:
-                    offset.y += bounds.y / 2.0f - (lineSpacing * textLineCount) / 2.0f;
-                    break;
-                case gui::Text::VAlignment_Bottom:
-                    offset.y += bounds.y - (lineSpacing * textLineCount);
-                    break;
-            }
-
-            linePos += offset;
-        }
-
-        vec2 glyphPos = linePos;
-
-        const size_t charCount(line.size());
-        for (size_t i2(0); i2 < charCount; ++i2)
-        {
-            const char character(line[i2]);
-
-            const Font::CharData& charData = font->getCharTextureData(character);
-            const RectF& regionToDraw = charData.textureRegion;
-
-            const vec2 tcScale(regionToDraw.width / texWidth, regionToDraw.height / texHeight);
-            const vec2 tcOffset(regionToDraw.x / texWidth, ((texHeight - regionToDraw.y) / texHeight) - tcScale.y);
-
-            const vec2 size(regionToDraw.width, regionToDraw.height);
-
-            VertexPosTex2D& vertex0(m_CharVertexBuffer[charCounter * 4 + 0]);
-            VertexPosTex2D& vertex1(m_CharVertexBuffer[charCounter * 4 + 1]);
-            VertexPosTex2D& vertex2(m_CharVertexBuffer[charCounter * 4 + 2]);
-            VertexPosTex2D& vertex3(m_CharVertexBuffer[charCounter * 4 + 3]);
-
-            vertex0.position = glyphPos + vec2(0, size.y);
-            vertex0.textureCoord = tcOffset;
-            vertex1.position = glyphPos + vec2(size.x, size.y);
-            vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
-            vertex2.position = glyphPos;
-            vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
-            vertex3.position = glyphPos + vec2( size.x, 0);
-            vertex3.textureCoord = tcOffset + tcScale;
-
-            m_CharIndexBuffer[charCounter * 6 + 0] = charCounter * 4 + 0;
-            m_CharIndexBuffer[charCounter * 6 + 1] = charCounter * 4 + 1;
-            m_CharIndexBuffer[charCounter * 6 + 2] = charCounter * 4 + 2;
-
-            m_CharIndexBuffer[charCounter * 6 + 3] = charCounter * 4 + 1;
-            m_CharIndexBuffer[charCounter * 6 + 4] = charCounter * 4 + 3;
-            m_CharIndexBuffer[charCounter * 6 + 5] = charCounter * 4 + 2;
-            
-            glyphPos.x += charData.advance.x;
-
-            ++charCounter;
-            if (i2 < charCount - 1)
-            {
-                glyphPos.x += font->getKerning(character, line[i2 + 1]);
-            }
-
-        }
+    case gui::Text::VAlignment_Top:
+        break;
+    case gui::Text::VAlignment_Center:
+        offset.y -= bounds.y / 2.0f - (lineSpacing * lineCounter) / 2.0f;
+        break;
+    case gui::Text::VAlignment_Bottom:
+        offset.y -= bounds.y - (lineSpacing * lineCounter);
+        break;
     }
-    HE_ASSERT(charCounter == size, "Incompatible charCounter and size");
 
-    m_DynamicFontMesh->setVertices(&m_CharVertexBuffer[0], size * 4, MeshUsage_Stream, false);
-    m_DynamicFontMesh->setIndices(&m_CharIndexBuffer[0], size * 6, IndexStride_UInt, MeshUsage_Stream);
+    m_DynamicFontMesh->setVertices(&m_CharVertexBuffer[0], m_CharVertexBuffer.size(), MeshUsage_Stream, false);
+    m_DynamicFontMesh->setIndices(&m_CharIndexBuffer[0], m_CharIndexBuffer.size(), IndexStride_UInt, MeshUsage_Stream);
     
     s_FontEffect->begin();
     s_FontEffect->setDiffuseMap(tex2D);
     s_FontEffect->setFontColor(m_Color);
     s_FontEffect->setDepth(0.5f);
-    s_FontEffect->setWorldMatrix(m_OrthographicMatrix);
-
+    s_FontEffect->setWorldMatrix(m_OrthographicMatrix * mat44::createTranslation(offset));
+	
     GL::heBlendEnabled(true);
     GL::heBlendEquation(BlendEquation_Add);
     // reduce text quality loss by alpha reduction
@@ -233,6 +179,70 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
 
     glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
 }
+void Canvas2DRendererGL::addSentenceToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gfx::Font* const font )
+{
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+    const Texture2D* const tex2D(font->getTextureAtlas());
+    const uint32 texWidth(tex2D->getWidth());
+    const uint32 texHeight(tex2D->getHeight());
+
+    vec2 glyphPos(pos);
+    float hoffset(0.0f);
+    switch (alignment)
+    {
+    case gui::Text::HAlignment_Left:
+        break;
+    case gui::Text::HAlignment_Center:
+        hoffset = (maxWidth / 2.0f - font->getStringWidth(buffer, count) / 2.0f);
+        break;
+    case gui::Text::HAlignment_Right:
+        hoffset = (maxWidth - font->getStringWidth(buffer, count));
+        break;
+    }
+    glyphPos.x += hoffset;
+
+    const size_t charCount(m_CharVertexBuffer.size() / 4);
+    m_CharVertexBuffer.resize((charCount + count) * 4);
+    m_CharIndexBuffer.resize((charCount + count) * 6);
+    for (uint32 i(0); i < count; ++i)
+    {
+        const char character(buffer[i]);
+        const Font::CharData& charData = font->getCharTextureData(character);
+        const RectF& regionToDraw = charData.textureRegion;
+
+        const vec2 tcScale(regionToDraw.width / texWidth, regionToDraw.height / texHeight);
+        const vec2 tcOffset(regionToDraw.x / texWidth, ((texHeight - regionToDraw.y) / texHeight) - tcScale.y);
+
+        const vec2 size(regionToDraw.width, regionToDraw.height);
+
+        const size_t offset(charCount + i);
+        VertexPosTex2D& vertex0(m_CharVertexBuffer[offset * 4 + 0]);
+        VertexPosTex2D& vertex1(m_CharVertexBuffer[offset * 4 + 1]);
+        VertexPosTex2D& vertex2(m_CharVertexBuffer[offset * 4 + 2]);
+        VertexPosTex2D& vertex3(m_CharVertexBuffer[offset * 4 + 3]);
+
+        vertex0.position = glyphPos + vec2(0, size.y);
+        vertex0.textureCoord = tcOffset;
+        vertex1.position = glyphPos + vec2(size.x, size.y);
+        vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
+        vertex2.position = glyphPos;
+        vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
+        vertex3.position = glyphPos + vec2(size.x, 0);
+        vertex3.textureCoord = tcOffset + tcScale;
+
+        m_CharIndexBuffer[offset * 6 + 0] = offset * 4 + 0;
+        m_CharIndexBuffer[offset * 6 + 1] = offset * 4 + 1;
+        m_CharIndexBuffer[offset * 6 + 2] = offset * 4 + 2;
+
+        m_CharIndexBuffer[offset * 6 + 3] = offset * 4 + 1;
+        m_CharIndexBuffer[offset * 6 + 4] = offset * 4 + 3;
+        m_CharIndexBuffer[offset * 6 + 5] = offset * 4 + 2;
+
+        glyphPos.x += charData.advance.x;
+    }
+}
+
+
 void Canvas2DRendererGL::drawImage( const Texture2D* tex2D, const vec2& pos,
                                     const vec2& newDimensions,
                                     const RectI regionToDraw)

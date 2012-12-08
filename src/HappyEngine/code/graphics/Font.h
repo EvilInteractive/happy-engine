@@ -58,6 +58,7 @@ public:
     uint32 getLineSpacing() const;
     uint32 getLineHeight() const;
     float getStringWidth(const std::string& string) const;
+    float getStringWidth(const char* buff, const int len = -1) const;
 
     int getKerning(char first, char second) const;
 

@@ -91,7 +91,7 @@ private:
     uint16 m_RecordTime;
     
     gfx::Font* m_Font;
-    gfx::Font* m_FontSmall;
+    gui::Text m_Text;
 
     int m_FPSGraphState;
 

@@ -44,7 +44,6 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_CurrentFPS(0),
                         m_Interval(interval),
                         m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 6, false)),
-                        m_FontSmall(CONTENT->loadFont("Ubuntu-Medium.ttf", 5, false)),
                         m_FPSGraphState(Type_TextOnly),
                         m_Pos(5.0f, 5.0f),
                         m_FpsHistory(300),
@@ -54,6 +53,9 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_RecordTime(recordTime),
                         m_CurrentScale(4.0f)
 {
+    m_Text.setFont(m_Font);
+    m_Text.setBounds(vec2(100,20));
+
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
     m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,60));
@@ -63,7 +65,6 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
 FPSGraph::~FPSGraph()
 {
     m_Font->release();
-    m_FontSmall->release();
 
     m_Sprites[0]->release();
     m_Sprites[1]->release();
@@ -157,16 +158,11 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 
     canvas->setFillColor(Color(1.0f,1.0f,1.0f));
 
-    gui::Text txt(m_Font);
+    m_Text.clear();
+    m_Text.addTextExt("FPS: %u (%u)\n", m_CurrentFPS, getAverageFPS());
+    m_Text.addTextExt("DTime: %.3f ms", m_CurrentDTime * 1000.0f);
 
-    char buff[64];
-    sprintf(buff, "FPS: %u (%u)", m_CurrentFPS, getAverageFPS());
-    txt.addLine(std::string(buff));
-
-    sprintf(buff, "DTime: %.3f ms", m_CurrentDTime * 1000.0f);
-    txt.addLine(std::string(buff));
-
-    canvas->fillText(txt, m_Pos);
+    canvas->fillText(m_Text, m_Pos);
 
     canvas->restoreDepth();
 }
@@ -180,49 +176,32 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
 
     cvs->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 
-    gui::Text txt(m_Font);
-
-    char buff[32];
-    sprintf(buff, "%u (%u)", m_CurrentFPS, getAverageFPS());
-    std::string buffS(buff);
-
-    txt.addLine(buffS);
+	m_Text.clear();
+	m_Text.addTextExt("%u (%u)", m_CurrentFPS, getAverageFPS());
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->setColor(Color((uint8)228,(uint8)211,(uint8)93));
-    cvs->fillText(txt, m_Pos + vec2(5,48));
+    cvs->fillText(m_Text, m_Pos + vec2(5,48));
 
-    txt.clear();
-    std::string mS(" - ");
-    txt.addLine(mS);
-
-    cvs->setColor(Color(1.0f,1.0f,1.0f));
-    cvs->fillText(txt, m_Pos + vec2(5,48) + vec2(m_Font->getStringWidth(buffS), 0));
-
-    txt.clear();
-
-    char buff0[32];
-    sprintf(buff0, "%.3f MS", m_CurrentDTime * 1000.0f);
-    txt.addLine(std::string(buff0));
+    m_Text.clear();
+    m_Text.addTextExt("%.3f MS", m_CurrentDTime * 1000.0f);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
     
     cvs->setColor(Color((uint8)94,(uint8)195,(uint8)247));
-    cvs->fillText(txt, m_Pos + vec2(5,48) + vec2(m_Font->getStringWidth(buffS) + m_Font->getStringWidth(mS), 0));
+    cvs->fillText(m_Text, m_Pos + vec2(5,48));
 
-    gui::Text txt2(m_FontSmall);
+    cvs->setColor(Color(1.0f,1.0f,1.0f,0.6f));
 
-    cvs->setColor(Color(1.0f,1.0f,1.0f));
+    m_Text.clear();
+    m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.75f);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
-    char buff2[8];
-    sprintf(buff2, "%.0f",  m_CurrentScale * 20 * 0.75f);
-    txt2.addLine(std::string(buff2));
+    cvs->fillText(m_Text, m_Pos + vec2(5,9.0f));
 
-    cvs->fillText(txt2, m_Pos + vec2(5,9.0f));
+    m_Text.clear();
+    m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.25f);
 
-    txt2.clear();
-
-    char buff3[8];
-    sprintf(buff3, "%.0f",  m_CurrentScale * 20 * 0.25f);
-    txt2.addLine(std::string(buff3));
-    cvs->fillText(txt2, m_Pos + vec2(5,29.0f));
+    cvs->fillText(m_Text, m_Pos + vec2(5,29.0f));
 }
 
 void FPSGraph::updateScale(uint16 currentMaxFpsInFrame)

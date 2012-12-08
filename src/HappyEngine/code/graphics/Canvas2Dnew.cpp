@@ -48,6 +48,9 @@ Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent,const RectF& relativeViewport) 
     m_Size = vec2(
         (parent->getView()->getViewport().width * relativeViewport.width),
         (parent->getView()->getViewport().height * relativeViewport.height));
+
+    he::eventCallback0<void> viewResizedHandler(boost::bind(&Canvas2Dnew::viewResized, this));
+    parent->getView()->ViewportSizeChanged += viewResizedHandler;
 }
 
 Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent, const RectI& absoluteViewport) :
@@ -64,6 +67,9 @@ Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent, const RectI& absoluteViewport)
     m_Size = vec2(
         static_cast<float>(absoluteViewport.width),
         static_cast<float>(absoluteViewport.height));
+
+    he::eventCallback0<void> viewResizedHandler(boost::bind(&Canvas2Dnew::viewResized, this));
+    parent->getView()->ViewportSizeChanged += viewResizedHandler;
 }
 
 Canvas2Dnew::~Canvas2Dnew()
@@ -117,6 +123,7 @@ void Canvas2Dnew::setPosition(const vec2& position)
 void Canvas2Dnew::setSize(const vec2& size)
 {
     m_Size = size;
+    resize();
 }
 
 void Canvas2Dnew::setColor(const Color& color)
@@ -165,6 +172,18 @@ void Canvas2Dnew::cleanup()
 {
     delete m_BufferData;
     delete m_RendererGL;
+}
+void Canvas2Dnew::viewResized()
+{
+    m_Size.x = static_cast<float>(m_Renderer2D->getView()->getViewport().width);
+    m_Size.y = static_cast<float>(m_Renderer2D->getView()->getViewport().height);
+
+    resize();
+}
+void Canvas2Dnew::resize()
+{
+    m_BufferData->resize(m_Size);
+    m_RendererGL->resize();
 }
 
 }} //end namespace

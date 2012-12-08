@@ -33,6 +33,8 @@ public:
     typedef T* iterator;
     typedef T const* const_iterator;
     typedef boost::function2<int, const T&, const T&> Sorter;
+    typedef boost::function2<bool, const T&, const T&> Comparer;
+    typedef boost::function1<bool, const T&> Pred;
 
     explicit List(const size_t capacity = 0);
     virtual ~List();
@@ -53,6 +55,7 @@ public:
 
     inline bool contains(const T& element) const; // O(n)
     inline bool find(const T& element, size_t& outIndex) const; // O(n)
+    inline bool find_if(const Pred& pred, size_t& outIndex) const; // O(n)
     inline bool rfind(const T& element, size_t& outIndex) const; // O(n)
     inline bool binFind(const T& element, const Sorter& sorter, size_t& outIndex) const; // O(log(n))  binary search - only on sorted lists
     inline void sort(const Sorter& sorter); // quick sort O(n*log(n))
@@ -232,15 +235,32 @@ bool he::List<T, Creator>::contains( const T& element ) const
 template<typename T, typename Creator> inline
 bool he::List<T, Creator>::find( const T& element, size_t& outIndex ) const
 {
+    bool result(false);
     for (size_t i(0); i < m_Size; ++i)
     {
         if (m_Buffer[i] == element)
         {
             outIndex = i;
-            return true;
+            result = true;
+            break;
         }
     }
-    return false;
+    return result;
+}
+template<typename T, typename Creator> inline
+bool he::List<T, Creator>::find_if( const Pred& condition, size_t& outIndex ) const
+{
+    bool result(false);
+    for (size_t i(0); i < m_Size; ++i)
+    {
+        if (condition(m_Buffer[i]))
+        {
+            outIndex = i;
+            result = true;
+            break;
+        }
+    }
+    return result;
 }
 template<typename T, typename Creator> inline
 bool he::List<T, Creator>::rfind( const T& element, size_t& outIndex ) const

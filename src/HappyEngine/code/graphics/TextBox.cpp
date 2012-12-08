@@ -49,6 +49,9 @@ TextBox::TextBox(RectF posSize,
                                                     m_BackSpaceDelayTimer(0)
 {
     m_Font = CONTENT->loadFont(customFont, fontSize, false);
+    m_Text.setFont(m_Font);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
     m_Hitrect = NEW gui::Hitregion(
         gui::Hitregion::TYPE_RECTANGLE,
@@ -166,9 +169,6 @@ void TextBox::tick()
 
 void TextBox::draw(gfx::Canvas2D* canvas)
 {
-    gui::Text text(m_Font);
-    text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-    text.setVerticalAlignment(gui::Text::VAlignment_Center);
 
     he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
 
@@ -190,22 +190,23 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
         cvs->setColor(m_Colors[TextBoxColor_Text]);
 
-        if (m_String == "")
+        m_Text.clear();
+        if (m_String.empty())
         {
             if (!m_bHasFocus)
             {
-                text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+                m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
-                text.addLine(m_DefaultString);
-                cvs->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
+                m_Text.addText(m_DefaultString.c_str());
+                cvs->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
             }
         }
         else
         {
-            text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+            m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
-            text.addLine(m_String);
-            cvs->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
+            m_Text.addText(m_String.c_str());
+            cvs->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
         }
 
         if (m_bHasFocus)
@@ -224,9 +225,9 @@ void TextBox::draw(gfx::Canvas2D* canvas)
                     cursorRect.x += cursorX;
                 }
 
-                text.clear();
-                text.addLine(m_Cursor);
-                cvs->fillText(text, vec2(cursorRect.x, cursorRect.y - 1));
+                m_Text.clear();
+                m_Text.addText(m_Cursor.c_str());
+                cvs->fillText(m_Text, vec2(cursorRect.x, cursorRect.y - 1));
             }
         }
     }
@@ -244,18 +245,18 @@ void TextBox::draw(gfx::Canvas2D* canvas)
         {
             if (!m_bHasFocus)
             {
-                text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+                m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
-                text.addLine(m_DefaultString);
-                canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
+                m_Text.addText(m_DefaultString.c_str());
+                canvas->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
             }
         }
         else
         {
-            text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
+            m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
-            text.addLine(m_String);
-            canvas->fillText(text, vec2(m_Rect.x + 4, m_Rect.y + 4));
+            m_Text.addLine(m_String.c_str());
+            canvas->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
         }
     }
 }

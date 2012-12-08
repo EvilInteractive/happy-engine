@@ -17,104 +17,71 @@
 //
 //Author:  Sebastiaan Sprengers
 //Created: 09/10/2011
+//Rewritten with c-string to be faster -- Bastian
 #include "HappyPCH.h" 
 
 #include "Text.h"
 #include "Font.h"
 #include "ContentManager.h"
 
+#define CAPA_INCR_MIN 8
+
 namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Text::Text(	gfx::Font* font,
-            OverFlowType overflow) :	m_Font(font),
-                                        m_OverFlowType(overflow),
-                                        m_HAlignment(HAlignment_Left),
-                                        m_VAlignment(VAlignment_Top),
-                                        m_Bounds(),
-                                        m_HasBounds(false)
-{
-    m_Font->instantiate();
-}
-Text::Text(	const std::string& text,
-            gfx::Font* font,
-            OverFlowType overflow) :	m_Font(font),
-                                        m_OverFlowType(overflow),
-                                        m_HAlignment(HAlignment_Left),
-                                        m_VAlignment(VAlignment_Top),
-                                        m_Bounds(),
-                                        m_HasBounds(false)
-{
-    m_Font->instantiate();
-    addText(text);
-}
-
 Text::Text() :	m_OverFlowType(OverFlowType_Clip),
                 m_HAlignment(HAlignment_Left),
                 m_VAlignment(VAlignment_Top),
                 m_Bounds(),
                 m_HasBounds(false),
-                m_Font(nullptr)
+                m_Font(nullptr),
+                m_Capacity(0), m_Size(0),
+                m_Text(nullptr)
 {
-
 }
 
 Text::~Text()
 {
     if (m_Font != nullptr)
         m_Font->release();
+    he_free(m_Text);
 }
 
 /* GENERAL */
-void Text::addText( const std::string& text )
+void Text::addText( const char* text, int len )
 {
-    size_t start(0);
-    for (size_t end(0); end < text.size(); ++end)
-    {
-        if (text[end] == '\n')
-        {
-            addLine(text.substr(start, end - start));
-            start = end + 1;
-        }
-    }
-    addLine(text.substr(start, text.size() - start));
+    HIERARCHICAL_PROFILE(__HE_FUNCTION__);
+    const size_t size(len == -1? strlen(text) : len);
+    const size_t start(m_Size);
+    resize(m_Size + size);
+    he_memcpy(m_Text + start, text, size);
 }
 
-void Text::addLine(const std::string& string)
+void Text::addLine(const char* text, int len)
 {
-    m_Text.add(string);
+    addText(text, len);
+    addText("\n", 1);
+}
+
+void Text::addTextExt( const char* text, ... )
+{
+    va_list argList;
+    va_start(argList, text);
+    int len(vsnprintf(m_ScratchBuffer, MAX_SCRATCH, text, argList));
+    va_end(argList);
+
+    HE_ASSERT(len >= 0, "addTextExt FAILED!");
+
+    addText(m_ScratchBuffer, len);
 }
 
 void Text::clear()
 {
-    m_Text.clear();
+    m_Size = 0;
 }
 
 /* SETTERS */
-void Text::setLine(const std::string& string, uint32 lineNumber)
-{
-    if (lineNumber < m_Text.size())
-    {
-        m_Text[lineNumber] = string;
-    }
-}
-
-void Text::setHorizontalAlignment(HAlignment alignment)
-{
-    m_HAlignment = alignment;
-}
-
-void Text::setVerticalAlignment(VAlignment alignment)
-{
-    m_VAlignment = alignment;
-}
-
-void Text::setOverFlowType( OverFlowType overFlowType )
-{
-    m_OverFlowType = overFlowType;
-}
-
 void Text::setBounds(const vec2& bounds)
 {
     if (bounds != vec2())
@@ -128,58 +95,22 @@ void Text::setBounds(const vec2& bounds)
     }
 }
 
-/* GETTERS */
-const std::string& Text::getLine(uint32 lineNumber) const
-{
-    return m_Text[lineNumber];
-}
-
-const he::ObjectList<std::string>& Text::getText() const
-{
-    return m_Text;
-}
-
-bool Text::isEmpty() const
-{
-    return m_Text.empty();
-}
-
-bool Text::hasBounds() const
-{
-    return m_HasBounds;
-}
-
-Text::OverFlowType Text::getOverFlowType() const
-{
-    return m_OverFlowType;
-}
-
-Text::HAlignment Text::getHorizontalAlignment() const
-{
-    return m_HAlignment;
-}
-
-Text::VAlignment Text::getVerticalAlignment() const
-{
-    return m_VAlignment;
-}
-
-gfx::Font* Text::getFont() const
-{
-    return m_Font;
-}
-
-const vec2& Text::getBounds() const
-{
-    return m_Bounds;
-}
-
 void Text::setFont( gfx::Font* font )
 {
     if (m_Font != nullptr)
         m_Font->release();
     m_Font = font;
     m_Font->instantiate();
+}
+
+void Text::resize( const size_t newSize )
+{
+    if (m_Capacity < newSize)
+    {
+        m_Text = static_cast<char*>(he_realloc(m_Text, he::max(newSize, m_Capacity + CAPA_INCR_MIN)));
+        m_Capacity = newSize;
+    }
+    m_Size = newSize;
 }
 
 } } //end namespace

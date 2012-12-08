@@ -67,8 +67,7 @@ public:
 
     virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
-    void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
-    void addMessage(const std::string& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
+    void addMessage(const char* msg, CMSG_TYPE type = CMSG_TYPE_INFO);
 
     template <typename T>
     void registerVar(T* pVar, const std::string& varKey)
@@ -124,7 +123,7 @@ private:
     bool m_IsOpen;
 
     gui::TextBox* m_TextBox;
-    gui::Text* m_Help;
+    std::string m_Help;
     gui::Scrollbar* m_ScrollBar;
 
     std::string m_HelpCommand;

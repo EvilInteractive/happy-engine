@@ -34,7 +34,6 @@ namespace he {
 namespace tools {
 
 Profiler* Profiler::s_Profiler = nullptr;
-std::stringstream Profiler::s_Stream;
 
 HierarchicalProfile::HierarchicalProfile(const char* name)
 {
@@ -67,8 +66,30 @@ struct Profiler::ProfileTreeNode
     std::string m_Name;
 
     ProfileData m_CurrentProfile;
-
     Profiler::DataMap m_Nodes;
+
+    ProfileTreeNode(): m_Parent(nullptr), m_TotalFrameTime(0.0), m_MaxTime(0.0), m_HitsPerFrame(0), m_Recurses(0), m_Name("") {}
+    ProfileTreeNode(ProfileTreeNode& other)
+        : m_Parent(other.m_Parent), m_TotalFrameTime(other.m_TotalFrameTime), 
+        m_MaxTime(other.m_MaxTime), m_HitsPerFrame(other.m_HitsPerFrame), m_Recurses(other.m_Recurses), 
+        m_Name(other.m_Name), m_CurrentProfile(other.m_CurrentProfile)
+    {
+        HE_ASSERT(other.m_Nodes.empty(), "A copied node cannot have nodes");
+    }
+    ProfileTreeNode& operator=(const ProfileTreeNode& other)
+    {
+        m_Parent = other.m_Parent;
+        m_TotalFrameTime = other.m_TotalFrameTime;
+        m_MaxTime = other.m_MaxTime;
+        m_HitsPerFrame = other.m_HitsPerFrame;
+        m_Recurses = other.m_Recurses;
+        m_Name = other.m_Name;
+        m_CurrentProfile = other.m_CurrentProfile;
+        m_Nodes.clear();
+        HE_ASSERT(other.m_Nodes.empty(), "A copied node cannot have nodes");
+        return *this;
+    }
+    ~ProfileTreeNode() {}
 
     void start() 
     { 
@@ -100,7 +121,6 @@ Profiler::Profiler()
       m_NodesFront(NEW DataMap()),
       m_NodesBack(NEW DataMap())
 {
-    s_Stream.precision(2);
 }
 void Profiler::load()
 {
@@ -138,9 +158,10 @@ void Profiler::dispose()
 void Profiler::resetNode( ProfileTreeNode& node )
 {
     node.reset();
-    DataMap::iterator it(node.m_Nodes.begin());
-    for(; it != node.m_Nodes.end(); ++it)   
-        resetNode(it->second); 
+    node.m_Nodes.forEach([this](ProfileTreeNode& node)   
+    {
+        resetNode(node); 
+    });
 }
 void Profiler::tick()
 {
@@ -163,7 +184,7 @@ void Profiler::tick()
     m_NodesFront->clear();
 }
 
-void Profiler::begin( const std::string& name )
+void Profiler::begin( const char* name )
 {
     if (isEnabled() == false)
         return;
@@ -175,22 +196,25 @@ void Profiler::begin( const std::string& name )
     else
     {
         DataMap& currentBranch(m_CurrentNode != nullptr ? m_CurrentNode->m_Nodes : *m_NodesFront);
-        DataMap::iterator it(currentBranch.find(name));
-        if (it == currentBranch.end())
+        size_t index(0);
+        ProfileTreeNode* parent(m_CurrentNode);
+        if (currentBranch.find_if([&name](const ProfileTreeNode& node) { return node.m_Name == name; }, index) == false)
         {
             ProfileTreeNode node;
             node.m_Name = name;
-            node.m_Parent = m_CurrentNode;
+            node.m_Parent = parent;
             node.m_HitsPerFrame = 0;
             node.m_TotalFrameTime = 0.0f;
             node.m_MaxTime = 0.0f;
             node.m_Recurses = 1;
-            m_CurrentNode = &(currentBranch[name] = node);
+            currentBranch.add(node);
+            m_CurrentNode = &currentBranch.back();
         }
         else
         {
-            m_CurrentNode = &it->second;
+            m_CurrentNode = &currentBranch[index];
             m_CurrentNode->m_Recurses = 1;
+            m_CurrentNode->m_Parent = parent; // prev pointer could have been invalidated
         }
 
         m_CurrentNode->start();
@@ -211,36 +235,25 @@ void Profiler::end()
         m_CurrentNode = m_CurrentNode->m_Parent;
     }
 }
-void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth)
+void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int treeDepth, size_t& lines)
 {
     HE_ASSERT(node.m_HitsPerFrame > 0, "Cannot have 0 hit!");
     double totalFrameTime(node.m_TotalFrameTime);
     double avgFrameTime(node.m_TotalFrameTime / node.m_HitsPerFrame);
     double maxFrameTime(node.m_MaxTime);
-
-    char totalBuf[10];
-    char avgBuf[10];
-    char maxBuf[10];
-    sprintf(totalBuf, "%02.4f\0", totalFrameTime);
-    sprintf(avgBuf, "%02.4f\0", avgFrameTime);
-    sprintf(maxBuf, "%02.4f\0", maxFrameTime);
-
-    s_Stream.clear();
-    s_Stream.str("");
+    
     for (int i(0); i < treeDepth; ++i)
     {
-        s_Stream << "|----";
+        text.addText("|----");
     }
-    s_Stream << "+ " + node.m_Name << ": tot: " << totalBuf << " avg: " << avgBuf << " max: " << maxBuf << " calls: " << node.m_HitsPerFrame;
-    text.addLine(s_Stream.str());
+    text.addTextExt("+ %s: tot: %02.4f avg: %02.4f max: %02.4f calls: %d\n", node.m_Name.c_str(), totalFrameTime, 
+        avgFrameTime, maxFrameTime, node.m_HitsPerFrame);
+    
+    ++lines;
 
-    uint32 textWidth(static_cast<uint32>(m_Font->getStringWidth(s_Stream.str())));
-    if (textWidth > m_Width)
-        m_Width = textWidth;
-
-    std::for_each(node.m_Nodes.cbegin(), node.m_Nodes.cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
+    node.m_Nodes.forEach([&](const ProfileTreeNode& treeNode)
     {       
-        drawProfileNode(treeNodePair.second, text, treeDepth + 1);
+        drawProfileNode(treeNode, text, treeDepth + 1, lines);
     });
 }
 void Profiler::draw2D(gfx::Canvas2D* canvas)
@@ -251,18 +264,19 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
     m_Text.clear();
     m_Width = 0;
     
-    m_Text.addLine("----PROFILER------------------------------");
-    std::for_each(m_NodesBack->cbegin(), m_NodesBack->cend(), [&](const std::pair<std::string, ProfileTreeNode>& treeNodePair)
+    size_t lines(2);
+    m_Text.addText("----PROFILER------------------------------\n");
+    m_NodesBack->forEach([&](const ProfileTreeNode& treeNode)
     {
-        drawProfileNode(treeNodePair.second, m_Text, 1);  
+        drawProfileNode(treeNode, m_Text, 1, lines);  
     });
-    m_Text.addLine("------------------------------------------");
+    m_Text.addText("------------------------------------------\n");
 
-    float y((float)(m_Text.getText().size() * m_Font->getLineSpacing()));
+    //float y((float)(m_Text.getText().size() * m_Font->getLineSpacing()));
 
     he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-    canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
-    canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
+    //canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
+    //canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
     cvs->setColor(Color(1.0f, 1.0f, 1.0f));
     cvs->fillText(m_Text, vec2(4, 4));

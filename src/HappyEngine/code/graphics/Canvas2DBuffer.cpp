@@ -113,6 +113,8 @@ void Canvas2DBuffer::resize(const vec2& size)
     Texture2D* texture(ResourceFactory<Texture2D>::getInstance()->get(renderTextureHandle));
     texture->setData(static_cast<uint32>(size.x), static_cast<uint32>(size.y), nullptr, gfx::TextureBufferLayout_RGBA, gfx::TextureBufferType_Byte, 0);
 
+    this->size = size;
+
     //glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBufferId);
     //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
 }
