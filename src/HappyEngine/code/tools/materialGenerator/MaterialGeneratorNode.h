@@ -46,10 +46,17 @@ public:
     virtual bool canConnect(const MaterialGeneratorNodeOutput& fromOutput, 
                             const MaterialGeneratorNodeInput& toInput, MaterialGeneratorError& error) const;
 
-    void addOverload(uint8 outputCount, uint8 inputCount, ...);
+    bool pick(const vec2& worldPos) const;
+    void setSelected(bool selected) { m_IsSelected = selected; }
+    bool isSelected() const { return m_IsSelected; }
+
+    void setPosition(const vec2& position) { m_Position = position; }
+    const vec2& getPosition() const { return m_Position; }
 
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
+protected:
+    void addOverload(uint8 outputCount, uint8 inputCount, ...);
 private:
     struct Overload
     {
@@ -75,6 +82,8 @@ private:
     uint8 m_SelectedOverload;
 
     vec2 m_Position;
+    vec2 m_Size;
+    bool m_IsSelected;
 
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;

@@ -64,6 +64,10 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     m_NodeList.add(add);
     MaterialGeneratorNodeAdd* add2(NEW MaterialGeneratorNodeAdd(this, vec2(200, 300)));
     m_NodeList.add(add2);
+    MaterialGeneratorNodeAdd* add3(NEW MaterialGeneratorNodeAdd(this, vec2(300, 200)));
+    m_NodeList.add(add3);
+    MaterialGeneratorNodeAdd* add4(NEW MaterialGeneratorNodeAdd(this, vec2(500, 300)));
+    m_NodeList.add(add4);
 
     he::gfx::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
     m_DebugText.setFont(font);
@@ -110,6 +114,7 @@ void MaterialGeneratorGraph::init()
         {
             m_IsActive = false;
             GAME->removeFromTickList(this);
+            CONTROLS->returnFocus(this);
         }
     });
     eventCallback0<void> closeCallback([this]()
@@ -126,6 +131,7 @@ void MaterialGeneratorGraph::init()
         {
             m_IsActive = true;
             GAME->addToTickList(this);
+            CONTROLS->getFocus(this);
         }
     });
     m_Window->GainedFocus += gainfocusCallback;
@@ -156,34 +162,92 @@ void MaterialGeneratorGraph::close()
 void MaterialGeneratorGraph::tick( float /*dTime*/ )
 {
     const io::ControlsManager* const controls(CONTROLS);
-    //const io::IKeyboard* const keyboard(controls->getKeyboard());
     const io::IMouse* const mouse(controls->getMouse());
+    const io::IKeyboard* const keyboard(controls->getKeyboard());
+    const bool keepSelection(keyboard->isKeyDown(io::Key_Lctrl) || keyboard->isKeyDown(io::Key_Rctrl));
+    const bool removeSelection(keyboard->isKeyDown(io::Key_Lalt) || keyboard->isKeyDown(io::Key_Ralt));
     switch (m_State)
     {
         case State_Idle:
         {
-            if (mouse->isButtonPressed(io::MouseButton_Left) || mouse->isButtonPressed(io::MouseButton_Middle))
+            m_GrabWorldPos = screenToWorldPos(mouse->getPosition());
+            const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
+            if (leftDown)
+            {
+                if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection) && 
+                    keepSelection == false && removeSelection == false)
+                {
+                    m_State = State_StartMoveNode;
+                }
+                else if (keepSelection == false && removeSelection == false)
+                {
+                    m_State = State_StartPan;
+                }
+            }
+        } break;
+        case State_StartPan:
+        {
+            const vec2 mousePos(mouse->getPosition());
+            const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
+            const vec2 diff(mousePos - grabScreenPos);
+            if (mouse->isButtonReleased(io::MouseButton_Left))
+            {
+                deselectAll();
+                m_State = State_Idle;
+            }
+            else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
             {
                 m_State = State_Pan;
-                m_GrabWorldPos = screenToWorldPos(mouse->getPosition());
             }
         } break;
         case State_Pan:
         {
-            const vec2 worldMouse(screenToWorldPos(mouse->getPosition()));
+            const vec2 mousePos(mouse->getPosition());
+            const vec2 worldMouse(screenToWorldPos(mousePos));
             const vec2 diff(worldMouse - m_GrabWorldPos);
             m_Offset -= diff; 
-
-            if (mouse->isButtonReleased(io::MouseButton_Left) || mouse->isButtonReleased(io::MouseButton_Middle))
+            if (mouse->isButtonReleased(io::MouseButton_Left))
             {
                 m_State = State_Idle;
             }
         } break;
+        case State_StartMoveNode:
+        {
+            const vec2 mousePos(mouse->getPosition());
+            const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
+            const vec2 diff(mousePos - grabScreenPos);
+            if (mouse->isButtonReleased(io::MouseButton_Left))
+            {
+                if (keepSelection == false && removeSelection == false)
+                {
+                    deselectAll();
+                }
+                doNodeSelect(mouse->getPosition(), keepSelection, removeSelection);
+                m_State = State_Idle;
+            }
+            else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
+            {
+                m_State = State_MoveNode;
+            }
+        } break;
         case State_MoveNode:
         {
+            const vec2 mouseMove(mouse->getMove());
+            const vec2 worldMove(mouseMove / m_Scale);
+            m_SelectedNodeList.forEach([&worldMove](MaterialGeneratorNode* const node)
+            {
+                node->setPosition(node->getPosition() + worldMove);
+            });
 
+            if (mouse->isButtonReleased(io::MouseButton_Left))
+            {
+                m_State = State_Idle;
+            }
         } break;
     }
+
+    //if (m_SelectedNodeList.size() > 0)
+
     const int scroll(mouse->getScroll());
     if (scroll != 0)
     {
@@ -196,6 +260,44 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         m_Offset -= offset;
     }
 }
+bool MaterialGeneratorGraph::doNodeSelect(const vec2& mousePos, const bool keepSelection, const bool removeSelection)
+{
+    bool result(false);
+
+    const vec2 mouseWorld(screenToWorldPos(mousePos));
+    size_t pickedNode(0);
+    if (m_NodeList.rfind_if([&mouseWorld](MaterialGeneratorNode* const node)
+    {
+        return node->pick(mouseWorld);
+    }, pickedNode))
+    {
+        MaterialGeneratorNode* const selectedNode(m_NodeList[pickedNode]);
+        bool isSelected(selectedNode->isSelected());
+        if (removeSelection)
+        {
+            if (isSelected)
+            {
+                m_SelectedNodeList.remove(selectedNode);
+                selectedNode->setSelected(false);
+            }
+        }
+        else
+        {
+            if (keepSelection == false && isSelected == false)
+            {
+                deselectAll();
+            }
+            if (isSelected == false)
+            {
+                selectedNode->setSelected(true);
+                m_SelectedNodeList.add(selectedNode);
+            }
+        }
+        result = true;
+    }
+    return result;
+}
+
 
 bool MaterialGeneratorGraph::isOpen() const
 {
@@ -230,6 +332,15 @@ he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const
 he::vec2 MaterialGeneratorGraph::worldToScreenPos( const vec2& worldPos ) const
 {
     return (worldPos - m_Offset) * m_Scale;
+}
+
+void MaterialGeneratorGraph::deselectAll()
+{
+    m_SelectedNodeList.forEach([](MaterialGeneratorNode* const node)
+    {
+        node->setSelected(false);
+    });
+    m_SelectedNodeList.clear();
 }
 
 } } //end namespace

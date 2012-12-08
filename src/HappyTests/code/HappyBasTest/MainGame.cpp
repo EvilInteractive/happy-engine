@@ -420,36 +420,46 @@ void MainGame::tick( float dTime )
     m_MovingEntityFase += dTime / 2.0f;
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
-    
-    he::io::IKeyboard* keyboard(CONTROLS->getKeyboard());
 
-    if (keyboard->isKeyPressed(he::io::Key_Return))
+    he::io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+    if (CONTROLS->getFocus(this))
     {
-        he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
-        spotlight->setLocalTranslate(m_View->getCamera()->getPosition());
-        spotlight->setDirection(m_View->getCamera()->getLook());
-        spotlight->setMultiplier(s_Random.nextFloat(1.0f, 5.0));
-        spotlight->setAttenuation(1.0f, s_Random.nextFloat(10.0f, 20.0f));
-        spotlight->setFov(he::piOverFour * s_Random.nextFloat(0.5f, 4.0f));
-        he::vec3 color(he::normalize(he::vec3(s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1))));
-        spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
-        spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
-    }
-    if (keyboard->isKeyDown(he::io::Key_Lctrl))
-    {
-        he::ge::Entity* bullet(NEW he::ge::Entity());
-        bullet->init(m_Scene);
-        bullet->setLocalTranslate(m_View->getCamera()->getPosition());
-        he::ge::InstancedModelComponent* modelComp(NEW he::ge::InstancedModelComponent());
-        modelComp->setLocalScale(he::vec3(0.5f));
-        bullet->addComponent(modelComp);
-        modelComp->setController("bullet");  
-        he::ge::DynamicPhysicsComponent* physicsComp(NEW he::ge::DynamicPhysicsComponent());
-        bullet->addComponent(physicsComp);
-        he::px::PhysicsBoxShape shape(he::vec3(1.0f, 1.0f, 1.0f));
-        physicsComp->addShape(&shape, he::px::PhysicsMaterial(1.0f, 0.8f, 0.3f), 1.0f, 0x00000001, 0xffffffff);
-        m_EntityList.push_back(bullet);
-        physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
+        if (keyboard->isKeyPressed(he::io::Key_Return))
+        {
+            he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
+            spotlight->setLocalTranslate(m_View->getCamera()->getPosition());
+            spotlight->setDirection(m_View->getCamera()->getLook());
+            spotlight->setMultiplier(s_Random.nextFloat(1.0f, 5.0));
+            spotlight->setAttenuation(1.0f, s_Random.nextFloat(10.0f, 20.0f));
+            spotlight->setFov(he::piOverFour * s_Random.nextFloat(0.5f, 4.0f));
+            he::vec3 color(he::normalize(he::vec3(s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1))));
+            spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
+            spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
+        }
+        if (keyboard->isKeyDown(he::io::Key_Lctrl))
+        {
+            he::ge::Entity* bullet(NEW he::ge::Entity());
+            bullet->init(m_Scene);
+            bullet->setLocalTranslate(m_View->getCamera()->getPosition());
+            he::ge::InstancedModelComponent* modelComp(NEW he::ge::InstancedModelComponent());
+            modelComp->setLocalScale(he::vec3(0.5f));
+            bullet->addComponent(modelComp);
+            modelComp->setController("bullet");  
+            he::ge::DynamicPhysicsComponent* physicsComp(NEW he::ge::DynamicPhysicsComponent());
+            bullet->addComponent(physicsComp);
+            he::px::PhysicsBoxShape shape(he::vec3(1.0f, 1.0f, 1.0f));
+            physicsComp->addShape(&shape, he::px::PhysicsMaterial(1.0f, 0.8f, 0.3f), 1.0f, 0x00000001, 0xffffffff);
+            m_EntityList.push_back(bullet);
+            physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
+        }
+        if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
+        {
+            //he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
+            //
+            //if (i != UINT32_MAX)
+            //    ++i;
+        }
+        CONTROLS->returnFocus(this);
     }
     if (keyboard->isKeyPressed(he::io::Key_F9))
     {
@@ -459,13 +469,6 @@ void MainGame::tick( float dTime )
             m_MaterialGenerator->open();
     }
 
-    if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
-    {
-        //he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
-        //
-        //if (i != UINT32_MAX)
-        //    ++i;
-    }
 
 
     he::uint8 prevIndex(static_cast<he::uint8>(m_ColorTimer * 16));

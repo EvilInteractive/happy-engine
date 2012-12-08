@@ -26,7 +26,9 @@
 namespace he {
 namespace tools {
 
-MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos): m_SelectedOverload(0), m_Overloads(1), m_Position(pos)
+MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos): 
+    m_SelectedOverload(0), m_Overloads(1), m_Position(pos), m_Size(128, 96),
+    m_IsSelected(false)
 {
 }
 
@@ -155,15 +157,30 @@ bool MaterialGeneratorNode::findOverload( uint8& outOverload ) const
     return result;
 }
 
+bool MaterialGeneratorNode::pick( const vec2& worldPos ) const
+{
+    bool result(false);
+    const vec2 halfSize(m_Size / 2.0f);
+    if (worldPos.x > m_Position.x - halfSize.x && worldPos.y > m_Position.y - halfSize.y &&
+        worldPos.x < m_Position.x + halfSize.x && worldPos.y < m_Position.y + halfSize.y)
+    {
+        result = true;
+    }
+    return result;
+}
+
 void MaterialGeneratorNode::draw2D( gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
 {
     const vec2 transformedPosition(transform * m_Position);
-    const vec2 size((transform * vec3(128, 96, 0)).xy());
+    const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
 
     if (transformedPosition.x + size.x / 2.0f > clipRect.x && transformedPosition.x - size.x / 2.0f < clipRect.x + clipRect.width && 
         transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height)
     {
-        canvas->setFillColor(Color(0.7f, 0.5f, 0.3f));
+        if (m_IsSelected)
+            canvas->setFillColor(Color(0.9f, 0.8f, 0.6f));
+        else
+            canvas->setFillColor(Color(0.7f, 0.5f, 0.3f));
         canvas->fillRect(transformedPosition - size / 2.0f, size);
     }
 }

@@ -44,7 +44,9 @@ class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
     enum State
     {
         State_Idle,
+        State_StartPan,
         State_Pan,
+        State_StartMoveNode,
         State_MoveNode
     };
 public:
@@ -64,6 +66,9 @@ public:
     bool isOpen() const;
 
 private:
+    void deselectAll();
+    bool doNodeSelect(const vec2& mousePos, const bool keepSelection, const bool removeSelection);
+
     vec2 screenToWorldPos(const vec2& screenPos) const;
     vec2 worldToScreenPos(const vec2& worldPos) const;
 
@@ -72,8 +77,9 @@ private:
     gui::Text m_DebugText;
     
     NodeGraph<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> m_NodeGraph;
-    he::ObjectList<MaterialGeneratorNode*> m_NodeList;
+    he::PrimitiveList<MaterialGeneratorNode*> m_NodeList;
     he::ObjectList<NodeGraphError<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput>> m_ErrorList;
+    he::PrimitiveList<MaterialGeneratorNode*> m_SelectedNodeList;
 
     gfx::Window* m_Window;
     gfx::View* m_View;
@@ -86,6 +92,7 @@ private:
     vec2 m_Offset;
     float m_Scale;
     bool m_IsActive;
+
 
     //Disable default copy constructor and default assignment operator
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

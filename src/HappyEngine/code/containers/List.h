@@ -56,6 +56,7 @@ public:
     inline bool contains(const T& element) const; // O(n)
     inline bool find(const T& element, size_t& outIndex) const; // O(n)
     inline bool find_if(const Pred& pred, size_t& outIndex) const; // O(n)
+    inline bool rfind_if(const Pred& pred, size_t& outIndex) const; // O(n)
     inline bool rfind(const T& element, size_t& outIndex) const; // O(n)
     inline bool binFind(const T& element, const Sorter& sorter, size_t& outIndex) const; // O(log(n))  binary search - only on sorted lists
     inline void sort(const Sorter& sorter); // quick sort O(n*log(n))
@@ -263,9 +264,24 @@ bool he::List<T, Creator>::find_if( const Pred& condition, size_t& outIndex ) co
     return result;
 }
 template<typename T, typename Creator> inline
+bool he::List<T, Creator>::rfind_if( const Pred& condition, size_t& outIndex ) const
+{
+    bool result(false);
+    for (int i(m_Size - 1); i >= 0; --i)
+    {
+        if (condition(m_Buffer[i]))
+        {
+            outIndex = i;
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
+template<typename T, typename Creator> inline
 bool he::List<T, Creator>::rfind( const T& element, size_t& outIndex ) const
 {
-    for (size_t i(m_Size - 1); i >= 0; --i)
+    for (int i(m_Size - 1); i >= 0; --i)
     {
         if (m_Buffer[i] == element)
         {
