@@ -37,7 +37,6 @@ namespace gui {
 Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent,const RectF& relativeViewport) :
     m_Renderer2D(parent),
     m_BufferData(NEW gfx::Canvas2DBuffer()),
-    m_CanvasDepth(0x7fff),
     m_RendererGL(nullptr),
     m_Color(Color(1.0f,1.0f,1.0f))
 {
@@ -56,7 +55,6 @@ Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent,const RectF& relativeViewport) 
 Canvas2Dnew::Canvas2Dnew(gfx::Renderer2D* parent, const RectI& absoluteViewport) :
     m_Renderer2D(parent),
     m_BufferData(NEW gfx::Canvas2DBuffer()),
-    m_CanvasDepth(0x7fff),
     m_RendererGL(nullptr),
     m_Color(Color(1.0f,1.0f,1.0f))
 {
@@ -87,7 +85,6 @@ void Canvas2Dnew::init()
 }
 
 /* GETTERS */
-
 gfx::Canvas2DBuffer* Canvas2Dnew::getCanvas2DBuffer() const
 {
     return m_BufferData;
@@ -102,20 +99,8 @@ const vec2& Canvas2Dnew::getSize() const
 {
     return m_Size;
 }
-uint16 Canvas2Dnew::getCanvasDepth() const
-{
-    return m_CanvasDepth;
-}
 
 /* SETTERS */
-void Canvas2Dnew::setCanvasDepth(uint16 depth)
-{
-    m_CanvasDepth = depth;
-}
-void Canvas2Dnew::setDefaultCanvasDepth()
-{
-    m_CanvasDepth = 0x7fff;
-}
 void Canvas2Dnew::setPosition(const vec2& position)
 {
     m_Position = position;

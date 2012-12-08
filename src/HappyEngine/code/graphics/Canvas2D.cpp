@@ -358,8 +358,8 @@ void Canvas2D::strokeRect(const vec2& pos, const vec2& size)
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
     
     m_BufferMesh->clear();
     m_BufferMesh->addVertex(pos);
@@ -384,8 +384,8 @@ void Canvas2D::fillRect(const vec2& pos, const vec2& size)
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
     
     m_BufferMesh->clear();
     m_BufferMesh->addVertex(pos);
@@ -568,8 +568,8 @@ void Canvas2D::drawImage(	const Texture2D* tex2D, const vec2& pos,
     applyBlend();
 
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
+    GL::heSetDepthRead(false);
+    GL::heSetDepthWrite(false);
 
     GL::heBindFbo(m_BufferData->fbufferID);
     GL::heBindVao(m_TextureQuad->getVertexArraysID());

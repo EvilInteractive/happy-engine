@@ -20,7 +20,7 @@
 #version 150 core
 
 in vec2 passTexCoord;
-in vec3 passColor;
+in vec4 passColor;
 
 out vec4 outColor;
 
@@ -29,5 +29,5 @@ uniform sampler2D diffuseMap;
 void main()
 {
 	float alpha = texture2D(diffuseMap, passTexCoord).r;	
-	outColor = vec4(passColor.xyz, alpha);
+	outColor = vec4(passColor.xyz, alpha * passColor.w);
 }

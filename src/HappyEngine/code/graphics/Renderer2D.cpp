@@ -113,10 +113,28 @@ void Renderer2D::removeWebView( WebView* webview )
 
 void Renderer2D::render()
 {
-    m_DefaultCanvas->clear();
-    m_Drawables.forEach([this](IDrawable2D* drawable)
+    he::PrimitiveList<std::pair<uint32,uint16> > orderList(m_DrawablesDepth.size());
+
+    m_DrawablesDepth.forEach([&orderList](std::pair<uint32,uint16> p)
     {
-        drawable->draw2D(m_DefaultCanvas);
+        orderList.add(p);
+    });
+
+    orderList.sort([](std::pair<uint32,uint16> p1, std::pair<uint32,uint16> p2) -> int
+    {
+        if (p1.second < p2.second)
+            return -1;
+        else if (p1.second > p2.second)
+            return 1;
+        else
+            return 0;
+    });
+
+    m_DefaultCanvas->clear();
+
+    orderList.forEach([this](std::pair<uint32,uint16> p)
+    {
+        m_Drawables[p.first]->draw2D(m_DefaultCanvas);
     });
 
     m_RenderTarget->prepareForRendering();
@@ -228,15 +246,20 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
 
-void Renderer2D::attachToRender(IDrawable2D* drawable)
+void Renderer2D::attachToRender(IDrawable2D* drawable, uint16 depth)
 {
     m_Drawables.add(drawable);
+    m_DrawablesDepth.add(std::pair<uint32,uint16>(m_Drawables.size() - 1, 0xffff - depth));
 }
 
 void Renderer2D::detachFromRender(IDrawable2D* drawable)
 {
     HE_IF_ASSERT(m_Drawables.contains(drawable), "drawable not found in draw list")
     {
+        size_t i(0);
+        m_Drawables.find(drawable, i);
+
+        m_DrawablesDepth.removeAt(i);
         m_Drawables.remove(drawable);
     }
 }

@@ -63,13 +63,7 @@ public:
     const vec2& getPosition() const;
     const vec2& getSize() const;
 
-    uint16 getCanvasDepth() const;
-
     /* SETTERS */
-    // set depth for the canvas in relation to the other canvas
-    void setCanvasDepth(uint16 depth);
-    void setDefaultCanvasDepth();
-
     // sets position in pixels on screen
     void setPosition(const vec2& position);
     void setSize(const vec2& size);
@@ -106,8 +100,6 @@ private:
     gfx::Canvas2DBuffer* m_BufferData;
 
     gfx::Canvas2DRendererGL* m_RendererGL;
-
-    uint16 m_CanvasDepth;
 
     vec2 m_Position;
     vec2 m_Size;

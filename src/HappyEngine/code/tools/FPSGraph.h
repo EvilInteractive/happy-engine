@@ -49,7 +49,7 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    FPSGraph(float interval = 0.25f, uint16 recordTime = 60);
+    FPSGraph(float interval = 0.5f, uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
@@ -101,6 +101,17 @@ private:
     uint8 m_ActiveSprite;
 
     float m_CurrentScale;
+
+    float m_CurrentCPU;
+
+    Color m_ColorWhite;
+    Color m_ColorWhiteAlpha;
+    Color m_ColorYellow;
+    Color m_ColorYellowAlpha;
+    Color m_ColorBlue;
+    Color m_ColorBlueAlpha;
+    Color m_ColorDarkGrey;
+    Color m_ColorGrey;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

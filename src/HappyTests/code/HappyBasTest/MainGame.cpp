@@ -254,8 +254,10 @@ void MainGame::load()
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
+
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
-    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph, 5);
+
     m_View->getPostProcessor()->setDebugRenderer(m_RenderPipeline->get2DRenderer());
 
 #ifdef ENABLE_WINDOW2
