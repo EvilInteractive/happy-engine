@@ -164,7 +164,7 @@ void MaterialGeneratorNode::draw2D( gfx::Canvas2D* const canvas, const mat33& tr
         transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height)
     {
         canvas->setFillColor(Color(0.7f, 0.5f, 0.3f));
-        canvas->fillRect(transformedPosition, size);
+        canvas->fillRect(transformedPosition - size / 2.0f, size);
     }
 }
 

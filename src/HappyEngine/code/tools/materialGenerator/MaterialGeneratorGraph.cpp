@@ -170,8 +170,9 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         } break;
         case State_Pan:
         {
-            //const vec2 diff((mouse->getPosition() - m_StartDragMousePos) / m_Scale);
-            //m_Offset = m_StartDragOffset + diff; 
+            const vec2 worldMouse(screenToWorldPos(mouse->getPosition()));
+            const vec2 diff(worldMouse - m_GrabWorldPos);
+            m_Offset -= diff; 
 
             if (mouse->isButtonReleased(io::MouseButton_Left) || mouse->isButtonReleased(io::MouseButton_Middle))
             {
@@ -192,7 +193,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         m_Scale = he::clamp(m_Scale, ZOOM_MIN, ZOOM_MAX);
         const vec2 wrongMouseWorldPos(screenToWorldPos(mousePos));
         const vec2 offset(wrongMouseWorldPos - mouseWorldPos);
-        m_Offset += offset;
+        m_Offset -= offset;
     }
 }
 
@@ -203,9 +204,9 @@ bool MaterialGeneratorGraph::isOpen() const
 
 void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
 {
-    const mat33 transform(mat33::createTranslation2D(m_Offset) * mat33::createScale2D(vec2(m_Scale, m_Scale)));
-    const vec2 transformedSize((transform * vec3(static_cast<float>(m_View->getViewport().width), static_cast<float>(m_View->getViewport().height), 0)).xy());
-    const RectF clipRect(m_Offset, transformedSize);
+    const mat33 transform(mat33::createScale2D(vec2(m_Scale, m_Scale)) * mat33::createTranslation2D(-m_Offset));
+    const vec2 transformedSize(static_cast<float>(m_View->getViewport().width) / m_Scale, static_cast<float>(m_View->getViewport().height) / m_Scale);
+    const RectF clipRect(0.0f, 0.0f, static_cast<float>(m_View->getViewport().width), static_cast<float>(m_View->getViewport().height));
     m_NodeList.forEach([canvas, &transform, &clipRect](MaterialGeneratorNode* const node)
     {
         node->draw2D(canvas, transform, clipRect);
@@ -213,7 +214,9 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
 
     // DEBUG
     m_DebugText.clear();
-    m_DebugText.addTextExt("Zoom: %.2f\nOffset: %.2f, %.2f", m_Scale, m_Offset.x, m_Offset.y);
+    const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse()->getPosition()));
+    m_DebugText.addTextExt("&5F5Zoom: &AFA%.2f\n&5F5Region: &AFA%.2f, %.2f, %.2f, %.2f\n&5F5Mouse: &AFA%.2f, %.2f", 
+        m_Scale, m_Offset.x, m_Offset.y, transformedSize.x, transformedSize.y, mouseWorld.x, mouseWorld.y);
     gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     cvs->fillText(m_DebugText, vec2(12, 12));
