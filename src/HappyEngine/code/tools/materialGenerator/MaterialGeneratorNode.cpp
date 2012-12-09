@@ -22,6 +22,10 @@
 #include "MaterialGeneratorNode.h"
 #include "NodeGraphError.h"
 #include "Canvas2D.h"
+#include "Sprite.h"
+#include "Gui.h"
+#include "Canvas2Dnew.h"
+#include "Renderer2D.h"
 
 namespace he {
 namespace tools {
@@ -30,11 +34,44 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
     m_SelectedOverload(0), m_Overloads(1), m_Position(pos), m_Size(128, 96),
     m_IsSelected(false)
 {
-}
+    gui::SpriteCreator* cr(GUI->Sprites);
 
+    gui::Sprite* sp1(cr->createSprite(vec2(100,100)));
+
+    cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
+    
+    cr->setColor(Color(0.6f,0.6f,0.6f));
+    cr->fill();
+
+    cr->setLineWidth(4.0f);
+    cr->setColor(Color(0.2f,0.2f,0.2f));
+    cr->stroke();
+
+    cr->renderSpriteAsync();
+
+    gui::Sprite* sp2(cr->createSprite(vec2(100,100)));
+
+    cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
+    
+    cr->setColor(Color(0.8f,0.8f,0.8f));
+    cr->fill();
+
+    cr->setLineWidth(4.0f);
+    cr->setColor(Color(0.2f,0.2f,0.2f));
+    cr->stroke();
+
+    cr->renderSpriteAsync();
+
+    m_Sprites.add(sp1);
+    m_Sprites.add(sp2);
+}
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
 {
+    m_Sprites.forEach([](gui::Sprite* sp)
+    {
+        sp->release();
+    });
 }
 
 bool MaterialGeneratorNode::canConnect( const MaterialGeneratorNodeOutput& fromOutput, 
@@ -169,8 +206,10 @@ bool MaterialGeneratorNode::pick( const vec2& worldPos ) const
     return result;
 }
 
-void MaterialGeneratorNode::draw2D( gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
+void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
 {
+    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
+
     const vec2 transformedPosition(transform * m_Position);
     const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
 
@@ -178,10 +217,9 @@ void MaterialGeneratorNode::draw2D( gfx::Canvas2D* const canvas, const mat33& tr
         transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height)
     {
         if (m_IsSelected)
-            canvas->setFillColor(Color(0.9f, 0.8f, 0.6f));
+            cvs->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
         else
-            canvas->setFillColor(Color(0.7f, 0.5f, 0.3f));
-        canvas->fillRect(transformedPosition - size / 2.0f, size);
+            cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
     }
 }
 

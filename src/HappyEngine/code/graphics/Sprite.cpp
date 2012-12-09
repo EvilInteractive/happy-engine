@@ -34,7 +34,8 @@ Sprite::Sprite() :
     m_Render(nullptr),
     m_Rendered(false),
     m_Size(vec2(0,0)),
-    m_Center(RectF(0,0,0,0))
+    m_Center(RectF(0,0,0,0)),
+    m_Flags(OPTIONS_NONE)
 {
     m_ID = s_SpriteCount;
     ++s_SpriteCount;
@@ -46,9 +47,10 @@ Sprite::~Sprite()
 }
 
 /* GENERAL */
-void Sprite::init(const vec2& size)
+void Sprite::init(const vec2& size, char flags)
 {
     m_Size = size;
+    m_Flags = flags;
 
     // create renderbuffer
     ResourceFactory<gfx::Texture2D>* factory(ResourceFactory<gfx::Texture2D>::getInstance());
@@ -119,6 +121,10 @@ vec2 Sprite::getSize() const
 RectF Sprite::getCenter() const
 {
     return m_Center;
+}
+char Sprite::getFlags() const
+{
+    return m_Flags;
 }
 
 /* SETTERS */

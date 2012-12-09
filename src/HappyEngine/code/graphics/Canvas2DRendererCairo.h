@@ -106,14 +106,16 @@ private:
                     Texture2D* tex2D,
                     unsigned char* rBuff,
                     _cairo_surface* surf,
-                    _cairo* cp) :
+                    _cairo* cp,
+                    bool keep) :
                         id(id),
                         size(size),
                         texture2D(tex2D),
                         renderBuffer(rBuff),
                         cairoSurface(surf),
                         cairoPaint(cp),
-                        readyState(0x00)
+                        readyState(0x00),
+                        keep(keep)
         {}
 
         uint16 id;
@@ -124,6 +126,7 @@ private:
         _cairo_surface* cairoSurface;
         _cairo* cairoPaint;
         char readyState;
+        bool keep;
     };
 
     void blit();

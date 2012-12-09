@@ -29,6 +29,9 @@ namespace he {
 namespace gfx {
     class Canvas2D;
 }
+namespace gui {
+    class Sprite;
+}
 namespace tools {
 
 typedef NodeGraphNode<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> MaterialGeneratorNodeBase;
@@ -87,6 +90,8 @@ private:
 
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;
+
+    he::PrimitiveList<gui::Sprite*> m_Sprites;
     
     //Disable default copy constructor and default assignment operator
     MaterialGeneratorNode(const MaterialGeneratorNode&);

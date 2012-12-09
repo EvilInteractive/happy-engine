@@ -23,13 +23,10 @@
 #pragma once
 
 #include "Canvas2DRendererCairo.h"
+#include "Sprite.h"
 
 namespace he {
-namespace gfx {
-    class Canvas2DRendererCairo;
-}
 namespace gui {
-    class Sprite;
 
 class SpriteCreator
 {
@@ -43,7 +40,7 @@ public:
     void tick(float dTime);
     void glThreadInvoke();
 
-    Sprite* createSprite(const vec2& size);
+    Sprite* createSprite(const vec2& size, char flags = Sprite::OPTIONS_NONE);
     // renders drawcalls to active sprite
     void renderSpriteAsync();
 

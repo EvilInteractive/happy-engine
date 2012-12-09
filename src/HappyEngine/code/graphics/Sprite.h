@@ -35,12 +35,19 @@ class Sprite : public Resource<Sprite>
 {
 public:
 
+    enum OPTIONS
+    {
+        OPTIONS_NONE =      0x00,
+        UNIFORM_SCALE =     0x01,
+        DYNAMIC_DRAW =      0x02
+    };
+
     /* CONSTRUCTOR - DESTRUCTOR */
     Sprite();
     virtual ~Sprite();
 
     /* GENERAL */
-    void init(const vec2& size);
+    void init(const vec2& size, char flags = OPTIONS_NONE);
     void invalidate(const vec2& newSize = vec2(0.f,0.f));
 
     /* GETTERS */
@@ -48,6 +55,7 @@ public:
     uint16 getID() const;
     vec2 getSize() const;
     RectF getCenter() const;
+    char getFlags() const;
 
     /* SETTERS */
     void setCenter(const RectF& center);
@@ -67,6 +75,8 @@ private:
     uint16 m_ID;
 
     RectF m_Center;
+
+    char m_Flags;
 
     /* DEFAULT COPY & ASSIGNMENT */ 
     Sprite(const Sprite&);
