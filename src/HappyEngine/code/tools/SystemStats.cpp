@@ -65,6 +65,10 @@ void SystemStats::init()
 {
     SystemStats::sdmInit();
 }
+void SystemStats::done()
+{
+    SystemStats::sdmDestroy();
+}
 
 /* GETTERS */
 uint32 SystemStats::getTotalVirtualMemory() const

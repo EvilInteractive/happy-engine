@@ -89,6 +89,7 @@ public:
     void stroke();
     void fill();
     void clip();
+    void resetClip();
 
 private:
 
@@ -96,7 +97,8 @@ private:
     enum SpriteReadyState
     {
         SpriteReadyForRender =    0x01,
-        SpriteReadyForBlit =      0x02
+        SpriteReadyForBlit =      0x02,
+        SpriteDynamic =           0x04
     };
 
     struct SpriteData
@@ -106,17 +108,46 @@ private:
                     Texture2D* tex2D,
                     unsigned char* rBuff,
                     _cairo_surface* surf,
-                    _cairo* cp,
-                    bool keep) :
+                    _cairo* cp) :
                         id(id),
                         size(size),
                         texture2D(tex2D),
                         renderBuffer(rBuff),
                         cairoSurface(surf),
                         cairoPaint(cp),
-                        readyState(0x00),
-                        keep(keep)
+                        readyState(0x00)
         {}
+
+        
+        SpriteData(const SpriteData& sd)
+        {
+            this->id = sd.id;
+            this->size = sd.size;
+            this->drawCalls = sd.drawCalls;
+            this->texture2D = sd.texture2D;
+            this->renderBuffer = sd.renderBuffer;
+            this->cairoSurface = sd.cairoSurface;
+            this->cairoPaint = sd.cairoPaint;
+            this->readyState = sd.readyState;
+        }
+        SpriteData& operator=(const SpriteData& sd)
+        {
+            this->id = sd.id;
+            this->size = sd.size;
+            this->drawCalls = sd.drawCalls;
+            this->texture2D = sd.texture2D;
+            this->renderBuffer = sd.renderBuffer;
+            this->cairoSurface = sd.cairoSurface;
+            this->cairoPaint = sd.cairoPaint;
+            this->readyState = sd.readyState;
+
+            return *this;
+        }
+
+        bool operator==(const SpriteData& sd)
+        {
+            return (this->id == sd.id);
+        }
 
         uint16 id;
         vec2 size;
@@ -126,13 +157,15 @@ private:
         _cairo_surface* cairoSurface;
         _cairo* cairoPaint;
         char readyState;
-        bool keep;
     };
 
     void blit();
     float normalizeAngle(float a);
     void handleDrawCalls();
     void transformY();
+
+    void save();
+    void restore();
 
     /* MEMBERS */
     std::queue<SpriteData> m_SpriteList;

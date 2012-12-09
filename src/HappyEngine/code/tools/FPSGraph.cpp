@@ -68,14 +68,16 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
 
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
-    m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,82));
-    m_Sprites[1] = GUI->Sprites->createSprite(vec2(110,82));
+    m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,82));//, gui::Sprite::DYNAMIC_DRAW);
+    m_Sprites[1] = GUI->Sprites->createSprite(vec2(110,82));//, gui::Sprite::DYNAMIC_DRAW);
 
     SystemStats::init();
 }
 
 FPSGraph::~FPSGraph()
 {
+    SystemStats::done();
+
     m_Font->release();
 
     m_Sprites[0]->release();
