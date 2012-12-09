@@ -56,6 +56,8 @@ public:
     void setPosition(const vec2& position) { m_Position = position; }
     const vec2& getPosition() const { return m_Position; }
 
+    const Guid& getGuid() const { return m_Guid; }
+
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
 protected:
@@ -87,6 +89,7 @@ private:
     vec2 m_Position;
     vec2 m_Size;
     bool m_IsSelected;
+    Guid m_Guid;
 
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;

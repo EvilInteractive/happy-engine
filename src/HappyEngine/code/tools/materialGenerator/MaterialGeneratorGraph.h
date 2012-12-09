@@ -26,6 +26,9 @@
 #include "IDrawable2D.h"
 #include "MaterialGeneratorNodeInOut.h"
 #include "NodeGraph.h"
+#include "CommandStack.h"
+
+#include "MaterialGeneratorGraphCommands.h"
 
 namespace he {
 namespace gfx {
@@ -41,6 +44,9 @@ class MaterialGeneratorNode;
 
 class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
 {
+    friend class MaterialGeneratorGraphMoveCommand;
+    friend class MaterialGeneratorGraphEditSelectionCommand;
+    friend class MaterialGeneratorGraphDeselectAllCommand;
     enum State
     {
         State_Idle,
@@ -59,14 +65,13 @@ public:
 
     void open();
     void close();
-
+    
     virtual void tick(float dTime);
     virtual void draw2D(gfx::Canvas2D* canvas);
 
     bool isOpen() const;
 
 private:
-    void deselectAll();
     bool doNodeSelect(const vec2& mousePos, const bool keepSelection, const bool removeSelection);
 
     vec2 screenToWorldPos(const vec2& screenPos) const;
@@ -93,6 +98,9 @@ private:
     float m_Scale;
     bool m_IsActive;
 
+    CommandStack m_CommandStack;
+    MaterialGeneratorGraphMoveCommand m_MoveCommand;
+    MaterialGeneratorGraphEditSelectionCommand m_EditSelectionCommand;
 
     //Disable default copy constructor and default assignment operator
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

@@ -32,7 +32,7 @@ namespace tools {
 
 MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos): 
     m_SelectedOverload(0), m_Overloads(1), m_Position(pos), m_Size(128, 96),
-    m_IsSelected(false)
+    m_IsSelected(false), m_Guid(Guid::generateGuid())
 {
     gui::SpriteCreator* cr(GUI->Sprites);
 

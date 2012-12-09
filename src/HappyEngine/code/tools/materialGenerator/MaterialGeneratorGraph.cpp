@@ -42,6 +42,8 @@
 #include "Canvas2Dnew.h"
 #include "Font.h"
 
+#include "Command.h"
+
 #define ZOOM_STEP 0.1f
 #define ZOOM_MIN 0.1f
 #define ZOOM_MAX 10.0f
@@ -49,6 +51,7 @@
 namespace he {
 namespace tools {
 
+#pragma warning(disable:4355) // use of this in init list
 MaterialGeneratorGraph::MaterialGeneratorGraph()
     : m_Generator(NEW ct::ShaderGenerator)
     , m_Renderer(nullptr)
@@ -59,6 +62,8 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_Scale(1.0f)
     , m_GrabWorldPos(0.0f, 0.0f)
     , m_State(State_Idle)
+    , m_MoveCommand(this)
+    , m_EditSelectionCommand(this)
 {
     MaterialGeneratorNodeAdd* add(NEW MaterialGeneratorNodeAdd(this, vec2(12, 12)));
     m_NodeList.add(add);
@@ -73,6 +78,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     m_DebugText.setFont(font);
     font->release();
 }
+#pragma warning(default:4355) // use of this in init list
 
 
 MaterialGeneratorGraph::~MaterialGeneratorGraph()
@@ -172,6 +178,13 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         {
             m_GrabWorldPos = screenToWorldPos(mouse->getPosition());
             const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
+            if ((keyboard->isKeyDown(io::Key_Lctrl) || keyboard->isKeyDown(io::Key_Rctrl)) && keyboard->isKeyReleased(io::Key_Z))
+            {
+                if (keyboard->isKeyDown(io::Key_Lshift) || keyboard->isKeyDown(io::Key_Rshift))
+                    m_CommandStack.redo();
+                else
+                    m_CommandStack.undo();
+            }
             if (leftDown)
             {
                 if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection) && 
@@ -192,7 +205,9 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             const vec2 diff(mousePos - grabScreenPos);
             if (mouse->isButtonReleased(io::MouseButton_Left))
             {
-                deselectAll();
+                m_EditSelectionCommand.beginTransaction();
+                m_EditSelectionCommand.deselectAll();
+                m_EditSelectionCommand.endTransaction();
                 m_State = State_Idle;
             }
             else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
@@ -220,13 +235,16 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             {
                 if (keepSelection == false && removeSelection == false)
                 {
-                    deselectAll();
+                    m_EditSelectionCommand.beginTransaction();
+                    m_EditSelectionCommand.deselectAll();
+                    m_EditSelectionCommand.endTransaction();
                 }
                 doNodeSelect(mouse->getPosition(), keepSelection, removeSelection);
                 m_State = State_Idle;
             }
             else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
             {
+                m_MoveCommand.beginTransaction();
                 m_State = State_MoveNode;
             }
         } break;
@@ -234,13 +252,10 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         {
             const vec2 mouseMove(mouse->getMove());
             const vec2 worldMove(mouseMove / m_Scale);
-            m_SelectedNodeList.forEach([&worldMove](MaterialGeneratorNode* const node)
-            {
-                node->setPosition(node->getPosition() + worldMove);
-            });
-
+            m_MoveCommand.doMove(worldMove);
             if (mouse->isButtonReleased(io::MouseButton_Left))
             {
+                m_MoveCommand.endTransaction();
                 m_State = State_Idle;
             }
         } break;
@@ -272,27 +287,9 @@ bool MaterialGeneratorGraph::doNodeSelect(const vec2& mousePos, const bool keepS
     }, pickedNode))
     {
         MaterialGeneratorNode* const selectedNode(m_NodeList[pickedNode]);
-        bool isSelected(selectedNode->isSelected());
-        if (removeSelection)
-        {
-            if (isSelected)
-            {
-                m_SelectedNodeList.remove(selectedNode);
-                selectedNode->setSelected(false);
-            }
-        }
-        else
-        {
-            if (keepSelection == false && isSelected == false)
-            {
-                deselectAll();
-            }
-            if (isSelected == false)
-            {
-                selectedNode->setSelected(true);
-                m_SelectedNodeList.add(selectedNode);
-            }
-        }
+        m_EditSelectionCommand.beginTransaction();
+        m_EditSelectionCommand.doEditSelection(keepSelection, removeSelection, selectedNode);
+        m_EditSelectionCommand.endTransaction();
         result = true;
     }
     return result;
@@ -332,15 +329,6 @@ he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const
 he::vec2 MaterialGeneratorGraph::worldToScreenPos( const vec2& worldPos ) const
 {
     return (worldPos - m_Offset) * m_Scale;
-}
-
-void MaterialGeneratorGraph::deselectAll()
-{
-    m_SelectedNodeList.forEach([](MaterialGeneratorNode* const node)
-    {
-        node->setSelected(false);
-    });
-    m_SelectedNodeList.clear();
 }
 
 } } //end namespace

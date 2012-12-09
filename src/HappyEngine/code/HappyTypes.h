@@ -109,7 +109,7 @@ struct ObjectHandle
     const static ObjectHandle unassigned;
 };
 
-__declspec(align(16)) struct Guid
+struct Guid
 {
     Guid();
     ~Guid() {}
