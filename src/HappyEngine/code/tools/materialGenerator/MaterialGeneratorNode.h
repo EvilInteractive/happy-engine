@@ -40,6 +40,51 @@ typedef NodeGraphConnection<MaterialGeneratorNodeInput, MaterialGeneratorNodeOut
 
 class MaterialGeneratorNode : public MaterialGeneratorNodeBase
 {
+protected:
+    struct ConnecterDesc
+    {
+        ConnecterDesc(const std::string& name, const Color& color)
+            : m_Name(name)
+            , m_Color(color) {}
+        std::string m_Name;
+        Color m_Color;
+    };
+private:
+    class Connecter
+    {
+    public:
+        Connecter(const bool isInput, const uint8 index, const ConnecterDesc& desc);
+        ~Connecter();
+
+        void setPosition(const vec2& position) { m_Position = position; }
+        const vec2& getPosition() const { return m_Position; }
+
+        const vec2& getSize() const { return m_Size; }
+        bool isInput() const { return m_IsInput; }
+        uint8 getIndex() const { return m_Index; }
+
+        bool pick(const vec2& worldPos) const;
+        bool doHoover(const vec2& worldPos, const bool undoHoover);
+        void setSelected(const bool isSelected) { m_IsSelected = isSelected; }
+        void setHoover(const bool isHoovered) { m_IsHooverd = isHoovered; }
+
+        void renderSprites();
+        void draw2D(gfx::Canvas2D* const canvas, const mat33& transform) const;
+
+    private:
+        gui::Sprite* m_Sprites[3];
+        vec2 m_Position;
+        const vec2 m_Size;
+        const ConnecterDesc m_Desc;
+        const bool m_IsInput;
+        const uint8 m_Index;
+        bool m_IsSelected;
+        bool m_IsHooverd;
+
+        //Disable default copy constructor and default assignment operator
+        Connecter(const Connecter&);
+        Connecter& operator=(const Connecter&);
+    };
 public:
     MaterialGeneratorNode(const vec2& pos);
     virtual ~MaterialGeneratorNode();
@@ -50,10 +95,11 @@ public:
                             const MaterialGeneratorNodeInput& toInput, MaterialGeneratorError& error) const;
 
     bool pick(const vec2& worldPos) const;
+    bool doHoover(const vec2& worldPos, const bool undoHoover);
     void setSelected(bool selected) { m_IsSelected = selected; }
     bool isSelected() const { return m_IsSelected; }
 
-    void setPosition(const vec2& position) { m_Position = position; }
+    void setPosition(const vec2& position);
     const vec2& getPosition() const { return m_Position; }
 
     const Guid& getGuid() const { return m_Guid; }
@@ -61,7 +107,8 @@ public:
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
 protected:
-    void addOverload(uint8 outputCount, uint8 inputCount, ...);
+    void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's
+    void addConnecters(uint8 outputCount, uint8 inputCount, ...); // Takes ConnecterDesc's
 private:
     struct Overload
     {
@@ -89,11 +136,15 @@ private:
     vec2 m_Position;
     vec2 m_Size;
     bool m_IsSelected;
+    bool m_IsHoovering;
     Guid m_Guid;
 
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;
 
+    void updateConnecterPositions();
+
+    he::PrimitiveList<Connecter*> m_Connecters;
     he::PrimitiveList<gui::Sprite*> m_Sprites;
     
     //Disable default copy constructor and default assignment operator

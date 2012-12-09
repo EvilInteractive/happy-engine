@@ -46,7 +46,7 @@
 
 #define ZOOM_STEP 0.1f
 #define ZOOM_MIN 0.1f
-#define ZOOM_MAX 10.0f
+#define ZOOM_MAX 3.0f
 
 namespace he {
 namespace tools {
@@ -176,7 +176,13 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
     {
         case State_Idle:
         {
-            m_GrabWorldPos = screenToWorldPos(mouse->getPosition());
+            const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+            bool foundHoover(false);
+            m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
+            {
+                foundHoover |= node->doHoover(mouseWorld, foundHoover);
+            });
+            m_GrabWorldPos = mouseWorld;
             const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
             if ((keyboard->isKeyDown(io::Key_Lctrl) || keyboard->isKeyDown(io::Key_Rctrl)) && keyboard->isKeyReleased(io::Key_Z))
             {

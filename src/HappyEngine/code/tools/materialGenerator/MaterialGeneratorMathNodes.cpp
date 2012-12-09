@@ -34,6 +34,7 @@ MaterialGeneratorNodeAbs::MaterialGeneratorNodeAbs(MaterialGeneratorGraph* const
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
+    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
 }
 
 bool MaterialGeneratorNodeAbs::evaluate( MaterialGeneratorError& error )
@@ -62,6 +63,7 @@ MaterialGeneratorNodeAdd::MaterialGeneratorNodeAdd(MaterialGeneratorGraph* const
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
+    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
 }
 
 bool MaterialGeneratorNodeAdd::evaluate( MaterialGeneratorError& error )

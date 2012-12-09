@@ -30,9 +30,99 @@
 namespace he {
 namespace tools {
 
+//////////////////////////////////////////////////////////////////////////
+// MaterialGeneratorNode::Connecter
+//////////////////////////////////////////////////////////////////////////
+MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
+    m_IsInput(isInput), m_Index(index), m_Desc(desc), 
+    m_IsSelected(false), m_IsHooverd(false), m_Size(16, 12)
+{
+    gui::SpriteCreator* const cr(GUI->Sprites);
+    m_Sprites[0] = cr->createSprite(m_Size);
+    m_Sprites[1] = cr->createSprite(m_Size);
+    m_Sprites[2] = cr->createSprite(m_Size);
+    renderSprites();
+}
+MaterialGeneratorNode::Connecter::~Connecter()
+{
+    m_Sprites[0]->release();
+    m_Sprites[1]->release();
+}
+void MaterialGeneratorNode::Connecter::renderSprites()
+{
+    gui::SpriteCreator* const cr(GUI->Sprites);
+
+    // Normal
+    cr->setActiveSprite(m_Sprites[0]);
+    cr->roundedRectangle(vec2(2, 2), m_Size - vec2(4, 4), 2.0f);
+    cr->setColor(Color(0.3f,0.2f,0.2f));
+    cr->fill();
+    cr->renderSpriteAsync();
+
+    // Selected
+    cr->setActiveSprite(m_Sprites[1]);
+    cr->roundedRectangle(vec2(0, 0), m_Size, 2.0f);
+    cr->setColor(Color(0.8f,0.8f,0.9f));
+    cr->fill();
+    cr->roundedRectangle(vec2(2, 2), m_Size - vec2(4, 4), 2.0f);
+    cr->setColor(Color(0.3f,0.2f,0.2f));
+    cr->fill();
+    cr->renderSpriteAsync();
+
+    // Hoover
+    cr->setActiveSprite(m_Sprites[2]);
+    cr->roundedRectangle(vec2(0, 0), m_Size, 2.0f);
+    cr->setColor(Color(0.5f,0.5f,0.6f));
+    cr->fill();
+    cr->roundedRectangle(vec2(2, 2), m_Size - vec2(4, 4), 2.0f);
+    cr->setColor(Color(0.3f,0.2f,0.2f));
+    cr->fill();
+    cr->renderSpriteAsync();
+}
+
+void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, const mat33& transform ) const
+{
+    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
+
+    const vec2 transformedPosition(transform * m_Position);
+    const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
+
+    if (m_IsSelected)
+        cvs->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
+    else if (m_IsHooverd)
+        cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
+    else
+        cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+}
+
+bool MaterialGeneratorNode::Connecter::pick( const vec2& worldPos ) const
+{
+    bool result(false);
+    const vec2 halfSize(m_Size / 2.0f);
+    if (worldPos.x > m_Position.x - halfSize.x && worldPos.y > m_Position.y - halfSize.y &&
+        worldPos.x < m_Position.x + halfSize.x && worldPos.y < m_Position.y + halfSize.y)
+    {
+        result = true;
+    }
+    return result;
+}
+
+bool MaterialGeneratorNode::Connecter::doHoover( const vec2& worldPos, const bool undoHoover )
+{
+    m_IsHooverd = false;
+    if (undoHoover == false)
+    {
+        m_IsHooverd = pick(worldPos);
+    }
+    return m_IsHooverd;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// MaterialGeneratorNode
+//////////////////////////////////////////////////////////////////////////
 MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos): 
     m_SelectedOverload(0), m_Overloads(1), m_Position(pos), m_Size(128, 96),
-    m_IsSelected(false), m_Guid(Guid::generateGuid())
+    m_IsSelected(false), m_Guid(Guid::generateGuid()), m_IsHoovering(false)
 {
     gui::SpriteCreator* cr(GUI->Sprites);
 
@@ -62,8 +152,22 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
 
     cr->renderSpriteAsync();
 
+    gui::Sprite* sp3(cr->createSprite(vec2(100,100)));
+
+    cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
+
+    cr->setColor(Color(0.6f,0.6f,0.6f));
+    cr->fill();
+
+    cr->setLineWidth(4.0f);
+    cr->setColor(Color(0.4f,0.4f,0.4f));
+    cr->stroke();
+
+    cr->renderSpriteAsync();
+
     m_Sprites.add(sp1);
     m_Sprites.add(sp2);
+    m_Sprites.add(sp3);
 }
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
@@ -79,7 +183,7 @@ bool MaterialGeneratorNode::canConnect( const MaterialGeneratorNodeOutput& fromO
 {
     bool result(true);
 
-    // Overloads are impossible to type check, so they are checked @compile time
+    // Overloads are impossible to type check, so they are checked @shader compile time
     if (fromOutput.getType() != toInput.getType() && m_Overloads.size() == 1) // types don't match and we have no overloads
     {
         error.setMessage("Type %s is not compatible with %s", 
@@ -129,6 +233,30 @@ void MaterialGeneratorNode::addOverload( uint8 outputCount, uint8 inputCount, ..
         activateOverload(0);
     }
 }
+
+void MaterialGeneratorNode::addConnecters( uint8 outputCount, uint8 inputCount, ... )
+{
+    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount, 
+        "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d", 
+        outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
+    HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
+
+    va_list argList;
+    va_start(argList, inputCount);
+    for (uint8 i(0); i < outputCount; ++i)
+    {
+        const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
+        m_Connecters.add(NEW Connecter(false, i, desc));
+    }
+    for (uint8 i(0); i < inputCount; ++i)
+    {
+        const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
+        m_Connecters.add(NEW Connecter(true, i, desc));
+    }
+    va_end(argList);
+    updateConnecterPositions();
+}
+
 
 bool MaterialGeneratorNode::evaluate( MaterialGeneratorError& error )
 {
@@ -205,6 +333,49 @@ bool MaterialGeneratorNode::pick( const vec2& worldPos ) const
     }
     return result;
 }
+bool MaterialGeneratorNode::doHoover( const vec2& worldPos, const bool undoHoover )
+{
+    m_IsHoovering = false;
+    bool result(false);
+    m_Connecters.rForEach([&worldPos, &result, undoHoover](Connecter* const connecter)
+    {
+        result |= connecter->doHoover(worldPos, result || undoHoover);
+    });
+    if (result == false && undoHoover == false)
+    {
+        result = pick(worldPos);
+        m_IsHoovering = result;
+    }
+    return result;
+}
+
+
+void MaterialGeneratorNode::setPosition( const vec2& position )
+{
+    m_Position = position;
+    updateConnecterPositions();
+}
+
+void MaterialGeneratorNode::updateConnecterPositions()
+{
+    m_Connecters.forEach([this](Connecter* const connecter)
+    {
+        vec2 pos(m_Position);
+        uint8 count(0);
+        if (connecter->isInput())
+        {
+            pos.x += m_Size.x / 2.0f;
+            count = getInputCount();
+        }
+        else
+        {
+            pos.x -= m_Size.x / 2.0f;
+            count = getOutputCount();
+        }
+        pos.y += (m_Size.y / (count + 1)) * (connecter->getIndex() + 1) - m_Size.y / 2.0f;
+        connecter->setPosition(pos);
+    });
+}
 
 void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
 {
@@ -218,8 +389,14 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
     {
         if (m_IsSelected)
             cvs->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
+        else if (m_IsHoovering)
+            cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
         else
             cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+        m_Connecters.forEach([canvas, &transform](Connecter* connecter)
+        {
+            connecter->draw2D(canvas, transform);
+        });
     }
 }
 
