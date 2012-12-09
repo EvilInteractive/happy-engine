@@ -44,13 +44,27 @@ void MainGame::init()
 void MainGame::load()
 {
     //listUnitTest();
-    nodeGraphUnitTest();
+    //nodeGraphUnitTest();
+    guidUnitTest();
     HAPPYENGINE->quit();
 }
 
 void MainGame::tick( float dTime )
 {
     he::ge::Game::tick(dTime);
+}
+
+void MainGame::guidUnitTest()
+{
+    for (size_t i(0); i < 1000; ++i)
+    {
+        he::Guid g(he::Guid::generateGuid());
+        HE_INFO("Guid: %s", g.toString().c_str());
+        he::Guid g2(g.toString().c_str());
+        HE_INFO("Guid2: %s", g2.toString().c_str());
+        HE_ASSERT(g2 == g, "g2 != g! %s != %s", g.toString().c_str(), g2.toString().c_str());
+        HE_ASSERT(g == g2, "g != g2! %s != %s", g2.toString().c_str(), g.toString().c_str());
+    }
 }
 
 void MainGame::nodeGraphUnitTest()
