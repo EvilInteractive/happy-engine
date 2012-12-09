@@ -109,6 +109,33 @@ struct ObjectHandle
     const static ObjectHandle unassigned;
 };
 
+__declspec(align(16)) struct Guid
+{
+    Guid();
+    ~Guid() {}
+    explicit Guid(const char* const guid);
+    Guid(const Guid& other);
+    Guid& operator=(const Guid& other); // 921E39A0-F8A8-4131-BB74-31968CF5A9E6
+
+    std::string toString() const;
+
+    static Guid generateGuid();
+
+    bool operator==(const Guid& other) const;
+    bool operator!=(const Guid& other) const;
+
+    uint32 m_Data1;
+    // -
+    uint16 m_Data2;
+    // -
+    uint16 m_Data3;
+    // -
+    uint16 m_Data4;
+    // -
+    uint16 m_Data5;
+    uint32 m_Data6;
+};
+
 } //end namespace
 
 

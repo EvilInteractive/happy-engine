@@ -55,7 +55,7 @@ include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/PhysX/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
 
-add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX )
+add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX -D_SCL_SECURE_NO_WARNINGS )
 if (${BITNESS} EQUAL 64)
 	add_definitions(-DARCH_64)
 else()

@@ -39,6 +39,7 @@ public:
 private:
     void nodeGraphUnitTest();
     void listUnitTest();
+    void guidUnitTest();
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
