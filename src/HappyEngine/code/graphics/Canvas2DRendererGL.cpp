@@ -336,6 +336,13 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
                                     const vec2& size)
 {
     HE_ASSERT(m_CanvasBuffer->glContext == GL::s_CurrentContext, "Access Violation: wrong context is bound!");
+    
+    if (sprite->getFlags() & gui::Sprite::UNIFORM_SCALE)
+    {
+        drawImage(sprite->getRenderTexture(), pos, size);
+
+        return;
+    }
 
     vec2 s(sprite->getSize());
     RectF c(sprite->getCenter());

@@ -21,8 +21,6 @@
 #include "HappyPCH.h" 
 
 #include "SpriteCreator.h"
-#include "Canvas2DRendererCairo.h"
-#include "Sprite.h"
 
 #define FACTORY ResourceFactory<gui::Sprite>::getInstance()
 
@@ -49,12 +47,12 @@ void SpriteCreator::glThreadInvoke()
     m_Renderer->glThreadInvoke();
 }
 
-Sprite* SpriteCreator::createSprite(const vec2& size)
+Sprite* SpriteCreator::createSprite(const vec2& size, char flags)
 {
     ObjectHandle handle(FACTORY->create());
     Sprite* sp(FACTORY->get(handle));
 
-    sp->init(size);
+    sp->init(size, flags);
     m_Renderer->addNewSprite(sp);
 
     return sp;
