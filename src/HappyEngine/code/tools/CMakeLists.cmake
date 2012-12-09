@@ -11,6 +11,7 @@ set (CODE_TOOL_NO_FILTER
 set (CODE_TOOL_UNDO_REDO
         Command.cpp                  Command.h
         CommandStack.cpp             CommandStack.h
+        CommandTransaction.cpp       CommandTransaction.h
 )
         
 set (CODE_TOOL_CONSOLE_FILTER

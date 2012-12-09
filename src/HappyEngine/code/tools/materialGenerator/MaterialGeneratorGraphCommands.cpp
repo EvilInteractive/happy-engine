@@ -40,7 +40,7 @@ void MaterialGeneratorGraphMoveCommand::operator()( const CommandType type )
     });
 }
 
-void MaterialGeneratorGraphMoveCommand::beginTransaction()
+void MaterialGeneratorGraphMoveCommand::beginCommand()
 {
     m_Move.x = 0.0f;
     m_Move.y = 0.0f;
@@ -55,7 +55,7 @@ void MaterialGeneratorGraphMoveCommand::doMove( const vec2& move )
     m_Move += move;
 }
 
-void MaterialGeneratorGraphMoveCommand::endTransaction()
+void MaterialGeneratorGraphMoveCommand::endCommand()
 {
     m_Parent->m_CommandStack.pushCommand(Command(*this));
 }
@@ -119,13 +119,13 @@ void MaterialGeneratorGraphEditSelectionCommand::doEditSelection( const bool kee
     });
 }
 
-void MaterialGeneratorGraphEditSelectionCommand::beginTransaction()
+void MaterialGeneratorGraphEditSelectionCommand::beginCommand()
 {
     m_SelectedNodes.clear();
     m_DeselectedNodes.clear();
 }
 
-void MaterialGeneratorGraphEditSelectionCommand::endTransaction()
+void MaterialGeneratorGraphEditSelectionCommand::endCommand()
 {
     m_Parent->m_CommandStack.pushCommand(Command(*this));
 }

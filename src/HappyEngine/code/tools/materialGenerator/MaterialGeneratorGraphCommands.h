@@ -41,8 +41,8 @@ public:
 
     void operator()(const CommandType type);
 
-    void beginTransaction();
-    void endTransaction();
+    void beginCommand();
+    void endCommand();
     void doMove(const vec2& move);
 
 private:
@@ -77,8 +77,8 @@ public:
 
     void operator()(const CommandType type);
 
-    void beginTransaction();
-    void endTransaction();
+    void beginCommand();
+    void endCommand();
     void doEditSelection(const bool keepSelection, const bool removeSelection, const he::PrimitiveList<MaterialGeneratorNode*>& nodes);
     void doEditSelection(const bool keepSelection, const bool removeSelection, MaterialGeneratorNode* const node);
     void deselectAll();

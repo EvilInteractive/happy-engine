@@ -187,12 +187,15 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             }
             if (leftDown)
             {
-                if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection) && 
-                    keepSelection == false && removeSelection == false)
+                m_CommandStack.beginTransaction("Select Node");
+                if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection))        
                 {
-                    m_State = State_StartMoveNode;
+                    if (keepSelection == false && removeSelection == false)
+                        m_State = State_StartMoveNode;
+                    else
+                        m_CommandStack.endTransaction();
                 }
-                else if (keepSelection == false && removeSelection == false)
+                else
                 {
                     m_State = State_StartPan;
                 }
@@ -205,14 +208,16 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             const vec2 diff(mousePos - grabScreenPos);
             if (mouse->isButtonReleased(io::MouseButton_Left))
             {
-                m_EditSelectionCommand.beginTransaction();
+                m_EditSelectionCommand.beginCommand();
                 m_EditSelectionCommand.deselectAll();
-                m_EditSelectionCommand.endTransaction();
+                m_EditSelectionCommand.endCommand();
                 m_State = State_Idle;
+                m_CommandStack.endTransaction("Deselect");
             }
             else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
             {
                 m_State = State_Pan;
+                m_CommandStack.endTransaction();
             }
         } break;
         case State_Pan:
@@ -235,16 +240,17 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             {
                 if (keepSelection == false && removeSelection == false)
                 {
-                    m_EditSelectionCommand.beginTransaction();
+                    m_EditSelectionCommand.beginCommand();
                     m_EditSelectionCommand.deselectAll();
-                    m_EditSelectionCommand.endTransaction();
+                    m_EditSelectionCommand.endCommand();
                 }
                 doNodeSelect(mouse->getPosition(), keepSelection, removeSelection);
+                m_CommandStack.endTransaction();
                 m_State = State_Idle;
             }
             else if (fabs(diff.x) > 4 || fabs(diff.y) > 4)
             {
-                m_MoveCommand.beginTransaction();
+                m_MoveCommand.beginCommand();
                 m_State = State_MoveNode;
             }
         } break;
@@ -255,7 +261,8 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             m_MoveCommand.doMove(worldMove);
             if (mouse->isButtonReleased(io::MouseButton_Left))
             {
-                m_MoveCommand.endTransaction();
+                m_MoveCommand.endCommand();
+                m_CommandStack.endTransaction("Move Node(s)");
                 m_State = State_Idle;
             }
         } break;
@@ -287,9 +294,9 @@ bool MaterialGeneratorGraph::doNodeSelect(const vec2& mousePos, const bool keepS
     }, pickedNode))
     {
         MaterialGeneratorNode* const selectedNode(m_NodeList[pickedNode]);
-        m_EditSelectionCommand.beginTransaction();
+        m_EditSelectionCommand.beginCommand();
         m_EditSelectionCommand.doEditSelection(keepSelection, removeSelection, selectedNode);
-        m_EditSelectionCommand.endTransaction();
+        m_EditSelectionCommand.endCommand();
         result = true;
     }
     return result;
@@ -314,8 +321,17 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     // DEBUG
     m_DebugText.clear();
     const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse()->getPosition()));
-    m_DebugText.addTextExt("&5F5Zoom: &AFA%.2f\n&5F5Region: &AFA%.2f, %.2f, %.2f, %.2f\n&5F5Mouse: &AFA%.2f, %.2f", 
+    m_DebugText.addTextExt("&5F5Zoom: &AFA%.2f\n&5F5Region: &AFA%.2f, %.2f, %.2f, %.2f\n&5F5Mouse: &AFA%.2f, %.2f\n\n&5F5: Undo/Redo: &5F5\n", 
         m_Scale, m_Offset.x, m_Offset.y, transformedSize.x, transformedSize.y, mouseWorld.x, mouseWorld.y);
+
+    const he::ObjectList<CommandTransaction>& transactions(m_CommandStack.getTransactions());
+    const size_t transactionCount(transactions.size());
+    const size_t undoIndex(m_CommandStack.getUndoIndex());
+    for (size_t i(0); i < transactionCount; ++i)
+    {
+        m_DebugText.addTextExt("&%s  - %s\n", i < undoIndex? "AFA" : "ABA", transactions[i].getName().c_str());
+    }
+
     gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     cvs->fillText(m_DebugText, vec2(12, 12));

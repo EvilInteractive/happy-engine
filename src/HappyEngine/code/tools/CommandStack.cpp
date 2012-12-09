@@ -24,7 +24,7 @@
 namespace he {
 namespace tools {
 
-CommandStack::CommandStack(): m_UndoIndex(0)
+CommandStack::CommandStack(): m_UndoIndex(0), m_OpenTransaction(false)
 {
 }
 
@@ -33,26 +33,58 @@ CommandStack::~CommandStack()
 {
 }
 
+void CommandStack::beginTransaction(const std::string& name)
+{
+    HE_IF_ASSERT(m_OpenTransaction == false, "There is still an open transaction: %s\nwhen starting a new one: %s!",  m_Transactions[m_UndoIndex].getName().c_str(), name.c_str())
+    {
+        m_OpenTransaction = true;
+        m_CurrentTransaction.begin(name);
+    }
+}
+
+void CommandStack::endTransaction(const std::string& rename)
+{
+    HE_IF_ASSERT(m_OpenTransaction == true, "There is no open transaction!")
+    {
+        if (m_CurrentTransaction.getSize() > 0)
+        {
+            if (rename.empty() == false)
+                m_CurrentTransaction.setName(rename);
+            m_Transactions.resize(m_UndoIndex);
+            m_Transactions.add(m_CurrentTransaction);
+            ++m_UndoIndex;
+        }
+        m_OpenTransaction = false;
+    }
+}
+
 void CommandStack::pushCommand( const Command& command )
 {
-    m_CommandStack.resize(m_UndoIndex);
-    m_CommandStack.add(command);
-    ++m_UndoIndex;
+    HE_IF_ASSERT(m_OpenTransaction == true, "There is no open transaction!")
+    {
+        m_CurrentTransaction.pushCommand(command);
+    }
 }
 
 void CommandStack::undo()
 {
-    if (canUndo())
+    HE_IF_ASSERT(m_OpenTransaction == false, "Cannot undo when there is an open transaction: %s!",  m_Transactions[m_UndoIndex].getName().c_str())
     {
-        m_CommandStack[--m_UndoIndex].undoCommand();
+        if (canUndo())
+        {
+            m_Transactions[--m_UndoIndex].undoTransaction();
+        }
     }
 }
 
 void CommandStack::redo()
 {
-    if (canRedo())
+    HE_IF_ASSERT(m_OpenTransaction == false, "Cannot redo when there is an open transaction: %s!",  m_Transactions[m_UndoIndex].getName().c_str())
     {
-        m_CommandStack[m_UndoIndex++].doCommand();
+        if (canRedo())
+        {
+            m_Transactions[m_UndoIndex++].redoTransaction();
+        }
     }
 }
 
@@ -63,7 +95,8 @@ bool CommandStack::canUndo() const
 
 bool CommandStack::canRedo() const
 {
-    return m_CommandStack.size() > m_UndoIndex;
+    return m_Transactions.size() > m_UndoIndex;
 }
+
 
 } } //end namespace

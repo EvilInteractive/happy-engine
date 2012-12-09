@@ -16,47 +16,38 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 9/12/2012
+//Created: 09/12/2012
 
-#ifndef _HE_CommandStack_H_
-#define _HE_CommandStack_H_
+#ifndef _HE_CommandTransaction_H_
+#define _HE_CommandTransaction_H_
 #pragma once
 
-#include "CommandTransaction.h"
+#include "Command.h"
 
 namespace he {
 namespace tools {
 
-class Command;
-
-class CommandStack
+class CommandTransaction
 {
 public:
-    CommandStack();
-    virtual ~CommandStack();
+    CommandTransaction();
+    ~CommandTransaction();
+    CommandTransaction(const CommandTransaction& other);
+    CommandTransaction& operator=(const CommandTransaction& other);
 
-    void beginTransaction(const std::string& name);
-    void endTransaction(const std::string& rename = "");
-
+    void begin(const std::string& name);
     void pushCommand(const Command& command);
-    void undo();
-    void redo();
+    void undoTransaction();
+    void redoTransaction();
 
-    bool canUndo() const;
-    bool canRedo() const;
+    size_t getSize() const { return m_Commands.size(); }
 
-    const he::ObjectList<CommandTransaction>& getTransactions() const { return m_Transactions; }
-    size_t getUndoIndex() const { return m_UndoIndex; }
+    void setName(const std::string& name) { m_Name = name; }
+    const std::string& getName() const { return m_Name; }
 
 private:
-    bool m_OpenTransaction;
-    CommandTransaction m_CurrentTransaction;
-    he::ObjectList<CommandTransaction> m_Transactions;
-    size_t m_UndoIndex;
-
-    //Disable default copy constructor and default assignment operator
-    CommandStack(const CommandStack&);
-    CommandStack& operator=(const CommandStack&);
+    std::string m_Name;
+    he::ObjectList<Command> m_Commands;
 };
 
 } } //end namespace
