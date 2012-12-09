@@ -40,6 +40,7 @@ public:
 
     /* GENERAL */
     static void init();
+    static void done();
 
     /* GETTERS */
     uint32 getTotalVirtualMemory() const;

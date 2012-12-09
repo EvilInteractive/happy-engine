@@ -323,10 +323,10 @@ void MainGame::load()
     m_DebugText.setFont(font);
     font->release();
 
-    font = CONTENT->loadFont("MODES.TTF", 128) ;
+    font = CONTENT->loadFont("MODES.TTF", 36) ;
     m_BigText.setFont(font);
     m_BigText.setHorizontalAlignment(gui::Text::HAlignment_Left);
-    m_BigText.setVerticalAlignment(gui::Text::VAlignment_Top);
+    m_BigText.setVerticalAlignment(gui::Text::VAlignment_Bottom);
     font->release();
     
     m_BackgroundSound = AUDIO->loadSound2D("stuff.wav", true);
@@ -504,7 +504,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     he::gfx::CameraPerspective* camera(m_View->getCamera());
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
-    //const he::RectI& viewport(m_View->getViewport());
+    const he::RectI& viewport(m_View->getViewport());
 
     m_RenderPipeline->getPicker()->drawDebug(canvas);
 
@@ -527,10 +527,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
         m_ShuffeledColor[5].r16(), m_ShuffeledColor[5].g16(), m_ShuffeledColor[5].b16(),
         m_ShuffeledColor[6].r16(), m_ShuffeledColor[6].g16(), m_ShuffeledColor[6].b16(),
         m_ShuffeledColor[7].r16(), m_ShuffeledColor[7].g16(), m_ShuffeledColor[7].b16());
-    cvs->fillText(m_BigText, he::vec2(200,0));
-    cvs->fillText(m_BigText, he::vec2(200,180));
-    cvs->fillText(m_BigText, he::vec2(200,360));
-    cvs->fillText(m_BigText, he::vec2(200,540));
+    cvs->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
     
     // NEW CANVAS TEST
     //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();

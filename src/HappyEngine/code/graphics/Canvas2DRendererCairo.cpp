@@ -81,8 +81,7 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
             sprite->getRenderTexture(),
             rBuff,
             surf,
-            cp,
-            false));
+            cp));
 
     m_SpriteListLock.unlock();
 
