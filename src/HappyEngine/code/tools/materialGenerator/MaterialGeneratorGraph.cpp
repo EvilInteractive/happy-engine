@@ -198,7 +198,6 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         case State_Idle:
         {
             const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
-            m_TestConnecter->setConnectionPosition(mouseWorld);
             bool foundHoover(false);
             m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
             {
@@ -247,6 +246,9 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_State = State_Pan;
                 m_CommandStack.endTransaction();
             }
+
+            const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+            m_TestConnecter->setConnectionPosition(mouseWorld);
         } break;
         case State_Pan:
         {
