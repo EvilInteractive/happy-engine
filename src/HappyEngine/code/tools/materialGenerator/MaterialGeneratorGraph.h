@@ -36,6 +36,9 @@ namespace gfx {
     class View;
     class Renderer2D;
 }
+namespace gui {
+    class Sprite;
+}
 namespace ct {
     class ShaderGenerator;
 }
@@ -101,6 +104,8 @@ private:
     CommandStack m_CommandStack;
     MaterialGeneratorGraphMoveCommand m_MoveCommand;
     MaterialGeneratorGraphEditSelectionCommand m_EditSelectionCommand;
+
+    gui::Sprite* m_Background;
 
     //Disable default copy constructor and default assignment operator
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

@@ -35,7 +35,7 @@ namespace tools {
 //////////////////////////////////////////////////////////////////////////
 MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
     m_IsInput(isInput), m_Index(index), m_Desc(desc), 
-    m_IsSelected(false), m_IsHooverd(false), m_Size(16, 12)
+    m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10)
 {
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Sprites[0] = cr->createSprite(m_Size);
@@ -47,6 +47,7 @@ MaterialGeneratorNode::Connecter::~Connecter()
 {
     m_Sprites[0]->release();
     m_Sprites[1]->release();
+    m_Sprites[2]->release();
 }
 void MaterialGeneratorNode::Connecter::renderSprites()
 {
@@ -54,29 +55,32 @@ void MaterialGeneratorNode::Connecter::renderSprites()
 
     // Normal
     cr->setActiveSprite(m_Sprites[0]);
-    cr->roundedRectangle(vec2(2, 2), m_Size - vec2(4, 4), 2.0f);
-    cr->setColor(Color(0.3f,0.2f,0.2f));
+    cr->circle(m_Size / 2, 4.0f);
+    cr->setColor(Color(1.0f,0.9f,0.2f));
     cr->fill();
+    cr->setLineWidth(1.0f);
+    cr->setColor(Color(0.1f,0.1f,0.1f));
+    cr->stroke();
     cr->renderSpriteAsync();
 
     // Selected
     cr->setActiveSprite(m_Sprites[1]);
-    cr->roundedRectangle(vec2(0, 0), m_Size, 2.0f);
-    cr->setColor(Color(0.8f,0.8f,0.9f));
+    cr->circle(m_Size / 2, 4.0f);
+    cr->setColor(Color(1.0f,0.9f,0.2f));
     cr->fill();
-    cr->roundedRectangle(vec2(2, 2), m_Size - vec2(4, 4), 2.0f);
-    cr->setColor(Color(0.3f,0.2f,0.2f));
-    cr->fill();
+    cr->setLineWidth(1.0f);
+    cr->setColor(Color(1.0f,1.0f,1.0f));
+    cr->stroke();
     cr->renderSpriteAsync();
 
     // Hoover
     cr->setActiveSprite(m_Sprites[2]);
-    cr->roundedRectangle(vec2(0, 0), m_Size, 2.0f);
-    cr->setColor(Color(0.5f,0.5f,0.6f));
+    cr->circle(m_Size / 2, 4.0f);
+    cr->setColor(Color(1.0f,0.9f,0.2f));
     cr->fill();
-    cr->roundedRectangle(vec2(2, 2), m_Size - vec2(4, 4), 2.0f);
-    cr->setColor(Color(0.3f,0.2f,0.2f));
-    cr->fill();
+    cr->setLineWidth(1.0f);
+    cr->setColor(Color(1.0f,1.0f,1.0f));
+    cr->stroke();
     cr->renderSpriteAsync();
 }
 
@@ -127,42 +131,30 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
     gui::SpriteCreator* cr(GUI->Sprites);
 
     gui::Sprite* sp1(cr->createSprite(vec2(100,100)));
-
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
-    
-    cr->setColor(Color(0.6f,0.6f,0.6f));
+    cr->setColor(Color(0.35f,0.35f,0.35f));
     cr->fill();
-
-    cr->setLineWidth(4.0f);
-    cr->setColor(Color(0.2f,0.2f,0.2f));
+    cr->setLineWidth(2.0f);
+    cr->setColor(Color(0.1f,0.1f,0.1f));
     cr->stroke();
-
     cr->renderSpriteAsync();
 
     gui::Sprite* sp2(cr->createSprite(vec2(100,100)));
-
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
-    
-    cr->setColor(Color(0.8f,0.8f,0.8f));
+    cr->setColor(Color(0.35f,0.35f,0.35f));
     cr->fill();
-
-    cr->setLineWidth(4.0f);
-    cr->setColor(Color(0.2f,0.2f,0.2f));
+    cr->setLineWidth(2.0f);
+    cr->setColor(Color(0.78f,0.53f,0.23f));
     cr->stroke();
-
     cr->renderSpriteAsync();
 
     gui::Sprite* sp3(cr->createSprite(vec2(100,100)));
-
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
-
-    cr->setColor(Color(0.6f,0.6f,0.6f));
+    cr->setColor(Color(0.55f,0.55f,0.55f));
     cr->fill();
-
-    cr->setLineWidth(4.0f);
-    cr->setColor(Color(0.4f,0.4f,0.4f));
+    cr->setLineWidth(2.0f);
+    cr->setColor(Color(0.1f,0.1f,0.1f));
     cr->stroke();
-
     cr->renderSpriteAsync();
 
     m_Sprites.add(sp1);
@@ -175,6 +167,11 @@ MaterialGeneratorNode::~MaterialGeneratorNode()
     m_Sprites.forEach([](gui::Sprite* sp)
     {
         sp->release();
+    });
+
+    m_Connecters.forEach([](Connecter* c)
+    {
+        delete c;
     });
 }
 

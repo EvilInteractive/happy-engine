@@ -1,3 +1,5 @@
+lightingSettings
+lightingSettings
 //HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
@@ -41,6 +43,8 @@
 #include "MaterialGeneratorMathNodes.h"
 #include "Canvas2Dnew.h"
 #include "Font.h"
+#include "Sprite.h"
+#include "Gui.h"
 
 #include "Command.h"
 
@@ -98,6 +102,8 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     {
         GRAPHICS->removeWindow(m_Window);
     }
+
+    m_Background->release();
 }
 
 void MaterialGeneratorGraph::init()
@@ -153,6 +159,14 @@ void MaterialGeneratorGraph::init()
     m_View->init(settings);
 
     m_Renderer->attachToRender(this);
+
+    gui::SpriteCreator* const cr(GUI->Sprites);
+
+    m_Background = cr->createSprite(vec2(1280,720));
+    cr->rectangle(vec2(0,0),vec2(1280,720));
+    cr->setColor(Color(0.22f,0.22f,0.22f));
+    cr->fill();
+    cr->renderSpriteAsync();
 }
 
 void MaterialGeneratorGraph::open()
@@ -316,6 +330,10 @@ bool MaterialGeneratorGraph::isOpen() const
 
 void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
 {
+    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
+
+    cvs->drawSprite(m_Background, vec2(0,0));
+
     const mat33 transform(mat33::createScale2D(vec2(m_Scale, m_Scale)) * mat33::createTranslation2D(-m_Offset));
     const vec2 transformedSize(static_cast<float>(m_View->getViewport().width) / m_Scale, static_cast<float>(m_View->getViewport().height) / m_Scale);
     const RectF clipRect(0.0f, 0.0f, static_cast<float>(m_View->getViewport().width), static_cast<float>(m_View->getViewport().height));
@@ -338,7 +356,7 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         m_DebugText.addTextExt("&%s  - %s\n", i < undoIndex? "AFA" : "ABA", transactions[i].getName().c_str());
     }
 
-    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
+    
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     cvs->fillText(m_DebugText, vec2(12, 12));
 }
