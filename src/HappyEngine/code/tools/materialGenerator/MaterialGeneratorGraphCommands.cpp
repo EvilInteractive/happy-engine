@@ -170,4 +170,106 @@ void MaterialGeneratorGraphEditSelectionCommand::deselectAll()
     selectedNodes.clear();
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+// Connect Node
+//////////////////////////////////////////////////////////////////////////
+void MaterialGeneratorGraphNodeConnectCommand::operator()( const CommandType type )
+{
+    MaterialGeneratorNode* nodeStart(m_Parent->getNode(m_NodeStart));
+    MaterialGeneratorNode* nodeEnd(m_Parent->getNode(m_NodeEnd));
+    HE_IF_ASSERT(nodeStart != nullptr && nodeEnd != nullptr, "Node start or end could not be found when connecting nodes")
+    {
+        if (type == CommandType_Do)
+        {
+            MaterialGeneratorError error;
+            if (m_StartAtOutput == true)
+            {
+                nodeEnd->connectToInput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            }
+            else
+            {
+                nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            }
+        }
+        else
+        {
+            if (m_StartAtOutput == true)
+            {
+                nodeEnd->disconnect(m_IndexEnd);
+            }
+            else
+            {
+                nodeStart->disconnect(m_IndexStart);
+            }
+        }
+    }
+}
+
+void MaterialGeneratorGraphNodeConnectCommand::startConnect( const Guid& startNode, const bool startAtOutput, const uint8 startIndex )
+{
+    HE_ASSERT(m_IsConnection == false, "Already connecting a node!");
+    m_NodeStart = startNode;
+    m_StartAtOutput = startAtOutput;
+    m_IndexStart = startIndex;
+    m_IsConnection = true;
+}
+
+bool MaterialGeneratorGraphNodeConnectCommand::doConnect( const Guid& endNode, const uint8 endIndex )
+{
+    bool result(false);
+    HE_IF_ASSERT(m_IsConnection == true, "Ending connection when not started one!")
+    {
+        m_NodeEnd = endNode;
+        m_IndexEnd = endIndex;
+        result = doCommand();
+        if (result == true)
+            m_Parent->m_CommandStack.pushCommand(Command(*this));
+    }
+    m_IsConnection = false;
+    return result;
+}
+
+bool MaterialGeneratorGraphNodeConnectCommand::doCommand()
+{
+    MaterialGeneratorNode* nodeStart(m_Parent->getNode(m_NodeStart));
+    MaterialGeneratorNode* nodeEnd(m_Parent->getNode(m_NodeEnd));
+    bool result(false);
+    HE_IF_ASSERT(nodeStart != nullptr && nodeEnd != nullptr, "Node start or end could not be found when connecting nodes")
+    {
+        MaterialGeneratorError error;
+        if (m_StartAtOutput == true)
+        {
+            result = nodeEnd->connectToInput(nodeStart, m_IndexStart, m_IndexEnd, error);
+        }
+        else
+        {
+            result = nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
+        }
+    }
+    return result;
+}
+
+void MaterialGeneratorGraphNodeConnectCommand::undoCommand()
+{
+    MaterialGeneratorNode* nodeStart(m_Parent->getNode(m_NodeStart));
+    MaterialGeneratorNode* nodeEnd(m_Parent->getNode(m_NodeEnd));
+    HE_IF_ASSERT(nodeStart != nullptr && nodeEnd != nullptr, "Node start or end could not be found when connecting nodes")
+    {
+        if (m_StartAtOutput == true)
+        {
+            nodeEnd->disconnect(m_IndexEnd);
+        }
+        else
+        {
+            nodeStart->disconnect(m_IndexStart);
+        }
+    }
+}
+
+void MaterialGeneratorGraphNodeConnectCommand::cancelConnect()
+{
+    m_IsConnection = false;
+}
+
 } } //end namespace

@@ -40,7 +40,7 @@ typedef NodeGraphConnection<MaterialGeneratorNodeInput, MaterialGeneratorNodeOut
 
 class MaterialGeneratorNode : public MaterialGeneratorNodeBase
 {
-public:
+protected:
     struct ConnecterDesc
     {
         ConnecterDesc(const std::string& name, const Color& color)
@@ -56,11 +56,11 @@ public:
         Connecter(const bool isInput, const uint8 index, const ConnecterDesc& desc);
         ~Connecter();
 
-        void setPosition(const vec2& position) { m_Position = position; }
+        void setPosition(const vec2& position);
         const vec2& getPosition() const { return m_Position; }
 
-        void setConnectionPosition(const vec2& connectionPos);
-        void setConnected(const bool connected) { m_IsConnected = connected; }
+        void setConnectedConnecter(Connecter* connecter) { m_ConnectedConnecter = connecter; }
+        void setConnected(const bool connected);
 
         const vec2& getSize() const { return m_Size; }
         bool isInput() const { return m_IsInput; }
@@ -75,6 +75,8 @@ public:
         void draw2D(gfx::Canvas2D* const canvas, const mat33& transform) const;
 
     private:
+        void updateSprite();
+
         gui::Sprite* m_Sprites[3];
         vec2 m_Position;
         const vec2 m_Size;
@@ -85,8 +87,8 @@ public:
         bool m_IsHooverd;
 
         bool m_IsConnected;
-        vec2 m_ConnectionPos;
         gui::Sprite* m_ConnectionSprite;
+        Connecter* m_ConnectedConnecter;
 
         //Disable default copy constructor and default assignment operator
         Connecter(const Connecter&);
@@ -110,6 +112,7 @@ public:
     const vec2& getPosition() const { return m_Position; }
 
     const Guid& getGuid() const { return m_Guid; }
+    const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
 
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 

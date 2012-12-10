@@ -38,7 +38,7 @@ const vec2 connectionResolution(256, 256);
 MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
     m_IsInput(isInput), m_Index(index), m_Desc(desc), 
     m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10),
-    m_IsConnected(false), m_ConnectionPos(0, 0), m_ConnectionSprite(nullptr)
+    m_IsConnected(false), m_ConnectionSprite(nullptr)
 {
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Sprites[0] = cr->createSprite(m_Size);
@@ -107,7 +107,7 @@ void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, cons
     if (m_IsConnected)
     {
 
-        const vec2 transformedConnectionPosition(transform * m_ConnectionPos);
+        const vec2 transformedConnectionPosition(transform * m_ConnectedConnecter->getPosition());
         const vec2 diff(transformedConnectionPosition - transformedPosition);
         const float maxDiff(std::max(fabs(diff.x), fabs(diff.y)));
         const vec2 transformedSize(maxDiff, maxDiff);
@@ -139,12 +139,11 @@ bool MaterialGeneratorNode::Connecter::doHoover( const vec2& worldPos, const boo
     return m_IsHooverd;
 }
 
-void MaterialGeneratorNode::Connecter::setConnectionPosition( const vec2& connectionPos )
+void MaterialGeneratorNode::Connecter::updateSprite()
 {
-    HE_IF_ASSERT(m_IsInput == true && m_ConnectionSprite != nullptr, "Set connection position on an output or connectionSprite == nullptr!")
+    HE_IF_ASSERT(m_IsInput == true && m_ConnectionSprite != nullptr && m_ConnectedConnecter != nullptr, "Set connection position on an output \nor connectionSprite == nullptr!\nor m_ConnectedConnecter == nulltpr")
     {
-        m_ConnectionPos = connectionPos;
-        vec2 diff(m_ConnectionPos - m_Position);
+        vec2 diff(m_ConnectedConnecter->getPosition() - m_Position);
         const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
         const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
         diff.x *= myNormal.x; // abs
@@ -162,6 +161,25 @@ void MaterialGeneratorNode::Connecter::setConnectionPosition( const vec2& connec
         cr->stroke();
         cr->renderSpriteAsync();
     }
+}
+
+void MaterialGeneratorNode::Connecter::setPosition( const vec2& position )
+{
+    m_Position = position;
+    if (m_ConnectedConnecter != nullptr && m_IsInput == false)
+    {
+        m_ConnectedConnecter->updateSprite();
+    }
+    else if (m_IsConnected)
+    {
+        updateSprite();
+    }
+}
+
+void MaterialGeneratorNode::Connecter::setConnected( const bool connected )
+{
+    m_ConnectedConnecter = nullptr;
+    m_IsConnected = connected;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -209,6 +227,52 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
     m_Sprites.add(sp1);
     m_Sprites.add(sp2);
     m_Sprites.add(sp3);
+
+    he::eventCallback2<void, bool, uint8> onConnect([this](const bool isInput, const uint8 index)
+    {
+        if (isInput)
+        {
+            size_t connectionIndex(0);
+            if (m_Connecters.find_if([isInput, index](Connecter* connecter) -> bool
+            {
+                return connecter->isInput() && connecter->getIndex() == index;
+            }, connectionIndex))
+            {
+                Connecter* connecter(m_Connecters[connectionIndex]);
+                const MaterialGeneratorConnection& connection(getInputConnection(index));
+                MaterialGeneratorNode* other(static_cast<MaterialGeneratorNode*>(connection.node));
+                HE_ASSERT(other != nullptr, "Connecting to an unknown node");
+
+                size_t otherConnectionIndex(0);
+                if (other->m_Connecters.find_if([&connection](Connecter* connecter) -> bool
+                {
+                    return connecter->isInput() == false && connecter->getIndex() == connection.connecter;
+                }, otherConnectionIndex))
+                {
+                    Connecter* otherConnecter(other->m_Connecters[otherConnectionIndex]);
+                    connecter->setConnected(true);
+                    connecter->setConnectedConnecter(otherConnecter);
+                }
+            }
+        }
+    });
+    he::eventCallback2<void, bool, uint8> onDisconnect([this](const bool isInput, const uint8 index)
+    {
+        if (isInput)
+        {
+            size_t connectionIndex(0);
+            if (m_Connecters.find_if([isInput, index](Connecter* connecter) -> bool
+            {
+                return connecter->isInput() && connecter->getIndex() == index;
+            }, connectionIndex))
+            {
+                Connecter* connecter(m_Connecters[connectionIndex]);
+                connecter->setConnected(false);
+            }
+        }
+    });
+    NodeConnected += onConnect;
+    NodeDisconnected += onDisconnect;
 }
 
 MaterialGeneratorNode::~MaterialGeneratorNode()

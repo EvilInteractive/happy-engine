@@ -51,14 +51,15 @@ class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
 {
     friend class MaterialGeneratorGraphMoveCommand;
     friend class MaterialGeneratorGraphEditSelectionCommand;
-    friend class MaterialGeneratorGraphDeselectAllCommand;
+    friend class MaterialGeneratorGraphNodeConnectCommand;
     enum State
     {
         State_Idle,
         State_StartPan,
         State_Pan,
         State_StartMoveNode,
-        State_MoveNode
+        State_MoveNode,
+        State_ConnectNode
     };
 
 public:
@@ -80,10 +81,15 @@ public:
     ct::ShaderGenerator* getGenerator() const { return m_Generator; }
     bool isOpen() const;
 
+    MaterialGeneratorNode* getNode(const Guid& guid) const;
+    MaterialGeneratorNode* getSelectedNode(const Guid& guid) const;
+
 private:
 
     /* INTERNAL */
     bool doNodeSelect(const vec2& mousePos, const bool keepSelection, const bool removeSelection);
+    bool doConnectStart(const vec2& mousePos);
+    bool doConnectEnd(const vec2& mousePos);
 
     vec2 screenToWorldPos(const vec2& screenPos) const;
     vec2 worldToScreenPos(const vec2& worldPos) const;
@@ -116,9 +122,11 @@ private:
     CommandStack m_CommandStack;
     MaterialGeneratorGraphMoveCommand m_MoveCommand;
     MaterialGeneratorGraphEditSelectionCommand m_EditSelectionCommand;
+    MaterialGeneratorGraphNodeConnectCommand m_ConnectNodeCommand;
 
     gui::Sprite* m_Background;
-    MaterialGeneratorNode::Connecter* m_TestConnecter;
+
+    gui::Sprite* m_GhostConnection;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

@@ -71,16 +71,16 @@ bool he::NodeGraphNode<TInput, TOutput>::connectToOutput( NodeGraphNode* fromNod
     if (canConnect(getOutput(toOutput), fromNode->getInput(fromInput), error))
     {
         fromNode->disconnect(fromInput);
-        fromNode->m_InputSlots[toInput].node = this;
-        fromNode->m_InputSlots[toInput].connecter = toOutput;
+        fromNode->m_InputSlots[fromInput].node = this;
+        fromNode->m_InputSlots[fromInput].connecter = toOutput;
         fromNode->NodeConnected(true, fromInput);
         NodeConnected(false, toOutput);
         return true;
     }
     else
     {
-        error.m_Node = this;
-        error.m_Connecter = getOutput(toOutput);
+        error.m_Node = fromNode;
+        error.m_Connecter = fromNode->getInputConnection(fromInput);
         error.m_Fixed = true;
         return false;
     }

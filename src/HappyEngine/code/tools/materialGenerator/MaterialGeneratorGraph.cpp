@@ -68,7 +68,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_State(State_Idle)
     , m_MoveCommand(this)
     , m_EditSelectionCommand(this)
-    , m_TestConnecter(nullptr)
+    , m_ConnectNodeCommand(this)
 {
     MaterialGeneratorNodeAdd* add(NEW MaterialGeneratorNodeAdd(this, vec2(12, 12)));
     m_NodeList.add(add);
@@ -168,12 +168,6 @@ void MaterialGeneratorGraph::init()
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Background = cr->createSprite(vec2(1280,720));
     renderBackground();
-
-    m_TestConnecter = NEW MaterialGeneratorNode::Connecter(true, 0, MaterialGeneratorNode::ConnecterDesc("Test", Color(1.0f, 1.0f, 1.0f)));
-    m_TestConnecter->setPosition(vec2(500, 500));
-    m_TestConnecter->setConnected(true);
-    m_TestConnecter->setConnectionPosition(vec2(0, 0));
-
 }
 
 void MaterialGeneratorGraph::open()
@@ -198,7 +192,6 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         case State_Idle:
         {
             const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
-            m_TestConnecter->setConnectionPosition(mouseWorld);
             bool foundHoover(false);
             m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
             {
@@ -215,17 +208,25 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             }
             if (leftDown)
             {
-                m_CommandStack.beginTransaction("Select Node");
-                if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection))        
+                if (doConnectStart(mouse->getPosition()))
                 {
-                    if (keepSelection == false && removeSelection == false)
-                        m_State = State_StartMoveNode;
-                    else
-                        m_CommandStack.endTransaction();
+                    m_CommandStack.beginTransaction("Connect node");
+                    m_State = State_ConnectNode;
                 }
                 else
                 {
-                    m_State = State_StartPan;
+                    m_CommandStack.beginTransaction("Select Node");
+                    if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection))        
+                    {
+                        if (keepSelection == false && removeSelection == false)
+                            m_State = State_StartMoveNode;
+                        else
+                            m_CommandStack.endTransaction();
+                    }
+                    else
+                    {
+                        m_State = State_StartPan;
+                    }
                 }
             }
         } break;
@@ -294,6 +295,16 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_State = State_Idle;
             }
         } break;
+        case State_ConnectNode:
+        {
+            if (mouse->isButtonReleased(io::MouseButton_Left))
+            {
+                doConnectEnd(mouse->getPosition());
+                m_CommandStack.endTransaction();
+                m_State = State_Idle;
+            }
+
+        } break;
     }
 
     //if (m_SelectedNodeList.size() > 0)
@@ -330,6 +341,64 @@ bool MaterialGeneratorGraph::doNodeSelect(const vec2& mousePos, const bool keepS
     return result;
 }
 
+bool MaterialGeneratorGraph::doConnectStart( const vec2& mousePos )
+{
+    bool result(false);
+
+    const vec2 mouseWorld(screenToWorldPos(mousePos));
+    size_t pickedNode(0);
+    size_t pickedConnecter(0);
+    if (m_NodeList.rfind_if([&mouseWorld, &pickedConnecter](MaterialGeneratorNode* const node) -> bool
+    {
+        const vec2& mouseWorldScoped(mouseWorld);
+        return node->getConnecters().rfind_if([&mouseWorldScoped](MaterialGeneratorNode::Connecter* const connecter) -> bool
+        {
+            return connecter->pick(mouseWorldScoped);
+        }, pickedConnecter);
+    }, pickedNode))
+    {
+        const MaterialGeneratorNode* const node(m_NodeList[pickedNode]);
+        const MaterialGeneratorNode::Connecter* const connecter(node->getConnecters()[pickedConnecter]);
+        m_ConnectNodeCommand.startConnect(node->getGuid(), !connecter->isInput(), static_cast<uint8>(connecter->getIndex()));
+        result = true;
+    }
+    return result;
+}
+bool MaterialGeneratorGraph::doConnectEnd( const vec2& mousePos )
+{
+    bool result(false);
+
+    const vec2 mouseWorld(screenToWorldPos(mousePos));
+    size_t pickedNode(0);
+    size_t pickedConnecter(0);
+    if (m_NodeList.rfind_if([&mouseWorld, &pickedConnecter](MaterialGeneratorNode* const node) -> bool
+    {
+        const vec2& mouseWorldScoped(mouseWorld);
+        return node->getConnecters().rfind_if([&mouseWorldScoped](MaterialGeneratorNode::Connecter* const connecter) -> bool
+        {
+            return connecter->pick(mouseWorldScoped);
+        }, pickedConnecter);
+    }, pickedNode))
+    {
+        const MaterialGeneratorNode* const node(m_NodeList[pickedNode]);
+        const MaterialGeneratorNode::Connecter* const connecter(node->getConnecters()[pickedConnecter]);
+        const bool isInput(connecter->isInput());
+        if (isInput == m_ConnectNodeCommand.startedAtOutput())
+        {
+            result = m_ConnectNodeCommand.doConnect(node->getGuid(), connecter->getIndex());
+        }
+        else
+        {
+            m_ConnectNodeCommand.cancelConnect();
+        }
+    }
+    else
+    {
+        m_ConnectNodeCommand.cancelConnect();
+    }
+    return result;
+}
+
 
 bool MaterialGeneratorGraph::isOpen() const
 {
@@ -349,7 +418,6 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     {
         node->draw2D(canvas, transform, clipRect);
     });
-    m_TestConnecter->draw2D(canvas, transform);
 
     // DEBUG
     m_DebugText.clear();
@@ -417,6 +485,34 @@ void MaterialGeneratorGraph::renderBackground()
 void MaterialGeneratorGraph::onViewResized()
 {
     renderBackground();
+}
+
+MaterialGeneratorNode* MaterialGeneratorGraph::getNode( const Guid& guid ) const
+{
+    MaterialGeneratorNode* node(nullptr);
+    size_t index(0);
+    if (m_NodeList.find_if([&guid](const MaterialGeneratorNode* const node) -> bool
+                            {
+                                return node->getGuid() == guid;
+                            }, index))
+    {
+        node = m_NodeList[index];
+    }
+    return node;
+}
+
+MaterialGeneratorNode* MaterialGeneratorGraph::getSelectedNode( const Guid& guid ) const
+{
+    MaterialGeneratorNode* node(nullptr);
+    size_t index(0);
+    if (m_SelectedNodeList.find_if([&guid](const MaterialGeneratorNode* const node) -> bool
+    {
+        return node->getGuid() == guid;
+    }, index))
+    {
+        node = m_NodeList[index];
+    }
+    return node;
 }
 
 } } //end namespace

@@ -89,6 +89,42 @@ private:
     he::ObjectList<Guid> m_DeselectedNodes;
 };
 
+class MaterialGeneratorGraphNodeConnectCommand
+{ // Move is always on current selection
+public:
+    MaterialGeneratorGraphNodeConnectCommand(MaterialGeneratorGraph* const parent)
+        : m_Parent(parent)
+        , m_StartAtOutput(false)
+        , m_IndexStart(UINT8_MAX)
+        , m_IndexEnd(UINT8_MAX)
+        , m_IsConnection(false)
+    {}
+    // Copy == ok
+
+    void operator()(const CommandType type);
+
+    void startConnect(const Guid& startNode, const bool startAtOutput, const uint8 startIndex);
+    bool doConnect( const Guid& endNode, const uint8 endIndex );
+    void cancelConnect();
+
+    bool isConnecting() const { return m_IsConnection; }
+    bool startedAtOutput() const { return m_StartAtOutput; }
+
+private:
+
+    bool doCommand();
+    void undoCommand();
+
+    MaterialGeneratorGraph* m_Parent;
+    bool m_IsConnection;
+    Guid m_NodeStart;
+    bool m_StartAtOutput;
+    uint8 m_IndexStart;
+    Guid m_NodeEnd;
+    uint8 m_IndexEnd;
+};
+
+
 } } //end namespace
 
 #endif
