@@ -132,8 +132,10 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
 
     gui::Sprite* sp1(cr->createSprite(vec2(100,100)));
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
-    cr->setColor(Color(0.35f,0.35f,0.35f));
+    cr->setColor(Color(0.35f,0.35f,0.35f,0.7f));
     cr->fill();
+    cr->newPath();
+    cr->roundedRectangle(vec2(4,4), vec2(92,92), 10.0f);
     cr->setLineWidth(2.0f);
     cr->setColor(Color(0.1f,0.1f,0.1f));
     cr->stroke();
@@ -141,8 +143,10 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
 
     gui::Sprite* sp2(cr->createSprite(vec2(100,100)));
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
-    cr->setColor(Color(0.35f,0.35f,0.35f));
+    cr->setColor(Color(0.35f,0.35f,0.35f,0.7f));
     cr->fill();
+    cr->newPath();
+    cr->roundedRectangle(vec2(4,4), vec2(92,92), 10.0f);
     cr->setLineWidth(2.0f);
     cr->setColor(Color(0.78f,0.53f,0.23f));
     cr->stroke();
@@ -150,8 +154,10 @@ MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos):
 
     gui::Sprite* sp3(cr->createSprite(vec2(100,100)));
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
-    cr->setColor(Color(0.55f,0.55f,0.55f));
+    cr->setColor(Color(0.55f,0.55f,0.55f,0.7f));
     cr->fill();
+    cr->newPath();
+    cr->roundedRectangle(vec2(4,4), vec2(92,92), 10.0f);
     cr->setLineWidth(2.0f);
     cr->setColor(Color(0.1f,0.1f,0.1f));
     cr->stroke();

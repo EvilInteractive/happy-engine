@@ -158,15 +158,14 @@ void MaterialGeneratorGraph::init()
     settings.enablePost = false;
     m_View->init(settings);
 
+    he::eventCallback0<void> viewResizedHandler(boost::bind(&MaterialGeneratorGraph::onViewResized, this));
+    m_View->ViewportSizeChanged += viewResizedHandler;
+
     m_Renderer->attachToRender(this);
 
     gui::SpriteCreator* const cr(GUI->Sprites);
-
     m_Background = cr->createSprite(vec2(1280,720));
-    cr->rectangle(vec2(0,0),vec2(1280,720));
-    cr->setColor(Color(0.22f,0.22f,0.22f));
-    cr->fill();
-    cr->renderSpriteAsync();
+    renderBackground();
 }
 
 void MaterialGeneratorGraph::open()
@@ -369,6 +368,46 @@ he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const
 he::vec2 MaterialGeneratorGraph::worldToScreenPos( const vec2& worldPos ) const
 {
     return (worldPos - m_Offset) * m_Scale;
+}
+
+void MaterialGeneratorGraph::renderBackground()
+{
+    int width(m_View->getViewport().width);
+    int height(m_View->getViewport().height);
+
+    m_Background->invalidate(vec2((float)width,(float)height));
+
+    gui::SpriteCreator* const cr(GUI->Sprites);
+
+    cr->setActiveSprite(m_Background);
+
+    cr->rectangle(vec2(0,0),vec2((float)width,(float)height));
+    cr->setColor(Color(0.22f,0.22f,0.22f));
+    cr->fill();
+
+    cr->newPath();
+
+    for (uint8 i(0); i < ((height / 20) + 1); ++i)
+    {
+        cr->moveTo(vec2(0, (float)(i * 20)));
+        cr->lineTo(vec2((float)width, (float)(i * 20)));
+    }
+
+    for (uint8 i(0); i < ((width / 20) + 1); ++i)
+    {
+        cr->moveTo(vec2((float)(i * 20), 0));
+        cr->lineTo(vec2((float)(i * 20), (float)(height)));
+    }
+
+    cr->setLineWidth(1.0f);
+    cr->setColor(Color(0.0f,0.0f,0.0f,0.2f));
+    cr->stroke();
+
+    cr->renderSpriteAsync();
+}
+void MaterialGeneratorGraph::onViewResized()
+{
+    renderBackground();
 }
 
 } } //end namespace

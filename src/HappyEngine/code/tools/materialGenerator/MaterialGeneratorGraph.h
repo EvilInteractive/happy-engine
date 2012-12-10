@@ -58,12 +58,14 @@ class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
         State_StartMoveNode,
         State_MoveNode
     };
+
 public:
+
+    /* CONSTRUCTOR - DESTRUCTOR */
     MaterialGeneratorGraph();
     virtual ~MaterialGeneratorGraph();
 
-    ct::ShaderGenerator* getGenerator() const { return m_Generator; }
-
+    /* GENERAL */
     void init();
 
     void open();
@@ -72,14 +74,22 @@ public:
     virtual void tick(float dTime);
     virtual void draw2D(gfx::Canvas2D* canvas);
 
+    /* GETTERS */
+    ct::ShaderGenerator* getGenerator() const { return m_Generator; }
     bool isOpen() const;
 
 private:
+
+    /* INTERNAL */
     bool doNodeSelect(const vec2& mousePos, const bool keepSelection, const bool removeSelection);
 
     vec2 screenToWorldPos(const vec2& screenPos) const;
     vec2 worldToScreenPos(const vec2& worldPos) const;
 
+    void renderBackground();
+    void onViewResized();
+
+    /* MEMBERS */
     ct::ShaderGenerator* m_Generator;
 
     gui::Text m_DebugText;
@@ -107,7 +117,7 @@ private:
 
     gui::Sprite* m_Background;
 
-    //Disable default copy constructor and default assignment operator
+    /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);
     MaterialGeneratorGraph& operator=(const MaterialGeneratorGraph&);
 };
