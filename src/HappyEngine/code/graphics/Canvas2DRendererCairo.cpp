@@ -281,7 +281,7 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadSta
         static_cast<double>(normalizeAngle(angleRadStart)),
         static_cast<double>(normalizeAngle(angleRadEnd))));
 }
-void Canvas2DRendererCairo::curveTo(const vec2& start, const vec2& middle, const vec2& end)
+void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2, const vec2& end)
 {
     boost::mutex::scoped_lock lock(m_SpriteListLock);
 
@@ -294,10 +294,10 @@ void Canvas2DRendererCairo::curveTo(const vec2& start, const vec2& middle, const
         boost::bind(
 		&cairo_curve_to,
         sData.cairoPaint,
-		static_cast<double>(start.x),
-        static_cast<double>(start.y),
-        static_cast<double>(middle.x),
-        static_cast<double>(middle.y),
+		static_cast<double>(controlP1.x),
+        static_cast<double>(controlP1.y),
+        static_cast<double>(controlP2.x),
+        static_cast<double>(controlP2.y),
         static_cast<double>(end.x),
         static_cast<double>(end.y)));
 }

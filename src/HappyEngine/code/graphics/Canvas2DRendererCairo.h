@@ -82,7 +82,7 @@ public:
 
     void rectangle(const vec2& pos, const vec2& size);
     void arc(const vec2& pos, float radius, float angleRadStart, float angleRadEnd);
-    void curveTo(const vec2& start, const vec2& middle, const vec2& end);
+    void curveTo(const vec2& controlP1, const vec2& controlP2, const vec2& end);
     void newPath();
     void closePath();
 

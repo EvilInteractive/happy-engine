@@ -26,6 +26,7 @@
 #include "Gui.h"
 #include "Canvas2Dnew.h"
 #include "Renderer2D.h"
+#include "MathFunctions.h"
 
 namespace he {
 namespace tools {
@@ -44,10 +45,12 @@ MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 ind
     m_Sprites[0] = cr->createSprite(m_Size);
     m_Sprites[1] = cr->createSprite(m_Size);
     m_Sprites[2] = cr->createSprite(m_Size);
+
     if (isInput) // only inputs have connections
     {
-        m_ConnectionSprite = cr->createSprite(connectionResolution, gui::Sprite::DYNAMIC_DRAW);
+        m_ConnectionSprite = cr->createSprite(connectionResolution, gui::Sprite::DYNAMIC_DRAW | gui::Sprite::UNIFORM_SCALE);
     }
+
     renderSprites();
 }
 MaterialGeneratorNode::Connecter::~Connecter()
@@ -55,6 +58,9 @@ MaterialGeneratorNode::Connecter::~Connecter()
     m_Sprites[0]->release();
     m_Sprites[1]->release();
     m_Sprites[2]->release();
+
+    if (m_ConnectionSprite != nullptr)
+        m_ConnectionSprite->release();
 }
 void MaterialGeneratorNode::Connecter::renderSprites()
 {
@@ -106,14 +112,13 @@ void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, cons
         cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
     if (m_IsConnected)
     {
+        vec2 diff(m_ConnectionPos - m_Position);
+        const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
+        const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
 
-        const vec2 transformedConnectionPosition(transform * m_ConnectedConnecter->getPosition());
-        const vec2 diff(transformedConnectionPosition - transformedPosition);
-        const float maxDiff(std::max(fabs(diff.x), fabs(diff.y)));
-        const vec2 transformedSize(maxDiff, maxDiff);
-
-        cvs->drawImage(m_ConnectionSprite->getRenderTexture(), 
-            (transformedPosition + transformedConnectionPosition) / 2.0f - transformedSize / 2.0f, transformedSize);
+        cvs->drawSprite(m_ConnectionSprite, 
+            transformedPosition - vec2(myNormal.x > 0 ? 0 : m_ConnectionSprite->getSize().x,
+            myUp.y > 0 ? 0 : m_ConnectionSprite->getSize().y));
     }
 }
 
@@ -143,19 +148,30 @@ void MaterialGeneratorNode::Connecter::updateSprite()
 {
     HE_IF_ASSERT(m_IsInput == true && m_ConnectionSprite != nullptr && m_ConnectedConnecter != nullptr, "Set connection position on an output \nor connectionSprite == nullptr!\nor m_ConnectedConnecter == nulltpr")
     {
-        vec2 diff(m_ConnectedConnecter->getPosition() - m_Position);
+        m_ConnectionPos = connectionPos;
+        const float lineWidth(3.0f);
+
+        vec2 diff(m_ConnectionPos - m_Position);
+        const vec2 size(abs(diff.x) + lineWidth, abs(diff.y) + lineWidth);
         const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
         const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
         diff.x *= myNormal.x; // abs
         diff.y *= myUp.y;
+
         const vec2 scaledDiff((diff / std::max(diff.x, diff.y)) * connectionResolution.x);
+        const vec2 beginPoint(size.x / 2.0f - myNormal.x * size.x / 2.0f, size.y / 2.0f - myUp.y * size.y / 2.0f + (lineWidth * myUp.y) / 2.0f);
+        const vec2 endPoint(size.x / 2.0f + myNormal.x * size.x / 2.0f, size.y / 2.0f + myUp.y * size.y / 2.0f - (lineWidth * myUp.y) / 2.0f);
+
+        m_ConnectionSprite->invalidate(size);
 
         gui::SpriteCreator* const cr(GUI->Sprites);
         cr->setActiveSprite(m_ConnectionSprite);
         cr->newPath();
-        cr->moveTo(connectionResolution / 2.0f - myUp * scaledDiff.y / 2.0f - myNormal * scaledDiff.x / 2.0f);
-        cr->curveTo(myNormal * diff.x / 2.0f, -myNormal * diff.x / 2.0f,
-            connectionResolution / 2.0f + myUp * scaledDiff.y / 2.0f + myNormal * scaledDiff.x / 2.0f);
+        cr->moveTo(beginPoint);
+        cr->curveTo(
+            beginPoint + vec2(diff.x * myNormal.x * 0.5f, 0),
+            endPoint - vec2(diff.x * myNormal.x * 0.5f, 0),
+            endPoint);
         cr->setColor(Color(1.0f, 1.0f, 1.0f));
         cr->setLineWidth(3);
         cr->stroke();
