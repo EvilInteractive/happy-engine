@@ -67,7 +67,7 @@ public:
 
         m_AweObject.SetCustomMethod(method, false);
     }
-    void removeCallback(const Awesomium::WebString& method, const eventCallback1<void, const Awesomium::JSArray&>& callback)
+    void removeCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback)
     {
         Container::const_iterator it(m_MethodCallBacks.find(method));
         HE_IF_ASSERT(it != m_MethodCallBacks.cend(), "Removing callback from non existing method")

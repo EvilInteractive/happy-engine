@@ -59,7 +59,7 @@ public:
         void setPosition(const vec2& position);
         const vec2& getPosition() const { return m_Position; }
 
-        void setConnectedConnecter(Connecter* connecter) { m_ConnectedConnecter = connecter; }
+        void setConnectedConnecter(Connecter* connecter);
         void setConnected(const bool connected);
 
         const vec2& getSize() const { return m_Size; }
@@ -77,6 +77,8 @@ public:
     private:
         void updateSprite();
 
+        he::event0<void> Moved;
+
         gui::Sprite* m_Sprites[3];
         vec2 m_Position;
         const vec2 m_Size;
@@ -89,6 +91,7 @@ public:
         bool m_IsConnected;
         gui::Sprite* m_ConnectionSprite;
         Connecter* m_ConnectedConnecter;
+        he::eventCallback0<void> m_ConnectionMovedCallback;
 
         //Disable default copy constructor and default assignment operator
         Connecter(const Connecter&);

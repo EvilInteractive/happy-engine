@@ -36,10 +36,12 @@ const vec2 connectionResolution(256, 256);
 //////////////////////////////////////////////////////////////////////////
 // MaterialGeneratorNode::Connecter
 //////////////////////////////////////////////////////////////////////////
+#pragma warning(disable:4355) // use of this in init list
 MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
     m_IsInput(isInput), m_Index(index), m_Desc(desc), 
     m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10),
-    m_IsConnected(false), m_ConnectionSprite(nullptr)
+    m_IsConnected(false), m_ConnectionSprite(nullptr), m_ConnectedConnecter(nullptr),
+    m_ConnectionMovedCallback(boost::bind(&Connecter::updateSprite, this))
 {
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Sprites[0] = cr->createSprite(m_Size);
@@ -53,6 +55,7 @@ MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 ind
 
     renderSprites();
 }
+#pragma warning(default:4355) // use of this in init list
 MaterialGeneratorNode::Connecter::~Connecter()
 {
     m_Sprites[0]->release();
@@ -112,7 +115,7 @@ void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, cons
         cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
     if (m_IsConnected)
     {
-        vec2 diff(m_ConnectionPos - m_Position);
+        vec2 diff(m_ConnectedConnecter->getPosition() - m_Position);
         const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
         const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
 
@@ -148,10 +151,9 @@ void MaterialGeneratorNode::Connecter::updateSprite()
 {
     HE_IF_ASSERT(m_IsInput == true && m_ConnectionSprite != nullptr && m_ConnectedConnecter != nullptr, "Set connection position on an output \nor connectionSprite == nullptr!\nor m_ConnectedConnecter == nulltpr")
     {
-        m_ConnectionPos = connectionPos;
         const float lineWidth(3.0f);
 
-        vec2 diff(m_ConnectionPos - m_Position);
+        vec2 diff(m_ConnectedConnecter->getPosition() - m_Position);
         const vec2 size(abs(diff.x) + lineWidth, abs(diff.y) + lineWidth);
         const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
         const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
@@ -181,21 +183,37 @@ void MaterialGeneratorNode::Connecter::updateSprite()
 
 void MaterialGeneratorNode::Connecter::setPosition( const vec2& position )
 {
-    m_Position = position;
-    if (m_ConnectedConnecter != nullptr && m_IsInput == false)
+    if (position != m_Position)
     {
-        m_ConnectedConnecter->updateSprite();
-    }
-    else if (m_IsConnected)
-    {
-        updateSprite();
+        m_Position = position;
+        Moved();
+        if (m_ConnectedConnecter != nullptr && m_IsInput == false)
+        {
+            m_ConnectedConnecter->updateSprite();
+        }
+        else if (m_IsConnected)
+        {
+            updateSprite();
+        }
     }
 }
 
 void MaterialGeneratorNode::Connecter::setConnected( const bool connected )
 {
-    m_ConnectedConnecter = nullptr;
+    setConnectedConnecter(nullptr);
     m_IsConnected = connected;
+}
+
+void MaterialGeneratorNode::Connecter::setConnectedConnecter( Connecter* connecter )
+{
+    if (m_ConnectedConnecter != nullptr)
+        m_ConnectedConnecter->Moved -= m_ConnectionMovedCallback;
+    m_ConnectedConnecter = connecter;
+    if (m_ConnectedConnecter != nullptr)
+    {
+        m_ConnectedConnecter->Moved += m_ConnectionMovedCallback;
+        updateSprite();
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////

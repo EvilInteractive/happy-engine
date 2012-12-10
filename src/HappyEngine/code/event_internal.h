@@ -83,7 +83,7 @@ namespace details
         {
             add(func);
         }
-        void operator-=(const Callback& func)
+        void operator-=(Callback& func)
         {
             remove(func);
         }
@@ -108,7 +108,7 @@ namespace details
                 m_FreeConnections.push(i);
             m_CallbackPool.resize(m_CallbackPool.size() + step);
         }
-        void remove(const Callback& func)
+        void remove(Callback& func)
         {
             if (func.m_Connection == UINT16_MAX)
                 return;
@@ -119,6 +119,7 @@ namespace details
                 m_FreeConnections.push(func.m_Connection);
                 m_Connections.removeAt(index);
             }
+            func.m_Connection = UINT16_MAX;
         }
         bool empty() const { return m_Connections.empty(); }
 

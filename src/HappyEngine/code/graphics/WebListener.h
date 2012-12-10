@@ -45,7 +45,7 @@ public:
                            eventCallback1<void, const Awesomium::JSArray&>& callBack);
     void removeObjectCallback(const std::string& object,
                               const std::string& method,
-                              const eventCallback1<void, const Awesomium::JSArray&>& callBack);
+                              eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
     void executeFunction(const std::string& object,
                         const std::string& method,

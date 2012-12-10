@@ -22,3 +22,4 @@ src/build_install/*
 *.idea/
 src/build_install64/*
 *.cfg
+*.orig
