@@ -30,6 +30,8 @@
 
 #include "MaterialGeneratorGraphCommands.h"
 
+#include "MaterialGeneratorNode.h"
+
 namespace he {
 namespace gfx {
     class Window;
@@ -116,6 +118,7 @@ private:
     MaterialGeneratorGraphEditSelectionCommand m_EditSelectionCommand;
 
     gui::Sprite* m_Background;
+    MaterialGeneratorNode::Connecter* m_TestConnecter;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

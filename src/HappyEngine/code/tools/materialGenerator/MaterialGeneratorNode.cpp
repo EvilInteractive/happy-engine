@@ -30,17 +30,24 @@
 namespace he {
 namespace tools {
 
+const vec2 connectionResolution(256, 256);
+
 //////////////////////////////////////////////////////////////////////////
 // MaterialGeneratorNode::Connecter
 //////////////////////////////////////////////////////////////////////////
 MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
     m_IsInput(isInput), m_Index(index), m_Desc(desc), 
-    m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10)
+    m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10),
+    m_IsConnected(false), m_ConnectionPos(0, 0), m_ConnectionSprite(nullptr)
 {
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Sprites[0] = cr->createSprite(m_Size);
     m_Sprites[1] = cr->createSprite(m_Size);
     m_Sprites[2] = cr->createSprite(m_Size);
+    if (isInput) // only inputs have connections
+    {
+        m_ConnectionSprite = cr->createSprite(connectionResolution, gui::Sprite::DYNAMIC_DRAW);
+    }
     renderSprites();
 }
 MaterialGeneratorNode::Connecter::~Connecter()
@@ -97,6 +104,17 @@ void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, cons
         cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
     else
         cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+    if (m_IsConnected)
+    {
+
+        const vec2 transformedConnectionPosition(transform * m_ConnectionPos);
+        const vec2 diff(transformedConnectionPosition - transformedPosition);
+        const float maxDiff(std::max(fabs(diff.x), fabs(diff.y)));
+        const vec2 transformedSize(maxDiff, maxDiff);
+
+        cvs->drawImage(m_ConnectionSprite->getRenderTexture(), 
+            (transformedPosition + transformedConnectionPosition) / 2.0f - transformedSize / 2.0f, transformedSize);
+    }
 }
 
 bool MaterialGeneratorNode::Connecter::pick( const vec2& worldPos ) const
@@ -119,6 +137,31 @@ bool MaterialGeneratorNode::Connecter::doHoover( const vec2& worldPos, const boo
         m_IsHooverd = pick(worldPos);
     }
     return m_IsHooverd;
+}
+
+void MaterialGeneratorNode::Connecter::setConnectionPosition( const vec2& connectionPos )
+{
+    HE_IF_ASSERT(m_IsInput == true && m_ConnectionSprite != nullptr, "Set connection position on an output or connectionSprite == nullptr!")
+    {
+        m_ConnectionPos = connectionPos;
+        vec2 diff(m_ConnectionPos - m_Position);
+        const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
+        const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
+        diff.x *= myNormal.x; // abs
+        diff.y *= myUp.y;
+        const vec2 scaledDiff((diff / std::max(diff.x, diff.y)) * connectionResolution.x);
+
+        gui::SpriteCreator* const cr(GUI->Sprites);
+        cr->setActiveSprite(m_ConnectionSprite);
+        cr->newPath();
+        cr->moveTo(connectionResolution / 2.0f - myUp * scaledDiff.y / 2.0f - myNormal * scaledDiff.x / 2.0f);
+        cr->curveTo(myNormal * diff.x / 2.0f, -myNormal * diff.x / 2.0f,
+            connectionResolution / 2.0f + myUp * scaledDiff.y / 2.0f + myNormal * scaledDiff.x / 2.0f);
+        cr->setColor(Color(1.0f, 1.0f, 1.0f));
+        cr->setLineWidth(3);
+        cr->stroke();
+        cr->renderSpriteAsync();
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -68,6 +68,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_State(State_Idle)
     , m_MoveCommand(this)
     , m_EditSelectionCommand(this)
+    , m_TestConnecter(nullptr)
 {
     MaterialGeneratorNodeAdd* add(NEW MaterialGeneratorNodeAdd(this, vec2(12, 12)));
     m_NodeList.add(add);
@@ -81,6 +82,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     he::gfx::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
     m_DebugText.setFont(font);
     font->release();
+
 }
 #pragma warning(default:4355) // use of this in init list
 
@@ -166,6 +168,12 @@ void MaterialGeneratorGraph::init()
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Background = cr->createSprite(vec2(1280,720));
     renderBackground();
+
+    m_TestConnecter = NEW MaterialGeneratorNode::Connecter(true, 0, MaterialGeneratorNode::ConnecterDesc("Test", Color(1.0f, 1.0f, 1.0f)));
+    m_TestConnecter->setPosition(vec2(500, 500));
+    m_TestConnecter->setConnected(true);
+    m_TestConnecter->setConnectionPosition(vec2(0, 0));
+
 }
 
 void MaterialGeneratorGraph::open()
@@ -190,6 +198,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         case State_Idle:
         {
             const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+            m_TestConnecter->setConnectionPosition(mouseWorld);
             bool foundHoover(false);
             m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
             {
@@ -340,6 +349,7 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     {
         node->draw2D(canvas, transform, clipRect);
     });
+    m_TestConnecter->draw2D(canvas, transform);
 
     // DEBUG
     m_DebugText.clear();
@@ -354,7 +364,6 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     {
         m_DebugText.addTextExt("&%s  - %s\n", i < undoIndex? "AFA" : "ABA", transactions[i].getName().c_str());
     }
-
     
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     cvs->fillText(m_DebugText, vec2(12, 12));

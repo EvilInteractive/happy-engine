@@ -67,9 +67,14 @@ public:
     void disconnect(uint8 input);
 
     bool evaluteMarch(uint8 marchId, he::ObjectList<NodeGraphError<TInput, TOutput>>& errors);
+    bool customMarch(uint8 marchId, const boost::function0<NodeGraphNode<TInput, TOutput>* const>& callback);
 
     virtual bool evaluate(NodeGraphError<TInput, TOutput>& error) = 0;
     virtual bool canConnect(const TOutput& fromOutput, const TInput& toInput, NodeGraphError<TInput, TOutput>& error) const = 0;
+
+    // void, isInput, id
+    event2<void, bool, uint8> NodeDisconnected;
+    event2<void, bool, uint8> NodeConnected;
 
 private:
 

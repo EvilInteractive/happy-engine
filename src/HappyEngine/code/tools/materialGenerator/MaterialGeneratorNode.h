@@ -40,7 +40,7 @@ typedef NodeGraphConnection<MaterialGeneratorNodeInput, MaterialGeneratorNodeOut
 
 class MaterialGeneratorNode : public MaterialGeneratorNodeBase
 {
-protected:
+public:
     struct ConnecterDesc
     {
         ConnecterDesc(const std::string& name, const Color& color)
@@ -49,7 +49,7 @@ protected:
         std::string m_Name;
         Color m_Color;
     };
-private:
+public:
     class Connecter
     {
     public:
@@ -58,6 +58,9 @@ private:
 
         void setPosition(const vec2& position) { m_Position = position; }
         const vec2& getPosition() const { return m_Position; }
+
+        void setConnectionPosition(const vec2& connectionPos);
+        void setConnected(const bool connected) { m_IsConnected = connected; }
 
         const vec2& getSize() const { return m_Size; }
         bool isInput() const { return m_IsInput; }
@@ -80,6 +83,10 @@ private:
         const uint8 m_Index;
         bool m_IsSelected;
         bool m_IsHooverd;
+
+        bool m_IsConnected;
+        vec2 m_ConnectionPos;
+        gui::Sprite* m_ConnectionSprite;
 
         //Disable default copy constructor and default assignment operator
         Connecter(const Connecter&);

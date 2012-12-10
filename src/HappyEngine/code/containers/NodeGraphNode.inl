@@ -52,6 +52,8 @@ bool NodeGraphNode<TInput, TOutput>::connectToInput( NodeGraphNode* fromNode, ui
         disconnect(toInput);
         m_InputSlots[toInput].node = fromNode;
         m_InputSlots[toInput].connecter = fromOutput;
+        NodeConnected(true, toInput);
+        fromNode->NodeConnected(false, fromOutput);
         return true;
     }
     else
@@ -71,6 +73,8 @@ bool he::NodeGraphNode<TInput, TOutput>::connectToOutput( NodeGraphNode* fromNod
         fromNode->disconnect(fromInput);
         fromNode->m_InputSlots[toInput].node = this;
         fromNode->m_InputSlots[toInput].connecter = toOutput;
+        fromNode->NodeConnected(true, fromInput);
+        NodeConnected(false, toOutput);
         return true;
     }
     else
@@ -86,8 +90,21 @@ bool he::NodeGraphNode<TInput, TOutput>::connectToOutput( NodeGraphNode* fromNod
 template<typename TInput, typename TOutput>
 void NodeGraphNode<TInput, TOutput>::disconnect( uint8 input )
 {
-    m_InputSlots[input].node = nullptr;
-    m_InputSlots[input].connecter = UINT8_MAX;
+    NodeGraphConnection<TInput, TOutput>& connection(m_InputSlots[input]);
+    if (connection.isConnected())
+    {
+        HE_ASSERT(connection.node != nullptr, "Node is connected but other node is nullptr!");
+
+        // Throw output event
+        connection.node->NodeDisconnected(false, connection.connecter);
+
+        // Reset
+        m_InputSlots[input].node = nullptr;
+        m_InputSlots[input].connecter = UINT8_MAX;
+
+        // Throw event
+        NodeDisconnected(true, input);
+    }
 }
 
 template<typename TInput, typename TOutput>
@@ -119,6 +136,30 @@ bool NodeGraphNode<TInput, TOutput>::evaluteMarch(uint8 marchId, he::ObjectList<
     }
     m_LastMarchId = m_CurrentMarchId;
     return true;
+}
+
+template<typename TInput, typename TOutput>
+bool he::NodeGraphNode<TInput, TOutput>::customMarch( uint8 marchId, const boost::function0<NodeGraphNode<TInput, TOutput>* const>& callback )
+{
+    bool result(true);
+    if (m_LastMarchId != marchId)  // node already passed
+    {
+        if (m_CurrentMarchId == marchId)
+        {
+            HE_WARNING("Warning! Endless loop detected - stopped evaluating branch");
+            result = false;
+        }
+        else
+        {
+            m_CurrentMarchId = marchId;
+            m_InputSlots.forEach([marchId, &callback](const NodeGraphConnection<TInput, TOutput>& connection)
+            {
+                connection.node->customMarch(marchId, callback);
+            });
+            m_LastMarchId = m_CurrentMarchId;
+        }
+    }
+    return result;
 }
 
 } //end namespace
