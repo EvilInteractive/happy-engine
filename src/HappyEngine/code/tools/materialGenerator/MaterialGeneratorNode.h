@@ -31,6 +31,7 @@ namespace gfx {
 }
 namespace gui {
     class Sprite;
+    class BezierShape2D;
 }
 namespace tools {
 
@@ -75,8 +76,6 @@ public:
         void draw2D(gfx::Canvas2D* const canvas, const mat33& transform) const;
 
     private:
-        void updateSprite();
-
         he::event0<void> Moved;
 
         gui::Sprite* m_Sprites[3];
@@ -89,7 +88,7 @@ public:
         bool m_IsHooverd;
 
         bool m_IsConnected;
-        gui::Sprite* m_ConnectionSprite;
+        gui::BezierShape2D* m_Bezier;
         Connecter* m_ConnectedConnecter;
         he::eventCallback0<void> m_ConnectionMovedCallback;
 

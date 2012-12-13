@@ -27,11 +27,10 @@
 #include "Canvas2Dnew.h"
 #include "Renderer2D.h"
 #include "MathFunctions.h"
+#include "BezierShape2D.h"
 
 namespace he {
 namespace tools {
-
-const vec2 connectionResolution(256, 256);
 
 //////////////////////////////////////////////////////////////////////////
 // MaterialGeneratorNode::Connecter
@@ -40,8 +39,8 @@ const vec2 connectionResolution(256, 256);
 MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
     m_IsInput(isInput), m_Index(index), m_Desc(desc), 
     m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10),
-    m_IsConnected(false), m_ConnectionSprite(nullptr), m_ConnectedConnecter(nullptr),
-    m_ConnectionMovedCallback(boost::bind(&Connecter::updateSprite, this))
+    m_IsConnected(false), m_Bezier(nullptr), m_ConnectedConnecter(nullptr),
+    m_ConnectionMovedCallback([this](){ m_Bezier->setPositionEnd(m_ConnectedConnecter->getPosition()); })
 {
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Sprites[0] = cr->createSprite(m_Size);
@@ -50,7 +49,9 @@ MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 ind
 
     if (isInput) // only inputs have connections
     {
-        m_ConnectionSprite = cr->createSprite(connectionResolution, gui::Sprite::DYNAMIC_DRAW | gui::Sprite::UNIFORM_SCALE);
+        m_Bezier = NEW gui::BezierShape2D;
+        m_Bezier->setBeginTangent(vec2(1, 0));
+        m_Bezier->setEndTangent(vec2(-1, 0));
     }
 
     renderSprites();
@@ -61,9 +62,7 @@ MaterialGeneratorNode::Connecter::~Connecter()
     m_Sprites[0]->release();
     m_Sprites[1]->release();
     m_Sprites[2]->release();
-
-    if (m_ConnectionSprite != nullptr)
-        m_ConnectionSprite->release();
+    delete m_Bezier;
 }
 void MaterialGeneratorNode::Connecter::renderSprites()
 {
@@ -115,13 +114,7 @@ void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, cons
         cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
     if (m_IsConnected)
     {
-        vec2 diff(m_ConnectedConnecter->getPosition() - m_Position);
-        const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
-        const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
-
-        cvs->drawSprite(m_ConnectionSprite, 
-            transformedPosition - vec2(myNormal.x > 0 ? 0 : m_ConnectionSprite->getSize().x,
-            myUp.y > 0 ? 0 : m_ConnectionSprite->getSize().y));
+        m_Bezier->draw2D(canvas, transform);
     }
 }
 
@@ -147,53 +140,15 @@ bool MaterialGeneratorNode::Connecter::doHoover( const vec2& worldPos, const boo
     return m_IsHooverd;
 }
 
-void MaterialGeneratorNode::Connecter::updateSprite()
-{
-    HE_IF_ASSERT(m_IsInput == true && m_ConnectionSprite != nullptr && m_ConnectedConnecter != nullptr, "Set connection position on an output \nor connectionSprite == nullptr!\nor m_ConnectedConnecter == nulltpr")
-    {
-        const float lineWidth(3.0f);
-
-        vec2 diff(m_ConnectedConnecter->getPosition() - m_Position);
-        const vec2 size(abs(diff.x) + lineWidth, abs(diff.y) + lineWidth);
-        const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
-        const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
-        diff.x *= myNormal.x; // abs
-        diff.y *= myUp.y;
-
-        const vec2 scaledDiff((diff / std::max(diff.x, diff.y)) * connectionResolution.x);
-        const vec2 beginPoint(size.x / 2.0f - myNormal.x * size.x / 2.0f, size.y / 2.0f - myUp.y * size.y / 2.0f + (lineWidth * myUp.y) / 2.0f);
-        const vec2 endPoint(size.x / 2.0f + myNormal.x * size.x / 2.0f, size.y / 2.0f + myUp.y * size.y / 2.0f - (lineWidth * myUp.y) / 2.0f);
-
-        m_ConnectionSprite->invalidate(size);
-
-        gui::SpriteCreator* const cr(GUI->Sprites);
-        cr->setActiveSprite(m_ConnectionSprite);
-        cr->newPath();
-        cr->moveTo(beginPoint);
-        cr->curveTo(
-            beginPoint + vec2(diff.x * myNormal.x * 0.5f, 0),
-            endPoint - vec2(diff.x * myNormal.x * 0.5f, 0),
-            endPoint);
-        cr->setColor(Color(1.0f, 1.0f, 1.0f));
-        cr->setLineWidth(3);
-        cr->stroke();
-        cr->renderSpriteAsync();
-    }
-}
-
 void MaterialGeneratorNode::Connecter::setPosition( const vec2& position )
 {
     if (position != m_Position)
     {
         m_Position = position;
         Moved();
-        if (m_ConnectedConnecter != nullptr && m_IsInput == false)
+        if (m_IsConnected)
         {
-            m_ConnectedConnecter->updateSprite();
-        }
-        else if (m_IsConnected)
-        {
-            updateSprite();
+            m_Bezier->setPositionStart(m_Position);
         }
     }
 }
@@ -202,6 +157,10 @@ void MaterialGeneratorNode::Connecter::setConnected( const bool connected )
 {
     setConnectedConnecter(nullptr);
     m_IsConnected = connected;
+    if (m_IsConnected)
+    {
+        m_Bezier->setPositionStart(m_Position);
+    }
 }
 
 void MaterialGeneratorNode::Connecter::setConnectedConnecter( Connecter* connecter )
@@ -212,7 +171,7 @@ void MaterialGeneratorNode::Connecter::setConnectedConnecter( Connecter* connect
     if (m_ConnectedConnecter != nullptr)
     {
         m_ConnectedConnecter->Moved += m_ConnectionMovedCallback;
-        updateSprite();
+        m_Bezier->setPositionEnd(m_ConnectedConnecter->getPosition());
     }
 }
 

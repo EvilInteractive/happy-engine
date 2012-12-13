@@ -40,6 +40,7 @@ namespace gfx {
 }
 namespace gui {
     class Sprite;
+    class BezierShape2D;
 }
 namespace ct {
     class ShaderGenerator;
@@ -123,10 +124,10 @@ private:
     MaterialGeneratorGraphMoveCommand m_MoveCommand;
     MaterialGeneratorGraphEditSelectionCommand m_EditSelectionCommand;
     MaterialGeneratorGraphNodeConnectCommand m_ConnectNodeCommand;
-
+    
     gui::Sprite* m_Background;
 
-    gui::Sprite* m_GhostConnection;
+    gui::BezierShape2D* m_GhostConnection;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

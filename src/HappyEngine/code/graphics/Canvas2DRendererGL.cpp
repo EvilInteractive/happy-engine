@@ -340,42 +340,42 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
     if (sprite->getFlags() & gui::Sprite::UNIFORM_SCALE)
     {
         drawImage(sprite->getRenderTexture(), pos, size);
-
-        return;
     }
-
-    vec2 s(sprite->getSize());
-    RectF c(sprite->getCenter());
-
-    if (size != vec2(0.0f,0.0f))
+    else
     {
-        //vec2 scale(size.x / s.x, size.y / s.y);
-        c.width = size.x - (s.x - c.width);
-        c.height = size.y - (s.y - c.height);
+        vec2 s(sprite->getSize());
+        RectF c(sprite->getCenter());
 
-        s = size;
+        if (size != vec2(0.0f,0.0f))
+        {
+            //vec2 scale(size.x / s.x, size.y / s.y);
+            c.width = size.x - (s.x - c.width);
+            c.height = size.y - (s.y - c.height);
+
+            s = size;
+        }
+
+        mat44 world(mat44::createTranslation(vec3(pos.x + s.x/2, pos.y + s.y/2, 0.0f)) * mat44::createScale(s.x, s.y, 1.0f));
+    
+        s_NinePatchEffect->begin();
+        s_NinePatchEffect->setWorldMatrix(m_OrthographicMatrix * world);
+        s_NinePatchEffect->setCenter(c);
+        s_NinePatchEffect->setSize(s);
+        s_NinePatchEffect->setOriginalSize(sprite->getSize());
+        s_NinePatchEffect->setDiffuseMap(sprite->getRenderTexture());
+        s_NinePatchEffect->setDepth(0.5f);
+
+        GL::heBlendEnabled(true);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+
+        GL::heSetDepthRead(false);
+        GL::heSetDepthWrite(false);
+    
+        GL::heBindFbo(m_CanvasBuffer->frameBufferId);
+        GL::heBindVao(m_TextureQuad->getVertexArraysID());
+        glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
     }
-
-    mat44 world(mat44::createTranslation(vec3(pos.x + s.x/2, pos.y + s.y/2, 0.0f)) * mat44::createScale(s.x, s.y, 1.0f));
-    
-    s_NinePatchEffect->begin();
-    s_NinePatchEffect->setWorldMatrix(m_OrthographicMatrix * world);
-    s_NinePatchEffect->setCenter(c);
-    s_NinePatchEffect->setSize(s);
-    s_NinePatchEffect->setOriginalSize(sprite->getSize());
-    s_NinePatchEffect->setDiffuseMap(sprite->getRenderTexture());
-    s_NinePatchEffect->setDepth(0.5f);
-
-    GL::heBlendEnabled(true);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
-
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
-    
-    GL::heBindFbo(m_CanvasBuffer->frameBufferId);
-    GL::heBindVao(m_TextureQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
 
 /* INTERNAL */

@@ -79,6 +79,9 @@ set (CODE_GRAPHICS_RENDERING_2D_FILTER
 			WebListener.cpp					    WebListener.h
 			JSObject.h
 			NinePatchEffect.cpp					NinePatchEffect.h)
+            
+set (CODE_GRAPHICS_RENDERING_2D_SHAPES_FILTER
+            BezierShape2D.cpp                   BezierShape2D.h)           
 			
 set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
 			Deferred3DRenderer.cpp              Deferred3DRenderer.h)
@@ -141,6 +144,9 @@ endforeach(f)
     foreach(f ${CODE_GRAPHICS_RENDERING_2D_FILTER}) 
         LIST(APPEND CODE_GRAPHICS_RENDERING_2D_FILTER_SRCS code/graphics/${f})
     endforeach(f) 
+        foreach(f ${CODE_GRAPHICS_RENDERING_2D_SHAPES_FILTER}) 
+            LIST(APPEND CODE_GRAPHICS_RENDERING_2D_SHAPES_FILTER_SRCS code/graphics/${f})
+        endforeach(f) 
     foreach(f ${CODE_GRAPHICS_RENDERING_DEFERRED_FILTER}) 
         LIST(APPEND CODE_GRAPHICS_RENDERING_DEFERRED_FILTER_SRCS code/graphics/${f})
     endforeach(f) 
@@ -168,6 +174,7 @@ source_group (src\\graphics\\model FILES ${CODE_GRAPHICS_MODEL_FILTER_SRCS})
 source_group (src\\graphics\\picking FILES ${CODE_GRAPHICS_PICKING_FILTER_SRCS})
 source_group (src\\graphics\\rendering FILES ${CODE_GRAPHICS_RENDERING_FILTER_SRCS})
     source_group (src\\graphics\\rendering\\2d FILES ${CODE_GRAPHICS_RENDERING_2D_FILTER_SRCS})
+        source_group (src\\graphics\\rendering\\2d\\shapes FILES ${CODE_GRAPHICS_RENDERING_2D_SHAPES_FILTER_SRCS})
     source_group (src\\graphics\\rendering\\deferred FILES ${CODE_GRAPHICS_RENDERING_DEFERRED_FILTER_SRCS})
     source_group (src\\graphics\\rendering\\forward FILES ${CODE_GRAPHICS_RENDERING_FORWARD_FILTER_SRCS})
     source_group (src\\graphics\\rendering\\instancing FILES ${CODE_GRAPHICS_RENDERING_INSTANCING_FILTER_SRCS})
@@ -184,6 +191,7 @@ LIST(APPEND HAPPYENGINE_CODE_GRAPHICS_SRCS
         ${CODE_GRAPHICS_PICKING_FILTER_SRCS}
         ${CODE_GRAPHICS_RENDERING_FILTER_SRCS}
         ${CODE_GRAPHICS_RENDERING_2D_FILTER_SRCS}
+        ${CODE_GRAPHICS_RENDERING_2D_SHAPES_FILTER_SRCS}
         ${CODE_GRAPHICS_RENDERING_DEFERRED_FILTER_SRCS}
         ${CODE_GRAPHICS_RENDERING_FORWARD_FILTER_SRCS}
         ${CODE_GRAPHICS_RENDERING_INSTANCING_FILTER_SRCS}

@@ -45,6 +45,7 @@ lightingSettings
 #include "Font.h"
 #include "Sprite.h"
 #include "Gui.h"
+#include "BezierShape2D.h"
 
 #include "Command.h"
 
@@ -69,6 +70,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_MoveCommand(this)
     , m_EditSelectionCommand(this)
     , m_ConnectNodeCommand(this)
+    , m_GhostConnection(NEW gui::BezierShape2D)
 {
     MaterialGeneratorNodeAdd* add(NEW MaterialGeneratorNodeAdd(this, vec2(12, 12)));
     m_NodeList.add(add);
@@ -105,6 +107,7 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
         GRAPHICS->removeWindow(m_Window);
     }
 
+    delete m_GhostConnection;
     m_Background->release();
 }
 
@@ -297,6 +300,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
         } break;
         case State_ConnectNode:
         {
+            m_GhostConnection->setPositionEnd(screenToWorldPos(mouse->getPosition()));
             if (mouse->isButtonReleased(io::MouseButton_Left))
             {
                 doConnectEnd(mouse->getPosition());
@@ -360,6 +364,16 @@ bool MaterialGeneratorGraph::doConnectStart( const vec2& mousePos )
         const MaterialGeneratorNode* const node(m_NodeList[pickedNode]);
         const MaterialGeneratorNode::Connecter* const connecter(node->getConnecters()[pickedConnecter]);
         m_ConnectNodeCommand.startConnect(node->getGuid(), !connecter->isInput(), static_cast<uint8>(connecter->getIndex()));
+
+        m_GhostConnection->setPositionStart(connecter->getPosition());
+        m_GhostConnection->setPositionEnd(connecter->getPosition());
+
+        int mod = -1;
+        if (connecter->isInput())
+            mod = 1;
+        m_GhostConnection->setBeginTangent(vec2(1.0f * mod, 0));
+        m_GhostConnection->setEndTangent(vec2(-1.0f * mod, 0));
+
         result = true;
     }
     return result;
@@ -418,6 +432,11 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     {
         node->draw2D(canvas, transform, clipRect);
     });
+
+    if (m_State == State_ConnectNode)
+    {
+        m_GhostConnection->draw2D(canvas, transform);
+    }
 
     // DEBUG
     m_DebugText.clear();
