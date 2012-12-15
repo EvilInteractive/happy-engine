@@ -1,3 +1,7 @@
+Key_Ctrl
+Key_Delete
+Key_Z
+Key_Ctrl
 lightingSettings
 lightingSettings
 //HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
@@ -70,21 +74,29 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_MoveCommand(this)
     , m_EditSelectionCommand(this)
     , m_ConnectNodeCommand(this)
+    , m_CreateCommand(this)
+    , m_DeleteCommand(this)
     , m_GhostConnection(NEW gui::BezierShape2D)
 {
-    MaterialGeneratorNodeAdd* add(NEW MaterialGeneratorNodeAdd(this, vec2(12, 12)));
-    m_NodeList.add(add);
-    MaterialGeneratorNodeAdd* add2(NEW MaterialGeneratorNodeAdd(this, vec2(200, 300)));
-    m_NodeList.add(add2);
-    MaterialGeneratorNodeAdd* add3(NEW MaterialGeneratorNodeAdd(this, vec2(300, 200)));
-    m_NodeList.add(add3);
-    MaterialGeneratorNodeAdd* add4(NEW MaterialGeneratorNodeAdd(this, vec2(500, 300)));
-    m_NodeList.add(add4);
-
     he::gfx::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
     m_DebugText.setFont(font);
     font->release();
 
+    //m_ShortcutList.add(Shortcut(io::Key_1, MaterialGeneratorNodeType_Float1));
+    //m_ShortcutList.add(Shortcut(io::Key_2, MaterialGeneratorNodeType_Float2));
+    //m_ShortcutList.add(Shortcut(io::Key_3, MaterialGeneratorNodeType_Float3));
+    //m_ShortcutList.add(Shortcut(io::Key_4, MaterialGeneratorNodeType_Float4));
+    m_ShortcutList.add(Shortcut(io::Key_A, MaterialGeneratorNodeType_Add));
+    m_ShortcutList.add(Shortcut(io::Key_D, MaterialGeneratorNodeType_Divide));
+    m_ShortcutList.add(Shortcut(io::Key_E, MaterialGeneratorNodeType_Power));
+    m_ShortcutList.add(Shortcut(io::Key_L, MaterialGeneratorNodeType_Lerp));
+    m_ShortcutList.add(Shortcut(io::Key_M, MaterialGeneratorNodeType_Multiply));
+    m_ShortcutList.add(Shortcut(io::Key_N, MaterialGeneratorNodeType_Normalize));
+    m_ShortcutList.add(Shortcut(io::Key_O, MaterialGeneratorNodeType_OneMin));
+    //m_ShortcutList.add(Shortcut(io::Key_P, MaterialGeneratorNodeType_Panner));
+    //m_ShortcutList.add(Shortcut(io::Key_R, MaterialGeneratorNodeType_Reflect));
+    //m_ShortcutList.add(Shortcut(io::Key_T, MaterialGeneratorNodeType_Texture2D));
+    //m_ShortcutList.add(Shortcut(io::Key_U, MaterialGeneratorNodeType_Texcoord));
 }
 #pragma warning(default:4355) // use of this in init list
 
@@ -202,35 +214,58 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             });
             m_GrabWorldPos = mouseWorld;
             const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
-            if ((keyboard->isKeyDown(io::Key_Lctrl) || keyboard->isKeyDown(io::Key_Rctrl)) && keyboard->isKeyReleased(io::Key_Z))
+            if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Shift, io::Key_Z) || 
+                keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Y))
             {
-                if (keyboard->isKeyDown(io::Key_Lshift) || keyboard->isKeyDown(io::Key_Rshift))
-                    m_CommandStack.redo();
-                else
-                    m_CommandStack.undo();
+                m_CommandStack.redo();
             }
-            if (leftDown)
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Z))
             {
-                if (doConnectStart(mouse->getPosition()))
+                m_CommandStack.undo();
+            }
+            else if (leftDown)
+            {
+                size_t keyIndex(0);
+                if (m_ShortcutList.find_if(
+                    [keyboard](const Shortcut& shortcut) { return keyboard->isKeyDown(shortcut.m_Key); }, keyIndex))
                 {
-                    m_CommandStack.beginTransaction("Connect node");
-                    m_State = State_ConnectNode;
+                    m_CommandStack.beginTransaction("Create node");
+                    m_CreateCommand.create(m_ShortcutList[keyIndex].m_Type, mouseWorld);
+                    m_CommandStack.endTransaction();
                 }
                 else
                 {
-                    m_CommandStack.beginTransaction("Select Node");
-                    if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection))        
+                    if (doConnectStart(mouse->getPosition()))
                     {
-                        if (keepSelection == false && removeSelection == false)
-                            m_State = State_StartMoveNode;
-                        else
-                            m_CommandStack.endTransaction();
+                        m_CommandStack.beginTransaction("Connect node");
+                        m_State = State_ConnectNode;
                     }
                     else
                     {
-                        m_State = State_StartPan;
+                        m_CommandStack.beginTransaction("Select Node");
+                        if (doNodeSelect(mouse->getPosition(), keepSelection, removeSelection))        
+                        {
+                            if (keepSelection == false && removeSelection == false)
+                                m_State = State_StartMoveNode;
+                            else
+                                m_CommandStack.endTransaction();
+                        }
+                        else
+                        {
+                            m_State = State_StartPan;
+                        }
                     }
                 }
+            }
+            else if (keyboard->isKeyPressed(io::Key_Delete))
+            {
+                m_CommandStack.beginTransaction("Delete node(s)");
+                m_SelectedNodeList.forEach([this](MaterialGeneratorNode* const node)
+                {
+                    m_DeleteCommand.doDelete(node);
+                });
+                m_SelectedNodeList.clear();
+                m_CommandStack.endTransaction();
             }
         } break;
         case State_StartPan:
@@ -240,9 +275,12 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             const vec2 diff(mousePos - grabScreenPos);
             if (mouse->isButtonReleased(io::MouseButton_Left))
             {
-                m_EditSelectionCommand.beginCommand();
-                m_EditSelectionCommand.deselectAll();
-                m_EditSelectionCommand.endCommand();
+                if (m_SelectedNodeList.empty() == false)
+                {
+                    m_EditSelectionCommand.beginCommand();
+                    m_EditSelectionCommand.deselectAll();
+                    m_EditSelectionCommand.endCommand();
+                }
                 m_State = State_Idle;
                 m_CommandStack.endTransaction("Deselect");
             }
@@ -272,9 +310,12 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
             {
                 if (keepSelection == false && removeSelection == false)
                 {
-                    m_EditSelectionCommand.beginCommand();
-                    m_EditSelectionCommand.deselectAll();
-                    m_EditSelectionCommand.endCommand();
+                    if (m_SelectedNodeList.empty() == false)
+                    {
+                        m_EditSelectionCommand.beginCommand();
+                        m_EditSelectionCommand.deselectAll();
+                        m_EditSelectionCommand.endCommand();
+                    }
                 }
                 doNodeSelect(mouse->getPosition(), keepSelection, removeSelection);
                 m_CommandStack.endTransaction();
@@ -532,6 +573,12 @@ MaterialGeneratorNode* MaterialGeneratorGraph::getSelectedNode( const Guid& guid
         node = m_NodeList[index];
     }
     return node;
+}
+
+void MaterialGeneratorGraph::addNode( MaterialGeneratorNode* const node )
+{
+    m_NodeList.add(node);
+    node->setParent(this);
 }
 
 } } //end namespace

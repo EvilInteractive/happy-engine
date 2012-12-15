@@ -35,11 +35,15 @@ public:
     Keyboard();
     virtual ~Keyboard();
     
-    virtual bool isKeyUp(Key key) const;
-    virtual bool isKeyDown(Key key) const;
+    virtual bool isKeyUp(const Key key) const;
+    virtual bool isKeyDown(const Key key) const;
 
-    virtual bool isKeyPressed(Key key) const;           //true when state goes from up to down
-    virtual bool isKeyReleased(Key key) const;          //true when state goes from down to up
+    virtual bool isKeyPressed(const Key key) const;           //true when state goes from up to down
+    virtual bool isKeyReleased(const Key key) const;          //true when state goes from down to up
+
+    virtual bool isShortcutPressed(const Key key1, const Key key2) const; // true when shortcut is pressed and one key went from up to down
+    virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3) const;
+    virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3, const Key key4) const;
     
     virtual const char& getTextCharEntered() const;
 

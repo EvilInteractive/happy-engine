@@ -30,6 +30,8 @@
 namespace he {
 namespace gui {
 
+const vec2 marge(128, 4);
+
 BezierShape2D::BezierShape2D():
     m_Sprite(nullptr), m_NeedsUpdate(false),
     m_PositionBegin(0, 0), m_PositionEnd(0, 0)
@@ -86,12 +88,13 @@ void BezierShape2D::draw2D( gfx::Canvas2D* const canvas, const mat33& transform 
     const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
 
     const vec2 transformedPosition(transform * m_PositionBegin);
+    const vec2 size((transform * vec3(m_Sprite->getSize().x, m_Sprite->getSize().y, 0)).xy());
+    const vec2 scaledMarge((transform * vec3(marge.x, marge.y, 0)).xy());
 
     Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
     cvs->drawSprite(m_Sprite, 
-        transformedPosition - vec2(myNormal.x > 0 ? 0 : m_Sprite->getSize().x,
-        myUp.y > 0 ? 0 : m_Sprite->getSize().y));
-
+        transformedPosition - vec2(myNormal.x > 0 ? scaledMarge.x / 2.0f : size.x - scaledMarge.x / 2.0f,
+                                   myUp.y > 0 ? scaledMarge.y / 2.0f : size.y - scaledMarge.y / 2.0f), size);
     if (m_NeedsUpdate)
     {
         updateShape();
@@ -101,17 +104,17 @@ void BezierShape2D::draw2D( gfx::Canvas2D* const canvas, const mat33& transform 
 
 void BezierShape2D::updateShape()
 {
-    const float lineWidth(3.0f);
-
     vec2 diff(m_PositionEnd - m_PositionBegin);
-    const vec2 size(abs(diff.x) + lineWidth, abs(diff.y) + lineWidth);
+    const vec2 size(abs(diff.x) + marge.x, abs(diff.y) + marge.y);
     const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
     const vec2 myUp(0.0f, diff.y > 0? 1.0f : -1.0f);
     diff.x *= myNormal.x; // abs
     diff.y *= myUp.y;
 
-    const vec2 beginPoint(size.x / 2.0f - myNormal.x * size.x / 2.0f, size.y / 2.0f - myUp.y * size.y / 2.0f + (lineWidth * myUp.y) / 2.0f);
-    const vec2 endPoint(size.x / 2.0f + myNormal.x * size.x / 2.0f, size.y / 2.0f + myUp.y * size.y / 2.0f - (lineWidth * myUp.y) / 2.0f);
+    const vec2 beginPoint(size.x / 2.0f - myNormal.x * size.x / 2.0f + myNormal.x * marge.x / 2.0f, 
+                          size.y / 2.0f - myUp.y * size.y / 2.0f + myUp.y * marge.y / 2.0f);
+    const vec2 endPoint(size.x / 2.0f + myNormal.x * size.x / 2.0f - myNormal.x * marge.x / 2.0f, 
+                        size.y / 2.0f + myUp.y * size.y / 2.0f - myUp.y * marge.y / 2.0f);
 
     m_Sprite->invalidate(size);
 

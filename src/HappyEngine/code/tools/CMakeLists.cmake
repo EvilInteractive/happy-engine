@@ -28,15 +28,17 @@ set (CODE_TOOL_CONSOLE_FILTER
 )
 
 set (CODE_TOOL_MATERIALGENERATOR_FILTER
-        materialGenerator/MaterialGeneratorConstNodes.h
+        materialGenerator/MaterialGeneratorConstNodes.cpp               materialGenerator/MaterialGeneratorConstNodes.h
+        materialGenerator/MaterialGeneratorNodeClassHelper.h
         materialGenerator/MaterialGeneratorHelpers.h
 		materialGenerator/MaterialGeneratorGraph.cpp					materialGenerator/MaterialGeneratorGraph.h
         materialGenerator/MaterialGeneratorGraphCommands.cpp            materialGenerator/MaterialGeneratorGraphCommands.h
 		materialGenerator/MaterialGeneratorMathNodes.cpp				materialGenerator/MaterialGeneratorMathNodes.h
 		materialGenerator/MaterialGeneratorNode.cpp						materialGenerator/MaterialGeneratorNode.h
+        materialGenerator/MaterialGeneratorNodeFactory.cpp              materialGenerator/MaterialGeneratorNodeFactory.h
 		materialGenerator/MaterialGeneratorNodeInOut.cpp				materialGenerator/MaterialGeneratorNodeInOut.h
 		materialGenerator/MaterialGeneratorNodeTypes.cpp				materialGenerator/MaterialGeneratorNodeTypes.h
-		materialGenerator/MaterialGeneratorTextureNodes.h						
+		materialGenerator/MaterialGeneratorTextureNodes.cpp             materialGenerator/MaterialGeneratorTextureNodes.h						
 )
                       
 

@@ -16,24 +16,15 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 15/12/2012
+//Created: 14/11/2012
+#include "HappyPCH.h" 
 
-#ifndef _HE_MaterialGeneratorTextureNodes_H_
-#define _HE_MaterialGeneratorTextureNodes_H_
-#pragma once
-
-#include "MaterialGeneratorNodeClassHelper.h"
+#include "MaterialGeneratorConstNodes.h"
+#include "ShaderGeneratorVariableFactory.h"
+#include "MaterialGeneratorGraph.h"
 
 namespace he {
 namespace tools {
-    
-MaterialGeneratorNodeClass(FlipBook)
-MaterialGeneratorNodeClass(Panner)
-MaterialGeneratorNodeClass(Rotator)
-MaterialGeneratorNodeClass(Texture2D)
-MaterialGeneratorNodeClass(TextureCube)
-MaterialGeneratorNodeClass(Texcoord)
+
 
 } } //end namespace
-
-#endif

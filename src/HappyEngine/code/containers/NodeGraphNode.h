@@ -45,6 +45,26 @@ public:
 };
 
 template<typename TInput, typename TOutput>
+class NodeGraphNodeOutputConnections : public ObjectList<NodeGraphConnection<TInput, TOutput>>
+{
+public:
+    NodeGraphNodeOutputConnections() {}
+    virtual ~NodeGraphNodeOutputConnections() {}
+
+    NodeGraphNodeOutputConnections(const NodeGraphNodeOutputConnections<TInput, TOutput>& other):
+        ObjectList<NodeGraphConnection>(other.m_Connections.size())
+    {
+        append(other);
+    }
+    NodeGraphNodeOutputConnections& operator=(const NodeGraphNodeOutputConnections<TInput, TOutput>& other)
+    {
+        clear();
+        append(other);
+        return *this;
+    }
+};
+
+template<typename TInput, typename TOutput>
 class NodeGraphNode
 {
 public:
@@ -58,7 +78,9 @@ public:
     const TOutput& getOutput(uint8 index) const { return m_Outputs[index]; }
     TInput& getInput(uint8 index) { return m_Inputs[index]; }
     TOutput& getOutput(uint8 index) { return m_Outputs[index]; }
-    const NodeGraphConnection<TInput, TOutput>& getInputConnection(uint8 index) const { return m_InputSlots[index]; }
+    const NodeGraphConnection<TInput, TOutput>& getInputConnection(const uint8 input) const { return m_InputSlots[input]; }
+    const size_t getOutputConnectionCount(const uint8 output) const { return m_OutputSlots[output].size(); }
+    const NodeGraphConnection<TInput, TOutput>& getOutputConnection(const uint8 output, const uint8 index) const { return m_OutputSlots[output][index]; }
     uint8 getInputCount() const { return static_cast<uint8>(m_Inputs.size()); }
     uint8 getOutputCount() const { return static_cast<uint8>(m_Outputs.size()); }
 
@@ -85,6 +107,7 @@ private:
     uint8 m_CurrentMarchId;
 
     he::ObjectList<NodeGraphConnection<TInput, TOutput>> m_InputSlots;
+    he::ObjectList<NodeGraphNodeOutputConnections<TInput, TOutput>> m_OutputSlots;
 
     //Disable default copy constructor and default assignment operator
     NodeGraphNode(const NodeGraphNode&);

@@ -63,6 +63,7 @@ enum ShaderGeneratorVariableOperationType
     ShaderGeneratorVariableOperationType_Clamp,
     ShaderGeneratorVariableOperationType_Lerp,
     ShaderGeneratorVariableOperationType_Step,
+    ShaderGeneratorVariableOperationType_SmoothStep,
 
     ShaderGeneratorVariableOperationType_Length,
     ShaderGeneratorVariableOperationType_Distance,

@@ -106,7 +106,7 @@ void TextBox::tick()
             }
         }
         // check for backspace
-        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Backspace))
+        else if (CONTROLS->getKeyboard()->isKeyDown(io::Key_BackSpace))
         {
             if (m_BackspaceDown == false)
             {
@@ -139,7 +139,7 @@ void TextBox::tick()
             }
         }
 
-        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_Backspace))
+        if (CONTROLS->getKeyboard()->isKeyUp(io::Key_BackSpace))
         {
             m_BackspaceDown = false;
             m_BackSpaceTimer = (uint32)(m_BlinkTimer.elapsed() * 10);

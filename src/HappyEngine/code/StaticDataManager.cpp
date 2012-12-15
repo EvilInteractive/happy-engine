@@ -37,6 +37,7 @@
 #include "CullOctreeNodeFactory.h"
 #include "ShaderGeneratorVariableFactory.h"
 #include "Sprite.h"
+#include "materialGenerator/MaterialGeneratorNodeFactory.h"
 
 namespace he {
 
@@ -60,10 +61,12 @@ void StaticDataManager::init()
     gfx::LightFactory::sdmInit();
     gfx::CullOctreeNodeFactory::sdmInit();
     ct::ShaderGeneratorVariableFactory::sdmInit();
+    tools::MaterialGeneratorNodeFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();

@@ -34,6 +34,7 @@ public:
     ShaderGeneratorVariable();
     ~ShaderGeneratorVariable();
 
+    // Const
     void setConstant(const float a);
     void setConstant(const vec2& a);
     void setConstant(const vec3& a);
@@ -41,13 +42,41 @@ public:
     void setGlobalVar(const ShaderGeneratorGlobalVariableType type);
     void setExposedVar(const ShaderGeneratorVariableType type);
 
+    // One param
+    void setAbs(const ObjectHandle& a);
+    void setCeil(const ObjectHandle& a);
+    void setCos(const ObjectHandle& a);
+    void setFloor(const ObjectHandle& a);
+    void setFrac(const ObjectHandle& a);
+    void setNormalize(const ObjectHandle& a);
+    void setSign(const ObjectHandle& a);
+    void setSin(const ObjectHandle& a);
+
+    // Two params
+    void setAdd(const ObjectHandle& a, const ObjectHandle& b);
+    void setCross(const ObjectHandle& a, const ObjectHandle& b);
+    void setDistance(const ObjectHandle& a, const ObjectHandle& b);
+    void setDivide(const ObjectHandle& a, const ObjectHandle& b);
+    void setDot(const ObjectHandle& a, const ObjectHandle& b);
+    void setMultiply(const ObjectHandle& a, const ObjectHandle& b);
+    void setMin(const ObjectHandle& a, const ObjectHandle& b);
+    void setPower(const ObjectHandle& a, const ObjectHandle& b);
+    void setReflect(const ObjectHandle& in, const ObjectHandle& normal);
+    void setSubtract(const ObjectHandle& a, const ObjectHandle& b);
+    void setStep(const ObjectHandle& edge, const ObjectHandle& a);
+
+    // Three params
+    void setClamp(const ObjectHandle& a, const ObjectHandle& min, const ObjectHandle& max);
+    void setLerp(const ObjectHandle& x, const ObjectHandle& y, const ObjectHandle& a);
+    void setSmoothStep(const ObjectHandle& edge1, const ObjectHandle& edge2, const ObjectHandle& a);
+
+
+
+    // Getters
     float getFloatData() const;
     const vec2& getFloat2Data() const;
     const vec3& getFloat3Data() const;
     const vec4& getFloat4Data() const;
-
-    void setAbs(const ObjectHandle& a);
-    void setAdd(const ObjectHandle& a, const ObjectHandle& b);
 
     const ShaderGeneratorVariableOperation& getOperation() const { return m_Operation; }
     const ShaderGeneratorVariableType& getType() const { return m_Type; }

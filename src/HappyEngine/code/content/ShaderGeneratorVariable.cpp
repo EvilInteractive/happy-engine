@@ -83,20 +83,61 @@ void ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType t
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
 }
 
-void ShaderGeneratorVariable::setAbs( const ObjectHandle& a )
-{
-    m_Operation.type = ShaderGeneratorVariableOperationType_Abs;
-    m_Operation.params[0] = a;
-    setTypeFromOther(a);
+#define FUNC1(name, oper) \
+void ShaderGeneratorVariable::name( const ObjectHandle& a )\
+{\
+    m_Operation.type = oper; \
+    m_Operation.params[0] = a; \
+    setTypeFromOther(a);\
 }
 
-void ShaderGeneratorVariable::setAdd( const ObjectHandle& a, const ObjectHandle& b )
-{
-    m_Operation.type = ShaderGeneratorVariableOperationType_Add;
-    m_Operation.params[0] = a;
-    m_Operation.params[1] = b;
-    setTypeFromOther(a);
+#define FUNC2(name, oper) \
+void ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b )\
+{\
+    m_Operation.type = oper; \
+    m_Operation.params[0] = a; \
+    m_Operation.params[1] = b; \
+    setTypeFromOther(a); \
 }
+
+#define FUNC3(name, oper) \
+void ShaderGeneratorVariable::name( const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c )\
+{\
+    m_Operation.type = oper; \
+    m_Operation.params[0] = a; \
+    m_Operation.params[1] = b; \
+    m_Operation.params[2] = c; \
+    setTypeFromOther(a); \
+}
+
+FUNC1(setAbs, ShaderGeneratorVariableOperationType_Abs)
+FUNC1(setCeil, ShaderGeneratorVariableOperationType_Ceil)
+FUNC1(setCos, ShaderGeneratorVariableOperationType_Cos)
+FUNC1(setFloor, ShaderGeneratorVariableOperationType_Floor)
+FUNC1(setFrac, ShaderGeneratorVariableOperationType_Frac)
+FUNC1(setNormalize, ShaderGeneratorVariableOperationType_Normalize)
+FUNC1(setSign, ShaderGeneratorVariableOperationType_Sign)
+FUNC1(setSin, ShaderGeneratorVariableOperationType_Sin)
+
+FUNC2(setAdd, ShaderGeneratorVariableOperationType_Add)
+FUNC2(setCross, ShaderGeneratorVariableOperationType_Cross)
+FUNC2(setDistance, ShaderGeneratorVariableOperationType_Distance)
+FUNC2(setDivide, ShaderGeneratorVariableOperationType_Div)
+FUNC2(setDot, ShaderGeneratorVariableOperationType_Dot)
+FUNC2(setMultiply, ShaderGeneratorVariableOperationType_Mul)
+FUNC2(setMin, ShaderGeneratorVariableOperationType_Min)
+FUNC2(setPower, ShaderGeneratorVariableOperationType_Pow)
+FUNC2(setReflect, ShaderGeneratorVariableOperationType_Reflect)
+FUNC2(setSubtract, ShaderGeneratorVariableOperationType_Sub)
+FUNC2(setStep, ShaderGeneratorVariableOperationType_Step)
+
+FUNC3(setClamp, ShaderGeneratorVariableOperationType_Clamp)
+FUNC3(setLerp, ShaderGeneratorVariableOperationType_Lerp)
+FUNC3(setSmoothStep, ShaderGeneratorVariableOperationType_SmoothStep)
+
+#undef FUNC1                                           
+#undef FUNC2
+#undef FUNC3
 
 void ShaderGeneratorVariable::setTypeFromOther( const ObjectHandle& handle )
 {

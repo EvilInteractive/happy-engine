@@ -32,11 +32,15 @@ class IKeyboard
 public:
     virtual ~IKeyboard() {}
     
-    virtual bool isKeyUp(Key key) const = 0;
-    virtual bool isKeyDown(Key key) const = 0;
+    virtual bool isKeyUp(const Key key) const = 0;
+    virtual bool isKeyDown(const Key key) const = 0;
 
-    virtual bool isKeyPressed(Key key) const = 0;           //true when state goes from up to down
-    virtual bool isKeyReleased(Key key) const = 0;          //true when state goes from down to up
+    virtual bool isKeyPressed(const Key key) const = 0;           //true when state goes from up to down
+    virtual bool isKeyReleased(const Key key) const = 0;          //true when state goes from down to up
+
+    virtual bool isShortcutPressed(const Key key1, const Key key2) const = 0;
+    virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3) const = 0;
+    virtual bool isShortcutPressed(const Key key1, const Key key2, const Key key3, const Key key4) const = 0;
     
     virtual const char& getTextCharEntered() const = 0;
 

@@ -18,22 +18,36 @@
 //Author:  Bastian Damman
 //Created: 15/12/2012
 
-#ifndef _HE_MaterialGeneratorTextureNodes_H_
-#define _HE_MaterialGeneratorTextureNodes_H_
+#ifndef _HE_MaterialGeneratorNodeClassHelpers_H_
+#define _HE_MaterialGeneratorNodeClassHelpers_H_
 #pragma once
 
-#include "MaterialGeneratorNodeClassHelper.h"
+#include "MaterialGeneratorNode.h"
 
 namespace he {
 namespace tools {
-    
-MaterialGeneratorNodeClass(FlipBook)
-MaterialGeneratorNodeClass(Panner)
-MaterialGeneratorNodeClass(Rotator)
-MaterialGeneratorNodeClass(Texture2D)
-MaterialGeneratorNodeClass(TextureCube)
-MaterialGeneratorNodeClass(Texcoord)
+class MaterialGeneratorGraph;
 
-} } //end namespace
+#define _MaterialGeneratorNodeClass(className, type) \
+class className : public MaterialGeneratorNode\
+{\
+public:\
+    className();\
+    virtual ~className() {}\
+    \
+    virtual bool evaluate(MaterialGeneratorError& error);\
+    \
+    virtual MaterialGeneratorNodeType getType() { return MaterialGeneratorNodeType_##type; } \
+    \
+private:\
+    MaterialGeneratorGraph* m_Parent;\
+    \
+    className(const className&);\
+    className& operator=(const className&);\
+};
+
+#define MaterialGeneratorNodeClass(type) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type, type)
+
+} }
 
 #endif

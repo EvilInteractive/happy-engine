@@ -41,6 +41,7 @@ template<typename TInput, typename TOutput>
 uint8 NodeGraphNode<TInput, TOutput>::addOutput( const TOutput& output )
 {
     m_Outputs.add(output); 
+    m_OutputSlots.resize(m_OutputSlots.size() + 1);
     return static_cast<uint8>(m_Outputs.size() - 1); 
 }
 
@@ -53,6 +54,11 @@ bool NodeGraphNode<TInput, TOutput>::connectToInput( NodeGraphNode* fromNode, ui
         m_InputSlots[toInput].node = fromNode;
         m_InputSlots[toInput].connecter = fromOutput;
         NodeConnected(true, toInput);
+
+        NodeGraphConnection<TInput, TOutput> connection;
+        connection.node = this;
+        connection.connecter = toInput;
+        fromNode->m_OutputSlots[fromOutput].add(connection);
         fromNode->NodeConnected(false, fromOutput);
         return true;
     }
@@ -74,6 +80,11 @@ bool he::NodeGraphNode<TInput, TOutput>::connectToOutput( NodeGraphNode* fromNod
         fromNode->m_InputSlots[fromInput].node = this;
         fromNode->m_InputSlots[fromInput].connecter = toOutput;
         fromNode->NodeConnected(true, fromInput);
+
+        NodeGraphConnection<TInput, TOutput> connection;
+        connection.node = fromNode;
+        connection.connecter = fromInput;
+        m_OutputSlots[toOutput].add(connection);
         NodeConnected(false, toOutput);
         return true;
     }
@@ -95,12 +106,20 @@ void NodeGraphNode<TInput, TOutput>::disconnect( uint8 input )
     {
         HE_ASSERT(connection.node != nullptr, "Node is connected but other node is nullptr!");
 
+        // Disconnect output
+        NodeGraphConnection<TInput, TOutput>& inputConnection(m_InputSlots[input]);
+        size_t outputIndex(0);
+        const bool foundOutput(inputConnection.node->m_OutputSlots[inputConnection.connecter].find_if(
+            [this](const NodeGraphConnection<TInput, TOutput>& conn) -> bool { return conn.node == this; }, outputIndex));
+        HE_ASSERT(foundOutput, "Output connection not found when disconnecting"); foundOutput;
+        inputConnection.node->m_OutputSlots[inputConnection.connecter].removeAt(outputIndex);
+
         // Throw output event
         connection.node->NodeDisconnected(false, connection.connecter);
 
         // Reset
-        m_InputSlots[input].node = nullptr;
-        m_InputSlots[input].connecter = UINT8_MAX;
+        inputConnection.node = nullptr;
+        inputConnection.connecter = UINT8_MAX;
 
         // Throw event
         NodeDisconnected(true, input);

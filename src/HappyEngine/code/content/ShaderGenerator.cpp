@@ -265,6 +265,7 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
     // Func 3
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_Clamp, "clamp");
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_Lerp, "mix");
+    GLSL_FUNC3(ShaderGeneratorVariableOperationType_SmoothStep, "smoothstep");
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_Refract, "refract");
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_TextureLod, "textureLod");
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_TextureOffset, "textureOffset");

@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Command.h"
+#include "MaterialGeneratorNodeTypes.h"
 
 namespace he {
 namespace tools {
@@ -90,14 +91,14 @@ private:
 };
 
 class MaterialGeneratorGraphNodeConnectCommand
-{ // Move is always on current selection
+{
 public:
     MaterialGeneratorGraphNodeConnectCommand(MaterialGeneratorGraph* const parent)
         : m_Parent(parent)
         , m_StartAtOutput(false)
         , m_IndexStart(UINT8_MAX)
         , m_IndexEnd(UINT8_MAX)
-        , m_IsConnection(false)
+        , m_IsConnecting(false)
     {}
     // Copy == ok
 
@@ -107,7 +108,10 @@ public:
     bool doConnect( const Guid& endNode, const uint8 endIndex );
     void cancelConnect();
 
-    bool isConnecting() const { return m_IsConnection; }
+    bool doDisconnect( const Guid& node, const bool isInput, const uint8 index );
+    bool doDisconnect( MaterialGeneratorNode* const node, const bool isInput, const uint8 index );
+
+    bool isConnecting() const { return m_IsConnecting; }
     bool startedAtOutput() const { return m_StartAtOutput; }
 
 private:
@@ -116,14 +120,56 @@ private:
     void undoCommand();
 
     MaterialGeneratorGraph* m_Parent;
-    bool m_IsConnection;
+    bool m_IsConnecting;
+
     Guid m_NodeStart;
     bool m_StartAtOutput;
     uint8 m_IndexStart;
     Guid m_NodeEnd;
     uint8 m_IndexEnd;
+    bool m_IsConnect;
 };
 
+class MaterialGeneratorGraphCreateCommand
+{
+public:
+    MaterialGeneratorGraphCreateCommand(MaterialGeneratorGraph* const parent)
+        : m_Parent(parent)
+    {}
+    // Copy == ok
+
+    void operator()(const CommandType type);
+
+    void create(const MaterialGeneratorNodeType type, const vec2& position);
+
+private:
+    Guid m_Id;
+    MaterialGeneratorNodeType m_Type;
+    vec2 m_Position;
+
+    MaterialGeneratorGraph* m_Parent;
+};
+
+class MaterialGeneratorGraphDeleteCommand
+{
+public:
+    MaterialGeneratorGraphDeleteCommand(MaterialGeneratorGraph* const parent)
+        : m_Parent(parent)
+    {}
+    // Copy == ok
+
+    void operator()(const CommandType type);
+
+    void doDelete(const Guid& id);
+    void doDelete(MaterialGeneratorNode* const node);
+
+private:
+    Guid m_Id;
+    MaterialGeneratorNodeType m_Type;
+    vec2 m_Position;
+
+    MaterialGeneratorGraph* m_Parent;
+};
 
 } } //end namespace
 

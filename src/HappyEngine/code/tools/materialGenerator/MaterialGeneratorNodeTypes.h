@@ -40,10 +40,10 @@ const char* materialGeneratorVariableTypeToString(const MaterialGeneratorVariabl
 enum MaterialGeneratorNodeType
 {
     // Const
-    MaterialGeneratorNodeType_ConstFloat1,
-    MaterialGeneratorNodeType_ConstFloat2,
-    MaterialGeneratorNodeType_ConstFloat3,
-    MaterialGeneratorNodeType_ConstFloat4,
+    MaterialGeneratorNodeType_Float1,
+    MaterialGeneratorNodeType_Float2,
+    MaterialGeneratorNodeType_Float3,
+    MaterialGeneratorNodeType_Float4,
 
     // Globals
     MaterialGeneratorNodeType_Position,
@@ -58,11 +58,10 @@ enum MaterialGeneratorNodeType
         MaterialGeneratorNodeType_Abs,
         MaterialGeneratorNodeType_Add,
         MaterialGeneratorNodeType_Cos,
-        MaterialGeneratorNodeType_Div,
-        MaterialGeneratorNodeType_Min,
-        MaterialGeneratorNodeType_Mul,
+        MaterialGeneratorNodeType_Divide,
+        MaterialGeneratorNodeType_Multiply,
         MaterialGeneratorNodeType_Sin,
-        MaterialGeneratorNodeType_Sub,
+        MaterialGeneratorNodeType_Subtract,
         // Func
         MaterialGeneratorNodeType_Ceil,
         MaterialGeneratorNodeType_Clamp,
@@ -71,13 +70,15 @@ enum MaterialGeneratorNodeType
         MaterialGeneratorNodeType_DistanceSqr,
         MaterialGeneratorNodeType_Dot,
         MaterialGeneratorNodeType_Floor,
-        MaterialGeneratorNodeType_FMod,
         MaterialGeneratorNodeType_Frac,
         MaterialGeneratorNodeType_Lerp,
+        MaterialGeneratorNodeType_Max,
+        MaterialGeneratorNodeType_Min,
         MaterialGeneratorNodeType_OneMin,
         MaterialGeneratorNodeType_Normalize,
         MaterialGeneratorNodeType_Power,
-        MaterialGeneratorNodeType_Sine,
+        MaterialGeneratorNodeType_Reflect,
+        MaterialGeneratorNodeType_Sign,
 
     // Texture
     MaterialGeneratorNodeType_FlipBook,

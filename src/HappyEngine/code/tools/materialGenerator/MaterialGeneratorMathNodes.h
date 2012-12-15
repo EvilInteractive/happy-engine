@@ -22,58 +22,38 @@
 #define _HE_MaterialGeneratorMathNodes_H_
 #pragma once
 
-#include "MaterialGeneratorNode.h"
+#include "MaterialGeneratorNodeClassHelper.h"
 
 namespace he {
 namespace tools {
-class MaterialGeneratorGraph;
-
-#define _MaterialGeneratorNodeClass(className) \
-class className : public MaterialGeneratorNode\
-{\
-public:\
-    className(MaterialGeneratorGraph* const parent, const vec2& pos);\
-    virtual ~className() {}\
-    \
-    virtual bool evaluate(MaterialGeneratorError& error);\
-    \
-private:\
-    MaterialGeneratorGraph* m_Parent;\
-    \
-    className(const className&);\
-    className& operator=(const className&);\
-};
-
-#define MaterialGeneratorNodeClass(type) _MaterialGeneratorNodeClass(MaterialGeneratorNode##type)
-
     
+// One param
 MaterialGeneratorNodeClass(Abs)
-MaterialGeneratorNodeClass(Add)
 MaterialGeneratorNodeClass(Cos)
-MaterialGeneratorNodeClass(Div)
-MaterialGeneratorNodeClass(Min)
-MaterialGeneratorNodeClass(Mul)
 MaterialGeneratorNodeClass(Sin)
-MaterialGeneratorNodeClass(Sub)
-// Func
 MaterialGeneratorNodeClass(Ceil)
-MaterialGeneratorNodeClass(Clamp)
+MaterialGeneratorNodeClass(Floor)
+MaterialGeneratorNodeClass(Frac)
+MaterialGeneratorNodeClass(OneMin)
+MaterialGeneratorNodeClass(Normalize)
+MaterialGeneratorNodeClass(Sign)
+
+// Two params
+MaterialGeneratorNodeClass(Add)
+MaterialGeneratorNodeClass(Divide)
+MaterialGeneratorNodeClass(Min)
+MaterialGeneratorNodeClass(Multiply)
+MaterialGeneratorNodeClass(Subtract)
 MaterialGeneratorNodeClass(Cross)
 MaterialGeneratorNodeClass(Distance)
 MaterialGeneratorNodeClass(DistanceSqr)
 MaterialGeneratorNodeClass(Dot)
-MaterialGeneratorNodeClass(Floor)
-MaterialGeneratorNodeClass(FMod)
-MaterialGeneratorNodeClass(Frac)
-MaterialGeneratorNodeClass(Lerp)
-MaterialGeneratorNodeClass(OneMin)
-MaterialGeneratorNodeClass(Normalize)
 MaterialGeneratorNodeClass(Power)
-MaterialGeneratorNodeClass(Sine)
+MaterialGeneratorNodeClass(Reflect)
 
-
-#undef MaterialGeneratorNodeClass
-#undef _MaterialGeneratorNodeClass
+// Three param
+MaterialGeneratorNodeClass(Clamp)
+MaterialGeneratorNodeClass(Lerp)
 
 } } //end namespace
 

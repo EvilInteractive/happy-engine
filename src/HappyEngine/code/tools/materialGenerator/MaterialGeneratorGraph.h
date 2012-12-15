@@ -53,6 +53,8 @@ class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
     friend class MaterialGeneratorGraphMoveCommand;
     friend class MaterialGeneratorGraphEditSelectionCommand;
     friend class MaterialGeneratorGraphNodeConnectCommand;
+    friend class MaterialGeneratorGraphCreateCommand;
+    friend class MaterialGeneratorGraphDeleteCommand;
     enum State
     {
         State_Idle,
@@ -61,6 +63,17 @@ class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
         State_StartMoveNode,
         State_MoveNode,
         State_ConnectNode
+    };
+    struct Shortcut
+    {
+        Shortcut(): m_Key(io::Key_MAX), m_Type(MaterialGeneratorNodeType_Unassigned) {}
+        Shortcut(const io::Key key, const MaterialGeneratorNodeType type)
+         : m_Key(key), m_Type(type) {}
+
+        ~Shortcut() {}
+
+        io::Key m_Key;
+        MaterialGeneratorNodeType m_Type;
     };
 
 public:
@@ -98,6 +111,8 @@ private:
     void renderBackground();
     void onViewResized();
 
+    void addNode(MaterialGeneratorNode* const node);
+
     /* MEMBERS */
     ct::ShaderGenerator* m_Generator;
 
@@ -124,6 +139,10 @@ private:
     MaterialGeneratorGraphMoveCommand m_MoveCommand;
     MaterialGeneratorGraphEditSelectionCommand m_EditSelectionCommand;
     MaterialGeneratorGraphNodeConnectCommand m_ConnectNodeCommand;
+    MaterialGeneratorGraphCreateCommand m_CreateCommand;
+    MaterialGeneratorGraphDeleteCommand m_DeleteCommand;
+
+    he::ObjectList<Shortcut> m_ShortcutList;
     
     gui::Sprite* m_Background;
 

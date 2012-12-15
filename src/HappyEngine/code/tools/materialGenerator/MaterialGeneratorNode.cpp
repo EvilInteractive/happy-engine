@@ -36,11 +36,12 @@ namespace tools {
 // MaterialGeneratorNode::Connecter
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable:4355) // use of this in init list
-MaterialGeneratorNode::Connecter::Connecter( const bool isInput, const uint8 index, const ConnecterDesc& desc ):
+MaterialGeneratorNode::Connecter::Connecter( MaterialGeneratorNode* const parent, const bool isInput, const uint8 index, const ConnecterDesc& desc ):
     m_IsInput(isInput), m_Index(index), m_Desc(desc), 
     m_IsSelected(false), m_IsHooverd(false), m_Size(10, 10),
     m_IsConnected(false), m_Bezier(nullptr), m_ConnectedConnecter(nullptr),
-    m_ConnectionMovedCallback([this](){ m_Bezier->setPositionEnd(m_ConnectedConnecter->getPosition()); })
+    m_ConnectionMovedCallback([this](){ m_Bezier->setPositionEnd(m_ConnectedConnecter->getPosition()); }),
+    m_Parent(parent)
 {
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Sprites[0] = cr->createSprite(m_Size);
@@ -71,7 +72,7 @@ void MaterialGeneratorNode::Connecter::renderSprites()
     // Normal
     cr->setActiveSprite(m_Sprites[0]);
     cr->circle(m_Size / 2, 4.0f);
-    cr->setColor(Color(1.0f,0.9f,0.2f));
+    cr->setColor(m_Desc.m_Color);
     cr->fill();
     cr->setLineWidth(1.0f);
     cr->setColor(Color(0.1f,0.1f,0.1f));
@@ -81,7 +82,7 @@ void MaterialGeneratorNode::Connecter::renderSprites()
     // Selected
     cr->setActiveSprite(m_Sprites[1]);
     cr->circle(m_Size / 2, 4.0f);
-    cr->setColor(Color(1.0f,0.9f,0.2f));
+    cr->setColor(m_Desc.m_Color);
     cr->fill();
     cr->setLineWidth(1.0f);
     cr->setColor(Color(1.0f,1.0f,1.0f));
@@ -91,7 +92,7 @@ void MaterialGeneratorNode::Connecter::renderSprites()
     // Hoover
     cr->setActiveSprite(m_Sprites[2]);
     cr->circle(m_Size / 2, 4.0f);
-    cr->setColor(Color(1.0f,0.9f,0.2f));
+    cr->setColor(m_Desc.m_Color);
     cr->fill();
     cr->setLineWidth(1.0f);
     cr->setColor(Color(1.0f,1.0f,1.0f));
@@ -112,6 +113,7 @@ void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, cons
         cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
     else
         cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+    
     if (m_IsConnected)
     {
         m_Bezier->draw2D(canvas, transform);
@@ -178,9 +180,11 @@ void MaterialGeneratorNode::Connecter::setConnectedConnecter( Connecter* connect
 //////////////////////////////////////////////////////////////////////////
 // MaterialGeneratorNode
 //////////////////////////////////////////////////////////////////////////
-MaterialGeneratorNode::MaterialGeneratorNode(const vec2& pos): 
-    m_SelectedOverload(0), m_Overloads(1), m_Position(pos), m_Size(128, 96),
-    m_IsSelected(false), m_Guid(Guid::generateGuid()), m_IsHoovering(false)
+IMPLEMENT_OBJECT(MaterialGeneratorNode)
+
+MaterialGeneratorNode::MaterialGeneratorNode(): 
+    m_SelectedOverload(0), m_Overloads(1), m_Position(0, 0), m_Size(128, 96),
+    m_IsSelected(false), m_IsHoovering(false), m_Parent(nullptr)
 {
     gui::SpriteCreator* cr(GUI->Sprites);
 
@@ -349,12 +353,12 @@ void MaterialGeneratorNode::addConnecters( uint8 outputCount, uint8 inputCount, 
     for (uint8 i(0); i < outputCount; ++i)
     {
         const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
-        m_Connecters.add(NEW Connecter(false, i, desc));
+        m_Connecters.add(NEW Connecter(this, false, i, desc));
     }
     for (uint8 i(0); i < inputCount; ++i)
     {
         const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
-        m_Connecters.add(NEW Connecter(true, i, desc));
+        m_Connecters.add(NEW Connecter(this, true, i, desc));
     }
     va_end(argList);
     updateConnecterPositions();
@@ -480,6 +484,15 @@ void MaterialGeneratorNode::updateConnecterPositions()
     });
 }
 
+bool MaterialGeneratorNode::isInView( const mat33& transform, const RectF& clipRect )
+{
+    const vec2 transformedPosition(transform * m_Position);
+    const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
+
+     return transformedPosition.x + size.x / 2.0f > clipRect.x && transformedPosition.x - size.x / 2.0f < clipRect.x + clipRect.width && 
+            transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height;
+}
+
 void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
 {
     gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
@@ -487,8 +500,9 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
     const vec2 transformedPosition(transform * m_Position);
     const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
 
-    if (transformedPosition.x + size.x / 2.0f > clipRect.x && transformedPosition.x - size.x / 2.0f < clipRect.x + clipRect.width && 
-        transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height)
+    size_t index(0);
+    if (isInView(transform, clipRect) || m_Connecters.find_if([&transform, &clipRect](Connecter* connecter) -> bool
+        { return connecter->isConnected() && connecter->getConnection()->getParent()->isInView(transform, clipRect); }, index))
     {
         if (m_IsSelected)
             cvs->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
@@ -496,6 +510,7 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
             cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
         else
             cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+        
         m_Connecters.forEach([canvas, &transform](Connecter* connecter)
         {
             connecter->draw2D(canvas, transform);

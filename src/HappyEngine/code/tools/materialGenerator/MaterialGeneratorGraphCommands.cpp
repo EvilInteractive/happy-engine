@@ -23,6 +23,7 @@
 
 #include "MaterialGeneratorGraph.h"
 #include "MaterialGeneratorNode.h"
+#include "MaterialGeneratorNodeFactory.h"
 
 namespace he {
 namespace tools {
@@ -176,49 +177,30 @@ void MaterialGeneratorGraphEditSelectionCommand::deselectAll()
 //////////////////////////////////////////////////////////////////////////
 void MaterialGeneratorGraphNodeConnectCommand::operator()( const CommandType type )
 {
-    MaterialGeneratorNode* nodeStart(m_Parent->getNode(m_NodeStart));
-    MaterialGeneratorNode* nodeEnd(m_Parent->getNode(m_NodeEnd));
-    HE_IF_ASSERT(nodeStart != nullptr && nodeEnd != nullptr, "Node start or end could not be found when connecting nodes")
+    if (type == CommandType_Do)
     {
-        if (type == CommandType_Do)
-        {
-            MaterialGeneratorError error;
-            if (m_StartAtOutput == true)
-            {
-                nodeEnd->connectToInput(nodeStart, m_IndexStart, m_IndexEnd, error);
-            }
-            else
-            {
-                nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
-            }
-        }
-        else
-        {
-            if (m_StartAtOutput == true)
-            {
-                nodeEnd->disconnect(m_IndexEnd);
-            }
-            else
-            {
-                nodeStart->disconnect(m_IndexStart);
-            }
-        }
+        doCommand();
+    }
+    else
+    {
+        undoCommand();
     }
 }
 
 void MaterialGeneratorGraphNodeConnectCommand::startConnect( const Guid& startNode, const bool startAtOutput, const uint8 startIndex )
 {
-    HE_ASSERT(m_IsConnection == false, "Already connecting a node!");
+    HE_ASSERT(m_IsConnecting == false, "Already connecting a node!");
     m_NodeStart = startNode;
     m_StartAtOutput = startAtOutput;
     m_IndexStart = startIndex;
-    m_IsConnection = true;
+    m_IsConnecting = true;
 }
 
 bool MaterialGeneratorGraphNodeConnectCommand::doConnect( const Guid& endNode, const uint8 endIndex )
 {
+    m_IsConnect = true;
     bool result(false);
-    HE_IF_ASSERT(m_IsConnection == true, "Ending connection when not started one!")
+    HE_IF_ASSERT(m_IsConnecting == true, "Ending connection when not started one!")
     {
         m_NodeEnd = endNode;
         m_IndexEnd = endIndex;
@@ -226,7 +208,7 @@ bool MaterialGeneratorGraphNodeConnectCommand::doConnect( const Guid& endNode, c
         if (result == true)
             m_Parent->m_CommandStack.pushCommand(Command(*this));
     }
-    m_IsConnection = false;
+    m_IsConnecting = false;
     return result;
 }
 
@@ -237,14 +219,22 @@ bool MaterialGeneratorGraphNodeConnectCommand::doCommand()
     bool result(false);
     HE_IF_ASSERT(nodeStart != nullptr && nodeEnd != nullptr, "Node start or end could not be found when connecting nodes")
     {
-        MaterialGeneratorError error;
-        if (m_StartAtOutput == true)
+        if (m_IsConnect)
         {
-            result = nodeEnd->connectToInput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            MaterialGeneratorError error;
+            if (m_StartAtOutput == true)
+            {
+                result = nodeEnd->connectToInput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            }
+            else
+            {
+                result = nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            }
         }
         else
         {
-            result = nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            nodeStart->disconnect(m_IndexStart);
+            result = true;
         }
     }
     return result;
@@ -256,20 +246,162 @@ void MaterialGeneratorGraphNodeConnectCommand::undoCommand()
     MaterialGeneratorNode* nodeEnd(m_Parent->getNode(m_NodeEnd));
     HE_IF_ASSERT(nodeStart != nullptr && nodeEnd != nullptr, "Node start or end could not be found when connecting nodes")
     {
-        if (m_StartAtOutput == true)
+        if (m_IsConnect)
         {
-            nodeEnd->disconnect(m_IndexEnd);
+            if (m_StartAtOutput == true)
+            {
+                nodeEnd->disconnect(m_IndexEnd);
+            }
+            else
+            {
+                nodeStart->disconnect(m_IndexStart);
+            }
         }
         else
         {
-            nodeStart->disconnect(m_IndexStart);
+            MaterialGeneratorError error;
+            nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
         }
     }
 }
 
 void MaterialGeneratorGraphNodeConnectCommand::cancelConnect()
 {
-    m_IsConnection = false;
+    m_IsConnecting = false;
+}
+
+bool MaterialGeneratorGraphNodeConnectCommand::doDisconnect( const Guid& nodeId, const bool isInput, const uint8 index  )
+{
+    MaterialGeneratorNode* const node(m_Parent->getNode(nodeId));
+    return doDisconnect(node, isInput, index);
+}
+
+bool MaterialGeneratorGraphNodeConnectCommand::doDisconnect( MaterialGeneratorNode* const node, const bool isInput, const uint8 index )
+{
+    if (isInput)
+    {
+        const MaterialGeneratorConnection& connection(node->getInputConnection(index));
+        MaterialGeneratorNode* const endNode(static_cast<MaterialGeneratorNode*>(connection.node));
+
+        m_IsConnect = false;
+        m_StartAtOutput = false;
+        m_NodeStart = node->getGuid();
+        m_NodeEnd = endNode->getGuid();
+        m_IndexStart = index;
+        m_IndexEnd = connection.connecter;
+
+        node->disconnect(index);
+
+        m_Parent->m_CommandStack.pushCommand(Command(*this));
+    }
+    else
+    {
+        for (uint8 i(0); i < node->getOutputConnectionCount(index); ) // we do not increase i because the size will be lowered by the disconnect
+        {
+            const MaterialGeneratorConnection& conn(node->getOutputConnection(index, i));
+            doDisconnect(static_cast<MaterialGeneratorNode*>(conn.node), true, conn.connecter);
+        }
+    }
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Create Node
+//////////////////////////////////////////////////////////////////////////
+void MaterialGeneratorGraphCreateCommand::operator()( const CommandType type )
+{
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    if (type == CommandType_Do)
+    {
+        MaterialGeneratorNode* const node(factory->create(m_Type, m_Id));
+        m_Parent->addNode(node);
+        node->setPosition(m_Position);
+    }
+    else
+    {
+        size_t index(0);
+        m_Parent->m_NodeList.find_if([this](MaterialGeneratorNode* node) { return node->getGuid() == m_Id; }, index);
+        factory->destroy(m_Parent->m_NodeList[index]);
+        m_Parent->m_NodeList.removeAt(index);
+    }
+}
+
+void MaterialGeneratorGraphCreateCommand::create( const MaterialGeneratorNodeType type, const vec2& position )
+{
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    MaterialGeneratorNode* const node(factory->create(type));
+    node->setPosition(position);
+    m_Parent->addNode(node);
+    m_Id = node->getGuid();
+    m_Type = type;
+    m_Position = position;
+    m_Parent->m_CommandStack.pushCommand(Command(*this));
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Delete Node
+//////////////////////////////////////////////////////////////////////////
+
+void MaterialGeneratorGraphDeleteCommand::operator()( const CommandType type )
+{
+    if (type == CommandType_Do)
+    {
+        MaterialGeneratorNode* const node(m_Parent->getNode(m_Id));
+        size_t index(0);
+        if (m_Parent->m_SelectedNodeList.find(node, index))
+        {
+            m_Parent->m_SelectedNodeList.removeAt(index);
+        }
+        m_Parent->m_NodeList.remove(node);
+        MaterialGeneratorNodeFactory::getInstance()->destroy(node);
+    }
+    else
+    {
+        MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+        MaterialGeneratorNode* node(factory->create(m_Type, m_Id));
+        m_Parent->addNode(node);
+        node->setPosition(m_Position);
+        m_Parent->m_SelectedNodeList.add(node);
+    }
+}
+
+void MaterialGeneratorGraphDeleteCommand::doDelete( const Guid& id )
+{
+    MaterialGeneratorNode* const node(m_Parent->getNode(id));
+    doDelete(node);
+}
+
+void MaterialGeneratorGraphDeleteCommand::doDelete( MaterialGeneratorNode* const node )
+{
+    // Disconnect node with commands
+    const uint8 inputCount(node->getInputCount());
+    MaterialGeneratorGraphNodeConnectCommand command(m_Parent);
+    for (uint8 i(0); i < inputCount; ++i)
+    {
+        const MaterialGeneratorConnection& conn(node->getInputConnection(i));
+        if (conn.isConnected())
+        {
+            command.doDisconnect(node->getGuid(), true, i);
+        }
+    }
+    const uint8 outputCount(node->getOutputCount());
+    for (uint8 i(0); i < outputCount; ++i)
+    {
+        const size_t outputConnections(node->getOutputConnectionCount(i));
+        if (outputConnections > 0)
+        {
+            command.doDisconnect(node->getGuid(), false, i);
+        }
+    }
+
+    // Real delete
+    m_Id = node->getGuid();
+    m_Type = node->getType();
+    m_Position = node->getPosition();
+    m_Parent->m_NodeList.remove(node);
+    MaterialGeneratorNodeFactory::getInstance()->destroy(node);
+
+    m_Parent->m_CommandStack.pushCommand(Command(*this));
 }
 
 } } //end namespace

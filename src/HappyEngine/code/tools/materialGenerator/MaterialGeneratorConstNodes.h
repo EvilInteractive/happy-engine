@@ -15,28 +15,23 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 15/12/2012
 
-#ifndef _HE_X_H_
-#define _HE_X_H_
+#ifndef _HE_MaterialGeneratorConstNodes_H_
+#define _HE_MaterialGeneratorConstNodes_H_
 #pragma once
 
+#include "MaterialGeneratorNodeClassHelper.h"
+
 namespace he {
+namespace tools {
 
-class X
-{
-public:
-    X();
-    virtual ~X();
+    MaterialGeneratorNodeClass(Float1)
+    MaterialGeneratorNodeClass(Float2)
+    MaterialGeneratorNodeClass(Float3)
+    MaterialGeneratorNodeClass(Float4)
 
-private:
-
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
-};
-
-} //end namespace
+} } //end namespace
 
 #endif

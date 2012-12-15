@@ -35,12 +35,15 @@ namespace gui {
 }
 namespace tools {
 
+class MaterialGeneratorGraph;
+
 typedef NodeGraphNode<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> MaterialGeneratorNodeBase;
 typedef NodeGraphError<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> MaterialGeneratorError;
 typedef NodeGraphConnection<MaterialGeneratorNodeInput, MaterialGeneratorNodeOutput> MaterialGeneratorConnection;
 
 class MaterialGeneratorNode : public MaterialGeneratorNodeBase
 {
+DECLARE_OBJECT(MaterialGeneratorNode);
 protected:
     struct ConnecterDesc
     {
@@ -54,7 +57,7 @@ public:
     class Connecter
     {
     public:
-        Connecter(const bool isInput, const uint8 index, const ConnecterDesc& desc);
+        Connecter(MaterialGeneratorNode* const parent, const bool isInput, const uint8 index, const ConnecterDesc& desc);
         ~Connecter();
 
         void setPosition(const vec2& position);
@@ -66,6 +69,9 @@ public:
         const vec2& getSize() const { return m_Size; }
         bool isInput() const { return m_IsInput; }
         uint8 getIndex() const { return m_Index; }
+        bool isConnected() const { return m_IsConnected; }
+        MaterialGeneratorNode* getParent() const { return m_Parent; }
+        Connecter* getConnection() const { return m_ConnectedConnecter; }
 
         bool pick(const vec2& worldPos) const;
         bool doHoover(const vec2& worldPos, const bool undoHoover);
@@ -86,6 +92,7 @@ public:
         const uint8 m_Index;
         bool m_IsSelected;
         bool m_IsHooverd;
+        MaterialGeneratorNode* const m_Parent;
 
         bool m_IsConnected;
         gui::BezierShape2D* m_Bezier;
@@ -97,7 +104,7 @@ public:
         Connecter& operator=(const Connecter&);
     };
 public:
-    MaterialGeneratorNode(const vec2& pos);
+    MaterialGeneratorNode();
     virtual ~MaterialGeneratorNode();
 
     virtual bool evaluate(MaterialGeneratorError& error);
@@ -110,9 +117,15 @@ public:
     void setSelected(bool selected) { m_IsSelected = selected; }
     bool isSelected() const { return m_IsSelected; }
 
+    void setParent(MaterialGeneratorGraph* const parent) { m_Parent = parent; }
+    MaterialGeneratorGraph* getParent() { return m_Parent; }
+
     void setPosition(const vec2& position);
     const vec2& getPosition() const { return m_Position; }
 
+    virtual MaterialGeneratorNodeType getType() { return MaterialGeneratorNodeType_Unassigned; }
+
+    void setGuid(const Guid& id) { m_Guid = id; }
     const Guid& getGuid() const { return m_Guid; }
     const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
 
@@ -151,10 +164,13 @@ private:
     bool m_IsHoovering;
     Guid m_Guid;
 
+    MaterialGeneratorGraph* m_Parent;
+
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;
 
     void updateConnecterPositions();
+    bool isInView(const mat33& transform, const RectF& clipRect);
 
     he::PrimitiveList<Connecter*> m_Connecters;
     he::PrimitiveList<gui::Sprite*> m_Sprites;
