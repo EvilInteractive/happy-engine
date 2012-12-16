@@ -22,8 +22,6 @@
 #define _HE_SPRITE_H_
 #pragma once
 
-#include "Resource.h"
-
 namespace he {
 namespace gfx {
     class Texture2D;
@@ -31,8 +29,9 @@ namespace gfx {
 namespace gui {
     class SpriteCreator;
 
-class Sprite : public Resource<Sprite>
+class Sprite
 {
+DECLARE_OBJECT(Sprite)
 public:
 
     enum OPTIONS

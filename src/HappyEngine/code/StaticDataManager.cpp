@@ -38,6 +38,7 @@
 #include "ShaderGeneratorVariableFactory.h"
 #include "Sprite.h"
 #include "materialGenerator/MaterialGeneratorNodeFactory.h"
+#include "SpriteCreator.h"
 
 namespace he {
 
@@ -54,7 +55,7 @@ void StaticDataManager::init()
     ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
     ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
-    ResourceFactory<gui::Sprite>::init(8,4,"SpriteFactory");
+    gui::SpriteFactory::sdmInit();
     gfx::ViewFactory::sdmInit();
     gfx::SceneFactory::sdmInit();
     gfx::WindowFactory::sdmInit();
@@ -79,7 +80,7 @@ void StaticDataManager::destroy()
     ResourceFactory<gfx::Shader>::destroy();
     ResourceFactory<px::PhysicsConvexMesh>::destroy();
     ResourceFactory<px::PhysicsConcaveMesh>::destroy();
-    ResourceFactory<gui::Sprite>::destroy();
+    gui::SpriteFactory::sdmDestroy();
     gfx::ViewFactory::sdmDestroy();
     gfx::SceneFactory::sdmDestroy();
     gfx::WindowFactory::sdmDestroy();

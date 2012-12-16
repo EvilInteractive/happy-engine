@@ -120,7 +120,8 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     }
 
     delete m_GhostConnection;
-    m_Background->release();
+    gui::SpriteCreator* const cr(GUI->Sprites);
+    cr->removeSprite(m_Background);
 }
 
 void MaterialGeneratorGraph::init()

@@ -136,6 +136,8 @@ private:
 
     AssetContainer<ObjectHandle> m_AssetContainer;
 
+    float m_GCTimer;
+
     /* DEFAULT COPY & ASSIGNMENT */
     TextureLoader(const TextureLoader&);
     TextureLoader& operator=(const TextureLoader&);

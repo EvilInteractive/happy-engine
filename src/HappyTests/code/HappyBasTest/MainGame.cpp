@@ -138,7 +138,8 @@ MainGame::~MainGame()
 
     delete m_FpsGraph;
 
-    m_TestSprite->release();
+    he::gui::SpriteCreator* const cr(GUI->Sprites);
+    cr->removeSprite(m_TestSprite);
     
     delete m_ToneMapGui;
     delete m_ToneMapGuiListener;

@@ -60,9 +60,10 @@ MaterialGeneratorNode::Connecter::Connecter( MaterialGeneratorNode* const parent
 #pragma warning(default:4355) // use of this in init list
 MaterialGeneratorNode::Connecter::~Connecter()
 {
-    m_Sprites[0]->release();
-    m_Sprites[1]->release();
-    m_Sprites[2]->release();
+    gui::SpriteCreator* const cr(GUI->Sprites);
+    cr->removeSprite(m_Sprites[0]);
+    cr->removeSprite(m_Sprites[1]);
+    cr->removeSprite(m_Sprites[2]);
     delete m_Bezier;
 }
 void MaterialGeneratorNode::Connecter::renderSprites()
@@ -274,9 +275,10 @@ MaterialGeneratorNode::MaterialGeneratorNode():
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
 {
-    m_Sprites.forEach([](gui::Sprite* sp)
+    gui::SpriteCreator* const cr(GUI->Sprites);
+    m_Sprites.forEach([cr](gui::Sprite* sp)
     {
-        sp->release();
+        cr->removeSprite(sp);
     });
 
     m_Connecters.forEach([](Connecter* c)

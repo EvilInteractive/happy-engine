@@ -39,7 +39,11 @@ public:
         delete Sprites;
     }
 
-    SpriteCreator* Sprites;
+    SpriteCreator* const Sprites;
+
+private:
+    Gui(const Gui&);
+    Gui& operator=(const Gui&);
 };
 
 }} //end namespace

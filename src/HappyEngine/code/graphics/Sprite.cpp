@@ -29,6 +29,8 @@ namespace gui {
 /* STATIC */
 uint16 Sprite::s_SpriteCount = 0;
 
+IMPLEMENT_OBJECT(Sprite)
+
 /* CONSTRUCTOR - DESTRUCTOR */
 Sprite::Sprite() : 
     m_Render(nullptr),

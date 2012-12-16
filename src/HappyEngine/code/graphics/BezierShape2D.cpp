@@ -43,7 +43,7 @@ BezierShape2D::BezierShape2D():
 
 BezierShape2D::~BezierShape2D()
 {
-    m_Sprite->release();
+    GUI->Sprites->removeSprite(m_Sprite);
 }
 
 void BezierShape2D::setPositionStart( const vec2& position )

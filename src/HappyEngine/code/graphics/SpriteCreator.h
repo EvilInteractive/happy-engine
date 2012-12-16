@@ -24,9 +24,18 @@
 
 #include "Canvas2DRendererCairo.h"
 #include "Sprite.h"
+#include "Singleton.h"
 
 namespace he {
 namespace gui {
+
+class SpriteFactory : public ObjectFactory<Sprite>, public Singleton<SpriteFactory>
+{
+    friend class Singleton<SpriteFactory>;
+
+    SpriteFactory() { init(4, 16, "SpriteFactory"); }
+    virtual ~SpriteFactory() {}
+};
 
 class SpriteCreator
 {
@@ -41,6 +50,7 @@ public:
     void glThreadInvoke();
 
     Sprite* createSprite(const vec2& size, char flags = Sprite::OPTIONS_NONE);
+    void removeSprite(Sprite* const sprite);
     // renders drawcalls to active sprite
     void renderSpriteAsync();
 

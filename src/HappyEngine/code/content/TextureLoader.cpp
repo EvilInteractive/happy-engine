@@ -36,10 +36,12 @@
 #define FACTORY_2D ResourceFactory<gfx::Texture2D>::getInstance()
 #define FACTORY_CUBE ResourceFactory<gfx::TextureCube>::getInstance()
 
+#define GC_TIME 10.0f
+
 namespace he {
 namespace ct {
 
-TextureLoader::TextureLoader(): m_isLoadThreadRunning(false)
+TextureLoader::TextureLoader(): m_isLoadThreadRunning(false), m_GCTimer(GC_TIME)
 {
 }
 
@@ -62,12 +64,25 @@ inline void handleILError(const std::string& file)
     }
 }
 
-void TextureLoader::tick(float /*dTime*/) //checks for new load operations, if true start thread
+void TextureLoader::tick(float dTime) //checks for new load operations, if true start thread
 {
     if (m_isLoadThreadRunning == false)
     {
         PROFILER_BEGIN("TextureFactory garbage collect");
-        //ResourceFactory<gfx::Texture2D>::getInstance()->garbageCollect();
+        if (m_GCTimer > 0.0f)
+        {
+            m_GCTimer -= dTime;
+            if (m_GCTimer <= 0.0f)
+            {
+                ResourceFactory<gfx::Texture2D>* const factory(ResourceFactory<gfx::Texture2D>::getInstance());
+                uint32 destoyed(factory->garbageCollect());
+                if (destoyed > 0)
+                {
+                    HE_WARNING("TextureFactory: GC'd %d textures!", destoyed);
+                }
+                m_GCTimer = GC_TIME;
+            }
+        }
         PROFILER_END();
         if (m_TextureLoadQueue.empty() == false)
         {

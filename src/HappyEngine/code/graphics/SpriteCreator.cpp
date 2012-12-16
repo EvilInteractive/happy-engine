@@ -22,8 +22,6 @@
 
 #include "SpriteCreator.h"
 
-#define FACTORY ResourceFactory<gui::Sprite>::getInstance()
-
 namespace he {
 namespace gui {
 
@@ -34,7 +32,7 @@ SpriteCreator::SpriteCreator() : m_Renderer(NEW gfx::Canvas2DRendererCairo())
 SpriteCreator::~SpriteCreator()
 {
     delete m_Renderer;
-    FACTORY->garbageCollect();
+    SpriteFactory::getInstance()->destroyAll();
 }
 
 /* GENERAL */
@@ -49,14 +47,21 @@ void SpriteCreator::glThreadInvoke()
 
 Sprite* SpriteCreator::createSprite(const vec2& size, char flags)
 {
-    ObjectHandle handle(FACTORY->create());
-    Sprite* sp(FACTORY->get(handle));
+    SpriteFactory* const factory(SpriteFactory::getInstance());
+    ObjectHandle handle(factory->create());
+    Sprite* sp(factory->get(handle));
 
     sp->init(size, flags);
     m_Renderer->addNewSprite(sp);
 
     return sp;
 }
+void SpriteCreator::removeSprite( Sprite* const sprite )
+{
+    SpriteFactory* const factory(SpriteFactory::getInstance());
+    factory->destroyObject(sprite->getHandle());
+}
+
 void SpriteCreator::renderSpriteAsync()
 {
     m_Renderer->finishSprite();

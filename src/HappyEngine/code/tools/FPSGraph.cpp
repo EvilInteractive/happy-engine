@@ -79,9 +79,10 @@ FPSGraph::~FPSGraph()
     SystemStats::done();
 
     m_Font->release();
-
-    m_Sprites[0]->release();
-    m_Sprites[1]->release();
+    
+    gui::SpriteCreator* const cr(GUI->Sprites);
+    cr->removeSprite(m_Sprites[0]);
+    cr->removeSprite(m_Sprites[1]);
 }
 
 /* GENERAL */
@@ -172,8 +173,8 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
 {
     gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
 
-	m_Text.clear();
-	m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
+    m_Text.clear();
+    m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->setColor(m_ColorYellow);
@@ -187,14 +188,14 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
     cvs->fillText(m_Text, m_Pos);
 
     m_Text.clear();
-	m_Text.addTextExt("MEM");
+    m_Text.addTextExt("MEM");
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->setColor(m_ColorWhite);
     cvs->fillText(m_Text, m_Pos + vec2(0,11));
 
     m_Text.clear();
-	m_Text.addTextExt("%u - %u (%u)",
+    m_Text.addTextExt("%u - %u (%u)",
         (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
         (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
         (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
@@ -203,13 +204,13 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
     cvs->fillText(m_Text, m_Pos + vec2(0,11));
 
     m_Text.clear();
-	m_Text.addTextExt("CPU");
+    m_Text.addTextExt("CPU");
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->fillText(m_Text, m_Pos + vec2(0,22));
 
     m_Text.clear();
-	m_Text.addTextExt("%.2f", m_CurrentCPU);
+    m_Text.addTextExt("%.2f", m_CurrentCPU);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     cvs->fillText(m_Text, m_Pos + vec2(0,22));
@@ -224,8 +225,8 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
 
     cvs->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 
-	m_Text.clear();
-	m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
+    m_Text.clear();
+    m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->setColor(m_ColorYellow);
@@ -252,14 +253,14 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
     cvs->fillText(m_Text, m_Pos + vec2(5,29.0f));
 
     m_Text.clear();
-	m_Text.addTextExt("MEM");
+    m_Text.addTextExt("MEM");
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->setColor(m_ColorWhite);
     cvs->fillText(m_Text, m_Pos + vec2(5,59));
 
     m_Text.clear();
-	m_Text.addTextExt("%u - %u (%u)",
+    m_Text.addTextExt("%u - %u (%u)",
         (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
         (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
         (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
@@ -268,13 +269,13 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
     cvs->fillText(m_Text, m_Pos + vec2(5,59));
 
     m_Text.clear();
-	m_Text.addTextExt("CPU");
+    m_Text.addTextExt("CPU");
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
     cvs->fillText(m_Text, m_Pos + vec2(5,70));
 
     m_Text.clear();
-	m_Text.addTextExt("%.2f", m_CurrentCPU);
+    m_Text.addTextExt("%.2f", m_CurrentCPU);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     cvs->fillText(m_Text, m_Pos + vec2(5,70));
