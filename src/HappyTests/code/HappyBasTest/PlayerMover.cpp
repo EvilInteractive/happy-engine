@@ -44,44 +44,53 @@ PlayerMover::~PlayerMover()
 
 void PlayerMover::tick( float dTime )
 {
+    he::io::ControlsManager* const controls(CONTROLS);
     he::px::PhysicsCharacterController* const controller(getCharacterController());
-    const he::io::IKeyboard* const keyboard(CONTROLS->getKeyboard());
+    const he::io::IKeyboard* const keyboard(controls->getKeyboard());
 
-    he::vec3 speed(he::vec3::zero);
-    float jump(0.0f);
-    if (controller->getStandsOnFloor() && keyboard->isKeyDown(he::io::Key_Space))
+    controls->getFocus(this);
+
+    if (controls->hasFocus(this))
     {
-        jump = JUMP_SPEED;
+        he::vec3 speed(he::vec3::zero);
+        float jump(0.0f);
+        if (controller->getStandsOnFloor() && keyboard->isKeyDown(he::io::Key_Space))
+        {
+            jump = JUMP_SPEED;
+        }
+
+        const he::vec3 forward(he::normalize(m_Player->getCamera()->getLook().x0z()));
+        const he::vec3 right(he::normalize(he::cross(forward, he::vec3::up)));
+
+        // Forward / backwards
+        if (keyboard->isKeyDown(he::io::Key_Up) || keyboard->isKeyDown(he::io::Key_W) || keyboard->isKeyDown(he::io::Key_Z))
+        {
+            speed += forward * MOVE_SPEED;
+        }
+        if (keyboard->isKeyDown(he::io::Key_Down) || keyboard->isKeyDown(he::io::Key_S))
+        {
+            speed -= forward * MOVE_SPEED;
+        }
+
+        // Strafe
+        if (keyboard->isKeyDown(he::io::Key_Left) || keyboard->isKeyDown(he::io::Key_A) || keyboard->isKeyDown(he::io::Key_Q))
+        {
+            speed -= right * MOVE_SPEED;
+        }
+        if (keyboard->isKeyDown(he::io::Key_Right) || keyboard->isKeyDown(he::io::Key_D))
+        {
+            speed += right * MOVE_SPEED;
+        }
+
+        if (jump > 0.0f)
+        {
+            controller->addSpeed(he::vec3::up * jump);
+        }
+
+        controller->setMoveSpeed(speed);
     }
 
-    const he::vec3 forward(he::normalize(m_Player->getCamera()->getLook().x0z()));
-    const he::vec3 right(he::normalize(he::cross(forward, he::vec3::up)));
-
-    // Forward / backwards
-    if (keyboard->isKeyDown(he::io::Key_Up) || keyboard->isKeyDown(he::io::Key_W) || keyboard->isKeyDown(he::io::Key_Z))
-    {
-        speed += forward * MOVE_SPEED;
-    }
-    if (keyboard->isKeyDown(he::io::Key_Down) || keyboard->isKeyDown(he::io::Key_S))
-    {
-        speed -= forward * MOVE_SPEED;
-    }
-
-    // Strafe
-    if (keyboard->isKeyDown(he::io::Key_Left) || keyboard->isKeyDown(he::io::Key_A) || keyboard->isKeyDown(he::io::Key_Q))
-    {
-        speed -= right * MOVE_SPEED;
-    }
-    if (keyboard->isKeyDown(he::io::Key_Right) || keyboard->isKeyDown(he::io::Key_D))
-    {
-        speed += right * MOVE_SPEED;
-    }
-
-    if (jump > 0.0f)
-    {
-        controller->addSpeed(he::vec3::up * jump);
-    }
-    controller->setMoveSpeed(speed);
+    controls->returnFocus(this);
 
     he::ge::CharacterPhysicsComponent::tick(dTime);
 }

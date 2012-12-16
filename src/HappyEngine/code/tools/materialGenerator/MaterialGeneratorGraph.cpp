@@ -153,6 +153,7 @@ void MaterialGeneratorGraph::init()
         {
             m_IsActive = false;
             GAME->removeFromTickList(this);
+            CONTROLS->returnFocus(this);
         }
     });
     eventCallback0<void> gainfocusCallback([this]()
