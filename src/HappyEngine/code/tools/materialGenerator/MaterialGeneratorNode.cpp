@@ -520,4 +520,14 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
     }
 }
 
+void MaterialGeneratorNode::addParam( const MaterialGeneratorNodeParam& param )
+{
+    m_Params.add(param);
+}
+
+const MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const uint8& index )
+{
+    return m_Params[index];
+}
+
 } } //end namespace

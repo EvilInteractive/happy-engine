@@ -1,9 +1,3 @@
-Key_Ctrl
-Key_Delete
-Key_Z
-Key_Ctrl
-lightingSettings
-lightingSettings
 //HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
@@ -82,10 +76,10 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     m_DebugText.setFont(font);
     font->release();
 
-    //m_ShortcutList.add(Shortcut(io::Key_1, MaterialGeneratorNodeType_Float1));
-    //m_ShortcutList.add(Shortcut(io::Key_2, MaterialGeneratorNodeType_Float2));
-    //m_ShortcutList.add(Shortcut(io::Key_3, MaterialGeneratorNodeType_Float3));
-    //m_ShortcutList.add(Shortcut(io::Key_4, MaterialGeneratorNodeType_Float4));
+    m_ShortcutList.add(Shortcut(io::Key_1, MaterialGeneratorNodeType_Float1));
+    m_ShortcutList.add(Shortcut(io::Key_2, MaterialGeneratorNodeType_Float2));
+    m_ShortcutList.add(Shortcut(io::Key_3, MaterialGeneratorNodeType_Float3));
+    m_ShortcutList.add(Shortcut(io::Key_4, MaterialGeneratorNodeType_Float4));
     m_ShortcutList.add(Shortcut(io::Key_A, MaterialGeneratorNodeType_Add));
     m_ShortcutList.add(Shortcut(io::Key_D, MaterialGeneratorNodeType_Divide));
     m_ShortcutList.add(Shortcut(io::Key_E, MaterialGeneratorNodeType_Power));

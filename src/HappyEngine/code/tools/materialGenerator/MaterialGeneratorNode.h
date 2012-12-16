@@ -24,6 +24,7 @@
 
 #include "NodeGraphNode.h"
 #include "MaterialGeneratorNodeInOut.h"
+#include "MaterialGeneratorNodeParam.h"
 
 namespace he {
 namespace gfx {
@@ -134,6 +135,9 @@ public:
 protected:
     void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's
     void addConnecters(uint8 outputCount, uint8 inputCount, ...); // Takes ConnecterDesc's
+
+    void addParam(const MaterialGeneratorNodeParam& param);
+    const MaterialGeneratorNodeParam& getParam(const uint8& index);
     
     MaterialGeneratorGraph* m_Parent;
 private:
@@ -159,6 +163,8 @@ private:
 
     he::ObjectList<Overload> m_Overloads;
     uint8 m_SelectedOverload;
+
+    he::ObjectList<MaterialGeneratorNodeParam> m_Params;
 
     vec2 m_Position;
     vec2 m_Size;

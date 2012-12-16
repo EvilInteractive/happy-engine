@@ -51,10 +51,10 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
     switch (type)
     {
         // Const
-        //case MaterialGeneratorNodeType_Float1: node = NEW MaterialGeneratorNodeFloat1(); break;
-        //case MaterialGeneratorNodeType_Float2: node = NEW MaterialGeneratorNodeFloat2(); break;
-        //case MaterialGeneratorNodeType_Float3: node = NEW MaterialGeneratorNodeFloat3(); break;
-        //case MaterialGeneratorNodeType_Float4: node = NEW MaterialGeneratorNodeFloat4(); break;
+        case MaterialGeneratorNodeType_Float1: node = NEW MaterialGeneratorNodeFloat1(); break;
+        case MaterialGeneratorNodeType_Float2: node = NEW MaterialGeneratorNodeFloat2(); break;
+        case MaterialGeneratorNodeType_Float3: node = NEW MaterialGeneratorNodeFloat3(); break;
+        case MaterialGeneratorNodeType_Float4: node = NEW MaterialGeneratorNodeFloat4(); break;
 
         // Globals
         //case MaterialGeneratorNodeType_Position: node = NEW MaterialGeneratorNodeFloat1(); break;
