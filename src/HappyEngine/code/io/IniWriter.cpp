@@ -28,7 +28,7 @@
 namespace he {
 namespace io {
 
-IniWriter::IniWriter()
+IniWriter::IniWriter(): m_Path("")
 {
 }
 

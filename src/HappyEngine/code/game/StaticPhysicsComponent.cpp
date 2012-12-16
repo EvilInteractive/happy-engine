@@ -27,7 +27,7 @@
 namespace he {
 namespace ge {
 
-StaticPhysicsComponent::StaticPhysicsComponent(): m_StaticActor(nullptr)
+StaticPhysicsComponent::StaticPhysicsComponent(): m_StaticActor(nullptr), m_Parent(nullptr)
 {
 }
 

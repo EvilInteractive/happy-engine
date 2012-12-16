@@ -40,7 +40,6 @@ public:\
     virtual MaterialGeneratorNodeType getType() { return MaterialGeneratorNodeType_##type; } \
     \
 private:\
-    MaterialGeneratorGraph* m_Parent;\
     \
     className(const className&);\
     className& operator=(const className&);\

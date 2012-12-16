@@ -44,6 +44,9 @@ struct PostSettings
     };
     struct ShaderSettings
     {
+        ShaderSettings(): enableHDR(true), enableAO(false), enableBloom(true), enableNormalEdgeDetect(false),
+            enableDepthEdgeDetect(false), enableVignette(true), enableFog(true) {}
+
         bool enableHDR : 1;
         bool enableAO : 1;
         bool enableBloom : 1;
@@ -74,10 +77,13 @@ struct PostSettings
 };  
 struct ShadowSettings
 {
+    ShadowSettings(): shadowMult(1) {}
     uint8 shadowMult;
 };
 struct LightingSettings
 {
+    LightingSettings(): enableLighting(true), enableSpecular(true), enableNormalMap(true), enableShadows(true) {}
+
     bool enableLighting;
     bool enableSpecular;
     bool enableNormalMap;

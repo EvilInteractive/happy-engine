@@ -28,7 +28,7 @@
 namespace he {
 namespace ge {
 
-DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr)
+DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr), m_Parent(nullptr)
 {
 }
 

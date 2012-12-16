@@ -96,7 +96,7 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
         case Key_Lshift: mergeKey = Key_Shift; releaseMergeKey = getPressed(Key_Rshift, m_CurrentKeyState) == 0; break;
         case Key_Rshift: mergeKey = Key_Shift; releaseMergeKey = getPressed(Key_Lshift, m_CurrentKeyState) == 0; break;
         }
-        if (mergeKey != Key_MAX)
+        if (mergeKey != Key_MAX && releaseMergeKey)
         {
             getIndexShift(mergeKey, index, shift);
             m_CurrentKeyState[index] &= ~(1 << shift);

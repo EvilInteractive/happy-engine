@@ -28,7 +28,7 @@
 namespace he {
 namespace ge {
 
-CharacterPhysicsComponent::CharacterPhysicsComponent(): m_CharacterController(nullptr)
+CharacterPhysicsComponent::CharacterPhysicsComponent(): m_CharacterController(nullptr), m_Parent(nullptr)
 {
 }
 

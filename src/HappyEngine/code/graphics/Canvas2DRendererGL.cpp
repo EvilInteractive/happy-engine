@@ -53,7 +53,8 @@ Canvas2DRendererGL::Canvas2DRendererGL(Canvas2DBuffer* canvasBuffer, GLContext* 
     m_SurfaceDirty(true),
     m_Size(vec2(0,0)),
     m_Context(glContext),
-    m_DynamicFontMesh(nullptr)
+    m_DynamicFontMesh(nullptr),
+    m_TextureQuad(nullptr)
 {
     ++s_Renderers;
 }

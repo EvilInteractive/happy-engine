@@ -118,12 +118,12 @@ SoundFileProperties SoundFile::getProperties() const
 
 /* DEFAULT COPY & ASSIGNMENT */
 SoundFile::SoundFile(const SoundFile& second)
+    : m_SoundFile(second.m_SoundFile)
+    , m_FilePath(second.m_FilePath)
+    , m_NrSamples(second.m_NrSamples)
+    , m_Samplerate(second.m_Samplerate)
+    , m_ChannelsCount(second.m_ChannelsCount)
 {
-    m_SoundFile = second.m_SoundFile;
-    m_FilePath = second.m_FilePath;
-    m_NrSamples = second.m_NrSamples;
-    m_Samplerate = second.m_Samplerate;
-    m_ChannelsCount = second.m_ChannelsCount;
 }
 
 SoundFile& SoundFile::operator=(const SoundFile& second)

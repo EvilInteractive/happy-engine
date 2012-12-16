@@ -36,7 +36,7 @@ namespace he {
 namespace ge {
     
 #pragma region Pointlight
-PointLightComponent::PointLightComponent(): m_PointLight(nullptr)
+PointLightComponent::PointLightComponent(): m_PointLight(nullptr), m_Parent(nullptr)
 {
 }
 
@@ -113,7 +113,7 @@ const vec3& PointLightComponent::getColor() const
 #pragma endregion
 
 #pragma region SpotLight
-SpotLightComponent::SpotLightComponent(): m_SpotLight(nullptr)
+SpotLightComponent::SpotLightComponent(): m_SpotLight(nullptr), m_Parent(nullptr)
 {
 
 }

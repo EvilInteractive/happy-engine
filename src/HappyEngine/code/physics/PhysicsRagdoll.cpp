@@ -40,7 +40,7 @@ m_pSpine1NeckJoint(nullptr), m_pNeckHeadJoint(nullptr), m_pShouldersArmL1Joint(n
 m_pArmL1ArmL2Joint(nullptr), m_pArmL2HandJoint(nullptr), m_pShouldersArmR1Joint(nullptr), 
 m_pArmR1ArmR2Joint(nullptr), m_pArmR2HandJoint(nullptr), m_pPelvisLegL1Joint(nullptr), 
 m_pLegL1LegL2Joint(nullptr), m_pLegL2FootJoint(nullptr), m_pPelvisLegR1Joint(nullptr), 
-m_pLegR1LegR2Joint(nullptr), m_pLegR2FootJoint(nullptr)
+m_pLegR1LegR2Joint(nullptr), m_pLegR2FootJoint(nullptr), m_pAggregate(nullptr)
 {
 }
 

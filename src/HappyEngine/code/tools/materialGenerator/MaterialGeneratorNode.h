@@ -134,6 +134,8 @@ public:
 protected:
     void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's
     void addConnecters(uint8 outputCount, uint8 inputCount, ...); // Takes ConnecterDesc's
+    
+    MaterialGeneratorGraph* m_Parent;
 private:
     struct Overload
     {
@@ -163,8 +165,6 @@ private:
     bool m_IsSelected;
     bool m_IsHoovering;
     Guid m_Guid;
-
-    MaterialGeneratorGraph* m_Parent;
 
     void activateOverload(uint8 overload);
     bool findOverload(uint8& outOverload) const;

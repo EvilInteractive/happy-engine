@@ -99,6 +99,7 @@ public:
         , m_IndexStart(UINT8_MAX)
         , m_IndexEnd(UINT8_MAX)
         , m_IsConnecting(false)
+        , m_IsConnect(false)
     {}
     // Copy == ok
 

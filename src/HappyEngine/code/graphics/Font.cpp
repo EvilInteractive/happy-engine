@@ -37,7 +37,8 @@ Font::Font() :  m_FTLibrary(nullptr),
                 m_ExtendedChars(false),
                 m_Cached(false),
                 m_Init(false),
-                m_LineHeight(0)
+                m_LineHeight(0),
+                m_TextureAtlas(nullptr)
 {
     
 }

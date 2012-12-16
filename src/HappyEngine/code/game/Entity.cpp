@@ -27,7 +27,7 @@
 namespace he {
 namespace ge {
 
-Entity::Entity()
+Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr)
 {
 }
 

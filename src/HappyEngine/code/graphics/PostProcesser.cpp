@@ -48,7 +48,9 @@ PostProcesser::PostProcesser():
     m_FogColor(0.2f, 0.4f, 0.6f),
     m_View(nullptr),
     m_DebugRenderer(nullptr),
-    m_ToneMapUniformBuffer(nullptr)
+    m_ToneMapUniformBuffer(nullptr),
+    m_WriteRenderTarget(nullptr),
+    m_ReadRenderTarget(nullptr)
 {
 }
 

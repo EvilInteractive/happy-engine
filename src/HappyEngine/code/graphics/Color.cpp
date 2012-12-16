@@ -24,7 +24,7 @@
 
 namespace he {
 
-Color::Color()
+Color::Color(): m_rgb(1.0f, 1.0f, 1.0f), m_a(1.0f)
 {
 }
 Color::Color(float red, float green, float blue, float alpha): m_rgb(red, green, blue), m_a(alpha)

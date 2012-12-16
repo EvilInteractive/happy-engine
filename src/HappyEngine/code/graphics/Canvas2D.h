@@ -45,25 +45,18 @@ public:
 
     struct Data
     {
-        Data() : fbufferID(UINT32_MAX),
-                 colorRbufferID(UINT32_MAX),
-                 depthRbufferID(UINT32_MAX)
+        Data() : m_FBufferID(UINT32_MAX),
+                 m_ColorRbufferID(UINT32_MAX),
+                 m_DepthRbufferID(UINT32_MAX),
+                 m_Context(nullptr),
+                 m_RenderTextureHnd(ObjectHandle::unassigned)
         {}
 
-        ObjectHandle renderTextureHnd;
-        uint32 fbufferID;
-        uint32 colorRbufferID;
-        uint32 depthRbufferID;
-        GLContext* context;
-    };
-
-    struct DrawingState
-    {
-        Color fillColor;
-        Color strokeColor;
-        Font* font;
-        float globalAlpha;
-        float lineWidth;
+        ObjectHandle m_RenderTextureHnd;
+        uint32 m_FBufferID;
+        uint32 m_ColorRbufferID;
+        uint32 m_DepthRbufferID;
+        GLContext* m_Context;
     };
 
     /* STATIC */

@@ -39,6 +39,7 @@ Text::Text() :	m_OverFlowType(OverFlowType_Clip),
                 m_Capacity(0), m_Size(0),
                 m_Text(nullptr)
 {
+    he_memset(m_ScratchBuffer, 0, MAX_SCRATCH);
 }
 
 Text::~Text()

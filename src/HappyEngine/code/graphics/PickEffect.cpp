@@ -32,7 +32,7 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-PickEffect::PickEffect(): m_PickMaterial(nullptr)
+PickEffect::PickEffect(): m_PickMaterial(nullptr), m_IdVar(nullptr)
 {
 }
 

@@ -92,16 +92,16 @@ void Canvas2DRendererCairo::finishSprite()
 {
     boost::mutex::scoped_lock lock(m_SpriteListLock);
 
-    if (m_SpriteList.size() <= 0)
-        return;
-
-    m_SpriteList.back().readyState |= SpriteReadyForRender;
+    if (m_SpriteList.empty() == false)
+    {
+        m_SpriteList.back().readyState |= SpriteReadyForRender;
+    }
 }
 
 /* SETTERS */
 void Canvas2DRendererCairo::setLineWidth(float width)
 {
-	HE_ASSERT(width > 0, "Linewidth can't be smaller or equal to zero!");
+    HE_ASSERT(width > 0, "Linewidth can't be smaller or equal to zero!");
 
     boost::mutex::scoped_lock lock(m_SpriteListLock);
 
@@ -112,40 +112,40 @@ void Canvas2DRendererCairo::setLineWidth(float width)
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_set_line_width,
+        &cairo_set_line_width,
         sData.cairoPaint,
-		static_cast<double>(width)));
+        static_cast<double>(width)));
 }
 void Canvas2DRendererCairo::setColor(const Color& col)
 {
-	boost::mutex::scoped_lock lock(m_SpriteListLock);
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
 
     SpriteData& sData = m_SpriteList.back();
 
     HE_ASSERT((sData.readyState &= SpriteReadyForRender) == false,
         "Sprite is already marked for rendering, can't draw!");
 
-	if (col.a() == 1.0f)
-	{
-		sData.drawCalls.push(
+    if (col.a() == 1.0f)
+    {
+        sData.drawCalls.push(
             boost::bind(
             &cairo_set_source_rgb,
             sData.cairoPaint,
-		    static_cast<double>(col.r()),
-		    static_cast<double>(col.g()),
-		    static_cast<double>(col.b())));
-	}
-	else
-	{
-		sData.drawCalls.push(
+            static_cast<double>(col.r()),
+            static_cast<double>(col.g()),
+            static_cast<double>(col.b())));
+    }
+    else
+    {
+        sData.drawCalls.push(
             boost::bind(
-		    &cairo_set_source_rgba,
+            &cairo_set_source_rgba,
             sData.cairoPaint,
-			static_cast<double>(col.r()),
-			static_cast<double>(col.g()),
-			static_cast<double>(col.b()),
-			static_cast<double>(col.a())));
-	}
+            static_cast<double>(col.r()),
+            static_cast<double>(col.g()),
+            static_cast<double>(col.b()),
+            static_cast<double>(col.a())));
+    }
 }
 void Canvas2DRendererCairo::setLineCap(gui::LINE_CAP cap)
 {
@@ -158,9 +158,9 @@ void Canvas2DRendererCairo::setLineCap(gui::LINE_CAP cap)
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_set_line_cap,
+        &cairo_set_line_cap,
         sData.cairoPaint,
-		static_cast<cairo_line_cap_t>(cap)));
+        static_cast<cairo_line_cap_t>(cap)));
 }
 void Canvas2DRendererCairo::setLineJoin(gui::LINE_JOIN join)
 {
@@ -173,9 +173,9 @@ void Canvas2DRendererCairo::setLineJoin(gui::LINE_JOIN join)
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_set_line_join,
+        &cairo_set_line_join,
         sData.cairoPaint,
-		static_cast<cairo_line_join_t>(join)));
+        static_cast<cairo_line_join_t>(join)));
 }
 
 /* DRAW */
@@ -190,23 +190,23 @@ void Canvas2DRendererCairo::clear()
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_save,
+        &cairo_save,
         sData.cairoPaint));
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_set_operator,
+        &cairo_set_operator,
         sData.cairoPaint,
         CAIRO_OPERATOR_CLEAR));
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_paint,
+        &cairo_paint,
         sData.cairoPaint));
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_restore,
+        &cairo_restore,
         sData.cairoPaint));
 }
 void Canvas2DRendererCairo::moveTo(const vec2& pos)
@@ -220,9 +220,9 @@ void Canvas2DRendererCairo::moveTo(const vec2& pos)
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_move_to,
+        &cairo_move_to,
         sData.cairoPaint,
-		static_cast<double>(pos.x),
+        static_cast<double>(pos.x),
         static_cast<double>(pos.y)));
 }
 void Canvas2DRendererCairo::lineTo(const vec2& pos)
@@ -236,15 +236,15 @@ void Canvas2DRendererCairo::lineTo(const vec2& pos)
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_line_to,
+        &cairo_line_to,
         sData.cairoPaint,
-		static_cast<double>(pos.x),
+        static_cast<double>(pos.x),
         static_cast<double>(pos.y)));
 }
 
 void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
 {
-	HE_ASSERT(size.x > 0 && size.y > 0, "Size of rectangle can't be negative!");
+    HE_ASSERT(size.x > 0 && size.y > 0, "Size of rectangle can't be negative!");
 
     boost::mutex::scoped_lock lock(m_SpriteListLock);
 
@@ -255,9 +255,9 @@ void Canvas2DRendererCairo::rectangle(const vec2& pos, const vec2& size)
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_rectangle,
+        &cairo_rectangle,
         sData.cairoPaint,
-		static_cast<double>(pos.x),
+        static_cast<double>(pos.x),
         static_cast<double>(pos.y),
         static_cast<double>(size.x),
         static_cast<double>(size.y)));
@@ -273,9 +273,9 @@ void Canvas2DRendererCairo::arc(const vec2& pos, float radius, float angleRadSta
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_arc,
+        &cairo_arc,
         sData.cairoPaint,
-		static_cast<double>(pos.x),
+        static_cast<double>(pos.x),
         static_cast<double>(pos.y),
         static_cast<double>(radius),
         static_cast<double>(normalizeAngle(angleRadStart)),
@@ -292,9 +292,9 @@ void Canvas2DRendererCairo::curveTo(const vec2& controlP1, const vec2& controlP2
 
     sData.drawCalls.push(
         boost::bind(
-		&cairo_curve_to,
+        &cairo_curve_to,
         sData.cairoPaint,
-		static_cast<double>(controlP1.x),
+        static_cast<double>(controlP1.x),
         static_cast<double>(controlP1.y),
         static_cast<double>(controlP2.x),
         static_cast<double>(controlP2.y),
@@ -332,7 +332,7 @@ void Canvas2DRendererCairo::closePath()
     
 void Canvas2DRendererCairo::stroke()
 {
-	boost::mutex::scoped_lock lock(m_SpriteListLock);
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
 
     SpriteData& sData = m_SpriteList.back();
 
@@ -346,7 +346,7 @@ void Canvas2DRendererCairo::stroke()
 }
 void Canvas2DRendererCairo::fill()
 {
-	boost::mutex::scoped_lock lock(m_SpriteListLock);
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
 
     SpriteData& sData = m_SpriteList.back();
 
@@ -385,10 +385,10 @@ void Canvas2DRendererCairo::blit()
         // blit
         data.texture2D->setData(
                 static_cast<uint32>(data.size.x),
-		        static_cast<uint32>(data.size.y),
+                static_cast<uint32>(data.size.y),
                 data.renderBuffer,
-		        TextureBufferLayout_BGRA,
-		        TextureBufferType_Byte);
+                TextureBufferLayout_BGRA,
+                TextureBufferType_Byte);
 
         // cleanup
         he_free(data.renderBuffer);
@@ -407,16 +407,14 @@ void Canvas2DRendererCairo::handleDrawCalls()
     boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(10);
 
     bool renderSprite(false);
-    uint32 spritesToRender(0);
 
     while (m_HandleDrawCalls)
     {
         renderSprite = false;
-        spritesToRender = 0;
 
         m_SpriteListLock.lock();
 
-            spritesToRender = m_SpriteList.size();
+        uint32 spritesToRender(m_SpriteList.size());
 
         m_SpriteListLock.unlock();
 
@@ -429,10 +427,8 @@ void Canvas2DRendererCairo::handleDrawCalls()
                     // check if needs to be rendered
                     SpriteData& data(m_SpriteList.front());
             
-        #pragma warning(disable:4800)
                     renderSprite = 
-                        (data.readyState &= SpriteReadyForRender);
-        #pragma warning(default:4800)
+                        (data.readyState &= SpriteReadyForRender) != 0;
 
                 m_SpriteListLock.unlock();
 

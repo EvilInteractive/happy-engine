@@ -29,7 +29,7 @@
 namespace he {
 namespace io {
 
-IniReader::IniReader()
+IniReader::IniReader(): m_IsOpen(false)
 {
 }
 
@@ -41,8 +41,6 @@ IniReader::~IniReader()
 bool parseKeyValue(const std::wstring& line, std::wstring& key, std::wstring& value)
 {
     using namespace std;
-
-    stringstream streamKey, streamValue;
 
     wstring::size_type pos(line.find(L'='));
 

@@ -39,6 +39,7 @@ friend class Shader;
 friend class UniformBuffer;
 
 protected:
+    ShaderVariableBase(): m_Update(false), m_Size(0), m_Offset(0) {}
     bool m_Update;
     int m_Size;
 

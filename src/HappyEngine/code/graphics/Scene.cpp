@@ -43,6 +43,7 @@ Scene::Scene():
         , m_Active(true)
         , m_ShadowCaster(NEW ShadowCaster)
         , m_SkyBox(nullptr)
+        , m_Picker(nullptr)
 {
     m_ShadowCaster->init();
 }

@@ -47,7 +47,8 @@ Picker::Picker() :	m_PickEffect(NEW PickEffect()),
                     m_Initialized(false),
                     m_RenderTexture(nullptr),
                     m_Scene(nullptr),
-                    m_RenderTarget(nullptr)
+                    m_RenderTarget(nullptr),
+                    m_View(nullptr)
 {
     m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(ResourceFactory<Texture2D>::getInstance()->create());
     m_RenderTexture->setName("Picker::m_pIDTexture");
