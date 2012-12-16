@@ -70,6 +70,28 @@ void WebListener::addObjectCallback(const std::string& object,
 
         Awesomium::JSObject& obj = val.ToObject();
 
+        // prevent crashing by retrying
+        // wait some time for the awesomium process to
+        // finish with the object
+        #if DEBUG || _DEBUG
+        uint8 tries(10);
+        boost::posix_time::seconds waitTime =
+            boost::posix_time::seconds(1);
+
+        while (tries > 0)
+        {
+            if (obj.last_error() != 0)
+            {
+                boost::this_thread::sleep(waitTime);
+                --tries;
+            }
+            else
+                break;
+        }
+
+        HE_ASSERT(tries > 0, "JSObject creation timed out!");
+        #endif
+
         JSObject* jsObject(NEW JSObject(obj, object));
         jsObject->addCallback(aweMethod, callBack);
 
