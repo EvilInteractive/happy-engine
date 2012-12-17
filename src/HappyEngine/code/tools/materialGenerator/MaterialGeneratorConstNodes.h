@@ -27,10 +27,10 @@
 namespace he {
 namespace tools {
 
-    MaterialGeneratorNodeClass(Float1)
-    MaterialGeneratorNodeClass(Float2)
-    MaterialGeneratorNodeClass(Float3)
-    MaterialGeneratorNodeClass(Float4)
+MaterialGeneratorNodeClass(Float1)
+MaterialGeneratorNodeClass(Float2)
+MaterialGeneratorNodeClass(Float3)
+MaterialGeneratorNodeClass(Float4)
 
 } } //end namespace
 
