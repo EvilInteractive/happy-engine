@@ -75,7 +75,7 @@ private:
     /* DATAMEMBERS */
     RectF m_Rect;
 
-    gfx::Font* m_Font;
+    gui::Font* m_Font;
     gui::Text m_Text;
 
     std::string m_DefaultString;

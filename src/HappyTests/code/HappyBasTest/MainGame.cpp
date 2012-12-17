@@ -320,7 +320,7 @@ void MainGame::load()
     m_View->setCamera(m_Player->getCamera());
     
     #pragma region GUI stuff
-    gfx::Font* font(CONTENT->getDefaultFont(14));
+    gui::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
     font->release();
 
@@ -406,6 +406,12 @@ void MainGame::load()
     creator->fill();
     creator->roundedRectangle(he::vec2(120,0), he::vec2(40,40), 10.0f);
     creator->setColor(he::Color(1.0f,1.0f,1.0f));
+    creator->fill();
+
+    m_BigText.clear();
+    m_BigText.addTextExt("testing cairo text");
+    creator->text(m_BigText, he::vec2(20,20));
+    creator->setColor(he::Color(1.0f,0.5f,0.5f));
     creator->fill();
     creator->renderSpriteAsync();
 #pragma endregion
@@ -531,8 +537,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     cvs->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
     
     // NEW CANVAS TEST
-    //he::gui::Canvas2Dnew* cvs = m_RenderPipeline->get2DRenderer()->getNewCanvas();
-    //cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
+    cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
 
     //canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
 }

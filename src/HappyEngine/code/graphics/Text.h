@@ -23,11 +23,8 @@
 #pragma once
 
 namespace he {
-namespace gfx {
-    class Font;
-}
-
 namespace gui {
+    class Font;
 
 class Text
 {
@@ -66,7 +63,7 @@ public:
     void setHorizontalAlignment(HAlignment alignment) { m_HAlignment = alignment; }
     void setVerticalAlignment(VAlignment alignment) { m_VAlignment = alignment; }
     void setBounds(const vec2& bounds = vec2());
-    void setFont(gfx::Font* font);
+    void setFont(Font* font);
     void setOverFlowType(OverFlowType overFlowType) { m_OverFlowType = overFlowType; }
 
     /* GETTERS */
@@ -81,9 +78,13 @@ public:
     HAlignment getHorizontalAlignment() const { return m_HAlignment; }
     VAlignment getVerticalAlignment() const { return m_VAlignment; }
 
-    gfx::Font* getFont() const { return m_Font; }
+    Font* getFont() const { return m_Font; }
 
     const vec2& getBounds() const { return m_Bounds; }
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    Text(const Text& text);
+    Text& operator=(const Text& text);
 
 private:
 
@@ -101,14 +102,10 @@ private:
     HAlignment m_HAlignment;
     VAlignment m_VAlignment;
 
-    gfx::Font* m_Font;
+    Font* m_Font;
 
     vec2 m_Bounds;
     bool m_HasBounds;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    Text(const Text&);
-    Text& operator=(const Text&);
 };
 
 } } //end namespace

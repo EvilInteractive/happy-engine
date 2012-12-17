@@ -136,6 +136,10 @@ void SpriteCreator::closePath()
 {
     m_Renderer->closePath();
 }
+void SpriteCreator::text(const gui::Text& text, const vec2& pos)
+{
+    m_Renderer->text(text, pos);
+}
 void SpriteCreator::stroke()
 {
     m_Renderer->stroke();

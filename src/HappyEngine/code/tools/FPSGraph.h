@@ -90,7 +90,7 @@ private:
     uint16 m_Ticks;
     uint16 m_RecordTime;
     
-    gfx::Font* m_Font;
+    gui::Font* m_Font;
     gui::Text m_Text;
 
     int m_FPSGraphState;

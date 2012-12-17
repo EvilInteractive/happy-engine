@@ -162,7 +162,7 @@ void Button::setText(const std::string& text, uint16 fontSize)
 
     if (m_Text.getFont() == nullptr || m_Text.getFont()->getPixelHeight() != fontSize)
     {
-        gfx::Font* font(CONTENT->getDefaultFont(fontSize));
+        gui::Font* font(CONTENT->getDefaultFont(fontSize));
         m_Text.setFont(font);
         font->release();
     }

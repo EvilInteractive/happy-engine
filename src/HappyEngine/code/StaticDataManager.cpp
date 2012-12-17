@@ -51,7 +51,7 @@ void StaticDataManager::init()
     ResourceFactory<gfx::TextureCube>::init(5, 5, "TextureCubeFactory");
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
-    ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
+    ResourceFactory<gui::Font>::init(64, 64, "FontFactory");
     ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
     ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
@@ -71,7 +71,7 @@ void StaticDataManager::destroy()
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
-    ResourceFactory<gfx::Font>::destroy();
+    ResourceFactory<gui::Font>::destroy();
     ResourceFactory<gfx::Material>::destroy();
     ResourceFactory<gfx::TextureCube>::destroy();
     ResourceFactory<gfx::Texture2D>::destroy();

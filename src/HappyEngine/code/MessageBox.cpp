@@ -99,7 +99,7 @@ public:
         else if (button2 != "")
             m_ButtonCount = 2;
 
-        gfx::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", FONT_SIZE));
+        gui::Font* font(CONTENT->loadFont("Ubuntu-Regular.ttf", FONT_SIZE));
         m_TextBlock.addText(message.c_str(), message.size());
         m_TextBlock.setFont(font);
         m_TextBlock.setOverFlowType(gui::Text::OverFlowType_Wrap);

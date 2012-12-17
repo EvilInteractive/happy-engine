@@ -90,6 +90,8 @@ public:
     void newPath();
     // closes current path
     void closePath();
+    // render text path
+    void text(const gui::Text& text, const vec2& pos);
     
     // stroke the current path
     void stroke();

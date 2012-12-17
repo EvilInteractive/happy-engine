@@ -118,7 +118,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         m_CharVertexBuffer.clear();
         m_CharIndexBuffer.clear();
 
-        const he::gfx::Font* const font(text.getFont());
+        const he::gui::Font* const font(text.getFont());
         const uint32 lineSpacing(font->getLineSpacing());
         const gui::Text::HAlignment h = text.getHorizontalAlignment();
 
@@ -212,7 +212,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
     }
 }
-float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gfx::Font* const font )
+float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gui::Font* const font )
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const Texture2D* const tex2D(font->getTextureAtlas());
@@ -240,7 +240,7 @@ float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const s
     for (uint32 i(0); i < count; ++i)
     {
         const char character(buffer[i]);
-        const Font::CharData& charData = font->getCharTextureData(character);
+        const gui::Font::CharData& charData = font->getCharTextureData(character);
         const RectF& regionToDraw = charData.textureRegion;
 
         const vec2 tcScale(regionToDraw.width / texWidth, regionToDraw.height / texHeight);

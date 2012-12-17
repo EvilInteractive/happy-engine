@@ -60,7 +60,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_Renderer->attachToRender(this);
     m_Renderer->attachToRender(m_WebView);
     
-    he::gfx::Font* font(CONTENT->getDefaultFont(10));
+    he::gui::Font* font(CONTENT->getDefaultFont(10));
     m_SceneInfo.setFont(font);
     font->release();
 }

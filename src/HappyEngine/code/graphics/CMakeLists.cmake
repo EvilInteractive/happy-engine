@@ -78,7 +78,8 @@ set (CODE_GRAPHICS_RENDERING_2D_FILTER
 			WebView.cpp                         WebView.h
 			WebListener.cpp					    WebListener.h
 			JSObject.h
-			NinePatchEffect.cpp					NinePatchEffect.h)
+			NinePatchEffect.cpp					NinePatchEffect.h
+			SpriteData.h)
             
 set (CODE_GRAPHICS_RENDERING_2D_SHAPES_FILTER
             BezierShape2D.cpp                   BezierShape2D.h)           

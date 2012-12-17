@@ -92,7 +92,7 @@ private:
     ProfileTreeNode* m_CurrentNode;
     ProfileTreeNode* m_PrevNode;
 
-    gfx::Font* m_Font;
+    gui::Font* m_Font;
     gfx::Renderer2D* m_Renderer;
     gui::Text m_Text;
 

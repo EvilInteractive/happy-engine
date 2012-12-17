@@ -155,12 +155,12 @@ ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Font* ContentManager::loadFont(const std::string& asset, uint16 size, bool compress)
+gui::Font* ContentManager::loadFont(const std::string& asset, uint16 size, uint8 options)
 {
-    return m_FontLoader->load(m_FontPath.str() + asset, size, compress);
+    return m_FontLoader->load(m_FontPath.str() + asset, size, options);
 }
 
-gfx::Font* ContentManager::getDefaultFont(uint16 size)
+gui::Font* ContentManager::getDefaultFont(uint16 size)
 {
     return loadFont("Ubuntu-Bold.ttf", size);
 }

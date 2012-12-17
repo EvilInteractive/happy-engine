@@ -96,7 +96,7 @@ void Text::setBounds(const vec2& bounds)
     }
 }
 
-void Text::setFont( gfx::Font* font )
+void Text::setFont( gui::Font* font )
 {
     if (m_Font != nullptr)
         m_Font->release();
@@ -112,6 +112,56 @@ void Text::resize( const size_t newSize )
         m_Capacity = newSize;
     }
     m_Size = newSize;
+}
+
+/* DEFAULT COPY & ASSIGNMENT */
+Text::Text(const Text& text)
+{
+    he_memset(this->m_ScratchBuffer, 0, MAX_SCRATCH);
+
+    this->m_Text = (char*)he_malloc(sizeof(char) * text.m_Size);
+
+    this->m_Size = text.m_Size;
+    this->m_Capacity = text.m_Size;
+
+    he_memcpy(this->m_Text, text.m_Text, m_Size);
+
+    if (text.m_Font != nullptr)
+    {
+        text.m_Font->instantiate();
+        this->m_Font = text.m_Font;
+    }
+
+    this->m_HAlignment = text.m_HAlignment;
+    this->m_VAlignment = text.m_VAlignment;
+
+    this->m_Bounds = text.m_Bounds;
+    this->m_HasBounds = text.m_HasBounds;
+}
+Text& Text::operator=(const Text& text)
+{
+    he_memset(this->m_ScratchBuffer, 0, MAX_SCRATCH);
+
+    this->m_Text = (char*)he_malloc(sizeof(char) * text.m_Size);
+
+    this->m_Size = text.m_Size;
+    this->m_Capacity = text.m_Size;
+
+    he_memcpy(this->m_Text, text.m_Text, m_Size);
+
+    if (text.m_Font != nullptr)
+    {
+        text.m_Font->instantiate();
+        this->m_Font = text.m_Font;
+    }
+
+    this->m_HAlignment = text.m_HAlignment;
+    this->m_VAlignment = text.m_VAlignment;
+
+    this->m_Bounds = text.m_Bounds;
+    this->m_HasBounds = text.m_HasBounds;
+
+    return *this;
 }
 
 } } //end namespace

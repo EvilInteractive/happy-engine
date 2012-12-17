@@ -128,7 +128,7 @@ private:
 
     std::string m_HelpCommand;
 
-    gfx::Font* m_Font;
+    gui::Font* m_Font;
     gui::Text m_Text;
     gfx::Renderer2D* m_Renderer;
 

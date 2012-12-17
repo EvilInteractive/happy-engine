@@ -26,14 +26,16 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-namespace he {
+struct _cairo_font_face;
 
-namespace gui {
-    class Text;
-}
+namespace he {
 
 namespace gfx {
     class Texture2D;
+}
+
+namespace gui {
+    class Text;
 
 class Font : public Resource<Font>
 {
@@ -45,12 +47,18 @@ public:
         vec2 advance;
     };
 
+    enum Options
+    {
+        NO_CACHE =          0x01,
+        NO_COMPRESSION =    0x02,
+    };
+
     /* CONSTRUCTOR - DESTRUCTOR */
     Font();
     virtual ~Font();
     
     /* GENERAL */
-    void init(FT_Library lib, FT_Face face, uint16 size, bool compress = true);
+    void init(FT_Library lib, FT_Face face, uint16 size, uint8 options = 0);
     void preCache(bool extendedCharacters = false);
 
     /* GETTERS */
@@ -62,7 +70,7 @@ public:
 
     int getKerning(char first, char second) const;
 
-    Texture2D* getTextureAtlas() const;
+    gfx::Texture2D* getTextureAtlas() const;
     inline const CharData& getCharTextureData(const uint8 chr) const
     {
         HE_ASSERT(m_Init, "Init Font before using!");
@@ -77,8 +85,9 @@ public:
         return m_CharTextureData[useChr];
     }
 
-
     bool isPreCached() const;
+
+    _cairo_font_face* getCairoFontFace() const;
 
     /* SETTERS */
 
@@ -96,10 +105,13 @@ private:
 
     bool m_Cached;
     bool m_ExtendedChars;
-    Texture2D* m_TextureAtlas;
-    he::PrimitiveList<CharData> m_CharTextureData;
+    gfx::Texture2D* m_TextureAtlas;
+    PrimitiveList<CharData> m_CharTextureData;
 
     bool m_Init;
+
+    // needed for rendering with cairo to sprites
+    _cairo_font_face* m_CairoFontFace;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Font(const Font&);

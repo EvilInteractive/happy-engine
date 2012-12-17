@@ -24,7 +24,7 @@
 
 #include "ResourceFactory.h"
 
-#define FACTORY ResourceFactory<gfx::Font>::getInstance()
+#define FACTORY ResourceFactory<gui::Font>::getInstance()
 
 namespace he {
 namespace ct {
@@ -38,12 +38,12 @@ FontLoader::FontLoader()
 
 FontLoader::~FontLoader()
 {
-    ResourceFactory<gfx::Font>::getInstance()->garbageCollect();
+    ResourceFactory<gui::Font>::getInstance()->garbageCollect();
     FT_Done_FreeType(m_FTLibrary);
 }
 
 /* GENERAL */
-gfx::Font* FontLoader::load(const std::string& path, uint16 size, bool compress)
+gui::Font* FontLoader::load(const std::string& path, uint16 size, uint8 options)
 {
     std::stringstream stream;
     stream << path << size;
@@ -88,9 +88,9 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size, bool compress)
             return nullptr;
         }
 
-        gfx::Font* pFont = FACTORY->get(handle);
+        gui::Font* pFont = FACTORY->get(handle);
         pFont->setName(stream.str());
-        pFont->init(m_FTLibrary, face, size, compress);
+        pFont->init(m_FTLibrary, face, size, options);
 
         m_AssetContainer.addAsset(stream.str(), handle);
 

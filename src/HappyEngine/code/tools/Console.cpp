@@ -92,7 +92,7 @@ Console::Console() :	m_Shortcut(io::Key_C),
 void Console::load()
 {
     // don't compress font because it is small and needs crispness
-    m_Font = CONTENT->loadFont("DejaVuSansMono.ttf", 8, false);
+    m_Font = CONTENT->loadFont("DejaVuSansMono.ttf", 8, gui::Font::NO_COMPRESSION);
     m_Text.setFont(m_Font);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Top);

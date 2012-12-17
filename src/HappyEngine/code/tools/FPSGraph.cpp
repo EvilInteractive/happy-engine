@@ -44,7 +44,7 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
                         m_CurrentDTime(0.0f),
                         m_CurrentFPS(0),
                         m_Interval(interval),
-                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 6, false)),
+                        m_Font(CONTENT->loadFont("Ubuntu-Medium.ttf", 6, gui::Font::NO_COMPRESSION)),
                         m_FPSGraphState(Type_TextOnly),
                         m_Pos(5.0f, 5.0f),
                         m_FpsHistory(300),

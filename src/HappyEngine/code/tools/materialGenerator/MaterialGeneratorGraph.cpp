@@ -78,7 +78,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_DeleteCommand(this)
     , m_GhostConnection(NEW gui::BezierShape2D)
 {
-    he::gfx::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
+    he::gui::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
     m_DebugText.setFont(font);
     font->release();
 

@@ -24,9 +24,10 @@
 #include "Canvas2DBuffer.h"
 #include "Texture2D.h"
 #include "cairo\cairo.h"
-#include "MathConstants.h"
-#include "MathFunctions.h"
+#include "cairo\cairo-ft.h"
 #include "Sprite.h"
+#include "Text.h"
+#include "Font.h"
 
 namespace he {
 namespace gfx {
@@ -62,6 +63,26 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
     vec2 size(sprite->getSize());
     int w(static_cast<int>(size.x));
     int h(static_cast<int>(size.y));
+    /*
+    const bool isDynamic((sprite->getFlags() & gui::Sprite::DYNAMIC_DRAW) == gui::Sprite::DYNAMIC_DRAW);
+
+    if (isDynamic)
+    {
+        size_t index(UINT32_MAX);
+
+        if (m_DynamicSpriteList.find_if([&id](const SpriteData*spd) -> bool
+        {
+            if (spd->id == id)
+                return true;
+            else
+                return false;
+        }, index))
+        {
+            SpriteData& data(m_SpriteList.front());
+
+            if (size == )
+        }
+    }*/
 
     unsigned char* rBuff(
         static_cast<unsigned char*>(he_calloc(
@@ -329,6 +350,24 @@ void Canvas2DRendererCairo::closePath()
         &cairo_close_path,
         sData.cairoPaint));
 }
+
+void Canvas2DRendererCairo::text(const gui::Text& text, const vec2& pos)
+{
+    boost::mutex::scoped_lock lock(m_SpriteListLock);
+
+    SpriteData& sData = m_SpriteList.back();
+
+    HE_ASSERT((sData.readyState &= SpriteReadyForRender) == false,
+        "Sprite is already marked for rendering, can't draw!");
+
+    sData.drawCalls.push(
+        boost::bind(
+        &Canvas2DRendererCairo::_text,
+        this,
+        text,
+        pos,
+        sData.cairoPaint));
+}
     
 void Canvas2DRendererCairo::stroke()
 {
@@ -410,13 +449,7 @@ void Canvas2DRendererCairo::handleDrawCalls()
 
     while (m_HandleDrawCalls)
     {
-        renderSprite = false;
-
-        m_SpriteListLock.lock();
-
         uint32 spritesToRender(m_SpriteList.size());
-
-        m_SpriteListLock.unlock();
 
         if (spritesToRender > 0)
         {
@@ -426,11 +459,11 @@ void Canvas2DRendererCairo::handleDrawCalls()
 
                     // check if needs to be rendered
                     SpriteData& data(m_SpriteList.front());
-            
-                    renderSprite = 
-                        (data.readyState &= SpriteReadyForRender) != 0;
 
                 m_SpriteListLock.unlock();
+            
+                renderSprite = 
+                    (data.readyState & SpriteReadyForRender) == SpriteReadyForRender;
 
                 if (renderSprite)
                 {
@@ -492,6 +525,143 @@ void Canvas2DRendererCairo::transformY()
         sData.cairoPaint,
         0.0,
         static_cast<double>(-sData.size.y)));
+}
+
+void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_t* cairoPaint)
+{
+    vec2 linePos(0,0);
+    const bool hasBounds(text.hasBounds());
+    const gui::Font* font(text.getFont());
+    cairo_font_face_t* cairoFont(font->getCairoFontFace());
+    const uint32 lineSpacing(font->getLineSpacing());
+    const gui::Text::HAlignment hAl(text.getHorizontalAlignment());
+    const gui::Text::VAlignment vAl(text.getVerticalAlignment());
+    const char* fullText(text.getText());
+    const size_t size(text.getTextSize());
+    const vec2 bounds(hasBounds ? text.getBounds() : vec2(0,0));
+    uint16 lines(0);
+
+    cairo_glyph_t* cairoGlyphs((cairo_glyph_t*)he_malloc(size * sizeof(cairo_glyph_t)));
+    size_t numGlyphs(0);
+
+    size_t lineCharStart(0);
+
+    for (uint32 i(0); i < size; ++i)
+    {
+        const char currentChar(fullText[i]);
+
+        if (currentChar == '\n')
+        {
+            const size_t lineSize(i - lineCharStart);
+            if (lineSize > 0)
+            {
+                vec2 glyphPos;
+                float hoffset(0.0f);
+                switch (hAl)
+                {
+                    case gui::Text::HAlignment_Left:
+                        break;
+                    case gui::Text::HAlignment_Center:
+                        hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize) / 2.0f;
+                        break;
+                    case gui::Text::HAlignment_Right:
+                        hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize);
+                        break;
+                }
+
+                glyphPos.x += hoffset;
+
+                for (uint32 i2(lineCharStart); i2 < lineCharStart + lineSize; ++i2)
+                {
+                    const gui::Font::CharData& charData = font->getCharTextureData(currentChar);
+
+                    cairo_glyph_t& c(cairoGlyphs[i2]);
+
+                    c.index = static_cast<int>(fullText[i2]);
+                    c.x = static_cast<double>(glyphPos.x);
+                    c.y = static_cast<double>(glyphPos.y);
+
+                    glyphPos.x += charData.advance.x;
+
+                    ++numGlyphs;
+                }
+            }
+
+            lineCharStart = i + 1;
+
+            linePos.y += lineSpacing;
+            linePos.x = 0;
+
+            ++lines;
+        } 
+    }
+
+    if (lineCharStart < size)
+    {
+        const size_t lineSize(size - lineCharStart);
+        if (lineSize > 0)
+        {
+            vec2 glyphPos;
+            float hoffset(0.0f);
+            switch (hAl)
+            {
+                case gui::Text::HAlignment_Left:
+                    break;
+                case gui::Text::HAlignment_Center:
+                    hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize) / 2.0f;
+                    break;
+                case gui::Text::HAlignment_Right:
+                    hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize);
+                    break;
+            }
+
+            glyphPos.x += hoffset;
+
+            for (uint32 i2(lineCharStart); i2 < lineCharStart + lineSize; ++i2)
+            {
+                const gui::Font::CharData& charData = font->getCharTextureData(fullText[i2]);
+
+                cairo_glyph_t& c(cairoGlyphs[i2]);
+
+                c.index = static_cast<int>(fullText[i2]);
+                c.x = static_cast<double>(glyphPos.x);
+                c.y = static_cast<double>(glyphPos.y);
+
+                glyphPos.x += charData.advance.x;
+
+                ++numGlyphs;
+            }
+
+            ++lines;
+        }
+    }
+
+    vec2 offset(pos.x, pos.y);
+    switch (vAl)
+    {
+        case gui::Text::VAlignment_Top:
+            break;
+        case gui::Text::VAlignment_Center:
+            offset.y -= bounds.y / 2.0f - (lineSpacing * lines) / 2.0f;
+            break;
+        case gui::Text::VAlignment_Bottom:
+            offset.y -= bounds.y + (lineSpacing * lines);
+            break;
+    }
+
+    cairo_translate(cairoPaint, static_cast<double>(offset.x), static_cast<double>(offset.y));
+
+    cairo_set_font_face(cairoPaint, cairoFont);
+    cairo_set_font_size(cairoPaint, static_cast<double>(font->getPixelHeight()));
+
+    // render glyphs
+    //cairo_glyph_path(cairoPaint, cairoGlyphs, numGlyphs);
+
+    cairo_translate(cairoPaint, static_cast<double>(-offset.x), static_cast<double>(-offset.y));
+
+    he_free(cairoGlyphs);
+
+    //cairo_glyph_free(cairoGlyphs);
 }
 
 }} //end namespace

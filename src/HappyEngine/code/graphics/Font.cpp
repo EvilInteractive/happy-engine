@@ -28,8 +28,11 @@
 #include FT_GLYPH_H
 #include FT_BITMAP_H
 
+#include "cairo\cairo.h"
+#include "cairo\cairo-ft.h"
+
 namespace he {
-namespace gfx {
+namespace gui {
 
 Font::Font() :  m_FTLibrary(nullptr),
                 m_Face(nullptr),
@@ -38,13 +41,16 @@ Font::Font() :  m_FTLibrary(nullptr),
                 m_Cached(false),
                 m_Init(false),
                 m_LineHeight(0),
-                m_TextureAtlas(nullptr)
+                m_TextureAtlas(nullptr),
+                m_CairoFontFace(nullptr)
 {
     
 }
 
 Font::~Font()
 {
+    cairo_font_face_destroy(m_CairoFontFace);
+
     if (m_Face != 0)
     {
         FT_Done_Face(m_Face);
@@ -54,23 +60,30 @@ Font::~Font()
 }
 
 /* GENERAL */
-void Font::init(FT_Library lib, FT_Face face, uint16 size, bool compress)
+void Font::init(FT_Library lib, FT_Face face, uint16 size, uint8 options)
 {
     m_FTLibrary = lib;
     m_Face = face;
     m_CharSize = size;
 
-    ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
-    m_TextureAtlas = ResourceFactory<Texture2D>::getInstance()->get(hnd);
-    m_TextureAtlas->init(gfx::TextureWrapType_Repeat,  gfx::TextureFilterType_Nearest, 
-        compress == true ? gfx::TextureFormat_Compressed_RGBA8_DXT5 : gfx::TextureFormat_RGBA8, false);
-    m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
-
     m_Init = true;
 
-    /* Precache (create texture atlas) automatically.
-    No reason not to, huge performance improvement */
-    preCache();
+    m_CairoFontFace = cairo_ft_font_face_create_for_ft_face(m_Face, 0);
+
+    if ((options & NO_CACHE) != NO_CACHE)
+    {
+        ObjectHandle hnd = ResourceFactory<gfx::Texture2D>::getInstance()->create();
+        m_TextureAtlas = ResourceFactory<gfx::Texture2D>::getInstance()->get(hnd);
+        m_TextureAtlas->init(
+            gfx::TextureWrapType_Repeat,
+            gfx::TextureFilterType_Nearest, 
+            (options & NO_COMPRESSION) == NO_COMPRESSION ?
+            gfx::TextureFormat_RGBA8 : gfx::TextureFormat_Compressed_RGBA8_DXT5,
+            false);
+        m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
+
+        preCache();
+    }
 }
 
 void Font::preCache(bool extendedCharacters)
@@ -267,7 +280,7 @@ int Font::getKerning(char first, char second) const
     return result;
 }
 
-Texture2D* Font::getTextureAtlas() const
+gfx::Texture2D* Font::getTextureAtlas() const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
     HE_ASSERT(m_Cached, "Precache Font before using!");
@@ -278,6 +291,11 @@ Texture2D* Font::getTextureAtlas() const
 bool Font::isPreCached() const
 {
     return m_Cached;
+}
+
+_cairo_font_face* Font::getCairoFontFace() const
+{
+    return m_CairoFontFace;
 }
 
 /* EXTRA */

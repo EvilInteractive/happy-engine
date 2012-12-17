@@ -58,7 +58,7 @@ private:
     he::gfx::Window* m_Window;
     he::gfx::View*   m_View;
     he::gfx::Renderer2D* m_Renderer;
-    he::gfx::Font* m_Font;
+    he::gui::Font* m_Font;
     he::gfx::WebView* m_WebView;
 
     /* DEFAULT COPY & ASSIGNMENT */

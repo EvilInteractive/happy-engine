@@ -22,8 +22,7 @@
 #define _HE_CANVAS2DRENDERERCAIRO_H_
 #pragma once
 
-#include <queue>
-#include "boost\thread.hpp"
+#include "SpriteData.h"
 #include "cairo\cairo.h"
 
 /* FORWARD DECLARATIONS */
@@ -86,6 +85,8 @@ public:
     void newPath();
     void closePath();
 
+    void text(const gui::Text& text, const vec2& pos);
+
     void stroke();
     void fill();
     void clip();
@@ -94,69 +95,11 @@ public:
 private:
 
     /* INTERNAL */
-    enum SpriteReadyState
+    enum SpriteState
     {
         SpriteReadyForRender =    0x01,
         SpriteReadyForBlit =      0x02,
         SpriteDynamic =           0x04
-    };
-
-    struct SpriteData
-    {
-        SpriteData( const uint16& id,
-                    const vec2& size,
-                    Texture2D* tex2D,
-                    unsigned char* rBuff,
-                    _cairo_surface* surf,
-                    _cairo* cp) :
-                        id(id),
-                        size(size),
-                        texture2D(tex2D),
-                        renderBuffer(rBuff),
-                        cairoSurface(surf),
-                        cairoPaint(cp),
-                        readyState(0x00)
-        {}
-
-        
-        SpriteData(const SpriteData& sd)
-        {
-            this->id = sd.id;
-            this->size = sd.size;
-            this->drawCalls = sd.drawCalls;
-            this->texture2D = sd.texture2D;
-            this->renderBuffer = sd.renderBuffer;
-            this->cairoSurface = sd.cairoSurface;
-            this->cairoPaint = sd.cairoPaint;
-            this->readyState = sd.readyState;
-        }
-        SpriteData& operator=(const SpriteData& sd)
-        {
-            this->id = sd.id;
-            this->size = sd.size;
-            this->drawCalls = sd.drawCalls;
-            this->texture2D = sd.texture2D;
-            this->renderBuffer = sd.renderBuffer;
-            this->cairoSurface = sd.cairoSurface;
-            this->cairoPaint = sd.cairoPaint;
-            this->readyState = sd.readyState;
-
-            return *this;
-        }
-
-        bool operator==(const SpriteData& sd)
-        {
-            return (this->id == sd.id);
-        }
-
-        uint16 id;
-        vec2 size;
-        std::queue<boost::function0<void> > drawCalls;
-        Texture2D* texture2D;
-        unsigned char* renderBuffer;
-        _cairo_surface* cairoSurface;
-        _cairo* cairoPaint;
-        char readyState;
     };
 
     void blit();
@@ -167,9 +110,12 @@ private:
     void save();
     void restore();
 
+    void _text(const gui::Text& text, const vec2& pos, cairo_t* cairoPaint);
+
     /* MEMBERS */
     std::queue<SpriteData> m_SpriteList;
     std::queue<SpriteData> m_SpriteListBlit;
+    PrimitiveList<SpriteData*> m_DynamicSpriteList;
 
     boost::thread m_DrawThread;
     boost::mutex m_SpriteListLock;
