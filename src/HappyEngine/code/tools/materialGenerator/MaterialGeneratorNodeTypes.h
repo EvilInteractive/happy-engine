@@ -39,6 +39,9 @@ const char* materialGeneratorVariableTypeToString(const MaterialGeneratorVariabl
 
 enum MaterialGeneratorNodeType
 {
+    // Root
+    MaterialGeneratorNodeType_RootNormalDraw,
+
     // Const
     MaterialGeneratorNodeType_Float1,
     MaterialGeneratorNodeType_Float2,
@@ -87,7 +90,6 @@ enum MaterialGeneratorNodeType
     MaterialGeneratorNodeType_Texture2D,
     MaterialGeneratorNodeType_TextureCube,
     MaterialGeneratorNodeType_Texcoord,
-
 
 
 

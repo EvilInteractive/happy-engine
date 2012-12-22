@@ -52,6 +52,11 @@ struct NodeGraphError
         m_ErrorMessage = buff;
     }
 
+    const std::string getMessage() const { return m_ErrorMessage; }
+    const NodeGraphNode<TInput, TOutput>* getNode() const { return m_Node; }
+    const NodeGraphConnection<TInput, TOutput>& getConnection() const { return m_Connecter; }
+    bool isFatal() const { return !m_Fixed; }
+
 private:
     const NodeGraphNode<TInput, TOutput>* m_Node;                  // Node that threw the error
     NodeGraphConnection<TInput, TOutput> m_Connecter;              // Connecter from the node that threw the error (can be nullptr)

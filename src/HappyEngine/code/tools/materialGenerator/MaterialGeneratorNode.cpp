@@ -185,7 +185,7 @@ IMPLEMENT_OBJECT(MaterialGeneratorNode)
 
 MaterialGeneratorNode::MaterialGeneratorNode(): 
     m_SelectedOverload(0), m_Overloads(1), m_Position(0, 0), m_Size(128, 96),
-    m_IsSelected(false), m_IsHoovering(false), m_Parent(nullptr)
+    m_IsSelected(false), m_IsHoovering(false), m_Parent(nullptr), m_CanBeSelected(true)
 {
     gui::SpriteCreator* cr(GUI->Sprites);
 
@@ -434,11 +434,14 @@ bool MaterialGeneratorNode::findOverload( uint8& outOverload ) const
 bool MaterialGeneratorNode::pick( const vec2& worldPos ) const
 {
     bool result(false);
-    const vec2 halfSize(m_Size / 2.0f);
-    if (worldPos.x > m_Position.x - halfSize.x && worldPos.y > m_Position.y - halfSize.y &&
-        worldPos.x < m_Position.x + halfSize.x && worldPos.y < m_Position.y + halfSize.y)
+    if (m_CanBeSelected)
     {
-        result = true;
+        const vec2 halfSize(m_Size / 2.0f);
+        if (worldPos.x > m_Position.x - halfSize.x && worldPos.y > m_Position.y - halfSize.y &&
+            worldPos.x < m_Position.x + halfSize.x && worldPos.y < m_Position.y + halfSize.y)
+        {
+            result = true;
+        }
     }
     return result;
 }
@@ -450,7 +453,7 @@ bool MaterialGeneratorNode::doHoover( const vec2& worldPos, const bool undoHoove
     {
         result |= connecter->doHoover(worldPos, result || undoHoover);
     });
-    if (result == false && undoHoover == false)
+    if (m_CanBeSelected == true && result == false && undoHoover == false)
     {
         result = pick(worldPos);
         m_IsHoovering = result;
@@ -529,5 +532,12 @@ const MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const uint8& 
 {
     return m_Params[index];
 }
+
+void MaterialGeneratorNode::setSize( const vec2& size )
+{
+    m_Size = size;
+    updateConnecterPositions();
+}
+
 
 } } //end namespace

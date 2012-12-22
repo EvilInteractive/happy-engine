@@ -139,6 +139,9 @@ protected:
     void addParam(const MaterialGeneratorNodeParam& param);
     const MaterialGeneratorNodeParam& getParam(const uint8& index);
     
+    void setSize(const vec2& size);
+    void setCanBeSelected(const bool canBeSelected) { m_CanBeSelected = canBeSelected; }
+
     MaterialGeneratorGraph* m_Parent;
 private:
     struct Overload
@@ -168,6 +171,7 @@ private:
 
     vec2 m_Position;
     vec2 m_Size;
+    bool m_CanBeSelected;
     bool m_IsSelected;
     bool m_IsHoovering;
     Guid m_Guid;
@@ -177,7 +181,7 @@ private:
 
     void updateConnecterPositions();
     bool isInView(const mat33& transform, const RectF& clipRect);
-
+    
     he::PrimitiveList<Connecter*> m_Connecters;
     he::PrimitiveList<gui::Sprite*> m_Sprites;
     

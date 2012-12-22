@@ -39,6 +39,8 @@ set (CODE_TOOL_MATERIALGENERATOR_FILTER
 		materialGenerator/MaterialGeneratorNodeInOut.cpp				materialGenerator/MaterialGeneratorNodeInOut.h
 		materialGenerator/MaterialGeneratorNodeParam.cpp                materialGenerator/MaterialGeneratorNodeParam.h	
 		materialGenerator/MaterialGeneratorNodeTypes.cpp				materialGenerator/MaterialGeneratorNodeTypes.h
+        materialGenerator/MaterialGeneratorRootNodes.cpp                materialGenerator/MaterialGeneratorRootNodes.h
+        materialGenerator/MaterialGeneratorVectorNodes.cpp                materialGenerator/MaterialGeneratorVectorNodes.h
 		materialGenerator/MaterialGeneratorTextureNodes.cpp             materialGenerator/MaterialGeneratorTextureNodes.h						
 )
                       

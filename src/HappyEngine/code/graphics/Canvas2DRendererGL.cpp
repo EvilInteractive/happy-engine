@@ -160,7 +160,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
                     int g = atoix(cG);
                     int b = atoix(cB);
 
-                    setColor(Color(r / 15.0f, g / 15.0f, b / 15.0f));
+                    setColor(Color(r / 15.0f, g / 15.0f, b / 15.0f, m_Color.a()));
 
                     i += 3;
                     lineCharStart = i + 1;
@@ -185,7 +185,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         case gui::Text::VAlignment_Top:
             break;
         case gui::Text::VAlignment_Center:
-            offset.y -= bounds.y / 2.0f - (lineSpacing * lineCounter) / 2.0f;
+            offset.y -= bounds.y / 2.0f + (lineSpacing * lineCounter) / 2.0f;
             break;
         case gui::Text::VAlignment_Bottom:
             offset.y -= bounds.y + (lineSpacing * lineCounter);
@@ -365,6 +365,7 @@ void Canvas2DRendererGL::drawSprite(const gui::Sprite* sprite, const vec2& pos,
         s_NinePatchEffect->setOriginalSize(sprite->getSize());
         s_NinePatchEffect->setDiffuseMap(sprite->getRenderTexture());
         s_NinePatchEffect->setDepth(0.5f);
+        s_NinePatchEffect->setBlendColor(m_Color);
 
         GL::heBlendEnabled(true);
         GL::heBlendEquation(BlendEquation_Add);
