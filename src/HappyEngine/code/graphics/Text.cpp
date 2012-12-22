@@ -102,7 +102,7 @@ he::vec2 Text::measureText()
             else if (m_Text[i] == '\n' || i + 1 == m_Size)
             {
                 result.x = std::max(result.x, m_Font->getStringWidth(m_ScratchBuffer, scratchEnd));
-                result.y += m_Font->getLineHeight();
+                result.y += m_Font->getLineSpacing();
                 scratchEnd = 0;
                 start = i + 1;
             }

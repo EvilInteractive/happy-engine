@@ -26,39 +26,71 @@
 
 namespace he {
 namespace tools {
-
+class MaterialGeneratorNode;
 class MaterialGeneratorNodeInput
 {
 public:
-    MaterialGeneratorNodeInput(): m_Type(MaterialGeneratorVariableType_Unknown) {}
+    MaterialGeneratorNodeInput()
+        : m_Type(MaterialGeneratorVariableType_Unknown)
+        , m_Parent(nullptr) 
+        , m_Index(UINT8_MAX)
+    {}
+    MaterialGeneratorNodeInput(MaterialGeneratorNode* const parent, const uint8 index)
+        : m_Type(MaterialGeneratorVariableType_Unknown)
+        , m_Parent(parent)
+        , m_Index(index) 
+    {}
     virtual ~MaterialGeneratorNodeInput() {}
     // Default copy == OK
 
     inline void setType(const MaterialGeneratorVariableType type) { m_Type = type; }
     inline MaterialGeneratorVariableType getType() const { return m_Type; }
 
+    inline MaterialGeneratorNode* getParent() const { return m_Parent; }
+
+    inline uint8 getIndex() const { return m_Index; }
+
 private:
 
     MaterialGeneratorVariableType m_Type;
+    MaterialGeneratorNode* m_Parent;
+    uint8 m_Index;
 };
 
 class MaterialGeneratorNodeOutput
 {
 public:
-    MaterialGeneratorNodeOutput(): m_Type(MaterialGeneratorVariableType_Unknown), m_Variable(ObjectHandle::unassigned) {}
+    MaterialGeneratorNodeOutput()
+        : m_Type(MaterialGeneratorVariableType_Unknown)
+        , m_Variable(ObjectHandle::unassigned)
+        , m_Parent(nullptr) 
+        , m_Index(UINT8_MAX)
+    {}
+    MaterialGeneratorNodeOutput(MaterialGeneratorNode* const parent, const uint8 index)
+        : m_Type(MaterialGeneratorVariableType_Unknown)
+        , m_Variable(ObjectHandle::unassigned)
+        , m_Parent(parent) 
+        , m_Index(index)
+    {}
     ~MaterialGeneratorNodeOutput() {}
     // Default copy == OK
 
     inline void setType(const MaterialGeneratorVariableType type) { m_Type = type; }
     inline MaterialGeneratorVariableType getType() const { return m_Type; }
 
-    const ObjectHandle& getVar() const { return m_Variable; }
-    void setVar(const ObjectHandle& var) { m_Variable = var; }
+    inline const ObjectHandle& getVar() const { return m_Variable; }
+    inline void setVar(const ObjectHandle& var) { m_Variable = var; }
+
+    inline MaterialGeneratorNode* getParent() const { return m_Parent; }
+
+    inline uint8 getIndex() const { return m_Index; }
 
 private:
 
     MaterialGeneratorVariableType m_Type;
     ObjectHandle m_Variable;
+    MaterialGeneratorNode* m_Parent;
+    uint8 m_Index;
 };
 
 

@@ -113,6 +113,9 @@ private:
     void renderBackground();
     void onViewResized();
 
+    void updateStates(const float dTime);
+    void updateErrors(const float dTime);
+
     void addNode(MaterialGeneratorNode* const node);
 
     /* MEMBERS */

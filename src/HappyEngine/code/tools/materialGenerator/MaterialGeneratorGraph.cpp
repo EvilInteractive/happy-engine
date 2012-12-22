@@ -51,8 +51,8 @@
 #define ZOOM_MIN 0.1f
 #define ZOOM_MAX 3.0f
 
-#define ERROR_TIME 4.0f
-#define ERROR_FADE_TIME 1.0f
+#define ERROR_TIME 2.0f
+#define ERROR_FADE_TIME 0.5f
 const he::vec2 errorTextMarge(4.0f, 4.0f);
 
 namespace he {
@@ -226,7 +226,7 @@ void MaterialGeneratorGraph::close()
     m_Window->close();
 }
 
-void MaterialGeneratorGraph::tick( float dTime )
+void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
 {
     const io::ControlsManager* const controls(CONTROLS);
     const io::IMouse* const mouse(controls->getMouse());
@@ -235,30 +235,10 @@ void MaterialGeneratorGraph::tick( float dTime )
     const bool removeSelection(keyboard->isKeyDown(io::Key_Lalt) || keyboard->isKeyDown(io::Key_Ralt));
 
     const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
-    bool foundHoover(false);
-    m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
-    {
-        foundHoover |= node->doHoover(mouseWorld, foundHoover);
-    });
-
-    for (size_t i(0); i < m_VisibleErrors.size();)
-    {
-        ErrorMessage& msg(m_VisibleErrors[i]);
-        msg.m_TimeLeft -= dTime;
-        if (msg.m_TimeLeft <= 0.0f)
-        {
-            m_ErrorPool.add(m_VisibleErrors[i].m_Text);
-            m_VisibleErrors.removeAt(i);
-        }
-        else
-        {
-            ++i;
-        }
-    }
 
     switch (m_State)
     {
-        case State_Idle:
+    case State_Idle:
         {
             m_GrabWorldPos = mouseWorld;
             const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
@@ -316,7 +296,7 @@ void MaterialGeneratorGraph::tick( float dTime )
                 m_CommandStack.endTransaction();
             }
         } break;
-        case State_StartPan:
+    case State_StartPan:
         {
             const vec2 mousePos(mouse->getPosition());
             const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
@@ -338,7 +318,7 @@ void MaterialGeneratorGraph::tick( float dTime )
                 m_CommandStack.endTransaction();
             }
         } break;
-        case State_Pan:
+    case State_Pan:
         {
             const vec2 mousePos(mouse->getPosition());
             const vec2 worldMouse(screenToWorldPos(mousePos));
@@ -349,7 +329,7 @@ void MaterialGeneratorGraph::tick( float dTime )
                 m_State = State_Idle;
             }
         } break;
-        case State_StartMoveNode:
+    case State_StartMoveNode:
         {
             const vec2 mousePos(mouse->getPosition());
             const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
@@ -375,7 +355,7 @@ void MaterialGeneratorGraph::tick( float dTime )
                 m_State = State_MoveNode;
             }
         } break;
-        case State_MoveNode:
+    case State_MoveNode:
         {
             const vec2 mouseMove(mouse->getMove());
             const vec2 worldMove(mouseMove / m_Scale);
@@ -387,7 +367,7 @@ void MaterialGeneratorGraph::tick( float dTime )
                 m_State = State_Idle;
             }
         } break;
-        case State_ConnectNode:
+    case State_ConnectNode:
         {
             m_GhostConnection->setPositionEnd(screenToWorldPos(mouse->getPosition()));
             if (mouse->isButtonReleased(io::MouseButton_Left))
@@ -399,8 +379,53 @@ void MaterialGeneratorGraph::tick( float dTime )
 
         } break;
     }
+}
 
-    //if (m_SelectedNodeList.size() > 0)
+void MaterialGeneratorGraph::updateErrors( const float dTime )
+{
+    const io::ControlsManager* const controls(CONTROLS);
+    const io::IMouse* const mouse(controls->getMouse());
+    const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+    for (size_t i(0); i < m_VisibleErrors.size();)
+    {
+        ErrorMessage& msg(m_VisibleErrors[i]);
+        msg.m_TimeLeft -= dTime;
+        if (mouseWorld.x > msg.m_Position.x - msg.m_TextSize.x / 2.0f - errorTextMarge.x && 
+            mouseWorld.y > msg.m_Position.y - msg.m_TextSize.y / 2.0f - errorTextMarge.y &&
+            mouseWorld.x < msg.m_Position.x + msg.m_TextSize.x / 2.0f + errorTextMarge.x && 
+            mouseWorld.y < msg.m_Position.y + msg.m_TextSize.y / 2.0f + errorTextMarge.y)
+        {
+            if (mouse->isButtonPressed(io::MouseButton_Left))
+                msg.m_TimeLeft = 0.0f;
+            else if (msg.m_TimeLeft < ERROR_FADE_TIME)
+                msg.m_TimeLeft = ERROR_FADE_TIME;
+        }
+        if (msg.m_TimeLeft <= 0.0f)
+        {
+            m_ErrorPool.add(m_VisibleErrors[i].m_Text);
+            m_VisibleErrors.removeAt(i);
+        }
+        else
+        {
+            ++i;
+        }
+    }
+}
+void MaterialGeneratorGraph::tick( float dTime )
+{
+    const io::ControlsManager* const controls(CONTROLS);
+    const io::IMouse* const mouse(controls->getMouse());
+
+    const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+    bool foundHoover(false);
+    m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
+    {
+        foundHoover |= node->doHoover(mouseWorld, foundHoover);
+    });
+
+    updateErrors(dTime);
+    
+    updateStates(dTime);
 
     const int scroll(mouse->getScroll());
     if (scroll != 0)
@@ -532,7 +557,7 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         const vec2 screenPos(worldToScreenPos(msg.m_Position));
         cvs->setColor(Color(1, 1, 1, (ERROR_FADE_TIME + std::min(0.0f, msg.m_TimeLeft - ERROR_FADE_TIME)) / ERROR_FADE_TIME));
         cvs->drawSprite(m_ErrorBackgroundSprite, screenPos - msg.m_TextSize / 2.0f - errorTextMarge, msg.m_TextSize + errorTextMarge * 2);
-        cvs->fillText(*msg.m_Text, screenPos);
+        cvs->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
     });
 
     // DEBUG
@@ -662,11 +687,12 @@ void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
     for (uint8 i(0); i < 5; ++i)
     {
         gui::Text* text(NEW gui::Text);
-        text->setHorizontalAlignment(gui::Text::HAlignment_Center);
-        text->setVerticalAlignment(gui::Text::VAlignment_Center);
+        text->setHorizontalAlignment(gui::Text::HAlignment_Left);
+        text->setVerticalAlignment(gui::Text::VAlignment_Top);
         text->setFont(m_ErrorFont);
         m_ErrorPool.add(text);
     }
 }
+
 
 } } //end namespace
