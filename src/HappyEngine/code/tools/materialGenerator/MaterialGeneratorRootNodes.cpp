@@ -22,11 +22,24 @@
 #include "MaterialGeneratorRootNodes.h"
 #include "ShaderGeneratorVariableFactory.h"
 #include "MaterialGeneratorGraph.h"
+#include "ContentManager.h"
 
 namespace he {
 namespace tools {
     
 #pragma region RootNormalDraw
+
+enum RootNodeNormalDrawConnection
+{
+    RootNodeNormalDrawConnection_Diffuse,
+    RootNodeNormalDrawConnection_Emissive,
+    RootNodeNormalDrawConnection_Specular,
+    RootNodeNormalDrawConnection_Gloss,
+    RootNodeNormalDrawConnection_Opacity,
+    RootNodeNormalDrawConnection_Normal,
+    RootNodeNormalDrawConnection_WorldPositionOffset
+};
+
 MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
 {
     addOverload(0, 7, 
@@ -53,25 +66,46 @@ bool MaterialGeneratorNodeRootNormalDraw::evaluate( MaterialGeneratorError& erro
     const bool result(MaterialGeneratorNode::evaluate(error));
     if (result)
     {
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());
-
-        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
-
-        const he::ObjectHandle oneHandle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varOne(factory->get(oneHandle));
-        switch (factory->get(a)->getType())
+        ct::ShaderGenerator* const shaderGenerator(m_Parent->getGenerator());
+        
+        const auto& diffuseConnection(getInputConnection(RootNodeNormalDrawConnection_Diffuse));
+        const auto& emissiveConnection(getInputConnection(RootNodeNormalDrawConnection_Emissive));
+        const auto& specularConnection(getInputConnection(RootNodeNormalDrawConnection_Specular));
+        const auto& glossConnection(getInputConnection(RootNodeNormalDrawConnection_Gloss));
+        const auto& opacityConnection(getInputConnection(RootNodeNormalDrawConnection_Opacity));
+        const auto& normalConnection(getInputConnection(RootNodeNormalDrawConnection_Normal));
+        const auto& worldPosOffsetConnection(getInputConnection(RootNodeNormalDrawConnection_WorldPositionOffset));
+        if (diffuseConnection.isConnected())
         {
-        case MaterialGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
-        case MaterialGeneratorVariableType_Float2: varOne->setConstant(vec2(1.0f, 1.0f)); break;
-        case MaterialGeneratorVariableType_Float3: varOne->setConstant(vec3(1.0f, 1.0f, 1.0f)); break;
-        case MaterialGeneratorVariableType_Float4: varOne->setConstant(vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
+            shaderGenerator->setDiffuse(diffuseConnection.getConnection().getVar());
+        }
+        if (emissiveConnection.isConnected())
+        {
+            shaderGenerator->setEmissive(emissiveConnection.getConnection().getVar());
+        }
+        if (specularConnection.isConnected())
+        {
+            shaderGenerator->setSpecular(specularConnection.getConnection().getVar());
+        }
+        if (glossConnection.isConnected())
+        {
+            shaderGenerator->setGloss(glossConnection.getConnection().getVar());
+        }
+        if (opacityConnection.isConnected())
+        {
+            shaderGenerator->setOpacity(opacityConnection.getConnection().getVar());
+        }
+        if (normalConnection.isConnected())
+        {
+            shaderGenerator->setNormal(normalConnection.getConnection().getVar());
+        }
+        if (worldPosOffsetConnection.isConnected())
+        {
+            shaderGenerator->setWorldPositionOffset(worldPosOffsetConnection.getConnection().getVar());
         }
 
-        const he::ObjectHandle resultHandle(m_Parent->getGenerator()->addVariable());
-        ct::ShaderGeneratorVariable* const varResult(factory->get(resultHandle));
-        varResult->setSubtract(oneHandle, a);
-
-        getOutput(0).setVar(resultHandle);
+        shaderGenerator->compile(Path(CONTENT->getShaderFolderPath().append("generateTest")), "testShader");
+        shaderGenerator->reset();
     }
     return result;
 }

@@ -192,10 +192,12 @@ bool MaterialGeneratorNodeOneMin::evaluate( MaterialGeneratorError& error )
         ct::ShaderGeneratorVariable* const varOne(factory->get(oneHandle));
         switch (factory->get(a)->getType())
         {
-        case MaterialGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
-        case MaterialGeneratorVariableType_Float2: varOne->setConstant(vec2(1.0f, 1.0f)); break;
-        case MaterialGeneratorVariableType_Float3: varOne->setConstant(vec3(1.0f, 1.0f, 1.0f)); break;
-        case MaterialGeneratorVariableType_Float4: varOne->setConstant(vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
+        case ct::ShaderGeneratorVariableType_Float: varOne->setConstant(1.0f); break;
+        case ct::ShaderGeneratorVariableType_Float2: varOne->setConstant(vec2(1.0f, 1.0f)); break;
+        case ct::ShaderGeneratorVariableType_Float3: varOne->setConstant(vec3(1.0f, 1.0f, 1.0f)); break;
+        case ct::ShaderGeneratorVariableType_Float4: varOne->setConstant(vec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
+        default:
+            LOG(LogType_ProgrammerAssert, "Error unknown/unsupported variable type"); break;
         }
 
         const he::ObjectHandle resultHandle(m_Parent->getGenerator()->addVariable());
@@ -257,6 +259,9 @@ MaterialGeneratorNodeDivide::MaterialGeneratorNodeDivide()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
     addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
 }
 
@@ -285,6 +290,12 @@ MaterialGeneratorNodeMultiply::MaterialGeneratorNodeMultiply()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float2);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float4);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
+    addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
     addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
 }
 

@@ -19,10 +19,6 @@
 #define _HE_FILEREADER_H_
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <vector>
-
 namespace he {
 namespace io {
 

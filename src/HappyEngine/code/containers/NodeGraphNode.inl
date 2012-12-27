@@ -143,7 +143,10 @@ bool NodeGraphNode<TInput, TOutput>::evaluteMarch(uint8 marchId, he::ObjectList<
     m_CurrentMarchId = marchId;
     m_InputSlots.forEach([marchId, &errors](const NodeGraphConnection<TInput, TOutput>& connection)
     {
-        connection.node->evaluteMarch(marchId, errors);
+        if (connection.isConnected())
+        {
+            connection.node->evaluteMarch(marchId, errors);
+        }
     });
     NodeGraphError<TInput, TOutput> error;
     if (evaluate(error) == false)

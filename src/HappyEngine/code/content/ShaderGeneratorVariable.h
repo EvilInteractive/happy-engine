@@ -39,8 +39,8 @@ public:
     void setConstant(const vec2& a);
     void setConstant(const vec3& a);
     void setConstant(const vec4& a);
-    void setGlobalVar(const ShaderGeneratorGlobalVariableType type);
     void setExposedVar(const ShaderGeneratorVariableType type);
+    void setGlobal();
 
     // One param
     void setAbs(const ObjectHandle& a);
@@ -64,14 +64,17 @@ public:
     void setReflect(const ObjectHandle& in, const ObjectHandle& normal);
     void setSubtract(const ObjectHandle& a, const ObjectHandle& b);
     void setStep(const ObjectHandle& edge, const ObjectHandle& a);
+    void setComposeFloat2(const ObjectHandle& a, const ObjectHandle& b);
 
     // Three params
     void setClamp(const ObjectHandle& a, const ObjectHandle& min, const ObjectHandle& max);
     void setLerp(const ObjectHandle& x, const ObjectHandle& y, const ObjectHandle& a);
     void setSmoothStep(const ObjectHandle& edge1, const ObjectHandle& edge2, const ObjectHandle& a);
 
-
-
+    // Mutiple
+    void setComposeFloat3(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned);
+    void setComposeFloat4(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned, const ObjectHandle& d = ObjectHandle::unassigned);
+    
     // Getters
     float getFloatData() const;
     const vec2& getFloat2Data() const;
@@ -80,31 +83,35 @@ public:
 
     const ShaderGeneratorVariableOperation& getOperation() const { return m_Operation; }
     const ShaderGeneratorVariableType& getType() const { return m_Type; }
-
-    uint16 getFragUseCount() const { return m_VertUsageCount; }
-    uint16 getVertUseCount() const { return m_FragUsageCount; }
-    void IncrementVertUseCount() { ++m_VertUsageCount; }
-    void IncrementFragUseCount() { ++m_FragUsageCount; }
-
+    
     const std::string& getLocalName() const { return m_LocalName; }
     void setLocalName(const std::string& name) { m_LocalName = name; }
+
+    void setType(const ShaderGeneratorVariableType type) { m_Type = type; }
+    ShaderGeneratorVariableType getType() { return m_Type; }
+
+    bool hasDeclaration() const { return m_HasDeclaration; }
+    void setHasDeclaration(const bool has) { m_HasDeclaration = has; }
+
+    void resetRefcounter() { m_RefCounter = 0; }
+    void incrementRefcounter() { ++m_RefCounter; }
+    uint32 getRefCount() const { return m_RefCounter; }
 
 private:
     ShaderGeneratorVariableOperation m_Operation;
     ShaderGeneratorVariableType m_Type;
     union
     {
-        ShaderGeneratorGlobalVariableType globalData;
         float floatData[4];
         uint64 handleData;
     } m_ConstantData;
 
-    uint16 m_FragUsageCount;
-    uint16 m_VertUsageCount;
     std::string m_LocalName;
 
+    uint32 m_RefCounter;
+    bool m_HasDeclaration;
+
     void setTypeFromOther(const ObjectHandle& handle);
-    void setTypeFromGlobal(const ShaderGeneratorGlobalVariableType type);
 
     //Disable default copy constructor and default assignment operator
     ShaderGeneratorVariable(const ShaderGeneratorVariable&);

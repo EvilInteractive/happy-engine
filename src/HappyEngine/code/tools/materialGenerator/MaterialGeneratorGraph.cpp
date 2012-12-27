@@ -242,7 +242,12 @@ void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
         {
             m_GrabWorldPos = mouseWorld;
             const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
-            if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Shift, io::Key_Z) || 
+            if (keyboard->isKeyPressed(io::Key_F7))
+            {
+                he::ObjectList<MaterialGeneratorError> errors;
+                m_NodeGraph.evalute(errors);
+            }
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Shift, io::Key_Z) || 
                 keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Y))
             {
                 m_CommandStack.redo();

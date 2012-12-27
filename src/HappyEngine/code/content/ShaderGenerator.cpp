@@ -21,19 +21,22 @@
 
 #include "ShaderGeneratorVariableFactory.h"
 #include "ShaderGeneratorVariable.h"
+#include "FileWriter.h"
 
 namespace he {
 namespace ct {
 
 ShaderGenerator::ShaderGenerator()
     : m_LocalVarUID(0)
-    , m_State(State_Idle)
-    , m_VertexShader("")
-    , m_FragmentShader("")
-    , m_FragmentOutput(ObjectHandle::unassigned)
-    , m_VertexOutput(ObjectHandle::unassigned)
+    , m_DiffuseVar(ObjectHandle::unassigned)
+    , m_EmissiveVar(ObjectHandle::unassigned)
+    , m_SpecularVar(ObjectHandle::unassigned)
+    , m_GlossVar(ObjectHandle::unassigned)
+    , m_OpacityVar(ObjectHandle::unassigned)
+    , m_NormalVar(ObjectHandle::unassigned)
+    , m_WorldPositionOffsetVar(ObjectHandle::unassigned)
 {
-
+    createGlobalVariables();
 }
 
 ShaderGenerator::~ShaderGenerator()
@@ -41,135 +44,444 @@ ShaderGenerator::~ShaderGenerator()
 
 }
 
+void ShaderGenerator::createGlobalVariables()
+{
+    ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
+    for (size_t i(0); i < ShaderGeneratorGlobalInputVariableType_MAX; ++i)
+    {
+        m_GlobalInputVariables[i] = factory->get(factory->create());
+        m_GlobalInputVariables[i]->setLocalName(getGlobalInputVariableName(static_cast<ShaderGeneratorGlobalInputVariableType>(i)));
+        m_GlobalInputVariables[i]->setType(getGlobalInputVariableType(static_cast<ShaderGeneratorGlobalInputVariableType>(i)));
+        m_GlobalInputVariables[i]->setHasDeclaration(true);
+        m_GlobalInputVariables[i]->setGlobal();
+    }
+    for (size_t i(0); i < ShaderGeneratorGlobalFragmentVariableType_MAX; ++i)
+    {
+        m_GlobalFragmentVariables[i] = factory->get(factory->create());
+        m_GlobalFragmentVariables[i]->setLocalName(getGlobalFragmentVariableName(static_cast<ShaderGeneratorGlobalFragmentVariableType>(i)));
+        m_GlobalFragmentVariables[i]->setType(getGlobalFragmentVariableType(static_cast<ShaderGeneratorGlobalFragmentVariableType>(i)));
+        m_GlobalFragmentVariables[i]->setHasDeclaration(true);
+        m_GlobalFragmentVariables[i]->setGlobal();
+    }
+    for (size_t i(0); i < ShaderGeneratorGlobalCodeVariableType_MAX; ++i)
+    {
+        m_GlobalCodeVariables[i] = factory->get(factory->create());
+        m_GlobalCodeVariables[i]->setLocalName(getGlobalCodeVariableName(static_cast<ShaderGeneratorGlobalCodeVariableType>(i)));
+        m_GlobalCodeVariables[i]->setType(getGlobalCodeVariableType(static_cast<ShaderGeneratorGlobalCodeVariableType>(i)));
+        m_GlobalCodeVariables[i]->setHasDeclaration(true);
+        m_GlobalCodeVariables[i]->setGlobal();
+    }
+}
+
 he::ObjectHandle ShaderGenerator::addVariable()
 {
-    ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
     ObjectHandle result(factory->create());
     m_Variables.add(result);
-    return result;
-}
 
-bool ShaderGenerator::compile()
-{
-    m_VertexShader.clear();
-    m_FragmentShader.clear();
-    m_ShaderFile.clear();
-    m_ShaderFile.str("");
+    ShaderGeneratorVariable* const var(factory->get(result));
 
-    ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
-
-    m_PassVariables.clear();
-    m_Variables.forEach([this, factory](const ObjectHandle& handle)
-    {
-        ShaderGeneratorVariable* var(factory->get(handle));
-        if (var->getVertUseCount() >= 1 && var->getOperation().type == ShaderGeneratorVariableOperationType_Global)
-        {
-            createLocalVar(var);
-        }
-    });
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // Vertex
-    //////////////////////////////////////////////////////////////////////////
-    m_State = State_VertexShader;
-
-    // Vertex
-    writeHeader();
-    writeNewLine();
-    writeVertexInputVars();
-    writeNewLine();
-    writeVertexGlobalVars();
-
-    writeNewLine();
-    writeOpenMain();
-
-    m_Variables.forEach([this, factory](const ObjectHandle& handle)
-    {
-        ShaderGeneratorVariable* var(factory->get(handle));
-        if (var->getVertUseCount() > 1 && var->getOperation().type != ShaderGeneratorVariableOperationType_Constant)
-            createLocalVar(var);
-    });
-    writeVertexOutput();
-
-    writeCloseMain();
-    writeNewLine();
-
-    m_VertexShader = m_ShaderFile.str();
-    m_ShaderFile.clear();
-    m_ShaderFile.str("");
-
-    //////////////////////////////////////////////////////////////////////////
-    // Fragment
-    //////////////////////////////////////////////////////////////////////////
-    m_State = State_FragmentShader;
-    writeHeader();
-    writeNewLine();
-    writeVertexPassVars();
-    writeNewLine();
-    writeFragmentGlobalVars();
-
-    writeNewLine();
-    writeOpenMain();
-
-    m_Variables.forEach([this, factory](const ObjectHandle& handle)
-    {
-        ShaderGeneratorVariable* var(factory->get(handle));
-        if (var->getFragUseCount() > 1 && var->getOperation().type != ShaderGeneratorVariableOperationType_Constant)
-            createLocalVar(var);
-    });
-    writeFragmentOutput();
-
-    writeCloseMain();
-    writeNewLine();
-
-    m_FragmentShader = m_ShaderFile.str();
-    m_ShaderFile.clear();
-    m_ShaderFile.str("");
-    m_State = State_Idle;
-
-    return true;
-}
-
-void ShaderGenerator::createLocalVar( ShaderGeneratorVariable* const var )
-{
-    uint32 id(m_LocalVarUID++);
+    const uint32 id(m_LocalVarUID++);
     char name[20];
     sprintf(name, "localvar%d\0", id);
     var->setLocalName(name);
 
-    writeVariableDeclaration(var);
-    writeOperation(var->getOperation());
-    writeEndLine();
-    writeNewLine();
+    return result;
 }
 
-void ShaderGenerator::writeVariableDeclaration( const ShaderGeneratorVariable* const var )
+ShaderGeneratorVariable* ShaderGenerator::addInternalVariable()
 {
-    if (var->getOperation().type == ShaderGeneratorVariableOperationType_Constant)
-        m_ShaderFile << "const ";
-    writeTypeName(var->getType());
-    m_ShaderFile << " ";
-    writeVariable(var);
+    ShaderGeneratorVariableFactory* factory(ShaderGeneratorVariableFactory::getInstance());
+    ObjectHandle result(factory->create());
+    m_InternalVariables.add(result);
+
+    ShaderGeneratorVariable* const var(factory->get(result));
+
+    const uint32 id(m_LocalVarUID++);
+    char name[20];
+    sprintf(name, "localvar%d\0", id);
+    var->setLocalName(name);
+
+    return var;
+}
+
+
+bool ShaderGenerator::compile(const Path& shaderPath, const std::string& shaderName)
+{
+    bool result(true);
+
+    // Vertex shader
+    result &= generateVertexShader(ShadingType_Forward, ShadingType_Single);
+    saveShader(shaderPath.append(shaderName + "_F_SI.vert"));
+
+    //result &= generateVertexShader(ShadingType_Forward, ShadingType_Skinned);
+    //saveShader(shaderPath.append(shaderName + "_F_SK.vert"));
+
+    result &= generateVertexShader(ShadingType_Forward, ShadingType_Instanced);
+    saveShader(shaderPath.append(shaderName + "_F_IN.vert"));
+
+    result &= generateVertexShader(ShadingType_Deferred, ShadingType_Single);
+    saveShader(shaderPath.append(shaderName + "_D_SI.vert"));
+
+    //result &= generateVertexShader(ShadingType_Deferred, ShadingType_Skinned);
+    //saveShader(shaderPath.append(shaderName + "_D_SK.vert"));
+
+    result &= generateVertexShader(ShadingType_Deferred, ShadingType_Instanced);
+    saveShader(shaderPath.append(shaderName + "_D_IN.vert"));
+
+
+    // Fragment Shader
+    result &= generateFragmentShader(ShadingType_Forward);
+    saveShader(shaderPath.append(shaderName + "_F.frag"));
+
+    result &= generateFragmentShader(ShadingType_Deferred);
+    saveShader(shaderPath.append(shaderName + "_D.frag"));
+
+    return result;
+}
+
+void ShaderGenerator::saveShader( const Path& shaderPath )
+{
+    io::FileWriter writer;
+    if (writer.open(shaderPath.str(), false))
+    {
+        writer << m_ShaderFile.str();
+        writer.close();
+    }
+}
+
+void ShaderGenerator::resetAnalyse()
+{
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+    m_Variables.forEach([factory](const ObjectHandle& handle)
+    {
+        ShaderGeneratorVariable* const var(factory->get(handle));
+        var->resetRefcounter();
+        var->setHasDeclaration(false);
+    });
+    for (size_t i(0); i < ShaderGeneratorGlobalInputVariableType_MAX; ++i)
+    {
+        m_GlobalInputVariables[i]->resetRefcounter();
+    }
+    for (size_t i(0); i < ShaderGeneratorGlobalFragmentVariableType_MAX; ++i)
+    {
+        m_GlobalFragmentVariables[i]->resetRefcounter();
+    }
+    for (size_t i(0); i < ShaderGeneratorGlobalCodeVariableType_MAX; ++i)
+    {
+        m_GlobalCodeVariables[i]->resetRefcounter();
+    }
+    if (m_DiffuseVar != ObjectHandle::unassigned)
+        factory->get(m_DiffuseVar)->resetRefcounter();
+    if (m_EmissiveVar != ObjectHandle::unassigned)
+        factory->get(m_EmissiveVar)->resetRefcounter();
+    if (m_SpecularVar != ObjectHandle::unassigned)
+        factory->get(m_SpecularVar)->resetRefcounter();
+    if (m_GlossVar != ObjectHandle::unassigned)
+        factory->get(m_GlossVar)->resetRefcounter();
+    if (m_OpacityVar != ObjectHandle::unassigned)
+        factory->get(m_OpacityVar)->resetRefcounter();
+    if (m_NormalVar != ObjectHandle::unassigned)
+        factory->get(m_NormalVar)->resetRefcounter();
+    if (m_WorldPositionOffsetVar != ObjectHandle::unassigned)
+        factory->get(m_WorldPositionOffsetVar)->resetRefcounter();
+}
+
+void ShaderGenerator::analyseVariable( ShaderGeneratorVariable* const var )
+{
+    var->incrementRefcounter();
+
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+
+    const ShaderGeneratorVariableOperation& operation(var->getOperation());
+    for (size_t i(0); i < 4; ++i)
+    {
+        ObjectHandle p(operation.params[i]);
+        if (p != ObjectHandle::unassigned)
+        {
+            analyseVariable(factory->get(p));
+        }
+        else // no holes in parameters allowed
+        {
+            break;
+        }
+    }
+}
+
+void ShaderGenerator::analyseVertexVariables(const ShadingType shadingType, const DrawType /*drawType*/)
+{
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+
+    // Reset
+    resetAnalyse();
+    
+    switch (shadingType)
+    {
+        case ShadingType_Forward:
+        {
+            m_OutVariables.forEach([this, factory](const ObjectHandle& handle)
+            {
+                analyseVariable(factory->get(handle));
+            });
+        } break;
+        case ShadingType_Deferred:
+        {
+
+        } break;
+    }
+}
+
+void ShaderGenerator::analyseFragmentVariables( const ShadingType /*shadingType*/, const DrawType /*drawType*/ )
+{
+    // Reset
+    resetAnalyse();
+
+}
+
+void ShaderGenerator::intitializeInternalVertexVars( const ShadingType /*shadingType*/, const DrawType drawType )
+{
+    ShaderGeneratorVariable* const const0(addInternalVariable());
+    const0->setConstant(0.0f);
+    ShaderGeneratorVariable* const const1(addInternalVariable());
+    const1->setConstant(1.0f);
+
+    ObjectHandle inPos3(getVariable(ShaderGeneratorGlobalInputVariableType_Position));
+
+    ObjectHandle localPos(inPos3);
+    if (m_WorldPositionOffsetVar != ObjectHandle::unassigned)
+    {
+        ShaderGeneratorVariable* const localPosVar(addInternalVariable());
+        localPosVar->setAdd(inPos3, m_WorldPositionOffsetVar);
+        localPos = localPosVar->getHandle();
+    }
+
+    ShaderGeneratorVariable* const localPos4_0(addInternalVariable());
+    localPos4_0->setComposeFloat4(localPos, const0->getHandle());
+
+    ShaderGeneratorVariable* const localPos4_1(addInternalVariable());
+    localPos4_1->setComposeFloat4(localPos, const1->getHandle());
+
+    ShaderGeneratorVariable* outPosition(addInternalVariable());
+    outPosition->setLocalName("gl_Position");
+
+    switch (drawType)
+    {
+        case ShadingType_Single:
+        {
+            ObjectHandle wvp(getVariable(ShaderGeneratorGlobalCodeVariableType_WorldViewProjection));
+            outPosition->setMultiply(wvp, localPos4_1->getHandle());
+        } break;
+        case ShadingType_Skinned:
+        {
+            LOG(LogType_ProgrammerAssert, "Not implemented");
+        } break;
+        case ShadingType_Instanced:
+        {
+            ObjectHandle inWorld(getVariable(ShaderGeneratorGlobalInputVariableType_World));
+            ObjectHandle view(getVariable(ShaderGeneratorGlobalCodeVariableType_View));
+            ObjectHandle proj(getVariable(ShaderGeneratorGlobalCodeVariableType_Projection));
+
+            ShaderGeneratorVariable* viewWorld(addInternalVariable());
+            viewWorld->setMultiply(view, inWorld);
+
+            ShaderGeneratorVariable* viewPosition(addInternalVariable());
+            viewPosition->setMultiply(viewWorld->getHandle(), localPos4_1->getHandle());
+
+            outPosition->setMultiply(proj, viewPosition->getHandle());
+        } break;
+    }
+    
+    m_OutVariables.add(outPosition->getHandle());
+}
+
+bool ShaderGenerator::generateVertexShader( const ShadingType shadingType, const DrawType drawType )
+{
+    clearShader();
+
+    intitializeInternalVertexVars(shadingType, drawType);
+
+    analyseVertexVariables(shadingType, drawType);
+    
+    writeHeader();
+
+    writeGlobalVertexVariablesDeclarations();
+
+    writeNewLine();
+
+    writeOpenMain();
+
+    writeVariableDeclarations();
+
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+    m_OutVariables.forEach([this, factory](const ObjectHandle& handle)
+    {
+        ShaderGeneratorVariable* const var(factory->get(handle));
+
+        m_ShaderFile << var->getLocalName();
+        writeAssignment();
+        writeVariable(var);
+        writeEndLine();
+        writeNewLine();
+    });
+
+    writeCloseMain();
+    writeNewLine();
+
+    return true;
+}
+
+void ShaderGenerator::writeVariableDeclarations()
+{
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+    m_OutVariables.forEach([this, factory](const ObjectHandle& handle)
+    {
+        writeVariableDeclaration(factory->get(handle));
+    });
+}
+
+void ShaderGenerator::writeVariableDeclaration( ShaderGeneratorVariable* const var )
+{
+    if (var->hasDeclaration() == false)
+    {
+        var->setHasDeclaration(true);
+
+        ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+        const ShaderGeneratorVariableOperation& operation(var->getOperation());
+        if (operation.type != ShaderGeneratorVariableOperationType_Constant)
+        {
+            for (size_t i(0); i < 4; ++i)
+            {
+                ObjectHandle p(operation.params[i]);
+                if (p != ObjectHandle::unassigned)
+                {
+                    writeVariableDeclaration(factory->get(p));
+                }
+                else // no holes in parameters allowed
+                {
+                    break;
+                }
+            }
+        }
+        else if (var->getRefCount() > 1)
+        {
+            m_ShaderFile << "const ";
+        }
+
+        if (var->getRefCount() > 1)
+        {
+            writeTypeName(var->getType());
+            m_ShaderFile << " " << var->getLocalName();
+            writeAssignment();
+            writeVariable(var, true);
+            writeEndLine();
+            writeNewLine();
+        }
+    }
+}
+
+bool ShaderGenerator::generateFragmentShader( const ShadingType /*shadingType*/ )
+{
+    return false;
+}
+
+void ShaderGenerator::clearShader()
+{
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+    m_InternalVariables.forEach([factory](const ObjectHandle& handle)
+    {
+        factory->destroyObject(handle);
+    });
+    m_InternalVariables.clear();
+    m_OutVariables.clear();
+
+    m_ShaderFile.clear();
+    m_ShaderFile.str("");
+}
+
+void ShaderGenerator::reset()
+{
+    clearShader();
+
+    m_DiffuseVar = ObjectHandle::unassigned;
+    m_EmissiveVar = ObjectHandle::unassigned;
+    m_SpecularVar = ObjectHandle::unassigned;
+    m_GlossVar = ObjectHandle::unassigned;
+    m_OpacityVar = ObjectHandle::unassigned;
+    m_NormalVar = ObjectHandle::unassigned;
+    m_WorldPositionOffsetVar = ObjectHandle::unassigned;
+
+    ShaderGeneratorVariableFactory* const factory(ShaderGeneratorVariableFactory::getInstance());
+    m_Variables.forEach([factory](const ObjectHandle& variable)
+    {
+        factory->destroyObject(variable);
+    });
+    m_Variables.clear();
+
+    m_LocalVarUID = 0;
+}
+
+
+void ShaderGenerator::writeGlobalVertexVariablesDeclarations()
+{
+    for (size_t i(0); i < ShaderGeneratorGlobalInputVariableType_MAX; ++i)
+    {
+        const ShaderGeneratorVariable* const var(m_GlobalInputVariables[i]);
+        if (var->getRefCount() > 0)
+        {
+            writeInVarDeclaration(var);
+        }
+    }
+    writeNewLine();
+    for (size_t i(0); i < ShaderGeneratorGlobalFragmentVariableType_MAX; ++i)
+    {
+        const ShaderGeneratorVariable* const var(m_GlobalFragmentVariables[i]);
+        if (var->getRefCount() > 0)
+        {
+            writeOutVarDeclaration(var);
+        }
+    }
+    writeNewLine();
+    for (size_t i(0); i < ShaderGeneratorGlobalCodeVariableType_MAX; ++i)
+    {
+        const ShaderGeneratorVariable* const var(m_GlobalCodeVariables[i]);
+        if (var->getRefCount() > 0)
+        {
+            writeCodeVarDeclaration(var);
+        }
+    }
+}
+void ShaderGenerator::writeGlobalFragmentVariablesDeclarations()
+{
+    for (size_t i(0); i < ShaderGeneratorGlobalFragmentVariableType_MAX; ++i)
+    {
+        const ShaderGeneratorVariable* const var(m_GlobalFragmentVariables[i]);
+        writeInVarDeclaration(var);
+    }
+    writeNewLine();
+    for (size_t i(0); i < ShaderGeneratorGlobalCodeVariableType_MAX; ++i)
+    {
+        const ShaderGeneratorVariable* const var(m_GlobalCodeVariables[i]);
+        writeCodeVarDeclaration(var);
+    }
 }
 
 void ShaderGenerator::writeTypeName( const ShaderGeneratorVariableType type )
 {
     switch (type)
     {
-        case ShaderVariableType_Unknown: { m_ShaderFile << "Unknown"; break; }
-        case ShaderVariableType_Int: { m_ShaderFile << "int"; break; }
-        case ShaderVariableType_Int2: { m_ShaderFile << "ivec2"; break; }
-        case ShaderVariableType_Int3: { m_ShaderFile << "ivec3"; break; }
-        case ShaderVariableType_Int4: { m_ShaderFile << "ivec4"; break; }
-        case ShaderVariableType_Uint: { m_ShaderFile << "uint"; break; }
-        case ShaderVariableType_Float: { m_ShaderFile << "float"; break; }
-        case ShaderVariableType_Float2: { m_ShaderFile << "vec2"; break; }
-        case ShaderVariableType_Float3: { m_ShaderFile << "vec3"; break; }
-        case ShaderVariableType_Float4: { m_ShaderFile << "vec4"; break; }
-        case ShaderVariableType_Mat44: { m_ShaderFile << "mat4"; break; }
-        case ShaderVariableType_Texture2D: { m_ShaderFile << "sampler2D"; break; }
-        case ShaderVariableType_TextureCube: { m_ShaderFile << "samplerCube"; break; }
+        case ShaderGeneratorVariableType_Unknown: { m_ShaderFile << "Unknown"; break; }
+        case ShaderGeneratorVariableType_Int: { m_ShaderFile << "int"; break; }
+        case ShaderGeneratorVariableType_Int2: { m_ShaderFile << "ivec2"; break; }
+        case ShaderGeneratorVariableType_Int3: { m_ShaderFile << "ivec3"; break; }
+        case ShaderGeneratorVariableType_Int4: { m_ShaderFile << "ivec4"; break; }
+        case ShaderGeneratorVariableType_Uint: { m_ShaderFile << "uint"; break; }
+        case ShaderGeneratorVariableType_Float: { m_ShaderFile << "float"; break; }
+        case ShaderGeneratorVariableType_Float2: { m_ShaderFile << "vec2"; break; }
+        case ShaderGeneratorVariableType_Float3: { m_ShaderFile << "vec3"; break; }
+        case ShaderGeneratorVariableType_Float4: { m_ShaderFile << "vec4"; break; }
+        case ShaderGeneratorVariableType_Mat44: { m_ShaderFile << "mat4"; break; }
+        case ShaderGeneratorVariableType_Texture2D: { m_ShaderFile << "sampler2D"; break; }
+        case ShaderGeneratorVariableType_TextureCube: { m_ShaderFile << "samplerCube"; break; }
         default: LOG(LogType_ProgrammerAssert, "Unknown type! %d", type); break;
     }
 }
@@ -219,6 +531,7 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
     switch (operation.type)
     {
     case ShaderGeneratorVariableOperationType_Constant:
+    case ShaderGeneratorVariableOperationType_Exposed:
     {
         LOG(LogType_ProgrammerAssert, "Should not get here");
     } break;
@@ -261,6 +574,7 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
     GLSL_FUNC2(ShaderGeneratorVariableOperationType_Reflect, "reflect");
     GLSL_FUNC2(ShaderGeneratorVariableOperationType_Distance, "distance");
     GLSL_FUNC2(ShaderGeneratorVariableOperationType_Texture, "texture");
+    GLSL_FUNC2(ShaderGeneratorVariableOperationType_ComposeFloat2, "vec2");
 
     // Func 3
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_Clamp, "clamp");
@@ -269,6 +583,39 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_Refract, "refract");
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_TextureLod, "textureLod");
     GLSL_FUNC3(ShaderGeneratorVariableOperationType_TextureOffset, "textureOffset");
+
+    // Multiple
+    case ShaderGeneratorVariableOperationType_ComposeFloat3:
+    {
+        m_ShaderFile << "vec3(";
+        writeVariable(factory->get(operation.params[0]));
+        m_ShaderFile << ", ";
+        writeVariable(factory->get(operation.params[1]));
+        if (operation.params[2] != ObjectHandle::unassigned)
+        {
+            m_ShaderFile << ", ";
+            writeVariable(factory->get(operation.params[2]));
+        }
+        m_ShaderFile << ")";
+    } break;
+    case ShaderGeneratorVariableOperationType_ComposeFloat4:
+    {
+        m_ShaderFile << "vec4(";
+        writeVariable(factory->get(operation.params[0]));
+        m_ShaderFile << ", ";
+        writeVariable(factory->get(operation.params[1]));
+        if (operation.params[2] != ObjectHandle::unassigned)
+        {
+            m_ShaderFile << ", ";
+            writeVariable(factory->get(operation.params[2]));
+            if (operation.params[3] != ObjectHandle::unassigned)
+            {
+                m_ShaderFile << ", ";
+                writeVariable(factory->get(operation.params[3]));
+            }
+        }
+        m_ShaderFile << ")";
+    } break;
 
     default:
         {
@@ -286,16 +633,17 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
 void ShaderGenerator::writeVariable( const ShaderGeneratorVariable* const var, const bool forceInline )
 {
     HE_ASSERT(var != nullptr, "Writing nullptr var");
-    HE_ASSERT(m_State == State_Idle, "Writing in invalid state");
-    const uint16 usageCount(m_State == State_VertexShader? var->getVertUseCount() : var->getFragUseCount());
-    if (usageCount > 1 && forceInline == false)
+    const uint32 usageCount(var->getRefCount());
+    const ShaderGeneratorVariableOperation& operation(var->getOperation());
+
+    if ((usageCount > 1 && forceInline == false) || operation.type == ShaderGeneratorVariableOperationType_Exposed)
     {
         HE_ASSERT(var->getLocalName().empty() == false, "ShaderVar does not have a name"); 
         m_ShaderFile << var->getLocalName();
     }
     else
     {
-        if (var->getOperation().type == ShaderGeneratorVariableOperationType_Constant)
+        if (operation.type == ShaderGeneratorVariableOperationType_Constant)
         {
             writeConstant(var);
         }
@@ -326,7 +674,7 @@ void ShaderGenerator::writeHeader()
         "//    You should have received a copy of the GNU Lesser General Public License   \n"
         "//    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.       \n"
         "//                                                                               \n"
-        "//This file was was generated with the HappyMaterialEditor                       \n";
+        "//This file was was generated with the HappyMaterialEditor                       \n\n";
 }
 
 void ShaderGenerator::writeOpenMain()
@@ -343,24 +691,21 @@ void ShaderGenerator::writeConstant( const ShaderGeneratorVariable* const variab
 {
     switch (variable->getType())
     {
-    case ShaderVariableType_Float:
+    case ShaderGeneratorVariableType_Float:
         {
-            m_ShaderFile << variable->getFloatData();
+            writeFloat(variable->getFloatData());
         } break;
-    case ShaderVariableType_Float2:
+    case ShaderGeneratorVariableType_Float2:
         {
-            const vec2& float2(variable->getFloat2Data());
-            m_ShaderFile << "vec2(" << float2.x << ", " << float2.y << ")";
+            writeFloat2(variable->getFloat2Data());
         } break;
-    case ShaderVariableType_Float3:
+    case ShaderGeneratorVariableType_Float3:
         {
-            const vec3& float3(variable->getFloat3Data());
-            m_ShaderFile << "vec3(" << float3.x << ", " << float3.y << ", " << float3.z << ")";
+            writeFloat3(variable->getFloat3Data());
         } break;
-    case ShaderVariableType_Float4:
+    case ShaderGeneratorVariableType_Float4:
         {
-            const vec4& float4(variable->getFloat4Data());
-            m_ShaderFile << "vec4(" << float4.x << ", " << float4.y << ", " << float4.z << ", " << float4.w << ")";
+            writeFloat4(variable->getFloat4Data());
         } break;
     default:
         {
@@ -369,14 +714,72 @@ void ShaderGenerator::writeConstant( const ShaderGeneratorVariable* const variab
     }
 }
 
-void ShaderGenerator::setFragmentOutput( const ObjectHandle& var )
+void ShaderGenerator::writeInVarDeclaration( const ShaderGeneratorVariable* const var )
 {
-    m_FragmentOutput = var;
+    m_ShaderFile << "in ";
+    writeTypeName(var->getType());
+    m_ShaderFile << " " << var->getLocalName();
+    writeEndLine();
+    writeNewLine();
 }
 
-void ShaderGenerator::setVertexOutput( const ObjectHandle& var )
+void ShaderGenerator::writeOutVarDeclaration( const ShaderGeneratorVariable* const var )
 {
-    m_VertexOutput = var;
+    m_ShaderFile << "out ";
+    writeTypeName(var->getType());
+    m_ShaderFile << " " << var->getLocalName();
+    writeEndLine();
+    writeNewLine();
 }
+
+void ShaderGenerator::writeCodeVarDeclaration( const ShaderGeneratorVariable* const var )
+{
+    m_ShaderFile << "uniform ";
+    writeTypeName(var->getType());
+    m_ShaderFile << " " << var->getLocalName();
+    writeEndLine();
+    writeNewLine();
+}
+
+void ShaderGenerator::writeFloat( const float value )
+{
+    m_ShaderFile << value;
+}
+
+void ShaderGenerator::writeFloat2( const vec2& value )
+{
+    m_ShaderFile << "vec2(" << value.x << ", " << value.y << ")";
+}
+
+void ShaderGenerator::writeFloat3( const vec3& value )
+{
+    m_ShaderFile << "vec3(" << value.x << ", " << value.y << ", " << value.z << ")";
+}
+
+void ShaderGenerator::writeFloat4( const vec4& value )
+{
+    m_ShaderFile << "vec4(" << value.x << ", " << value.y << ", " << value.z << ", " << value.w << ")";
+}
+
+void ShaderGenerator::writeOutPosition()
+{
+    m_ShaderFile << "gl_Position";
+}
+
+const ObjectHandle& ShaderGenerator::getVariable( const ShaderGeneratorGlobalInputVariableType type )
+{
+    return m_GlobalInputVariables[type]->getHandle();
+}
+
+const ObjectHandle& ShaderGenerator::getVariable( const ShaderGeneratorGlobalFragmentVariableType type )
+{
+    return m_GlobalFragmentVariables[type]->getHandle();
+}
+
+const ObjectHandle& ShaderGenerator::getVariable( const ShaderGeneratorGlobalCodeVariableType type )
+{
+    return m_GlobalCodeVariables[type]->getHandle();
+}
+
 
 } } //end namespace
