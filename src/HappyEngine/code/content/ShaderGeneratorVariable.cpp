@@ -76,10 +76,28 @@ void ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType t
 {
     m_Type = type;
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+    setHasDeclaration(true);
 }
 
-void ShaderGeneratorVariable::setGlobal()
+void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariableType type)
 {
+    setLocalName(getGlobalInputVariableName(type));
+    setType(getGlobalInputVariableType(type));
+    setHasDeclaration(true);
+    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+}
+void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVariableType type)
+{
+    setLocalName(getGlobalFragmentVariableName(type));
+    setType(getGlobalFragmentVariableType(type));
+    setHasDeclaration(true);
+    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+}
+void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableType type)
+{
+    setLocalName(getGlobalCodeVariableName(type));
+    setType(getGlobalCodeVariableType(type));
+    setHasDeclaration(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
 }
 
@@ -179,6 +197,38 @@ void ShaderGeneratorVariable::setComposeFloat4( const ObjectHandle& a, const Obj
     m_Operation.params[2] = c;
     m_Operation.params[3] = d;
     m_Type = ShaderGeneratorVariableType_Float4;
+}
+
+void ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskC /*= ShaderGeneratorSwizzleMask_None*/, const ShaderGeneratorSwizzleMask maskD /*= ShaderGeneratorSwizzleMask_None*/ )
+{
+    m_Operation.type = ShaderGeneratorVariableOperationType_Swizzle;
+    m_Operation.params[0] = a;
+    m_Operation.swizzleParams[0] = maskA; 
+    m_Operation.swizzleParams[1] = maskB;
+    m_Operation.swizzleParams[2] = maskC;
+    m_Operation.swizzleParams[3] = maskD;
+    if (maskD == ShaderGeneratorSwizzleMask_None)
+    {
+        if (maskC == ShaderGeneratorSwizzleMask_None)
+        {
+            if (maskB == ShaderGeneratorSwizzleMask_None)
+            {
+                m_Type = ShaderGeneratorVariableType_Float;
+            }
+            else
+            {
+                m_Type = ShaderGeneratorVariableType_Float2;
+            }
+        }
+        else
+        {
+            m_Type = ShaderGeneratorVariableType_Float3;
+        }
+    }
+    else
+    {
+        m_Type = ShaderGeneratorVariableType_Float4;
+    }
 }
 
 #undef FUNC1                                           

@@ -50,26 +50,17 @@ void ShaderGenerator::createGlobalVariables()
     for (size_t i(0); i < ShaderGeneratorGlobalInputVariableType_MAX; ++i)
     {
         m_GlobalInputVariables[i] = factory->get(factory->create());
-        m_GlobalInputVariables[i]->setLocalName(getGlobalInputVariableName(static_cast<ShaderGeneratorGlobalInputVariableType>(i)));
-        m_GlobalInputVariables[i]->setType(getGlobalInputVariableType(static_cast<ShaderGeneratorGlobalInputVariableType>(i)));
-        m_GlobalInputVariables[i]->setHasDeclaration(true);
-        m_GlobalInputVariables[i]->setGlobal();
+        m_GlobalInputVariables[i]->setGlobal(static_cast<ShaderGeneratorGlobalInputVariableType>(i));
     }
     for (size_t i(0); i < ShaderGeneratorGlobalFragmentVariableType_MAX; ++i)
     {
         m_GlobalFragmentVariables[i] = factory->get(factory->create());
-        m_GlobalFragmentVariables[i]->setLocalName(getGlobalFragmentVariableName(static_cast<ShaderGeneratorGlobalFragmentVariableType>(i)));
-        m_GlobalFragmentVariables[i]->setType(getGlobalFragmentVariableType(static_cast<ShaderGeneratorGlobalFragmentVariableType>(i)));
-        m_GlobalFragmentVariables[i]->setHasDeclaration(true);
-        m_GlobalFragmentVariables[i]->setGlobal();
+        m_GlobalFragmentVariables[i]->setGlobal(static_cast<ShaderGeneratorGlobalFragmentVariableType>(i));
     }
     for (size_t i(0); i < ShaderGeneratorGlobalCodeVariableType_MAX; ++i)
     {
         m_GlobalCodeVariables[i] = factory->get(factory->create());
-        m_GlobalCodeVariables[i]->setLocalName(getGlobalCodeVariableName(static_cast<ShaderGeneratorGlobalCodeVariableType>(i)));
-        m_GlobalCodeVariables[i]->setType(getGlobalCodeVariableType(static_cast<ShaderGeneratorGlobalCodeVariableType>(i)));
-        m_GlobalCodeVariables[i]->setHasDeclaration(true);
-        m_GlobalCodeVariables[i]->setGlobal();
+        m_GlobalCodeVariables[i]->setGlobal(static_cast<ShaderGeneratorGlobalCodeVariableType>(i));
     }
 }
 
@@ -245,6 +236,22 @@ void ShaderGenerator::intitializeInternalVertexVars( const ShadingType /*shading
     ShaderGeneratorVariable* const const1(addInternalVariable());
     const1->setConstant(1.0f);
 
+    // Normal
+    ObjectHandle localNormal(getVariable(ShaderGeneratorGlobalInputVariableType_Normal));
+    ObjectHandle worldView(getVariable(ShaderGeneratorGlobalCodeVariableType_WorldView));
+    
+    ShaderGeneratorVariable* localNormal4_0(addInternalVariable());
+    localNormal4_0->setComposeFloat4(localNormal, const0->getHandle());
+
+    ShaderGeneratorVariable* viewNormal4(addInternalVariable());
+    viewNormal4->setMultiply(worldView, localNormal4_0->getHandle());
+
+    ShaderGeneratorVariable* passNormal(addInternalVariable());
+    passNormal->setLocalName(getGlobalFragmentVariableName(ShaderGeneratorGlobalFragmentVariableType_ViewNormal));
+    passNormal->setSwizzle(viewNormal4->getHandle(), ShaderGeneratorSwizzleMask_X, ShaderGeneratorSwizzleMask_Y, ShaderGeneratorSwizzleMask_Z);
+    m_OutVariables.add(passNormal->getHandle());
+
+    // Position
     ObjectHandle inPos3(getVariable(ShaderGeneratorGlobalInputVariableType_Position));
 
     ObjectHandle localPos(inPos3);
@@ -615,6 +622,15 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
             }
         }
         m_ShaderFile << ")";
+    } break;
+    case ShaderGeneratorVariableOperationType_Swizzle:
+    {
+        writeVariable(factory->get(operation.params[0]));
+        m_ShaderFile << ".";
+        m_ShaderFile << shaderGeneratorSwizzleMaskToString(operation.swizzleParams[0]);
+        m_ShaderFile << shaderGeneratorSwizzleMaskToString(operation.swizzleParams[1]);
+        m_ShaderFile << shaderGeneratorSwizzleMaskToString(operation.swizzleParams[2]);
+        m_ShaderFile << shaderGeneratorSwizzleMaskToString(operation.swizzleParams[3]);
     } break;
 
     default:

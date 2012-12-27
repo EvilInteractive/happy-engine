@@ -29,15 +29,23 @@ namespace ct {
 
 struct ShaderGeneratorVariableOperation
 {
+    static const int MAX_PARAMS = 4;
+
     ShaderGeneratorVariableOperation() : type(ShaderGeneratorVariableOperationType_Invalid)
     {
-        for (size_t i(0); i < 4; ++i)
+        for (size_t i(0); i < MAX_PARAMS; ++i)
         {
             params[i] = ObjectHandle::unassigned;
         }
+        for (size_t i(0); i < 4; ++i)
+        {
+            swizzleParams[i] = ShaderGeneratorSwizzleMask_None;
+        }
     }
     ShaderGeneratorVariableOperationType type;
-    ObjectHandle params[4];
+
+    ObjectHandle params[MAX_PARAMS];
+    ShaderGeneratorSwizzleMask swizzleParams[4];
 };
 
 class ShaderGeneratorVariable;

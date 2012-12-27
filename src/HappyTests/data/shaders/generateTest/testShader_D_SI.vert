@@ -22,6 +22,7 @@
 
 void main() 
 {
-gl_Position = (matWVP * vec4((inPosition + (vec3(0, 0, 0) * (1 - 0))), 1));
+passNormal = (matWorldView * vec4(inNormal, 0)).xyz;
+gl_Position = (matWVP * vec4((inPosition + vec3(0, 0, 0)), 1));
 }
 

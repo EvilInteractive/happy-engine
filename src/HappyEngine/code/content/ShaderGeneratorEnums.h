@@ -114,6 +114,15 @@ enum ShaderGeneratorVariableType
     ShaderGeneratorVariableType_TextureCube
 };
 
+enum ShaderGeneratorSwizzleMask
+{
+    ShaderGeneratorSwizzleMask_X,
+    ShaderGeneratorSwizzleMask_Y,
+    ShaderGeneratorSwizzleMask_Z,
+    ShaderGeneratorSwizzleMask_W,
+    ShaderGeneratorSwizzleMask_None
+};
+
 enum ShaderGeneratorGlobalInputVariableType
 {
     ShaderGeneratorGlobalInputVariableType_Position,
@@ -161,6 +170,7 @@ enum ShaderGeneratorGlobalCodeVariableType
     ShaderGeneratorGlobalCodeVariableType_MAX
 };
 
+const char* shaderGeneratorSwizzleMaskToString(const ShaderGeneratorSwizzleMask mask);
 
 const char* getGlobalInputVariableName(const ShaderGeneratorGlobalInputVariableType type);
 const char* getGlobalFragmentVariableName(const ShaderGeneratorGlobalFragmentVariableType type);

@@ -149,4 +149,17 @@ ShaderGeneratorVariableType getGlobalCodeVariableType( const ShaderGeneratorGlob
     return result;
 }
 
+const char* shaderGeneratorSwizzleMaskToString( const ShaderGeneratorSwizzleMask mask )
+{
+    const char* result("");
+    switch (mask)
+    {
+    case ShaderGeneratorSwizzleMask_X: result = "x"; break;
+    case ShaderGeneratorSwizzleMask_Y: result = "y"; break;
+    case ShaderGeneratorSwizzleMask_Z: result = "z"; break;
+    case ShaderGeneratorSwizzleMask_W: result = "w"; break;
+    }
+    return result;
+}
+
 } } //end namespace

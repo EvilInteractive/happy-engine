@@ -18,14 +18,17 @@
 //This file was was generated with the HappyMaterialEditor                       
 
 in vec3 inPosition;
+in vec3 inNormal;
 in mat4 inWorld;
 
 
+uniform mat4 matWorldView;
 uniform mat4 matView;
 uniform mat4 matProj;
 
 void main() 
 {
-gl_Position = (matProj * ((matView * inWorld) * vec4((inPosition + (vec3(0, 0, 0) * (1 - 0))), 1)));
+passNormal = (matWorldView * vec4(inNormal, 0)).xyz;
+gl_Position = (matProj * ((matView * inWorld) * vec4((inPosition + vec3(0, 0, 0)), 1)));
 }
 

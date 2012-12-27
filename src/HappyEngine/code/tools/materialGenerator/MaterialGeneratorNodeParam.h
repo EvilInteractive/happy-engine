@@ -22,6 +22,8 @@
 #define _HE_MaterialGeneratorNodeParam_H_
 #pragma once
 
+#include "ShaderGeneratorEnums.h"
+
 namespace he {
 namespace tools {
 
@@ -35,6 +37,7 @@ public:
         Type_Float3,
         Type_Float4,
         Type_Bool,
+        Type_SwizzleMask,
 
         Type_Unknown
     };
@@ -49,6 +52,7 @@ public:
     void setFloat3(const vec3& val);
     void setFloat4(const vec4& val);
     void setBool(const bool val);
+    void setSwizzleMask(const ct::ShaderGeneratorSwizzleMask val);
 
     // Getters
     float getFloat() const;
@@ -56,6 +60,7 @@ public:
     vec3  getFloat3() const;
     vec4  getFloat4() const;
     bool  getBool() const;
+    ct::ShaderGeneratorSwizzleMask  getSwizzleMask() const;
 
     Type getType() const { return m_Type; }
 
@@ -66,6 +71,7 @@ private:
     {
         bool m_Bool;
         float m_Float[4];
+        ct::ShaderGeneratorSwizzleMask m_Mask;
     } m_Data;
 };
 

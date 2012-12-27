@@ -53,7 +53,7 @@ enum MaterialGeneratorNodeType
     MaterialGeneratorNodeType_Normal,
 
     // Vector
-    MaterialGeneratorNodeType_ComponentMask,
+    MaterialGeneratorNodeType_Swizzle,
     MaterialGeneratorNodeType_ComposeVector,
 
     // Math

@@ -40,7 +40,9 @@ public:
     void setConstant(const vec3& a);
     void setConstant(const vec4& a);
     void setExposedVar(const ShaderGeneratorVariableType type);
-    void setGlobal();
+    void setGlobal(const ShaderGeneratorGlobalInputVariableType type);
+    void setGlobal(const ShaderGeneratorGlobalFragmentVariableType type);
+    void setGlobal(const ShaderGeneratorGlobalCodeVariableType type);
 
     // One param
     void setAbs(const ObjectHandle& a);
@@ -74,6 +76,7 @@ public:
     // Mutiple
     void setComposeFloat3(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned);
     void setComposeFloat4(const ObjectHandle& a, const ObjectHandle& b, const ObjectHandle& c = ObjectHandle::unassigned, const ObjectHandle& d = ObjectHandle::unassigned);
+    void setSwizzle(const ObjectHandle& a, const ShaderGeneratorSwizzleMask maskA, const ShaderGeneratorSwizzleMask maskB = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskC = ShaderGeneratorSwizzleMask_None, const ShaderGeneratorSwizzleMask maskD = ShaderGeneratorSwizzleMask_None);
     
     // Getters
     float getFloatData() const;

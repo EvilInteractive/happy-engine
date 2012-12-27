@@ -66,6 +66,12 @@ void MaterialGeneratorNodeParam::setFloat4( const vec4& val )
     m_Data.m_Float[3] = val.w;
 }
 
+void MaterialGeneratorNodeParam::setSwizzleMask( const ct::ShaderGeneratorSwizzleMask val )
+{
+    HE_ASSERT(m_Type == Type_SwizzleMask, "Type mismatch setting Float4 when var is not");
+    m_Data.m_Mask = val;
+}
+
 void MaterialGeneratorNodeParam::setBool( const bool val )
 {
     HE_ASSERT(m_Type == Type_Bool, "Type mismatch setting Bool when var is not");
@@ -100,6 +106,12 @@ bool MaterialGeneratorNodeParam::getBool() const
 {
     HE_ASSERT(m_Type == Type_Bool, "Type mismatch getting Bool when var is not");
     return m_Data.m_Bool;
+}
+
+ct::ShaderGeneratorSwizzleMask MaterialGeneratorNodeParam::getSwizzleMask() const
+{
+    HE_ASSERT(m_Type == Type_SwizzleMask, "Type mismatch getting SwizzleMask when var is not");
+    return m_Data.m_Mask;
 }
 
 } } //end namespace

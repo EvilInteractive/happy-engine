@@ -27,8 +27,8 @@
 namespace he {
 namespace tools {
     
-// One param
-//MaterialGeneratorNodeClass(Abs)
+MaterialGeneratorNodeClass(ComposeVector)
+MaterialGeneratorNodeClass(Swizzle)
 
 } } //end namespace
 
