@@ -98,5 +98,11 @@ bool CommandStack::canRedo() const
     return m_Transactions.size() > m_UndoIndex;
 }
 
+void CommandStack::clear()
+{
+    m_Transactions.clear();
+    m_UndoIndex = 0;
+}
+
 
 } } //end namespace

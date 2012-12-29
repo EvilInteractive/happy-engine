@@ -62,6 +62,8 @@ public:
     virtual     std::string     readString()                            const;
     virtual     std::wstring    readWString()                           const;
 
+    virtual     Guid            readGuid()                              const;
+
     virtual		physx::PxU32	read(void* buffer, physx::PxU32 size)	const;
     virtual		physx::PxU32	read(void* buffer, physx::PxU32 size);
 
@@ -80,6 +82,8 @@ public:
 
     virtual     void            writeString(const std::string& s);
     virtual     void            writeWString(const std::wstring& s);
+
+    virtual     void            writeGuid(const Guid& v);
 
     virtual     physx::PxU32    write(const void* buffer, physx::PxU32 count);
 

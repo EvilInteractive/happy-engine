@@ -38,6 +38,8 @@ public:
     void addRootNode(NodeGraphNode<TInput, TOutput>* node);
     void removeRootNode(NodeGraphNode<TInput, TOutput>* node);
 
+    void clear();
+
     void evalute(he::ObjectList<NodeGraphError<TInput, TOutput>>& errorList);
     void evaluteFrom(NodeGraphNode<TInput, TOutput>* node, he::ObjectList<NodeGraphError<TInput, TOutput>>& errorList);
 

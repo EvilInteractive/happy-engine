@@ -27,6 +27,7 @@
 #include "MaterialGeneratorConstNodes.h"
 #include "MaterialGeneratorMathNodes.h"
 #include "MaterialGeneratorTextureNodes.h"
+#include "MaterialGeneratorRootNodes.h"
 
 namespace he {
 namespace tools {
@@ -50,6 +51,9 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
     MaterialGeneratorNode* node(nullptr);
     switch (type)
     {
+        // Const
+        case MaterialGeneratorNodeType_RootNormalDraw: node = NEW MaterialGeneratorNodeRootNormalDraw(); break;
+
         // Const
         case MaterialGeneratorNodeType_Float1: node = NEW MaterialGeneratorNodeFloat1(); break;
         case MaterialGeneratorNodeType_Float2: node = NEW MaterialGeneratorNodeFloat2(); break;

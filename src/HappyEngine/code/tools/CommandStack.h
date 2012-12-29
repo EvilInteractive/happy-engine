@@ -42,6 +42,8 @@ public:
     void undo();
     void redo();
 
+    void clear();
+
     bool canUndo() const;
     bool canRedo() const;
 

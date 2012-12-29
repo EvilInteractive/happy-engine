@@ -37,7 +37,7 @@ public:\
     \
     virtual bool evaluate(MaterialGeneratorError& error);\
     \
-    virtual MaterialGeneratorNodeType getType() { return MaterialGeneratorNodeType_##type; } \
+    virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_##type; } \
     \
 private:\
     \

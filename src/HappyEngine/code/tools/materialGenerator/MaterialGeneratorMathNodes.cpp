@@ -442,13 +442,13 @@ IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
 #pragma region Lerp
 MaterialGeneratorNodeLerp::MaterialGeneratorNodeLerp()
 {
-    addOverload(1, 3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
-    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float,  MaterialGeneratorVariableType_Float,  MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
+    addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
     addConnecters(1, 3, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Y", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)));
 }
 

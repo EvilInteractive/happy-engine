@@ -148,6 +148,13 @@ std::wstring BinaryStream::readWString() const
     return s;
 }
 
+he::Guid BinaryStream::readGuid() const
+{
+    Guid g;
+    read(&g, sizeof(Guid));
+    return g;
+}
+
 physx::PxU32 BinaryStream::read(void* buffer, physx::PxU32 size)	const
 {
     if (size > 0)
@@ -222,6 +229,11 @@ void BinaryStream::writeWString(const std::wstring& s)
     write(s.c_str(), static_cast<uint32>(sizeof(wchar_t) * s.size()));
 }
 
+void BinaryStream::writeGuid( const Guid& v )
+{
+    write(&v, sizeof(Guid));
+}
+
 physx::PxU32 BinaryStream::write(const void* buffer, physx::PxU32 size)
 {
     if (size > 0)
@@ -231,6 +243,5 @@ physx::PxU32 BinaryStream::write(const void* buffer, physx::PxU32 size)
     }
     return size;
 }
-
 
 } } //end namespace

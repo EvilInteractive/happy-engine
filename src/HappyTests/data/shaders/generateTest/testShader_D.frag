@@ -59,19 +59,22 @@ vec2 encodeNormal(in vec3 normal)
 
 void main()
 {
-    float localvar5 = (1 - 0);
-    float localvar7 = pow(localvar5, 0);
-    if (localvar7 < 0.5)
+    if (0 < 0.5)
     {
         discard;
     }
     
     const vec3 localvar0 = vec3(0, 0, 0);
-    float localvar16 = ((passDepth - camNearFar.x) / (camNearFar.y - camNearFar.x));
-    vec3 localvar21 = encodeNormal(calcNormal(passNormal, passTangent, (localvar7 * vec3(0, 0, 0))));
-    outColor = vec4(localvar0, 1);
-    outNormalDepth = vec3(localvar21, localvar16);
-    outSG = vec4(localvar0, 0);
+    const vec3 localvar4 = vec3(0, 0, 0);
+    vec3 localvar8 = pow(localvar0, 0);
+    vec3 localvar11 = (localvar0 + localvar4);
+    vec3 localvar12 = (localvar11 + localvar4);
+    vec3 localvar13 = normalize(localvar12);
+    float localvar20 = ((passDepth - camNearFar.x) / (camNearFar.y - camNearFar.x));
+    vec3 localvar25 = encodeNormal(calcNormal(passNormal, passTangent, localvar13));
+    outColor = vec4(mix(((0 * localvar8) + localvar8), localvar13, (1 - 0)), 1);
+    outNormalDepth = vec3(localvar25, localvar20);
+    outSG = vec4(localvar11, 0);
     
 }
 

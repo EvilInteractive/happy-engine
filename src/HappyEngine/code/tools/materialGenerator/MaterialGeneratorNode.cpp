@@ -28,6 +28,7 @@
 #include "Renderer2D.h"
 #include "MathFunctions.h"
 #include "BezierShape2D.h"
+#include "BinaryStream.h"
 
 namespace he {
 namespace tools {
@@ -579,6 +580,18 @@ void MaterialGeneratorNode::setSize( const vec2& size )
 {
     m_Size = size;
     updateConnecterPositions();
+}
+
+void MaterialGeneratorNode::serialize( io::BinaryStream& stream ) const
+{
+    stream.writeVector2(m_Position);
+    stream.writeGuid(m_Guid);
+}
+
+void MaterialGeneratorNode::deserialize( io::BinaryStream& stream )
+{
+    setPosition(stream.readVector2());
+    m_Guid = stream.readGuid();
 }
 
 

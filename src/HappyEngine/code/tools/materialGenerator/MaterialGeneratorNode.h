@@ -30,6 +30,9 @@ namespace he {
 namespace gfx {
     class Canvas2D;
 }
+namespace io {
+    class BinaryStream;
+}
 namespace gui {
     class Sprite;
     class BezierShape2D;
@@ -124,11 +127,14 @@ public:
     void setPosition(const vec2& position);
     const vec2& getPosition() const { return m_Position; }
 
-    virtual MaterialGeneratorNodeType getType() { return MaterialGeneratorNodeType_Unassigned; }
+    virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_Unassigned; }
 
     void setGuid(const Guid& id) { m_Guid = id; }
     const Guid& getGuid() const { return m_Guid; }
     const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
+    
+    void serialize(io::BinaryStream& stream) const;
+    void deserialize(io::BinaryStream& stream);
 
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 

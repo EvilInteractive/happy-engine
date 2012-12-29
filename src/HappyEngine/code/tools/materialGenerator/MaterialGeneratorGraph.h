@@ -100,6 +100,9 @@ public:
 
     void pushError(const MaterialGeneratorError& errorMsg);
 
+    void save();
+    void load();
+
 private:
 
     /* INTERNAL */

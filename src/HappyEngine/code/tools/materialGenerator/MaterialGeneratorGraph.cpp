@@ -46,6 +46,8 @@
 #include "BezierShape2D.h"
 
 #include "Command.h"
+#include "BinaryStream.h"
+#include "MaterialGeneratorNodeFactory.h"
 
 #define ZOOM_STEP 0.1f
 #define ZOOM_MIN 0.1f
@@ -100,7 +102,7 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     //m_ShortcutList.add(Shortcut(io::Key_T, MaterialGeneratorNodeType_Texture2D));
     //m_ShortcutList.add(Shortcut(io::Key_U, MaterialGeneratorNodeType_Texcoord));
 
-    MaterialGeneratorNodeRootNormalDraw* const root(NEW MaterialGeneratorNodeRootNormalDraw);
+    MaterialGeneratorNode* const root(MaterialGeneratorNodeFactory::getInstance()->create(MaterialGeneratorNodeType_RootNormalDraw));
     addNode(root);
     m_NodeGraph.addRootNode(root);
 }
@@ -109,10 +111,12 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
 
 MaterialGeneratorGraph::~MaterialGeneratorGraph()
 {
-    m_NodeList.forEach([](MaterialGeneratorNode* const node)
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    m_NodeList.forEach([factory](MaterialGeneratorNode* const node)
     {
-        delete node;
+        factory->destroy(node);
     });
+    m_NodeList.clear();
     m_Renderer->detachFromRender(this);
     delete m_Renderer;
     delete m_Generator;
@@ -251,6 +255,14 @@ void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
                 keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Y))
             {
                 m_CommandStack.redo();
+            }
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_S))
+            {
+                save();
+            }
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_O))
+            {
+                load();
             }
             else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Z))
             {
@@ -696,6 +708,103 @@ void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
         text->setVerticalAlignment(gui::Text::VAlignment_Top);
         text->setFont(m_ErrorFont);
         m_ErrorPool.add(text);
+    }
+}
+
+#define VERSION 1ui16
+
+void MaterialGeneratorGraph::save()
+{
+    io::BinaryStream stream;
+    if (stream.open(CONTENT->getShaderFolderPath().append("testShader.shader").str(), io::BinaryStream::Write))
+    {
+        stream.writeWord(VERSION);
+        stream.writeDword(static_cast<uint32>(m_NodeList.size()));
+        m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
+        {
+            const uint16 type(static_cast<uint16>(node->getType()));
+            stream.writeWord(type);
+            node->serialize(stream);
+        });
+        m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
+        {
+            io::BinaryStream& scopedStream(stream);
+            node->getConnecters().forEach([&scopedStream](MaterialGeneratorNode::Connecter* const connecter)
+            {
+                if (connecter->isInput())
+                {
+                    const bool isConnected(connecter->isConnected());
+                    scopedStream.writeByte(isConnected? 1 : 0);
+                    if (isConnected)
+                    {
+                        MaterialGeneratorNode::Connecter* const connection(connecter->getConnection());
+                        scopedStream.writeGuid(connection->getParent()->getGuid());
+                        scopedStream.writeByte(connection->getIndex());
+                    }
+                }
+            });
+        });
+        stream.close();
+    }
+    else
+    {
+        LOG(LogType_ArtAssert, "File open failed!\nSave failed...");
+    }
+}
+
+void MaterialGeneratorGraph::load()
+{
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    m_NodeList.forEach([factory](MaterialGeneratorNode* const node)
+    {
+        factory->destroy(node);
+    });
+    m_NodeList.clear();
+    m_NodeGraph.clear();
+    m_CommandStack.clear();
+
+    io::BinaryStream stream;
+    if (stream.open(CONTENT->getShaderFolderPath().append("testShader.shader").str(), io::BinaryStream::Read))
+    {
+        const uint16 version(stream.readWord());
+        if (version == VERSION)
+        {
+            const uint32 size(stream.readDword());
+            for (uint32 i(0); i < size; ++i)
+            {
+                const MaterialGeneratorNodeType type(static_cast<MaterialGeneratorNodeType>(stream.readWord()));
+                MaterialGeneratorNode* const node(factory->create(type));
+                addNode(node);
+                node->deserialize(stream);
+            }
+            m_NodeGraph.addRootNode(m_NodeList[0]); // first node is always root
+            m_NodeList.forEach([&stream, this](MaterialGeneratorNode* const node)
+            {
+                io::BinaryStream& scopedStream(stream);
+                MaterialGeneratorGraph* const scopedThis(this);
+                node->getConnecters().forEach([&scopedStream, node, scopedThis](MaterialGeneratorNode::Connecter* const connecter)
+                {
+                    if (connecter->isInput())
+                    {
+                        const bool isConnected(scopedStream.readByte() == 1);
+                        if (isConnected)
+                        {
+                            Guid guid(scopedStream.readGuid());
+                            uint8 index(scopedStream.readByte());
+                            MaterialGeneratorNode* const otherNode(scopedThis->getNode(guid));
+                            MaterialGeneratorError error;
+                            node->connectToInput(otherNode, index, connecter->getIndex(), error);
+                        }
+                    }
+                });
+            });
+        }
+        else
+        {
+            LOG(LogType_ArtAssert, "Incompatible version!\nVersion = %d, code version = %d", version, VERSION);
+        }
+
+        stream.close();
     }
 }
 

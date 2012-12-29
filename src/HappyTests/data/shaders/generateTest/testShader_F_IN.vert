@@ -37,7 +37,7 @@ uniform mat4 matProj;
 
 void main()
 {
-    if (pow((1 - 0), 0) < 0.5)
+    if (0 < 0.5)
     {
         discard;
     }
