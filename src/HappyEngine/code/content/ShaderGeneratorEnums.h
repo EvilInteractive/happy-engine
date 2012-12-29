@@ -88,6 +88,10 @@ enum ShaderGeneratorVariableOperationType
     ShaderGeneratorVariableOperationType_Reflect,
     ShaderGeneratorVariableOperationType_Refract,
 
+    // Custom func
+    ShaderGeneratorVariableOperationType_CalcNormal,
+    ShaderGeneratorVariableOperationType_EncodeNormal,
+
     // Texture
     ShaderGeneratorVariableOperationType_Texture,
     ShaderGeneratorVariableOperationType_TextureLod,
@@ -140,7 +144,9 @@ enum ShaderGeneratorGlobalFragmentVariableType
 {
     ShaderGeneratorGlobalFragmentVariableType_ViewPosition,
     ShaderGeneratorGlobalFragmentVariableType_ViewNormal,
+    ShaderGeneratorGlobalFragmentVariableType_ViewTangent,
     ShaderGeneratorGlobalFragmentVariableType_TexCoord,
+    ShaderGeneratorGlobalFragmentVariableType_Depth,
 
     ShaderGeneratorGlobalFragmentVariableType_MAX
 };
@@ -170,15 +176,28 @@ enum ShaderGeneratorGlobalCodeVariableType
     ShaderGeneratorGlobalCodeVariableType_MAX
 };
 
+enum ShaderGeneratorOutVariableType
+{
+    ShaderGeneratorOutVariableType_GLPosition,
+    ShaderGeneratorOutVariableType_OutColor,
+    ShaderGeneratorOutVariableType_OutNormalDepth,
+    ShaderGeneratorOutVariableType_OutSG,
+    ShaderGeneratorOutVariableType_MAX
+};
+
 const char* shaderGeneratorSwizzleMaskToString(const ShaderGeneratorSwizzleMask mask);
 
 const char* getGlobalInputVariableName(const ShaderGeneratorGlobalInputVariableType type);
 const char* getGlobalFragmentVariableName(const ShaderGeneratorGlobalFragmentVariableType type);
 const char* getGlobalCodeVariableName(const ShaderGeneratorGlobalCodeVariableType type);
 
+const char* getOutVariableName(const ShaderGeneratorOutVariableType type);
+
 ShaderGeneratorVariableType getGlobalInputVariableType(const ShaderGeneratorGlobalInputVariableType type);
 ShaderGeneratorVariableType getGlobalFragmentVariableType(const ShaderGeneratorGlobalFragmentVariableType type);
 ShaderGeneratorVariableType getGlobalCodeVariableType(const ShaderGeneratorGlobalCodeVariableType type);
+
+ShaderGeneratorVariableType getOutVariableType(const ShaderGeneratorOutVariableType type);
 
 } } //end namespace
 

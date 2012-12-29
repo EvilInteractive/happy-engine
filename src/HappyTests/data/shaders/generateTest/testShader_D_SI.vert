@@ -16,13 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.       
 //                                                                               
 //This file was was generated with the HappyMaterialEditor                       
+                                                                                 
+#version 150 core                                                                
+#pragma optionNV(fastmath on)                                                    
+//#pragma optionNV(fastprecision on)                                             
+#pragma optionNV(ifcvt none)                                                     
+#pragma optionNV(inline all)                                                     
+#pragma optionNV(strict on)                                                      
+#pragma optionNV(unroll all)                                                     
+                                                                                 
+in vec3 inPosition;
+in vec3 inNormal;
 
 
+uniform mat4 matWorldView;
+uniform mat4 matWVP;
 
 
-void main() 
+void main()
 {
-passNormal = (matWorldView * vec4(inNormal, 0)).xyz;
-gl_Position = (matWVP * vec4((inPosition + vec3(0, 0, 0)), 1));
+    if (pow((1 - 0), 0) < 0.5)
+    {
+        discard;
+    }
+    
+    passNormal = (matWorldView * vec4(inNormal, 0)).xyz;
+    gl_Position = (matWVP * vec4(inPosition, 1));
+    
 }
 

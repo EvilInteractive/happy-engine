@@ -46,7 +46,7 @@ MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
         MaterialGeneratorVariableType_Float3, 
         MaterialGeneratorVariableType_Float3, 
         MaterialGeneratorVariableType_Float3, 
-        MaterialGeneratorVariableType_Float3, 
+        MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float3, 
         MaterialGeneratorVariableType_Float3);
@@ -66,6 +66,7 @@ bool MaterialGeneratorNodeRootNormalDraw::evaluate( MaterialGeneratorError& erro
     const bool result(MaterialGeneratorNode::evaluate(error));
     if (result)
     {
+        ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
         ct::ShaderGenerator* const shaderGenerator(m_Parent->getGenerator());
         
         const auto& diffuseConnection(getInputConnection(RootNodeNormalDrawConnection_Diffuse));
@@ -94,6 +95,9 @@ bool MaterialGeneratorNodeRootNormalDraw::evaluate( MaterialGeneratorError& erro
         if (opacityConnection.isConnected())
         {
             shaderGenerator->setOpacity(opacityConnection.getConnection().getVar());
+            ct::ShaderGeneratorVariable* const testValue(factory->get(shaderGenerator->addVariable()));
+            testValue->setConstant(0.5f);
+            shaderGenerator->setAlphaTestValue(testValue->getHandle());
         }
         if (normalConnection.isConnected())
         {

@@ -49,6 +49,8 @@ const char* getGlobalFragmentVariableName( const ShaderGeneratorGlobalFragmentVa
     {
     case ShaderGeneratorGlobalFragmentVariableType_ViewPosition: result = "passPosition"; break;
     case ShaderGeneratorGlobalFragmentVariableType_ViewNormal: result = "passNormal"; break;
+    case ShaderGeneratorGlobalFragmentVariableType_ViewTangent: result = "passTangent"; break;
+    case ShaderGeneratorGlobalFragmentVariableType_Depth: result = "passDepth"; break;
     case ShaderGeneratorGlobalFragmentVariableType_TexCoord: result = "passTexCoord"; break;
     default:
         LOG(LogType_ProgrammerAssert, "Unknown ShaderGeneratorGlobalFragmentVariableType: %d", type);
@@ -87,6 +89,23 @@ const char* getGlobalCodeVariableName( const ShaderGeneratorGlobalCodeVariableTy
     return result;
 }
 
+const char* getOutVariableName( const ShaderGeneratorOutVariableType type )
+{
+    const char* result("ERROR_UNKNOW_OUT_VAR");
+    switch (type)
+    {
+    case ShaderGeneratorOutVariableType_GLPosition: result = "gl_Position"; break;
+    case ShaderGeneratorOutVariableType_OutColor: result = "outColor"; break;
+    case ShaderGeneratorOutVariableType_OutNormalDepth: result = "outNormalDepth"; break;
+    case ShaderGeneratorOutVariableType_OutSG: result = "outSG"; break;
+    default:
+        LOG(LogType_ProgrammerAssert, "Unknown ShaderGeneratorOutVariableType: %d", type);
+    }
+
+    return result;
+}
+
+
 ShaderGeneratorVariableType getGlobalInputVariableType( const ShaderGeneratorGlobalInputVariableType type )
 {
     ShaderGeneratorVariableType result(ShaderGeneratorVariableType_Unknown);
@@ -112,6 +131,8 @@ ShaderGeneratorVariableType getGlobalFragmentVariableType( const ShaderGenerator
     {
     case ShaderGeneratorGlobalFragmentVariableType_ViewPosition: result = ShaderGeneratorVariableType_Float3; break;
     case ShaderGeneratorGlobalFragmentVariableType_ViewNormal:   result = ShaderGeneratorVariableType_Float3; break;
+    case ShaderGeneratorGlobalFragmentVariableType_ViewTangent:  result = ShaderGeneratorVariableType_Float3; break;
+    case ShaderGeneratorGlobalFragmentVariableType_Depth:        result = ShaderGeneratorVariableType_Float; break;
     case ShaderGeneratorGlobalFragmentVariableType_TexCoord:     result = ShaderGeneratorVariableType_Float2; break;
     default:
         LOG(LogType_ProgrammerAssert, "Unknown ShaderGeneratorGlobalFragmentVariableType: %d", type);
@@ -149,6 +170,21 @@ ShaderGeneratorVariableType getGlobalCodeVariableType( const ShaderGeneratorGlob
     return result;
 }
 
+he::ct::ShaderGeneratorVariableType getOutVariableType( const ShaderGeneratorOutVariableType type )
+{
+    ShaderGeneratorVariableType result(ShaderGeneratorVariableType_Unknown);
+    switch (type)
+    {
+    case ShaderGeneratorOutVariableType_GLPosition: result = ShaderGeneratorVariableType_Float4; break;
+    case ShaderGeneratorOutVariableType_OutColor: result = ShaderGeneratorVariableType_Float4; break;
+    case ShaderGeneratorOutVariableType_OutNormalDepth: result = ShaderGeneratorVariableType_Float3; break;
+    case ShaderGeneratorOutVariableType_OutSG: result = ShaderGeneratorVariableType_Float4; break;
+    default:
+        LOG(LogType_ProgrammerAssert, "Unknown ShaderGeneratorVariableType: %d", type);
+    }
+    return result;
+}
+
 const char* shaderGeneratorSwizzleMaskToString( const ShaderGeneratorSwizzleMask mask )
 {
     const char* result("");
@@ -161,5 +197,6 @@ const char* shaderGeneratorSwizzleMaskToString( const ShaderGeneratorSwizzleMask
     }
     return result;
 }
+
 
 } } //end namespace

@@ -32,6 +32,8 @@ ShaderGeneratorVariable::ShaderGeneratorVariable()
 , m_LocalName("")
 , m_RefCounter(0)
 , m_HasDeclaration(false)
+, m_ForceInline(false)
+, m_ForceDeclare(false)
 {
     he_memset(&m_ConstantData, 0, sizeof(m_ConstantData));
 }
@@ -46,6 +48,7 @@ void ShaderGeneratorVariable::setConstant( const float a )
     m_Operation.type = ShaderGeneratorVariableOperationType_Constant;
     m_Type = ShaderGeneratorVariableType_Float;
     m_ConstantData.floatData[0] = a;
+    setForceInline(true);
 }
 void ShaderGeneratorVariable::setConstant( const vec2& a )
 {
@@ -77,6 +80,7 @@ void ShaderGeneratorVariable::setExposedVar( const ShaderGeneratorVariableType t
     m_Type = type;
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
     setHasDeclaration(true);
+    setForceDeclare(true);
 }
 
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariableType type)
@@ -84,6 +88,7 @@ void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalInputVariable
     setLocalName(getGlobalInputVariableName(type));
     setType(getGlobalInputVariableType(type));
     setHasDeclaration(true);
+    setForceDeclare(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
 }
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVariableType type)
@@ -91,6 +96,7 @@ void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalFragmentVaria
     setLocalName(getGlobalFragmentVariableName(type));
     setType(getGlobalFragmentVariableType(type));
     setHasDeclaration(true);
+    setForceDeclare(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
 }
 void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableType type)
@@ -98,6 +104,14 @@ void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorGlobalCodeVariableT
     setLocalName(getGlobalCodeVariableName(type));
     setType(getGlobalCodeVariableType(type));
     setHasDeclaration(true);
+    setForceDeclare(true);
+    m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
+}
+void ShaderGeneratorVariable::setGlobal(const ShaderGeneratorOutVariableType type)
+{
+    setLocalName(getOutVariableName(type));
+    setType(getOutVariableType(type));
+    setForceInline(true);
     m_Operation.type = ShaderGeneratorVariableOperationType_Exposed;
 }
 
@@ -154,6 +168,7 @@ FUNC1(setFrac, ShaderGeneratorVariableOperationType_Frac)
 FUNC1(setNormalize, ShaderGeneratorVariableOperationType_Normalize)
 FUNC1(setSign, ShaderGeneratorVariableOperationType_Sign)
 FUNC1(setSin, ShaderGeneratorVariableOperationType_Sin)
+FUNC1(setEncodeNormal, ShaderGeneratorVariableOperationType_EncodeNormal)
 
 FUNC2(setAdd, ShaderGeneratorVariableOperationType_Add)
 FUNC2(setCross, ShaderGeneratorVariableOperationType_Cross)
@@ -170,6 +185,7 @@ FUNC2(setStep, ShaderGeneratorVariableOperationType_Step)
 FUNC3(setClamp, ShaderGeneratorVariableOperationType_Clamp)
 FUNC3(setLerp, ShaderGeneratorVariableOperationType_Lerp)
 FUNC3(setSmoothStep, ShaderGeneratorVariableOperationType_SmoothStep)
+FUNC3(setCalculateNormal, ShaderGeneratorVariableOperationType_CalcNormal)
 
 void ShaderGeneratorVariable::setComposeFloat2( const ObjectHandle& a, const ObjectHandle& b )\
 {
@@ -229,6 +245,7 @@ void ShaderGeneratorVariable::setSwizzle( const ObjectHandle& a, const ShaderGen
     {
         m_Type = ShaderGeneratorVariableType_Float4;
     }
+    setForceInline(true);
 }
 
 #undef FUNC1                                           

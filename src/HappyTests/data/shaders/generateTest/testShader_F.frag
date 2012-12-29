@@ -16,13 +16,47 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.       
 //                                                                               
 //This file was was generated with the HappyMaterialEditor                       
+                                                                                 
+#version 150 core                                                                
+#pragma optionNV(fastmath on)                                                    
+//#pragma optionNV(fastprecision on)                                             
+#pragma optionNV(ifcvt none)                                                     
+#pragma optionNV(inline all)                                                     
+#pragma optionNV(strict on)                                                      
+#pragma optionNV(unroll all)                                                     
+                                                                                 
 
 
 
+vec3 calcNormal(in vec3 normal, in vec3 tangent, in vec3 rgb)            
+{                                                                        
+    //NormalMap                                                          
+    tangent = normalize(tangent);                                        
+    normal = normalize(normal);                                          
+                                                                         
+    vec3 binormal = cross(tangent, normal);                              
+                                                                         
+    mat3 assenstelsel = mat3(binormal, tangent, normal);                 
+                                                                         
+    vec3 xyz = vec3(rgb.x * 2 - 1, (1 - rgb.y) * 2 - 1, rgb.z * 2 - 1);  
+                                                                         
+    return normalize(assenstelsel * xyz);                                
+}                                                                        
+                                                                         
+vec2 encodeNormal(in vec3 normal)                                        
+{                                                                        
+    float f = sqrt(-normal.z * 8.0f + 8.0f);                             
+    return normal.xy / f + 0.5f;                                         
+}                                                                        
+                                                                         
 
-void main() 
+void main()
 {
-passNormal = (matWorldView * vec4(inNormal, 0)).xyz;
-gl_Position = (matProj * ((matView * inWorld) * vec4((inPosition + vec3(0, 0, 0)), 1)));
+    if (pow((1 - 0), 0) < 0.5)
+    {
+        discard;
+    }
+    
+    
 }
 
