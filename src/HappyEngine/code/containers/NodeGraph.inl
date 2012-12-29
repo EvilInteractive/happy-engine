@@ -33,6 +33,12 @@ void he::NodeGraph<TInput, TOutput>::removeRootNode( NodeGraphNode<TInput, TOutp
 }
 
 template<typename TInput, typename TOutput>
+void he::NodeGraph<TInput, TOutput>::clear()
+{
+    m_RootNodes.clear();
+}
+
+template<typename TInput, typename TOutput>
 void he::NodeGraph<TInput, TOutput>::evalute( he::ObjectList<NodeGraphError<TInput, TOutput>>& errorList )
 {
     uint8 marchId(m_CurrentMarchId);

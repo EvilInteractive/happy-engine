@@ -98,6 +98,11 @@ public:
     MaterialGeneratorNode* getNode(const Guid& guid) const;
     MaterialGeneratorNode* getSelectedNode(const Guid& guid) const;
 
+    void pushError(const MaterialGeneratorError& errorMsg);
+
+    void save();
+    void load();
+
 private:
 
     /* INTERNAL */
@@ -110,6 +115,9 @@ private:
 
     void renderBackground();
     void onViewResized();
+
+    void updateStates(const float dTime);
+    void updateErrors(const float dTime);
 
     void addNode(MaterialGeneratorNode* const node);
 
@@ -147,6 +155,19 @@ private:
     gui::Sprite* m_Background;
 
     gui::BezierShape2D* m_GhostConnection;
+
+    struct ErrorMessage
+    {
+        float m_TimeLeft;
+        gui::Text* m_Text;
+        vec2 m_TextSize;
+        vec2 m_Position;
+    };
+    void increaseErrorPool(const size_t extraSize);
+    gfx::Font* m_ErrorFont;
+    he::PrimitiveList<gui::Text*> m_ErrorPool;
+    he::ObjectList<ErrorMessage> m_VisibleErrors;
+    gui::Sprite* m_ErrorBackgroundSprite;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

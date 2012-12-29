@@ -28,6 +28,7 @@
 #include "Renderer2D.h"
 #include "MathFunctions.h"
 #include "BezierShape2D.h"
+#include "BinaryStream.h"
 
 namespace he {
 namespace tools {
@@ -185,7 +186,7 @@ IMPLEMENT_OBJECT(MaterialGeneratorNode)
 
 MaterialGeneratorNode::MaterialGeneratorNode(): 
     m_SelectedOverload(0), m_Overloads(1), m_Position(0, 0), m_Size(128, 96),
-    m_IsSelected(false), m_IsHoovering(false), m_Parent(nullptr)
+    m_IsSelected(false), m_IsHoovering(false), m_Parent(nullptr), m_CanBeSelected(true)
 {
     gui::SpriteCreator* cr(GUI->Sprites);
 
@@ -290,15 +291,57 @@ MaterialGeneratorNode::~MaterialGeneratorNode()
 bool MaterialGeneratorNode::canConnect( const MaterialGeneratorNodeOutput& fromOutput, 
                                         const MaterialGeneratorNodeInput& toInput, MaterialGeneratorError& error ) const
 {
-    bool result(true);
+    bool result(false);
 
     // Overloads are impossible to type check, so they are checked @shader compile time
-    if (fromOutput.getType() != toInput.getType() && m_Overloads.size() == 1) // types don't match and we have no overloads
+    // Just do a check if one of my overloads is compatible with one of the other's overloads
+    HE_ASSERT(fromOutput.getParent() != nullptr, "Connection output parent is nullptr! - Fatal");
+    HE_ASSERT(toInput.getParent() != nullptr, "Connection input parent is nullptr! - Fatal");
+
+    MaterialGeneratorNode* const fromOutputParent(fromOutput.getParent());
+    const uint8 fromOutputIndex(fromOutput.getIndex());
+    const he::ObjectList<Overload>& outputOverloads(fromOutputParent->m_Overloads);
+
+    MaterialGeneratorNode* const toInputParent(toInput.getParent());
+    const uint8 toInputIndex(toInput.getIndex());
+    const he::ObjectList<Overload>& inputOverloads(toInputParent->m_Overloads);
+
+    if (fromOutputParent != toInputParent)
     {
-        error.setMessage("Type %s is not compatible with %s", 
-            materialGeneratorVariableTypeToString(fromOutput.getType()), 
-            materialGeneratorVariableTypeToString(toInput.getType()));
-        result = false;
+        size_t index(0);
+        result = outputOverloads.find_if([fromOutputIndex, &inputOverloads, toInputIndex](const Overload& overloadOutput) -> bool
+        {
+            size_t inputIndex(0);
+            const MaterialGeneratorVariableType typeOutput(overloadOutput.outputs[fromOutputIndex]);
+            const uint8 scopedToInputIndex(toInputIndex);
+            return inputOverloads.find_if([typeOutput, scopedToInputIndex](const Overload& overloadInput)
+            {
+                return typeOutput == overloadInput.inputs[scopedToInputIndex];
+            }, inputIndex);
+        }, index);
+        if (result == false)
+        {
+            int size(0);
+            char outputTypeBuffer[128];
+            outputOverloads.forEach([&outputTypeBuffer, &size, fromOutputIndex](const Overload& overload) 
+            { size += sprintf(outputTypeBuffer + size, "%s, ", materialGeneratorVariableTypeToString(overload.outputs[fromOutputIndex])); });
+            outputTypeBuffer[size - 2] = '\0'; // remove trailing comma
+
+            size = 0;
+            char inputTypeBuffer[128];
+            inputOverloads.forEach([&inputTypeBuffer, &size, toInputIndex](const Overload& overload) 
+            { size += sprintf(inputTypeBuffer + size, "%s, ", materialGeneratorVariableTypeToString(overload.inputs[toInputIndex])); });
+            inputTypeBuffer[size - 2] = '\0'; // remove trailing comma
+
+            error.setMessage("Node output with possible types: \n"
+                             " %s\n"
+                             "is incompatible with node input of possible types: \n"
+                             " %s", outputTypeBuffer, inputTypeBuffer);
+        }
+    }
+    else
+    {
+        error.setMessage("Cannot connect a node to itself");
     }
     return result;
 }
@@ -333,11 +376,11 @@ void MaterialGeneratorNode::addOverload( uint8 outputCount, uint8 inputCount, ..
     {
         for (uint8 i(0); i < outputCount; ++i)
         {
-            addOutput(MaterialGeneratorNodeOutput());
+            addOutput(MaterialGeneratorNodeOutput(this, i));
         }
         for (uint8 i(0); i < inputCount; ++i)
         {
-            addInput(MaterialGeneratorNodeInput());
+            addInput(MaterialGeneratorNodeInput(this, i));
         }
         activateOverload(0);
     }
@@ -434,11 +477,14 @@ bool MaterialGeneratorNode::findOverload( uint8& outOverload ) const
 bool MaterialGeneratorNode::pick( const vec2& worldPos ) const
 {
     bool result(false);
-    const vec2 halfSize(m_Size / 2.0f);
-    if (worldPos.x > m_Position.x - halfSize.x && worldPos.y > m_Position.y - halfSize.y &&
-        worldPos.x < m_Position.x + halfSize.x && worldPos.y < m_Position.y + halfSize.y)
+    if (m_CanBeSelected)
     {
-        result = true;
+        const vec2 halfSize(m_Size / 2.0f);
+        if (worldPos.x > m_Position.x - halfSize.x && worldPos.y > m_Position.y - halfSize.y &&
+            worldPos.x < m_Position.x + halfSize.x && worldPos.y < m_Position.y + halfSize.y)
+        {
+            result = true;
+        }
     }
     return result;
 }
@@ -450,7 +496,7 @@ bool MaterialGeneratorNode::doHoover( const vec2& worldPos, const bool undoHoove
     {
         result |= connecter->doHoover(worldPos, result || undoHoover);
     });
-    if (result == false && undoHoover == false)
+    if (m_CanBeSelected == true && result == false && undoHoover == false)
     {
         result = pick(worldPos);
         m_IsHoovering = result;
@@ -529,5 +575,24 @@ const MaterialGeneratorNodeParam& MaterialGeneratorNode::getParam( const uint8& 
 {
     return m_Params[index];
 }
+
+void MaterialGeneratorNode::setSize( const vec2& size )
+{
+    m_Size = size;
+    updateConnecterPositions();
+}
+
+void MaterialGeneratorNode::serialize( io::BinaryStream& stream ) const
+{
+    stream.writeVector2(m_Position);
+    stream.writeGuid(m_Guid);
+}
+
+void MaterialGeneratorNode::deserialize( io::BinaryStream& stream )
+{
+    setPosition(stream.readVector2());
+    m_Guid = stream.readGuid();
+}
+
 
 } } //end namespace

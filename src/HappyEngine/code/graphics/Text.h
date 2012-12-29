@@ -69,6 +69,7 @@ public:
     /* GETTERS */
     const char* getText() const { return m_Text; }
     const size_t getTextSize() const { return m_Size; }
+    vec2 measureText();
 
     bool isEmpty() const { return m_Size == 0; }
     bool hasBounds() const { return m_HasBounds; }

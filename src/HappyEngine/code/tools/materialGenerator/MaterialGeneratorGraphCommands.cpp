@@ -230,6 +230,10 @@ bool MaterialGeneratorGraphNodeConnectCommand::doCommand()
             {
                 result = nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
             }
+            if (error.getMessage().empty() == false)
+            {
+                m_Parent->pushError(error);
+            }
         }
         else
         {
@@ -261,6 +265,10 @@ void MaterialGeneratorGraphNodeConnectCommand::undoCommand()
         {
             MaterialGeneratorError error;
             nodeEnd->connectToOutput(nodeStart, m_IndexStart, m_IndexEnd, error);
+            if (error.getMessage().empty() == false)
+            {
+                m_Parent->pushError(error);
+            }
         }
     }
 }

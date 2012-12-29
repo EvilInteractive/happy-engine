@@ -149,6 +149,7 @@ void Canvas2Dnew::drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
 void Canvas2Dnew::drawSprite(const Sprite* sprite, const vec2& pos,
                              const vec2& size)
 {
+    m_RendererGL->setColor(m_Color);
     m_RendererGL->drawSprite(sprite, pos, size);
 }
 

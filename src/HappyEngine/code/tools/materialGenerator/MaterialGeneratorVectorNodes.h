@@ -16,12 +16,20 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 09/11/2012
-#include "HappyPCH.h" 
+//Created: 15/11/2012
 
-#include "GLSLShaderGenerator.h"
+#ifndef _HE_MaterialGeneratorMathNodes_H_
+#define _HE_MaterialGeneratorMathNodes_H_
+#pragma once
+
+#include "MaterialGeneratorNodeClassHelper.h"
 
 namespace he {
-namespace ct {
+namespace tools {
+    
+MaterialGeneratorNodeClass(ComposeVector)
+MaterialGeneratorNodeClass(Swizzle)
 
 } } //end namespace
+
+#endif

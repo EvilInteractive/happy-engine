@@ -61,6 +61,7 @@ void NinePatchEffect::load()
     m_ShaderSizePos = m_Shader->getShaderVarId("size");
     m_ShaderOrigSizePos = m_Shader->getShaderVarId("originalSize");
     m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
+    m_ShaderBlendColor = m_Shader->getShaderVarId("blendColor");
 
     m_Shader->bind();
     mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
@@ -104,6 +105,11 @@ void NinePatchEffect::setOriginalSize(const vec2& origSize) const
 void NinePatchEffect::setDepth(float depth) const
 {
     m_Shader->setShaderVar(m_ShaderDepthPos, depth);
+}
+
+void NinePatchEffect::setBlendColor( const Color& color ) const
+{
+    m_Shader->setShaderVar(m_ShaderBlendColor, color.rgba());
 }
 
 } } //end namespace

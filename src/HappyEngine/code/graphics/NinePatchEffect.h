@@ -43,6 +43,7 @@ public:
     void setSize(const vec2& size) const;
     void setOriginalSize(const vec2& origSize) const;
     void setDepth(float depth) const;
+    void setBlendColor(const Color& color) const;
 
 private:
     gfx::Shader* m_Shader;
@@ -53,6 +54,7 @@ private:
     uint32 m_ShaderSizePos;
     uint32 m_ShaderOrigSizePos;
     uint32 m_ShaderDepthPos;
+    uint32 m_ShaderBlendColor;
 
     //Disable default copy constructor and default assignment operator
     NinePatchEffect(const NinePatchEffect&);

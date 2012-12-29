@@ -30,6 +30,9 @@ namespace he {
 namespace gfx {
     class Canvas2D;
 }
+namespace io {
+    class BinaryStream;
+}
 namespace gui {
     class Sprite;
     class BezierShape2D;
@@ -124,11 +127,14 @@ public:
     void setPosition(const vec2& position);
     const vec2& getPosition() const { return m_Position; }
 
-    virtual MaterialGeneratorNodeType getType() { return MaterialGeneratorNodeType_Unassigned; }
+    virtual MaterialGeneratorNodeType getType() const { return MaterialGeneratorNodeType_Unassigned; }
 
     void setGuid(const Guid& id) { m_Guid = id; }
     const Guid& getGuid() const { return m_Guid; }
     const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
+    
+    void serialize(io::BinaryStream& stream) const;
+    void deserialize(io::BinaryStream& stream);
 
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
@@ -139,6 +145,9 @@ protected:
     void addParam(const MaterialGeneratorNodeParam& param);
     const MaterialGeneratorNodeParam& getParam(const uint8& index);
     
+    void setSize(const vec2& size);
+    void setCanBeSelected(const bool canBeSelected) { m_CanBeSelected = canBeSelected; }
+
     MaterialGeneratorGraph* m_Parent;
 private:
     struct Overload
@@ -168,6 +177,7 @@ private:
 
     vec2 m_Position;
     vec2 m_Size;
+    bool m_CanBeSelected;
     bool m_IsSelected;
     bool m_IsHoovering;
     Guid m_Guid;
@@ -177,7 +187,7 @@ private:
 
     void updateConnecterPositions();
     bool isInView(const mat33& transform, const RectF& clipRect);
-
+    
     he::PrimitiveList<Connecter*> m_Connecters;
     he::PrimitiveList<gui::Sprite*> m_Sprites;
     

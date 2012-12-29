@@ -82,6 +82,35 @@ void Text::clear()
     m_Size = 0;
 }
 
+he::vec2 Text::measureText()
+{
+    vec2 result(0, 0);
+    size_t start(0);
+    size_t scratchEnd(0);
+    for (size_t i(0); i < m_Size; ++i)
+    {
+        if (m_Text[i] == '&' || m_Text[i] == '\n' || i + 1 == m_Size) // Color: &FFF
+        {
+            const size_t size(i - start + (i + 1 == m_Size? 1 : 0));
+            memcpy(m_ScratchBuffer + scratchEnd, m_Text + start, size);
+            scratchEnd += size;
+            if (m_Text[i] == '&')
+            {
+                start = i + 4;
+                i += 3;
+            }
+            else if (m_Text[i] == '\n' || i + 1 == m_Size)
+            {
+                result.x = std::max(result.x, m_Font->getStringWidth(m_ScratchBuffer, scratchEnd));
+                result.y += m_Font->getLineSpacing();
+                scratchEnd = 0;
+                start = i + 1;
+            }
+        }
+    }
+    return result;
+}
+
 /* SETTERS */
 void Text::setBounds(const vec2& bounds)
 {

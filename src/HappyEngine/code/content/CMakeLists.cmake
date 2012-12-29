@@ -19,9 +19,9 @@ set (CODE_CONTENT_MATERIAL_FILTER
 	)
 set (CODE_CONTENT_MATERIAL_GENERATOR_FILTER
 						ShaderGenerator.cpp					ShaderGenerator.h
+                        ShaderGeneratorEnums.cpp            ShaderGeneratorEnums.h
 						ShaderGeneratorVariableFactory.cpp  ShaderGeneratorVariableFactory.h
 						ShaderGeneratorVariable.cpp			ShaderGeneratorVariable.h
-						GLSLShaderGenerator.cpp				GLSLShaderGenerator.h
 	)
 set (CODE_CONTENT_PHYSICS_FILTER
                         PhysicsShapeLoader.cpp              PhysicsShapeLoader.h

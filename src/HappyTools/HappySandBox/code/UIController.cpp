@@ -52,7 +52,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_Renderer = renderer;
 
     // get gui dir
-    m_GUIDirectory = he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str();
+    m_GUIDirectory = he::Path::getWorkingPath().append("../../data/gui/").str();
 
     // create webview for gui to load
     m_WebView = m_Renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled

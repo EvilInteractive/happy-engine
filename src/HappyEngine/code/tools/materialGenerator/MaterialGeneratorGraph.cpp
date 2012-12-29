@@ -38,7 +38,7 @@
 #include "IKeyboard.h"
 #include "IMouse.h"
 
-#include "MaterialGeneratorMathNodes.h"
+#include "MaterialGeneratorRootNodes.h"
 #include "Canvas2Dnew.h"
 #include "Font.h"
 #include "Sprite.h"
@@ -46,10 +46,16 @@
 #include "BezierShape2D.h"
 
 #include "Command.h"
+#include "BinaryStream.h"
+#include "MaterialGeneratorNodeFactory.h"
 
 #define ZOOM_STEP 0.1f
 #define ZOOM_MIN 0.1f
 #define ZOOM_MAX 3.0f
+
+#define ERROR_TIME 2.0f
+#define ERROR_FADE_TIME 0.5f
+const he::vec2 errorTextMarge(4.0f, 4.0f);
 
 namespace he {
 namespace tools {
@@ -76,6 +82,10 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     m_DebugText.setFont(font);
     font->release();
 
+    m_ErrorFont = CONTENT->loadFont("DejaVuSansMono.ttf", 12);
+
+    increaseErrorPool(5);
+
     m_ShortcutList.add(Shortcut(io::Key_1, MaterialGeneratorNodeType_Float1));
     m_ShortcutList.add(Shortcut(io::Key_2, MaterialGeneratorNodeType_Float2));
     m_ShortcutList.add(Shortcut(io::Key_3, MaterialGeneratorNodeType_Float3));
@@ -91,16 +101,22 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     //m_ShortcutList.add(Shortcut(io::Key_R, MaterialGeneratorNodeType_Reflect));
     //m_ShortcutList.add(Shortcut(io::Key_T, MaterialGeneratorNodeType_Texture2D));
     //m_ShortcutList.add(Shortcut(io::Key_U, MaterialGeneratorNodeType_Texcoord));
+
+    MaterialGeneratorNode* const root(MaterialGeneratorNodeFactory::getInstance()->create(MaterialGeneratorNodeType_RootNormalDraw));
+    addNode(root);
+    m_NodeGraph.addRootNode(root);
 }
 #pragma warning(default:4355) // use of this in init list
 
 
 MaterialGeneratorGraph::~MaterialGeneratorGraph()
 {
-    m_NodeList.forEach([](MaterialGeneratorNode* const node)
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    m_NodeList.forEach([factory](MaterialGeneratorNode* const node)
     {
-        delete node;
+        factory->destroy(node);
     });
+    m_NodeList.clear();
     m_Renderer->detachFromRender(this);
     delete m_Renderer;
     delete m_Generator;
@@ -113,9 +129,23 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
         GRAPHICS->removeWindow(m_Window);
     }
 
+    m_ErrorFont->release();
+
+    m_ErrorPool.forEach([](gui::Text* const text)
+    {
+        delete text;
+    });
+    m_ErrorPool.clear();
+    m_VisibleErrors.forEach([](const ErrorMessage& msg)
+    {
+        delete msg.m_Text;
+    });
+    m_VisibleErrors.clear();
+
     delete m_GhostConnection;
     gui::SpriteCreator* const cr(GUI->Sprites);
     cr->removeSprite(m_Background);
+    cr->removeSprite(m_ErrorBackgroundSprite);
 }
 
 void MaterialGeneratorGraph::init()
@@ -177,8 +207,17 @@ void MaterialGeneratorGraph::init()
     m_Renderer->attachToRender(this);
 
     gui::SpriteCreator* const cr(GUI->Sprites);
-    m_Background = cr->createSprite(vec2(1280,720));
+    m_Background = cr->createSprite(vec2(1280, 720));
     renderBackground();
+
+    m_ErrorBackgroundSprite = cr->createSprite(vec2(16, 16));
+    cr->rectangle(vec2(0, 0), vec2(16, 16));
+    cr->setColor(Color(0.35f, 0.35f, 0.35f, 0.7f));
+    cr->fill();
+    cr->setColor(Color(0.7f, 0.2f, 0.2f, 1));
+    cr->setLineWidth(2.0f);
+    cr->setLineJoin(gui::LINE_JOIN_BEVEL);
+    cr->stroke();
 }
 
 void MaterialGeneratorGraph::open()
@@ -191,29 +230,39 @@ void MaterialGeneratorGraph::close()
     m_Window->close();
 }
 
-void MaterialGeneratorGraph::tick( float /*dTime*/ )
+void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
 {
     const io::ControlsManager* const controls(CONTROLS);
     const io::IMouse* const mouse(controls->getMouse());
     const io::IKeyboard* const keyboard(controls->getKeyboard());
     const bool keepSelection(keyboard->isKeyDown(io::Key_Lctrl) || keyboard->isKeyDown(io::Key_Rctrl));
     const bool removeSelection(keyboard->isKeyDown(io::Key_Lalt) || keyboard->isKeyDown(io::Key_Ralt));
+
+    const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+
     switch (m_State)
     {
-        case State_Idle:
+    case State_Idle:
         {
-            const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
-            bool foundHoover(false);
-            m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
-            {
-                foundHoover |= node->doHoover(mouseWorld, foundHoover);
-            });
             m_GrabWorldPos = mouseWorld;
             const bool leftDown(mouse->isButtonPressed(io::MouseButton_Left));
-            if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Shift, io::Key_Z) || 
+            if (keyboard->isKeyPressed(io::Key_F7))
+            {
+                he::ObjectList<MaterialGeneratorError> errors;
+                m_NodeGraph.evalute(errors);
+            }
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Shift, io::Key_Z) || 
                 keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Y))
             {
                 m_CommandStack.redo();
+            }
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_S))
+            {
+                save();
+            }
+            else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_O))
+            {
+                load();
             }
             else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Z))
             {
@@ -264,7 +313,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_CommandStack.endTransaction();
             }
         } break;
-        case State_StartPan:
+    case State_StartPan:
         {
             const vec2 mousePos(mouse->getPosition());
             const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
@@ -286,7 +335,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_CommandStack.endTransaction();
             }
         } break;
-        case State_Pan:
+    case State_Pan:
         {
             const vec2 mousePos(mouse->getPosition());
             const vec2 worldMouse(screenToWorldPos(mousePos));
@@ -297,7 +346,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_State = State_Idle;
             }
         } break;
-        case State_StartMoveNode:
+    case State_StartMoveNode:
         {
             const vec2 mousePos(mouse->getPosition());
             const vec2 grabScreenPos(worldToScreenPos(m_GrabWorldPos));
@@ -323,7 +372,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_State = State_MoveNode;
             }
         } break;
-        case State_MoveNode:
+    case State_MoveNode:
         {
             const vec2 mouseMove(mouse->getMove());
             const vec2 worldMove(mouseMove / m_Scale);
@@ -335,7 +384,7 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
                 m_State = State_Idle;
             }
         } break;
-        case State_ConnectNode:
+    case State_ConnectNode:
         {
             m_GhostConnection->setPositionEnd(screenToWorldPos(mouse->getPosition()));
             if (mouse->isButtonReleased(io::MouseButton_Left))
@@ -347,8 +396,53 @@ void MaterialGeneratorGraph::tick( float /*dTime*/ )
 
         } break;
     }
+}
 
-    //if (m_SelectedNodeList.size() > 0)
+void MaterialGeneratorGraph::updateErrors( const float dTime )
+{
+    const io::ControlsManager* const controls(CONTROLS);
+    const io::IMouse* const mouse(controls->getMouse());
+    const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+    for (size_t i(0); i < m_VisibleErrors.size();)
+    {
+        ErrorMessage& msg(m_VisibleErrors[i]);
+        msg.m_TimeLeft -= dTime;
+        if (mouseWorld.x > msg.m_Position.x - msg.m_TextSize.x / 2.0f - errorTextMarge.x && 
+            mouseWorld.y > msg.m_Position.y - msg.m_TextSize.y / 2.0f - errorTextMarge.y &&
+            mouseWorld.x < msg.m_Position.x + msg.m_TextSize.x / 2.0f + errorTextMarge.x && 
+            mouseWorld.y < msg.m_Position.y + msg.m_TextSize.y / 2.0f + errorTextMarge.y)
+        {
+            if (mouse->isButtonPressed(io::MouseButton_Left))
+                msg.m_TimeLeft = 0.0f;
+            else if (msg.m_TimeLeft < ERROR_FADE_TIME)
+                msg.m_TimeLeft = ERROR_FADE_TIME;
+        }
+        if (msg.m_TimeLeft <= 0.0f)
+        {
+            m_ErrorPool.add(m_VisibleErrors[i].m_Text);
+            m_VisibleErrors.removeAt(i);
+        }
+        else
+        {
+            ++i;
+        }
+    }
+}
+void MaterialGeneratorGraph::tick( float dTime )
+{
+    const io::ControlsManager* const controls(CONTROLS);
+    const io::IMouse* const mouse(controls->getMouse());
+
+    const vec2 mouseWorld(screenToWorldPos(mouse->getPosition()));
+    bool foundHoover(false);
+    m_NodeList.rForEach([&mouseWorld, &foundHoover](MaterialGeneratorNode* const node)
+    {
+        foundHoover |= node->doHoover(mouseWorld, foundHoover);
+    });
+
+    updateErrors(dTime);
+    
+    updateStates(dTime);
 
     const int scroll(mouse->getScroll());
     if (scroll != 0)
@@ -475,6 +569,14 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         m_GhostConnection->draw2D(canvas, transform);
     }
 
+    m_VisibleErrors.forEach([this, cvs](const ErrorMessage& msg)
+    {
+        const vec2 screenPos(worldToScreenPos(msg.m_Position));
+        cvs->setColor(Color(1, 1, 1, (ERROR_FADE_TIME + std::min(0.0f, msg.m_TimeLeft - ERROR_FADE_TIME)) / ERROR_FADE_TIME));
+        cvs->drawSprite(m_ErrorBackgroundSprite, screenPos - msg.m_TextSize / 2.0f - errorTextMarge, msg.m_TextSize + errorTextMarge * 2);
+        cvs->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
+    });
+
     // DEBUG
     m_DebugText.clear();
     const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse()->getPosition()));
@@ -576,5 +678,135 @@ void MaterialGeneratorGraph::addNode( MaterialGeneratorNode* const node )
     m_NodeList.add(node);
     node->setParent(this);
 }
+
+void MaterialGeneratorGraph::pushError( const MaterialGeneratorError& errorMsg )
+{
+    HE_ASSERT(m_ErrorPool.empty() == false, "Error pool to small resizing... %d -> %d", m_VisibleErrors.size(), m_VisibleErrors.size() + 5);
+    if (m_ErrorPool.empty())
+    {
+        increaseErrorPool(m_VisibleErrors.size() + 5);
+    }
+
+    ErrorMessage msg;
+    msg.m_Text = m_ErrorPool.back();
+    m_ErrorPool.removeAt(m_ErrorPool.size() - 1);
+    msg.m_Text->clear();
+    msg.m_Text->addTextExt("&F55%s", errorMsg.getMessage().c_str());
+    msg.m_TextSize = msg.m_Text->measureText();
+    msg.m_Position = screenToWorldPos(CONTROLS->getMouse()->getPosition());
+    msg.m_TimeLeft = ERROR_TIME;
+    m_VisibleErrors.add(msg);
+}
+
+void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
+{
+    m_ErrorPool.reserve(m_ErrorPool.size() + extraSize);
+    for (uint8 i(0); i < 5; ++i)
+    {
+        gui::Text* text(NEW gui::Text);
+        text->setHorizontalAlignment(gui::Text::HAlignment_Left);
+        text->setVerticalAlignment(gui::Text::VAlignment_Top);
+        text->setFont(m_ErrorFont);
+        m_ErrorPool.add(text);
+    }
+}
+
+#define VERSION 1ui16
+
+void MaterialGeneratorGraph::save()
+{
+    io::BinaryStream stream;
+    if (stream.open(CONTENT->getShaderFolderPath().append("testShader.shader").str(), io::BinaryStream::Write))
+    {
+        stream.writeWord(VERSION);
+        stream.writeDword(static_cast<uint32>(m_NodeList.size()));
+        m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
+        {
+            const uint16 type(static_cast<uint16>(node->getType()));
+            stream.writeWord(type);
+            node->serialize(stream);
+        });
+        m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
+        {
+            io::BinaryStream& scopedStream(stream);
+            node->getConnecters().forEach([&scopedStream](MaterialGeneratorNode::Connecter* const connecter)
+            {
+                if (connecter->isInput())
+                {
+                    const bool isConnected(connecter->isConnected());
+                    scopedStream.writeByte(isConnected? 1 : 0);
+                    if (isConnected)
+                    {
+                        MaterialGeneratorNode::Connecter* const connection(connecter->getConnection());
+                        scopedStream.writeGuid(connection->getParent()->getGuid());
+                        scopedStream.writeByte(connection->getIndex());
+                    }
+                }
+            });
+        });
+        stream.close();
+    }
+    else
+    {
+        LOG(LogType_ArtAssert, "File open failed!\nSave failed...");
+    }
+}
+
+void MaterialGeneratorGraph::load()
+{
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    m_NodeList.forEach([factory](MaterialGeneratorNode* const node)
+    {
+        factory->destroy(node);
+    });
+    m_NodeList.clear();
+    m_NodeGraph.clear();
+    m_CommandStack.clear();
+
+    io::BinaryStream stream;
+    if (stream.open(CONTENT->getShaderFolderPath().append("testShader.shader").str(), io::BinaryStream::Read))
+    {
+        const uint16 version(stream.readWord());
+        if (version == VERSION)
+        {
+            const uint32 size(stream.readDword());
+            for (uint32 i(0); i < size; ++i)
+            {
+                const MaterialGeneratorNodeType type(static_cast<MaterialGeneratorNodeType>(stream.readWord()));
+                MaterialGeneratorNode* const node(factory->create(type));
+                addNode(node);
+                node->deserialize(stream);
+            }
+            m_NodeGraph.addRootNode(m_NodeList[0]); // first node is always root
+            m_NodeList.forEach([&stream, this](MaterialGeneratorNode* const node)
+            {
+                io::BinaryStream& scopedStream(stream);
+                MaterialGeneratorGraph* const scopedThis(this);
+                node->getConnecters().forEach([&scopedStream, node, scopedThis](MaterialGeneratorNode::Connecter* const connecter)
+                {
+                    if (connecter->isInput())
+                    {
+                        const bool isConnected(scopedStream.readByte() == 1);
+                        if (isConnected)
+                        {
+                            Guid guid(scopedStream.readGuid());
+                            uint8 index(scopedStream.readByte());
+                            MaterialGeneratorNode* const otherNode(scopedThis->getNode(guid));
+                            MaterialGeneratorError error;
+                            node->connectToInput(otherNode, index, connecter->getIndex(), error);
+                        }
+                    }
+                });
+            });
+        }
+        else
+        {
+            LOG(LogType_ArtAssert, "Incompatible version!\nVersion = %d, code version = %d", version, VERSION);
+        }
+
+        stream.close();
+    }
+}
+
 
 } } //end namespace

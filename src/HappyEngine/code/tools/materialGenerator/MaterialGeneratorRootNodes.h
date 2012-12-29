@@ -16,14 +16,18 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 04/11/2012
+//Created: 22/12/2012
 
-#ifndef _HE_GLSLShaderGenerator_H_
-#define _HE_GLSLShaderGenerator_H_
+#ifndef _HE_MaterialGeneratorRootNodes_H_
+#define _HE_MaterialGeneratorRootNodes_H_
 #pragma once
 
+#include "MaterialGeneratorNodeClassHelper.h"
+
 namespace he {
-namespace ct {
+namespace tools {
+    
+MaterialGeneratorNodeClass(RootNormalDraw)
 
 } } //end namespace
 

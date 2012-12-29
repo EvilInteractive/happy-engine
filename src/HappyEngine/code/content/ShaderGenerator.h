@@ -22,183 +22,165 @@
 #define _HE_ShaderGenerator_H_
 #pragma once
 
+#include "ShaderGeneratorEnums.h"
+
 namespace he {
 namespace ct {
 
-enum ShaderGeneratorVariableOperationType
-{
-    ShaderGeneratorVariableOperationType_Constant,
-    ShaderGeneratorVariableOperationType_Global,
-    ShaderGeneratorVariableOperationType_Exposed,
-
-    // Operators
-    ShaderGeneratorVariableOperationType_Add,
-    ShaderGeneratorVariableOperationType_Div,
-    ShaderGeneratorVariableOperationType_Mul,
-    ShaderGeneratorVariableOperationType_Sub,
-
-    // Func
-    ShaderGeneratorVariableOperationType_Sin,
-    ShaderGeneratorVariableOperationType_Cos,
-    ShaderGeneratorVariableOperationType_Tan,
-    ShaderGeneratorVariableOperationType_ASin,
-    ShaderGeneratorVariableOperationType_ACos,
-    ShaderGeneratorVariableOperationType_ATan,
-
-    ShaderGeneratorVariableOperationType_Pow,
-    ShaderGeneratorVariableOperationType_Log,
-    ShaderGeneratorVariableOperationType_Log2,
-    ShaderGeneratorVariableOperationType_Sqrt,
-    ShaderGeneratorVariableOperationType_InvSqrt,
-
-    ShaderGeneratorVariableOperationType_Abs,
-    ShaderGeneratorVariableOperationType_Sign,
-    ShaderGeneratorVariableOperationType_Floor,
-    ShaderGeneratorVariableOperationType_Ceil,
-    ShaderGeneratorVariableOperationType_Round,
-    ShaderGeneratorVariableOperationType_Frac,
-    ShaderGeneratorVariableOperationType_Mod,
-    ShaderGeneratorVariableOperationType_Min,
-    ShaderGeneratorVariableOperationType_Max,
-    ShaderGeneratorVariableOperationType_Clamp,
-    ShaderGeneratorVariableOperationType_Lerp,
-    ShaderGeneratorVariableOperationType_Step,
-    ShaderGeneratorVariableOperationType_SmoothStep,
-
-    ShaderGeneratorVariableOperationType_Length,
-    ShaderGeneratorVariableOperationType_Distance,
-    ShaderGeneratorVariableOperationType_Dot,
-    ShaderGeneratorVariableOperationType_Cross,
-    ShaderGeneratorVariableOperationType_Normalize,
-    ShaderGeneratorVariableOperationType_Reflect,
-    ShaderGeneratorVariableOperationType_Refract,
-
-    // Texture
-    ShaderGeneratorVariableOperationType_Texture,
-    ShaderGeneratorVariableOperationType_TextureLod,
-    ShaderGeneratorVariableOperationType_TextureOffset,
-
-    ShaderGeneratorVariableOperationType_Invalid,
-    ShaderGeneratorVariableOperationType_MAX = ShaderGeneratorVariableOperationType_Invalid
-};
-bool isConstantOperation(const ShaderGeneratorVariableOperationType type);
-
-enum ShaderGeneratorVariableType
-{
-    ShaderVariableType_Unknown,
-    ShaderVariableType_Int,
-    ShaderVariableType_Int2,
-    ShaderVariableType_Int3,
-    ShaderVariableType_Int4,
-    ShaderVariableType_Uint,
-    ShaderVariableType_Float,
-    ShaderVariableType_Float2,
-    ShaderVariableType_Float3,
-    ShaderVariableType_Float4,
-    ShaderVariableType_Mat44,
-    ShaderVariableType_Texture2D,
-    ShaderVariableType_TextureCube
-};
-
-enum ShaderGeneratorGlobalVariableType
-{
-    // Pass
-    ShaderGeneratorGlobalVariableType_TexCoord,
-
-    ShaderGeneratorGlobalVariableType_CameraViewDirection,  // always (0, 0, 1)
-    ShaderGeneratorGlobalVariableType_CameraViewPosition,   // always (0, 0, 0)
-    ShaderGeneratorGlobalVariableType_CameraNearFar,
-
-    ShaderGeneratorGlobalVariableType_DepthMap,
-    ShaderGeneratorGlobalVariableType_ColorMap,
-
-    ShaderGeneratorGlobalVariableType_ViewPosition,
-    ShaderGeneratorGlobalVariableType_ViewNormal,
-
-    ShaderGeneratorGlobalVariableType_Time,
-
-    ShaderGeneratorGlobalVariableType_ScreenPosition,
-    ShaderGeneratorGlobalVariableType_ScreenSize,
-};
-
-enum ShaderGeneratorFlag
-{
-    ShaderGeneratorFlag_Single,
-    ShaderGeneratorFlag_Skinned,
-    ShaderGeneratorFlag_Instanced,
-    ShaderGeneratorFlag_PreDeffered,
-    ShaderGeneratorFlag_PostDeffered,
-    ShaderGeneratorFlag_Forward,
-};
-
 struct ShaderGeneratorVariableOperation
 {
+    static const int MAX_PARAMS = 4;
+
+    ShaderGeneratorVariableOperation() : type(ShaderGeneratorVariableOperationType_Invalid)
+    {
+        for (size_t i(0); i < MAX_PARAMS; ++i)
+        {
+            params[i] = ObjectHandle::unassigned;
+        }
+        for (size_t i(0); i < 4; ++i)
+        {
+            swizzleParams[i] = ShaderGeneratorSwizzleMask_None;
+        }
+    }
     ShaderGeneratorVariableOperationType type;
-    ObjectHandle params[4];
+
+    ObjectHandle params[MAX_PARAMS];
+    ShaderGeneratorSwizzleMask swizzleParams[4];
 };
 
 class ShaderGeneratorVariable;
 
 class ShaderGenerator
 {
-    enum State
-    {
-        State_Idle,
-        State_VertexShader,
-        State_FragmentShader
-    };
 public:
     ShaderGenerator();
-    virtual ~ShaderGenerator();
+    ~ShaderGenerator();
 
-    //void init(const ShaderGeneratorType type);
-    bool compile();
+    bool compile(const Path& shaderPath, const std::string& shaderName);
+    void reset();
 
     ObjectHandle addVariable();
-    void setFragmentOutput(const ObjectHandle& var);
-    void setVertexOutput(const ObjectHandle& var);
+    const ObjectHandle& getVariable(const ShaderGeneratorGlobalInputVariableType type);
+    const ObjectHandle& getVariable(const ShaderGeneratorGlobalFragmentVariableType type);
+    const ObjectHandle& getVariable(const ShaderGeneratorGlobalCodeVariableType type);
+    const ObjectHandle& getVariable(const ShaderGeneratorOutVariableType type);
 
-
+    void setDiffuse(const ObjectHandle& var) { m_DiffuseVar = var; }
+    void setEmissive(const ObjectHandle& var) { m_EmissiveVar = var; }
+    void setSpecular(const ObjectHandle& var) { m_SpecularVar = var; }
+    void setGloss(const ObjectHandle& var) { m_GlossVar = var; }
+    void setOpacity(const ObjectHandle& var) { m_OpacityVar = var; }
+    void setNormal(const ObjectHandle& var) { m_NormalVar = var; }
+    void setWorldPositionOffset(const ObjectHandle& var) { m_WorldPositionOffsetVar = var; }
+    void setAlphaTestValue(const ObjectHandle& var) { m_AlphaTestValue = var; }
 
 private:
-    virtual void writeTypeName(const ShaderGeneratorVariableType type);
-    virtual void writeOperation(const ShaderGeneratorVariableOperation& operation);
-    virtual void writeHeader();
-    virtual void writeOpenMain();
-    virtual void writeCloseMain();
-    virtual void writeVertexOutput() { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeVertexInputVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeVertexGlobalVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeVertexPassVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeFragmentGlobalVars() { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeFragmentOutput() { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeVariableDeclaration(const ShaderGeneratorVariable* const var);
-    virtual void writeVariable(const ShaderGeneratorVariable* const var, const bool forceInline = false);
-    virtual void writeConstant(const ShaderGeneratorVariable* const var);
-    virtual void writeFloat(const float /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeFloat2(const vec2& /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeFloat3(const vec3& /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeFloat4(const vec4& /*value*/) { LOG(LogType_ProgrammerAssert, "Implement!"); }
-    virtual void writeAssignment() { m_ShaderFile << " = "; }
-    virtual void writeEndLine() { m_ShaderFile << ";"; }
-    virtual void writeNewLine() { m_ShaderFile << "\n"; }
+    struct GlobalGeneratorSwitches
+    {
+        GlobalGeneratorSwitches()
+          : m_UseNormalMap(false)
+          , m_UseTexcoord(false) 
+          , m_AlphaTest(false)
+        {}
 
-    void createLocalVar(ShaderGeneratorVariable* const var);
+        bool m_UseNormalMap;
+        bool m_UseTexcoord;
+        bool m_AlphaTest;
+    };
+    enum ShadingType
+    {
+        ShadingType_Forward,
+        ShadingType_Deferred
+    };
+    enum DrawType
+    {
+        DrawType_Single,
+        DrawType_Skinned,
+        DrawType_Instanced,
+        DrawType_Unused
+    };
+    void clearShader();
+
+    bool generateShader(const ShaderGeneratorType genType, const ShadingType shadingType, const DrawType drawType = DrawType_Unused);
+    void saveShader(const Path& shaderPath);
+
+    void inititalizeInternalVertexVars(const ShadingType shadingType, const DrawType drawType);
+    void inititalizeInternalFragmentVars(const ShadingType shadingType);
+    ShaderGeneratorVariable* addInternalVariable();
+
+    void resetAnalyse();
+    void analyseVariables();
+    void analyseVariable( ShaderGeneratorVariable* const var);
+
+    void writeTypeName(const ShaderGeneratorVariableType type);
+    void writeOperation(const ShaderGeneratorVariableOperation& operation);
+
+    void writeHeader();
+
+    void writeOpenMain();
+    void writeCloseMain();
+
+    void writeGlobalVertexVariablesDeclarations();
+    void writeGlobalFragmentVariablesDeclarations();
+    void writeInVarDeclaration(const ShaderGeneratorVariable* const var);
+    void writeOutVarDeclaration(const ShaderGeneratorVariable* const var);
+    void writeCodeVarDeclaration(const ShaderGeneratorVariable* const var);
+
+    void writeVariableDeclarations();
+    void writeVariableDeclaration(ShaderGeneratorVariable* const var);
+    void writeVariable(const ShaderGeneratorVariable* const var, const bool forceInline = false);
+    void writeConstant(const ShaderGeneratorVariable* const var);
+    
+    void writeFloat(const float value);
+    void writeFloat2(const vec2& value);
+    void writeFloat3(const vec3& value);
+    void writeFloat4(const vec4& value);
+
+    void writeAssignment() { m_ShaderFile << " = "; }
+    void writeEndLine() { m_ShaderFile << ";"; }
+    void writeNewLine();
+
+    void write(const char* const text);
+    void write(const std::string& text);
+    void writeIndend();
+
+    void writeOpenScope();
+    void writeCloseScope();
+
+    void writeNormalFunction();
+    void writeDiscardTest(const ShaderGeneratorVariable* const value, const ShaderGeneratorVariable* const test);
+
     uint32 m_LocalVarUID;
 
+    uint8 m_ScopeDepth;
+
     std::stringstream m_ShaderFile;
-
-    std::string m_VertexShader;
-    std::string m_FragmentShader;
-
-    he::ObjectList<ObjectHandle> m_PassVariables;
-
+    
     he::ObjectList<ObjectHandle> m_Variables;
-    ObjectHandle m_FragmentOutput;
-    ObjectHandle m_VertexOutput;
+    he::ObjectList<ObjectHandle> m_InternalVariables;
+    he::ObjectList<ObjectHandle> m_OutVariables;
 
-    State m_State;
-};
+    void createGlobalVariables();
+    void destroyGlobalVariables();
+
+    // not a handle because lifetime == my lifetime
+    ShaderGeneratorVariable* m_GlobalInputVariables[ShaderGeneratorGlobalInputVariableType_MAX];
+    ShaderGeneratorVariable* m_GlobalFragmentVariables[ShaderGeneratorGlobalFragmentVariableType_MAX];
+    ShaderGeneratorVariable* m_GlobalCodeVariables[ShaderGeneratorGlobalCodeVariableType_MAX];
+    ShaderGeneratorVariable* m_GlobalOutVariables[ShaderGeneratorOutVariableType_MAX];
+
+    ObjectHandle m_DiffuseVar;
+    ObjectHandle m_EmissiveVar;
+    ObjectHandle m_SpecularVar;
+    ObjectHandle m_GlossVar;
+    ObjectHandle m_OpacityVar;
+    ObjectHandle m_NormalVar;
+    ObjectHandle m_WorldPositionOffsetVar;
+
+    ObjectHandle m_AlphaTestValue;
+
+    GlobalGeneratorSwitches m_GlobalSwitches;
+};                 
 
 } } //end namespace
 

@@ -2,6 +2,7 @@ set (CODE_IO_NO_FILTER
         BinaryStream.cpp                    BinaryStream.h
         ControlsManager.cpp                 ControlsManager.h
         FileReader.cpp                      FileReader.h
+        FileWriter.cpp                      FileWriter.h
         IniReader.cpp                       IniReader.h
         IniWriter.cpp                       IniWriter.h)
         

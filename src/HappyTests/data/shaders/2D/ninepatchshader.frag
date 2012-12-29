@@ -27,6 +27,7 @@ uniform sampler2D diffuseMap;
 uniform vec4 center;
 uniform vec2 size;
 uniform vec2 originalSize;
+uniform vec4 blendColor;
 
 vec2 remap(in vec2 value, in vec4 originalRange, in vec4 newRange)
 {
@@ -62,5 +63,5 @@ void main()
     vec2 texcoord = remap(passTexCoord, newPartBorder, origPartBorder);
     color = texture2D(diffuseMap, texcoord);
     
-    outColor = color;
+    outColor = color * blendColor;
 }

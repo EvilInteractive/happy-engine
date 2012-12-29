@@ -32,20 +32,21 @@ public:
     Path& operator=(const Path& other);
     virtual ~Path();
 
-    const std::string& str() const; // include trailing slash
+    const std::string& str() const; // includes trailing slash
 
     //ex:
     //Root = C:/Test/
     //relativePath = ../data/test.png
     //return = C:/data/test.png => absolute
-    Path getAbsolutePath(const Path& relativePath) const; 
+    Path append(const std::string& relativePath) const; 
 
     static Path getWorkingPath();
 
 private:
-    std::string m_Path;
-    Path& operator+=(const std::string& str);
+    void convertBackslashesToForward();
+    void ensureTrailingSlash();
 
+    std::string m_Path;
 };
 
 } //end namespace

@@ -102,7 +102,7 @@ bool MaterialGeneratorNodeFloat2::evaluate( MaterialGeneratorError& error )
 MaterialGeneratorNodeFloat3::MaterialGeneratorNodeFloat3()
 {
     addOverload(4, 0, 
-        MaterialGeneratorVariableType_Float2, 
+        MaterialGeneratorVariableType_Float3, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float);
@@ -156,7 +156,7 @@ bool MaterialGeneratorNodeFloat3::evaluate( MaterialGeneratorError& error )
 MaterialGeneratorNodeFloat4::MaterialGeneratorNodeFloat4()
 {
     addOverload(5, 0, 
-        MaterialGeneratorVariableType_Float2, 
+        MaterialGeneratorVariableType_Float4, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float, 
