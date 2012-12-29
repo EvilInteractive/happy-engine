@@ -10,3 +10,4 @@ installers\PhysX.exe
 installers\RakNet.exe
 installers\SFML2.0.exe
 installers\Cairo.exe
+installers\fontconfig.exe
