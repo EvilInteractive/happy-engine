@@ -143,7 +143,8 @@ void Font::preCache(bool extendedCharacters)
         glyphSizes[chr] = vec2((float)width, (float)height);
 
         // 1 / 64 pixel -> weird format of freetype
-        m_CharTextureData[chr].advance = vec2((float)(glyph->metrics.horiAdvance >> 6), (float)glyph->bitmap_top); 
+        m_CharTextureData[chr].advance = vec2(static_cast<float>(glyph->metrics.horiAdvance >> 6), static_cast<float>(glyph->bitmap_top)); 
+        m_CharTextureData[chr].offset = static_cast<float>(glyph->metrics.horiBearingX >> 6);
         glyphTop[chr] = (float)(height - glyph->bitmap_top);
 
         // use RGBA instead of R (1 channel)
@@ -296,6 +297,25 @@ bool Font::isPreCached() const
 _cairo_font_face* Font::getCairoFontFace() const
 {
     return m_CairoFontFace;
+}
+
+uint32 Font::getGlyphIndex(const char c) const
+{
+    return static_cast<uint32>(FT_Get_Char_Index(m_Face, c));
+}
+
+float Font::getAdvance(const char c) const
+{
+    FT_Load_Glyph(m_Face, FT_Get_Char_Index(m_Face, c), FT_LOAD_DEFAULT);
+
+    return static_cast<float>(m_Face->glyph->metrics.horiAdvance >> 6);
+}
+
+float Font::getOffset(const char c) const
+{
+    FT_Load_Glyph(m_Face, FT_Get_Char_Index(m_Face, c), FT_LOAD_DEFAULT);
+
+    return static_cast<float>(m_Face->glyph->metrics.horiBearingX >> 6);
 }
 
 /* EXTRA */

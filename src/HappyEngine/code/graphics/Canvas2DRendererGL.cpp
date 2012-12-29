@@ -242,6 +242,7 @@ float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const s
         const char character(buffer[i]);
         const gui::Font::CharData& charData = font->getCharTextureData(character);
         const RectF& regionToDraw = charData.textureRegion;
+        const float glyphOffset(charData.offset);
 
         const vec2 tcScale(regionToDraw.width / texWidth, regionToDraw.height / texHeight);
         const vec2 tcOffset(regionToDraw.x / texWidth, ((texHeight - regionToDraw.y) / texHeight) - tcScale.y);
@@ -254,16 +255,16 @@ float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const s
         VertexText& vertex2(m_CharVertexBuffer[offset * 4 + 2]);
         VertexText& vertex3(m_CharVertexBuffer[offset * 4 + 3]);
 
-        vertex0.position = glyphPos + vec2(0, size.y);
+        vertex0.position = glyphPos + vec2(0, size.y) + vec2(glyphOffset, 0.f);
         vertex0.textureCoord = tcOffset;
         vertex0.color = m_Color.rgba();
-        vertex1.position = glyphPos + vec2(size.x, size.y);
+        vertex1.position = glyphPos + vec2(size.x, size.y) + vec2(glyphOffset, 0.f);
         vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
         vertex1.color = m_Color.rgba();
-        vertex2.position = glyphPos;
+        vertex2.position = glyphPos+ vec2(glyphOffset,0.f);
         vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
         vertex2.color = m_Color.rgba();
-        vertex3.position = glyphPos + vec2(size.x, 0);
+        vertex3.position = glyphPos + vec2(size.x, 0) + vec2(glyphOffset, 0.f);
         vertex3.textureCoord = tcOffset + tcScale;
         vertex3.color = m_Color.rgba();
 

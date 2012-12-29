@@ -537,7 +537,7 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
     cvs->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
     
     // NEW CANVAS TEST
-    cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
+    //cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
 
     //canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
 }

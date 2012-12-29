@@ -224,61 +224,6 @@ void FPSGraph::drawFull(gfx::Canvas2D* canvas)
     gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
 
     cvs->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
-
-    m_Text.clear();
-    m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-
-    cvs->setColor(m_ColorYellow);
-    cvs->fillText(m_Text, m_Pos + vec2(5,48));
-
-    m_Text.clear();
-    m_Text.addTextExt("%.3f MS", m_CurrentDTime * 1000.0f);
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
-    
-    cvs->setColor(m_ColorBlue);
-    cvs->fillText(m_Text, m_Pos + vec2(5,48));
-
-    cvs->setColor(m_ColorWhiteAlpha);
-
-    m_Text.clear();
-    m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.75f);
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-
-    cvs->fillText(m_Text, m_Pos + vec2(5,9.0f));
-
-    m_Text.clear();
-    m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.25f);
-
-    cvs->fillText(m_Text, m_Pos + vec2(5,29.0f));
-
-    m_Text.clear();
-    m_Text.addTextExt("MEM");
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-
-    cvs->setColor(m_ColorWhite);
-    cvs->fillText(m_Text, m_Pos + vec2(5,59));
-
-    m_Text.clear();
-    m_Text.addTextExt("%u - %u (%u)",
-        (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
-        (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
-        (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
-
-    cvs->fillText(m_Text, m_Pos + vec2(5,59));
-
-    m_Text.clear();
-    m_Text.addTextExt("CPU");
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
-
-    cvs->fillText(m_Text, m_Pos + vec2(5,70));
-
-    m_Text.clear();
-    m_Text.addTextExt("%.2f", m_CurrentCPU);
-    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
-
-    cvs->fillText(m_Text, m_Pos + vec2(5,70));
 }
 
 void FPSGraph::updateScale(uint16 currentMaxFpsInFrame)
@@ -521,6 +466,77 @@ void FPSGraph::renderGraph()
     cr->setColor(Color((uint8)20,(uint8)20,(uint8)20));
 
     cr->stroke();
+
+    m_Text.clear();
+    m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cr->newPath();
+    cr->setColor(m_ColorYellow);
+    cr->text(m_Text, vec2(5,50));
+    cr->fill();
+
+    m_Text.clear();
+    m_Text.addTextExt("%.3f MS", m_CurrentDTime * 1000.0f);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+    
+    cr->newPath();
+    cr->setColor(m_ColorBlue);
+    cr->text(m_Text, vec2(5,50));
+    cr->fill();
+
+    cr->setColor(m_ColorWhiteAlpha);
+
+    m_Text.clear();
+    m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.75f);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cr->newPath();
+    cr->text(m_Text, vec2(5,11));
+    cr->fill();
+
+    m_Text.clear();
+    m_Text.addTextExt("%.0f",  m_CurrentScale * 20 * 0.25f);
+
+    cr->newPath();
+    cr->text(m_Text, vec2(5,31));
+    cr->fill();
+
+    m_Text.clear();
+    m_Text.addTextExt("MEM");
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cr->newPath();
+    cr->setColor(m_ColorWhite);
+    cr->text(m_Text, vec2(5,61));
+    cr->fill();
+
+    m_Text.clear();
+    m_Text.addTextExt("%u - %u (%u)",
+        (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
+        (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
+        (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+
+    cr->newPath();
+    cr->text(m_Text, vec2(5,61));
+    cr->fill();
+
+    m_Text.clear();
+    m_Text.addTextExt("CPU");
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
+
+    cr->newPath();
+    cr->text(m_Text, vec2(5,72));
+    cr->fill();
+
+    m_Text.clear();
+    m_Text.addTextExt("%.2f", m_CurrentCPU);
+    m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
+
+    cr->newPath();
+    cr->text(m_Text, vec2(5,72));
+    cr->fill();
 
     cr->renderSpriteAsync();
 

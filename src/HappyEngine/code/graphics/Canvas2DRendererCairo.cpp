@@ -562,10 +562,10 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
                     case gui::Text::HAlignment_Left:
                         break;
                     case gui::Text::HAlignment_Center:
-                        hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize) / 2.0f;
+                        hoffset = bounds.x - (font->getStringWidth(fullText + lineCharStart, lineSize) / 2.0f);
                         break;
                     case gui::Text::HAlignment_Right:
-                        hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize);
+                        hoffset = (bounds.x / 2.0f) - font->getStringWidth(fullText + lineCharStart, lineSize);
                         break;
                 }
 
@@ -573,15 +573,15 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
 
                 for (uint32 i2(lineCharStart); i2 < lineCharStart + lineSize; ++i2)
                 {
-                    const gui::Font::CharData& charData = font->getCharTextureData(currentChar);
+                    const char currentCharIL(fullText[i2]);
 
                     cairo_glyph_t& c(cairoGlyphs[i2]);
 
-                    c.index = static_cast<int>(fullText[i2]);
+                    c.index = static_cast<unsigned long>(font->getGlyphIndex(currentCharIL));
                     c.x = static_cast<double>(glyphPos.x);
                     c.y = static_cast<double>(glyphPos.y);
 
-                    glyphPos.x += charData.advance.x;
+                    glyphPos.x += font->getAdvance(currentCharIL);
 
                     ++numGlyphs;
                 }
@@ -608,10 +608,10 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
                 case gui::Text::HAlignment_Left:
                     break;
                 case gui::Text::HAlignment_Center:
-                    hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize) / 2.0f;
+                    hoffset = (bounds.x / 2.0f) - (font->getStringWidth(fullText + lineCharStart, lineSize) / 2.0f);
                     break;
                 case gui::Text::HAlignment_Right:
-                    hoffset = -font->getStringWidth(fullText + lineCharStart, lineSize);
+                    hoffset = bounds.x - font->getStringWidth(fullText + lineCharStart, lineSize);
                     break;
             }
 
@@ -619,15 +619,15 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
 
             for (uint32 i2(lineCharStart); i2 < lineCharStart + lineSize; ++i2)
             {
-                const gui::Font::CharData& charData = font->getCharTextureData(fullText[i2]);
+                const char currentCharIL(fullText[i2]);
 
                 cairo_glyph_t& c(cairoGlyphs[i2]);
 
-                c.index = static_cast<int>(fullText[i2]);
+                c.index = static_cast<unsigned long>(font->getGlyphIndex(currentCharIL));
                 c.x = static_cast<double>(glyphPos.x);
                 c.y = static_cast<double>(glyphPos.y);
 
-                glyphPos.x += charData.advance.x;
+                glyphPos.x += font->getAdvance(currentCharIL);
 
                 ++numGlyphs;
             }
@@ -640,9 +640,10 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
     switch (vAl)
     {
         case gui::Text::VAlignment_Top:
+            offset.y += font->getPixelHeight();
             break;
         case gui::Text::VAlignment_Center:
-            offset.y -= bounds.y / 2.0f - (lineSpacing * lines) / 2.0f;
+            offset.y -= bounds.y / 2.0f - (lineSpacing * lines) / 2.0f + font->getPixelHeight() / 2.0f;
             break;
         case gui::Text::VAlignment_Bottom:
             offset.y -= bounds.y + (lineSpacing * lines);
@@ -652,10 +653,13 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
     cairo_translate(cairoPaint, static_cast<double>(offset.x), static_cast<double>(offset.y));
 
     cairo_set_font_face(cairoPaint, cairoFont);
-    cairo_set_font_size(cairoPaint, static_cast<double>(font->getPixelHeight()));
+
+    // TODO: font size in cairo is smaller, find out why!
+    // doesn't work well with non integer values
+    cairo_set_font_size(cairoPaint, static_cast<double>(ceil(font->getPixelHeight() * 1.3)));
 
     // render glyphs
-    //cairo_glyph_path(cairoPaint, cairoGlyphs, numGlyphs);
+    cairo_glyph_path(cairoPaint, cairoGlyphs, numGlyphs);
 
     cairo_translate(cairoPaint, static_cast<double>(-offset.x), static_cast<double>(-offset.y));
 

@@ -45,6 +45,7 @@ public:
     {
         RectF textureRegion;
         vec2 advance;
+        float offset;
     };
 
     enum Options
@@ -88,6 +89,10 @@ public:
     bool isPreCached() const;
 
     _cairo_font_face* getCairoFontFace() const;
+
+    uint32 getGlyphIndex(const char c) const;
+    float getAdvance(const char c) const;
+    float getOffset(const char c) const;
 
     /* SETTERS */
 
