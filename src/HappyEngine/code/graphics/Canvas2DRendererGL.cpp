@@ -185,7 +185,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         case gui::Text::VAlignment_Top:
             break;
         case gui::Text::VAlignment_Center:
-            offset.y -= bounds.y / 2.0f + (lineSpacing * lineCounter) / 2.0f;
+            offset.y -= (bounds.y / 2.0f) - ((lineSpacing * (lineCounter - 1)) / 2.0f) - ((lineCounter * font->getPixelHeight()) / 2.0f);
             break;
         case gui::Text::VAlignment_Bottom:
             offset.y -= bounds.y + (lineSpacing * lineCounter);

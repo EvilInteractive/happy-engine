@@ -118,11 +118,12 @@ void MainGame::load()
 
     m_Scene = GRAPHICS->createScene();
 
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
-    m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
     
     /* CAMERA */
@@ -135,7 +136,7 @@ void MainGame::load()
     /* GUI */
     m_FPSGraph = NEW tools::FPSGraph();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
-    m_FPSGraph->setPos(he::vec2(50,50));
+    m_FPSGraph->setPos(he::vec2(50,35));
     m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
     m_UIController = NEW UIController();

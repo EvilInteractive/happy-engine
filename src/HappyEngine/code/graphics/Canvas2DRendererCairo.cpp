@@ -643,7 +643,7 @@ void Canvas2DRendererCairo::_text(const gui::Text& text, const vec2& pos, cairo_
             offset.y += font->getPixelHeight();
             break;
         case gui::Text::VAlignment_Center:
-            offset.y -= bounds.y / 2.0f - (lineSpacing * lines) / 2.0f + font->getPixelHeight() / 2.0f;
+            offset.y -= (bounds.y / 2.0f) - ((lineSpacing * (lineCounter - 1)) / 2.0f) - ((lineCounter * font->getPixelHeight()) / 2.0f);
             break;
         case gui::Text::VAlignment_Bottom:
             offset.y -= bounds.y + (lineSpacing * lines);
