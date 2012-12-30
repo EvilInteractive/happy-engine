@@ -111,6 +111,8 @@ public:
     MaterialGeneratorNode();
     virtual ~MaterialGeneratorNode();
 
+    void init();
+
     virtual bool evaluate(MaterialGeneratorError& error);
 
     virtual bool canConnect(const MaterialGeneratorNodeOutput& fromOutput, 

@@ -30,6 +30,9 @@
 #include "BezierShape2D.h"
 #include "BinaryStream.h"
 
+#include "ContentManager.h"
+#include "Font.h"
+
 namespace he {
 namespace tools {
 
@@ -193,7 +196,21 @@ MaterialGeneratorNode::MaterialGeneratorNode():
     m_SelectedOverload(0), m_Overloads(1), m_Position(0, 0), m_Size(128, 96),
     m_IsSelected(false), m_IsHoovering(false), m_Parent(nullptr), m_CanBeSelected(true)
 {
+}
+
+void MaterialGeneratorNode::init()
+{
     gui::SpriteCreator* cr(GUI->Sprites);
+
+    gui::Font* nodeFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 18));
+    gui::Text name;
+    const MaterialGeneratorNodeType type(getType());
+    name.addText(materialGeneratorNodeTypeToString(type));
+    name.setFont(nodeFont);
+    name.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    name.setVerticalAlignment(gui::Text::VAlignment_Top);
+    name.setBounds(name.measureText());
+    nodeFont->release();
 
     gui::Sprite* sp1(cr->createSprite(vec2(100,100)));
     cr->roundedRectangle(vec2(5,5), vec2(90,90), 10.0f);
@@ -228,9 +245,17 @@ MaterialGeneratorNode::MaterialGeneratorNode():
     cr->stroke();
     cr->renderSpriteAsync();
 
+    gui::Sprite* sp4(cr->createSprite(name.getBounds(), gui::Sprite::UNIFORM_SCALE));
+    cr->setColor(Color(0.8f, 0.8f, 0.8f, 0.9f));
+    cr->newPath();
+    cr->text(name, vec2(0, 0));
+    cr->fill();
+    cr->renderSpriteAsync();
+
     m_Sprites.add(sp1);
     m_Sprites.add(sp2);
     m_Sprites.add(sp3);
+    m_Sprites.add(sp4);
 
     he::eventCallback2<void, bool, uint8> onConnect([this](const bool isInput, const uint8 index)
     {
@@ -278,6 +303,7 @@ MaterialGeneratorNode::MaterialGeneratorNode():
     NodeConnected += onConnect;
     NodeDisconnected += onDisconnect;
 }
+
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
 {
@@ -552,6 +578,7 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
 
     const vec2 transformedPosition(transform * m_Position);
     const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
+    const vec2 textSize((transform * vec3(m_Sprites[3]->getSize(), 0)).xy());
 
     size_t index(0);
     if (isInView(transform, clipRect) || m_Connecters.find_if([&transform, &clipRect](Connecter* connecter) -> bool
@@ -563,6 +590,9 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
             cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
         else
             cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+
+        // Name
+        cvs->drawSprite(m_Sprites[3], transformedPosition - vec2(textSize.x / 2.0f, size.y / 2.0f - textSize.y / 2.0f), textSize);
         
         m_Connecters.forEach([canvas, &transform](Connecter* connecter)
         {
