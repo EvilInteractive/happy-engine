@@ -40,7 +40,7 @@ public:
     //return = C:/data/test.png => absolute
     Path append(const std::string& relativePath) const; 
 
-    static Path getWorkingPath();
+    static Path getWorkingDir();
 
 private:
     void convertBackslashesToForward();

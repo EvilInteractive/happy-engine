@@ -81,7 +81,7 @@ Path Path::append( const std::string& relativePath ) const
     return returnPath;
 }
 
-Path Path::getWorkingPath()
+Path Path::getWorkingDir()
 {
     boost::filesystem::path workDir(boost::filesystem::current_path());
 

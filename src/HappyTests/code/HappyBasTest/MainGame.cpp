@@ -343,7 +343,7 @@ void MainGame::load()
     /******* TONEMAP GUI *******/
     m_ToneMapGui = m_RenderPipeline->get2DRenderer()->createWebViewRelative(he::RectF(0,0,1,1), true);
 
-    std::string guiPath(he::Path::getWorkingPath().append("../../data/gui/").str());
+    std::string guiPath(he::Path::getWorkingDir().append("../../data/gui/").str());
     
     m_ToneMapGui->loadUrl(guiPath + "tonemap.html");
     m_ToneMapGui->setTransparent(true);

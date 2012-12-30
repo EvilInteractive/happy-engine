@@ -95,6 +95,8 @@ public:
 	);
 
 private:
+
+    /* EXTRA */
     void init();
     void onViewResized();
     void resize(const vec2& newSize);

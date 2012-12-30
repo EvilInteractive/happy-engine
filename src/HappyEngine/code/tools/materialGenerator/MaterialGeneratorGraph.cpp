@@ -167,37 +167,6 @@ void MaterialGeneratorGraph::init()
     m_Window->setWindowTitle("Happy Material Editor");
     m_Window->close();
 
-    eventCallback0<void> lostfocusCallback([this]()
-    {
-        if (m_IsActive == true)
-        {
-            m_IsActive = false;
-            GAME->removeFromTickList(this);
-            CONTROLS->returnFocus(this);
-        }
-    });
-    eventCallback0<void> closeCallback([this]()
-    {
-        if (m_IsActive == true)
-        {
-            m_IsActive = false;
-            GAME->removeFromTickList(this);
-            CONTROLS->returnFocus(this);
-        }
-    });
-    eventCallback0<void> gainfocusCallback([this]()
-    {
-        if (m_IsActive == false)
-        {
-            m_IsActive = true;
-            GAME->addToTickList(this);
-            CONTROLS->getFocus(this);
-        }
-    });
-    m_Window->GainedFocus += gainfocusCallback;
-    m_Window->LostFocus += lostfocusCallback;
-    m_Window->Closed += closeCallback;
-    
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_Renderer = NEW gfx::Renderer2D();
@@ -212,9 +181,10 @@ void MaterialGeneratorGraph::init()
     m_Renderer->attachToRender(this);
 
     m_WebViewGui = m_Renderer->createWebViewRelative(RectF(0, 0, 1, 1), true);
-    m_WebViewGui->loadUrl((Path::getWorkingPath().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
+    m_WebViewGui->loadUrl((Path::getWorkingDir().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
     m_WebViewGui->setTransparent(true);
     m_WebListener = NEW gfx::WebListener(m_WebViewGui);
+
     he::eventCallback0<void> loadedCallback([this]()
     {
         Awesomium::JSArray args;
@@ -243,7 +213,43 @@ void MaterialGeneratorGraph::init()
         args.Clear();
         m_WebListener->executeFunction("", "init", args);
     });
+
     m_WebViewGui->OnUrlLoaded += loadedCallback;
+
+    eventCallback0<void> lostfocusCallback([this]()
+    {
+        if (m_IsActive == true)
+        {
+            m_IsActive = false;
+            GAME->removeFromTickList(this);
+            CONTROLS->returnFocus(this);
+            m_WebViewGui->unfocus();
+        }
+    });
+    eventCallback0<void> closeCallback([this]()
+    {
+        if (m_IsActive == true)
+        {
+            m_IsActive = false;
+            GAME->removeFromTickList(this);
+            CONTROLS->returnFocus(this);
+            m_WebViewGui->unfocus();
+        }
+    });
+    eventCallback0<void> gainfocusCallback([this]()
+    {
+        if (m_IsActive == false)
+        {
+            m_IsActive = true;
+            GAME->addToTickList(this);
+            CONTROLS->getFocus(this);
+            m_WebViewGui->focus();
+        }
+    });
+
+    m_Window->GainedFocus += gainfocusCallback;
+    m_Window->LostFocus += lostfocusCallback;
+    m_Window->Closed += closeCallback;
 
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Background = cr->createSprite(vec2(1280, 720));
@@ -257,6 +263,7 @@ void MaterialGeneratorGraph::init()
     cr->setLineWidth(2.0f);
     cr->setLineJoin(gui::LINE_JOIN_BEVEL);
     cr->stroke();
+    cr->renderSpriteAsync();
 }
 
 void MaterialGeneratorGraph::open()
@@ -634,7 +641,6 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     cvs->fillText(m_DebugText, vec2(12, 12));
-
 }
 
 he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const

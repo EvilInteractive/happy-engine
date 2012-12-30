@@ -34,6 +34,7 @@
 #include "ControlsManager.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
+#include "Canvas2Dnew.h"
 #pragma warning(default:4100)
 
 #define COMMON_ASCII_CHAR 128
@@ -93,8 +94,8 @@ void WebView::init()
         m_KeyPressedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
             // check if we cant get focus
-            if (CONTROLS->getFocus(this) == false)
-                return;
+            /*if (CONTROLS->getFocus(this) == false)
+                return;*/
 
             Awesomium::WebKeyboardEvent keyEvent;
 
@@ -134,14 +135,14 @@ void WebView::init()
                 w->InjectKeyboardEvent(keyEvent);
             }
 
-            CONTROLS->returnFocus(this);
+            //CONTROLS->returnFocus(this);
         });
 
         m_KeyReleasedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
             // check if we cant get focus
-            if (CONTROLS->getFocus(this) == false)
-                return;
+            /*if (CONTROLS->getFocus(this) == false)
+                return;*/
 
             Awesomium::WebKeyboardEvent keyEvent;
 
@@ -164,8 +165,8 @@ void WebView::init()
         m_MouseButtonPressedHandler = eventCallback1<void, io::MouseButton>([w,this](io::MouseButton but)
         {
             // check if we cant get focus
-            if (CONTROLS->getFocus(this) == false)
-                return;
+            /*if (CONTROLS->getFocus(this) == false)
+                return;*/
 
             if (but == io::MouseButton_Left)
                 w->InjectMouseDown(Awesomium::kMouseButton_Left);
@@ -174,14 +175,14 @@ void WebView::init()
             else if (but == io::MouseButton_Middle)
                 w->InjectMouseDown(Awesomium::kMouseButton_Middle);
 
-            CONTROLS->returnFocus(this);
+            //CONTROLS->returnFocus(this);
         });
 
         m_MouseButtonReleasedHandler = eventCallback1<void, io::MouseButton>([w,this](io::MouseButton but)
         {
             // check if we cant get focus
-            if (CONTROLS->getFocus(this) == false)
-                return;
+            /*if (CONTROLS->getFocus(this) == false)
+                return;*/
 
             if (but == io::MouseButton_Left)
                 w->InjectMouseUp(Awesomium::kMouseButton_Left);
@@ -190,29 +191,29 @@ void WebView::init()
             else if (but == io::MouseButton_Middle)
                 w->InjectMouseUp(Awesomium::kMouseButton_Middle);
 
-            CONTROLS->returnFocus(this);
+            //CONTROLS->returnFocus(this);
         });
 
         m_MouseMoveHandler = eventCallback1<void, const vec2&>([w,this](const vec2& pos)
         {
             // check if we cant get focus
-            if (CONTROLS->getFocus(this) == false)
-                return;
+            /*if (CONTROLS->getFocus(this) == false)
+                return;*/
 
             w->InjectMouseMove(static_cast<int>(pos.x), static_cast<int>(pos.y));
 
-            CONTROLS->returnFocus(this);
+            //CONTROLS->returnFocus(this);
         });
 
         m_MouseScrollHandler = eventCallback1<void, int>([w,this](int move)
         {
             // check if we cant get focus
-            if (CONTROLS->getFocus(this) == false)
-                return;
+            /*if (CONTROLS->getFocus(this) == false)
+                return;*/
 
             w->InjectMouseWheel(move * 30, 0);
 
-            CONTROLS->returnFocus(this);
+            //CONTROLS->returnFocus(this);
         });
 
         keyboard->KeyPressed += m_KeyPressedHandler;
@@ -223,7 +224,6 @@ void WebView::init()
         mouse->MouseWheelMoved += m_MouseScrollHandler;
     }
 }
-
 
 WebView::~WebView()
 {
@@ -264,7 +264,8 @@ void WebView::draw2D(Canvas2D* canvas)
         }
     }
 
-    canvas->drawImage(m_RenderTexture, m_Position);
+    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
+    cvs->drawImage(m_RenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)
