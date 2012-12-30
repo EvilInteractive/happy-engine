@@ -44,11 +44,6 @@ MaterialGeneratorNode::Connecter::Connecter( MaterialGeneratorNode* const parent
     m_ConnectionMovedCallback([this](){ m_Bezier->setPositionEnd(m_ConnectedConnecter->getPosition()); }),
     m_Parent(parent)
 {
-    gui::SpriteCreator* const cr(GUI->Sprites);
-    m_Sprites[0] = cr->createSprite(m_Size);
-    m_Sprites[1] = cr->createSprite(m_Size);
-    m_Sprites[2] = cr->createSprite(m_Size);
-
     if (isInput) // only inputs have connections
     {
         m_Bezier = NEW gui::BezierShape2D;
@@ -69,7 +64,17 @@ MaterialGeneratorNode::Connecter::~Connecter()
 }
 void MaterialGeneratorNode::Connecter::renderSprites()
 {
+    //gui::Text name;
+    //name.addText(m_Desc.m_Name.c_str(), m_Desc.m_Name.size());
+    //
+    //const vec2 normalSize(10.0f, 10.0f);
+    //const vec2 extraSize(name.measureText());
+    //const vec2 newSize(extraSize.x + normalSize.x + 4.0f, std::max(extraSize.y, normalSize.y));
+
     gui::SpriteCreator* const cr(GUI->Sprites);
+    m_Sprites[0] = cr->createSprite(m_Size);
+    m_Sprites[1] = cr->createSprite(m_Size);
+    m_Sprites[2] = cr->createSprite(m_Size);
 
     // Normal
     cr->setActiveSprite(m_Sprites[0]);

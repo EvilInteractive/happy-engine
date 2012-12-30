@@ -49,8 +49,8 @@ enum MaterialGeneratorNodeType
     MaterialGeneratorNodeType_Float4,
 
     // Globals
-    MaterialGeneratorNodeType_Position,
-    MaterialGeneratorNodeType_Normal,
+    MaterialGeneratorNodeType_WorldViewPosition,
+    MaterialGeneratorNodeType_WorldViewNormal,
 
     // Vector
     MaterialGeneratorNodeType_Swizzle,
@@ -97,6 +97,21 @@ enum MaterialGeneratorNodeType
     MaterialGeneratorNodeType_Unassigned = MaterialGeneratorNodeType_MAX
 };
 
+enum MaterialGeneratorNodeTypeSubdivion
+{
+    MaterialGeneratorNodeTypeSubdivion_ConstNodes,
+    MaterialGeneratorNodeTypeSubdivion_MathNodes,
+    MaterialGeneratorNodeTypeSubdivion_VectorNodes,
+    MaterialGeneratorNodeTypeSubdivion_TextureNodes,
+
+    MaterialGeneratorNodeTypeSubdivion_None,
+    MaterialGeneratorNodeTypeSubdivion_MAX = MaterialGeneratorNodeTypeSubdivion_None
+};
+
+const char* materialGeneratorNodeTypeToString(const MaterialGeneratorNodeType type);
+MaterialGeneratorNodeType materialGeneratorNodeTypeFromString(const char* str);
+MaterialGeneratorNodeTypeSubdivion getMaterialGeneratorNodeTypeSubdivision(const MaterialGeneratorNodeType type);
+const char* materialGeneratorNodeTypeSubdivionToString(const MaterialGeneratorNodeTypeSubdivion type);
 
 } } //end namespace
 

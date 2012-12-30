@@ -48,6 +48,9 @@
 #include "Command.h"
 #include "BinaryStream.h"
 #include "MaterialGeneratorNodeFactory.h"
+#include "WebView.h"
+#include "WebListener.h"
+
 
 #define ZOOM_STEP 0.1f
 #define ZOOM_MIN 0.1f
@@ -77,6 +80,8 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_CreateCommand(this)
     , m_DeleteCommand(this)
     , m_GhostConnection(NEW gui::BezierShape2D)
+    , m_WebViewGui(nullptr)
+    , m_WebListener(nullptr)
 {
     he::gui::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
     m_DebugText.setFont(font);
@@ -205,6 +210,40 @@ void MaterialGeneratorGraph::init()
     m_View->ViewportSizeChanged += viewResizedHandler;
 
     m_Renderer->attachToRender(this);
+
+    m_WebViewGui = m_Renderer->createWebViewRelative(RectF(0, 0, 1, 1), true);
+    m_WebViewGui->loadUrl((Path::getWorkingPath().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
+    m_WebViewGui->setTransparent(true);
+    m_WebListener = NEW gfx::WebListener(m_WebViewGui);
+    he::eventCallback0<void> loadedCallback([this]()
+    {
+        Awesomium::JSArray args;
+        for (size_t i(0); i < MaterialGeneratorNodeTypeSubdivion_MAX; ++i)
+        {
+            const MaterialGeneratorNodeTypeSubdivion subD(static_cast<MaterialGeneratorNodeTypeSubdivion>(i));
+            const char* subDString(materialGeneratorNodeTypeSubdivionToString(subD));
+            args.Clear();
+            args.Push(Awesomium::JSValue(Awesomium::WebString::CreateFromUTF8(subDString, strlen(subDString))));
+            m_WebListener->executeFunction("", "addNodeSubdivision", args);
+        }
+        for (size_t i(0); i < MaterialGeneratorNodeType_MAX; ++i)
+        {
+            const MaterialGeneratorNodeType type(static_cast<MaterialGeneratorNodeType>(i));
+            const MaterialGeneratorNodeTypeSubdivion subD(getMaterialGeneratorNodeTypeSubdivision(type));
+            if (subD != MaterialGeneratorNodeTypeSubdivion_None)
+            {
+                const char* subDString(materialGeneratorNodeTypeSubdivionToString(subD));
+                const char* typeString(materialGeneratorNodeTypeToString(type));
+                args.Clear();
+                args.Push(Awesomium::JSValue(Awesomium::WebString::CreateFromUTF8(subDString, strlen(subDString))));
+                args.Push(Awesomium::JSValue(Awesomium::WebString::CreateFromUTF8(typeString, strlen(typeString))));
+                m_WebListener->executeFunction("", "addNode", args);
+            }
+        }
+        args.Clear();
+        m_WebListener->executeFunction("", "init", args);
+    });
+    m_WebViewGui->OnUrlLoaded += loadedCallback;
 
     gui::SpriteCreator* const cr(GUI->Sprites);
     m_Background = cr->createSprite(vec2(1280, 720));
@@ -441,7 +480,7 @@ void MaterialGeneratorGraph::tick( float dTime )
     });
 
     updateErrors(dTime);
-    
+        
     updateStates(dTime);
 
     const int scroll(mouse->getScroll());
@@ -577,6 +616,8 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         cvs->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
     });
 
+    m_WebViewGui->draw2D(canvas);
+
     // DEBUG
     m_DebugText.clear();
     const vec2 mouseWorld(screenToWorldPos(CONTROLS->getMouse()->getPosition()));
@@ -593,6 +634,7 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
     
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     cvs->fillText(m_DebugText, vec2(12, 12));
+
 }
 
 he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const

@@ -37,6 +37,8 @@ namespace gfx {
     class Window;
     class View;
     class Renderer2D;
+    class WebView;
+    class WebListener;
 }
 namespace gui {
     class Sprite;
@@ -168,6 +170,9 @@ private:
     he::PrimitiveList<gui::Text*> m_ErrorPool;
     he::ObjectList<ErrorMessage> m_VisibleErrors;
     gui::Sprite* m_ErrorBackgroundSprite;
+
+    gfx::WebView* m_WebViewGui;
+    gfx::WebListener* m_WebListener;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

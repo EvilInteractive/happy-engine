@@ -1,0 +1,151 @@
+@import url("redmond/jquery-ui-1.9.2.custom.css");
+
+@font-face
+{
+    font-family: 'OpenSansRegular';
+    src: url('../font/opensans/OpenSans-Regular-webfont.woff') format('woff'),
+    url('../font/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face
+{
+    font-family: 'OpenSansBold';
+    src: /*url('../font/opensans/OpenSans-Bold-webfont.woff') format('woff'),*/
+        url('../font/opensans/OpenSans-Bold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body
+{
+    margin: 0;
+    padding: 0;
+
+    font: normal 12px OpenSansRegular,sans-serif;
+    color: #666;
+
+    overflow: hidden;
+
+    background-color: transparent;
+
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+a
+{
+    color: #333;
+}
+
+a.tip span
+{
+    display: none;
+}
+
+a.tip:hover span
+{
+    PADDING: 2px 2px 2px 2px;
+    DISPLAY: block;
+    Z-INDEX: 100;
+    LEFT: 0px;
+    MARGIN: 20px;
+    WIDTH: 150px;
+    POSITION: absolute;
+    TOP: 10px;
+    TEXT-DECORATION: none;
+
+    background: #eee;
+    border: solid 1px #bbb;
+    color: #555;
+    font-size: 12px;
+}
+
+#scene
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    top: 18px;
+
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+#nodeSelectPanel
+{
+    position: absolute;
+    width: 154px;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #333;
+    -webkit-box-shadow: 3px 0px 4px rgba(0, 0, 0, .4);
+    border-right: 4px solid #222;
+
+    margin: 0;
+    padding: 0;
+
+    color: #2e2e2e;
+
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+.ui-accordion .ui-accordion-content {padding: 8px 0 4px 8px;}
+
+.nodeSelectPanelSubDContainer
+{
+    color: #2e2e2e;
+    padding: 0px;
+
+    list-style: none;
+}
+
+.nodeSelectPanelSubdivision
+{
+    margin: 0;
+    padding: 0;
+
+    background: -webkit-gradient(linear, left top, left bottom, from(#6c6c6c), to(#4b4b4b));
+
+    border: 1px solid #222;
+
+    -webkit-border-radius: 4px;
+}
+.nodeSelectPanelSubdivision ul
+{
+    margin: 0px 0px 0px 0px;
+    padding: 0;
+}
+.nodeSelectPanelSubdivision li
+{
+
+    list-style: none;
+    float: left;
+}
+
+.nodeSelectPanelSubdivision h3
+{
+    overflow: hidden;
+}
+
+.node
+{
+    margin: 0px 5px 5px 0px;
+    padding: 2px;
+
+    min-width: 128px;
+    max-width: 128px;
+    overflow: hidden;
+
+    text-align: center;
+
+    background: -webkit-gradient(linear, left top, left bottom, from(#cdcdcd), to(#a5a5a5));
+
+    border: 1px solid #222;
+
+    -webkit-border-radius: 4px;
+}
