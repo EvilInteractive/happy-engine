@@ -103,6 +103,7 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
         //case MaterialGeneratorNodeType_Texcoord: node = NEW MaterialGeneratorNodeTexcoord(); break;
     }
     registerObject(node);
+    node->init();
     node->setGuid(id);
     return node;
 }
