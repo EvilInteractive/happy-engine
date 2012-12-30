@@ -25,6 +25,9 @@
 #include "Singleton.h"
 
 namespace he {
+namespace io {
+    enum MouseCursor;
+}
 namespace gfx {
 class Window;
 
@@ -61,6 +64,7 @@ public:
     void setWindowDimension(uint32 width, uint32 height);
     void setVSync(bool enable);
     void setCursorVisible(bool visible);
+    void setCursor(const io::MouseCursor cursor);
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create
 
@@ -90,6 +94,13 @@ private:
     bool m_IsVisible;
 
     GLContext m_Context;
+
+#ifdef HE_WINDOWS
+    HCURSOR m_Cursor;
+#elif HE_LINUX
+    XID m_Cursor;
+    Display* m_Display;
+#endif
 
     //Disable default copy constructor and default assignment operator
     Window(const Window&);

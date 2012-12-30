@@ -20,8 +20,6 @@
 
 #include "HappyPCH.h" 
 
-// warnings in awesomium lib
-#pragma warning(disable:4100)
 #include "WebView.h"
 #include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
@@ -30,25 +28,25 @@
 #include "GraphicsEngine.h"
 #include "Texture2D.h"
 #include "View.h"
+#include "Window.h"
 
 #include "ControlsManager.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
 #include "Canvas2Dnew.h"
-#pragma warning(default:4100)
 
 #define COMMON_ASCII_CHAR 128
 
 namespace he {
 namespace gfx {
 
-WebView::WebView(const RectI& viewport, bool enableUserInput) :   
+WebView::WebView(gfx::View* view, const RectI& viewport, bool enableUserInput) :   
 m_WebView(nullptr),
     m_InputEnabled(enableUserInput),
     m_RenderTexture(nullptr),
     m_Position(static_cast<float>(viewport.x), static_cast<float>(viewport.y)),
     m_Size(-1, -1),
-    m_View(nullptr),
+    m_View(view),
     m_ViewportPercent(0, 0, 1, 1),
     m_Buffer(nullptr)
 {    
@@ -56,7 +54,7 @@ m_WebView(nullptr),
     resize(vec2(static_cast<float>(viewport.width), static_cast<float>(viewport.height)));
 }
 #pragma warning(disable:4355) // this is initializer list
-WebView::WebView(View* view, const RectF& viewportPercent, bool enableUserInput) :   
+WebView::WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserInput) :   
     m_WebView(nullptr),
     m_InputEnabled(enableUserInput),
     m_RenderTexture(nullptr),
@@ -274,6 +272,7 @@ void WebView::loadUrl(const std::string& url)
     m_WebView->LoadURL(webUrl);
 
     m_WebView->set_load_listener(this);
+    m_WebView->set_view_listener(this);
 }
 
 void WebView::loadFile(const he::Path& /*path*/)
@@ -388,6 +387,65 @@ void WebView::OnBeginLoadingFrame(
         bool						/*is_error_page*/
     )
 {
+}
+
+io::MouseCursor getCursorTypeFromAwesomium(const Awesomium::Cursor cursor)
+{
+    io::MouseCursor result(io::MouseCursor_Pointer);
+    switch (cursor)
+    {
+        case Awesomium::kCursor_Pointer: result = io::MouseCursor_Pointer; break;
+        case Awesomium::kCursor_Cross: result = io::MouseCursor_Cross; break;
+        case Awesomium::kCursor_Hand: result = io::MouseCursor_Hand; break;
+        case Awesomium::kCursor_IBeam: result = io::MouseCursor_IBeam; break;
+        case Awesomium::kCursor_Wait: result = io::MouseCursor_Wait; break;
+        case Awesomium::kCursor_Help: result = io::MouseCursor_Help; break;
+        case Awesomium::kCursor_EastResize: result = io::MouseCursor_EastResize; break;
+        case Awesomium::kCursor_NorthResize: result = io::MouseCursor_NorthResize; break;
+        case Awesomium::kCursor_NorthEastResize: result = io::MouseCursor_NorthEastResize; break;
+        case Awesomium::kCursor_NorthWestResize: result = io::MouseCursor_NorthWestResize; break;
+        case Awesomium::kCursor_SouthResize: result = io::MouseCursor_SouthResize; break;
+        case Awesomium::kCursor_SouthEastResize: result = io::MouseCursor_SouthEastResize; break;
+        case Awesomium::kCursor_SouthWestResize: result = io::MouseCursor_SouthWestResize; break;
+        case Awesomium::kCursor_WestResize: result = io::MouseCursor_WestResize; break;
+        case Awesomium::kCursor_NorthSouthResize: result = io::MouseCursor_NorthSouthResize; break;
+        case Awesomium::kCursor_EastWestResize: result = io::MouseCursor_EastWestResize; break;
+        case Awesomium::kCursor_NorthEastSouthWestResize: result = io::MouseCursor_NorthEastSouthWestResize; break;
+        case Awesomium::kCursor_NorthWestSouthEastResize: result = io::MouseCursor_NorthWestSouthEastResize; break;
+        case Awesomium::kCursor_ColumnResize: result = io::MouseCursor_ColumnResize; break;
+        case Awesomium::kCursor_RowResize: result = io::MouseCursor_RowResize; break;
+        case Awesomium::kCursor_MiddlePanning: result = io::MouseCursor_MiddlePanning; break;
+        case Awesomium::kCursor_EastPanning: result = io::MouseCursor_EastPanning; break;
+        case Awesomium::kCursor_NorthPanning: result = io::MouseCursor_NorthPanning; break;
+        case Awesomium::kCursor_NorthEastPanning: result = io::MouseCursor_NorthEastPanning; break;
+        case Awesomium::kCursor_NorthWestPanning: result = io::MouseCursor_NorthWestPanning; break;
+        case Awesomium::kCursor_SouthPanning: result = io::MouseCursor_SouthPanning; break;
+        case Awesomium::kCursor_SouthEastPanning: result = io::MouseCursor_SouthEastPanning; break;
+        case Awesomium::kCursor_SouthWestPanning: result = io::MouseCursor_SouthWestPanning; break;
+        case Awesomium::kCursor_WestPanning: result = io::MouseCursor_WestPanning; break;
+        case Awesomium::kCursor_Move: result = io::MouseCursor_Move; break;
+        case Awesomium::kCursor_VerticalText: result = io::MouseCursor_VerticalText; break;
+        case Awesomium::kCursor_Cell: result = io::MouseCursor_Cell; break;
+        case Awesomium::kCursor_ContextMenu: result = io::MouseCursor_ContextMenu; break;
+        case Awesomium::kCursor_Alias: result = io::MouseCursor_Alias; break;
+        case Awesomium::kCursor_Progress: result = io::MouseCursor_Progress; break;
+        case Awesomium::kCursor_NoDrop: result = io::MouseCursor_NoDrop; break;
+        case Awesomium::kCursor_Copy: result = io::MouseCursor_Copy; break;
+        case Awesomium::kCursor_None: result = io::MouseCursor_None; break;
+        case Awesomium::kCursor_NotAllowed: result = io::MouseCursor_NotAllowed; break;
+        case Awesomium::kCursor_ZoomIn: result = io::MouseCursor_ZoomIn; break;
+        case Awesomium::kCursor_ZoomOut: result = io::MouseCursor_ZoomOut; break;
+        case Awesomium::kCursor_Grab: result = io::MouseCursor_Grab; break;
+        case Awesomium::kCursor_Grabbing: result = io::MouseCursor_Grabbing; break;
+        case Awesomium::kCursor_Custom: result = io::MouseCursor_Custom; break;
+        default:
+            LOG(LogType_ProgrammerAssert, "Unknown Awesomium mouse cursor"); break;
+    }
+    return result;
+}
+void WebView::OnChangeCursor( Awesomium::WebView* /*caller*/, Awesomium::Cursor cursor )
+{
+    m_View->getWindow()->setCursor(getCursorTypeFromAwesomium(cursor));
 }
 
 }} //end namespace

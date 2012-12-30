@@ -24,6 +24,7 @@
 #pragma message("-------------------------------------------------\n")
 
 #define __HE_FUNCTION__ __FUNCTION__
+
 #include <cstdlib>
 #include <string>
 #include <map>
@@ -47,6 +48,18 @@
 #include <boost/date_time.hpp>
 
 #include <SFML/Window.hpp>
+
+#ifdef SFML_SYSTEM_WINDOWS
+#define HE_WINDOWS
+#elif defined SFML_SYSTEM_LINUX
+#define  HE_LINUX
+#elif defined SFML_SYSTEM_MACOS
+#define HE_MAC
+#endif
+
+#if !(defined(HE_WINDOWS) || defined(HE_LINUX) || defined(HE_MAC))
+#error Unsupported OS!
+#endif
 
 #undef MessageBox
 

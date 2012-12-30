@@ -181,7 +181,7 @@ void MaterialGeneratorGraph::init()
     m_Renderer->attachToRender(this);
 
     m_WebViewGui = m_Renderer->createWebViewRelative(RectF(0, 0, 1, 1), true);
-    m_WebViewGui->loadUrl((Path::getWorkingDir().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
+    loadGui();
     m_WebViewGui->setTransparent(true);
     m_WebListener = NEW gfx::WebListener(m_WebViewGui);
 
@@ -215,6 +215,8 @@ void MaterialGeneratorGraph::init()
     });
 
     m_WebViewGui->OnUrlLoaded += loadedCallback;
+
+    CONSOLE->registerCmd(boost::bind(&MaterialGeneratorGraph::loadGui, this), "reloadMaterialGeneratorGui");
 
     eventCallback0<void> lostfocusCallback([this]()
     {
@@ -265,6 +267,12 @@ void MaterialGeneratorGraph::init()
     cr->stroke();
     cr->renderSpriteAsync();
 }
+
+void MaterialGeneratorGraph::loadGui()
+{
+    m_WebViewGui->loadUrl((Path::getWorkingDir().append(CONTENT->getContentDir().str()).append("gui/materialEditor.html")).str());
+}
+
 
 void MaterialGeneratorGraph::open()
 {

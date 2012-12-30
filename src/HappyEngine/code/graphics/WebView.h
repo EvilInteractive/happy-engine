@@ -36,13 +36,13 @@ namespace he {
 namespace gfx {
 class Texture2D;
 
-class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load
+class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
 {
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebView(const RectI& viewport, bool enableUserInput);
-    WebView(View* view, const RectF& viewportPercent, bool enableUserInput);
+    WebView(gfx::View* view, const RectI& viewport, bool enableUserInput);
+    WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserInput);
     virtual ~WebView();
 
     /* GENERAL */
@@ -64,35 +64,49 @@ public:
     /* EVENTS */
     event0<void> OnUrlLoaded;
 
-	// webview load listeners
-	virtual void OnFailLoadingFrame(
-		Awesomium::WebView *  		caller,
-		int64  						frame_id,
-		bool  						is_main_frame,
-		const Awesomium::WebURL&  	url,
-		int  						error_code,
-		const Awesomium::WebString& error_desc 
-	);
+    // webview load listeners
+    virtual void OnFailLoadingFrame(
+        Awesomium::WebView *  		caller,
+        int64  						frame_id,
+        bool  						is_main_frame,
+        const Awesomium::WebURL&  	url,
+        int  						error_code,
+        const Awesomium::WebString& error_desc 
+    );
 
-	virtual void OnFinishLoadingFrame(
-		Awesomium::WebView *  		caller,
-		int64  						frame_id,
-		bool  						is_main_frame,
-		const Awesomium::WebURL&  	url 
-	);
+    virtual void OnFinishLoadingFrame(
+        Awesomium::WebView *  		caller,
+        int64  						frame_id,
+        bool  						is_main_frame,
+        const Awesomium::WebURL&  	url 
+    );
 
-	virtual void OnDocumentReady(
-		Awesomium::WebView *  		caller,
-		const Awesomium::WebURL &  	url 
-	);
+    virtual void OnDocumentReady(
+        Awesomium::WebView *  		caller,
+        const Awesomium::WebURL &  	url 
+    );
 
-	virtual void OnBeginLoadingFrame(
-		Awesomium::WebView*			caller,
-		int64						frame_id,
-		bool						is_main_frame,
-		const Awesomium::WebURL&	url,
-		bool						is_error_page
-	);
+    virtual void OnBeginLoadingFrame(
+        Awesomium::WebView*			caller,
+        int64						frame_id,
+        bool						is_main_frame,
+        const Awesomium::WebURL&	url,
+        bool						is_error_page
+        );
+
+    // webview view listeners
+    virtual void OnChangeTitle(Awesomium::WebView* /*caller*/, const Awesomium::WebString& /*title*/) {}
+    virtual void OnChangeAddressBar(Awesomium::WebView* /*caller*/, const Awesomium::WebURL& /*url*/) {}
+    virtual void OnChangeTooltip(Awesomium::WebView* /*caller*/, const Awesomium::WebString& /*tooltip*/) {}
+    virtual void OnChangeTargetURL(Awesomium::WebView* /*caller*/, const Awesomium::WebURL& /*url*/) {}
+    virtual void OnChangeCursor(Awesomium::WebView* caller, Awesomium::Cursor cursor);
+    virtual void OnChangeFocus(Awesomium::WebView* /*caller*/, Awesomium::FocusedElementType /*focused_type*/) {}
+    virtual void OnShowCreatedWebView(Awesomium::WebView* /*caller*/,
+        Awesomium::WebView* /*new_view*/,
+        const Awesomium::WebURL& /*opener_url*/,
+        const Awesomium::WebURL& /*target_url*/,
+        const Awesomium::Rect& /*initial_pos*/,
+        bool /*is_popup*/) {}
 
 private:
 
@@ -114,7 +128,7 @@ private:
     uint8* m_Buffer;
 
     // View
-    View* m_View;
+    gfx::View* m_View;
     he::eventCallback0<void> m_ViewResizedHandler;
 
     // Controls

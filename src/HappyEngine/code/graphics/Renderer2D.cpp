@@ -92,7 +92,7 @@ void Renderer2D::removeCanvas( Canvas2D* canvas )
 
 WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
-    WebView* web(NEW WebView(viewport, enableUserInput));
+    WebView* web(NEW WebView(m_View, viewport, enableUserInput));
     m_WebViews.add(web);
     return web;
 }

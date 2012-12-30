@@ -108,6 +108,8 @@ public:
 private:
 
     /* INTERNAL */
+    void loadGui();
+
     bool doNodeSelect(const vec2& mousePos, const bool keepSelection, const bool removeSelection);
     bool doConnectStart(const vec2& mousePos);
     bool doConnectEnd(const vec2& mousePos);
