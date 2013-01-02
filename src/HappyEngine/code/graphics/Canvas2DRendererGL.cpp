@@ -128,6 +128,8 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         m_CharVertexBuffer.reserve(size * 4);
         m_CharIndexBuffer.reserve(size * 6);
 
+        Color textColor(1.0f, 1.0f, 1.0f, 1.0f);
+
         size_t lineCharStart(0);
         size_t lineCounter(0);
         for (uint32 i(0); i < size; ++i)
@@ -138,7 +140,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
             {
                 const size_t lineSize(i - lineCharStart);
                 if (lineSize > 0)
-                    addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+                    addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font, textColor);
                 lineCharStart = i + 1;
                 linePos.y += lineSpacing;
                 linePos.x = 0;
@@ -150,7 +152,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
                 {
                     const size_t lineSize(i - lineCharStart);
                     if (lineSize > 0)
-                        linePos.x = addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+                        linePos.x = addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font, textColor);
 
                     char cR(fullText[i + 1]);
                     char cG(fullText[i + 2]);
@@ -160,7 +162,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
                     int g = atoix(cG);
                     int b = atoix(cB);
 
-                    setColor(Color(r / 15.0f, g / 15.0f, b / 15.0f, m_Color.a()));
+                    textColor = Color(r / 15.0f, g / 15.0f, b / 15.0f, 1.0f);
 
                     i += 3;
                     lineCharStart = i + 1;
@@ -172,7 +174,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
             const size_t lineSize(size - lineCharStart);
             if (lineSize > 0)
             {
-                addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font);
+                addTextToTextBuffer(fullText + lineCharStart, lineSize, linePos, h, bounds.x, font, textColor);
                 ++lineCounter;
             }
         }
@@ -197,6 +199,7 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
     
         s_FontEffect->begin();
         s_FontEffect->setDiffuseMap(tex2D);
+        s_FontEffect->setBlendColor(m_Color);
         s_FontEffect->setWorldMatrix(m_OrthographicMatrix * mat44::createTranslation(offset));
     
         GL::heBlendEnabled(true);
@@ -212,7 +215,8 @@ void Canvas2DRendererGL::fillText(const gui::Text& text, const vec2& pos)
         glDrawElements(GL_TRIANGLES, m_DynamicFontMesh->getNumIndices(), m_DynamicFontMesh->getIndexType(), BUFFER_OFFSET(0));
     }
 }
-float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, const gui::Text::HAlignment alignment, const float maxWidth, const he::gui::Font* const font )
+float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const size_t count, const vec2& pos, 
+    const gui::Text::HAlignment alignment, const float maxWidth, const he::gui::Font* const font, const Color& color )
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     const Texture2D* const tex2D(font->getTextureAtlas());
@@ -255,18 +259,19 @@ float Canvas2DRendererGL::addTextToTextBuffer( const char* const buffer, const s
         VertexText& vertex2(m_CharVertexBuffer[offset * 4 + 2]);
         VertexText& vertex3(m_CharVertexBuffer[offset * 4 + 3]);
 
+        const vec4 rgba(color.rgba());
         vertex0.position = glyphPos + vec2(0, size.y) + vec2(glyphOffset, 0.f);
         vertex0.textureCoord = tcOffset;
-        vertex0.color = m_Color.rgba();
+        vertex0.color = rgba;
         vertex1.position = glyphPos + vec2(size.x, size.y) + vec2(glyphOffset, 0.f);
         vertex1.textureCoord = tcOffset + vec2(tcScale.x, 0);
-        vertex1.color = m_Color.rgba();
+        vertex1.color = rgba;
         vertex2.position = glyphPos+ vec2(glyphOffset,0.f);
         vertex2.textureCoord = tcOffset + vec2(0, tcScale.y);
-        vertex2.color = m_Color.rgba();
+        vertex2.color = rgba;
         vertex3.position = glyphPos + vec2(size.x, 0) + vec2(glyphOffset, 0.f);
         vertex3.textureCoord = tcOffset + tcScale;
-        vertex3.color = m_Color.rgba();
+        vertex3.color = rgba;
 
         m_CharIndexBuffer[offset * 6 + 0] = offset * 4 + 0;
         m_CharIndexBuffer[offset * 6 + 1] = offset * 4 + 1;

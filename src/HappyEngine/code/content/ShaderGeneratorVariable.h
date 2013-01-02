@@ -63,6 +63,7 @@ public:
     void setDot(const ObjectHandle& a, const ObjectHandle& b);
     void setMultiply(const ObjectHandle& a, const ObjectHandle& b);
     void setMin(const ObjectHandle& a, const ObjectHandle& b);
+    void setMax(const ObjectHandle& a, const ObjectHandle& b);
     void setPower(const ObjectHandle& a, const ObjectHandle& b);
     void setReflect(const ObjectHandle& in, const ObjectHandle& normal);
     void setSubtract(const ObjectHandle& a, const ObjectHandle& b);

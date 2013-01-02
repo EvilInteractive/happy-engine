@@ -71,7 +71,8 @@ private:
                               const vec2& pos,
                               const gui::Text::HAlignment alignment,
                               const float maxWidth,
-                              const he::gui::Font* const font);
+                              const he::gui::Font* const font,
+                              const Color& color);
 
     /* STATIC */
     static Simple2DEffect* s_ColorEffect;

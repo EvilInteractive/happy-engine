@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 15/11/2012
 
-#ifndef _HE_MaterialGeneratorMathNodes_H_
-#define _HE_MaterialGeneratorMathNodes_H_
+#ifndef _HE_MaterialGeneratorVectorNodes_H_
+#define _HE_MaterialGeneratorVectorNodes_H_
 #pragma once
 
 #include "MaterialGeneratorNodeClassHelper.h"

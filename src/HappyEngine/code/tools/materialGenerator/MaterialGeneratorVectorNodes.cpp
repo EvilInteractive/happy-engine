@@ -58,10 +58,18 @@ bool MaterialGeneratorNodeComposeVector::evaluate( MaterialGeneratorError& error
     const bool result(MaterialGeneratorNode::evaluate(error));
     if (result)
     {
-        const ObjectHandle a(getInputConnection(0).getConnection().getVar());
-        const ObjectHandle b(getInputConnection(1).getConnection().getVar());
-        const ObjectHandle c(getInputConnection(2).getConnection().getVar());
-        const ObjectHandle d(getInputConnection(3).getConnection().getVar());
+        ObjectHandle a(ObjectHandle::unassigned);
+        ObjectHandle b(ObjectHandle::unassigned);
+        ObjectHandle c(ObjectHandle::unassigned);
+        ObjectHandle d(ObjectHandle::unassigned);
+        if (getInputConnection(0).isConnected())
+            a = getInputConnection(0).getConnection().getVar();
+        if (getInputConnection(1).isConnected())
+            b = getInputConnection(1).getConnection().getVar();
+        if (getInputConnection(2).isConnected())
+            c = getInputConnection(2).getConnection().getVar();
+        if (getInputConnection(3).isConnected())
+            d = getInputConnection(3).getConnection().getVar();
 
         ct::ShaderGeneratorVariableFactory* const factory(ct::ShaderGeneratorVariableFactory::getInstance());
         const he::ObjectHandle handle(m_Parent->getGenerator()->addVariable());

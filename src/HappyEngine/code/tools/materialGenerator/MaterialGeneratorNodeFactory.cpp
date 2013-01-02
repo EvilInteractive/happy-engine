@@ -28,6 +28,7 @@
 #include "MaterialGeneratorMathNodes.h"
 #include "MaterialGeneratorTextureNodes.h"
 #include "MaterialGeneratorRootNodes.h"
+#include "MaterialGeneratorVectorNodes.h"
 
 namespace he {
 namespace tools {
@@ -65,8 +66,8 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
         //case MaterialGeneratorNodeType_Normal: node = NEW MaterialGeneratorNodeFloat1(); break;
 
         // Vector
-        //case MaterialGeneratorNodeType_ComponentMask: node = NEW MaterialGeneratorNodeComponentMask(); break;
-        //case MaterialGeneratorNodeType_ComposeVector: node = NEW MaterialGeneratorNodeComposeVector(); break;
+        case MaterialGeneratorNodeType_Swizzle: node = NEW MaterialGeneratorNodeSwizzle(); break;
+        case MaterialGeneratorNodeType_ComposeVector: node = NEW MaterialGeneratorNodeComposeVector(); break;
 
         // Math
         // Basic
@@ -74,7 +75,6 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
         case MaterialGeneratorNodeType_Add: node = NEW MaterialGeneratorNodeAdd(); break;
         case MaterialGeneratorNodeType_Cos: node = NEW MaterialGeneratorNodeCos(); break;
         case MaterialGeneratorNodeType_Divide: node = NEW MaterialGeneratorNodeDivide(); break;
-        case MaterialGeneratorNodeType_Min: node = NEW MaterialGeneratorNodeMin(); break;
         case MaterialGeneratorNodeType_Multiply: node = NEW MaterialGeneratorNodeMultiply(); break;
         case MaterialGeneratorNodeType_Sin: node = NEW MaterialGeneratorNodeSin(); break;
         case MaterialGeneratorNodeType_Subtract: node = NEW MaterialGeneratorNodeSubtract(); break;
@@ -88,6 +88,8 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
         case MaterialGeneratorNodeType_Floor: node = NEW MaterialGeneratorNodeFloor(); break;
         case MaterialGeneratorNodeType_Frac: node = NEW MaterialGeneratorNodeFrac(); break;
         case MaterialGeneratorNodeType_Lerp: node = NEW MaterialGeneratorNodeLerp(); break;
+        case MaterialGeneratorNodeType_Min: node = NEW MaterialGeneratorNodeMin(); break;
+        case MaterialGeneratorNodeType_Max: node = NEW MaterialGeneratorNodeMax(); break;
         case MaterialGeneratorNodeType_OneMin: node = NEW MaterialGeneratorNodeOneMin(); break;
         case MaterialGeneratorNodeType_Normalize: node = NEW MaterialGeneratorNodeNormalize(); break;
         case MaterialGeneratorNodeType_Power: node = NEW MaterialGeneratorNodePower(); break;
@@ -101,6 +103,9 @@ MaterialGeneratorNode* MaterialGeneratorNodeFactory::create( const MaterialGener
         //case MaterialGeneratorNodeType_Texture2D: node = NEW MaterialGeneratorNodeTexture2D(); break;
         //case MaterialGeneratorNodeType_TextureCube: node = NEW MaterialGeneratorNodeTextureCube(); break;
         //case MaterialGeneratorNodeType_Texcoord: node = NEW MaterialGeneratorNodeTexcoord(); break;
+
+        default:
+            LOG(LogType_ProgrammerAssert, "Unknown node in factory: %s", materialGeneratorNodeTypeToString(type));
     }
     registerObject(node);
     node->init();

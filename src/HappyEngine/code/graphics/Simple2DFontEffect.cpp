@@ -28,7 +28,11 @@
 namespace he {
 namespace gfx {
 
-Simple2DFontEffect::Simple2DFontEffect() : m_Shader(nullptr)
+Simple2DFontEffect::Simple2DFontEffect() 
+    : m_Shader(nullptr)
+    , m_ShaderWVPPos(UINT32_MAX)
+    , m_ShaderDiffTexPos(UINT32_MAX)
+    , m_ShaderBlendColorPos(UINT32_MAX)
 {
 }
 
@@ -56,6 +60,7 @@ void Simple2DFontEffect::load()
 
     m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
     m_ShaderDiffTexPos = m_Shader->getShaderSamplerId("diffuseMap");
+    m_ShaderBlendColorPos = m_Shader->getShaderVarId("blendColor");
 }
 
 void Simple2DFontEffect::begin() const
@@ -75,6 +80,11 @@ void Simple2DFontEffect::setWorldMatrix(const he::mat44& mat) const
 void Simple2DFontEffect::setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const
 {
     m_Shader->setShaderVar(m_ShaderDiffTexPos, diffuseMap);
+}
+
+void Simple2DFontEffect::setBlendColor( const Color& col ) const
+{
+    m_Shader->setShaderVar(m_ShaderBlendColorPos, col.rgba());
 }
 
 } } //end namespace

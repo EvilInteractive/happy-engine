@@ -139,10 +139,10 @@ public:
     {
         HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str())
         {
-            m_FreeHandles.push(index);
             delete m_Pool[index];
             m_Pool[index] = nullptr;
             ++m_Salt[index];
+            m_FreeHandles.push(index);
         }
         HE_ASSERT(m_Salt[index] + 1 < OBJECTHANDLE_MAX, "ObjectFactory (%s): salt is growing out of bounds", m_DisplayName.c_str());
     }

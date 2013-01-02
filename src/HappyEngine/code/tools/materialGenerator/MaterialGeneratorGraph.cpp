@@ -83,8 +83,9 @@ MaterialGeneratorGraph::MaterialGeneratorGraph()
     , m_WebViewGui(nullptr)
     , m_WebListener(nullptr)
 {
-    he::gui::Font* font(CONTENT->loadFont("DejaVuSansMono.ttf", 12));
+    he::gui::Font* font(CONTENT->loadFont("Ubuntu-Medium.ttf", 14));
     m_DebugText.setFont(font);
+    m_DebugText.setHorizontalAlignment(gui::Text::HAlignment_Left);
     font->release();
 
     m_ErrorFont = CONTENT->loadFont("DejaVuSansMono.ttf", 12);
@@ -212,6 +213,24 @@ void MaterialGeneratorGraph::init()
         }
         args.Clear();
         m_WebListener->executeFunction("", "init", args);
+
+        MaterialGeneratorGraph* _this(this);
+        he::eventCallback1<void, const Awesomium::JSArray&> nodeDroppedCallback([_this](const Awesomium::JSArray& args)
+        {
+            char buff[100];
+            he_memset(buff, 0, 100);
+            HE_ASSERT(args.size() > 0, "Nor arguments supply with nodeDroppedCallback callback!");
+            const Awesomium::JSValue& value(args[0]);
+            HE_ASSERT(value.IsString(), "nodeDroppedCallback did not return a string!");
+            HE_ASSERT(value.IsUndefined() == false, "nodeDroppedCallback returned am undefined value!");
+            const Awesomium::WebString str(value.ToString());
+            value.ToString().ToUTF8(buff, str.length());
+            _this->m_CommandStack.beginTransaction("Create node");
+            _this->m_CreateCommand.create(materialGeneratorNodeTypeFromString(buff), 
+                _this->screenToWorldPos(CONTROLS->getMouse()->getPosition()));
+            _this->m_CommandStack.endTransaction();
+        });
+        m_WebListener->addObjectCallback("HME", "nodeDropped", nodeDroppedCallback);
     });
 
     m_WebViewGui->OnUrlLoaded += loadedCallback;
@@ -647,8 +666,10 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         m_DebugText.addTextExt("&%s  - %s\n", i < undoIndex? "AFA" : "ABA", transactions[i].getName().c_str());
     }
     
+    cvs->setColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
+    cvs->fillText(m_DebugText, vec2(14.0f, 14.0f));
     cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-    cvs->fillText(m_DebugText, vec2(12, 12));
+    cvs->fillText(m_DebugText, vec2(12.0f, 12.0f));
 }
 
 he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const
