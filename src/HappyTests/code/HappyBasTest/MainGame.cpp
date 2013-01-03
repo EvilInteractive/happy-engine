@@ -348,7 +348,7 @@ void MainGame::load()
     m_ToneMapGui->loadUrl(guiPath + "tonemap.html");
     m_ToneMapGui->setTransparent(true);
 
-    m_ToneMapGuiListener = NEW he::gfx::WebListener(m_ToneMapGui);
+    m_ToneMapGuiListener = m_ToneMapGui->getWebListener();
 
     he::eventCallback1<void, const Awesomium::JSArray&> updateHandler(boost::bind(&ht::MainGame::updateToneMapData,this,_1));
     m_ToneMapGuiListener->addObjectCallback("HE", "updateTonemapData", updateHandler);
@@ -419,6 +419,8 @@ void MainGame::load()
     m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph;
     m_MaterialGenerator->init();
 
+    LOG(LogType_ProgrammerAssert, "Test");
+
     PHYSICS->startSimulation();
 }
 
@@ -429,6 +431,8 @@ void MainGame::tick( float dTime )
     m_MovingEntityFase += dTime / 2.0f;
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
+
+    HE_ASSERT(m_MovingEntityFase < 1.0f, "Test");
 
     he::io::IKeyboard* keyboard(CONTROLS->getKeyboard());
     if (CONTROLS->getFocus(this))

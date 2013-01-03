@@ -35,6 +35,7 @@ namespace Awesomium {
 namespace he {
 namespace gfx {
 class Texture2D;
+class WebListener;
 
 class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
 {
@@ -57,6 +58,7 @@ public:
     /* GETTERS */
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
+    WebListener* getWebListener() const { return m_WebListener; }
 
     /* SETTERS */
     void setPosition(const vec2& position) { m_Position = position; }
@@ -117,6 +119,7 @@ private:
 
     /* DATAMEMBERS */
     Awesomium::WebView* m_WebView;
+    WebListener* m_WebListener;
 
     bool m_InputEnabled;
     

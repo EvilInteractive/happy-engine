@@ -38,6 +38,14 @@ class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactor
     virtual ~WindowFactory() { }
 };
 
+#if defined(HE_WINDOWS)
+typedef HWND__* NativeWindowHandle;
+#elif defined(HE_LINUX)
+typedef unsigned long NativeWindowHandle;
+#elif defined(HE_MACOS)
+typedef void* NativeWindowHandle;
+#endif
+
 class Window
 {
 DECLARE_OBJECT(Window)
@@ -73,6 +81,7 @@ public:
     uint32 getWindowWidth() const;
     uint32 getWindowHeight() const;
     GLContext* getContext() { return &m_Context; }  
+    NativeWindowHandle getNativeHandle() const { return m_Window->getSystemHandle(); }
 
     // Events
     event0<void> Resized;

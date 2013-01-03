@@ -67,7 +67,6 @@ function resizePropertyColumns()
 }
 function clearProperties()
 {
-
 }
 
 function addProperty(name, node)
@@ -171,4 +170,5 @@ $(function() {
 
     init();
     resizeBottomPanel();
+    clearProperties();
 });

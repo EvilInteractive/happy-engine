@@ -26,6 +26,9 @@
 namespace he {
 namespace err {
 namespace details {
+
+static std::unordered_map<int, std::unordered_set<const char*>> g_IgnoreAsserts;
+
 void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message)
 {        
     char infoText[1000];
@@ -35,15 +38,29 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
         "On line: %d\n\n"
         "Message:\n%s", func, file, line, message);
     
-    if (MessageBox::showExt(type == AssertType_Code? "Assert!" : "Art Assert!", 
-        infoText, type == AssertType_Code? MessageBoxIcon_ProgrammerAssert : MessageBoxIcon_ArtAssert, 
-        "Debug", "Skip", "Ignore") == MessageBoxButton_Button1)
+    bool ignore = false;
+    std::unordered_map<int, std::unordered_set<const char*>>::const_iterator it(g_IgnoreAsserts.find(line));
+    if (it != g_IgnoreAsserts.cend())
     {
-        #ifndef GCC
-        __debugbreak();
-        #else
-        __builtin_trap();
-        #endif
+        ignore = it->second.find(file) != it->second.cend();
+    }
+    if (ignore == false)
+    {
+        const MessageBoxButton result(MessageBox::showExt(type == AssertType_Code? "Assert!" : "Art Assert!", 
+            infoText, type == AssertType_Code? MessageBoxIcon_ProgrammerAssert : MessageBoxIcon_ArtAssert, 
+            "Debug", "Skip", "Ignore"));
+        if (result == MessageBoxButton_Button1)
+        {
+            #ifndef GCC
+            __debugbreak();
+            #else
+            __builtin_trap();
+            #endif
+        }
+        else if (result == MessageBoxButton_Button3)
+        {
+            g_IgnoreAsserts[line].insert(file);
+        }
     }
 }
 

@@ -76,6 +76,7 @@ set (CODE_GRAPHICS_RENDERING_2D_FILTER
 			Simple2DFontEffect.cpp              Simple2DFontEffect.h
 			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
 			WebView.cpp                         WebView.h
+            WebWindow.cpp                       WebWindow.h
 			WebListener.cpp					    WebListener.h
 			JSObject.h
 			NinePatchEffect.cpp					NinePatchEffect.h

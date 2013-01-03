@@ -184,7 +184,7 @@ void MaterialGeneratorGraph::init()
     m_WebViewGui = m_Renderer->createWebViewRelative(RectF(0, 0, 1, 1), true);
     loadGui();
     m_WebViewGui->setTransparent(true);
-    m_WebListener = NEW gfx::WebListener(m_WebViewGui);
+    m_WebListener = m_WebViewGui->getWebListener();
 
     he::eventCallback0<void> loadedCallback([this]()
     {

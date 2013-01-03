@@ -34,6 +34,7 @@
 #include "IKeyboard.h"
 #include "IMouse.h"
 #include "Canvas2Dnew.h"
+#include "WebListener.h"
 
 #define COMMON_ASCII_CHAR 128
 
@@ -48,7 +49,8 @@ m_WebView(nullptr),
     m_Size(-1, -1),
     m_View(view),
     m_ViewportPercent(0, 0, 1, 1),
-    m_Buffer(nullptr)
+    m_Buffer(nullptr),
+    m_WebListener(nullptr)
 {    
     init();
     resize(vec2(static_cast<float>(viewport.width), static_cast<float>(viewport.height)));
@@ -63,7 +65,8 @@ WebView::WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserI
     m_View(view),
     m_ViewportPercent(viewportPercent),
     m_ViewResizedHandler(boost::bind(&WebView::onViewResized, this)),
-    m_Buffer(nullptr)
+    m_Buffer(nullptr),
+    m_WebListener(nullptr)
 {    
     init();
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
@@ -77,6 +80,7 @@ void WebView::init()
 
     // create webview
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
+    m_WebListener = NEW WebListener(m_WebView);
 
     ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
     m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
@@ -242,6 +246,7 @@ WebView::~WebView()
     he_free(m_Buffer);
     m_WebView->Destroy();
     m_RenderTexture->release();
+    delete m_WebListener;
 }
 
 /* GENERAL */
@@ -273,6 +278,7 @@ void WebView::loadUrl(const std::string& url)
 
     m_WebView->set_load_listener(this);
     m_WebView->set_view_listener(this);
+    m_WebView->set_js_method_handler(m_WebListener);
 }
 
 void WebView::loadFile(const he::Path& /*path*/)
