@@ -418,9 +418,7 @@ void MainGame::load()
 
     m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph;
     m_MaterialGenerator->init();
-
-    LOG(LogType_ProgrammerAssert, "Test");
-
+    
     PHYSICS->startSimulation();
 }
 
@@ -431,9 +429,7 @@ void MainGame::tick( float dTime )
     m_MovingEntityFase += dTime / 2.0f;
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
-
-    HE_ASSERT(m_MovingEntityFase < 1.0f, "Test");
-
+    
     he::io::IKeyboard* keyboard(CONTROLS->getKeyboard());
     if (CONTROLS->getFocus(this))
     {
