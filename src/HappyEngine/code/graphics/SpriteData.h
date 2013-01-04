@@ -36,54 +36,54 @@ struct SpriteData
                 unsigned char* rBuff,
                 _cairo_surface* surf,
                 _cairo* cp) :
-                    id(id),
-                    size(size),
-                    texture2D(tex2D),
-                    renderBuffer(rBuff),
-                    cairoSurface(surf),
-                    cairoPaint(cp),
-                    readyState(0x00)
+                    m_Id(id),
+                    m_Size(size),
+                    m_Texture2D(tex2D),
+                    m_RenderBuffer(rBuff),
+                    m_CairoSurface(surf),
+                    m_CairoPaint(cp),
+                    m_ReadyState(0x00)
     {}
 
         
     SpriteData(const SpriteData& sd)
     {
-        this->id = sd.id;
-        this->size = sd.size;
-        this->drawCalls = sd.drawCalls;
-        this->texture2D = sd.texture2D;
-        this->renderBuffer = sd.renderBuffer;
-        this->cairoSurface = sd.cairoSurface;
-        this->cairoPaint = sd.cairoPaint;
-        this->readyState = sd.readyState;
+        this->m_Id = sd.m_Id;
+        this->m_Size = sd.m_Size;
+        this->m_DrawCalls = sd.m_DrawCalls;
+        this->m_Texture2D = sd.m_Texture2D;
+        this->m_RenderBuffer = sd.m_RenderBuffer;
+        this->m_CairoSurface = sd.m_CairoSurface;
+        this->m_CairoPaint = sd.m_CairoPaint;
+        this->m_ReadyState = sd.m_ReadyState;
     }
     SpriteData& operator=(const SpriteData& sd)
     {
-        this->id = sd.id;
-        this->size = sd.size;
-        this->drawCalls = sd.drawCalls;
-        this->texture2D = sd.texture2D;
-        this->renderBuffer = sd.renderBuffer;
-        this->cairoSurface = sd.cairoSurface;
-        this->cairoPaint = sd.cairoPaint;
-        this->readyState = sd.readyState;
+        this->m_Id = sd.m_Id;
+        this->m_Size = sd.m_Size;
+        this->m_DrawCalls = sd.m_DrawCalls;
+        this->m_Texture2D = sd.m_Texture2D;
+        this->m_RenderBuffer = sd.m_RenderBuffer;
+        this->m_CairoSurface = sd.m_CairoSurface;
+        this->m_CairoPaint = sd.m_CairoPaint;
+        this->m_ReadyState = sd.m_ReadyState;
 
         return *this;
     }
 
     bool operator==(const SpriteData& sd)
     {
-        return (this->id == sd.id);
+        return (this->m_Id == sd.m_Id);
     }
 
-    uint16 id;
-    vec2 size;
-    std::queue<boost::function0<void> > drawCalls;
-    Texture2D* texture2D;
-    unsigned char* renderBuffer;
-    _cairo_surface* cairoSurface;
-    _cairo* cairoPaint;
-    char readyState;
+    uint16 m_Id;
+    vec2 m_Size;
+    std::queue<boost::function0<void> > m_DrawCalls;
+    Texture2D* m_Texture2D;
+    unsigned char* m_RenderBuffer;
+    _cairo_surface* m_CairoSurface;
+    _cairo* m_CairoPaint;
+    char m_ReadyState;
 };
 
 }} //end namespace

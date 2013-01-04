@@ -63,8 +63,7 @@ gui::Font* FontLoader::load(const std::string& path, uint16 size, uint8 options)
 
         if (error != 0)
         {
-            HE_ERROR("Error loading font: %s", path.c_str());
-            LOG(LogType_ProgrammerAssert, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font: %s", path.c_str());
             return nullptr;
         }
 
@@ -72,8 +71,7 @@ gui::Font* FontLoader::load(const std::string& path, uint16 size, uint8 options)
 
         if (error != 0)
         {
-            HE_ERROR("Error loading font charmap: %s", path.c_str());
-            LOG(LogType_ProgrammerAssert, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font charmap: %s", path.c_str());
             return nullptr;
         }
 
@@ -83,8 +81,7 @@ gui::Font* FontLoader::load(const std::string& path, uint16 size, uint8 options)
 
         if (error != 0)
         {
-            HE_ERROR("Error setting font size: %s", path.c_str());
-            LOG(LogType_ProgrammerAssert, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error setting font size: %s", path.c_str());
             return nullptr;
         }
 
