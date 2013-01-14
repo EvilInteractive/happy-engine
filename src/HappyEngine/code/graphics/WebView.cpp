@@ -50,7 +50,8 @@ m_WebView(nullptr),
     m_View(view),
     m_ViewportPercent(0, 0, 1, 1),
     m_Buffer(nullptr),
-    m_WebListener(nullptr)
+    m_WebListener(nullptr),
+    m_HasFocus(false)
 {    
     init();
     resize(vec2(static_cast<float>(viewport.width), static_cast<float>(viewport.height)));
@@ -66,7 +67,8 @@ WebView::WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserI
     m_ViewportPercent(viewportPercent),
     m_ViewResizedHandler(boost::bind(&WebView::onViewResized, this)),
     m_Buffer(nullptr),
-    m_WebListener(nullptr)
+    m_WebListener(nullptr),
+    m_HasFocus(false)
 {    
     init();
     m_View->ViewportSizeChanged += m_ViewResizedHandler;
@@ -89,9 +91,6 @@ void WebView::init()
 
     if (m_InputEnabled)
     {
-        io::IKeyboard* keyboard(CONTROLS->getKeyboard());
-        io::IMouse* mouse(CONTROLS->getMouse());
-
         Awesomium::WebView* w(m_WebView);
         m_KeyPressedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
@@ -218,12 +217,7 @@ void WebView::init()
             //CONTROLS->returnFocus(this);
         });
 
-        keyboard->KeyPressed += m_KeyPressedHandler;
-        keyboard->KeyReleased += m_KeyReleasedHandler;
-        mouse->MouseButtonPressed += m_MouseButtonPressedHandler;
-        mouse->MouseButtonReleased += m_MouseButtonReleasedHandler;
-        mouse->MouseMoved += m_MouseMoveHandler;
-        mouse->MouseWheelMoved += m_MouseScrollHandler;
+        focus();
     }
 }
 
@@ -294,12 +288,40 @@ void WebView::executeJavaScript(const std::string& /*script*/)
 
 void WebView::focus()
 {
-    m_WebView->Focus();
+    HE_IF_ASSERT(m_HasFocus == false, "Webview already has focus")
+    {
+        m_WebView->Focus();
+        if (m_InputEnabled)
+        {
+            io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+            io::IMouse* mouse(CONTROLS->getMouse());
+            keyboard->KeyPressed += m_KeyPressedHandler;
+            keyboard->KeyReleased += m_KeyReleasedHandler;
+            mouse->MouseButtonPressed += m_MouseButtonPressedHandler;
+            mouse->MouseButtonReleased += m_MouseButtonReleasedHandler;
+            mouse->MouseMoved += m_MouseMoveHandler;
+            mouse->MouseWheelMoved += m_MouseScrollHandler;
+        }
+    }
 }
 
 void WebView::unfocus()
 {
-    m_WebView->Unfocus();
+    HE_IF_ASSERT(m_HasFocus == true, "Webview does not have focus when unfocussing")
+    {
+        m_WebView->Unfocus();
+        if (m_InputEnabled)
+        {
+            io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+            io::IMouse* mouse(CONTROLS->getMouse());
+            keyboard->KeyPressed -= m_KeyPressedHandler;
+            keyboard->KeyReleased -= m_KeyReleasedHandler;
+            mouse->MouseButtonPressed -= m_MouseButtonPressedHandler;
+            mouse->MouseButtonReleased -= m_MouseButtonReleasedHandler;
+            mouse->MouseMoved -= m_MouseMoveHandler;
+            mouse->MouseWheelMoved -= m_MouseScrollHandler;
+        }
+    }
 }
 
 void WebView::setTransparent(bool transparent)

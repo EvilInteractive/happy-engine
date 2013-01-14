@@ -122,6 +122,7 @@ private:
     WebListener* m_WebListener;
 
     bool m_InputEnabled;
+    bool m_HasFocus;
     
     Texture2D* m_RenderTexture;
     vec2 m_Position;
@@ -147,6 +148,6 @@ private:
     WebView& operator=(const WebView&);
 };
 
-}} //end namespace
+} } //end namespace
 
 #endif

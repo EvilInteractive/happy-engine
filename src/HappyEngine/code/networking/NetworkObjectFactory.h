@@ -99,8 +99,6 @@ public:
     virtual details::NetworkObjectBase* createReplica() 
     { 
         ObjectHandle handle(ObjectFactory<T>::create());
-        details::NetworkObjectBase* obj(get(handle));
-        obj->setHandle(handle);
         return get(handle); 
     };
 

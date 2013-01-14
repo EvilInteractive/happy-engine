@@ -142,7 +142,6 @@ MainGame::~MainGame()
     cr->removeSprite(m_TestSprite);
     
     delete m_ToneMapGui;
-    delete m_ToneMapGuiListener;
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {

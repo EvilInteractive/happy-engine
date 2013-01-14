@@ -91,6 +91,7 @@ private:
         // Shadow
         uint32 shadowMap;
         uint32 shadowMatrix;
+        uint32 shadowInvSize;
     };
     struct PostAmbDirIllLightData
     {

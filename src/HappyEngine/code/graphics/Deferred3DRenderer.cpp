@@ -221,6 +221,7 @@ void Deferred3DRenderer::compileShaders()
         m_ShadowSpotLightData.wvp = m_ShadowSpotLightShader->getShaderVarId("mtxWVP");
         m_ShadowSpotLightData.shadowMap = m_ShadowSpotLightShader->getShaderSamplerId("shadowMap");
         m_ShadowSpotLightData.shadowMatrix = m_ShadowSpotLightShader->getShaderVarId("shadowMatrix");
+        m_ShadowSpotLightData.shadowInvSize = m_ShadowSpotLightShader->getShaderVarId("shadowMapInvSize");
 
     //----AL----------------------------------------------------------------------   
     m_AmbDirIllLightData.ambColor = m_AmbDirIllShader->getShaderVarId("ambLight.color");
@@ -491,6 +492,7 @@ void Deferred3DRenderer::postSpotLights()
 
                     m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.shadowMatrix,     light->getShadowCamera().getViewProjection() * camera.getView().inverse());
                     m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.shadowMap,        light->getShadowMap());
+                    m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.shadowInvSize,    vec2(1.0f / gfx::GraphicsEngine::getShadowMapSize(light->getShadowResolution())));
                 }
                 else
                 {

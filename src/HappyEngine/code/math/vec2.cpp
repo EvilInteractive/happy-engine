@@ -27,6 +27,9 @@ vec2::vec2(): x(0), y(0)
 vec2::vec2(float x_, float y_): x(x_), y(y_)
 {
 }
+vec2::vec2(const float v): x(v), y(v)
+{
+}
 vec2::vec2(const physx::PxVec2& vec) : x(vec.x), y(vec.y)
 {
 }

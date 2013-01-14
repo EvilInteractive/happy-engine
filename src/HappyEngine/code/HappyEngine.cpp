@@ -148,7 +148,7 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     }
 }
 
-void HappyEngine::start(ge::Game* pGame)
+void HappyEngine::start(ge::Game* game)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -156,7 +156,13 @@ void HappyEngine::start(ge::Game* pGame)
     cout << "*************  HappyEngine :D  *************\n";
     cout << "  ***************          ***************  \n";
     cout << "       ******************************       \n";
-    //cout << "os: " << SDL_GetPlatform() << "\n\n";
+#ifdef HE_WINDOWS
+    cout << "os: Windows\n\n";
+#elif HE_MAC
+    cout << "os: Mac\n\n";
+#elif HE_LINUX
+    cout << "os: Linux\n\n";
+#endif
 
 #ifdef ARCH_32
     int sse(0x01 << 25);
@@ -175,28 +181,22 @@ void HappyEngine::start(ge::Game* pGame)
     } 
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
 #endif
-    m_Game = pGame;
+    m_Game = game;
   
-    //Init Game
-    pGame->init();
+    // Init Game
+    game->init();
 
-    //load stuff
+    // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
-        m_GraphicsEngine->init();
-        
+        m_GraphicsEngine->init();        
         m_Console->load();
-        //CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
 
 #ifdef ENABLE_PROFILING
         PROFILER->load();
 #endif
     }
-
-
-    //if (m_SubEngines & SubEngine_2DRenderer) m_2DRenderer->init();
-
-
+    
     m_Game->load();
     
     if (m_SubEngines & SubEngine_Audio)
@@ -204,13 +204,14 @@ void HappyEngine::start(ge::Game* pGame)
         m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
     }
 
-    //boost::timer t;
     m_PrevTime = boost::chrono::high_resolution_clock::now();
-
     while (m_Quit == false)
     {
         loop();
     }   
+
+    // Destroy Game
+    game->init();
 }
 void HappyEngine::loop()
 {

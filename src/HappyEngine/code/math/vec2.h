@@ -33,6 +33,7 @@ public:
     vec2();
     explicit vec2(const physx::PxVec2& vec);
     vec2(float x, float y);
+    explicit vec2(const float v);
     ~vec2();
 
     vec2(const vec2& other);
