@@ -55,6 +55,7 @@ public:
 
     /* GENERAL */
     void addTextExt(const char* text, ...);
+    void addTextExt(const char* text, const va_list& argList);
     void addText(const char* text, int len = -1);
     void addLine(const char* text, int len = -1);
     void clear();

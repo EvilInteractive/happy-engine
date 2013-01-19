@@ -30,6 +30,11 @@ struct vec2
 public:
     float x, y;
 
+    static const vec2 zero;
+    static const vec2 one;
+    static const vec2 unitX;
+    static const vec2 unitY;
+
     vec2();
     explicit vec2(const physx::PxVec2& vec);
     vec2(float x, float y);

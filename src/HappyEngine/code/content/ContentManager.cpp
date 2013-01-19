@@ -326,10 +326,7 @@ void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
 
 bool ContentManager::isLoading() const
 {
-    if (m_ModelLoader->isLoading() || m_TextureLoader->isLoading())
-        return true;
-    else
-        return false;
+    return m_ModelLoader->isLoading() || m_TextureLoader->isLoading();
 }
 
 //////////////////////////////////////////////////////////////////////////
