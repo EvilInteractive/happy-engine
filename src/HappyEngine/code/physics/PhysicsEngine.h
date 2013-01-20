@@ -77,10 +77,7 @@ public:
 
     void startSimulation();
     void stopSimulation();
-
-    void lock();
-    void unlock();
-
+    
     physx::PxPhysics* getSDK() const;
     physx::PxScene* getScene() const;
     //PhysicsCarManager* getCarManager() const;
@@ -122,8 +119,6 @@ private:
     float m_Timer;
 
     bool m_Simulate;
-
-    boost::mutex m_PhysXMutex;
 
     //Disable default copy constructor and default assignment operator
     PhysicsEngine(const PhysicsEngine&);

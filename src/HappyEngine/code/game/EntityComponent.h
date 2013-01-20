@@ -40,6 +40,9 @@ public:
     virtual void serialize(SerializerStream& /*stream*/) {}
     virtual void deserialize(const SerializerStream& /*stream*/) {}
 
+    virtual void activate() {}
+    virtual void deactivate() {}
+
     //////////////////////////////////////////////////////////////////////////
     // IObject3D
     //////////////////////////////////////////////////////////////////////////

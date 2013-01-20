@@ -43,6 +43,8 @@ public:
     /* EntityComponent */
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
+    virtual void activate();
+    virtual void deactivate();
     
     /* GENERAL */
     void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 

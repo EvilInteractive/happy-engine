@@ -1,6 +1,6 @@
 
 addFilter(CODE_SRCS src/physics code/physics/
-            IPhysicsActor.cpp                          IPhysicsActor.h
+            PhysicsActor.cpp                           PhysicsActor.h
             PhysicsCharacterController.cpp             PhysicsCharacterController.h
             PhysicsDynamicActor.cpp                    PhysicsDynamicActor.h
             PhysicsEngine.cpp                          PhysicsEngine.h

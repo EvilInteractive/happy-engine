@@ -248,17 +248,6 @@ physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dy
 //    return m_pCarManager->getFrictionTable()->getMaterial(id);
 //}
 
-void PhysicsEngine::lock()
-{
-    m_PhysXMutex.lock();
-}
-
-void PhysicsEngine::unlock()
-{
-    m_PhysXMutex.unlock();
-}
-
-
 void PhysicsEngine::onConstraintBreak( physx::PxConstraintInfo* /*constraints*/, physx::PxU32 /*count*/ )
 {
 
@@ -322,7 +311,7 @@ RayCastResult PhysicsEngine::raycast( const Ray& ray, uint32 collisionGroup ) co
         result.hitDistance = hit.distance;
         result.hitPosition = vec3(hit.impact);
         result.hitNormal = vec3(hit.normal);
-        result.actorHit = static_cast<IPhysicsActor*>(hit.shape->userData);
+        result.actorHit = static_cast<PhysicsActor*>(hit.shape->userData);
     }
     else
     {

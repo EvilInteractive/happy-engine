@@ -80,7 +80,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 #endif
         } break;
         case LogType_Error:
-            {
+        {
             typeString = "Error"; 
             consoleType = CMSG_TYPE_ERROR;
         } break;

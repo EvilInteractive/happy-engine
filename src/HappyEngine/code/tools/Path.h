@@ -40,6 +40,8 @@ public:
     //return = C:/data/test.png => absolute
     Path append(const std::string& relativePath) const; 
 
+    std::string getFileName() const;
+
     static Path getWorkingDir();
 
 private:

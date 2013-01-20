@@ -22,7 +22,7 @@
 #define _HE_PHYSICS_STATIC_ACTOR_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsUserData.h"
 
 namespace physx {
@@ -35,7 +35,7 @@ namespace px {
 class IPhysicsShape;
 class PhysicsMaterial;
 
-class PhysicsStaticActor : public IPhysicsActor
+class PhysicsStaticActor : public PhysicsActor
 {
 public:
     PhysicsStaticActor(const mat44& pose, const IPhysicsShape* shape, const PhysicsMaterial& material);

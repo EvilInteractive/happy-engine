@@ -22,7 +22,7 @@
 #include "PxRigidActor.h"
 
 #include "PhysicsEngine.h"
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "IPhysicsShape.h"
 
 #include "PhysicsBoxShape.h"
@@ -37,7 +37,18 @@
 namespace he {
 namespace px {
 
-bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
+PhysicsActor::PhysicsActor()
+    : m_IsAttachedToScene(false)
+{
+
+}
+
+PhysicsActor::~PhysicsActor()
+{
+    HE_ASSERT(m_IsAttachedToScene == false, "Actor is still attached to scene when deleting");
+}
+
+bool PhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList, const IPhysicsShape* shape, 
                                 const PhysicsMaterial& material, const mat44& localPose /*= mat44::Identity*/ )
 {
     physx::PxShape* pxShape(nullptr);
@@ -131,10 +142,30 @@ bool IPhysicsActor::createShape(he::PrimitiveList<physx::PxShape*>& outShapeList
     return result;
 }
 
-void IPhysicsActor::teleport( const mat44& pose )
+void PhysicsActor::teleport( const mat44& pose )
 {
     physx::PxRigidActor* actor(getInternalActor());
     actor->setGlobalPose(physx::PxTransform(pose.getPhyicsMatrix()));
+}
+
+void PhysicsActor::attachToScene()
+{
+    HE_IF_ASSERT(m_IsAttachedToScene == false, "Actor already attached to scene")
+    HE_IF_ASSERT(getInternalActor() != nullptr, "Actor is nullptr when attaching to scene")
+    {
+        m_IsAttachedToScene = true;
+        PHYSICS->getScene()->addActor(*getInternalActor());
+    }
+}
+
+void PhysicsActor::detachFromScene()
+{
+    HE_IF_ASSERT(m_IsAttachedToScene == true, "Actor already detached from scene")
+    HE_IF_ASSERT(getInternalActor() != nullptr, "Actor is nullptr when removing from scene")
+    {
+        m_IsAttachedToScene = false;
+        PHYSICS->getScene()->removeActor(*getInternalActor());
+    }
 }
 
 

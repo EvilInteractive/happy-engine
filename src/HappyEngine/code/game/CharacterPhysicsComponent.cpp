@@ -35,7 +35,6 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(): m_CharacterController(nu
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()
 {
-    GAME->removeFromTickList(this);
     delete m_CharacterController;
 }
 
@@ -49,7 +48,18 @@ void CharacterPhysicsComponent::init( Entity* parent )
     m_CharacterController->setHeight(2.0f);
     m_CharacterController->setRadius(0.5f);
     m_CharacterController->setMoveSpeed(vec3::zero);
+}
+
+void CharacterPhysicsComponent::activate()
+{
+    m_CharacterController->attachToScene();
     GAME->addToTickList(this);
+}
+
+void CharacterPhysicsComponent::deactivate()
+{
+    m_CharacterController->detachFromScene();
+    GAME->removeFromTickList(this);
 }
 
 void CharacterPhysicsComponent::serialize(SerializerStream& /*stream*/)

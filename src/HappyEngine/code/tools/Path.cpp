@@ -119,4 +119,15 @@ void Path::convertBackslashesToForward()
     }
 }
 
+std::string Path::getFileName() const
+{
+    std::string result("");
+    size_t index(m_Path.rfind('/', m_Path.size() - 1));
+    if (index != std::string::npos)
+    {
+        result = m_Path.substr(index + 1, m_Path.size() - index - 1);
+    }
+    return result;
+}
+
 } //end namespace

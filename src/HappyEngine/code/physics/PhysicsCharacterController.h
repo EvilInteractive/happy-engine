@@ -22,7 +22,7 @@
 #define _HE_PhysicsCharacterController_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsUserData.h"
 
 namespace he {
@@ -33,6 +33,9 @@ class PhysicsCharacterController : physx::PxUserControllerHitReport, public IPhy
 public:
     PhysicsCharacterController();
     virtual ~PhysicsCharacterController();
+
+    void attachToScene();
+    void detachFromScene();
 
     void setHeight(const float height);
     void setRadius(const float radius);
@@ -71,6 +74,7 @@ public:
     }
 
 private:
+    physx::PxCapsuleControllerDesc m_ControllerDesc;
     physx::PxCapsuleController* m_Controller;
     physx::PxControllerFilters m_Filters;
 

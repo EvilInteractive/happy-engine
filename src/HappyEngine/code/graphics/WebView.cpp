@@ -290,6 +290,7 @@ void WebView::focus()
 {
     HE_IF_ASSERT(m_HasFocus == false, "Webview already has focus")
     {
+        m_HasFocus = true;
         m_WebView->Focus();
         if (m_InputEnabled)
         {
@@ -309,6 +310,7 @@ void WebView::unfocus()
 {
     HE_IF_ASSERT(m_HasFocus == true, "Webview does not have focus when unfocussing")
     {
+        m_HasFocus = false;
         m_WebView->Unfocus();
         if (m_InputEnabled)
         {

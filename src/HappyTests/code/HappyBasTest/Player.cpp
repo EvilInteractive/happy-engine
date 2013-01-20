@@ -37,13 +37,11 @@ Player::Player()
     : m_Mover(NEW PlayerMover(this))
     , m_Camera(NEW PlayerThirdPersonCamera(this))
 {
-    he::gfx::Scene* scene(static_cast<MainGame*>(GAME)->getScene());
-    init(scene);
     addComponent(m_Mover);
 
     he::ge::ModelComponent* const model(NEW he::ge::ModelComponent);
-    model->setModelMeshAndMaterial("testPlatformer/player.material", "testPlatformer/player2m.binobj");
     addComponent(model);
+    model->setModelMeshAndMaterial("testPlatformer/player.material", "testPlatformer/player2m.binobj");
 
     he::ge::SpotLightComponent* const spotLight(NEW he::ge::SpotLightComponent);
     addComponent(spotLight);
@@ -55,6 +53,8 @@ Player::Player()
     spotLight->setShadow(he::gfx::ShadowResolution_512);
     spotLight->setLocalTranslate(he::vec3(0, 1, 0));
 
+    he::gfx::Scene* scene(static_cast<MainGame*>(GAME)->getScene());
+    setScene(scene);
     scene->getCameraManager()->addCamera("player3thperson", m_Camera);
 }
 #pragma warning(default:4355) // this in constructor

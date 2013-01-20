@@ -34,7 +34,7 @@ public:
     FileReader();
     virtual ~FileReader();
 
-    bool open(const std::string& path, OpenType type);
+    bool open(const he::Path& path, OpenType type);
     void close();
 
     std::string readLine();

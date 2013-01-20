@@ -211,7 +211,7 @@ void HappyEngine::start(ge::Game* game)
     }   
 
     // Destroy Game
-    game->init();
+    game->destroy();
 }
 void HappyEngine::loop()
 {

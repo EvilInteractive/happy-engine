@@ -45,6 +45,9 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual void serialize(SerializerStream& stream);
     virtual void deserialize(const SerializerStream& stream);
+
+    virtual void activate();
+    virtual void deactivate();
     //////////////////////////////////////////////////////////////////////////
          
     void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, uint32 collisionGroup = 0xffffffff, const mat44& localPose = mat44::Identity );

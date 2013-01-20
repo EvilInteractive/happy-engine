@@ -71,16 +71,19 @@ void Forward3DRenderer::init( View* view, const RenderTarget* target)
 void Forward3DRenderer::render()
 {
     const ICamera* camera(m_View->getCamera());
-    m_RenderTarget->prepareForRendering();
+    if (camera != nullptr)
+    {
+        m_RenderTarget->prepareForRendering();
         
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-    GL::heSetCullFace(false);
-    GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
+        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+        GL::heSetDepthRead(true);
+        GL::heSetDepthWrite(true);
+        GL::heSetCullFace(false);
+        GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
 
-    PreRender(camera);
-    PostRender(camera);
+        PreRender(camera);
+        PostRender(camera);
+    }
 }
 
 
