@@ -75,6 +75,7 @@ public:
     void setCursor(const io::MouseCursor cursor);
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create
+    void setMousePosition(const vec2& pos);
 
     // Getters
     void getWindowPosition(int& x, int& y) const;

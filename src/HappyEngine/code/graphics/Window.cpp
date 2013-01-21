@@ -98,7 +98,6 @@ void Window::create(Window* parent)
         m_Window->setSize(sf::Vector2u(m_WindowRect.width, m_WindowRect.height));
     }
     m_Window->setKeyRepeatEnabled(false);
-    m_Window->setFramerateLimit(0);
     setWindowPosition(m_WindowRect.x, m_WindowRect.y);
     setCursorVisible(m_IsCursorVisible);
     setVSync(m_VSyncEnabled);
@@ -283,6 +282,11 @@ void Window::setFullscreen( bool fullscreen )
 void Window::setResizable( bool resizable )
 {
     m_Resizeable = resizable;
+}
+
+void Window::setMousePosition( const vec2& pos )
+{
+    sf::Mouse::setPosition(sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y)), *m_Window);
 }
 
 #ifdef HE_WINDOWS
