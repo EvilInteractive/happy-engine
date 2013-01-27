@@ -1,6 +1,8 @@
 
 addFilter(CODE_SRCS src/io code/io/
-            BinaryStream.cpp                    BinaryStream.h
+            BinaryVisitor.cpp                   BinaryVisitor.h
+            BinaryStreamVisitor.cpp             BinaryStreamVisitor.h
+            BinaryFileVisitor.cpp               BinaryFileVisitor.h
             ControlsManager.cpp                 ControlsManager.h
             FileReader.cpp                      FileReader.h
             FileWriter.cpp                      FileWriter.h

@@ -80,14 +80,6 @@ void PointLightComponent::deactivate()
     }
 }
 
-void PointLightComponent::serialize(SerializerStream& /*stream*/)
-{
-}
-
-void PointLightComponent::deserialize(const SerializerStream& /*stream*/)
-{
-}
-
 void PointLightComponent::setMultiplier( float multiplier )
 {
     m_Multiplier = multiplier;
@@ -188,14 +180,6 @@ void SpotLightComponent::deactivate()
         m_SpotLight = nullptr;
         m_Parent->getScene()->getLightManager()->remove(spotlightHandle);
     }
-}
-
-void SpotLightComponent::serialize( SerializerStream& /*stream*/ )
-{
-}
-
-void SpotLightComponent::deserialize( const SerializerStream& /*stream*/ )
-{
 }
 
 void SpotLightComponent::setMultiplier( float multiplier )

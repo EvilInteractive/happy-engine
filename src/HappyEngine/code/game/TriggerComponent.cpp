@@ -95,16 +95,6 @@ void TriggerComponent::deactivate()
     }
 }
 
-void TriggerComponent::serialize(SerializerStream& /*stream*/)
-{
-
-}
-
-void TriggerComponent::deserialize(const SerializerStream& /*stream*/)
-{
-
-}
-
 /* GENERAL */
 void TriggerComponent::addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
     const mat44& localPose)

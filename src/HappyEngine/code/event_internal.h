@@ -145,6 +145,10 @@ template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS>
 class EVENT : public details::EVENTBASE<ReturnType COMMA TEMPLATE_EXTRA_ARGS>
 {
 public:
+    /// \brief Executes after every callback to combine the return type
+    /// \param[in] value to ultimately return from the event
+    /// \param[in] last received return value from a callback
+    /// \return true to eat event
     typedef boost::function2<bool, ReturnType&, const ReturnType&> EventCombiner;
 
     EVENT(): 

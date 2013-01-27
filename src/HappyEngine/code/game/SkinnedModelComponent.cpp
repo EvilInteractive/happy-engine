@@ -47,14 +47,6 @@ void SkinnedModelComponent::init( Entity* parent )
     m_Parent = parent;
 }
 
-void SkinnedModelComponent::serialize(SerializerStream& /*stream*/)
-{
-}
-
-void SkinnedModelComponent::deserialize(const SerializerStream& /*stream*/)
-{
-}
-
 const gfx::Material* SkinnedModelComponent::getMaterial() const
 {
     return m_Material;

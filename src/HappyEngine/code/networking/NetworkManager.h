@@ -24,6 +24,9 @@
 
 #include "ReplicaManager3.h"
 #include "NetworkConnection.h"
+#include "NetworkPackage.h"
+
+#include <PacketPriority.h>
 
 namespace RakNet {
     class RakPeerInterface;
@@ -40,6 +43,23 @@ enum ConnectionType
     ConnectionType_Client
 };
 
+enum ENetworkPriority
+{
+    eNetworkPriority_Low = LOW_PRIORITY,
+    eNetworkPriority_Medium = MEDIUM_PRIORITY,
+    eNetworkPriority_High = HIGH_PRIORITY,
+    eNetworkPriority_Immediate = IMMEDIATE_PRIORITY,
+};
+
+enum ENetworkReliability
+{
+    eNetworkReliability_UnReliable = UNRELIABLE,
+    eNetworkReliability_UnReliableSequenced = UNRELIABLE_SEQUENCED, // discard packages if a newer has already arrived
+    eNetworkReliability_Reliable = RELIABLE_ORDERED,
+    eNetworkReliability_ReliableOrdered = RELIABLE_ORDERED,  // queue packages to match send order
+    eNetworkReliability_ReliableSequenced = RELIABLE_SEQUENCED  // discard packages if a newer has already arrived
+};
+
 class NetworkManager : public RakNet::ReplicaManager3
 {
 public:
@@ -53,6 +73,11 @@ public:
     void disconnect();
     void tick(float dTime);
     bool isConnected() const;
+
+    void send(const NetworkPackage& package, const NetworkID& to, 
+        const ENetworkReliability reliability = eNetworkReliability_ReliableOrdered, const ENetworkPriority priority = eNetworkPriority_High);
+    void broadcast(const NetworkPackage& package, const bool ignoreSelf = true, 
+        const ENetworkReliability reliability = eNetworkReliability_ReliableOrdered, const ENetworkPriority priority = eNetworkPriority_High);
 
     bool IsHost() const;
     NetworkID getNetworkId() const;
@@ -73,11 +98,11 @@ public:
     he::event0<void> ConnectionSuccessful;
     he::event0<void> ConnectionFailed;
     he::event0<void> ConnectionLost;
+    he::event1<bool, const NetworkPackage&> PacketReceived; // return true if you handled the package
 
 private:
     void clientConnected(const NetworkID& id, const std::string& adress);
     void clientDisconnected(const NetworkID& id);
-
 
     float m_Sleep, m_SleepTimout;
 

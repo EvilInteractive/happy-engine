@@ -31,7 +31,7 @@ namespace gfx {
     class Canvas2D;
 }
 namespace io {
-    class BinaryStream;
+    class BinaryFileVisitor;
 }
 namespace gui {
     class Sprite;
@@ -135,8 +135,7 @@ public:
     const Guid& getGuid() const { return m_Guid; }
     const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
     
-    void serialize(io::BinaryStream& stream) const;
-    void deserialize(io::BinaryStream& stream);
+    void visit(io::BinaryFileVisitor& stream);
 
     void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 

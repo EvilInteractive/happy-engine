@@ -5,7 +5,7 @@ addFilter(CODE_SRCS src/game code/game/
             Entity.cpp                              Entity.h
             Game.h
             ITickable.h
-            SerializerStream.cpp                    SerializerStream.h)
+        )
                         
                         
 addFilter(CODE_SRCS src/game/components code/game/
@@ -17,12 +17,12 @@ addFilter(CODE_SRCS src/game/components code/game/
             SkinnedModelComponent.cpp               SkinnedModelComponent.h
             StaticPhysicsComponent.cpp              StaticPhysicsComponent.h
             TriggerComponent.cpp                    TriggerComponent.h
-            )
+        )
                         
 addFilter(CODE_SRCS src/game/components/factory code/game/
             EntityComponentFactory.cpp              EntityComponentFactory.h
-            )
+        )
 
 addFilter(CODE_SRCS src/game/components/base code/game/
             EntityComponent.cpp                     EntityComponent.h
-            )
+        )

@@ -6,6 +6,7 @@ addFilter(CODE_SRCS src/networking code/networking/
             NetworkObjectBase.cpp                NetworkObjectBase.h
             NetworkObjectFactory.cpp             NetworkObjectFactory.h
             NetworkObjectFactoryManager.cpp      NetworkObjectFactoryManager.h
+            NetworkPackage.cpp                   NetworkPackage.h
             NetworkReplicaConnection.cpp         NetworkReplicaConnection.h
             NetworkSerializer.cpp                NetworkSerializer.h
             INetworkSerializable.h

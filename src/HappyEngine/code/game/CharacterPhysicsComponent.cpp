@@ -62,16 +62,6 @@ void CharacterPhysicsComponent::deactivate()
     GAME->removeFromTickList(this);
 }
 
-void CharacterPhysicsComponent::serialize(SerializerStream& /*stream*/)
-{
-
-}
-
-void CharacterPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
-{
-
-}
-
 void CharacterPhysicsComponent::tick( float dTime )
 {
     m_CharacterController->tick(dTime);

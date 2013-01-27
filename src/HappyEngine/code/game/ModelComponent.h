@@ -43,8 +43,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* parent);
 
-    virtual void serialize(SerializerStream& stream);
-    virtual void deserialize(const SerializerStream& stream);
+    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
     virtual void activate();
     virtual void deactivate();

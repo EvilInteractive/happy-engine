@@ -21,8 +21,10 @@
 
 #include "PhysicsConvexMesh.h"
 
-#include "BinaryStream.h"
+#include "PhysicsBinaryStream.h"
 #include "PhysicsEngine.h"
+
+#include "BinaryVisitor.h"
 
 
 namespace he {
@@ -42,17 +44,21 @@ PhysicsConvexMesh::~PhysicsConvexMesh()
     });
 }
 
-void PhysicsConvexMesh::load( const io::BinaryStream& stream )
+void PhysicsConvexMesh::load( PhysicsBinaryStream& stream )
 {
     HE_ASSERT(m_InternalMeshes.size() == 0, "PhysicsConvexMesh %s already loaded!", getName().c_str());
 
-    uint8 numConvex(stream.readByte());
+    io::BinaryVisitor* const visitor(stream.getVisitor());
 
+    uint8 numConvex(0);
+    visitor->visit(numConvex);
+
+    std::string name;
     for (uint8 i(0); i < numConvex; ++i)
     {
-        stream.readString(); // Not used
+        visitor->visit(name);
         m_InternalMeshes.add(
-            PHYSICS->getSDK()->createConvexMesh(const_cast<io::BinaryStream&>(stream)) // sorry for the const_cast
+            PHYSICS->getSDK()->createConvexMesh(stream)
         );
     }
 }

@@ -28,7 +28,7 @@
 #include "Renderer2D.h"
 #include "MathFunctions.h"
 #include "BezierShape2D.h"
-#include "BinaryStream.h"
+#include "BinaryFileVisitor.h"
 
 #include "ContentManager.h"
 #include "Font.h"
@@ -617,16 +617,10 @@ void MaterialGeneratorNode::setSize( const vec2& size )
     updateConnecterPositions();
 }
 
-void MaterialGeneratorNode::serialize( io::BinaryStream& stream ) const
+void MaterialGeneratorNode::visit( io::BinaryFileVisitor& stream )
 {
-    stream.writeVector2(m_Position);
-    stream.writeGuid(m_Guid);
-}
-
-void MaterialGeneratorNode::deserialize( io::BinaryStream& stream )
-{
-    setPosition(stream.readVector2());
-    m_Guid = stream.readGuid();
+    stream.visit(m_Position);
+    stream.visit(m_Guid);
 }
 
 

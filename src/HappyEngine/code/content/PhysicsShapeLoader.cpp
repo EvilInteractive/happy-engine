@@ -21,9 +21,11 @@
 
 #include "PhysicsShapeLoader.h"
 
-#include "BinaryStream.h"
+#include "PhysicsBinaryStream.h"
 #include "PhysicsConvexMesh.h"
 #include "PhysicsConcaveMesh.h"
+
+#include "BinaryFileVisitor.h"
 
 #define CC_FACTORY ResourceFactory<px::PhysicsConcaveMesh>::getInstance()
 #define CV_FACTORY ResourceFactory<px::PhysicsConvexMesh>::getInstance()
@@ -55,18 +57,19 @@ ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
     {
         if (path.rfind(".pxcv") != std::string::npos)
         {
-            io::BinaryStream stream;
-            if (stream.open(path, io::BinaryStream::Read) == false)
+            io::BinaryFileVisitor visitor;
+            if (visitor.openRead(path) == false)
             {
                 HE_ERROR("Error loading convex mesh: %s", path.c_str());
                 return ObjectHandle::unassigned;
             }
 
+            px::PhysicsBinaryStream stream(&visitor);
             ObjectHandle handle(CV_FACTORY->create());
             px::PhysicsConvexMesh* mesh(CV_FACTORY->get(handle));
             mesh->setName(path);
             mesh->load(stream);
-
+            visitor.close();
             m_ConvexAssetContainer.addAsset(path, handle);
             return handle;
         }
@@ -90,17 +93,20 @@ ObjectHandle PhysicsShapeLoader::loadConcave(const std::string& path)
     {
         if (path.rfind(".pxcc") != std::string::npos)
         {
-            io::BinaryStream stream;
-            if (stream.open(path, io::BinaryStream::Read) == false)
+            io::BinaryFileVisitor visitor;
+            if (visitor.openRead(path) == false)
             {
                 HE_ERROR("Error loading concave mesh: %s", path.c_str());
                 return ObjectHandle::unassigned;
             }
 
+            px::PhysicsBinaryStream stream(&visitor);
             ObjectHandle handle(CC_FACTORY->create());
             px::PhysicsConcaveMesh* mesh(CC_FACTORY->get(handle));
             mesh->setName(path);
             mesh->load(stream);
+
+            visitor.close();
 
             m_ConcaveAssetContainer.addAsset(path, handle);
             return m_ConcaveAssetContainer.getAsset(path);

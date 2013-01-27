@@ -21,7 +21,7 @@
 
 #include "BinObjLoader.h"
 
-#include "BinaryStream.h"
+#include "BinaryFileVisitor.h"
 #include "BufferLayout.h"
 #include "Model.h"
 #include "Bone.h"
@@ -99,43 +99,54 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
 
     using namespace std;
 
-    io::BinaryStream stream;
-    if (stream.open(path, io::BinaryStream::Read) == false)
+    io::BinaryFileVisitor stream;
+    if (stream.openRead(path) == false)
         return false;
     
-    uint32 meshes(stream.readDword());
+    uint32 meshes(0);
+    stream.visit(meshes);
 
+    std::string name;
     for(uint32 i = 0; i < meshes; ++i)
     {
-        m_MeshName.add(stream.readString());
+        stream.visit(name);
+        m_MeshName.add(name);
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Bones                                  ///
         //////////////////////////////////////////////////////////////////////////
-        uint32 numBones(stream.readByte());
+        uint8 numBones(0);
+        stream.visit(numBones);
         m_BoneData.add(NEW he::ObjectList<gfx::Bone>());
         m_BoneData.back()->reserve(numBones);
-        for (uint32 iBone = 0; iBone < numBones; ++iBone)
+        for (uint8 iBone = 0; iBone < numBones; ++iBone)
         {
             gfx::Bone bone;
-            bone.m_Name = stream.readString();
-            bone.m_BaseTransform = stream.readMatrix();
+            stream.visit(name);
+            bone.m_Name = name;
+            mat44 matrix;
+            stream.visit(matrix);
+            bone.m_BaseTransform = matrix;
             m_BoneData.back()->add(bone);
         }
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Vertices                               ///
         //////////////////////////////////////////////////////////////////////////
-        uint32 numVertices(stream.readDword());
+        uint32 numVertices(0);
+        stream.visit(numVertices);
         m_VertexData.add(NEW he::ObjectList<InternalVertex>((size_t)numVertices));
         m_VertexData.back()->resize(numVertices);
-        stream.read(&(m_VertexData.back()->front()), numVertices * sizeof(InternalVertex));
+        stream.visitBlob(&(m_VertexData.back()->front()), numVertices * sizeof(InternalVertex));
 
         //////////////////////////////////////////////////////////////////////////
         ///                             Indices                                ///
         //////////////////////////////////////////////////////////////////////////
-        m_NumIndices.add(stream.readDword());
-        gfx::IndexStride stride(static_cast<gfx::IndexStride>(stream.readByte()));
+        uint32 numIndices(0);
+        stream.visit(numIndices);
+        m_NumIndices.add(numIndices);
+        gfx::IndexStride stride(gfx::IndexStride_Byte);
+        stream.visitEnum<gfx::IndexStride, uint8>(stride);
         if (stride == gfx::IndexStride_Byte && allowByteIndices == false)
             m_IndexStride.add(gfx::IndexStride_UShort);
         else
@@ -143,9 +154,10 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
         
         void* pInd = he_malloc(stride * m_NumIndices.back());
         HE_ASSERT(pInd != nullptr, "not enough memory!");
-        stream.read(pInd, stride * m_NumIndices.back());
+        stream.visitBlob(pInd, stride * m_NumIndices.back());
         m_Indices.add(pInd);
     }
+    stream.close();
     return true;
 }
 

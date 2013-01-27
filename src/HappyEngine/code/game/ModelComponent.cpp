@@ -57,16 +57,6 @@ void ModelComponent::init(Entity* parent)
     m_Parent = parent;
 }
 
-void ModelComponent::serialize(SerializerStream& /*stream*/)
-{
-    //Object3D::serialize(stream);
-}
-
-void ModelComponent::deserialize(const SerializerStream& /*stream*/)
-{
-    //Object3D::deserialize(stream);
-}
-
 const gfx::Material* ModelComponent::getMaterial() const
 {
     return m_Material;

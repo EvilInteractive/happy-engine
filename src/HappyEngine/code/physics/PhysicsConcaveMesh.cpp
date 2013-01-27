@@ -22,7 +22,8 @@
 #include "PhysicsConcaveMesh.h"
 
 #include "PhysicsEngine.h"
-#include "BinaryStream.h"
+#include "PhysicsBinaryStream.h"
+#include "BinaryVisitor.h"
 
 namespace he {
 namespace px {
@@ -40,17 +41,21 @@ PhysicsConcaveMesh::~PhysicsConcaveMesh()
     });
 }
 
-void PhysicsConcaveMesh::load( const io::BinaryStream& stream )
+void PhysicsConcaveMesh::load( PhysicsBinaryStream& stream )
 {
     HE_ASSERT(m_InternalMeshes.size() == 0, "PhysicsConcaveMesh %s already loaded!", getName().c_str());
 
-    uint8 numConcave(stream.readByte());
+    io::BinaryVisitor* const visitor(stream.getVisitor());
 
+    uint8 numConcave(0);
+    visitor->visit(numConcave);
+
+    std::string name;
     for (uint8 i(0); i < numConcave; ++i)
     {
-        stream.readString(); // Name not used..
+        visitor->visit(name);
         m_InternalMeshes.add(
-            PHYSICS->getSDK()->createTriangleMesh(const_cast<io::BinaryStream&>(stream))
+            PHYSICS->getSDK()->createTriangleMesh(stream)
         );
     }
 }

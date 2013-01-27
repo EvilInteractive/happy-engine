@@ -68,6 +68,8 @@
 
 #include <GL/glew.h>
 
+// Happy Code
+
 #include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
@@ -86,6 +88,15 @@
 
 #include "Logger.h"
 #include "HeAssert.h"
+
+template<typename To, typename From>
+inline To checked_numcast(const From value)
+{
+    const To result(static_cast<To>(value));
+    HE_ASSERT(result == value, "Numcast fail!");
+    return result;
+}
+
 #include "ExternalError.h"
 #include "HappyMemory.h"
 #include "HappyNew.h"

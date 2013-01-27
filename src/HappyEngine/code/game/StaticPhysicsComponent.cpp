@@ -59,16 +59,6 @@ void StaticPhysicsComponent::deactivate()
     }
 }
 
-void StaticPhysicsComponent::serialize(SerializerStream& /*stream*/)
-{
-
-}
-
-void StaticPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
-{
-
-}
-
 void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, uint32 collisionGroup, const mat44& localPose )
 {
     HE_ASSERT(m_StaticActor != nullptr, "attach component first to entity");

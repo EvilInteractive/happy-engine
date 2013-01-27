@@ -63,16 +63,6 @@ void DynamicPhysicsComponent::deactivate()
     }
 }
 
-void DynamicPhysicsComponent::serialize(SerializerStream& /*stream*/)
-{
-
-}
-
-void DynamicPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
-{
-
-}
-
 void DynamicPhysicsComponent::tick( float /*dTime*/ )
 {
     vec3 translation;
