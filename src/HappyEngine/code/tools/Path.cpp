@@ -130,4 +130,46 @@ std::string Path::getFileName() const
     return result;
 }
 
+bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )
+{
+    bool result(false);
+    boost::filesystem::path boostPath(m_Path);
+    boost::system::error_code error;
+    if (boost::filesystem::exists(boostPath, error) && boost::filesystem::is_directory(boostPath, error))
+    {
+        boost::filesystem::directory_iterator endIt;
+        for (boost::filesystem::directory_iterator it(boostPath); it != endIt; ++it)
+        {
+            if (boost::filesystem::is_regular_file(it->status()))
+            {
+                func(it->path().string());
+            }
+            else if (boost::filesystem::is_directory(it->status()))
+            {
+                Path path(it->path().string());
+                path.iterateFiles(recursive, func);
+            }
+        }
+        result = true;
+    }
+    return result;
+}
+
+bool Path::isFile() const
+{
+    return m_Path.back() != '/';
+}
+
+bool Path::isDirectory() const
+{
+    return !isFile();
+}
+
+bool Path::exists() const
+{
+    boost::filesystem::path boostPath(m_Path);
+    boost::system::error_code error;
+    return boost::filesystem::exists(boostPath, error);
+}
+
 } //end namespace

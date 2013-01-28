@@ -98,7 +98,7 @@ public:
     he::event0<void> ConnectionSuccessful;
     he::event0<void> ConnectionFailed;
     he::event0<void> ConnectionLost;
-    he::event1<bool, const NetworkPackage&> PacketReceived; // return true if you handled the package
+    he::event1<bool, NetworkPackage&> PacketReceived; // return true if you handled the package
 
 private:
     void clientConnected(const NetworkID& id, const std::string& adress);

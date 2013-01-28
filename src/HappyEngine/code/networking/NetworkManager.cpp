@@ -203,7 +203,7 @@ void NetworkManager::tick( float dTime )
                 {
                     NetworkPackage package(packet->data, packet->length, packet->guid);
                     const bool eaten(PacketReceived(package));
-                    HE_ASSERT(eaten == true, "Unhandled packet received!");
+                    HE_ASSERT(eaten == true, "Unhandled packet received!"); eaten;
                 }
                 break;
             }
