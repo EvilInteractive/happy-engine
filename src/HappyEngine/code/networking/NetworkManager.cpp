@@ -201,9 +201,10 @@ void NetworkManager::tick( float dTime )
                 break;
             case ID_USER_PACKET_ENUM:
                 {
-                    NetworkPackage package(packet->data, packet->length, packet->guid);
-                    const bool eaten(PacketReceived(package));
+                    m_NetworkPackage.init(packet->data, packet->length, packet->guid);
+                    const bool eaten(PacketReceived(m_NetworkPackage));
                     HE_ASSERT(eaten == true, "Unhandled packet received!"); eaten;
+                    m_NetworkPackage.finalise();
                 }
                 break;
             }

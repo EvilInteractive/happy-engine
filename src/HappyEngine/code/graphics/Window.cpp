@@ -97,7 +97,7 @@ void Window::create(Window* parent)
         m_Window->setTitle(m_Titel);
         m_Window->setSize(sf::Vector2u(m_WindowRect.width, m_WindowRect.height));
     }
-    m_Window->setKeyRepeatEnabled(false);
+    m_Window->setKeyRepeatEnabled(true);
     setWindowPosition(m_WindowRect.x, m_WindowRect.y);
     setCursorVisible(m_IsCursorVisible);
     setVSync(m_VSyncEnabled);
@@ -202,7 +202,7 @@ void Window::doEvents( float /*dTime*/ )
             break;
         case sf::Event::TextEntered:
             if (hasFocus == true)
-                keyboard->TextCharEntered(static_cast<char>(event.text.unicode));
+                keyboard->TextCharEntered(static_cast<uint32>(event.text.unicode));
             break;
         }
     }

@@ -89,6 +89,7 @@
 #include "Logger.h"
 #include "HeAssert.h"
 
+#pragma warning(disable:4389) // '==' signed/unsigned mismatch
 template<typename To, typename From>
 inline To checked_numcast(const From value)
 {
@@ -96,6 +97,7 @@ inline To checked_numcast(const From value)
     HE_ASSERT(result == value, "Numcast fail!");
     return result;
 }
+#pragma warning(default:4389)
 
 #include "ExternalError.h"
 #include "HappyMemory.h"

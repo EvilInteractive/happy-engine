@@ -102,9 +102,9 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
             m_CurrentKeyState[index] &= ~(1 << shift);
         }
     });
-    eventCallback1<void, char> textCharEnteredHandler([&](char chr)
+    eventCallback1<void, uint32> textCharEnteredHandler([&](uint32 chr)
     {
-        m_TextCharEntered = chr;
+        m_TextCharEntered = static_cast<char>(chr);
     });
 
     KeyPressed += keyPressedHandler;

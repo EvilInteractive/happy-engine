@@ -136,6 +136,7 @@ private:
     he::eventCallback0<void> m_ViewResizedHandler;
 
     // Controls
+    he::eventCallback1<void, uint32> m_TextEnteredHandler;
     he::eventCallback1<void, io::Key> m_KeyPressedHandler;
     he::eventCallback1<void, io::Key> m_KeyReleasedHandler;
     he::eventCallback1<void, io::MouseButton> m_MouseButtonPressedHandler;

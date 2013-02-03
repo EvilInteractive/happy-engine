@@ -92,6 +92,18 @@ void WebView::init()
     if (m_InputEnabled)
     {
         Awesomium::WebView* w(m_WebView);
+
+        m_TextEnteredHandler = eventCallback1<void, uint32>([w,this](uint32 chr)
+        {
+            Awesomium::WebKeyboardEvent keyEvent;
+            keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
+            keyEvent.text[0] = (wchar16)chr;
+            keyEvent.unmodified_text[0] = (wchar16)chr;
+            keyEvent.native_key_code = chr;
+
+            w->InjectKeyboardEvent(keyEvent);
+        });
+
         m_KeyPressedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
             // check if we cant get focus
@@ -114,28 +126,6 @@ void WebView::init()
             keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
 
             w->InjectKeyboardEvent(keyEvent);
-
-            // if it is an ASCII char
-            if (chr < COMMON_ASCII_CHAR)
-            {
-                // if it is a letter
-                if (chr >= 65 && chr <= 90)
-                {
-                    if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
-                        CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
-                    {
-                        chr += 32; // to lowercase ASCII
-                    }
-                }
-
-                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
-                keyEvent.text[0] = (wchar16)chr;
-                keyEvent.unmodified_text[0] = (wchar16)chr;
-                keyEvent.native_key_code = chr;
-
-                w->InjectKeyboardEvent(keyEvent);
-            }
-
             //CONTROLS->returnFocus(this);
         });
 
@@ -229,6 +219,7 @@ WebView::~WebView()
     {
         io::IKeyboard* keyboard(CONTROLS->getKeyboard());
         io::IMouse* mouse(CONTROLS->getMouse());
+        keyboard->TextCharEntered -= m_TextEnteredHandler;
         keyboard->KeyPressed -= m_KeyPressedHandler;
         keyboard->KeyReleased -= m_KeyReleasedHandler;
         mouse->MouseButtonPressed -= m_MouseButtonPressedHandler;
@@ -296,6 +287,7 @@ void WebView::focus()
         {
             io::IKeyboard* keyboard(CONTROLS->getKeyboard());
             io::IMouse* mouse(CONTROLS->getMouse());
+            keyboard->TextCharEntered += m_TextEnteredHandler;
             keyboard->KeyPressed += m_KeyPressedHandler;
             keyboard->KeyReleased += m_KeyReleasedHandler;
             mouse->MouseButtonPressed += m_MouseButtonPressedHandler;
@@ -316,6 +308,7 @@ void WebView::unfocus()
         {
             io::IKeyboard* keyboard(CONTROLS->getKeyboard());
             io::IMouse* mouse(CONTROLS->getMouse());
+            keyboard->TextCharEntered -= m_TextEnteredHandler;
             keyboard->KeyPressed -= m_KeyPressedHandler;
             keyboard->KeyReleased -= m_KeyReleasedHandler;
             mouse->MouseButtonPressed -= m_MouseButtonPressedHandler;
