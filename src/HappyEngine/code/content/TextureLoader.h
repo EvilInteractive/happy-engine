@@ -80,40 +80,48 @@ private:
     {
         const static int MAX_CUBE_FACES = 6;
 
-        TextureLoadData()
+        TextureLoadData(): m_Path(""), m_Faces(0), m_TextureFormat(gfx::TextureFormat_RGBA8),
+            m_IlImageId(0), m_IsILimage(false), m_Color(0.0f, 0.0f, 0.0f, 0.0f), m_Tex(ObjectHandle::unassigned)
         {
         }
-        TextureLoadData(const TextureLoadData& other)
+        TextureLoadData(const TextureLoadData& other): 
+            m_Path(other.m_Path), m_Faces(other.m_Faces), m_TextureFormat(other.m_TextureFormat),
+            m_IlImageId(other.m_IlImageId), m_IsILimage(other.m_IsILimage), 
+            m_Color(other.m_Color), m_Tex(other.m_Tex)
         {
-            this->operator=(other);
+            for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
+            {
+                m_MipData[i].clear();
+                m_MipData[i].append(other.m_MipData[i]);
+            }
         }
         TextureLoadData& operator=(const TextureLoadData& other)
         {
-            path = other.path;
-            faces = other.faces;
+            m_Path = other.m_Path;
+            m_Faces = other.m_Faces;
             for (uint8 i(0); i < MAX_CUBE_FACES; ++i)
             {
-                mipData[i].clear();
-                mipData[i].append(other.mipData[i]);
+                m_MipData[i].clear();
+                m_MipData[i].append(other.m_MipData[i]);
             }
-            textureFormat = other.textureFormat;
-            ilImageId = other.ilImageId;
-            isILimage = other.isILimage;
-            color = other.color;
-            tex = other.tex;
+            m_TextureFormat = other.m_TextureFormat;
+            m_IlImageId = other.m_IlImageId;
+            m_IsILimage = other.m_IsILimage;
+            m_Color = other.m_Color;
+            m_Tex = other.m_Tex;
 
             return *this;
         }
         ~TextureLoadData() {}
 
-        std::string path;
-        uint8 faces;
-        he::ObjectList<TextureLoadMipData> mipData[MAX_CUBE_FACES];
-        gfx::TextureFormat textureFormat;
-        uint32 ilImageId;
-        bool isILimage;
-        Color color;
-        ObjectHandle tex;
+        std::string m_Path;
+        uint8 m_Faces;
+        he::ObjectList<TextureLoadMipData> m_MipData[MAX_CUBE_FACES];
+        gfx::TextureFormat m_TextureFormat;
+        uint32 m_IlImageId;
+        bool m_IsILimage;
+        Color m_Color;
+        ObjectHandle m_Tex;
     };
 
     bool m_isLoadThreadRunning;
@@ -135,6 +143,8 @@ private:
     boost::thread m_TextureLoadThread;
 
     AssetContainer<ObjectHandle> m_AssetContainer;
+
+    float m_GCTimer;
 
     /* DEFAULT COPY & ASSIGNMENT */
     TextureLoader(const TextureLoader&);

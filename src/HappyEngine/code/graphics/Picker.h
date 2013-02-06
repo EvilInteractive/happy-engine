@@ -22,13 +22,15 @@
 #define _HE_PICKER_H_
 #pragma once
 
-#include "vec2.h"
-#include "PickEffect.h"
-#include "Texture2D.h"
-#include "IDrawable.h"
-
 namespace he {
 namespace gfx {
+    class Texture2D;
+    class PickEffect;
+    class IDrawable;
+    class Scene;
+    class RenderTarget;
+    class View;
+    class Canvas2D;
 
 class Picker
 {
@@ -39,23 +41,25 @@ public:
     virtual ~Picker();
 
     /* GENERAL */
-    void initialize();
+    void init(View* view, Scene* scene);
     // returns ID of mesh in drawlist which is picked, or UINT32_MAX if none
     uint32 pick(const vec2& screenPoint);
     uint32 pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
 
-    void drawDebug() const;
+    void drawDebug(Canvas2D* canvas) const;
 
 private:
 
     /* DATAMEMBERS */
-    PickEffect* m_pPickEffect;
+    PickEffect* m_PickEffect;
 
-    uint32 m_RenderFboID;
-    uint32 m_DepthRenderBuffer;
-    Texture2D* m_pIDTexture;
+    Texture2D* m_RenderTexture;
+    RenderTarget* m_RenderTarget;
 
-    bool m_bInitialized;
+    bool m_Initialized;
+
+    Scene* m_Scene;
+    View* m_View;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Picker(const Picker&);

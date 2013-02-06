@@ -27,28 +27,35 @@
 namespace he {
 namespace ge {
 
-Entity::Entity():
-    m_SleepEvaluaters([](bool& inoutA, const bool& outB) -> bool
-    { 
-        inoutA = outB; 
-        return inoutA;
-    }, false)
+Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr)
 {
 }
 
 
 Entity::~Entity()
 {
-    m_Components.forEach([](EntityComponent* component)
+    m_Components.forEach([](EntityComponent* const component)
     {
         delete component;
     });
 }
 
-void Entity::init( gfx::Scene* scene )
+void Entity::activate()
 {
-    m_Scene = scene;
+    m_Components.forEach([](EntityComponent* const component)
+    {
+        component->activate();
+    });
 }
+
+void Entity::deactivate()
+{
+    m_Components.forEach([](EntityComponent* const component)
+    {
+        component->deactivate();
+    });
+}
+
 
 void Entity::init( Entity* parent )
 {
@@ -70,11 +77,6 @@ void Entity::removeComponent( EntityComponent* component )
     {
         m_Components.remove(component);
     }
-}
-
-bool Entity::isSleeping() const
-{
-    return m_SleepEvaluaters();
 }
 
 } } //end namespace

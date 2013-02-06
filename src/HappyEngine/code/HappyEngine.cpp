@@ -32,20 +32,22 @@
 #include "SoundEngine.h"
 #include "StaticDataManager.h"
 #include "Window.h"
+#include "Gui.h"
+#include "Sprite.h"
 
 namespace he {
 
-HappyEngine* HappyEngine::s_pHappyEngine = nullptr;
+HappyEngine* HappyEngine::s_HappyEngine = nullptr;
 Random HappyEngine::s_Random;
 
 
-HappyEngine::HappyEngine(): m_pGame(nullptr), m_Quit(false),
-                            m_pGraphicsEngine(nullptr), m_pControlsManager(nullptr),
-                            m_pPhysicsEngine(nullptr), m_pContentManager(nullptr),
-                            m_pNetworkManager(nullptr),
-                            m_pConsole(nullptr), m_pSoundEngine(nullptr), m_SubEngines(0),
-                            m_bShowProfiler(false), m_bGameLoading(true),
-                            m_RootDir("./")
+HappyEngine::HappyEngine(): m_Game(nullptr), m_Quit(false),
+                            m_GraphicsEngine(nullptr), m_ControlsManager(nullptr),
+                            m_PhysicsEngine(nullptr), m_ContentManager(nullptr),
+                            m_NetworkManager(nullptr),
+                            m_Console(nullptr), m_SoundEngine(nullptr), m_SubEngines(0),
+                            m_ShowProfiler(false), m_GameLoading(true),
+                            m_RootDir("./"), m_Gui(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -64,8 +66,8 @@ void HappyEngine::dispose()
 
     StaticDataManager::destroy();
 
-    delete s_pHappyEngine;
-    s_pHappyEngine = nullptr;
+    delete s_HappyEngine;
+    s_HappyEngine = nullptr;
 }
 void HappyEngine::cleanup()
 {  
@@ -73,33 +75,35 @@ void HappyEngine::cleanup()
 
     m_AudioThread.join(); // wait for audiothread to finish
 
-    if (m_pGraphicsEngine != nullptr)
-        m_pGraphicsEngine->destroy();
+    if (m_GraphicsEngine != nullptr)
+        m_GraphicsEngine->destroy();
 
     //dispose/delete all sub engines here
-    delete m_pConsole;
-    m_pConsole = nullptr;
-    delete m_pContentManager;
-    m_pContentManager = nullptr;
-    m_pGame = nullptr;
-    delete m_pSoundEngine;
-    m_pSoundEngine = nullptr;
-    delete m_pControlsManager;
-    m_pControlsManager = nullptr;
-    delete m_pNetworkManager;
-    m_pNetworkManager = nullptr;
-    delete m_pPhysicsEngine;
-    m_pPhysicsEngine = nullptr;
-
+    delete m_Gui;
+    m_Gui = nullptr;
+    delete m_Console;
+    m_Console = nullptr;
+    delete m_ContentManager;
+    m_ContentManager = nullptr;
+    m_Game = nullptr;
+    delete m_SoundEngine;
+    m_SoundEngine = nullptr;
+    delete m_ControlsManager;
+    m_ControlsManager = nullptr;
+    delete m_NetworkManager;
+    m_NetworkManager = nullptr;
+    delete m_PhysicsEngine;
+    m_PhysicsEngine = nullptr;
+    
     // Gl context get deleted here - make sure all content is gone
-    delete m_pGraphicsEngine;
-    m_pGraphicsEngine = nullptr;
+    delete m_GraphicsEngine;
+    m_GraphicsEngine = nullptr;
 }
 void HappyEngine::init(int subengines)
 {
     StaticDataManager::init();
-    if (s_pHappyEngine == nullptr)
-        s_pHappyEngine = NEW HappyEngine();
+    if (s_HappyEngine == nullptr)
+        s_HappyEngine = NEW HappyEngine();
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
@@ -109,8 +113,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
 
     if (subengines & SubEngine_Graphics)
     {
-        m_pGraphicsEngine = NEW gfx::GraphicsEngine();
-        m_pConsole = NEW tools::Console();
+        m_GraphicsEngine = NEW gfx::GraphicsEngine();
+        m_Console = NEW tools::Console();
 
         ilInit();
         iluInit();
@@ -119,30 +123,32 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         ilEnable(IL_ORIGIN_SET);
         ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_LOWER_LEFT);
 
-        m_pControlsManager = NEW io::ControlsManager();
+        m_ControlsManager = NEW io::ControlsManager();
+
+        m_Gui = NEW gui::Gui();
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
-        m_pContentManager = NEW ct::ContentManager();
+        m_ContentManager = NEW ct::ContentManager();
     
     if (subengines & SubEngine_Physics)
     {
-        m_pPhysicsEngine = NEW px::PhysicsEngine();
+        m_PhysicsEngine = NEW px::PhysicsEngine();
     }
 
     if (subengines & SubEngine_Networking)
     {
-        m_pNetworkManager = NEW net::NetworkManager();
+        m_NetworkManager = NEW net::NetworkManager();
     }
 
     if (subengines & SubEngine_Audio)
     {
-        m_pSoundEngine = NEW sfx::SoundEngine();
-        m_pSoundEngine->initialize();
+        m_SoundEngine = NEW sfx::SoundEngine();
+        m_SoundEngine->initialize();
     }
 }
 
-void HappyEngine::start(ge::Game* pGame)
+void HappyEngine::start(ge::Game* game)
 {
     using namespace std;
     cout << "       ******************************       \n";
@@ -150,9 +156,15 @@ void HappyEngine::start(ge::Game* pGame)
     cout << "*************  HappyEngine :D  *************\n";
     cout << "  ***************          ***************  \n";
     cout << "       ******************************       \n";
-    //cout << "os: " << SDL_GetPlatform() << "\n\n";
+#ifdef HE_WINDOWS
+    cout << "os: Windows\n\n";
+#elif HE_MAC
+    cout << "os: Mac\n\n";
+#elif HE_LINUX
+    cout << "os: Linux\n\n";
+#endif
 
-#ifdef MSVC
+#if MSVC && ARCH_32
     int sse(0x01 << 25);
     int sse2(0x01 << 26);
     int sse3(0x01);
@@ -169,43 +181,37 @@ void HappyEngine::start(ge::Game* pGame)
     } 
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
 #endif
-
-    m_pGame = pGame;
+    m_Game = game;
   
-    //Init Game
-    pGame->init();
+    // Init Game
+    game->init();
 
-    //load stuff
+    // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
-        m_pGraphicsEngine->init();
-        
-        m_pConsole->load();
-        //CONSOLE->registerVar(&m_bShowProfiler, "s_profiler");
+        m_GraphicsEngine->init();        
+        m_Console->load();
 
 #ifdef ENABLE_PROFILING
         PROFILER->load();
 #endif
     }
-
-
-    //if (m_SubEngines & SubEngine_2DRenderer) m_p2DRenderer->init();
-
-
-    m_pGame->load();
+    
+    m_Game->load();
     
     if (m_SubEngines & SubEngine_Audio)
     {
         m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
     }
 
-    //boost::timer t;
     m_PrevTime = boost::chrono::high_resolution_clock::now();
-
     while (m_Quit == false)
     {
         loop();
     }   
+
+    // Destroy Game
+    game->destroy();
 }
 void HappyEngine::loop()
 {
@@ -238,7 +244,7 @@ void HappyEngine::updateLoop(float dTime)
 
     if (m_SubEngines & SubEngine_Graphics)
     {
-        m_pControlsManager->tick();
+        m_ControlsManager->tick();
 
         PROFILER_BEGIN("SFML poll events");
         const he::ObjectList<ObjectHandle>& windows(GRAPHICS->getAllWindows());
@@ -249,25 +255,31 @@ void HappyEngine::updateLoop(float dTime)
         });
         PROFILER_END();
 
-        m_pGraphicsEngine->tick(dTime);
+        m_GraphicsEngine->tick(dTime);
         CONSOLE->tick();
-        if (m_bGameLoading == true && CONTENT->isLoading() == false) // TODO: event this
-            m_bGameLoading = false;
+        if (m_GameLoading == true && CONTENT->isLoading() == false) // TODO: event this
+            m_GameLoading = false;
     }
 
     if (m_SubEngines & SubEngine_Networking)
-        m_pNetworkManager->tick(dTime);
+        m_NetworkManager->tick(dTime);
 
-    if (m_pContentManager != nullptr)
+    if (m_ContentManager != nullptr)
     {
-        m_pContentManager->tick(dTime);
-        m_pContentManager->glThreadInvoke();
+        m_ContentManager->tick(dTime);
+        m_ContentManager->glThreadInvoke();
+    }
+
+    if (m_Gui != nullptr)
+    {
+        m_Gui->Sprites->tick(dTime);
+        m_Gui->Sprites->glThreadInvoke();
     }
 
     if (m_SubEngines & SubEngine_Physics)
-        m_pPhysicsEngine->tick(dTime);
+        m_PhysicsEngine->tick(dTime);
 
-    m_pGame->tick(dTime);
+    m_Game->tick(dTime);
 }
 void HappyEngine::drawLoop()
 {
@@ -279,7 +291,7 @@ void HappyEngine::drawLoop()
 
 HappyEngine* HappyEngine::getPointer()
 {
-    return s_pHappyEngine;
+    return s_HappyEngine;
 }
 
 void HappyEngine::audioLoop()
@@ -296,7 +308,7 @@ void HappyEngine::audioLoop()
 
         if (dTime >= (1 / 60.0f))
         {
-            m_pSoundEngine->tick(dTime);
+            m_SoundEngine->tick(dTime);
             dTime = 0;
         }
         else

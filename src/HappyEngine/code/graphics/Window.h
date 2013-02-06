@@ -25,6 +25,9 @@
 #include "Singleton.h"
 
 namespace he {
+namespace io {
+    enum MouseCursor;
+}
 namespace gfx {
 class Window;
 
@@ -34,6 +37,14 @@ class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactor
     WindowFactory() { init(1, 2, "WindowFactory"); }
     virtual ~WindowFactory() { }
 };
+
+#if defined(HE_WINDOWS)
+typedef HWND__* NativeWindowHandle;
+#elif defined(HE_LINUX)
+typedef unsigned long NativeWindowHandle;
+#elif defined(HE_MACOS)
+typedef void* NativeWindowHandle;
+#endif
 
 class Window
 {
@@ -61,14 +72,17 @@ public:
     void setWindowDimension(uint32 width, uint32 height);
     void setVSync(bool enable);
     void setCursorVisible(bool visible);
+    void setCursor(const io::MouseCursor cursor);
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create
+    void setMousePosition(const vec2& pos);
 
     // Getters
     void getWindowPosition(int& x, int& y) const;
     uint32 getWindowWidth() const;
     uint32 getWindowHeight() const;
     GLContext* getContext() { return &m_Context; }  
+    NativeWindowHandle getNativeHandle() const { return m_Window->getSystemHandle(); }
 
     // Events
     event0<void> Resized;
@@ -90,6 +104,13 @@ private:
     bool m_IsVisible;
 
     GLContext m_Context;
+
+#ifdef HE_WINDOWS
+    HCURSOR m_Cursor;
+#elif HE_LINUX
+    XID m_Cursor;
+    Display* m_Display;
+#endif
 
     //Disable default copy constructor and default assignment operator
     Window(const Window&);

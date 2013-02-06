@@ -58,6 +58,26 @@
 #include "PostProcesser.h"
 #include "WebView.h"
 #include "WebListener.h"
+#include "Canvas2Dnew.h"
+#include "MathFunctions.h"
+#include "Sprite.h"
+#include "Gui.h"
+#include "Player.h"
+#include "PlayerThirdPersonCamera.h"
+
+#include "InstancingController.h"
+#include "InstancingManager.h"
+#include "InstancedModelComponent.h"
+#include "PhysicsEngine.h"
+#include "StaticPhysicsComponent.h"
+#include "PhysicsConcaveShape.h"
+#include "PhysicsConvexShape.h"
+#include "PhysicsBoxShape.h"
+#include "DynamicPhysicsComponent.h"
+#include "PhysicsDynamicActor.h"
+#include "materialGenerator/MaterialGeneratorGraph.h"
+#include "Mouse.h"
+#include "Picker.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -78,6 +98,10 @@ MainGame::MainGame()
     , m_Scene(nullptr)
     , m_RenderPipeline(nullptr), m_RenderPipeline2(nullptr)
     , m_ToneMapGui(nullptr), m_ToneMapGuiListener(nullptr)
+    , m_TestSprite(nullptr)
+    , m_Player(nullptr)
+    , m_MaterialGenerator(nullptr)
+    , m_ColorTimer(0.0f)
 {
     for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
     {
@@ -87,23 +111,42 @@ MainGame::MainGame()
         r.c = he::vec3((float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5));
         m_MovingEntityRandomness.push_back(r);
     }
+
+    for (he::uint8 r(0); r < 16; ++r)
+        m_Colors[r].r(static_cast<he::uint8>(r * 16));
+    for (he::uint8 g(0); g < 16; ++g)
+        m_Colors[g].g(static_cast<he::uint8>( (16 - g) * 16));
+    for (he::uint8 b(0); b < 8; ++b)
+        m_Colors[b].b(static_cast<he::uint8>(b * 2 * 16));
+    for (he::uint8 b(0); b < 8; ++b)
+        m_Colors[b + 8].b(static_cast<he::uint8>((8 - b) * 2 * 16));
 }
 
 
 MainGame::~MainGame()
 {
+    PHYSICS->stopSimulation();
+
+    delete m_MaterialGenerator;
+
+    m_Player->deactivate();
+    delete m_Player;
+
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FpsGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
     CONSOLE->detachFromRenderer();
     PROFILER->detachFromRenderer();
 
     delete m_FpsGraph;
-    
-    delete m_ToneMapGui;
-    delete m_ToneMapGuiListener;
+
+    he::gui::SpriteCreator* const cr(GUI->Sprites);
+    cr->removeSprite(m_TestSprite);
+
+    m_RenderPipeline->get2DRenderer()->removeWebView(m_ToneMapGui);
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
+        entity->deactivate();
         delete entity;     
     });
 
@@ -151,10 +194,10 @@ void MainGame::load()
 
     settings.lightingSettings.enableLighting = true;
     settings.lightingSettings.enableNormalMap = true;
-    settings.lightingSettings.enableShadows = false;
+    settings.lightingSettings.enableShadows = true;
     settings.lightingSettings.enableSpecular = true;
 
-    settings.shadowSettings.shadowMult = 2;
+    settings.shadowSettings.shadowMult = 1;
 
     settings.postSettings.shaderSettings.enableAO = false;
     settings.postSettings.shaderSettings.enableBloom = true;
@@ -170,11 +213,12 @@ void MainGame::load()
     m_Scene = GRAPHICS->createScene();
     m_Scene->loadSkybox("engine/cubemaps/defaultSky.dds");
 
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
-    m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
 #ifdef ENABLE_WINDOW2
@@ -206,14 +250,16 @@ void MainGame::load()
     m_View2->setCamera(flyCamera2);
 #endif
     
-    
     m_FpsGraph = NEW tools::FPSGraph();
-    m_FpsGraph->setType(tools::FPSGraph::Type_TextOnly);
+    m_FpsGraph->setType(tools::FPSGraph::Type_Full);
+    m_FpsGraph->setPos(he::vec2(m_View->getViewport().width - 115.f, 5.f));
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
+
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
-    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph);
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FpsGraph, 5);
+
     m_View->getPostProcessor()->setDebugRenderer(m_RenderPipeline->get2DRenderer());
 
 #ifdef ENABLE_WINDOW2
@@ -224,71 +270,67 @@ void MainGame::load()
     
     #pragma region Scene
     ge::Entity* scene(NEW ge::Entity());
-    scene->init(m_Scene);
+    scene->setScene(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
     scene->addComponent(modelComp);
-    modelComp->setModelMeshAndMaterial("testScene3.material", "testScene3.binobj");
-
-    modelComp = NEW ge::ModelComponent();
-    modelComp->setModelMeshAndMaterial("testScene4.material", "testScene4.binobj");
-    modelComp->setLocalTranslate(he::vec3(1, 1, 1));
-    modelComp->setLocalRotate(he::mat33::createRotation3D(vec3(0, 1, 0), he::pi));
-    modelComp->setLocalScale(vec3(100.0f, 100.0f, 100.0f));
-    scene->addComponent(modelComp);
-    
+    modelComp->setModelMeshAndMaterial("testScene3.material", "testPlatformer/scene.binobj");    
     m_EntityList.push_back(scene);
+    ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
+    scene->addComponent(physicsComp);
+    px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
+    px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");
+    physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
+    physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
+    scene->activate();
 
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
-    {
-        ge::Entity* entity(NEW he::ge::Entity());
-        entity->init(m_Scene);
-        modelComp = NEW ge::ModelComponent();
-        modelComp->setModelMeshAndMaterial("cube.material", "cube.binobj");
-        entity->addComponent(modelComp);
-        m_MovingEntityList.push_back(entity);
-        m_EntityList.push_back(entity);
-
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-            pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-            pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
-    }
+    m_Scene->getInstancingManager()->createController("bullet", true, "cube.material", "cube.binobj");
+    m_Scene->getInstancingManager()->getController("bullet")->attachToScene(m_Scene);
 
     #pragma endregion
     
     #pragma region Lights
-    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.6f);
-    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 2.0f);
+    m_Scene->getLightManager()->setAmbientLight(Color(0.9f, 1.0f, 1.0f, 1.0f), 0.3f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 0.0f);
 
     m_DebugSpotLight = m_Scene->getLightManager()->addSpotLight();
-    m_DebugSpotLight->setLocalTranslate(vec3(-42.71f, 10.20f, 30.74f));
-    m_DebugSpotLight->setDirection(vec3(-0.70f, -0.67f, -0.27f));
-    m_DebugSpotLight->setMultiplier(2.0f);
-    m_DebugSpotLight->setAttenuation(1.0f, 20.0f);
-    m_DebugSpotLight->setFov(he::piOverTwo);
-    m_DebugSpotLight->setColor(he::Color(1.0f, 0.4f, 0.4f));
+    m_DebugSpotLight->setLocalTranslate(vec3(-81.985f, -5.572f, 58.675f));
+    m_DebugSpotLight->setDirection(vec3(0.0f, -0.809f, -0.5878f));
+    m_DebugSpotLight->setMultiplier(5.0f);
+    m_DebugSpotLight->setAttenuation(1.0f, 87.0f);
+    m_DebugSpotLight->setFov(he::piOverTwo + he::pi / 6);
+    m_DebugSpotLight->setColor(he::Color(1.0f, 1.0f, 1.0f));
     m_DebugSpotLight->setShadowResolution(gfx::ShadowResolution_512);
 
     he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
-    spotlight->setLocalTranslate(vec3(-35.32f, 6.04f, 31.85f));
-    spotlight->setDirection(vec3(0.80f, 0.13f, -0.58f));
+    spotlight->setLocalTranslate(vec3(-32.468f, 10.291f, 34.99f));
+    spotlight->setDirection(vec3(0.0f, -1.0f, 0.0f));
     spotlight->setMultiplier(2.0f);
-    spotlight->setAttenuation(1.0f, 30.0f);
-    spotlight->setFov(he::piOverFour);
-    spotlight->setColor(he::Color(0.4f, 0.4f, 1.0f));
-    spotlight->setShadowResolution(gfx::ShadowResolution_128);
+    spotlight->setAttenuation(1.0f, 20.0f);
+    spotlight->setFov(he::piOverTwo + he::pi / 6);
+    spotlight->setColor(he::Color(1.0f, 1.0f, 1.0f));
+    spotlight->setShadowResolution(gfx::ShadowResolution_256);
 
     he::gfx::PointLight* pointlight(m_Scene->getLightManager()->addPointLight());
-    pointlight->setLocalTranslate(vec3(-49.02f, 8.08f, 31.07f));
-    pointlight->setMultiplier(3.0f);
-    pointlight->setAttenuation(1.0f, 10.0f);
-    pointlight->setColor(he::Color(0.01f, 0.01f, 1.0f));
+    pointlight->setLocalTranslate(vec3(-81.98f, 5.572f, 45.634f));
+    pointlight->setMultiplier(2.0f);
+    pointlight->setAttenuation(0.0f, 38.0f);
+    pointlight->setColor(he::Color(1.00f, 1.00f, 1.00f));
 
     #pragma endregion
+
+    m_Player = NEW Player();
+    m_Player->activate();
+    m_View->setCamera(m_Player->getCamera());
     
-    gfx::Font* font(CONTENT->getDefaultFont(14));
+    #pragma region GUI stuff
+    gui::Font* font(CONTENT->getDefaultFont(14));
     m_DebugText.setFont(font);
+    font->release();
+
+    font = CONTENT->loadFont("MODES.TTF", 36) ;
+    m_BigText.setFont(font);
+    m_BigText.setHorizontalAlignment(gui::Text::HAlignment_Left);
+    m_BigText.setVerticalAlignment(gui::Text::VAlignment_Bottom);
     font->release();
     
     m_BackgroundSound = AUDIO->loadSound2D("stuff.wav", true);
@@ -304,12 +346,12 @@ void MainGame::load()
     /******* TONEMAP GUI *******/
     m_ToneMapGui = m_RenderPipeline->get2DRenderer()->createWebViewRelative(he::RectF(0,0,1,1), true);
 
-    std::string guiPath(he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str());
+    std::string guiPath(he::Path::getWorkingDir().append("../../data/gui/").str());
     
     m_ToneMapGui->loadUrl(guiPath + "tonemap.html");
     m_ToneMapGui->setTransparent(true);
 
-    m_ToneMapGuiListener = NEW he::gfx::WebListener(m_ToneMapGui);
+    m_ToneMapGuiListener = m_ToneMapGui->getWebListener();
 
     he::eventCallback1<void, const Awesomium::JSArray&> updateHandler(boost::bind(&ht::MainGame::updateToneMapData,this,_1));
     m_ToneMapGuiListener->addObjectCallback("HE", "updateTonemapData", updateHandler);
@@ -318,12 +360,69 @@ void MainGame::load()
     he::eventCallback0<void> onGuiLoaded([&]()
     {
         Awesomium::JSArray args;
+        const he::gfx::ToneMapData& data(m_View->getPostProcessor()->getToneMapData());
         args.Push(Awesomium::JSValue(0));
-        args.Push(Awesomium::JSValue(0.55));
+        args.Push(Awesomium::JSValue(data.shoulderStrength));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(1));
+        args.Push(Awesomium::JSValue(data.linearStrength));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(2));
+        args.Push(Awesomium::JSValue(data.linearAngle));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(3));
+        args.Push(Awesomium::JSValue(data.toeStrength));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(4));
+        args.Push(Awesomium::JSValue(data.toeNumerator));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(5));
+        args.Push(Awesomium::JSValue(data.toeDenominator));
+        m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
+        args.Clear();
+
+        args.Push(Awesomium::JSValue(6));
+        args.Push(Awesomium::JSValue(data.exposureBias));
         m_ToneMapGuiListener->executeFunction("","setSliderValue", args);
     });
 
     m_ToneMapGui->OnUrlLoaded += onGuiLoaded;
+
+    he::gui::SpriteCreator* creator(GUI->Sprites);
+    m_TestSprite = creator->createSprite(he::vec2(200,200));
+    creator->setActiveSprite(m_TestSprite);
+    creator->roundedRectangle(he::vec2(0,0), he::vec2(200,200), 50.0f);
+    creator->setColor(he::Color(1.0f,0.0f,1.0f));
+    creator->fill();
+    creator->roundedRectangle(he::vec2(40,0), he::vec2(40,40), 10.0f);
+    creator->setColor(he::Color(1.0f,1.0f,1.0f));
+    creator->fill();
+    creator->roundedRectangle(he::vec2(120,0), he::vec2(40,40), 10.0f);
+    creator->setColor(he::Color(1.0f,1.0f,1.0f));
+    creator->fill();
+
+    m_BigText.clear();
+    m_BigText.addTextExt("testing cairo text");
+    creator->text(m_BigText, he::vec2(20,20));
+    creator->setColor(he::Color(1.0f,0.5f,0.5f));
+    creator->fill();
+    creator->renderSpriteAsync();
+#pragma endregion
+
+    m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph;
+    m_MaterialGenerator->init();
+    
+    PHYSICS->startSimulation();
 }
 
 void MainGame::tick( float dTime )
@@ -333,34 +432,73 @@ void MainGame::tick( float dTime )
     m_MovingEntityFase += dTime / 2.0f;
     if (m_MovingEntityFase >= he::twoPi)
         m_MovingEntityFase -= he::twoPi;
-
-    m_DebugSpotLight->setLocalTranslate(he::vec3(-42.71f, 10.20f, 30.74f) + 
-        he::vec3(pow(cos(m_MovingEntityFase), 4) * 5, 
-                 pow(sin(m_MovingEntityFase), 3) * 3, 
-                 pow(cos(m_MovingEntityFase), 2) * 3));
-    m_DebugSpotLight->setLocalRotate(he::mat33::createRotation3D(he::vec3::up, m_MovingEntityFase));
     
-    for (size_t i(0); i < NUM_MOVING_ENTITIES; ++i)
+    he::io::IKeyboard* keyboard(CONTROLS->getKeyboard());
+    if (CONTROLS->getFocus(this))
     {
-        const MovingEntityRandomness& r(m_MovingEntityRandomness[i]);
-        m_MovingEntityList[i]->setLocalTranslate(
-            he::vec3(pow(cos(m_MovingEntityFase), r.c.x) * r.a.x + r.b.x, 
-                     pow(sin(m_MovingEntityFase), r.c.y) * r.a.y + r.b.y, 
-                     pow(cos(m_MovingEntityFase), r.c.z) * r.a.z + r.b.z));
+        if (keyboard->isKeyPressed(he::io::Key_Return))
+        {
+            he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
+            spotlight->setLocalTranslate(m_View->getCamera()->getPosition());
+            spotlight->setDirection(m_View->getCamera()->getLook());
+            spotlight->setMultiplier(s_Random.nextFloat(1.0f, 5.0));
+            spotlight->setAttenuation(1.0f, s_Random.nextFloat(10.0f, 20.0f));
+            spotlight->setFov(he::piOverFour * s_Random.nextFloat(0.5f, 4.0f));
+            he::vec3 color(he::normalize(he::vec3(s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1))));
+            spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
+            spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
+        }
+        if (keyboard->isKeyDown(he::io::Key_Lctrl))
+        {
+            he::ge::Entity* bullet(NEW he::ge::Entity());
+            bullet->setScene(m_Scene);
+            bullet->setLocalTranslate(m_View->getCamera()->getPosition());
+            he::ge::InstancedModelComponent* modelComp(NEW he::ge::InstancedModelComponent());
+            modelComp->setLocalScale(he::vec3(0.5f));
+            bullet->addComponent(modelComp);
+            modelComp->setController("bullet");  
+            he::ge::DynamicPhysicsComponent* physicsComp(NEW he::ge::DynamicPhysicsComponent());
+            bullet->addComponent(physicsComp);
+            he::px::PhysicsBoxShape shape(he::vec3(1.0f, 1.0f, 1.0f));
+            physicsComp->addShape(&shape, he::px::PhysicsMaterial(1.0f, 0.8f, 0.3f), 1.0f, 0x00000001, 0xffffffff);
+            m_EntityList.push_back(bullet);
+            physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
+            bullet->activate();
+        }
+        if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
+        {
+            //he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
+            //
+            //if (i != UINT32_MAX)
+            //    ++i;
+        }
+        CONTROLS->returnFocus(this);
+    }
+    if (keyboard->isKeyPressed(he::io::Key_F9))
+    {
+        if (m_MaterialGenerator->isOpen())
+            m_MaterialGenerator->close();
+        else
+            m_MaterialGenerator->open();
     }
 
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_Return))
+
+
+    he::uint8 prevIndex(static_cast<he::uint8>(m_ColorTimer * 16));
+    m_ColorTimer += dTime;
+    he::uint8 newIndex(static_cast<he::uint8>(m_ColorTimer * 16));
+    if (prevIndex != newIndex)
     {
-        he::gfx::SpotLight* spotlight = m_Scene->getLightManager()->addSpotLight();
-        spotlight->setLocalTranslate(m_View->getCamera()->getPosition());
-        spotlight->setDirection(m_View->getCamera()->getLook());
-        spotlight->setMultiplier(s_Random.nextFloat(1.0f, 5.0));
-        spotlight->setAttenuation(1.0f, s_Random.nextFloat(10.0f, 20.0f));
-        spotlight->setFov(he::piOverFour * s_Random.nextFloat(0.5f, 4.0f));
-        he::vec3 color(he::normalize(he::vec3(s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1), s_Random.nextFloat(0, 1))));
-        spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
-        spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
+        for (he::uint8 c(0); c < 8; ++c)
+        {
+            he::uint8 index(newIndex + c);
+            if (index > 15)
+                index -= 15;
+            m_ShuffeledColor[c] = m_Colors[index];
+        }
     }
+    if (m_ColorTimer > 1.0f)
+        m_ColorTimer -= static_cast<int>(m_ColorTimer);
 
     m_FpsGraph->tick(dTime);
 }
@@ -372,26 +510,40 @@ void MainGame::drawShapes( he::gfx::ShapeRenderer* /*renderer*/ )
 
 void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 {
+    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
+
     he::gfx::CameraPerspective* camera(m_View->getCamera());
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
-    
-    m_DebugText.clear();
+    const he::RectI& viewport(m_View->getViewport());
 
-    char buff[100];
-    sprintf(buff, "Position: %.2f, %.2f, %.2f\0", position.x, position.y, position.z);
-    m_DebugText.addLine(buff);
-
-    sprintf(buff, "Look: %.2f, %.2f, %.2f\0", look.x, look.y, look.z);
-    m_DebugText.addLine(buff);
-
+    m_RenderPipeline->getPicker()->drawDebug(canvas);
 
     canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
     canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
-
     m_ToneMapGui->draw2D(canvas);
+    
+    m_DebugText.clear();
+    m_DebugText.addTextExt("&0F0Position:&FFF %.2f, %.2f, %.2f\n", position.x, position.y, position.z);
+    m_DebugText.addTextExt("&F00Look:&FFF %.2f, %.2f, %.2f\n", look.x, look.y, look.z);
+    cvs->fillText(m_DebugText, he::vec2(12, 12));
 
-    canvas->fillText(m_DebugText, he::vec2(12, 12));
+    m_BigText.clear();
+    m_BigText.addTextExt("&%c%c%cF&%c%c%ca&%c%c%cb&%c%c%cu&%c%c%cl&%c%c%co&%c%c%cu&%c%c%cs\n",
+        m_ShuffeledColor[0].r16(), m_ShuffeledColor[0].g16(), m_ShuffeledColor[0].b16(),
+        m_ShuffeledColor[1].r16(), m_ShuffeledColor[1].g16(), m_ShuffeledColor[1].b16(),
+        m_ShuffeledColor[2].r16(), m_ShuffeledColor[2].g16(), m_ShuffeledColor[2].b16(),
+        m_ShuffeledColor[3].r16(), m_ShuffeledColor[3].g16(), m_ShuffeledColor[3].b16(),
+        m_ShuffeledColor[4].r16(), m_ShuffeledColor[4].g16(), m_ShuffeledColor[4].b16(),
+        m_ShuffeledColor[5].r16(), m_ShuffeledColor[5].g16(), m_ShuffeledColor[5].b16(),
+        m_ShuffeledColor[6].r16(), m_ShuffeledColor[6].g16(), m_ShuffeledColor[6].b16(),
+        m_ShuffeledColor[7].r16(), m_ShuffeledColor[7].g16(), m_ShuffeledColor[7].b16());
+    cvs->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
+    
+    // NEW CANVAS TEST
+    //cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
+
+    //canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
 }
 
 void MainGame::updateToneMapData(const Awesomium::JSArray& args)

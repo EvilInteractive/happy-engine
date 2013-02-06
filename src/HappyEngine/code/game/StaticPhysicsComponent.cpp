@@ -27,7 +27,7 @@
 namespace he {
 namespace ge {
 
-StaticPhysicsComponent::StaticPhysicsComponent(): m_StaticActor(nullptr)
+StaticPhysicsComponent::StaticPhysicsComponent(): m_StaticActor(nullptr), m_Parent(nullptr)
 {
 }
 
@@ -43,14 +43,20 @@ void StaticPhysicsComponent::init( Entity* pParent )
     m_StaticActor = NEW px::PhysicsStaticActor(getWorldMatrix());
 }
 
-void StaticPhysicsComponent::serialize(SerializerStream& /*stream*/)
+void StaticPhysicsComponent::activate()
 {
-
+    HE_IF_ASSERT(m_StaticActor != nullptr, "activating none inited StaticPhysicsComponent")
+    {
+        m_StaticActor->attachToScene();
+    }
 }
 
-void StaticPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
+void StaticPhysicsComponent::deactivate()
 {
-
+    HE_IF_ASSERT(m_StaticActor != nullptr, "deactivating none inited StaticPhysicsComponent")
+    {
+        m_StaticActor->detachFromScene();
+    }
 }
 
 void StaticPhysicsComponent::addShape(  const px::IPhysicsShape* pShape, const px::PhysicsMaterial& material, uint32 collisionGroup, const mat44& localPose )
@@ -70,5 +76,6 @@ void StaticPhysicsComponent::calculateWorldMatrix()
     if (m_StaticActor != nullptr)
         m_StaticActor->teleport(m_WorldMatrix);
 }
+
 
 } } //end namespace

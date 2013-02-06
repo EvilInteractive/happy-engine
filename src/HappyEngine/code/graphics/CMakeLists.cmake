@@ -1,4 +1,5 @@
-set (CODE_GRAPHICS_NO_FILTER    
+
+addFilter(CODE_SRCS src/graphics code/graphics/
             BufferLayout.cpp                    BufferLayout.h
             Color.cpp                           Color.h
             DefaultSingleDrawable.cpp           DefaultSingleDrawable.h
@@ -14,41 +15,50 @@ set (CODE_GRAPHICS_NO_FILTER
 			Texture.cpp							Texture.h
             Texture2D.cpp                       Texture2D.h
             TextureCube.cpp                     TextureCube.h
-            Vertex.cpp                          Vertex.h)
+            Vertex.cpp                          Vertex.h
+        )
                             
-set (CODE_GRAPHICS_GUI_FILTER
+addFilter(CODE_SRCS src/graphics/gui code/graphics/
             Button.cpp                          Button.h
             Font.cpp                            Font.h
             Scrollbar.cpp                       Scrollbar.h
             Text.cpp                            Text.h
-            TextBox.cpp                         TextBox.h)
+            TextBox.cpp                         TextBox.h
+			Sprite.cpp							Sprite.h
+			SpriteCreator.cpp					SpriteCreator.h
+			Gui.h
+        )
             
-set (CODE_GRAPHICS_LIGHT_FILTER
+addFilter(CODE_SRCS src/graphics/light code/graphics/
             AmbientLight.cpp                    AmbientLight.h
             DirectionalLight.cpp                DirectionalLight.h                   
             Light.cpp                           Light.h
             LightFactory.cpp                    LightFactory.h
             LightManager.cpp                    LightManager.h
             PointLight.cpp                      PointLight.h
-            SpotLight.cpp                       SpotLight.h)
+            SpotLight.cpp                       SpotLight.h
+        )
             
-set (CODE_GRAPHICS_MATERIAL_FILTER
+addFilter(CODE_SRCS src/graphics/material code/graphics/
             Material.cpp                        Material.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
-            ShaderVar.h                         )
+            ShaderVar.h                         
+        )
             
-set (CODE_GRAPHICS_MODEL_FILTER
+addFilter(CODE_SRCS src/graphics/model code/graphics/
             Bone.cpp                            Bone.h
             Mesh2D.cpp                          Mesh2D.h
             Model.cpp                           Model.h
-            ModelMesh.cpp                       ModelMesh.h)
+            ModelMesh.cpp                       ModelMesh.h
+        )
             
-set (CODE_GRAPHICS_PICKING_FILTER
+addFilter(CODE_SRCS src/graphics/picking code/graphics/
             PickEffect.cpp                      PickEffect.h
-            Picker.cpp                          Picker.h)
+            Picker.cpp                          Picker.h
+        )
             
-set (CODE_GRAPHICS_RENDERING_FILTER
+addFilter(CODE_SRCS src/graphics/rendering code/graphics/
             CameraOrtho.cpp                     CameraOrtho.h
             CameraPerspective.cpp               CameraPerspective.h
             CameraBound.cpp                     CameraBound.h
@@ -60,126 +70,63 @@ set (CODE_GRAPHICS_RENDERING_FILTER
             RenderTarget.cpp                    RenderTarget.h
             Scene.cpp                           Scene.h
             View.cpp                            View.h
-            Window.cpp                          Window.h)
+            Window.cpp                          Window.h
+        )
             
-    set (CODE_GRAPHICS_RENDERING_2D_FILTER
-                Canvas2D.cpp                        Canvas2D.h
-                Renderer2D.cpp                      Renderer2D.h
-                Simple2DEffect.cpp                  Simple2DEffect.h
-                Simple2DFontEffect.cpp              Simple2DFontEffect.h
-                Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
-                WebView.cpp                         WebView.h
-				WebListener.cpp					    WebListener.h
-				JSObject.h)
-                
-    set (CODE_GRAPHICS_RENDERING_DEFERRED_FILTER
-                Deferred3DRenderer.cpp              Deferred3DRenderer.h)
-                
-    set (CODE_GRAPHICS_RENDERING_FORWARD_FILTER
-                BillboardEffect.cpp                 BillboardEffect.h
-                ShapeRenderer.cpp                   ShapeRenderer.h
-                Forward3DRenderer.cpp               Forward3DRenderer.h
-                SimpleColorEffect.cpp               SimpleColorEffect.h)
-                
-    set (CODE_GRAPHICS_RENDERING_INSTANCING_FILTER                      
-                IInstanceFiller.h
-                IInstancible.h   
-                InstancingBuffer.cpp                InstancingBuffer.h
-                InstancingController.cpp            InstancingController.h
-                InstancingManager.cpp               InstancingManager.h)
-                
-    set (CODE_GRAPHICS_RENDERING_MANAGER_FILTER
-                DrawListContainer.cpp               DrawListContainer.h
-                GraphicsEngine.cpp                  GraphicsEngine.h 
-                RenderSettings.h)
-                
-    set (CODE_GRAPHICS_RENDERING_POST_FILTER
-                AutoExposure.cpp                    AutoExposure.h
-                Bloom.cpp                           Bloom.h
-                PostProcesser.cpp                   PostProcesser.h)
-    
-    set (CODE_GRAPHICS_RENDERING_SHADOW_FILTER
-                ShadowCaster.cpp                    ShadowCaster.h
-				ShadowCasterSpotlight.cpp			ShadowCasterSpotlight.h)
-    
-    
-foreach(f ${CODE_GRAPHICS_NO_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_NO_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
+addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
+			Canvas2D.cpp                        Canvas2D.h
+			Canvas2Dnew.cpp                     Canvas2Dnew.h
+			Canvas2DBuffer.cpp                  Canvas2DBuffer.h
+			Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
+			Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h
+			Renderer2D.cpp                      Renderer2D.h
+			Simple2DEffect.cpp                  Simple2DEffect.h
+			Simple2DFontEffect.cpp              Simple2DFontEffect.h
+			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
+			WebView.cpp                         WebView.h
+            WebWindow.cpp                       WebWindow.h
+			WebListener.cpp					    WebListener.h
+			JSObject.h
+			NinePatchEffect.cpp					NinePatchEffect.h
+			SpriteData.h
+        )
+            
+addFilter(CODE_SRCS src/graphics/rendering/2D/shapes code/graphics/
+            BezierShape2D.cpp                   BezierShape2D.h
+        )           
+			
+addFilter(CODE_SRCS src/graphics/rendering/deferred code/graphics/
+			Deferred3DRenderer.cpp              Deferred3DRenderer.h
+        )
+			
+addFilter(CODE_SRCS src/graphics/rendering/forward code/graphics/
+			BillboardEffect.cpp                 BillboardEffect.h
+			ShapeRenderer.cpp                   ShapeRenderer.h
+			Forward3DRenderer.cpp               Forward3DRenderer.h
+			SimpleColorEffect.cpp               SimpleColorEffect.h
+        )
+			
+addFilter(CODE_SRCS src/graphics/rendering/instancing code/graphics/                    
+			IInstanceFiller.h
+			IInstancible.h   
+			InstancingBuffer.cpp                InstancingBuffer.h
+			InstancingController.cpp            InstancingController.h
+			InstancingManager.cpp               InstancingManager.h
+        )
+			
+addFilter(CODE_SRCS src/graphics/rendering/manager code/graphics/
+			DrawListContainer.cpp               DrawListContainer.h
+			GraphicsEngine.cpp                  GraphicsEngine.h 
+			RenderSettings.h
+        )
+			
+addFilter(CODE_SRCS src/graphics/rendering/post code/graphics/
+			AutoExposure.cpp                    AutoExposure.h
+			Bloom.cpp                           Bloom.h
+			PostProcesser.cpp                   PostProcesser.h
+        )
 
-foreach(f ${CODE_GRAPHICS_GUI_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_GUI_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
-
-foreach(f ${CODE_GRAPHICS_LIGHT_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_LIGHT_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
-
-foreach(f ${CODE_GRAPHICS_MATERIAL_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_MATERIAL_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
-
-foreach(f ${CODE_GRAPHICS_MODEL_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_MODEL_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
-
-foreach(f ${CODE_GRAPHICS_PICKING_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_PICKING_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
-
-foreach(f ${CODE_GRAPHICS_RENDERING_FILTER}) 
-    LIST(APPEND CODE_GRAPHICS_RENDERING_FILTER_SRCS code/graphics/${f})
-endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_2D_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_2D_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_DEFERRED_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_DEFERRED_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_FORWARD_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_FORWARD_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_INSTANCING_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_INSTANCING_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_MANAGER_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_MANAGER_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_POST_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_POST_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-    foreach(f ${CODE_GRAPHICS_RENDERING_SHADOW_FILTER}) 
-        LIST(APPEND CODE_GRAPHICS_RENDERING_SHADOW_FILTER_SRCS code/graphics/${f})
-    endforeach(f) 
-
-source_group (src\\graphics FILES ${CODE_GRAPHICS_NO_FILTER_SRCS})
-source_group (src\\graphics\\gui FILES ${CODE_GRAPHICS_GUI_FILTER_SRCS})
-source_group (src\\graphics\\light FILES ${CODE_GRAPHICS_LIGHT_FILTER_SRCS})
-source_group (src\\graphics\\material FILES ${CODE_GRAPHICS_MATERIAL_FILTER_SRCS})
-source_group (src\\graphics\\model FILES ${CODE_GRAPHICS_MODEL_FILTER_SRCS})
-source_group (src\\graphics\\picking FILES ${CODE_GRAPHICS_PICKING_FILTER_SRCS})
-source_group (src\\graphics\\rendering FILES ${CODE_GRAPHICS_RENDERING_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\2d FILES ${CODE_GRAPHICS_RENDERING_2D_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\deferred FILES ${CODE_GRAPHICS_RENDERING_DEFERRED_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\forward FILES ${CODE_GRAPHICS_RENDERING_FORWARD_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\instancing FILES ${CODE_GRAPHICS_RENDERING_INSTANCING_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\manager FILES ${CODE_GRAPHICS_RENDERING_MANAGER_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\post FILES ${CODE_GRAPHICS_RENDERING_POST_FILTER_SRCS})
-    source_group (src\\graphics\\rendering\\shadow FILES ${CODE_GRAPHICS_RENDERING_SHADOW_FILTER_SRCS})
-
-LIST(APPEND HAPPYENGINE_CODE_GRAPHICS_SRCS 
-        ${CODE_GRAPHICS_NO_FILTER_SRCS}
-        ${CODE_GRAPHICS_GUI_FILTER_SRCS}
-        ${CODE_GRAPHICS_LIGHT_FILTER_SRCS}
-        ${CODE_GRAPHICS_MATERIAL_FILTER_SRCS}
-        ${CODE_GRAPHICS_MODEL_FILTER_SRCS}
-        ${CODE_GRAPHICS_PICKING_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_2D_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_DEFERRED_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_FORWARD_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_INSTANCING_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_MANAGER_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_POST_FILTER_SRCS}
-        ${CODE_GRAPHICS_RENDERING_SHADOW_FILTER_SRCS}
+addFilter(CODE_SRCS src/graphics/rendering/shadow code/graphics/
+			ShadowCaster.cpp                    ShadowCaster.h
+			ShadowCasterSpotlight.cpp			ShadowCasterSpotlight.h
         )

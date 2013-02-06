@@ -76,7 +76,7 @@ private:
     he::PrimitiveList<const Texture2D*> m_TextureTargets;
 
     uint32 m_DrawBuffers[MAX_TEXTURE_TARGETS];
-    uint32 m_DrawBufferCount;
+    size_t m_DrawBufferCount;
 
     uint32 m_Width, m_Height;
     GLContext* m_Context;

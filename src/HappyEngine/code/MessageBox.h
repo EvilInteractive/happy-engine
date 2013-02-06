@@ -15,8 +15,8 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 02/01/2013
 
 #ifndef _HE_MessageBox_H_
 #define _HE_MessageBox_H_
@@ -52,10 +52,7 @@ public:
 
 private:
     MessageBox();
-
-    static boost::mutex s_Mutex;
-    static MessageBoxButton s_Result;
-
+    
     //Disable default copy constructor and default assignment operator
     MessageBox(const MessageBox&);
     MessageBox& operator=(const MessageBox&);

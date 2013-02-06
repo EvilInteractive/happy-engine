@@ -58,9 +58,9 @@ inline float rsqrtf(float number)
 
     x2 = number * 0.5F;
     y  = number;
-    i  = * ( long * ) &y;                       // evil floating point bit level hacking
+    i  = * reinterpret_cast<long*>(&y);          // evil floating point bit level hacking
     i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
-    y  = * ( float * ) &i;
+    y  = * reinterpret_cast<float*>(&i);
     y  = y * ( threehalfs - ( x2 * y * y ) );
 
     return y;

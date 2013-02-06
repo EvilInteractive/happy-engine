@@ -27,16 +27,23 @@
 #include "JSObject.h"
 #include "event.h"
 
+namespace Awesomium
+{    
+    class WebView;
+}
+
 namespace he {
 namespace gfx {
     class WebView;
+    class WebWindow;
 
 class WebListener : public Awesomium::JSMethodHandler
 {
+friend class WebWindow;
+friend class WebView;
 public:
 
-    /* CONSTRUCTOR - DESTRUCTOR */
-    WebListener(WebView* view);
+    /* DESTRUCTOR */
     virtual ~WebListener();
 
     /* GENERAL */
@@ -45,7 +52,7 @@ public:
                            eventCallback1<void, const Awesomium::JSArray&>& callBack);
     void removeObjectCallback(const std::string& object,
                               const std::string& method,
-                              const eventCallback1<void, const Awesomium::JSArray&>& callBack);
+                              eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
     void executeFunction(const std::string& object,
                         const std::string& method,
@@ -62,9 +69,11 @@ public:
                                                            const Awesomium::JSArray& args);
 
 private:
+    // Only webview and webwindow may create this
+    WebListener(Awesomium::WebView* const webView);
 
     /* DATAMEMBERS */
-    WebView* m_WebView;
+    Awesomium::WebView* m_WebView;
     he::PrimitiveList<JSObject*> m_Objects;
 
     /* DEFAULT COPY & ASSIGNMENT */

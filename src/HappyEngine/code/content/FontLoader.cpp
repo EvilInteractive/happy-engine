@@ -24,7 +24,7 @@
 
 #include "ResourceFactory.h"
 
-#define FACTORY ResourceFactory<gfx::Font>::getInstance()
+#define FACTORY ResourceFactory<gui::Font>::getInstance()
 
 namespace he {
 namespace ct {
@@ -32,18 +32,18 @@ namespace ct {
 /* CONSTRUCTOR - DESTRUCTOR*/
 FontLoader::FontLoader()
 {
-    FT_Error error(FT_Init_FreeType(&m_FTLibrary));
-    HE_ASSERT(error == false,"Error creating freetype library!");
+    const FT_Error error(FT_Init_FreeType(&m_FTLibrary));
+    HE_ASSERT(error == false,"Error creating freetype library!"); error;
 }
 
 FontLoader::~FontLoader()
 {
-    ResourceFactory<gfx::Font>::getInstance()->garbageCollect();
+    ResourceFactory<gui::Font>::getInstance()->garbageCollect();
     FT_Done_FreeType(m_FTLibrary);
 }
 
 /* GENERAL */
-gfx::Font* FontLoader::load(const std::string& path, uint16 size)
+gui::Font* FontLoader::load(const std::string& path, uint16 size, uint8 options)
 {
     std::stringstream stream;
     stream << path << size;
@@ -63,8 +63,7 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size)
 
         if (error != 0)
         {
-            HE_ERROR("Error loading font: %s", path.c_str());
-            HE_ASSERT(false, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font: %s", path.c_str());
             return nullptr;
         }
 
@@ -72,8 +71,7 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size)
 
         if (error != 0)
         {
-            HE_ERROR("Error loading font charmap: %s", path.c_str());
-            HE_ASSERT(false, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error loading font charmap: %s", path.c_str());
             return nullptr;
         }
 
@@ -83,14 +81,13 @@ gfx::Font* FontLoader::load(const std::string& path, uint16 size)
 
         if (error != 0)
         {
-            HE_ERROR("Error setting font size: %s", path.c_str());
-            HE_ASSERT(false, "Error loading font!");
+            LOG(LogType_ProgrammerAssert, "Error setting font size: %s", path.c_str());
             return nullptr;
         }
 
-        gfx::Font* pFont = FACTORY->get(handle);
+        gui::Font* pFont = FACTORY->get(handle);
         pFont->setName(stream.str());
-        pFont->init(m_FTLibrary, face, size);
+        pFont->init(m_FTLibrary, face, size, options);
 
         m_AssetContainer.addAsset(stream.str(), handle);
 

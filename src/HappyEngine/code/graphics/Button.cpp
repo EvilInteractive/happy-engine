@@ -158,11 +158,11 @@ void Button::setPosition(const vec2& centerPos)
 void Button::setText(const std::string& text, uint16 fontSize)
 {
     m_Text.clear();
-    m_Text.addLine(text);
+    m_Text.addText(text.c_str());
 
     if (m_Text.getFont() == nullptr || m_Text.getFont()->getPixelHeight() != fontSize)
     {
-        gfx::Font* font(CONTENT->getDefaultFont(fontSize));
+        gui::Font* font(CONTENT->getDefaultFont(fontSize));
         m_Text.setFont(font);
         font->release();
     }
@@ -265,12 +265,12 @@ void Button::drawColor(gfx::Canvas2D* renderer)
 
 void Button::drawSprites(gfx::Canvas2D* /*renderer*/)
 {
-    HE_ASSERT(false, "Not Implemented!");
+    LOG(LogType_ProgrammerAssert, "Not Implemented!");
 }
 
 void Button::drawSpriteSheet()
 {
-    HE_ASSERT(false, "Not Implemented!");
+    LOG(LogType_ProgrammerAssert, "Not Implemented!");
 }
 
 /* CALLBACK HANDLERS */

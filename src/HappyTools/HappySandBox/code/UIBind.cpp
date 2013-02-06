@@ -23,18 +23,18 @@
 #include "UIBind.h"
 #include "WebListener.h"
 #include "UIController.h"
+#include "WebView.h"
 
 namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 UIBind::UIBind(UIController* uiController) : m_UIController(uiController),
-                                             m_WebListener(NEW he::gfx::WebListener(m_UIController->getWebView()))
+                                             m_WebListener(m_UIController->getWebView()->getWebListener())
 {
 }
 
 UIBind::~UIBind()
 {
-    delete m_WebListener;
 }
 
 /* GENERAL */

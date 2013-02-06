@@ -52,7 +52,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_Renderer = renderer;
 
     // get gui dir
-    m_GUIDirectory = he::Path::getWorkingPath().getAbsolutePath(he::Path("../../data/gui/")).str();
+    m_GUIDirectory = he::Path::getWorkingDir().append("../../data/gui/").str();
 
     // create webview for gui to load
     m_WebView = m_Renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
@@ -60,7 +60,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_Renderer->attachToRender(this);
     m_Renderer->attachToRender(m_WebView);
     
-    he::gfx::Font* font(CONTENT->getDefaultFont(10));
+    he::gui::Font* font(CONTENT->getDefaultFont(10));
     m_SceneInfo.setFont(font);
     font->release();
 }

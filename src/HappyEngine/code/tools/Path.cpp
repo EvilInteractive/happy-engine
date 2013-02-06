@@ -27,13 +27,8 @@ namespace he {
 
 Path::Path( const std::string& path ): m_Path(path)
 {
-    for (uint32 i(0); i < m_Path.size(); ++i)
-    {
-        if (m_Path[i] == '\\')
-            m_Path[i] = '/';
-    }
-    if (m_Path.size() > 0 && m_Path.back() != '/')
-        m_Path.push_back('/');
+    convertBackslashesToForward();
+    ensureTrailingSlash();
 }
 
 Path::Path( const Path& other ): m_Path(other.m_Path)
@@ -57,9 +52,10 @@ const std::string& Path::str() const
     return m_Path;
 }
 
-Path Path::getAbsolutePath( const Path& relativePath ) const
+Path Path::append( const std::string& relativePath ) const
 {
-    std::string path(relativePath.str());
+    Path temp(relativePath); // ensures forward slashes and trailing slash
+    const std::string path(temp.str());
     std::string::size_type newLength(m_Path.size() - 2); // -2 : skip trailing slash
     std::string::size_type off(0);
     for (;;)
@@ -80,21 +76,100 @@ Path Path::getAbsolutePath( const Path& relativePath ) const
         }
     }
     Path returnPath(m_Path.substr(0, newLength + 1));
-    returnPath += path.substr(off);
+    returnPath.m_Path += path.substr(off);
+    
     return returnPath;
 }
 
-Path& Path::operator+=( const std::string& str )
-{
-    m_Path += str;
-    return *this;
-}
-
-Path Path::getWorkingPath()
+Path Path::getWorkingDir()
 {
     boost::filesystem::path workDir(boost::filesystem::current_path());
 
     return Path(workDir.string());
+}
+
+void Path::ensureTrailingSlash()
+{
+    if (m_Path.size() > 0 && m_Path.back() != '/')
+    {
+        bool addSlash(true);
+        for (int i(m_Path.size() - 1); i >= 0; --i)
+        {
+            if (m_Path[i] == '/')
+            {
+                break;
+            }
+            else if (m_Path[i] == '.')
+            {
+                addSlash = false;
+                break;
+            }
+        }
+        if (addSlash)
+            m_Path.push_back('/');
+    }
+}
+
+void Path::convertBackslashesToForward()
+{
+    for (uint32 i(0); i < m_Path.size(); ++i)
+    {
+        if (m_Path[i] == '\\')
+            m_Path[i] = '/';
+    }
+}
+
+std::string Path::getFileName() const
+{
+    std::string result("");
+    size_t index(m_Path.rfind('/', m_Path.size() - 1));
+    if (index != std::string::npos)
+    {
+        result = m_Path.substr(index + 1, m_Path.size() - index - 1);
+    }
+    return result;
+}
+
+bool Path::iterateFiles( const bool recursive, const boost::function1<void, const Path&>& func )
+{
+    bool result(false);
+    boost::filesystem::path boostPath(m_Path);
+    boost::system::error_code error;
+    if (boost::filesystem::exists(boostPath, error) && boost::filesystem::is_directory(boostPath, error))
+    {
+        boost::filesystem::directory_iterator endIt;
+        for (boost::filesystem::directory_iterator it(boostPath); it != endIt; ++it)
+        {
+            if (boost::filesystem::is_regular_file(it->status()))
+            {
+                func(it->path().string());
+            }
+            else if (boost::filesystem::is_directory(it->status()))
+            {
+                Path path(it->path().string());
+                path.iterateFiles(recursive, func);
+            }
+        }
+        result = true;
+    }
+    return result;
+}
+
+bool Path::isFile() const
+{
+    return m_Path.back() != '/';
+}
+
+bool Path::isDirectory() const
+{
+    return !isFile();
+}
+
+bool Path::exists() const
+{
+    boost::filesystem::path boostPath(m_Path);
+    boost::system::error_code error;
+    return boost::filesystem::exists(boostPath, error);
 }
 
 } //end namespace

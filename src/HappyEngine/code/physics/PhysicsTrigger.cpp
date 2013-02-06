@@ -54,12 +54,10 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisio
     he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, mat, localPose))
     {
-        PHYSICS->lock();
         shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, collisionGroup, collisionAgainstGroup);
         });
-        PHYSICS->unlock();
     }
 }
 void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup )
@@ -67,7 +65,7 @@ void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uin
     HE_ASSERT(shape != nullptr, "Trigger shape creation failed");
 
     shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true); // trigger shape
-    shape->userData = this;
+    shape->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     physx::PxFilterData filter;
     filter.word0 = collisionGroup;
@@ -115,20 +113,20 @@ void PhysicsTrigger::getPose( mat44& pose ) const
     m_Actor->getPose(pose);
 }
 
-const PhysicsUserData& PhysicsTrigger::getUserData()
+const PhysicsUserData& PhysicsTrigger::getUserData() const
 {
     return m_Actor->getUserData();
 }
 
 void PhysicsTrigger::onTriggerEnter( physx::PxShape* shape )
 {
-    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    PhysicsActor* actor(static_cast<PhysicsActor*>(shape->userData));
     OnTriggerEnter(actor);
 }
 
 void PhysicsTrigger::onTriggerLeave( physx::PxShape* shape )
 {
-    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    PhysicsActor* actor(static_cast<PhysicsActor*>(shape->userData));
     OnTriggerLeave(actor);
 }
 

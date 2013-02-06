@@ -50,7 +50,7 @@ void TriggerComponent::init(Entity* parent)
     m_Trigger = NEW px::PhysicsTrigger(m_Parent->getWorldMatrix());
     m_Trigger->setUserData(m_Parent);
     
-    he::eventCallback1<void, px::IPhysicsActor*> onEnterHandler([&](px::IPhysicsActor* actor)
+    he::eventCallback1<void, px::PhysicsActor*> onEnterHandler([&](px::PhysicsActor* actor)
     {
         const px::PhysicsUserData& data(actor->getUserData());
         if (RTTI::isA(data.getRTTI(), Entity::getRTTI()))
@@ -62,10 +62,10 @@ void TriggerComponent::init(Entity* parent)
         //   Should we handle this?
         //}
     });
-    he::eventCallback1<void, px::IPhysicsActor*> onLeaveHandler([&](px::IPhysicsActor* actor)
+    he::eventCallback1<void, px::PhysicsActor*> onLeaveHandler([&](px::PhysicsActor* actor)
     {
         const px::PhysicsUserData& data(actor->getUserData());
-        if (data.getRTTI() == Entity::getRTTI())
+        if (RTTI::isA(data.getRTTI(), Entity::getRTTI()))
         {
             OnTriggerLeave(static_cast<Entity*>(data.getData()));
         }
@@ -79,14 +79,20 @@ void TriggerComponent::init(Entity* parent)
     m_Trigger->OnTriggerLeave += onLeaveHandler;
 }
 
-void TriggerComponent::serialize(SerializerStream& /*stream*/)
+void TriggerComponent::activate()
 {
-
+    HE_IF_ASSERT(m_Trigger != nullptr, "activating none inited TriggerComponent")
+    {
+        m_Trigger->attachToScene();
+    }
 }
 
-void TriggerComponent::deserialize(const SerializerStream& /*stream*/)
+void TriggerComponent::deactivate()
 {
-
+    HE_IF_ASSERT(m_Trigger != nullptr, "deactivating none inited TriggerComponent")
+    {
+        m_Trigger->detachFromScene();
+    }
 }
 
 /* GENERAL */

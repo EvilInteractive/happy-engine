@@ -60,7 +60,7 @@ public:
     virtual ~ModelMesh();
 
     void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
-    void setVertices(const void* pVertices, uint32 num, MeshUsage usage);
+    void setVertices(const void* pVertices, uint32 num, MeshUsage usage, bool calcBound = true);
     void setIndices(const void* pIndices, uint32 num, IndexStride type, MeshUsage usage);
     void setBones(const he::ObjectList<Bone>& boneList);
     void setLoaded();

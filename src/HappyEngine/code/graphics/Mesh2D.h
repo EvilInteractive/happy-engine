@@ -31,7 +31,7 @@ class Mesh2D
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Mesh2D();
+    Mesh2D(bool staticDraw = false);
     virtual ~Mesh2D();
 
     /* GENERAL */
@@ -52,6 +52,8 @@ public:
     void setWorldMatrix(const mat44& mat);
 
 private:
+
+    /* INTERNAL */
     void initVao(GLContext* context);
     void destroyVao(GLContext* context);
 
@@ -64,6 +66,8 @@ private:
 
     eventCallback1<void, GLContext*> m_ContextCreatedHandler;
     eventCallback1<void, GLContext*> m_ContextRemovedHandler;
+
+    bool m_StaticDraw;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Mesh2D(const Mesh2D&);

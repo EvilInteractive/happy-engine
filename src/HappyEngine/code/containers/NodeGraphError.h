@@ -22,10 +22,10 @@
 #define _HE_NodeGraphError_H_
 #pragma once
 
+#include "NodeGraphNode.h"
+
 namespace he {
 
-template<typename TInput, typename TOutput>
-class NodeGraphConnection;
 template<typename TInput, typename TOutput>
 class NodeGraphNode;
 
@@ -40,10 +40,22 @@ struct NodeGraphError
     {
     }
 
-    void setMessage(const std::string& message)
+    void setMessage(const char* message, ...)
     {
-        m_ErrorMessage = message;
+        va_list argList;
+        va_start(argList, message);
+        char buff[1024];
+        memset(buff, 0, 1024);
+        vsnprintf(buff, 1024, message, argList);
+        va_end(argList);
+
+        m_ErrorMessage = buff;
     }
+
+    const std::string getMessage() const { return m_ErrorMessage; }
+    const NodeGraphNode<TInput, TOutput>* getNode() const { return m_Node; }
+    const NodeGraphConnection<TInput, TOutput>& getConnection() const { return m_Connecter; }
+    bool isFatal() const { return !m_Fixed; }
 
 private:
     const NodeGraphNode<TInput, TOutput>* m_Node;                  // Node that threw the error

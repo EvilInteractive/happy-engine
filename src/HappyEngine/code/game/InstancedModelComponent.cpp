@@ -55,16 +55,6 @@ void InstancedModelComponent::init( Entity* parent )
     setController(m_ControllerKey);
 }
 
-void InstancedModelComponent::serialize(SerializerStream& /*stream*/)
-{
-    //stream << m_ControllerKey;
-}
-
-void InstancedModelComponent::deserialize(const SerializerStream& /*stream*/)
-{
-    //stream >> m_mtxLocalTransform >> m_ControllerKey;
-}
-
 void InstancedModelComponent::setController( const std::string& key )
 {
     if (m_ControllerKey != "")

@@ -167,9 +167,30 @@ void GL::heBlendFunc(BlendFunc srcFactor, BlendFunc destFactor)
 {
     if (srcFactor != s_CurrentContext->m_BlendSrc || destFactor != s_CurrentContext->m_BlendDest)
     {
+        s_CurrentContext->m_ColorBlendSrc = BlendFunc_Unassigned;
+
         s_CurrentContext->m_BlendSrc = srcFactor;
         s_CurrentContext->m_BlendDest = destFactor;
         glBlendFunc(srcFactor, destFactor);
+    }
+}
+void GL::heBlendFuncSeperate(BlendFunc colorSrcFactor,
+                             BlendFunc colorDestFactor,
+                             BlendFunc alphaSrcFactor,
+                             BlendFunc alphaDestFactor)
+{
+    if (colorSrcFactor  != s_CurrentContext->m_ColorBlendSrc  ||
+        colorDestFactor != s_CurrentContext->m_ColorBlendDest ||
+        alphaSrcFactor  != s_CurrentContext->m_AlphaBlendSrc  ||
+        alphaDestFactor != s_CurrentContext->m_AlphaBlendDest)
+    {
+        s_CurrentContext->m_BlendSrc = BlendFunc_Unassigned;
+
+        s_CurrentContext->m_ColorBlendSrc  = colorSrcFactor;
+        s_CurrentContext->m_ColorBlendDest = colorDestFactor;
+        s_CurrentContext->m_AlphaBlendSrc  = alphaSrcFactor;
+        s_CurrentContext->m_AlphaBlendDest = alphaDestFactor;
+        glBlendFuncSeparate(colorSrcFactor, colorDestFactor, alphaSrcFactor, alphaDestFactor);
     }
 }
 void GL::heBlendEquation( BlendEquation eq )
@@ -296,7 +317,7 @@ void GL::getGLTypesFromBufferElement( const BufferElement& element, GLint& compo
     case BufferElement::Type_IVec4: type = GL_INT; components = 4; break;
     case BufferElement::Type_UInt: type = GL_UNSIGNED_INT; break;
 
-    default: HE_ASSERT(false, "unknown/unsupported BufferElement"); break;
+    default: LOG(LogType_ProgrammerAssert, "unknown/unsupported BufferElement"); break;
     }
 }
 

@@ -1,3 +1,4 @@
+Key_Ctrl
 //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
@@ -23,11 +24,19 @@
 
 namespace he {
 namespace io {
- 
-inline void getIndexShift(Key key, int& index, int& shift)
+
+inline void getIndexShift(const Key key, int& index, int& shift)
 {
     index = key / 8;
     shift = key % 8;
+}
+
+inline uint8 getPressed(const Key key, const uint8* const keys)
+{
+    int index(0);
+    int shift(0);
+    getIndexShift(key, index, shift);
+    return keys[index] & (1 << shift);
 }
 
 Keyboard::Keyboard(): m_TextCharEntered(0)
@@ -41,6 +50,31 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
         int shift(0);
         getIndexShift(key, index, shift);
         m_CurrentKeyState[index] |= 1 << shift;
+
+        Key mergeKey(Key_MAX);
+        switch (key)
+        {
+            case Key_Lctrl:
+            case Key_Rctrl:
+            {
+                mergeKey = Key_Ctrl;          
+            } break;
+            case Key_Lalt:
+            case Key_Ralt:
+            {
+                mergeKey = Key_Alt;          
+            } break;
+            case Key_Lshift:
+            case Key_Rshift:
+            {
+                mergeKey = Key_Shift;          
+            } break;
+        }
+        if (mergeKey != Key_MAX)
+        {
+            getIndexShift(mergeKey, index, shift);
+            m_CurrentKeyState[index] |= 1 << shift;
+        }
     });
     eventCallback1<void, Key> keyReleasedHandler([&](Key key)
     {
@@ -48,10 +82,29 @@ Keyboard::Keyboard(): m_TextCharEntered(0)
         int shift(0);
         getIndexShift(key, index, shift);
         m_CurrentKeyState[index] &= ~(1 << shift);
+
+        Key mergeKey(Key_MAX);
+        bool releaseMergeKey(true);
+        switch (key)
+        {
+        case Key_Lctrl: mergeKey = Key_Ctrl; releaseMergeKey = getPressed(Key_Rctrl, m_CurrentKeyState) == 0; break;
+        case Key_Rctrl: mergeKey = Key_Ctrl; releaseMergeKey = getPressed(Key_Lctrl, m_CurrentKeyState) == 0; break;
+
+        case Key_Lalt: mergeKey = Key_Alt; releaseMergeKey = getPressed(Key_Ralt, m_CurrentKeyState) == 0; break;
+        case Key_Ralt: mergeKey = Key_Alt; releaseMergeKey = getPressed(Key_Lalt, m_CurrentKeyState) == 0; break;
+
+        case Key_Lshift: mergeKey = Key_Shift; releaseMergeKey = getPressed(Key_Rshift, m_CurrentKeyState) == 0; break;
+        case Key_Rshift: mergeKey = Key_Shift; releaseMergeKey = getPressed(Key_Lshift, m_CurrentKeyState) == 0; break;
+        }
+        if (mergeKey != Key_MAX && releaseMergeKey)
+        {
+            getIndexShift(mergeKey, index, shift);
+            m_CurrentKeyState[index] &= ~(1 << shift);
+        }
     });
-    eventCallback1<void, char> textCharEnteredHandler([&](char chr)
+    eventCallback1<void, uint32> textCharEnteredHandler([&](uint32 chr)
     {
-        m_TextCharEntered = chr;
+        m_TextCharEntered = static_cast<char>(chr);
     });
 
     KeyPressed += keyPressedHandler;
@@ -70,39 +123,52 @@ void Keyboard::tick()
     m_TextCharEntered = 0;
 }
 
-bool Keyboard::isKeyUp(Key key) const
+bool Keyboard::isKeyUp(const Key key) const
 {
     int index(0);
     int shift(0);
     getIndexShift(key, index, shift);
     return (m_CurrentKeyState[index] & (1 << shift)) == 0;
 }
-bool Keyboard::isKeyDown(Key key) const
+bool Keyboard::isKeyDown(const Key key) const
 {
-    int index(0);
-    int shift(0);
-    getIndexShift(key, index, shift);
-    return (m_CurrentKeyState[index] & (1 << shift)) != 0;
+    return getPressed(key, m_CurrentKeyState) != 0;
 }
 
-bool Keyboard::isKeyPressed(Key key) const
+bool Keyboard::isKeyPressed(const Key key) const
 {
-    int index(0);
-    int shift(0);
-    getIndexShift(key, index, shift);
-    return ((m_CurrentKeyState[index] & (1 << shift)) != 0 && (m_PrevKeyState[index] & (1 << shift)) == 0);
+    return getPressed(key, m_CurrentKeyState) != 0 && getPressed(key, m_PrevKeyState) == 0;
 }
-bool Keyboard::isKeyReleased(Key key) const
+bool Keyboard::isKeyReleased(const Key key) const
 {
-    int index(0);
-    int shift(0);
-    getIndexShift(key, index, shift);
-    return ((m_CurrentKeyState[index] & (1 << shift)) == 0 && (m_PrevKeyState[index] & (1 << shift)) != 0);
+    return getPressed(key, m_CurrentKeyState) == 0 && getPressed(key, m_PrevKeyState) != 0;
 }
 
 const char& Keyboard::getTextCharEntered() const
 {
     return m_TextCharEntered;
+}
+
+bool Keyboard::isShortcutPressed( const Key key1, const Key key2 ) const
+{
+    return (getPressed(key1, m_CurrentKeyState) != 0) && (getPressed(key2, m_CurrentKeyState) != 0) &&
+          ((getPressed(key1, m_PrevKeyState) == 0) || (getPressed(key2, m_PrevKeyState) == 0));
+}
+
+bool Keyboard::isShortcutPressed( const Key key1, const Key key2, const Key key3 ) const
+{
+    return (getPressed(key1, m_CurrentKeyState) != 0) && (getPressed(key2, m_CurrentKeyState) != 0) &&
+            (getPressed(key3, m_CurrentKeyState) != 0) &&
+        ((getPressed(key1, m_PrevKeyState) == 0) || (getPressed(key2, m_PrevKeyState) == 0) ||
+          getPressed(key3, m_PrevKeyState) == 0);
+}
+
+bool Keyboard::isShortcutPressed( const Key key1, const Key key2, const Key key3, const Key key4 ) const
+{
+    return (getPressed(key1, m_CurrentKeyState) != 0) && (getPressed(key2, m_CurrentKeyState) != 0) &&
+        (getPressed(key3, m_CurrentKeyState) != 0) && (getPressed(key4, m_CurrentKeyState) != 0) &&
+        ((getPressed(key1, m_PrevKeyState) == 0) || (getPressed(key2, m_PrevKeyState) == 0) ||
+        (getPressed(key3, m_PrevKeyState) == 0) || (getPressed(key4, m_PrevKeyState) == 0));
 }
 
 } } //end namespace

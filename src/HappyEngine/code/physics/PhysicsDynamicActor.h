@@ -23,7 +23,7 @@
 #define _HE_PHYSICS_DYNAMIC_ACTOR_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsUserData.h"
 
 namespace physx {
@@ -36,7 +36,7 @@ namespace px {
 class IPhysicsShape;
 class PhysicsMaterial;
 
-class PhysicsDynamicActor : public IPhysicsActor
+class PhysicsDynamicActor : public PhysicsActor
 {
 public:
     PhysicsDynamicActor(const mat44& pose);
@@ -62,7 +62,8 @@ public:
 
     bool isSleeping() const;
 
-    virtual const PhysicsUserData& getUserData() { return m_UserData; }
+    virtual PhysicsUserDataContainerType getType() const { return PhysicsUserDataContainerType_Dynamic; }
+    virtual const PhysicsUserData& getUserData() const { return m_UserData; }
     template<typename T>
     void setUserData(T* rttiType)
     {

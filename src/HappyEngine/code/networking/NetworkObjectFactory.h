@@ -65,28 +65,32 @@ public:
         ObjectHandle handle(ObjectFactory<T>::create());
         details::NetworkObjectBase* obj(this->get(handle));
         obj->setHandle(handle);
-        obj->setOwner(NETWORK->getNetworkId());
-        NETWORK->Reference(obj);
+        NetworkManager* const man(NETWORK);
+        obj->setOwner(man->getNetworkId());
+        man->Reference(obj);
         return handle;
     }
     virtual ObjectHandle registerObject(T* obj)
     {
         ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
         obj->setHandle(handle);
-        obj->setOwner(NETWORK->getNetworkId());
-        NETWORK->Reference(obj);
+        NetworkManager* const man(NETWORK);
+        obj->setOwner(man->getNetworkId());
+        man->Reference(obj);
         return handle;
     }
     virtual void destroyObject(const ObjectHandle& handle)
     {
-        if (NETWORK->isConnected())
-            NETWORK->BroadcastDestruction(this->get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+        NetworkManager* const man(NETWORK);
+        if (man->isConnected())
+            man->BroadcastDestruction(this->get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
         ObjectFactory<T>::destroyObject(handle);
     }
     virtual void destroyAt(ObjectHandle::IndexType index)
     {
-        if (NETWORK->isConnected())
-            NETWORK->BroadcastDestruction(this->getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+        NetworkManager* const man(NETWORK);
+        if (man->isConnected())
+            man->BroadcastDestruction(this->getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
         ObjectFactory<T>::destroyAt(index);
     }
     //////////////////////////////////////////////////////////////////////////
@@ -97,8 +101,6 @@ public:
     virtual details::NetworkObjectBase* createReplica() 
     { 
         ObjectHandle handle(ObjectFactory<T>::create());
-        details::NetworkObjectBase* obj(this->get(handle));
-        obj->setHandle(handle);
         return this->get(handle); 
     };
 

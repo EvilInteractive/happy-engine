@@ -32,6 +32,7 @@
 namespace he {
     namespace tools {
         class FPSGraph;
+        class MaterialGeneratorGraph;
     }
     namespace ge {
         class Entity;
@@ -51,10 +52,14 @@ namespace he {
     namespace sfx {
         class Sound2D;
     }
+    namespace gui {
+        class Sprite;
+    }
 }
 
 namespace ht {
 class FlyCamera;
+class Player;
 
 class MainGame : public he::ge::Game, public he::gfx::IShapeDrawable, public he::gfx::IDrawable2D
 {
@@ -63,11 +68,14 @@ public:
     virtual ~MainGame();
 
     virtual void init();
+    virtual void destroy() {}
     virtual void load();
     virtual void tick(float dTime);
 
     virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
     virtual void draw2D(he::gfx::Canvas2D* renderer);
+
+    he::gfx::Scene* getScene() const { return m_Scene; }
 
     void updateToneMapData(const Awesomium::JSArray& args);
 
@@ -106,9 +114,20 @@ private:
 
     he::gfx::SpotLight* m_DebugSpotLight;
 
+    Player* m_Player;
+
+    he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
+
+    he::Color m_Colors[16];
+    he::Color m_ShuffeledColor[8];
+    float m_ColorTimer;
+    he::gui::Text m_BigText;
+
     //gui
     he::gfx::WebView* m_ToneMapGui;
     he::gfx::WebListener* m_ToneMapGuiListener;
+
+    he::gui::Sprite* m_TestSprite;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

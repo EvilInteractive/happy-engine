@@ -34,7 +34,7 @@ namespace details {
 
 std::string trimEnd(const std::string& str)
 {
-    int i(str.size() - 1);
+    int32 i(static_cast<int32>(str.size()) - 1);
     for (; i >= 0; --i)
     {
         if (str[i] != ' ')

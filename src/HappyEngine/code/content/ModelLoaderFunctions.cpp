@@ -29,9 +29,9 @@ namespace he {
 namespace ct {
 namespace models {
 
-void calculateTangents( const void* pVertices, uint32 numVertices,
+void calculateTangents( const void* pVertices, size_t numVertices,
                         uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
-                        const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride,
+                        const void* pIndices, size_t numIndices, gfx::IndexStride indexStride,
                         he::PrimitiveList<vec3>& outTangents)
 {
     he::PrimitiveList<vec3> tan1(numVertices);
@@ -50,7 +50,7 @@ void calculateTangents( const void* pVertices, uint32 numVertices,
     else if (indexStride == gfx::IndexStride_UInt)
         indicesUInt = static_cast<const uint32*>(pIndices);
     else
-        HE_ASSERT(false, "unkown index stride: %d", indexStride);
+        LOG(LogType_ProgrammerAssert, "unkown index stride: %d", indexStride);
     
     for (uint32 i = 0; i < numIndices; i += 3) //per triangle
     {

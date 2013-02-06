@@ -45,25 +45,18 @@ public:
 
     struct Data
     {
-        Data() : fbufferID(UINT32_MAX),
-                 colorRbufferID(UINT32_MAX),
-                 depthRbufferID(UINT32_MAX)
+        Data() : m_FBufferID(UINT32_MAX),
+                 m_ColorRbufferID(UINT32_MAX),
+                 m_DepthRbufferID(UINT32_MAX),
+                 m_Context(nullptr),
+                 m_RenderTextureHnd(ObjectHandle::unassigned)
         {}
 
-        ObjectHandle renderTextureHnd;
-        uint32 fbufferID;
-        uint32 colorRbufferID;
-        uint32 depthRbufferID;
-        GLContext* context;
-    };
-
-    struct DrawingState
-    {
-        Color fillColor;
-        Color strokeColor;
-        Font* font;
-        float globalAlpha;
-        float lineWidth;
+        ObjectHandle m_RenderTextureHnd;
+        uint32 m_FBufferID;
+        uint32 m_ColorRbufferID;
+        uint32 m_DepthRbufferID;
+        GLContext* m_Context;
     };
 
     /* STATIC */
@@ -88,6 +81,7 @@ public:
     /* GETTERS */
     Data* getData() const;
     const vec2& getSize() const { return m_CanvasSize; }
+    Renderer2D* getRenderer2D() const { return m_Renderer2D; }
     
     /* SETTERS */
     void setStrokeColor(const Color& newColor);
@@ -110,7 +104,7 @@ public:
     void strokeRect(const vec2& pos, const vec2& size);
     void fillRect(const vec2& pos, const vec2& size);
 
-    void fillText(const gui::Text& txt, const vec2& pos);
+    void fillText(const he::gui::Text& txt, const vec2& pos);
 
     void drawImage(	const Texture2D* tex2D, const vec2& pos,
                     const vec2& newDimensions = vec2(0.0f,0.0f),
@@ -131,8 +125,6 @@ private:
     void resize(const vec2& newSize);
 
     void applyBlend();
-    
-    //void drawLineAA(const vec2& pos1, const vec2& pos2);
 
     /* DATAMEMBERS */
     he::PrimitiveList<mat33> m_TransformationStack;
@@ -173,6 +165,8 @@ private:
     eventCallback0<void> m_ViewResizedHandler;
 
     int16 m_ExtraPixelDepth;
+
+    Renderer2D* m_Renderer2D;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);

@@ -32,7 +32,7 @@ namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
-PickEffect::PickEffect(): m_PickMaterial(nullptr)
+PickEffect::PickEffect(): m_PickMaterial(nullptr), m_IdVar(nullptr)
 {
 }
 
@@ -54,15 +54,14 @@ void PickEffect::load()
     Shader* shader(ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create()));
     
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    bool shaderInit(shader->initFromFile(folder + "2D/pickingShader.vert", 
+    const bool shaderInit(shader->initFromFile(folder + "2D/pickingShader.vert", 
                                          folder + "2D/pickingShader.frag", layout));
-    HE_ASSERT(shaderInit == true, "picking shader init failed");
+    HE_ASSERT(shaderInit == true, "picking shader init failed"); shaderInit;
 
     m_PickMaterial = ResourceFactory<Material>::getInstance()->get(ResourceFactory<Material>::getInstance()->create());
     m_PickMaterial->setShader(shader->getHandle(), vertexLayout, instancingLayout);
 
-    m_PickMaterial->registerVar(NEW ShaderGlobalVar(shader->getShaderVarId("matVP"), "matVP", ShaderVarType_ViewProjection));
-    m_PickMaterial->registerVar(NEW ShaderGlobalVar(shader->getShaderVarId("matW"), "matW", ShaderVarType_World));
+    m_PickMaterial->registerVar(NEW ShaderGlobalVar(shader->getShaderVarId("matWVP"), "matVP", ShaderVarType_WorldViewProjection));
 
     m_IdVar = NEW ShaderUserVar<vec4>(shader->getShaderVarId("id"), "id", vec4(0, 0, 0, 0));
     m_PickMaterial->registerVar(m_IdVar);

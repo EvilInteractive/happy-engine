@@ -46,9 +46,7 @@ public:
     ///                         EntityComponent                                 ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
-
-    virtual void serialize(SerializerStream& stream);
-    virtual void deserialize(const SerializerStream& stream);
+    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
     //////////////////////////////////////////////////////////////////////////
     
 

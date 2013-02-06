@@ -32,29 +32,29 @@ public:
     ~SlotPContainer() {}
     //default copy OK
 
-    uint32 insert(const T& obj)
+    size_t insert(const T& obj)
     {
         if (m_FreeSlots.size() > 0)
         {
-            uint32 id(m_FreeSlots.front());
+            size_t id(m_FreeSlots.front());
             m_FreeSlots.pop();
             m_MemPool[id] = obj;
             return id;
         }
         else
         {
-            uint32 id(m_MemPool.size());
+            size_t id(m_MemPool.size());
             m_MemPool.add(obj);
             return id;
         }
     }
-    const T& get(uint32 id)
+    const T& get(size_t id)
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
-    T remove(uint32 id)
+    T remove(size_t id)
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
 
@@ -65,24 +65,24 @@ public:
 
         return pObj;
     }
-    uint32 getId(const T& obj)
+    size_t getId(const T& obj)
     {
         HE_ASSERT(obj != nullptr, "object == nullptr");
 
-        for (uint32 i(0); i < m_MemPool.size(); ++i)
+        for (size_t i(0); i < m_MemPool.size(); ++i)
             if (m_MemPool[i] == obj)
                 return i;
-        HE_ASSERT(false, "object not present in container");
+        LOG(LogType_ProgrammerAssert, "object not present in container");
         return 0;
     }
 
-    T& operator[](uint32 id)
+    T& operator[](size_t id)
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
         return m_MemPool[id];
     }
-    const T& operator[](uint32 id) const
+    const T& operator[](size_t id) const
     {
         HE_ASSERT(id < m_MemPool.size(), "id is not in a valid range");
         HE_ASSERT(m_MemPool[id] != nullptr, "no object @id");
@@ -140,7 +140,7 @@ public:
         return const_iterator<T>(m_MemPool.cend(), m_MemPool.cend());
     }
 
-    uint32 size()
+    size_t size()
     {
         return m_MemPool.size() - m_FreeSlots.size();
     }
@@ -148,7 +148,7 @@ public:
 private:
     
     he::ObjectList<T> m_MemPool;
-    std::queue<uint32> m_FreeSlots;
+    std::queue<size_t> m_FreeSlots;
 
     //disable default assignment operator
     SlotPContainer& operator=(const SlotPContainer&);

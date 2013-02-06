@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "Mouse.h"
+#include "Window.h"
 
 namespace he {
 namespace io {
@@ -94,5 +95,6 @@ vec2 Mouse::getMove() const
 {
     return (m_Position - m_PrevPosition);
 }
+
 
 } } //end namespace

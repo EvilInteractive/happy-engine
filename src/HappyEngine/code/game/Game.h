@@ -36,31 +36,24 @@ public:
     virtual ~Game() {}
 
     virtual void init() = 0;
+    virtual void destroy() = 0;
+
     virtual void load() = 0;
 
     virtual void tick(float dTime)
     {
-        if (m_RemoveTickList.size() > 0)
-        {
-            for(size_t tickIndex(0); tickIndex < m_TickList.size() && m_RemoveTickList.size() > 0; )
-            {
-                size_t removeIndex(0);
-                if (m_RemoveTickList.find(m_TickList[tickIndex], removeIndex))
-                {
-                    m_TickList.removeAt(tickIndex);
-                    m_RemoveTickList.removeAt(removeIndex);
-                }
-                else
-                {
-                    ++tickIndex;
-                }
-            }
-            m_RemoveTickList.clear();
-        }
         if (m_NewTickList.size() > 0)
         {
             m_TickList.append(m_NewTickList);
             m_NewTickList.clear();
+        }
+        if (m_RemoveTickList.size() > 0)
+        {
+            m_RemoveTickList.forEach([this](ITickable* const obj)
+            {
+                m_TickList.remove(obj);
+            });
+            m_RemoveTickList.clear();
         }
         m_TickList.forEach([&dTime](ITickable* pObj)
         {

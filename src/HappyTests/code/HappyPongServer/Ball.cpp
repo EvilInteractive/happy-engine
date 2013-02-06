@@ -159,7 +159,7 @@ void Ball::serializeCreate( he::net::NetworkStream* stream ) const
 
 bool Ball::deserializeCreate( he::net::NetworkStream* stream )
 {
-    HE_ASSERT(false, "Will never happen");
+    LOG(he::LogType_ProgrammerAssert, "Will never happen");
     return he::net::NetworkObject<Ball>::deserializeCreate(stream);
 }
 
@@ -170,7 +170,7 @@ void Ball::serializeRemove( he::net::NetworkStream* stream ) const
 
 bool Ball::deserializeRemove( he::net::NetworkStream* stream )
 {
-    HE_ASSERT(false, "Will never happen");
+    LOG(he::LogType_ProgrammerAssert, "Will never happen");
     return he::net::NetworkObject<Ball>::deserializeRemove(stream);
 }
 
@@ -183,7 +183,7 @@ void Ball::serialize(const  he::net::NetworkSerializer& serializer )
 
 void Ball::deserialize(const  he::net::NetworkDeserializer& /*serializer*/ )
 {
-    HE_ASSERT(false, "Will never happen");
+    LOG(he::LogType_ProgrammerAssert, "Will never happen");
 }
 
 } //end namespace

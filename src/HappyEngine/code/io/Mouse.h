@@ -54,7 +54,6 @@ private:
 
     int m_Scroll;
 
-
     //Disable default copy constructor and default assignment operator
     Mouse(const Mouse&);
     Mouse& operator=(const Mouse&);

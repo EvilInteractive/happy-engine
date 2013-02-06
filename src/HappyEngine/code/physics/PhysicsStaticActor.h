@@ -22,7 +22,7 @@
 #define _HE_PHYSICS_STATIC_ACTOR_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsUserData.h"
 
 namespace physx {
@@ -35,7 +35,7 @@ namespace px {
 class IPhysicsShape;
 class PhysicsMaterial;
 
-class PhysicsStaticActor : public IPhysicsActor
+class PhysicsStaticActor : public PhysicsActor
 {
 public:
     PhysicsStaticActor(const mat44& pose, const IPhysicsShape* shape, const PhysicsMaterial& material);
@@ -51,7 +51,8 @@ public:
                 uint32 collisionGroup = 0xffffffff, 
                 const mat44& localPose = mat44::Identity);
 
-    virtual const PhysicsUserData& getUserData() { return m_UserData; }
+    virtual PhysicsUserDataContainerType getType() const { return PhysicsUserDataContainerType_Static; }
+    virtual const PhysicsUserData& getUserData() const { return m_UserData; }
     template<typename T>
     void setUserData(T* rttiType)
     {

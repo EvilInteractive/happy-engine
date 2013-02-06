@@ -54,8 +54,9 @@ public:
     }
 
     //>---------Getters----------------------->
-    vec2 xz() const;
-    vec2 xy() const;
+    inline vec3 x0z() const { return vec3(x, 0, z); }
+    inline vec2 xz() const { return vec2(x, z); }
+    inline vec2 xy() const { return vec2(x, y); }
     void toPxVec3(physx::PxVec3* outVec) const;
     //<---------------------------------------<
 
@@ -65,11 +66,11 @@ public:
         return vec3(-x, -y, -z);
     }
 
-    inline vec3 operator*(float a) const
+    inline vec3 operator*(const float a) const
     {
         return vec3(x * a, y * a, z * a);
     }
-    inline vec3 operator/(float a) const
+    inline vec3 operator/(const float a) const
     {
         return vec3(x / a, y / a, z / a);
     }
@@ -97,14 +98,14 @@ public:
         z -= v.z;
         return *this;
     }
-    inline vec3& operator*=(float a)
+    inline vec3& operator*=(const float a)
     {
         x *= a;
         y *= a;
         z *= a;
         return *this;
     }
-    inline vec3& operator/=(float a)
+    inline vec3& operator/=(const float a)
     {
         x /= a;
         y /= a;

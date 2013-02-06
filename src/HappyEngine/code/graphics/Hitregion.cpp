@@ -26,11 +26,12 @@ namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Hitregion::Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size) :	m_Type(hitregionType),
-																										m_Size(size),
-																										m_Pos(centerPos)
+Hitregion::Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size) 
+    :	m_Type(hitregionType),
+        m_Size(size),
+        m_Pos(centerPos)
 {
-	m_matWorld = mat33::createTranslation2D(centerPos);
+    m_matWorld = mat33::createTranslation2D(centerPos);
 }
 
 Hitregion::~Hitregion()
@@ -38,83 +39,85 @@ Hitregion::~Hitregion()
 }
 
 /* DEFAULT COPY & ASSIGNMENT OPERATOR */
-Hitregion::Hitregion(const Hitregion& second)
+Hitregion::Hitregion(const Hitregion& second):
+m_Type(second.m_Type),
+m_Size(second.m_Size),
+m_matWorld(second.m_matWorld),
+m_Pos(second.m_Pos)
 {
-	m_Type = second.m_Type;
-	m_Size = second.m_Size;
-	m_matWorld = second.m_matWorld;
 }
 
 Hitregion& Hitregion::operator=(const Hitregion& second)
 {
-	m_Type = second.m_Type;
-	m_Size = second.m_Size;
-	m_matWorld = second.m_matWorld;
+    m_Type = second.m_Type;
+    m_Size = second.m_Size;
+    m_matWorld = second.m_matWorld;
+    m_Pos = second.m_Pos;
 
-	return *this;
+    return *this;
 }
 
 /* GETTERS */
 bool Hitregion::hitTest(const Hitregion* pHitrect) const
 {
-	if (m_Type == TYPE_RECTANGLE && pHitrect->getType() == TYPE_RECTANGLE)
-	{
-		//if (
-	}
+    if (m_Type == TYPE_RECTANGLE && pHitrect->getType() == TYPE_RECTANGLE)
+    {
+        //if (
+    }
 
-	return false;
+    return false;
 }
 
 bool Hitregion::hitTest(const vec2& point) const
 {
-	if (m_Type == TYPE_RECTANGLE)
-	{
-		if (point.x < m_Pos.x + m_Size.x / 2 &&
-			point.x > m_Pos.x - m_Size.x / 2 &&
-			point.y < m_Pos.y + m_Size.y / 2 &&
-			point.y > m_Pos.y - m_Size.y / 2)
-		{
-			return true;
-		}
-	}
+    if (m_Type == TYPE_RECTANGLE)
+    {
+        if (point.x < m_Pos.x + m_Size.x / 2 &&
+            point.x > m_Pos.x - m_Size.x / 2 &&
+            point.y < m_Pos.y + m_Size.y / 2 &&
+            point.y > m_Pos.y - m_Size.y / 2)
+        {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 vec2 Hitregion::getSize() const
 {
-	return m_Size;
+    return m_Size;
 }
 
 vec2 Hitregion::getPosition() const
 {
-	return m_Pos;
+    return m_Pos;
 }
 
 Hitregion::TYPE Hitregion::getType() const
 {
-	return m_Type;
+    return m_Type;
 }
 
 /* SETTERS */
 void Hitregion::setPosition(const vec2& pos)
 {
-	m_Pos = pos;
+    m_Pos = pos;
 }
 
 void Hitregion::setSize(const vec2& size)
 {
-	m_Size = size;
+    m_Size = size;
 }
 
 void Hitregion::move(const vec2& translation)
 {
-	setPosition(getPosition() + translation);
+    setPosition(getPosition() + translation);
 }
 
 void Hitregion::setTransformationMatrix(const mat33& mat)
 {
-	m_matWorld = mat;
+    m_matWorld = mat;
 }
 
 } } //end namespace

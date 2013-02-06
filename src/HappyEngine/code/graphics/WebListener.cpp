@@ -24,15 +24,17 @@
 #include "WebView.h"
 #include "Awesomium/JSValue.h"
 #include "Awesomium/WebView.h"
+#pragma warning(disable:4267) // conversion warning
 #include "Awesomium/STLHelpers.h"
+#pragma warning(default:4267)
 
 namespace he {
 namespace gfx {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-WebListener::WebListener(WebView* view) : m_WebView(view)
+WebListener::WebListener(Awesomium::WebView* const webView)
+    : m_WebView(webView)
 {
-    m_WebView->getAWEView()->set_js_method_handler(this);
 }
 
 WebListener::~WebListener()
@@ -61,12 +63,47 @@ void WebListener::addObjectCallback(const std::string& object,
     // create new js object if it doesn't already exists
     if (objectExists == false)
     {
-        Awesomium::JSValue val = m_WebView->getAWEView()->CreateGlobalJavascriptObject(
-            Awesomium::WSLit(object.c_str()));
+        Awesomium::JSValue val(m_WebView->CreateGlobalJavascriptObject(
+                Awesomium::WSLit(object.c_str())));
 
         Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
+        HE_ASSERT(val.IsObject(), "object: %s, is not a javascript object!", object.c_str());
         Awesomium::JSObject& obj = val.ToObject();
+
+        // prevent crashing by retrying
+        // wait some time for the awesomium process to
+        // finish with the object
+        #if DEBUG || _DEBUG
+        uint8 tries(10);
+        boost::posix_time::seconds waitTime =
+            boost::posix_time::seconds(1);
+
+        while (tries > 0)
+        {
+            Awesomium::Error error(obj.last_error());
+            if (error != Awesomium::kError_None)
+            {
+                const char* errorString("Unknown");
+                switch (error)
+                {
+                case Awesomium::kError_BadParameters: errorString = "BadParameters"; break; 
+                case Awesomium::kError_ObjectGone: errorString = "ObjectGone"; break;     
+                case Awesomium::kError_ConnectionGone: errorString = "ConnectionGone"; break; 
+                case Awesomium::kError_TimedOut: errorString = "TimedOut"; break;       
+                case Awesomium::kError_WebViewGone: errorString = "WebViewGone"; break;    
+                case Awesomium::kError_Generic: errorString = "Generic"; break; 
+                }
+                HE_ERROR("Awesomium error: %s, waiting 1s", errorString);
+                boost::this_thread::sleep(waitTime);
+                --tries;
+            }
+            else
+                break;
+        }
+
+        HE_ASSERT(tries > 0, "JSObject creation timed out!");
+        #endif
 
         JSObject* jsObject(NEW JSObject(obj, object));
         jsObject->addCallback(aweMethod, callBack);
@@ -82,7 +119,7 @@ void WebListener::addObjectCallback(const std::string& object,
 }
 void WebListener::removeObjectCallback(const std::string& object,
                             const std::string& method,
-                            const eventCallback1<void, const Awesomium::JSArray&>& callBack)
+                            eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
     auto it(std::find_if(m_Objects.begin(), m_Objects.end(), [&object](JSObject* obj)
@@ -120,7 +157,7 @@ void WebListener::executeFunction(const std::string& object,
         // create new js object if it doesn't already exists
         if (objectExists == false)
         {
-            Awesomium::JSValue val = m_WebView->getAWEView()->CreateGlobalJavascriptObject(
+            Awesomium::JSValue val = m_WebView->CreateGlobalJavascriptObject(
                 Awesomium::WSLit(objName.c_str()));
 
             Awesomium::JSObject& obj = val.ToObject();
@@ -139,7 +176,7 @@ void WebListener::executeFunction(const std::string& object,
     else
     {
         Awesomium::JSValue window(
-            m_WebView->getAWEView()->ExecuteJavascriptWithResult(
+            m_WebView->ExecuteJavascriptWithResult(
             Awesomium::WSLit("window"), Awesomium::WSLit("")));
 
         Awesomium::JSObject& obj = window.ToObject();
@@ -153,7 +190,7 @@ void WebListener::OnMethodCall(Awesomium::WebView* caller,
                                const Awesomium::WebString& method_name,
                                const Awesomium::JSArray& args)
 {
-    if (caller == m_WebView->getAWEView())
+    if (caller == m_WebView)
     {
         // call correct callback on method of jsobject
         m_Objects.forEach([&](JSObject* jsObject)

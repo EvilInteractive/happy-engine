@@ -39,6 +39,7 @@ class HappyPhysicsAllocator : public physx::PxAllocatorCallback
         #if !GCC && !LLVM && (DEBUG || _DEBUG)
         return _aligned_malloc_dbg(size, 16, file, line);
         #else
+        file; line;
         return he_aligned_malloc(size, 16);
         #endif
     }
@@ -76,13 +77,11 @@ public:
 
     void startSimulation();
     void stopSimulation();
-
-    void lock();
-    void unlock();
-
+    
     physx::PxPhysics* getSDK() const;
     physx::PxScene* getScene() const;
     //PhysicsCarManager* getCarManager() const;
+    physx::PxControllerManager* getControllerManager() const { return m_ControllerManager; }
 
     RayCastResult raycast(const Ray& ray, uint32 collisionGroup = 0xffffffff) const;
 
@@ -101,6 +100,7 @@ private:
     physx::PxFoundation* m_PhysXFoundation;
     physx::PxScene* m_Scene;
     physx::PxProfileZoneManager* m_PxProfileZoneManager;
+    physx::PxControllerManager* m_ControllerManager;
 
     physx::PxErrorCallback* m_ErrorCallback;
     physx::PxAllocatorCallback* m_Allocator;
@@ -119,8 +119,6 @@ private:
     float m_Timer;
 
     bool m_Simulate;
-
-    boost::mutex m_PhysXMutex;
 
     //Disable default copy constructor and default assignment operator
     PhysicsEngine(const PhysicsEngine&);

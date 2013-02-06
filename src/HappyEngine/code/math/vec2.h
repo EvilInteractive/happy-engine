@@ -30,9 +30,15 @@ struct vec2
 public:
     float x, y;
 
+    static const vec2 zero;
+    static const vec2 one;
+    static const vec2 unitX;
+    static const vec2 unitY;
+
     vec2();
     explicit vec2(const physx::PxVec2& vec);
     vec2(float x, float y);
+    explicit vec2(const float v);
     ~vec2();
 
     vec2(const vec2& other);
@@ -43,9 +49,10 @@ public:
 
     vec2 operator*(float a) const;
     vec2 operator/(float a) const;
-
     vec2 operator+(const vec2& v) const;
     vec2 operator-(const vec2& v) const;
+    vec2 operator*(const vec2& v) const;
+    vec2 operator/(const vec2& v) const;
 
     vec2& operator+=(const vec2& v);
     vec2& operator-=(const vec2& v);

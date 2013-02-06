@@ -25,6 +25,9 @@
 #include "IRenderer.h"
 
 namespace he {
+namespace gui {
+class Canvas2Dnew;
+}
 namespace gfx {
 class WebView;
 class Canvas2D;
@@ -59,8 +62,10 @@ public:
     View* getView() const { return m_View; }
     const RenderTarget* getRTG() const {return m_RenderTarget;}
 
+    gui::Canvas2Dnew* getNewCanvas() const;
+
     /* Attach */
-    void attachToRender(IDrawable2D* drawable);
+    void attachToRender(IDrawable2D* drawable, uint16 depth = 0xff);
     void detachFromRender(IDrawable2D* drawable);
 
     /* IRenderer */
@@ -78,11 +83,13 @@ private:
     he::PrimitiveList<WebView*> m_WebViews;
     he::PrimitiveList<Canvas2D*> m_Canvas2Ds;
     he::PrimitiveList<IDrawable2D*> m_Drawables;
+    he::PrimitiveList<std::pair<uint32,uint16> > m_DrawablesDepth;
 
     Simple2DTextureEffect* m_TextureEffect;
     ModelMesh* m_TextureQuad;
 
     Canvas2D* m_DefaultCanvas;
+    he::gui::Canvas2Dnew* m_CanvasNew;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

@@ -39,20 +39,14 @@ public:
 
     void setWorldMatrix(const he::mat44& mat) const;
     void setDiffuseMap(const he::gfx::Texture2D* diffuseMap) const;
-    void setDepth(float depth) const;
-    void setFontColor(const Color& col) const;
-    void setTCOffset(const vec2& offset) const;
-    void setTCScale(const vec2& scale) const;
+    void setBlendColor(const Color& col) const;
 
 private:
     gfx::Shader* m_Shader;
 
     uint32 m_ShaderWVPPos;
     uint32 m_ShaderDiffTexPos;
-    uint32 m_ShaderDepthPos;
-    uint32 m_ShaderFontColorPos;
-    uint32 m_ShaderTCOffsetPos;
-    uint32 m_ShaderTCScalePos;
+    uint32 m_ShaderBlendColorPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DFontEffect(const Simple2DFontEffect&);

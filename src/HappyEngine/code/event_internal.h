@@ -85,13 +85,13 @@ namespace details
         {
             add(func);
         }
-        void operator-=(const Callback& func)
+        void operator-=(Callback& func)
         {
             remove(func);
         }
         void add(Callback& func)
         {
-            HE_IF_ASSERT(func.m_Connection == UINT16_MAX, "Callback already connected to an events! Ignoring connection")
+            HE_IF_ASSERT(func.m_Connection == UINT16_MAX, "Callback already connected to an event! Ignoring connection")
             {
                 if (m_FreeConnections.empty())
                     enlargePool();
@@ -110,7 +110,7 @@ namespace details
                 m_FreeConnections.push(i);
             m_CallbackPool.resize(m_CallbackPool.size() + step);
         }
-        void remove(const Callback& func)
+        void remove(Callback& func)
         {
             if (func.m_Connection == UINT16_MAX)
                 return;
@@ -121,6 +121,7 @@ namespace details
                 m_FreeConnections.push(func.m_Connection);
                 m_Connections.removeAt(index);
             }
+            func.m_Connection = UINT16_MAX;
         }
         bool empty() const { return m_Connections.empty(); }
 
@@ -145,6 +146,10 @@ template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS>
 class EVENT : public details::EVENTBASE<ReturnType COMMA TEMPLATE_TYPEDEF_ARGS>
 {
 public:
+    /// \brief Executes after every callback to combine the return type
+    /// \param[in] value to ultimately return from the event
+    /// \param[in] last received return value from a callback
+    /// \return true to eat event
     typedef boost::function2<bool, ReturnType&, const ReturnType&> EventCombiner;
 
     EVENT(): 

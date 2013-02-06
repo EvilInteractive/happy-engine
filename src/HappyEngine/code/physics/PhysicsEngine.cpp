@@ -35,7 +35,7 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
                             m_Allocator(NEW HappyPhysicsAllocator()), m_ErrorCallback(NEW err::HappyPhysicsErrorCallback()),
                             m_Simulate(false), m_PxProfileZoneManager(nullptr),
                            /* m_pCarManager(NEW PhysicsCarManager()),*/ m_PhysXFoundation(nullptr), m_VisualDebuggerConnection(nullptr),
-                           m_Timer(0.0f)
+                           m_ControllerManager(nullptr), m_Timer(0.0f)
 {
     bool memDebug(false);
     #if _DEBUG || DEBUG
@@ -50,13 +50,15 @@ PhysicsEngine::PhysicsEngine(): m_PhysXSDK(nullptr), m_Scene(nullptr),
     HE_ASSERT(m_PxProfileZoneManager != nullptr, "Loading physx profileZoneManager unsuccessful");
     #endif
 
+    m_ControllerManager = PxCreateControllerManager(*m_PhysXFoundation);
+
     m_PhysXSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_PhysXFoundation,
                                     physx::PxTolerancesScale(), memDebug, m_PxProfileZoneManager);   
     HE_ASSERT(m_PhysXSDK != nullptr, "init of physX failed");
    
     if (!PxInitExtensions(*m_PhysXSDK))
     {
-        HE_ASSERT(false, "PxInitExtensions failed!");
+        LOG(LogType_ProgrammerAssert, "PxInitExtensions failed!");
     }
 
     if (m_PhysXSDK->getPvdConnectionManager() != nullptr)
@@ -131,9 +133,7 @@ void PhysicsEngine::createScene()
         sceneDesc.gpuDispatcher = m_CudaContextManager->getGpuDispatcher();
     }
     #endif
-
-    //sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
-
+    
     m_Scene = m_PhysXSDK->createScene(sceneDesc);
     HE_ASSERT(m_Scene != nullptr, "createScene failed!");
 
@@ -165,11 +165,14 @@ PhysicsEngine::~PhysicsEngine()
     if (m_CudaContextManager != nullptr)
         m_CudaContextManager->release();
 
-    if (m_PxProfileZoneManager != nullptr)
-        m_PxProfileZoneManager->release();
-
     if (m_PhysXSDK != nullptr)
         m_PhysXSDK->release();
+
+    if (m_ControllerManager != nullptr)
+        m_ControllerManager->release();
+
+    if (m_PxProfileZoneManager != nullptr)
+        m_PxProfileZoneManager->release();
 
     if (m_PhysXFoundation != nullptr)
         m_PhysXFoundation->release();
@@ -245,17 +248,6 @@ physx::PxMaterial* PhysicsEngine::createMaterial( float staticFriction, float dy
 //    return m_pCarManager->getFrictionTable()->getMaterial(id);
 //}
 
-void PhysicsEngine::lock()
-{
-    m_PhysXMutex.lock();
-}
-
-void PhysicsEngine::unlock()
-{
-    m_PhysXMutex.unlock();
-}
-
-
 void PhysicsEngine::onConstraintBreak( physx::PxConstraintInfo* /*constraints*/, physx::PxU32 /*count*/ )
 {
 
@@ -281,19 +273,19 @@ void PhysicsEngine::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 /*count*
     if (pairs->triggerShape->userData == nullptr)
         return;
 
-    PhysicsTrigger* pTrigger(static_cast<PhysicsTrigger*>(pairs->triggerShape->userData));
+    PhysicsTrigger* const trigger(static_cast<PhysicsTrigger*>(pairs->triggerShape->userData));
 
     switch (pairs->status)
     {
     case physx::PxPairFlag::eNOTIFY_TOUCH_FOUND:
         {
-            pTrigger->onTriggerEnter(pairs->otherShape);
+            trigger->onTriggerEnter(pairs->otherShape);
             break;
         }
 
     case physx::PxPairFlag::eNOTIFY_TOUCH_LOST:
         {
-            pTrigger->onTriggerLeave(pairs->otherShape);
+            trigger->onTriggerLeave(pairs->otherShape);
             break;
         }
     }
@@ -319,7 +311,7 @@ RayCastResult PhysicsEngine::raycast( const Ray& ray, uint32 collisionGroup ) co
         result.hitDistance = hit.distance;
         result.hitPosition = vec3(hit.impact);
         result.hitNormal = vec3(hit.normal);
-        result.actorHit = static_cast<IPhysicsActor*>(hit.shape->userData);
+        result.actorHit = static_cast<PhysicsActor*>(hit.shape->userData);
     }
     else
     {

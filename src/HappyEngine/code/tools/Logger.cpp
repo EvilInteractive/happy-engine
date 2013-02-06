@@ -44,15 +44,15 @@ Logger::~Logger()
 {
 }
 
-void Logger::log(LogType type, const char* str, ... )
+void Logger::log( const LogType type, const char* file, const char* func, int line, const char* str, ... )
 {
     va_list argList;
     va_start(argList, str);
-    log(type, str, argList);
+    log(type, file, func, line, str, argList);
     va_end(argList);
 }
 
-void Logger::log( LogType type, const char* str, va_list& argList )
+void Logger::log( const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList )
 {
     char buff[1024];
     memset(buff, 0, 1024);
@@ -60,28 +60,40 @@ void Logger::log( LogType type, const char* str, va_list& argList )
 
     std::string typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);
+    file; func; line;
     switch(type)
     {
         case LogType_ProgrammerAssert:  
+        {
             typeString = "Programmer Assert"; 
             consoleType = CMSG_TYPE_ERROR;
-            break;
-        case LogType_ArtAssert:        
+#ifdef _DEBUG
+            he::err::details::happyAssert(err::details::AssertType_Code, file, func, line, buff);
+#endif
+        } break;
+        case LogType_ArtAssert:
+        {
             typeString = "Art Assert"; 
             consoleType = CMSG_TYPE_ERROR;
-            break;
-        case LogType_Error:             
+#ifdef _DEBUG
+            he::err::details::happyAssert(err::details::AssertType_Art, file, func, line, buff);
+#endif
+        } break;
+        case LogType_Error:
+        {
             typeString = "Error"; 
             consoleType = CMSG_TYPE_ERROR;
-            break;
-        case LogType_Warning:           
+        } break;
+        case LogType_Warning:
+        {
             typeString = "Warning"; 
             consoleType = CMSG_TYPE_WARNING;
-            break;
-        case LogType_Info:              
+        } break;
+        case LogType_Info:
+        {
             typeString = "Info"; 
             consoleType = CMSG_TYPE_INFO;
-            break;
+        } break;
     }
 
     m_Mutex.lock();

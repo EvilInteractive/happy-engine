@@ -24,6 +24,8 @@
 #include "ResourceFactory.h"
 #include "PhysicsConvexMesh.h"
 
+#include "ContentManager.h"
+
 namespace he {
 namespace px {
 IMPLEMENT_OBJECT(PhysicsConvexShape)
@@ -32,6 +34,10 @@ PhysicsConvexShape::PhysicsConvexShape(const ObjectHandle& convexMesh, const vec
         m_ConvexMesh(convexMesh), m_Scale(scale)
 { 
     ResourceFactory<PhysicsConvexMesh>::getInstance()->instantiate(m_ConvexMesh);
+}
+PhysicsConvexShape::PhysicsConvexShape(const std::string& asset, const vec3& scale): 
+        m_ConvexMesh(CONTENT->loadPhysicsConvex(asset)), m_Scale(scale)
+{ 
 }
 
 PhysicsConvexShape::PhysicsConvexShape(): m_ConvexMesh(ObjectHandle::unassigned), m_Scale()

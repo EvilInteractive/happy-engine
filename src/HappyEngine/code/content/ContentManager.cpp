@@ -63,7 +63,7 @@ ContentManager::ContentManager():
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
 {
-    setContentDir(HAPPYENGINE->getRootDir().getAbsolutePath(Path("../data/")));
+    setContentDir(HAPPYENGINE->getRootDir().append("../data/"));
 }
 
 ContentManager::~ContentManager()
@@ -155,12 +155,12 @@ ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Font* ContentManager::loadFont(const std::string& asset, uint16 size)
+gui::Font* ContentManager::loadFont(const std::string& asset, uint16 size, uint8 options)
 {
-    return m_FontLoader->load(m_FontPath.str() + asset, size);
+    return m_FontLoader->load(m_FontPath.str() + asset, size, options);
 }
 
-gfx::Font* ContentManager::getDefaultFont(uint16 size)
+gui::Font* ContentManager::getDefaultFont(uint16 size)
 {
     return loadFont("Ubuntu-Bold.ttf", size);
 }
@@ -192,37 +192,37 @@ void ContentManager::setContentDir(const Path& path)
 void ContentManager::setTextureFolder(const std::string& folder)
 {
     m_TextureFolder = folder;
-    m_TexturePath = m_ContentRootDir.getAbsolutePath(folder);
+    m_TexturePath = m_ContentRootDir.append(folder);
 }
 void ContentManager::setModelFolder(const std::string& folder)
 {
     m_ModelFolder = folder;
-    m_ModelPath = m_ContentRootDir.getAbsolutePath(folder);
+    m_ModelPath = m_ContentRootDir.append(folder);
 }
 void ContentManager::setPhysicsFolder(const std::string& folder)
 {
     m_PhysicsFolder = folder;
-    m_PhysicsPath = m_ContentRootDir.getAbsolutePath(folder);
+    m_PhysicsPath = m_ContentRootDir.append(folder);
 }
 void ContentManager::setFontFolder(const std::string& folder)
 {
     m_FontFolder = folder;
-    m_FontPath = m_ContentRootDir.getAbsolutePath(folder);
+    m_FontPath = m_ContentRootDir.append(folder);
 }
 void ContentManager::setShaderFolder(const std::string& folder)
 {
     m_ShaderFolder = folder;
-    m_ShaderPath = m_ContentRootDir.getAbsolutePath(folder);
+    m_ShaderPath = m_ContentRootDir.append(folder);
 }
 void ContentManager::setMaterialFolder(const std::string& folder)
 {
     m_MaterialFolder = folder;
-    m_MaterialPath = m_ContentRootDir.getAbsolutePath(folder);
+    m_MaterialPath = m_ContentRootDir.append(folder);
 }
 void ContentManager::setFxFolder( const std::string& folder )
 {
     m_FxFolder = folder;
-    m_FxPath = m_ContentRootDir.getAbsolutePath(folder);
+    m_FxPath = m_ContentRootDir.append(folder);
 }
 const Path& ContentManager::getContentDir() const
 {
@@ -326,10 +326,7 @@ void ContentManager::setRenderSettings( const gfx::RenderSettings& settings )
 
 bool ContentManager::isLoading() const
 {
-    if (m_ModelLoader->isLoading() || m_TextureLoader->isLoading())
-        return true;
-    else
-        return false;
+    return m_ModelLoader->isLoading() || m_TextureLoader->isLoading();
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -209,7 +209,7 @@ void CullOctreeNode::insert( IDrawable* drawable )
                 return;
             }
 #ifdef OCTREE_PARANOID
-            HE_ASSERT(false, "Object fits loosebound but is not in one of the childs!");
+            LOG(LogType_ProgrammerAssert, "Object fits loosebound but is not in one of the childs!");
 #endif
         }
     }
@@ -375,7 +375,7 @@ void CullOctreeNode::drawAndCreateDebugMesh( const ICamera* camera, boost::funct
     if (checkChilderen == true)
     {
         HIERARCHICAL_PROFILE("checkChilderen");
-        m_StrictBound.getAABB().generateIndices(indices, vertices.size());
+        m_StrictBound.getAABB().generateIndices(indices, static_cast<uint32>(vertices.size()));
         m_StrictBound.getAABB().generateVertices(vertices);
         // if camera is inside bound
         if ( m_LooseBound.getAABB().isOtherInside(cameraPosition) == false )

@@ -140,7 +140,7 @@ he::IntersectResult CameraPerspective::intersect( const Bound& bound ) const
             break;
         }
     }
-    HE_ASSERT(false, "Should never get here");
+    LOG(LogType_ProgrammerAssert, "Should never get here");
     return IntersectResult_Outside;
 }
 

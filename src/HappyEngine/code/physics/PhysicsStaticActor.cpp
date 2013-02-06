@@ -37,33 +37,23 @@ namespace px {
 
 PhysicsStaticActor::PhysicsStaticActor(const mat44& pose, const IPhysicsShape* shape, const PhysicsMaterial& material)
 {
-    PHYSICS->lock();
     m_Actor = PHYSICS->getSDK()->createRigidStatic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
         physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
-    PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
+    m_Actor->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     addShape(shape, material);
-
-    PHYSICS->lock();
-    PHYSICS->getScene()->addActor(*m_Actor);
-    PHYSICS->unlock();
 }
 PhysicsStaticActor::PhysicsStaticActor(const mat44& pose)
 {  
-    PHYSICS->lock();
     m_Actor = PHYSICS->getSDK()->createRigidStatic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
         physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
         pose.getPhyicsMatrix().column1.getXYZ(), 
         pose.getPhyicsMatrix().column2.getXYZ()))));
-    PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
-
-    PHYSICS->lock();
-    PHYSICS->getScene()->addActor(*m_Actor);
-    PHYSICS->unlock();
+    m_Actor->userData = static_cast<IPhysicsUserDataContainer*>(this);
 }
 void PhysicsStaticActor::addShape( const IPhysicsShape* shape, const PhysicsMaterial& material, 
                                    uint32 collisionGroup, const mat44& localPose)
@@ -71,12 +61,10 @@ void PhysicsStaticActor::addShape( const IPhysicsShape* shape, const PhysicsMate
     he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, material, localPose))
     {
-        PHYSICS->lock();
         shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, collisionGroup);
         });
-        PHYSICS->unlock();
     }
 }
 
@@ -84,7 +72,7 @@ void PhysicsStaticActor::addShape( physx::PxShape* shape, uint32 collisionGroup 
 {
     HE_ASSERT(shape != nullptr, "Shape creation failed");
 
-    shape->userData = static_cast<IPhysicsActor*>(this);
+    shape->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
     physx::PxFilterData filter;
     filter.word0 = collisionGroup;
@@ -96,11 +84,8 @@ void PhysicsStaticActor::addShape( physx::PxShape* shape, uint32 collisionGroup 
 
 PhysicsStaticActor::~PhysicsStaticActor()
 {
-    if (PHYSICS != nullptr)
+    if (m_Actor != nullptr)
     {
-        PHYSICS->lock();
-        PHYSICS->getScene()->removeActor(*m_Actor);
-        PHYSICS->unlock();
         m_Actor->release();
     }
 }

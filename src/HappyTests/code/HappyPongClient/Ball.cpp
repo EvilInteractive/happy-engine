@@ -116,7 +116,7 @@ float Ball::getRadius() const
 
 void Ball::serializeCreate( he::net::NetworkStream* /*stream*/ ) const
 {
-    HE_ASSERT(false, "will never happen");
+    LOG(he::LogType_ProgrammerAssert, "will never happen");
 }
 
 bool Ball::deserializeCreate( he::net::NetworkStream* stream )
@@ -139,7 +139,7 @@ bool Ball::deserializeRemove( he::net::NetworkStream* /*stream*/ )
 
 void Ball::serialize(const he::net::NetworkSerializer& /*serializer*/ )
 {
-    HE_ASSERT(false, "will never happen");
+    LOG(he::LogType_ProgrammerAssert, "will never happen");
 }
 
 void Ball::deserialize(const he::net::NetworkDeserializer& serializer )

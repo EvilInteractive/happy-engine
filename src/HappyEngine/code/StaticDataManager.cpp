@@ -35,6 +35,10 @@
 #include "Scene.h"
 #include "Window.h"
 #include "CullOctreeNodeFactory.h"
+#include "ShaderGeneratorVariableFactory.h"
+#include "Sprite.h"
+#include "materialGenerator/MaterialGeneratorNodeFactory.h"
+#include "SpriteCreator.h"
 
 namespace he {
 
@@ -47,22 +51,27 @@ void StaticDataManager::init()
     ResourceFactory<gfx::TextureCube>::init(5, 5, "TextureCubeFactory");
     ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
-    ResourceFactory<gfx::Font>::init(64, 64, "FontFactory");
+    ResourceFactory<gui::Font>::init(64, 64, "FontFactory");
     ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
     ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
+    gui::SpriteFactory::sdmInit();
     gfx::ViewFactory::sdmInit();
     gfx::SceneFactory::sdmInit();
     gfx::WindowFactory::sdmInit();
     gfx::LightFactory::sdmInit();
     gfx::CullOctreeNodeFactory::sdmInit();
+    ct::ShaderGeneratorVariableFactory::sdmInit();
+    tools::MaterialGeneratorNodeFactory::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    tools::MaterialGeneratorNodeFactory::sdmDestroy();
+    ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
-    ResourceFactory<gfx::Font>::destroy();
+    ResourceFactory<gui::Font>::destroy();
     ResourceFactory<gfx::Material>::destroy();
     ResourceFactory<gfx::TextureCube>::destroy();
     ResourceFactory<gfx::Texture2D>::destroy();
@@ -71,6 +80,7 @@ void StaticDataManager::destroy()
     ResourceFactory<gfx::Shader>::destroy();
     ResourceFactory<px::PhysicsConvexMesh>::destroy();
     ResourceFactory<px::PhysicsConcaveMesh>::destroy();
+    gui::SpriteFactory::sdmDestroy();
     gfx::ViewFactory::sdmDestroy();
     gfx::SceneFactory::sdmDestroy();
     gfx::WindowFactory::sdmDestroy();

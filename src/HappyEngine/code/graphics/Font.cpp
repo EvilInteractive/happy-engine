@@ -28,8 +28,11 @@
 #include FT_GLYPH_H
 #include FT_BITMAP_H
 
+#include "cairo\cairo.h"
+#include "cairo\cairo-ft.h"
+
 namespace he {
-namespace gfx {
+namespace gui {
 
 Font::Font() :  m_FTLibrary(nullptr),
                 m_Face(nullptr),
@@ -37,13 +40,17 @@ Font::Font() :  m_FTLibrary(nullptr),
                 m_ExtendedChars(false),
                 m_Cached(false),
                 m_Init(false),
-                m_LineHeight(0)
+                m_LineHeight(0),
+                m_TextureAtlas(nullptr),
+                m_CairoFontFace(nullptr)
 {
     
 }
 
 Font::~Font()
 {
+    cairo_font_face_destroy(m_CairoFontFace);
+
     if (m_Face != 0)
     {
         FT_Done_Face(m_Face);
@@ -53,23 +60,30 @@ Font::~Font()
 }
 
 /* GENERAL */
-void Font::init(FT_Library lib, FT_Face face, uint16 size)
+void Font::init(FT_Library lib, FT_Face face, uint16 size, uint8 options)
 {
     m_FTLibrary = lib;
     m_Face = face;
     m_CharSize = size;
 
-    ObjectHandle hnd = ResourceFactory<Texture2D>::getInstance()->create();
-    m_TextureAtlas = ResourceFactory<Texture2D>::getInstance()->get(hnd);
-    m_TextureAtlas->init(gfx::TextureWrapType_Repeat,  gfx::TextureFilterType_Nearest, 
-        gfx::TextureFormat_Compressed_RGBA8_DXT5, false);
-    m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
-
     m_Init = true;
 
-    /* Precache (create texture atlas) automatically.
-    No reason not to, huge performance improvement */
-    preCache();
+    m_CairoFontFace = cairo_ft_font_face_create_for_ft_face(m_Face, 0);
+
+    if ((options & NO_CACHE) != NO_CACHE)
+    {
+        ObjectHandle hnd = ResourceFactory<gfx::Texture2D>::getInstance()->create();
+        m_TextureAtlas = ResourceFactory<gfx::Texture2D>::getInstance()->get(hnd);
+        m_TextureAtlas->init(
+            gfx::TextureWrapType_Repeat,
+            gfx::TextureFilterType_Nearest, 
+            (options & NO_COMPRESSION) == NO_COMPRESSION ?
+            gfx::TextureFormat_RGBA8 : gfx::TextureFormat_Compressed_RGBA8_DXT5,
+            false);
+        m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
+
+        preCache();
+    }
 }
 
 void Font::preCache(bool extendedCharacters)
@@ -104,31 +118,34 @@ void Font::preCache(bool extendedCharacters)
     {
         // load character glyphs
         FT_ULong c(chr);
-        FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
+        //FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
+        FT_UInt glyphIndex = FT_Get_Char_Index(m_Face, c);
 
         // render glyph
-        FT_Glyph glyph;
-        FT_Get_Glyph(m_Face->glyph, &glyph);
+        FT_GlyphSlot& glyph = m_Face->glyph;
+        //FT_Get_Glyph(m_Face->glyph, &glyph);
+        FT_Load_Glyph(m_Face, glyphIndex, FT_LOAD_RENDER);
 
         // normal -> 256 gray -> AA
-        FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-        FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
+        //FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
+        FT_Bitmap bmpGlyph = glyph->bitmap;
 
-        if (bmpGlyph->bitmap.rows > maxHeight)
-            maxHeight = bmpGlyph->bitmap.rows;
+        if (bmpGlyph.rows > maxHeight)
+            maxHeight = bmpGlyph.rows;
 
-        if (bmpGlyph->top > maxTop)
-            maxTop = bmpGlyph->top;
+        if (glyph->bitmap_top > maxTop)
+            maxTop = glyph->bitmap_top;
 
-        width = bmpGlyph->bitmap.width;
-        height = bmpGlyph->bitmap.rows;
+        width = bmpGlyph.width;
+        height = bmpGlyph.rows;
 
         texSize.x += (float)width;
         glyphSizes[chr] = vec2((float)width, (float)height);
 
         // 1 / 64 pixel -> weird format of freetype
-        m_CharTextureData[chr].advance = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); 
-        glyphTop[chr] = (float)(height - bmpGlyph->top);
+        m_CharTextureData[chr].advance = vec2(static_cast<float>(glyph->metrics.horiAdvance >> 6), static_cast<float>(glyph->bitmap_top)); 
+        m_CharTextureData[chr].offset = static_cast<float>(glyph->metrics.horiBearingX >> 6);
+        glyphTop[chr] = (float)(height - glyph->bitmap_top);
 
         // use RGBA instead of R (1 channel)
         // gpu's like 4 byte packing better
@@ -140,11 +157,11 @@ void Font::preCache(bool extendedCharacters)
             {
                 glyphBuffers[chr][4 * (w + (h * width))] = glyphBuffers[chr][(4 * (w + (h * width))) + 1] =
                 glyphBuffers[chr][(4 * (w + (h * width))) + 2] = glyphBuffers[chr][(4 * (w + (h * width))) + 3] =
-                    bmpGlyph->bitmap.buffer[w + (bmpGlyph->bitmap.width * (height - h - 1))];
+                    bmpGlyph.buffer[w + (bmpGlyph.width * (height - h - 1))];
             }
         }
 
-        FT_Done_Glyph(glyph);
+        //FT_Done_Glyph(glyph);
     }
 
     m_LineHeight = maxHeight;
@@ -220,78 +237,29 @@ uint32 Font::getLineHeight() const
     return m_LineHeight;
 }
 
-float Font::getStringWidth(const std::string& string) const
+float Font::getStringWidth(const char* buff, const int len) const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
+    HE_ASSERT(m_Cached == true, "Font must be prechached!");
 
-    vec2 penPos;
+    float width(0.0f);
+    const size_t count(len == -1? strlen(buff) : len);
 
-    if (m_Cached)
+    for (uint32 i(0); i < count; ++i)
     {
-        for (uint32 i(0); i < string.size(); ++i)
+        width += m_CharTextureData[buff[i]].advance.x;
+
+        if (i < count - 1)
         {
-            penPos.x += m_CharTextureData[string[i]].advance.x;
-
-            if (i < (string.size() - 1))
-            {
-                penPos.x += getKerning(string[i], string[i] + 1);
-            }
-        }
-    }
-    else
-    {
-        he::PrimitiveList<vec2> glyphSizes;
-        he::PrimitiveList<vec2> glyphAdvance;
-
-        glyphSizes.resize(string.size());
-        glyphAdvance.resize(string.size());
-
-        int maxHeight(0);
-
-        for (uint32 i(0); i < string.size(); ++i)
-        {
-            // load character glyphs
-            FT_ULong c(string[i]);
-            FT_Load_Char(m_Face, c, FT_LOAD_TARGET_NORMAL);
-
-            // render glyph
-            FT_Glyph glyph;
-            FT_Get_Glyph(m_Face->glyph, &glyph);
-
-            // normal -> 256 gray -> AA
-            FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-            FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;
-
-            if (bmpGlyph->bitmap.rows > maxHeight)
-                maxHeight = bmpGlyph->bitmap.rows;
-
-            glyphSizes[i] = vec2((float)bmpGlyph->bitmap.width, (float)bmpGlyph->bitmap.rows);
-
-            glyphAdvance[i] = vec2((float)(glyph->advance.x >> 16), (float)bmpGlyph->top); // 1 / 64
-
-            FT_Done_Glyph(glyph);
-        }
-
-        FT_Vector kerning;
-
-        for (uint32 i(0); i < string.size(); ++i)
-        {
-            penPos.y = maxHeight - glyphAdvance[i].y;
-            penPos.x += glyphAdvance[i].x;
-
-            if (FT_HAS_KERNING(m_Face) && i < string.size() - 1)
-            {
-                FT_UInt index1(FT_Get_Char_Index(m_Face, string[i]));
-                FT_UInt index2(FT_Get_Char_Index(m_Face, string[i + 1]));
-
-                FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
-
-                penPos.x += (kerning.x >> 6); // 1 / 64
-            }
+            width += getKerning(buff[i], buff[i] + 1);
         }
     }
 
-    return penPos.x;
+    return width;
+}
+float Font::getStringWidth(const std::string& string) const
+{
+    return getStringWidth(string.c_str(), string.size());
 }
 
 int Font::getKerning(char first, char second) const
@@ -300,6 +268,7 @@ int Font::getKerning(char first, char second) const
 
     FT_Vector kerning;
 
+    int result(0);
     if (FT_HAS_KERNING(m_Face))
     {
         FT_UInt index1(FT_Get_Char_Index(m_Face, first));
@@ -307,15 +276,12 @@ int Font::getKerning(char first, char second) const
 
         FT_Get_Kerning(m_Face, index1, index2, FT_KERNING_DEFAULT, &kerning);
 
-        return (kerning.x / 64); // 1 / 64
+        result = kerning.x / 64; // 1 / 64
     }
-    else
-    {
-        return 0;
-    }
+    return result;
 }
 
-Texture2D* Font::getTextureAtlas() const
+gfx::Texture2D* Font::getTextureAtlas() const
 {
     HE_ASSERT(m_Init, "Init Font before using!");
     HE_ASSERT(m_Cached, "Precache Font before using!");
@@ -323,22 +289,33 @@ Texture2D* Font::getTextureAtlas() const
     return m_TextureAtlas;
 }
 
-const Font::CharData* Font::getCharTextureData(uint8 chr) const
-{
-    HE_ASSERT(m_Init, "Init Font before using!");
-    HE_ASSERT(m_Cached, "Precache Font before using!");
-
-    if (!m_ExtendedChars && chr > 127)
-    {
-        return nullptr;
-    }
-
-    return &m_CharTextureData[chr];
-}
-
 bool Font::isPreCached() const
 {
     return m_Cached;
+}
+
+_cairo_font_face* Font::getCairoFontFace() const
+{
+    return m_CairoFontFace;
+}
+
+uint32 Font::getGlyphIndex(const char c) const
+{
+    return static_cast<uint32>(FT_Get_Char_Index(m_Face, c));
+}
+
+float Font::getAdvance(const char c) const
+{
+    FT_Load_Glyph(m_Face, FT_Get_Char_Index(m_Face, c), FT_LOAD_DEFAULT);
+
+    return static_cast<float>(m_Face->glyph->metrics.horiAdvance >> 6);
+}
+
+float Font::getOffset(const char c) const
+{
+    FT_Load_Glyph(m_Face, FT_Get_Char_Index(m_Face, c), FT_LOAD_DEFAULT);
+
+    return static_cast<float>(m_Face->glyph->metrics.horiBearingX >> 6);
 }
 
 /* EXTRA */

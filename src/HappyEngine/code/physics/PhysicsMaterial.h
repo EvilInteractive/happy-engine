@@ -41,7 +41,7 @@ public:
     physx::PxMaterial* getInternalMaterial() const;
 
 private:
-    physx::PxMaterial* m_pInternalMaterial;
+    physx::PxMaterial* m_InternalMaterial;
 };
 
 } } //end namespace

@@ -118,11 +118,12 @@ void MainGame::load()
 
     m_Scene = GRAPHICS->createScene();
 
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
+
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
-    m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
     
     /* CAMERA */
@@ -135,6 +136,8 @@ void MainGame::load()
     /* GUI */
     m_FPSGraph = NEW tools::FPSGraph();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
+    m_FPSGraph->setPos(he::vec2(50,35));
+    m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());
@@ -144,8 +147,7 @@ void MainGame::load()
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
-    m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
-
+    
     // test
     he::eventCallback1<void, const Awesomium::JSArray&> callbackTest([](const Awesomium::JSArray& /*args*/){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
     m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);

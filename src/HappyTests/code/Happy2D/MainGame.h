@@ -47,6 +47,7 @@ public:
     virtual ~MainGame();
 
     virtual void init();
+    virtual void destroy() {}
     virtual void load();
     virtual void tick(float dTime);
     virtual void draw2D(he::gfx::Canvas2D* canvas);
@@ -58,7 +59,7 @@ private:
     he::gfx::Window* m_Window;
     he::gfx::View*   m_View;
     he::gfx::Renderer2D* m_Renderer;
-    he::gfx::Font* m_Font;
+    he::gui::Font* m_Font;
     he::gfx::WebView* m_WebView;
 
     /* DEFAULT COPY & ASSIGNMENT */

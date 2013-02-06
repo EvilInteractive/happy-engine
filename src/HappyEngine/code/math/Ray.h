@@ -24,7 +24,7 @@
 
 namespace he {
 namespace px {
-    class IPhysicsActor;
+    class PhysicsActor;
 }
 namespace gfx {
     class ICamera;
@@ -37,7 +37,7 @@ struct RayCastResult
     vec3 hitPosition;
     vec3 hitNormal;
     float hitDistance;
-    px::IPhysicsActor* actorHit;
+    px::PhysicsActor* actorHit;
 };
 
 class Ray

@@ -31,9 +31,9 @@ namespace he {
 namespace ct {
 namespace models {
 
-void calculateTangents( const void* pVertices, uint32 numVertices,
+    void calculateTangents( const void* pVertices, size_t numVertices,
                         uint32 posOff, uint32 texOff, uint32 normOff, uint32 vertStride,
-                        const void* pIndices, uint32 numIndices, gfx::IndexStride indexStride,
+                        const void* pIndices, size_t numIndices, gfx::IndexStride indexStride,
                         he::PrimitiveList<vec3>& outTangents);
 
 } } } //end namespace

@@ -27,6 +27,15 @@
 
 #include "OpenGL.h"
 
+#ifdef SFML_SYSTEM_WINDOWS
+#include <windows.h>
+#elif defined(SFML_SYSTEM_LINUX)
+#include <X11/cursorfont.h>
+#include <X11/Xlib.h>
+#else
+#error This OS is not yet supported for changing the cursor.
+#endif
+
 namespace he {
 namespace gfx {
 IMPLEMENT_OBJECT(Window)
@@ -44,6 +53,12 @@ Window::Window()
   , m_Resizeable(true)
   , m_Context(this)
   , m_IsVisible(true)
+#ifdef HE_WINDOWS
+  , m_Cursor(0)
+#elif HE_LINUX
+  , m_Cursor(0)
+  , m_Display(nullptr)
+#endif
 {
 }
 #pragma warning(default:4355)
@@ -53,6 +68,12 @@ Window::~Window()
 {
     destroy();
     delete m_Window;
+
+#ifdef HE_LINUX
+    XFreeCursor(m_Display, m_Cursor);
+    delete m_Display;
+    m_Display = NULL;
+#endif
 }
 
 void Window::create(Window* parent)
@@ -76,11 +97,11 @@ void Window::create(Window* parent)
         m_Window->setTitle(m_Titel);
         m_Window->setSize(sf::Vector2u(m_WindowRect.width, m_WindowRect.height));
     }
-    m_Window->setKeyRepeatEnabled(false);
-    m_Window->setFramerateLimit(0);
+    m_Window->setKeyRepeatEnabled(true);
     setWindowPosition(m_WindowRect.x, m_WindowRect.y);
     setCursorVisible(m_IsCursorVisible);
     setVSync(m_VSyncEnabled);
+    setCursor(io::MouseCursor_Pointer);
     GRAPHICS->setActiveWindow(this);
 
     GRAPHICS->setActiveContext(&m_Context);
@@ -181,7 +202,7 @@ void Window::doEvents( float /*dTime*/ )
             break;
         case sf::Event::TextEntered:
             if (hasFocus == true)
-                keyboard->TextCharEntered(static_cast<char>(event.text.unicode));
+                keyboard->TextCharEntered(static_cast<uint32>(event.text.unicode));
             break;
         }
     }
@@ -263,6 +284,197 @@ void Window::setResizable( bool resizable )
     m_Resizeable = resizable;
 }
 
+void Window::setMousePosition( const vec2& pos )
+{
+    sf::Mouse::setPosition(sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y)), *m_Window);
+}
+
+#ifdef HE_WINDOWS
+void Window::setCursor( const io::MouseCursor cursor )
+{
+    LPCSTR cursorName(IDC_ARROW);
+    switch(cursor)
+    {
+    case io::MouseCursor_Progress: 
+        cursorName = IDC_APPSTARTING; break;
+
+    case io::MouseCursor_Custom:
+    case io::MouseCursor_ZoomIn:
+    case io::MouseCursor_ZoomOut:
+    case io::MouseCursor_Pointer:
+    case io::MouseCursor_Copy:
+    case io::MouseCursor_None:
+    case io::MouseCursor_VerticalText:
+    case io::MouseCursor_Cell:
+    case io::MouseCursor_ContextMenu:
+    case io::MouseCursor_Alias: 
+        cursorName = IDC_ARROW; break;
+
+    case io::MouseCursor_Cross: 
+        cursorName = IDC_CROSS; break;
+
+    case io::MouseCursor_Grab:
+    case io::MouseCursor_Grabbing:
+    case io::MouseCursor_Hand: 
+        cursorName = IDC_HAND; break;
+
+    case io::MouseCursor_Help: 
+        cursorName = IDC_HELP; break;
+
+    case io::MouseCursor_IBeam: 
+        cursorName = IDC_IBEAM; break;
+
+    case io::MouseCursor_NoDrop:
+    case io::MouseCursor_NotAllowed: 
+        cursorName = IDC_NO; break;
+
+    case io::MouseCursor_Move: 
+    case io::MouseCursor_MiddlePanning:
+    case io::MouseCursor_EastPanning:
+    case io::MouseCursor_WestPanning:
+    case io::MouseCursor_NorthPanning:
+    case io::MouseCursor_SouthPanning:
+    case io::MouseCursor_NorthEastPanning:
+    case io::MouseCursor_SouthWestPanning:
+    case io::MouseCursor_NorthWestPanning:
+    case io::MouseCursor_SouthEastPanning:
+        cursorName = IDC_SIZEALL; break;
+
+    case io::MouseCursor_NorthEastSouthWestResize: 
+    case io::MouseCursor_NorthEastResize:
+    case io::MouseCursor_SouthWestResize:
+        cursorName = IDC_SIZENESW; break;
+
+    case io::MouseCursor_NorthSouthResize: 
+    case io::MouseCursor_NorthResize:
+    case io::MouseCursor_RowResize:
+    case io::MouseCursor_SouthResize:
+        cursorName = IDC_SIZENS; break;
+
+    case io::MouseCursor_NorthWestResize: 
+    case io::MouseCursor_NorthWestSouthEastResize:
+    case io::MouseCursor_SouthEastResize:
+        cursorName = IDC_SIZENWSE; break;
+
+    case io::MouseCursor_EastWestResize: 
+    case io::MouseCursor_EastResize:
+    case io::MouseCursor_ColumnResize:
+    case io::MouseCursor_WestResize:
+        cursorName = IDC_SIZEWE; break;
+
+    case io::MouseCursor_Wait: 
+        cursorName = IDC_WAIT; break;
+    default:
+        LOG(LogType_ProgrammerAssert, "Unknow mouse cursor %d", cursor);
+    }
+
+    m_Cursor = LoadCursor(NULL, cursorName);
+    SetClassLongPtr(m_Window->getSystemHandle(), GCLP_HCURSOR, reinterpret_cast<LONG_PTR>(m_Cursor));
+}
+
+#elif defined(HE_LINUX)
+void Window::setCursor( const io::MouseCursor cursor )
+{
+    unsigned int shape(XC_left_ptr);
+    switch(cursor)
+    {
+    case io::MouseCursor_Progress: 
+        shape = XC_watch; break;
+
+    case io::MouseCursor_Custom:
+    case io::MouseCursor_ZoomIn:
+    case io::MouseCursor_ZoomOut:
+    case io::MouseCursor_Pointer:
+    case io::MouseCursor_Copy:
+    case io::MouseCursor_None:
+    case io::MouseCursor_VerticalText:
+    case io::MouseCursor_Cell:
+    case io::MouseCursor_ContextMenu:
+    case io::MouseCursor_Alias: 
+        shape = XC_left_ptr; break;
+
+    case io::MouseCursor_Cross: 
+        shape = XC_tcross; break;
+
+    case io::MouseCursor_Grab:
+    case io::MouseCursor_Grabbing:
+    case io::MouseCursor_Hand: 
+        shape = XC_hand1; break;
+
+    case io::MouseCursor_Help: 
+        shape = XC_question_arrow; break;
+
+    case io::MouseCursor_IBeam: 
+        shape = XC_xterm; break;
+
+    case io::MouseCursor_NoDrop:
+    case io::MouseCursor_NotAllowed: 
+        shape = XC_X_cursor; break;
+
+    case io::MouseCursor_Move: 
+    case io::MouseCursor_MiddlePanning:
+    case io::MouseCursor_EastPanning:
+    case io::MouseCursor_WestPanning:
+    case io::MouseCursor_NorthPanning:
+    case io::MouseCursor_SouthPanning:
+    case io::MouseCursor_NorthEastPanning:
+    case io::MouseCursor_SouthWestPanning:
+    case io::MouseCursor_NorthWestPanning:
+    case io::MouseCursor_SouthEastPanning:
+        shape = XC_fleur; break;
+
+    case io::MouseCursor_NorthEastResize:
+        shape = XC_top_right_corner; break;
+
+    case io::MouseCursor_SouthWestResize:
+        shape = XC_bottom_left_corner; break;
+ 
+    case io::MouseCursor_NorthResize:
+        shape = XC_top_side; break;
+
+    case io::MouseCursor_NorthSouthResize:
+        shape = XC_sb_v_double_arrow; break;
+
+    case io::MouseCursor_SouthResize:
+        shape = XC_bottom_side; break;
+
+    case io::MouseCursor_NorthWestResize: 
+        shape = XC_top_left_corner; break;
+
+    case io::MouseCursor_NorthEastSouthWestResize: 
+    case io::MouseCursor_NorthWestSouthEastResize:
+        shape = XC_sizing; break;
+
+    case io::MouseCursor_SouthEastResize:
+        shape = XC_bottom_right_corner; break;
+
+    case io::MouseCursor_EastWestResize: 
+        shape = XC_sb_h_double_arrow; break;
+
+    case io::MouseCursor_EastResize:
+        shape = XC_right_side; break;
+
+    case io::MouseCursor_WestResize:
+        shape = XC_left_side; break;
+
+    case io::MouseCursor_RowResize:
+        shape = XC_sb_v_double_arrow; break;
+    case io::MouseCursor_ColumnResize:
+        shape = XC_sb_h_double_arrow; break;
+
+    case io::MouseCursor_Wait: 
+        shape = XC_watch; break;
+    default:
+        LOG(LogType_ProgrammerAssert, "Unknow mouse cursor %d", cursor);
+    }
+
+    m_Display = XOpenDisplay(NULL);
+    m_Cursor = XCreateFontCursor(m_Display, XC_xterm);
+    XDefineCursor(m_Display, m_Window->getSystemHandle(), m_Cursor);
+    XFlush(m_Display);
+}
+
+#endif
 
 
 } } //end namespace

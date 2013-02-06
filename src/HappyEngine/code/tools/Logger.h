@@ -23,8 +23,6 @@
 #pragma once
 
 namespace he {
-namespace tools {
-
 enum LogType
 {
     LogType_ProgrammerAssert,
@@ -33,14 +31,15 @@ enum LogType
     LogType_Warning,
     LogType_Info
 };
+namespace tools {
 
 class Logger
 {
 public:
     ~Logger();
 
-    void log(LogType type, const char* str, ...);
-    void log(LogType type, const char* str, va_list& argList);
+    void log(const LogType type, const char* file, const char* func, int line, const char* str, ...);
+    void log(const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList);
 
     static Logger* getInstance();
     static void sdmInit();
@@ -57,7 +56,7 @@ private:
     Logger& operator=(const Logger&);
 };
 
-#define LOG he::tools::Logger::getInstance()->log
+#define LOG(type, message, ...) he::tools::Logger::getInstance()->log(type, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__)
 
 } } //end namespace
 

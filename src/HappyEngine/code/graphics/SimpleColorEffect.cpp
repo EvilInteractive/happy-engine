@@ -52,9 +52,9 @@ void SimpleColorEffect::load()
     shaderOutputs.add("outColor");
 
     const std::string& folder(CONTENT->getShaderFolderPath().str());
-    bool shaderInit(m_Shader->initFromFile(folder + "2D/simpleShader.vert", 
+    const bool shaderInit(m_Shader->initFromFile(folder + "2D/simpleShader.vert", 
                                             folder + "2D/simpleShader.frag", layout, shaderOutputs));
-    HE_ASSERT(shaderInit == true, "simpleShader init failed");
+    HE_ASSERT(shaderInit == true, "simpleShader init failed"); shaderInit;
 
     m_ShaderVPPos = m_Shader->getShaderVarId("matVP");
     m_ShaderWPos = m_Shader->getShaderVarId("matW");

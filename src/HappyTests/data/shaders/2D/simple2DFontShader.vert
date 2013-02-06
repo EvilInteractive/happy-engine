@@ -19,16 +19,18 @@
 
 #version 150 core
 
+out vec2 passTexCoord;
+out vec4 passColor;
+
 in vec2 inPosition;
 in vec2 inTexCoord;
-
-out vec2 passTexCoord;
+in vec4 inColor;
 
 uniform mat4 matWVP;
-uniform float depth;
 
 void main()
 {
-	gl_Position = matWVP * vec4(inPosition, depth, 1.0f);
+	gl_Position = matWVP * vec4(inPosition, 0.5f, 1.0f);
 	passTexCoord = inTexCoord;
+    passColor = inColor;
 }

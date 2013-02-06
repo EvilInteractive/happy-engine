@@ -23,8 +23,6 @@
 #define _HE_ASSERT_H_
 #pragma once
 
-#pragma warning(disable:4127)
-
 namespace he {
 namespace err {
 namespace details {
@@ -36,7 +34,8 @@ enum AssertType
 };
 
 #if _DEBUG || TEST
-bool happyAssert(bool isOk, AssertType type, const char* file, const char* func, int line, const char* message, ...);
+void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
+void happyAssert(AssertType type, const char* file, const char* func, int line, const char* message);
 #endif
 
 static int s_scope = 0;
@@ -44,17 +43,16 @@ static int s_scope = 0;
 } } } //end namespace
 
 #if _DEBUG || TEST
-#define HE_ASSERT(isOk, message, ...) he::err::details::happyAssert(isOk, he::err::details::AssertType_Code, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__)
-#define HE_IF_ASSERT(isOk, message, ...) if (he::err::details::happyAssert(isOk, he::err::details::AssertType_Code, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__) == true)
-#define HE_ART_ASSERT(isOk, message, ...) he::err::details::happyAssert(isOk, he::err::details::AssertType_Art, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__)
-#define HE_IF_ART_ASSERT(isOk, message, ...) if (he::err::details::happyAssert(isOk, he::err::details::AssertType_Art, __FILE__, __HE_FUNCTION__, __LINE__, message, ##__VA_ARGS__) == true)
+#define HE_ASSERT(isOk, message, ...) if (!(isOk)) LOG(he::LogType_ProgrammerAssert, message, ##__VA_ARGS__)
+#define HE_IF_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ProgrammerAssert, message, ##__VA_ARGS__); } else 
+#define HE_ART_ASSERT(isOk, message, ...) if (!(isOk)) LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__)
+#define HE_IF_ART_ASSERT(isOk, message, ...) if (!(isOk)) { LOG(he::LogType_ArtAssert, message, ##__VA_ARGS__); } else
 #else
 #define HE_ASSERT(...) {}
 #define HE_IF_ASSERT(...) {}
 #define HE_ART_ASSERT(...) {}
-#define HE_IF_ART_ASSERT(isOk, message, args) if (isOk)
+#define HE_IF_ART_ASSERT(isOk, ...) if (isOk)
 #endif
-
-#pragma warning(default:4127)
+#define HE_COMPILE_ASSERT(isOk, message) static_assert(isOk, message)
 
 #endif

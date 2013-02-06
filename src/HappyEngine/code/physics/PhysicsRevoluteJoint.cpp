@@ -22,44 +22,40 @@
 #include "PhysicsRevoluteJoint.h"
 
 #include "PhysicsEngine.h"
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 
 namespace he {
 namespace px {
 
-PhysicsRevoluteJoint::PhysicsRevoluteJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
-                                           const IPhysicsActor* pActor1, const vec3& localAttach1)
+PhysicsRevoluteJoint::PhysicsRevoluteJoint(const PhysicsActor* actor0, const vec3& localAttach0,
+                                           const PhysicsActor* actor1, const vec3& localAttach1)
 {
-    PHYSICS->lock();
-    m_pJoint = physx::PxRevoluteJointCreate(*PHYSICS->getSDK(), 
-        pActor0->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
-        pActor1->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
-    PHYSICS->unlock();
+    m_Joint = physx::PxRevoluteJointCreate(*PHYSICS->getSDK(), 
+        actor0->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach0.x, localAttach0.y, localAttach0.z)),
+        actor1->getInternalActor(), physx::PxTransform(physx::PxVec3(localAttach1.x, localAttach1.y, localAttach1.z)));
 
 #if DEBUG || _DEBUG
-    m_pJoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
+    m_Joint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
 #endif
 }
 
 
 PhysicsRevoluteJoint::~PhysicsRevoluteJoint()
 {
-    PHYSICS->lock();
-    m_pJoint->release();
-    PHYSICS->unlock();
+    m_Joint->release();
 }
 
 void PhysicsRevoluteJoint::setBreakForce( float force, float torque )
 {
-    m_pJoint->setBreakForce(force, torque);
+    m_Joint->setBreakForce(force, torque);
 }
 
 void PhysicsRevoluteJoint::setAsHardLimit(float lower, float upper, float restitution)
 {
     physx::PxJointLimitPair limit(lower, upper, 0.01f);
     limit.restitution = restitution;
-    m_pJoint->setLimit(limit);
-    m_pJoint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+    m_Joint->setLimit(limit);
+    m_Joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eLIMIT_ENABLED, true);
 }
 
 void PhysicsRevoluteJoint::setAsSpring( float lower, float upper, float springStrength, float springDamping )
@@ -67,8 +63,8 @@ void PhysicsRevoluteJoint::setAsSpring( float lower, float upper, float springSt
     physx::PxJointLimitPair limit(lower, upper, 0.01f);
     limit.spring = springStrength;
     limit.damping = springDamping;
-    m_pJoint->setLimit(limit);
-    m_pJoint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+    m_Joint->setLimit(limit);
+    m_Joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eLIMIT_ENABLED, true);
 }
 
 } } //end namespace

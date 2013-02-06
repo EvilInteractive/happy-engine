@@ -188,7 +188,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                             else if (p.second == L"GBUFFER_NORMALDEPTH")
                                 shaderOutputs[2] = std::string(p.first.cbegin(), p.first.cend());
                             else
-                                HE_ASSERT(false, "unknow semantic");
+                                LOG(LogType_ProgrammerAssert, "unknow semantic");
                         });
                     }
                     else if (outNodes.size() == 2)
@@ -201,7 +201,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                             else if (p.second == L"GBUFFER_NORMALDEPTH")
                                 shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
                             else
-                                HE_ASSERT(false, "unknow semantic");
+                                LOG(LogType_ProgrammerAssert, "unknow semantic");
                         });
                     }
                 }
@@ -240,7 +240,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     }
                     else if (p.second == L"BONEWEIGHTS")
                     {
-                        HE_ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
+                        HE_COMPILE_ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
                         vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneWeights, sizeof(vec4), offset));
                         offset += sizeof(vec4);
                     }
@@ -248,7 +248,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     {
                         HE_ERROR("Material: unknown attribute %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
                     } 
-                    shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));
+                    shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), std::string(p.first.cbegin(), p.first.cend())));
                 }); 
 
                 gfx::BufferLayout instancingLayout;
@@ -304,7 +304,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         {
                             HE_ERROR("Material: instancing unknown type %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
                         }
-                        shaderLayout.addElement(gfx::ShaderLayoutElement(shaderLayout.getElements().size(), std::string(p.first.cbegin(), p.first.cend())));  
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), std::string(p.first.cbegin(), p.first.cend())));  
                     });
                 }
 

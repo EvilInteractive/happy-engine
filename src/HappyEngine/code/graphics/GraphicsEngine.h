@@ -84,7 +84,7 @@ public:
     const he::ObjectList<ObjectHandle>& getAllWindows() const { return m_Windows; }
     const he::PrimitiveList<GLContext*>& getContexts() const { return m_Contexts; } 
 
-    uint16 getShadowMapSize(const ShadowResolution& resolution);
+    static uint16 getShadowMapSize(const ShadowResolution& resolution);
 
     View* getActiveView() const { return m_ActiveView; }
 

@@ -4,7 +4,7 @@ $(function()
     var open = true;
     var dragging = false;
     var mousepos = {x:0,y:0};
-    var contentpos = {x:50,y:200};
+    var contentpos = {x:10,y:60};
 
     for (var i = 0; i <= nrSliders; ++i)
     {
@@ -85,10 +85,13 @@ $(function()
     }
 
     updateContentPos();
+	
+	$('#slidersandlabels').css('display', 'none');
+	open = false;
 });
 
 function setSliderValue(id, value)
 {
 	$('#slider' + id).val(value);
-	$('#slider' + id + 'val').html(value);
+	$('#slider' + id + 'val').html(Math.floor(value * 10000) / 10000);
 }

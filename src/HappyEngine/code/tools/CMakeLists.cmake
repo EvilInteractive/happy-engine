@@ -1,36 +1,46 @@
-set (CODE_TOOL_NO_FILTER
-        FPSGraph.cpp                 FPSGraph.h
-        Grid.cpp                     Grid.h
-        LoadingScreen.cpp            LoadingScreen.h
-        Logger.cpp                   Logger.h
-        Path.cpp                     Path.h
-        Profiler.cpp                 Profiler.h
-        StopWatch.cpp                StopWatch.h)
+
+addFilter(CODE_SRCS src/tools code/tools/
+            FPSGraph.cpp                 FPSGraph.h
+            Grid.cpp                     Grid.h
+            Logger.cpp                   Logger.h
+            Path.cpp                     Path.h
+            Profiler.cpp                 Profiler.h
+            StopWatch.cpp                StopWatch.h
+            SystemStats.cpp				 SystemStats.h
+        )
+
+addFilter(CODE_SRCS src/tools/undoRedo code/tools/
+            Command.cpp                  Command.h
+            CommandStack.cpp             CommandStack.h
+            CommandTransaction.cpp       CommandTransaction.h
+        )
         
-set (CODE_TOOL_CONSOLE_FILTER
-        BoolTypeHandler.h
-        Console.cpp                  Console.h
-        FloatTypeHandler.h
-        IntTypeHandler.h
-        ITypeHandler.h
-        StringTypeHandler.h
-        UIntTypeHandler.h
-        Vec2TypeHandler.h
-        Vec3TypeHandler.h
-        Vec4TypeHandler.h
-)
-                      
+addFilter(CODE_SRCS src/tools/console code/tools/
+            BoolTypeHandler.h
+            Console.cpp                  Console.h
+            FloatTypeHandler.h
+            IntTypeHandler.h
+            ITypeHandler.h
+            StringTypeHandler.h
+            UIntTypeHandler.h
+            Vec2TypeHandler.h
+            Vec3TypeHandler.h
+            Vec4TypeHandler.h
+        )
 
-foreach(f ${CODE_TOOL_NO_FILTER}) 
-    LIST(APPEND CODE_TOOL_NO_FILTER_SRCS code/tools/${f})
-endforeach(f) 
-
-foreach(f ${CODE_TOOL_CONSOLE_FILTER}) 
-    LIST(APPEND CODE_TOOL_CONSOLE_FILTER_SRC code/tools/${f})
-endforeach(f) 
-
-source_group (src\\tools FILES ${CODE_TOOL_NO_FILTER_SRCS})
-source_group (src\\tools\\console FILES ${CODE_TOOL_CONSOLE_FILTER_SRC})
-
-LIST(APPEND HAPPYENGINE_CODE_TOOLS_SRCS ${CODE_TOOL_NO_FILTER_SRCS} ${CODE_TOOL_CONSOLE_FILTER_SRC})
-
+addFilter(CODE_SRCS src/tools/materialGenerator code/tools/materialGenerator/
+            MaterialGeneratorConstNodes.cpp                 MaterialGeneratorConstNodes.h
+            MaterialGeneratorNodeClassHelper.h
+            MaterialGeneratorHelpers.h
+            MaterialGeneratorGraph.cpp					    MaterialGeneratorGraph.h
+            MaterialGeneratorGraphCommands.cpp              MaterialGeneratorGraphCommands.h
+            MaterialGeneratorMathNodes.cpp				    MaterialGeneratorMathNodes.h
+            MaterialGeneratorNode.cpp						MaterialGeneratorNode.h
+            MaterialGeneratorNodeFactory.cpp                MaterialGeneratorNodeFactory.h
+            MaterialGeneratorNodeInOut.cpp				    MaterialGeneratorNodeInOut.h
+            MaterialGeneratorNodeParam.cpp                  MaterialGeneratorNodeParam.h	
+            MaterialGeneratorNodeTypes.cpp				    MaterialGeneratorNodeTypes.h
+            MaterialGeneratorRootNodes.cpp                  MaterialGeneratorRootNodes.h
+            MaterialGeneratorVectorNodes.cpp                MaterialGeneratorVectorNodes.h
+            MaterialGeneratorTextureNodes.cpp               MaterialGeneratorTextureNodes.h						
+        )

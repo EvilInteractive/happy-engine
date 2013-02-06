@@ -30,18 +30,18 @@ FileReader::~FileReader()
 {
     close();
 }
-bool FileReader::open( const std::string& path, OpenType type )
+bool FileReader::open( const he::Path& path, OpenType type )
 {
     close();
     if (type == OpenType_Unicode)
     {
-        m_Wfstream.open(path.c_str(), std::ios_base::in);
+        m_Wfstream.open(path.str().c_str(), std::ios_base::in);
         if (m_Wfstream.is_open() == false)
             return false;
     }
     else
     {
-        m_fstream.open(path.c_str(), std::ios_base::in);
+        m_fstream.open(path.str().c_str(), std::ios_base::in);
         if (m_fstream.is_open() == false)
             return false;
     }

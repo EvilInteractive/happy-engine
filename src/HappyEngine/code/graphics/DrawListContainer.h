@@ -55,6 +55,8 @@ public:
     void remove(IDrawable* drawable);
     void forceReevalute(IDrawable* drawable);
     void doReevalute(IDrawable* drawable);
+
+    const PrimitiveList<IDrawable*>* getList() const;
     
 private:
 

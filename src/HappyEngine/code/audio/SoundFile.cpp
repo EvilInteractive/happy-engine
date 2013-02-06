@@ -72,12 +72,12 @@ void SoundFile::close()
 {
     if (m_SoundFile)
     {
-        int err(sf_close(m_SoundFile));
+        const int err(sf_close(m_SoundFile));
 
         std::string errMsg("Can't close file: ");
         errMsg += getProperties().filePath;
 
-        HE_ASSERT(err == 0, errMsg.c_str());
+        HE_ASSERT(err == 0, errMsg.c_str()); err;
 
         m_SoundFile = nullptr;
     }
@@ -118,12 +118,12 @@ SoundFileProperties SoundFile::getProperties() const
 
 /* DEFAULT COPY & ASSIGNMENT */
 SoundFile::SoundFile(const SoundFile& second)
+    : m_SoundFile(second.m_SoundFile)
+    , m_FilePath(second.m_FilePath)
+    , m_NrSamples(second.m_NrSamples)
+    , m_Samplerate(second.m_Samplerate)
+    , m_ChannelsCount(second.m_ChannelsCount)
 {
-    m_SoundFile = second.m_SoundFile;
-    m_FilePath = second.m_FilePath;
-    m_NrSamples = second.m_NrSamples;
-    m_Samplerate = second.m_Samplerate;
-    m_ChannelsCount = second.m_ChannelsCount;
 }
 
 SoundFile& SoundFile::operator=(const SoundFile& second)

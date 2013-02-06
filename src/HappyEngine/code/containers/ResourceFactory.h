@@ -65,15 +65,18 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// ResourceFactory<T>
     //////////////////////////////////////////////////////////////////////////
-    void garbageCollect()
+    uint32 garbageCollect()
     {
+        uint32 ret(0);
         for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
         {
             if (m_RefCounter[i] == 0 && this->isAliveAt(i) && this->getAt(i)->canBeGarbageCollected())
             {
                 destroyAt(i);
+                ++ret;
             }
         }
+        return ret;
     }
 
     uint32 getRefCount(const ObjectHandle& handle)

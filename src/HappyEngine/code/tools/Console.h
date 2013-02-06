@@ -67,14 +67,12 @@ public:
 
     virtual void draw2D(gfx::Canvas2D* canvas); // auto called
 
-    void addMessage(const gui::Text& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
-    void addMessage(const std::string& msg, CMSG_TYPE type = CMSG_TYPE_INFO);
+    void addMessage(const char* msg, CMSG_TYPE type = CMSG_TYPE_INFO);
 
     template <typename T>
     void registerVar(T* pVar, const std::string& varKey)
     {
-        const char* type(typeid(T).name());
-        HE_IF_ASSERT(m_TypeHandlers.find(type) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", type)
+        HE_IF_ASSERT(m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", typeid(T).name())
         {
             HE_IF_ASSERT(m_ValueContainer.find(varKey) == m_ValueContainer.end(), "Variable: '%s' already registered!", varKey.c_str())
             {
@@ -105,7 +103,7 @@ private:
     void displayHelp();
     void displayVars();
     void displayCmds();
-	void onResize();
+    void onResize();
 
     /* DATAMEMBERS */
     std::map<std::string, boost::any> m_ValueContainer;
@@ -125,12 +123,13 @@ private:
     bool m_IsOpen;
 
     gui::TextBox* m_TextBox;
-    gui::Text* m_Help;
+    std::string m_Help;
     gui::Scrollbar* m_ScrollBar;
 
     std::string m_HelpCommand;
 
-    gfx::Font* m_Font;
+    gui::Font* m_Font;
+    gui::Text m_Text;
     gfx::Renderer2D* m_Renderer;
 
     vec2 m_ViewportSize;

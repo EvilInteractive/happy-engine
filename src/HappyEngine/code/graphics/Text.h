@@ -23,11 +23,8 @@
 #pragma once
 
 namespace he {
-namespace gfx {
-    class Font;
-}
-
 namespace gui {
+    class Font;
 
 class Text
 {
@@ -53,61 +50,64 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    Text(	gfx::Font* font,
-            OverFlowType overflow = OverFlowType_Clip);
-    Text(	const std::string& text,
-            gfx::Font* font,
-            OverFlowType overflow = OverFlowType_Clip);
     Text();
     virtual ~Text();
 
     /* GENERAL */
-    void addText(const std::string& text);
-    void addLine(const std::string& string);
+    void addTextExt(const char* text, ...);
+    void addTextExt(const char* text, const va_list& argList);
+    void addText(const char* text, int len = -1);
+    void addLine(const char* text, int len = -1);
     void clear();
 
     /* SETTERS */
-    void setLine(const std::string& string, uint32 lineNumber);
-    void setHorizontalAlignment(HAlignment alignment);
-    void setVerticalAlignment(VAlignment alignment);
+    void setHorizontalAlignment(HAlignment alignment) { m_HAlignment = alignment; }
+    void setVerticalAlignment(VAlignment alignment) { m_VAlignment = alignment; }
     void setBounds(const vec2& bounds = vec2());
-    void setFont(gfx::Font* font);
-    void setOverFlowType(OverFlowType overFlowType);
+    void setFont(Font* font);
+    void setOverFlowType(OverFlowType overFlowType) { m_OverFlowType = overFlowType; }
 
     /* GETTERS */
-    const std::string& getLine(uint32 lineNumber) const;
-    const he::ObjectList<std::string>& getText() const;
+    const char* getText() const { return m_Text; }
+    const size_t getTextSize() const { return m_Size; }
+    vec2 measureText();
 
-    bool isEmpty() const;
-    bool hasBounds() const;
+    bool isEmpty() const { return m_Size == 0; }
+    bool hasBounds() const { return m_HasBounds; }
 
-    OverFlowType getOverFlowType() const;
+    OverFlowType getOverFlowType() const { return m_OverFlowType; }
 
-    HAlignment getHorizontalAlignment() const;
-    VAlignment getVerticalAlignment() const;
+    HAlignment getHorizontalAlignment() const { return m_HAlignment; }
+    VAlignment getVerticalAlignment() const { return m_VAlignment; }
 
-    gfx::Font* getFont() const;
+    Font* getFont() const { return m_Font; }
 
-    const vec2& getBounds() const;
+    const vec2& getBounds() const { return m_Bounds; }
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    Text(const Text& text);
+    Text& operator=(const Text& text);
 
 private:
 
     /* DATAMEMBERS */
-    he::ObjectList<std::string> m_Text;
+    char* m_Text;
+    size_t m_Size;
+    size_t m_Capacity;
+    void resize(const size_t newSize);
+
+    static const int MAX_SCRATCH = 4096;
+    char m_ScratchBuffer[MAX_SCRATCH];
 
     OverFlowType m_OverFlowType;
 
     HAlignment m_HAlignment;
     VAlignment m_VAlignment;
 
-    gfx::Font* m_Font;
+    Font* m_Font;
 
     vec2 m_Bounds;
     bool m_HasBounds;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    Text(const Text&);
-    Text& operator=(const Text&);
 };
 
 } } //end namespace

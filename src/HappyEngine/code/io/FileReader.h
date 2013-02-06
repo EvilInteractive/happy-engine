@@ -19,10 +19,6 @@
 #define _HE_FILEREADER_H_
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <vector>
-
 namespace he {
 namespace io {
 
@@ -38,7 +34,7 @@ public:
     FileReader();
     virtual ~FileReader();
 
-    bool open(const std::string& path, OpenType type);
+    bool open(const he::Path& path, OpenType type);
     void close();
 
     std::string readLine();

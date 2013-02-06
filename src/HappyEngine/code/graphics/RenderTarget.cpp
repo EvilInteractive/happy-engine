@@ -143,7 +143,7 @@ void RenderTarget::init()
 void RenderTarget::clear( const Color& color ) const
 {
     GL::heBindFbo(m_FboId);
-    glDrawBuffers(m_DrawBufferCount, m_DrawBuffers);
+    glDrawBuffers(static_cast<uint32>(m_DrawBufferCount), m_DrawBuffers);
     GL::heSetDepthWrite(true);
     GL::heClearColor(color);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -151,7 +151,7 @@ void RenderTarget::clear( const Color& color ) const
 
 void RenderTarget::prepareForRendering() const
 {
-    prepareForRendering(m_DrawBufferCount);
+    prepareForRendering(static_cast<uint32>(m_DrawBufferCount));
 }
 
 void RenderTarget::prepareForRendering( uint32 numTextureTargets, uint32 offset) const

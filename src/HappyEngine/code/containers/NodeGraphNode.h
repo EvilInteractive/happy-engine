@@ -22,9 +22,10 @@
 #define _HE_NodeGraphNode_H_
 #pragma once
 
-#include "NodeGraphError.h"
-
 namespace he {
+
+template<typename TInput, typename TOutput>
+struct NodeGraphError;
 
 template<typename TInput, typename TOutput>
 class NodeGraphNode;
@@ -35,8 +36,32 @@ class NodeGraphConnection
 public:
     NodeGraphConnection(): node(nullptr), connecter(UINT8_MAX) {}
     ~NodeGraphConnection() {}
+
     NodeGraphNode<TInput, TOutput>* node;
     uint8 connecter;
+
+    const TOutput& getConnection() const { return node->getOutput(connecter); }
+    bool isConnected() const { return node != nullptr; }
+};
+
+template<typename TInput, typename TOutput>
+class NodeGraphNodeOutputConnections : public ObjectList<NodeGraphConnection<TInput, TOutput>>
+{
+public:
+    NodeGraphNodeOutputConnections() {}
+    virtual ~NodeGraphNodeOutputConnections() {}
+
+    NodeGraphNodeOutputConnections(const NodeGraphNodeOutputConnections<TInput, TOutput>& other):
+        ObjectList<NodeGraphConnection>(other.m_Connections.size())
+    {
+        append(other);
+    }
+    NodeGraphNodeOutputConnections& operator=(const NodeGraphNodeOutputConnections<TInput, TOutput>& other)
+    {
+        clear();
+        append(other);
+        return *this;
+    }
 };
 
 template<typename TInput, typename TOutput>
@@ -53,7 +78,9 @@ public:
     const TOutput& getOutput(uint8 index) const { return m_Outputs[index]; }
     TInput& getInput(uint8 index) { return m_Inputs[index]; }
     TOutput& getOutput(uint8 index) { return m_Outputs[index]; }
-    const NodeGraphConnection<TInput, TOutput>& getInputConnection(uint8 index) const { return m_InputSlots[index]; }
+    const NodeGraphConnection<TInput, TOutput>& getInputConnection(const uint8 input) const { return m_InputSlots[input]; }
+    const size_t getOutputConnectionCount(const uint8 output) const { return m_OutputSlots[output].size(); }
+    const NodeGraphConnection<TInput, TOutput>& getOutputConnection(const uint8 output, const uint8 index) const { return m_OutputSlots[output][index]; }
     uint8 getInputCount() const { return static_cast<uint8>(m_Inputs.size()); }
     uint8 getOutputCount() const { return static_cast<uint8>(m_Outputs.size()); }
 
@@ -62,9 +89,14 @@ public:
     void disconnect(uint8 input);
 
     bool evaluteMarch(uint8 marchId, he::ObjectList<NodeGraphError<TInput, TOutput>>& errors);
+    bool customMarch(uint8 marchId, const boost::function0<NodeGraphNode<TInput, TOutput>* const>& callback);
 
     virtual bool evaluate(NodeGraphError<TInput, TOutput>& error) = 0;
     virtual bool canConnect(const TOutput& fromOutput, const TInput& toInput, NodeGraphError<TInput, TOutput>& error) const = 0;
+
+    // void, isInput, id
+    event2<void, bool, uint8> NodeDisconnected;
+    event2<void, bool, uint8> NodeConnected;
 
 private:
 
@@ -75,6 +107,7 @@ private:
     uint8 m_CurrentMarchId;
 
     he::ObjectList<NodeGraphConnection<TInput, TOutput>> m_InputSlots;
+    he::ObjectList<NodeGraphNodeOutputConnections<TInput, TOutput>> m_OutputSlots;
 
     //Disable default copy constructor and default assignment operator
     NodeGraphNode(const NodeGraphNode&);

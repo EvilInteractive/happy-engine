@@ -36,9 +36,9 @@ mat33::mat33(const physx::PxMat33& mat) :	m_Matrix(mat)
 mat33::mat33( float _00, float _01, float _02,
                     float _10, float _11, float _12,
                     float _20, float _21, float _22 ) :	
-    m_Matrix(physx::PxVec3(_00, _01, _02),
-             physx::PxVec3(_10, _11, _12),
-             physx::PxVec3(_20, _21, _22))
+    m_Matrix(physx::PxVec3(_00, _10, _20),
+             physx::PxVec3(_01, _11, _21),
+             physx::PxVec3(_02, _12, _22))
 {
 }
 
@@ -51,32 +51,38 @@ mat33 mat33::createTranslation2D(const vec2& translation)
 {
     return mat33(1.0f, 0.0f, translation.x,
                     0.0f, 1.0f, translation.y,
-                    0.0f, 1.0f, 0.0f );
+                    0.0f, 0.0f, 1.0f );
 }
 
 mat33 mat33::createRotation2D(const float radians)
 {
     return mat33(cosf(radians), -sinf(radians), 0.0f,
-                    sinf(radians), cosf(radians), 0.0f,
-                    0.0f, 0.0f, 1.0f );
+                 sinf(radians), cosf(radians), 0.0f,
+                 0.0f, 0.0f, 1.0f );
 }
 
 mat33 mat33::createScale2D(const vec2& scale)
 {
     return mat33(scale.x, 0.0f, 0.0f,
-                    0.0f, scale.y, 0.0f,
-                    0.0f, 0.0f, 1.0f);
+                 0.0f, scale.y, 0.0f,
+                 0.0f, 0.0f, 1.0f);
 }
 
 /* OPERATORS */
-mat33 mat33::operator*(const mat33& mat)
+mat33 mat33::operator*(const mat33& mat) const
 {
     return mat33(m_Matrix * mat.m_Matrix);
 }
 
-vec2 mat33::operator*(const vec2& vec)
+vec2 mat33::operator*(const vec2& vec) const
 {
-    return vec2(m_Matrix.transform(physx::PxVec3(vec.x, vec.y, 0.0f)).x, m_Matrix.transform(physx::PxVec3(vec.x, vec.y, 0.0f)).y);
+    physx::PxVec3 pxVec(m_Matrix.transform(physx::PxVec3(vec.x, vec.y, 1.0f)));
+    return vec2(pxVec.x, pxVec.y);
+}
+vec3 mat33::operator*(const vec3& vec) const
+{
+    physx::PxVec3 pxVec(m_Matrix.transform(physx::PxVec3(vec.x, vec.y, vec.z)));
+    return vec3(pxVec.x, pxVec.y, pxVec.z);
 }
 
 /* GETTERS */
@@ -127,6 +133,21 @@ he::mat33 mat33::createRotation3D( const vec3& axis, float radians )
         axis.x * axis.y * (1 - cosAlpha) + axis.z * sinAlpha,       cosAlpha + sqr(axis.y) * (1 - cosAlpha),                    axis.y * axis.z * (1 - cosAlpha) - axis.x * sinAlpha,
         axis.x * axis.z * (1 - cosAlpha) - axis.y * sinAlpha,       axis.y * axis.z * (1 - cosAlpha) + axis.x * sinAlpha,       cosAlpha + sqr(axis.z) * (1 - cosAlpha));
 
+}
+
+const vec3& mat33::getForward() const
+{
+    return *reinterpret_cast<const vec3*>(&m_Matrix.column2);
+}
+
+const vec3& mat33::getUp() const
+{
+    return *reinterpret_cast<const vec3*>(&m_Matrix.column1);
+}
+
+const vec3& mat33::getRight() const
+{
+    return *reinterpret_cast<const vec3*>(&m_Matrix.column0);
 }
 
 /* STATIC */

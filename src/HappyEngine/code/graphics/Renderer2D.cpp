@@ -40,6 +40,7 @@
 #include "Texture2D.h"
 #include "View.h"
 #include "IDrawable2D.h"
+#include "Canvas2Dnew.h"
 
 namespace he {
 namespace gfx {
@@ -49,7 +50,8 @@ Renderer2D::Renderer2D() :
                             m_TextureQuad(nullptr),
                             m_View(nullptr),
                             m_RenderTarget(nullptr),
-                            m_DefaultCanvas(nullptr)
+                            m_DefaultCanvas(nullptr),
+                            m_CanvasNew(nullptr)
 {
 }
 
@@ -59,6 +61,8 @@ Renderer2D::~Renderer2D()
 
     delete m_TextureEffect;
     m_TextureQuad->release();
+
+    delete m_CanvasNew;
 }
 
 /* GENERAL */
@@ -88,7 +92,7 @@ void Renderer2D::removeCanvas( Canvas2D* canvas )
 
 WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
-    WebView* web(NEW WebView(viewport, enableUserInput));
+    WebView* web(NEW WebView(m_View, viewport, enableUserInput));
     m_WebViews.add(web);
     return web;
 }
@@ -109,14 +113,33 @@ void Renderer2D::removeWebView( WebView* webview )
 
 void Renderer2D::render()
 {
-    m_DefaultCanvas->clear();
-    m_Drawables.forEach([this](IDrawable2D* drawable)
+    he::PrimitiveList<std::pair<uint32,uint16> > orderList(m_DrawablesDepth.size());
+
+    m_DrawablesDepth.forEach([&orderList](std::pair<uint32,uint16> p)
     {
-        drawable->draw2D(m_DefaultCanvas);
+        orderList.add(p);
+    });
+
+    orderList.sort([](std::pair<uint32,uint16> p1, std::pair<uint32,uint16> p2) -> int
+    {
+        if (p1.second < p2.second)
+            return -1;
+        else if (p1.second > p2.second)
+            return 1;
+        else
+            return 0;
+    });
+
+    m_DefaultCanvas->clear();
+
+    orderList.forEach([this](std::pair<uint32,uint16> p)
+    {
+        m_Drawables[p.first]->draw2D(m_DefaultCanvas);
     });
 
     m_RenderTarget->prepareForRendering();
     m_DefaultCanvas->draw();
+    m_CanvasNew->draw();
 }
 
 void Renderer2D::init( View* view, const RenderTarget* target )
@@ -160,6 +183,8 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_TextureQuad->setLoaded();
 
     m_DefaultCanvas = createCanvasRelative(RectF(0,0,1,1));
+    m_CanvasNew = NEW he::gui::Canvas2Dnew(this, RectF(0,0,1,1));
+    m_CanvasNew->init();
 }
 
 void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
@@ -208,7 +233,7 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
 
     if (useBlending == true)
     {
-        GL::heBlendFunc(BlendFunc_SrcAlpha, BlendFunc_OneMinusSrcAlpha);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_OneMinusSrcAlpha);
         GL::heBlendEquation(BlendEquation_Add);
         GL::heBlendEnabled(true);
     }
@@ -221,17 +246,27 @@ void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
     glDrawElements(GL_TRIANGLES, m_TextureQuad->getNumIndices(), m_TextureQuad->getIndexType(), 0);
 }
 
-void Renderer2D::attachToRender(IDrawable2D* drawable)
+void Renderer2D::attachToRender(IDrawable2D* drawable, uint16 depth)
 {
     m_Drawables.add(drawable);
+    m_DrawablesDepth.add(std::pair<uint32,uint16>(m_Drawables.size() - 1, 0xffff - depth));
 }
 
 void Renderer2D::detachFromRender(IDrawable2D* drawable)
 {
     HE_IF_ASSERT(m_Drawables.contains(drawable), "drawable not found in draw list")
     {
+        size_t i(0);
+        m_Drawables.find(drawable, i);
+
+        m_DrawablesDepth.removeAt(i);
         m_Drawables.remove(drawable);
     }
+}
+
+he::gui::Canvas2Dnew* Renderer2D::getNewCanvas() const
+{
+    return m_CanvasNew;
 }
 
 } } //end namespace

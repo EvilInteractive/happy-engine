@@ -32,7 +32,11 @@
 namespace he {
 namespace ge {
 
-ModelComponent::ModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr), m_IsAttached(false)
+ModelComponent::ModelComponent()
+    : m_ModelMesh(nullptr)
+    , m_Parent(nullptr)
+    , m_Material(nullptr)
+    , m_IsAttached(false)
 {
 }
 
@@ -51,25 +55,6 @@ void ModelComponent::init(Entity* parent)
 {
     HE_ASSERT(parent != nullptr, "Parent can not be nullptr! - fatal crash");
     m_Parent = parent;
-
-    if (m_ModelMesh != nullptr && m_IsAttached == false)
-    {
-        m_IsAttached = true;
-        m_ModelMesh->callbackOnceIfLoaded([&]()
-        {
-            m_Parent->getScene()->attachToScene(this);
-        });
-    }
-}
-
-void ModelComponent::serialize(SerializerStream& /*stream*/)
-{
-    //Object3D::serialize(stream);
-}
-
-void ModelComponent::deserialize(const SerializerStream& /*stream*/)
-{
-    //Object3D::deserialize(stream);
 }
 
 const gfx::Material* ModelComponent::getMaterial() const
@@ -93,6 +78,18 @@ void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, 
     he::gfx::Model* model(contentManager->asyncLoadModel(modelAsset, layout));
     model->callbackOnceIfLoaded([&, model, meshName]()
     {
+        bool reactivate(false);
+        if (m_IsAttached)
+        {
+            deactivate();
+            reactivate = true;
+        }
+        if (m_ModelMesh != nullptr)
+        {
+            m_ModelMesh->release();
+            m_ModelMesh = nullptr;
+        }
+
         if (meshName == "")
             m_ModelMesh = model->instantiateMesh(0);
         else
@@ -100,12 +97,40 @@ void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, 
 
         model->release();
 
-        if (m_IsAttached == false && m_Parent != nullptr)
+        if (reactivate == true)
         {
-            m_Parent->getScene()->attachToScene(this);
-            m_IsAttached = true;
+            activate();
         }
     });
+}
+
+void ModelComponent::activate()
+{
+    HE_IF_ASSERT(m_IsAttached == false, "ModelComponent already active")
+    HE_IF_ASSERT(m_Parent != nullptr, "Activating ModelComponent without a parent is not possible!")
+    {
+        m_IsAttached = true;
+        if (m_ModelMesh != nullptr)
+        {
+            m_ModelMesh->callbackOnceIfLoaded([this]()
+            {
+                if (m_IsAttached = true && isAttachedToScene() == false)
+                    m_Parent->getScene()->attachToScene(this);
+            });
+        }
+    }
+}
+
+void ModelComponent::deactivate()
+{
+    HE_IF_ASSERT(m_IsAttached == true, "ModelComponent not active")
+    {
+        m_IsAttached = false;
+        if (isAttachedToScene())
+        {
+            m_Parent->getScene()->detachFromScene(this);
+        }
+    }
 }
 
 } } //end namespace

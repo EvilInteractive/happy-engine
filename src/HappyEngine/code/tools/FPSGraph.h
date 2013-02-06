@@ -32,6 +32,9 @@ namespace gfx {
     class Font;
     class View;
 }
+namespace gui {
+    class Sprite;
+}
 namespace tools {
 
 class FPSGraph : public gfx::IDrawable2D
@@ -46,11 +49,11 @@ public:
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    FPSGraph();
+    FPSGraph(float interval = 0.5f, uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
-    void tick(float dTime, float interval = 0.5f);
+    void tick(float dTime);
     virtual void draw2D(gfx::Canvas2D* canvas);
 
     /* GETTERS */
@@ -64,10 +67,15 @@ public:
 
 private:
 
-    uint16 cap(float fps);
+    /* INTERNAL */
+    inline uint16 cap(const float& fps) const;
+    inline uint16 cap(const uint32& fps) const;
     void drawToConsole(gfx::Canvas2D* canvas);
     void drawTextOnly(gfx::Canvas2D* canvas);
     void drawFull(gfx::Canvas2D* canvas);
+    void updateScale(uint16 currentMaxFpsInFrame);
+
+    void renderGraph();
 
     /* DATAMEMBERS */
     he::PrimitiveList<uint16> m_FpsHistory;
@@ -76,14 +84,34 @@ private:
     float m_TBase;
     float m_CurrentDTime;
     float m_Interval;
+    float m_AcumulatedDTime;
 
     uint16 m_CurrentFPS;
+    uint16 m_Ticks;
+    uint16 m_RecordTime;
     
-    gfx::Font* m_Font;
+    gui::Font* m_Font;
+    gui::Text m_Text;
 
     int m_FPSGraphState;
 
     vec2 m_Pos;
+
+    gui::Sprite* m_Sprites[2];
+    uint8 m_ActiveSprite;
+
+    float m_CurrentScale;
+
+    float m_CurrentCPU;
+
+    Color m_ColorWhite;
+    Color m_ColorWhiteAlpha;
+    Color m_ColorYellow;
+    Color m_ColorYellowAlpha;
+    Color m_ColorBlue;
+    Color m_ColorBlueAlpha;
+    Color m_ColorDarkGrey;
+    Color m_ColorGrey;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     FPSGraph(const FPSGraph&);

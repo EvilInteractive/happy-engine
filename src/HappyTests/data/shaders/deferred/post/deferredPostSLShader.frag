@@ -52,23 +52,40 @@ uniform sampler2D sgMap;
 #if SHADOWS
 uniform sampler2D shadowMap;
 uniform mat4 shadowMatrix;   // = shadowViewProjMatrix * invViewMatrix => transform viewPosition to world -> world to shadowViewProj
+uniform vec2 shadowMapInvSize;
 
-float PCF9(in sampler2D sampler, in vec2 texCoord)
+vec2 poissonDisk[16] = vec2[]
+(
+    vec2( -0.94201624, -0.39906216 ), 
+    vec2( 0.94558609, -0.76890725 ), 
+    vec2( -0.094184101, -0.92938870 ), 
+    vec2( 0.34495938, 0.29387760 ), 
+    vec2( -0.91588581, 0.45771432 ), 
+    vec2( -0.81544232, -0.87912464 ), 
+    vec2( -0.38277543, 0.27676845 ), 
+    vec2( 0.97484398, 0.75648379 ), 
+    vec2( 0.44323325, -0.97511554 ), 
+    vec2( 0.53742981, -0.47373420 ), 
+    vec2( -0.26496911, -0.41893023 ), 
+    vec2( 0.79197514, 0.19090188 ), 
+    vec2( -0.24188840, 0.99706507 ), 
+    vec2( -0.81409955, 0.91437590 ), 
+    vec2( 0.19984126, 0.78641367 ), 
+    vec2( 0.14383161, -0.14100790 ) 
+);
+
+float PCF(in sampler2D sampler, in vec2 texCoord, in float bias, in float depth)
 {
-    float depth = 0;
-    depth += textureOffset(sampler, texCoord, ivec2(-1, -1)).r;
-    depth += textureOffset(sampler, texCoord, ivec2( 0, -1)).r;
-    depth += textureOffset(sampler, texCoord, ivec2( 1, -1)).r;
-
-    depth += textureOffset(sampler, texCoord, ivec2(-1,  0)).r;
-    depth += textureOffset(sampler, texCoord, ivec2( 0,  0)).r;
-    depth += textureOffset(sampler, texCoord, ivec2( 1,  0)).r;
-
-    depth += textureOffset(sampler, texCoord, ivec2(-1,  1)).r;
-    depth += textureOffset(sampler, texCoord, ivec2( 0,  1)).r;
-    depth += textureOffset(sampler, texCoord, ivec2( 1,  1)).r;
-
-    return depth / 9.0f;
+    vec2 mult = shadowMapInvSize * 2;
+    float pcf = 0.0f;
+    for( int i = 0; i < 16; ++i ) 
+    {
+        if (depth <= (texture(sampler, texCoord + mult * poissonDisk[i]).r + bias))
+        {
+            pcf += 1.0f;
+        }
+    }
+    return pcf / 16.0f;
 }
 
 float shadowCheck(in vec3 position, in float distFromLight, in sampler2D shadowMap, in mat4 shadowMatrix, in float bias)
@@ -82,10 +99,10 @@ float shadowCheck(in vec3 position, in float distFromLight, in sampler2D shadowM
     //NDC -> texturespace
     coord.xy = coord.xy * 0.5f + 0.5f;
         
-    float shadowDepth = PCF9(shadowMap, coord.xy) + bias;
     float depth = (distFromLight - light.beginAttenuation) / (light.endAttenuation - light.beginAttenuation);
+    float shadow = PCF(shadowMap, coord.xy, bias, depth);
 
-    return depth <= shadowDepth? 1.0f : 0.0f;
+    return shadow;
 }
 
 #endif
@@ -117,7 +134,7 @@ void main()
     float shadow = 1;
 
 #if SHADOWS
-    shadow = shadowCheck(position, lightDist, shadowMap, shadowMatrix, 0.001f);
+    shadow = shadowCheck(position, lightDist, shadowMap, shadowMatrix, 0.01f);
     if (shadow < 0.1f)
         discard;
 #endif

@@ -23,7 +23,64 @@
 #pragma once
 
 namespace he {
+namespace gfx {
+    class Window;
+}
 namespace io {
+
+enum MouseCursor
+{
+    MouseCursor_Pointer,
+    MouseCursor_Cross,
+    MouseCursor_Hand,
+    MouseCursor_IBeam,
+    MouseCursor_Wait,
+    MouseCursor_Help,
+
+    MouseCursor_EastResize,
+    MouseCursor_NorthResize,
+    MouseCursor_NorthEastResize,
+    MouseCursor_NorthWestResize,
+    MouseCursor_SouthResize,
+    MouseCursor_SouthEastResize,
+    MouseCursor_SouthWestResize,
+    MouseCursor_WestResize,
+    MouseCursor_NorthSouthResize,
+    MouseCursor_EastWestResize,
+    MouseCursor_NorthEastSouthWestResize,
+    MouseCursor_NorthWestSouthEastResize,
+    MouseCursor_ColumnResize,
+    MouseCursor_RowResize,
+
+    MouseCursor_MiddlePanning,
+    MouseCursor_EastPanning,
+    MouseCursor_NorthPanning,
+    MouseCursor_NorthEastPanning,
+    MouseCursor_NorthWestPanning,
+    MouseCursor_SouthPanning,
+    MouseCursor_SouthEastPanning,
+    MouseCursor_SouthWestPanning,
+    MouseCursor_WestPanning,
+
+    MouseCursor_Move,
+    MouseCursor_VerticalText,
+    MouseCursor_Cell,
+    MouseCursor_ContextMenu,
+    MouseCursor_Alias,
+    MouseCursor_Progress,
+    MouseCursor_NoDrop,
+    MouseCursor_Copy,
+    MouseCursor_None,
+    MouseCursor_NotAllowed,
+
+    MouseCursor_ZoomIn,
+    MouseCursor_ZoomOut,
+
+    MouseCursor_Grab,
+    MouseCursor_Grabbing,
+
+    MouseCursor_Custom
+};
 
 class IMouse
 {
@@ -40,7 +97,7 @@ public:
     virtual vec2 getMove() const = 0;
 
     virtual void tick() = 0;
-
+    
     event1<void, MouseButton> MouseButtonPressed;
     event1<void, MouseButton> MouseButtonReleased;
     event1<void, const vec2&> MouseMoved;

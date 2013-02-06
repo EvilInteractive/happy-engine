@@ -58,6 +58,10 @@ public:
         , m_ActiveTex(0)
             //Blending
         , m_BlendEnabled(false)
+        , m_ColorBlendSrc(BlendFunc_Unassigned)
+        , m_ColorBlendDest(BlendFunc_Unassigned)
+        , m_AlphaBlendSrc(BlendFunc_Unassigned)
+        , m_AlphaBlendDest(BlendFunc_Unassigned)
         , m_BlendDest(BlendFunc_Unassigned)
         , m_BlendEquation(BlendEquation_Unassigned)
         , m_BlendColor(0.0f, 0.0f, 0.0f, 0.0f)
@@ -109,6 +113,8 @@ private:
     // Blending
     bool m_BlendEnabled;
     BlendFunc m_BlendSrc, m_BlendDest;
+    BlendFunc m_ColorBlendSrc, m_ColorBlendDest,
+              m_AlphaBlendSrc, m_AlphaBlendDest;
     BlendEquation m_BlendEquation;
     Color m_BlendColor;
 

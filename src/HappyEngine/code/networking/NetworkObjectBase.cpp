@@ -69,9 +69,9 @@ RakNet::RM3QuerySerializationResult NetworkObjectBase::QuerySerialization( RakNe
     if (result == RakNet::RM3QSR_CALL_SERIALIZE)
     {
         if (m_Serialize)
-            return RakNet::RM3QSR_CALL_SERIALIZE;
+            result = RakNet::RM3QSR_CALL_SERIALIZE;
         else
-            return RakNet::RM3QSR_DO_NOT_CALL_SERIALIZE;
+            result = RakNet::RM3QSR_DO_NOT_CALL_SERIALIZE;
     }
     return result;
 }

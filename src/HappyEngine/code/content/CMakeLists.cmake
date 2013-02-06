@@ -1,71 +1,38 @@
-set (CODE_CONTENT_NO_FILTER 
-						AssetContainer.h
-                        ContentManager.cpp                  ContentManager.h
-	)
-set (CODE_CONTENT_MODEL_FILTER
-                        BinObjLoader.cpp                    BinObjLoader.h
-                        IModelLoader.h                      
-                        ModelLoader.cpp                     ModelLoader.h
-                        ModelLoaderFunctions.cpp            ModelLoaderFunctions.h
-                        ObjLoader.cpp                       ObjLoader.h
-	)
-set (CODE_CONTENT_TEXTURE_FILTER
-                        TextureLoader.cpp                   TextureLoader.h
-	)
-set (CODE_CONTENT_MATERIAL_FILTER
-                        MaterialLoader.cpp                  MaterialLoader.h
-                        ShaderLoader.cpp                    ShaderLoader.h
-                        ShaderPreProcessor.cpp              ShaderPreProcessor.h
-	)
-set (CODE_CONTENT_MATERIAL_GENERATOR_FILTER
-						IShaderGenerator.h
-						GLSLShaderGenerator.cpp				GLSLShaderGenerator.h
-	)
-set (CODE_CONTENT_PHYSICS_FILTER
-                        PhysicsShapeLoader.cpp              PhysicsShapeLoader.h
-	)
-set (CODE_CONTENT_FONT_FILTER
-						FontLoader.cpp                      FontLoader.h
-	)
-                        
-foreach(f ${CODE_CONTENT_NO_FILTER}) 
-    LIST(APPEND CODE_CONTENT_NO_FILTER_SRCS code/content/${f})
-endforeach(f) 
-	foreach(f ${CODE_CONTENT_MODEL_FILTER}) 
-    LIST(APPEND CODE_CONTENT_MODEL_FILTER_SRCS code/content/${f})
-	endforeach(f) 
-	foreach(f ${CODE_CONTENT_TEXTURE_FILTER}) 
-    LIST(APPEND CODE_CONTENT_TEXTURE_FILTER_SRCS code/content/${f})
-	endforeach(f) 
-	foreach(f ${CODE_CONTENT_MATERIAL_FILTER}) 
-    LIST(APPEND CODE_CONTENT_MATERIAL_FILTER_SRCS code/content/${f})
-	endforeach(f) 
-		foreach(f ${CODE_CONTENT_MATERIAL_GENERATOR_FILTER}) 
-		LIST(APPEND CODE_CONTENT_MATERIAL_GENERATOR_FILTER_SRCS code/content/${f})
-		endforeach(f) 
-	foreach(f ${CODE_CONTENT_PHYSICS_FILTER}) 
-    LIST(APPEND CODE_CONTENT_PHYSICS_FILTER_SRCS code/content/${f})
-	endforeach(f) 
-	foreach(f ${CODE_CONTENT_FONT_FILTER}) 
-    LIST(APPEND CODE_CONTENT_FONT_FILTER_SRCS code/content/${f})
-	endforeach(f) 
 
-
-
-source_group (src\\content FILES ${CODE_CONTENT_NO_FILTER_SRCS})
-	source_group (src\\content\\model FILES ${CODE_CONTENT_MODEL_FILTER_SRCS})
-	source_group (src\\content\\texture FILES ${CODE_CONTENT_TEXTURE_FILTER_SRCS})
-	source_group (src\\content\\material FILES ${CODE_CONTENT_MATERIAL_FILTER_SRCS})
-		source_group (src\\content\\material\\generator FILES ${CODE_CONTENT_MATERIAL_GENERATOR_FILTER_SRCS})
-	source_group (src\\content\\physics FILES ${CODE_CONTENT_PHYSICS_FILTER_SRCS})
-	source_group (src\\content\\font FILES ${CODE_CONTENT_FONT_FILTER_SRCS})
-
-LIST(APPEND HAPPYENGINE_CODE_GRAPHICS_SRCS 
-        ${CODE_CONTENT_NO_FILTER_SRCS}
-        ${CODE_CONTENT_MODEL_FILTER_SRCS}
-        ${CODE_CONTENT_TEXTURE_FILTER_SRCS}
-        ${CODE_CONTENT_MATERIAL_FILTER_SRCS}
-        ${CODE_CONTENT_MATERIAL_GENERATOR_FILTER_SRCS}
-        ${CODE_CONTENT_PHYSICS_FILTER_SRCS}
-        ${CODE_CONTENT_FONT_FILTER_SRCS}
+addFilter(CODE_SRCS src/content code/content/
+            AssetContainer.h
+            ContentManager.cpp                  ContentManager.h
+        )
+    
+addFilter(CODE_SRCS src/content/model code/content/
+            BinObjLoader.cpp                    BinObjLoader.h
+            IModelLoader.h                      
+            ModelLoader.cpp                     ModelLoader.h
+            ModelLoaderFunctions.cpp            ModelLoaderFunctions.h
+            ObjLoader.cpp                       ObjLoader.h
+        )
+        
+addFilter(CODE_SRCS src/content/texture code/content/
+            TextureLoader.cpp                   TextureLoader.h
+        )
+    
+addFilter(CODE_SRCS src/content/material code/content/
+            MaterialLoader.cpp                  MaterialLoader.h
+            ShaderLoader.cpp                    ShaderLoader.h
+            ShaderPreProcessor.cpp              ShaderPreProcessor.h
+        )
+    
+addFilter(CODE_SRCS src/content/material/generator code/content/
+            ShaderGenerator.cpp					ShaderGenerator.h
+            ShaderGeneratorEnums.cpp            ShaderGeneratorEnums.h
+            ShaderGeneratorVariableFactory.cpp  ShaderGeneratorVariableFactory.h
+            ShaderGeneratorVariable.cpp			ShaderGeneratorVariable.h
+        )
+    
+addFilter(CODE_SRCS src/content/physics code/content/
+            PhysicsShapeLoader.cpp              PhysicsShapeLoader.h
+        )
+    
+addFilter(CODE_SRCS src/content/font code/content/
+            FontLoader.cpp                      FontLoader.h
         )

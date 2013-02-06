@@ -35,14 +35,15 @@ namespace Awesomium {
 namespace he {
 namespace gfx {
 class Texture2D;
+class WebListener;
 
-class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load
+class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
 {
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    WebView(const RectI& viewport, bool enableUserInput);
-    WebView(View* view, const RectF& viewportPercent, bool enableUserInput);
+    WebView(gfx::View* view, const RectI& viewport, bool enableUserInput);
+    WebView(gfx::View* view, const RectF& viewportPercent, bool enableUserInput);
     virtual ~WebView();
 
     /* GENERAL */
@@ -57,6 +58,7 @@ public:
     /* GETTERS */
     Awesomium::WebView* getAWEView() const;
     bool inputEnabled() const;
+    WebListener* getWebListener() const { return m_WebListener; }
 
     /* SETTERS */
     void setPosition(const vec2& position) { m_Position = position; }
@@ -64,45 +66,63 @@ public:
     /* EVENTS */
     event0<void> OnUrlLoaded;
 
-	// webview load listeners
-	virtual void OnFailLoadingFrame(
-		Awesomium::WebView *  		caller,
+    // webview load listeners
+    virtual void OnFailLoadingFrame(
+        Awesomium::WebView *  		caller,
         ::int64  						frame_id,
-		bool  						is_main_frame,
-		const Awesomium::WebURL&  	url,
-		int  						error_code,
-		const Awesomium::WebString& error_desc 
-	) override;
+        bool  						is_main_frame,
+        const Awesomium::WebURL&  	url,
+        int  						error_code,
+        const Awesomium::WebString& error_desc 
+    );
 
-	virtual void OnFinishLoadingFrame(
-		Awesomium::WebView *  		caller,
-        ::int64  						frame_id,
-		bool  						is_main_frame,
-		const Awesomium::WebURL&  	url 
-	) override;
+    virtual void OnFinishLoadingFrame(
+        Awesomium::WebView *  		caller,
+        ::int64  					frame_id,
+        bool  						is_main_frame,
+        const Awesomium::WebURL&  	url 
+    );
 
-	virtual void OnDocumentReady(
-		Awesomium::WebView *  		caller,
-		const Awesomium::WebURL &  	url 
-	) override;
+    virtual void OnDocumentReady(
+        Awesomium::WebView *  		caller,
+        const Awesomium::WebURL &  	url 
+    );
 
-	virtual void OnBeginLoadingFrame(
-		Awesomium::WebView*			caller,
+    virtual void OnBeginLoadingFrame(
+        Awesomium::WebView*			caller,
         ::int64						frame_id,
-		bool						is_main_frame,
-		const Awesomium::WebURL&	url,
-		bool						is_error_page
-	) override;
+        bool						is_main_frame,
+        const Awesomium::WebURL&	url,
+        bool						is_error_page
+        );
+
+    // webview view listeners
+    virtual void OnChangeTitle(Awesomium::WebView* /*caller*/, const Awesomium::WebString& /*title*/) {}
+    virtual void OnChangeAddressBar(Awesomium::WebView* /*caller*/, const Awesomium::WebURL& /*url*/) {}
+    virtual void OnChangeTooltip(Awesomium::WebView* /*caller*/, const Awesomium::WebString& /*tooltip*/) {}
+    virtual void OnChangeTargetURL(Awesomium::WebView* /*caller*/, const Awesomium::WebURL& /*url*/) {}
+    virtual void OnChangeCursor(Awesomium::WebView* caller, Awesomium::Cursor cursor);
+    virtual void OnChangeFocus(Awesomium::WebView* /*caller*/, Awesomium::FocusedElementType /*focused_type*/) {}
+    virtual void OnShowCreatedWebView(Awesomium::WebView* /*caller*/,
+        Awesomium::WebView* /*new_view*/,
+        const Awesomium::WebURL& /*opener_url*/,
+        const Awesomium::WebURL& /*target_url*/,
+        const Awesomium::Rect& /*initial_pos*/,
+        bool /*is_popup*/) {}
 
 private:
+
+    /* EXTRA */
     void init();
     void onViewResized();
     void resize(const vec2& newSize);
 
     /* DATAMEMBERS */
     Awesomium::WebView* m_WebView;
+    WebListener* m_WebListener;
 
     bool m_InputEnabled;
+    bool m_HasFocus;
     
     Texture2D* m_RenderTexture;
     vec2 m_Position;
@@ -112,10 +132,11 @@ private:
     uint8* m_Buffer;
 
     // View
-    View* m_View;
+    gfx::View* m_View;
     he::eventCallback0<void> m_ViewResizedHandler;
 
     // Controls
+    he::eventCallback1<void, uint32> m_TextEnteredHandler;
     he::eventCallback1<void, io::Key> m_KeyPressedHandler;
     he::eventCallback1<void, io::Key> m_KeyReleasedHandler;
     he::eventCallback1<void, io::MouseButton> m_MouseButtonPressedHandler;
@@ -128,6 +149,6 @@ private:
     WebView& operator=(const WebView&);
 };
 
-}} //end namespace
+} } //end namespace
 
 #endif

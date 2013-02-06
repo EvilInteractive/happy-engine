@@ -29,6 +29,7 @@ namespace gfx {
     class Renderer2D;
     class ShapeRenderer;
     class Scene;
+    class Picker;
     struct RenderSettings;
 }
 namespace ge {
@@ -39,18 +40,22 @@ public:
     DefaultRenderPipeline();
     virtual ~DefaultRenderPipeline();
 
-    void init(gfx::View* view, gfx::Scene* scene, const gfx::RenderSettings& settings);
+    void init(gfx::View* const view, gfx::Scene* const scene, const gfx::RenderSettings& settings);
 
     gfx::IRenderer* getOpacRenderer() const { return m_OpacRenderer; }
     gfx::Forward3DRenderer* getTransparentRenderer() const { return m_TransparentRenderer; }
     gfx::ShapeRenderer* getShapeRenderer() const { return m_ShapeRenderer; }
     gfx::Renderer2D* get2DRenderer() const { return m_2DRenderer; }
+    gfx::Picker* getPicker() const { return m_Picker; }
 
 private:
     gfx::IRenderer* m_OpacRenderer;
     gfx::Forward3DRenderer* m_TransparentRenderer;
     gfx::ShapeRenderer* m_ShapeRenderer;
     gfx::Renderer2D* m_2DRenderer;
+    gfx::Picker* m_Picker;
+
+    bool m_IsDeferred;
 
     //Disable default copy constructor and default assignment operator
     DefaultRenderPipeline(const DefaultRenderPipeline&);

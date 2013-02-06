@@ -50,8 +50,9 @@ public:
     static mat33 createRotation3D(const vec3& axis, float radians);
 
     /* OPERATORS */
-    mat33 operator*(const mat33& mat);
-    vec2 operator*(const vec2& vec);
+    mat33 operator*(const mat33& mat) const;
+    vec2 operator*(const vec2& vec) const;
+    vec3 operator*(const vec3& vec) const;
     bool operator==(const mat33& other) const;
     bool operator!=(const mat33& other) const;
     float operator()(int row, int column) const;
@@ -60,6 +61,10 @@ public:
     /* GETTERS */
     vec2 getTranslation() const;
     mat44 getMat44() const;
+
+    const vec3& getForward() const;
+    const vec3& getUp() const;
+    const vec3& getRight() const;
 
     /* STATIC */
     static const mat33 Identity;

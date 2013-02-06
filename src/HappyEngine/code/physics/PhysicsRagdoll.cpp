@@ -40,7 +40,7 @@ m_pSpine1NeckJoint(nullptr), m_pNeckHeadJoint(nullptr), m_pShouldersArmL1Joint(n
 m_pArmL1ArmL2Joint(nullptr), m_pArmL2HandJoint(nullptr), m_pShouldersArmR1Joint(nullptr), 
 m_pArmR1ArmR2Joint(nullptr), m_pArmR2HandJoint(nullptr), m_pPelvisLegL1Joint(nullptr), 
 m_pLegL1LegL2Joint(nullptr), m_pLegL2FootJoint(nullptr), m_pPelvisLegR1Joint(nullptr), 
-m_pLegR1LegR2Joint(nullptr), m_pLegR2FootJoint(nullptr)
+m_pLegR1LegR2Joint(nullptr), m_pLegR2FootJoint(nullptr), m_Aggregate(nullptr)
 {
 }
 
@@ -98,7 +98,7 @@ PhysicsRagdoll::~PhysicsRagdoll()
     m_pLegR1LegR2Joint->release();
     m_pLegR2FootJoint->release();
 
-    m_pAggregate->release();
+    m_Aggregate->release();
 }
 
 void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material, 
@@ -106,7 +106,7 @@ void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& 
 {
     (*ppActor) = NEW PhysicsDynamicActor(mat44::createTranslation(m_StartPosition) * part.bonePose);
     PHYSICS->getScene()->removeActor(*(*ppActor)->getInternalActor());
-    m_pAggregate->addActor(*(*ppActor)->getInternalActor());
+    m_Aggregate->addActor(*(*ppActor)->getInternalActor());
     (*ppActor)->getInternalActor()->setSolverIterationCounts(8, 2);
     PhysicsCapsuleShape pelvisShape(part.radius / 2.0f, part.length);
     (*ppActor)->addShape(&pelvisShape, material, part.mass, collisionGroup, collisionGroupAgainst, part.capsulePose);
@@ -143,10 +143,7 @@ void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& des
 {
     m_StartPosition = position;
 
-
-    PHYSICS->lock();
-    m_pAggregate = PHYSICS->getSDK()->createAggregate(20, false);
-    PHYSICS->unlock();
+    m_Aggregate = PHYSICS->getSDK()->createAggregate(20, false);
 
     addBodyPart(&m_pArmL1, desc.armL1, material, collisionGroup, collisionGroupAgainst);
     addBodyPart(&m_pArmL2, desc.armL2, material, collisionGroup, collisionGroupAgainst);
@@ -247,9 +244,7 @@ void PhysicsRagdoll::initProperties(const vec3& position, const RagdollDesc& des
         physx::PxD6Motion::eLOCKED, physx::PxD6Motion::eLIMITED, physx::PxD6Motion::eLIMITED,
         0, 0, piOverFour, piOverFour);
 
-    PHYSICS->lock();
-    PHYSICS->getScene()->addAggregate(*m_pAggregate);
-    PHYSICS->unlock();
+    PHYSICS->getScene()->addAggregate(*m_Aggregate);
 }
 
 
