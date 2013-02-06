@@ -334,7 +334,7 @@ void WebView::resize( const vec2& newSize )
 
 void WebView::OnFailLoadingFrame(
         Awesomium::WebView *  		/*caller*/,
-        int64  						/*frame_id*/,
+        ::int64  						/*frame_id*/,
         bool  						/*is_main_frame*/,
         const Awesomium::WebURL&  	url,
         int  						/*error_code*/,
@@ -349,19 +349,20 @@ void WebView::OnFailLoadingFrame(
 
     HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-    delete[] buff0, buff2;
+    delete[] buff0;
+    delete[] buff2;
 }
 
 void WebView::OnFinishLoadingFrame(
         Awesomium::WebView *  		/*caller*/,
-        int64  						/*frame_id*/,
+        ::int64  						/*frame_id*/,
         bool  						/*is_main_frame*/,
         const Awesomium::WebURL&  	url 
     )
 {
     char buff0[200];
     HE_ASSERT(200 > url.path().length(), "Output buffer to small!");
-    url.path().ToUTF8(buff0, std::max(url.path().length(), 200ui32));
+    url.path().ToUTF8(buff0, std::max<uint32>(url.path().length(), 200));
 
     HE_INFO("Finished loading url: '%s'", buff0);
 
@@ -377,7 +378,7 @@ void WebView::OnDocumentReady(
 
 void WebView::OnBeginLoadingFrame(
         Awesomium::WebView*			/*caller*/,
-        int64						/*frame_id*/,
+        ::int64						/*frame_id*/,
         bool						/*is_main_frame*/,
         const Awesomium::WebURL&	/*url*/,
         bool						/*is_error_page*/

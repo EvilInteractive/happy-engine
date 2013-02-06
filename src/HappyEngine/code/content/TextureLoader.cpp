@@ -346,7 +346,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
                 data.textureFormat = gfx::TextureFormat_Compressed_RGB8_DXT1;
             else
             {
-                HE_ERROR("Unsupported channel count (%d) for DXT1 compression - %s", channels, data.path);
+                HE_ERROR("Unsupported channel count (%d) for DXT1 compression - %s", channels, data.path.c_str());
                 return false;
             }
         }
@@ -355,7 +355,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
             data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT3;
             if (channels != 4)
             {
-                HE_ERROR("Unsupported channel count (%d) for DXT3 compression - %s", channels, data.path);
+                HE_ERROR("Unsupported channel count (%d) for DXT3 compression - %s", channels, data.path.c_str());
                 return false;
             }
         }
@@ -364,7 +364,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
             data.textureFormat = gfx::TextureFormat_Compressed_RGBA8_DXT5;
             if (channels != 4)
             {
-                HE_ERROR("Unsupported channel count (%d) for DXT5 compression - %s", channels, data.path);
+                HE_ERROR("Unsupported channel count (%d) for DXT5 compression - %s", channels, data.path.c_str());
                 return false;
             }
         }
@@ -402,7 +402,7 @@ bool TextureLoader::loadData( TextureLoadData& data )
                         mipData.isDataDirty = true;
                         if (ilGetDXTCData(mipData.data, mipData.bufferSize, dxtcFormat) == 0)
                         {
-                            HE_ERROR("Could not compress texture - %s", data.path);
+                            HE_ERROR("Could not compress texture - %s", data.path.c_str());
                             he_free(mipData.data);
                             mipData.isDataDirty = false;
                             handleILError(data.path);

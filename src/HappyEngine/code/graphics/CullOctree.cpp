@@ -204,13 +204,13 @@ void CullOctreeNode::insert( IDrawable* drawable )
 #ifdef OCTREE_PARANOID
                 const Bound& looseBound(m_ChildNodes[i]->getLooseBound());
                 HE_ASSERT(looseBound.isOtherInside(drawableBound), "Object not completely in loose bound!");
-#endif OCTREE_PARANOID
+#endif
                 m_ChildNodes[i]->insert(drawable);
                 return;
             }
 #ifdef OCTREE_PARANOID
             HE_ASSERT(false, "Object fits loosebound but is not in one of the childs!");
-#endif OCTREE_PARANOID
+#endif
         }
     }
     if (m_Parent == nullptr)

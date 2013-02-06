@@ -25,7 +25,7 @@ namespace he {
 namespace gfx {
     struct Bone;
     class BufferLayout;
-    enum IndexStride;
+    enum IndexStride : uint8;
 }
 namespace ct {
 namespace models {

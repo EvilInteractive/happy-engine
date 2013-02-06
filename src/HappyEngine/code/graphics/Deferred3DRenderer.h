@@ -122,7 +122,7 @@ public:
     Scene* getScene() const { return m_Scene; }
 
     virtual RenderPass getRenderPass() const { return RenderPass_Opac; }
-    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual uint8 getRenderPriority() const { return 50; }
 
     virtual void render();
     virtual void draw2D(Canvas2D* canvas);

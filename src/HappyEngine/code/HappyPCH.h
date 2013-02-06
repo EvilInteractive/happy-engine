@@ -23,6 +23,10 @@
 #pragma message("-- HappyEngine: Compiling precompiled headers. --")
 #pragma message("-------------------------------------------------\n")
 
+#ifndef NDEBUG
+#define _DEBUG 1
+#endif
+
 #define __HE_FUNCTION__ __FUNCTION__
 #include <cstdlib>
 #include <string>

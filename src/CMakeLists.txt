@@ -30,8 +30,12 @@ endif()
 
 # Compiler flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
-    set(CMAKE_CXX_FLAGS "-std=c++0x")  ## Use new features
+    set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
+    message(gcc)
+endif()
+
+if(CMAKE_COMPILER_IS_LLVMXX)
+    message(llvm)
 endif()
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

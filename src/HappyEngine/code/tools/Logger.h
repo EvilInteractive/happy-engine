@@ -40,7 +40,7 @@ public:
     ~Logger();
 
     void log(LogType type, const char* str, ...);
-    void log(LogType type, const char* str, const va_list& argList);
+    void log(LogType type, const char* str, va_list& argList);
 
     static Logger* getInstance();
     static void sdmInit();

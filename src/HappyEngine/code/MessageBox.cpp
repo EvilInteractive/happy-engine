@@ -148,22 +148,22 @@ public:
 
     virtual void draw2D(gfx::Canvas2D* renderer) 
     {
-        renderer->setFillColor(Color(243ui8, 249, 253));
+        renderer->setFillColor(Color(static_cast<uint8>(243), 249, 253));
         renderer->fillRect(vec2(0, 0), windowSize);
 
-        renderer->setFillColor(Color(197ui8, 209, 217));
+        renderer->setFillColor(Color(static_cast<uint8>(197), 209, 217));
         renderer->fillRect(textboxPos, textboxSize);
         renderer->fillRect(buttonBoxPos, buttonBoxSize);
         renderer->fillRect(iconPos, iconSize);
 
-        renderer->setStrokeColor(Color(26ui8, 68, 95));
+        renderer->setStrokeColor(Color(static_cast<uint8>(26), 68, 95));
         renderer->strokeRect(textboxPos, textboxSize);
         renderer->strokeRect(buttonBoxPos, buttonBoxSize);
         renderer->strokeRect(iconPos, iconSize);
 
         renderer->drawImage(m_Icon, iconPos, iconSize);
 
-        renderer->setFillColor(Color(0ui8, 0, 0));
+        renderer->setFillColor(Color(static_cast<uint8>(0), 0, 0));
         renderer->fillText(m_TextBlock, textboxPos + vec2(TEXT_MARGIN, TEXT_MARGIN));
         for (uint8 i(0); i < m_ButtonCount; ++i)
         {

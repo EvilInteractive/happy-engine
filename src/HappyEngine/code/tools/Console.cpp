@@ -142,7 +142,7 @@ void Console::processCommand(const std::string& command)
 
     // remove spaces
     #if !GCC
-    s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
     #else // !FIX! will be fixed when work on linux resumed
     #error What if GCC?
     #endif

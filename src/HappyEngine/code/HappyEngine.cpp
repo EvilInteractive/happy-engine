@@ -152,6 +152,7 @@ void HappyEngine::start(ge::Game* pGame)
     cout << "       ******************************       \n";
     //cout << "os: " << SDL_GetPlatform() << "\n\n";
 
+#ifdef MSVC
     int sse(0x01 << 25);
     int sse2(0x01 << 26);
     int sse3(0x01);
@@ -167,6 +168,7 @@ void HappyEngine::start(ge::Game* pGame)
         and sse4, ecx
     } 
     HE_INFO("Supported XMM: %s,%s,%s,%s", sse?"SSE":"", sse2?"SSE2":"", sse3?"SSE3":"", sse4?"SSE4":"");
+#endif
 
     m_pGame = pGame;
   

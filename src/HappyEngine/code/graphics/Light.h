@@ -25,7 +25,7 @@
 namespace he {
 namespace gfx {
 
-enum ShadowResolution // note this is Normal quality, can be scaled up or down for other qualities
+enum ShadowResolution : uint8 // note this is Normal quality, can be scaled up or down for other qualities
 {
     ShadowResolution_None,
     ShadowResolution_32,

@@ -48,7 +48,7 @@ NetworkManager::~NetworkManager()
 {
     delete m_NetworkObjectFactoryManager;
     delete m_NetworkIdManager;
-    bool isConnected(isConnected());
+    const bool isConnected(this->isConnected());
     if (isConnected == true)
         disconnect();
 }

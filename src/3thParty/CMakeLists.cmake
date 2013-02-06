@@ -2,42 +2,22 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/LibFindPackage.cmake)
 
 macro (IncludeThirdPartyOSX)
 
-set(Boost_USE_STATIC_LIBS   ON)
-set(Boost_USE_MULTITHREADED ON)
-find_package( Boost 1.49.0 COMPONENTS date_time system thread regex chrono )
 
-if (Boost_FOUND)
-include_directories(${Boost_INCLUDE_DIRS})
-message(Boost found!)
-else()
-message(Could not find boost!)
-endif()
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/assimp/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/awesomium/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/boost/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/devIL/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/freeType/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/glew/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/libsndfile/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/openAl/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/physx/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/raknet/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/SFML/include)
 
+add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX -DLLVM )
 
-
-# Dependencies
-libfind_package(glew glew)
-
-# Use pkg-config to get hints about paths
-libfind_pkg_check_modules(glew_PKGCONF glew)
-
-# Include dir
-find_path(glew_INCLUDE_DIR
-  PATHS ${glew_PKGCONF_INCLUDE_DIRS}
-)
-
-# Finally the library itself
-find_library(glew_LIBRARY
-  PATHS ${glew_PKGCONF_LIBRARY_DIRS}
-)
-
-# Set the include dir variables and the libraries and let libfind_process do the rest.
-# NOTE: Singular variables for this library, plural for libraries this this lib depends on.
-set(glew_PROCESS_INCLUDES glew_INCLUDE_DIR glew_INCLUDE_DIRS)
-set(glew_PROCESS_LIBS glew_LIBRARY glew_LIBRARIES)
-libfind_process(glew)
 endmacro()
-
 
 macro (IncludeThirdParty)
 

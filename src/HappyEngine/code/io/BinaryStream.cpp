@@ -33,7 +33,7 @@ bool BinaryStream::open( const std::string& path, OpenType openType )
     m_FileName = path;
 
     int err(0);
-#ifndef GCC
+#if !GCC && !LLVM
     err = fopen_s(&m_pFile, path.c_str(), (openType == Read)? "rb" : "wb");
 #else
     m_pFile = fopen(path.c_str(), (openType == Read)? "rb" : "wb");
