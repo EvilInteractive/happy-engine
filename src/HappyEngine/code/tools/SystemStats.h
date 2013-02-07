@@ -58,7 +58,7 @@ private:
 
     /* MEMBERS */
 
-    #ifdef GCC
+    #ifndef MSVC
     #else
         ULARGE_INTEGER m_LastCPU;
         ULARGE_INTEGER m_LastSysCPU;

@@ -56,9 +56,9 @@ public:
     event0<void> HitSide;
 
     // PxUserControllerHitReport
-    virtual void onShapeHit(const PxControllerShapeHit& hit);
-    virtual void onControllerHit(const PxControllersHit& hit);
-    virtual void onObstacleHit(const PxControllerObstacleHit& hit);
+    virtual void onShapeHit(const PVD::PxControllerShapeHit& hit);
+    virtual void onControllerHit(const PVD::PxControllersHit& hit);
+    virtual void onObstacleHit(const PVD::PxControllerObstacleHit& hit);
 
     // IPhysicsUserDataContainer
     virtual PhysicsUserDataContainerType getType() const { return PhysicsUserDataContainerType_Controller; }

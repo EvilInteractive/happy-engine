@@ -44,7 +44,7 @@ void WebWindow::init(const int width, const int height)
     m_WebListener = NEW WebListener(m_WebView);
     m_Window.create(sf::VideoMode(width, height), "");
     m_Window.setVerticalSyncEnabled(true);
-    m_WebView->set_parent_window(m_Window.getSystemHandle());
+    m_WebView->set_parent_window(static_cast<Awesomium::NativeWindow>(m_Window.getSystemHandle()));
 }
 
 WebWindow::~WebWindow()
@@ -78,7 +78,7 @@ void WebWindow::unfocus()
 
 void WebWindow::OnFailLoadingFrame(
         Awesomium::WebView *  		/*caller*/,
-        int64  						/*frame_id*/,
+        ::int64  						/*frame_id*/,
         bool  						/*is_main_frame*/,
         const Awesomium::WebURL&  	url,
         int  						/*error_code*/,
@@ -93,19 +93,20 @@ void WebWindow::OnFailLoadingFrame(
 
     HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-    delete[] buff0, buff2;
+    delete[] buff0;
+    delete[] buff2;
 }
 
 void WebWindow::OnFinishLoadingFrame(
         Awesomium::WebView *  		/*caller*/,
-        int64  						/*frame_id*/,
+        ::int64  						/*frame_id*/,
         bool  						/*is_main_frame*/,
         const Awesomium::WebURL&  	url 
     )
 {
     char buff0[200];
     HE_ASSERT(200 > url.path().length(), "Output buffer to small!");
-    url.path().ToUTF8(buff0, std::max(url.path().length(), 200ui32));
+    url.path().ToUTF8(buff0, std::max<uint32>(url.path().length(), 200));
 
     HE_INFO("Finished loading url: '%s'", buff0);
 
@@ -121,7 +122,7 @@ void WebWindow::OnDocumentReady(
 
 void WebWindow::OnBeginLoadingFrame(
         Awesomium::WebView*			/*caller*/,
-        int64						/*frame_id*/,
+        ::int64						/*frame_id*/,
         bool						/*is_main_frame*/,
         const Awesomium::WebURL&	/*url*/,
         bool						/*is_error_page*/

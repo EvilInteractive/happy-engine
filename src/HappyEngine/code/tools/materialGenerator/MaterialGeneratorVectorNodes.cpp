@@ -46,11 +46,11 @@ MaterialGeneratorNodeComposeVector::MaterialGeneratorNodeComposeVector()
     addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
     addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
 
-    addConnecters(1, 4, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
+    addConnecters({ ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) },
+                  {     ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)),
                         ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
                         ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
-                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
-                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 bool MaterialGeneratorNodeComposeVector::evaluate( MaterialGeneratorError& error )
@@ -100,8 +100,8 @@ MaterialGeneratorNodeSwizzle::MaterialGeneratorNodeSwizzle()
     addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float4);
 
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
-                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters({ ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) },
+                  { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 
     addParam(MaterialGeneratorNodeParam("A", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("B", MaterialGeneratorNodeParam::Type_SwizzleMask));

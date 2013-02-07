@@ -26,7 +26,7 @@
 
 namespace he {
 namespace io {
-    enum MouseCursor;
+    enum MouseCursor : uint8;
 }
 namespace gfx {
 class Window;
@@ -42,7 +42,7 @@ class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactor
 typedef HWND__* NativeWindowHandle;
 #elif defined(HE_LINUX)
 typedef unsigned long NativeWindowHandle;
-#elif defined(HE_MACOS)
+#elif defined(HE_MAC)
 typedef void* NativeWindowHandle;
 #endif
 

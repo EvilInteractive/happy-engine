@@ -180,7 +180,7 @@ void Console::processCommand(const std::string& command)
         }
         else
         {
-            HE_ERROR("the keyword '%s' was not found!", keyWord);
+            HE_ERROR("the keyword '%s' was not found!", keyWord.c_str());
         }
     }
     else if (m_FunctionContainer.find(s) != m_FunctionContainer.end()) // check if it's a command

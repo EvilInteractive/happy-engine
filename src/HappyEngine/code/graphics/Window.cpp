@@ -27,13 +27,13 @@
 
 #include "OpenGL.h"
 
-#ifdef SFML_SYSTEM_WINDOWS
+#ifdef HE_WINDOWS
 #include <windows.h>
-#elif defined(SFML_SYSTEM_LINUX)
+#elif defined(HE_LINUX)
 #include <X11/cursorfont.h>
 #include <X11/Xlib.h>
 #else
-#error This OS is not yet supported for changing the cursor.
+//#error This OS is not yet supported for changing the cursor.
 #endif
 
 namespace he {
@@ -473,8 +473,13 @@ void Window::setCursor( const io::MouseCursor cursor )
     XDefineCursor(m_Display, m_Window->getSystemHandle(), m_Cursor);
     XFlush(m_Display);
 }
+    
+#elif defined(HE_MAC)
+    
+void Window::setCursor( const io::MouseCursor /*cursor*/ )
+{
+}
 
 #endif
-
-
+    
 } } //end namespace

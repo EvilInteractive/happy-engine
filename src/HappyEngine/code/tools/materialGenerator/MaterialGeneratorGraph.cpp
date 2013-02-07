@@ -788,7 +788,7 @@ void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
     }
 }
 
-#define VERSION 1ui16
+#define VERSION 1
 
 void MaterialGeneratorGraph::save()
 {

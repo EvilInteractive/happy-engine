@@ -94,7 +94,7 @@ MaterialGeneratorNodeAbs::MaterialGeneratorNodeAbs()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeAbs, setAbs)
@@ -108,7 +108,7 @@ MaterialGeneratorNodeCos::MaterialGeneratorNodeCos()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) } );
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCos, setCos)
@@ -122,7 +122,7 @@ MaterialGeneratorNodeSin::MaterialGeneratorNodeSin()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSin, setSin)
@@ -136,7 +136,7 @@ MaterialGeneratorNodeCeil::MaterialGeneratorNodeCeil()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeCeil, setCeil)
@@ -150,7 +150,7 @@ MaterialGeneratorNodeFloor::MaterialGeneratorNodeFloor()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFloor, setFloor)
@@ -164,7 +164,7 @@ MaterialGeneratorNodeFrac::MaterialGeneratorNodeFrac()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeFrac, setFrac)
@@ -177,7 +177,7 @@ MaterialGeneratorNodeOneMin::MaterialGeneratorNodeOneMin()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 bool MaterialGeneratorNodeOneMin::evaluate( MaterialGeneratorError& error )
 {
@@ -218,7 +218,7 @@ MaterialGeneratorNodeNormalize::MaterialGeneratorNodeNormalize()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeNormalize, setNormalize)
@@ -231,7 +231,7 @@ MaterialGeneratorNodeSign::MaterialGeneratorNodeSign()
     addOverload(1, 1, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 1, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 1, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 IMPLEMENT_EVALUATE1(MaterialGeneratorNodeSign, setSign)
 #pragma endregion
@@ -245,7 +245,7 @@ MaterialGeneratorNodeAdd::MaterialGeneratorNodeAdd()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeAdd, setAdd)
@@ -262,7 +262,7 @@ MaterialGeneratorNodeDivide::MaterialGeneratorNodeDivide()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDivide, setDivide)
@@ -276,7 +276,7 @@ MaterialGeneratorNodeMin::MaterialGeneratorNodeMin()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
@@ -290,7 +290,7 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMin, setMin)
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMax, setMax)
@@ -310,7 +310,7 @@ MaterialGeneratorNodeMultiply::MaterialGeneratorNodeMultiply()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeMultiply, setMultiply)
@@ -324,7 +324,7 @@ MaterialGeneratorNodeSubtract::MaterialGeneratorNodeSubtract()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
@@ -335,7 +335,7 @@ IMPLEMENT_EVALUATE2(MaterialGeneratorNodeSubtract, setSubtract)
 MaterialGeneratorNodeCross::MaterialGeneratorNodeCross()
 {
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeCross, setCross)
@@ -348,7 +348,7 @@ MaterialGeneratorNodeDistance::MaterialGeneratorNodeDistance()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDistance, setDistance)
@@ -361,7 +361,7 @@ MaterialGeneratorNodeDistanceSqr::MaterialGeneratorNodeDistanceSqr()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 bool MaterialGeneratorNodeDistanceSqr::evaluate( MaterialGeneratorError& error )
@@ -396,7 +396,7 @@ MaterialGeneratorNodeDot::MaterialGeneratorNodeDot()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeDot, setDot)
@@ -413,7 +413,7 @@ MaterialGeneratorNodePower::MaterialGeneratorNodePower()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodePower, setPower)
@@ -427,7 +427,7 @@ MaterialGeneratorNodeReflect::MaterialGeneratorNodeReflect()
     addOverload(1, 2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2);
     addOverload(1, 2, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3);
     addOverload(1, 2, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4);
-    addConnecters(1, 2, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("B", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE2(MaterialGeneratorNodeReflect, setReflect)
@@ -446,7 +446,7 @@ MaterialGeneratorNodeClamp::MaterialGeneratorNodeClamp()
     addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
     addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
     addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    addConnecters(1, 3, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Min", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Max", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Min", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Max", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE3(MaterialGeneratorNodeClamp, setClamp)
@@ -463,7 +463,7 @@ MaterialGeneratorNodeLerp::MaterialGeneratorNodeLerp()
     addOverload(1, 3, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float2, MaterialGeneratorVariableType_Float);
     addOverload(1, 3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float);
     addOverload(1, 3, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float);
-    addConnecters(1, 3, ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Y", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+    addConnecters( { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) }, { ConnecterDesc("X", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("Y", Color(1.0f, 0.5f, 0.0f, 1.0f)), ConnecterDesc("A", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
 }
 
 IMPLEMENT_EVALUATE3(MaterialGeneratorNodeLerp, setLerp)

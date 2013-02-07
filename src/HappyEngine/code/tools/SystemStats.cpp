@@ -22,7 +22,7 @@
 
 #include "SystemStats.h"
 
-#ifdef GCC
+#ifndef MSVC
     
 #else
     #include "windows.h"
@@ -37,7 +37,7 @@ namespace tools {
 /* CONSTRUCTOR - DESTRUCTOR */
 SystemStats::SystemStats()
 {
-    #ifdef GCC
+    #ifndef MSVC
     
     #else
         SYSTEM_INFO sysInfo;
@@ -73,8 +73,8 @@ void SystemStats::done()
 /* GETTERS */
 uint32 SystemStats::getTotalVirtualMemory() const
 {
-    #ifdef GCC
-    
+    #ifndef MSVC
+    return 0;
     #else
         MEMORYSTATUSEX memInfo;
         memInfo.dwLength = sizeof(MEMORYSTATUSEX);
@@ -86,8 +86,8 @@ uint32 SystemStats::getTotalVirtualMemory() const
 }
 uint32 SystemStats::getVirtualMemoryUsed() const
 {
-    #ifdef GCC
-    
+    #ifndef MSVC
+    return 0;
     #else
         PROCESS_MEMORY_COUNTERS_EX pmc;
         GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)(&pmc), sizeof(pmc));
@@ -98,8 +98,8 @@ uint32 SystemStats::getVirtualMemoryUsed() const
 }
 uint32 SystemStats::getTotalMemory() const
 {
-    #ifdef GCC
-    
+    #ifndef MSVC
+    return 0;
     #else
         MEMORYSTATUSEX memInfo;
         memInfo.dwLength = sizeof(MEMORYSTATUSEX);
@@ -111,8 +111,8 @@ uint32 SystemStats::getTotalMemory() const
 }
 uint32 SystemStats::getMemoryUsed() const
 {
-    #ifdef GCC
-    
+    #ifndef MSVC
+    return 0;
     #else
         PROCESS_MEMORY_COUNTERS pmc;
         GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
@@ -123,8 +123,8 @@ uint32 SystemStats::getMemoryUsed() const
 }
 float SystemStats::getCpuUsage()
 {
-    #ifdef GCC
-    
+    #ifndef MSVC
+    return 0;
     #else
         FILETIME ftime, fsys, fuser;
         ULARGE_INTEGER now, sys, user;

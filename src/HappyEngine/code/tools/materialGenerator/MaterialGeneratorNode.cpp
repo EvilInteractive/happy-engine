@@ -417,26 +417,27 @@ void MaterialGeneratorNode::addOverload( uint8 outputCount, uint8 inputCount, ..
     }
 }
 
-void MaterialGeneratorNode::addConnecters( uint8 outputCount, uint8 inputCount, ... )
+void MaterialGeneratorNode::addConnecters( const std::initializer_list<ConnecterDesc> outputs, const std::initializer_list<ConnecterDesc> inputs )
 {
-    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount, 
-        "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d", 
-        outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
     HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
 
-    va_list argList;
-    va_start(argList, inputCount);
-    for (uint8 i(0); i < outputCount; ++i)
+    uint8 outputCount(0);
+    for (ConnecterDesc desc : outputs)
     {
-        const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
-        m_Connecters.add(NEW Connecter(this, false, i, desc));
+        m_Connecters.add(NEW Connecter(this, false, outputCount++, desc));
     }
-    for (uint8 i(0); i < inputCount; ++i)
+    
+    uint8 inputCount(0);
+    for (ConnecterDesc desc : inputs)
     {
-        const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
-        m_Connecters.add(NEW Connecter(this, true, i, desc));
+        m_Connecters.add(NEW Connecter(this, true, inputCount, desc));
     }
-    va_end(argList);
+    
+    
+    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount,
+              "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d",
+              outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
+    
     updateConnecterPositions();
 }
 

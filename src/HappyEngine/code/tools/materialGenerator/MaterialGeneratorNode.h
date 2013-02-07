@@ -141,7 +141,7 @@ public:
 
 protected:
     void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's
-    void addConnecters(uint8 outputCount, uint8 inputCount, ...); // Takes ConnecterDesc's
+    void addConnecters(const std::initializer_list<ConnecterDesc> outputs, const std::initializer_list<ConnecterDesc> inputs);
 
     void addParam(const MaterialGeneratorNodeParam& param);
     const MaterialGeneratorNodeParam& getParam(const uint8& index);

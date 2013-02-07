@@ -1,4 +1,3 @@
-Key_Ctrl
 //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.

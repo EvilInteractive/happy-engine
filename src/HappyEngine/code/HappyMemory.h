@@ -37,7 +37,7 @@
 ///    calloc -> inits to 0
 //////////////////////////////////////////////////////////////////////////
 #if DEBUG || _DEBUG
-    #ifdef GCC
+    #if GCC || LLVM
         #define he_calloc(num,size) calloc(num,size)
     #else
         #define he_calloc(num,size) _calloc_dbg(num, size, _NORMAL_BLOCK, __FILE__, __LINE__)
