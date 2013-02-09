@@ -31,7 +31,7 @@
 namespace he {
 namespace gfx {
 
-    enum IndexStride : uint8
+ENUM(IndexStride, uint8)
 {
     IndexStride_Byte = sizeof(uint8),
     IndexStride_UShort = sizeof(uint16),

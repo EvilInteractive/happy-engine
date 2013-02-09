@@ -22,7 +22,7 @@
 
 #include "SystemStats.h"
 
-#ifndef MSVC
+#ifndef _MSC_VER
     
 #else
     #include "windows.h"
@@ -37,7 +37,7 @@ namespace tools {
 /* CONSTRUCTOR - DESTRUCTOR */
 SystemStats::SystemStats()
 {
-    #ifndef MSVC
+    #ifndef _MSC_VER
     
     #else
         SYSTEM_INFO sysInfo;
@@ -73,7 +73,7 @@ void SystemStats::done()
 /* GETTERS */
 uint32 SystemStats::getTotalVirtualMemory() const
 {
-    #ifndef MSVC
+    #ifndef _MSC_VER
     return 0;
     #else
         MEMORYSTATUSEX memInfo;
@@ -86,7 +86,7 @@ uint32 SystemStats::getTotalVirtualMemory() const
 }
 uint32 SystemStats::getVirtualMemoryUsed() const
 {
-    #ifndef MSVC
+    #ifndef _MSC_VER
     return 0;
     #else
         PROCESS_MEMORY_COUNTERS_EX pmc;
@@ -98,7 +98,7 @@ uint32 SystemStats::getVirtualMemoryUsed() const
 }
 uint32 SystemStats::getTotalMemory() const
 {
-    #ifndef MSVC
+    #ifndef _MSC_VER
     return 0;
     #else
         MEMORYSTATUSEX memInfo;
@@ -111,7 +111,7 @@ uint32 SystemStats::getTotalMemory() const
 }
 uint32 SystemStats::getMemoryUsed() const
 {
-    #ifndef MSVC
+    #ifndef _MSC_VER
     return 0;
     #else
         PROCESS_MEMORY_COUNTERS pmc;
@@ -123,7 +123,7 @@ uint32 SystemStats::getMemoryUsed() const
 }
 float SystemStats::getCpuUsage()
 {
-    #ifndef MSVC
+    #ifndef _MSC_VER
     return 0;
     #else
         FILETIME ftime, fsys, fuser;

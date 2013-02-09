@@ -51,6 +51,7 @@ DECLARE_OBJECT(MaterialGeneratorNode);
 protected:
     struct ConnecterDesc
     {
+        ConnecterDesc() {}
         ConnecterDesc(const std::string& name, const Color& color)
             : m_Name(name)
             , m_Color(color) {}
@@ -141,7 +142,12 @@ public:
 
 protected:
     void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's
-    void addConnecters(const std::initializer_list<ConnecterDesc> outputs, const std::initializer_list<ConnecterDesc> inputs);
+    template<typename T, typename R> // T, R == list of ConnecterDesc
+    void addConnecters(const T& outputs, const R& inputs);
+    template<typename T> // T == list of ConnecterDesc
+    void addConnecterInputs(const T& inputs);
+    template<typename T> // T == list of ConnecterDesc
+    void addConnecterOutputs(const T& outputs);
 
     void addParam(const MaterialGeneratorNodeParam& param);
     const MaterialGeneratorNodeParam& getParam(const uint8& index);
@@ -196,6 +202,63 @@ private:
     MaterialGeneratorNode(const MaterialGeneratorNode&);
     MaterialGeneratorNode& operator=(const MaterialGeneratorNode&);
 };
+
+template<typename T, typename R>
+void he::tools::MaterialGeneratorNode::addConnecters( const T& outputs, const R& inputs )
+{
+    HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
+
+    uint8 outputCount(0);
+    outputs.forEach([this, &outputCount](const ConnecterDesc& desc)
+    {
+        m_Connecters.add(NEW Connecter(this, false, outputCount++, desc));
+    });
+
+    uint8 inputCount(0);
+    inputs.forEach([this, &inputCount](const ConnecterDesc& desc)
+    {
+        m_Connecters.add(NEW Connecter(this, true, inputCount++, desc));
+    });
+
+
+    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount,
+        "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d",
+        outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
+
+    updateConnecterPositions();
+}
+
+template<typename T>
+void he::tools::MaterialGeneratorNode::addConnecterOutputs( const T& outputs )
+{
+    HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
+    uint8 outputCount(0);
+    outputs.forEach([this, &outputCount](const ConnecterDesc& desc)
+    {
+        m_Connecters.add(NEW Connecter(this, false, outputCount++, desc));
+    });
+    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == 0,
+        "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d",
+        outputCount, m_Overloads[0].outputs.size(), 0, m_Overloads[0].inputs.size());
+
+    updateConnecterPositions();
+}
+
+template<typename T>
+void he::tools::MaterialGeneratorNode::addConnecterInputs( const T& inputs )
+{
+    HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
+    uint8 inputCount(0);
+    inputs.forEach([this, &inputCount](const ConnecterDesc& desc)
+    {
+        m_Connecters.add(NEW Connecter(this, true, inputCount++, desc));
+    });
+    HE_ASSERT(m_Overloads[0].outputs.size() == 0 && m_Overloads[0].inputs.size() == inputCount,
+        "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d",
+        0, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
+
+    updateConnecterPositions();
+}
 
 } } //end namespace
 

@@ -25,7 +25,11 @@ namespace he {
 namespace gfx {
     struct Bone;
     class BufferLayout;
+#if defined(_MSC_VER) && _MSC_VER < 1700
+    enum IndexStride;
+#else
     enum IndexStride : uint8;
+#endif
 }
 namespace ct {
 namespace models {

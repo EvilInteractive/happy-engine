@@ -26,7 +26,7 @@
 
 namespace he {
 namespace io {
-    enum MouseCursor : uint8;
+    ENUM(MouseCursor, uint8);
 }
 namespace gfx {
 class Window;

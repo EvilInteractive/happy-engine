@@ -36,8 +36,8 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     /// Resource
-    virtual void release() const override;
-    virtual bool canBeGarbageCollected() const override;
+    virtual void release() const;
+    virtual bool canBeGarbageCollected() const;
 
     //////////////////////////////////////////////////////////////////////////
     /// Model

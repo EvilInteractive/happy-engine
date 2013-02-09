@@ -21,7 +21,7 @@ add_library (HappyEngine STATIC ${HAPPYENGINE_SRCS})
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(HappyEngine code/HappyPCH.h code/HappyPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(HappyEngine HappyPCH.h code/HappyPCH.cpp)
 
 #set output dir
 SET_TARGET_PROPERTIES(HappyEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyEngine/bin)

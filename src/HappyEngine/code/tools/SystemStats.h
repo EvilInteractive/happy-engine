@@ -58,7 +58,7 @@ private:
 
     /* MEMBERS */
 
-    #ifndef MSVC
+    #ifndef _MSC_VER
     #else
         ULARGE_INTEGER m_LastCPU;
         ULARGE_INTEGER m_LastSysCPU;

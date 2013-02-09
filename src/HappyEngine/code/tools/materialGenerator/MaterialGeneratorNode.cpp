@@ -417,31 +417,6 @@ void MaterialGeneratorNode::addOverload( uint8 outputCount, uint8 inputCount, ..
     }
 }
 
-void MaterialGeneratorNode::addConnecters( const std::initializer_list<ConnecterDesc> outputs, const std::initializer_list<ConnecterDesc> inputs )
-{
-    HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
-
-    uint8 outputCount(0);
-    for (ConnecterDesc desc : outputs)
-    {
-        m_Connecters.add(NEW Connecter(this, false, outputCount++, desc));
-    }
-    
-    uint8 inputCount(0);
-    for (ConnecterDesc desc : inputs)
-    {
-        m_Connecters.add(NEW Connecter(this, true, inputCount, desc));
-    }
-    
-    
-    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount,
-              "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d",
-              outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
-    
-    updateConnecterPositions();
-}
-
-
 bool MaterialGeneratorNode::evaluate( MaterialGeneratorError& error )
 {
     bool result(false);

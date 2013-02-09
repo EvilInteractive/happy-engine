@@ -74,6 +74,12 @@
 
 // Happy Code
 
+#if defined(_MSC_VER) && _MSC_VER < 1700
+#define ENUM(name, size) enum name
+#else
+#define ENUM(name, size) enum name : size
+#endif
+
 #include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
@@ -110,6 +116,7 @@ inline To checked_numcast(const From value)
 #include "MathFunctions.h"
 
 #include "List.h"
+#include "FixedSizeList.h"
 
 #include "GLContext.h"
 #include "OpenGL.h"

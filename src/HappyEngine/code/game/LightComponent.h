@@ -29,7 +29,7 @@ namespace he {
 namespace gfx {
     class PointLight;
     class SpotLight;
-    enum ShadowResolution : uint8;
+    ENUM(ShadowResolution, uint8);
 }
 namespace ge {
     

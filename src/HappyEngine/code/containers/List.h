@@ -118,7 +118,7 @@ public:
 
 template<typename T, typename Creator> inline
 he::List<T, Creator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
-	m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
+    m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
 {
     Creator::createArray(m_Buffer, m_Capacity);
 }

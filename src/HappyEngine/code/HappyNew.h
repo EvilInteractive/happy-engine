@@ -22,7 +22,7 @@
 #define _HE_HAPPY_NEW_H_
 #pragma once
 
-#if _DEBUG && MSVC
+#if _DEBUG && defined(_MSC_VER)
 #include <crtdbg.h>
 #define _CRTDBG_MAP_ALLOC
 #define NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)

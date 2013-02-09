@@ -1,6 +1,12 @@
+@echo off
+set /p vc12=Install for Visual Studio 12? (y/n): 
 installers\win\Assimp.exe
 installers\win\Awesomium.exe
+IF /I %vc12% == y (
+installers\win\Boost-msvc11.exe
+) ELSE (
 installers\win\Boost.exe
+)
 installers\win\DevIL.exe
 installers\win\FreeType.exe
 installers\win\glew.exe

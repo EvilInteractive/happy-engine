@@ -46,11 +46,14 @@ MaterialGeneratorNodeComposeVector::MaterialGeneratorNodeComposeVector()
     addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
     addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
 
-    addConnecters({ ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) },
-                  {     ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)),
-                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
-                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
-                        ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
+    FixedSizeList<ConnecterDesc, 4> outputs;
+    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    outputs[1] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    outputs[2] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    outputs[3] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    FixedSizeList<ConnecterDesc, 1> inputs;
+    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    addConnecters( outputs, inputs );
 }
 
 bool MaterialGeneratorNodeComposeVector::evaluate( MaterialGeneratorError& error )
@@ -100,9 +103,12 @@ MaterialGeneratorNodeSwizzle::MaterialGeneratorNodeSwizzle()
     addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float3);
     addOverload(1, 1, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Float4);
 
-    addConnecters({ ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) },
-                  { ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f)) });
-
+    FixedSizeList<ConnecterDesc, 1> outputs;
+    outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    FixedSizeList<ConnecterDesc, 1> inputs;
+    inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    addConnecters( outputs, inputs );
+    
     addParam(MaterialGeneratorNodeParam("A", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("B", MaterialGeneratorNodeParam::Type_SwizzleMask));
     addParam(MaterialGeneratorNodeParam("C", MaterialGeneratorNodeParam::Type_SwizzleMask));
