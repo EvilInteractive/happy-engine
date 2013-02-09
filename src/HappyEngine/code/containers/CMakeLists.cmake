@@ -1,6 +1,7 @@
 
 addFilter(CODE_SRCS src/containers code/containers/
                 Creator.h
+                FixedSizeList.h
                 List.h
                 NodeGraph.inl			NodeGraph.h
                 NodeGraphError.h

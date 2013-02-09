@@ -28,8 +28,8 @@
 #include FT_GLYPH_H
 #include FT_BITMAP_H
 
-#include "cairo\cairo.h"
-#include "cairo\cairo-ft.h"
+#include <cairo/cairo.h>
+#include <cairo/cairo-ft.h>
 
 namespace he {
 namespace gui {

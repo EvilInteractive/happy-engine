@@ -158,13 +158,13 @@ void HappyEngine::start(ge::Game* game)
     cout << "       ******************************       \n";
 #ifdef HE_WINDOWS
     cout << "os: Windows\n\n";
-#elif HE_MAC
+#elif defined(HE_MAC)
     cout << "os: Mac\n\n";
-#elif HE_LINUX
+#elif defined(HE_LINUX)
     cout << "os: Linux\n\n";
 #endif
 
-#ifdef ARCH_32
+#if defined(_MSC_VER) && ARCH_32
     int sse(0x01 << 25);
     int sse2(0x01 << 26);
     int sse3(0x01);

@@ -48,7 +48,7 @@ public:
     /* GENERAL */
     virtual void init(View* view, const RenderTarget* target);
     virtual RenderPass getRenderPass() const { return RenderPass_AfterPost; }
-    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual uint8 getRenderPriority() const { return 50; }
     virtual void render();
 
     void attachToRenderer(IShapeDrawable* drawable);

@@ -92,6 +92,18 @@ void WebView::init()
     if (m_InputEnabled)
     {
         Awesomium::WebView* w(m_WebView);
+
+        m_TextEnteredHandler = eventCallback1<void, uint32>([w,this](uint32 chr)
+        {
+            Awesomium::WebKeyboardEvent keyEvent;
+            keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
+            keyEvent.text[0] = (wchar16)chr;
+            keyEvent.unmodified_text[0] = (wchar16)chr;
+            keyEvent.native_key_code = chr;
+
+            w->InjectKeyboardEvent(keyEvent);
+        });
+
         m_KeyPressedHandler = eventCallback1<void, io::Key>([w,this](io::Key key)
         {
             // check if we cant get focus
@@ -114,28 +126,6 @@ void WebView::init()
             keyEvent.type = Awesomium::WebKeyboardEvent::kTypeKeyDown;
 
             w->InjectKeyboardEvent(keyEvent);
-
-            // if it is an ASCII char
-            if (chr < COMMON_ASCII_CHAR)
-            {
-                // if it is a letter
-                if (chr >= 65 && chr <= 90)
-                {
-                    if (!(CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift) ||
-                        CONTROLS->getKeyboard()->isKeyDown(io::Key_Rshift)))
-                    {
-                        chr += 32; // to lowercase ASCII
-                    }
-                }
-
-                keyEvent.type = Awesomium::WebKeyboardEvent::kTypeChar;
-                keyEvent.text[0] = (wchar16)chr;
-                keyEvent.unmodified_text[0] = (wchar16)chr;
-                keyEvent.native_key_code = chr;
-
-                w->InjectKeyboardEvent(keyEvent);
-            }
-
             //CONTROLS->returnFocus(this);
         });
 
@@ -229,6 +219,7 @@ WebView::~WebView()
     {
         io::IKeyboard* keyboard(CONTROLS->getKeyboard());
         io::IMouse* mouse(CONTROLS->getMouse());
+        keyboard->TextCharEntered -= m_TextEnteredHandler;
         keyboard->KeyPressed -= m_KeyPressedHandler;
         keyboard->KeyReleased -= m_KeyReleasedHandler;
         mouse->MouseButtonPressed -= m_MouseButtonPressedHandler;
@@ -296,6 +287,7 @@ void WebView::focus()
         {
             io::IKeyboard* keyboard(CONTROLS->getKeyboard());
             io::IMouse* mouse(CONTROLS->getMouse());
+            keyboard->TextCharEntered += m_TextEnteredHandler;
             keyboard->KeyPressed += m_KeyPressedHandler;
             keyboard->KeyReleased += m_KeyReleasedHandler;
             mouse->MouseButtonPressed += m_MouseButtonPressedHandler;
@@ -316,6 +308,7 @@ void WebView::unfocus()
         {
             io::IKeyboard* keyboard(CONTROLS->getKeyboard());
             io::IMouse* mouse(CONTROLS->getMouse());
+            keyboard->TextCharEntered -= m_TextEnteredHandler;
             keyboard->KeyPressed -= m_KeyPressedHandler;
             keyboard->KeyReleased -= m_KeyReleasedHandler;
             mouse->MouseButtonPressed -= m_MouseButtonPressedHandler;
@@ -368,7 +361,7 @@ void WebView::resize( const vec2& newSize )
 
 void WebView::OnFailLoadingFrame(
         Awesomium::WebView *  		/*caller*/,
-        int64  						/*frame_id*/,
+        ::int64  						/*frame_id*/,
         bool  						/*is_main_frame*/,
         const Awesomium::WebURL&  	url,
         int  						/*error_code*/,
@@ -383,19 +376,20 @@ void WebView::OnFailLoadingFrame(
 
     HE_WARNING("Failed to load url: '%s', '%s'", buff0, buff2);
 
-    delete[] buff0, buff2;
+    delete[] buff0;
+    delete[] buff2;
 }
 
 void WebView::OnFinishLoadingFrame(
         Awesomium::WebView *  		/*caller*/,
-        int64  						/*frame_id*/,
+        ::int64  						/*frame_id*/,
         bool  						/*is_main_frame*/,
         const Awesomium::WebURL&  	url 
     )
 {
     char buff0[200];
     HE_ASSERT(200 > url.path().length(), "Output buffer to small!");
-    url.path().ToUTF8(buff0, std::max(url.path().length(), 200ui32));
+    url.path().ToUTF8(buff0, std::max<uint32>(url.path().length(), 200));
 
     HE_INFO("Finished loading url: '%s'", buff0);
 
@@ -411,7 +405,7 @@ void WebView::OnDocumentReady(
 
 void WebView::OnBeginLoadingFrame(
         Awesomium::WebView*			/*caller*/,
-        int64						/*frame_id*/,
+        ::int64						/*frame_id*/,
         bool						/*is_main_frame*/,
         const Awesomium::WebURL&	/*url*/,
         bool						/*is_error_page*/

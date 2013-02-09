@@ -114,6 +114,8 @@ private:
 
     uint8 m_MaxConnections;
 
+    NetworkPackage m_NetworkPackage;
+
     // Host
     std::map<NetworkID, NetworkConnection> m_Connections;
 

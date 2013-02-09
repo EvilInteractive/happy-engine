@@ -25,14 +25,12 @@
 #include "ObjectFactory.h"
 #include "Singleton.h"
 #include "NetworkManager.h"
-#include "NetworkObjectBase.h"
 
 namespace he {
 namespace net {
 namespace details {
-class NetworkObjectBase;
+    class NetworkObjectBase;
 }
-
 class INetworkObjectFactory
 {
 public:
@@ -65,7 +63,7 @@ public:
     virtual ObjectHandle create()
     {
         ObjectHandle handle(ObjectFactory<T>::create());
-        details::NetworkObjectBase* obj(get(handle));
+        details::NetworkObjectBase* obj(this->get(handle));
         obj->setHandle(handle);
         NetworkManager* const man(NETWORK);
         obj->setOwner(man->getNetworkId());
@@ -85,14 +83,14 @@ public:
     {
         NetworkManager* const man(NETWORK);
         if (man->isConnected())
-            man->BroadcastDestruction(get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+            man->BroadcastDestruction(this->get(handle), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
         ObjectFactory<T>::destroyObject(handle);
     }
     virtual void destroyAt(ObjectHandle::IndexType index)
     {
         NetworkManager* const man(NETWORK);
         if (man->isConnected())
-            man->BroadcastDestruction(getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+            man->BroadcastDestruction(this->getAt(index), RakNet::UNASSIGNED_SYSTEM_ADDRESS);
         ObjectFactory<T>::destroyAt(index);
     }
     //////////////////////////////////////////////////////////////////////////
@@ -103,7 +101,7 @@ public:
     virtual details::NetworkObjectBase* createReplica() 
     { 
         ObjectHandle handle(ObjectFactory<T>::create());
-        return get(handle); 
+        return this->get(handle); 
     };
 
 protected: 

@@ -38,9 +38,11 @@ enum NetworkPackageID
 class NetworkPackage
 {
 public:
-    NetworkPackage(const uint8* data, const size_t byteCount, const NetworkID from); // Read
-    explicit NetworkPackage(const uint8 id); // Write
+    NetworkPackage();
     ~NetworkPackage();
+
+    void init(const uint8 id); // Write
+    void init(const uint8* data, const size_t byteCount, const NetworkID from); // Read
 
     uint8 getID() const { return m_MessageID; }
 

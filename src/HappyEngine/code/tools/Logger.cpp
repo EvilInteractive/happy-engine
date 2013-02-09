@@ -52,7 +52,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
     va_end(argList);
 }
 
-void Logger::log( const LogType type, const char* file, const char* func, int line, const char* str, const va_list& argList )
+void Logger::log( const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList )
 {
     char buff[1024];
     memset(buff, 0, 1024);

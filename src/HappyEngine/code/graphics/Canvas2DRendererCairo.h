@@ -23,7 +23,7 @@
 #pragma once
 
 #include "SpriteData.h"
-#include "cairo\cairo.h"
+#include <cairo/cairo.h>
 
 /* FORWARD DECLARATIONS */
 //struct _cairo_surface;

@@ -73,7 +73,7 @@ void Text::addTextExt( const char* text, ... )
     va_end(argList);
 }
 
-void Text::addTextExt( const char* text, const va_list& argList )
+void Text::addTextExt( const char* text, va_list& argList )
 {
     int len(vsnprintf(m_ScratchBuffer, MAX_SCRATCH, text, argList));
     HE_ASSERT(len >= 0, "addTextExt FAILED!");

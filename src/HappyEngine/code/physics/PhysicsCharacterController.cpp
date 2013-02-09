@@ -95,7 +95,7 @@ void PhysicsCharacterController::setFootPosition( const vec3& position )
     m_Position = position;
     if (m_Controller != nullptr)
     {
-        PxExtendedVec3 pos(position.x, position.y, position.z);
+        physx::PxExtendedVec3 pos(position.x, position.y, position.z);
         m_Controller->setFootPosition(pos);
     }
 }
@@ -129,11 +129,11 @@ void PhysicsCharacterController::tick( float dTime )
     m_Speed += m_Gravity * 10 * dTime;
     const vec3 speed((m_Speed + m_MoveSpeed) * dTime);
 
-    PxVec3 disp;
+    physx::PxVec3 disp;
     speed.toPxVec3(&disp);
     const uint32 moveResult(m_Controller->move(disp, 0.0001f, dTime, m_Filters));
 
-    const PxExtendedVec3 pxFootPos(m_Controller->getFootPosition());
+    const physx::PxExtendedVec3 pxFootPos(m_Controller->getFootPosition());
     m_Position.x = static_cast<float>(pxFootPos.x);
     m_Position.y = static_cast<float>(pxFootPos.y);
     m_Position.z = static_cast<float>(pxFootPos.z);
@@ -156,15 +156,15 @@ void PhysicsCharacterController::tick( float dTime )
 }
 
 // PxUserControllerHitReport
-void PhysicsCharacterController::onShapeHit( const PxControllerShapeHit& /*hit*/ )
+void PhysicsCharacterController::onShapeHit( const physx::PxControllerShapeHit& /*hit*/ )
 {
 }
 
-void PhysicsCharacterController::onControllerHit( const PxControllersHit& /*hit*/ )
+void PhysicsCharacterController::onControllerHit( const physx::PxControllersHit& /*hit*/ )
 {
 }
 
-void PhysicsCharacterController::onObstacleHit( const PxControllerObstacleHit& /*hit*/ )
+void PhysicsCharacterController::onObstacleHit( const physx::PxControllerObstacleHit& /*hit*/ )
 {
 }
 

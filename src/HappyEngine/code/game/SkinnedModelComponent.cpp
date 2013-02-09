@@ -91,7 +91,7 @@ void SkinnedModelComponent::modelLoadedCallback()
     }
     else
     {
-        HE_ERROR("SkinnedMesh error: no bones found in %s", m_ModelMesh->getName());
+        HE_ERROR("SkinnedMesh error: no bones found in %s", m_ModelMesh->getName().c_str());
     }
 }
 

@@ -68,28 +68,32 @@ void FileWriter::close()
     m_Stream.close();
 }
 
-void FileWriter::operator<<( const char* const str )
+FileWriter& FileWriter::operator<<( const char* const str )
 {
     HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
     m_Stream << str;
+    return *this;
 }
 
-void FileWriter::operator<<( const std::string& str )
+FileWriter& FileWriter::operator<<( const std::string& str )
 {
     HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
     m_Stream << str.c_str();
+    return *this;
 }
 
-void FileWriter::operator<<( const wchar_t* const str )
+FileWriter& FileWriter::operator<<( const wchar_t* const str )
 {
     HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
     m_Stream << str;
+    return *this;
 }
 
-void FileWriter::operator<<( const std::wstring& str )
+FileWriter& FileWriter::operator<<( const std::wstring& str )
 {
     HE_ASSERT(m_Stream.is_open(), "File is not open!\nWrite will fail...");
     m_Stream << str;
+    return *this;
 }
 
 } } //end namespace

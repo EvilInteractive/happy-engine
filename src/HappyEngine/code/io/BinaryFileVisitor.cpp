@@ -57,10 +57,10 @@ bool BinaryFileVisitor::openWrite( const Path& path )
 bool BinaryFileVisitor::open( const Path& path, const char* type )
 {
     int err(0);
-#ifndef GCC
+#ifdef _MSC_VER
     err = fopen_s(&m_File, path.str().c_str(), type);
 #else
-    m_File = fopen(path.c_str(), type);
+    m_File = fopen(path.str().c_str(), type);
     if (m_File == nullptr)
         err = 1;
     else

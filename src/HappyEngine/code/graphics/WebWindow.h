@@ -65,7 +65,7 @@ public:
     // WebWindow load listeners
     virtual void OnFailLoadingFrame(
         Awesomium::WebView *  		caller,
-        int64  						frame_id,
+        ::int64  						frame_id,
         bool  						is_main_frame,
         const Awesomium::WebURL&  	url,
         int  						error_code,
@@ -74,7 +74,7 @@ public:
 
     virtual void OnFinishLoadingFrame(
         Awesomium::WebView *  		caller,
-        int64  						frame_id,
+        ::int64  						frame_id,
         bool  						is_main_frame,
         const Awesomium::WebURL&  	url 
     );
@@ -86,7 +86,7 @@ public:
 
     virtual void OnBeginLoadingFrame(
         Awesomium::WebView*			caller,
-        int64						frame_id,
+        ::int64						frame_id,
         bool						is_main_frame,
         const Awesomium::WebURL&	url,
         bool						is_error_page

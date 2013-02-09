@@ -42,7 +42,7 @@ class Window;
 class Scene;
 class View;
 
-enum ShadowResolution;
+ENUM(ShadowResolution, uint8);
 
 class GraphicsEngine
 {

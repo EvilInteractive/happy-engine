@@ -22,7 +22,7 @@
 #define _HE_SPRITEDATA_H_
 #pragma once
 
-#include "cairo\cairo.h"
+#include <cairo/cairo.h>
 
 namespace he {
 namespace gfx {

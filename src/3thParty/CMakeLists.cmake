@@ -2,49 +2,34 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/LibFindPackage.cmake)
 
 macro (IncludeThirdPartyOSX)
 
-set(Boost_USE_STATIC_LIBS   ON)
-set(Boost_USE_MULTITHREADED ON)
-find_package( Boost 1.49.0 COMPONENTS date_time system thread regex chrono )
 
-if (Boost_FOUND)
-include_directories(${Boost_INCLUDE_DIRS})
-message(Boost found!)
-else()
-message(Could not find boost!)
-endif()
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/assimp/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/awesomium/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/boost/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/cairo/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/devIL/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/freeType/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/glew/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/libsndfile/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/openAl/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/physx/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/raknet/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML/include)
 
+add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX -DLLVM )
 
-
-# Dependencies
-libfind_package(glew glew)
-
-# Use pkg-config to get hints about paths
-libfind_pkg_check_modules(glew_PKGCONF glew)
-
-# Include dir
-find_path(glew_INCLUDE_DIR
-  PATHS ${glew_PKGCONF_INCLUDE_DIRS}
-)
-
-# Finally the library itself
-find_library(glew_LIBRARY
-  PATHS ${glew_PKGCONF_LIBRARY_DIRS}
-)
-
-# Set the include dir variables and the libraries and let libfind_process do the rest.
-# NOTE: Singular variables for this library, plural for libraries this this lib depends on.
-set(glew_PROCESS_INCLUDES glew_INCLUDE_DIR glew_INCLUDE_DIRS)
-set(glew_PROCESS_LIBS glew_LIBRARY glew_LIBRARIES)
-libfind_process(glew)
 endmacro()
-
 
 macro (IncludeThirdParty)
 
 
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Assimp/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/include)
+if (MSVC11)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Boost-msvc11/include)
+else()
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Boost/include)
+endif()
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Cairo/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/DevIL/include/${PLATFORM}${BITNESS})
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/FreeType/include)
@@ -57,7 +42,7 @@ include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/PhysX/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/SFML2.0/include)
 
-add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX -D_SCL_SECURE_NO_WARNINGS )
+add_definitions( -DGLEW_STATIC -DSFML_STATIC -DGLEW_MX -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS )
 if (${BITNESS} EQUAL 64)
 	add_definitions(-DARCH_64)
 else()
@@ -66,7 +51,11 @@ endif()
 
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Assimp/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Awesomium/lib/${PLATFORM}${BITNESS})
+if (MSVC11)
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Boost-msvc11/lib/${PLATFORM}${BITNESS})
+else()
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Boost/lib/${PLATFORM}${BITNESS})
+endif()
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/Cairo/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/DevIL/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/FreeType/lib/${PLATFORM}${BITNESS})
@@ -89,6 +78,21 @@ macro (LinkThirdParty target)
 target_link_libraries(${target} assimp)
 target_link_libraries(${target} awesomium)
 
+if (MSVC11)
+target_link_libraries(${target} debug libboost_chrono-vc110-mt-gd-1_53)
+target_link_libraries(${target} debug libboost_date_time-vc110-mt-gd-1_53)
+target_link_libraries(${target} debug libboost_regex-vc110-mt-gd-1_53)
+target_link_libraries(${target} debug libboost_system-vc110-mt-gd-1_53)
+target_link_libraries(${target} debug libboost_thread-vc110-mt-gd-1_53)
+target_link_libraries(${target} debug libboost_filesystem-vc110-mt-gd-1_53)
+
+target_link_libraries(${target} optimized libboost_chrono-vc110-mt-1_53)
+target_link_libraries(${target} optimized libboost_date_time-vc110-mt-1_53)
+target_link_libraries(${target} optimized libboost_regex-vc110-mt-1_53)
+target_link_libraries(${target} optimized libboost_system-vc110-mt-1_53)
+target_link_libraries(${target} optimized libboost_thread-vc110-mt-1_53)
+target_link_libraries(${target} optimized libboost_filesystem-vc110-mt-1_53)
+else()
 target_link_libraries(${target} debug libboost_chrono-vc100-mt-gd-1_49)
 target_link_libraries(${target} debug libboost_date_time-vc100-mt-gd-1_49)
 target_link_libraries(${target} debug libboost_regex-vc100-mt-gd-1_49)
@@ -104,6 +108,7 @@ target_link_libraries(${target} optimized libboost_system-vc100-mt-1_49)
 target_link_libraries(${target} optimized libboost_thread-vc100-mt-1_49)
 target_link_libraries(${target} optimized libboost_filesystem-vc100-mt-1_49)
 target_link_libraries(${target} optimized libboost_signals-vc100-mt-1_49)
+endif()
 
 target_link_libraries(${target} DevIL)
 target_link_libraries(${target} ILU)

@@ -48,11 +48,11 @@ Button::Button() :	m_Type(TYPE_NORMAL),
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
     m_Text.setBounds(m_Size);
     setColors(
-        Color(220ui8, 220, 220), 
-        Color(180ui8, 200, 220), 
-        Color(146ui8, 162, 179), 
-        Color(150ui8, 150, 150), 
-        Color(140ui8, 140, 140));
+        Color(static_cast<uint8>(220), 220, 220),
+        Color(static_cast<uint8>(180), 200, 220),
+        Color(static_cast<uint8>(146), 162, 179),
+        Color(static_cast<uint8>(150), 150, 150),
+        Color(static_cast<uint8>(140), 140, 140));
 }
 
 Button::~Button()

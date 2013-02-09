@@ -22,26 +22,9 @@
 #define _HE_EntityComponentFactory_H_
 #pragma once
 
-#include "NetworkObjectFactory.h"
-#include "ObjectFactory.h"
-
 namespace he {
 namespace ge {
 
-class EntityComponentFactory
-{
-public:
-    EntityComponentFactory();
-    virtual ~EntityComponentFactory();
-
-    
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    EntityComponentFactory(const EntityComponentFactory&);
-    EntityComponentFactory& operator=(const EntityComponentFactory&);
-};
 
 } } //end namespace
 

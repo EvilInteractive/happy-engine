@@ -49,7 +49,7 @@ public:
     /* IRENDERER */
     virtual void init( View* view, const RenderTarget* target);
     virtual RenderPass getRenderPass() const { return m_RenderPass; }
-    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual uint8 getRenderPriority() const { return 50; }
     virtual void render();
 
     he::event1<void, const ICamera*> PreRender;

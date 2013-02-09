@@ -87,9 +87,9 @@ public:
 private:
     void internalSort(const int begin, const int end, const Sorter& sorter);
     bool internalBinFind(const size_t begin, const size_t end, const T& element, const Sorter& sorter, size_t& outIndex) const;
-
-    size_t m_Capacity;
+    
     size_t m_Size;
+    size_t m_Capacity;
 
     T* m_Buffer;
 
@@ -102,14 +102,14 @@ template<typename T>
 class PrimitiveList : public List<T, PrimitiveCreator<T>> 
 {
 public:
-    explicit PrimitiveList(size_t capacity = 0): List(capacity) {}
+    explicit PrimitiveList(size_t capacity = 0): List<T, PrimitiveCreator<T>>(capacity) {}
     virtual ~PrimitiveList() {}
 };
 template<typename T>
 class ObjectList : public List<T, ObjectCreator<T>> 
 {
 public:
-    explicit ObjectList(size_t capacity = 0): List(capacity) {}
+    explicit ObjectList(size_t capacity = 0): List<T, ObjectCreator<T>>(capacity) {}
     virtual ~ObjectList() {}
 };
 
@@ -117,7 +117,8 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T, typename Creator> inline
-he::List<T, Creator>::List(const size_t capacity = 0): m_Size(0), m_Capacity(capacity), m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
+he::List<T, Creator>::List(const size_t capacity): m_Size(0), m_Capacity(capacity), 
+    m_Buffer(static_cast<T*>(he_malloc(sizeof(T) * capacity)))
 {
     Creator::createArray(m_Buffer, m_Capacity);
 }
@@ -416,8 +417,8 @@ template<typename T, typename Creator> inline
 void he::List<T, Creator>::forEach( const boost::function1<void, T&>& func )
 {    
     iterator it(begin());
-    iterator end(end());
-    for (; it != end; ++it)
+    iterator endIt(end());
+    for (; it != endIt; ++it)
         func(*it);
 }
 //////////////////////////////////////////////////////////////////////////

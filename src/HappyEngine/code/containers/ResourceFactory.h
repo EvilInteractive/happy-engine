@@ -41,7 +41,7 @@ public:
 template<typename T>
 class ResourceFactory : public IResourceFactory,  public ObjectFactory<T>
 {
-template<typename T> friend class Resource;
+template<typename R> friend class Resource;
 public:
 
     //////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ public:
         uint32 ret(0);
         for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
         {
-            if (m_RefCounter[i] == 0 && isAliveAt(i) && getAt(i)->canBeGarbageCollected())
+            if (m_RefCounter[i] == 0 && this->isAliveAt(i) && this->getAt(i)->canBeGarbageCollected())
             {
                 destroyAt(i);
                 ++ret;
@@ -86,17 +86,17 @@ public:
 
     virtual void instantiate(const ObjectHandle& handle)
     {
-        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
-        HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", m_DisplayName.c_str());
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", this->m_DisplayName.c_str());
+        HE_ASSERT(handle.type == this->m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", this->m_DisplayName.c_str());
         ++m_RefCounter[handle.index];
     }
 
     void release(const ObjectHandle& handle)
     {
-        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): releasing unassigned handle", m_DisplayName.c_str());
-        HE_ASSERT(handle.type == m_Type, "ObjectHandle does not belong to this factory!");
-        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", m_DisplayName.c_str(), get(handle)->getName().c_str());
+        HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): releasing unassigned handle", this->m_DisplayName.c_str());
+        HE_ASSERT(handle.type == this->m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", this->m_DisplayName.c_str(), this->get(handle)->getName().c_str());
         --m_RefCounter[handle.index];
     }
 
@@ -113,7 +113,7 @@ public:
     virtual ObjectHandle registerObject(T* obj)
     {
         ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
-        get(handle)->setHandle(handle);
+        this->get(handle)->setHandle(handle);
         instantiate(handle);
         return handle;
     }
@@ -156,7 +156,7 @@ private:
         {
             if (m_RefCounter[i] != 0)
             {
-                HE_WARNING("%s: resource %s has %d references open!", m_DisplayName.c_str(), getAt(i)->getName().c_str(), m_RefCounter[i]);
+                HE_WARNING("%s: resource %s has %d references open!", this->m_DisplayName.c_str(), this->getAt(i)->getName().c_str(), m_RefCounter[i]);
             }
         }
     }

@@ -23,6 +23,10 @@
 #pragma message("-- HappyEngine: Compiling precompiled headers. --")
 #pragma message("-------------------------------------------------\n")
 
+#ifndef NDEBUG
+#define _DEBUG 1
+#endif
+
 #define __HE_FUNCTION__ __FUNCTION__
 
 #include <cstdlib>
@@ -70,6 +74,12 @@
 
 // Happy Code
 
+#if defined(_MSC_VER) && _MSC_VER < 1700
+#define ENUM(name, size) enum name
+#else
+#define ENUM(name, size) enum name : size
+#endif
+
 #include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
@@ -89,6 +99,7 @@
 #include "Logger.h"
 #include "HeAssert.h"
 
+#pragma warning(disable:4389) // '==' signed/unsigned mismatch
 template<typename To, typename From>
 inline To checked_numcast(const From value)
 {
@@ -96,6 +107,7 @@ inline To checked_numcast(const From value)
     HE_ASSERT(result == value, "Numcast fail!");
     return result;
 }
+#pragma warning(default:4389)
 
 #include "ExternalError.h"
 #include "HappyMemory.h"
@@ -104,6 +116,7 @@ inline To checked_numcast(const From value)
 #include "MathFunctions.h"
 
 #include "List.h"
+#include "FixedSizeList.h"
 
 #include "GLContext.h"
 #include "OpenGL.h"

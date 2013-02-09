@@ -24,4 +24,20 @@
 namespace he {
 namespace io {
 
+template<>
+void BinaryVisitor::visit(std::string& value)
+{
+    uint32 length(checked_numcast<uint32>(value.size()));
+    visit(length);
+    if (m_OpenType == eOpenType_Read)
+    {
+        value.resize(length);
+        readBuffer(&value[0], sizeof(char) * length);
+    }
+    else
+    {
+        writeBuffer(&value[0], sizeof(char) * length);
+    }
+}
+
 } } //end namespace

@@ -52,13 +52,13 @@ public:
     virtual ~NodeGraphNodeOutputConnections() {}
 
     NodeGraphNodeOutputConnections(const NodeGraphNodeOutputConnections<TInput, TOutput>& other):
-        ObjectList<NodeGraphConnection>(other.m_Connections.size())
+        ObjectList<NodeGraphConnection<TInput, TOutput>>(other.m_Connections.size())
     {
         append(other);
     }
     NodeGraphNodeOutputConnections& operator=(const NodeGraphNodeOutputConnections<TInput, TOutput>& other)
     {
-        clear();
+        this->clear();
         append(other);
         return *this;
     }

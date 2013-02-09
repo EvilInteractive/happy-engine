@@ -31,11 +31,11 @@ public:
     bool open(const Path& path, const bool overrideWarning);
     void close();
 
-    void operator<<(const char* const str);
-    void operator<<(const std::string& str);
+    FileWriter& operator<<(const char* const str);
+    FileWriter& operator<<(const std::string& str);
 
-    void operator<<(const wchar_t* const str);
-    void operator<<(const std::wstring& str);
+    FileWriter& operator<<(const wchar_t* const str);
+    FileWriter& operator<<(const std::wstring& str);
 
     template<typename T>
     void operator<<(const T value)

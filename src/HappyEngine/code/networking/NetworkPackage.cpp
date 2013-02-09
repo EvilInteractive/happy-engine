@@ -26,9 +26,22 @@
 namespace he {
 namespace net {
 
-NetworkPackage::NetworkPackage(const uint8* data, const size_t byteCount, const NetworkID from)
-    : m_MessageID(NetworkPackageID_Unknown), m_Sender(from)
+NetworkPackage::NetworkPackage() 
+    : m_MessageID(0), m_Sender(UNASSIGNED_NETWORKID)
 {
+}
+
+void NetworkPackage::init( const uint8 id )
+{
+    m_MessageID = id;
+    m_Visitor.openWrite();
+    uint8 rakID(checked_numcast<uint8>(m_MessageID + ID_USER_PACKET_ENUM));
+    m_Visitor.visit(rakID);
+}
+
+void NetworkPackage::init( const uint8* data, const size_t byteCount, const NetworkID from )
+{
+    m_Sender = from;
     m_Visitor.openWrite();
     m_Visitor.visitBlob(data, 1);
     const uint8* realData(data + 1);
@@ -38,15 +51,6 @@ NetworkPackage::NetworkPackage(const uint8* data, const size_t byteCount, const 
     m_Visitor.visit(m_MessageID);
     m_MessageID = checked_numcast<uint8>(m_MessageID - ID_USER_PACKET_ENUM);
 }
-
-NetworkPackage::NetworkPackage( const uint8 id ) 
-    : m_MessageID(id), m_Sender(UNASSIGNED_NETWORKID)
-{
-    m_Visitor.openWrite();
-    uint8 rakID(checked_numcast<uint8>(m_MessageID + ID_USER_PACKET_ENUM));
-    m_Visitor.visit(rakID);
-}
-
 
 NetworkPackage::~NetworkPackage()
 {
@@ -60,5 +64,6 @@ void NetworkPackage::finalise()
 {
     m_Visitor.close();
 }
+
 
 } } //end namespace

@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "NetworkObjectFactoryManager.h"
+#include "NetworkObjectBase.h"
 #include "NetworkObjectFactory.h"
 
 namespace he {

@@ -1,5 +1,3 @@
-guid
-guid
 //HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
@@ -57,7 +55,7 @@ NetworkManager::~NetworkManager()
 {
     delete m_NetworkObjectFactoryManager;
     delete m_NetworkIdManager;
-    bool isConnected(isConnected());
+    const bool isConnected(this->isConnected());
     if (isConnected == true)
         disconnect();
 }
@@ -201,9 +199,10 @@ void NetworkManager::tick( float dTime )
                 break;
             case ID_USER_PACKET_ENUM:
                 {
-                    NetworkPackage package(packet->data, packet->length, packet->guid);
-                    const bool eaten(PacketReceived(package));
+                    m_NetworkPackage.init(packet->data, packet->length, packet->guid);
+                    const bool eaten(PacketReceived(m_NetworkPackage));
                     HE_ASSERT(eaten == true, "Unhandled packet received!"); eaten;
+                    m_NetworkPackage.finalise();
                 }
                 break;
             }

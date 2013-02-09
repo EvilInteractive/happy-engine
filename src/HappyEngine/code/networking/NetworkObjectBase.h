@@ -23,7 +23,6 @@
 #pragma once
 
 #include "ReplicaManager3.h"
-#include "NetworkObjectFactory.h"
 #include "VariableDeltaSerializer.h"
 #include "INetworkSerializable.h"
 
