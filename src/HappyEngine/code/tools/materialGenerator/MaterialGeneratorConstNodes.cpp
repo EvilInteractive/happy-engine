@@ -32,7 +32,7 @@ MaterialGeneratorNodeFloat1::MaterialGeneratorNodeFloat1()
 {
     addOverload(1, 0, MaterialGeneratorVariableType_Float);
     FixedSizeList<ConnecterDesc, 1> outputs;
-    outputs[1] = ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f));
+    outputs[0] = ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f));
     addConnecterOutputs( outputs );
     addParam(MaterialGeneratorNodeParam("Float", MaterialGeneratorNodeParam::Type_Float));
 }

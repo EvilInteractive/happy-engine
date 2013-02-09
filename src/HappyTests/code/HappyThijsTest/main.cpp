@@ -20,8 +20,6 @@
 
 #include "HappyThijsTestPCH.h" 
 
-#include "Texture2D.h"
-#include "ModelMesh.h"
 #include "ContentManager.h"
 
 #include "MainGame.h"

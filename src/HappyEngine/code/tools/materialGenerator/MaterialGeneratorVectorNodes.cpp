@@ -46,13 +46,13 @@ MaterialGeneratorNodeComposeVector::MaterialGeneratorNodeComposeVector()
     addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
     addOverload(1, 4, MaterialGeneratorVariableType_Float4, MaterialGeneratorVariableType_Float, MaterialGeneratorVariableType_Float3, MaterialGeneratorVariableType_Unknown, MaterialGeneratorVariableType_Unknown);
 
-    FixedSizeList<ConnecterDesc, 4> outputs;
+    FixedSizeList<ConnecterDesc, 1> outputs;
     outputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    outputs[1] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    outputs[2] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    outputs[3] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
-    FixedSizeList<ConnecterDesc, 1> inputs;
+    FixedSizeList<ConnecterDesc, 4> inputs;
     inputs[0] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[1] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[2] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[3] = ConnecterDesc("", Color(1.0f, 0.5f, 0.0f, 1.0f));
     addConnecters( outputs, inputs );
 }
 
