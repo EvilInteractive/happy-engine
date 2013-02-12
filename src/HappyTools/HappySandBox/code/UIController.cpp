@@ -70,7 +70,7 @@ void UIController::load(const std::string& file)
     m_WebView->setTransparent(true);
 }
 
-void UIController::draw2D(he::gfx::Canvas2D* canvas)
+void UIController::draw2D(he::gui::Canvas2D* canvas)
 {
     canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
     canvas->fillRect(he::vec2(5,5),he::vec2(1,1));

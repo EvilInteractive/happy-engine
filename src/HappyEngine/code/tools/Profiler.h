@@ -26,14 +26,14 @@
 #include "Text.h"
 
 namespace he {
-    namespace gui {
-        class Text;
-    }
-    namespace gfx {
-        class Renderer2D;
-        class View;
-        class Font;
-    }
+namespace gui {
+    class Text;
+}
+namespace gfx {
+    class Renderer2D;
+    class View;
+    class Font;
+}
 namespace tools {
 
 class HierarchicalProfile
@@ -70,7 +70,7 @@ public:
 
     void attachToRenderer(gfx::Renderer2D* renderer);
     void detachFromRenderer();
-    virtual void draw2D(gfx::Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
     void toggleProfiler();
     

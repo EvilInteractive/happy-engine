@@ -47,7 +47,7 @@ public:
     virtual ~WebView();
 
     /* GENERAL */
-    virtual void draw2D(Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
     void loadUrl(const std::string& url);   // for web
     void loadFile(const he::Path& path);    // for local
     void executeJavaScript(const std::string& script);

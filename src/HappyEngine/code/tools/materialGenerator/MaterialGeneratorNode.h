@@ -27,15 +27,13 @@
 #include "MaterialGeneratorNodeParam.h"
 
 namespace he {
-namespace gfx {
-    class Canvas2D;
-}
 namespace io {
     class BinaryStream;
 }
 namespace gui {
     class Sprite;
     class BezierShape2D;
+    class Canvas2D;
 }
 namespace tools {
 
@@ -83,7 +81,7 @@ public:
         void setHoover(const bool isHoovered) { m_IsHooverd = isHoovered; }
 
         void renderSprites();
-        void draw2D(gfx::Canvas2D* const canvas, const mat33& transform) const;
+        void draw2D(gui::Canvas2D* const canvas, const mat33& transform) const;
 
     private:
         he::event0<void> Moved;
@@ -138,7 +136,7 @@ public:
     void serialize(io::BinaryStream& stream) const;
     void deserialize(io::BinaryStream& stream);
 
-    void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
+    void draw2D(gui::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
 protected:
     void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's

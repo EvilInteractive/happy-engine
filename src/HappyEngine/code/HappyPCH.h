@@ -47,6 +47,7 @@
 #include <boost/any.hpp>
 #include <boost/function.hpp>
 #include <boost/date_time.hpp>
+#include <boost/timer.hpp>
 
 #include <SFML/Window.hpp>
 

@@ -73,7 +73,7 @@ public:
     void setDebugRenderer(Renderer2D* renderer);
 
     void draw();
-    virtual void draw2D(Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
 private:
     void onSettingsChanged(const RenderSettings& settings, bool force = false);

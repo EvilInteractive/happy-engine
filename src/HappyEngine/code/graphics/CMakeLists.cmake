@@ -67,7 +67,6 @@ set (CODE_GRAPHICS_RENDERING_FILTER
             
 set (CODE_GRAPHICS_RENDERING_2D_FILTER
 			Canvas2D.cpp                        Canvas2D.h
-			Canvas2Dnew.cpp                     Canvas2Dnew.h
 			Canvas2DBuffer.cpp                  Canvas2DBuffer.h
 			Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
 			Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h

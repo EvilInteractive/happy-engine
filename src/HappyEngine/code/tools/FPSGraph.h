@@ -28,12 +28,12 @@
 
 namespace he {
 namespace gfx {
-    class Canvas2D;
     class Font;
     class View;
 }
 namespace gui {
     class Sprite;
+    class Canvas2D;
 }
 namespace tools {
 
@@ -54,7 +54,7 @@ public:
 
     /* GENERAL */
     void tick(float dTime);
-    virtual void draw2D(gfx::Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
     /* GETTERS */
     uint16 getMaxFPS() const;
@@ -70,9 +70,9 @@ private:
     /* INTERNAL */
     inline uint16 cap(const float& fps) const;
     inline uint16 cap(const uint32& fps) const;
-    void drawToConsole(gfx::Canvas2D* canvas);
-    void drawTextOnly(gfx::Canvas2D* canvas);
-    void drawFull(gfx::Canvas2D* canvas);
+    void drawToConsole(gui::Canvas2D* canvas);
+    void drawTextOnly(gui::Canvas2D* canvas);
+    void drawFull(gui::Canvas2D* canvas);
     void updateScale(uint16 currentMaxFpsInFrame);
 
     void renderGraph();

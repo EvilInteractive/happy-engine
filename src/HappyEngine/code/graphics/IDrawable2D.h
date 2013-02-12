@@ -23,16 +23,19 @@
 #pragma once
 
 namespace he {
-namespace gfx {
+namespace gui {
+    class Canvas2D;
+}
 
-class Canvas2D;
+namespace gfx {
 
 class IDrawable2D
 {
 public:
+
     virtual ~IDrawable2D() {};
 
-    virtual void draw2D(Canvas2D* canvas) = 0;
+    virtual void draw2D(gui::Canvas2D* canvas) = 0;
 }; 
 
 } } //end namespace

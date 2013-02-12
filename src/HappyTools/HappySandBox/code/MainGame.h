@@ -36,6 +36,8 @@ namespace he {
         class Window;
         class View;
         class Scene;
+    }
+    namespace gui {
         class Canvas2D;
     }
 }
@@ -53,7 +55,7 @@ public:
     virtual void init();
     virtual void load();
     virtual void tick(float dTime);
-    virtual void draw2D(he::gfx::Canvas2D* canvas);
+    virtual void draw2D(he::gui::Canvas2D* canvas);
 
 private:
 

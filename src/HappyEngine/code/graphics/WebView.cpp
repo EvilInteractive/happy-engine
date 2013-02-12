@@ -33,7 +33,6 @@
 #include "ControlsManager.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
-#include "Canvas2Dnew.h"
 #include "WebListener.h"
 
 #define COMMON_ASCII_CHAR 128
@@ -250,7 +249,7 @@ WebView::~WebView()
 }
 
 /* GENERAL */
-void WebView::draw2D(Canvas2D* canvas)
+void WebView::draw2D(gui::Canvas2D* canvas)
 {
     if (m_WebView->surface())
     {
@@ -267,8 +266,7 @@ void WebView::draw2D(Canvas2D* canvas)
         }
     }
 
-    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
-    cvs->drawImage(m_RenderTexture, m_Position);
+    canvas->drawImage(m_RenderTexture, m_Position);
 }
 
 void WebView::loadUrl(const std::string& url)

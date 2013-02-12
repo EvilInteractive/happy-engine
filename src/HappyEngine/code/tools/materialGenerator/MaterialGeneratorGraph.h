@@ -91,7 +91,7 @@ public:
     void close();
     
     virtual void tick(float dTime);
-    virtual void draw2D(gfx::Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
     /* GETTERS */
     ct::ShaderGenerator* getGenerator() const { return m_Generator; }

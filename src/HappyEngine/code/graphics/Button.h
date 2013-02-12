@@ -64,7 +64,7 @@ public:
 
     /* GENERAL */
     virtual void tick();
-    virtual void draw2D(gfx::Canvas2D* renderer);
+    virtual void draw2D(gui::Canvas2D* renderer);
 
     /* SETTERS */
     virtual void setSpriteSheet(const ObjectHandle& spriteSheet);
@@ -94,8 +94,8 @@ public:
 protected:
 
     /* EXTRA */
-    virtual void drawColor(gfx::Canvas2D* renderer);
-    virtual void drawSprites(gfx::Canvas2D* renderer);
+    virtual void drawColor(gui::Canvas2D* renderer);
+    virtual void drawSprites(gui::Canvas2D* renderer);
     virtual void drawSpriteSheet();
 
     /* CALLBACK HANDLERS */

@@ -24,8 +24,7 @@
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "ControlsManager.h"
-#include "Renderer2D.h"
-#include "Canvas2Dnew.h"
+#include "Gui.h"
 
 #include "BoolTypeHandler.h"
 #include "FloatTypeHandler.h"
@@ -39,7 +38,6 @@
 #include "Scrollbar.h"
 #include "TextBox.h"
 #include "View.h"
-#include "Text.h"
 
 namespace he {
 namespace tools {
@@ -55,7 +53,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_Help(""),
                         m_Font(nullptr),
                         m_Renderer(nullptr),
-                        m_ViewportSize(20,20)
+                        m_ViewportSize(20,20),
+                        m_Background(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -120,6 +119,10 @@ void Console::load()
     m_ScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint32>(190 / m_Font->getLineSpacing());
+
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+    m_Background = cr->createSprite(vec2(1280.0f, 200.0f));
+    renderBackground();
 }
 
 Console::~Console()
@@ -323,18 +326,9 @@ void Console::tick()
     }
 }
 
-void Console::draw2D(gfx::Canvas2D* canvas)
+void Console::draw2D(gui::Canvas2D* canvas)
 {
-    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-    canvas->setBlendStyle(gfx::BlendStyle_Alpha);
-
-    canvas->setDepth(-2000);
-
-    canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-    canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
-
-    canvas->setStrokeColor(Color(0.19f,0.19f,0.19f));
-    canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
+    canvas->drawSprite(m_Background, vec2(0,0));
 
     m_TextBox->draw(canvas);
     
@@ -349,12 +343,10 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         m_Text.addTextExt("%s\n", m_MsgHistory[i].second.c_str());
     }
 
-    cvs->fillText(m_Text, vec2(5, 5));
-
+    canvas->fillText(m_Text, vec2(5, 5));
+    
     if (m_MsgHistory.size() > m_MaxMessagesInWindow)
         m_ScrollBar->draw(canvas);
-
-    canvas->restoreDepth();
 }
 
 void Console::addMessage(const char* msg, CMSG_TYPE type)
@@ -476,6 +468,22 @@ void Console::onResize()
 
     m_TextBox->setSize(vec2(m_ViewportSize.x, 20.f));
     m_ScrollBar->setPosition(vec2(m_ViewportSize.x - 20, 0));
+
+    m_Background->invalidate(vec2(m_ViewportSize.x, 200));
+
+    renderBackground();
+}
+
+void Console::renderBackground()
+{
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+    cr->setActiveSprite(m_Background);
+    
+    cr->rectangle(vec2(0,0), vec2(m_Background->getSize().x - 2, 200));
+    cr->setColor(Color(0.2f,0.2f,0.2f,0.9f));
+    cr->fill();
+    cr->setColor(Color(0.19f,0.19f,0.19f));
+    cr->stroke();
 }
 
 } } //end namespace

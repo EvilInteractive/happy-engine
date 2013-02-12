@@ -58,7 +58,6 @@
 #include "PostProcesser.h"
 #include "WebView.h"
 #include "WebListener.h"
-#include "Canvas2Dnew.h"
 #include "MathFunctions.h"
 #include "Sprite.h"
 #include "Gui.h"
@@ -138,11 +137,12 @@ MainGame::~MainGame()
 
     delete m_FpsGraph;
 
-    he::gui::SpriteCreator* const cr(GUI->Sprites);
+    he::gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_TestSprite);
     
-    delete m_ToneMapGui;
-    delete m_ToneMapGuiListener;
+    m_RenderPipeline->get2DRenderer()->removeWebView(m_ToneMapGui);
+    //delete m_ToneMapGui;
+    //delete m_ToneMapGuiListener;
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
@@ -395,7 +395,7 @@ void MainGame::load()
 
     m_ToneMapGui->OnUrlLoaded += onGuiLoaded;
 
-    he::gui::SpriteCreator* creator(GUI->Sprites);
+    he::gui::SpriteCreator* creator(GUI->getSpriteCreator());
     m_TestSprite = creator->createSprite(he::vec2(200,200));
     creator->setActiveSprite(m_TestSprite);
     creator->roundedRectangle(he::vec2(0,0), he::vec2(200,200), 50.0f);
@@ -504,10 +504,8 @@ void MainGame::drawShapes( he::gfx::ShapeRenderer* /*renderer*/ )
 
 }
 
-void MainGame::draw2D(he::gfx::Canvas2D* canvas)
+void MainGame::draw2D(he::gui::Canvas2D* canvas)
 {
-    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-
     he::gfx::CameraPerspective* camera(m_View->getCamera());
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
@@ -515,14 +513,14 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
 
     m_RenderPipeline->getPicker()->drawDebug(canvas);
 
-    canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
+    //canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
     canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
     m_ToneMapGui->draw2D(canvas);
     
     m_DebugText.clear();
     m_DebugText.addTextExt("&0F0Position:&FFF %.2f, %.2f, %.2f\n", position.x, position.y, position.z);
     m_DebugText.addTextExt("&F00Look:&FFF %.2f, %.2f, %.2f\n", look.x, look.y, look.z);
-    cvs->fillText(m_DebugText, he::vec2(12, 12));
+    canvas->fillText(m_DebugText, he::vec2(12, 12));
 
     m_BigText.clear();
     m_BigText.addTextExt("&%c%c%cF&%c%c%ca&%c%c%cb&%c%c%cu&%c%c%cl&%c%c%co&%c%c%cu&%c%c%cs\n",
@@ -534,10 +532,10 @@ void MainGame::draw2D(he::gfx::Canvas2D* canvas)
         m_ShuffeledColor[5].r16(), m_ShuffeledColor[5].g16(), m_ShuffeledColor[5].b16(),
         m_ShuffeledColor[6].r16(), m_ShuffeledColor[6].g16(), m_ShuffeledColor[6].b16(),
         m_ShuffeledColor[7].r16(), m_ShuffeledColor[7].g16(), m_ShuffeledColor[7].b16());
-    cvs->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
+    canvas->fillText(m_BigText, he::vec2(20, viewport.height - 20.0f));
     
     // NEW CANVAS TEST
-    //cvs->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
+    //canvas->drawSprite(m_TestSprite, he::vec2(200,400), he::vec2(800,300));
 
     //canvas->drawImage(m_TestSprite->getRenderTexture(), he::vec2(12, 500));
 }

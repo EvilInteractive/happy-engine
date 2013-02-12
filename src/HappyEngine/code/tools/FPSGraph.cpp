@@ -31,7 +31,6 @@
 #include "Font.h"
 #include "Sprite.h"
 #include "Gui.h"
-#include "Canvas2Dnew.h"
 #include "SystemStats.h"
 
 namespace he {
@@ -68,8 +67,9 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
 
     CONSOLE->registerVar(&m_FPSGraphState, "s_fps_graph");
 
-    m_Sprites[0] = GUI->Sprites->createSprite(vec2(110,82));//, gui::Sprite::DYNAMIC_DRAW);
-    m_Sprites[1] = GUI->Sprites->createSprite(vec2(110,82));//, gui::Sprite::DYNAMIC_DRAW);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+    m_Sprites[0] = cr->createSprite(vec2(110,82));//, gui::Sprite::DYNAMIC_DRAW);
+    m_Sprites[1] = cr->createSprite(vec2(110,82));//, gui::Sprite::DYNAMIC_DRAW);
 
     SystemStats::init();
 }
@@ -80,7 +80,7 @@ FPSGraph::~FPSGraph()
 
     m_Font->release();
     
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_Sprites[0]);
     cr->removeSprite(m_Sprites[1]);
 }
@@ -122,7 +122,7 @@ void FPSGraph::tick(float dTime)
     }
 }
 
-void FPSGraph::draw2D(gfx::Canvas2D* canvas)
+void FPSGraph::draw2D(gui::Canvas2D* canvas)
 {
     if (m_GameTime <= m_Interval)
         return;
@@ -161,7 +161,7 @@ inline uint16 FPSGraph::cap(const uint32& fps) const
     return static_cast<uint16>(fps);
 }
 
-void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
+void FPSGraph::drawToConsole(gui::Canvas2D* /*canvas*/)
 {
     if ((m_GameTime - m_TBase) < FLT_EPSILON)
     {
@@ -169,30 +169,28 @@ void FPSGraph::drawToConsole(gfx::Canvas2D* /*canvas*/)
     }
 }
 
-void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
+void FPSGraph::drawTextOnly(gui::Canvas2D* canvas)
 {
-    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-
     m_Text.clear();
     m_Text.addTextExt("%u (%u) FPS", m_CurrentFPS, getAverageFPS());
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
-    cvs->setColor(m_ColorYellow);
-    cvs->fillText(m_Text, m_Pos);
+    canvas->setColor(m_ColorYellow);
+    canvas->fillText(m_Text, m_Pos);
 
     m_Text.clear();
     m_Text.addTextExt("%.3f MS", m_CurrentDTime * 1000.0f);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
     
-    cvs->setColor(m_ColorBlue);
-    cvs->fillText(m_Text, m_Pos);
+    canvas->setColor(m_ColorBlue);
+    canvas->fillText(m_Text, m_Pos);
 
     m_Text.clear();
     m_Text.addTextExt("MEM");
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
-    cvs->setColor(m_ColorWhite);
-    cvs->fillText(m_Text, m_Pos + vec2(0,11));
+    canvas->setColor(m_ColorWhite);
+    canvas->fillText(m_Text, m_Pos + vec2(0,11));
 
     m_Text.clear();
     m_Text.addTextExt("%u - %u (%u)",
@@ -201,29 +199,27 @@ void FPSGraph::drawTextOnly(gfx::Canvas2D* canvas)
         (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
-    cvs->fillText(m_Text, m_Pos + vec2(0,11));
+    canvas->fillText(m_Text, m_Pos + vec2(0,11));
 
     m_Text.clear();
     m_Text.addTextExt("CPU");
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
 
-    cvs->fillText(m_Text, m_Pos + vec2(0,22));
+    canvas->fillText(m_Text, m_Pos + vec2(0,22));
 
     m_Text.clear();
     m_Text.addTextExt("%.2f", m_CurrentCPU);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
-    cvs->fillText(m_Text, m_Pos + vec2(0,22));
+    canvas->fillText(m_Text, m_Pos + vec2(0,22));
 }
 
-void FPSGraph::drawFull(gfx::Canvas2D* canvas)
+void FPSGraph::drawFull(gui::Canvas2D* canvas)
 {
     if (m_FpsHistory.size() == 0)
         return;
 
-    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-
-    cvs->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
+    canvas->drawSprite(m_Sprites[m_ActiveSprite], m_Pos);
 }
 
 void FPSGraph::updateScale(uint16 currentMaxFpsInFrame)
@@ -237,7 +233,7 @@ void FPSGraph::updateScale(uint16 currentMaxFpsInFrame)
 
 void FPSGraph::renderGraph()
 {
-    gui::SpriteCreator* cr(GUI->Sprites);
+    gui::SpriteCreator* cr(GUI->getSpriteCreator());
 
     cr->setActiveSprite(m_Sprites[m_ActiveSprite]);
 

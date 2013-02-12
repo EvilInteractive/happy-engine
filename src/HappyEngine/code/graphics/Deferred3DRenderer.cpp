@@ -318,15 +318,14 @@ void Deferred3DRenderer::render()
     GL::heSetCullFace(false);
     GL::heSetDepthFunc(DepthFunc_LessOrEqual);
 }
-void Deferred3DRenderer::draw2D(Canvas2D* canvas)
+void Deferred3DRenderer::draw2D(gui::Canvas2D* canvas)
 {
     if (m_ShowDebugTextures)
     {
-        canvas->setBlendStyle(gfx::BlendStyle_Opac);
-        canvas->drawImage(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        canvas->drawImage(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        canvas->drawImage(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
-        canvas->drawImage(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), vec2(256, 144));
+        canvas->blitTexture2D(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        canvas->blitTexture2D(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        canvas->blitTexture2D(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        canvas->blitTexture2D(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
     }
 }
 

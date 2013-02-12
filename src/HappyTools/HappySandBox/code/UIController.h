@@ -46,7 +46,7 @@ public:
     /* GENERAL */
     void init(he::gfx::Renderer2D* renderer);
     void load(const std::string& file);
-    void draw2D(he::gfx::Canvas2D* canvas);
+    void draw2D(he::gui::Canvas2D* canvas);
     void updateSceneInfo(const he::vec3& camPos);
 
     /* GETTERS */

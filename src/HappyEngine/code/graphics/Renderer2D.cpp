@@ -40,18 +40,15 @@
 #include "Texture2D.h"
 #include "View.h"
 #include "IDrawable2D.h"
-#include "Canvas2Dnew.h"
 
 namespace he {
 namespace gfx {
 
-Renderer2D::Renderer2D() :
-                            m_TextureEffect(NEW Simple2DTextureEffect()),
+Renderer2D::Renderer2D() :  m_TextureEffect(NEW Simple2DTextureEffect()),
                             m_TextureQuad(nullptr),
                             m_View(nullptr),
                             m_RenderTarget(nullptr),
-                            m_DefaultCanvas(nullptr),
-                            m_CanvasNew(nullptr)
+                            m_DefaultCanvas(nullptr)
 {
 }
 
@@ -61,26 +58,24 @@ Renderer2D::~Renderer2D()
 
     delete m_TextureEffect;
     m_TextureQuad->release();
-
-    delete m_CanvasNew;
 }
 
 /* GENERAL */
-Canvas2D* Renderer2D::createCanvasAbsolute(const RectI& viewport)
+gui::Canvas2D* Renderer2D::createCanvasAbsolute(const RectI& viewport)
 {
     HE_ASSERT(viewport.width > 0 && viewport.height > 0, "viewport width and height must be > 0");
-    Canvas2D* canvas(NEW Canvas2D(viewport));
+    he::gui::Canvas2D* canvas(NEW gui::Canvas2D(this, viewport));
     m_Canvas2Ds.add(canvas);
     return canvas;
 }
-Canvas2D* Renderer2D::createCanvasRelative(const RectF& percent)
+gui::Canvas2D* Renderer2D::createCanvasRelative(const RectF& percent)
 {
     HE_ASSERT(percent.width > 0 && percent.height > 0, "viewport width and height must be > 0");
-    Canvas2D* canvas(NEW Canvas2D(this, percent));
+    he::gui::Canvas2D* canvas(NEW gui::Canvas2D(this, percent));
     m_Canvas2Ds.add(canvas);
     return canvas;
 }
-void Renderer2D::removeCanvas( Canvas2D* canvas )
+void Renderer2D::removeCanvas(gui::Canvas2D* canvas)
 {
     HE_IF_ASSERT(m_Canvas2Ds.contains(canvas) == true, "Canvas is not a member of this Renderer2D!")
     {
@@ -88,7 +83,6 @@ void Renderer2D::removeCanvas( Canvas2D* canvas )
         delete canvas;
     }
 }
-
 
 WebView* Renderer2D::createWebViewAbsolute(const RectI& viewport, bool enableUserInput)
 {
@@ -139,7 +133,6 @@ void Renderer2D::render()
 
     m_RenderTarget->prepareForRendering();
     m_DefaultCanvas->draw();
-    m_CanvasNew->draw();
 }
 
 void Renderer2D::init( View* view, const RenderTarget* target )
@@ -182,9 +175,9 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_TextureQuad->setLoaded();
 
-    m_DefaultCanvas = createCanvasRelative(RectF(0,0,1,1));
-    m_CanvasNew = NEW he::gui::Canvas2Dnew(this, RectF(0,0,1,1));
-    m_CanvasNew->init();
+    m_DefaultCanvas = NEW he::gui::Canvas2D(this, RectF(0,0,1,1));
+    m_DefaultCanvas->init();
+    m_Canvas2Ds.add(m_DefaultCanvas);
 }
 
 void Renderer2D::drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos,
@@ -262,11 +255,6 @@ void Renderer2D::detachFromRender(IDrawable2D* drawable)
         m_DrawablesDepth.removeAt(i);
         m_Drawables.remove(drawable);
     }
-}
-
-he::gui::Canvas2Dnew* Renderer2D::getNewCanvas() const
-{
-    return m_CanvasNew;
 }
 
 } } //end namespace

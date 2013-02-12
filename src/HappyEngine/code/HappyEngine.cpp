@@ -79,8 +79,6 @@ void HappyEngine::cleanup()
         m_GraphicsEngine->destroy();
 
     //dispose/delete all sub engines here
-    delete m_Gui;
-    m_Gui = nullptr;
     delete m_Console;
     m_Console = nullptr;
     delete m_ContentManager;
@@ -94,6 +92,8 @@ void HappyEngine::cleanup()
     m_NetworkManager = nullptr;
     delete m_PhysicsEngine;
     m_PhysicsEngine = nullptr;
+    delete m_Gui;
+    m_Gui = nullptr;
     
     // Gl context get deleted here - make sure all content is gone
     delete m_GraphicsEngine;
@@ -271,8 +271,9 @@ void HappyEngine::updateLoop(float dTime)
 
     if (m_Gui != nullptr)
     {
-        m_Gui->Sprites->tick(dTime);
-        m_Gui->Sprites->glThreadInvoke();
+        gui::SpriteCreator* const cr(m_Gui->getSpriteCreator());
+        cr->tick(dTime);
+        cr->glThreadInvoke();
     }
 
     if (m_SubEngines & SubEngine_Physics)

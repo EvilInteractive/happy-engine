@@ -265,9 +265,9 @@ uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& dr
         return ID2[(id - 1)];
 }
 
-void Picker::drawDebug(Canvas2D* canvas) const
+void Picker::drawDebug(gui::Canvas2D* canvas) const
 {
-    canvas->getRenderer2D()->drawTexture2DToScreen(m_RenderTexture, vec2(0,0), false, vec2(m_View->getViewport().width * 1.0f, m_View->getViewport().height * 1.0f));
+    canvas->blitTexture2D(m_RenderTexture, vec2(0,0), false, vec2(m_View->getViewport().width * 1.0f, m_View->getViewport().height * 1.0f));
 }
 
 /* SETTERS */

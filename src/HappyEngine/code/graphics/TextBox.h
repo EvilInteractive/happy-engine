@@ -22,20 +22,15 @@
 #define _HE_TEXTBOX_H_
 #pragma once
 
-#include <string>
-#include "Rect.h"
-#include "Font.h"
-#include "Hitregion.h"
-#include "Color.h"
-#include <map>
-#include "Font.h"
-#include "boost/timer.hpp"
-#include <vector>
 #include "Keyboard.h"
-#include "Canvas2D.h"
 
 namespace he {
 namespace gui {
+    class Canvas2D;
+    class Hitregion;
+    class Font;
+    class Sprite;
+    class Text;
 
 class TextBox
 {
@@ -50,7 +45,7 @@ public:
 
     /* GENERAL */
     void tick();
-    void draw(gfx::Canvas2D* canvas);
+    void draw(Canvas2D* canvas);
 
     void resetText();
 
@@ -72,24 +67,27 @@ public:
 
 private:
 
+    /* INTERNAL */
+    void renderSprites();
+
     /* DATAMEMBERS */
     RectF m_Rect;
 
-    gui::Font* m_Font;
-    gui::Text m_Text;
+    Font* m_Font;
+    Text m_Text;
 
     std::string m_DefaultString;
     std::string m_String;
     std::string m_Cursor;
 
-    bool m_bActive;
-    bool m_bHasFocus;
-    bool m_bEntered;
-    bool m_bKeyDown;
+    bool m_Active;
+    bool m_HasFocus;
+    bool m_Entered;
+    bool m_KeyDown;
 
     bool m_BackspaceDown;
 
-    gui::Hitregion* m_Hitrect;
+    Hitregion* m_Hitrect;
 
     enum TextBoxColor
     {
@@ -100,6 +98,7 @@ private:
 
         TextBoxColor_MAX
     };
+
     Color m_Colors[TextBoxColor_MAX];
 
     uint32 m_CursorPos;
@@ -109,6 +108,9 @@ private:
     uint32 m_BackSpaceDelayTimer;
 
     he::PrimitiveList<io::Key> m_CharacterKeyCodes;
+
+    Sprite* m_NormalSprite;
+    Sprite* m_HoverSprite;
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     TextBox(const TextBox&);

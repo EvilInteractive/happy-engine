@@ -72,7 +72,7 @@ public:
     virtual void tick(float dTime);
 
     virtual void drawShapes(he::gfx::ShapeRenderer* renderer);
-    virtual void draw2D(he::gfx::Canvas2D* renderer);
+    virtual void draw2D(he::gui::Canvas2D* renderer);
 
     he::gfx::Scene* getScene() const { return m_Scene; }
 

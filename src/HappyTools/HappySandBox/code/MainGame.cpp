@@ -40,7 +40,6 @@
 #include "Scene.h"
 #include "View.h"
 #include "DefaultRenderPipeline.h"
-#include "Renderer2D.h"
 #include "MessageBox.h"
 
 //#include "boost/filesystem.hpp"
@@ -166,7 +165,7 @@ void MainGame::tick(float dTime)
     m_FPSGraph->tick(dTime);
 }
 
-void MainGame::draw2D(he::gfx::Canvas2D* /*canvas*/)
+void MainGame::draw2D(he::gui::Canvas2D* /*canvas*/)
 {
     /*
     canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));

@@ -23,6 +23,9 @@
 #pragma once
 
 namespace he {
+namespace gui {
+    class Canvas2D;
+}
 namespace gfx {
     class Texture2D;
     class PickEffect;
@@ -30,7 +33,6 @@ namespace gfx {
     class Scene;
     class RenderTarget;
     class View;
-    class Canvas2D;
 
 class Picker
 {
@@ -46,7 +48,7 @@ public:
     uint32 pick(const vec2& screenPoint);
     uint32 pick(const vec2& screenPoint, const he::PrimitiveList<IDrawable*>& drawList);
 
-    void drawDebug(Canvas2D* canvas) const;
+    void drawDebug(gui::Canvas2D* canvas) const;
 
 private:
 

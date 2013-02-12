@@ -69,6 +69,8 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
 {
     finishSprite();
 
+    sprite->setRendered(false);
+
     uint16 id(sprite->getID());
 
     vec2 size(sprite->getSize());

@@ -40,6 +40,7 @@ namespace gui {
     class TextBox;
     class Text;
     class Scrollbar;
+    class Sprite;
 }
 
 namespace gfx {
@@ -65,7 +66,7 @@ public:
     void attachToRenderer(gfx::Renderer2D* renderer);
     void detachFromRenderer();
 
-    virtual void draw2D(gfx::Canvas2D* canvas); // auto called
+    virtual void draw2D(gui::Canvas2D* canvas); // auto called
 
     void addMessage(const char* msg, CMSG_TYPE type = CMSG_TYPE_INFO);
 
@@ -104,6 +105,7 @@ private:
     void displayVars();
     void displayCmds();
     void onResize();
+    void renderBackground();
 
     /* DATAMEMBERS */
     std::map<std::string, boost::any> m_ValueContainer;
@@ -131,6 +133,7 @@ private:
     gui::Font* m_Font;
     gui::Text m_Text;
     gfx::Renderer2D* m_Renderer;
+    gui::Sprite* m_Background;
 
     vec2 m_ViewportSize;
     eventCallback0<void> m_ResizeHandler;

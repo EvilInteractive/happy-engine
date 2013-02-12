@@ -29,7 +29,6 @@
 #include "Window.h"
 
 #include "Renderer2D.h"
-#include "Canvas2D.h"
 
 #include "NodeGraph.h"
 #include "MaterialGeneratorNode.h"
@@ -39,7 +38,7 @@
 #include "IMouse.h"
 
 #include "MaterialGeneratorRootNodes.h"
-#include "Canvas2Dnew.h"
+#include "Canvas2D.h"
 #include "Font.h"
 #include "Sprite.h"
 #include "Gui.h"
@@ -124,6 +123,7 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     });
     m_NodeList.clear();
     m_Renderer->detachFromRender(this);
+    m_Renderer->removeWebView(m_WebViewGui);
     delete m_Renderer;
     delete m_Generator;
     if (m_View != nullptr)
@@ -149,7 +149,7 @@ MaterialGeneratorGraph::~MaterialGeneratorGraph()
     m_VisibleErrors.clear();
 
     delete m_GhostConnection;
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_Background);
     cr->removeSprite(m_ErrorBackgroundSprite);
 }
@@ -272,7 +272,7 @@ void MaterialGeneratorGraph::init()
     m_Window->LostFocus += lostfocusCallback;
     m_Window->Closed += closeCallback;
 
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Background = cr->createSprite(vec2(1280, 720));
     renderBackground();
 
@@ -623,11 +623,9 @@ bool MaterialGeneratorGraph::isOpen() const
     return m_Window->isOpen();
 }
 
-void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
+void MaterialGeneratorGraph::draw2D( gui::Canvas2D* canvas )
 {
-    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
-
-    cvs->drawSprite(m_Background, vec2(0,0));
+    canvas->drawSprite(m_Background, vec2(0,0));
 
     const mat33 transform(mat33::createScale2D(vec2(m_Scale, m_Scale)) * mat33::createTranslation2D(-m_Offset));
     const vec2 transformedSize(static_cast<float>(m_View->getViewport().width) / m_Scale, static_cast<float>(m_View->getViewport().height) / m_Scale);
@@ -642,12 +640,12 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         m_GhostConnection->draw2D(canvas, transform);
     }
 
-    m_VisibleErrors.forEach([this, cvs](const ErrorMessage& msg)
+    m_VisibleErrors.forEach([this, canvas](const ErrorMessage& msg)
     {
         const vec2 screenPos(worldToScreenPos(msg.m_Position));
-        cvs->setColor(Color(1, 1, 1, (ERROR_FADE_TIME + std::min(0.0f, msg.m_TimeLeft - ERROR_FADE_TIME)) / ERROR_FADE_TIME));
-        cvs->drawSprite(m_ErrorBackgroundSprite, screenPos - msg.m_TextSize / 2.0f - errorTextMarge, msg.m_TextSize + errorTextMarge * 2);
-        cvs->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
+        canvas->setColor(Color(1, 1, 1, (ERROR_FADE_TIME + std::min(0.0f, msg.m_TimeLeft - ERROR_FADE_TIME)) / ERROR_FADE_TIME));
+        canvas->drawSprite(m_ErrorBackgroundSprite, screenPos - msg.m_TextSize / 2.0f - errorTextMarge, msg.m_TextSize + errorTextMarge * 2);
+        canvas->fillText(*msg.m_Text, screenPos - msg.m_TextSize / 2.0f);
     });
 
     m_WebViewGui->draw2D(canvas);
@@ -666,10 +664,10 @@ void MaterialGeneratorGraph::draw2D( gfx::Canvas2D* canvas )
         m_DebugText.addTextExt("&%s  - %s\n", i < undoIndex? "AFA" : "ABA", transactions[i].getName().c_str());
     }
     
-    cvs->setColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
-    cvs->fillText(m_DebugText, vec2(14.0f, 14.0f));
-    cvs->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-    cvs->fillText(m_DebugText, vec2(12.0f, 12.0f));
+    canvas->setColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
+    canvas->fillText(m_DebugText, vec2(14.0f, 14.0f));
+    canvas->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    canvas->fillText(m_DebugText, vec2(12.0f, 12.0f));
 }
 
 he::vec2 MaterialGeneratorGraph::screenToWorldPos( const vec2& mousePos ) const
@@ -689,7 +687,7 @@ void MaterialGeneratorGraph::renderBackground()
 
     m_Background->invalidate(vec2((float)width,(float)height));
 
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
 
     cr->setActiveSprite(m_Background);
 
