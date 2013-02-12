@@ -47,14 +47,6 @@ void SkinnedModelComponent::init( Entity* parent )
     m_Parent = parent;
 }
 
-void SkinnedModelComponent::serialize(SerializerStream& /*stream*/)
-{
-}
-
-void SkinnedModelComponent::deserialize(const SerializerStream& /*stream*/)
-{
-}
-
 const gfx::Material* SkinnedModelComponent::getMaterial() const
 {
     return m_Material;
@@ -99,7 +91,7 @@ void SkinnedModelComponent::modelLoadedCallback()
     }
     else
     {
-        HE_ERROR("SkinnedMesh error: no bones found in %s", m_ModelMesh->getName());
+        HE_ERROR("SkinnedMesh error: no bones found in %s", m_ModelMesh->getName().c_str());
     }
 }
 

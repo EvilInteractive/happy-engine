@@ -154,7 +154,7 @@ uint32 Picker::pick(const vec2& screenPoint)
     i = 1;
     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
     {
-        byte packedID[4];
+        uint8 packedID[4];
         he_memcpy(packedID, &i, 4);
  
         m_PickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
@@ -166,7 +166,7 @@ uint32 Picker::pick(const vec2& screenPoint)
 
     GL::heScissorEnabled(false);
  
-    byte packedID[4];
+    uint8 packedID[4];
     glReadPixels(	static_cast<int>(screenPoint.x),
                     height - static_cast<int>(screenPoint.y),
                     1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);
@@ -239,7 +239,7 @@ uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& dr
     i = 1;
     std::for_each(pickList.cbegin(), pickList.cend(), [&](IDrawable* pDrawable)
     {
-        byte packedID[4];
+        uint8 packedID[4];
         he_memcpy(packedID, &i, 4);
  
         m_PickEffect->setID(vec4(packedID[2] / 255.0f, packedID[1] / 255.0f, packedID[0] / 255.0f, packedID[3] / 255.0f)); //BGRA
@@ -251,7 +251,7 @@ uint32 Picker::pick(const vec2& screenPoint, const PrimitiveList<IDrawable*>& dr
 
     GL::heScissorEnabled(false);
  
-    byte packedID[4];
+    uint8 packedID[4];
     glReadPixels(	static_cast<int>(screenPoint.x),
                     height - static_cast<int>(screenPoint.y),
                     1, 1, GL_BGRA, GL_UNSIGNED_BYTE, &packedID);

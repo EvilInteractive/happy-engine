@@ -28,7 +28,7 @@ namespace gfx {
 }
 namespace io {
 
-enum MouseCursor
+ENUM(MouseCursor, uint8)
 {
     MouseCursor_Pointer,
     MouseCursor_Cross,

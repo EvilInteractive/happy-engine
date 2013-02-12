@@ -686,7 +686,7 @@ void ShaderGenerator::writeOperation( const ShaderGeneratorVariableOperation& op
     { \
         m_ShaderFile << "(";\
         writeVariable(factory->get(operation.params[0]));\
-        m_ShaderFile << " "op" "; \
+        m_ShaderFile << " " op " "; \
         writeVariable(factory->get(operation.params[1]));\
         m_ShaderFile << ")";\
     } break;

@@ -22,36 +22,32 @@
 #include "PhysicsFixedJoint.h"
 
 #include "PhysicsEngine.h"
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 
 namespace he {
 namespace px {
 
-PhysicsFixedJoint::PhysicsFixedJoint(const IPhysicsActor* pActor0, const mat44& localAttach0,
-                                     const IPhysicsActor* pActor1, const mat44& localAttach1)
+PhysicsFixedJoint::PhysicsFixedJoint(const PhysicsActor* actor0, const mat44& localAttach0,
+                                     const PhysicsActor* actor1, const mat44& localAttach1)
 {
-    PHYSICS->lock();
-    m_pJoint = physx::PxFixedJointCreate(*PHYSICS->getSDK(), 
-        pActor0 != nullptr ? pActor0->getInternalActor() : nullptr, physx::PxTransform(localAttach0.getPhyicsMatrix()),
-        pActor1 != nullptr ? pActor1->getInternalActor() : nullptr, physx::PxTransform(localAttach1.getPhyicsMatrix()));
-    PHYSICS->unlock();
+    m_Joint = physx::PxFixedJointCreate(*PHYSICS->getSDK(), 
+        actor0 != nullptr ? actor0->getInternalActor() : nullptr, physx::PxTransform(localAttach0.getPhyicsMatrix()),
+        actor1 != nullptr ? actor1->getInternalActor() : nullptr, physx::PxTransform(localAttach1.getPhyicsMatrix()));
 
 #if DEBUG || _DEBUG
-    m_pJoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
+    m_Joint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
 #endif
 }
 
 
 PhysicsFixedJoint::~PhysicsFixedJoint()
 {
-    PHYSICS->lock();
-    m_pJoint->release();
-    PHYSICS->unlock();
+    m_Joint->release();
 }
 
 void PhysicsFixedJoint::setBreakForce( float force, float torque )
 {
-    m_pJoint->setBreakForce(force, torque);
+    m_Joint->setBreakForce(force, torque);
 }
 
 } } //end namespace

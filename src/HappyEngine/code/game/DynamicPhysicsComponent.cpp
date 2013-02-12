@@ -35,7 +35,6 @@ DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr), m_P
 
 DynamicPhysicsComponent::~DynamicPhysicsComponent()
 {
-    GAME->removeFromTickList(this);
     delete m_DynamicActor;
 }
 
@@ -44,17 +43,24 @@ void DynamicPhysicsComponent::init( Entity* parent )
     HE_ASSERT(parent != nullptr, "Component must have a parent!");
     m_Parent = parent;
     m_DynamicActor = NEW px::PhysicsDynamicActor(m_Parent->getWorldMatrix());
-    GAME->addToTickList(this);
 }
 
-void DynamicPhysicsComponent::serialize(SerializerStream& /*stream*/)
+void DynamicPhysicsComponent::activate()
 {
-
+    HE_IF_ASSERT(m_DynamicActor != nullptr, "activating none inited DynamicPhysicsComponent")
+    {
+        m_DynamicActor->attachToScene();
+        GAME->addToTickList(this);
+    }
 }
 
-void DynamicPhysicsComponent::deserialize(const SerializerStream& /*stream*/)
+void DynamicPhysicsComponent::deactivate()
 {
-
+    HE_IF_ASSERT(m_DynamicActor != nullptr, "deactivating none inited DynamicPhysicsComponent")
+    {
+        GAME->removeFromTickList(this);
+        m_DynamicActor->detachFromScene();
+    }
 }
 
 void DynamicPhysicsComponent::tick( float /*dTime*/ )

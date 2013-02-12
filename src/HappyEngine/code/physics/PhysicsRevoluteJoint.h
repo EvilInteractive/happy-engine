@@ -31,13 +31,13 @@ namespace physx {
 namespace he {
 namespace px {
 
-class IPhysicsActor;
+class PhysicsActor;
 
 class PhysicsRevoluteJoint : public IPhysicsJoint
 {
 public:
-    PhysicsRevoluteJoint(const IPhysicsActor* pActor0, const vec3& localAttach0,
-                          const IPhysicsActor* pActor1, const vec3& localAttach1);
+    PhysicsRevoluteJoint(const PhysicsActor* pActor0, const vec3& localAttach0,
+                          const PhysicsActor* pActor1, const vec3& localAttach1);
     virtual ~PhysicsRevoluteJoint();
 
     void setBreakForce( float force, float torque );
@@ -46,7 +46,7 @@ public:
     
 private:
 
-    physx::PxRevoluteJoint* m_pJoint;
+    physx::PxRevoluteJoint* m_Joint;
 
     //Disable default copy constructor and default assignment operator
     PhysicsRevoluteJoint(const PhysicsRevoluteJoint&);

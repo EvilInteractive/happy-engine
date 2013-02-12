@@ -29,10 +29,8 @@ namespace physx {
 }
 
 namespace he {
-namespace io {
-    class BinaryStream;
-}
 namespace px {
+class PhysicsBinaryStream;
 
 class PhysicsConvexMesh : public Resource<PhysicsConvexMesh>
 {
@@ -41,7 +39,7 @@ public:
     PhysicsConvexMesh();
     virtual ~PhysicsConvexMesh();
 
-    void load(const io::BinaryStream& stream);
+    void load(PhysicsBinaryStream& stream);
 
     const he::PrimitiveList<physx::PxConvexMesh*>& getInternalMeshes() const;
 

@@ -27,7 +27,7 @@
 #include "Renderer2D.h"
 #include "MathFunctions.h"
 #include "BezierShape2D.h"
-#include "BinaryStream.h"
+#include "BinaryFileVisitor.h"
 
 #include "ContentManager.h"
 #include "Font.h"
@@ -414,30 +414,6 @@ void MaterialGeneratorNode::addOverload( uint8 outputCount, uint8 inputCount, ..
     }
 }
 
-void MaterialGeneratorNode::addConnecters( uint8 outputCount, uint8 inputCount, ... )
-{
-    HE_ASSERT(m_Overloads[0].outputs.size() == outputCount && m_Overloads[0].inputs.size() == inputCount, 
-        "Incompatible amount of inputs or outputs supplied with connecters:\n Outputs: %d/%d\n Inputs: %d/%d", 
-        outputCount, m_Overloads[0].outputs.size(), inputCount, m_Overloads[0].inputs.size());
-    HE_ASSERT(m_Connecters.empty(), "Connecters already set!");
-
-    va_list argList;
-    va_start(argList, inputCount);
-    for (uint8 i(0); i < outputCount; ++i)
-    {
-        const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
-        m_Connecters.add(NEW Connecter(this, false, i, desc));
-    }
-    for (uint8 i(0); i < inputCount; ++i)
-    {
-        const ConnecterDesc& desc(va_arg(argList, ConnecterDesc));
-        m_Connecters.add(NEW Connecter(this, true, i, desc));
-    }
-    va_end(argList);
-    updateConnecterPositions();
-}
-
-
 bool MaterialGeneratorNode::evaluate( MaterialGeneratorError& error )
 {
     bool result(false);
@@ -612,16 +588,10 @@ void MaterialGeneratorNode::setSize( const vec2& size )
     updateConnecterPositions();
 }
 
-void MaterialGeneratorNode::serialize( io::BinaryStream& stream ) const
+void MaterialGeneratorNode::visit( io::BinaryFileVisitor& stream )
 {
-    stream.writeVector2(m_Position);
-    stream.writeGuid(m_Guid);
-}
-
-void MaterialGeneratorNode::deserialize( io::BinaryStream& stream )
-{
-    setPosition(stream.readVector2());
-    m_Guid = stream.readGuid();
+    stream.visit(m_Position);
+    stream.visit(m_Guid);
 }
 
 

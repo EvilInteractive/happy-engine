@@ -54,12 +54,10 @@ void PhysicsTrigger::addTriggerShape(const IPhysicsShape* shape, uint32 collisio
     he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, mat, localPose))
     {
-        PHYSICS->lock();
         shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, collisionGroup, collisionAgainstGroup);
         });
-        PHYSICS->unlock();
     }
 }
 void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uint32 collisionAgainstGroup )
@@ -122,13 +120,13 @@ const PhysicsUserData& PhysicsTrigger::getUserData() const
 
 void PhysicsTrigger::onTriggerEnter( physx::PxShape* shape )
 {
-    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    PhysicsActor* actor(static_cast<PhysicsActor*>(shape->userData));
     OnTriggerEnter(actor);
 }
 
 void PhysicsTrigger::onTriggerLeave( physx::PxShape* shape )
 {
-    IPhysicsActor* actor(static_cast<IPhysicsActor*>(shape->userData));
+    PhysicsActor* actor(static_cast<PhysicsActor*>(shape->userData));
     OnTriggerLeave(actor);
 }
 

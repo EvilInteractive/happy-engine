@@ -31,6 +31,12 @@
 namespace he {
 namespace net {
 
+bool packageReceivedEventCombiner(bool& inoutA, const bool& inB)
+{
+    inoutA = inB;
+    return inB;
+}
+
 NetworkManager::NetworkManager()
     : m_RakPeer(nullptr)
     , m_Sleep(0.0f)
@@ -39,6 +45,7 @@ NetworkManager::NetworkManager()
     , m_MaxConnections(8)
     , m_NetworkIdManager(NEW RakNet::NetworkIDManager())
     , m_SleepTimout(1 / 30.0f)
+    , PacketReceived(&packageReceivedEventCombiner, false)
 {
     SetNetworkIDManager(m_NetworkIdManager);
 }
@@ -48,7 +55,7 @@ NetworkManager::~NetworkManager()
 {
     delete m_NetworkObjectFactoryManager;
     delete m_NetworkIdManager;
-    bool isConnected(isConnected());
+    const bool isConnected(this->isConnected());
     if (isConnected == true)
         disconnect();
 }
@@ -124,7 +131,6 @@ void NetworkManager::tick( float dTime )
     if (m_Sleep > m_SleepTimout)
     {
         m_Sleep = 0.0f; // don't care if m_Sleep is x * m_SleepTimout
-
         for (RakNet::Packet* packet(m_RakPeer->Receive());   packet != nullptr; 
                 m_RakPeer->DeallocatePacket(packet), packet = m_RakPeer->Receive())
         {
@@ -191,6 +197,14 @@ void NetworkManager::tick( float dTime )
                     }*/
                 }
                 break;
+            case ID_USER_PACKET_ENUM:
+                {
+                    m_NetworkPackage.init(packet->data, packet->length, packet->guid);
+                    const bool eaten(PacketReceived(m_NetworkPackage));
+                    HE_ASSERT(eaten == true, "Unhandled packet received!"); eaten;
+                    m_NetworkPackage.finalise();
+                }
+                break;
             }
         }
     }
@@ -238,6 +252,21 @@ void NetworkManager::setSyncTimeout( float seconds )
 {
     m_SleepTimout = seconds;
     SetAutoSerializeInterval(static_cast<RakNet::Time>(seconds * 1000 - 1));
+}
+
+void NetworkManager::send( const NetworkPackage& package, const NetworkID& to, 
+        const ENetworkReliability reliability, const ENetworkPriority priority )
+{
+    m_RakPeer->Send(static_cast<const char*>(package.getData()), package.getByteCount(), 
+        checked_numcast<PacketPriority>(priority), checked_numcast<PacketReliability>(reliability), 0, to, false);
+}
+
+void NetworkManager::broadcast( const NetworkPackage& package, const bool ignoreSelf, 
+    const ENetworkReliability reliability, const ENetworkPriority priority )
+{
+    m_RakPeer->Send(static_cast<const char*>(package.getData()), package.getByteCount(), 
+        checked_numcast<PacketPriority>(priority), checked_numcast<PacketReliability>(reliability), 
+        0, ignoreSelf?getNetworkId():UNASSIGNED_NETWORKID, true);
 }
 
 

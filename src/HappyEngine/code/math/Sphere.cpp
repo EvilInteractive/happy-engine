@@ -58,10 +58,16 @@ IntersectResult Sphere::intersect(const Sphere& other) const
     float distSq(lengthSqr(axis));
 
     if (distSq < intersectDistSq)
+    {
         if (distSq + sqr(other.m_Radius) < sqr(m_Radius))
+        {
             return IntersectResult_Inside;
+        }
         else
+        {
             return IntersectResult_Intersecting;
+        }
+    }
 
     return IntersectResult_Outside;
 }

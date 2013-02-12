@@ -221,6 +221,7 @@ void Deferred3DRenderer::compileShaders()
         m_ShadowSpotLightData.wvp = m_ShadowSpotLightShader->getShaderVarId("mtxWVP");
         m_ShadowSpotLightData.shadowMap = m_ShadowSpotLightShader->getShaderSamplerId("shadowMap");
         m_ShadowSpotLightData.shadowMatrix = m_ShadowSpotLightShader->getShaderVarId("shadowMatrix");
+        m_ShadowSpotLightData.shadowInvSize = m_ShadowSpotLightShader->getShaderVarId("shadowMapInvSize");
 
     //----AL----------------------------------------------------------------------   
     m_AmbDirIllLightData.ambColor = m_AmbDirIllShader->getShaderVarId("ambLight.color");
@@ -266,57 +267,59 @@ void Deferred3DRenderer::onViewResized()
 void Deferred3DRenderer::render()
 {
     HE_ASSERT(m_Scene != nullptr, "Scene is nullptr, assign a scene first!");
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                             BEGIN                                  ///
-    //////////////////////////////////////////////////////////////////////////
-    m_CollectionRenderTarget->prepareForRendering();
-    GL::heSetCullFace(false);
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
-    GL::heSetDepthRead(true);
-    GL::heSetDepthWrite(true);
-    GL::heBlendFunc(BlendFunc_One, BlendFunc_Zero);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heBlendEnabled(false);
-    GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
-    m_CollectionRenderTarget->clear(he::Color(0.0f, 1, 0, 0));
-
-
-    //////////////////////////////////////////////////////////////////////////
-    ///                             DRAW                                   ///
-    //////////////////////////////////////////////////////////////////////////
     const CameraPerspective* camera(m_View->getCamera());
-    m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+    if (camera != nullptr)
     {
-        d->applyMaterial(camera);
-        d->draw();
-    });
+        //////////////////////////////////////////////////////////////////////////
+        ///                             BEGIN                                  ///
+        //////////////////////////////////////////////////////////////////////////
+        m_CollectionRenderTarget->prepareForRendering();
+        GL::heSetCullFace(false);
+        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+        GL::heSetDepthRead(true);
+        GL::heSetDepthWrite(true);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_Zero);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heBlendEnabled(false);
+        GL::heSetViewport(RectI(0, 0, m_View->getViewport().width, m_View->getViewport().height));
+        m_CollectionRenderTarget->clear(he::Color(0.0f, 1, 0, 0));
 
 
-    //////////////////////////////////////////////////////////////////////////
-    ///                             POST                                   ///
-    //////////////////////////////////////////////////////////////////////////
-    m_OutputRenderTarget->prepareForRendering(1);
+        //////////////////////////////////////////////////////////////////////////
+        ///                             DRAW                                   ///
+        //////////////////////////////////////////////////////////////////////////
+        m_Scene->getDrawList().draw(DrawListContainer::BlendFilter_Opac, camera, [&camera](IDrawable* d)
+        {
+            d->applyMaterial(camera);
+            d->draw();
+        });
 
-    GL::heBlendEnabled(true);
-    GL::heBlendFunc(BlendFunc_One, BlendFunc_One);
-    GL::heBlendEquation(BlendEquation_Add);
-    GL::heSetDepthRead(false);
-    GL::heSetDepthWrite(false);
 
-    m_SharedShaderData.projParams = vec4(
-        camera->getProjection()(0, 0),
-        camera->getProjection()(1, 1),
-        camera->getNearClip(),
-        camera->getFarClip());
-    m_SharedShaderData.sharedBuffer->uploadData(&m_SharedShaderData.projParams, sizeof(vec4));
+        //////////////////////////////////////////////////////////////////////////
+        ///                             POST                                   ///
+        //////////////////////////////////////////////////////////////////////////
+        m_OutputRenderTarget->prepareForRendering(1);
 
-    postPointLights();           
-    postSpotLights();
-    postAmbDirIllLight();
+        GL::heBlendEnabled(true);
+        GL::heBlendFunc(BlendFunc_One, BlendFunc_One);
+        GL::heBlendEquation(BlendEquation_Add);
+        GL::heSetDepthRead(false);
+        GL::heSetDepthWrite(false);
 
-    GL::heSetCullFace(false);
-    GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+        m_SharedShaderData.projParams = vec4(
+            camera->getProjection()(0, 0),
+            camera->getProjection()(1, 1),
+            camera->getNearClip(),
+            camera->getFarClip());
+        m_SharedShaderData.sharedBuffer->uploadData(&m_SharedShaderData.projParams, sizeof(vec4));
+
+        postPointLights();           
+        postSpotLights();
+        postAmbDirIllLight();
+
+        GL::heSetCullFace(false);
+        GL::heSetDepthFunc(DepthFunc_LessOrEqual);
+    }
 }
 void Deferred3DRenderer::draw2D(gui::Canvas2D* canvas)
 {
@@ -490,6 +493,7 @@ void Deferred3DRenderer::postSpotLights()
 
                     m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.shadowMatrix,     light->getShadowCamera().getViewProjection() * camera.getView().inverse());
                     m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.shadowMap,        light->getShadowMap());
+                    m_ShadowSpotLightShader->setShaderVar(m_ShadowSpotLightData.shadowInvSize,    vec2(1.0f / gfx::GraphicsEngine::getShadowMapSize(light->getShadowResolution())));
                 }
                 else
                 {

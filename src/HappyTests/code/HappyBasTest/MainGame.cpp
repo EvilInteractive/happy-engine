@@ -128,6 +128,7 @@ MainGame::~MainGame()
 
     delete m_MaterialGenerator;
 
+    m_Player->deactivate();
     delete m_Player;
 
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FpsGraph);
@@ -139,13 +140,12 @@ MainGame::~MainGame()
 
     he::gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_TestSprite);
-    
+
     m_RenderPipeline->get2DRenderer()->removeWebView(m_ToneMapGui);
-    //delete m_ToneMapGui;
-    //delete m_ToneMapGuiListener;
 
     std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
     {
+        entity->deactivate();
         delete entity;     
     });
 
@@ -269,7 +269,7 @@ void MainGame::load()
     
     #pragma region Scene
     ge::Entity* scene(NEW ge::Entity());
-    scene->init(m_Scene);
+    scene->setScene(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
     scene->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testScene3.material", "testPlatformer/scene.binobj");    
@@ -280,6 +280,7 @@ void MainGame::load()
     px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");
     physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
     physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
+    scene->activate();
 
     m_Scene->getInstancingManager()->createController("bullet", true, "cube.material", "cube.binobj");
     m_Scene->getInstancingManager()->getController("bullet")->attachToScene(m_Scene);
@@ -317,6 +318,7 @@ void MainGame::load()
     #pragma endregion
 
     m_Player = NEW Player();
+    m_Player->activate();
     m_View->setCamera(m_Player->getCamera());
     
     #pragma region GUI stuff
@@ -448,7 +450,7 @@ void MainGame::tick( float dTime )
         if (keyboard->isKeyDown(he::io::Key_Lctrl))
         {
             he::ge::Entity* bullet(NEW he::ge::Entity());
-            bullet->init(m_Scene);
+            bullet->setScene(m_Scene);
             bullet->setLocalTranslate(m_View->getCamera()->getPosition());
             he::ge::InstancedModelComponent* modelComp(NEW he::ge::InstancedModelComponent());
             modelComp->setLocalScale(he::vec3(0.5f));
@@ -460,6 +462,7 @@ void MainGame::tick( float dTime )
             physicsComp->addShape(&shape, he::px::PhysicsMaterial(1.0f, 0.8f, 0.3f), 1.0f, 0x00000001, 0xffffffff);
             m_EntityList.push_back(bullet);
             physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
+            bullet->activate();
         }
         if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
         {

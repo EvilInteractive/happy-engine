@@ -29,7 +29,7 @@ namespace he {
 namespace gfx {
     class PointLight;
     class SpotLight;
-    enum ShadowResolution;
+    ENUM(ShadowResolution, uint8);
 }
 namespace ge {
     
@@ -43,9 +43,10 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
+    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
-    virtual void serialize(SerializerStream& stream);
-    virtual void deserialize(const SerializerStream& stream);
+    virtual void activate();
+    virtual void deactivate();
     //////////////////////////////////////////////////////////////////////////
         
     void setMultiplier(float multiplier);
@@ -64,7 +65,12 @@ protected:
 
 private:    
     Entity* m_Parent;   
+
     gfx::PointLight* m_PointLight;
+
+    float m_Multiplier;
+    vec3 m_Color;
+    vec2 m_Attenuation;
 
     //Disable default copy constructor and default assignment operator
     PointLightComponent(const PointLightComponent&);
@@ -79,12 +85,12 @@ public:
     virtual ~SpotLightComponent();
 
     //////////////////////////////////////////////////////////////////////////
-    ///                         EntityComponent                                 ///
-    //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* pParent);
+    ///                         EntityComponent                            ///
+    //////////////////////////////////////////////////////////////////////////    
+    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
-    virtual void serialize(SerializerStream& stream);
-    virtual void deserialize(const SerializerStream& stream);
+    virtual void activate();
+    virtual void deactivate();
     //////////////////////////////////////////////////////////////////////////
     
     void setMultiplier(float multiplier);
@@ -100,14 +106,23 @@ public:
     float getBeginAttenuation() const;
     float getEndAttenuation() const;
     const vec3& getColor() const;
-    float getCosCutoff() const;
     float getFov() const;
     gfx::ShadowResolution getShadow() const;
 
+protected:
+    virtual void init(Entity* parent);
 
 private:
     Entity* m_Parent;
+
     gfx::SpotLight* m_SpotLight;
+
+    float m_Multiplier;
+    float m_Fov;
+    vec2 m_Attenuation;
+    vec3 m_Color;
+    vec3 m_Direction;
+    gfx::ShadowResolution m_ShadowResolution;
 
     //Disable default copy constructor and default assignment operator
     SpotLightComponent(const SpotLightComponent&);

@@ -22,7 +22,7 @@
 #define _HE_PhysicsCharacterController_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsUserData.h"
 
 namespace he {
@@ -33,6 +33,9 @@ class PhysicsCharacterController : physx::PxUserControllerHitReport, public IPhy
 public:
     PhysicsCharacterController();
     virtual ~PhysicsCharacterController();
+
+    void attachToScene();
+    void detachFromScene();
 
     void setHeight(const float height);
     void setRadius(const float radius);
@@ -53,9 +56,9 @@ public:
     event0<void> HitSide;
 
     // PxUserControllerHitReport
-    virtual void onShapeHit(const PxControllerShapeHit& hit);
-    virtual void onControllerHit(const PxControllersHit& hit);
-    virtual void onObstacleHit(const PxControllerObstacleHit& hit);
+    virtual void onShapeHit(const PVD::PxControllerShapeHit& hit);
+    virtual void onControllerHit(const PVD::PxControllersHit& hit);
+    virtual void onObstacleHit(const PVD::PxControllerObstacleHit& hit);
 
     // IPhysicsUserDataContainer
     virtual PhysicsUserDataContainerType getType() const { return PhysicsUserDataContainerType_Controller; }
@@ -71,6 +74,7 @@ public:
     }
 
 private:
+    physx::PxCapsuleControllerDesc m_ControllerDesc;
     physx::PxCapsuleController* m_Controller;
     physx::PxControllerFilters m_Filters;
 

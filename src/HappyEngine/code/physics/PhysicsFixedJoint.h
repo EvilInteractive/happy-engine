@@ -31,20 +31,20 @@ namespace physx {
 namespace he {
 namespace px {
 
-class IPhysicsActor;
+class PhysicsActor;
 
 class PhysicsFixedJoint : public IPhysicsJoint
 {
 public:
-    PhysicsFixedJoint(const IPhysicsActor* pActor0, const mat44& localAttach0,
-                      const IPhysicsActor* pActor1, const mat44& localAttach1);
+    PhysicsFixedJoint(const PhysicsActor* pActor0, const mat44& localAttach0,
+                      const PhysicsActor* pActor1, const mat44& localAttach1);
     virtual ~PhysicsFixedJoint();
 
     void setBreakForce( float force, float torque );
 
 private:
 
-    physx::PxFixedJoint* m_pJoint;
+    physx::PxFixedJoint* m_Joint;
 
     //Disable default copy constructor and default assignment operator
     PhysicsFixedJoint(const PhysicsFixedJoint&);

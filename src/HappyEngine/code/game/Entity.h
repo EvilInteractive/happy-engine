@@ -43,14 +43,16 @@ public:
     void addComponent(EntityComponent* component);      // Gives ownership to Entity
     void removeComponent(EntityComponent* component);   // Returns ownership to caller
 
-    virtual void init(gfx::Scene* scene);
+    virtual void activate();
+    virtual void deactivate();
+
+    void setScene(gfx::Scene* const scene) { m_Scene = scene; }
     gfx::Scene* getScene() const { return m_Scene; }
      
     //////////////////////////////////////////////////////////////////////////
     /// EntityComponent
-    //////////////////////////////////////////////////////////////////////////
-    virtual void serialize(SerializerStream& /*stream*/) {};
-    virtual void deserialize(const SerializerStream& /*stream*/) {};
+    //////////////////////////////////////////////////////////////////////////    
+    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
     //////////////////////////////////////////////////////////////////////////
     /// Object3D (resolve ambiguity)

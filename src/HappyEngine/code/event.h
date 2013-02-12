@@ -39,12 +39,16 @@ bool defaultEventCombiner(T& inoutA, const T& inB)
 
 #define ARGS 1
 #define TEMPLATE_EXTRA_ARGS typename Arg1Type
+#define TEMPLATE_EXTRA_ARGS_PREDCL typename Arg1TypeA
+#define TEMPLATE_TYPEDEF_ARGS Arg1Type
 #define DECL_PARAMS const Arg1Type& arg1
 #define PARAMS arg1
 #include "event_internal.h"
 
 #define ARGS 2
 #define TEMPLATE_EXTRA_ARGS typename Arg1Type, typename Arg2Type
+#define TEMPLATE_EXTRA_ARGS_PREDCL typename Arg1TypeA, typename Arg2TypeA
+#define TEMPLATE_TYPEDEF_ARGS Arg1Type, Arg2Type
 #define DECL_PARAMS const Arg1Type& arg1, const Arg2Type& arg2
 #define PARAMS arg1, arg2
 #include "event_internal.h"

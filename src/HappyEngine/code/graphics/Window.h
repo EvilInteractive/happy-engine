@@ -26,7 +26,7 @@
 
 namespace he {
 namespace io {
-    enum MouseCursor;
+    ENUM(MouseCursor, uint8);
 }
 namespace gfx {
 class Window;
@@ -42,7 +42,7 @@ class WindowFactory: public ObjectFactory<Window>, public Singleton<WindowFactor
 typedef HWND__* NativeWindowHandle;
 #elif defined(HE_LINUX)
 typedef unsigned long NativeWindowHandle;
-#elif defined(HE_MACOS)
+#elif defined(HE_MAC)
 typedef void* NativeWindowHandle;
 #endif
 
@@ -75,6 +75,7 @@ public:
     void setCursor(const io::MouseCursor cursor);
     void setFullscreen(bool fullscreen);
     void setResizable(bool resizable);   // call before creating, or destroy and create
+    void setMousePosition(const vec2& pos);
 
     // Getters
     void getWindowPosition(int& x, int& y) const;

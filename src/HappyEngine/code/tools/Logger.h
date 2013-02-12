@@ -39,7 +39,7 @@ public:
     ~Logger();
 
     void log(const LogType type, const char* file, const char* func, int line, const char* str, ...);
-    void log(const LogType type, const char* file, const char* func, int line, const char* str, const va_list& argList);
+    void log(const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList);
 
     static Logger* getInstance();
     static void sdmInit();

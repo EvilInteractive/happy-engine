@@ -27,13 +27,13 @@
 
 #include "OpenGL.h"
 
-#ifdef SFML_SYSTEM_WINDOWS
+#ifdef HE_WINDOWS
 #include <windows.h>
-#elif defined(SFML_SYSTEM_LINUX)
+#elif defined(HE_LINUX)
 #include <X11/cursorfont.h>
 #include <X11/Xlib.h>
 #else
-#error This OS is not yet supported for changing the cursor.
+//#error This OS is not yet supported for changing the cursor.
 #endif
 
 namespace he {
@@ -44,7 +44,7 @@ IMPLEMENT_OBJECT(Window)
 Window::Window() 
   : m_Window(NEW sf::Window())
   , m_Parent(nullptr)
-  , m_ClearColor(0ui8, 0, 0)
+  , m_ClearColor(0.0f, 0, 0)
   , m_WindowRect(-1, -1, 1280, 720)
   , m_Titel("")
   , m_VSyncEnabled(false)
@@ -97,8 +97,7 @@ void Window::create(Window* parent)
         m_Window->setTitle(m_Titel);
         m_Window->setSize(sf::Vector2u(m_WindowRect.width, m_WindowRect.height));
     }
-    m_Window->setKeyRepeatEnabled(false);
-    m_Window->setFramerateLimit(0);
+    m_Window->setKeyRepeatEnabled(true);
     setWindowPosition(m_WindowRect.x, m_WindowRect.y);
     setCursorVisible(m_IsCursorVisible);
     setVSync(m_VSyncEnabled);
@@ -203,7 +202,7 @@ void Window::doEvents( float /*dTime*/ )
             break;
         case sf::Event::TextEntered:
             if (hasFocus == true)
-                keyboard->TextCharEntered(static_cast<char>(event.text.unicode));
+                keyboard->TextCharEntered(static_cast<uint32>(event.text.unicode));
             break;
         }
     }
@@ -283,6 +282,11 @@ void Window::setFullscreen( bool fullscreen )
 void Window::setResizable( bool resizable )
 {
     m_Resizeable = resizable;
+}
+
+void Window::setMousePosition( const vec2& pos )
+{
+    sf::Mouse::setPosition(sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y)), *m_Window);
 }
 
 #ifdef HE_WINDOWS
@@ -469,8 +473,13 @@ void Window::setCursor( const io::MouseCursor cursor )
     XDefineCursor(m_Display, m_Window->getSystemHandle(), m_Cursor);
     XFlush(m_Display);
 }
+    
+#elif defined(HE_MAC)
+    
+void Window::setCursor( const io::MouseCursor /*cursor*/ )
+{
+}
 
 #endif
-
-
+    
 } } //end namespace

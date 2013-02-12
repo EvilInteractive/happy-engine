@@ -62,6 +62,10 @@ public:
     vec2 getTranslation() const;
     mat44 getMat44() const;
 
+    const vec3& getForward() const;
+    const vec3& getUp() const;
+    const vec3& getRight() const;
+
     /* STATIC */
     static const mat33 Identity;
 

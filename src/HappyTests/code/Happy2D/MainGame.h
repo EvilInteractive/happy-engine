@@ -47,6 +47,7 @@ public:
     virtual ~MainGame();
 
     virtual void init();
+    virtual void destroy() {}
     virtual void load();
     virtual void tick(float dTime);
     virtual void draw2D(he::gui::Canvas2D* canvas);

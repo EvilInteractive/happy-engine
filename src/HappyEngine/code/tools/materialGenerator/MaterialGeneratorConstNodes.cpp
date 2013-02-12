@@ -31,7 +31,9 @@ namespace tools {
 MaterialGeneratorNodeFloat1::MaterialGeneratorNodeFloat1()
 {
     addOverload(1, 0, MaterialGeneratorVariableType_Float);
-    addConnecters(1, 0, ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f)));
+    FixedSizeList<ConnecterDesc, 1> outputs;
+    outputs[0] = ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f));
+    addConnecterOutputs( outputs );
     addParam(MaterialGeneratorNodeParam("Float", MaterialGeneratorNodeParam::Type_Float));
 }
 bool MaterialGeneratorNodeFloat1::evaluate( MaterialGeneratorError& error )
@@ -59,10 +61,13 @@ MaterialGeneratorNodeFloat2::MaterialGeneratorNodeFloat2()
         MaterialGeneratorVariableType_Float2, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float);
-    addConnecters(3, 0, 
-        ConnecterDesc("XY", Color(1.0f, 1.0f, 1.0f, 1.0f)), 
-        ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f)), 
-        ConnecterDesc("Y", Color(0.0f, 1.0f, 0.0f, 1.0f)));
+
+    FixedSizeList<ConnecterDesc, 3> outputs;
+    outputs[0] = ConnecterDesc("XY", Color(1.0f, 1.0, 1.0, 1.0f));
+    outputs[1] = ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f));
+    outputs[2] = ConnecterDesc("Y", Color(0.0f, 1.0f, 0.0f, 1.0f));
+    addConnecterOutputs( outputs );
+
     addParam(MaterialGeneratorNodeParam("Float2", MaterialGeneratorNodeParam::Type_Float2));
 }
 bool MaterialGeneratorNodeFloat2::evaluate( MaterialGeneratorError& error )
@@ -106,11 +111,14 @@ MaterialGeneratorNodeFloat3::MaterialGeneratorNodeFloat3()
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float);
-    addConnecters(4, 0, 
-        ConnecterDesc("XYZ", Color(1.0f, 1.0f, 1.0f, 1.0f)), 
-        ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f)), 
-        ConnecterDesc("Y", Color(0.0f, 1.0f, 0.0f, 1.0f)),
-        ConnecterDesc("Z", Color(0.0f, 0.0f, 1.0f, 1.0f)));
+
+    FixedSizeList<ConnecterDesc, 4> outputs;
+    outputs[0] = ConnecterDesc("XYZ", Color(1.0f, 1.0, 1.0, 1.0f));
+    outputs[1] = ConnecterDesc("X", Color(1.0f, 0.0f, 0.0f, 1.0f));
+    outputs[2] = ConnecterDesc("Y", Color(0.0f, 1.0f, 0.0f, 1.0f));
+    outputs[3] = ConnecterDesc("Z", Color(0.0f, 0.0f, 1.0f, 1.0f));
+    addConnecterOutputs( outputs );
+
     addParam(MaterialGeneratorNodeParam("Float3", MaterialGeneratorNodeParam::Type_Float3));
 }
 bool MaterialGeneratorNodeFloat3::evaluate( MaterialGeneratorError& error )
@@ -161,12 +169,15 @@ MaterialGeneratorNodeFloat4::MaterialGeneratorNodeFloat4()
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float);
-    addConnecters(5, 0, 
-        ConnecterDesc("RGBA", Color(1.0f, 1.0f, 1.0f, 1.0f)), 
-        ConnecterDesc("R", Color(1.0f, 0.0f, 0.0f, 1.0f)), 
-        ConnecterDesc("G", Color(0.0f, 1.0f, 0.0f, 1.0f)),
-        ConnecterDesc("B", Color(0.0f, 0.0f, 1.0f, 1.0f)),
-        ConnecterDesc("A", Color(0.5f, 0.0f, 1.0f, 1.0f)));
+
+    FixedSizeList<ConnecterDesc, 5> outputs;
+    outputs[0] = ConnecterDesc("RGBA", Color(1.0f, 1.0, 1.0, 1.0f));
+    outputs[1] = ConnecterDesc("R", Color(1.0f, 0.0f, 0.0f, 1.0f));
+    outputs[2] = ConnecterDesc("G", Color(0.0f, 1.0f, 0.0f, 1.0f));
+    outputs[3] = ConnecterDesc("B", Color(0.0f, 0.0f, 1.0f, 1.0f));
+    outputs[4] = ConnecterDesc("A", Color(0.5f, 0.0f, 1.0f, 1.0f));
+    addConnecterOutputs( outputs );
+
     addParam(MaterialGeneratorNodeParam("Float4", MaterialGeneratorNodeParam::Type_Float4));
 }
 bool MaterialGeneratorNodeFloat4::evaluate( MaterialGeneratorError& error )

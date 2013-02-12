@@ -69,7 +69,7 @@ public:
     // webview load listeners
     virtual void OnFailLoadingFrame(
         Awesomium::WebView *  		caller,
-        int64  						frame_id,
+        ::int64  						frame_id,
         bool  						is_main_frame,
         const Awesomium::WebURL&  	url,
         int  						error_code,
@@ -78,7 +78,7 @@ public:
 
     virtual void OnFinishLoadingFrame(
         Awesomium::WebView *  		caller,
-        int64  						frame_id,
+        ::int64  					frame_id,
         bool  						is_main_frame,
         const Awesomium::WebURL&  	url 
     );
@@ -90,7 +90,7 @@ public:
 
     virtual void OnBeginLoadingFrame(
         Awesomium::WebView*			caller,
-        int64						frame_id,
+        ::int64						frame_id,
         bool						is_main_frame,
         const Awesomium::WebURL&	url,
         bool						is_error_page
@@ -122,6 +122,7 @@ private:
     WebListener* m_WebListener;
 
     bool m_InputEnabled;
+    bool m_HasFocus;
     
     Texture2D* m_RenderTexture;
     vec2 m_Position;
@@ -135,6 +136,7 @@ private:
     he::eventCallback0<void> m_ViewResizedHandler;
 
     // Controls
+    he::eventCallback1<void, uint32> m_TextEnteredHandler;
     he::eventCallback1<void, io::Key> m_KeyPressedHandler;
     he::eventCallback1<void, io::Key> m_KeyReleasedHandler;
     he::eventCallback1<void, io::MouseButton> m_MouseButtonPressedHandler;
@@ -147,6 +149,6 @@ private:
     WebView& operator=(const WebView&);
 };
 
-}} //end namespace
+} } //end namespace
 
 #endif

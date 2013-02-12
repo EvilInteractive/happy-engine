@@ -220,7 +220,7 @@ void SpotLight::setShadowResolution( const ShadowResolution& resolution )
                 m_ShadowMap->setName("Spotlight shadowmap");
                 m_ShadowMap->init(TextureWrapType_Clamp, TextureFilterType_Linear, TextureFormat_R16, false);
             }
-            uint16 res(GRAPHICS->getShadowMapSize(resolution));
+            uint16 res(gfx::GraphicsEngine::getShadowMapSize(resolution));
             m_ShadowMap->setData(res, res, 0, TextureBufferLayout_R, TextureBufferType_Float);
         }
     }

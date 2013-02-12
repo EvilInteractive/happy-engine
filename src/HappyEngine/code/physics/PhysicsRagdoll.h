@@ -167,7 +167,7 @@ private:
     physx::PxD6Joint* m_pLegR1LegR2Joint;
     physx::PxD6Joint* m_pLegR2FootJoint;
 
-    physx::PxAggregate* m_pAggregate;
+    physx::PxAggregate* m_Aggregate;
 
     void addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& part, const PhysicsMaterial& material, 
         uint32 collisionGroup = 0xffffffff, uint32 collisionGroupAgainst = 0xffffffff);

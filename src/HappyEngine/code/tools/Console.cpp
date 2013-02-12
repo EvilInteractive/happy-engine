@@ -148,7 +148,7 @@ void Console::processCommand(const std::string& command)
 
     // remove spaces
     #if !GCC
-    s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
+    s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
     #else // !FIX! will be fixed when work on linux resumed
     #error What if GCC?
     #endif
@@ -183,7 +183,7 @@ void Console::processCommand(const std::string& command)
         }
         else
         {
-            HE_ERROR("the keyword '%s' was not found!", keyWord);
+            HE_ERROR("the keyword '%s' was not found!", keyWord.c_str());
         }
     }
     else if (m_FunctionContainer.find(s) != m_FunctionContainer.end()) // check if it's a command

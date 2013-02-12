@@ -50,14 +50,17 @@ MaterialGeneratorNodeRootNormalDraw::MaterialGeneratorNodeRootNormalDraw()
         MaterialGeneratorVariableType_Float, 
         MaterialGeneratorVariableType_Float3, 
         MaterialGeneratorVariableType_Float3);
-    addConnecters(0, 7, 
-        ConnecterDesc("Diffuse", Color(1.0f, 0.5f, 0.0f, 1.0f)), 
-        ConnecterDesc("Emissive", Color(1.0f, 0.5f, 0.0f, 1.0f)),
-        ConnecterDesc("Specular", Color(1.0f, 0.5f, 0.0f, 1.0f)),
-        ConnecterDesc("Gloss", Color(1.0f, 0.5f, 0.0f, 1.0f)),
-        ConnecterDesc("Opacity", Color(1.0f, 0.5f, 0.0f, 1.0f)),
-        ConnecterDesc("Normal", Color(1.0f, 0.5f, 0.0f, 1.0f)),
-        ConnecterDesc("WorldPositionOffset", Color(1.0f, 0.5f, 0.0f, 1.0f)));
+
+    FixedSizeList<ConnecterDesc, 7> inputs;
+    inputs[0] = ConnecterDesc("Diffuse", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[1] = ConnecterDesc("Emissive", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[2] = ConnecterDesc("Specular", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[3] = ConnecterDesc("Gloss", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[4] = ConnecterDesc("Opacity", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[5] = ConnecterDesc("Normal", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    inputs[6] = ConnecterDesc("WorldPositionOffset", Color(1.0f, 0.5f, 0.0f, 1.0f));
+    addConnecterInputs( inputs );
+
     setSize(vec2(128, 256));
     setCanBeSelected(false);
 }

@@ -22,14 +22,14 @@
 #define _HE_PHYSICS_TRIGGER_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsDynamicActor.h"
 
 namespace he {
 namespace px {
 class PhysicsDynamicActor;
 
-class PhysicsTrigger : public IPhysicsActor
+class PhysicsTrigger : public PhysicsActor
 {
 public:
 
@@ -64,8 +64,8 @@ public:
     void onTriggerEnter(physx::PxShape* shape);
     void onTriggerLeave(physx::PxShape* shape);
 
-    event1<void, IPhysicsActor*> OnTriggerEnter;
-    event1<void, IPhysicsActor*> OnTriggerLeave;
+    event1<void, PhysicsActor*> OnTriggerEnter;
+    event1<void, PhysicsActor*> OnTriggerLeave;
 
 protected:
     virtual uint32 getCompatibleShapes() const;

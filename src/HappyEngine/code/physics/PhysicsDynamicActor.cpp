@@ -36,20 +36,15 @@ namespace he {
 namespace px {
 
 PhysicsDynamicActor::PhysicsDynamicActor(const mat44& pose)
+    : m_Actor(nullptr)
 {  
-    PHYSICS->lock();
     m_Actor = PHYSICS->getSDK()->createRigidDynamic(physx::PxTransform(pose.getPhyicsMatrix().column3.getXYZ(), 
                                   physx::PxQuat(physx::PxMat33(pose.getPhyicsMatrix().column0.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column1.getXYZ(), 
                                                                  pose.getPhyicsMatrix().column2.getXYZ()))));
     m_Actor->userData = static_cast<IPhysicsUserDataContainer*>(this);
 
-    PHYSICS->unlock();
     HE_ASSERT(m_Actor != nullptr, "Actor creation failed");
-
-    PHYSICS->lock();
-    PHYSICS->getScene()->addActor(*m_Actor);
-    PHYSICS->unlock();
 }
 void PhysicsDynamicActor::addShape( const IPhysicsShape* shape, const PhysicsMaterial& material, float mass, 
     uint32 collisionGroup, uint32 collisionAgainstGroup, const mat44& localPose/* = mat44::Identity*/ )
@@ -57,12 +52,10 @@ void PhysicsDynamicActor::addShape( const IPhysicsShape* shape, const PhysicsMat
     he::PrimitiveList<physx::PxShape*> shapes;
     if (createShape(shapes, shape, material, localPose))
     {
-        PHYSICS->lock();
         shapes.forEach([&](physx::PxShape* pxShape)
         {
             addShape(pxShape, mass, collisionGroup, collisionAgainstGroup);
         });
-        PHYSICS->unlock();
     }
 }
 
@@ -85,13 +78,8 @@ void PhysicsDynamicActor::addShape( physx::PxShape* shape, float mass, uint32 co
 
 PhysicsDynamicActor::~PhysicsDynamicActor()
 {
-    if (PHYSICS != nullptr)
-    {
-        PHYSICS->lock();
-        PHYSICS->getScene()->removeActor(*m_Actor);
-        PHYSICS->unlock();
+    if (m_Actor != nullptr)
         m_Actor->release();
-    }
 }
 
 void PhysicsDynamicActor::getTranslation(vec3& translation) const

@@ -34,45 +34,70 @@ PhysicsCharacterController::PhysicsCharacterController()
     , m_StandsOnFloor(false)
     , m_MoveSpeed(0, 0, 0)
 {
-    PxCapsuleControllerDesc desc;
-    desc.height = 2.0f;
-    desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
-    desc.interactionMode = physx::PxCCTInteractionMode::eINCLUDE;
-    desc.nonWalkableMode = physx::PxCCTNonWalkableMode::eFORCE_SLIDING;
-    desc.radius = 0.5f;
-    desc.slopeLimit = cosf(piOverFour);
-    desc.stepOffset = 0.3f;
-    desc.callback = this;
-    desc.userData = static_cast<IPhysicsUserDataContainer*>(this);
+    m_ControllerDesc.height = 2.0f;
+    m_ControllerDesc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
+    m_ControllerDesc.interactionMode = physx::PxCCTInteractionMode::eINCLUDE;
+    m_ControllerDesc.nonWalkableMode = physx::PxCCTNonWalkableMode::eFORCE_SLIDING;
+    m_ControllerDesc.radius = 0.5f;
+    m_ControllerDesc.slopeLimit = cosf(piOverFour);
+    m_ControllerDesc.stepOffset = 0.3f;
+    m_ControllerDesc.callback = this;
+    m_ControllerDesc.userData = static_cast<IPhysicsUserDataContainer*>(this);
     PhysicsMaterial material(0.1f, 0.1f, 0.2f);
-    desc.material = material.getInternalMaterial();
-
-    PhysicsEngine* physics(PHYSICS);
-    m_Controller = static_cast<physx::PxCapsuleController*>(
-        physics->getControllerManager()->createController(*physics->getSDK(), physics->getScene(), desc));
-    HE_ASSERT(m_Controller != nullptr, "Creation of character controller failed!");
+    m_ControllerDesc.material = material.getInternalMaterial();
 }
 
+void PhysicsCharacterController::attachToScene()
+{
+    HE_IF_ASSERT(m_Controller == nullptr, "Controller already attached to scene!")
+    {
+        PhysicsEngine* const physics(PHYSICS);
+        m_Controller = static_cast<physx::PxCapsuleController*>(
+            physics->getControllerManager()->createController(*physics->getSDK(), physics->getScene(), m_ControllerDesc));
+        setFootPosition(m_Position);
+        HE_ASSERT(m_Controller != nullptr, "Creation of character controller failed!");
+    }
+}
+
+void PhysicsCharacterController::detachFromScene()
+{
+    if (m_Controller != nullptr)
+    {
+        m_Controller->release();
+        m_Controller = nullptr;
+    }
+}
 
 PhysicsCharacterController::~PhysicsCharacterController()
 {
-    m_Controller->release();
 }
 
 void PhysicsCharacterController::setHeight( const float height )
 {
-    m_Controller->resize(height/2.0f);
+    m_ControllerDesc.height = height / 2.0f;
+    if (m_Controller != nullptr)
+    {
+        m_Controller->resize(height/2.0f);
+    }
 }
 
 void PhysicsCharacterController::setRadius( const float radius )
 {
-    m_Controller->setRadius(radius);
+    m_ControllerDesc.radius = radius;
+    if (m_Controller != nullptr)
+    {
+        m_Controller->setRadius(radius);
+    }
 }
 
 void PhysicsCharacterController::setFootPosition( const vec3& position )
 {
-    PxExtendedVec3 pos(position.x, position.y, position.z);
-    m_Controller->setFootPosition(pos);
+    m_Position = position;
+    if (m_Controller != nullptr)
+    {
+        physx::PxExtendedVec3 pos(position.x, position.y, position.z);
+        m_Controller->setFootPosition(pos);
+    }
 }
 
 void PhysicsCharacterController::setGravity( const vec3& gravity )
@@ -82,7 +107,11 @@ void PhysicsCharacterController::setGravity( const vec3& gravity )
 
 void PhysicsCharacterController::setMaxStepSize( const float meters )
 {
-    m_Controller->setStepOffset(meters);
+    m_ControllerDesc.stepOffset = meters;
+    if (m_Controller != nullptr)
+    {
+        m_Controller->setStepOffset(meters);
+    }
 }
 
 void PhysicsCharacterController::setMoveSpeed( const vec3& moveSpeed )
@@ -100,11 +129,11 @@ void PhysicsCharacterController::tick( float dTime )
     m_Speed += m_Gravity * 10 * dTime;
     const vec3 speed((m_Speed + m_MoveSpeed) * dTime);
 
-    PxVec3 disp;
+    physx::PxVec3 disp;
     speed.toPxVec3(&disp);
     const uint32 moveResult(m_Controller->move(disp, 0.0001f, dTime, m_Filters));
 
-    const PxExtendedVec3 pxFootPos(m_Controller->getFootPosition());
+    const physx::PxExtendedVec3 pxFootPos(m_Controller->getFootPosition());
     m_Position.x = static_cast<float>(pxFootPos.x);
     m_Position.y = static_cast<float>(pxFootPos.y);
     m_Position.z = static_cast<float>(pxFootPos.z);
@@ -127,15 +156,15 @@ void PhysicsCharacterController::tick( float dTime )
 }
 
 // PxUserControllerHitReport
-void PhysicsCharacterController::onShapeHit( const PxControllerShapeHit& /*hit*/ )
+void PhysicsCharacterController::onShapeHit( const physx::PxControllerShapeHit& /*hit*/ )
 {
 }
 
-void PhysicsCharacterController::onControllerHit( const PxControllersHit& /*hit*/ )
+void PhysicsCharacterController::onControllerHit( const physx::PxControllersHit& /*hit*/ )
 {
 }
 
-void PhysicsCharacterController::onObstacleHit( const PxControllerObstacleHit& /*hit*/ )
+void PhysicsCharacterController::onObstacleHit( const physx::PxControllerObstacleHit& /*hit*/ )
 {
 }
 

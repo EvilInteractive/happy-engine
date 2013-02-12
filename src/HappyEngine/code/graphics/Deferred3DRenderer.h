@@ -94,6 +94,7 @@ private:
         // Shadow
         uint32 shadowMap;
         uint32 shadowMatrix;
+        uint32 shadowInvSize;
     };
     struct PostAmbDirIllLightData
     {
@@ -125,7 +126,7 @@ public:
     Scene* getScene() const { return m_Scene; }
 
     virtual RenderPass getRenderPass() const { return RenderPass_Opac; }
-    virtual uint8 getRenderPriority() const { return 50ui8; }
+    virtual uint8 getRenderPriority() const { return 50; }
 
     virtual void render();
     virtual void draw2D(gui::Canvas2D* canvas);

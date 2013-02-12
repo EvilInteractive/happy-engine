@@ -39,11 +39,11 @@ Model::~Model()
     });
 }
 
-void Model::release()
+void Model::release() const
 {
     Resource<Model>::release();
 }
-bool Model::canBeGarbageCollected()
+bool Model::canBeGarbageCollected() const
 {
     // only GC if all meshes are referenced just by this instance
     bool block(std::any_of(cbegin(), cend(), [](ModelMesh* mesh)

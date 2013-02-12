@@ -21,10 +21,18 @@
 
 namespace he {
 
+const vec2 vec2::zero(0, 0);
+const vec2 vec2::one(1, 1);
+const vec2 vec2::unitX(1, 0);
+const vec2 vec2::unitY(0, 1);
+
 vec2::vec2(): x(0), y(0)
 {
 }
 vec2::vec2(float x_, float y_): x(x_), y(y_)
+{
+}
+vec2::vec2(const float v): x(v), y(v)
 {
 }
 vec2::vec2(const physx::PxVec2& vec) : x(vec.x), y(vec.y)
@@ -125,6 +133,8 @@ bool vec2::operator!=(const vec2& v) const
 {
     return x != v.x || y != v.y;
 }
+
+
 //<----------------------------------------<
 
 } //end namespace

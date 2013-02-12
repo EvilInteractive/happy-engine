@@ -45,7 +45,7 @@
 #include "BezierShape2D.h"
 
 #include "Command.h"
-#include "BinaryStream.h"
+#include "BinaryFileVisitor.h"
 #include "MaterialGeneratorNodeFactory.h"
 #include "WebView.h"
 #include "WebListener.h"
@@ -786,35 +786,40 @@ void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
     }
 }
 
-#define VERSION 1ui16
+#define VERSION 1
 
 void MaterialGeneratorGraph::save()
 {
-    io::BinaryStream stream;
-    if (stream.open(CONTENT->getShaderFolderPath().append("testShader.shader").str(), io::BinaryStream::Write))
+    io::BinaryFileVisitor stream;
+    if (stream.openWrite(CONTENT->getShaderFolderPath().append("testShader.shader").str()))
     {
-        stream.writeWord(VERSION);
-        stream.writeDword(static_cast<uint32>(m_NodeList.size()));
-        m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
+        uint16 version(VERSION);
+        uint32 nodeCount(static_cast<uint32>(m_NodeList.size()));
+        stream.visit(version);
+        stream.visit(nodeCount);
+        m_NodeList.forEach([&stream](MaterialGeneratorNode* const node)
         {
-            const uint16 type(static_cast<uint16>(node->getType()));
-            stream.writeWord(type);
-            node->serialize(stream);
+            MaterialGeneratorNodeType type(node->getType());
+            stream.visitEnum<MaterialGeneratorNodeType, uint16>(type);
+            stream.visit(type);
+            node->visit(stream);
         });
         m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
         {
-            io::BinaryStream& scopedStream(stream);
+            io::BinaryFileVisitor& scopedStream(stream);
             node->getConnecters().forEach([&scopedStream](MaterialGeneratorNode::Connecter* const connecter)
             {
                 if (connecter->isInput())
                 {
-                    const bool isConnected(connecter->isConnected());
-                    scopedStream.writeByte(isConnected? 1 : 0);
+                    bool isConnected(connecter->isConnected());
+                    scopedStream.visit(isConnected);
                     if (isConnected)
                     {
                         MaterialGeneratorNode::Connecter* const connection(connecter->getConnection());
-                        scopedStream.writeGuid(connection->getParent()->getGuid());
-                        scopedStream.writeByte(connection->getIndex());
+                        Guid guid(connection->getParent()->getGuid());
+                        uint8 index(connection->getIndex());
+                        scopedStream.visit(guid);
+                        scopedStream.visit(index);
                     }
                 }
             });
@@ -838,34 +843,40 @@ void MaterialGeneratorGraph::load()
     m_NodeGraph.clear();
     m_CommandStack.clear();
 
-    io::BinaryStream stream;
-    if (stream.open(CONTENT->getShaderFolderPath().append("testShader.shader").str(), io::BinaryStream::Read))
+    io::BinaryFileVisitor stream;
+    if (stream.openRead(CONTENT->getShaderFolderPath().append("testShader.shader").str()))
     {
-        const uint16 version(stream.readWord());
+        uint16 version(0);
+        stream.visit(version);
         if (version == VERSION)
         {
-            const uint32 size(stream.readDword());
+            uint32 size(0);
+            stream.visit(size);
             for (uint32 i(0); i < size; ++i)
             {
-                const MaterialGeneratorNodeType type(static_cast<MaterialGeneratorNodeType>(stream.readWord()));
+                MaterialGeneratorNodeType type(MaterialGeneratorNodeType_Unassigned);
+                stream.visitEnum<MaterialGeneratorNodeType, uint16>(type);
                 MaterialGeneratorNode* const node(factory->create(type));
                 addNode(node);
-                node->deserialize(stream);
+                node->visit(stream);
             }
             m_NodeGraph.addRootNode(m_NodeList[0]); // first node is always root
             m_NodeList.forEach([&stream, this](MaterialGeneratorNode* const node)
             {
-                io::BinaryStream& scopedStream(stream);
+                io::BinaryFileVisitor& scopedStream(stream);
                 MaterialGeneratorGraph* const scopedThis(this);
                 node->getConnecters().forEach([&scopedStream, node, scopedThis](MaterialGeneratorNode::Connecter* const connecter)
                 {
                     if (connecter->isInput())
                     {
-                        const bool isConnected(scopedStream.readByte() == 1);
+                        bool isConnected(false);
+                        scopedStream.visit(isConnected);
                         if (isConnected)
                         {
-                            Guid guid(scopedStream.readGuid());
-                            uint8 index(scopedStream.readByte());
+                            Guid guid;
+                            scopedStream.visit(guid);
+                            uint8 index(0);
+                            scopedStream.visit(index);
                             MaterialGeneratorNode* const otherNode(scopedThis->getNode(guid));
                             MaterialGeneratorError error;
                             node->connectToInput(otherNode, index, connecter->getIndex(), error);

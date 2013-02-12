@@ -36,6 +36,8 @@ public:
     virtual ~Game() {}
 
     virtual void init() = 0;
+    virtual void destroy() = 0;
+
     virtual void load() = 0;
 
     virtual void tick(float dTime)

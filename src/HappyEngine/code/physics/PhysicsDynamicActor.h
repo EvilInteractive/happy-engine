@@ -23,7 +23,7 @@
 #define _HE_PHYSICS_DYNAMIC_ACTOR_H_
 #pragma once
 
-#include "IPhysicsActor.h"
+#include "PhysicsActor.h"
 #include "PhysicsUserData.h"
 
 namespace physx {
@@ -36,7 +36,7 @@ namespace px {
 class IPhysicsShape;
 class PhysicsMaterial;
 
-class PhysicsDynamicActor : public IPhysicsActor
+class PhysicsDynamicActor : public PhysicsActor
 {
 public:
     PhysicsDynamicActor(const mat44& pose);

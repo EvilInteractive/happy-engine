@@ -48,7 +48,7 @@ public:
 
     event1<void, Key> KeyPressed;
     event1<void, Key> KeyReleased;
-    event1<void, char> TextCharEntered;
+    event1<void, uint32> TextCharEntered;
 };
 
 } } //end namespace

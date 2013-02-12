@@ -41,8 +41,9 @@ public:
     virtual ~TriggerComponent();
 
     /* EntityComponent */
-    virtual void serialize(SerializerStream& stream);
-    virtual void deserialize(const SerializerStream& stream);
+    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    virtual void activate();
+    virtual void deactivate();
     
     /* GENERAL */
     void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 

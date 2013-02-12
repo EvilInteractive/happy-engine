@@ -29,6 +29,8 @@
 #define COMMA ,
 #else
 #define TEMPLATE_EXTRA_ARGS
+#define TEMPLATE_EXTRA_ARGS_PREDCL
+#define TEMPLATE_TYPEDEF_ARGS
 #define COMMA
 #endif
 
@@ -50,9 +52,9 @@ template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS> class EVENTBASE;
 template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS>
 struct EVENTCALLBACK
 {
-    template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS> friend class EVENT;
-    template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS> friend class details::EVENTBASE;
-    typedef typename CONCAT_EXT(boost::function,ARGS)<ReturnType COMMA TEMPLATE_EXTRA_ARGS> Function;
+    template<typename ReturnTypeA COMMA TEMPLATE_EXTRA_ARGS_PREDCL> friend class EVENT;
+    template<typename ReturnTypeB COMMA TEMPLATE_EXTRA_ARGS_PREDCL> friend class details::EVENTBASE;
+    typedef typename CONCAT_EXT(boost::function,ARGS)<ReturnType COMMA TEMPLATE_TYPEDEF_ARGS> Function;
 
 public:
     EVENTCALLBACK(): m_Connection(UINT16_MAX) {}
@@ -73,7 +75,7 @@ namespace details
     class EVENTBASE
     {
     public:
-        typedef EVENTCALLBACK<ReturnType COMMA TEMPLATE_EXTRA_ARGS> Callback;
+        typedef EVENTCALLBACK<ReturnType COMMA TEMPLATE_TYPEDEF_ARGS> Callback;
         typedef typename Callback::Function Function;
 
         EVENTBASE() {}
@@ -131,7 +133,6 @@ namespace details
             });
             m_Connections.clear();
         }
-
     protected:
         he::ObjectList<Function> m_CallbackPool;
         he::PrimitiveList<uint16> m_Connections;
@@ -142,9 +143,13 @@ namespace details
     };
 }
 template<typename ReturnType COMMA TEMPLATE_EXTRA_ARGS>
-class EVENT : public details::EVENTBASE<ReturnType COMMA TEMPLATE_EXTRA_ARGS>
+class EVENT : public details::EVENTBASE<ReturnType COMMA TEMPLATE_TYPEDEF_ARGS>
 {
 public:
+    /// \brief Executes after every callback to combine the return type
+    /// \param[in] value to ultimately return from the event
+    /// \param[in] last received return value from a callback
+    /// \return true to eat event
     typedef boost::function2<bool, ReturnType&, const ReturnType&> EventCombiner;
 
     EVENT(): 
@@ -161,14 +166,14 @@ public:
     }
     ReturnType execute(DECL_PARAMS) const
     {
-        he::PrimitiveList<uint16>::const_iterator it(m_Connections.cbegin());
-        he::PrimitiveList<uint16>::const_iterator last(m_Connections.cend());
+        he::PrimitiveList<uint16>::const_iterator it(this->m_Connections.cbegin());
+        he::PrimitiveList<uint16>::const_iterator last(this->m_Connections.cend());
 
         if (it == last)
             return m_DefaultValue;
 
-        ReturnType outValue(m_CallbackPool[*it](PARAMS));
-        while (++it != last && !m_Combiner(outValue, m_CallbackPool[*it](PARAMS)));
+        ReturnType outValue(this->m_CallbackPool[*it](PARAMS));
+        while (++it != last && !m_Combiner(outValue, this->m_CallbackPool[*it](PARAMS)));
 
         return outValue;
     }
@@ -181,7 +186,7 @@ private:
     EVENT& operator=(const EVENT&);
 };
 template<TEMPLATE_EXTRA_ARGS>
-class EVENT<void COMMA TEMPLATE_EXTRA_ARGS> : public details::EVENTBASE<void COMMA TEMPLATE_EXTRA_ARGS>
+class EVENT<void COMMA TEMPLATE_TYPEDEF_ARGS> : public details::EVENTBASE<void COMMA TEMPLATE_TYPEDEF_ARGS>
 {
 public:
     EVENT() {}
@@ -194,15 +199,15 @@ public:
 
     void execute(DECL_PARAMS) const
     {
-        he::PrimitiveList<uint16>::const_iterator it(m_Connections.cbegin());
-        he::PrimitiveList<uint16>::const_iterator last(m_Connections.cend());
+        he::PrimitiveList<uint16>::const_iterator it(this->m_Connections.cbegin());
+        he::PrimitiveList<uint16>::const_iterator last(this->m_Connections.cend());
 
         if (it == last)
             return;
 
-        m_CallbackPool[*it](PARAMS);
+        this->m_CallbackPool[*it](PARAMS);
         while (++it != last)
-            m_CallbackPool[*it](PARAMS);
+            this->m_CallbackPool[*it](PARAMS);
     }
 
 private:
@@ -213,6 +218,8 @@ private:
 #undef ARGS
 #undef COMMA
 #undef TEMPLATE_EXTRA_ARGS
+#undef TEMPLATE_EXTRA_ARGS_PREDCL
+#undef TEMPLATE_TYPEDEF_ARGS
 #undef DECL_PARAMS
 #undef PARAMS
 

@@ -23,8 +23,8 @@
 #include "Canvas2DRendererCairo.h"
 #include "Canvas2DBuffer.h"
 #include "Texture2D.h"
-#include "cairo\cairo.h"
-#include "cairo\cairo-ft.h"
+#include <cairo/cairo.h>
+#include <cairo/cairo-ft.h>
 #include "Sprite.h"
 #include "Text.h"
 #include "Font.h"

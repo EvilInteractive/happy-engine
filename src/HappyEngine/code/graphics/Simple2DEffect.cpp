@@ -55,7 +55,6 @@ void Simple2DEffect::load()
     m_ShaderWVPPos = m_Shader->getShaderVarId("matWVP");
     m_ShaderColorPos = m_Shader->getShaderVarId("color");
     m_ShaderDepthPos = m_Shader->getShaderVarId("depth");
-    m_ShaderBlendPos = m_Shader->getShaderVarId("blending");
 
     m_Shader->bind();
     mat44 MatWVP = mat44::createTranslation(vec3(0.0f,0.0f,0.0f));
@@ -85,11 +84,6 @@ void Simple2DEffect::setWorldMatrix(const he::mat44 &mat) const
 void Simple2DEffect::setDepth(float depth) const
 {
     m_Shader->setShaderVar(m_ShaderDepthPos, depth);
-}
-
-void Simple2DEffect::setBlending(bool blend) const
-{
-    m_Shader->setShaderVar(m_ShaderBlendPos, blend);
 }
 
 } } //end namespace

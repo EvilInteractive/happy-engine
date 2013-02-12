@@ -37,9 +37,9 @@ public:
     virtual ~NetworkObject() {}
 
     virtual void serializeCreate(net::NetworkStream* /*stream*/) const {}
-    virtual bool deserializeCreate(net::NetworkStream* /*stream*/)  { return true; }
+    virtual bool deserializeCreate(net::NetworkStream* /*stream*/)  { return true; } // return == allow creation
     virtual void serializeRemove(net::NetworkStream* /*stream*/) const {}
-    virtual bool deserializeRemove(net::NetworkStream* /*stream*/) { return true; }
+    virtual bool deserializeRemove(net::NetworkStream* /*stream*/) { return true; } // return == allow destruction
 
     virtual bool isSerializeDataDirty() const { return m_IsSerializeDataDirty; }
     virtual void setSerializeDataDirty(bool dirty = true) { m_IsSerializeDataDirty = dirty; }

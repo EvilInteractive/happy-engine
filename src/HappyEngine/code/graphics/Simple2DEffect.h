@@ -44,7 +44,6 @@ public:
     void setColor(const Color& color) const;
     void setWorldMatrix(const he::mat44& mat) const;
     void setDepth(float depth) const;
-    void setBlending(bool blend) const;
 
 private:
 
@@ -53,7 +52,6 @@ private:
     uint32 m_ShaderWVPPos;
     uint32 m_ShaderColorPos;
     uint32 m_ShaderDepthPos;
-    uint32 m_ShaderBlendPos;
 
     //Disable default copy constructor and default assignment operator
     Simple2DEffect(const Simple2DEffect&);

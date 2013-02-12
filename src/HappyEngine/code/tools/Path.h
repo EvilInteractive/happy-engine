@@ -40,6 +40,18 @@ public:
     //return = C:/data/test.png => absolute
     Path append(const std::string& relativePath) const; 
 
+    // Checks
+    bool isFile() const;
+    bool isDirectory() const;
+    bool exists() const;
+
+    // Getters
+    std::string getFileName() const;
+
+    // Iterators
+    bool iterateFiles(const bool recursive, const boost::function1<void, const Path&>& func);
+
+    // Static
     static Path getWorkingDir();
 
 private:

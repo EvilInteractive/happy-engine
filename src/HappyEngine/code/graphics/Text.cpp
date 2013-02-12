@@ -69,11 +69,14 @@ void Text::addTextExt( const char* text, ... )
 {
     va_list argList;
     va_start(argList, text);
-    int len(vsnprintf(m_ScratchBuffer, MAX_SCRATCH, text, argList));
+    addTextExt(text, argList);
     va_end(argList);
+}
 
+void Text::addTextExt( const char* text, va_list& argList )
+{
+    int len(vsnprintf(m_ScratchBuffer, MAX_SCRATCH, text, argList));
     HE_ASSERT(len >= 0, "addTextExt FAILED!");
-
     addText(m_ScratchBuffer, len);
 }
 
