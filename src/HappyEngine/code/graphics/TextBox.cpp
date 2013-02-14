@@ -323,16 +323,20 @@ void TextBox::setSize(const vec2& size)
 
     m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 4));
 
-    m_NormalSprite->invalidate(vec2(m_Rect.x, m_Rect.y));
-    m_HoverSprite->invalidate(vec2(m_Rect.x, m_Rect.y));
+    m_NormalSprite->invalidate(vec2(m_Rect.width, m_Rect.height));
+    m_HoverSprite->invalidate(vec2(m_Rect.width, m_Rect.height));
 
     renderSprites();
+
+    m_Hitrect->setSize(vec2(m_Rect.width, m_Rect.height));
 }
 
 void TextBox::setPosition(const vec2& pos)
 {
     m_Rect.x = pos.x;
     m_Rect.y = pos.y;
+
+    m_Hitrect->setPosition(pos + (vec2(m_Rect.width, m_Rect.height) / 2.0f));
 }
 
 /* INTERNAL */
