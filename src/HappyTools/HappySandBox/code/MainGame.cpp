@@ -81,7 +81,7 @@ void MainGame::init()
     m_Window = GRAPHICS->createWindow();
 
     m_Window->setResizable(true);
-    m_Window->setVSync(true);
+    m_Window->setVSync(false);
     m_Window->setWindowDimension(1280, 720);
     m_Window->setWindowTitle("Happy Sandbox");
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
@@ -135,7 +135,7 @@ void MainGame::load()
     /* GUI */
     m_FPSGraph = NEW tools::FPSGraph();
     m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
-    m_FPSGraph->setPos(he::vec2(50,35));
+    m_FPSGraph->setPos(he::vec2(910,35));
     m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
     m_UIController = NEW UIController();

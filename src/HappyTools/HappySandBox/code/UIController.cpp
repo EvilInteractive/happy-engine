@@ -58,7 +58,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_WebView = m_Renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
 
     m_Renderer->attachToRender(this);
-    m_Renderer->attachToRender(m_WebView);
+    m_Renderer->attachToRender(m_WebView, 0xf);
     
     he::gui::Font* font(CONTENT->getDefaultFont(10));
     m_SceneInfo.setFont(font);
@@ -72,8 +72,8 @@ void UIController::load(const std::string& file)
 
 void UIController::draw2D(he::gui::Canvas2D* canvas)
 {
-    canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
-    canvas->fillRect(he::vec2(5,5),he::vec2(1,1));
+//    canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
+  //  canvas->fillRect(he::vec2(5,5),he::vec2(1,1));
     canvas->fillText(m_SceneInfo, he::vec2(50,30));
 }
 
