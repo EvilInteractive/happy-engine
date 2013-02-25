@@ -64,17 +64,17 @@ void main()
         discard;
     }
     
-    const vec3 localvar0 = vec3(0, 0, 0);
-    const vec3 localvar4 = vec3(0, 0, 0);
-    vec3 localvar8 = pow(localvar0, 0);
-    vec3 localvar11 = (localvar0 + localvar4);
-    vec3 localvar12 = (localvar11 + localvar4);
-    vec3 localvar13 = normalize(localvar12);
-    float localvar20 = ((passDepth - camNearFar.x) / (camNearFar.y - camNearFar.x));
-    vec3 localvar25 = encodeNormal(calcNormal(passNormal, passTangent, localvar13));
-    outColor = vec4(mix(((0 * localvar8) + localvar8), localvar13, (1 - 0)), 1);
-    outNormalDepth = vec3(localvar25, localvar20);
-    outSG = vec4(localvar11, 0);
+    const vec3 localvar17 = vec3(0, 0, 0);
+    const vec3 localvar21 = vec3(0, 0, 0);
+    vec3 localvar25 = pow(localvar17, 0);
+    vec3 localvar28 = (localvar17 + localvar21);
+    vec3 localvar29 = (localvar28 + localvar21);
+    vec3 localvar30 = normalize(localvar29);
+    float localvar38 = ((passDepth - camNearFar.x) / (camNearFar.y - camNearFar.x));
+    vec3 localvar43 = encodeNormal(calcNormal(passNormal, passTangent, pow(localvar30, 0)));
+    outColor = vec4(mix(((0 * localvar25) + localvar25), localvar30, (1 - 0)), 1);
+    outNormalDepth = vec3(localvar43, localvar38);
+    outSG = vec4(localvar28, 0);
     
 }
 

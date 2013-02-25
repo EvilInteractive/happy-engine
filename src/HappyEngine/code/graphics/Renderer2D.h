@@ -62,7 +62,7 @@ public:
     const RenderTarget* getRTG() const {return m_RenderTarget;}
 
     /* Attach */
-    void attachToRender(IDrawable2D* drawable, uint16 depth = 0xff);
+    void attachToRender(IDrawable2D* drawable, uint16 depth = 0x8000);
     void detachFromRender(IDrawable2D* drawable);
 
     /* IRenderer */

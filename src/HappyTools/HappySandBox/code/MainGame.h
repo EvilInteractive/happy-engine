@@ -31,6 +31,7 @@ namespace he {
     }
     namespace ge {
         class DefaultRenderPipeline;
+        class Entity;
     }
     namespace gfx {
         class Window;
@@ -69,6 +70,8 @@ private:
 
     UIController* m_UIController;
     UIBind* m_UIBind;
+
+    he::ge::Entity* m_TestScene;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

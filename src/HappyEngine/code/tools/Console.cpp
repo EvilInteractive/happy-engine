@@ -43,7 +43,7 @@ namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Console::Console() :	m_Shortcut(io::Key_C),
+Console::Console() :	m_Shortcut(io::Key_F1),
                         m_MaxMessages(0),
                         m_IsOpen(false),
                         m_TextBox(nullptr),
@@ -244,7 +244,7 @@ void Console::displayCmds()
     {
         std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<std::string, boost::function<void()> > p)
         {
-            stream << "'" << p.first << "'";
+            stream << "'" << p.first << "'\n";
         });
     }
 
@@ -257,7 +257,7 @@ void Console::displayCmds()
 void Console::tick()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_TextBox->hasFocus())
+    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut))
     {
         m_IsOpen = !m_IsOpen;
         m_TextBox->resetText();
@@ -360,11 +360,33 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
         type == CMSG_TYPE_COMMAND? "] " : "", msg);
 
     size_t size(strlen(buff));
-
-    size = std::remove(buff, buff + size, '\n') - buff;
     buff[size] = 0;
 
-    m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, buff));
+    size_t lineCharStart(0);
+    for (size_t i(0); i < size; ++i)
+    {
+        const char character(buff[i]);
+
+        if (character == '\n')
+        {
+            const size_t lineSize(i - lineCharStart);
+            if (lineSize > 0)
+            {
+                m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, std::string(buff, lineCharStart, lineSize)));
+            }
+
+            lineCharStart = i + 1;
+        }
+    }
+
+    if (lineCharStart < size)
+    {
+        const size_t lineSize(size - lineCharStart);
+        if (lineSize > 0)
+        {
+            m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, std::string(buff, lineCharStart, lineSize)));
+        }
+    }
 
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
     {
@@ -440,7 +462,7 @@ void Console::attachToRenderer(gfx::Renderer2D* renderer)
 
         if (m_IsOpen)
         {
-            m_Renderer->attachToRender(this, 65000);
+            m_Renderer->attachToRender(this, 1);
         }
     }
 }
