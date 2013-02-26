@@ -9,5 +9,6 @@ addFilter(CODE_SRCS src/networking code/networking/
             NetworkPackage.cpp                   NetworkPackage.h
             NetworkReplicaConnection.cpp         NetworkReplicaConnection.h
             NetworkSerializer.cpp                NetworkSerializer.h
+            NetworkVisitor.cpp                   NetworkVisitor.h
             INetworkSerializable.h
         )

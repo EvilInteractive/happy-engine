@@ -173,7 +173,7 @@ public:
             return m_DefaultValue;
 
         ReturnType outValue(this->m_CallbackPool[*it](PARAMS));
-        while (++it != last && !m_Combiner(outValue, this->m_CallbackPool[*it](PARAMS)));
+        while (outValue == false && ++it != last && !m_Combiner(outValue, this->m_CallbackPool[*it](PARAMS)));
 
         return outValue;
     }

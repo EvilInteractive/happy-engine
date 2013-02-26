@@ -66,7 +66,7 @@ public:
         details::NetworkObjectBase* obj(this->get(handle));
         obj->setHandle(handle);
         NetworkManager* const man(NETWORK);
-        obj->setOwner(man->getNetworkId());
+        obj->setNetworkOwner(man->getNetworkId());
         man->Reference(obj);
         return handle;
     }
@@ -75,7 +75,7 @@ public:
         ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
         obj->setHandle(handle);
         NetworkManager* const man(NETWORK);
-        obj->setOwner(man->getNetworkId());
+        obj->setNetworkOwner(man->getNetworkId());
         man->Reference(obj);
         return handle;
     }

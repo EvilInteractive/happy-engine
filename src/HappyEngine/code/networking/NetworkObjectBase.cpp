@@ -24,6 +24,7 @@
 #include "ReplicaManager3.h"
 #include "NetworkSerializer.h"
 #include "NetworkManager.h"
+#include "NetworkVisitor.h"
 
 namespace he {
 namespace net {
@@ -42,25 +43,29 @@ void NetworkObjectBase::DeallocReplica( RakNet::Connection_RM3* /*sourceConnecti
 void NetworkObjectBase::SerializeConstruction( RakNet::BitStream* stream, RakNet::Connection_RM3* destinationConnection )
 {
     m_VariableDeltaSerializer.AddRemoteSystemVariableHistory(destinationConnection->GetRakNetGUID());
-    //stream->Write(m_Owner);
-    serializeCreate(stream);
+    NetworkVisitor visitor(stream, NetworkVisitor::eOpenType_Write);
+    netVisitCreate(visitor);
 }
 
 bool NetworkObjectBase::DeserializeConstruction( RakNet::BitStream* stream, RakNet::Connection_RM3* /*sourceConnection*/ )
 {
-    return deserializeCreate(stream);
+    NetworkVisitor visitor(stream, NetworkVisitor::eOpenType_Read);
+    netVisitCreate(visitor);
+    return true;
 }
 
 void NetworkObjectBase::SerializeDestruction( RakNet::BitStream* stream, RakNet::Connection_RM3* destinationConnection )
 {
     m_VariableDeltaSerializer.RemoveRemoteSystemVariableHistory(destinationConnection->GetRakNetGUID());
-    //stream->Read(m_Owner);
-    serializeRemove(stream);
+    NetworkVisitor visitor(stream, NetworkVisitor::eOpenType_Write);
+    netVisitRemove(visitor);
 }
 
 bool NetworkObjectBase::DeserializeDestruction( RakNet::BitStream* stream, RakNet::Connection_RM3* /*sourceConnection*/ )
 {
-    return deserializeRemove(stream);
+    NetworkVisitor visitor(stream, NetworkVisitor::eOpenType_Read);
+    netVisitRemove(visitor);
+    return true;
 }
 
 RakNet::RM3QuerySerializationResult NetworkObjectBase::QuerySerialization( RakNet::Connection_RM3* destinationConnection )
@@ -95,7 +100,7 @@ RakNet::RM3SerializationResult NetworkObjectBase::Serialize( RakNet::SerializePa
 {
     RakNet::VariableDeltaSerializer::SerializationContext context;
 
-    serializeParameters->pro[0].reliability = RELIABLE_ORDERED;
+    serializeParameters->pro[0].reliability = RELIABLE_SEQUENCED;
     serializeParameters->messageTimestamp = RakNet::GetTime();
 
     m_VariableDeltaSerializer.BeginIdenticalSerialize(
@@ -104,7 +109,7 @@ RakNet::RM3SerializationResult NetworkObjectBase::Serialize( RakNet::SerializePa
         &serializeParameters->outputBitstream[0]);
     {
         NetworkSerializer serializer(&m_VariableDeltaSerializer, &context);
-        serialize(serializer);
+        netSerialize(serializer);
     }
     m_VariableDeltaSerializer.EndSerialize(&context);
 
@@ -120,7 +125,7 @@ void NetworkObjectBase::Deserialize( RakNet::DeserializeParameters* deserializeP
     m_VariableDeltaSerializer.BeginDeserialize(&context, &deserializeParameters->serializationBitstream[0]);
     {
         NetworkDeserializer serializer(&m_VariableDeltaSerializer, &context, dTime);
-        deserialize(serializer);
+        netDeserialize(serializer);
     }
     m_VariableDeltaSerializer.EndDeserialize(&context);
 }
@@ -132,7 +137,7 @@ void NetworkObjectBase::OnPoppedConnection( RakNet::Connection_RM3* droppedConne
 
 void NetworkObjectBase::OnUserReplicaPreSerializeTick( void )
 {
-    m_Serialize = isSerializeDataDirty();
+    m_Serialize = isNetSerializeDataDirty();
     m_VariableDeltaSerializer.OnPreSerializeTick();
 }
 

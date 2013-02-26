@@ -16,29 +16,31 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 25/06/2012
+//Created: 23/02/2013
+#include "HappyPCH.h"
 
-#ifndef _HE_INetworkSerializable_H_
-#define _HE_INetworkSerializable_H_
-#pragma once
+#include "NetworkVisitor.h"
 
 namespace he {
 namespace net {
-class NetworkSerializer;
-class NetworkDeserializer;
-class NetworkVisitor;
 
-class INetworkSerializable
+template<>
+bool NetworkVisitor::visit(std::string& value)
 {
-public:
-    virtual void netVisitCreate(net::NetworkVisitor& stream) = 0;
-    virtual void netVisitRemove(net::NetworkVisitor& stream) = 0;
+    bool result(true);
+    uint16 length(checked_numcast<uint16>(value.size()));
+    result &= visit(length);
+    if (m_OpenType == eOpenType_Read)
+    {
+        value.resize(length);
+        result &= m_Stream->Read(&value[0], sizeof(char) * length);
+    }
+    else
+    {
+        m_Stream->Write(&value[0], sizeof(char) * length);
+    }
+    return result;
+}
 
-    virtual bool isNetSerializeDataDirty() const = 0;
-    virtual void netSerialize(const NetworkSerializer& serializer) = 0;
-    virtual void netDeserialize(const NetworkDeserializer& serializer) = 0;
-};
 
 } } //end namespace
-
-#endif

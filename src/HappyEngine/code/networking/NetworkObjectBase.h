@@ -29,6 +29,7 @@
 
 namespace he {
 namespace net {
+class NetworkVisitor;
 class NetworkSerializer;
 class NetworkDeserializer;
 
@@ -64,14 +65,12 @@ public:
     //////////////////////////////////////////////////////////////////////////
     /// INetworkSerializable
     //////////////////////////////////////////////////////////////////////////
-    virtual void serializeCreate(net::NetworkStream* stream) const = 0;
-    virtual bool deserializeCreate(net::NetworkStream* stream) = 0;
-    virtual void serializeRemove(net::NetworkStream* stream) const = 0;
-    virtual bool deserializeRemove(net::NetworkStream* stream) = 0;
+    virtual void netVisitCreate(net::NetworkVisitor& stream) = 0;
+    virtual void netVisitRemove(net::NetworkVisitor& stream) = 0;
 
-    virtual bool isSerializeDataDirty() const = 0;
-    virtual void serialize(const NetworkSerializer& serializer) = 0;
-    virtual void deserialize(const NetworkDeserializer& serializer) = 0;
+    virtual bool isNetSerializeDataDirty() const = 0;
+    virtual void netSerialize(const NetworkSerializer& serializer) = 0;
+    virtual void netDeserialize(const NetworkDeserializer& serializer) = 0;
     //////////////////////////////////////////////////////////////////////////
 
     virtual void destroyReplica() = 0;
@@ -83,8 +82,8 @@ public:
     virtual const ObjectHandle& getHandle() const = 0;
 
     // Call this just after creation, synced in serializeCreate!
-    virtual void setOwner(const NetworkID& id) { creatingSystemGUID = id; }
-    virtual NetworkID getOwner() { return GetCreatingSystemGUID(); }
+    virtual void setNetworkOwner(const NetworkID& id) { creatingSystemGUID = id; }
+    virtual NetworkID getNetworkOwner() { return GetCreatingSystemGUID(); }
     
     virtual ~NetworkObjectBase() {}
 protected:
