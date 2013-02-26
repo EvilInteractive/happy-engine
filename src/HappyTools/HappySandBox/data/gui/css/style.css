@@ -28,8 +28,17 @@ body
     
     background-color: transparent;
 
+    /*-webkit-user-select: none;
+    -webkit-user-drag: none;*/
+
+    cursor: default;
+}
+
+.unselectable
+{
     -webkit-user-select: none;
-    -webkit-user-drag: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 a
@@ -82,8 +91,8 @@ a.tip:hover span
  
     -webkit-box-shadow: inset 0px 1px 0px 0px rgba(255,255,255, .1), 0px 1px 0px 0px rgba(0,0,0, .1);
 
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
+    /*-webkit-user-select: none;
+    -webkit-user-drag: none;*/
 }
 
 #menuBar li
@@ -252,8 +261,8 @@ html[xmlns] #menuBar
     background-color: transparent;
     top: 18px;
 
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
+    /*-webkit-user-select: none;
+    -webkit-user-drag: none;*/
 }
 
 #propertyPanel
@@ -272,8 +281,8 @@ html[xmlns] #menuBar
     resize: both;
     overflow: hidden;
 
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
+    /*-webkit-user-select: none;
+    -webkit-user-drag: none;*/
 }
 
 #propertyList
@@ -451,8 +460,8 @@ html[xmlns] #menuBar
     resize: both;
     overflow: hidden;
 
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
+    /*-webkit-user-select: none;
+    -webkit-user-drag: none;*/
 }
 
 #tools
@@ -495,10 +504,11 @@ html[xmlns] #menuBar
     margin-top: 10px;
 }
 
-#tools a
+#tools li a
 {
     text-decoration: none;
     display: block;
+    margin: 0px;
 }
 
 #tools li.divider
@@ -552,21 +562,21 @@ html[xmlns] #menuBar
     /*height: 12px;*/
     width: 25%;
     
-    padding: 0 2px 0 2px;
+    padding: 0px;
     border: 1px solid #666;
     
-    -webkit-border-radius: 3px;
+    -webkit-border-radius: 2px;
     
-    background: #999;
+    background: #bbb;
     margin: 0 2px;
-    
-    text-align: center;
 }
 
 #propertyList input.tb:focus
 {
     border: 1px solid #0186ba;
     outline: none;
+
+    background: #ccc;
 }
 
 #propertyList input.tbFullWidth
@@ -581,19 +591,20 @@ html[xmlns] #menuBar
     /*height: 12px;*/
     width: 97%;
     
-    padding: 0 2px 0 2px;
+    padding: 0px;
     border: 1px solid #666;
     
-    -webkit-border-radius: 3px;
+    -webkit-border-radius: 2px;
     
-    background: #999;
+    background: #bbb;
     margin: 0 2px;
-    
-    text-align: center;
 }
 
 #propertyList input.tbFullWidth:focus
 {
     border: 1px solid #0186ba;
     outline: none;
+
+    background: #ccc;
+
 }

@@ -349,8 +349,6 @@ void TextBox::renderSprites()
     cr->setColor(m_Colors[TextBoxColor_Background]);
     cr->fill();
 
-    cr->newPath();
-    cr->rectangle(vec2(0, 0), vec2(m_Rect.width, m_Rect.height));
     cr->setColor(m_Colors[TextBoxColor_Edge]);
     cr->stroke();
 
@@ -359,13 +357,9 @@ void TextBox::renderSprites()
     cr->setColor(m_Colors[TextBoxColor_Background]);
     cr->fill();
 
-    cr->newPath();
-    cr->rectangle(vec2(0, 0), vec2(m_Rect.width, m_Rect.height));
     cr->setColor(m_Colors[TextBoxColor_Edge]);
     cr->stroke();
 
-    cr->newPath();
-    cr->rectangle(vec2(0, 0), vec2(m_Rect.width, m_Rect.height));
     cr->setColor(m_Colors[TextBoxColor_Focus]);
     cr->stroke();
 }

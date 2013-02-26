@@ -100,10 +100,16 @@ var MenuBehaviour = (function()
 
         // disable selection by dragging
         //$('#propertyPanel').draggable = false;
+
+        pub.makeElementsUnselectable();
 	}
+
+    pub.makeElementsUnselectable = function()
+    {
+        $("*:not(input)").addClass("unselectable");
+    }
 	
 	return pub;
 })();
-
 // run script on load
 window.addEventListener('load', MenuBehaviour.init);

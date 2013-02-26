@@ -58,7 +58,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_WebView = m_Renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true); // fullscreen with user input enabled
 
     m_Renderer->attachToRender(this);
-    m_Renderer->attachToRender(m_WebView, 0xf);
+    m_Renderer->attachToRender(m_WebView, 0x1000);
     
     he::gui::Font* font(CONTENT->getDefaultFont(10));
     m_SceneInfo.setFont(font);
@@ -68,6 +68,10 @@ void UIController::load(const std::string& file)
 {
     m_WebView->loadUrl(m_GUIDirectory + file);
     m_WebView->setTransparent(true);
+
+    // awesomium focus bug
+    m_WebView->unfocus();
+    m_WebView->focus();
 }
 
 void UIController::draw2D(he::gui::Canvas2D* canvas)

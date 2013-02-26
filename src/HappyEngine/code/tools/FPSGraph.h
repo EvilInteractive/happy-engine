@@ -40,12 +40,27 @@ namespace tools {
 class FPSGraph : public gfx::IDrawable2D
 {
 public:
+
     enum Type
     {
         Type_Hide,
         Type_ToConsole,
         Type_TextOnly,
         Type_Full
+    };
+
+    enum PositionType
+    {
+        PositionType_Absolute,
+        PositionType_Dock
+    };
+
+    enum Position
+    {
+        Position_TopLeft,
+        Position_TopRight,
+        Position_BottomLeft,
+        Position_BottomRight
     };
 
     /* CONSTRUCTOR - DESTRUCTOR */
@@ -63,7 +78,9 @@ public:
 
     /* SETTERS */
     void setType(Type type);
+    void setPositionType(PositionType posType);
     void setPos(const vec2& pos);
+    void setPos(Position pos);
 
 private:
 

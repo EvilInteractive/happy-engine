@@ -251,9 +251,19 @@ void Renderer2D::detachFromRender(IDrawable2D* drawable)
     {
         size_t i(0);
         m_Drawables.find(drawable, i);
-
-        m_DrawablesDepth.removeAt(i);
         m_Drawables.remove(drawable);
+
+        // reposition depths
+        he::PrimitiveList<std::pair<uint32,uint16> > temp;
+        temp.append(m_DrawablesDepth);
+        m_DrawablesDepth.clear();
+        
+        i = 0;
+        m_Drawables.forEach([&](IDrawable2D* /*drawable*/)
+        {
+            m_DrawablesDepth.add(std::pair<uint32,uint16>(i, temp[i].second));
+            ++i;
+        });
     }
 }
 

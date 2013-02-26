@@ -25,9 +25,11 @@ in vec4 passColor;
 out vec4 outColor;
 
 uniform sampler2D diffuseMap;
+uniform vec4 blendColor;
 
 void main()
 {
-	float alpha = texture2D(diffuseMap, passTexCoord).r;	
-	outColor = vec4(passColor.xyz, alpha * passColor.w);
+	float alpha = texture2D(diffuseMap, passTexCoord).r;
+    vec4 color = passColor * blendColor;
+	outColor = vec4(color.xyz, alpha * color.a);
 }

@@ -41,6 +41,13 @@
 #include "View.h"
 #include "DefaultRenderPipeline.h"
 #include "MessageBox.h"
+#include "Entity.h"
+#include "ModelComponent.h"
+#include "StaticPhysicsComponent.h"
+#include "PhysicsConvexShape.h"
+#include "PhysicsConcaveShape.h"
+#include "PhysicsMaterial.h"
+#include "LightManager.h"
 
 //#include "boost/filesystem.hpp"
 
@@ -52,12 +59,16 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
                       m_RenderPipeline(nullptr),
                       m_Scene(nullptr),
                       m_View(nullptr),
-                      m_Window(nullptr)
+                      m_Window(nullptr),
+                      m_TestScene(nullptr)
 {
 }
 
 MainGame::~MainGame()
 {
+    m_TestScene->deactivate();
+    delete m_TestScene;
+
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FPSGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
     CONSOLE->detachFromRenderer();
@@ -128,7 +139,7 @@ void MainGame::load()
     /* CAMERA */
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
-    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 100.0f);
+    flyCamera->setLens(1280/720.0f, piOverTwo / 3.0f * 2.0f, 1.0f, 10000.0f);
     flyCamera->lookAt(vec3(5, 2, 4), vec3::zero, vec3::up);
     m_View->setCamera(flyCamera);
 
@@ -152,6 +163,24 @@ void MainGame::load()
     m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);
 
     m_UIController->load("main.html");
+
+    // test 3D
+    m_TestScene = NEW ge::Entity();
+    m_TestScene->setScene(m_Scene);
+    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
+    m_TestScene->addComponent(modelComp);
+    modelComp->setModelMeshAndMaterial("testSceneBas.material", "testPlatformer/scene.binobj");    
+    //m_EntityList.push_back(scene);
+    ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
+    m_TestScene->addComponent(physicsComp);
+    px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
+    px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");
+    physicsComp->addShape(&convexSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
+    physicsComp->addShape(&concaveSceneShape, px::PhysicsMaterial(1.2f, 1.0f, 0.1f));
+    m_TestScene->activate();
+
+    m_Scene->getLightManager()->setAmbientLight(Color(1.0f, 1.0f, 1.0f, 0.8f), 0.5f);
+    m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 1.0f);
 }
 
 void MainGame::tick(float dTime)
