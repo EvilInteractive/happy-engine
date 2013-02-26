@@ -202,7 +202,7 @@ void MainGame::load()
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = true;
-    settings.postSettings.shaderSettings.enableHDR = true;
+    settings.postSettings.shaderSettings.enableHDR = false;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
     settings.postSettings.hdrSettings.exposureSpeed = 0.5f;

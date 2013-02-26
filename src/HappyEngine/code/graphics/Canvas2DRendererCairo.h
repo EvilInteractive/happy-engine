@@ -113,8 +113,8 @@ private:
     void _text(const gui::Text& text, const vec2& pos, cairo_t* cairoPaint);
 
     /* MEMBERS */
-    std::queue<SpriteData> m_SpriteList;
-    std::queue<SpriteData> m_SpriteListBlit;
+    std::queue<SpriteData*> m_SpriteList;
+    std::queue<SpriteData*> m_SpriteListBlit;
     PrimitiveList<SpriteData*> m_DynamicSpriteList;
 
     boost::thread m_DrawThread;
