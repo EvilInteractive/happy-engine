@@ -81,9 +81,11 @@ void HappyEngine::cleanup()
     //dispose/delete all sub engines here
     delete m_Console;
     m_Console = nullptr;
+    m_Game = nullptr;
+    delete m_Gui;
+    m_Gui = nullptr;
     delete m_ContentManager;
     m_ContentManager = nullptr;
-    m_Game = nullptr;
     delete m_SoundEngine;
     m_SoundEngine = nullptr;
     delete m_ControlsManager;
@@ -92,8 +94,6 @@ void HappyEngine::cleanup()
     m_NetworkManager = nullptr;
     delete m_PhysicsEngine;
     m_PhysicsEngine = nullptr;
-    delete m_Gui;
-    m_Gui = nullptr;
     
     // Gl context get deleted here - make sure all content is gone
     delete m_GraphicsEngine;
