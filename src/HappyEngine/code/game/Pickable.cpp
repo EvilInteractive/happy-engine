@@ -35,13 +35,21 @@ bool triangleHitTest(const Ray& ray, const vec3& v1, const vec3& v2, const vec3&
 
 bool Pickable::pick( const Ray& ray, PickResult& result )
 {
-    mat44 pickingWorld(getPickingWorld().inverse());
+    const mat44& pickingWorld(getPickingWorld());
+    mat44 inversePickingWorld(pickingWorld.inverse());
 
     const Bound& bound(getPickingBound());
 
-    Ray testRay(ray.transform(pickingWorld)); // transform ray instead of triangles, only 1 transform needed!
+    Ray testRay(ray.transform(inversePickingWorld)); // transform ray instead of triangles, only 1 transform needed!
 
-    float dist(result.isHit()? std::min(result.getHitDistance(), testRay.getMaxDistance()) : testRay.getMaxDistance());
+
+    // We need to recalc the dist because of scaling
+    vec3 from(ray.getOrigin());
+    vec3 to(from + ray.getDirection() * (result.isHit()? result.getHitDistance() : ray.getMaxDistance()));
+    from = (inversePickingWorld * vec4(from, 1.0f)).xyz();
+    to = (inversePickingWorld * vec4(to, 1.0f)).xyz();
+    float dist(length(to - from));
+    
     bool hit(false);
     vec3 normal(0, 0, 0);
     if (bound.intersectTest(testRay))
@@ -68,7 +76,10 @@ bool Pickable::pick( const Ray& ray, PickResult& result )
 
     if (hit == true)
     {
-        result.setHit(this, testRay.getOrigin() + testRay.getDirection() * dist, normal, dist);
+        const vec3 hitNormal((pickingWorld * vec4(normal, 0)).xyz());
+        const vec3 hitPos((pickingWorld * vec4(testRay.getOrigin() + testRay.getDirection() * dist, 1)).xyz());
+        const float realDist(length(hitPos - ray.getOrigin()));
+        result.setHit(this, hitPos, normalize(hitNormal), realDist);
     }
 
     return hit;
@@ -79,7 +90,7 @@ bool triangleHitTest(const Ray& ray, const vec3& v1, const vec3& v2, const vec3&
     bool result(true);
 
     Plane p(v1, v2, v3);
-    float dist(0.0f);
+    float dist(FLT_MAX);
     if (p.intersect(ray, dist))
     {
         if (dist >= inOutDist) // early out if the hit dist is further than the prev one
@@ -93,35 +104,39 @@ bool triangleHitTest(const Ray& ray, const vec3& v1, const vec3& v2, const vec3&
 
             const vec3 v_v1(v1 - pointOnPlane);
             const vec3 v_v2(v2 - pointOnPlane);
-            const vec3 n1(normalize(cross(v2, v1)));
+            const vec3 n1(normalize(cross(v_v2, v_v1)));
             const float d1(dot(-rayOrigin, n1));
 
-            if (dot(pointOnPlane, n1) - d1 < 0)
+            if (dot(pointOnPlane, n1) + d1 < 0)
             {
                 result = false;
             }
             else
             {
                 const vec3 v_v3(v3 - pointOnPlane);
-                const vec3 n2(normalize(cross(v3, v2)));
+                const vec3 n2(normalize(cross(v_v3, v_v2)));
                 const float d2(dot(-rayOrigin, n2));
 
-                if (dot(pointOnPlane, n2) - d2 < 0)
+                if (dot(pointOnPlane, n2) + d2 < 0)
                 {
                     result = false;
                 }
                 else
                 {
-                    const vec3 n3(normalize(cross(v1, v3)));
+                    const vec3 n3(normalize(cross(v_v1, v_v3)));
                     const float d3(dot(-rayOrigin, n3));
 
-                    if (dot(pointOnPlane, n3) - d3 < 0)
+                    if (dot(pointOnPlane, n3) + d3 < 0)
                     {
                         result = false;
                     }
                 }
             }
         }
+    }
+    else
+    {
+        result = false;
     }
     if (result == true)
     {

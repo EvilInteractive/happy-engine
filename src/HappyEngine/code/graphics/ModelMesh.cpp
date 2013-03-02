@@ -244,6 +244,7 @@ void ModelMesh::createPickingData(const void* const vertices, const size_t verte
         m_PickingData.m_TriangleCount = indexCount / 3;
         m_PickingData.m_Vertices = static_cast<vec3*>(he_malloc(sizeof(vec3) * vertexCount));
         m_PickingData.m_Indices = he_malloc(indexStride * indexCount);
+        m_PickingData.m_IndexStride = indexStride;
         he_memcpy(m_PickingData.m_Indices, indices, indexStride * indexCount);
 
         uint32 posOffset(UINT32_MAX);

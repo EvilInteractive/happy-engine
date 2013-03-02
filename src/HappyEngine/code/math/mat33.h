@@ -48,6 +48,7 @@ public:
     static mat33 createScale2D(const vec2& scale);
 
     static mat33 createRotation3D(const vec3& axis, float radians);
+    static mat33 createRotation3D(const vec3& forward, const vec3& up, const vec3& right);
 
     /* OPERATORS */
     mat33 operator*(const mat33& mat) const;

@@ -39,7 +39,7 @@ Plane::Plane( const vec3& v1, const vec3& v2, const vec3& v3 )
 {
     const vec3 vec1(v2 - v1);
     const vec3 vec2(v3 - v1);
-    m_Normal = normalize(cross(v2, v3));
+    m_Normal = normalize(cross(vec1, vec2));
     m_Distance = -dot(v1, m_Normal);
 }
 

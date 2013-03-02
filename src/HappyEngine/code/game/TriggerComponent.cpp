@@ -31,6 +31,8 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_ENTITY_COMPONENT_TYPE(TriggerComponent)
+
 /* CONSTRUCTOR - DESTRUCTOR */
 TriggerComponent::TriggerComponent() :  m_Trigger(nullptr),
                                         m_Parent(nullptr)

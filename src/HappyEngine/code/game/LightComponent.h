@@ -36,6 +36,7 @@ namespace ge {
 class PointLightComponent : public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     PointLightComponent();
     virtual ~PointLightComponent();
@@ -80,6 +81,7 @@ private:
 class SpotLightComponent : public EntityComponent, public Object3D
 {
 IMPLEMENT_IOBJECT3D_FROM(Object3D)
+DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     SpotLightComponent();
     virtual ~SpotLightComponent();

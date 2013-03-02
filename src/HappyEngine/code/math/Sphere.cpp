@@ -47,11 +47,17 @@ bool Sphere::intersectTest( const Ray& ray ) const
     // http://www.cs.princeton.edu/courses/archive/fall00/cs426/lectures/raycast/sld013.htm
     bool result(false);
     const vec3 tocenter(m_Position - ray.getOrigin());
-    const float lenToCenter(dot(tocenter, ray.getDirection()));
-    if (lenToCenter >= 0) // ray points to sphere
+    const float toCenterLenSqr(lengthSqr(tocenter));
+    const float lenToCenterPP(dot(tocenter, ray.getDirection()));
+    const float radSqr(sqr(m_Radius));
+    if (toCenterLenSqr <= radSqr) // inside sphere
     {
-        const float distToChordSqr(lengthSqr(tocenter) - sqr(lenToCenter));
-        if (distToChordSqr <= sqr(m_Radius))
+        result = true;
+    }
+    else if ( lenToCenterPP >= 0) // ray points to sphere
+    {
+        const float distToChordSqr(toCenterLenSqr - sqr(lenToCenterPP));
+        if (distToChordSqr <= radSqr)
         {
             result = true;
         }

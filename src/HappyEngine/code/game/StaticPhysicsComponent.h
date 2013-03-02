@@ -36,6 +36,7 @@ namespace ge {
 
 class StaticPhysicsComponent : public EntityComponent, public Object3D
 {
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     StaticPhysicsComponent();
     virtual ~StaticPhysicsComponent();

@@ -28,6 +28,7 @@
 #include "Random.h"
 #include "Text.h"
 #include "Awesomium\JSValue.h"
+#include "PickResult.h"
 
 namespace he {
     namespace tools {
@@ -93,7 +94,7 @@ private:
     he::ge::DefaultRenderPipeline* m_RenderPipeline2;
     he::gfx::View*   m_View2;
 
-    std::vector<he::ge::Entity*> m_EntityList;
+    he::PrimitiveList<he::ge::Entity*> m_EntityList;
     
     const he::gfx::Texture2D* m_TestTexture;
 
@@ -106,8 +107,8 @@ private:
         he::vec3 b;
         he::vec3 c;
     };
-    std::vector<MovingEntityRandomness> m_MovingEntityRandomness;
-    std::vector<he::ge::Entity*> m_MovingEntityList;
+    he::ObjectList<MovingEntityRandomness> m_MovingEntityRandomness;
+    he::PrimitiveList<he::ge::Entity*> m_MovingEntityList;
     float m_MovingEntityFase;
     
     he::gui::Text m_DebugText;
@@ -128,6 +129,7 @@ private:
     he::gfx::WebListener* m_ToneMapGuiListener;
 
     he::gui::Sprite* m_TestSprite;
+    he::ge::PickResult m_LastPickResult;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

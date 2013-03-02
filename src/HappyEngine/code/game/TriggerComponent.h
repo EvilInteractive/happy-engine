@@ -34,6 +34,7 @@ namespace ge {
 
 class TriggerComponent : public EntityComponent, public Object3D
 {
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */

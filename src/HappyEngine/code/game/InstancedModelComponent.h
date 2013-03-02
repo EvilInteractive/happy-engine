@@ -35,6 +35,7 @@ namespace ge {
 class InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     InstancedModelComponent();
     virtual ~InstancedModelComponent();

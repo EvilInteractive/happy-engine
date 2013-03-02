@@ -77,6 +77,11 @@
 #include "materialGenerator/MaterialGeneratorGraph.h"
 #include "Mouse.h"
 
+#include "Ray.h"
+#include "PickResult.h"
+#include "PickingManager.h"
+#include "PickingComponent.h"
+
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
 
@@ -107,7 +112,7 @@ MainGame::MainGame()
         r.a = he::vec3(s_Random.nextFloat(-50, 50), s_Random.nextFloat(0, 50), s_Random.nextFloat(-50, 50));
         r.b = he::vec3(s_Random.nextFloat(-50, 50), s_Random.nextFloat(0, 50), s_Random.nextFloat(-50, 50));
         r.c = he::vec3((float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5), (float)s_Random.nextInt(1, 5));
-        m_MovingEntityRandomness.push_back(r);
+        m_MovingEntityRandomness.add(r);
     }
 
     for (he::uint8 r(0); r < 16; ++r)
@@ -142,7 +147,7 @@ MainGame::~MainGame()
 
     m_RenderPipeline->get2DRenderer()->removeWebView(m_ToneMapGui);
 
-    std::for_each(m_EntityList.cbegin(), m_EntityList.cend(), [&](he::ge::Entity* entity)
+    m_EntityList.forEach([&](he::ge::Entity* entity)
     {
         entity->deactivate();
         delete entity;     
@@ -201,7 +206,7 @@ void MainGame::load()
     settings.postSettings.shaderSettings.enableBloom = true;
     settings.postSettings.shaderSettings.enableDepthEdgeDetect = false;
     settings.postSettings.shaderSettings.enableFog = true;
-    settings.postSettings.shaderSettings.enableHDR = false;
+    settings.postSettings.shaderSettings.enableHDR = true;
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
     settings.postSettings.hdrSettings.exposureSpeed = 0.5f;
@@ -271,8 +276,10 @@ void MainGame::load()
     scene->setScene(m_Scene);
     ge::ModelComponent* modelComp(NEW ge::ModelComponent());
     scene->addComponent(modelComp);
-    modelComp->setModelMeshAndMaterial("testScene3.material", "testPlatformer/scene.binobj");    
-    m_EntityList.push_back(scene);
+    modelComp->setModelMeshAndMaterial("testScene3.material", "testPlatformer/scene.binobj"); 
+    ge::PickingComponent* pickComp(NEW ge::PickingComponent());   
+    scene->addComponent(pickComp);
+    m_EntityList.add(scene);
     ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
     scene->addComponent(physicsComp);
     px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
@@ -318,7 +325,7 @@ void MainGame::load()
 
     m_Player = NEW Player();
     m_Player->activate();
-    m_View->setCamera(m_Player->getCamera());
+    //m_View->setCamera(m_Player->getCamera());
     
     #pragma region GUI stuff
     gui::Font* font(CONTENT->getDefaultFont(14));
@@ -446,29 +453,45 @@ void MainGame::tick( float dTime )
             spotlight->setColor(he::Color(color.x, color.y, color.z, 1.0f));
             spotlight->setShadowResolution(he::gfx::ShadowResolution_256);
         }
-        if (keyboard->isKeyDown(he::io::Key_Lctrl))
+        if (keyboard->isKeyPressed(he::io::Key_Lctrl))
         {
+            he::Ray ray(m_View, m_View->getCamera(), CONTROLS->getMouse()->getPosition());
             he::ge::Entity* bullet(NEW he::ge::Entity());
             bullet->setScene(m_Scene);
-            bullet->setLocalTranslate(m_View->getCamera()->getPosition());
-            he::ge::InstancedModelComponent* modelComp(NEW he::ge::InstancedModelComponent());
-            modelComp->setLocalScale(he::vec3(0.5f));
+            he::ge::ModelComponent* modelComp(NEW he::ge::ModelComponent());
+            modelComp->setModelMeshAndMaterial("pong/obstacle.material", "pong/obstacles.binobj");
+            modelComp->setLocalScale(he::vec3(100, 100, 100));
             bullet->addComponent(modelComp);
-            modelComp->setController("bullet");  
-            he::ge::DynamicPhysicsComponent* physicsComp(NEW he::ge::DynamicPhysicsComponent());
-            bullet->addComponent(physicsComp);
-            he::px::PhysicsBoxShape shape(he::vec3(1.0f, 1.0f, 1.0f));
-            physicsComp->addShape(&shape, he::px::PhysicsMaterial(1.0f, 0.8f, 0.3f), 1.0f, 0x00000001, 0xffffffff);
-            m_EntityList.push_back(bullet);
-            physicsComp->getDynamicActor()->setVelocity(m_View->getCamera()->getLook() * 40);
+            bullet->setLocalTranslate(ray.getOrigin());
+            he::ge::PickingComponent* pickComp(NEW he::ge::PickingComponent());   
+            bullet->addComponent(pickComp);
             bullet->activate();
+            m_EntityList.add(bullet);
         }
         if (CONTROLS->getMouse()->isButtonPressed(he::io::MouseButton_Left))
         {
-            //he::uint32 i(m_RenderPipeline->getPicker()->pick(CONTROLS->getMouse()->getPosition()));
-            //
-            //if (i != UINT32_MAX)
-            //    ++i;
+            he::Ray ray(m_View, m_View->getCamera(), CONTROLS->getMouse()->getPosition());
+            m_LastPickResult.reset();
+            if (he::ge::PickingManager::getInstance()->pick(ray, m_LastPickResult))
+            {
+                he::ge::Entity* pickTest(NEW he::ge::Entity());
+                pickTest->setScene(m_Scene);
+                pickTest->setLocalTranslate(m_LastPickResult.getHitPosition());
+
+                const he::vec3& normal(m_LastPickResult.getHitNormal());
+                he::vec3 up(fabs(dot(normal, he::vec3::up)) < 0.99f? he::vec3::up : he::vec3::forward);
+                he::vec3 right(normalize(cross(normal, up)));
+                up = cross(normal, right);
+
+                pickTest->setLocalRotate(he::mat33::createRotation3D(normal, up, right));
+
+                he::ge::ModelComponent* modelComp(NEW he::ge::ModelComponent());
+                modelComp->setModelMeshAndMaterial("pong/ball.material", "pong/ball.binobj");
+                modelComp->setLocalScale(he::vec3(100, 100, 300));
+                pickTest->addComponent(modelComp);
+                pickTest->activate();
+                m_EntityList.add(pickTest);
+            }
         }
         CONTROLS->returnFocus(this);
     }
@@ -520,6 +543,17 @@ void MainGame::draw2D(he::gui::Canvas2D* canvas)
     m_DebugText.clear();
     m_DebugText.addTextExt("&0F0Position:&FFF %.2f, %.2f, %.2f\n", position.x, position.y, position.z);
     m_DebugText.addTextExt("&F00Look:&FFF %.2f, %.2f, %.2f\n", look.x, look.y, look.z);
+    if (m_LastPickResult.isHit())
+    {
+        const he::vec3& hitPos(m_LastPickResult.getHitPosition());
+        const he::vec3& hitNormal(m_LastPickResult.getHitNormal());
+        const float hitDist(m_LastPickResult.getHitDistance());
+        m_DebugText.addTextExt("&F00Pick:&FFF dist: %.2f   pos: %.2f, %.2f, %.2f  norm: %.2f, %.2f, %.2f\n", hitDist, hitPos.x, hitPos.y, hitPos.z, hitNormal.x, hitNormal.y, hitNormal.z);
+    }
+    else
+    {
+        m_DebugText.addTextExt("&F00Pick:&FFF Fail!\n");
+    }
     canvas->fillText(m_DebugText, he::vec2(12, 12));
 
     m_BigText.clear();

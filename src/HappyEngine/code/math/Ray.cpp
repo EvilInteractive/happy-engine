@@ -24,12 +24,14 @@
 #include "ICamera.h"
 #include "View.h"
 
+#define RAY_MAXDIST 1000000.0f
+
 namespace he {
 
 Ray::Ray( const vec3& position, const vec3& direction, float maxDist /*= FLT_MAX*/ )
 : m_Origin(position)
 , m_Direction(direction)
-, m_MaxDistance(maxDist)
+, m_MaxDistance(std::min(maxDist, RAY_MAXDIST))
 {
 
 }
@@ -38,9 +40,9 @@ Ray::Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& mousePos
 {
     const RectI& viewPort(view->getViewport());
     vec2 ndc(((mousePos.x - viewPort.x) / viewPort.width) * 2.0f - 1.0f,
-             ((mousePos.y - viewPort.y ) / viewPort.height) * 2.0f - 1.0f);
-    vec4 nearPoint(-ndc, 0.0f, 1.0f);
-    vec4  farPoint(-ndc, 1.0f, 1.0f);
+             -((mousePos.y - viewPort.y ) / viewPort.height) * 2.0f + 1.0f);
+    vec4 nearPoint(ndc, 0.0f, 1.0f);
+    vec4  farPoint(ndc, 1.0f, 1.0f);
 
     mat44 unproject(camera->getViewProjection().inverse());
 
@@ -59,7 +61,7 @@ Ray::~Ray()
 
 Ray Ray::transform( const mat44& world ) const
 {
-    return Ray((world * vec4(m_Origin, 1)).xyz(), (world * vec4(m_Direction, 0)).xyz(), m_MaxDistance);
+    return Ray((world * vec4(m_Origin, 1)).xyz(), normalize((world * vec4(m_Direction, 0)).xyz()), m_MaxDistance);
 }
 
 } //end namespace

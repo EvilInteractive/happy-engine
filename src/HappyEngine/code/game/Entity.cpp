@@ -27,6 +27,8 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_ENTITY_COMPONENT_TYPE(Entity)
+
 Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr)
 {
 }
@@ -76,6 +78,19 @@ void Entity::removeComponent( EntityComponent* component )
     HE_IF_ASSERT(m_Components.contains(component), "Component not attached to Entity")
     {
         m_Components.remove(component);
+    }
+}
+
+EntityComponent* Entity::getComponent( EntityComponentType const type )
+{
+    size_t index(0);
+    if (m_Components.find_if([&type](EntityComponent* const comp) { return comp->getComponentType() == type; }, index))
+    {
+        return m_Components[index];
+    }
+    else
+    {
+        return nullptr;
     }
 }
 

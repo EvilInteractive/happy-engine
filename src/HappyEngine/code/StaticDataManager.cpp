@@ -39,6 +39,7 @@
 #include "Sprite.h"
 #include "materialGenerator/MaterialGeneratorNodeFactory.h"
 #include "SpriteCreator.h"
+#include "PickingManager.h"
 
 namespace he {
 
@@ -63,10 +64,12 @@ void StaticDataManager::init()
     gfx::CullOctreeNodeFactory::sdmInit();
     ct::ShaderGeneratorVariableFactory::sdmInit();
     tools::MaterialGeneratorNodeFactory::sdmInit();
+    ge::PickingManager::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    ge::PickingManager::sdmDestroy();
     tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();

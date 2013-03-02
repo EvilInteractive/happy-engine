@@ -85,6 +85,8 @@ public:
 
     void createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
     void destroyPickingData();
+    const PickingData& getPickingData() const { return m_PickingData; }
+    bool hasPickingData() const { return m_PickingData.m_Vertices != nullptr; }
 
     inline uint32 getNumVertices() const { return m_NumVertices; }
     inline uint32 getNumIndices() const { return m_NumIndices; }
@@ -142,6 +144,8 @@ private:
     ModelMesh(const ModelMesh&);
     ModelMesh& operator=(const ModelMesh&);
 };
+
+typedef ResourceFactory<ModelMesh> ModelMeshFactory;
 
 } } //end namespace
 

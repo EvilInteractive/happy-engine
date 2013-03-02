@@ -35,6 +35,7 @@ namespace ge {
 
 class DynamicPhysicsComponent : public EntityComponent, public Object3D, public ITickable
 {
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     DynamicPhysicsComponent();
     virtual ~DynamicPhysicsComponent();

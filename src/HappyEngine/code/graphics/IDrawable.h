@@ -22,7 +22,6 @@
 #define _HE_IDRAWABLE_H_
 #pragma once
 
-#include "IPickable.h"
 #include "Object3D.h"
 
 namespace he {
@@ -35,7 +34,7 @@ class Material;
 class CullOctreeNode;
 class Scene;
 
-class IDrawable : public IPickable
+class IDrawable
 {
 public:
     IDrawable(): m_Node(nullptr) {}

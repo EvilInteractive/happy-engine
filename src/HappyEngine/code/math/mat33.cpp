@@ -135,6 +135,14 @@ he::mat33 mat33::createRotation3D( const vec3& axis, float radians )
 
 }
 
+he::mat33 mat33::createRotation3D( const vec3& forward, const vec3& up, const vec3& right )
+{
+    return mat33(
+        right.x,        up.x,           forward.x,
+        right.y,        up.y,           forward.y,
+        right.z,        up.z,           forward.z);
+}
+
 const vec3& mat33::getForward() const
 {
     return *reinterpret_cast<const vec3*>(&m_Matrix.column2);

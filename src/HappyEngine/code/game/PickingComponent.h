@@ -16,59 +16,61 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 28/11/2012
+//Created: 2013-03-02
 
-#ifndef _HE_CHARACTER_PHYSICS_COMPONENT_H_
-#define _HE_CHARACTER_PHYSICS_COMPONENT_H_
+#ifndef _HE_PickingComponent_H_
+#define _HE_PickingComponent_H_
 #pragma once
 
 #include "EntityComponent.h"
-#include "ITickable.h"
+#include "Pickable.h"
+#include "Object3D.h"
 
 namespace he {
-namespace px {
-    class PhysicsCharacterController;
-}
-namespace ge {
 
-class CharacterPhysicsComponent : public EntityComponent, public Object3D, public ITickable
+namespace gfx {
+    class ModelMesh;
+}
+
+namespace ge {
+    
+class PickingComponent : public Pickable, public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
     DECLARE_ENTITY_COMPONENT_TYPE()
 public:
-    CharacterPhysicsComponent();
-    virtual ~CharacterPhysicsComponent();
+    PickingComponent();
+    virtual ~PickingComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
+    virtual void init(Entity* parent);
+
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
     virtual void activate();
     virtual void deactivate();
     //////////////////////////////////////////////////////////////////////////
-     
-    //////////////////////////////////////////////////////////////////////////
-    ///                            ITickable                               ///
-    //////////////////////////////////////////////////////////////////////////
-    virtual void tick(float dTime);
-    //////////////////////////////////////////////////////////////////////////
-    
-
+           
 protected:
-    virtual void init(Entity* parent);
+    virtual void getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const;   // Local space
+    virtual const Bound& getPickingBound() const; // Local space
+    virtual const mat44& getPickingWorld() const;
 
-    px::PhysicsCharacterController* getCharacterController() const { return m_CharacterController; }
+    Entity* m_Parent;
 
 private:
-    px::PhysicsCharacterController* m_CharacterController;
-    
-    Entity* m_Parent;
-    
+    void initPickingMesh();
+
+    he::eventCallback0<void> m_OnNewPickingMesh;
+    const gfx::ModelMesh* m_ModelMesh;
+
     //Disable default copy constructor and default assignment operator
-    CharacterPhysicsComponent(const CharacterPhysicsComponent&);
-    CharacterPhysicsComponent& operator=(const CharacterPhysicsComponent&);
+    PickingComponent(const PickingComponent&);
+    PickingComponent& operator=(const PickingComponent&);
 };
+
 } } //end namespace
 
 #endif

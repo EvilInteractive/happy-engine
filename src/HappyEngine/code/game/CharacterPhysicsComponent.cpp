@@ -28,6 +28,8 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_ENTITY_COMPONENT_TYPE(CharacterPhysicsComponent)
+
 CharacterPhysicsComponent::CharacterPhysicsComponent(): m_CharacterController(nullptr), m_Parent(nullptr)
 {
 }

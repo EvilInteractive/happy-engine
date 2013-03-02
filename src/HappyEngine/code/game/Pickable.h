@@ -36,7 +36,7 @@ class PickResult;
 class Pickable
 {
 public:
-    virtual ~Pickable();
+    virtual ~Pickable() {}
 
     bool pick(const Ray& ray, PickResult& result);
 

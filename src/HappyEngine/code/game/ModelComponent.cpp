@@ -32,6 +32,8 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_ENTITY_COMPONENT_TYPE(ModelComponent)
+
 ModelComponent::ModelComponent()
     : m_ModelMesh(nullptr)
     , m_Parent(nullptr)
@@ -101,6 +103,8 @@ void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, 
         {
             activate();
         }
+
+        OnModelMeshLoaded();
     });
 }
 

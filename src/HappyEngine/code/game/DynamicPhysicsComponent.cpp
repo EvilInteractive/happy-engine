@@ -28,6 +28,8 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_ENTITY_COMPONENT_TYPE(DynamicPhysicsComponent)
+
 DynamicPhysicsComponent::DynamicPhysicsComponent(): m_DynamicActor(nullptr), m_Parent(nullptr)
 {
 }

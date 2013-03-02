@@ -25,6 +25,16 @@
 namespace he {
 namespace ge {
 
+PickingManager::PickingManager()
+{
+
+}
+
+PickingManager::~PickingManager()
+{
+    HE_ASSERT(m_PickList.empty(), "Picklist leak!, %d objects still attached", m_PickList.size());
+}
+
 void PickingManager::addToPickList( Pickable* const object )
 {
     HE_IF_ASSERT(m_PickList.contains(object) == false, "Picklist already contains object!")
@@ -50,5 +60,6 @@ bool PickingManager::pick( const Ray& ray, PickResult& result )
     });
     return hasPicked;
 }
+
 
 } } //end namespace

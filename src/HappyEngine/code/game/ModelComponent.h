@@ -24,7 +24,6 @@
 
 #include "EntityComponent.h"
 #include "DefaultSingleDrawable.h"
-#include "IPickable.h"
 
 namespace he {
 namespace ge {
@@ -34,6 +33,7 @@ class ModelComponent;
 class ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     ModelComponent();
     virtual ~ModelComponent();
@@ -58,6 +58,8 @@ public:
     //////////////////////////////////////////////////////////////////////////
        
     void setModelMeshAndMaterial(const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName = "");
+
+    he::event0<void> OnModelMeshLoaded;
 
 protected:
     Entity* m_Parent;

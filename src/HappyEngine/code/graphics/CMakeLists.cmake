@@ -9,8 +9,7 @@ addFilter(CODE_SRCS src/graphics code/graphics/
             IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h
-            IDrawable.h    
-            IPickable.h 
+            IDrawable.h  
             SkyBox.cpp                          SkyBox.h
 			Texture.cpp							Texture.h
             Texture2D.cpp                       Texture2D.h

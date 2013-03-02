@@ -34,6 +34,7 @@ namespace ge {
 
 class Entity : public EntityComponent, public Object3D
 {
+    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     DECLARE_RTTI(RTTI::Entity)
 
@@ -42,6 +43,7 @@ public:
     
     void addComponent(EntityComponent* component);      // Gives ownership to Entity
     void removeComponent(EntityComponent* component);   // Returns ownership to caller
+    EntityComponent* getComponent(EntityComponentType const type);
 
     virtual void activate();
     virtual void deactivate();

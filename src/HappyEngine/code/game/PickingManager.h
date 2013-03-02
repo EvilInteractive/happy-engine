@@ -25,8 +25,8 @@
 #include "Singleton.h"
 
 namespace he {
-namespace ge {
 class Ray;
+namespace ge {
 class PickResult;
 class Pickable;
 

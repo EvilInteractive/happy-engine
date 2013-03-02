@@ -29,6 +29,8 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_ENTITY_COMPONENT_TYPE(SkinnedModelComponent)
+
 SkinnedModelComponent::SkinnedModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr)
 {
 }
