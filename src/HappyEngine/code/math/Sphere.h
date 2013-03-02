@@ -23,7 +23,7 @@
 #pragma once
 
 namespace he {
-    
+class Ray;
 class Sphere
 {
 public:
@@ -38,6 +38,7 @@ public:
     inline void setRadius(float radius) { m_Radius = radius; }
     
     bool intersectTest(const Sphere& other) const;
+    bool intersectTest(const Ray& other) const;
     bool isOtherInside(const Sphere& other) const;
     IntersectResult intersect(const Sphere& other) const;
 

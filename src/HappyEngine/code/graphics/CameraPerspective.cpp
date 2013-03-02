@@ -41,7 +41,6 @@ CameraPerspective::CameraPerspective() :
         m_LookWorld(1.0f, 0.0f, 0.0f),
         m_RegenViewMatrix(true), m_RegenProjMatrix(true)
 {
-    m_Bound.calculate(this);
 }
 
 CameraPerspective::~CameraPerspective()

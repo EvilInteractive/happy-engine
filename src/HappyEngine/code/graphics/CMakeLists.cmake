@@ -52,12 +52,7 @@ addFilter(CODE_SRCS src/graphics/model code/graphics/
             Model.cpp                           Model.h
             ModelMesh.cpp                       ModelMesh.h
         )
-            
-addFilter(CODE_SRCS src/graphics/picking code/graphics/
-            PickEffect.cpp                      PickEffect.h
-            Picker.cpp                          Picker.h
-        )
-            
+                        
 addFilter(CODE_SRCS src/graphics/rendering code/graphics/
             CameraOrtho.cpp                     CameraOrtho.h
             CameraPerspective.cpp               CameraPerspective.h

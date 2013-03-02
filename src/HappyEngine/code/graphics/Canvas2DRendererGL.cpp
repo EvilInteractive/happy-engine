@@ -447,7 +447,7 @@ void Canvas2DRendererGL::init()
         indices.add(1); indices.add(3); indices.add(2);
 
         mesh->init(vLayout, MeshDrawMode_Triangles);
-        mesh->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        mesh->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         mesh->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
         mesh->setLoaded();
 

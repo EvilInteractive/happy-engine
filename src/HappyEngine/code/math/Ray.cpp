@@ -34,10 +34,11 @@ Ray::Ray( const vec3& position, const vec3& direction, float maxDist /*= FLT_MAX
 
 }
 
-Ray::Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& viewCoord, float maxDist /*= FLT_MAX*/ )
+Ray::Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& mousePos, float maxDist /*= FLT_MAX*/ )
 {
-    vec2 ndc((viewCoord.x / view->getViewport().width) * 2.0f - 1.0f,
-             (viewCoord.y / view->getViewport().height) * 2.0f - 1.0f);
+    const RectI& viewPort(view->getViewport());
+    vec2 ndc(((mousePos.x - viewPort.x) / viewPort.width) * 2.0f - 1.0f,
+             ((mousePos.y - viewPort.y ) / viewPort.height) * 2.0f - 1.0f);
     vec4 nearPoint(-ndc, 0.0f, 1.0f);
     vec4  farPoint(-ndc, 1.0f, 1.0f);
 
@@ -56,19 +57,9 @@ Ray::~Ray()
 {
 }
 
-const vec3& Ray::getOrigin() const
+Ray Ray::transform( const mat44& world ) const
 {
-    return m_Origin;
-}
-
-const vec3& Ray::getDirection() const
-{
-    return m_Direction;
-}
-
-float Ray::getMaxDistance() const
-{
-    return m_MaxDistance;
+    return Ray((world * vec4(m_Origin, 1)).xyz(), (world * vec4(m_Direction, 0)).xyz(), m_MaxDistance);
 }
 
 } //end namespace

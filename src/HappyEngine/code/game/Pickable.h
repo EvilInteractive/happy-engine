@@ -16,49 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 19/05/2012
+//Created: 2013/03/02
 
-#ifndef _HE_Ray_H_
-#define _HE_Ray_H_
+#ifndef _HE_Pickable_H_
+#define _HE_Pickable_H_
 #pragma once
 
+
 namespace he {
-namespace px {
-    class PhysicsActor;
-}
+class Ray;
+class Bound;
+
 namespace gfx {
-    class ICamera;
-    class View;
+ENUM(IndexStride, uint8);
 }
+namespace ge {
 
-struct RayCastResult
-{
-    bool hit;
-    vec3 hitPosition;
-    vec3 hitNormal;
-    float hitDistance;
-    px::PhysicsActor* actorHit;
-};
-
-class Ray
+class PickResult;
+class Pickable
 {
 public:
-    Ray(const vec3& position, const vec3& direction, float maxDist = FLT_MAX);
-    Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& mousePos, float maxDist = FLT_MAX);
-    ~Ray();
+    virtual ~Pickable();
 
-    inline const vec3& getOrigin() const { return m_Origin; }
-    inline const vec3& getDirection() const { return m_Direction; }
-    inline float getMaxDistance() const { return m_MaxDistance; }
+    bool pick(const Ray& ray, PickResult& result);
 
-    Ray transform(const mat44& world) const;
-
-private:
-    vec3 m_Origin;
-    vec3 m_Direction;
-    float m_MaxDistance;
+protected:
+    virtual void getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const = 0;   // Local space
+    virtual const Bound& getPickingBound() const = 0; // Local space
+    virtual const mat44& getPickingWorld() const = 0;
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

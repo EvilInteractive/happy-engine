@@ -21,15 +21,26 @@
 
 #include "Plane.h"
 #include "AABB.h"
+#include "Ray.h"
 
 namespace he {
 
 // a*Nx + b*Ny + c*Nz + d = 0
 Plane::Plane( float a, float b, float c, float d ): m_Normal(a, b, c), m_Distance(-d)
 {
-    float len(length(m_Normal));
+    const float len(length(m_Normal));
     m_Normal /= len;
     m_Distance /= len;
+}
+
+Plane::Plane( const vec3& v1, const vec3& v2, const vec3& v3 )
+    : m_Normal(0, 1, 0)
+    , m_Distance(0.0f)
+{
+    const vec3 vec1(v2 - v1);
+    const vec3 vec2(v3 - v1);
+    m_Normal = normalize(cross(v2, v3));
+    m_Distance = -dot(v1, m_Normal);
 }
 
 bool Plane::isPointInFrontOfPlane( const vec3& point ) const
@@ -82,6 +93,22 @@ he::IntersectResult Plane::intersect( const AABB& box ) const
         return IntersectResult_Inside;
     else 
         return IntersectResult_Intersecting;
+}
+
+bool Plane::intersect( const Ray& ray, float& outDist ) const
+{
+    bool result(false);
+    const float dotDirNorm(dot(ray.getDirection(), m_Normal));
+    if (dotDirNorm < 0) // Plane is facing away from ray or parallel to ray
+    {
+        const float t(-(dot(ray.getOrigin(), m_Normal) + m_Distance) / dotDirNorm);
+        if (t >= 0.0f) // Plane is not behind the ray
+        {
+            result = true;
+            outDist = t;
+        }
+    }
+    return result;
 }
 
 float Plane::getDistanceToPoint( const vec3& point ) const

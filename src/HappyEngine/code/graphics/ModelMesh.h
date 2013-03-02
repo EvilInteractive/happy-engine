@@ -53,6 +53,15 @@ enum MeshDrawMode
     MeshDrawMode_Triangles  =   GL_TRIANGLES
 };
 
+struct PickingData
+{
+    PickingData() : m_Vertices(nullptr), m_Indices(nullptr), m_IndexStride(IndexStride_Byte), m_TriangleCount(0) {}
+    vec3* m_Vertices;
+    void* m_Indices;
+    IndexStride m_IndexStride;
+    size_t m_TriangleCount;
+};
+
 class ModelMesh : public Resource<ModelMesh>
 {
 public:
@@ -60,8 +69,8 @@ public:
     virtual ~ModelMesh();
 
     void init(const BufferLayout& vertexLayout, MeshDrawMode mode);
-    void setVertices(const void* pVertices, uint32 num, MeshUsage usage, bool calcBound = true);
-    void setIndices(const void* pIndices, uint32 num, IndexStride type, MeshUsage usage);
+    void setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound);
+    void setIndices(const void* const indices, const uint32 num, const IndexStride type, const MeshUsage usage);
     void setBones(const he::ObjectList<Bone>& boneList);
     void setLoaded();
 
@@ -73,6 +82,9 @@ public:
     inline uint32 getVBOID() const { return m_VertexVboID; }
     inline uint32 getVBOIndexID() const { return m_IndexVboID; }
     inline const MeshDrawMode& getDrawMode() const { return m_DrawMode; }
+
+    void createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride);
+    void destroyPickingData();
 
     inline uint32 getNumVertices() const { return m_NumVertices; }
     inline uint32 getNumIndices() const { return m_NumIndices; }
@@ -89,7 +101,7 @@ public:
 
 private:
     void initVAO(GLContext* context);
-    void destroyVAO(GLContext* context);
+    void destroyVAO(GLContext* context);    
 
     struct ShadowSkinnedVertex
     {
@@ -117,6 +129,7 @@ private:
     bool m_IsLoaded;
 
     Bound m_Bound;
+    PickingData m_PickingData;
 
     he::ObjectList<Bone> m_BoneList;
 

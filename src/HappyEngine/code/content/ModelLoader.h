@@ -53,11 +53,11 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model* asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::ModelMesh* asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
 
-    gfx::Model* loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::ModelMesh* loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
 
     /* GETTERS */
     bool isLoading() const;
@@ -66,10 +66,12 @@ private:
     struct ModelLoadData
     {
     public:
+        ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false) {}
         std::string path;
         gfx::BufferLayout vertexLayout;
         ObjectHandle modelHandle;
         models::IModelLoader* loader;
+        bool savePickingData;
     };
 
     bool getModelLoader(ModelLoadData& data);

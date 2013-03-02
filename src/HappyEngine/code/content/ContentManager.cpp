@@ -103,19 +103,19 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 //////////////////////////////////////////////////////////////////////////
 gfx::Model* ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
-    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout);
+    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout, true);
 }
 gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
 {
-    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
+    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
 }
 gfx::Model* ContentManager::loadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
 {
-    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout);
+    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout, true);
 }
 gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
 {
-    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout);
+    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -309,7 +309,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
         indices.add(1); indices.add(2); indices.add(3);
 
         m_FullscreenQuad->init(layout, gfx::MeshDrawMode_Triangles);
-        m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        m_FullscreenQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         m_FullscreenQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
         m_FullscreenQuad->setLoaded();
     }
@@ -354,7 +354,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
         m_ParticleQuad->setName("Particle quad");
 
         m_ParticleQuad->init(layout, gfx::MeshDrawMode_Triangles);
-        m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+        m_ParticleQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
         m_ParticleQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
         m_ParticleQuad->setLoaded();
     }

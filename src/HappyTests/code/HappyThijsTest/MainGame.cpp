@@ -95,7 +95,7 @@ void MainGame::tick( float dTime )
     m_FpsGraph->tick(dTime);
 }
 
-void MainGame::draw2D( he::gfx::Canvas2D* canvas )
+void MainGame::draw2D( he::gui::Canvas2D* canvas )
 {
     canvas->drawImage(m_Font->getTextureAtlas(), he::vec2(20, 20));
 }

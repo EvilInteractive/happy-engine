@@ -171,7 +171,7 @@ void Renderer2D::init( View* view, const RenderTarget* target )
     indices.add(0); indices.add(1); indices.add(2);
     indices.add(1); indices.add(3); indices.add(2);
 
-    m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
+    m_TextureQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, false);
     m_TextureQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
     m_TextureQuad->setLoaded();
 

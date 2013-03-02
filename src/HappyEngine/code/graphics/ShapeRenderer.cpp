@@ -41,9 +41,9 @@ namespace gfx {
 
 /* CONSTRUCTOR - DESCTRUCTOR */
 ShapeRenderer::ShapeRenderer() :	
-    m_pColorEffect(NEW SimpleColorEffect()),
-    m_pBillboardEffect(NEW BillboardEffect()),
-    m_pBillboardQuad(nullptr),
+    m_ColorEffect(NEW SimpleColorEffect()),
+    m_BillboardEffect(NEW BillboardEffect()),
+    m_BillboardQuad(nullptr),
     m_View(nullptr),
     m_RenderTarget(nullptr)
 {
@@ -51,10 +51,10 @@ ShapeRenderer::ShapeRenderer() :
 
 ShapeRenderer::~ShapeRenderer()
 {
-    delete m_pColorEffect;
-    delete m_pBillboardEffect;
-    if (m_pBillboardQuad != nullptr)
-        m_pBillboardQuad->release();
+    delete m_ColorEffect;
+    delete m_BillboardEffect;
+    if (m_BillboardQuad != nullptr)
+        m_BillboardQuad->release();
 }
 
 void ShapeRenderer::createBillboardQuad()
@@ -62,8 +62,8 @@ void ShapeRenderer::createBillboardQuad()
     m_VertexLayoutBillboard.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
     m_VertexLayoutBillboard.addElement(BufferElement(1, BufferElement::Type_Vec2, BufferElement::Usage_TextureCoordinate, 8, 12));
 
-    m_pBillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
-    m_pBillboardQuad->init(m_VertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
+    m_BillboardQuad = ResourceFactory<ModelMesh>::getInstance()->get(ResourceFactory<ModelMesh>::getInstance()->create());
+    m_BillboardQuad->init(m_VertexLayoutBillboard, gfx::MeshDrawMode_Triangles);
 
     he::ObjectList<VertexPosTex> vertices(4);
     vertices.add(
@@ -86,9 +86,9 @@ void ShapeRenderer::createBillboardQuad()
     indices.add(0); indices.add(1); indices.add(2);
     indices.add(1); indices.add(3); indices.add(2);
 
-    m_pBillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static);
-    m_pBillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
-    m_pBillboardQuad->setLoaded();
+    m_BillboardQuad->setVertices(&vertices[0], 4, gfx::MeshUsage_Static, true);
+    m_BillboardQuad->setIndices(&indices[0], 6, IndexStride_Byte, gfx::MeshUsage_Static);
+    m_BillboardQuad->setLoaded();
 }
 
 /* GENERAL */
@@ -99,17 +99,17 @@ void ShapeRenderer::init(View* view, const RenderTarget* target)
 
     createBillboardQuad();
 
-    m_pColorEffect->load();
-    m_pBillboardEffect->load();
+    m_ColorEffect->load();
+    m_BillboardEffect->load();
 }
 
 /* DRAW METHODS */
 void ShapeRenderer::drawColored(const ModelMesh* model, const mat44& world, const Color& color) const
 {
-    m_pColorEffect->begin();
-    m_pColorEffect->setViewProjection(m_ViewProjection);
-    m_pColorEffect->setWorld(world);
-    m_pColorEffect->setColor(color);
+    m_ColorEffect->begin();
+    m_ColorEffect->setViewProjection(m_ViewProjection);
+    m_ColorEffect->setWorld(world);
+    m_ColorEffect->setColor(color);
 
     GL::heBindVao(model->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
@@ -120,10 +120,10 @@ void ShapeRenderer::drawColoredNoDepth(const ModelMesh* model, const mat44& worl
     GL::heSetDepthRead(false);
     GL::heSetDepthWrite(false);
 
-    m_pColorEffect->begin();
-    m_pColorEffect->setViewProjection(m_ViewProjection);
-    m_pColorEffect->setWorld(world);
-    m_pColorEffect->setColor(color);
+    m_ColorEffect->begin();
+    m_ColorEffect->setViewProjection(m_ViewProjection);
+    m_ColorEffect->setWorld(world);
+    m_ColorEffect->setColor(color);
 
     GL::heBindVao(model->getVertexArraysID());
     glDrawElements(GL_TRIANGLES, model->getNumIndices(), model->getIndexType(), 0);
@@ -134,10 +134,10 @@ void ShapeRenderer::drawColoredNoDepth(const ModelMesh* model, const mat44& worl
 
 void ShapeRenderer::drawMeshColor(const ModelMesh* spline, const mat44& world, const Color& color) const
 {
-    m_pColorEffect->begin();
-    m_pColorEffect->setViewProjection(m_ViewProjection);
-    m_pColorEffect->setWorld(world);
-    m_pColorEffect->setColor(color);
+    m_ColorEffect->begin();
+    m_ColorEffect->setViewProjection(m_ViewProjection);
+    m_ColorEffect->setWorld(world);
+    m_ColorEffect->setColor(color);
 
     GL::heBindVao(spline->getVertexArraysID());
     glDrawElements(spline->getDrawMode(), spline->getNumIndices(), spline->getIndexType(), 0);
@@ -149,15 +149,15 @@ void ShapeRenderer::drawBillboard(const Texture2D* tex2D, const vec3& pos)
     
     mat44 world(mat44::createTranslation(pos));
 
-    m_pBillboardEffect->begin();
+    m_BillboardEffect->begin();
 
-    m_pBillboardEffect->setWorldViewProjection(m_ViewProjection * world * m_BillboardMatrix);
+    m_BillboardEffect->setWorldViewProjection(m_ViewProjection * world * m_BillboardMatrix);
 
-    m_pBillboardEffect->setDiffuseMap(tex2D);
-    m_pBillboardEffect->setTCScale(tcScale);
+    m_BillboardEffect->setDiffuseMap(tex2D);
+    m_BillboardEffect->setTCScale(tcScale);
 
-    GL::heBindVao(m_pBillboardQuad->getVertexArraysID());
-    glDrawElements(GL_TRIANGLES, m_pBillboardQuad->getNumIndices(), m_pBillboardQuad->getIndexType(), 0);
+    GL::heBindVao(m_BillboardQuad->getVertexArraysID());
+    glDrawElements(GL_TRIANGLES, m_BillboardQuad->getNumIndices(), m_BillboardQuad->getIndexType(), 0);
 }
 
 void ShapeRenderer::render()

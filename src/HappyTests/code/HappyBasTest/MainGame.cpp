@@ -76,7 +76,6 @@
 #include "PhysicsDynamicActor.h"
 #include "materialGenerator/MaterialGeneratorGraph.h"
 #include "Mouse.h"
-#include "Picker.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -513,9 +512,7 @@ void MainGame::draw2D(he::gui::Canvas2D* canvas)
     const he::vec3& position(camera->getPosition());
     const he::vec3& look(camera->getLook());
     const he::RectI& viewport(m_View->getViewport());
-
-    m_RenderPipeline->getPicker()->drawDebug(canvas);
-
+    
     //canvas->setBlendStyle(he::gfx::BlendStyle_Opac);
     canvas->drawImage(m_DebugSpotLight->getShadowMap(), he::vec2(12, 300), he::vec2(128, 128));
     m_ToneMapGui->draw2D(canvas);

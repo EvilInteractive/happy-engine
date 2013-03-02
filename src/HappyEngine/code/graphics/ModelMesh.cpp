@@ -60,6 +60,7 @@ ModelMesh::~ModelMesh()
         glDeleteBuffers(1, &m_VertexVboID);
     if (m_IndexVboID != UINT32_MAX)
         glDeleteBuffers(1, &m_IndexVboID);
+    destroyPickingData();
 }
 
 void ModelMesh::init(const BufferLayout& vertexLayout, MeshDrawMode mode)
@@ -165,7 +166,7 @@ void ModelMesh::destroyVAO( GLContext* context )
 
 
 //Calling glBufferData with a NULL pointer before uploading new data can improve performance (tells the driver you don't care about the old cts)
-void ModelMesh::setVertices(const void* pVertices, uint32 num, MeshUsage usage, bool calcBound)
+void ModelMesh::setVertices(const void* const vertices, const uint32 num, const MeshUsage usage, const bool calcBound)
 {
     m_NumVertices = num;
 
@@ -179,22 +180,22 @@ void ModelMesh::setVertices(const void* pVertices, uint32 num, MeshUsage usage, 
                 posOffset = e.getByteOffset();
             }
         });
-        m_Bound.fromAABB(AABB::calculateBoundingAABB(pVertices, num, m_VertexLayout.getSize(), posOffset));
+        m_Bound.fromAABB(AABB::calculateBoundingAABB(vertices, num, m_VertexLayout.getSize(), posOffset));
     }
 
     GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ARRAY_BUFFER, m_VertexVboID);
     glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, nullptr, usage);
-    glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, pVertices, usage);
+    glBufferData(GL_ARRAY_BUFFER, m_VertexLayout.getSize() * num, vertices, usage);
 }
-void ModelMesh::setIndices(const void* pIndices, uint32 num, IndexStride type, MeshUsage usage)
+void ModelMesh::setIndices(const void* const indices, const uint32 num, const IndexStride type, const MeshUsage usage)
 {
     m_NumIndices = num;
 
     GL::heBindVao(getVertexArraysID());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, nullptr, usage);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, pIndices, usage);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, type * num, indices, usage);
 
     switch (type)
     {
@@ -234,6 +235,42 @@ void ModelMesh::setLoaded()
     Loaded();
     Loaded.clear();
     m_LoadMutex.unlock();
+}
+
+void ModelMesh::createPickingData(const void* const vertices, const size_t vertexCount, const BufferLayout& vertexLayout, const void* const indices, const size_t indexCount, const IndexStride indexStride)
+{
+    HE_IF_ASSERT(m_PickingData.m_Vertices == nullptr && m_PickingData.m_Indices == nullptr, "Picking data already initialized!")
+    {
+        m_PickingData.m_TriangleCount = indexCount / 3;
+        m_PickingData.m_Vertices = static_cast<vec3*>(he_malloc(sizeof(vec3) * vertexCount));
+        m_PickingData.m_Indices = he_malloc(indexStride * indexCount);
+        he_memcpy(m_PickingData.m_Indices, indices, indexStride * indexCount);
+
+        uint32 posOffset(UINT32_MAX);
+        std::for_each(vertexLayout.getElements().cbegin(), vertexLayout.getElements().cend(), [&](const BufferElement& e)
+        {
+            if (e.getUsage() == gfx::BufferElement::Usage_Position)
+            {
+                posOffset = e.getByteOffset();
+            }
+        });
+
+        const uint32 stride(vertexLayout.getSize());
+        for (size_t i(0); i < vertexCount; ++i)
+        {
+            he_memcpy(m_PickingData.m_Vertices + i, 
+                reinterpret_cast<const vec3*>(static_cast<const char*>(vertices) + stride * i + posOffset), sizeof(vec3));
+        }
+    }
+}
+
+void ModelMesh::destroyPickingData()
+{
+    m_PickingData.m_TriangleCount = 0;
+    he_free(m_PickingData.m_Vertices);
+    m_PickingData.m_Vertices = nullptr;
+    he_free(m_PickingData.m_Indices);
+    m_PickingData.m_Indices = nullptr;
 }
 
 } } //end namespace

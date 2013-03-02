@@ -6,7 +6,12 @@ addFilter(CODE_SRCS src/game code/game/
             Game.h
             ITickable.h
         )
-                        
+
+addFilter(CODE_SRCS src/game/picking code/game/
+            PickingManager.cpp                      PickingManager.h
+            PickResult.h
+            Pickable.cpp                            Pickable.h
+        )
                         
 addFilter(CODE_SRCS src/game/components code/game/
             CharacterPhysicsComponent.cpp           CharacterPhysicsComponent.h

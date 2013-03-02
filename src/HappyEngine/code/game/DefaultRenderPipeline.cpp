@@ -27,7 +27,6 @@
 #include "Forward3DRenderer.h"
 #include "ShapeRenderer.h"
 #include "Renderer2D.h"
-#include "Picker.h"
 
 namespace he {
 namespace ge {
@@ -37,7 +36,6 @@ DefaultRenderPipeline::DefaultRenderPipeline()
     , m_TransparentRenderer(nullptr)
     , m_ShapeRenderer(nullptr)
     , m_2DRenderer(nullptr)
-    , m_Picker(nullptr)
     , m_IsDeferred(false)
 {
 }
@@ -51,7 +49,6 @@ DefaultRenderPipeline::~DefaultRenderPipeline()
     delete m_TransparentRenderer;
     delete m_ShapeRenderer;
     delete m_2DRenderer;
-    delete m_Picker;
 }
 
 void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene, const gfx::RenderSettings& settings )
@@ -75,8 +72,6 @@ void DefaultRenderPipeline::init( gfx::View* const view, gfx::Scene* const scene
     m_TransparentRenderer = NEW gfx::Forward3DRenderer(gfx::RenderPass_Translucent, true);
     m_TransparentRenderer->setScene(scene);
     m_ShapeRenderer = NEW gfx::ShapeRenderer();
-    m_Picker = NEW gfx::Picker();
-    m_Picker->init(view, scene);
 
     view->addRenderPlugin(m_OpacRenderer);
     view->addRenderPlugin(m_TransparentRenderer);
