@@ -19,6 +19,18 @@
 #define _HE_HAPPYMEMORY_H_
 #pragma once
 
+//////////////////////////////////////////////////////////////////////////
+///    check mem
+//////////////////////////////////////////////////////////////////////////
+#if DEBUG || _DEBUG
+    #if GCC || LLVM
+        #define he_checkmem()
+    #else
+        #define he_checkmem() _ASSERT_EXPR(_CrtCheckMemory() == TRUE, _CRT_WIDE("Heap check failed! Memcorruption detected"))
+    #endif
+#else
+    #define he_checkmem()
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 ///    malloc

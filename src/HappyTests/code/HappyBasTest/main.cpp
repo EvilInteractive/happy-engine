@@ -44,6 +44,8 @@ int main( int /*argc*/, char** /*args[]*/ )
 
     HAPPYENGINE->dispose();
 
+    he_checkmem();
+
     std::cout << "\npress enter to quit\n";
     std::cin.get();
 
