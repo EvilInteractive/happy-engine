@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,26 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 24/03/2012
+//Created: 2013/03/03
 
-#ifndef _HE_STATIC_DATA_MANAGER_H_
-#define _HE_STATIC_DATA_MANAGER_H_
-#pragma once
+#include "HappyPluginTestPCH.h" 
 
-namespace he {
+#include "HappyPluginTestMain.h"
 
-namespace io {
-    class BinaryVisitor;
+PLUGIN_EXPORT he::pl::IPlugin* createPlugin()
+{
+    return NEW ht::HappyPluginTestMain();
 }
 
-class StaticDataManager
+BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpReserved*/ )
 {
-public:
-    static void init();
-    static void destroy();
-    static void visit(he::io::BinaryVisitor& visitor);
-};
+    switch( fdwReason ) 
+    { 
+    case DLL_PROCESS_ATTACH:
+        std::cout << "Plugin HappyPluginTestMain loaded!\n";
+        break;
+    case DLL_PROCESS_DETACH:
+        std::cout << "Plugin HappyPluginTestMain unloaded!\n";
+        break;
 
-} //end namespace
-
-#endif
+    case DLL_THREAD_ATTACH:
+        break;
+    case DLL_THREAD_DETACH:
+        break;
+    }
+    return TRUE;
+}

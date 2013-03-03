@@ -34,20 +34,17 @@
 #include "Window.h"
 #include "Gui.h"
 #include "Sprite.h"
+#include "PluginLoader.h"
 
 namespace he {
-
-HappyEngine* HappyEngine::s_HappyEngine = nullptr;
-Random HappyEngine::s_Random;
-
-
+    
 HappyEngine::HappyEngine(): m_Game(nullptr), m_Quit(false),
                             m_GraphicsEngine(nullptr), m_ControlsManager(nullptr),
                             m_PhysicsEngine(nullptr), m_ContentManager(nullptr),
                             m_NetworkManager(nullptr),
                             m_Console(nullptr), m_SoundEngine(nullptr), m_SubEngines(0),
                             m_ShowProfiler(false), m_GameLoading(true),
-                            m_RootDir("./"), m_Gui(nullptr)
+                            m_RootDir("./"), m_Gui(nullptr), m_PluginLoader(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -65,9 +62,6 @@ void HappyEngine::dispose()
     HAPPYENGINE->cleanup();
 
     StaticDataManager::destroy();
-
-    delete s_HappyEngine;
-    s_HappyEngine = nullptr;
 }
 void HappyEngine::cleanup()
 {  
@@ -84,6 +78,8 @@ void HappyEngine::cleanup()
     m_Game = nullptr;
     delete m_Gui;
     m_Gui = nullptr;
+    delete m_PluginLoader;
+    m_PluginLoader = nullptr;
     delete m_ContentManager;
     m_ContentManager = nullptr;
     delete m_SoundEngine;
@@ -102,8 +98,6 @@ void HappyEngine::cleanup()
 void HappyEngine::init(int subengines)
 {
     StaticDataManager::init();
-    if (s_HappyEngine == nullptr)
-        s_HappyEngine = NEW HappyEngine();
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
@@ -146,6 +140,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         m_SoundEngine = NEW sfx::SoundEngine();
         m_SoundEngine->initialize();
     }
+
+    m_PluginLoader = NEW pl::PluginLoader();
 }
 
 void HappyEngine::start(ge::Game* game)
@@ -288,11 +284,6 @@ void HappyEngine::drawLoop()
     
     // render everything
     GRAPHICS->draw();
-}
-
-HappyEngine* HappyEngine::getPointer()
-{
-    return s_HappyEngine;
 }
 
 void HappyEngine::audioLoop()

@@ -31,24 +31,38 @@ enum LogType
     LogType_Warning,
     LogType_Info
 };
+namespace io {
+    class BinaryVisitor;
+}
 namespace tools {
 
 class Logger
 {
 public:
+    //////////////////////////////////////////////////////////////////////////
+    ///  Singleton -- singleton is implemented here because we can't use the Singleton base class because it uses HE_ASSERT
+    //////////////////////////////////////////////////////////////////////////
+    static void sdmInit();
+    static void sdmDestroy();
+    static void sdmVisit(he::io::BinaryVisitor& visitor);
+    static Logger* getInstance()
+    {
+        return s_Instance;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    ///  Logger
+    //////////////////////////////////////////////////////////////////////////
     ~Logger();
 
     void log(const LogType type, const char* file, const char* func, int line, const char* str, ...);
     void log(const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList);
-
-    static Logger* getInstance();
-    static void sdmInit();
-    static void sdmDestroy();
-
+    
 private:
+    static Logger* s_Instance;
+    
     Logger();
 
-    static Logger* s_Instance;
     boost::mutex m_Mutex;
 
     //Disable default copy constructor and default assignment operator

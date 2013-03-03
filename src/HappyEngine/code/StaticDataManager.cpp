@@ -40,22 +40,33 @@
 #include "materialGenerator/MaterialGeneratorNodeFactory.h"
 #include "SpriteCreator.h"
 #include "PickingManager.h"
+#include "BinaryVisitor.h"
 
 namespace he {
 
 void StaticDataManager::init()
 {
+    he::HappyEngine::sdmInit();
     details::ObjectFactoryTypeManager::sdmInit();
     tools::Logger::sdmInit();
-    ResourceFactory<gfx::Material>::init(64, 64, "MaterialFactory");
-    ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
-    ResourceFactory<gfx::TextureCube>::init(5, 5, "TextureCubeFactory");
-    ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
-    ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
-    ResourceFactory<gui::Font>::init(64, 64, "FontFactory");
-    ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
-    ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
-    ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
+    ResourceFactory<gfx::Material>::sdmInit();
+    ResourceFactory<gfx::Material>::getInstance()->init(64, 64, "MaterialFactory");
+    ResourceFactory<gfx::Texture2D>::sdmInit();
+    ResourceFactory<gfx::Texture2D>::getInstance()->init(64, 64, "TextureFactory");
+    ResourceFactory<gfx::TextureCube>::sdmInit();
+    ResourceFactory<gfx::TextureCube>::getInstance()->init(5, 5, "TextureCubeFactory");
+    ResourceFactory<gfx::Model>::sdmInit();
+    ResourceFactory<gfx::Model>::getInstance()->init(64, 64, "ModelFactory");
+    ResourceFactory<gfx::ModelMesh>::sdmInit();
+    ResourceFactory<gfx::ModelMesh>::getInstance()->init(64, 64, "ModelMeshFactory");
+    ResourceFactory<gui::Font>::sdmInit();
+    ResourceFactory<gui::Font>::getInstance()->init(64, 64, "FontFactory");
+    ResourceFactory<gfx::Shader>::sdmInit();
+    ResourceFactory<gfx::Shader>::getInstance()->init(16, 16, "ShaderFactory");
+    ResourceFactory<px::PhysicsConvexMesh>::sdmInit();
+    ResourceFactory<px::PhysicsConvexMesh>::getInstance()->init(64, 64, "PhysicsConvexMeshFactory");
+    ResourceFactory<px::PhysicsConcaveMesh>::sdmInit();
+    ResourceFactory<px::PhysicsConcaveMesh>::getInstance()->init(64, 64, "PhysicsConcaveMeshFactory");
     gui::SpriteFactory::sdmInit();
     gfx::ViewFactory::sdmInit();
     gfx::SceneFactory::sdmInit();
@@ -74,21 +85,47 @@ void StaticDataManager::destroy()
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
-    ResourceFactory<gui::Font>::destroy();
-    ResourceFactory<gfx::Material>::destroy();
-    ResourceFactory<gfx::TextureCube>::destroy();
-    ResourceFactory<gfx::Texture2D>::destroy();
-    ResourceFactory<gfx::Model>::destroy();
-    ResourceFactory<gfx::ModelMesh>::destroy();
-    ResourceFactory<gfx::Shader>::destroy();
-    ResourceFactory<px::PhysicsConvexMesh>::destroy();
-    ResourceFactory<px::PhysicsConcaveMesh>::destroy();
+    ResourceFactory<gui::Font>::sdmDestroy();
+    ResourceFactory<gfx::Material>::sdmDestroy();
+    ResourceFactory<gfx::TextureCube>::sdmDestroy();
+    ResourceFactory<gfx::Texture2D>::sdmDestroy();
+    ResourceFactory<gfx::Model>::sdmDestroy();
+    ResourceFactory<gfx::ModelMesh>::sdmDestroy();
+    ResourceFactory<gfx::Shader>::sdmDestroy();
+    ResourceFactory<px::PhysicsConvexMesh>::sdmDestroy();
+    ResourceFactory<px::PhysicsConcaveMesh>::sdmDestroy();
     gui::SpriteFactory::sdmDestroy();
     gfx::ViewFactory::sdmDestroy();
     gfx::SceneFactory::sdmDestroy();
     gfx::WindowFactory::sdmDestroy();
     tools::Logger::sdmDestroy();
     details::ObjectFactoryTypeManager::sdmDestroy();
+    he::HappyEngine::sdmDestroy();
+}
+
+void StaticDataManager::visit( he::io::BinaryVisitor& visitor )
+{
+    ge::PickingManager::sdmVisit(visitor);
+    tools::MaterialGeneratorNodeFactory::sdmVisit(visitor);
+    ct::ShaderGeneratorVariableFactory::sdmVisit(visitor);
+    gfx::CullOctreeNodeFactory::sdmVisit(visitor);
+    gfx::LightFactory::sdmVisit(visitor);
+    ResourceFactory<gui::Font>::sdmVisit(visitor);
+    ResourceFactory<gfx::Material>::sdmVisit(visitor);
+    ResourceFactory<gfx::TextureCube>::sdmVisit(visitor);
+    ResourceFactory<gfx::Texture2D>::sdmVisit(visitor);
+    ResourceFactory<gfx::Model>::sdmVisit(visitor);
+    ResourceFactory<gfx::ModelMesh>::sdmVisit(visitor);
+    ResourceFactory<gfx::Shader>::sdmVisit(visitor);
+    ResourceFactory<px::PhysicsConvexMesh>::sdmVisit(visitor);
+    ResourceFactory<px::PhysicsConcaveMesh>::sdmVisit(visitor);
+    gui::SpriteFactory::sdmVisit(visitor);
+    gfx::ViewFactory::sdmVisit(visitor);
+    gfx::SceneFactory::sdmVisit(visitor);
+    gfx::WindowFactory::sdmVisit(visitor);
+    tools::Logger::sdmVisit(visitor);
+    details::ObjectFactoryTypeManager::sdmVisit(visitor);
+    he::HappyEngine::sdmVisit(visitor);
 }
 
 } //end namespace

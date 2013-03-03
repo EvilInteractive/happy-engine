@@ -38,7 +38,7 @@ target_link_libraries(HappySandBox HappyEngine)
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(HappySandBox HappySandBoxPCH.h ./code/HappySandBoxPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(HappySandBox HappySandBoxPCH.h code/HappySandBoxPCH.cpp)
 
 # set output dir
 SET_TARGET_PROPERTIES(HappySandBox PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/bin)

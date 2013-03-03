@@ -43,6 +43,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
                     const std::string& button1, const std::string& button2, const std::string& button3)
 {
     MessageBoxButton result(MessageBoxButton_None);
+    if (GRAPHICS != nullptr)
     {
         gfx::WebWindow window;
         window.init(512, 256);

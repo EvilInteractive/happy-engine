@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,26 +16,20 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 24/03/2012
+//Created: 2013/03/03
 
-#ifndef _HE_STATIC_DATA_MANAGER_H_
-#define _HE_STATIC_DATA_MANAGER_H_
-#pragma once
+#include "HappySandBoxPCH.h" 
 
-namespace he {
+#include "PluginManager.h"
 
-namespace io {
-    class BinaryVisitor;
+namespace hs {
+
+PluginManager::PluginManager()
+{
 }
 
-class StaticDataManager
+PluginManager::~PluginManager()
 {
-public:
-    static void init();
-    static void destroy();
-    static void visit(he::io::BinaryVisitor& visitor);
-};
+}
 
 } //end namespace
-
-#endif

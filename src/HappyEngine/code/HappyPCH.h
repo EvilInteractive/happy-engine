@@ -96,8 +96,6 @@
 
 #include "Logger.h"
 #include "HappyInfo.h"
-
-#include "Logger.h"
 #include "HeAssert.h"
 
 #pragma warning(disable:4389) // '==' signed/unsigned mismatch

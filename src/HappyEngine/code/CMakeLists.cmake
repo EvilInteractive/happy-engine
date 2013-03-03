@@ -12,6 +12,7 @@ include (code/math/CMakeLists.cmake)
 include (code/networking/CMakeLists.cmake)
 include (code/physics/CMakeLists.cmake)
 include (code/tools/CMakeLists.cmake)
+include (code/plugin/CMakeLists.cmake)
   
 addFilter(CODE_SRCS src code/
             event.h

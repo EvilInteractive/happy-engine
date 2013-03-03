@@ -33,14 +33,14 @@ int main( int /*argc*/, char** /*args[]*/ )
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    HAPPYENGINE->init(he::SubEngine_All);
+    he::HappyEngine::init(he::SubEngine_All);
     CONTENT->setContentDir(he::Path("../../data"));
 
     he::ge::Game* ge(NEW hs::MainGame());
     HAPPYENGINE->start(ge);
     delete ge;
 
-    HAPPYENGINE->dispose();
+    he::HappyEngine::dispose();
 
     std::cout << "\npress enter to quit\n";
     std::cin.get();

@@ -20,11 +20,12 @@
 #include "HappyPCH.h" 
 
 #include "Logger.h"
+#include "BinaryVisitor.h"
 
 namespace he {
 namespace tools {
 
-Logger* Logger::s_Instance = nullptr;
+Logger* Logger::s_Instance(nullptr);
 
 Logger::Logger()
 {
@@ -97,7 +98,6 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
     }
 
     m_Mutex.lock();
-
     std::ofstream output;
     output.open("log.log", std::ios_base::app);
     if (output.is_open())
@@ -107,29 +107,33 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
     }
 
     std::cout << typeString << ": " << buff << "\n";
+#ifdef _MSC_VER
+    OutputDebugStringA(typeString.c_str());
+    OutputDebugStringA(": ");
+    OutputDebugStringA(buff);
+    OutputDebugStringA("\n");
+#endif
+    m_Mutex.unlock();
     if (HAPPYENGINE != nullptr && CONSOLE != nullptr) 
     {
         CONSOLE->addMessage(buff, consoleType);
     }
-
-    m_Mutex.unlock();
 }
 
 void Logger::sdmInit()
 {
-    HE_ASSERT(s_Instance == nullptr, "Logger is already initialized!");
+    HE_ASSERT(s_Instance == nullptr, "initing an already inited singleton");
     s_Instance = NEW Logger();
 }
 
 void Logger::sdmDestroy()
 {
     delete s_Instance;
-    s_Instance = nullptr;
 }
 
-Logger* Logger::getInstance()
+void Logger::sdmVisit( he::io::BinaryVisitor& visitor )
 {
-    return s_Instance;
+    visitor.visit(s_Instance);
 }
 
 } } //end namespace

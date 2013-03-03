@@ -49,6 +49,8 @@
 #include "PhysicsMaterial.h"
 #include "LightManager.h"
 
+#include "PluginLoader.h"
+
 //#include "boost/filesystem.hpp"
 
 namespace hs {
@@ -60,7 +62,8 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
                       m_Scene(nullptr),
                       m_View(nullptr),
                       m_Window(nullptr),
-                      m_TestScene(nullptr)
+                      m_TestScene(nullptr),
+                      m_GamePlugin(nullptr)
 {
 }
 
@@ -86,6 +89,12 @@ MainGame::~MainGame()
     GRAPHICS->removeWindow(m_Window);
 }
 
+void MainGame::destroy()
+{
+    HAPPYENGINE->getPluginLoader()->unloadPlugin(m_GamePlugin);
+    m_GamePlugin = nullptr;
+}
+
 void MainGame::init()
 {
     m_View = GRAPHICS->createView();
@@ -98,6 +107,7 @@ void MainGame::init()
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
+    m_GamePlugin = HAPPYENGINE->getPluginLoader()->loadPlugin(he::Path("HappyPluginTest.dll"));
 }
 
 void MainGame::load()

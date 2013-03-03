@@ -41,6 +41,9 @@ namespace he {
     namespace gui {
         class Canvas2D;
     }
+    namespace pl {
+        class IPlugin;
+    }
 }
 
 namespace hs {
@@ -54,7 +57,7 @@ public:
     virtual ~MainGame();
 
     virtual void init();
-    virtual void destroy() {}
+    virtual void destroy();
     virtual void load();
     virtual void tick(float dTime);
     virtual void draw2D(he::gui::Canvas2D* canvas);
@@ -72,6 +75,8 @@ private:
     UIBind* m_UIBind;
 
     he::ge::Entity* m_TestScene;
+
+    he::pl::IPlugin* m_GamePlugin;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

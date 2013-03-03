@@ -23,6 +23,7 @@
 #pragma once
 
 #include "ObjectFactory.h"
+#include "Singleton.h"
 
 namespace he {
    
@@ -39,27 +40,25 @@ public:
 };
 
 template<typename T>
-class ResourceFactory : public IResourceFactory,  public ObjectFactory<T>
+class ResourceFactory : public IResourceFactory,  public ObjectFactory<T>, public Singleton<ResourceFactory<T>>
 {
+friend class Singleton<ResourceFactory<T>>;
 template<typename R> friend class Resource;
 public:
 
-    //////////////////////////////////////////////////////////////////////////
-    ///  Singleton
-    //////////////////////////////////////////////////////////////////////////
-    static void init(size_t startSize, size_t increaseSize, const std::string& displayName)
+    virtual ~ResourceFactory() 
     {
-        HE_ASSERT(s_Instance == nullptr, "initing an already inited resource factory: %s", displayName.c_str());
-        s_Instance = NEW ResourceFactory<T>(startSize, increaseSize, displayName);
+        for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
+        {
+            if (m_RefCounter[i] != 0)
+            {
+                HE_WARNING("%s: resource %s has %d references open!", this->m_DisplayName.c_str(), this->getAt(i)->getName().c_str(), m_RefCounter[i]);
+            }
+        }
     }
-    static void destroy()
+    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
     {
-        delete s_Instance;
-    }
-    static ResourceFactory<T>* getInstance()
-    {
-        HE_ASSERT(s_Instance != nullptr, "Resource factory has not been initialized!");
-        return s_Instance;
+        ObjectFactory<T>::init(startSize, increaseSize, displayName);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -144,21 +143,8 @@ protected:
     }
     
 private:
-    static ResourceFactory<T>* s_Instance;
-
-    ResourceFactory(size_t startSize, size_t increaseSize, const std::string& displayName): ObjectFactory<T>()
+    ResourceFactory(): ObjectFactory<T>()
     {
-        ObjectFactory<T>::init(startSize, increaseSize, displayName);
-    }
-    virtual ~ResourceFactory() 
-    {
-        for (ObjectHandle::IndexType i(0); i < m_RefCounter.size(); ++i)
-        {
-            if (m_RefCounter[i] != 0)
-            {
-                HE_WARNING("%s: resource %s has %d references open!", this->m_DisplayName.c_str(), this->getAt(i)->getName().c_str(), m_RefCounter[i]);
-            }
-        }
     }
 
     he::PrimitiveList<uint32> m_RefCounter;
@@ -167,9 +153,6 @@ private:
     ResourceFactory(const ResourceFactory&);
     ResourceFactory& operator=(const ResourceFactory&);
 };
-
-template<typename T>
-ResourceFactory<T>* ResourceFactory<T>::s_Instance = nullptr;
 
 } //end namespace
 

@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2013  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,24 +16,25 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 24/03/2012
+//Created: 2013/03/03
 
-#ifndef _HE_STATIC_DATA_MANAGER_H_
-#define _HE_STATIC_DATA_MANAGER_H_
+#ifndef _HT_PluginManager_H_
+#define _HT_PluginManager_H_
 #pragma once
 
-namespace he {
+namespace hs {
 
-namespace io {
-    class BinaryVisitor;
-}
-
-class StaticDataManager
+class PluginManager
 {
 public:
-    static void init();
-    static void destroy();
-    static void visit(he::io::BinaryVisitor& visitor);
+    PluginManager();
+    virtual ~PluginManager();
+
+private:
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    PluginManager(const PluginManager&);
+    PluginManager& operator=(const PluginManager&);
 };
 
 } //end namespace
