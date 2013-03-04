@@ -116,6 +116,28 @@ void Canvas2DRendererCairo::addNewSprite(he::gui::Sprite* sprite)
 
         HE_ASSERT((data->m_ReadyState & SpriteReadyForBlit), "Sprite is stil rendering, can't continue!");
 
+        if (size != data->m_Size)
+        {
+            he_free(data->m_RenderBuffer);
+            cairo_destroy(data->m_CairoPaint);
+            cairo_surface_destroy(data->m_CairoSurface);
+        
+            unsigned char* rBuff(
+                static_cast<unsigned char*>(he_calloc(
+                4 * w * h,
+                sizeof(unsigned char))));
+
+            _cairo_surface* surf(
+                cairo_image_surface_create_for_data(rBuff, CAIRO_FORMAT_ARGB32, w, h, 4 * w));
+
+            _cairo* cp(cairo_create(surf));
+
+            data->m_RenderBuffer = rBuff;
+            data->m_CairoPaint = cp;
+            data->m_CairoSurface = surf;
+            data->m_Size = size;
+        }
+
         data->m_ReadyState = 0;
         data->m_ReadyState |= SpriteDynamic;
 
