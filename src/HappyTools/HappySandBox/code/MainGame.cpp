@@ -50,6 +50,7 @@
 #include "LightManager.h"
 
 #include "PluginLoader.h"
+#include "EntityManager.h"
 
 //#include "boost/filesystem.hpp"
 
@@ -63,7 +64,8 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
                       m_View(nullptr),
                       m_Window(nullptr),
                       m_TestScene(nullptr),
-                      m_GamePlugin(nullptr)
+                      m_GamePlugin(nullptr),
+                      m_EntityManager(nullptr)
 {
 }
 
@@ -71,6 +73,8 @@ MainGame::~MainGame()
 {
     m_TestScene->deactivate();
     delete m_TestScene;
+
+    delete m_EntityManager;
 
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FPSGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
@@ -162,7 +166,10 @@ void MainGame::load()
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());
     
-    m_UIBind = NEW UIBind(m_UIController);
+    m_EntityManager = NEW EntityManager(m_Scene);
+
+    m_UIBind = NEW UIBind(m_UIController, m_EntityManager);
+    m_UIBind->setup();
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());

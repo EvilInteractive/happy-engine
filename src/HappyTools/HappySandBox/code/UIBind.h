@@ -34,13 +34,14 @@ namespace he{
 
 namespace hs {
     class UIController;
+    class EntityManager;
 
 class UIBind
 {
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    UIBind(UIController* uiController);
+    UIBind(UIController* uiController, EntityManager* entityManager);
     virtual ~UIBind();
 
     /* GENERAL */
@@ -51,11 +52,17 @@ public:
                                       const std::string& method,
                                       he::eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
+    void setup();
+
+    /* HANDLERS */
+    void menuCreateEntityHandler(const Awesomium::JSArray& /*args*/);
+
 private:
 
     /* DATAMEMBERS */
     UIController* m_UIController;
     he::gfx::WebListener* m_WebListener;
+    EntityManager* m_EntityManager;
 
     /* DEFAULT COPY & ASSIGNMENT */
     UIBind(const UIBind&);

@@ -24,12 +24,15 @@
 #include "WebListener.h"
 #include "UIController.h"
 #include "WebView.h"
+#include "EntityManager.h"
 
 namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-UIBind::UIBind(UIController* uiController) : m_UIController(uiController),
-                                             m_WebListener(m_UIController->getWebView()->getWebListener())
+UIBind::UIBind(UIController* uiController, EntityManager* entityManager) :
+                                            m_UIController(uiController),
+                                            m_WebListener(m_UIController->getWebView()->getWebListener()),
+                                            m_EntityManager(entityManager)
 {
 }
 
@@ -50,6 +53,18 @@ void UIBind::unbindObjectMethodToCallback(const std::string& object,
                                           he::eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     m_WebListener->removeObjectCallback(object, method, callBack);
+}
+
+void UIBind::setup()
+{
+    he::eventCallback1<void, const Awesomium::JSArray&> menuCreateEntityCallback(boost::bind(&UIBind::menuCreateEntityHandler, this, _1));
+    bindObjectMethodToCallback("HE", "menuCreateEntity", menuCreateEntityCallback);
+}
+
+/* HANDLERS */
+void UIBind::menuCreateEntityHandler(const Awesomium::JSArray& /*args*/)
+{
+    m_EntityManager->createEntity();
 }
 
 } //end namespace

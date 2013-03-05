@@ -49,6 +49,7 @@ namespace he {
 namespace hs {
     class UIController;
     class UIBind;
+    class EntityManager;
 
 class MainGame : public he::ge::Game, public he::gfx::IDrawable2D
 {
@@ -77,6 +78,8 @@ private:
     he::ge::Entity* m_TestScene;
 
     he::pl::IPlugin* m_GamePlugin;
+
+    EntityManager* m_EntityManager;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);
