@@ -61,6 +61,9 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 
     std::string typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);
+#ifdef HE_WINDOWS
+    WORD flags(0);
+#endif
     file; func; line;
     switch(type)
     {
@@ -71,6 +74,9 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 #ifdef _DEBUG
             he::err::details::happyAssert(err::details::AssertType_Code, file, func, line, buff);
 #endif
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_INTENSITY;
+#endif
         } break;
         case LogType_ArtAssert:
         {
@@ -79,21 +85,33 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 #ifdef _DEBUG
             he::err::details::happyAssert(err::details::AssertType_Art, file, func, line, buff);
 #endif
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_GREEN;
+#endif
         } break;
         case LogType_Error:
         {
             typeString = "Error"; 
             consoleType = CMSG_TYPE_ERROR;
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_INTENSITY;
+#endif
         } break;
         case LogType_Warning:
         {
             typeString = "Warning"; 
             consoleType = CMSG_TYPE_WARNING;
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_GREEN;
+#endif
         } break;
         case LogType_Info:
         {
             typeString = "Info"; 
             consoleType = CMSG_TYPE_INFO;
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_GREEN;
+#endif
         } break;
     }
 
@@ -106,7 +124,15 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
         output.close();
     }
 
-    std::cout << typeString << ": " << buff << "\n";
+#ifdef HE_WINDOWS
+    SetConsoleTextAttribute( GetStdHandle(STD_OUTPUT_HANDLE), flags );
+#endif
+    std::cout << typeString << ": ";
+
+#ifdef HE_WINDOWS
+    SetConsoleTextAttribute( GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE );
+#endif   
+    std::cout << buff << "\n";
 #ifdef _MSC_VER
     OutputDebugStringA(typeString.c_str());
     OutputDebugStringA(": ");
