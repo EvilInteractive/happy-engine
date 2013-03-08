@@ -35,14 +35,14 @@ int main( int /*argc*/, char** /*args[]*/ )
     //_CrtSetBreakAlloc(2988);
 #endif
 
-    HAPPYENGINE->init(he::SubEngine_All);
+    he::HappyEngine::init(he::SubEngine_All);
     CONTENT->setContentDir(he::Path("../../data"));
 
     he::ge::Game* ge(NEW ht::MainGame());
     HAPPYENGINE->start(ge);
     delete ge;
 
-    HAPPYENGINE->dispose();
+    he::HappyEngine::dispose();
 
     he_checkmem();
 
