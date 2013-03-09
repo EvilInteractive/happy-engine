@@ -21,26 +21,32 @@
 #include "HappySandBoxPCH.h" 
 
 #include "EntityManager.h"
-#include "Scene.h"
-#include "Entity.h"
-#include "CameraManager.h"
-#include "CameraPerspective.h"
-#include "ModelComponent.h"
+#include <Scene.h>
+#include <Entity.h>
+#include <CameraManager.h>
+#include <CameraPerspective.h>
+#include <ModelComponent.h>
+#include <EntityManager.h>
+#include <EngineEntityComponentFactory.h>
 
 namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 EntityManager::EntityManager(he::gfx::Scene* scene) : m_Scene(scene)
 {
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    entityMan->init();
+    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
 }
 
 EntityManager::~EntityManager()
 {
-    m_Entities.forEach([](he::ge::Entity* entity)
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    m_Entities.forEach([entityMan](he::ge::Entity* entity)
     {
-        entity->deactivate();
-        delete entity;
+        entityMan->destroyEntity(entity);
     });
+    entityMan->destroy();
 }
 
 /* GENERAL */
@@ -50,10 +56,12 @@ he::ge::Entity* EntityManager::createEntity()
 
     // still some test code
 
-    ge::Entity* newEntity(NEW ge::Entity());
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    ge::Entity* newEntity(entityMan->createEmptyEntity());
     newEntity->setScene(m_Scene);
 
-    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
+    ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
+        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
     newEntity->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testSceneBas.material", "box.binobj");    
 

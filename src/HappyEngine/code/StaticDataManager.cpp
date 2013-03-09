@@ -41,6 +41,7 @@
 #include "SpriteCreator.h"
 #include "PickingManager.h"
 #include "BinaryVisitor.h"
+#include "EntityManager.h"
 
 namespace he {
 
@@ -50,23 +51,23 @@ void StaticDataManager::init()
     details::ObjectFactoryTypeManager::sdmInit();
     tools::Logger::sdmInit();
     ResourceFactory<gfx::Material>::sdmInit();
-    ResourceFactory<gfx::Material>::getInstance()->init(64, 64, "MaterialFactory");
+    ResourceFactory<gfx::Material>::getInstance()->init(0, 16, "MaterialFactory");
     ResourceFactory<gfx::Texture2D>::sdmInit();
-    ResourceFactory<gfx::Texture2D>::getInstance()->init(64, 64, "TextureFactory");
+    ResourceFactory<gfx::Texture2D>::getInstance()->init(0, 16, "TextureFactory");
     ResourceFactory<gfx::TextureCube>::sdmInit();
-    ResourceFactory<gfx::TextureCube>::getInstance()->init(5, 5, "TextureCubeFactory");
+    ResourceFactory<gfx::TextureCube>::getInstance()->init(0, 5, "TextureCubeFactory");
     ResourceFactory<gfx::Model>::sdmInit();
-    ResourceFactory<gfx::Model>::getInstance()->init(64, 64, "ModelFactory");
+    ResourceFactory<gfx::Model>::getInstance()->init(0, 16, "ModelFactory");
     ResourceFactory<gfx::ModelMesh>::sdmInit();
-    ResourceFactory<gfx::ModelMesh>::getInstance()->init(64, 64, "ModelMeshFactory");
+    ResourceFactory<gfx::ModelMesh>::getInstance()->init(0, 16, "ModelMeshFactory");
     ResourceFactory<gui::Font>::sdmInit();
-    ResourceFactory<gui::Font>::getInstance()->init(64, 64, "FontFactory");
+    ResourceFactory<gui::Font>::getInstance()->init(0, 2, "FontFactory");
     ResourceFactory<gfx::Shader>::sdmInit();
-    ResourceFactory<gfx::Shader>::getInstance()->init(16, 16, "ShaderFactory");
+    ResourceFactory<gfx::Shader>::getInstance()->init(0, 8, "ShaderFactory");
     ResourceFactory<px::PhysicsConvexMesh>::sdmInit();
-    ResourceFactory<px::PhysicsConvexMesh>::getInstance()->init(64, 64, "PhysicsConvexMeshFactory");
+    ResourceFactory<px::PhysicsConvexMesh>::getInstance()->init(0, 16, "PhysicsConvexMeshFactory");
     ResourceFactory<px::PhysicsConcaveMesh>::sdmInit();
-    ResourceFactory<px::PhysicsConcaveMesh>::getInstance()->init(64, 64, "PhysicsConcaveMeshFactory");
+    ResourceFactory<px::PhysicsConcaveMesh>::getInstance()->init(0, 16, "PhysicsConcaveMeshFactory");
     gui::SpriteFactory::sdmInit();
     gfx::ViewFactory::sdmInit();
     gfx::SceneFactory::sdmInit();
@@ -76,10 +77,12 @@ void StaticDataManager::init()
     ct::ShaderGeneratorVariableFactory::sdmInit();
     tools::MaterialGeneratorNodeFactory::sdmInit();
     ge::PickingManager::sdmInit();
+    ge::EntityManager::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    ge::EntityManager::sdmDestroy();
     ge::PickingManager::sdmDestroy();
     tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
@@ -105,6 +108,7 @@ void StaticDataManager::destroy()
 
 void StaticDataManager::visit( he::io::BinaryVisitor& visitor )
 {
+    ge::EntityManager::sdmVisit(visitor);
     ge::PickingManager::sdmVisit(visitor);
     tools::MaterialGeneratorNodeFactory::sdmVisit(visitor);
     ct::ShaderGeneratorVariableFactory::sdmVisit(visitor);

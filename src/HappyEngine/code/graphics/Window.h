@@ -82,7 +82,12 @@ public:
     uint32 getWindowWidth() const;
     uint32 getWindowHeight() const;
     GLContext* getContext() { return &m_Context; }  
-    NativeWindowHandle getNativeHandle() const { return m_Window->getSystemHandle(); }
+    NativeWindowHandle getNativeHandle() const;
+
+    // Views
+    void addView(const ObjectHandle& view);
+    void removeView(const ObjectHandle& view);
+    const he::ObjectList<ObjectHandle>& getViews() const { return m_Views; }
 
     // Events
     event0<void> Resized;
@@ -91,6 +96,8 @@ public:
     event0<void> LostFocus;
 
 private:
+    he::ObjectList<ObjectHandle> m_Views;
+
     sf::Window* m_Window;
     Window* m_Parent;
 

@@ -24,6 +24,7 @@
 
 #include "Object3D.h"
 #include "INetworkSerializable.h"
+#include "EntityComponentType.h"
 
 namespace he {
 namespace io {
@@ -31,16 +32,9 @@ namespace io {
 }
 namespace ge {
 class Entity;
-typedef const char* EntityComponentType;
-#define DECLARE_ENTITY_COMPONENT_TYPE() \
-    public: \
-        static he::ge::EntityComponentType const s_ComponentType; \
-        virtual he::ge::EntityComponentType getComponentType() const { return s_ComponentType; }
-#define IMPLEMENT_ENTITY_COMPONENT_TYPE(class) \
-    he::ge::EntityComponentType const class::s_ComponentType(#class);
-
 class EntityComponent : public IObject3D
 {
+DECLARE_OBJECT(EntityComponent)
 friend class Entity;
 public:
     virtual ~EntityComponent() {}
@@ -50,7 +44,7 @@ public:
     virtual void activate() {}
     virtual void deactivate() {}
 
-    virtual const char* getComponentType() const = 0;
+    virtual EntityComponentType getComponentType() const = 0;
 
     //////////////////////////////////////////////////////////////////////////
     // IObject3D

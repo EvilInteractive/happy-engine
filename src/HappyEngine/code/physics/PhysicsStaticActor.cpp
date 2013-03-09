@@ -32,6 +32,9 @@
 #include "PhysicsConvexMesh.h"
 #include "PhysicsConcaveMesh.h"
 
+#include <PxRigidStatic.h>
+#include <PxShape.h>
+
 namespace he {
 namespace px {
 

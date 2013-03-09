@@ -26,6 +26,7 @@
 #include "IMouse.h"
 
 #include "OpenGL.h"
+#include <SFML/Window.hpp>
 
 #ifdef HE_WINDOWS
 #include <windows.h>
@@ -289,6 +290,22 @@ void Window::setMousePosition( const vec2& pos )
     sf::Mouse::setPosition(sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y)), *m_Window);
 }
 
+void Window::addView( const ObjectHandle& view )
+{
+    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
+    {
+        m_Views.add(view);
+    }
+}
+
+void Window::removeView( const ObjectHandle& view )
+{
+    HE_IF_ASSERT(m_Views.contains(view), "View not attached to window!")
+    {
+        m_Views.remove(view);
+    }
+}
+
 #ifdef HE_WINDOWS
 void Window::setCursor( const io::MouseCursor cursor )
 {
@@ -478,6 +495,11 @@ void Window::setCursor( const io::MouseCursor cursor )
     
 void Window::setCursor( const io::MouseCursor /*cursor*/ )
 {
+}
+
+he::gfx::NativeWindowHandle Window::getNativeHandle() const
+{
+    return m_Window->getSystemHandle();
 }
 
 #endif

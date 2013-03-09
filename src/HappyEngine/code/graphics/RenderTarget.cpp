@@ -23,6 +23,7 @@
 
 #include "Texture2D.h"
 #include "GraphicsEngine.h"
+#include "ExternalError.h"
 
 namespace he {
 namespace gfx {

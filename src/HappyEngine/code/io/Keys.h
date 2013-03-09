@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Awesomium/WebKeyboardCodes.h"
+#include "SFML/Window/Keyboard.hpp"
 
 namespace he {
 namespace io {

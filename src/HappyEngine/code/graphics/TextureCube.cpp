@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "TextureCube.h"
+#include "ExternalError.h"
 
 namespace he {
 namespace gfx {

@@ -1,5 +1,13 @@
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/LibFindPackage.cmake)
 
+if (WIN32)
+    add_definitions(-DHE_WINDOWS)
+elseif (APPLE)
+    add_definitions(-DHE_MAC)
+else()
+    add_definitions(-DHE_LINUX)
+endif()
+
 macro (IncludeThirdPartyOSX)
 
 

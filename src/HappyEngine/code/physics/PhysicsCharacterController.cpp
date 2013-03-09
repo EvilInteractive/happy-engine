@@ -23,6 +23,8 @@
 
 #include "PhysicsEngine.h"
 
+#include <characterkinematic/PxControllerManager.h>
+
 namespace he {
 namespace px {
 

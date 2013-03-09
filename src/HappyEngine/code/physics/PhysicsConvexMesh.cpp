@@ -26,6 +26,9 @@
 
 #include "BinaryVisitor.h"
 
+#include <PxPhysics.h>
+#include <geometry/PxConvexMesh.h>
+
 
 namespace he {
 namespace px {

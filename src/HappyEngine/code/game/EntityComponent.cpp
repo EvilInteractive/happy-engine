@@ -24,4 +24,6 @@
 namespace he {
 namespace ge {
 
+IMPLEMENT_OBJECT(EntityComponent)
+
 } } //end namespace

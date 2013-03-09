@@ -33,6 +33,9 @@
 #include "ResourceFactory.h"
 #include "PhysicsConvexMesh.h"
 
+#include <PxRigidDynamic.h>
+#include <PxShape.h>
+
 namespace he {
 namespace px {
 
@@ -79,13 +82,13 @@ void PhysicsTrigger::addShape( physx::PxShape* shape, uint32 collisionGroup, uin
 /* SETTERS */
 void PhysicsTrigger::setPose(const vec3& move, const vec3& axis, float angle)
 {
-    m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(physx::PxVec3(move.x, move.y, move.z),
+    static_cast<physx::PxRigidDynamic*>(m_Actor->getInternalActor())->setKinematicTarget(physx::PxTransform(physx::PxVec3(move.x, move.y, move.z),
         physx::PxQuat(angle, physx::PxVec3(axis.x, axis.y, axis.z))));
 }
 
 void PhysicsTrigger::setPose(const mat44& pose)
 {
-    m_Actor->getInternalActor()->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
+    static_cast<physx::PxRigidDynamic*>(m_Actor->getInternalActor())->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
 he::uint32 PhysicsTrigger::getCompatibleShapes() const

@@ -27,6 +27,7 @@
 #include "Game.h"
 #include "ModelMesh.h"
 #include "Texture2D.h"
+#include "ExternalError.h"
 
 namespace he {
     namespace gfx {

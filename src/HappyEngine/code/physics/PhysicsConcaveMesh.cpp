@@ -25,6 +25,9 @@
 #include "PhysicsBinaryStream.h"
 #include "BinaryVisitor.h"
 
+#include <PxPhysics.h>
+#include <geometry/PxTriangleMesh.h>
+
 namespace he {
 namespace px {
 

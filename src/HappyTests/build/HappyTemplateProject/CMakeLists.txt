@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 2.8)
 
 # include source files
 include (${HappyEngine_SOURCE_DIR}/HappyTests/code/Xx/CMakeLists.cmake)
-include_directories (${HappyEngine_SOURCE_DIR}/HappyTests/code/Xx)
 set (XX_SRCS ${XX_CODE_SRCS})
 
 # set compiler options

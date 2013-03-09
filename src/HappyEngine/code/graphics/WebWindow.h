@@ -30,6 +30,11 @@ namespace Awesomium {
     class WebWindow;
 }
 
+namespace sf
+{
+    class Window;
+}
+
 namespace he {
 namespace gfx {
 class Texture2D;
@@ -55,7 +60,7 @@ public:
 
     /* GETTERS */
     Awesomium::WebView* getAWEView() const { return m_WebView; } 
-    bool isOpen() { return m_Window.isOpen(); }
+    bool isOpen() const;
     WebListener* getWebListener() const { return m_WebListener; }
     
     /* EVENTS */
@@ -97,7 +102,7 @@ private:
     Awesomium::WebView* m_WebView;
     WebListener* m_WebListener;
 
-    sf::Window m_Window;
+    sf::Window* m_Window;
     
     /* DEFAULT COPY & ASSIGNMENT */
     WebWindow(const WebWindow&);

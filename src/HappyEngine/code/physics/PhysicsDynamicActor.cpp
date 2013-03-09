@@ -32,6 +32,11 @@
 #include "PhysicsConvexMesh.h"
 #include "ResourceFactory.h"
 
+#include <PxPhysics.h>
+#include <PxRigidDynamic.h>
+#include <PxShape.h>
+#include <extensions/PxRigidBodyExt.h>
+
 namespace he {
 namespace px {
 
@@ -131,7 +136,7 @@ void PhysicsDynamicActor::keyframedSetPose(const mat44& pose)
     m_Actor->setKinematicTarget(physx::PxTransform(pose.getPhyicsMatrix()));
 }
 
-physx::PxRigidDynamic* PhysicsDynamicActor::getInternalActor() const
+physx::PxRigidActor* PhysicsDynamicActor::getInternalActor() const
 {
     return m_Actor;
 }

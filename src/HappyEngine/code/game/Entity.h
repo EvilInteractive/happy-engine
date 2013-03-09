@@ -41,9 +41,12 @@ public:
     Entity();
     virtual ~Entity();
     
-    void addComponent(EntityComponent* component);      // Gives ownership to Entity
-    void removeComponent(EntityComponent* component);   // Returns ownership to caller
+    void addComponent(EntityComponent* const component);
+    void removeComponent(EntityComponent* const component);
+    void removeComponentAt(const size_t index);
     EntityComponent* getComponent(EntityComponentType const type);
+    size_t getComponentCount() const { return m_Components.size(); }
+    EntityComponent* getComponentAt(const size_t index) const { return m_Components[index]; }
 
     virtual void activate();
     virtual void deactivate();
@@ -90,6 +93,7 @@ private:
     he::PrimitiveList<EntityComponent*> m_Components;
     Entity* m_Parent;
     gfx::Scene* m_Scene;
+    bool m_IsActive;
 
     //Disable default copy constructor and default assignment operator
     Entity(const Entity&);

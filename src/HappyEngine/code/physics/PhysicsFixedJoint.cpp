@@ -24,6 +24,9 @@
 #include "PhysicsEngine.h"
 #include "PhysicsActor.h"
 
+#include <PxConstraint.h>
+#include <extensions/PxFixedJoint.h>
+
 namespace he {
 namespace px {
 

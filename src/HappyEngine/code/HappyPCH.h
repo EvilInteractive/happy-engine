@@ -29,7 +29,6 @@
 
 #define __HE_FUNCTION__ __FUNCTION__
 
-#include <cstdlib>
 #include <string>
 #include <map>
 #include <unordered_map>
@@ -37,12 +36,6 @@
 #include <deque>
 #include <queue>
 #include <set>
-#include <algorithm>
-#include <utility>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdarg>
 
 #pragma warning (disable : 4244)
 #include <boost/thread.hpp>
@@ -53,16 +46,6 @@
 #include <boost/date_time.hpp>
 #include <boost/timer.hpp>
 
-#include <SFML/Window.hpp>
-
-#ifdef SFML_SYSTEM_WINDOWS
-#define HE_WINDOWS
-#elif defined SFML_SYSTEM_LINUX
-#define  HE_LINUX
-#elif defined SFML_SYSTEM_MACOS
-#define HE_MAC
-#endif
-
 #if !(defined(HE_WINDOWS) || defined(HE_LINUX) || defined(HE_MAC))
 #error Unsupported OS!
 #endif
@@ -71,7 +54,6 @@
 
 #define glewGetContext() (&he::gfx::GL::s_CurrentContext->internalContext)
 
-#include <GL/glew.h>
 
 // Happy Code
 
@@ -90,8 +72,6 @@
 #include "Color.h"
 #include "Rect.h"
 
-#include "PxPhysicsAPI.h"
-
 #include "RTTI.h"
 
 #include "Logger.h"
@@ -108,17 +88,17 @@ inline To checked_numcast(const From value)
 }
 #pragma warning(default:4389)
 
-#include "ExternalError.h"
 #include "HappyMemory.h"
 #include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
 
+#include <GL/glew.h>
+#include "OpenGL.h"
+#include "GLContext.h"
+
 #include "List.h"
 #include "FixedSizeList.h"
-
-#include "GLContext.h"
-#include "OpenGL.h"
 
 #include "ObjectFactory.h"
 

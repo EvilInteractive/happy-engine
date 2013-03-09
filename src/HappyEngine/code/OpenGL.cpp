@@ -23,6 +23,8 @@
 #include "GLContext.h"
 #include "BufferLayout.h"
 #include "GraphicsEngine.h"
+#include "ExternalError.h"
+#include <GL/glew.h>
 
 namespace he {
 namespace gfx {

@@ -67,12 +67,29 @@ private:
 }
 
 template<typename T>
+class DefaultObjectAllocator
+{
+public:
+    static T* allocate() { return NEW T(); }
+    static void deallocate(T* const obj) { delete obj; }
+};
+
+template<typename T>
+class NoCreateObjectAllocator
+{
+public:
+    static T* allocate() { LOG(LogType_ProgrammerAssert, "Should not be called!"); return nullptr; }
+    static void deallocate(T* const obj) { delete obj; }
+};
+
+template<typename T, typename Allocator=DefaultObjectAllocator<T>>
 class ObjectFactory
 {
-protected:
+public:
     ObjectFactory(): m_IncreaseSize(32), m_Type(0), m_DisplayName("unknown")
     {
     }
+
     void init(size_t startSize, size_t increaseSize, const std::string& displayName)
     {
         m_IncreaseSize = increaseSize;
@@ -81,7 +98,6 @@ protected:
         resize(startSize);
     }
 
-public:
     virtual ~ObjectFactory()
     {
 #ifdef _DEBUG
@@ -110,7 +126,8 @@ public:
     virtual ObjectHandle create()
     {
         ObjectHandle handle(getFreeHandle());
-        T* obj(NEW T);
+        T* obj(Allocator::allocate());
+        HE_ASSERT(obj != nullptr, "Object allocator returned nullptr! (%s)", m_DisplayName.c_str());
         obj->setHandle(handle);
         m_Pool[handle.index] = obj;
         return handle;
@@ -139,7 +156,7 @@ public:
     {
         HE_IF_ASSERT(m_Pool[index] != nullptr, "ObjectFactory (%s): destroying non existing handle", m_DisplayName.c_str())
         {
-            delete m_Pool[index];
+            Allocator::deallocate(m_Pool[index]);
             m_Pool[index] = nullptr;
             ++m_Salt[index];
             m_FreeHandles.push(index);
@@ -167,6 +184,8 @@ public:
     {
         return m_Pool[index] != nullptr;
     }
+    bool isEmpty() const { return m_FreeHandles.size() == m_Pool.size(); }
+    size_t getSize() const { return m_Pool.size() - m_FreeHandles.size(); }
 
 protected:
     virtual void resize(size_t newSize)

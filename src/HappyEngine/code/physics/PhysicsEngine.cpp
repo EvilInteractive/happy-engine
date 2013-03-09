@@ -23,9 +23,12 @@
 #include "PhysicsEngine.h"
 #include "PhysicsCarManager.h"
 #include "PhysicsTrigger.h"
-#include "extensions/PxVisualDebuggerExt.h"
+#include <extensions/PxVisualDebuggerExt.h>
+#include <physxvisualdebuggersdk/PvdConnection.h>
 
 #include "Ray.h"
+#include "PxPhysicsAPI.h"
+#include "ExternalError.h"
 
 namespace he {
 namespace px {

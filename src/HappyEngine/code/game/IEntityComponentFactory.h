@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,25 +16,24 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 05/08/2012
+//Created: 2013/03/05
 
-#ifndef _HE_MouseButtons_H_
-#define _HE_MouseButtons_H_
+#ifndef _HE_IEntityComponentFactory_H_
+#define _HE_IEntityComponentFactory_H_
 #pragma once
 
-#include <SFML/Window/Mouse.hpp>
+#include "EntityComponentType.h"
 
 namespace he {
-namespace io {
+namespace ge {
 
-enum MouseButton
+class EntityComponent;
+class IEntityComponentFactory
 {
-    MouseButton_Left = sf::Mouse::Left, 
-    MouseButton_Right = sf::Mouse::Right, 
-    MouseButton_Middle = sf::Mouse::Middle,
-    MouseButton_X1 = sf::Mouse::XButton1, 
-    MouseButton_X2 = sf::Mouse::XButton2,
-    MouseButton_MAX = sf::Mouse::ButtonCount
+public:
+    virtual ~IEntityComponentFactory() {}
+
+    virtual EntityComponent* createEntityComponent(const EntityComponentType type) = 0;
 };
 
 } } //end namespace

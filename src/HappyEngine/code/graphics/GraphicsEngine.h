@@ -30,6 +30,7 @@ namespace Awesomium {
 }
 
 namespace sf {
+    class Context;
 namespace priv {
     class GlContext;
 }

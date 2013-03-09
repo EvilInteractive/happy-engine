@@ -180,9 +180,13 @@ void View::setWindow( Window* window )
 {
     HE_ASSERT(window != nullptr, "active window can not be nullptr!");
     if (m_Window != nullptr)
+    {
         m_Window->Resized -= m_WindowResizedCallback;
+        m_Window->removeView(getHandle());
+    }
     m_Window = window;
     m_Window->Resized += m_WindowResizedCallback;
+    m_Window->addView(getHandle());
 }
 void View::setAbsoluteViewport( const RectI& viewport )
 {
@@ -231,37 +235,30 @@ void View::tick( float dTime )
 
 void View::draw()
 {
-    if (m_Window->isOpen())
+    if (m_Camera != nullptr)
     {
-        m_Window->prepareForRendering();
-        GRAPHICS->setActiveView(this);
-        if (m_Camera != nullptr)
-        {
-            m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
-            m_Camera->prepareForRendering();
-        }
-
-        GL::heSetViewport(m_Viewport);
-        if (m_IntermediateRenderTarget != nullptr)
-            m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
-        m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
-
-        m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
-
-        if (m_Settings.enablePost)
-            m_PostProcesser->draw();
-
-        if (m_IntermediateRenderTarget != nullptr)
-        {
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
-            m_OutputRenderTarget->prepareForRendering();
-            glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-        }
-
-        m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
-
-        m_Window->present();
+        m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
+        m_Camera->prepareForRendering();
     }
+
+    GL::heSetViewport(m_Viewport);
+    if (m_IntermediateRenderTarget != nullptr)
+        m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
+    m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
+
+    m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
+
+    if (m_Settings.enablePost)
+        m_PostProcesser->draw();
+
+    if (m_IntermediateRenderTarget != nullptr)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
+        m_OutputRenderTarget->prepareForRendering();
+        glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    }
+
+    m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 }
 
 //////////////////////////////////////////////////////////////////////////

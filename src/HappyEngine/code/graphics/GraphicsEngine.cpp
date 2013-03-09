@@ -34,6 +34,7 @@
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
 #include "GLContext.h"
+#include <SFML/Window.hpp>
 
 namespace he {
 namespace gfx {
@@ -159,17 +160,36 @@ void GraphicsEngine::removeWindow( Window* window )
 void GraphicsEngine::draw()
 {
     setActiveContext(&m_DefaultContext);
-    SceneFactory* sceneFactory(SceneFactory::getInstance());
+    SceneFactory* const sceneFactory(SceneFactory::getInstance());
     m_Scenes.forEach([sceneFactory](const ObjectHandle& sceneHandle)
     {
-        Scene* scene(sceneFactory->get(sceneHandle));
+        Scene* const scene(sceneFactory->get(sceneHandle));
         if (scene->getActive())
             scene->prepareForRendering();
     });
-    ViewFactory* viewFactory(ViewFactory::getInstance());
-    m_Views.forEach([viewFactory](const ObjectHandle& view)
+    WindowFactory* const windowFactory(WindowFactory::getInstance());
+    m_Windows.forEach([this, windowFactory](const ObjectHandle& windowHandle)
     {
-        viewFactory->get(view)->draw();
+        Window* const window(windowFactory->get(windowHandle));
+        if (window->isOpen())
+        {
+            const ObjectList<ObjectHandle>& viewList(window->getViews());
+            if (viewList.empty() == false)
+            {
+                window->prepareForRendering();
+
+                GraphicsEngine* const _this(this);
+                ViewFactory* const viewFactory(ViewFactory::getInstance());
+                viewList.forEach([_this, viewFactory](const ObjectHandle& viewHandle)
+                {
+                    View* const view(viewFactory->get(viewHandle));
+                    _this->setActiveView(view);
+                    view->draw();
+                });
+
+                window->present();
+            }
+        }
     });
 }
 

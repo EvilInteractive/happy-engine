@@ -13,7 +13,7 @@ addFilter(CODE_SRCS src/game/picking code/game/
             Pickable.cpp                            Pickable.h
         )
                         
-addFilter(CODE_SRCS src/game/components code/game/
+addFilter(CODE_SRCS src/game/components/components code/game/
             CharacterPhysicsComponent.cpp           CharacterPhysicsComponent.h
             DynamicPhysicsComponent.cpp             DynamicPhysicsComponent.h
             InstancedModelComponent.cpp             InstancedModelComponent.h
@@ -25,10 +25,16 @@ addFilter(CODE_SRCS src/game/components code/game/
             TriggerComponent.cpp                    TriggerComponent.h
         )
                         
+addFilter(CODE_SRCS src/game/components code/game/
+            EntityManager.cpp                       EntityManager.h
+        )   
+        
 addFilter(CODE_SRCS src/game/components/factory code/game/
-            EntityComponentFactory.cpp              EntityComponentFactory.h
+            IEntityComponentFactory.h
+            EngineEntityComponentFactory.cpp        EngineEntityComponentFactory.h
         )
 
 addFilter(CODE_SRCS src/game/components/base code/game/
             EntityComponent.cpp                     EntityComponent.h
+            EntityComponentType.h
         )

@@ -29,6 +29,11 @@ else()
 endif()
 
 # Compiler flags
+if (MSVC)
+    message(msvc)
+    string(REPLACE "/Zm1000" "/Zm200" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
     message(gcc)

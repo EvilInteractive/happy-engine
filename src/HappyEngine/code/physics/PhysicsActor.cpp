@@ -34,6 +34,11 @@
 #include "PhysicsConvexMesh.h"
 #include "PhysicsConcaveMesh.h"
 
+#include <geometry/PxCapsuleGeometry.h>
+#include <geometry/PxConvexMeshGeometry.h>
+#include <geometry/PxTriangleMeshGeometry.h>
+#include <PxScene.h>
+
 namespace he {
 namespace px {
 

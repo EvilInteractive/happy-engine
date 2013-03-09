@@ -25,6 +25,29 @@
 #include "PhysicsMaterial.h"
 
 #include "AssetContainer.h"
+#include <foundation/PxAllocatorCallback.h>
+#include <PxSimulationEventCallback.h>
+
+namespace physx
+{
+    class PxPhysics;
+    class PxFoundation;
+    class PxScene;
+    class PxProfileZoneManager;
+    class PxControllerManager;
+
+    class PxErrorCallback;
+    class PxAllocatorCallback;
+
+    class PxDefaultCpuDispatcher;
+
+    namespace pxtask {
+        class CudaContextManager;
+    }
+    namespace debugger { namespace comm {
+            class PvdConnection;
+    } }
+}
 
 
 namespace he {
@@ -108,7 +131,7 @@ private:
     physx::PxDefaultCpuDispatcher* m_CpuDispatcher;
     physx::pxtask::CudaContextManager* m_CudaContextManager;
 
-    PVD::PvdConnection* m_VisualDebuggerConnection;
+    physx::debugger::comm::PvdConnection* m_VisualDebuggerConnection;
 
     //PhysicsCarManager* m_pCarManager;
 

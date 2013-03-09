@@ -81,6 +81,8 @@
 #include "PickResult.h"
 #include "PickingManager.h"
 #include "PickingComponent.h"
+#include <EntityManager.h>
+#include "EngineEntityComponentFactory.h"
 
 #define CONE_VERTICES 16
 #define NUM_MOVING_ENTITIES 200
@@ -146,12 +148,13 @@ MainGame::~MainGame()
     cr->removeSprite(m_TestSprite);
 
     m_RenderPipeline->get2DRenderer()->removeWebView(m_ToneMapGui);
-
+    
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     m_EntityList.forEach([&](he::ge::Entity* entity)
     {
-        entity->deactivate();
-        delete entity;     
+        entityMan->destroyEntity(entity);
     });
+    entityMan->destroy();
 
     delete m_RenderPipeline;
     GRAPHICS->removeView(m_View);
@@ -184,6 +187,10 @@ void MainGame::init()
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
+
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
+    entityMan->init();
 }
 
 void MainGame::load()
@@ -271,16 +278,20 @@ void MainGame::load()
     
     #pragma endregion
     
-    #pragma region Scene
-    ge::Entity* scene(NEW ge::Entity());
+#pragma region Scene
+    ge::EntityManager* const entityMan(ge::EntityManager::getInstance());
+    ge::Entity* scene(entityMan->createEmptyEntity());
     scene->setScene(m_Scene);
-    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
+    ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
+        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
     scene->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testScene3.material", "testPlatformer/scene.binobj"); 
-    ge::PickingComponent* pickComp(NEW ge::PickingComponent());   
+    ge::PickingComponent* pickComp(static_cast<ge::PickingComponent*>(
+        entityMan->createComponent(ge::PickingComponent::s_ComponentType)));   
     scene->addComponent(pickComp);
     m_EntityList.add(scene);
-    ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
+    ge::StaticPhysicsComponent* physicsComp(static_cast<ge::StaticPhysicsComponent*>(
+        entityMan->createComponent(ge::StaticPhysicsComponent::s_ComponentType)));
     scene->addComponent(physicsComp);
     px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
     px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");

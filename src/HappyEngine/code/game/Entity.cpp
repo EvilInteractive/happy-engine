@@ -29,21 +29,20 @@ namespace ge {
 
 IMPLEMENT_ENTITY_COMPONENT_TYPE(Entity)
 
-Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr)
+Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr), m_IsActive(false)
 {
 }
 
 
 Entity::~Entity()
 {
-    m_Components.forEach([](EntityComponent* const component)
-    {
-        delete component;
-    });
+    HE_ASSERT(m_Components.empty(), "Destroying entity that still has components!");
 }
 
 void Entity::activate()
 {
+    HE_ASSERT(m_IsActive == false, "Entity is already active");
+    m_IsActive = true;
     m_Components.forEach([](EntityComponent* const component)
     {
         component->activate();
@@ -52,6 +51,8 @@ void Entity::activate()
 
 void Entity::deactivate()
 {
+    HE_ASSERT(m_IsActive == true, "Entity is already not active");
+    m_IsActive = false;
     m_Components.forEach([](EntityComponent* const component)
     {
         component->deactivate();
@@ -65,20 +66,35 @@ void Entity::init( Entity* parent )
     m_Scene = m_Parent->getScene();
 }
 
-void Entity::addComponent( EntityComponent* component )
+void Entity::addComponent( EntityComponent* const component )
 {
     m_Components.add(component);
     attach(component);
     component->init(this);
+    if (m_IsActive)
+        component->activate();
 }
 
-void Entity::removeComponent( EntityComponent* component )
+void Entity::removeComponent( EntityComponent* const component )
 {
-    detach(component);
-    HE_IF_ASSERT(m_Components.contains(component), "Component not attached to Entity")
+    size_t index(0);
+    if (m_Components.find(component, index))
     {
-        m_Components.remove(component);
+        removeComponentAt(index);
     }
+    else
+    {
+        LOG(LogType_ProgrammerAssert, "Component not attached to Entity when removing!");
+    }
+}
+
+void Entity::removeComponentAt( const size_t index )
+{
+    EntityComponent* const component(m_Components[index]);
+    if (m_IsActive)
+        component->deactivate();
+    detach(component);
+    m_Components.removeAt(index);
 }
 
 EntityComponent* Entity::getComponent( EntityComponentType const type )

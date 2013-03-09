@@ -51,6 +51,7 @@
 
 #include "PluginLoader.h"
 #include "EntityManager.h"
+#include <EntityManager.h>
 
 //#include "boost/filesystem.hpp"
 
@@ -63,19 +64,14 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
                       m_Scene(nullptr),
                       m_View(nullptr),
                       m_Window(nullptr),
-                      m_TestScene(nullptr),
                       m_GamePlugin(nullptr),
-                      m_EntityManager(nullptr)
+                      m_EntityManager(nullptr),
+                      m_TestScene(nullptr)
 {
 }
 
 MainGame::~MainGame()
 {
-    m_TestScene->deactivate();
-    delete m_TestScene;
-
-    delete m_EntityManager;
-
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FPSGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
     CONSOLE->detachFromRenderer();
@@ -95,6 +91,10 @@ MainGame::~MainGame()
 
 void MainGame::destroy()
 {
+    he::ge::EntityManager::getInstance()->destroyEntity(m_TestScene);
+    delete m_EntityManager;
+    m_EntityManager = nullptr;
+
     HAPPYENGINE->getPluginLoader()->unloadPlugin(m_GamePlugin);
     m_GamePlugin = nullptr;
 }
@@ -111,6 +111,7 @@ void MainGame::init()
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
+
     m_GamePlugin = HAPPYENGINE->getPluginLoader()->loadPlugin(he::Path("HappyPluginTest.dll"));
 }
 
@@ -141,7 +142,6 @@ void MainGame::load()
     CONTENT->setRenderSettings(settings);
 
     m_Scene = GRAPHICS->createScene();
-
     m_View->setWindow(m_Window);
     m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
 
@@ -163,11 +163,11 @@ void MainGame::load()
     m_FPSGraph->setPos(he::vec2(910,35));
     m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
+    m_EntityManager = NEW EntityManager(m_Scene);
+
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());
     
-    m_EntityManager = NEW EntityManager(m_Scene);
-
     m_UIBind = NEW UIBind(m_UIController, m_EntityManager);
     m_UIBind->setup();
 
@@ -182,13 +182,16 @@ void MainGame::load()
     m_UIController->load("main.html");
 
     // test 3D
-    m_TestScene = NEW ge::Entity();
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    m_TestScene = entityMan->createEmptyEntity();
     m_TestScene->setScene(m_Scene);
-    ge::ModelComponent* modelComp(NEW ge::ModelComponent());
+    ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
+        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
     m_TestScene->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testSceneBas.material", "testPlatformer/scene.binobj");    
     //m_EntityList.push_back(scene);
-    ge::StaticPhysicsComponent* physicsComp(NEW ge::StaticPhysicsComponent());
+    ge::StaticPhysicsComponent* physicsComp(static_cast<ge::StaticPhysicsComponent*>(
+        entityMan->createComponent(ge::StaticPhysicsComponent::s_ComponentType)));
     m_TestScene->addComponent(physicsComp);
     px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
     px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");
