@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 2.8) 
 
 # include source files
-include (${HappyEngine_SOURCE_DIR}/HappyTests/code/Happy2D/CMakeLists.cmake)
-set (HAPPY2D_SRCS ${HAPPY2D_CODE_SRCS})
+include (${HappyEngine_SOURCE_DIR}/HappyTests/code/HappyPluginLoader/CMakeLists.cmake)
+set (HAPPYPLUGINLOADER_SRCS ${HAPPYPLUGINLOADER_CODE_SRCS})
 
 # set compiler options
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
@@ -18,12 +18,12 @@ if (WIN32)
 IncludeThirdParty()
 endif()
 
-# add Happy2D executable
-add_executable (Happy2D ${HAPPY2D_SRCS})
+# add HappyPluginLoader executable
+add_executable (HappyPluginLoader ${HAPPYPLUGINLOADER_SRCS})
 
 # link thirdparty
 if (WIN32)
-LinkThirdParty(Happy2D)
+LinkThirdParty(HappyPluginLoader)
 endif()
 
 # Copy thirdparty dll's
@@ -32,12 +32,12 @@ CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTests/bin)
 endif()
 
 # link HappyEngine
-target_link_libraries(Happy2D HappyEngine)
+target_link_libraries(HappyPluginLoader HappyEngine)
 
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
-ADD_NATIVE_PRECOMPILED_HEADER(Happy2D Happy2DPCH.h ../../code/Happy2D/Happy2DPCH.cpp)
+ADD_NATIVE_PRECOMPILED_HEADER(HappyPluginLoader HappyPluginLoaderPCH.h ../../code/HappyPluginLoader/HappyPluginLoaderPCH.cpp)
 
 # set output dir
-SET_TARGET_PROPERTIES(Happy2D PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)
+SET_TARGET_PROPERTIES(HappyPluginLoader PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)
