@@ -28,6 +28,10 @@ namespace io {
     class BinaryVisitor;
 }
 
+namespace gfx {
+    class Window;
+}
+
 namespace pl {
 
 class IPlugin;
@@ -52,7 +56,7 @@ public:
 
     virtual void sdmInit(io::BinaryVisitor& visitor) = 0;
 
-    virtual void init() = 0;
+    virtual void init(he::gfx::Window* const window, const he::RectI& viewport) = 0;
     virtual void terminate() = 0;
 
     virtual he::pl::EPluginType getPluginType() const = 0;
@@ -65,6 +69,7 @@ public:
     virtual void onStopGame() = 0;
     virtual void onPauseGame() = 0;
     virtual void onResumeGame() = 0;
+    virtual void onResize(const he::RectI& newViewport) = 0;
 };
 
 } } //end namespace

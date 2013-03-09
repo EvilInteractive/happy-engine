@@ -15,12 +15,12 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Thijs Morlion
-//Created: 27/01/2013
+//Author:  Bastian Damman
+//Created: 09/03/2013
 
-#include "HappyThijsTestPCH.h" 
+#include "HappyPluginLoaderPCH.h" 
 
-#include "ContentManager.h"
+#include <ContentManager.h>
 
 #include "MainGame.h"
 
@@ -39,6 +39,8 @@ int main( int /*argc*/, char** /*args[]*/ )
     delete ge;
 
     he::HappyEngine::dispose();
+
+    he_checkmem();
 
     std::cout << "\npress enter to quit\n";
     std::cin.get();

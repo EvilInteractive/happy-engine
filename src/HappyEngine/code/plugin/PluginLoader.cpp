@@ -61,7 +61,6 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path )
                 visitor.openRead();
                 plugin->sdmInit(visitor);
                 visitor.close();
-                plugin->init();
                 result = plugin;
             }
             else
@@ -89,7 +88,6 @@ IPlugin* PluginLoader::loadPlugin( IPlugin* const plugin )
 {
     PluginWrapper wrapper(plugin);
     m_Plugins.add(wrapper);
-    plugin->init();
     return plugin;
 }
 
@@ -99,7 +97,6 @@ void PluginLoader::unloadPlugin( IPlugin* const plugin )
     if (m_Plugins.find_if([plugin](const PluginWrapper& wrapper) { return wrapper.m_Plugin == plugin; }, index ))
     {
         const PluginWrapper& wrapper(m_Plugins[index]);
-        wrapper.m_Plugin->terminate();
         delete wrapper.m_Plugin;
         if (wrapper.m_ModuleHandle != NULL)
         {

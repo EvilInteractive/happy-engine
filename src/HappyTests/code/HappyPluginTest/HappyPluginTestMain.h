@@ -24,6 +24,16 @@
 
 #include "IPlugin.h"
 
+namespace he {
+    namespace gfx {
+        class View;
+        class Scene;
+    }
+    namespace ge {
+        class DefaultRenderPipeline;
+    }
+}
+
 namespace ht {
 
 class HappyPluginTestMain : public he::pl::IPlugin
@@ -33,7 +43,7 @@ public:
     virtual ~HappyPluginTestMain();
 
     virtual void sdmInit(he::io::BinaryVisitor& visitor);
-    virtual void init();
+    virtual void init(he::gfx::Window* const window, const he::RectI& viewport);
     virtual void terminate();
 
     virtual he::pl::EPluginType getPluginType() const { return he::pl::ePluginType_ToolGamePlugin; }
@@ -46,8 +56,13 @@ public:
     virtual void onStopGame();
     virtual void onPauseGame();
     virtual void onResumeGame();
+    virtual void onResize(const he::RectI& newViewport);
 
 private:
+    he::gfx::View* m_View;
+    he::gfx::Scene* m_Scene;
+    he::ge::DefaultRenderPipeline* m_RenderPipeline;
+
     /* DEFAULT COPY & ASSIGNMENT */
     HappyPluginTestMain(const HappyPluginTestMain&);
     HappyPluginTestMain& operator=(const HappyPluginTestMain&);
