@@ -70,7 +70,7 @@ void SkyBox::unload()
     }
 }
 
-void SkyBox::load( const std::string& asset )
+void SkyBox::load( const he::String& asset )
 {
     //////////////////////////////////////////////////////////////////////////
     /// Load Model

@@ -47,7 +47,7 @@ public:
 
     /* GENERAL */
     void init(he::gfx::Renderer2D* renderer);
-    void load(const std::string& file);
+    void load(const he::String& file);
     void draw2D(he::gui::Canvas2D* canvas);
     void updateSceneInfo(const he::vec3& camPos);
 
@@ -57,7 +57,7 @@ public:
 private:
 
     /* DATAMEMBERS */
-    std::string m_GUIDirectory;
+    he::String m_GUIDirectory;
 
     he::gui::WebView* m_WebView;
     he::gfx::Renderer2D* m_Renderer;

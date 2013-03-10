@@ -102,7 +102,7 @@ private:
 };
     
 template<>
-void BinaryVisitor::visit(std::string& value);
+void BinaryVisitor::visit(he::String& value);
 
 } } //end namespace
 

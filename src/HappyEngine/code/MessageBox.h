@@ -47,8 +47,8 @@ class MessageBox
 public:
     virtual ~MessageBox();
 
-    static MessageBoxButton showExt(const std::string& caption, const std::string& message, MessageBoxIcon icon,
-        const std::string& button1="Ok", const std::string& button2="", const std::string& button3="");
+    static MessageBoxButton showExt(const he::String& caption, const he::String& message, MessageBoxIcon icon,
+        const he::String& button1="Ok", const he::String& button2="", const he::String& button3="");
 
 private:
     MessageBox();

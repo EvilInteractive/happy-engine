@@ -36,13 +36,13 @@ public:
     InstancingManager();
     virtual ~InstancingManager();
 
-    void createController(const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
-    void createController(const std::string& id, bool dynamic, const std::string& materialAsset, const std::string& modelAsset);
-    InstancingController* getController(const std::string& id);
+    void createController(const he::String& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
+    void createController(const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset);
+    InstancingController* getController(const he::String& id);
 
 private:
 
-    std::map<std::string, InstancingController*> m_Controllers;
+    std::map<he::String, InstancingController*> m_Controllers;
 
     //Disable default copy constructor and default assignment operator
     InstancingManager(const InstancingManager&);

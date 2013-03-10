@@ -35,10 +35,10 @@ class JSObject
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    JSObject(Awesomium::JSObject& aweObject, const std::string& name);
+    JSObject(Awesomium::JSObject& aweObject, const he::String& name);
     ~JSObject();
 
-    inline const std::string& getObjectName() const { return m_ObjectName; }
+    inline const he::String& getObjectName() const { return m_ObjectName; }
     inline Awesomium::JSObject& getAweObject() { return m_AweObject; }
 
     /* GENERAL */
@@ -50,7 +50,7 @@ public:
 private:
 
     /* MEMBERS */
-    std::string m_ObjectName;
+    he::String m_ObjectName;
     Awesomium::JSObject m_AweObject;
 
     typedef std::map<Awesomium::WebString, event1<void, const Awesomium::JSArray&>*> Container;

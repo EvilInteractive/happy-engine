@@ -61,7 +61,7 @@ Scene::~Scene()
     delete m_CameraManager;
 }
 
-void Scene::loadSkybox( const std::string& asset )
+void Scene::loadSkybox( const he::String& asset )
 {
     if (m_SkyBox == nullptr)
     {

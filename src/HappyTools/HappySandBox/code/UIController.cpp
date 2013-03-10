@@ -64,7 +64,7 @@ void UIController::init(he::gfx::Renderer2D* renderer)
     m_SceneInfo.setFont(font);
     font->release();
 }
-void UIController::load(const std::string& file)
+void UIController::load(const he::String& file)
 {
     m_WebView->loadUrl(m_GUIDirectory + file);
     m_WebView->setTransparent(true);

@@ -57,7 +57,7 @@ void InstancedModelComponent::init( Entity* parent )
     setController(m_ControllerKey);
 }
 
-void InstancedModelComponent::setController( const std::string& key )
+void InstancedModelComponent::setController( const he::String& key )
 {
     if (m_ControllerKey != "")
     {
@@ -82,7 +82,7 @@ void InstancedModelComponent::setController( const std::string& key )
     }
 }
 
-const std::string& InstancedModelComponent::getControllerKey() const
+const he::String& InstancedModelComponent::getControllerKey() const
 {
     return m_ControllerKey;
 }

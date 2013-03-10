@@ -67,7 +67,7 @@ public:
     void present();
 
     // Setters
-    void setWindowTitle(const std::string& caption);
+    void setWindowTitle(const he::String& caption);
     void setWindowPosition(int x, int y);
     void setWindowDimension(uint32 width, uint32 height);
     void setVSync(bool enable);
@@ -102,7 +102,7 @@ private:
     Window* m_Parent;
 
     RectI m_WindowRect;
-    std::string m_Titel;
+    he::String m_Titel;
     Color m_ClearColor;
     bool m_VSyncEnabled;
     bool m_IsCursorVisible;

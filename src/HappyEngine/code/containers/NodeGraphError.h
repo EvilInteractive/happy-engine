@@ -52,7 +52,7 @@ struct NodeGraphError
         m_ErrorMessage = buff;
     }
 
-    const std::string getMessage() const { return m_ErrorMessage; }
+    const he::String getMessage() const { return m_ErrorMessage; }
     const NodeGraphNode<TInput, TOutput>* getNode() const { return m_Node; }
     const NodeGraphConnection<TInput, TOutput>& getConnection() const { return m_Connecter; }
     bool isFatal() const { return !m_Fixed; }
@@ -60,7 +60,7 @@ struct NodeGraphError
 private:
     const NodeGraphNode<TInput, TOutput>* m_Node;                  // Node that threw the error
     NodeGraphConnection<TInput, TOutput> m_Connecter;              // Connecter from the node that threw the error (can be nullptr)
-    std::string m_ErrorMessage;                                    // Error message
+    he::String m_ErrorMessage;                                    // Error message
     bool m_Fixed;                                                  // If true, error was fixed -> throw tool tip why something is not possible
                                                                    // If false, user needs to solve the error
 };

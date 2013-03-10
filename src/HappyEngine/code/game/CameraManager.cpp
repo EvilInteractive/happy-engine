@@ -36,13 +36,13 @@ CameraManager::~CameraManager()
     deleteAllCameras();
 }
 
-void ge::CameraManager::addCamera( const std::string& id, gfx::CameraPerspective* pCamera )
+void ge::CameraManager::addCamera( const he::String& id, gfx::CameraPerspective* pCamera )
 {
     HE_ASSERT(m_Cameras.find(id) == m_Cameras.cend(), "Adding camera to existing ID, memleak will occure");
     m_Cameras[id] = pCamera;
 }
 
-void ge::CameraManager::deleteCamera( const std::string& id )
+void ge::CameraManager::deleteCamera( const he::String& id )
 {
     HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Deleting non existing camera");
     delete m_Cameras[id];
@@ -51,14 +51,14 @@ void ge::CameraManager::deleteCamera( const std::string& id )
 
 void ge::CameraManager::deleteAllCameras()
 {
-    std::for_each(m_Cameras.cbegin(), m_Cameras.cend(), [](const std::pair<std::string, gfx::CameraPerspective*>& pr)
+    std::for_each(m_Cameras.cbegin(), m_Cameras.cend(), [](const std::pair<he::String, gfx::CameraPerspective*>& pr)
     {
         delete pr.second;
     });
     m_Cameras.clear();
 }
 
-gfx::CameraPerspective* ge::CameraManager::getCamera( const std::string& id )
+gfx::CameraPerspective* ge::CameraManager::getCamera( const he::String& id )
 {
     HE_ASSERT(m_Cameras.find(id) != m_Cameras.cend(), "Selected Camera does not exist");
     return m_Cameras.find(id)->second;

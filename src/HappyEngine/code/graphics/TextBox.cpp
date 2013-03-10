@@ -31,9 +31,9 @@ namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 TextBox::TextBox(RectF posSize,
-                 const std::string& defaultString,
+                 const he::String& defaultString,
                  uint16 fontSize,
-                 const std::string& customFont) :	m_Rect(posSize),
+                 const he::String& customFont) :	m_Rect(posSize),
                                                     m_DefaultString(defaultString),
                                                     m_Active(true),
                                                     m_String(""),
@@ -217,7 +217,7 @@ void TextBox::draw(gui::Canvas2D* canvas)
         {
             if (static_cast<int>(m_BlinkTimer.elapsed() * 100) % 100 < 50)
             {
-                std::string cursorText(m_String.substr(0, m_CursorPos));
+                he::String cursorText(m_String.substr(0, m_CursorPos));
 
                 RectF cursorRect(textRect);
 
@@ -273,7 +273,7 @@ void TextBox::resetText()
 }
 
 /* GETTERS */
-const std::string& TextBox::getString() const
+const he::String& TextBox::getString() const
 {
     return m_String;
 }
@@ -299,7 +299,7 @@ void TextBox::setFocus(bool focus)
     m_HasFocus = focus;
 }
 
-void TextBox::setString(const std::string& string)
+void TextBox::setString(const he::String& string)
 {
     m_String = string;
     m_CursorPos = (uint32)string.size();

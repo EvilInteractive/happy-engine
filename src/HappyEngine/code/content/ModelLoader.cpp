@@ -116,7 +116,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
     uint32 notLoadedMeshes(model->getNumMeshes());
     for (uint32 i = 0; i < data.loader->getNumMeshes(); ++i)
     {
-        const std::string& meshName(data.loader->getMeshName(i));
+        const he::String& meshName(data.loader->getMeshName(i));
         gfx::ModelMesh* mesh(nullptr);
         if (notLoadedMeshes > 0)
         {
@@ -159,7 +159,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
     return true;
 }
 
-bool ModelLoader::isModelLoaded( const std::string& path, ObjectHandle& outHandle )
+bool ModelLoader::isModelLoaded( const he::String& path, ObjectHandle& outHandle )
 {
     bool isLoaded(true);
     isLoaded &= m_AssetContainer.isAssetPresent(path);
@@ -171,7 +171,7 @@ bool ModelLoader::isModelLoaded( const std::string& path, ObjectHandle& outHandl
     return isLoaded;
 }
 
-gfx::Model* ModelLoader::asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
+gfx::Model* ModelLoader::asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
 {
     ObjectHandle handle;
     if (isModelLoaded(path, handle))
@@ -195,7 +195,7 @@ gfx::Model* ModelLoader::asyncLoadModel(const std::string& path, const gfx::Buff
         return model;
     }
 }
-gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData )
+gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData )
 {
     ObjectHandle modelHandle;
     if (isModelLoaded(path, modelHandle)) // if model is loading/loaded
@@ -263,11 +263,11 @@ gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const 
 
 bool ModelLoader::getModelLoader( ModelLoadData& data )
 {
-    if (data.path.rfind(".obj") != std::string::npos)
+    if (data.path.rfind(".obj") != he::String::npos)
     {
         data.loader = NEW models::ObjLoader();
     }
-    else if (data.path.rfind(".binobj") != std::string::npos)
+    else if (data.path.rfind(".binobj") != he::String::npos)
     {
         data.loader = NEW models::BinObjLoader();
     }
@@ -315,7 +315,7 @@ bool ModelLoader::startSyncLoadModel( ModelLoadData& data )
 }
 
 
-gfx::Model* ModelLoader::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
+gfx::Model* ModelLoader::loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
 {
     ObjectHandle handle;
     if (isModelLoaded(path, handle))
@@ -339,7 +339,7 @@ gfx::Model* ModelLoader::loadModel(const std::string& path, const gfx::BufferLay
     }
 }
 
-gfx::ModelMesh* ModelLoader::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
+gfx::ModelMesh* ModelLoader::loadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
 {
     ObjectHandle modelHandle;
     if (isModelLoaded(path, modelHandle))

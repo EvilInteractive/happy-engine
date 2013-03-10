@@ -35,18 +35,18 @@ public:
     CommandTransaction(const CommandTransaction& other);
     CommandTransaction& operator=(const CommandTransaction& other);
 
-    void begin(const std::string& name);
+    void begin(const he::String& name);
     void pushCommand(const Command& command);
     void undoTransaction();
     void redoTransaction();
 
     size_t getSize() const { return m_Commands.size(); }
 
-    void setName(const std::string& name) { m_Name = name; }
-    const std::string& getName() const { return m_Name; }
+    void setName(const he::String& name) { m_Name = name; }
+    const he::String& getName() const { return m_Name; }
 
 private:
-    std::string m_Name;
+    he::String m_Name;
     he::ObjectList<Command> m_Commands;
 };
 

@@ -90,7 +90,7 @@ private:
 };
     
 template<>
-bool NetworkVisitor::visit(std::string& value);
+bool NetworkVisitor::visit(he::String& value);
 
 } } //end namespace
 

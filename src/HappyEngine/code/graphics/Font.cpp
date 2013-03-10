@@ -80,7 +80,7 @@ void Font::init(FT_Library lib, FT_Face face, uint16 size, uint8 options)
             (options & NO_COMPRESSION) == NO_COMPRESSION ?
             gfx::TextureFormat_RGBA8 : gfx::TextureFormat_Compressed_RGBA8_DXT5,
             false);
-        m_TextureAtlas->setName(std::string("FontTextureAtlas: ") + getName());
+        m_TextureAtlas->setName(he::String("FontTextureAtlas: ") + getName());
 
         preCache();
     }
@@ -257,7 +257,7 @@ float Font::getStringWidth(const char* buff, const int len) const
 
     return width;
 }
-float Font::getStringWidth(const std::string& string) const
+float Font::getStringWidth(const he::String& string) const
 {
     return getStringWidth(string.c_str(), string.size());
 }

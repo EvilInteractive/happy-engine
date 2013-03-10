@@ -47,9 +47,9 @@ void Simple2DTextureEffect::load()
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<std::string> shaderOutputs;
+    he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
     const bool compiled = m_Shader->initFromFile(folder + "2D/simple2DTextureShader.vert", 
                                            folder + "2D/simple2DTextureShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, ""); compiled;

@@ -97,7 +97,7 @@ void MainGame::nodeGraphUnitTest()
             return *this;
         }
         Type type;
-        std::string name;
+        he::String name;
         void* data;
         size_t dataSize;
         void setData(size_t size)

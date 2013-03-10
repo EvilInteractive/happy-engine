@@ -155,7 +155,7 @@ void Button::setPosition(const vec2& centerPos)
     m_Hitregion.setPosition(m_Pos);
 }
 
-void Button::setText(const std::string& text, uint16 fontSize)
+void Button::setText(const he::String& text, uint16 fontSize)
 {
     m_Text.clear();
     m_Text.addText(text.c_str());

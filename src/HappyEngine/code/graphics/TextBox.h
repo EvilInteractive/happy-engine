@@ -38,9 +38,9 @@ public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
     TextBox(	RectF posSize,
-                const std::string& defaultString = std::string(""),
+                const he::String& defaultString = he::String(""),
                 uint16 fontSize = 12,
-                const std::string& customFont = std::string("Ubuntu-Regular.ttf"));
+                const he::String& customFont = he::String("Ubuntu-Regular.ttf"));
     virtual ~TextBox();
 
     /* GENERAL */
@@ -50,14 +50,14 @@ public:
     void resetText();
 
     /* GETTERS */
-    const std::string& getString() const;
+    const he::String& getString() const;
     bool hasFocus() const;
     bool entered() const;
 
     /* SETTERS */
     void setActive(bool isActive);
     void setFocus(bool focus);
-    void setString(const std::string& string);
+    void setString(const he::String& string);
     void setColors(	const Color& backgroundColor = Color(0.9f,0.9f,0.9f),
                     const Color& textColor = Color(0.2f,0.2f,0.2f),
                     const Color& focusColor = Color(0.0f,0.75f,1.0f),
@@ -76,9 +76,9 @@ private:
     Font* m_Font;
     Text m_Text;
 
-    std::string m_DefaultString;
-    std::string m_String;
-    std::string m_Cursor;
+    he::String m_DefaultString;
+    he::String m_String;
+    he::String m_Cursor;
 
     bool m_Active;
     bool m_HasFocus;

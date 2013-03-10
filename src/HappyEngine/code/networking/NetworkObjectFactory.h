@@ -52,7 +52,7 @@ public:
     virtual ~NetworkObjectFactory() {}
     
     // TODO: should not be public, this class should always be inherited
-    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
+    void init(size_t startSize, size_t increaseSize, const he::String& displayName)
     {
         ObjectFactory<T>::init(startSize, increaseSize, displayName);
     }

@@ -31,7 +31,7 @@ namespace gfx {
 struct Bone
 {
 
-    std::string m_Name;
+    he::String m_Name;
     mat44 m_BaseTransform;
 
     static const uint8 MAX_BONES = 64;

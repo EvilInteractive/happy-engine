@@ -60,7 +60,7 @@ void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const
     HE_WARNING(stream.str().c_str());
 }
 
-void checkFboStatus( const std::string& name )
+void checkFboStatus( const he::String& name )
 {
     GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (err != GL_FRAMEBUFFER_COMPLETE)

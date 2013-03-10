@@ -112,9 +112,9 @@ const he::PrimitiveList<mat44>& SkinnedModelComponent::getBoneTransforms() const
     return m_BoneTransform;
 }
 
-SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const std::string& name ) const
+SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const he::String& name ) const
 {
-    std::map<std::string, BoneTransform>::const_iterator it(m_Bones.find(name));
+    std::map<he::String, BoneTransform>::const_iterator it(m_Bones.find(name));
     if (it == m_Bones.cend())
     {
         HE_ERROR("SkinnedModelComponent error: No bone exists with name: %s", name.c_str());

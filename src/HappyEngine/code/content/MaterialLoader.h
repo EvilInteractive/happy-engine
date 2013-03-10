@@ -34,7 +34,7 @@ public:
     MaterialLoader();
     virtual ~MaterialLoader();
     
-    ObjectHandle load(const std::string& path);
+    ObjectHandle load(const he::String& path);
 
     void setRenderSettings(const gfx::RenderSettings& settings);
 

@@ -39,13 +39,13 @@ ShaderLoader::~ShaderLoader()
     ResourceFactory<gfx::Shader>::getInstance()->garbageCollect();
 }
 
-ObjectHandle ShaderLoader::load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs)
+ObjectHandle ShaderLoader::load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
 
     ResourceFactory<gfx::Shader>* factory(ResourceFactory<gfx::Shader>::getInstance());
 
-    std::string key(vsPath + fsPath);
+    he::String key(vsPath + fsPath);
     if (m_AssetContainer.isAssetPresent(key) && factory->isAlive(m_AssetContainer.getAsset(key)))
     {
         ObjectHandle shader(m_AssetContainer.getAsset(key));
@@ -55,7 +55,7 @@ ObjectHandle ShaderLoader::load(const std::string& vsPath, const std::string& fs
     else
     {
         gfx::Shader* shader(factory->get(factory->create()));
-        std::set<std::string> defines;
+        std::set<he::String> defines;
         if (m_RenderSettings.lightingSettings.enableShadows)
             defines.insert("SHADOWS");
         if (m_RenderSettings.lightingSettings.enableSpecular)

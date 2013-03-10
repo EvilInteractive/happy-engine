@@ -127,20 +127,20 @@ public:
     Shader();
     virtual ~Shader();
 
-    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout);
-    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs);
-    bool initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs = he::ObjectList<std::string>());
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout);
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
+    bool initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
     
-    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName);
-    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const he::ObjectList<std::string>& outputs);
-    bool initFromMem(const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs = he::ObjectList<std::string>());
+    bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName);
+    bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const he::ObjectList<he::String>& outputs);
+    bool initFromMem(const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs = he::ObjectList<he::String>());
 
     void bind();
 
-    uint32 getShaderVarId(const std::string& name) const;
-    uint32 getBufferId(const std::string& name) const;
-    uint32 getBufferVarId(uint32 bufferId, const std::string& name) const;
-    uint32 getShaderSamplerId(const std::string& name);
+    uint32 getShaderVarId(const he::String& name) const;
+    uint32 getBufferId(const he::String& name) const;
+    uint32 getBufferVarId(uint32 bufferId, const he::String& name) const;
+    uint32 getShaderSamplerId(const he::String& name);
 
     UniformBuffer* setBuffer(uint32 id); //create new buffer
     void setBuffer(uint32 id, UniformBuffer* pBuffer); //used to share buffer
@@ -161,11 +161,11 @@ private:
     uint32 m_VsId;
     uint32 m_FsId;
 
-    std::map<std::string, uint32> m_SamplerLocationMap;
+    std::map<he::String, uint32> m_SamplerLocationMap;
     std::map<uint32, UniformBuffer*> m_UniformBufferMap;
 
-    std::string m_FragShaderName;
-    std::string m_VertShaderName;
+    he::String m_FragShaderName;
+    he::String m_VertShaderName;
 
     static uint32 s_CurrentBoundShader;
 

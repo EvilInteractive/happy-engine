@@ -37,8 +37,8 @@ public:
     PhysicsShapeLoader();
     virtual ~PhysicsShapeLoader();
 
-    ObjectHandle loadConvex(const std::string& path);
-    ObjectHandle loadConcave(const std::string& path);
+    ObjectHandle loadConvex(const he::String& path);
+    ObjectHandle loadConcave(const he::String& path);
 
 private:
     AssetContainer<ObjectHandle> m_ConvexAssetContainer;

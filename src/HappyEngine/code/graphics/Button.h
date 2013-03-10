@@ -77,7 +77,7 @@ public:
     virtual void setPosition(const vec2& centerPos);
     virtual void setSize(const vec2& size);
     virtual void setType(const TYPE& type);
-    virtual void setText(const std::string& text, uint16 fontSize = 12);
+    virtual void setText(const he::String& text, uint16 fontSize = 12);
     virtual void setColors(const Color& normal, const Color& hoover, const Color& down, const Color& disabled, const Color& border);
 
     virtual const gui::Text& getText() const { return m_Text; }

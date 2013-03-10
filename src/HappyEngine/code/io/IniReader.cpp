@@ -86,7 +86,7 @@ void removeSpaces(std::wstring& str)
     });
     str = stream.str();
 }
-bool IniReader::open(const std::string& path)
+bool IniReader::open(const he::String& path)
 {
     using namespace std;
 
@@ -166,7 +166,7 @@ int IniReader::readInt(const std::wstring& root, const std::wstring& node, int d
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
-        std::string raw(wraw.cbegin(), wraw.cend());
+        he::String raw(wraw.cbegin(), wraw.cend());
         int ret = INT_MAX;
         if (sscanf(raw.c_str(), "%d", &ret) == EOF || ret == INT_MAX)
             return defaultReturn;
@@ -183,7 +183,7 @@ float IniReader::readFloat(const std::wstring& root, const std::wstring& node, f
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
-        std::string raw(wraw.cbegin(), wraw.cend());
+        he::String raw(wraw.cbegin(), wraw.cend());
         float ret = FLT_MAX;
         if (sscanf(raw.c_str(), "%f", &ret) == EOF || ret == FLT_MAX)
             return defaultReturn;
@@ -201,7 +201,7 @@ vec2 IniReader::readVector2(const std::wstring& root, const std::wstring& node, 
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
-        std::string raw(wraw.cbegin(), wraw.cend());
+        he::String raw(wraw.cbegin(), wraw.cend());
         vec2 ret(FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f", &ret.x, &ret.y) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX)
             return defaultReturn;
@@ -218,7 +218,7 @@ vec3 IniReader::readVector3(const std::wstring& root, const std::wstring& node, 
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
-        std::string raw(wraw.cbegin(), wraw.cend());
+        he::String raw(wraw.cbegin(), wraw.cend());
         vec3 ret(FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f,%f", &ret.x, &ret.y, &ret.z) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX || ret.z == FLT_MAX)
             return defaultReturn;
@@ -235,7 +235,7 @@ vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, 
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
-        std::string raw(wraw.cbegin(), wraw.cend());
+        he::String raw(wraw.cbegin(), wraw.cend());
         vec4 ret(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
         if (sscanf(raw.c_str(), "%f,%f,%f,%f", &ret.x, &ret.y, &ret.z, &ret.w) == EOF || ret.x == FLT_MAX || ret.y == FLT_MAX ||
                                                                                            ret.z == FLT_MAX || ret.w == FLT_MAX)
@@ -249,12 +249,12 @@ vec4 IniReader::readVector4(const std::wstring& root, const std::wstring& node, 
     }
 }
 
-std::string IniReader::readString(const std::wstring& root, const std::wstring& node, const std::string& defaultReturn) const
+he::String IniReader::readString(const std::wstring& root, const std::wstring& node, const he::String& defaultReturn) const
 {
     std::wstring wraw(L"");
     if (readRaw(root, node, wraw))
     {
-        std::string raw(wraw.cbegin(), wraw.cend());
+        he::String raw(wraw.cbegin(), wraw.cend());
         if (raw.front() == '"')
         {
             raw = raw.substr(1, raw.size() - 1);

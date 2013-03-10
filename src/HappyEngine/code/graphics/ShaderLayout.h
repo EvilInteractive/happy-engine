@@ -32,16 +32,16 @@ class ShaderLayoutElement
 {
 public:
     ShaderLayoutElement(): m_ElementIndex(UINT32_MAX), m_NameInShader("ERROR") {}
-    ShaderLayoutElement(uint32 elementIndex, const std::string& nameInShader);
+    ShaderLayoutElement(uint32 elementIndex, const he::String& nameInShader);
     virtual ~ShaderLayoutElement() {}
     //default copy constructor and assignment operator are fine
 
     uint32 getElementIndex() const;
-    const std::string& getShaderVariableName() const;
+    const he::String& getShaderVariableName() const;
 
 private:
     uint32 m_ElementIndex;
-    std::string m_NameInShader;
+    he::String m_NameInShader;
 };
 
 class ShaderLayout

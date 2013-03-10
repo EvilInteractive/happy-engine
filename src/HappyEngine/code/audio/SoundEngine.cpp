@@ -247,7 +247,7 @@ void SoundEngine::deleteAllSounds()
     //m_SoundBank.removeAllAssets();
 }
 
-Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
+Sound2D* SoundEngine::loadSound2D(const he::String& path, bool stream)
 {
     Sound2D* pSound(nullptr);
 
@@ -259,7 +259,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
     // try to open
     bool success(soundFile.open());
 
-    std::string err("Failed to open sound file: ");
+    he::String err("Failed to open sound file: ");
     err += path;
 
     HE_ASSERT(success == true, err.c_str());
@@ -335,7 +335,7 @@ Sound2D* SoundEngine::loadSound2D(const std::string& path, bool stream)
     return pSound;
 }
 
-Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
+Sound3D* SoundEngine::loadSound3D(const he::String& path, bool stream)
 {
     stream = false; // only static for now
 
@@ -349,7 +349,7 @@ Sound3D* SoundEngine::loadSound3D(const std::string& path, bool stream)
     // try to open
     bool success(soundFile.open());
 
-    std::string err("Failed to open sound file: ");
+    he::String err("Failed to open sound file: ");
     err += path;
 
     HE_ASSERT(success == true, err.c_str());

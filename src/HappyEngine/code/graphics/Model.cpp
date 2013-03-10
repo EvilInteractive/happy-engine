@@ -70,7 +70,7 @@ ModelMesh* Model::instantiateMesh(uint32 index) const
     return mesh;
 }
 
-ModelMesh* Model::instantiateMesh( const std::string& name ) const
+ModelMesh* Model::instantiateMesh( const he::String& name ) const
 {
     he::PrimitiveList<ModelMesh*>::const_iterator it(std::find_if(cbegin(), cend(), [&](ModelMesh* pMesh)
     {
@@ -87,7 +87,7 @@ ModelMesh* Model::instantiateMesh( const std::string& name ) const
     return nullptr;
 }
 
-Model* Model::instantiateMeshesWithPrefix( const std::string& prefix ) const
+Model* Model::instantiateMeshesWithPrefix( const he::String& prefix ) const
 {
     ObjectHandle modelHandle(ResourceFactory<Model>::getInstance()->create());
     Model* model(ResourceFactory<Model>::getInstance()->get(modelHandle));

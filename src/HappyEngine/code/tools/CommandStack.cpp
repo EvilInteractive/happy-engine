@@ -33,7 +33,7 @@ CommandStack::~CommandStack()
 {
 }
 
-void CommandStack::beginTransaction(const std::string& name)
+void CommandStack::beginTransaction(const he::String& name)
 {
     HE_IF_ASSERT(m_OpenTransaction == false, "There is still an open transaction: %s\nwhen starting a new one: %s!",  m_Transactions[m_UndoIndex].getName().c_str(), name.c_str())
     {
@@ -42,7 +42,7 @@ void CommandStack::beginTransaction(const std::string& name)
     }
 }
 
-void CommandStack::endTransaction(const std::string& rename)
+void CommandStack::endTransaction(const he::String& rename)
 {
     HE_IF_ASSERT(m_OpenTransaction == true, "There is no open transaction!")
     {

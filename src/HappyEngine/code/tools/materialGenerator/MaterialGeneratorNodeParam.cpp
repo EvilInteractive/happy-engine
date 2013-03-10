@@ -30,7 +30,7 @@ MaterialGeneratorNodeParam::MaterialGeneratorNodeParam()
     he_memset(&m_Data, 0, sizeof(Data));
 }
 
-MaterialGeneratorNodeParam::MaterialGeneratorNodeParam(const std::string& name, const Type type)
+MaterialGeneratorNodeParam::MaterialGeneratorNodeParam(const he::String& name, const Type type)
     : m_Name(name), m_Type(type)
 {
     he_memset(&m_Data, 0, sizeof(Data));

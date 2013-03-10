@@ -62,7 +62,7 @@ public:
     void setModelMesh(const ObjectHandle& modelHandle);
     void setMaterial(const ObjectHandle& material);
 
-    BoneTransform getBone(const std::string& name) const;
+    BoneTransform getBone(const he::String& name) const;
 
 protected:
     virtual void onModelLoaded() {}
@@ -74,7 +74,7 @@ private:
     const gfx::Material* m_Material;
 
     he::PrimitiveList<mat44> m_BoneTransform;
-    std::map<std::string, BoneTransform> m_Bones;
+    std::map<he::String, BoneTransform> m_Bones;
         
     Entity* m_Parent;
     

@@ -132,7 +132,7 @@ ShaderGeneratorVariable* ShaderGenerator::addInternalVariable()
 }
 
 
-bool ShaderGenerator::compile(const Path& shaderPath, const std::string& shaderName)
+bool ShaderGenerator::compile(const Path& shaderPath, const he::String& shaderName)
 {
     bool result(true);
 
@@ -1016,7 +1016,7 @@ void ShaderGenerator::write(const char* const text)
     m_ShaderFile << text;
 }
 
-void ShaderGenerator::write(const std::string& text)
+void ShaderGenerator::write(const he::String& text)
 {
     m_ShaderFile << text;
 }

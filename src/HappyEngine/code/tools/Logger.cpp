@@ -59,7 +59,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
     memset(buff, 0, 1024);
     vsnprintf(buff, 1024, str, argList);
 
-    std::string typeString("");
+    he::String typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);
 #ifdef HE_WINDOWS
     WORD flags(0);

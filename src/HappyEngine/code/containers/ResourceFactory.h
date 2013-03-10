@@ -56,7 +56,7 @@ public:
             }
         }
     }
-    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
+    void init(size_t startSize, size_t increaseSize, const he::String& displayName)
     {
         ObjectFactory<T>::init(startSize, increaseSize, displayName);
     }

@@ -62,14 +62,14 @@ bool FileReader::eof() const
     else
         return m_Wfstream.eof();
 }
-std::string FileReader::readLine()
+he::String FileReader::readLine()
 {
     HE_ASSERT(m_fstream.is_open(), "ASCII line reader is not open, did you check for open errors? or did you open it for unicode?");
-    std::string str;
+    he::String str;
     std::getline(m_fstream, str);
     return str;
 }
-std::string FileReader::readToEnd()
+he::String FileReader::readToEnd()
 {
     HE_ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open errors? or did you open it for unicode?");
 
@@ -77,20 +77,20 @@ std::string FileReader::readToEnd()
 
     while (m_fstream.eof() == false)
     {
-        std::string line;
+        he::String line;
         std::getline(m_fstream, line);
         file << line << "\n";
     }
 
     return file.str();
 }
-void FileReader::readToEndSplit(he::ObjectList<std::string>& outList)
+void FileReader::readToEndSplit(he::ObjectList<he::String>& outList)
 {
     HE_ASSERT(m_fstream.is_open(), "ASCII file reader is not open, did you check for open errors? or did you open it for unicode?");
     
     while (m_fstream.eof() == false)
     {
-        std::string line;
+        he::String line;
         std::getline(m_fstream, line);
         outList.add(line);
     }
@@ -99,7 +99,7 @@ void FileReader::readToEndSplit(he::ObjectList<std::string>& outList)
 std::wstring FileReader::readLineW()
 {
     HE_ASSERT(m_Wfstream.is_open(), "Unicode line reader is not open, did you check for open errors? or did you open it for ASCII?");
-    std::string str;
+    he::String str;
     std::getline(m_fstream, str);
     return L"";
 }

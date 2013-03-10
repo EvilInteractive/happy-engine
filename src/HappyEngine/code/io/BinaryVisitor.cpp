@@ -25,7 +25,7 @@ namespace he {
 namespace io {
 
 template<>
-void BinaryVisitor::visit(std::string& value)
+void BinaryVisitor::visit(he::String& value)
 {
     uint32 length(checked_numcast<uint32>(value.size()));
     visit(length);
