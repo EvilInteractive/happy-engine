@@ -48,9 +48,9 @@ void BillboardEffect::load()
     layout.addElement(ShaderLayoutElement(1, "inTexCoord"));
 
     m_pShader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<std::string> shaderOutputs;
+    he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
     const bool compiled = m_pShader->initFromFile(folder + "2D/billboardShader.vert", 
                                             folder + "2D/billboardShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, ""); compiled;

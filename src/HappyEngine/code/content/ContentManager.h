@@ -49,38 +49,38 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model* asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* asyncLoadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
-    gfx::Model* loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* loadModelMesh(const std::string& modelPath, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* asyncLoadModelMesh(const he::String& modelPath, const he::String& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout);
+    gfx::ModelMesh* loadModelMesh(const he::String& modelPath, const he::String& meshName, const gfx::BufferLayout& vertexLayout);
     gfx::ModelMesh* getFullscreenQuad();
     gfx::ModelMesh* getParticleQuad();
 
-    const gfx::Texture2D* asyncLoadTexture2D(const std::string& path);
-    const gfx::TextureCube* asyncLoadTextureCube(const std::string& path);
+    const gfx::Texture2D* asyncLoadTexture2D(const he::String& path);
+    const gfx::TextureCube* asyncLoadTextureCube(const he::String& path);
     const gfx::Texture2D* asyncMakeTexture2D(const Color& color);
-    const gfx::Texture2D* loadTexture2D(const std::string& path);
-    const gfx::TextureCube* loadTextureCube(const std::string& path);
+    const gfx::Texture2D* loadTexture2D(const he::String& path);
+    const gfx::TextureCube* loadTextureCube(const he::String& path);
     const gfx::Texture2D* makeTexture2D(const Color& color);
     
-    ObjectHandle loadPhysicsConvex(const std::string& path);
-    ObjectHandle loadPhysicsConcave(const std::string& path);
+    ObjectHandle loadPhysicsConvex(const he::String& path);
+    ObjectHandle loadPhysicsConcave(const he::String& path);
 
-    gui::Font* loadFont(const std::string& path, uint16 size, uint8 options = 0);
+    gui::Font* loadFont(const he::String& path, uint16 size, uint8 options = 0);
     gui::Font* getDefaultFont(uint16 size = 12);
 
-    ObjectHandle loadShader(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs);
+    ObjectHandle loadShader(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
    
-    ObjectHandle loadMaterial(const std::string& path);
+    ObjectHandle loadMaterial(const he::String& path);
 
     void setContentDir(const Path& path);
-    void setTextureFolder(const std::string& folder);
-    void setModelFolder(const std::string& folder);
-    void setPhysicsFolder(const std::string& folder);
-    void setFontFolder(const std::string& folder);
-    void setShaderFolder(const std::string& folder);
-    void setMaterialFolder(const std::string& folder);
-    void setFxFolder(const std::string& folder);
+    void setTextureFolder(const he::String& folder);
+    void setModelFolder(const he::String& folder);
+    void setPhysicsFolder(const he::String& folder);
+    void setFontFolder(const he::String& folder);
+    void setShaderFolder(const he::String& folder);
+    void setMaterialFolder(const he::String& folder);
+    void setFxFolder(const he::String& folder);
 
     const Path& getContentDir() const;
 
@@ -92,13 +92,13 @@ public:
     const Path& getMaterialFolderPath() const;
     const Path& getFxFolderPath() const;
 
-    const std::string& getTextureFolder() const;
-    const std::string& getModelFolder() const;
-    const std::string& getPhysicsFolder() const;
-    const std::string& getFontFolder() const;
-    const std::string& getShaderFolder() const;
-    const std::string& getMaterialFolder() const;
-    const std::string& getFxFolder() const;
+    const he::String& getTextureFolder() const;
+    const he::String& getModelFolder() const;
+    const he::String& getPhysicsFolder() const;
+    const he::String& getFontFolder() const;
+    const he::String& getShaderFolder() const;
+    const he::String& getMaterialFolder() const;
+    const he::String& getFxFolder() const;
 
     void setRenderSettings(const gfx::RenderSettings& settings);
 
@@ -114,7 +114,7 @@ private:
     MaterialLoader* m_MaterialLoader;
 
     Path m_ContentRootDir;
-    std::string m_TextureFolder, m_ModelFolder, m_PhysicsFolder, m_FontFolder,
+    he::String m_TextureFolder, m_ModelFolder, m_PhysicsFolder, m_FontFolder,
                 m_ShaderFolder, m_MaterialFolder, m_FxFolder;
     Path m_TexturePath, m_ModelPath, m_PhysicsPath, m_FontPath,
                 m_ShaderPath, m_MaterialPath, m_FxPath;

@@ -101,29 +101,29 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Model* ContentManager::asyncLoadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::asyncLoadModel(const he::String& asset, const gfx::BufferLayout& vertexLayout)
 {
     return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout, true);
 }
-gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
+gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const he::String& asset, const he::String& meshName, const gfx::BufferLayout& vertexLayout )
 {
     return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
 }
-gfx::Model* ContentManager::loadModel(const std::string& asset, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::loadModel(const he::String& asset, const gfx::BufferLayout& vertexLayout)
 {
     return m_ModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout, true);
 }
-gfx::ModelMesh* ContentManager::loadModelMesh(const std::string& asset, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ContentManager::loadModelMesh(const he::String& asset, const he::String& meshName, const gfx::BufferLayout& vertexLayout)
 {
     return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
 }
 
 //////////////////////////////////////////////////////////////////////////
-const gfx::Texture2D* ContentManager::asyncLoadTexture2D(const std::string& asset)
+const gfx::Texture2D* ContentManager::asyncLoadTexture2D(const he::String& asset)
 {
     return m_TextureLoader->asyncLoadTexture2D(m_TexturePath.str() + asset);
 }
-const gfx::TextureCube* ContentManager::asyncLoadTextureCube( const std::string& asset )
+const gfx::TextureCube* ContentManager::asyncLoadTextureCube( const he::String& asset )
 {
     return m_TextureLoader->asyncLoadTextureCube(m_TexturePath.str() + asset);
 }
@@ -131,11 +131,11 @@ const gfx::Texture2D* ContentManager::asyncMakeTexture2D(const Color& color)
 {
     return m_TextureLoader->asyncMakeTexture2D(color);
 }
-const gfx::Texture2D* ContentManager::loadTexture2D(const std::string& path)
+const gfx::Texture2D* ContentManager::loadTexture2D(const he::String& path)
 {
     return m_TextureLoader->loadTexture2D(m_TexturePath.str()  + path);
 }
-const gfx::TextureCube* ContentManager::loadTextureCube( const std::string& path )
+const gfx::TextureCube* ContentManager::loadTextureCube( const he::String& path )
 {
     return m_TextureLoader->loadTextureCube(m_TexturePath.str()  + path);
 }
@@ -145,17 +145,17 @@ const gfx::Texture2D* ContentManager::makeTexture2D(const Color& color)
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadPhysicsConvex(const std::string& asset)
+ObjectHandle ContentManager::loadPhysicsConvex(const he::String& asset)
 {
     return m_PhysicsShapeLoader->loadConvex(m_PhysicsPath.str()  + asset);
 }
-ObjectHandle ContentManager::loadPhysicsConcave(const std::string& asset)
+ObjectHandle ContentManager::loadPhysicsConcave(const he::String& asset)
 {
     return m_PhysicsShapeLoader->loadConcave(m_PhysicsPath.str() + asset);
 }
 
 //////////////////////////////////////////////////////////////////////////
-gui::Font* ContentManager::loadFont(const std::string& asset, uint16 size, uint8 options)
+gui::Font* ContentManager::loadFont(const he::String& asset, uint16 size, uint8 options)
 {
     return m_FontLoader->load(m_FontPath.str() + asset, size, options);
 }
@@ -166,13 +166,13 @@ gui::Font* ContentManager::getDefaultFont(uint16 size)
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadShader(const std::string& vsAsset, const std::string& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs)
+ObjectHandle ContentManager::loadShader(const he::String& vsAsset, const he::String& fsAsset, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
 {
     return m_ShaderLoader->load(m_ShaderPath.str() + vsAsset, m_ShaderPath.str() + fsAsset, shaderLayout, outputs);
 }
 
 //////////////////////////////////////////////////////////////////////////
-ObjectHandle ContentManager::loadMaterial(const std::string& asset)
+ObjectHandle ContentManager::loadMaterial(const he::String& asset)
 {
     return m_MaterialLoader->load(m_MaterialPath.str() + asset);
 }
@@ -189,37 +189,37 @@ void ContentManager::setContentDir(const Path& path)
     setShaderFolder(getShaderFolder());
     setTextureFolder(getTextureFolder());
 }
-void ContentManager::setTextureFolder(const std::string& folder)
+void ContentManager::setTextureFolder(const he::String& folder)
 {
     m_TextureFolder = folder;
     m_TexturePath = m_ContentRootDir.append(folder);
 }
-void ContentManager::setModelFolder(const std::string& folder)
+void ContentManager::setModelFolder(const he::String& folder)
 {
     m_ModelFolder = folder;
     m_ModelPath = m_ContentRootDir.append(folder);
 }
-void ContentManager::setPhysicsFolder(const std::string& folder)
+void ContentManager::setPhysicsFolder(const he::String& folder)
 {
     m_PhysicsFolder = folder;
     m_PhysicsPath = m_ContentRootDir.append(folder);
 }
-void ContentManager::setFontFolder(const std::string& folder)
+void ContentManager::setFontFolder(const he::String& folder)
 {
     m_FontFolder = folder;
     m_FontPath = m_ContentRootDir.append(folder);
 }
-void ContentManager::setShaderFolder(const std::string& folder)
+void ContentManager::setShaderFolder(const he::String& folder)
 {
     m_ShaderFolder = folder;
     m_ShaderPath = m_ContentRootDir.append(folder);
 }
-void ContentManager::setMaterialFolder(const std::string& folder)
+void ContentManager::setMaterialFolder(const he::String& folder)
 {
     m_MaterialFolder = folder;
     m_MaterialPath = m_ContentRootDir.append(folder);
 }
-void ContentManager::setFxFolder( const std::string& folder )
+void ContentManager::setFxFolder( const he::String& folder )
 {
     m_FxFolder = folder;
     m_FxPath = m_ContentRootDir.append(folder);
@@ -228,31 +228,31 @@ const Path& ContentManager::getContentDir() const
 {
     return m_ContentRootDir;
 }
-const std::string& ContentManager::getTextureFolder() const
+const he::String& ContentManager::getTextureFolder() const
 {
     return m_TextureFolder;
 }
-const std::string& ContentManager::getModelFolder() const
+const he::String& ContentManager::getModelFolder() const
 {
     return m_ModelFolder;
 }
-const std::string& ContentManager::getPhysicsFolder() const
+const he::String& ContentManager::getPhysicsFolder() const
 {
     return m_PhysicsFolder;
 }
-const std::string& ContentManager::getFontFolder() const
+const he::String& ContentManager::getFontFolder() const
 {
     return m_FontFolder;
 }
-const std::string& ContentManager::getShaderFolder() const
+const he::String& ContentManager::getShaderFolder() const
 {
     return m_ShaderFolder;
 }
-const std::string& ContentManager::getMaterialFolder() const
+const he::String& ContentManager::getMaterialFolder() const
 {
     return m_MaterialFolder;
 }
-const std::string& ContentManager::getFxFolder() const
+const he::String& ContentManager::getFxFolder() const
 {
     return m_FxFolder;
 }

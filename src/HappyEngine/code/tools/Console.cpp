@@ -127,7 +127,7 @@ void Console::load()
 
 Console::~Console()
 {
-    std::for_each(m_TypeHandlers.begin(), m_TypeHandlers.end(), [&](std::pair<std::string, ITypeHandler*> p)
+    std::for_each(m_TypeHandlers.begin(), m_TypeHandlers.end(), [&](std::pair<he::String, ITypeHandler*> p)
     {
         delete p.second;
         p.second = nullptr;
@@ -142,9 +142,9 @@ Console::~Console()
     delete m_ScrollBar;
 }
 
-void Console::processCommand(const std::string& command)
+void Console::processCommand(const he::String& command)
 {
-    std::string s(command);
+    he::String s(command);
 
     // remove spaces
     #if !GCC
@@ -156,13 +156,13 @@ void Console::processCommand(const std::string& command)
     if (s.find('=') != -1)
     {
         // get keyword (variable to change)
-        std::string keyWord(s.substr(0, s.find('=')));
+        he::String keyWord(s.substr(0, s.find('=')));
 
         if (m_ValueContainer.find(keyWord) != m_ValueContainer.end())
         {
-            std::string values(s.substr(s.find('=') + 1, s.size() - 1));
+            he::String values(s.substr(s.find('=') + 1, s.size() - 1));
 
-            std::string type(m_ValueContainer[keyWord].type().name());
+            he::String type(m_ValueContainer[keyWord].type().name());
             type = type.substr(0, type.size() - 2);
 
             if (m_TypeHandlers.find(type) != m_TypeHandlers.cend())
@@ -216,9 +216,9 @@ void Console::displayVars()
     }
     else
     {
-        std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<std::string, boost::any> p)
+        std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<he::String, boost::any> p)
         {
-            std::string type(p.second.type().name());
+            he::String type(p.second.type().name());
             type = type.substr(0, type.size() - 2);
 
             stream << "'" << p.first << "' (" << type << ")\n";
@@ -242,7 +242,7 @@ void Console::displayCmds()
     }
     else
     {
-        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<std::string, boost::function<void()> > p)
+        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, boost::function<void()> > p)
         {
             stream << "'" << p.first << "'\n";
         });
@@ -262,9 +262,9 @@ void Console::tick()
         m_IsOpen = !m_IsOpen;
         m_TextBox->resetText();
 
-        std::string& s = m_MsgHistory[m_MsgHistory.size() - 1].second;
+        he::String& s = m_MsgHistory[m_MsgHistory.size() - 1].second;
 
-        if (s != std::string("&FFF").append(m_HelpCommand))
+        if (s != he::String("&FFF").append(m_HelpCommand))
         {
             addMessage(m_HelpCommand.c_str(), CMSG_TYPE_INFO);
         }
@@ -372,7 +372,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
             const size_t lineSize(i - lineCharStart);
             if (lineSize > 0)
             {
-                m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, std::string(buff, lineCharStart, lineSize)));
+                m_MsgHistory.add(std::pair<CMSG_TYPE, he::String>(type, he::String(buff, lineCharStart, lineSize)));
             }
 
             lineCharStart = i + 1;
@@ -384,7 +384,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
         const size_t lineSize(size - lineCharStart);
         if (lineSize > 0)
         {
-            m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, std::string(buff, lineCharStart, lineSize)));
+            m_MsgHistory.add(std::pair<CMSG_TYPE, he::String>(type, he::String(buff, lineCharStart, lineSize)));
         }
     }
 
@@ -394,7 +394,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
     }
 }
 
-void Console::registerCmd(const boost::function<void()>& command, const std::string& cmdKey)
+void Console::registerCmd(const boost::function<void()>& command, const he::String& cmdKey)
 {
     HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {

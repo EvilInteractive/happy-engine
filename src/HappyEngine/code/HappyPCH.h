@@ -32,7 +32,6 @@
 #define FILE_AND_LINE __FILE__, __LINE__
 #endif
 
-#include <string>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
@@ -64,6 +63,8 @@
 #define ENUM(name, size) enum name : size
 #endif
 
+#include "HeString.h"
+
 #include "HappyTypes.h"
 #include "vec2.h"
 #include "vec3.h"
@@ -77,6 +78,7 @@
 
 #include "thread/Thread.h"
 #include "thread/Mutex.h"
+
 
 #include "Logger.h"
 #include "HappyInfo.h"

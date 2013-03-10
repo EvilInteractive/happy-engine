@@ -51,12 +51,12 @@ public:
     void init(const int width, const int height);
 
     /* GENERAL */
-    void loadUrl(const std::string& url);
+    void loadUrl(const he::String& url);
     void focus();
     void unfocus();
     void tick();
     void close();
-    void setTitle(const std::string& title);
+    void setTitle(const he::String& title);
 
     /* GETTERS */
     Awesomium::WebView* getAWEView() const { return m_WebView; } 

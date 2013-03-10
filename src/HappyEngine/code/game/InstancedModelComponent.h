@@ -54,11 +54,11 @@ public:
     virtual void fillInstancingBuffer(gfx::DynamicBuffer& buffer) const;
     //////////////////////////////////////////////////////////////////////////
 
-    void setController(const std::string& key);
-    const std::string& getControllerKey() const;
+    void setController(const he::String& key);
+    const he::String& getControllerKey() const;
 
 private:
-    std::string m_ControllerKey;
+    he::String m_ControllerKey;
     uint32 m_InstanceId;
 
     Entity* m_Parent; 

@@ -45,11 +45,11 @@ public:
     virtual ~UIBind();
 
     /* GENERAL */
-    void bindObjectMethodToCallback(const std::string& object,
-                                    const std::string& method,
+    void bindObjectMethodToCallback(const he::String& object,
+                                    const he::String& method,
                                     he::eventCallback1<void, const Awesomium::JSArray&>& callBack);
-    void unbindObjectMethodToCallback(const std::string& object,
-                                      const std::string& method,
+    void unbindObjectMethodToCallback(const he::String& object,
+                                      const he::String& method,
                                       he::eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
     void setup();

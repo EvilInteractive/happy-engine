@@ -55,7 +55,7 @@ BinObjLoader::~BinObjLoader()
         he_free(pInd);
     });
 }
-bool BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
+bool BinObjLoader::load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
     if (read(path, allowByteIndices) == false)
         return false;
@@ -78,7 +78,7 @@ bool BinObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLa
     return true;
 }
 
-bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
+bool BinObjLoader::read(const he::String& path, bool allowByteIndices)
 {
     //Clean
     std::for_each(m_Indices.begin(), m_Indices.end(), [&](void* pInd)
@@ -106,7 +106,7 @@ bool BinObjLoader::read(const std::string& path, bool allowByteIndices)
     uint32 meshes(0);
     stream.visit(meshes);
 
-    std::string name;
+    he::String name;
     for(uint32 i = 0; i < meshes; ++i)
     {
         stream.visit(name);
@@ -258,7 +258,7 @@ size_t BinObjLoader::getNumMeshes() const
 {
     return m_MeshName.size();
 }
-const std::string& BinObjLoader::getMeshName(uint32 mesh) const
+const he::String& BinObjLoader::getMeshName(uint32 mesh) const
 {
     return m_MeshName[mesh];
 }

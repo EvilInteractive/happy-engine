@@ -44,7 +44,7 @@ PhysicsShapeLoader::~PhysicsShapeLoader()
     CV_FACTORY->garbageCollect();
 }
 
-ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
+ObjectHandle PhysicsShapeLoader::loadConvex(const he::String& path)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_ConvexAssetContainer.isAssetPresent(path) && CV_FACTORY->isAlive(m_ConvexAssetContainer.getAsset(path)))
@@ -55,7 +55,7 @@ ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
     }
     else
     {
-        if (path.rfind(".pxcv") != std::string::npos)
+        if (path.rfind(".pxcv") != he::String::npos)
         {
             io::BinaryFileVisitor visitor;
             if (visitor.openRead(path) == false)
@@ -80,7 +80,7 @@ ObjectHandle PhysicsShapeLoader::loadConvex(const std::string& path)
         }
     }
 }
-ObjectHandle PhysicsShapeLoader::loadConcave(const std::string& path)
+ObjectHandle PhysicsShapeLoader::loadConcave(const he::String& path)
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
     if (m_ConcaveAssetContainer.isAssetPresent(path) && CC_FACTORY->isAlive(m_ConcaveAssetContainer.getAsset(path)))
@@ -91,7 +91,7 @@ ObjectHandle PhysicsShapeLoader::loadConcave(const std::string& path)
     }
     else
     {
-        if (path.rfind(".pxcc") != std::string::npos)
+        if (path.rfind(".pxcc") != he::String::npos)
         {
             io::BinaryFileVisitor visitor;
             if (visitor.openRead(path) == false)

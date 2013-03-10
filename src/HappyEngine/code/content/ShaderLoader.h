@@ -38,7 +38,7 @@ public:
     ShaderLoader();
     virtual ~ShaderLoader();
     
-    ObjectHandle load(const std::string& vsPath, const std::string& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs);
+    ObjectHandle load(const he::String& vsPath, const he::String& fsPath, const gfx::ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs);
 
     void setRenderSettings(const gfx::RenderSettings& settings);
 

@@ -117,7 +117,7 @@ struct Guid
     Guid(const Guid& other);
     Guid& operator=(const Guid& other); // 921E39A0-F8A8-4131-BB74-31968CF5A9E6
 
-    std::string toString() const;
+    he::String toString() const;
 
     static Guid generateGuid();
 

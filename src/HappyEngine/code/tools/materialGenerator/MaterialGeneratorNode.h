@@ -50,10 +50,10 @@ protected:
     struct ConnecterDesc
     {
         ConnecterDesc() {}
-        ConnecterDesc(const std::string& name, const Color& color)
+        ConnecterDesc(const he::String& name, const Color& color)
             : m_Name(name)
             , m_Color(color) {}
-        std::string m_Name;
+        he::String m_Name;
         Color m_Color;
     };
 public:

@@ -89,7 +89,7 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    he::ObjectList<std::string> shaderOutputs;
+    he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");
 
     m_LumShader = ResourceFactory<gfx::Shader>::getInstance()->get(

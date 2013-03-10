@@ -37,11 +37,11 @@ public:
 
 	virtual ~BoolTypeHandler() {}
 
-	bool parse(const std::string& values, boost::any& pValueToAssign) const
+	bool parse(const he::String& values, boost::any& pValueToAssign) const
 	{
 		bool& pB = *boost::any_cast<bool*>(pValueToAssign);
 
-		std::string s(values);
+		he::String s(values);
 
 		//s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
 		std::transform(s.begin(), s.end(), s.begin(),tolower);
@@ -66,7 +66,7 @@ public:
 		return true;
 	}
 
-	std::string getType() const
+	he::String getType() const
 	{
 		return typeid(bool).name();
 	}

@@ -48,8 +48,8 @@ WebListener::~WebListener()
 }
 
 /* GENERAL */
-void WebListener::addObjectCallback(const std::string& object,
-                        const std::string& method,
+void WebListener::addObjectCallback(const he::String& object,
+                        const he::String& method,
                         eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
@@ -116,8 +116,8 @@ void WebListener::addObjectCallback(const std::string& object,
         (*it)->addCallback(aweMethod, callBack);
     };
 }
-void WebListener::removeObjectCallback(const std::string& object,
-                            const std::string& method,
+void WebListener::removeObjectCallback(const he::String& object,
+                            const he::String& method,
                             eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
@@ -133,12 +133,12 @@ void WebListener::removeObjectCallback(const std::string& object,
     }
 }
 
-void WebListener::executeFunction(const std::string& object,
-                                    const std::string& method,
+void WebListener::executeFunction(const he::String& object,
+                                    const he::String& method,
                                     const Awesomium::JSArray& args)
 {
     // global js object for global functions
-    std::string objName("window");
+    he::String objName("window");
     Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
     if (object != "window" && object != "")

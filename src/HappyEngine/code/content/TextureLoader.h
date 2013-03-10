@@ -48,20 +48,20 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    const gfx::Texture2D* asyncLoadTexture2D(const std::string& path);
-    const gfx::TextureCube* asyncLoadTextureCube(const std::string& path);
+    const gfx::Texture2D* asyncLoadTexture2D(const he::String& path);
+    const gfx::TextureCube* asyncLoadTextureCube(const he::String& path);
     const gfx::Texture2D* asyncMakeTexture2D(const Color& color);
 
-    const gfx::Texture2D* loadTexture2D(const std::string& path);
-    const gfx::TextureCube* loadTextureCube(const std::string& path);
+    const gfx::Texture2D* loadTexture2D(const he::String& path);
+    const gfx::TextureCube* loadTextureCube(const he::String& path);
     const gfx::Texture2D* makeTexture2D(const Color& color);
 
     /* GETTERS */
     bool isLoading() const;
 
 private:
-    ObjectHandle asyncLoadTexture(const std::string& path, IResourceFactory* factory);
-    ObjectHandle loadTexture(const std::string& path, IResourceFactory* factory);
+    ObjectHandle asyncLoadTexture(const he::String& path, IResourceFactory* factory);
+    ObjectHandle loadTexture(const he::String& path, IResourceFactory* factory);
 
     struct TextureLoadMipData
     {
@@ -114,7 +114,7 @@ private:
         }
         ~TextureLoadData() {}
 
-        std::string m_Path;
+        he::String m_Path;
         uint8 m_Faces;
         he::ObjectList<TextureLoadMipData> m_MipData[MAX_CUBE_FACES];
         gfx::TextureFormat m_TextureFormat;

@@ -39,7 +39,7 @@ ObjLoader::~ObjLoader()
 {
     he_free(m_Vertices);
 }
-bool ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
+bool ObjLoader::load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices)
 {
     std::cout << "reading...\n";
     m_VertexLayout = vertLayout;
@@ -64,7 +64,7 @@ bool ObjLoader::load(const std::string& path, const gfx::BufferLayout& vertLayou
     return true;
 }
 
-bool ObjLoader::read(const std::string& path)
+bool ObjLoader::read(const he::String& path)
 {
     //Clean
     m_PositionData.clear();
@@ -75,7 +75,7 @@ bool ObjLoader::read(const std::string& path)
     using namespace std;
 
     io::FileReader reader;
-    he::ObjectList<std::string> objData;
+    he::ObjectList<he::String> objData;
     if (reader.open(path, io::FileReader::OpenType_ASCII))
     {
         reader.readToEndSplit(objData);
@@ -108,7 +108,7 @@ bool ObjLoader::read(const std::string& path)
         }
         else if (line[0] == 'g')
         {
-            std::string name(line.substr(2));
+            he::String name(line.substr(2));
             m_GroupData.add(name);
             if (m_GroupData.size() > 1)
             {
@@ -214,7 +214,7 @@ void ObjLoader::create(bool allowByteIndices)
         {
             std::stringstream stream;
             stream << face.data[i][0] << " " << face.data[i][1] << " " << face.data[i][2];
-            std::map<std::string, uint32>::const_iterator index(m_IndexMap.find(stream.str()));
+            std::map<he::String, uint32>::const_iterator index(m_IndexMap.find(stream.str()));
             if (index == m_IndexMap.cend())
             {
                 addIndex(static_cast<uint32>(m_VertexData.size()), group);
@@ -385,7 +385,7 @@ size_t ObjLoader::getNumMeshes() const
 {
     return m_GroupData.size();
 }
-const std::string& ObjLoader::getMeshName(uint32 mesh) const
+const he::String& ObjLoader::getMeshName(uint32 mesh) const
 {
     return m_GroupData[mesh];
 }

@@ -33,7 +33,7 @@ PhysicsConcaveShape::PhysicsConcaveShape(const ObjectHandle& concaveMesh, const 
 { 
     ResourceFactory<PhysicsConcaveMesh>::getInstance()->instantiate(m_ConcaveMesh);
 }
-PhysicsConcaveShape::PhysicsConcaveShape(const std::string& asset, const vec3& scale): 
+PhysicsConcaveShape::PhysicsConcaveShape(const he::String& asset, const vec3& scale): 
         m_ConcaveMesh(CONTENT->loadPhysicsConcave(asset)), m_Scale(scale)
 { 
 }

@@ -26,7 +26,7 @@ namespace gfx {
 
 
 
-ShaderLayoutElement::ShaderLayoutElement(uint32 elementIndex, const std::string& nameInShader): m_ElementIndex(elementIndex), m_NameInShader(nameInShader)
+ShaderLayoutElement::ShaderLayoutElement(uint32 elementIndex, const he::String& nameInShader): m_ElementIndex(elementIndex), m_NameInShader(nameInShader)
 {
 }
 
@@ -34,7 +34,7 @@ uint32 ShaderLayoutElement::getElementIndex() const
 {
     return m_ElementIndex;
 }
-const std::string& ShaderLayoutElement::getShaderVariableName() const
+const he::String& ShaderLayoutElement::getShaderVariableName() const
 {
     return m_NameInShader;
 }

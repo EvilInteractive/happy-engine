@@ -69,7 +69,7 @@ const gfx::ModelMesh* ModelComponent::getModelMesh() const
     return m_ModelMesh;
 }
 
-void ModelComponent::setModelMeshAndMaterial( const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName )
+void ModelComponent::setModelMeshAndMaterial( const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName )
 {
     he::ct::ContentManager* contentManager(CONTENT);
 

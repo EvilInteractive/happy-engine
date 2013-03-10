@@ -131,7 +131,7 @@ void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool forc
 }
 void PostProcesser::compileShader()
 {
-    std::set<std::string> postDefines;
+    std::set<he::String> postDefines;
     const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
 
     if (settings.enableBloom)
@@ -162,7 +162,7 @@ void PostProcesser::compileShader()
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
 
     m_PostShader->initFromFile(folder + "shared/postShaderQuad.vert", 
         folder + "post/postEffects.frag", 

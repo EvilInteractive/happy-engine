@@ -25,7 +25,7 @@ namespace he {
 namespace net {
 
 template<>
-bool NetworkVisitor::visit(std::string& value)
+bool NetworkVisitor::visit(he::String& value)
 {
     bool result(true);
     uint16 length(checked_numcast<uint16>(value.size()));

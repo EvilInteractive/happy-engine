@@ -42,7 +42,7 @@ public:
     IniWriter();
     virtual ~IniWriter();
 
-    void open(const std::string& path);
+    void open(const he::String& path);
     bool close();
 
     void writeBool(const std::wstring& root, const std::wstring& node, bool value);
@@ -53,12 +53,12 @@ public:
     void writeVector3(const std::wstring& root, const std::wstring& node, const vec3& value);
     void writeVector4(const std::wstring& root, const std::wstring& node, const vec4& value);
 
-    void writeString(const std::wstring& root, const std::wstring& node, const std::string& value);
+    void writeString(const std::wstring& root, const std::wstring& node, const he::String& value);
     void writeWString(const std::wstring& root, const std::wstring& node, const std::wstring& value);
 
 private:
     IniWriteData m_Data;
-    std::string m_Path;
+    he::String m_Path;
 
     void writeRaw(const std::wstring& root, const std::wstring& node, const std::wstring& value);
 

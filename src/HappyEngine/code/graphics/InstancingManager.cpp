@@ -32,25 +32,25 @@ InstancingManager::InstancingManager()
 
 InstancingManager::~InstancingManager()
 {
-    std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<std::string, InstancingController*>& pair)
+    std::for_each(m_Controllers.cbegin(), m_Controllers.cend(), [](const std::pair<he::String, InstancingController*>& pair)
     {
         delete pair.second;
     });
 }
 
-void InstancingManager::createController( const std::string& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material )
+void InstancingManager::createController( const he::String& id, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material )
 {
     InstancingController* pController(NEW InstancingController(id, dynamic, modelHandle, material));
     m_Controllers[id] = pController;
 }
 
-void InstancingManager::createController( const std::string& id, bool dynamic, const std::string& materialAsset, const std::string& modelAsset )
+void InstancingManager::createController( const he::String& id, bool dynamic, const he::String& materialAsset, const he::String& modelAsset )
 {
     InstancingController* pController(NEW InstancingController(id, dynamic, materialAsset, modelAsset));
     m_Controllers[id] = pController;
 }
 
-InstancingController* InstancingManager::getController( const std::string& id )
+InstancingController* InstancingManager::getController( const he::String& id )
 {
     auto it(m_Controllers.find(id));
     return (it != m_Controllers.cend())? it->second : nullptr;

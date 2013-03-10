@@ -37,13 +37,13 @@ public:
     CameraManager();
     virtual ~CameraManager();
     
-    void addCamera(const std::string& id, gfx::CameraPerspective* camera);
-    gfx::CameraPerspective* getCamera(const std::string& id);
-    void deleteCamera(const std::string& id);
+    void addCamera(const he::String& id, gfx::CameraPerspective* camera);
+    gfx::CameraPerspective* getCamera(const he::String& id);
+    void deleteCamera(const he::String& id);
     void deleteAllCameras();
 
 private:
-    std::map<std::string, gfx::CameraPerspective*> m_Cameras;
+    std::map<he::String, gfx::CameraPerspective*> m_Cameras;
 
     //Disable default copy constructor and default assignment operator
     CameraManager(const CameraManager&);

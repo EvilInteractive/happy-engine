@@ -43,7 +43,7 @@ public:
     virtual ~IniReader();
 
     //throws FileNotFoundException
-    bool open(const std::string& path);
+    bool open(const he::String& path);
 
     bool isOpen() const;
 
@@ -56,7 +56,7 @@ public:
     vec3 readVector3(const std::wstring& root, const std::wstring& node, const vec3& defaultReturn = vec3(0.0f, 0.0f, 0.0f)) const;
     vec4 readVector4(const std::wstring& root, const std::wstring& node, const vec4& defaultReturn = vec4(0.0f, 0.0f, 0.0f, 0.0f)) const;
 
-    std::string readString(const std::wstring& root, const std::wstring& node, const std::string& defaultReturn = "") const;
+    he::String readString(const std::wstring& root, const std::wstring& node, const he::String& defaultReturn = "") const;
     std::wstring readWString(const std::wstring& root, const std::wstring& node, const std::wstring& defaultReturn = L"") const;
 
     const std::map<std::wstring, std::wstring>& getNodes(const std::wstring& root) const;

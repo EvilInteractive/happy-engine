@@ -37,9 +37,9 @@ public:
     bool open(const he::Path& path, OpenType type);
     void close();
 
-    std::string readLine();
-    std::string readToEnd();
-    void readToEndSplit(he::ObjectList<std::string>& outList);
+    he::String readLine();
+    he::String readToEnd();
+    void readToEndSplit(he::ObjectList<he::String>& outList);
 
     std::wstring readLineW();
     std::wstring readToEndW();

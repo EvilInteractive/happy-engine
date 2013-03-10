@@ -41,7 +41,7 @@ public:
     virtual ~Material();
     
     void registerVar(ShaderVar* var);
-    ShaderVar* getVar(const std::string& var);
+    ShaderVar* getVar(const he::String& var);
     void setShader(const ObjectHandle& shaderHandle, const BufferLayout& compatibleVertexLayout, const BufferLayout& compatibleInstancingLayout);
 
     const BufferLayout& getCompatibleVertexLayout() const;

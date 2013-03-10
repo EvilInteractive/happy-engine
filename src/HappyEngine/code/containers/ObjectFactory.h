@@ -90,7 +90,7 @@ public:
     {
     }
 
-    void init(size_t startSize, size_t increaseSize, const std::string& displayName)
+    void init(size_t startSize, size_t increaseSize, const he::String& displayName)
     {
         m_IncreaseSize = increaseSize;
         m_DisplayName = displayName;
@@ -203,7 +203,7 @@ protected:
         }
     }
 
-    std::string m_DisplayName;
+    he::String m_DisplayName;
 
 protected:
     ObjectHandle::ObjectType m_Type;

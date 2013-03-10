@@ -129,9 +129,9 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
     ShaderLayout layout;
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
 
-    std::set<std::string> defineBrightPass;
+    std::set<he::String> defineBrightPass;
     defineBrightPass.insert("BRIGHTPASS");
     if (hdr)
         defineBrightPass.insert("HDR");
@@ -156,7 +156,7 @@ void Bloom::init(View* view, bool hdr, UniformBuffer* toneMapBuffer)
     {
         m_BlurShaderPass[pass] = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
 
-        std::set<std::string> definePass;
+        std::set<he::String> definePass;
         if (pass == 0)
             definePass.insert("PASS1");
         else

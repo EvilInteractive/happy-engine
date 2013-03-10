@@ -80,7 +80,7 @@ void NetworkManager::host(uint16 port)
     }
 }
 
-void NetworkManager::join(const std::string& ip, uint16 port)
+void NetworkManager::join(const he::String& ip, uint16 port)
 {
     HE_IF_ASSERT(m_RakPeer == nullptr, "Call host or join only once! Or call disconnect first!")
     {
@@ -116,7 +116,7 @@ void NetworkManager::clientDisconnected( const NetworkID& id )
     m_Connections.erase(id);
     ClientDisconnected(id);
 }
-void NetworkManager::clientConnected( const NetworkID& id, const std::string& adress )
+void NetworkManager::clientConnected( const NetworkID& id, const he::String& adress )
 {
     NetworkConnection connection;
     connection.m_NetworkId = id;

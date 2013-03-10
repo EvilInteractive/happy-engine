@@ -62,7 +62,7 @@ struct Profiler::ProfileTreeNode
     double m_MaxTime;
     uint32 m_HitsPerFrame;
     uint32 m_Recurses;
-    std::string m_Name;
+    he::String m_Name;
 
     ProfileData m_CurrentProfile;
     Profiler::DataMap m_Nodes;

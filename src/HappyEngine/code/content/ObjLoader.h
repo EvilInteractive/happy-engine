@@ -46,10 +46,10 @@ public:
     ObjLoader();
     virtual ~ObjLoader();
 
-    virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
+    virtual bool load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
     virtual size_t getNumMeshes() const;
-    virtual const std::string& getMeshName(uint32 mesh) const;
+    virtual const he::String& getMeshName(uint32 mesh) const;
 
     virtual const void* getVertices(uint32 mesh) const;
     virtual size_t getNumVertices(uint32 mesh) const;
@@ -68,7 +68,7 @@ private:
         uint32 end;
     };
 
-    bool read(const std::string& path);
+    bool read(const he::String& path);
     void flushCreateGroup(uint32 group);
     void create(bool allowByteIndices);
     void addIndex(uint32 index, uint32 group);
@@ -83,11 +83,11 @@ private:
     };
     he::PrimitiveList<FaceData> m_FaceData;
     he::PrimitiveList<Range> m_FaceDataMeshRange;
-    he::ObjectList<std::string> m_GroupData;
+    he::ObjectList<he::String> m_GroupData;
 
     he::ObjectList<InternalVertex> m_VertexData;
     he::PrimitiveList<Range> m_VertexMeshRange;
-    std::map<std::string, uint32> m_IndexMap;
+    std::map<he::String, uint32> m_IndexMap;
 
     he::PrimitiveList<Range> m_IndexMeshRange;
     he::PrimitiveList<uint8> m_IndicesByte;

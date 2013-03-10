@@ -67,7 +67,7 @@ void Material::setShader(const ObjectHandle& shaderHandle, const BufferLayout& c
     m_CompatibleVL = compatibleVertexLayout;
     m_CompatibleIL = compatibleInstancingLayout;
 }
-ShaderVar* Material::getVar( const std::string& var )
+ShaderVar* Material::getVar( const he::String& var )
 {
     he::PrimitiveList<ShaderVar*>::const_iterator it(m_ShaderVars.cbegin());
     for (; it != m_ShaderVars.cend(); ++it)

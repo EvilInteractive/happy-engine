@@ -47,11 +47,11 @@ public:
         ResourceFactory<T>::getInstance()->instantiate(m_Handle);
     }
 
-    void setName(const std::string& name)
+    void setName(const he::String& name)
     {
         m_Name = name;
     }
-    const std::string& getName() const
+    const he::String& getName() const
     {
         return m_Name;
     }
@@ -63,7 +63,7 @@ public:
 
 private:
 
-    std::string m_Name;
+    he::String m_Name;
 
     // disabled assignment operator
     Resource& operator=(const Resource&);

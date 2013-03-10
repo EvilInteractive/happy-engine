@@ -53,7 +53,7 @@ void PhysicsConcaveMesh::load( PhysicsBinaryStream& stream )
     uint8 numConcave(0);
     visitor->visit(numConcave);
 
-    std::string name;
+    he::String name;
     for (uint8 i(0); i < numConcave; ++i)
     {
         visitor->visit(name);

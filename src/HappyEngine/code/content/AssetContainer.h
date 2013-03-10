@@ -33,7 +33,7 @@
 namespace he {
 namespace ct {
     
-template<typename T, typename U = std::string>
+template<typename T, typename U = he::String>
 class AssetContainer
 {
 public:

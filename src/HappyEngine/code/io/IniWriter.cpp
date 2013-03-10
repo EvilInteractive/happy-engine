@@ -37,7 +37,7 @@ IniWriter::~IniWriter()
 {
 }
 
-void IniWriter::open(const std::string& path)
+void IniWriter::open(const he::String& path)
 {
     m_Path = path;
     m_Data.clear();
@@ -110,7 +110,7 @@ void IniWriter::writeVector4(const std::wstring& root, const std::wstring& node,
     writeRaw(root, node, stream.str());
 }
 
-void IniWriter::writeString(const std::wstring& root, const std::wstring& node, const std::string& value)
+void IniWriter::writeString(const std::wstring& root, const std::wstring& node, const he::String& value)
 {
     std::wstring wvalue(value.cbegin(), value.cend());
     writeRaw(root, node, L"\"" + wvalue + L"\"");

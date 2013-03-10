@@ -225,7 +225,7 @@ he::uint32 Window::getWindowHeight() const
     return m_Window->getSize().y;
 }
 
-void Window::setWindowTitle( const std::string& caption )
+void Window::setWindowTitle( const he::String& caption )
 {
     m_Window->setTitle(caption);
     m_Titel = caption;

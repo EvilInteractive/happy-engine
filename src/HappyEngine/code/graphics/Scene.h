@@ -76,7 +76,7 @@ public:
     bool getActive() const { return m_Active; }
 
     // Skybox
-    void loadSkybox(const std::string& asset);
+    void loadSkybox(const he::String& asset);
 
 private:  
     // Managers

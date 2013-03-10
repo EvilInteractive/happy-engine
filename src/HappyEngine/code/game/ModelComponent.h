@@ -57,7 +57,7 @@ public:
     virtual const gfx::ModelMesh* getModelMesh() const;
     //////////////////////////////////////////////////////////////////////////
        
-    void setModelMeshAndMaterial(const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName = "");
+    void setModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName = "");
 
     he::event0<void> OnModelMeshLoaded;
 

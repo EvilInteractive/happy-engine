@@ -23,13 +23,4 @@
 
 namespace he {
 
-String::String()
-{
-}
-
-
-String::~String()
-{
-}
-
 } //end namespace

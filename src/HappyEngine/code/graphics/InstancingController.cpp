@@ -41,7 +41,7 @@ namespace gfx {
 #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
 #pragma warning(disable:4355) // use of this in initializer list
-InstancingController::InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
+InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),
@@ -60,7 +60,7 @@ InstancingController::InstancingController(const std::string& name, bool dynamic
     ResourceFactory<ModelMesh>::getInstance()->get(modelHandle)->callbackOnceIfLoaded(boost::bind(&InstancingController::init, this));
 }
 
-InstancingController::InstancingController( const std::string& name, bool dynamic, const std::string& materialAsset, const std::string& modelAsset ):
+InstancingController::InstancingController( const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset ):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),
     m_ManualMode(false), m_Name(name), m_Material(nullptr), m_Scene(nullptr), m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1))),
     m_ContextCreatedHandler(boost::bind(&InstancingController::initVao, this, _1)),

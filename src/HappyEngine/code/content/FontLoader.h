@@ -40,7 +40,7 @@ public:
     virtual ~FontLoader();
 
     /* GENERAL */
-    gui::Font* load(const std::string& path, uint16 size, uint8 options = 0);
+    gui::Font* load(const he::String& path, uint16 size, uint8 options = 0);
 
 private:
 

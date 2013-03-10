@@ -56,7 +56,7 @@ public:
     ShaderGenerator();
     ~ShaderGenerator();
 
-    bool compile(const Path& shaderPath, const std::string& shaderName);
+    bool compile(const Path& shaderPath, const he::String& shaderName);
     void reset();
 
     ObjectHandle addVariable();
@@ -141,7 +141,7 @@ private:
     void writeNewLine();
 
     void write(const char* const text);
-    void write(const std::string& text);
+    void write(const he::String& text);
     void writeIndend();
 
     void writeOpenScope();

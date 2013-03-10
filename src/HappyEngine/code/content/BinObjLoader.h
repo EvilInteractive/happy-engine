@@ -65,10 +65,10 @@ public:
     BinObjLoader();
     virtual ~BinObjLoader();
 
-    virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
+    virtual bool load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
 
     virtual size_t getNumMeshes() const;
-    virtual const std::string& getMeshName(uint32 mesh) const;
+    virtual const he::String& getMeshName(uint32 mesh) const;
     
     virtual const he::ObjectList<gfx::Bone>& getBones(uint32 mesh) const;
 
@@ -81,13 +81,13 @@ public:
 
 
 private:
-    bool read(const std::string& path, bool allowByteIndices);
+    bool read(const he::String& path, bool allowByteIndices);
     void fill(const gfx::BufferLayout& vertLayout) const;
 
     he::PrimitiveList<he::ObjectList<InternalVertex>*> m_VertexData;
     he::PrimitiveList<he::ObjectList<gfx::Bone>*> m_BoneData;
     
-    he::ObjectList<std::string> m_MeshName;
+    he::ObjectList<he::String> m_MeshName;
 
     he::PrimitiveList<void*> m_Vertices;
     he::PrimitiveList<void*> m_Indices;

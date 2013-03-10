@@ -43,7 +43,7 @@ MaterialLoader::~MaterialLoader()
     m_AssetContainer.removeAllAssets();
 }
 
-gfx::BlendEquation blendEquationFromString(const std::string& str)
+gfx::BlendEquation blendEquationFromString(const he::String& str)
 {
     if (str == "ADD")
     {
@@ -71,7 +71,7 @@ gfx::BlendEquation blendEquationFromString(const std::string& str)
         return gfx::BlendEquation_Add;
     }
 }
-gfx::BlendFunc blendFuncFromString(const std::string& str)
+gfx::BlendFunc blendFuncFromString(const he::String& str)
 {
     if (str == "ZERO")
     {
@@ -124,7 +124,7 @@ gfx::BlendFunc blendFuncFromString(const std::string& str)
     }
 }
 
-ObjectHandle MaterialLoader::load(const std::string& path)
+ObjectHandle MaterialLoader::load(const he::String& path)
 {
     ResourceFactory<gfx::Material>* factory(ResourceFactory<gfx::Material>::getInstance());
     if (m_AssetContainer.isAssetPresent(path) && factory->isAlive(m_AssetContainer.getAsset(path)))
@@ -152,11 +152,11 @@ ObjectHandle MaterialLoader::load(const std::string& path)
             gfx::BufferLayout vertexLayout;
             // [Shader]
             {
-                std::string file;
+                he::String file;
                 file = reader.readString(L"Forward", L"shader", "");
                 if (m_RenderSettings.enableDeferred)
                 {
-                    std::string temp = reader.readString(L"Deferred", L"shader", file);
+                    he::String temp = reader.readString(L"Deferred", L"shader", file);
                     if (temp != file)
                     {
                         file = temp;
@@ -170,7 +170,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     return material->getHandle();
                 }
 
-                he::ObjectList<std::string> shaderOutputs;
+                he::ObjectList<he::String> shaderOutputs;
 
                 // [out]
                 if (shaderReader.containsRoot(L"out"))
@@ -182,11 +182,11 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                         {
                             if (p.second == L"GBUFFER_COLOR")
-                                shaderOutputs[0] = std::string(p.first.cbegin(), p.first.cend());
+                                shaderOutputs[0] = he::String(p.first.cbegin(), p.first.cend());
                             else if (p.second == L"GBUFFER_SG")
-                                shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
+                                shaderOutputs[1] = he::String(p.first.cbegin(), p.first.cend());
                             else if (p.second == L"GBUFFER_NORMALDEPTH")
-                                shaderOutputs[2] = std::string(p.first.cbegin(), p.first.cend());
+                                shaderOutputs[2] = he::String(p.first.cbegin(), p.first.cend());
                             else
                                 LOG(LogType_ProgrammerAssert, "unknow semantic");
                         });
@@ -197,9 +197,9 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
                         {
                             if (p.second == L"GBUFFER_COLOR")
-                                shaderOutputs[0] = std::string(p.first.cbegin(), p.first.cend());
+                                shaderOutputs[0] = he::String(p.first.cbegin(), p.first.cend());
                             else if (p.second == L"GBUFFER_NORMALDEPTH")
-                                shaderOutputs[1] = std::string(p.first.cbegin(), p.first.cend());
+                                shaderOutputs[1] = he::String(p.first.cbegin(), p.first.cend());
                             else
                                 LOG(LogType_ProgrammerAssert, "unknow semantic");
                         });
@@ -246,9 +246,9 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     }
                     else
                     {
-                        HE_ERROR("Material: unknown attribute %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
+                        HE_ERROR("Material: unknown attribute %s", he::String(p.second.cbegin(), p.second.cend()).c_str());
                     } 
-                    shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), std::string(p.first.cbegin(), p.first.cend())));
+                    shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), he::String(p.first.cbegin(), p.first.cend())));
                 }); 
 
                 gfx::BufferLayout instancingLayout;
@@ -302,9 +302,9 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         }
                         else
                         {
-                            HE_ERROR("Material: instancing unknown type %s", std::string(p.second.cbegin(), p.second.cend()).c_str());
+                            HE_ERROR("Material: instancing unknown type %s", he::String(p.second.cbegin(), p.second.cend()).c_str());
                         }
-                        shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), std::string(p.first.cbegin(), p.first.cend())));  
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), he::String(p.first.cbegin(), p.first.cend())));  
                     });
                 }
 
@@ -346,7 +346,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                     const std::map<std::wstring, std::wstring>& uniformNodes(shaderReader.getNodes(L"uniform"));
                     std::for_each(uniformNodes.cbegin(), uniformNodes.cend(), [&](const std::pair<std::wstring, std::wstring> node)
                     {
-                        std::string name = std::string(node.first.cbegin(), node.first.cend());
+                        he::String name = he::String(node.first.cbegin(), node.first.cend());
                         // Camera
                         if (node.second == L"WORLDVIEWPROJECTION")
                         {
@@ -480,7 +480,7 @@ ObjectHandle MaterialLoader::load(const std::string& path)
                         }
                         else
                         {
-                            HE_ERROR("Material: unknown semantic %s", std::string(node.second.cbegin(), node.second.cend()).c_str());
+                            HE_ERROR("Material: unknown semantic %s", he::String(node.second.cbegin(), node.second.cend()).c_str());
                         }
                     });
                 }

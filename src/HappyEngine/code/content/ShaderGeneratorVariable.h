@@ -93,8 +93,8 @@ public:
     const ShaderGeneratorVariableOperation& getOperation() const { return m_Operation; }
     const ShaderGeneratorVariableType& getType() const { return m_Type; }
     
-    const std::string& getLocalName() const { return m_LocalName; }
-    void setLocalName(const std::string& name) { m_LocalName = name; }
+    const he::String& getLocalName() const { return m_LocalName; }
+    void setLocalName(const he::String& name) { m_LocalName = name; }
 
     void setType(const ShaderGeneratorVariableType type) { m_Type = type; }
     ShaderGeneratorVariableType getType() { return m_Type; }
@@ -123,7 +123,7 @@ private:
         uint64 handleData;
     } m_ConstantData;
 
-    std::string m_LocalName;
+    he::String m_LocalName;
 
     uint32 m_RefCounter;
     bool m_HasDeclaration;

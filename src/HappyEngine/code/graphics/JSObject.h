@@ -35,7 +35,7 @@ class JSObject
 {
 public:
     /* CONSTRUCTOR */
-    JSObject(Awesomium::JSObject& aweObject, const std::string& name) : m_AweObject(aweObject), m_ObjectName(name) {}
+    JSObject(Awesomium::JSObject& aweObject, const he::String& name) : m_AweObject(aweObject), m_ObjectName(name) {}
     ~JSObject()
     {
         std::for_each(m_MethodCallBacks.cbegin(), m_MethodCallBacks.cend(), [](const std::pair<
@@ -46,7 +46,7 @@ public:
         });
     }
 
-    inline const std::string& getObjectName() const { return m_ObjectName; }
+    inline const he::String& getObjectName() const { return m_ObjectName; }
     inline Awesomium::JSObject& getAweObject() { return m_AweObject; }
 
     void addCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback)
@@ -86,7 +86,7 @@ public:
     }
 
 private:
-    std::string m_ObjectName;
+    he::String m_ObjectName;
     Awesomium::JSObject m_AweObject;
 
     typedef std::map<Awesomium::WebString, event1<void, const Awesomium::JSArray&>*> Container;

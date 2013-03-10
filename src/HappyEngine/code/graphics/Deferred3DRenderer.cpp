@@ -159,8 +159,8 @@ void Deferred3DRenderer::compileShaders()
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///
     //////////////////////////////////////////////////////////////////////////
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
-    std::set<std::string> shaderDefines;
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
+    std::set<he::String> shaderDefines;
     if (m_Settings.enableSpecular)
         shaderDefines.insert("SPECULAR");
     // Shadowless

@@ -31,7 +31,7 @@ namespace sfx {
 
 struct SoundFileProperties
 {
-    std::string filePath;
+    he::String filePath;
     uint32 samplesCount;
     uint32 channelsCount;
     uint32 samplerate;
@@ -44,7 +44,7 @@ public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
     SoundFile();
-    SoundFile(const std::string& filePath);
+    SoundFile(const he::String& filePath);
     virtual ~SoundFile();
 
     /* GENERAL */
@@ -65,7 +65,7 @@ private:
     /* DATAMEMBERS */
     SNDFILE* m_SoundFile;
 
-    std::string m_FilePath;
+    he::String m_FilePath;
 
     uint32 m_NrSamples;
     uint32 m_Samplerate;

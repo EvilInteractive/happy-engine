@@ -22,20 +22,11 @@
 #define _HE_String_H_
 #pragma once
 
+#include <xstring>
+
 namespace he {
 
-class String
-{
-public:
-    String();
-    ~String();
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    String(const String&);
-    String& operator=(const String&);
-};
+typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > String;
 
 } //end namespace
 

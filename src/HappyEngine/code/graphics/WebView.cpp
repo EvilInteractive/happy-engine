@@ -254,7 +254,7 @@ void WebView::draw2D(gui::Canvas2D* canvas)
     canvas->drawImage(m_RenderTexture, m_Position);
 }
 
-void WebView::loadUrl(const std::string& url)
+void WebView::loadUrl(const he::String& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), static_cast<unsigned int>(strlen(url.c_str()))));
     m_WebView->LoadURL(webUrl);
@@ -269,7 +269,7 @@ void WebView::loadFile(const he::Path& /*path*/)
     //m_WebView->LoadURL()
 }
 
-void WebView::executeJavaScript(const std::string& /*script*/)
+void WebView::executeJavaScript(const he::String& /*script*/)
 {
     //Awesomium::WebString string(script.c_str());
     //m_WebView->ExecuteJavascriptWithResult(string);

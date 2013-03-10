@@ -43,7 +43,7 @@ FontLoader::~FontLoader()
 }
 
 /* GENERAL */
-gui::Font* FontLoader::load(const std::string& path, uint16 size, uint8 options)
+gui::Font* FontLoader::load(const he::String& path, uint16 size, uint8 options)
 {
     std::stringstream stream;
     stream << path << size;

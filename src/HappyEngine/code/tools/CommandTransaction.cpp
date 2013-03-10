@@ -47,7 +47,7 @@ CommandTransaction& CommandTransaction::operator=( const CommandTransaction& oth
     return *this;
 }
 
-void CommandTransaction::begin( const std::string& name )
+void CommandTransaction::begin( const he::String& name )
 {
     m_Commands.clear();
     m_Name = name;

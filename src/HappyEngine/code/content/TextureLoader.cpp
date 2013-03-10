@@ -53,7 +53,7 @@ TextureLoader::~TextureLoader()
 }
 
 
-inline void handleILError(const std::string& file)
+inline void handleILError(const he::String& file)
 {
     ILenum err = ilGetError();
     while (err != IL_NO_ERROR)
@@ -161,28 +161,28 @@ const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
         return FACTORY_2D->get(handle);
     }
 }
-const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const std::string& path)
+const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const he::String& path)
 {
     ResourceFactory<gfx::Texture2D>* factory(FACTORY_2D);
     return factory->get(asyncLoadTexture(path, factory));
 }
-const gfx::Texture2D* TextureLoader::loadTexture2D(const std::string& path)
+const gfx::Texture2D* TextureLoader::loadTexture2D(const he::String& path)
 {
     ResourceFactory<gfx::Texture2D>* factory(FACTORY_2D);
     return factory->get(loadTexture(path, factory));
 }
-const gfx::TextureCube* TextureLoader::asyncLoadTextureCube(const std::string& path)
+const gfx::TextureCube* TextureLoader::asyncLoadTextureCube(const he::String& path)
 {
     ResourceFactory<gfx::TextureCube>* factory(FACTORY_CUBE);
     return factory->get(asyncLoadTexture(path, factory));
 }
-const gfx::TextureCube* TextureLoader::loadTextureCube(const std::string& path)
+const gfx::TextureCube* TextureLoader::loadTextureCube(const he::String& path)
 {
     ResourceFactory<gfx::TextureCube>* factory(FACTORY_CUBE);
     return factory->get(loadTexture(path, factory));
 }
 
-he::ObjectHandle TextureLoader::loadTexture( const std::string& path, IResourceFactory* factory )
+he::ObjectHandle TextureLoader::loadTexture( const he::String& path, IResourceFactory* factory )
 {
     ObjectHandle handle;
     if (m_AssetContainer.isAssetPresent(path, handle) && factory->isAlive(handle))
@@ -205,7 +205,7 @@ he::ObjectHandle TextureLoader::loadTexture( const std::string& path, IResourceF
     }
     return handle;
 }
-he::ObjectHandle TextureLoader::asyncLoadTexture( const std::string& path, IResourceFactory* factory )
+he::ObjectHandle TextureLoader::asyncLoadTexture( const he::String& path, IResourceFactory* factory )
 {
     ObjectHandle handle;
     if (m_AssetContainer.isAssetPresent(path, handle) && factory->isAlive(handle))

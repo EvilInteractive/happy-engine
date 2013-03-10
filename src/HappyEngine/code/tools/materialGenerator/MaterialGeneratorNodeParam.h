@@ -43,7 +43,7 @@ public:
     };
 
     MaterialGeneratorNodeParam();
-    MaterialGeneratorNodeParam(const std::string& name, const Type type);
+    MaterialGeneratorNodeParam(const he::String& name, const Type type);
     // Default copy and assignment are OK
 
     // Setters
@@ -65,7 +65,7 @@ public:
     Type getType() const { return m_Type; }
 
 private:
-    std::string m_Name;
+    he::String m_Name;
     Type m_Type;
     union Data
     {

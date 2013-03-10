@@ -39,8 +39,8 @@ MessageBox::~MessageBox()
 {
 }
 
-MessageBoxButton MessageBox::showExt(const std::string& caption, const std::string& message, MessageBoxIcon /*icon*/,
-                    const std::string& button1, const std::string& button2, const std::string& button3)
+MessageBoxButton MessageBox::showExt(const he::String& caption, const he::String& message, MessageBoxIcon /*icon*/,
+                    const he::String& button1, const he::String& button2, const he::String& button3)
 {
     MessageBoxButton result(MessageBoxButton_None);
     if (GRAPHICS != nullptr)
@@ -51,7 +51,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
 
         he::eventCallback1<void, const Awesomium::JSArray&> onButtonClicked([&](const Awesomium::JSArray& args)
         {
-            std::string button(Awesomium::ToString(args[0].ToString()));
+            he::String button(Awesomium::ToString(args[0].ToString()));
             if (strcmp(button1.c_str(), button.c_str()) == 0)
                 result = MessageBoxButton_Button1;
             else if (strcmp(button2.c_str(), button.c_str()) == 0)

@@ -59,7 +59,7 @@ WebWindow::~WebWindow()
 }
 
 /* GENERAL */
-void WebWindow::loadUrl(const std::string& url)
+void WebWindow::loadUrl(const he::String& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), static_cast<unsigned int>(strlen(url.c_str()))));
     m_WebView->LoadURL(webUrl);
@@ -157,7 +157,7 @@ void WebWindow::close()
     m_Window->close();
 }
 
-void WebWindow::setTitle( const std::string& title )
+void WebWindow::setTitle( const he::String& title )
 {
     m_Window->setTitle(title);
 }
