@@ -25,6 +25,7 @@
 #define BOOST_DISABLE_ASSERTS
 
 #include "IDrawable2D.h"
+#include "ITickable.h"
 
 namespace he {
 namespace gfx {
@@ -37,7 +38,7 @@ namespace gui {
 }
 namespace tools {
 
-class HAPPY_ENTRY FPSGraph : public gfx::IDrawable2D
+class HAPPY_ENTRY FPSGraph : public gfx::IDrawable2D, public ge::ITickable
 {
 public:
 
@@ -68,7 +69,7 @@ public:
     virtual ~FPSGraph();
 
     /* GENERAL */
-    void tick(float dTime);
+    virtual void tick(float dTime);
     virtual void draw2D(gui::Canvas2D* canvas);
 
     /* GETTERS */

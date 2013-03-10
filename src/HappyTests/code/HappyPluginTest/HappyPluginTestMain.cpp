@@ -28,6 +28,12 @@
 #include <Scene.h>
 #include <View.h>
 #include <DefaultRenderPipeline.h>
+
+#include <EntityManager.h>
+#include <Entity.h>
+#include <ModelComponent.h>
+#include <LightManager.h>
+
 #include "FlyCamera.h"
 
 ht::HappyPluginTestMain::HappyPluginTestMain()
@@ -63,6 +69,10 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_View->setAbsoluteViewport(viewport);
     m_View->init(settings);
     m_View->setCamera(m_Camera);
+
+    he::gfx::LightManager* lightMan(m_Scene->getLightManager());
+    lightMan->setDirectionalLight(he::normalize(he::vec3(0.5f, 1, 0.5f)), he::Color(1.0f, 0.95f, 0.9f), 2.0f);
+    lightMan->setAmbientLight(he::Color(0.8f, 0.9f, 1.0f), 0.5f);
 }
 
 void ht::HappyPluginTestMain::terminate()
@@ -83,12 +93,27 @@ void ht::HappyPluginTestMain::terminate()
 
 void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
 {
-
+    using namespace he;
+    ge::EntityManager* const entityMan(ge::EntityManager::getInstance());
+    ge::Entity* const scene(entityMan->createEmptyEntity());
+    scene->setScene(m_Scene);
+    ge::ModelComponent* const sceneModel(static_cast<ge::ModelComponent*>(
+        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
+    scene->addComponent(sceneModel);
+    sceneModel->setModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj");
+    scene->activate();
+    m_Entities.add(scene);
 }
 
 void ht::HappyPluginTestMain::onUnloadLevel()
 {
-
+    using namespace he;
+    ge::EntityManager* const entityMan(ge::EntityManager::getInstance());
+    m_Entities.forEach([entityMan](ge::Entity* const entity)
+    {
+        entityMan->destroyEntity(entity);
+    });
+    m_Entities.clear();
 }
 
 void ht::HappyPluginTestMain::onLevelLoaded()
@@ -114,11 +139,6 @@ void ht::HappyPluginTestMain::onPauseGame()
 void ht::HappyPluginTestMain::onResumeGame()
 {
 
-}
-
-void ht::HappyPluginTestMain::sdmInit( he::io::BinaryVisitor& /*visitor*/ )
-{
-    //he::StaticDataManager::visit(visitor);
 }
 
 void ht::HappyPluginTestMain::onResize( const he::RectI& newViewport )

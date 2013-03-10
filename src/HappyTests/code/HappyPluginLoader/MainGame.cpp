@@ -26,10 +26,23 @@
 #include <GraphicsEngine.h>
 #include <PluginLoader.h>
 #include <IPlugin.h>
+#include <EntityManager.h>
+#include <EngineEntityComponentFactory.h>
+#include <FPSGraph.h>
+#include <RenderSettings.h>
+#include <Renderer2D.h>
+#include <View.h>
 
 namespace ht {
 
-MainGame::MainGame(): m_Window(nullptr), m_PluginLoader(nullptr), m_Plugin(nullptr)
+MainGame::MainGame()
+    : m_Window(nullptr)
+    , m_PluginLoader(nullptr)
+    , m_Plugin(nullptr)
+    , m_Plugin2(nullptr)
+    , m_View(nullptr)
+    , m_DebugRenderer(nullptr)
+    , m_FpsGraph(nullptr)
 {
 }
 
@@ -40,7 +53,8 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-    m_Window = GRAPHICS->createWindow();
+    he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
+    m_Window = graphicsEngine->createWindow();
 
     m_Window->setResizable(true);
     m_Window->setVSync(true);
@@ -50,29 +64,91 @@ void MainGame::init()
     m_Window->Closed += quitHandler;
     m_Window->create();
 
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
+    entityMan->init();
+
     m_PluginLoader = NEW he::pl::PluginLoader();
     m_Plugin = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest.dll"));
     if (m_Plugin != nullptr)
     {
-        m_Plugin->init(m_Window, he::RectI(0, 0, m_Window->getWindowWidth(), m_Window->getWindowHeight()));
+        m_Plugin->init(m_Window, he::RectI(0, 0, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
+        m_Plugin->onLoadLevel(he::Path(""));
 
         he::eventCallback0<void> resizeHandler([this]()
         {
-            m_Plugin->onResize(he::RectI(0, 0, m_Window->getWindowWidth(), m_Window->getWindowHeight()));
+            m_Plugin->onResize(he::RectI(0, 0, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
         });
         m_Window->Resized += resizeHandler;
     }
+    m_Plugin2 = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest2.dll"));
+    if (m_Plugin2 != nullptr)
+    {
+        m_Plugin2->init(m_Window, he::RectI(0, m_Window->getWindowHeight() / 2, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
+        m_Plugin2->onLoadLevel(he::Path(""));
+
+        he::eventCallback0<void> resizeHandler([this]()
+        {
+            m_Plugin2->onResize(he::RectI(0, m_Window->getWindowHeight() / 2, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
+        });
+        m_Window->Resized += resizeHandler;
+    }
+
+    he::gfx::RenderSettings settings;
+    settings.enableDeferred = false;
+    settings.enablePost = false;
+    m_View = graphicsEngine->createView();
+    m_View->setWindow(m_Window);
+    m_View->setRelativeViewport(he::RectF(0, 0, 1, 1));
+    m_DebugRenderer = NEW he::gfx::Renderer2D();
+    m_View->addRenderPlugin(m_DebugRenderer);
+    m_View->init(settings);
+
+    PROFILER->attachToRenderer(m_DebugRenderer);
+    CONSOLE->attachToRenderer(m_DebugRenderer);
+    m_FpsGraph = NEW he::tools::FPSGraph();
+    m_FpsGraph->setPos(he::vec2(8, 8));
+    m_FpsGraph->setType(he::tools::FPSGraph::Type_Full);
+    addToTickList(m_FpsGraph);
+    m_DebugRenderer->attachToRender(m_FpsGraph);
 }
 
 void MainGame::destroy()
 {
-    m_PluginLoader->unloadPlugin(m_Plugin);
-    m_Plugin = nullptr;
+    if (m_Plugin != nullptr)
+    {
+        m_Plugin->onUnloadLevel();
+        m_Plugin->terminate();
+        m_PluginLoader->unloadPlugin(m_Plugin);
+        m_Plugin = nullptr;
+    }
+
+    if (m_Plugin2 != nullptr)
+    {
+        m_Plugin2->onUnloadLevel();
+        m_Plugin2->terminate();
+        m_PluginLoader->unloadPlugin(m_Plugin2);
+        m_Plugin2 = nullptr;
+    }
 
     delete m_PluginLoader;
     m_PluginLoader = nullptr;
 
-    GRAPHICS->removeWindow(m_Window);
+    he::ge::EntityManager::getInstance()->destroy();
+
+    PROFILER->detachFromRenderer();
+    CONSOLE->detachFromRenderer();
+    m_DebugRenderer->detachFromRender(m_FpsGraph);
+    removeFromTickList(m_FpsGraph);
+    delete m_FpsGraph;
+    m_FpsGraph = nullptr;
+
+    he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
+    graphicsEngine->removeView(m_View);
+    m_View = nullptr;
+    delete m_DebugRenderer;
+    m_DebugRenderer = nullptr;
+    graphicsEngine->removeWindow(m_Window);
     m_Window = nullptr;
 }
 

@@ -37,7 +37,7 @@ namespace gfx {
 namespace gui {
     class Text;
 
-class Font : public Resource<Font>
+class HAPPY_ENTRY Font : public Resource<Font>
 {
 public:
 

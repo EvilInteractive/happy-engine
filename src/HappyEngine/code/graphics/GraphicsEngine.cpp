@@ -55,9 +55,9 @@ GraphicsEngine::~GraphicsEngine()
 }
 void GraphicsEngine::destroy()
 {
-    ViewFactory::getInstance()->destroyAll();
-    SceneFactory::getInstance()->destroyAll();
-    WindowFactory::getInstance()->destroyAll();
+    HE_ASSERT(ViewFactory::getInstance()->isEmpty(), "View leak detected!");
+    HE_ASSERT(SceneFactory::getInstance()->isEmpty(), "Scene leak detected!");
+    HE_ASSERT(WindowFactory::getInstance()->isEmpty(), "Window leak detected!");
 
     if (m_WebCore != nullptr)
         Awesomium::WebCore::Shutdown();
@@ -159,7 +159,6 @@ void GraphicsEngine::removeWindow( Window* window )
 
 void GraphicsEngine::draw()
 {
-    setActiveContext(&m_DefaultContext);
     SceneFactory* const sceneFactory(SceneFactory::getInstance());
     m_Scenes.forEach([sceneFactory](const ObjectHandle& sceneHandle)
     {
@@ -177,7 +176,6 @@ void GraphicsEngine::draw()
             if (viewList.empty() == false)
             {
                 window->prepareForRendering();
-
                 GraphicsEngine* const _this(this);
                 ViewFactory* const viewFactory(ViewFactory::getInstance());
                 viewList.forEach([_this, viewFactory](const ObjectHandle& viewHandle)

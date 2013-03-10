@@ -83,7 +83,7 @@ Deferred3DRenderer::Deferred3DRenderer():
 void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
-    CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
+    //CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
     m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());

@@ -51,11 +51,9 @@ int rendererSorter(const IRenderer* a, const IRenderer* b)
     else if (aPass > bPass) return 1;
     else
     {
-        int aPriority(a->getRenderPriority());
-        int bPriority(b->getRenderPriority());
-        if (aPriority < bPriority) return -1;
-        else if (aPriority > bPriority) return 1;
-        else return 0;
+        const int aPriority(a->getRenderPriority());
+        const int bPriority(b->getRenderPriority());
+        return bPriority - aPriority;
     }
 }
 
@@ -235,6 +233,7 @@ void View::tick( float dTime )
 
 void View::draw()
 {
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
     if (m_Camera != nullptr)
     {
         m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
@@ -244,13 +243,14 @@ void View::draw()
     GL::heSetViewport(m_Viewport);
     if (m_IntermediateRenderTarget != nullptr)
         m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
-    m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
 
     m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
     if (m_Settings.enablePost)
         m_PostProcesser->draw();
 
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
     if (m_IntermediateRenderTarget != nullptr)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
@@ -258,6 +258,7 @@ void View::draw()
         glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     }
 
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
     m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 }
 

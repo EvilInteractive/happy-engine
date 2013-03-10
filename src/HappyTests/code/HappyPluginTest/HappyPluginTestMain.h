@@ -32,6 +32,7 @@ namespace he {
     }
     namespace ge {
         class DefaultRenderPipeline;
+        class Entity;
     }
 }
 

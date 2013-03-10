@@ -27,10 +27,15 @@
 namespace he {
     namespace gfx {
         class Window;
+        class View;
+        class Renderer2D;
     }
     namespace pl {
         class PluginLoader;
         class IPlugin;
+    }
+    namespace tools {
+        class FPSGraph;
     }
 }
 
@@ -44,13 +49,19 @@ public:
 
     virtual void init();
     virtual void destroy();
-
+    
 private:
 
     /* DATAMEMBERS */
     he::gfx::Window* m_Window;
     he::pl::PluginLoader* m_PluginLoader;
     he::pl::IPlugin* m_Plugin;
+    he::pl::IPlugin* m_Plugin2;
+
+    he::gfx::View* m_View;
+    he::gfx::Renderer2D* m_DebugRenderer;
+
+    he::tools::FPSGraph* m_FpsGraph;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

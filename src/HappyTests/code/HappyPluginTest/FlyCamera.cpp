@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include "HappyBasTestPCH.h"
+#include "HappyPluginTestPCH.h"
 
 #include "FlyCamera.h"
 #include "MathFunctions.h"
