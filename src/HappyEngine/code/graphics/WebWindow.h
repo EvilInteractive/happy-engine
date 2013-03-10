@@ -30,14 +30,16 @@ namespace Awesomium {
     class WebWindow;
 }
 
-namespace sf
-{
+namespace sf {
     class Window;
 }
 
 namespace he {
 namespace gfx {
-class Texture2D;
+    class Texture2D;
+}
+
+namespace gui {
 class WebListener;
 
 class WebWindow : public Awesomium::WebViewListener::Load

@@ -27,8 +27,10 @@
 
 namespace he {
     namespace gfx {
-        class WebView;
         class View;
+    }
+    namespace gui {
+        class WebView;
         class Canvas2D;
     }
 }
@@ -50,14 +52,14 @@ public:
     void updateSceneInfo(const he::vec3& camPos);
 
     /* GETTERS */
-    he::gfx::WebView* getWebView() const;
+    he::gui::WebView* getWebView() const;
 
 private:
 
     /* DATAMEMBERS */
     he::String m_GUIDirectory;
 
-    he::gfx::WebView* m_WebView;
+    he::gui::WebView* m_WebView;
     he::gfx::Renderer2D* m_Renderer;
 
     he::vec3 m_CamPos;

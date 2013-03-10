@@ -33,7 +33,7 @@ namespace Awesomium
 }
 
 namespace he {
-namespace gfx {
+namespace gui {
     class WebView;
     class WebWindow;
 

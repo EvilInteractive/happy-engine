@@ -27,71 +27,36 @@
 #include "event.h"
 
 namespace he {
-namespace gfx {
+namespace gui {
     class WebView;
 
-/* EXTRA */
 class JSObject
 {
 public:
-    /* CONSTRUCTOR */
-    JSObject(Awesomium::JSObject& aweObject, const he::String& name) : m_AweObject(aweObject), m_ObjectName(name) {}
-    ~JSObject()
-    {
-        std::for_each(m_MethodCallBacks.cbegin(), m_MethodCallBacks.cend(), [](const std::pair<
-                                                                                 Awesomium::WebString,
-                                                                                 event1<void, const Awesomium::JSArray&>*>& callback)
-        {
-            delete callback.second;
-        });
-    }
+
+    /* CONSTRUCTOR - DESTRUCTOR */
+    JSObject(Awesomium::JSObject& aweObject, const he::String& name);
+    ~JSObject();
 
     inline const he::String& getObjectName() const { return m_ObjectName; }
     inline Awesomium::JSObject& getAweObject() { return m_AweObject; }
 
-    void addCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback)
-    {
-        Container::const_iterator it(m_MethodCallBacks.find(method));
-        event1<void, const Awesomium::JSArray&>* event(nullptr);
-
-        if (it == m_MethodCallBacks.cend())
-        {
-            event = NEW event1<void, const Awesomium::JSArray&>();
-            m_MethodCallBacks[method] = event;
-        }
-        else
-        {
-            event = it->second;
-        }
-        event->add(callback);
-
-        m_AweObject.SetCustomMethod(method, false);
-    }
-    void removeCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback)
-    {
-        Container::const_iterator it(m_MethodCallBacks.find(method));
-        HE_IF_ASSERT(it != m_MethodCallBacks.cend(), "Removing callback from non existing method")
-            m_MethodCallBacks[method]->remove(callback);
-    }
-    void executeCallback(const Awesomium::WebString& method, const Awesomium::JSArray& args)
-    {
-        HE_IF_ASSERT(m_MethodCallBacks.find(method) != m_MethodCallBacks.cend(), "Executing non existing method")
-        {
-            m_MethodCallBacks[method]->execute(args);
-        }
-    }
-    void executeFunction(const Awesomium::WebString& method, const Awesomium::JSArray& args)
-    {
-        m_AweObject.Invoke(method, args);
-    }
+    /* GENERAL */
+    void addCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback);
+    void removeCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback);
+    void executeCallback(const Awesomium::WebString& method, const Awesomium::JSArray& args);
+    void executeFunction(const Awesomium::WebString& method, const Awesomium::JSArray& args);
 
 private:
+
+    /* MEMBERS */
     he::String m_ObjectName;
     Awesomium::JSObject m_AweObject;
 
     typedef std::map<Awesomium::WebString, event1<void, const Awesomium::JSArray&>*> Container;
     Container m_MethodCallBacks;
 
+    /* DEFAULT COPY & ASSIGNMENT */
     JSObject(const JSObject&);
     JSObject& operator=(const JSObject&);
 };

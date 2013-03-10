@@ -37,12 +37,12 @@ namespace gfx {
     class Window;
     class View;
     class Renderer2D;
-    class WebView;
-    class WebListener;
 }
 namespace gui {
     class Sprite;
     class BezierShape2D;
+    class WebView;
+    class WebListener;
 }
 namespace ct {
     class ShaderGenerator;
@@ -173,8 +173,8 @@ private:
     he::ObjectList<ErrorMessage> m_VisibleErrors;
     gui::Sprite* m_ErrorBackgroundSprite;
 
-    gfx::WebView* m_WebViewGui;
-    gfx::WebListener* m_WebListener;
+    gui::WebView* m_WebViewGui;
+    gui::WebListener* m_WebListener;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

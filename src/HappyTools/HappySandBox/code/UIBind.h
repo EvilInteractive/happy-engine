@@ -27,7 +27,7 @@
 #include "event.h"
 
 namespace he{
-    namespace gfx {
+    namespace gui {
         class WebListener;
     }
 }
@@ -61,7 +61,7 @@ private:
 
     /* DATAMEMBERS */
     UIController* m_UIController;
-    he::gfx::WebListener* m_WebListener;
+    he::gui::WebListener* m_WebListener;
     EntityManager* m_EntityManager;
 
     /* DEFAULT COPY & ASSIGNMENT */

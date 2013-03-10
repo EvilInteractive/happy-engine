@@ -27,11 +27,9 @@
 namespace he {
 namespace gui {
 class Canvas2D;
+class WebView;
 }
 namespace gfx {
-class WebView;
-class Simple2DTextureEffect;
-class ModelMesh;
 class IDrawable2D;
 class Texture2D;
 
@@ -49,14 +47,9 @@ public:
     gui::Canvas2D* getDefaultCanvas() { return m_DefaultCanvas; }
     void removeCanvas(gui::Canvas2D* canvas);
 
-    WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
-    WebView* createWebViewRelative(const RectF& viewportPercent, bool enableUserInput = false);
-    void removeWebView(WebView* webview);
- 
-    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos = vec2(),
-                                bool useBlending = true,
-                                const vec2& newDimensions = vec2(),
-                                const RectF& regionToDraw = RectF());
+    gui::WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
+    gui::WebView* createWebViewRelative(const RectF& viewportPercent, bool enableUserInput = false);
+    void removeWebView(gui::WebView* webview);
 
     View* getView() const { return m_View; }
     const RenderTarget* getRTG() const {return m_RenderTarget;}
@@ -77,13 +70,10 @@ private:
     View* m_View;
     const RenderTarget* m_RenderTarget;
 
-    he::PrimitiveList<WebView*> m_WebViews;
+    he::PrimitiveList<gui::WebView*> m_WebViews;
     he::PrimitiveList<gui::Canvas2D*> m_Canvas2Ds;
     he::PrimitiveList<IDrawable2D*> m_Drawables;
     he::PrimitiveList<std::pair<uint32,uint16> > m_DrawablesDepth;
-
-    Simple2DTextureEffect* m_TextureEffect;
-    ModelMesh* m_TextureQuad;
 
     gui::Canvas2D* m_DefaultCanvas;
 
