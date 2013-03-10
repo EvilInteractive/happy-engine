@@ -39,14 +39,15 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-}
-
-void MainGame::load()
-{
     //listUnitTest();
     //nodeGraphUnitTest();
     guidUnitTest();
     HAPPYENGINE->quit();
+}
+
+void MainGame::destroy()
+{
+
 }
 
 void MainGame::tick( float dTime )

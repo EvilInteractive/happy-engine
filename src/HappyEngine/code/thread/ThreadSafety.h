@@ -16,35 +16,14 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 03/11/2012
+//Created: 2013/03/09
 
-#ifndef _HUT_MainGame_H_
-#define _HUT_MainGame_H_
+#ifndef _HE_ThreadSafety_H_
+#define _HE_ThreadSafety_H_
 #pragma once
 
-#include "Game.h"
+namespace he {
 
-namespace hut {
-
-class MainGame : public he::ge::Game
-{
-public:
-    MainGame();
-    virtual ~MainGame();
-
-    virtual void init();
-    virtual void destroy();
-    virtual void tick(float dTime);
-
-private:
-    void nodeGraphUnitTest();
-    void listUnitTest();
-    void guidUnitTest();
-
-    //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
-};
 
 } //end namespace
 

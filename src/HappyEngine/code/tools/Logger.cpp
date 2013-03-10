@@ -115,7 +115,7 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
         } break;
     }
 
-    m_Mutex.lock();
+    m_Mutex.lock(FILE_AND_LINE);
     std::ofstream output;
     output.open("log.log", std::ios_base::app);
     if (output.is_open())

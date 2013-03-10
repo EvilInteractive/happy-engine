@@ -214,7 +214,7 @@ void ModelMesh::setBones( const he::ObjectList<Bone>& boneList )
 
 void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
 {
-    m_LoadMutex.lock();
+    m_LoadMutex.lock(FILE_AND_LINE);
     if (m_IsLoaded)
     {
         m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
@@ -231,7 +231,7 @@ void ModelMesh::callbackOnceIfLoaded( const boost::function<void()>& callback )
 void ModelMesh::setLoaded()
 {
     m_IsLoaded = true;
-    m_LoadMutex.lock();
+    m_LoadMutex.lock(FILE_AND_LINE);
     Loaded();
     Loaded.clear();
     m_LoadMutex.unlock();

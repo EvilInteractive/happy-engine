@@ -61,7 +61,7 @@ public:
 private:
 
 
-    boost::mutex m_CallbackMutex;
+    he::Mutex m_CallbackMutex;
     event0<void> Loaded;
 
     uint32 m_Width, m_Height;

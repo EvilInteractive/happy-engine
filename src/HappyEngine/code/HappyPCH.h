@@ -28,6 +28,9 @@
 #endif
 
 #define __HE_FUNCTION__ __FUNCTION__
+#ifdef _DEBUG
+#define FILE_AND_LINE __FILE__, __LINE__
+#endif
 
 #include <string>
 #include <map>
@@ -37,9 +40,7 @@
 #include <queue>
 #include <set>
 
-#pragma warning (disable : 4244)
-#include <boost/thread.hpp>
-#pragma warning (default : 4244)
+#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>
 #include <boost/function.hpp>
@@ -73,6 +74,9 @@
 #include "Rect.h"
 
 #include "RTTI.h"
+
+#include "thread/Thread.h"
+#include "thread/Mutex.h"
 
 #include "Logger.h"
 #include "HappyInfo.h"

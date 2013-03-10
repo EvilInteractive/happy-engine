@@ -113,12 +113,9 @@ void MainGame::init()
     m_Window->create();
 
     m_GamePlugin = HAPPYENGINE->getPluginLoader()->loadPlugin(he::Path("HappyPluginTest.dll"));
-}
 
-void MainGame::load()
-{
     using namespace he;
-    
+
     he::gfx::RenderSettings settings;
     settings.enableDeferred = true;
     settings.enablePost = true;
@@ -149,7 +146,7 @@ void MainGame::load()
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
     m_View->init(settings);
-    
+
     /* CAMERA */
     FlyCamera* flyCamera = NEW FlyCamera();
     m_Scene->getCameraManager()->addCamera("default", flyCamera);
@@ -167,14 +164,14 @@ void MainGame::load()
 
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());
-    
+
     m_UIBind = NEW UIBind(m_UIController, m_EntityManager);
     m_UIBind->setup();
 
     CONSOLE->attachToRenderer(m_RenderPipeline->get2DRenderer());
     PROFILER->attachToRenderer(m_RenderPipeline->get2DRenderer());
     m_RenderPipeline->get2DRenderer()->attachToRender(this);
-    
+
     // test
     he::eventCallback1<void, const Awesomium::JSArray&> callbackTest([](const Awesomium::JSArray& /*args*/){ CONSOLE->addMessage("testing gui", he::CMSG_TYPE_INFO);});
     m_UIBind->bindObjectMethodToCallback("HE", "test", callbackTest);

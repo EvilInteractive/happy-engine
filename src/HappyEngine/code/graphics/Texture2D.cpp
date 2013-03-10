@@ -115,7 +115,7 @@ void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data,
 
 void Texture2D::setLoadFinished()
 {
-    m_CallbackMutex.lock();
+    m_CallbackMutex.lock(FILE_AND_LINE);
     m_IsLoadDone = true;
     Loaded();
     Loaded.clear();
@@ -135,7 +135,7 @@ void Texture2D::generateMipMaps() const
 void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
 {
     Texture2D* _this(const_cast<Texture2D*>(this));
-    _this->m_CallbackMutex.lock();
+    _this->m_CallbackMutex.lock(FILE_AND_LINE);
     if (m_IsLoadDone)
     {
         _this->m_CallbackMutex.unlock();

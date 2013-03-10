@@ -16,35 +16,55 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 03/11/2012
+//Created: 2013/03/09
+#include "HappyPCH.h" 
 
-#ifndef _HUT_MainGame_H_
-#define _HUT_MainGame_H_
-#pragma once
+#ifdef HE_LINUX
+#include "Thread.h"
 
-#include "Game.h"
+namespace he {
 
-namespace hut {
-
-class MainGame : public he::ge::Game
+Thread::Thread()
+    : m_ID(0)
+    , m_IsRunning(false)
 {
-public:
-    MainGame();
-    virtual ~MainGame();
+}
 
-    virtual void init();
-    virtual void destroy();
-    virtual void tick(float dTime);
+void* threadProc(void* param)
+{
+    Thread* thread(static_cast<Thread*>(param));
+    thread->m_IsRunning = true;
+    thread->m_Worker();
+    thread->m_IsRunning = false;
+    return nullptr;
+}
 
-private:
-    void nodeGraphUnitTest();
-    void listUnitTest();
-    void guidUnitTest();
+void Thread::startThread(const boost::function0<void>& threadWorker, const char* /*name*/)
+{
+    m_Worker = threadWorker;
+    const int fail(pthread_create(&m_Internal, 0, threadProc, this));
+    HE_ASSERT(!failed, "Thread failed to create!"); fail;
+}
 
-    //Disable default copy constructor and default assignment operator
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
-};
+Thread::~Thread()
+{
+
+}
+
+void Thread::join()
+{
+    pthread_join(m_Internal, NULL);
+}
+
+he::ThreadID Thread::getCurrentThread()
+{
+    return pthread_self();
+}
+
+void Thread::sleep( const size_t millisec )
+{
+    usleep(millisec * 1000);
+}
 
 } //end namespace
 

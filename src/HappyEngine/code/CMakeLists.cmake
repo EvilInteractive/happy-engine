@@ -11,8 +11,9 @@ include (code/io/CMakeLists.cmake)
 include (code/math/CMakeLists.cmake)
 include (code/networking/CMakeLists.cmake)
 include (code/physics/CMakeLists.cmake)
-include (code/tools/CMakeLists.cmake)
 include (code/plugin/CMakeLists.cmake)
+include (code/tools/CMakeLists.cmake)
+include (code/thread/CMakeLists.cmake)
   
 addFilter(CODE_SRCS src code/
             event.h
@@ -22,11 +23,13 @@ addFilter(CODE_SRCS src code/
             HappyNew.h
             HappyPCH.h              HappyPCH.cpp
             HappyTypes.h            HappyTypes.cpp
+            HeString.h              HeString.cpp
             MessageBox.h            MessageBox.cpp
             OpenGL.h                OpenGL.cpp
             RTTI.h
             Singleton.h             Singleton.cpp
             StaticDataManager.h     StaticDataManager.cpp
+            Timer.cpp               Timer.h
         )
                         
 set (HAPPYENGINE_CODE_SRCS  ${CODE_SRCS})

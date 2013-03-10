@@ -70,14 +70,10 @@ FPSGraph::FPSGraph(float interval, uint16 recordTime) :
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Sprites[0] = cr->createSprite(vec2(110,82), gui::Sprite::DYNAMIC_DRAW);
     m_Sprites[1] = cr->createSprite(vec2(110,82), gui::Sprite::DYNAMIC_DRAW);
-
-    SystemStats::init();
 }
 
 FPSGraph::~FPSGraph()
 {
-    SystemStats::done();
-
     m_Font->release();
     
     gui::SpriteCreator* const cr(GUI->getSpriteCreator());
@@ -118,7 +114,7 @@ void FPSGraph::tick(float dTime)
             m_FpsHistory.orderedRemoveAt(0);
         }
 
-        m_CurrentCPU = HESTATS->getCpuUsage();
+        m_CurrentCPU = he::tools::SystemStats::getInstance()->getCpuUsage();
     }
 }
 
@@ -191,12 +187,13 @@ void FPSGraph::drawTextOnly(gui::Canvas2D* canvas)
 
     canvas->setColor(m_ColorWhite);
     canvas->fillText(m_Text, m_Pos + vec2(0,11));
-
+    
+    he::tools::SystemStats* const stats(he::tools::SystemStats::getInstance());
     m_Text.clear();
     m_Text.addTextExt("%u - %u (%u)",
-        (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
-        (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
-        (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
+        (uint32)(stats->getVirtualMemoryUsed() / (1024 * 1024)),
+        (uint32)(stats->getMemoryUsed() / (1024 * 1024)),
+        (uint64)(stats->getTotalMemory() / (1024 * 1024)));
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     canvas->fillText(m_Text, m_Pos + vec2(0,11));
@@ -507,11 +504,12 @@ void FPSGraph::renderGraph()
     cr->text(m_Text, vec2(5,61));
     cr->fill();
 
+    he::tools::SystemStats* const stats(he::tools::SystemStats::getInstance());
     m_Text.clear();
     m_Text.addTextExt("%u - %u (%u)",
-        (uint32)(HESTATS->getVirtualMemoryUsed() / (1024 * 1024)),
-        (uint32)(HESTATS->getMemoryUsed() / (1024 * 1024)),
-        (uint64)(HESTATS->getTotalMemory() / (1024 * 1024)));
+        (uint32)(stats->getVirtualMemoryUsed() / (1024 * 1024)),
+        (uint32)(stats->getMemoryUsed() / (1024 * 1024)),
+        (uint64)(stats->getTotalMemory() / (1024 * 1024)));
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Right);
 
     cr->newPath();

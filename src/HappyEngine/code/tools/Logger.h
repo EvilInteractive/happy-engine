@@ -63,7 +63,7 @@ private:
     
     Logger();
 
-    boost::mutex m_Mutex;
+    he::Mutex m_Mutex;
 
     //Disable default copy constructor and default assignment operator
     Logger(const Logger&);

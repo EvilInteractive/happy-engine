@@ -117,9 +117,9 @@ private:
     std::queue<SpriteData*> m_SpriteListBlit;
     PrimitiveList<SpriteData*> m_DynamicSpriteList;
 
-    boost::thread m_DrawThread;
-    boost::mutex m_SpriteListLock;
-    boost::mutex m_SpriteListBlitLock;
+    he::Thread m_DrawThread;
+    he::Mutex m_SpriteListLock;
+    he::Mutex m_SpriteListBlitLock;
     bool m_HandleDrawCalls;
 
     /* DEFAULT COPY & ASSIGNMENT */

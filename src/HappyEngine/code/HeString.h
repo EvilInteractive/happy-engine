@@ -15,53 +15,26 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Thijs Morlion
-//Created: 27/01/2013
+//Author:  Bastian Damman
+//Created: 2013/03/09
 
-#ifndef _HT_MainGame_H_
-#define _HT_MainGame_H_
+#ifndef _HE_String_H_
+#define _HE_String_H_
 #pragma once
 
-#include "Game.h"
-#include "IDrawable2D.h"
-
 namespace he {
-    namespace tools {
-        class FPSGraph;
-    }
-    namespace gfx {
-        class Font;
-        class View;
-        class Window;
-        class Renderer2D;
-    }
-}
 
-namespace ht {
-
-class MainGame : public he::ge::Game, public he::gfx::IDrawable2D
+class String
 {
 public:
-    MainGame();
-    virtual ~MainGame();
-
-    virtual void init();
-    virtual void destroy();
-    virtual void tick(float dTime);
-    virtual void draw2D(he::gui::Canvas2D* canvas);
+    String();
+    ~String();
 
 private:
 
-    /* DATAMEMBERS */
-    he::tools::FPSGraph* m_FpsGraph;
-    he::gfx::Window* m_Window;
-    he::gfx::View*   m_View;
-    he::gfx::Renderer2D* m_Renderer;
-    he::gui::Font* m_Font;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    //Disable default copy constructor and default assignment operator
+    String(const String&);
+    String& operator=(const String&);
 };
 
 } //end namespace

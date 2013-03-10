@@ -137,7 +137,7 @@ private:
 
     int m_SubEngines;
 
-    boost::thread m_AudioThread;
+    he::Thread m_AudioThread;
 
     boost::chrono::high_resolution_clock::time_point m_PrevTime;
     

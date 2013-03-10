@@ -76,8 +76,7 @@ void WebListener::addObjectCallback(const std::string& object,
         // finish with the object
         #if DEBUG || _DEBUG
         uint8 tries(10);
-        boost::posix_time::seconds waitTime =
-            boost::posix_time::seconds(1);
+        const size_t waitTime(1);
 
         while (tries > 0)
         {
@@ -95,7 +94,7 @@ void WebListener::addObjectCallback(const std::string& object,
                 case Awesomium::kError_Generic: errorString = "Generic"; break; 
                 }
                 HE_ERROR("Awesomium error: %s, waiting 1s", errorString);
-                boost::this_thread::sleep(waitTime);
+                he::Thread::sleep(waitTime);
                 --tries;
             }
             else

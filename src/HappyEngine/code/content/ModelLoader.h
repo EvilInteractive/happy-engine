@@ -86,13 +86,13 @@ private:
     bool m_isModelThreadRunning;
 
     std::queue<ModelLoadData> m_ModelLoadQueue;
-    boost::mutex m_ModelLoadQueueMutex;
+    he::Mutex m_ModelLoadQueueMutex;
     std::queue<ModelLoadData> m_ModelInvokeQueue;
-    boost::mutex m_ModelInvokeQueueMutex;
+    he::Mutex m_ModelInvokeQueueMutex;
 
-    boost::mutex m_WaitListMutex;
+    he::Mutex m_WaitListMutex;
 
-    boost::thread m_ModelLoadThread;
+    he::Thread m_ModelLoadThread;
 
 
     AssetContainer<ObjectHandle> m_AssetContainer;

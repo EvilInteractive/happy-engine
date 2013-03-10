@@ -87,7 +87,8 @@ void TextureLoader::tick(float dTime) //checks for new load operations, if true 
         if (m_TextureLoadQueue.empty() == false)
         {
             m_isLoadThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_TextureLoadThread = boost::thread(boost::bind(&TextureLoader::TextureLoadThread, this));
+            m_TextureLoadThread.join();
+            m_TextureLoadThread.startThread(boost::bind(&TextureLoader::TextureLoadThread, this), "TextureLoadThread");
         }
     }
 }
@@ -95,7 +96,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_TextureInvokeQueue.empty() == false)
     {
-        m_TextureInvokeQueueMutex.lock();
+        m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
         TextureLoadData data(m_TextureInvokeQueue.front());
         m_TextureInvokeQueue.pop();
         m_TextureInvokeQueueMutex.unlock();
@@ -124,7 +125,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
         data.m_Color = color;
         data.m_Tex = handle;
 
-        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
@@ -219,7 +220,7 @@ he::ObjectHandle TextureLoader::asyncLoadTexture( const std::string& path, IReso
         data.m_Path = path;
         data.m_Tex = handle;
 
-        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
@@ -490,7 +491,7 @@ void TextureLoader::TextureLoadThread()
     HE_INFO("Texture Load thread started");
     while (m_TextureLoadQueue.empty() == false)
     {
-        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         TextureLoadData data(m_TextureLoadQueue.front());
         m_TextureLoadQueue.pop();
         m_TextureLoadQueueMutex.unlock();
@@ -499,7 +500,7 @@ void TextureLoader::TextureLoadThread()
         {
             if (loadData(data))
             {
-                m_TextureInvokeQueueMutex.lock();
+                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
                 m_TextureInvokeQueue.push(data);
                 m_TextureInvokeQueueMutex.unlock();
             }
@@ -508,7 +509,7 @@ void TextureLoader::TextureLoadThread()
         {
             if (makeData(data))
             {
-                m_TextureInvokeQueueMutex.lock();
+                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
                 m_TextureInvokeQueue.push(data);
                 m_TextureInvokeQueueMutex.unlock();
             }

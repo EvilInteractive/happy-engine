@@ -118,7 +118,7 @@ bool Model::isLoaded() const
 void Model::setLoaded()
 {
     m_IsLoaded = true;
-    m_LoadedMutex.lock();
+    m_LoadedMutex.lock(FILE_AND_LINE);
     m_LoadedCallback();
     m_LoadedCallback.clear();
     m_LoadedMutex.unlock();
@@ -126,7 +126,7 @@ void Model::setLoaded()
 
 void Model::callbackOnceIfLoaded( const boost::function<void()>& callback )
 {
-    m_LoadedMutex.lock();
+    m_LoadedMutex.lock(FILE_AND_LINE);
     if (isLoaded())
     {
         m_LoadedMutex.unlock();

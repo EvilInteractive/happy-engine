@@ -54,6 +54,10 @@ MainGame::~MainGame()
     GRAPHICS->removeWindow(m_Window);
 }
 
+void MainGame::destroy()
+{
+    
+}
 void MainGame::init()
 {
     m_View = GRAPHICS->createView();
@@ -66,10 +70,7 @@ void MainGame::init()
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
-}
 
-void MainGame::load()
-{
     he::gfx::RenderSettings settings;
     CONTENT->setRenderSettings(settings);
 

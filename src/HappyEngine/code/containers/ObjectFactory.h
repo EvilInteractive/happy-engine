@@ -46,7 +46,7 @@ public:
     template<typename T>
     ObjectHandle::ObjectType getObjectType()
     {
-        m_Mutex.lock();
+        m_Mutex.lock(FILE_AND_LINE);
         if (T::s_ObjectType != ObjectHandle::UNASSIGNED_TYPE)
         {
             m_Mutex.unlock();
@@ -62,7 +62,7 @@ public:
 
 private:
     ObjectHandle::ObjectType m_LastType;
-    boost::mutex m_Mutex;
+    he::Mutex m_Mutex;
 };
 }
 

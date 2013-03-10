@@ -114,7 +114,7 @@ private:
 
 
     event0<void> Loaded;
-    boost::mutex m_LoadMutex;
+    he::Mutex m_LoadMutex;
 
     VaoID m_VaoID[MAX_VERTEX_ARRAY_OBJECTS];
     VaoID m_VaoShadowID[MAX_VERTEX_ARRAY_OBJECTS];

@@ -135,12 +135,12 @@ private:
 
     /* DATAMEMBERS */
     std::queue<TextureLoadData> m_TextureLoadQueue;
-    boost::mutex m_TextureLoadQueueMutex;
+    he::Mutex m_TextureLoadQueueMutex;
 
     std::queue<TextureLoadData> m_TextureInvokeQueue;
-    boost::mutex m_TextureInvokeQueueMutex;
+    he::Mutex m_TextureInvokeQueueMutex;
 
-    boost::thread m_TextureLoadThread;
+    he::Thread m_TextureLoadThread;
 
     AssetContainer<ObjectHandle> m_AssetContainer;
 

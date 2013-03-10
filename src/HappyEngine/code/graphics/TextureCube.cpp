@@ -117,7 +117,7 @@ void TextureCube::setCompressedData( uint32 width, uint32 height, const Face& fa
 
 void TextureCube::setLoadFinished()
 {
-    m_CallbackMutex.lock();
+    m_CallbackMutex.lock(FILE_AND_LINE);
     m_IsLoadDone = true;
     Loaded();
     Loaded.clear();
@@ -127,7 +127,7 @@ void TextureCube::setLoadFinished()
 void TextureCube::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
 {
     TextureCube* _this(const_cast<TextureCube*>(this));
-    _this->m_CallbackMutex.lock();
+    _this->m_CallbackMutex.lock(FILE_AND_LINE);
     if (m_IsLoadDone)
     {
         _this->m_CallbackMutex.unlock();

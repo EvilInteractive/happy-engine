@@ -42,11 +42,13 @@
 #include "PickingManager.h"
 #include "BinaryVisitor.h"
 #include "EntityManager.h"
+#include "SystemStats.h"
 
 namespace he {
 
 void StaticDataManager::init()
 {
+    he::tools::SystemStats::sdmInit();
     he::HappyEngine::sdmInit();
     details::ObjectFactoryTypeManager::sdmInit();
     tools::Logger::sdmInit();
@@ -104,6 +106,7 @@ void StaticDataManager::destroy()
     tools::Logger::sdmDestroy();
     details::ObjectFactoryTypeManager::sdmDestroy();
     he::HappyEngine::sdmDestroy();
+    he::tools::SystemStats::sdmDestroy();
 }
 
 void StaticDataManager::visit( he::io::BinaryVisitor& visitor )
@@ -130,6 +133,7 @@ void StaticDataManager::visit( he::io::BinaryVisitor& visitor )
     tools::Logger::sdmVisit(visitor);
     details::ObjectFactoryTypeManager::sdmVisit(visitor);
     he::HappyEngine::sdmVisit(visitor);
+    he::tools::SystemStats::sdmVisit(visitor);
 }
 
 } //end namespace

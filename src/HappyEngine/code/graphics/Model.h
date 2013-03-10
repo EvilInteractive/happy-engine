@@ -58,7 +58,7 @@ public:
 private:
 
     event0<void> m_LoadedCallback;
-    boost::mutex m_LoadedMutex;
+    he::Mutex m_LoadedMutex;
 
     he::PrimitiveList<ModelMesh*> m_Meshes;
     bool m_IsLoaded;

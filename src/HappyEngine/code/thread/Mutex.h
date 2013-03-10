@@ -15,53 +15,47 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Thijs Morlion
-//Created: 27/01/2013
+//Author:  Bastian Damman
+//Created: 2013/03/09
 
-#ifndef _HT_MainGame_H_
-#define _HT_MainGame_H_
+#ifndef _HE_Mutex_H_
+#define _HE_Mutex_H_
 #pragma once
 
-#include "Game.h"
-#include "IDrawable2D.h"
+#include "ThreadTypes.h"
 
 namespace he {
-    namespace tools {
-        class FPSGraph;
-    }
-    namespace gfx {
-        class Font;
-        class View;
-        class Window;
-        class Renderer2D;
-    }
-}
 
-namespace ht {
-
-class MainGame : public he::ge::Game, public he::gfx::IDrawable2D
+class Mutex
 {
 public:
-    MainGame();
-    virtual ~MainGame();
+    Mutex();
+    ~Mutex();
 
-    virtual void init();
-    virtual void destroy();
-    virtual void tick(float dTime);
-    virtual void draw2D(he::gui::Canvas2D* canvas);
+#ifdef _DEBUG
+    void lock(const char* file, int line);
+    bool tryLock(const char* file, int line);
+#else
+    void lock();
+#endif
+    void unlock();
 
 private:
+#ifdef HE_WINDOWS
+    CRITICAL_SECTION m_Internal;
+#else
+    pthread_mutex_t m_Internal;
+#endif
 
-    /* DATAMEMBERS */
-    he::tools::FPSGraph* m_FpsGraph;
-    he::gfx::Window* m_Window;
-    he::gfx::View*   m_View;
-    he::gfx::Renderer2D* m_Renderer;
-    he::gui::Font* m_Font;
+#ifdef _DEBUG
+    const char* m_File;
+    int m_Line;
+    ThreadID m_Thread;
+#endif
 
-    /* DEFAULT COPY & ASSIGNMENT */
-    MainGame(const MainGame&);
-    MainGame& operator=(const MainGame&);
+    //Disable default copy constructor and default assignment operator
+    Mutex(const Mutex&);
+    Mutex& operator=(const Mutex&);
 };
 
 } //end namespace

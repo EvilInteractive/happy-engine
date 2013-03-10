@@ -53,7 +53,8 @@ void ModelLoader::tick(float /*dTime*/)
         if (m_ModelLoadQueue.empty() == false)
         {
             m_isModelThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_ModelLoadThread = boost::thread(boost::bind(&ModelLoader::modelLoadThread, this));
+            m_ModelLoadThread.join(); // wait for previous to really finish
+            m_ModelLoadThread.startThread(boost::bind(&ModelLoader::modelLoadThread, this), "ModelLoadThread");
         }
     }
 }
@@ -62,7 +63,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_ModelInvokeQueue.empty() == false)
     {
-        m_ModelInvokeQueueMutex.lock();
+        m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
         ModelLoadData data(m_ModelInvokeQueue.front());
         m_ModelInvokeQueue.pop();
         m_ModelInvokeQueueMutex.unlock();
@@ -76,14 +77,14 @@ void ModelLoader::modelLoadThread()
     HE_INFO("Model Load thread started");
     while (m_ModelLoadQueue.empty() == false)
     {
-        m_ModelLoadQueueMutex.lock();
+        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
         ModelLoadData data(m_ModelLoadQueue.front());
         m_ModelLoadQueue.pop();
         m_ModelLoadQueueMutex.unlock();
 
         if (loadModel(data))
         {
-            m_ModelInvokeQueueMutex.lock();
+            m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
             m_ModelInvokeQueue.push(data);
             m_ModelInvokeQueueMutex.unlock();
         }                
@@ -109,7 +110,7 @@ bool ModelLoader::loadModel( ModelLoadData& data )
 }
 bool ModelLoader::createModel( ModelLoadData& data )
 {
-    m_WaitListMutex.lock();
+    m_WaitListMutex.lock(FILE_AND_LINE);
 
     gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
     uint32 notLoadedMeshes(model->getNumMeshes());
@@ -200,7 +201,7 @@ gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const 
     if (isModelLoaded(path, modelHandle)) // if model is loading/loaded
     {
         gfx::ModelMesh* mesh(nullptr);
-        m_WaitListMutex.lock();
+        m_WaitListMutex.lock(FILE_AND_LINE);
 
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(modelHandle));
         if (model->isLoaded()) // if loading done
@@ -289,7 +290,7 @@ bool ModelLoader::startAsyncLoadModel(ModelLoadData& data)
     {
         // need reference for async loading
         ResourceFactory<gfx::Model>::getInstance()->instantiate(data.modelHandle);
-        m_ModelLoadQueueMutex.lock();
+        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
         m_ModelLoadQueue.push(data);
         m_ModelLoadQueueMutex.unlock();
     }

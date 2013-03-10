@@ -69,7 +69,7 @@ public:
     void callbackOnceIfLoaded(const boost::function<void()>& callback) const;
 
 private:
-    boost::mutex m_CallbackMutex;
+    he::Mutex m_CallbackMutex;
     event0<void> Loaded;
     bool m_IsLoadDone;
    

@@ -29,6 +29,7 @@
 #include "Ray.h"
 #include "PxPhysicsAPI.h"
 #include "ExternalError.h"
+#include "SystemStats.h"
 
 namespace he {
 namespace px {
@@ -114,7 +115,7 @@ void PhysicsEngine::createScene()
 
     if(!sceneDesc.cpuDispatcher)
     {
-        uint32 useThreads(he::max<uint32>(1, boost::thread::hardware_concurrency() - 1));
+        const uint32 useThreads(he::max<uint32>(1, he::tools::SystemStats::getInstance()->getNumCores() - 1));
         HE_INFO("PhysX using Cpu - %d threads", useThreads);
         m_CpuDispatcher = physx::PxDefaultCpuDispatcherCreate(useThreads);
 
@@ -188,7 +189,7 @@ void PhysicsEngine::startSimulation()
 {
     m_Timer = 0.0f;
     m_Simulate = true;
-    //m_PhysXThread = boost::thread(boost::bind(&PhysicsEngine::physXThread, this));
+    //m_PhysXThread = he::Thread(boost::bind(&PhysicsEngine::physXThread, this));
 }
 void PhysicsEngine::stopSimulation()
 {

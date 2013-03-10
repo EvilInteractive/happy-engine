@@ -35,6 +35,7 @@
 #include "Gui.h"
 #include "Sprite.h"
 #include "PluginLoader.h"
+#include "Timer.h"
 
 namespace he {
     
@@ -179,9 +180,6 @@ void HappyEngine::start(ge::Game* game)
 #endif
     m_Game = game;
   
-    // Init Game
-    game->init();
-
     // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
@@ -193,11 +191,11 @@ void HappyEngine::start(ge::Game* game)
 #endif
     }
     
-    m_Game->load();
+    m_Game->init();
     
     if (m_SubEngines & SubEngine_Audio)
     {
-        m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
+        m_AudioThread.startThread(boost::bind(&HappyEngine::audioLoop, this), "Audio Thread");
     }
 
     m_PrevTime = boost::chrono::high_resolution_clock::now();
@@ -227,7 +225,7 @@ void HappyEngine::loop()
         }
         else
         {
-            boost::this_thread::sleep(boost::posix_time::millisec(5));
+            he::Thread::sleep(5);
         }
     }
 #ifdef ENABLE_PROFILING
@@ -288,23 +286,17 @@ void HappyEngine::drawLoop()
 
 void HappyEngine::audioLoop()
 {
-    boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(1);
-    boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
-    float dTime(0);
+    Timer timer;
 
+    timer.start();
     while (m_Quit == false)
     {
-        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
-        prevTime = boost::chrono::high_resolution_clock::now();
-        dTime += (elapsedTime.count() / static_cast<float>(boost::nano::den));
+        const float dTime(timer.getElapsedSecondsF());
+        timer.restart();
 
-        if (dTime >= (1 / 60.0f))
-        {
-            m_SoundEngine->tick(dTime);
-            dTime = 0;
-        }
-        else
-            boost::this_thread::sleep(waitTime);
+        m_SoundEngine->tick(dTime);
+
+        he::Thread::sleep(33);
     }
 }
 
