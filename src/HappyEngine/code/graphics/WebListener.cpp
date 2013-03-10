@@ -63,45 +63,64 @@ void WebListener::addObjectCallback(const std::string& object,
     // create new js object if it doesn't already exists
     if (objectExists == false)
     {
-        Awesomium::JSValue val(m_WebView->CreateGlobalJavascriptObject(
-                Awesomium::WSLit(object.c_str())));
+        // prevent crashing by retrying
+        // wait some time for the awesomium process to
+        // finish with the object
+        // needed for slow/heavy debug start-up
+        #if DEBUG || _DEBUG
+        uint8 tries(10);
+        const size_t waitTime(1000);
+
+        Awesomium::JSValue val;
+        Awesomium::WebString aweMethod;
+        Awesomium::JSObject obj;
+
+        while (tries > 0)
+        {
+            val = m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit(object.c_str()));
+            aweMethod = Awesomium::WSLit(method.c_str());
+
+            if (val.IsObject())
+            {
+                obj = val.ToObject();
+
+                Awesomium::Error error(obj.last_error());
+                if (error != Awesomium::kError_None)
+                {
+                    const char* errorString("Unknown");
+                    switch (error)
+                    {
+                    case Awesomium::kError_BadParameters: errorString = "BadParameters"; break; 
+                    case Awesomium::kError_ObjectGone: errorString = "ObjectGone"; break;     
+                    case Awesomium::kError_ConnectionGone: errorString = "ConnectionGone"; break; 
+                    case Awesomium::kError_TimedOut: errorString = "TimedOut"; break;       
+                    case Awesomium::kError_WebViewGone: errorString = "WebViewGone"; break;    
+                    case Awesomium::kError_Generic: errorString = "Generic"; break; 
+                    }
+
+                    HE_ERROR("Awesomium error: %s, waiting 1s", errorString);
+                    he::Thread::sleep(waitTime);
+                    --tries;
+                }
+                else
+                    break;
+            }
+            else
+            {
+                HE_WARNING("WebListener: Waiting 1s for JS Object creation");
+                he::Thread::sleep(waitTime);
+                --tries;
+            }
+        }
+
+        HE_ASSERT(tries > 0, "JSObject creation timed out!");
+        #else
+        Awesomium::JSValue val;(m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit(object.c_str())));
 
         Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
         HE_ASSERT(val.IsObject(), "object: %s, is not a javascript object!", object.c_str());
         Awesomium::JSObject& obj = val.ToObject();
-
-        // prevent crashing by retrying
-        // wait some time for the awesomium process to
-        // finish with the object
-        #if DEBUG || _DEBUG
-        uint8 tries(10);
-        const size_t waitTime(1);
-
-        while (tries > 0)
-        {
-            Awesomium::Error error(obj.last_error());
-            if (error != Awesomium::kError_None)
-            {
-                const char* errorString("Unknown");
-                switch (error)
-                {
-                case Awesomium::kError_BadParameters: errorString = "BadParameters"; break; 
-                case Awesomium::kError_ObjectGone: errorString = "ObjectGone"; break;     
-                case Awesomium::kError_ConnectionGone: errorString = "ConnectionGone"; break; 
-                case Awesomium::kError_TimedOut: errorString = "TimedOut"; break;       
-                case Awesomium::kError_WebViewGone: errorString = "WebViewGone"; break;    
-                case Awesomium::kError_Generic: errorString = "Generic"; break; 
-                }
-                HE_ERROR("Awesomium error: %s, waiting 1s", errorString);
-                he::Thread::sleep(waitTime);
-                --tries;
-            }
-            else
-                break;
-        }
-
-        HE_ASSERT(tries > 0, "JSObject creation timed out!");
         #endif
 
         JSObject* jsObject(NEW JSObject(obj, object));
