@@ -81,7 +81,7 @@ void MainGame::init()
         });
         m_Window->Resized += resizeHandler;
     }
-    m_Plugin2 = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest2.dll"));
+    m_Plugin2 = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest.dll"));
     if (m_Plugin2 != nullptr)
     {
         m_Plugin2->init(m_Window, he::RectI(0, m_Window->getWindowHeight() / 2, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
