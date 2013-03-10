@@ -33,7 +33,7 @@ ENUM(IndexStride, uint8);
 namespace ge {
 
 class PickResult;
-class Pickable
+class HAPPY_ENTRY Pickable
 {
 public:
     virtual ~Pickable() {}

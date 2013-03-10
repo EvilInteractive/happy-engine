@@ -34,7 +34,7 @@ class Material;
 class CullOctreeNode;
 class Scene;
 
-class IDrawable
+class HAPPY_ENTRY IDrawable
 {
 public:
     IDrawable(): m_Node(nullptr) {}
@@ -74,7 +74,7 @@ private:
     CullOctreeNode* m_Node;
 }; 
 
-class SingleDrawable : public Object3D, public IDrawable
+class HAPPY_ENTRY SingleDrawable : public Object3D, public IDrawable
 {
 public:
     virtual ~SingleDrawable() {}
@@ -85,7 +85,7 @@ public:
 
 }; 
 
-class InstancedDrawable : public IDrawable
+class HAPPY_ENTRY InstancedDrawable : public IDrawable
 {
 public:
     virtual ~InstancedDrawable() {}
@@ -96,7 +96,7 @@ public:
 
 };
 
-class SkinnedDrawable : public Object3D, public IDrawable
+class HAPPY_ENTRY SkinnedDrawable : public Object3D, public IDrawable
 {
 public:
     virtual ~SkinnedDrawable() {}

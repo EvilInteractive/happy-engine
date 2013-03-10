@@ -28,7 +28,7 @@
 namespace he {
 namespace px {
 
-class PhysicsConvexShape : public IPhysicsShape
+class HAPPY_ENTRY PhysicsConvexShape : public IPhysicsShape
 {
 DECLARE_OBJECT(PhysicsConvexShape)
 public:

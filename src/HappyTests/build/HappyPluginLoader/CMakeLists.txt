@@ -19,6 +19,9 @@ IncludeThirdParty()
 # add HappyPluginLoader executable
 add_executable (HappyPluginLoader ${HAPPYPLUGINLOADER_SRCS})
 
+include(${HappyEngine_SOURCE_DIR}/cmakeHelpers/CopyHappyRuntime.cmake)
+copyHappyRuntime(HappyPluginLoader)
+
 # link thirdparty
 LinkThirdParty(HappyPluginLoader)
 

@@ -54,13 +54,6 @@ IPlugin* PluginLoader::loadPlugin( const he::Path& path )
             {
                 PluginWrapper wrapper(plugin, mod);
                 m_Plugins.add(wrapper);
-                io::BinaryStreamVisitor visitor;
-                visitor.openWrite();
-                StaticDataManager::visit(visitor);
-                visitor.close();
-                visitor.openRead();
-                plugin->sdmInit(visitor);
-                visitor.close();
                 result = plugin;
             }
             else

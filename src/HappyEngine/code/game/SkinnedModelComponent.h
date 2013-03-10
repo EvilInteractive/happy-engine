@@ -28,7 +28,7 @@
 namespace he {
 namespace ge {
     
-class SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
+class HAPPY_ENTRY SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSkinnedDrawable)
     DECLARE_ENTITY_COMPONENT_TYPE()

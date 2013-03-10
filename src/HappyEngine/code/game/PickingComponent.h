@@ -34,7 +34,7 @@ namespace gfx {
 
 namespace ge {
     
-class PickingComponent : public Pickable, public EntityComponent, public Object3D
+class HAPPY_ENTRY PickingComponent : public Pickable, public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
     DECLARE_ENTITY_COMPONENT_TYPE()

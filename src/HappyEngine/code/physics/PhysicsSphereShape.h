@@ -31,7 +31,7 @@ namespace px {
 class PhysicsSphereShape : public IPhysicsShape
 {
 public:
-	explicit PhysicsSphereShape(float radius);
+    explicit PhysicsSphereShape(float radius);
     virtual ~PhysicsSphereShape();
     //Default copy constructor and assignment operator are OK
 

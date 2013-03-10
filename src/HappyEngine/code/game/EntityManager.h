@@ -33,7 +33,7 @@ class IEntityComponentFactory;
 class Entity;
 class EntityComponent;
 
-class EntityManager : public Singleton<EntityManager>
+class HAPPY_ENTRY EntityManager : public Singleton<EntityManager>
 {
 friend class Singleton<EntityManager>;
 public:

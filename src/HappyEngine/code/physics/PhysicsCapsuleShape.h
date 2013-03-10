@@ -27,7 +27,7 @@
 namespace he {
 namespace px {
 
-class PhysicsCapsuleShape : public IPhysicsShape
+class HAPPY_ENTRY PhysicsCapsuleShape : public IPhysicsShape
 {
 public:
     explicit PhysicsCapsuleShape(float radius, float height);

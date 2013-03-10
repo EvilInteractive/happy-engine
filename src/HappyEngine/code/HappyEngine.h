@@ -79,7 +79,7 @@ enum SubEngine
     SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3
 };
 
-class HappyEngine : public Singleton<HappyEngine>
+class HAPPY_ENTRY HappyEngine : public Singleton<HappyEngine>
 {
 friend class Singleton<HappyEngine>;
 public:

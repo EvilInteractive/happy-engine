@@ -37,7 +37,7 @@ namespace gfx {
 class Texture2D;
 class WebListener;
 
-class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
+class HAPPY_ENTRY WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
 {
 public:
 

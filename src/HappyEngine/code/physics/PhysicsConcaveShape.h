@@ -28,7 +28,7 @@
 namespace he {
 namespace px {
 
-class PhysicsConcaveShape : public IPhysicsShape
+class HAPPY_ENTRY PhysicsConcaveShape : public IPhysicsShape
 {
 public:
     PhysicsConcaveShape();

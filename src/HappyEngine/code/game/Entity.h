@@ -32,7 +32,7 @@ namespace gfx {
 }
 namespace ge {
 
-class Entity : public EntityComponent, public Object3D
+class HAPPY_ENTRY Entity : public EntityComponent, public Object3D
 {
     DECLARE_ENTITY_COMPONENT_TYPE()
 public:

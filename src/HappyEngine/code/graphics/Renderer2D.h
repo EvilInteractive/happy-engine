@@ -35,7 +35,7 @@ class ModelMesh;
 class IDrawable2D;
 class Texture2D;
 
-class Renderer2D : public IRenderer
+class HAPPY_ENTRY Renderer2D : public IRenderer
 {
 public:
 

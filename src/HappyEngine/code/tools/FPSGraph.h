@@ -37,7 +37,7 @@ namespace gui {
 }
 namespace tools {
 
-class FPSGraph : public gfx::IDrawable2D
+class HAPPY_ENTRY FPSGraph : public gfx::IDrawable2D
 {
 public:
 

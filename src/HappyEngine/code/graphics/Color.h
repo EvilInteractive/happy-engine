@@ -29,7 +29,7 @@
 
 namespace he {
     
-struct Color
+struct HAPPY_ENTRY Color
 {
 private:
     vec3 m_rgb;

@@ -34,7 +34,7 @@ namespace gfx {
 }
 namespace ge {
 
-class DefaultRenderPipeline
+class HAPPY_ENTRY DefaultRenderPipeline
 {
 public:
     DefaultRenderPipeline();

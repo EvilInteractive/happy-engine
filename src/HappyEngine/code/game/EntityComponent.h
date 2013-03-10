@@ -32,7 +32,7 @@ namespace io {
 }
 namespace ge {
 class Entity;
-class EntityComponent : public IObject3D
+class HAPPY_ENTRY EntityComponent : public IObject3D
 {
 DECLARE_OBJECT(EntityComponent)
 friend class Entity;

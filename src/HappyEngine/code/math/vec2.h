@@ -25,7 +25,7 @@ namespace physx {
 
 namespace he {
 
-struct vec2
+struct HAPPY_ENTRY vec2
 {
 public:
     float x, y;

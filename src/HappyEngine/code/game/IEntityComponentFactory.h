@@ -28,7 +28,7 @@ namespace he {
 namespace ge {
 
 class EntityComponent;
-class IEntityComponentFactory
+class HAPPY_ENTRY IEntityComponentFactory
 {
 public:
     virtual ~IEntityComponentFactory() {}

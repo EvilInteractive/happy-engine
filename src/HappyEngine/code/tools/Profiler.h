@@ -36,7 +36,7 @@ namespace gfx {
 }
 namespace tools {
 
-class HierarchicalProfile
+class HAPPY_ENTRY HierarchicalProfile
 {
 public:
     HierarchicalProfile(const char* name);
@@ -49,7 +49,7 @@ private:
 
 struct ProfileData;
 
-class Profiler : public gfx::IDrawable2D
+class HAPPY_ENTRY Profiler : public gfx::IDrawable2D
 {
     struct ProfileTreeNode;
 public:

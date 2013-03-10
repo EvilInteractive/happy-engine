@@ -32,7 +32,7 @@ namespace he {
 class Bound;
 namespace gfx {
 
-class CameraPerspective : public ICamera
+class HAPPY_ENTRY CameraPerspective : public ICamera
 {
 public:
     class CameraBound

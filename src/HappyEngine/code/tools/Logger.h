@@ -45,7 +45,7 @@ public:
     static void sdmInit();
     static void sdmDestroy();
     static void sdmVisit(he::io::BinaryVisitor& visitor);
-    static Logger* getInstance()
+    HAPPY_ENTRY static Logger* getInstance()
     {
         return s_Instance;
     }
@@ -55,11 +55,11 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ~Logger();
 
-    void log(const LogType type, const char* file, const char* func, int line, const char* str, ...);
-    void log(const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList);
+    HAPPY_ENTRY void log(const LogType type, const char* file, const char* func, int line, const char* str, ...);
+    HAPPY_ENTRY void log(const LogType type, const char* file, const char* func, int line, const char* str, va_list& argList);
     
 private:
-    static Logger* s_Instance;
+    HAPPY_ENTRY static Logger* s_Instance;
     
     Logger();
 

@@ -24,13 +24,13 @@
 
 namespace he {
 
-class Path
+class HAPPY_ENTRY Path
 {
 public:
     Path(const he::String& other); // implicit conversion allowed
     Path(const Path& other);
     Path& operator=(const Path& other);
-    virtual ~Path();
+    ~Path();
 
     const he::String& str() const; // includes trailing slash
 

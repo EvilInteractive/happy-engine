@@ -45,7 +45,7 @@ class View;
 
 ENUM(ShadowResolution, uint8);
 
-class GraphicsEngine
+class HAPPY_ENTRY GraphicsEngine
 {
 public:
 

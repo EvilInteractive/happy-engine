@@ -46,7 +46,7 @@ class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
     virtual ~SceneFactory() { }
 };
 
-class Scene
+class HAPPY_ENTRY Scene
 {
     DECLARE_OBJECT(Scene)
 public:

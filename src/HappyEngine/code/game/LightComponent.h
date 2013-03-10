@@ -33,7 +33,7 @@ namespace gfx {
 }
 namespace ge {
     
-class PointLightComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY PointLightComponent : public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
     DECLARE_ENTITY_COMPONENT_TYPE()
@@ -78,7 +78,7 @@ private:
     PointLightComponent& operator=(const PointLightComponent&);
 };
 
-class SpotLightComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY SpotLightComponent : public EntityComponent, public Object3D
 {
 IMPLEMENT_IOBJECT3D_FROM(Object3D)
 DECLARE_ENTITY_COMPONENT_TYPE()

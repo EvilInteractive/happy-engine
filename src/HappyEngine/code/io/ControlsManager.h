@@ -27,7 +27,7 @@ namespace io {
 class IMouse;
 class IKeyboard;
 
-class ControlsManager
+class HAPPY_ENTRY ControlsManager
 {
 public:
     ControlsManager();

@@ -82,7 +82,7 @@ ENUM(MouseCursor, uint8)
     MouseCursor_Custom
 };
 
-class IMouse
+class HAPPY_ENTRY IMouse
 {
 public:
     virtual ~IMouse() {}

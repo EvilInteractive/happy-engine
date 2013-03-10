@@ -109,31 +109,4 @@ void StaticDataManager::destroy()
     he::tools::SystemStats::sdmDestroy();
 }
 
-void StaticDataManager::visit( he::io::BinaryVisitor& visitor )
-{
-    ge::EntityManager::sdmVisit(visitor);
-    ge::PickingManager::sdmVisit(visitor);
-    tools::MaterialGeneratorNodeFactory::sdmVisit(visitor);
-    ct::ShaderGeneratorVariableFactory::sdmVisit(visitor);
-    gfx::CullOctreeNodeFactory::sdmVisit(visitor);
-    gfx::LightFactory::sdmVisit(visitor);
-    ResourceFactory<gui::Font>::sdmVisit(visitor);
-    ResourceFactory<gfx::Material>::sdmVisit(visitor);
-    ResourceFactory<gfx::TextureCube>::sdmVisit(visitor);
-    ResourceFactory<gfx::Texture2D>::sdmVisit(visitor);
-    ResourceFactory<gfx::Model>::sdmVisit(visitor);
-    ResourceFactory<gfx::ModelMesh>::sdmVisit(visitor);
-    ResourceFactory<gfx::Shader>::sdmVisit(visitor);
-    ResourceFactory<px::PhysicsConvexMesh>::sdmVisit(visitor);
-    ResourceFactory<px::PhysicsConcaveMesh>::sdmVisit(visitor);
-    gui::SpriteFactory::sdmVisit(visitor);
-    gfx::ViewFactory::sdmVisit(visitor);
-    gfx::SceneFactory::sdmVisit(visitor);
-    gfx::WindowFactory::sdmVisit(visitor);
-    tools::Logger::sdmVisit(visitor);
-    details::ObjectFactoryTypeManager::sdmVisit(visitor);
-    he::HappyEngine::sdmVisit(visitor);
-    he::tools::SystemStats::sdmVisit(visitor);
-}
-
 } //end namespace

@@ -31,7 +31,7 @@ namespace he {
 struct vec3;
 struct vec2;
 
-struct vec4
+struct HAPPY_ENTRY vec4
 {
 public:
     float x, y, z, w;

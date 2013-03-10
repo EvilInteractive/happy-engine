@@ -54,7 +54,7 @@ public:
 private:
 };
 
-class View : public ge::ITickable
+class HAPPY_ENTRY View : public ge::ITickable
 {
     DECLARE_OBJECT(View)
 public:

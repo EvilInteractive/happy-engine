@@ -40,7 +40,7 @@ class FontLoader;
 class ShaderLoader;
 class MaterialLoader;
 
-class ContentManager
+class HAPPY_ENTRY ContentManager
 {
 public:
     ContentManager();

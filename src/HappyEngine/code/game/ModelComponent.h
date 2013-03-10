@@ -27,10 +27,8 @@
 
 namespace he {
 namespace ge {
-
-class ModelComponent;
-
-class ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
+    
+class HAPPY_ENTRY ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
     DECLARE_ENTITY_COMPONENT_TYPE()

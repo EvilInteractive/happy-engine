@@ -24,9 +24,9 @@
 
 namespace he {
 
-void heInfo(const char* msg, ...);
-void heError(const char* msg, ...);
-void heWarning(const char* msg, ...);
+HAPPY_ENTRY void heInfo(const char* msg, ...);
+HAPPY_ENTRY void heError(const char* msg, ...);
+HAPPY_ENTRY void heWarning(const char* msg, ...);
 
 #define HE_INFO he::heInfo
 #define HE_ERROR he::heError

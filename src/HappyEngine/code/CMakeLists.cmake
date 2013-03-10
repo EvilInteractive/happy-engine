@@ -27,7 +27,7 @@ addFilter(CODE_SRCS src code/
             MessageBox.h            MessageBox.cpp
             OpenGL.h                OpenGL.cpp
             RTTI.h
-            Singleton.h             Singleton.cpp
+            Singleton.h
             StaticDataManager.h     StaticDataManager.cpp
             Timer.cpp               Timer.h
         )

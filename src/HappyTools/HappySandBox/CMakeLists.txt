@@ -21,6 +21,9 @@ endif()
 # add HappySandbox executable
 add_executable (HappySandBox ${HAPPYSANDBOX_SRCS})
 
+include(${HappyEngine_SOURCE_DIR}/cmakeHelpers/CopyHappyRuntime.cmake)
+copyHappyRuntime(HappySandBox)
+
 # link thirdparty
 if (WIN32)
 LinkThirdParty(HappySandBox)

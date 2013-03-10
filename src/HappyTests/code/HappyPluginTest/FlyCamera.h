@@ -15,29 +15,43 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 11/08/2012
 
-#ifndef _HE_I2DDrawable_H_
-#define _HE_I2DDrawable_H_
+#ifndef _FLY_CAMERA_H_
+#define _FLY_CAMERA_H_
 #pragma once
 
-namespace he {
-namespace gui {
-    class Canvas2D;
-}
+#include "CameraPerspective.h"
 
-namespace gfx {
+namespace ht {
 
-class HAPPY_ENTRY IDrawable2D
+class FlyCamera : public he::gfx::CameraPerspective
 {
 public:
+    // CONSTRUCTOR - DESTRUCTOR
+    FlyCamera();
+    virtual ~FlyCamera();
 
-    virtual ~IDrawable2D() {};
+    // GENERAL
+    virtual void tick(float dTime);
+    
+    // SETTERS
+    void moveable(bool bMoveable);
+    void setMouseSensitivty(float sens = 100.0f);
 
-    virtual void draw2D(gui::Canvas2D* canvas) = 0;
-}; 
+private:
+    bool m_bMoveable;
 
-} } //end namespace
+    float m_Speed;
+    float m_FastForward;
+    float m_MouseSensitivity;
+
+    he::vec2 m_PreviousMousePos;
+
+    //Disable default copy constructor and default assignment operator
+    FlyCamera(const FlyCamera&);
+    FlyCamera& operator=(const FlyCamera&);
+};
+
+} //end namespace
 
 #endif

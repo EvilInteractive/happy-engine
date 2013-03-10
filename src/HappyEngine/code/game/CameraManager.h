@@ -31,7 +31,7 @@ class CameraPerspective;
 
 namespace ge {
 
-class CameraManager
+class HAPPY_ENTRY CameraManager
 {
 public:
     CameraManager();

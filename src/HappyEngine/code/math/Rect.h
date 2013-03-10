@@ -29,7 +29,7 @@
 namespace he {
 
 struct RectI;
-struct RectF
+struct HAPPY_ENTRY RectF
 {
 public:
     float x, y, width, height;
@@ -44,7 +44,7 @@ public:
 	bool operator==(const RectF& r) const;
 	bool operator!=(const RectF& r) const;
 };
-struct RectI
+struct HAPPY_ENTRY RectI
 {
 public:
     int x, y, width, height;

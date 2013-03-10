@@ -28,11 +28,13 @@
 #include <Scene.h>
 #include <View.h>
 #include <DefaultRenderPipeline.h>
+#include "FlyCamera.h"
 
 ht::HappyPluginTestMain::HappyPluginTestMain()
     : m_View(nullptr)
     , m_Scene(nullptr)
     , m_RenderPipeline(nullptr)
+    , m_Camera(nullptr)
 {
 
 }
@@ -55,9 +57,12 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
+    m_Camera = NEW FlyCamera();
+
     m_View->setWindow(window);
     m_View->setAbsoluteViewport(viewport);
     m_View->init(settings);
+    m_View->setCamera(m_Camera);
 }
 
 void ht::HappyPluginTestMain::terminate()
@@ -67,6 +72,8 @@ void ht::HappyPluginTestMain::terminate()
     m_View = nullptr;
     graphicsEngine->removeScene(m_Scene);
     m_Scene = nullptr;
+    delete m_Camera;
+    m_Camera = nullptr;
 
     delete m_RenderPipeline;
     m_RenderPipeline = nullptr;
@@ -109,9 +116,9 @@ void ht::HappyPluginTestMain::onResumeGame()
 
 }
 
-void ht::HappyPluginTestMain::sdmInit( he::io::BinaryVisitor& visitor )
+void ht::HappyPluginTestMain::sdmInit( he::io::BinaryVisitor& /*visitor*/ )
 {
-    he::StaticDataManager::visit(visitor);
+    //he::StaticDataManager::visit(visitor);
 }
 
 void ht::HappyPluginTestMain::onResize( const he::RectI& newViewport )

@@ -33,7 +33,7 @@ namespace px {
 }
 namespace ge {
 
-class DynamicPhysicsComponent : public EntityComponent, public Object3D, public ITickable
+class HAPPY_ENTRY DynamicPhysicsComponent : public EntityComponent, public Object3D, public ITickable
 {
     DECLARE_ENTITY_COMPONENT_TYPE()
 public:

@@ -37,7 +37,7 @@ namespace gfx {
 namespace gui {
     class Sprite;
 
-class Canvas2D
+class HAPPY_ENTRY Canvas2D
 {
 public:
 

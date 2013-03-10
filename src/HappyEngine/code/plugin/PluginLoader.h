@@ -26,7 +26,7 @@ namespace he {
 namespace pl {
 class IPlugin;
 
-class PluginLoader
+class HAPPY_ENTRY PluginLoader
 {
     struct PluginWrapper
     {

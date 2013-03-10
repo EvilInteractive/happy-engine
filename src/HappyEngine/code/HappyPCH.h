@@ -32,6 +32,23 @@
 #define FILE_AND_LINE __FILE__, __LINE__
 #endif
 
+#ifdef HappyEngine_EXPORTS
+#define HAPPY_ENTRY __declspec(dllexport)
+#else
+#define HAPPY_ENTRY __declspec(dllimport)
+#endif
+
+/*
+'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+To minimize the possibility of data corruption when exporting a class with __declspec(dllexport), ensure that:
+ - All your static data is access through functions that are exported from the DLL.
+ - No inlined methods of your class can modify static data.
+ - No inlined methods of your class use CRT functions or other library functions use static data (see Potential Errors Passing CRT Objects Across DLL Boundaries for more information).
+ - No methods of your class (regardless of inlining) can use types where the instantiation in the EXE and DLL have static data differences.
+--> Make sure the compile options are the same!
+*/
+#pragma warning( disable : 4251 )
+
 #include <map>
 #include <unordered_map>
 #include <unordered_set>

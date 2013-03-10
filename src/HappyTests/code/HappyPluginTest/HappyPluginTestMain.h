@@ -28,6 +28,7 @@ namespace he {
     namespace gfx {
         class View;
         class Scene;
+        class CameraPerspective;
     }
     namespace ge {
         class DefaultRenderPipeline;
@@ -35,14 +36,13 @@ namespace he {
 }
 
 namespace ht {
-
+class FlyCamera;
 class HappyPluginTestMain : public he::pl::IPlugin
 {
 public:
     HappyPluginTestMain();
     virtual ~HappyPluginTestMain();
 
-    virtual void sdmInit(he::io::BinaryVisitor& visitor);
     virtual void init(he::gfx::Window* const window, const he::RectI& viewport);
     virtual void terminate();
 
@@ -62,6 +62,9 @@ private:
     he::gfx::View* m_View;
     he::gfx::Scene* m_Scene;
     he::ge::DefaultRenderPipeline* m_RenderPipeline;
+    FlyCamera* m_Camera;
+
+    he::PrimitiveList<he::ge::Entity*> m_Entities;
 
     /* DEFAULT COPY & ASSIGNMENT */
     HappyPluginTestMain(const HappyPluginTestMain&);

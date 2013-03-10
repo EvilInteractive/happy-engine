@@ -44,7 +44,7 @@ enum PhysicsShapeType
                                          PhysicsShapeType_Capsule
 };
     
-class IPhysicsShape                                            
+class HAPPY_ENTRY IPhysicsShape                                            
 {                                                              
     public:                                                        
     virtual ~IPhysicsShape() {}

@@ -27,7 +27,7 @@ class Bound;
 namespace gfx {
 
 class DynamicBuffer;
-class IInstancible : public IObject3D
+class HAPPY_ENTRY IInstancible : public IObject3D
 {
 public:
     virtual ~IInstancible() {}

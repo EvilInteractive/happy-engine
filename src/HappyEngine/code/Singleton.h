@@ -23,9 +23,6 @@
 #pragma once
 
 namespace he {
-namespace io {
-    class BinaryVisitor;
-}
 
 template<typename T>
 class Singleton
@@ -42,10 +39,6 @@ public:
     static void sdmDestroy()
     {
         delete s_Instance;
-    }
-    static void sdmVisit(he::io::BinaryVisitor& visitor)
-    {
-        visitor.visit(s_Instance);
     }
     static T* getInstance()
     {

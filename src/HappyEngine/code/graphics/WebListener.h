@@ -47,14 +47,14 @@ public:
     virtual ~WebListener();
 
     /* GENERAL */
-    void addObjectCallback(const he::String& object,
+    HAPPY_ENTRY void addObjectCallback(const he::String& object,
                            const he::String& method,
                            eventCallback1<void, const Awesomium::JSArray&>& callBack);
-    void removeObjectCallback(const he::String& object,
+    HAPPY_ENTRY void removeObjectCallback(const he::String& object,
                               const he::String& method,
                               eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
-    void executeFunction(const he::String& object,
+    HAPPY_ENTRY void executeFunction(const he::String& object,
                         const he::String& method,
                         const Awesomium::JSArray& args);
 

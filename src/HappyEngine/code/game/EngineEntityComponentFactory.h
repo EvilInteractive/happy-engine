@@ -27,7 +27,7 @@
 namespace he {
 namespace ge {
 
-class EngineEntityComponentFactory : public IEntityComponentFactory
+class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
 {
 public:
     virtual ~EngineEntityComponentFactory() {}

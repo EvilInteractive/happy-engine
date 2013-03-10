@@ -33,7 +33,6 @@ class StaticDataManager
 public:
     static void init();
     static void destroy();
-    static void visit(he::io::BinaryVisitor& visitor);
 };
 
 } //end namespace

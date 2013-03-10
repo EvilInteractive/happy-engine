@@ -51,7 +51,7 @@ namespace gfx {
 namespace tools {
 class ITypeHandler;
 
-class Console : public gfx::IDrawable2D
+class HAPPY_ENTRY Console : public gfx::IDrawable2D
 {
 public:
 

@@ -46,7 +46,7 @@ typedef unsigned long NativeWindowHandle;
 typedef void* NativeWindowHandle;
 #endif
 
-class Window
+class HAPPY_ENTRY Window
 {
 DECLARE_OBJECT(Window)
 friend GraphicsEngine;

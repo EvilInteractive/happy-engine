@@ -53,9 +53,7 @@ class IPlugin
 {
 public:
     virtual ~IPlugin() {}
-
-    virtual void sdmInit(io::BinaryVisitor& visitor) = 0;
-
+    
     virtual void init(he::gfx::Window* const window, const he::RectI& viewport) = 0;
     virtual void terminate() = 0;
 

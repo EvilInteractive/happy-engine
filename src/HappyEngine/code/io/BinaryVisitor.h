@@ -27,7 +27,7 @@
 namespace he {
 namespace io {
 
-class BinaryVisitor
+class HAPPY_ENTRY BinaryVisitor
 {
 public:
     enum EOpenType

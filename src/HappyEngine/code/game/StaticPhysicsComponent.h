@@ -34,7 +34,7 @@ namespace px {
 }
 namespace ge {
 
-class StaticPhysicsComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY StaticPhysicsComponent : public EntityComponent, public Object3D
 {
     DECLARE_ENTITY_COMPONENT_TYPE()
 public:
