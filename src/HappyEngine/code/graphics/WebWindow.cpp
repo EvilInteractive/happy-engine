@@ -32,7 +32,7 @@
 #include <SFML/Window.hpp>
 
 namespace he {
-namespace gfx {
+namespace gui {
 
 WebWindow::WebWindow() :   
 m_WebView(nullptr),

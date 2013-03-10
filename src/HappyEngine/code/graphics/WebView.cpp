@@ -38,7 +38,7 @@
 #define COMMON_ASCII_CHAR 128
 
 namespace he {
-namespace gfx {
+namespace gui {
 
 WebView::WebView(gfx::View* view, const RectI& viewport, bool enableUserInput) :   
 m_WebView(nullptr),
@@ -83,8 +83,8 @@ void WebView::init()
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
     m_WebListener = NEW WebListener(m_WebView);
 
-    ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
-    m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+    ObjectHandle handle = ResourceFactory<gfx::Texture2D>::getInstance()->create();
+    m_RenderTexture = ResourceFactory<gfx::Texture2D>::getInstance()->get(handle);
     m_RenderTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest,
         gfx::TextureFormat_RGBA8, false);
 
@@ -468,6 +468,23 @@ io::MouseCursor getCursorTypeFromAwesomium(const Awesomium::Cursor cursor)
 void WebView::OnChangeCursor( Awesomium::WebView* /*caller*/, Awesomium::Cursor cursor )
 {
     m_View->getWindow()->setCursor(getCursorTypeFromAwesomium(cursor));
+}
+
+void WebView::OnAddConsoleMessage(
+        Awesomium::WebView* /*caller*/,
+        const Awesomium::WebString& msg,int lineNr,
+        const Awesomium::WebString& source)
+{
+    char* buff0 = NEW char[msg.length()];
+    msg.ToUTF8(buff0, msg.length());
+
+    char* buff1 = NEW char[source.length()];
+    source.ToUTF8(buff1, source.length());
+
+    HE_INFO("JS Console: msg:'%s', lineNr:'%d', source:'%s'", buff0, lineNr, buff1);
+
+    delete[] buff0;
+    delete[] buff1;
 }
 
 }} //end namespace

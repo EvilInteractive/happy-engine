@@ -34,10 +34,13 @@ namespace Awesomium {
 
 namespace he {
 namespace gfx {
-class Texture2D;
+    class Texture2D;
+}
+
+namespace gui {
 class WebListener;
 
-class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
+class WebView : public gfx::IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
 {
 public:
 
@@ -109,6 +112,10 @@ public:
         const Awesomium::WebURL& /*target_url*/,
         const Awesomium::Rect& /*initial_pos*/,
         bool /*is_popup*/) {}
+    void OnAddConsoleMessage(
+        Awesomium::WebView* caller,
+        const Awesomium::WebString& msg,int lineNr,
+        const Awesomium::WebString& source);
 
 private:
 
@@ -124,7 +131,7 @@ private:
     bool m_InputEnabled;
     bool m_HasFocus;
     
-    Texture2D* m_RenderTexture;
+    gfx::Texture2D* m_RenderTexture;
     vec2 m_Position;
     vec2 m_Size;
     RectF m_ViewportPercent;

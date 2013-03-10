@@ -76,20 +76,20 @@ public:
     // draw to screen
     void draw();
 
-    // draw text
+    // draw dynamic text, for static use sprite
     void fillText(const Text& text, const vec2& pos);
     // draw image
     void drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
-                   const vec2& size = vec2(0.0f,0.0f),
-                   const RectI& regionToDraw = RectI(0,0,0,0));
+                   const vec2& size = vec2(),
+                   const RectI& regionToDraw = RectI());
     void drawSprite(const Sprite* sprite, const vec2& pos,
-                    const vec2& size = vec2(0.0f,0.0f));
+                    const vec2& size = vec2());
 
-    // blit tot screen
-    void blitTexture2D( const gfx::Texture2D* tex2D, const vec2& pos = vec2(),
-                        bool useBlending = true,
-                        const vec2& newDimensions = vec2(),
-                        const RectF& regionToDraw = RectF());
+    // blit to screen
+    void blitImage( const gfx::Texture2D* tex2D, const vec2& pos = vec2(),
+                    bool useBlending = true,
+                    const vec2& newDimensions = vec2(),
+                    const RectI& regionToDraw = RectI());
 
 private:
 

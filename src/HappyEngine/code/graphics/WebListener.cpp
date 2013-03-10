@@ -29,7 +29,7 @@
 #pragma warning(default:4267)
 
 namespace he {
-namespace gfx {
+namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 WebListener::WebListener(Awesomium::WebView* const webView)

@@ -49,10 +49,7 @@ public:
 
     /* GENERAL */
     void init();
-
     void resize();
-
-    /* GETTERS */
 
     /* SETTERS */
     void setColor(const Color& col);
@@ -60,12 +57,18 @@ public:
     /* DRAW */
     void fillText(const he::gui::Text& text, const vec2& pos);
     void drawImage( const Texture2D* tex2D, const vec2& pos,
-                    const vec2& newDimensions = vec2(0.0f,0.0f),
-                    const RectI regionToDraw = RectI(0,0,0,0));
+                    const vec2& newDimensions = vec2(),
+                    const RectI regionToDraw = RectI());
     void drawSprite(const gui::Sprite* sprite, const vec2& pos,
-                    const vec2& size = vec2(0.0f,0.0f));
+                    const vec2& size = vec2());
+    void blitImage( const Texture2D* tex2D, const vec2& pos,
+                    bool useBlending = true,
+                    const vec2& newDimensions = vec2(),
+                    const RectI regionToDraw = RectI());
 
 private:
+
+    /* EXTRA */
     float addTextToTextBuffer(const char* const buffer,
                               const size_t count,
                               const vec2& pos,

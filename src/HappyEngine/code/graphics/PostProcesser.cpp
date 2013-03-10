@@ -267,10 +267,10 @@ void PostProcesser::draw2D(gui::Canvas2D* canvas)
         float height(72.0f);
         float aspect(m_Bloom->getBloom(0)->getWidth() / (float)m_Bloom->getBloom(0)->getHeight());
         float width(aspect * height);
-        canvas->blitTexture2D(m_Bloom->getBloom(0), vec2(12 * 1 + width * 0, height), false, vec2(width, height));
-        canvas->blitTexture2D(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), false, vec2(width, height));
-        canvas->blitTexture2D(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), false, vec2(width, height));
-        canvas->blitTexture2D(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(0), vec2(12 * 1 + width * 0, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), false, vec2(width, height));
         if (m_Settings.postSettings.shaderSettings.enableHDR)
             canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
     }

@@ -26,6 +26,11 @@ addFilter(CODE_SRCS src/graphics/gui code/graphics/
 			Sprite.cpp							Sprite.h
 			SpriteCreator.cpp					SpriteCreator.h
 			Gui.h
+			WebView.cpp                         WebView.h
+            WebWindow.cpp                       WebWindow.h
+			WebListener.cpp					    WebListener.h
+			JSObject.cpp						JSObject.h
+			Canvas2D.cpp                        Canvas2D.h
         )
             
 addFilter(CODE_SRCS src/graphics/light code/graphics/
@@ -68,7 +73,6 @@ addFilter(CODE_SRCS src/graphics/rendering code/graphics/
         )
             
 addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
-			Canvas2D.cpp                        Canvas2D.h
 			Canvas2DBuffer.cpp                  Canvas2DBuffer.h
 			Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
 			Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h
@@ -76,10 +80,6 @@ addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
 			Simple2DEffect.cpp                  Simple2DEffect.h
 			Simple2DFontEffect.cpp              Simple2DFontEffect.h
 			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
-			WebView.cpp                         WebView.h
-            WebWindow.cpp                       WebWindow.h
-			WebListener.cpp					    WebListener.h
-			JSObject.h
 			NinePatchEffect.cpp					NinePatchEffect.h
 			SpriteData.h
         )

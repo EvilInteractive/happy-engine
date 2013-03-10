@@ -94,7 +94,7 @@ void UIController::updateSceneInfo(const he::vec3& camPos)
 }
 
 /* GETTERS */
-he::gfx::WebView* UIController::getWebView() const
+he::gui::WebView* UIController::getWebView() const
 {
     return m_WebView;
 }

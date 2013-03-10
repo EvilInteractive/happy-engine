@@ -125,7 +125,7 @@ void Canvas2D::draw()
 {
     gfx::Texture2D* tex2D(ResourceFactory<gfx::Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle));
 
-    m_Renderer2D->drawTexture2DToScreen(
+    m_RendererGL->blitImage(
         tex2D,
         m_Position,
         true);
@@ -153,12 +153,13 @@ void Canvas2D::drawSprite(const Sprite* sprite, const vec2& pos,
     m_RendererGL->drawSprite(sprite, pos, size);
 }
 
-void Canvas2D::blitTexture2D( const gfx::Texture2D* tex2D, const vec2& pos,
-                        bool useBlending,
-                        const vec2& newDimensions,
-                        const RectF& regionToDraw)
+void Canvas2D::blitImage(   const gfx::Texture2D* tex2D,
+                            const vec2& pos,
+                            bool useBlending,
+                            const vec2& newDimensions,
+                            const RectI& regionToDraw)
 {
-    m_Renderer2D->drawTexture2DToScreen(tex2D, pos, useBlending, newDimensions, regionToDraw);
+    m_RendererGL->blitImage(tex2D, pos, useBlending, newDimensions, regionToDraw);
 }
 
 /* INTERNAL */

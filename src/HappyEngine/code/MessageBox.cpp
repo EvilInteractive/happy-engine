@@ -45,7 +45,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
     MessageBoxButton result(MessageBoxButton_None);
     if (GRAPHICS != nullptr)
     {
-        gfx::WebWindow window;
+        gui::WebWindow window;
         window.init(512, 256);
         window.setTitle(caption);
 
@@ -62,7 +62,7 @@ MessageBoxButton MessageBox::showExt(const std::string& caption, const std::stri
         });
         he::eventCallback0<void> onloaded([&]()
         {
-            gfx::WebListener* const listener(window.getWebListener());
+            gui::WebListener* const listener(window.getWebListener());
             listener->addObjectCallback("HE", "onButtonClicked", onButtonClicked);
 
             Awesomium::JSArray array;
