@@ -16,26 +16,25 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/05
+//Created: 13/03/2013
 
-#ifndef _HE_EngineEntityComponentFactory_H_
-#define _HE_EngineEntityComponentFactory_H_
-#pragma once
+_DEF_FS(str, "");
 
-#include "IEntityComponentFactory.h"
+// Components
+DEF_FS(Entity);
+DEF_FS(CharacterPhysicsComponent);
+DEF_FS(DynamicPhysicsComponent);
+DEF_FS(InstancedModelComponent);
+DEF_FS(PointLightComponent);
+DEF_FS(SpotLightComponent);
+DEF_FS(ModelComponent);
+DEF_FS(PickingComponent);
+DEF_FS(SkinnedModelComponent);
+DEF_FS(StaticPhysicsComponent);
+DEF_FS(TriggerComponent);
 
-namespace he {
-namespace ge {
+// Component Properties
+DEF_FS(Translate);
+DEF_FS(Rotate);
+DEF_FS(Scale);
 
-class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
-{
-public:
-    virtual ~EngineEntityComponentFactory() {}
-
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
-};
-
-} } //end namespace
-
-#endif

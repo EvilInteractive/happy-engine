@@ -16,26 +16,39 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/05
+//Created: 13/03/2013
 
-#ifndef _HE_EngineEntityComponentFactory_H_
-#define _HE_EngineEntityComponentFactory_H_
+#ifndef _HE_FixedString_H_
+#define _HE_FixedString_H_
 #pragma once
 
-#include "IEntityComponentFactory.h"
-
 namespace he {
-namespace ge {
-
-class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
+class GlobalStringTable;
+class HAPPY_ENTRY FixedString
 {
+friend class GlobalStringTable;
 public:
-    virtual ~EngineEntityComponentFactory() {}
+    FixedString(): m_Handle(nullptr) {}
+    FixedString(const FixedString& other);
+    FixedString& operator=(const FixedString& other);
+    ~FixedString();
 
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
+    // Getters
+    const char* c_str() const { return m_Handle; }
+
+    // Operators
+    bool operator==(const FixedString& other) const { return m_Handle == other.m_Handle; }
+    bool operator!=(const FixedString& other) const { return m_Handle != other.m_Handle; }
+
+    // Static
+    static FixedString fromString(const char* const str, const int len = -1);
+
+private:
+    const char* m_Handle;
+
+    explicit FixedString(const char* const str);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

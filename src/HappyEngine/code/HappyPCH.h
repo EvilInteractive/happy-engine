@@ -81,6 +81,8 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #endif
 
 #include "HeString.h"
+#include "FixedString.h"
+#include "HeFixedStrings.h"
 
 #include "HappyTypes.h"
 #include "vec2.h"
@@ -101,6 +103,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #include "HappyInfo.h"
 #include "HeAssert.h"
 
+#ifdef _DEBUG
 #pragma warning(disable:4389) // '==' signed/unsigned mismatch
 template<typename To, typename From>
 inline To checked_numcast(const From value)
@@ -110,6 +113,25 @@ inline To checked_numcast(const From value)
     return result;
 }
 #pragma warning(default:4389)
+template<typename To, typename From>
+inline To checked_cast(From const value)
+{
+    To const result(dynamic_cast<To>(value));
+    HE_ASSERT(value == nullptr || nullptr != result, "checked cast failed!");
+    return result;
+}
+#else
+template<typename To, typename From>
+inline To checked_numcast(const From value)
+{
+    return static_cast<To>(value);
+}
+template<typename To, typename From>
+inline To* checked_cast(From* const value)
+{
+    return static_cast<To>(value);
+}
+#endif
 
 #include "HappyMemory.h"
 #include "HappyNew.h"

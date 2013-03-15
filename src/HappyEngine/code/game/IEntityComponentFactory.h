@@ -23,6 +23,7 @@
 #pragma once
 
 #include "EntityComponentType.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -33,7 +34,8 @@ class HAPPY_ENTRY IEntityComponentFactory
 public:
     virtual ~IEntityComponentFactory() {}
 
-    virtual EntityComponent* createEntityComponent(const EntityComponentType type) = 0;
+    virtual EntityComponent* createEntityComponent(const EntityComponentID& type) const = 0;
+    virtual void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const = 0;
 };
 
 } } //end namespace

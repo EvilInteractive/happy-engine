@@ -36,7 +36,6 @@ namespace ge {
 
 class HAPPY_ENTRY StaticPhysicsComponent : public EntityComponent, public Object3D
 {
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     StaticPhysicsComponent();
     virtual ~StaticPhysicsComponent();
@@ -48,6 +47,8 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strStaticPhysicsComponent; }
     //////////////////////////////////////////////////////////////////////////
          
     void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, uint32 collisionGroup = 0xffffffff, const mat44& localPose = mat44::Identity );

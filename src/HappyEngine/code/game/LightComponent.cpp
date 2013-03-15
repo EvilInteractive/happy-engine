@@ -35,8 +35,6 @@
 namespace he {
 namespace ge {
     
-IMPLEMENT_ENTITY_COMPONENT_TYPE(PointLightComponent)
-
 #pragma region Pointlight
 PointLightComponent::PointLightComponent()
     : m_PointLight(nullptr)
@@ -134,8 +132,6 @@ const vec3& PointLightComponent::getColor() const
 #pragma endregion
 
 #pragma region SpotLight
-
-IMPLEMENT_ENTITY_COMPONENT_TYPE(SpotLightComponent)
 
 SpotLightComponent::SpotLightComponent()
     : m_SpotLight(nullptr)

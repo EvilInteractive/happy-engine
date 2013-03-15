@@ -41,7 +41,8 @@ void MainGame::init()
 {
     //listUnitTest();
     //nodeGraphUnitTest();
-    guidUnitTest();
+    //guidUnitTest();
+    mat33UnitTest();
     HAPPYENGINE->quit();
 }
 
@@ -333,6 +334,32 @@ void MainGame::listUnitTest()
             list.add(TestStruct(i));
         }
     }
+}
+
+void printMat33(const he::mat33& mat)
+{
+    HE_INFO("|%6.3f %6.3f %6.3f|", mat(0, 0), mat(0, 1), mat(0, 2));
+    HE_INFO("|%6.3f %6.3f %6.3f|", mat(1, 0), mat(1, 1), mat(1, 2));
+    HE_INFO("|%6.3f %6.3f %6.3f|", mat(2, 0), mat(2, 1), mat(2, 2));
+}
+void printVec3(const he::vec3& vec)
+{
+    HE_INFO("(%.3f, %.3f, %.3f)", vec.x, vec.y, vec.z);
+}
+
+void MainGame::mat33UnitTest()
+{
+    using namespace he;
+    mat33 test1(mat33::createRotation3D(vec3::forward, piOverFour / 2) * mat33::createRotation3D(vec3::up, piOverTwo) * mat33::createRotation3D(vec3::right, piOverFour));
+    HE_INFO("Test1:");
+    printMat33(test1);
+    HE_INFO("result:");
+    vec3 euler(test1.getEulerAngles());
+    printVec3(euler);
+    HE_INFO("result2:");
+    mat33 result2(mat33::createRotation3D(euler));
+    printMat33(result2);
+    
 }
 
 } //end namespace

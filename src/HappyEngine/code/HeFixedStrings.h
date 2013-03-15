@@ -16,26 +16,27 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/05
+//Created: 13/03/2013
 
-#ifndef _HE_EngineEntityComponentFactory_H_
-#define _HE_EngineEntityComponentFactory_H_
+#ifndef _HE_FixedStrings_H_
+#define _HE_FixedStrings_H_
 #pragma once
 
-#include "IEntityComponentFactory.h"
-
 namespace he {
-namespace ge {
 
-class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
+class HAPPY_ENTRY HEFS 
 {
 public:
-    virtual ~EngineEntityComponentFactory() {}
+#define _DEF_FS(name, string) static he::FixedString name;
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "HeFixedStringTable.h"
+#undef _DEF_FS
+#undef DEF_FS
 
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
+    static void sdmInit();
+    static void sdmDestroy();
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

@@ -36,7 +36,6 @@ namespace ge {
 class HAPPY_ENTRY PointLightComponent : public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     PointLightComponent();
     virtual ~PointLightComponent();
@@ -48,6 +47,8 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strPointLightComponent; }
     //////////////////////////////////////////////////////////////////////////
         
     void setMultiplier(float multiplier);
@@ -81,7 +82,6 @@ private:
 class HAPPY_ENTRY SpotLightComponent : public EntityComponent, public Object3D
 {
 IMPLEMENT_IOBJECT3D_FROM(Object3D)
-DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     SpotLightComponent();
     virtual ~SpotLightComponent();
@@ -93,6 +93,8 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strSpotLightComponent; }
     //////////////////////////////////////////////////////////////////////////
     
     void setMultiplier(float multiplier);

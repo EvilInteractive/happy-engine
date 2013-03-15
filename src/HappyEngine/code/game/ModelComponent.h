@@ -31,7 +31,6 @@ namespace ge {
 class HAPPY_ENTRY ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     ModelComponent();
     virtual ~ModelComponent();
@@ -45,6 +44,8 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strModelComponent; }
     //////////////////////////////////////////////////////////////////////////
     
 

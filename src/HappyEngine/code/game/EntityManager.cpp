@@ -84,7 +84,7 @@ Entity* EntityManager::getEntity( const ObjectHandle& handle )
     return m_EntityFactory.get(handle);
 }
 
-EntityComponent* EntityManager::createComponent( const EntityComponentType type )
+EntityComponent* EntityManager::createComponent( const EntityComponentID& type )
 {
     EntityComponent* result(nullptr);
     const size_t factories(m_FactoryList.size());

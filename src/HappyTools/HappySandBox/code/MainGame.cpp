@@ -183,12 +183,12 @@ void MainGame::init()
     m_TestScene = entityMan->createEmptyEntity();
     m_TestScene->setScene(m_Scene);
     ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
-        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
+        entityMan->createComponent(he::HEFS::strModelComponent)));
     m_TestScene->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testSceneBas.material", "testPlatformer/scene.binobj");    
     //m_EntityList.push_back(scene);
     ge::StaticPhysicsComponent* physicsComp(static_cast<ge::StaticPhysicsComponent*>(
-        entityMan->createComponent(ge::StaticPhysicsComponent::s_ComponentType)));
+        entityMan->createComponent(he::HEFS::strStaticPhysicsComponent)));
     m_TestScene->addComponent(physicsComp);
     px::PhysicsConvexShape convexSceneShape("testPlatformer/scene.pxcv");
     px::PhysicsConcaveShape concaveSceneShape("testPlatformer/scene.pxcc");

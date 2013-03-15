@@ -37,7 +37,6 @@ namespace ge {
 class HAPPY_ENTRY PickingComponent : public Pickable, public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     PickingComponent();
     virtual ~PickingComponent();
@@ -51,6 +50,8 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strPickingComponent; }
     //////////////////////////////////////////////////////////////////////////
            
 protected:
@@ -65,6 +66,7 @@ private:
 
     he::eventCallback0<void> m_OnNewPickingMesh;
     const gfx::ModelMesh* m_ModelMesh;
+    ObjectHandle m_LinkedModelComponent;
 
     //Disable default copy constructor and default assignment operator
     PickingComponent(const PickingComponent&);

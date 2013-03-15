@@ -35,7 +35,6 @@ namespace ge {
 class HAPPY_ENTRY InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     InstancedModelComponent();
     virtual ~InstancedModelComponent();
@@ -46,6 +45,8 @@ public:
     virtual void init(Entity* pParent);
 
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strInstancedModelComponent; }
     //////////////////////////////////////////////////////////////////////////
     
     //////////////////////////////////////////////////////////////////////////

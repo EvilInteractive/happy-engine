@@ -97,8 +97,8 @@ void ht::HappyPluginTestMain::onLoadLevel( const he::Path& /*path*/ )
     ge::EntityManager* const entityMan(ge::EntityManager::getInstance());
     ge::Entity* const scene(entityMan->createEmptyEntity());
     scene->setScene(m_Scene);
-    ge::ModelComponent* const sceneModel(static_cast<ge::ModelComponent*>(
-        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
+    ge::ModelComponent* const sceneModel(checked_cast<ge::ModelComponent*>(
+        entityMan->createComponent(HEFS::strModelComponent)));
     scene->addComponent(sceneModel);
     sceneModel->setModelMeshAndMaterial("testSceneBas.material", "testScene3.binobj");
     scene->activate();

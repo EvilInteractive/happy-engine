@@ -34,7 +34,6 @@ namespace ge {
 
 class HAPPY_ENTRY TriggerComponent : public EntityComponent, public Object3D
 {
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
@@ -45,6 +44,8 @@ public:
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strTriggerComponent; }
     
     /* GENERAL */
     void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 

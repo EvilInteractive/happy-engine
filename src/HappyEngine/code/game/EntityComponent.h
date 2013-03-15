@@ -32,6 +32,7 @@ namespace io {
 }
 namespace ge {
 class Entity;
+class Property;
 class HAPPY_ENTRY EntityComponent : public IObject3D
 {
 DECLARE_OBJECT(EntityComponent)
@@ -44,7 +45,10 @@ public:
     virtual void activate() {}
     virtual void deactivate() {}
 
-    virtual EntityComponentType getComponentType() const = 0;
+    virtual const EntityComponentID& getComponentID() const = 0;
+
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
 
     //////////////////////////////////////////////////////////////////////////
     // IObject3D

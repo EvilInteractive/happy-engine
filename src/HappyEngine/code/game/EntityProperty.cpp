@@ -15,27 +15,6 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 2013/03/05
-
-#ifndef _HE_EngineEntityComponentFactory_H_
-#define _HE_EngineEntityComponentFactory_H_
-#pragma once
-
-#include "IEntityComponentFactory.h"
-
-namespace he {
-namespace ge {
-
-class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
-{
-public:
-    virtual ~EngineEntityComponentFactory() {}
-
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
-};
-
-} } //end namespace
-
-#endif
+//Author:  
+//Created: //
+#include "HappyPCH.h" 

@@ -26,9 +26,7 @@
 
 namespace he {
 namespace ge {
-
-IMPLEMENT_ENTITY_COMPONENT_TYPE(Entity)
-
+    
 Entity::Entity(): m_Parent(nullptr), m_Scene(nullptr), m_IsActive(false)
 {
 }
@@ -97,10 +95,10 @@ void Entity::removeComponentAt( const size_t index )
     m_Components.removeAt(index);
 }
 
-EntityComponent* Entity::getComponent( EntityComponentType const type )
+EntityComponent* Entity::getComponent( const EntityComponentID& id )
 {
     size_t index(0);
-    if (m_Components.find_if([&type](EntityComponent* const comp) { return comp->getComponentType() == type; }, index))
+    if (m_Components.find_if([&id](EntityComponent* const comp) { return comp->getComponentID() == id; }, index))
     {
         return m_Components[index];
     }

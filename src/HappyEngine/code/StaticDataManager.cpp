@@ -43,15 +43,18 @@
 #include "BinaryVisitor.h"
 #include "EntityManager.h"
 #include "SystemStats.h"
+#include "GlobalStringTable.h"
 
 namespace he {
 
 void StaticDataManager::init()
 {
-    he::tools::SystemStats::sdmInit();
     he::HappyEngine::sdmInit();
-    details::ObjectFactoryTypeManager::sdmInit();
     tools::Logger::sdmInit();
+    he::GlobalStringTable::sdmInit();
+    he::HEFS::sdmInit();
+    he::tools::SystemStats::sdmInit();
+    details::ObjectFactoryTypeManager::sdmInit();
     ResourceFactory<gfx::Material>::sdmInit();
     ResourceFactory<gfx::Material>::getInstance()->init(0, 16, "MaterialFactory");
     ResourceFactory<gfx::Texture2D>::sdmInit();
@@ -103,10 +106,12 @@ void StaticDataManager::destroy()
     gfx::ViewFactory::sdmDestroy();
     gfx::SceneFactory::sdmDestroy();
     gfx::WindowFactory::sdmDestroy();
-    tools::Logger::sdmDestroy();
     details::ObjectFactoryTypeManager::sdmDestroy();
-    he::HappyEngine::sdmDestroy();
     he::tools::SystemStats::sdmDestroy();
+    he::HEFS::sdmDestroy();
+    he::GlobalStringTable::sdmDestroy();
+    tools::Logger::sdmDestroy();
+    he::HappyEngine::sdmDestroy();
 }
 
 } //end namespace

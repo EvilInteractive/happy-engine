@@ -18,7 +18,6 @@
 //Author:  Bastian Damman
 //Created: 30/09/2011
 //Changed: 04/11/2011
-//added networking: 26/06/2012
 
 #ifndef _HE_ENTITY_H_
 #define _HE_ENTITY_H_
@@ -34,7 +33,6 @@ namespace ge {
 
 class HAPPY_ENTRY Entity : public EntityComponent, public Object3D
 {
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     DECLARE_RTTI(RTTI::Entity)
 
@@ -44,9 +42,11 @@ public:
     void addComponent(EntityComponent* const component);
     void removeComponent(EntityComponent* const component);
     void removeComponentAt(const size_t index);
-    EntityComponent* getComponent(EntityComponentType const type);
+    EntityComponent* getComponent(const EntityComponentID& id);
     size_t getComponentCount() const { return m_Components.size(); }
     EntityComponent* getComponentAt(const size_t index) const { return m_Components[index]; }
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strEntity; }
 
     virtual void activate();
     virtual void deactivate();

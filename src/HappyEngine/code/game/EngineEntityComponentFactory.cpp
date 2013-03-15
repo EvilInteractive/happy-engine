@@ -34,50 +34,64 @@
 namespace he {
 namespace ge {
 
-EntityComponent* EngineEntityComponentFactory::createEntityComponent( const EntityComponentType type )
+EntityComponent* EngineEntityComponentFactory::createEntityComponent( const EntityComponentID& type ) const
 {
     EntityComponent* result(nullptr);
-    if (type == CharacterPhysicsComponent::s_ComponentType)
+    if (type == HEFS::strCharacterPhysicsComponent)
     {
         result = NEW CharacterPhysicsComponent();
     }
-    else if (type == DynamicPhysicsComponent::s_ComponentType)
+    else if (type == HEFS::strDynamicPhysicsComponent)
     {
         result = NEW DynamicPhysicsComponent();
     }
-    else if (type == CharacterPhysicsComponent::s_ComponentType)
+    else if (type == HEFS::strInstancedModelComponent)
     {
-        result = NEW CharacterPhysicsComponent();
+        result = NEW InstancedModelComponent();
     }
-    else if (type == PointLightComponent::s_ComponentType)
+    else if (type == HEFS::strPointLightComponent)
     {
         result = NEW PointLightComponent();
     }
-    else if (type == SpotLightComponent::s_ComponentType)
+    else if (type == HEFS::strSpotLightComponent)
     {
         result = NEW SpotLightComponent();
     }
-    else if (type == ModelComponent::s_ComponentType)
+    else if (type == HEFS::strModelComponent)
     {
         result = NEW ModelComponent();
     }
-    else if (type == PickingComponent::s_ComponentType)
+    else if (type == HEFS::strPickingComponent)
     {
         result = NEW PickingComponent();
     }
-    else if (type == SkinnedModelComponent::s_ComponentType)
+    else if (type == HEFS::strSkinnedModelComponent)
     {
         result = NEW SkinnedModelComponent();
     }
-    else if (type == StaticPhysicsComponent::s_ComponentType)
+    else if (type == HEFS::strStaticPhysicsComponent)
     {
         result = NEW StaticPhysicsComponent();
     }
-    else if (type == TriggerComponent::s_ComponentType)
+    else if (type == HEFS::strTriggerComponent)
     {
         result = NEW TriggerComponent();
     }
     return result;
+}
+
+void EngineEntityComponentFactory::fillComponentDescList( he::ObjectList<EntityComponentDesc>& /*list*/ ) const
+{
+    //list.add(EntityComponentDesc(HEFS::strCharacterPhysicsComponent, CharacterPhysicsComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strDynamicPhysicsComponent, DynamicPhysicsComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strInstancedModelComponent, InstancedModelComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strPointLightComponent, PointLightComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strSpotLightComponent, SpotLightComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strModelComponent, ModelComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strPickingComponent, PickingComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strSkinnedModelComponent, SkinnedModelComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strStaticPhysicsComponent, StaticPhysicsComponent::getPropertyDesc()));
+    //list.add(EntityComponentDesc(HEFS::strTriggerComponent, TriggerComponent::getPropertyDesc()));
 }
 
 } } //end namespace

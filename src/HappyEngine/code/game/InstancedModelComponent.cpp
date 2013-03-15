@@ -30,8 +30,6 @@
 namespace he {
 namespace ge {
 
-IMPLEMENT_ENTITY_COMPONENT_TYPE(InstancedModelComponent)
-
 InstancedModelComponent::InstancedModelComponent(): m_InstanceId(UINT32_MAX), m_ControllerKey(""), m_Parent(nullptr)
 {
 }

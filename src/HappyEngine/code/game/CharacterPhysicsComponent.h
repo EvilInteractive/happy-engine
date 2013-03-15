@@ -34,7 +34,6 @@ namespace ge {
 class HAPPY_ENTRY CharacterPhysicsComponent : public EntityComponent, public Object3D, public ITickable
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     CharacterPhysicsComponent();
     virtual ~CharacterPhysicsComponent();
@@ -46,6 +45,8 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strCharacterPhysicsComponent; }
     //////////////////////////////////////////////////////////////////////////
      
     //////////////////////////////////////////////////////////////////////////

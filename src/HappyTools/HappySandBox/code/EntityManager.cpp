@@ -61,7 +61,7 @@ he::ge::Entity* EntityManager::createEntity()
     newEntity->setScene(m_Scene);
 
     ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
-        entityMan->createComponent(ge::ModelComponent::s_ComponentType)));
+        entityMan->createComponent(he::HEFS::strModelComponent)));
     newEntity->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testSceneBas.material", "box.binobj");    
 

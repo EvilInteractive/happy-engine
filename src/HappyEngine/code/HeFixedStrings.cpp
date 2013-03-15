@@ -16,26 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/05
+//Created: 13/03/2013
+#include "HappyPCH.h" 
 
-#ifndef _HE_EngineEntityComponentFactory_H_
-#define _HE_EngineEntityComponentFactory_H_
-#pragma once
-
-#include "IEntityComponentFactory.h"
+#include "HeFixedStrings.h"
 
 namespace he {
-namespace ge {
 
-class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
+#define _DEF_FS(name, string) he::FixedString HEFS::name;
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "HeFixedStringTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+
+
+void HEFS::sdmInit()
 {
-public:
-    virtual ~EngineEntityComponentFactory() {}
+#define _DEF_FS(name, string) name = he::FixedString::fromString(string, sizeof(string));
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "HeFixedStringTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+}
 
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
-};
+void HEFS::sdmDestroy()
+{
+#define _DEF_FS(name, string) name = he::FixedString();
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "HeFixedStringTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+}
 
-} } //end namespace
-
-#endif
+} //end namespace

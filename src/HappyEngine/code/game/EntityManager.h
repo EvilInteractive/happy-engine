@@ -45,7 +45,7 @@ public:
     Entity* createEmptyEntity();
     void destroyEntity(Entity* const entity);
 
-    EntityComponent* createComponent(const EntityComponentType type);
+    EntityComponent* createComponent(const EntityComponentID& type);
     void destroyComponent(EntityComponent* const component);
 
     Entity* getEntity(const ObjectHandle& handle);

@@ -16,24 +16,32 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/05
+//Created: 10/03/2013
 
-#ifndef _HE_EngineEntityComponentFactory_H_
-#define _HE_EngineEntityComponentFactory_H_
+#ifndef _HE_EntityComponentDesc_H_
+#define _HE_EntityComponentDesc_H_
 #pragma once
 
-#include "IEntityComponentFactory.h"
+#include "EntityComponentType.h"
 
 namespace he {
 namespace ge {
+class IEntityProperty;
 
-class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
+struct EntityComponentDesc
 {
 public:
-    virtual ~EngineEntityComponentFactory() {}
+    EntityComponentDesc()
+        : m_Type()
+    {
+    }
+    explicit EntityComponentDesc(const EntityComponentID& type)
+        : m_Type(type)
+    {
+    }
 
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
+    EntityComponentID m_Type;
+    he::PrimitiveList<IEntityProperty*> m_Properties;
 };
 
 } } //end namespace

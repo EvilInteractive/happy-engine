@@ -25,12 +25,11 @@
 #include "ModelMesh.h"
 #include "ModelComponent.h"
 #include "PickingManager.h"
+#include "EntityManager.h"
 
 namespace he {
 namespace ge {
-
-IMPLEMENT_ENTITY_COMPONENT_TYPE(PickingComponent)
-
+    
 #pragma warning(disable:4355)
 PickingComponent::PickingComponent()
     : m_ModelMesh(nullptr)
@@ -55,11 +54,12 @@ void PickingComponent::activate()
 {
     HE_IF_ASSERT(m_Parent != nullptr, "Activating PickingComponent without a parent is not possible!")
     {
-        EntityComponent* const comp(m_Parent->getComponent(ModelComponent::s_ComponentType));
-        if (comp != nullptr) // Make safer and more eff with objecthandles + keep as member!
+        EntityComponent* const comp(m_Parent->getComponent(HEFS::strModelComponent));
+        if (comp != nullptr)
         {
-            ModelComponent* const modelComp(static_cast<ModelComponent*>(comp));
+            ModelComponent* const modelComp(checked_cast<ModelComponent*>(comp));
             modelComp->OnModelMeshLoaded += m_OnNewPickingMesh;
+            m_LinkedModelComponent = modelComp->getHandle();
             initPickingMesh();
         }
         else
@@ -71,10 +71,10 @@ void PickingComponent::activate()
 
 void PickingComponent::deactivate()
 {
-    EntityComponent* const comp(m_Parent->getComponent(ModelComponent::s_ComponentType));
-    if (comp != nullptr) // Make safer with objecthandles!
+    if (m_LinkedModelComponent != ObjectHandle::unassigned)
     {
-        ModelComponent* const modelComp(static_cast<ModelComponent*>(comp));
+        EntityComponent* const comp(EntityManager::getInstance()->getComponent(m_LinkedModelComponent));
+        ModelComponent* const modelComp(checked_cast<ModelComponent*>(comp));
         modelComp->OnModelMeshLoaded -= m_OnNewPickingMesh;
     }
     if (m_ModelMesh != nullptr)
@@ -102,9 +102,9 @@ const Bound& PickingComponent::getPickingBound() const
 
 const mat44& PickingComponent::getPickingWorld() const
 {
-    EntityComponent* const comp(m_Parent->getComponent(ModelComponent::s_ComponentType));
-    if (comp != nullptr) // Make safer with objecthandles!
+    if (m_LinkedModelComponent != ObjectHandle::unassigned)
     {
+        EntityComponent* const comp(EntityManager::getInstance()->getComponent(m_LinkedModelComponent));
         return comp->getWorldMatrix();
     }
     return getWorldMatrix();
@@ -112,10 +112,10 @@ const mat44& PickingComponent::getPickingWorld() const
 
 void PickingComponent::initPickingMesh()
 {
-    EntityComponent* const comp(m_Parent->getComponent(ModelComponent::s_ComponentType));
-    if (comp != nullptr) // Make safer with objecthandles!
+    if (m_LinkedModelComponent != ObjectHandle::unassigned)
     {
-        ModelComponent* const modelComp(static_cast<ModelComponent*>(comp));
+        EntityComponent* const comp(EntityManager::getInstance()->getComponent(m_LinkedModelComponent));
+        ModelComponent* const modelComp(checked_cast<ModelComponent*>(comp));
         const gfx::ModelMesh* mesh(modelComp->getModelMesh());
         if (mesh != nullptr)
         {

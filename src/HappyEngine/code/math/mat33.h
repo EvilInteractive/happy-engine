@@ -28,7 +28,7 @@
 namespace he {
 class mat44;
 
-class mat33
+class HAPPY_ENTRY mat33
 {
 public:
 
@@ -49,6 +49,7 @@ public:
 
     static mat33 createRotation3D(const vec3& axis, float radians);
     static mat33 createRotation3D(const vec3& forward, const vec3& up, const vec3& right);
+    static mat33 createRotation3D(const vec3& eulerAngle);
 
     /* OPERATORS */
     mat33 operator*(const mat33& mat) const;
@@ -66,6 +67,8 @@ public:
     const vec3& getForward() const;
     const vec3& getUp() const;
     const vec3& getRight() const;
+
+    vec3 getEulerAngles() const;
 
     /* STATIC */
     static const mat33 Identity;

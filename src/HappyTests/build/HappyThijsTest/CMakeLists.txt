@@ -21,6 +21,9 @@ endif()
 # add HappyThijsTest executable
 add_executable (HappyThijsTest ${HAPPYTHIJSTEST_SRCS})
 
+include(${HappyEngine_SOURCE_DIR}/cmakeHelpers/CopyHappyRuntime.cmake)
+copyHappyRuntime(HappyThijsTest)
+
 # link thirdparty
 if (WIN32)
 LinkThirdParty(HappyThijsTest)

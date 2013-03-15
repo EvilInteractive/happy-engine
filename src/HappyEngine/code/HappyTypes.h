@@ -109,7 +109,7 @@ struct ObjectHandle
     const static ObjectHandle unassigned;
 };
 
-struct Guid
+struct HAPPY_ENTRY Guid
 {
     Guid();
     ~Guid() {}

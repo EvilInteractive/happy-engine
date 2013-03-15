@@ -21,6 +21,9 @@ endif()
 # add HappyUnitTests executable
 add_executable (HappyUnitTests ${HAPPYUNITTESTS_SRCS})
 
+include(${HappyEngine_SOURCE_DIR}/cmakeHelpers/CopyHappyRuntime.cmake)
+copyHappyRuntime(HappyUnitTests)
+
 # link thirdparty
 if (WIN32)
 LinkThirdParty(HappyUnitTests)

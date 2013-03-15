@@ -24,6 +24,10 @@ addFilter(CODE_SRCS src code/
             HappyPCH.h              HappyPCH.cpp
             HappyTypes.h            HappyTypes.cpp
             HeString.h              HeString.cpp
+            FixedString.h           FixedString.cpp
+            HeFixedStringTable.h
+            HeFixedStrings.h        HeFixedStrings.cpp
+            GlobalStringTable.h     GlobalStringTable.cpp
             MessageBox.h            MessageBox.cpp
             OpenGL.h                OpenGL.cpp
             RTTI.h

@@ -31,7 +31,6 @@ namespace ge {
 class HAPPY_ENTRY SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSkinnedDrawable)
-    DECLARE_ENTITY_COMPONENT_TYPE()
 public:
     SkinnedModelComponent();
     virtual ~SkinnedModelComponent();
@@ -48,6 +47,8 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+
+    virtual const EntityComponentID& getComponentID() const { return HEFS::strSkinnedModelComponent; }
     //////////////////////////////////////////////////////////////////////////
     
 
