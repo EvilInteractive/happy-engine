@@ -28,20 +28,54 @@ namespace he {
 namespace ge {
 class IEntityProperty;
 
+enum PropertyFeel
+{
+    PropertyFeel_Default,
+    PropertyFeel_Color,
+    PropertyFeel_Slider,
+    PropertyFeel_UpDown
+};
+
+class Property;
+struct PropertyDesc
+{
+    Property* m_Property;
+    he::String m_DisplayName;
+    he::String m_Tooltip;
+    PropertyFeel m_Feel;
+
+    PropertyDesc(): m_Property(nullptr), m_DisplayName(""), m_Tooltip(""), m_Feel(PropertyFeel_Default) {}
+    ~PropertyDesc() {}
+    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip = "", const PropertyFeel feel = PropertyFeel_Default)
+        : m_Property(prop), m_DisplayName(displayName), m_Tooltip(tooltip), m_Feel(feel)
+    {}
+
+};
+
 struct EntityComponentDesc
 {
 public:
     EntityComponentDesc()
-        : m_Type()
+        : m_ID(), m_DisplayName("")
     {
     }
-    explicit EntityComponentDesc(const EntityComponentID& type)
-        : m_Type(type)
+    EntityComponentDesc(const EntityComponentDesc& other)
+        : m_ID(other.m_ID), m_DisplayName(other.m_DisplayName)
     {
+        m_Properties.append(other.m_Properties);
+    }
+    EntityComponentDesc& operator=(const EntityComponentDesc& other)
+    {
+        m_ID = other.m_ID;
+        m_DisplayName = other.m_DisplayName;
+        m_Properties.clear();
+        m_Properties.append(other.m_Properties);
+        return *this;
     }
 
-    EntityComponentID m_Type;
-    he::PrimitiveList<IEntityProperty*> m_Properties;
+    EntityComponentID m_ID;
+    he::String m_DisplayName;
+    he::ObjectList<PropertyDesc> m_Properties;
 };
 
 } } //end namespace

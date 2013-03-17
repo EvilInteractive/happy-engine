@@ -43,3 +43,7 @@ DEF_FS(Translate);
 DEF_FS(Rotate);
 DEF_FS(Scale);
 
+DEF_FS(Multiplier)
+DEF_FS(Attenuation)
+DEF_FS(Color)
+

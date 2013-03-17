@@ -24,9 +24,7 @@
 
 namespace he {
 namespace ge {
-
-typedef he::FixedString PropertyID;
-
+    
 class IPropertyValue
 {
 public:
@@ -60,10 +58,10 @@ public:
     }
 
     template<typename T>
-    void init(PropertyID name, const T& defaultValue)
+    void init(const he::FixedString& name, const T& defaultValue)
     {
         HE_ASSERT(m_Value == nullptr, "Property %s already initialize", m_Name);
-        m_Name = id;
+        m_Name = name;
         m_Value = NEW PropertyValue<T>(defaultValue);
     }
 
@@ -81,13 +79,13 @@ public:
         return prop->get();
     }
 
-    PropertyID getName() const { return m_Name; }
+    const he::FixedString& getName() const { return m_Name; }
         
 private:
     Property(const Property&);
     Property& operator=(const Property&);
 
-    PropertyID m_Name;
+    he::FixedString m_Name;
     IPropertyValue* m_Value;
 };
 

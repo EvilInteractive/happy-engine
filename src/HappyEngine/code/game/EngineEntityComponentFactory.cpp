@@ -80,12 +80,14 @@ EntityComponent* EngineEntityComponentFactory::createEntityComponent( const Enti
     return result;
 }
 
-void EngineEntityComponentFactory::fillComponentDescList( he::ObjectList<EntityComponentDesc>& /*list*/ ) const
+void EngineEntityComponentFactory::fillComponentDescList( he::ObjectList<EntityComponentDesc>& list ) const
 {
+    EntityComponentDesc desc;
     //list.add(EntityComponentDesc(HEFS::strCharacterPhysicsComponent, CharacterPhysicsComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strDynamicPhysicsComponent, DynamicPhysicsComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strInstancedModelComponent, InstancedModelComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strPointLightComponent, PointLightComponent::getPropertyDesc()));
+    PointLightComponent::fillEntityComponentDesc(desc);
+    list.add(desc);
     //list.add(EntityComponentDesc(HEFS::strSpotLightComponent, SpotLightComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strModelComponent, ModelComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strPickingComponent, PickingComponent::getPropertyDesc()));
