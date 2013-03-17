@@ -43,6 +43,10 @@ MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m
 
 MainGame::~MainGame()
 {
+}
+
+void MainGame::destroy()
+{
     m_Renderer->detachFromRender(m_FpsGraph);
     m_Renderer->detachFromRender(this);
 
@@ -51,12 +55,7 @@ MainGame::~MainGame()
 
     delete m_Renderer;
     GRAPHICS->removeView(m_View);
-    GRAPHICS->removeWindow(m_Window);
-}
-
-void MainGame::destroy()
-{
-    
+    GRAPHICS->removeWindow(m_Window);    
 }
 void MainGame::init()
 {

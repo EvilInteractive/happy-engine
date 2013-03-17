@@ -27,7 +27,7 @@ int main( int /*argc*/, char** /*args[]*/ )
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    he::HappyEngine::init(he::SubEngine_None);
+    he::HappyEngine::init(he::SubEngine_None, he::Path("../../data"));
 
     he::ge::Game* game(NEW hut::MainGame());
     HAPPYENGINE->start(game);

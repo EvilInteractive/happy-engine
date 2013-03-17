@@ -125,7 +125,9 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
+    {
         m_ContentManager = NEW ct::ContentManager();
+    }
     
     if (subengines & SubEngine_Physics)
     {
