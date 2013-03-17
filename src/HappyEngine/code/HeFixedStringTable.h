@@ -20,6 +20,11 @@
 
 _DEF_FS(str, "");
 
+DEF_FS(X)
+DEF_FS(Y)
+DEF_FS(Z)
+DEF_FS(W)
+
 // Components
 DEF_FS(Entity);
 DEF_FS(CharacterPhysicsComponent);

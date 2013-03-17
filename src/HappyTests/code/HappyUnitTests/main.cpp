@@ -20,6 +20,7 @@
 #include "HappyUnitTestsPCH.h"
 
 #include "MainGame.h"
+#include "UnitTestFixedStrings.h"
 
 int main( int /*argc*/, char** /*args[]*/ )
 {
@@ -28,11 +29,13 @@ int main( int /*argc*/, char** /*args[]*/ )
 #endif
 
     he::HappyEngine::init(he::SubEngine_None, he::Path("../../data"));
+    hut::HTFS::sdmInit();
 
     he::ge::Game* game(NEW hut::MainGame());
     HAPPYENGINE->start(game);
     delete game;
 
+    hut::HTFS::sdmDestroy();
     he::HappyEngine::dispose();
 
     std::cout << "\npress enter to quit\n";

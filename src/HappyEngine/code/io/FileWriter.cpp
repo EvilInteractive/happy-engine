@@ -43,12 +43,16 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
     if (boost::filesystem::exists(boostPath, error) == false)
     {
         error.clear();
-        if (boost::filesystem::create_directory(boostPath.parent_path(), error) == false)
+        boost::filesystem::path parentDir(boostPath.parent_path());
+        if (parentDir.empty() == false)
         {
-            if (error.value() != 0)
+            if (boost::filesystem::create_directory(boostPath.parent_path(), error) == false)
             {
-                std::string message("Directory creation failed:\n" + error.message());
-                HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
+                if (error.value() != 0)
+                {
+                    std::string message("Directory creation failed:\n" + error.message());
+                    HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
+                }
             }
         }
     }

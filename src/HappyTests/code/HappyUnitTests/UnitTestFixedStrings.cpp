@@ -16,15 +16,36 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 03/11/2012
+//Created: 13/03/2013
+#include "HappyUnitTestsPCH.h" 
 
-#ifndef _HUT_HappyUnitTestsPCH_H_
-#define _HUT_HappyUnitTestsPCH_H_
-#pragma once
-
-#pragma message("HappyUnitTests: Compiling precompiled headers.")
-
-#include "HappyPCH.h"
 #include "UnitTestFixedStrings.h"
 
-#endif
+namespace hut {
+
+#define _DEF_FS(name, string) he::FixedString HTFS::name;
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "UnitTestFixedStringsTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+
+
+void HTFS::sdmInit()
+{
+#define _DEF_FS(name, string) name = he::FixedString::fromString(string, sizeof(string));
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "UnitTestFixedStringsTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+}
+
+void HTFS::sdmDestroy()
+{
+#define _DEF_FS(name, string) name = he::FixedString();
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "UnitTestFixedStringsTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+}
+
+} //end namespace

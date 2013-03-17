@@ -16,15 +16,14 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 03/11/2012
+//Created: 17/03/2013
 
-#ifndef _HUT_HappyUnitTestsPCH_H_
-#define _HUT_HappyUnitTestsPCH_H_
-#pragma once
 
-#pragma message("HappyUnitTests: Compiling precompiled headers.")
-
-#include "HappyPCH.h"
-#include "UnitTestFixedStrings.h"
-
-#endif
+DEF_FS(Vec4Test);
+DEF_FS(Vec2Test);
+DEF_FS(StringTest);
+DEF_FS(FloatTest);
+DEF_FS(Int8Test);
+DEF_FS(UInt32Test);
+DEF_FS(GuidTest);
+DEF_FS(ObjectTest);

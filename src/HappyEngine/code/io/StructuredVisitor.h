@@ -36,23 +36,31 @@ public:
     virtual ~StructuredVisitor() {}
 
     bool isOpen() const { return m_OpenType != eOpenType_Closed; }
-    
-    template<typename T>
-    void visit(const he::FixedString& key, T& value)
-    {
-        HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
-        if (m_OpenType == eOpenType_Read)
-        {
-            readBuffer(&value, sizeof(T));
-        }
-        else
-        {
-            writeBuffer(&value, sizeof(T));
-        }
-    }
+
+    virtual void close() = 0;
+
+    virtual bool enterNode(const he::FixedString& key, const char* comment = NULL) = 0;
+    virtual void exitNode(const he::FixedString& key) = 0;
+
+    virtual bool visit(const he::FixedString& key, he::String& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, bool& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, int8& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, uint8& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, int16& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, uint16& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, int32& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, uint32& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, int64& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, uint64& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, float& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, double& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, vec2& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, vec3& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, vec4& value, const char* comment = NULL) = 0;
+    virtual bool visit(const he::FixedString& key, Guid& value, const char* comment = NULL) = 0;
     
     template<typename EnumType, typename CastType>
-    void visitEnum(const he::FixedString& key, EnumType& enumValue)
+    bool visitEnum(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL)
     {
         HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
         CastType value;
@@ -60,18 +68,14 @@ public:
         {
             value = checked_numcast<CastType>(enumValue);
         }
-        visit(value);
+        const bool result(visit(key, value, comment));
 
         enumValue = checked_numcast<EnumType>(value);
+
+        return result;
     }
 
-
-    virtual void close() = 0;
-
 protected:
-    virtual	size_t readBuffer(void* buffer, const size_t byteCount) = 0;
-    virtual size_t writeBuffer(const void* buffer, const size_t byteCount) = 0;
-
     EOpenType m_OpenType;
 
 private:
@@ -80,8 +84,6 @@ private:
     StructuredVisitor& operator=(const StructuredVisitor&);
 };
     
-template<>
-void StructuredVisitor::visit(he::String& value);
 
 } } //end namespace
 
