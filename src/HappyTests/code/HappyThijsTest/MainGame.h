@@ -24,6 +24,7 @@
 
 #include "Game.h"
 #include "IDrawable2D.h"
+#include "AStar.h"
 
 namespace he {
     namespace tools {
@@ -57,7 +58,7 @@ private:
     he::gfx::Window* m_Window;
     he::gfx::View*   m_View;
     he::gfx::Renderer2D* m_Renderer;
-    he::gui::Font* m_Font;
+	ht::AStar*	m_AStar;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

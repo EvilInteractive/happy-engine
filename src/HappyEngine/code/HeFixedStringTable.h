@@ -20,6 +20,11 @@
 
 _DEF_FS(str, "");
 
+DEF_FS(X)
+DEF_FS(Y)
+DEF_FS(Z)
+DEF_FS(W)
+
 // Components
 DEF_FS(Entity);
 DEF_FS(CharacterPhysicsComponent);
@@ -37,4 +42,8 @@ DEF_FS(TriggerComponent);
 DEF_FS(Translate);
 DEF_FS(Rotate);
 DEF_FS(Scale);
+
+DEF_FS(Multiplier)
+DEF_FS(Attenuation)
+DEF_FS(Color)
 

@@ -26,6 +26,9 @@
 #include "NodeGraph.h"
 #include "NodeGraphNode.h"
 
+#include <JsonFileReader.h>
+#include <JsonFileWriter.h>
+
 namespace hut {
 
 MainGame::MainGame()
@@ -42,7 +45,8 @@ void MainGame::init()
     //listUnitTest();
     //nodeGraphUnitTest();
     //guidUnitTest();
-    mat33UnitTest();
+    //mat33UnitTest();
+    jsonUnitTest();
     HAPPYENGINE->quit();
 }
 
@@ -360,6 +364,75 @@ void MainGame::mat33UnitTest()
     mat33 result2(mat33::createRotation3D(euler));
     printMat33(result2);
     
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Json test
+//////////////////////////////////////////////////////////////////////////
+struct JsonConfig
+{
+    JsonConfig(): m_Vec4Test(2.0f, 0.f, -243.0f, 0.256f), m_Vec2Test(0.0f, 1.0f), 
+        m_StringTest("Hallo ik ben een string"), m_GuidTest(he::Guid::generateGuid()) {}
+    he::vec4 m_Vec4Test;
+    he::vec2 m_Vec2Test;
+    he::String m_StringTest;
+    he::Guid m_GuidTest;
+    struct ObjTest
+    {
+        ObjTest(): m_Float(235.1245f), m_Int8Test(-69), m_Uint32Test(12156483) {}
+        float m_Float;
+        he::int8 m_Int8Test;
+        he::uint32 m_Uint32Test;
+        void visit(he::io::StructuredVisitor* visitor)
+        {
+            visitor->visit(HTFS::strFloatTest, m_Float);
+            visitor->visit(HTFS::strInt8Test, m_Int8Test, "//int8 test");
+            visitor->visit(HTFS::strUInt32Test, m_Uint32Test);
+        }
+    };
+    ObjTest m_ObjectTest;
+
+    void visit(he::io::StructuredVisitor* visitor)
+    {
+        visitor->visit(HTFS::strVec4Test, m_Vec4Test, "//Vec4 Testje");
+        visitor->visit(HTFS::strVec2Test, m_Vec2Test);
+        visitor->visit(HTFS::strStringTest, m_StringTest);
+        visitor->visit(HTFS::strGuidTest, m_GuidTest);
+        if (visitor->enterNode(HTFS::strObjectTest, "//Object Test"))
+        {
+            m_ObjectTest.visit(visitor);
+            visitor->exitNode(HTFS::strObjectTest);
+        }
+    }
+};
+
+void MainGame::jsonUnitTest()
+{
+    using namespace he;
+
+    JsonConfig config;
+    JsonConfig configCopy(config);
+
+    {
+        he::io::JsonFileWriter writer;
+        writer.open(he::Path("jsonTest.txt"));
+        config.visit(&writer);
+        writer.close();
+    }
+    {
+        he::io::JsonFileReader reader;
+        if (reader.open(he::Path("jsonTest.txt")))
+        {
+            config.visit(&reader);
+            reader.close();
+        }
+    }
+    {
+        he::io::JsonFileWriter writer;
+        writer.open(he::Path("jsonTest2.txt"));
+        config.visit(&writer);
+        writer.close();
+    }
 }
 
 } //end namespace

@@ -8,6 +8,9 @@ addFilter(CODE_SRCS src/io code/io/
             FileWriter.cpp                      FileWriter.h
             IniReader.cpp                       IniReader.h
             IniWriter.cpp                       IniWriter.h
+            JsonFileReader.cpp                  JsonFileReader.h
+            JsonFileWriter.cpp                  JsonFileWriter.h
+            StructuredVisitor.cpp               StructuredVisitor.h
         )
             
 addFilter(CODE_SRCS src/io/keyboard code/io/

@@ -28,7 +28,6 @@ addFilter(CODE_SRCS src code/
             HeFixedStringTable.h
             HeFixedStrings.h        HeFixedStrings.cpp
             GlobalStringTable.h     GlobalStringTable.cpp
-            MessageBox.h            MessageBox.cpp
             OpenGL.h                OpenGL.cpp
             RTTI.h
             Singleton.h

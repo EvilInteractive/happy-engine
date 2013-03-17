@@ -73,7 +73,6 @@ public:
    
     ObjectHandle loadMaterial(const he::String& path);
 
-    void setContentDir(const Path& path);
     void setTextureFolder(const he::String& folder);
     void setModelFolder(const he::String& folder);
     void setPhysicsFolder(const he::String& folder);

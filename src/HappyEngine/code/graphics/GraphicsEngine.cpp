@@ -61,9 +61,6 @@ void GraphicsEngine::destroy()
     HE_ASSERT(ViewFactory::getInstance()->isEmpty(), "View leak detected!");
     HE_ASSERT(SceneFactory::getInstance()->isEmpty(), "Scene leak detected!");
     HE_ASSERT(WindowFactory::getInstance()->isEmpty(), "Window leak detected!");
-
-    if (m_WebCore != nullptr)
-        Awesomium::WebCore::Shutdown();
 }
 
 void GraphicsEngine::init()
@@ -75,7 +72,7 @@ void GraphicsEngine::init()
     GL::init();
 
     m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
-    m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+    m_WebCore = Awesomium::WebCore::instance();
     m_WebCore->set_surface_factory(m_WebViewSurfaceFactory);
         
     HE_INFO((char*)glGetString(GL_VENDOR));

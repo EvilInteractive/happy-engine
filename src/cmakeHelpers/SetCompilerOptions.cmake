@@ -16,4 +16,14 @@ if(CMAKE_BUILD_TOOL MATCHES "(msdev|devenv|nmake)")
     # Debug specific
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -WX -GR")
     
+    
+    set (linkTypes EXE SHARED)
+    set (configs DEBUG RELWITHDEBINFO)
+    foreach (l ${linkTypes})
+    foreach (c ${configs})
+        SET(link "CMAKE_${l}_LINKER_FLAGS_${c}")    
+        STRING(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${${link}})
+        SET(${link} "/INCREMENTAL:NO ${replacementFlags}" )       
+    endforeach()
+    endforeach()
 endif()

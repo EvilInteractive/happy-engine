@@ -32,6 +32,9 @@
 #include "Scene.h"
 #include "Light.h"
 
+#include "EntityComponentDesc.h"
+#include "EntityProperty.h"
+
 namespace he {
 namespace ge {
     
@@ -95,6 +98,11 @@ void PointLightComponent::setAttenuation( float begin, float end )
         m_PointLight->setAttenuation(begin, end);
 }
 
+void PointLightComponent::setAttenuation( const vec2& att )
+{
+    setAttenuation(att.x, att.y);
+}
+
 void PointLightComponent::setColor( const vec3& color )
 {
     m_Color = color;
@@ -127,6 +135,88 @@ float PointLightComponent::getEndAttenuation() const
 const vec3& PointLightComponent::getColor() const
 { 
     return m_Color;
+}
+
+void PointLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
+{
+    desc.m_ID = HEFS::strPointLightComponent;
+    desc.m_DisplayName = "Point Light";
+    desc.m_Properties.clear();
+
+    // Multiplier
+    Property* mulProp(NEW Property());
+    mulProp->init<float>(HEFS::strMultiplier, 1.0f);
+    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light"));
+
+    // Color
+    Property* attProp(NEW Property());
+    mulProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
+    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light"));
+
+    // Attenuation
+    Property* colorProp(NEW Property());
+    mulProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
+    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light", PropertyFeel_Color));
+
+
+}
+
+bool PointLightComponent::setProperty( const Property* const inProperty )
+{
+    bool result(false);
+    if (EntityComponent::setProperty(inProperty) == false)
+    {
+        const he::FixedString& id(inProperty->getName());
+        if (id == HEFS::strMultiplier)
+        {
+            setMultiplier(inProperty->get<float>());
+            result = true;
+        }
+        else if (id == HEFS::strAttenuation)
+        {
+            setAttenuation(inProperty->get<vec2>());
+            result = true;
+        }
+        else if (id == HEFS::strColor)
+        {
+            setColor(inProperty->get<vec3>());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
+}
+
+bool PointLightComponent::getProperty( Property* const inOutProperty )
+{
+    bool result(false);
+    if (EntityComponent::getProperty(inOutProperty) == false)
+    {
+        const he::FixedString& id(inOutProperty->getName());
+        if (id == HEFS::strMultiplier)
+        {
+            inOutProperty->set(getMultiplier());
+            result = true;
+        }
+        else if (id == HEFS::strAttenuation)
+        {
+            inOutProperty->set(vec2(getBeginAttenuation(), getEndAttenuation()));
+            result = true;
+        }
+        else if (id == HEFS::strColor)
+        {
+            inOutProperty->set(getColor());
+            result = true;
+        }
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }
 
 #pragma endregion

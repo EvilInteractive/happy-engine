@@ -25,5 +25,6 @@
 #pragma message("HappyUnitTests: Compiling precompiled headers.")
 
 #include "HappyPCH.h"
+#include "UnitTestFixedStrings.h"
 
 #endif

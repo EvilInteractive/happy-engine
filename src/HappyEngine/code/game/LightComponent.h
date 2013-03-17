@@ -32,7 +32,7 @@ namespace gfx {
     ENUM(ShadowResolution, uint8);
 }
 namespace ge {
-    
+struct EntityComponentDesc;
 class HAPPY_ENTRY PointLightComponent : public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
@@ -49,10 +49,18 @@ public:
     virtual void deactivate();
 
     virtual const EntityComponentID& getComponentID() const { return HEFS::strPointLightComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
         
     void setMultiplier(float multiplier);
     void setAttenuation(float begin, float end);
+    void setAttenuation(const vec2& att);
     void setColor(const vec3& color);
     void setColor(const Color& color);
 

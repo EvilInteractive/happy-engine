@@ -96,8 +96,9 @@ void HappyEngine::cleanup()
     delete m_GraphicsEngine;
     m_GraphicsEngine = nullptr;
 }
-void HappyEngine::init(int subengines)
+void HappyEngine::init(const int subengines, const he::Path& dataPath)
 {
+    Path::init(dataPath);
     StaticDataManager::init();
     HAPPYENGINE->initSubEngines(subengines);
 }
@@ -124,7 +125,9 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
+    {
         m_ContentManager = NEW ct::ContentManager();
+    }
     
     if (subengines & SubEngine_Physics)
     {

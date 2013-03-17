@@ -1,6 +1,9 @@
 set (HAPPYUNITTESTS_CODE_FILES_SRC_FILTER    
         main.cpp
-        MainGame.cpp            MainGame.h)
+        MainGame.cpp                MainGame.h
+        UnitTestFixedStrings.cpp    UnitTestFixedStrings.h
+        UnitTestFixedStringsTable.h
+    )
 
 set (HAPPYUNITTESTS_CODE_FILES_PCH_FILTER    
         HappyUnitTestsPCH.cpp     HappyUnitTestsPCH.h)

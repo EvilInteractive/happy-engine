@@ -44,11 +44,19 @@
 #include "EntityManager.h"
 #include "SystemStats.h"
 #include "GlobalStringTable.h"
+#include <HappyMessageBox.h>
+
+#pragma warning(disable:4100)
+#include <Awesomium/WebCore.h>
+#pragma warning(default:4100)
 
 namespace he {
 
 void StaticDataManager::init()
 {
+    Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+    he::Path msbbox(he::Path::getFullDataPath().append("gui/messageBox.html"));
+    he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
     he::HappyEngine::sdmInit();
     tools::Logger::sdmInit();
     he::GlobalStringTable::sdmInit();
@@ -112,6 +120,8 @@ void StaticDataManager::destroy()
     he::GlobalStringTable::sdmDestroy();
     tools::Logger::sdmDestroy();
     he::HappyEngine::sdmDestroy();
+    he::HappyMessageBox::destroy();
+    Awesomium::WebCore::Shutdown();
 }
 
 } //end namespace

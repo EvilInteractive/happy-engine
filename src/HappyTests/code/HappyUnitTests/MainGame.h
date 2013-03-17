@@ -41,6 +41,7 @@ private:
     void listUnitTest();
     void guidUnitTest();
     void mat33UnitTest();
+    void jsonUnitTest();
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

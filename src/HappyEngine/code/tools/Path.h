@@ -52,11 +52,19 @@ public:
     bool iterateFiles(const bool recursive, const boost::function1<void, const Path&>& func);
 
     // Static
-    static Path getWorkingDir();
+    static const Path& getDataPath() { return s_DataPath; }
+    static const Path& getFullDataPath() { return s_FullDataPath; }
+    static const Path& getWorkingDir() { return s_WorkingDirectory; }
+
+    static void init(const Path& dataPath);
 
 private:
     void convertBackslashesToForward();
     void ensureTrailingSlash();
+
+    static Path s_DataPath;
+    static Path s_FullDataPath;
+    static Path s_WorkingDirectory;
 
     he::String m_Path;
 };
