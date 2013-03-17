@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 2.8)
 
 # include Happy Source
 include (code/CMakeLists.cmake)
+include_directories (${HappyEngine_SOURCE_DIR}/HappyJson/include)
+include_directories (${HappyEngine_SOURCE_DIR}/HappyMessageBox/include)
 include_directories (${HappyEngine_SOURCE_DIR}/HappyEngine/code)
 set (HAPPYENGINE_SRCS ${HAPPYENGINE_CODE_SRCS})
 
@@ -18,7 +20,8 @@ endif()
 
 # Create HappyEngine library
 add_library (HappyEngine SHARED ${HAPPYENGINE_SRCS})
-
+target_link_libraries(HappyEngine HappyJson)
+target_link_libraries(HappyEngine HappyMessageBox)
 LinkThirdParty(HappyEngine)
 
 # setup PCH

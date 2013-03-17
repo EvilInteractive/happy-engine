@@ -25,6 +25,21 @@
 
 namespace he {
 
+Path Path::s_WorkingDirectory("");
+Path Path::s_FullDataPath("");
+Path Path::s_DataPath("");
+
+void Path::init( const Path& dataPath )
+{
+    s_DataPath = dataPath;
+
+    boost::filesystem::path workDir(boost::filesystem::current_path());
+    s_WorkingDirectory = Path(workDir.string());
+
+    s_FullDataPath = s_WorkingDirectory.append(dataPath.str());
+}
+
+
 Path::Path( const he::String& path ): m_Path(path)
 {
     convertBackslashesToForward();
@@ -79,13 +94,6 @@ Path Path::append( const he::String& relativePath ) const
     returnPath.m_Path += path.substr(off);
     
     return returnPath;
-}
-
-Path Path::getWorkingDir()
-{
-    boost::filesystem::path workDir(boost::filesystem::current_path());
-
-    return Path(workDir.string());
 }
 
 void Path::ensureTrailingSlash()

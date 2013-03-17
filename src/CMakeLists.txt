@@ -52,7 +52,8 @@ endif()
 message(Platform: ${PLATFORM}${BITNESS})
 
 SET(Include_HappyEngine on CACHE BOOL "Include HappyEngine in solution")
-SET(Include_HappyJson off CACHE BOOL "Include HappyJson in solution")
+SET(Include_HappyJson on CACHE BOOL "Include HappyJson in solution")
+SET(Include_HappyMessageBox on CACHE BOOL "Include HappyMessageBox in solution")
 SET(Include_HappyTests on CACHE BOOL "Include HappyTests in solution")
 SET(Include_HappySandBox on CACHE BOOL "Include HappySandBox in solution")
 
@@ -62,6 +63,10 @@ endif()
 
 if (${Include_HappyJson})
     include (HappyJson/CMakeIncludeLists.cmake)
+endif()
+
+if (${Include_HappyMessageBox})
+    include (HappyMessageBox/CMakeIncludeLists.cmake)
 endif()
 
 if (${Include_HappyTests})

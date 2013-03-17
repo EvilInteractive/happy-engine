@@ -115,7 +115,7 @@ void WebListener::addObjectCallback(const he::String& object,
 
         HE_ASSERT(tries > 0, "JSObject creation timed out!");
         #else
-        Awesomium::JSValue val;(m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit(object.c_str())));
+        Awesomium::JSValue val(m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit(object.c_str())));
 
         Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 

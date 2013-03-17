@@ -4,15 +4,20 @@ function onButtonClicked(name)
     HE.onButtonClicked(name);
 }
 
-function setMessageText(text)
+function addTab(name, text)
 {
-    var area = document.getElementById("textBoxMessage");
-    area.innerHTML = text;
-}
-function setInfoText(text)
-{
-    var area = document.getElementById("textBoxInfo");
-    area.innerHTML = text;
+    var bodyContainer = document.getElementById("tabBodyContainer");
+    var newDiv = document.createElement("div");
+    newDiv.id = "tab-" + name;
+    newDiv.classList.add("tab");
+    var newText = document.createElement("textarea");
+    newText.innerHTML = text;
+    newText.classList.add("textBoxMessage");
+    newDiv.appendChild(newText);
+    bodyContainer.appendChild(newDiv);
+
+    $("#tabContainer").tabs("add", "#tab-" + name, name);
+    $("#tabContainer").tabs( "option", "active", 0 );
 }
 
 function addButton(name)
@@ -46,6 +51,11 @@ $(function()
     //addButton("Test1");
     //addButton("Test2");
     //addButton("Test3");
+
+    //addTab("Test", "Test\nTextje")
+    //addTab("Test3", "Test\nTextje")
+    //addTab("Test2", "Test\nTextje")
+
 
     //setMessageText("Blah\ntest\ntest\n\n\n\n\nsdnfjfbvdvbdffgfgdhfhuvshbvdsabgvydfgvbyadgvbyuagvadhgvuaghaufdahvfaudi");
 });

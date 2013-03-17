@@ -19,7 +19,7 @@
 #include "FileWriter.h"
 
 #include "boost/filesystem.hpp"
-#include "MessageBox.h"
+#include <HappyMessageBox.h>
 
 namespace he {
 namespace io {
@@ -47,14 +47,16 @@ bool FileWriter::open( const Path& path, const bool overrideWarning )
         {
             if (error.value() != 0)
             {
-                MessageBox::showExt("Fail!", "Directory creation failed:\n" + error.message(), MessageBoxIcon_Error);
+                std::string message("Directory creation failed:\n" + error.message());
+                HappyMessageBox::showExt("Fail!", message.c_str(), HappyMessageBox::Icon_Error);
             }
         }
     }
     else if (overrideWarning)
     {
-        success = MessageBox::showExt("Override file?", "Are you sure you want to override\n" + path.str() + "?", 
-            MessageBoxIcon_Info, "Yes", "No") == MessageBoxButton_Button1;
+        std::string message("Are you sure you want to override\n" + path.str() + "?");
+        success = HappyMessageBox::showExt("Override file?", message.c_str(), 
+            HappyMessageBox::Icon_Info, "Yes", "No") == HappyMessageBox::Button_Button1;
     }
     if (success)
     {

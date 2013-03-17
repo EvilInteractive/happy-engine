@@ -63,7 +63,14 @@ ContentManager::ContentManager():
     m_ParticleQuad(nullptr),
     m_FullscreenQuad(nullptr)
 {
-    setContentDir(HAPPYENGINE->getRootDir().append("../data/"));
+    m_ContentRootDir = he::Path::getDataPath();
+    setFontFolder(getFontFolder());
+    setFxFolder(getFxFolder());
+    setMaterialFolder(getMaterialFolder());
+    setModelFolder(getModelFolder());
+    setPhysicsFolder(getPhysicsFolder());
+    setShaderFolder(getShaderFolder());
+    setTextureFolder(getTextureFolder());
 }
 
 ContentManager::~ContentManager()
@@ -178,17 +185,6 @@ ObjectHandle ContentManager::loadMaterial(const he::String& asset)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void ContentManager::setContentDir(const Path& path)
-{
-    m_ContentRootDir = path;
-    setFontFolder(getFontFolder());
-    setFxFolder(getFxFolder());
-    setMaterialFolder(getMaterialFolder());
-    setModelFolder(getModelFolder());
-    setPhysicsFolder(getPhysicsFolder());
-    setShaderFolder(getShaderFolder());
-    setTextureFolder(getTextureFolder());
-}
 void ContentManager::setTextureFolder(const he::String& folder)
 {
     m_TextureFolder = folder;

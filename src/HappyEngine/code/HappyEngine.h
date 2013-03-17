@@ -85,7 +85,7 @@ friend class Singleton<HappyEngine>;
 public:
     virtual ~HappyEngine();
 
-    static void init(int subengines);
+    static void init(const int subengines, const he::Path& dataPath);
     static void dispose();
 
     void start(ge::Game* pGame);

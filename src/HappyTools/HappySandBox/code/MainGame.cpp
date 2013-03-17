@@ -40,7 +40,6 @@
 #include "Scene.h"
 #include "View.h"
 #include "DefaultRenderPipeline.h"
-#include "MessageBox.h"
 #include "Entity.h"
 #include "ModelComponent.h"
 #include "StaticPhysicsComponent.h"
