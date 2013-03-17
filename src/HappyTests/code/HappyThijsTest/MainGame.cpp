@@ -36,7 +36,12 @@
 
 namespace ht {
 
-MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m_Renderer(nullptr), m_Font(nullptr)
+MainGame::MainGame()
+	: m_FpsGraph(nullptr)
+	, m_Window(nullptr)
+	, m_View(nullptr)
+	, m_Renderer(nullptr)
+	, m_AStar(nullptr)
 {
 }
 
@@ -46,7 +51,6 @@ MainGame::~MainGame()
     m_Renderer->detachFromRender(m_FpsGraph);
     m_Renderer->detachFromRender(this);
 
-    m_Font->release();
     delete m_FpsGraph;
 
     delete m_Renderer;
@@ -87,7 +91,8 @@ void MainGame::init()
     m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
     m_Renderer->attachToRender(m_FpsGraph);
 
-    m_Font = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
+	m_AStar = NEW ht::AStar();
+	m_AStar->init();
 }
 
 void MainGame::tick( float dTime )
@@ -98,7 +103,7 @@ void MainGame::tick( float dTime )
 
 void MainGame::draw2D( he::gui::Canvas2D* canvas )
 {
-    canvas->drawImage(m_Font->getTextureAtlas(), he::vec2(20, 20));
+	m_AStar->draw2D(canvas);
 }
 
 } //end namespace
