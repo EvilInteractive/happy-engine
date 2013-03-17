@@ -12,7 +12,7 @@
  * It is an internal header that must not be exposed.
  */
 
-namespace Json {
+namespace json {
 
 /// Converts a unicode code-point to UTF-8.
 static inline std::string 

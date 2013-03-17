@@ -15,7 +15,7 @@
 # include <string>
 # include <iostream>
 
-namespace Json {
+namespace json {
 
    /** \brief Unserialize a <a HREF="http://www.json.org">JSON</a> document into a Value.
     *

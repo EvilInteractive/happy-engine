@@ -36,29 +36,29 @@ readInputTestFile( const char *path )
 
 
 static void
-printValueTree( FILE *fout, Json::Value &value, const std::string &path = "." )
+printValueTree( FILE *fout, json::Value &value, const std::string &path = "." )
 {
    switch ( value.type() )
    {
-   case Json::nullValue:
+   case json::nullValue:
       fprintf( fout, "%s=null\n", path.c_str() );
       break;
-   case Json::intValue:
-      fprintf( fout, "%s=%s\n", path.c_str(), Json::valueToString( value.asLargestInt() ).c_str() );
+   case json::intValue:
+      fprintf( fout, "%s=%s\n", path.c_str(), json::valueToString( value.asLargestInt() ).c_str() );
       break;
-   case Json::uintValue:
-      fprintf( fout, "%s=%s\n", path.c_str(), Json::valueToString( value.asLargestUInt() ).c_str() );
+   case json::uintValue:
+      fprintf( fout, "%s=%s\n", path.c_str(), json::valueToString( value.asLargestUInt() ).c_str() );
       break;
-   case Json::realValue:
+   case json::realValue:
       fprintf( fout, "%s=%.16g\n", path.c_str(), value.asDouble() );
       break;
-   case Json::stringValue:
+   case json::stringValue:
       fprintf( fout, "%s=\"%s\"\n", path.c_str(), value.asString().c_str() );
       break;
-   case Json::booleanValue:
+   case json::booleanValue:
       fprintf( fout, "%s=%s\n", path.c_str(), value.asBool() ? "true" : "false" );
       break;
-   case Json::arrayValue:
+   case json::arrayValue:
       {
          fprintf( fout, "%s=[]\n", path.c_str() );
          int size = value.size();
@@ -70,13 +70,13 @@ printValueTree( FILE *fout, Json::Value &value, const std::string &path = "." )
          }
       }
       break;
-   case Json::objectValue:
+   case json::objectValue:
       {
          fprintf( fout, "%s={}\n", path.c_str() );
-         Json::Value::Members members( value.getMemberNames() );
+         json::Value::Members members( value.getMemberNames() );
          std::sort( members.begin(), members.end() );
          std::string suffix = *(path.end()-1) == '.' ? "" : ".";
-         for ( Json::Value::Members::iterator it = members.begin(); 
+         for ( json::Value::Members::iterator it = members.begin(); 
                it != members.end(); 
                ++it )
          {
@@ -95,11 +95,11 @@ static int
 parseAndSaveValueTree( const std::string &input, 
                        const std::string &actual,
                        const std::string &kind,
-                       Json::Value &root,
-                       const Json::Features &features,
+                       json::Value &root,
+                       const json::Features &features,
                        bool parseOnly )
 {
-   Json::Reader reader( features );
+   json::Reader reader( features );
    bool parsingSuccessful = reader.parse( input, root );
    if ( !parsingSuccessful )
    {
@@ -126,12 +126,12 @@ parseAndSaveValueTree( const std::string &input,
 
 static int
 rewriteValueTree( const std::string &rewritePath, 
-                  const Json::Value &root, 
+                  const json::Value &root, 
                   std::string &rewrite )
 {
    //Json::FastWriter writer;
    //writer.enableYAMLCompatibility();
-   Json::StyledWriter writer;
+   json::StyledWriter writer;
    rewrite = writer.write( root );
    FILE *fout = fopen( rewritePath.c_str(), "wt" );
    if ( !fout )
@@ -180,7 +180,7 @@ printUsage( const char *argv[] )
 
 int
 parseCommandLine( int argc, const char *argv[], 
-                  Json::Features &features, std::string &path,
+                  json::Features &features, std::string &path,
                   bool &parseOnly )
 {
    parseOnly = false;
@@ -192,7 +192,7 @@ parseCommandLine( int argc, const char *argv[],
    int index = 1;
    if ( std::string(argv[1]) == "--json-checker" )
    {
-      features = Json::Features::strictMode();
+      features = json::Features::strictMode();
       parseOnly = true;
       ++index;
    }
@@ -216,7 +216,7 @@ parseCommandLine( int argc, const char *argv[],
 int main( int argc, const char *argv[] )
 {
    std::string path;
-   Json::Features features;
+   json::Features features;
    bool parseOnly;
    int exitCode = parseCommandLine( argc, argv, features, path, parseOnly );
    if ( exitCode != 0 )
@@ -244,7 +244,7 @@ int main( int argc, const char *argv[] )
       std::string rewritePath = basePath + ".rewrite";
       std::string rewriteActualPath = basePath + ".actual-rewrite";
 
-      Json::Value root;
+      json::Value root;
       exitCode = parseAndSaveValueTree( input, actualPath, "input", root, features, parseOnly );
       if ( exitCode == 0  &&  !parseOnly )
       {
@@ -252,7 +252,7 @@ int main( int argc, const char *argv[] )
          exitCode = rewriteValueTree( rewritePath, root, rewrite );
          if ( exitCode == 0 )
          {
-            Json::Value rewriteRoot;
+            json::Value rewriteRoot;
             exitCode = parseAndSaveValueTree( rewrite, rewriteActualPath, 
                "rewrite", rewriteRoot, features, parseOnly );
          }

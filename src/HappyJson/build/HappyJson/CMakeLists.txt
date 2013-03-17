@@ -10,6 +10,16 @@ addFilter(HAPPYJSON_SRCS src ../../../HappyJson/src/HappyJson/
             json_valueiterator.inl
             json_writer.cpp
         )
+addFilter(HAPPYJSON_SRCS include ../../../HappyJson/include/json/
+            autolink.h
+            config.h
+            features.h
+            forwards.h
+            json.h
+            reader.h
+            value.h
+            writer.h
+)
  
 include_directories (${HappyEngine_SOURCE_DIR}/HappyJson/include)
 

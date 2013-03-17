@@ -19,7 +19,7 @@
 #pragma warning( disable : 4996 )   // disable warning about strdup being deprecated.
 #endif
 
-namespace Json {
+namespace json {
 
 static bool containsControlCharacter( const char* str )
 {
@@ -829,7 +829,7 @@ StyledStreamWriter::normalizeEOL( const std::string &text )
 
 std::ostream& operator<<( std::ostream &sout, const Value &root )
 {
-   Json::StyledStreamWriter writer;
+   json::StyledStreamWriter writer;
    writer.write(sout, root);
    return sout;
 }

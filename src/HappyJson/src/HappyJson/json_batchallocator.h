@@ -11,7 +11,7 @@
 
 # ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
 
-namespace Json {
+namespace json {
 
 /* Fast memory allocator.
  *

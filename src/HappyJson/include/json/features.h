@@ -10,7 +10,7 @@
 # include "forwards.h"
 #endif // if !defined(JSON_IS_AMALGAMATION)
 
-namespace Json {
+namespace json {
 
    /** \brief Configuration passed to reader and writer.
     * This configuration object can be used to force the Reader or Writer

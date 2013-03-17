@@ -21,28 +21,28 @@
 
 struct ValueTest : JsonTest::TestCase
 {
-   Json::Value null_;
-   Json::Value emptyArray_;
-   Json::Value emptyObject_;
-   Json::Value integer_;
-   Json::Value unsignedInteger_;
-   Json::Value smallUnsignedInteger_;
-   Json::Value real_;
-   Json::Value float_;
-   Json::Value array1_;
-   Json::Value object1_;
-   Json::Value emptyString_;
-   Json::Value string1_;
-   Json::Value string_;
-   Json::Value true_;
-   Json::Value false_;
+   json::Value null_;
+   json::Value emptyArray_;
+   json::Value emptyObject_;
+   json::Value integer_;
+   json::Value unsignedInteger_;
+   json::Value smallUnsignedInteger_;
+   json::Value real_;
+   json::Value float_;
+   json::Value array1_;
+   json::Value object1_;
+   json::Value emptyString_;
+   json::Value string1_;
+   json::Value string_;
+   json::Value true_;
+   json::Value false_;
 
 
    ValueTest()
-      : emptyArray_( Json::arrayValue )
-      , emptyObject_( Json::objectValue )
+      : emptyArray_( json::arrayValue )
+      , emptyObject_( json::objectValue )
       , integer_( 123456789 )
-      , smallUnsignedInteger_( Json::Value::UInt( Json::Value::maxInt ) )
+      , smallUnsignedInteger_( json::Value::UInt( json::Value::maxInt ) )
       , unsignedInteger_( 34567890u )
       , real_( 1234.56789 )
       , float_( 0.00390625f )
@@ -73,15 +73,15 @@ struct ValueTest : JsonTest::TestCase
       bool isNull_;
    };
 
-   void checkConstMemberCount( const Json::Value &value, unsigned int expectedCount );
+   void checkConstMemberCount( const json::Value &value, unsigned int expectedCount );
 
-   void checkMemberCount( Json::Value &value, unsigned int expectedCount );
+   void checkMemberCount( json::Value &value, unsigned int expectedCount );
 
-   void checkIs( const Json::Value &value, const IsCheck &check );
+   void checkIs( const json::Value &value, const IsCheck &check );
 
-   void checkIsLess( const Json::Value &x, const Json::Value &y );
+   void checkIsLess( const json::Value &x, const json::Value &y );
 
-   void checkIsEqual( const Json::Value &x, const Json::Value &y );
+   void checkIsEqual( const json::Value &x, const json::Value &y );
 };
 
 
@@ -182,12 +182,12 @@ JSONTEST_FIXTURE( ValueTest, isUInt )
 JSONTEST_FIXTURE( ValueTest, accessArray )
 {
     const unsigned int index0 = 0;
-    JSONTEST_ASSERT( Json::Value(1234) == array1_[index0] ) << "Json::Value::operator[ArrayIndex]";
-    JSONTEST_ASSERT( Json::Value(1234) == array1_[0] ) << "Json::Value::operator[int]";
+    JSONTEST_ASSERT( json::Value(1234) == array1_[index0] ) << "Json::Value::operator[ArrayIndex]";
+    JSONTEST_ASSERT( json::Value(1234) == array1_[0] ) << "Json::Value::operator[int]";
 
-    const Json::Value &constArray = array1_;
-    JSONTEST_ASSERT( Json::Value(1234) == constArray[index0] ) << "Json::Value::operator[ArrayIndex] const";
-    JSONTEST_ASSERT( Json::Value(1234) == constArray[0] ) << "Json::Value::operator[int] const";
+    const json::Value &constArray = array1_;
+    JSONTEST_ASSERT( json::Value(1234) == constArray[index0] ) << "Json::Value::operator[ArrayIndex] const";
+    JSONTEST_ASSERT( json::Value(1234) == constArray[0] ) << "Json::Value::operator[int] const";
 }
 
 
@@ -197,11 +197,11 @@ JSONTEST_FIXTURE( ValueTest, asFloat )
 }
 
 void
-ValueTest::checkConstMemberCount( const Json::Value &value, unsigned int expectedCount )
+ValueTest::checkConstMemberCount( const json::Value &value, unsigned int expectedCount )
 {
    unsigned int count = 0;
-   Json::Value::const_iterator itEnd = value.end();
-   for ( Json::Value::const_iterator it = value.begin(); it != itEnd; ++it )
+   json::Value::const_iterator itEnd = value.end();
+   for ( json::Value::const_iterator it = value.begin(); it != itEnd; ++it )
    {
       ++count;
    }
@@ -209,13 +209,13 @@ ValueTest::checkConstMemberCount( const Json::Value &value, unsigned int expecte
 }
 
 void
-ValueTest::checkMemberCount( Json::Value &value, unsigned int expectedCount )
+ValueTest::checkMemberCount( json::Value &value, unsigned int expectedCount )
 {
    JSONTEST_ASSERT_EQUAL( expectedCount, value.size() );
 
    unsigned int count = 0;
-   Json::Value::iterator itEnd = value.end();
-   for ( Json::Value::iterator it = value.begin(); it != itEnd; ++it )
+   json::Value::iterator itEnd = value.end();
+   for ( json::Value::iterator it = value.begin(); it != itEnd; ++it )
    {
       ++count;
    }
@@ -241,7 +241,7 @@ ValueTest::IsCheck::IsCheck()
 
 
 void 
-ValueTest::checkIs( const Json::Value &value, const IsCheck &check )
+ValueTest::checkIs( const json::Value &value, const IsCheck &check )
 {
    JSONTEST_ASSERT_EQUAL( check.isObject_, value.isObject() );
    JSONTEST_ASSERT_EQUAL( check.isArray_, value.isArray() );
@@ -258,7 +258,7 @@ ValueTest::checkIs( const Json::Value &value, const IsCheck &check )
 
 JSONTEST_FIXTURE( ValueTest, compareNull )
 {
-    JSONTEST_ASSERT_PRED( checkIsEqual( Json::Value(), Json::Value() ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( json::Value(), json::Value() ) );
 }
 
 
@@ -274,7 +274,7 @@ JSONTEST_FIXTURE( ValueTest, compareInt )
 JSONTEST_FIXTURE( ValueTest, compareUInt )
 {
     JSONTEST_ASSERT_PRED( checkIsLess( 0u, 10u ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( 0u, Json::Value::maxUInt ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( 0u, json::Value::maxUInt ) );
     JSONTEST_ASSERT_PRED( checkIsEqual( 10u, 10u ) );
 }
 
@@ -312,62 +312,62 @@ JSONTEST_FIXTURE( ValueTest, compareBoolean )
 JSONTEST_FIXTURE( ValueTest, compareArray )
 {
     // array compare size then content
-    Json::Value emptyArray(Json::arrayValue);
-    Json::Value l1aArray;
+    json::Value emptyArray(json::arrayValue);
+    json::Value l1aArray;
     l1aArray.append( 0 );
-    Json::Value l1bArray;
+    json::Value l1bArray;
     l1bArray.append( 10 );
-    Json::Value l2aArray;
+    json::Value l2aArray;
     l2aArray.append( 0 );
     l2aArray.append( 0 );
-    Json::Value l2bArray;
+    json::Value l2bArray;
     l2bArray.append( 0 );
     l2bArray.append( 10 );
     JSONTEST_ASSERT_PRED( checkIsLess( emptyArray, l1aArray ) );
     JSONTEST_ASSERT_PRED( checkIsLess( emptyArray, l2aArray ) );
     JSONTEST_ASSERT_PRED( checkIsLess( l1aArray, l2aArray ) );
     JSONTEST_ASSERT_PRED( checkIsLess( l2aArray, l2bArray ) );
-    JSONTEST_ASSERT_PRED( checkIsEqual( emptyArray, Json::Value( emptyArray ) ) );
-    JSONTEST_ASSERT_PRED( checkIsEqual( l1aArray, Json::Value( l1aArray) ) );
-    JSONTEST_ASSERT_PRED( checkIsEqual( l2bArray, Json::Value( l2bArray) ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( emptyArray, json::Value( emptyArray ) ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( l1aArray, json::Value( l1aArray) ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( l2bArray, json::Value( l2bArray) ) );
 }
 
 
 JSONTEST_FIXTURE( ValueTest, compareObject )
 {
     // object compare size then content
-    Json::Value emptyObject(Json::objectValue);
-    Json::Value l1aObject;
+    json::Value emptyObject(json::objectValue);
+    json::Value l1aObject;
     l1aObject["key1"] = 0;
-    Json::Value l1bObject;
+    json::Value l1bObject;
     l1aObject["key1"] = 10;
-    Json::Value l2aObject;
+    json::Value l2aObject;
     l2aObject["key1"] = 0;
     l2aObject["key2"] = 0;
     JSONTEST_ASSERT_PRED( checkIsLess( emptyObject, l1aObject ) );
     JSONTEST_ASSERT_PRED( checkIsLess( emptyObject, l2aObject ) );
     JSONTEST_ASSERT_PRED( checkIsLess( l1aObject, l2aObject ) );
-    JSONTEST_ASSERT_PRED( checkIsEqual( emptyObject, Json::Value( emptyObject ) ) );
-    JSONTEST_ASSERT_PRED( checkIsEqual( l1aObject, Json::Value( l1aObject ) ) );
-    JSONTEST_ASSERT_PRED( checkIsEqual( l2aObject, Json::Value( l2aObject ) ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( emptyObject, json::Value( emptyObject ) ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( l1aObject, json::Value( l1aObject ) ) );
+    JSONTEST_ASSERT_PRED( checkIsEqual( l2aObject, json::Value( l2aObject ) ) );
 }
 
 
 JSONTEST_FIXTURE( ValueTest, compareType )
 {
     // object of different type are ordered according to their type
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value(), Json::Value(1) ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value(1), Json::Value(1u) ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value(1u), Json::Value(1.0) ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value(1.0), Json::Value("a") ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value("a"), Json::Value(true) ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value(true), Json::Value(Json::arrayValue) ) );
-    JSONTEST_ASSERT_PRED( checkIsLess( Json::Value(Json::arrayValue), Json::Value(Json::objectValue) ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value(), json::Value(1) ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value(1), json::Value(1u) ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value(1u), json::Value(1.0) ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value(1.0), json::Value("a") ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value("a"), json::Value(true) ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value(true), json::Value(json::arrayValue) ) );
+    JSONTEST_ASSERT_PRED( checkIsLess( json::Value(json::arrayValue), json::Value(json::objectValue) ) );
 }
 
 
 void 
-ValueTest::checkIsLess( const Json::Value &x, const Json::Value &y )
+ValueTest::checkIsLess( const json::Value &x, const json::Value &y )
 {
     JSONTEST_ASSERT( x < y );
     JSONTEST_ASSERT( y > x );
@@ -385,7 +385,7 @@ ValueTest::checkIsLess( const Json::Value &x, const Json::Value &y )
 
 
 void 
-ValueTest::checkIsEqual( const Json::Value &x, const Json::Value &y )
+ValueTest::checkIsEqual( const json::Value &x, const json::Value &y )
 {
     JSONTEST_ASSERT( x == y );
     JSONTEST_ASSERT( y == x );

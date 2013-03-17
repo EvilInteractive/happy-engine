@@ -8,6 +8,8 @@ addFilter(CODE_SRCS src/io code/io/
             FileWriter.cpp                      FileWriter.h
             IniReader.cpp                       IniReader.h
             IniWriter.cpp                       IniWriter.h
+            StructuredFileVisitor.cpp           StructuredFileVisitor.h
+            StructuredVisitor.cpp               StructuredVisitor.h
         )
             
 addFilter(CODE_SRCS src/io/keyboard code/io/

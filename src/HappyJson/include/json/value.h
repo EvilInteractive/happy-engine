@@ -23,7 +23,7 @@
 
 /** \brief JSON (JavaScript Object Notation).
  */
-namespace Json {
+namespace json {
 
    /** \brief Type of the value held by a Value object.
     */
@@ -126,15 +126,15 @@ namespace Json {
       typedef std::vector<std::string> Members;
       typedef ValueIterator iterator;
       typedef ValueConstIterator const_iterator;
-      typedef Json::UInt UInt;
-      typedef Json::Int Int;
+      typedef json::UInt UInt;
+      typedef json::Int Int;
 # if defined(JSON_HAS_INT64)
-      typedef Json::UInt64 UInt64;
-      typedef Json::Int64 Int64;
+      typedef json::UInt64 UInt64;
+      typedef json::Int64 Int64;
 #endif // defined(JSON_HAS_INT64)
-      typedef Json::LargestInt LargestInt;
-      typedef Json::LargestUInt LargestUInt;
-      typedef Json::ArrayIndex ArrayIndex;
+      typedef json::LargestInt LargestInt;
+      typedef json::LargestUInt LargestUInt;
+      typedef json::ArrayIndex ArrayIndex;
 
       static const Value null;
       /// Minimum signed integer value that can be stored in a Json::Value.
