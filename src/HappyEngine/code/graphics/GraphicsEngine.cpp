@@ -36,11 +36,13 @@
 #include "GLContext.h"
 #include <SFML/Window.hpp>
 
+#include "WebViewSurfaceFactory.h"
+
 namespace he {
 namespace gfx {
 
 GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr),
-    m_DefaultContext(nullptr), m_DefaultSfContext(nullptr)
+    m_DefaultContext(nullptr), m_DefaultSfContext(nullptr), m_WebViewSurfaceFactory(nullptr)
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -52,6 +54,7 @@ GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m
 GraphicsEngine::~GraphicsEngine()
 {
     delete m_DefaultSfContext;
+    delete m_WebViewSurfaceFactory;
 }
 void GraphicsEngine::destroy()
 {
@@ -71,7 +74,9 @@ void GraphicsEngine::init()
     registerContext(&m_DefaultContext);
     GL::init();
 
+    m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
     m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+    m_WebCore->set_surface_factory(m_WebViewSurfaceFactory);
         
     HE_INFO((char*)glGetString(GL_VENDOR));
     HE_INFO((char*)glGetString(GL_RENDERER));

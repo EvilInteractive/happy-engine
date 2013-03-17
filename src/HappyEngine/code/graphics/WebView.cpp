@@ -21,7 +21,6 @@
 #include "HappyPCH.h" 
 
 #include "WebView.h"
-#include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
 #include "Canvas2D.h"
 #include "Renderer2D.h"
@@ -34,6 +33,8 @@
 #include "IKeyboard.h"
 #include "IMouse.h"
 #include "WebListener.h"
+
+#include "WebViewSurface.h"
 
 #define COMMON_ASCII_CHAR 128
 
@@ -238,16 +239,18 @@ void WebView::draw2D(gui::Canvas2D* canvas)
 {
     if (m_WebView->surface())
     {
-        Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(m_WebView->surface());
+        gfx::WebViewSurface* surface(static_cast<gfx::WebViewSurface*>(m_WebView->surface()));
 
-        if (pSurface->is_dirty())
+        if (surface->isDirty())
         {
-            pSurface->CopyTo(m_Buffer, pSurface->width() * 4, 4, false, true);
+            const RectI bounds(surface->getDirtyBounds(true));
 
-            m_RenderTexture->setData(
-                pSurface->width(), pSurface->height(), 
-                m_Buffer, 
-                gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
+            surface->copyDirty(m_Buffer, true);
+
+            m_RenderTexture->setSubData(bounds.x, bounds.y, bounds.width, bounds.height,
+                m_Buffer, gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
+
+            surface->setDirty(false);
         }
     }
 
@@ -353,6 +356,11 @@ void WebView::resize( const vec2& newSize )
             m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
 
         m_Buffer = static_cast<uint8*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
+
+        // needed for setsubdata
+        m_RenderTexture->setData((int)newSize.x, (int)newSize.y,
+            0, gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
+
         m_Size = newSize;
     }
 }
@@ -481,7 +489,7 @@ void WebView::OnAddConsoleMessage(
     char* buff1 = NEW char[source.length()];
     source.ToUTF8(buff1, source.length());
 
-    HE_INFO("JS Console: msg:'%s', lineNr:'%d', source:'%s'", buff0, lineNr, buff1);
+    HE_WARNING("JS Console: msg:'%s', lineNr:'%d', source:'%s'", buff0, lineNr, buff1);
 
     delete[] buff0;
     delete[] buff1;

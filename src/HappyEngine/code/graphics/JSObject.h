@@ -38,14 +38,18 @@ public:
     JSObject(Awesomium::JSObject& aweObject, const he::String& name);
     ~JSObject();
 
-    inline const he::String& getObjectName() const { return m_ObjectName; }
-    inline Awesomium::JSObject& getAweObject() { return m_AweObject; }
+    /* STATIC */
+    static JSObject* create(Awesomium::WebView* const webView, const he::String& name);
 
     /* GENERAL */
     void addCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback);
     void removeCallback(const Awesomium::WebString& method, eventCallback1<void, const Awesomium::JSArray&>& callback);
     void executeCallback(const Awesomium::WebString& method, const Awesomium::JSArray& args);
     void executeFunction(const Awesomium::WebString& method, const Awesomium::JSArray& args);
+
+    /* GETTERS */
+    inline const he::String& getObjectName() const { return m_ObjectName; }
+    inline Awesomium::JSObject& getAweObject() { return m_AweObject; }
 
 private:
 

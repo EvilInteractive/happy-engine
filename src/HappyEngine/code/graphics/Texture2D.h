@@ -40,6 +40,8 @@ public:
 
     void setData(uint32 width, uint32 height, 
         const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel = 0);
+    void setSubData(uint32 xOffset, uint32 yOffset, uint32 width, uint32 height, 
+        const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel = 0);
 
     void setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel = 0);
     

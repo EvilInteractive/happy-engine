@@ -76,8 +76,6 @@ void UIController::load(const he::String& file)
 
 void UIController::draw2D(he::gui::Canvas2D* canvas)
 {
-//    canvas->setFillColor(he::Color(1.0f,1.0f,1.0f));
-  //  canvas->fillRect(he::vec2(5,5),he::vec2(1,1));
     canvas->fillText(m_SceneInfo, he::vec2(50,30));
 }
 

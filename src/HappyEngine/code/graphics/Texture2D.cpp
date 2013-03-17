@@ -91,6 +91,21 @@ void Texture2D::setData( uint32 width, uint32 height,
     }
 }
 
+void Texture2D::setSubData(uint32 xOffset, uint32 yOffset, uint32 width, uint32 height, 
+    const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel)
+{
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    {
+        // Bind
+        GL::heBindTexture2D(0, m_Id);
+
+        //Data
+        glTexSubImage2D(GL_TEXTURE_2D, mipLevel, xOffset, yOffset, width, height, 
+            details::getInternalTextureBufferLayout(bufferLayout), details::getInternalTextureBufferType(bufferType), 
+            pData);
+    }
+}
+
 void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel)
 {
     HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())

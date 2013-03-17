@@ -42,6 +42,7 @@ namespace gfx {
 class Window;
 class Scene;
 class View;
+class WebViewSurfaceFactory;
 
 ENUM(ShadowResolution, uint8);
 
@@ -111,6 +112,8 @@ private:
 
     std::queue<uint32> m_FreeContexts;
     he::PrimitiveList<GLContext*> m_Contexts;
+
+    WebViewSurfaceFactory* m_WebViewSurfaceFactory;
 
     /* DEFAULT COPY & ASSIGNMENT */
     GraphicsEngine(const GraphicsEngine&);

@@ -21,6 +21,10 @@
 #include "HappyPCH.h" 
 
 #include "JSObject.h"
+#include "Awesomium/WebView.h"
+#pragma warning(disable:4267) // conversion warning
+#include "Awesomium/STLHelpers.h"
+#pragma warning(default:4267)
 
 namespace he {
 namespace gui {
@@ -32,11 +36,75 @@ JSObject::JSObject(Awesomium::JSObject& aweObject, const std::string& name) : m_
 
 JSObject::~JSObject()
 {
-    std::for_each(m_MethodCallBacks.cbegin(), m_MethodCallBacks.cend(), [](const std::pair<Awesomium::WebString,
-                                                                           event1<void, const Awesomium::JSArray&>*>& callback)
+    std::for_each(m_MethodCallBacks.cbegin(), m_MethodCallBacks.cend(),
+        [](const std::pair<Awesomium::WebString,
+        event1<void, const Awesomium::JSArray&>*>& callback)
     {
         delete callback.second;
     });
+}
+
+/* STATIC */
+JSObject* JSObject::create(Awesomium::WebView* const webView, const he::String& name)
+{
+    // prevent crashing by retrying
+    // wait some time for the awesomium process to
+    // finish with the object
+    // needed for slow/heavy debug start-up
+    #if DEBUG || _DEBUG
+    uint8 tries(10);
+    const size_t waitTime(1000);
+
+    Awesomium::JSObject obj;
+
+    while (tries > 0)
+    {
+        Awesomium::JSValue val(webView->CreateGlobalJavascriptObject(Awesomium::WSLit(name.c_str())));
+
+        if (val.IsObject())
+        {
+            obj = val.ToObject();
+
+            Awesomium::Error error(obj.last_error());
+            if (error != Awesomium::kError_None)
+            {
+                const char* errorString("Unknown");
+                switch (error)
+                {
+                case Awesomium::kError_BadParameters: errorString = "BadParameters"; break; 
+                case Awesomium::kError_ObjectGone: errorString = "ObjectGone"; break;     
+                case Awesomium::kError_ConnectionGone: errorString = "ConnectionGone"; break; 
+                case Awesomium::kError_TimedOut: errorString = "TimedOut"; break;       
+                case Awesomium::kError_WebViewGone: errorString = "WebViewGone"; break;    
+                case Awesomium::kError_Generic: errorString = "Generic"; break; 
+                }
+
+                HE_ERROR("Awesomium error: %s, waiting 1s", errorString);
+                he::Thread::sleep(waitTime);
+                --tries;
+            }
+            else
+                break;
+        }
+        else
+        {
+            HE_WARNING("WebListener: Waiting 1s for JS Object creation");
+            he::Thread::sleep(waitTime);
+            --tries;
+        }
+    }
+
+    HE_ASSERT(tries > 0, "JSObject creation timed out!");
+
+    #else
+    Awesomium::JSValue val(m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit(object.c_str())));
+
+    HE_ASSERT(val.IsObject(), "object: %s, is not a javascript object!", object.c_str());
+
+    Awesomium::JSObject& obj(val.ToObject());
+    #endif
+
+    return NEW JSObject(obj, name);
 }
 
 /* GENERAL */
@@ -54,6 +122,7 @@ void JSObject::addCallback(const Awesomium::WebString& method, eventCallback1<vo
     {
         event = it->second;
     }
+
     event->add(callback);
 
     m_AweObject.SetCustomMethod(method, false);

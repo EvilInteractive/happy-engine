@@ -82,6 +82,8 @@ addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
 			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
 			NinePatchEffect.cpp					NinePatchEffect.h
 			SpriteData.h
+			WebViewSurface.cpp					WebViewSurface.h
+			WebViewSurfaceFactory.cpp			WebViewSurfaceFactory.h
         )
             
 addFilter(CODE_SRCS src/graphics/rendering/2D/shapes code/graphics/
