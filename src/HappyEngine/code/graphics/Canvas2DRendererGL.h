@@ -38,6 +38,7 @@ namespace gfx {
     class Simple2DTextureEffect;
     class Simple2DFontEffect;
     class NinePatchEffect;
+    class Mesh2D;
 
 class Canvas2DRendererGL
 {
@@ -65,6 +66,11 @@ public:
                     bool useBlending = true,
                     const vec2& newDimensions = vec2(),
                     const RectI regionToDraw = RectI());
+    void strokeShape(Mesh2D* const shape);
+    void fillShape(Mesh2D* const shape);
+    void strokeRect(const RectI& rect);
+    void fillRect(const RectI& rect);
+    void drawLine(const vec2& p1, const vec2& p2);
 
 private:
 
@@ -93,8 +99,6 @@ private:
 
     Color m_Color;
 
-    bool m_SurfaceDirty;
-
     Canvas2DBuffer* m_CanvasBuffer;
 
     ModelMesh* m_TextureQuad;
@@ -104,6 +108,8 @@ private:
     PrimitiveList<VertexText> m_CharVertexBuffer;
     PrimitiveList<uint32> m_CharIndexBuffer;
     ModelMesh* m_DynamicFontMesh;
+
+    Mesh2D* m_DynamicShapeMesh;
     
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2DRendererGL(const Canvas2DRendererGL&);

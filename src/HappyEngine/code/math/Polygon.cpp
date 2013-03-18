@@ -59,7 +59,7 @@ void Polygon::addPoint(const vec2& p)
 
 bool Polygon::outline()
 {
-    if (m_Vertices.size() < 3)
+    if (m_Vertices.size() < 2)
         return false;
 
     m_Indices.clear();

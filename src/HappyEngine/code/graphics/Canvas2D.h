@@ -33,6 +33,7 @@ namespace gfx {
     class Renderer2D;
     class Texture2D;
     class Canvas2DRendererGL;
+    class Mesh2D;
 }
 namespace gui {
     class Sprite;
@@ -84,12 +85,16 @@ public:
                    const RectI& regionToDraw = RectI());
     void drawSprite(const Sprite* sprite, const vec2& pos,
                     const vec2& size = vec2());
-
     // blit to screen
     void blitImage( const gfx::Texture2D* tex2D, const vec2& pos = vec2(),
                     bool useBlending = true,
                     const vec2& newDimensions = vec2(),
                     const RectI& regionToDraw = RectI());
+    void strokeShape(gfx::Mesh2D* const shape);
+    void fillShape(gfx::Mesh2D* const shape);
+    void strokeRect(const RectI& rect);
+    void fillRect(const RectI& rect);
+    void drawLine(const vec2& p1, const vec2& p2);
 
 private:
 

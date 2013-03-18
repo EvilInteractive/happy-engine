@@ -29,6 +29,7 @@
 #include "Canvas2DRendererCairo.h"
 #include "Canvas2DRendererGL.h"
 #include "MathFunctions.h"
+#include "Mesh2D.h"
 
 namespace he {
 namespace gui {
@@ -105,6 +106,7 @@ void Canvas2D::setPosition(const vec2& position)
 {
     m_Position = position;
 }
+
 void Canvas2D::setSize(const vec2& size)
 {
     m_Size = size;
@@ -121,14 +123,12 @@ void Canvas2D::clear()
 {
     m_BufferData->clear();
 }
+
 void Canvas2D::draw()
 {
     gfx::Texture2D* tex2D(ResourceFactory<gfx::Texture2D>::getInstance()->get(m_BufferData->renderTextureHandle));
 
-    m_RendererGL->blitImage(
-        tex2D,
-        m_Position,
-        true);
+    m_RendererGL->blitImage(tex2D, m_Position, true);
 
     clear();
 }
@@ -162,12 +162,43 @@ void Canvas2D::blitImage(   const gfx::Texture2D* tex2D,
     m_RendererGL->blitImage(tex2D, pos, useBlending, newDimensions, regionToDraw);
 }
 
+void Canvas2D::strokeShape(gfx::Mesh2D* const shape)
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->strokeShape(shape);
+}
+
+void Canvas2D::fillShape(gfx::Mesh2D* const shape)
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->fillShape(shape);
+}
+
+void Canvas2D::strokeRect(const RectI& rect)
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->strokeRect(rect);
+}
+
+void Canvas2D::fillRect(const RectI& rect)
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->fillRect(rect);
+}
+
+void Canvas2D::drawLine(const vec2& p1, const vec2& p2)
+{
+    m_RendererGL->setColor(m_Color);
+    m_RendererGL->drawLine(p1, p2);
+}
+
 /* INTERNAL */
 void Canvas2D::cleanup()
 {
     delete m_BufferData;
     delete m_RendererGL;
 }
+
 void Canvas2D::viewResized()
 {
     m_Size.x = static_cast<float>(m_Renderer2D->getView()->getViewport().width);
@@ -175,6 +206,7 @@ void Canvas2D::viewResized()
 
     resize();
 }
+
 void Canvas2D::resize()
 {
     m_BufferData->resize(m_Size);
