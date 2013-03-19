@@ -22,6 +22,9 @@
 #define _HT_ENTITYMANAGER_H_
 #pragma once
 
+#include <FixedStringMap.h>
+#include <EntityComponentDesc.h>
+
 namespace he {
     namespace ge {
         class Entity;
@@ -38,16 +41,24 @@ class EntityManager
 public:
 
     /* CONSTRUCTOR - DESTRUCTOR */
-    EntityManager(he::gfx::Scene* scene);
-    virtual ~EntityManager();
+    EntityManager();
+    ~EntityManager();
+
+    void init(he::gfx::Scene* const scene);
+    void destroy();
 
     /* GENERAL */
     he::ge::Entity* createEntity();
+
+    /* GETTERS */
+    void getComponentTypes(he::ObjectList<he::FixedString>& outList) const;
+    he::ge::EntityComponentDesc* getComponentDescriptor(const he::FixedString& component);
 
 private:
 
     he::gfx::Scene* m_Scene;
     he::PrimitiveList<he::ge::Entity*> m_Entities;
+    he::FixedStringMap<he::ge::EntityComponentDesc*> m_ComponentDescList;
 
     /* DEFAULT COPY & ASSIGNMENT */
     EntityManager(const EntityManager&);

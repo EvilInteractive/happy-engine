@@ -35,6 +35,7 @@ public:
 
     // Getters
     const char* c_str() const { return m_Handle; }
+    const char* getHandle() const { return m_Handle; }
 
     // Operators
     bool operator==(const FixedString& other) const { return m_Handle == other.m_Handle; }

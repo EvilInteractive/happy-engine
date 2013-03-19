@@ -47,7 +47,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strDynamicPhysicsComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strDynamicPhysicsComponent; }
     //////////////////////////////////////////////////////////////////////////
      
     //////////////////////////////////////////////////////////////////////////

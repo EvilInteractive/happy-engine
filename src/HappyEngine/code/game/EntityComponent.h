@@ -24,7 +24,6 @@
 
 #include "Object3D.h"
 #include "INetworkSerializable.h"
-#include "EntityComponentType.h"
 
 namespace he {
 namespace io {
@@ -45,7 +44,7 @@ public:
     virtual void activate() {}
     virtual void deactivate() {}
 
-    virtual const EntityComponentID& getComponentID() const = 0;
+    virtual const he::FixedString& getComponentID() const = 0;
 
     virtual bool setProperty(const Property* const inProperty);
     virtual bool getProperty(Property* const inOutProperty);

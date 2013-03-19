@@ -32,8 +32,8 @@ class HAPPY_ENTRY EngineEntityComponentFactory : public IEntityComponentFactory
 public:
     virtual ~EngineEntityComponentFactory() {}
 
-    EntityComponent* createEntityComponent(const EntityComponentID& type) const;
-    void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const;
+    EntityComponent* createEntityComponent(const he::FixedString& type) const;
+    void fillComponentDescList(he::PrimitiveList<EntityComponentDesc*>& list) const;
 };
 
 } } //end namespace

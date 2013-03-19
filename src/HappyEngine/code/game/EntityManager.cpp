@@ -84,7 +84,7 @@ Entity* EntityManager::getEntity( const ObjectHandle& handle )
     return m_EntityFactory.get(handle);
 }
 
-EntityComponent* EntityManager::createComponent( const EntityComponentID& type )
+EntityComponent* EntityManager::createComponent( const he::FixedString& type )
 {
     EntityComponent* result(nullptr);
     const size_t factories(m_FactoryList.size());
@@ -109,6 +109,14 @@ void EntityManager::destroyComponent( EntityComponent* const component )
 EntityComponent* EntityManager::getComponent( const ObjectHandle& handle )
 {
     return m_ComponentFactory.get(handle);
+}
+
+void EntityManager::fillComponentDescList( he::PrimitiveList<EntityComponentDesc*>& list ) const
+{
+    m_FactoryList.forEach([&list](IEntityComponentFactory* const fact)
+    {
+        fact->fillComponentDescList(list);
+    });
 }
 
 

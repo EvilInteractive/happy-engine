@@ -33,7 +33,7 @@
 #include "Light.h"
 
 #include "EntityComponentDesc.h"
-#include "EntityProperty.h"
+#include "Property.h"
 
 namespace he {
 namespace ge {
@@ -150,15 +150,13 @@ void PointLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 
     // Color
     Property* attProp(NEW Property());
-    mulProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
+    attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
     desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light"));
 
     // Attenuation
     Property* colorProp(NEW Property());
-    mulProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
+    colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
     desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light", PropertyFeel_Color));
-
-
 }
 
 bool PointLightComponent::setProperty( const Property* const inProperty )

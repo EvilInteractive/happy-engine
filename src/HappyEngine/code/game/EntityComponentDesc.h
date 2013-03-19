@@ -22,11 +22,8 @@
 #define _HE_EntityComponentDesc_H_
 #pragma once
 
-#include "EntityComponentType.h"
-
 namespace he {
 namespace ge {
-class IEntityProperty;
 
 enum PropertyFeel
 {
@@ -37,45 +34,37 @@ enum PropertyFeel
 };
 
 class Property;
-struct PropertyDesc
+struct HAPPY_ENTRY PropertyDesc
 {
     Property* m_Property;
     he::String m_DisplayName;
     he::String m_Tooltip;
     PropertyFeel m_Feel;
 
-    PropertyDesc(): m_Property(nullptr), m_DisplayName(""), m_Tooltip(""), m_Feel(PropertyFeel_Default) {}
-    ~PropertyDesc() {}
-    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip = "", const PropertyFeel feel = PropertyFeel_Default)
-        : m_Property(prop), m_DisplayName(displayName), m_Tooltip(tooltip), m_Feel(feel)
-    {}
+    PropertyDesc();
+    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip = "", const PropertyFeel feel = PropertyFeel_Default);
+    ~PropertyDesc();
+    PropertyDesc(PropertyDesc&& other);
+    PropertyDesc& operator=(PropertyDesc&& other);
 
+private:
+    PropertyDesc(const PropertyDesc& desc);
+    PropertyDesc& operator=(const PropertyDesc&);
 };
 
-struct EntityComponentDesc
+struct HAPPY_ENTRY EntityComponentDesc
 {
 public:
-    EntityComponentDesc()
-        : m_ID(), m_DisplayName("")
-    {
-    }
-    EntityComponentDesc(const EntityComponentDesc& other)
-        : m_ID(other.m_ID), m_DisplayName(other.m_DisplayName)
-    {
-        m_Properties.append(other.m_Properties);
-    }
-    EntityComponentDesc& operator=(const EntityComponentDesc& other)
-    {
-        m_ID = other.m_ID;
-        m_DisplayName = other.m_DisplayName;
-        m_Properties.clear();
-        m_Properties.append(other.m_Properties);
-        return *this;
-    }
+    EntityComponentDesc();
+    ~EntityComponentDesc();
 
-    EntityComponentID m_ID;
+    he::FixedString m_ID;
     he::String m_DisplayName;
     he::ObjectList<PropertyDesc> m_Properties;
+
+private:
+    EntityComponentDesc(const EntityComponentDesc&);
+    EntityComponentDesc& operator=(const EntityComponentDesc&);
 };
 
 } } //end namespace

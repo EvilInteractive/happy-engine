@@ -32,14 +32,35 @@
 namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-EntityManager::EntityManager(he::gfx::Scene* scene) : m_Scene(scene)
+EntityManager::EntityManager() 
+    : m_Scene(nullptr)
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();
-    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
 }
 
 EntityManager::~EntityManager()
+{
+}
+
+
+void EntityManager::init( he::gfx::Scene* const scene )
+{
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
+
+    he::PrimitiveList<he::ge::EntityComponentDesc*> descList;
+    entityMan->fillComponentDescList(descList);
+    descList.forEach([this](he::ge::EntityComponentDesc* const desc)
+    {
+        HE_INFO("Registrating entity component: %s", desc->m_ID.c_str());
+        m_ComponentDescList[desc->m_ID] = desc;
+    });
+
+    m_Scene = scene;
+}
+
+void EntityManager::destroy()
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     m_Entities.forEach([entityMan](he::ge::Entity* entity)
@@ -47,6 +68,11 @@ EntityManager::~EntityManager()
         entityMan->destroyEntity(entity);
     });
     entityMan->destroy();
+    m_ComponentDescList.forEach([](std::pair<const he::FixedString, he::ge::EntityComponentDesc*>& desc)
+    {
+        delete desc.second;
+    });
+    m_ComponentDescList.clear();
 }
 
 /* GENERAL */
@@ -55,7 +81,6 @@ he::ge::Entity* EntityManager::createEntity()
     using namespace he;
 
     // still some test code
-
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     ge::Entity* newEntity(entityMan->createEmptyEntity());
     newEntity->setScene(m_Scene);
@@ -77,4 +102,17 @@ he::ge::Entity* EntityManager::createEntity()
     return newEntity;
 }
 
+void EntityManager::getComponentTypes( he::ObjectList<he::FixedString>& outList ) const
+{
+    m_ComponentDescList.forEach([&outList](const std::pair<const he::FixedString, he::ge::EntityComponentDesc*>& desc)
+    {
+        outList.add(desc.first);
+    });
+}
+
+he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::FixedString& component )
+{
+    HE_ASSERT(m_ComponentDescList.find(component) != m_ComponentDescList.cend(), "Could not find component %s", component.c_str());
+    return m_ComponentDescList[component];
+}
 } //end namespace

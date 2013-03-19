@@ -46,6 +46,7 @@ void MainGame::init()
     //nodeGraphUnitTest();
     //guidUnitTest();
     //mat33UnitTest();
+
     jsonUnitTest();
     HAPPYENGINE->quit();
 }

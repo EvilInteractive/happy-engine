@@ -48,7 +48,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strPointLightComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strPointLightComponent; }
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
@@ -102,7 +102,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strSpotLightComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strSpotLightComponent; }
     //////////////////////////////////////////////////////////////////////////
     
     void setMultiplier(float multiplier);

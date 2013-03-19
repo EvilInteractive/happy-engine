@@ -48,7 +48,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strStaticPhysicsComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strStaticPhysicsComponent; }
     //////////////////////////////////////////////////////////////////////////
          
     void addShape( const px::IPhysicsShape* shape, const px::PhysicsMaterial& material, uint32 collisionGroup = 0xffffffff, const mat44& localPose = mat44::Identity );

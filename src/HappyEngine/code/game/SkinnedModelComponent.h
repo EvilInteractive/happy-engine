@@ -48,7 +48,7 @@ public:
     virtual void init(Entity* pParent);
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strSkinnedModelComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strSkinnedModelComponent; }
     //////////////////////////////////////////////////////////////////////////
     
 

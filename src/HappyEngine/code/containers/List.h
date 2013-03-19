@@ -40,8 +40,10 @@ public:
     virtual ~List();
 
     inline void add(const T& element); // amortized O(1)
+    inline void add(T&& element); // amortized O(1)
     inline void append(const List<T, Creator>& list); // amortized O(n) (n = parameter list count)
     inline void insert(const T& element, const size_t index); // O(n)
+    inline void insert(T&& element, const size_t index); // O(n)
     
     inline void reserve(const size_t capacity);
     inline void resize(const size_t size);
@@ -133,9 +135,18 @@ he::List<T, Creator>::~List()
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::add( const T& element )
 {
+    HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to add an element already in this list without a copy");
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
     m_Buffer[m_Size++] = element;
+}
+template<typename T, typename Creator> inline
+void he::List<T, Creator>::add( T&& element )
+{
+    HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to add an element already in this list without a copy");
+    if (m_Size == m_Capacity)
+        reserve(m_Capacity + CAPACITY_INCREMENT);
+    m_Buffer[m_Size++] = std::forward<T>(element);
 }
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::append( const List<T, Creator>& list )
@@ -149,10 +160,23 @@ void he::List<T, Creator>::append( const List<T, Creator>& list )
 template<typename T, typename Creator> inline
 void he::List<T, Creator>::insert( const T& element, const size_t index )
 {
+    HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
+    if (m_Size == m_Capacity)
+    {
+        reserve(m_Capacity + CAPACITY_INCREMENT);
+    }
+    he_memmove(m_Buffer + index + 1, m_Buffer + index, sizeof(T) * (m_Size - index));
+    m_Buffer[index] = element;
+    ++m_Size;
+}
+template<typename T, typename Creator> inline
+void he::List<T, Creator>::insert( T&& element, const size_t index )
+{
+    HE_ASSERT(!(&element >= begin() && &element < end()), "List memcorruption can occur! trying to insert an element already in this list without a copy");
     if (m_Size == m_Capacity)
         reserve(m_Capacity + CAPACITY_INCREMENT);
     he_memmove(m_Buffer + index + 1, m_Buffer + index, sizeof(T) * (m_Size - index));
-    m_Buffer[index] = element;
+    m_Buffer[index] = std::forward<T>(element);
     ++m_Size;
 }
 //////////////////////////////////////////////////////////////////////////

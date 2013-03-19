@@ -20,7 +20,7 @@
 #include "HappyPCH.h"
 #include "EntityComponent.h"
 
-#include "EntityProperty.h"
+#include "Property.h"
 
 namespace he {
 namespace ge {

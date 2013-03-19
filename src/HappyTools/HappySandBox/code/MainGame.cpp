@@ -64,7 +64,7 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
                       m_View(nullptr),
                       m_Window(nullptr),
                       m_GamePlugin(nullptr),
-                      m_EntityManager(nullptr),
+                      m_EntityManager(NEW EntityManager()),
                       m_TestScene(nullptr)
 {
 }
@@ -91,11 +91,17 @@ MainGame::~MainGame()
 void MainGame::destroy()
 {
     he::ge::EntityManager::getInstance()->destroyEntity(m_TestScene);
+    m_EntityManager->destroy();
+
+    if (m_GamePlugin != nullptr)
+    {
+        HAPPYENGINE->getPluginLoader()->unloadPlugin(m_GamePlugin);
+        m_GamePlugin = nullptr;
+    }
+
     delete m_EntityManager;
     m_EntityManager = nullptr;
 
-    HAPPYENGINE->getPluginLoader()->unloadPlugin(m_GamePlugin);
-    m_GamePlugin = nullptr;
 }
 
 void MainGame::init()
@@ -159,7 +165,7 @@ void MainGame::init()
     m_FPSGraph->setPos(he::vec2(910,35));
     m_RenderPipeline->get2DRenderer()->attachToRender(m_FPSGraph);
 
-    m_EntityManager = NEW EntityManager(m_Scene);
+    m_EntityManager->init(m_Scene);
 
     m_UIController = NEW UIController();
     m_UIController->init(m_RenderPipeline->get2DRenderer());

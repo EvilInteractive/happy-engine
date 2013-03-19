@@ -45,7 +45,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strTriggerComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strTriggerComponent; }
     
     /* GENERAL */
     void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 

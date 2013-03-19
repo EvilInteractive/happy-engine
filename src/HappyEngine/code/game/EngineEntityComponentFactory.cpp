@@ -34,7 +34,7 @@
 namespace he {
 namespace ge {
 
-EntityComponent* EngineEntityComponentFactory::createEntityComponent( const EntityComponentID& type ) const
+EntityComponent* EngineEntityComponentFactory::createEntityComponent( const he::FixedString& type ) const
 {
     EntityComponent* result(nullptr);
     if (type == HEFS::strCharacterPhysicsComponent)
@@ -80,14 +80,19 @@ EntityComponent* EngineEntityComponentFactory::createEntityComponent( const Enti
     return result;
 }
 
-void EngineEntityComponentFactory::fillComponentDescList( he::ObjectList<EntityComponentDesc>& list ) const
+#define FILL_COMPONENT_DESC(list, T) \
+{\
+    EntityComponentDesc* desc(NEW EntityComponentDesc()); \
+    T::fillEntityComponentDesc(*desc); \
+    list.add(desc);\
+}
+
+void EngineEntityComponentFactory::fillComponentDescList( he::PrimitiveList<EntityComponentDesc*>& list ) const
 {
-    EntityComponentDesc desc;
     //list.add(EntityComponentDesc(HEFS::strCharacterPhysicsComponent, CharacterPhysicsComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strDynamicPhysicsComponent, DynamicPhysicsComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strInstancedModelComponent, InstancedModelComponent::getPropertyDesc()));
-    PointLightComponent::fillEntityComponentDesc(desc);
-    list.add(desc);
+    FILL_COMPONENT_DESC(list, PointLightComponent);
     //list.add(EntityComponentDesc(HEFS::strSpotLightComponent, SpotLightComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strModelComponent, ModelComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strPickingComponent, PickingComponent::getPropertyDesc()));
@@ -95,5 +100,7 @@ void EngineEntityComponentFactory::fillComponentDescList( he::ObjectList<EntityC
     //list.add(EntityComponentDesc(HEFS::strStaticPhysicsComponent, StaticPhysicsComponent::getPropertyDesc()));
     //list.add(EntityComponentDesc(HEFS::strTriggerComponent, TriggerComponent::getPropertyDesc()));
 }
+
+#undef FILL_COMPONENT_DESC
 
 } } //end namespace

@@ -22,7 +22,6 @@
 #define _HE_IEntityComponentFactory_H_
 #pragma once
 
-#include "EntityComponentType.h"
 #include "EntityComponentDesc.h"
 
 namespace he {
@@ -34,8 +33,8 @@ class HAPPY_ENTRY IEntityComponentFactory
 public:
     virtual ~IEntityComponentFactory() {}
 
-    virtual EntityComponent* createEntityComponent(const EntityComponentID& type) const = 0;
-    virtual void fillComponentDescList(he::ObjectList<EntityComponentDesc>& list) const = 0;
+    virtual EntityComponent* createEntityComponent(const he::FixedString& type) const = 0;
+    virtual void fillComponentDescList(he::PrimitiveList<EntityComponentDesc*>& list) const = 0;
 };
 
 } } //end namespace

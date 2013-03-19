@@ -42,11 +42,11 @@ public:
     void addComponent(EntityComponent* const component);
     void removeComponent(EntityComponent* const component);
     void removeComponentAt(const size_t index);
-    EntityComponent* getComponent(const EntityComponentID& id);
+    EntityComponent* getComponent(const he::FixedString& id);
     size_t getComponentCount() const { return m_Components.size(); }
     EntityComponent* getComponentAt(const size_t index) const { return m_Components[index]; }
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strEntity; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strEntity; }
 
     virtual void activate();
     virtual void deactivate();

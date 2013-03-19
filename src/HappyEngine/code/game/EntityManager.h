@@ -23,14 +23,13 @@
 #pragma once
 
 #include "Singleton.h"
-#include "EntityComponentType.h"
 #include "Entity.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
 
 class IEntityComponentFactory;
-class Entity;
 class EntityComponent;
 
 class HAPPY_ENTRY EntityManager : public Singleton<EntityManager>
@@ -45,13 +44,15 @@ public:
     Entity* createEmptyEntity();
     void destroyEntity(Entity* const entity);
 
-    EntityComponent* createComponent(const EntityComponentID& type);
+    EntityComponent* createComponent(const he::FixedString& type);
     void destroyComponent(EntityComponent* const component);
 
     Entity* getEntity(const ObjectHandle& handle);
     EntityComponent* getComponent(const ObjectHandle& handle);
 
     void installComponentFactory(IEntityComponentFactory* const factory);
+
+    void fillComponentDescList(he::PrimitiveList<EntityComponentDesc*>& list) const;
 
 private:
     EntityManager();

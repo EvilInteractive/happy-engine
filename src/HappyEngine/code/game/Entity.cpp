@@ -95,7 +95,7 @@ void Entity::removeComponentAt( const size_t index )
     m_Components.removeAt(index);
 }
 
-EntityComponent* Entity::getComponent( const EntityComponentID& id )
+EntityComponent* Entity::getComponent( const he::FixedString& id )
 {
     size_t index(0);
     if (m_Components.find_if([&id](EntityComponent* const comp) { return comp->getComponentID() == id; }, index))

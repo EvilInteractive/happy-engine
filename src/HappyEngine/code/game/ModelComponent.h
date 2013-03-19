@@ -45,7 +45,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual const EntityComponentID& getComponentID() const { return HEFS::strModelComponent; }
+    virtual const he::FixedString& getComponentID() const { return HEFS::strModelComponent; }
     //////////////////////////////////////////////////////////////////////////
     
 

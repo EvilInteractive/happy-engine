@@ -16,18 +16,6 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 2013/03/05
-
-#ifndef _HE_EntityComponentType_H_
-#define _HE_EntityComponentType_H_
-#pragma once
-
-namespace he {
-namespace ge {
-
-typedef he::FixedString EntityComponentID;
-
-
-} } //end namespace
-
-#endif
+//Created: 2013/03/19
+#include "HappyPCH.h" 
+#include "Property.h"

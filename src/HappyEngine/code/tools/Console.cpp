@@ -372,7 +372,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
             const size_t lineSize(i - lineCharStart);
             if (lineSize > 0)
             {
-                m_MsgHistory.add(std::pair<CMSG_TYPE, he::String>(type, he::String(buff, lineCharStart, lineSize)));
+                m_MsgHistory.add(std::make_pair(type, he::String(buff, lineCharStart, lineSize)));
             }
 
             lineCharStart = i + 1;
@@ -384,7 +384,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
         const size_t lineSize(size - lineCharStart);
         if (lineSize > 0)
         {
-            m_MsgHistory.add(std::pair<CMSG_TYPE, he::String>(type, he::String(buff, lineCharStart, lineSize)));
+            m_MsgHistory.add(std::make_pair(type, he::String(buff, lineCharStart, lineSize)));
         }
     }
 

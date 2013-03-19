@@ -25,6 +25,7 @@ addFilter(CODE_SRCS src code/
             HappyTypes.h            HappyTypes.cpp
             HeString.h              HeString.cpp
             FixedString.h           FixedString.cpp
+            FixedStringMap.h
             HeFixedStringTable.h
             HeFixedStrings.h        HeFixedStrings.cpp
             GlobalStringTable.h     GlobalStringTable.cpp
