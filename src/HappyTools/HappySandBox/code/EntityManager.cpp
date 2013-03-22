@@ -53,7 +53,8 @@ void EntityManager::init( he::gfx::Scene* const scene )
     entityMan->fillComponentDescList(descList);
     descList.forEach([this](he::ge::EntityComponentDesc* const desc)
     {
-        HE_INFO("Registrating entity component: %s", desc->m_ID.c_str());
+        HE_INFO("Registering entity component: %s", desc->m_ID.c_str());
+        HE_ASSERT(m_ComponentDescList.find(desc->m_ID) == m_ComponentDescList.cend(), "Component ID %s is already registered!", desc->m_ID.c_str());
         m_ComponentDescList[desc->m_ID] = desc;
     });
 

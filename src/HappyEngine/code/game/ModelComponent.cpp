@@ -28,6 +28,7 @@
 
 #include "ContentManager.h"
 #include "Model.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -133,6 +134,21 @@ void ModelComponent::deactivate()
             m_Parent->getScene()->detachFromScene(this);
         }
     }
+}
+
+void ModelComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool ModelComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool ModelComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 } } //end namespace

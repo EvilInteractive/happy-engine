@@ -27,7 +27,8 @@
 
 namespace he {
 namespace ge {
-    
+ 
+struct EntityComponentDesc;   
 class HAPPY_ENTRY ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
@@ -46,6 +47,13 @@ public:
     virtual void deactivate();
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strModelComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
 

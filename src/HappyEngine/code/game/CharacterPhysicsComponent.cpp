@@ -24,6 +24,7 @@
 #include "Entity.h"
 #include "Game.h"
 #include "PhysicsCharacterController.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -67,6 +68,22 @@ void CharacterPhysicsComponent::tick( float dTime )
     m_CharacterController->tick(dTime);
     const vec3 translation(m_CharacterController->getFootPosition());
     m_Parent->setLocalTranslate(translation);
+}
+
+void CharacterPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
+{
+    desc.m_ID = HEFS::strCharacterPhysicsComponent;
+    desc.m_DisplayName = "Character physics component";
+}
+
+bool CharacterPhysicsComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool CharacterPhysicsComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 } } //end namespace

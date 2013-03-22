@@ -89,16 +89,27 @@ EntityComponent* EngineEntityComponentFactory::createEntityComponent( const he::
 
 void EngineEntityComponentFactory::fillComponentDescList( he::PrimitiveList<EntityComponentDesc*>& list ) const
 {
-    //list.add(EntityComponentDesc(HEFS::strCharacterPhysicsComponent, CharacterPhysicsComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strDynamicPhysicsComponent, DynamicPhysicsComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strInstancedModelComponent, InstancedModelComponent::getPropertyDesc()));
+    //// Fully implemented ////
     FILL_COMPONENT_DESC(list, PointLightComponent);
-    //list.add(EntityComponentDesc(HEFS::strSpotLightComponent, SpotLightComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strModelComponent, ModelComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strPickingComponent, PickingComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strSkinnedModelComponent, SkinnedModelComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strStaticPhysicsComponent, StaticPhysicsComponent::getPropertyDesc()));
-    //list.add(EntityComponentDesc(HEFS::strTriggerComponent, TriggerComponent::getPropertyDesc()));
+    FILL_COMPONENT_DESC(list, SpotLightComponent);
+
+    //// Do we need exposed and non exposed components? ///
+    //FILL_COMPONENT_DESC(list, PickingComponent);
+
+    //// Needs to be better with a ModelResource and a MaterialResource ////
+    //FILL_COMPONENT_DESC(list, ModelComponent);
+
+    //// When we have animations ////
+    //FILL_COMPONENT_DESC(list, SkinnedModelComponent);
+
+    //// Need a better manager for this one, we need to have a controller object somewhere ////
+    //FILL_COMPONENT_DESC(list, InstancedModelComponent);
+
+    //// Need shape components for these - also these are mutually exclusive! ////
+    //FILL_COMPONENT_DESC(list, CharacterPhysicsComponent);
+    //FILL_COMPONENT_DESC(list, DynamicPhysicsComponent);
+    //FILL_COMPONENT_DESC(list, StaticPhysicsComponent);
+    //FILL_COMPONENT_DESC(list, TriggerComponent);
 }
 
 #undef FILL_COMPONENT_DESC

@@ -22,6 +22,8 @@
 #include "EntityComponentDesc.h"
 
 #include "Property.h"
+#include "PropertyConverter.h"
+#include "PropertyFeel.h"
 
 namespace he {
 namespace ge {
@@ -29,20 +31,28 @@ namespace ge {
 //////////////////////////////////////////////////////////////////////////
 // PropertyDesc
 //////////////////////////////////////////////////////////////////////////
-PropertyDesc::PropertyDesc() : m_Property(nullptr), m_DisplayName(""), m_Tooltip(""), m_Feel(PropertyFeel_Default)
+PropertyDesc::PropertyDesc() : m_Property(nullptr), m_DisplayName(""), m_Tooltip(""), m_Converter(nullptr), m_Feel(nullptr)
 {
 
 }
 
-PropertyDesc::PropertyDesc( Property* const prop, const char* displayName, const char* tooltip /*= ""*/, const PropertyFeel feel /*= PropertyFeel_Default*/ ) : m_Property(prop), m_DisplayName(displayName), m_Tooltip(tooltip), m_Feel(feel)
+PropertyDesc::PropertyDesc( Property* const prop, const char* displayName, const char* tooltip, 
+    PropertyConverter* const converter, PropertyFeel* const feel) 
+    : m_Property(prop)
+    , m_DisplayName(displayName)
+    , m_Tooltip(tooltip)
+    , m_Converter(converter)
+    , m_Feel(feel)
 {
 
 }
 
 PropertyDesc::PropertyDesc( PropertyDesc&& other ) : m_Property(other.m_Property), m_DisplayName(std::move(other.m_DisplayName)), 
-    m_Tooltip(std::move(other.m_Tooltip)), m_Feel(other.m_Feel)
+    m_Tooltip(std::move(other.m_Tooltip)), m_Converter(other.m_Converter), m_Feel(other.m_Feel)
 {
     other.m_Property = nullptr;
+    other.m_Converter = nullptr;
+    other.m_Feel = nullptr;
 }
 
 PropertyDesc& PropertyDesc::operator=( PropertyDesc&& other )
@@ -51,7 +61,10 @@ PropertyDesc& PropertyDesc::operator=( PropertyDesc&& other )
     other.m_Property = nullptr;
     std::swap(m_DisplayName, other.m_DisplayName);
     std::swap(m_Tooltip, other.m_Tooltip);
+    m_Converter = other.m_Converter;
+    other.m_Converter = nullptr;
     m_Feel = other.m_Feel;
+    other.m_Feel = nullptr;
     return *this;
 }
 
@@ -75,6 +88,10 @@ EntityComponentDesc::~EntityComponentDesc()
     {
         delete desc.m_Property;
         desc.m_Property = nullptr;
+        delete desc.m_Converter;
+        desc.m_Converter = nullptr;
+        delete desc.m_Feel;
+        desc.m_Feel = nullptr;
     });
 }
 

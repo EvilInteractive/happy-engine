@@ -37,6 +37,9 @@ ENUM(ShadowResolution, uint8) // note this is Normal quality, can be scaled up o
 
     ShadowResolution_MAX
 };
+HAPPY_ENTRY const char* shadowResolutionToGuiString(const ShadowResolution res);
+HAPPY_ENTRY ShadowResolution shadowResolutionFromGuiString(const char* str);
+
 enum LightType
 {
     LightType_Point,

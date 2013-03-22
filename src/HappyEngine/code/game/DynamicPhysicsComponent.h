@@ -33,6 +33,7 @@ namespace px {
 }
 namespace ge {
 
+struct EntityComponentDesc;
 class HAPPY_ENTRY DynamicPhysicsComponent : public EntityComponent, public Object3D, public ITickable
 {
 public:
@@ -48,6 +49,13 @@ public:
     virtual void deactivate();
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strDynamicPhysicsComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
      
     //////////////////////////////////////////////////////////////////////////

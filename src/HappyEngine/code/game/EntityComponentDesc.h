@@ -25,24 +25,20 @@
 namespace he {
 namespace ge {
 
-enum PropertyFeel
-{
-    PropertyFeel_Default,
-    PropertyFeel_Color,
-    PropertyFeel_Slider,
-    PropertyFeel_UpDown
-};
-
 class Property;
+class PropertyConverter;
+class PropertyFeel;
 struct HAPPY_ENTRY PropertyDesc
 {
     Property* m_Property;
     he::String m_DisplayName;
     he::String m_Tooltip;
-    PropertyFeel m_Feel;
+    PropertyConverter* m_Converter;
+    PropertyFeel* m_Feel;
 
     PropertyDesc();
-    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip = "", const PropertyFeel feel = PropertyFeel_Default);
+    PropertyDesc(Property* const prop, const char* displayName, const char* tooltip, 
+        PropertyConverter* const converter, PropertyFeel* const feel);
     ~PropertyDesc();
     PropertyDesc(PropertyDesc&& other);
     PropertyDesc& operator=(PropertyDesc&& other);

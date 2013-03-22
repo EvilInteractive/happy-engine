@@ -33,7 +33,8 @@ namespace gfx {
 }
 
 namespace ge {
-    
+  
+struct EntityComponentDesc;  
 class HAPPY_ENTRY PickingComponent : public Pickable, public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
@@ -52,6 +53,13 @@ public:
     virtual void deactivate();
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strPickingComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
            
 protected:

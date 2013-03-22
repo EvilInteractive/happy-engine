@@ -31,7 +31,8 @@ namespace gfx {
     class InstancingController;
 }
 namespace ge {
-    
+  
+struct EntityComponentDesc;  
 class HAPPY_ENTRY InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
@@ -47,6 +48,13 @@ public:
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strInstancedModelComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
     //////////////////////////////////////////////////////////////////////////

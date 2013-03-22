@@ -26,6 +26,7 @@
 #include "ModelComponent.h"
 #include "PickingManager.h"
 #include "EntityManager.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -131,6 +132,21 @@ void PickingComponent::initPickingMesh()
             m_ModelMesh->instantiate();
         }
     }
+}
+
+void PickingComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool PickingComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool PickingComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 } } //end namespace

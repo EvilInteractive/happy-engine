@@ -27,6 +27,7 @@
 #include "Entity.h"
 #include "Game.h"
 #include "PhysicsUserData.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -109,6 +110,21 @@ void TriggerComponent::calculateWorldMatrix()
 {
     Object3D::calculateWorldMatrix();
     m_Trigger->setPose(m_WorldMatrix);
+}
+
+void TriggerComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool TriggerComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool TriggerComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 } } //end namespace

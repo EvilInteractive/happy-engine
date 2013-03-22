@@ -23,6 +23,7 @@
 
 #include "Entity.h"
 #include "PhysicsStaticActor.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -75,6 +76,21 @@ void StaticPhysicsComponent::calculateWorldMatrix()
     Object3D::calculateWorldMatrix();
     if (m_StaticActor != nullptr)
         m_StaticActor->teleport(m_WorldMatrix);
+}
+
+void StaticPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool StaticPhysicsComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool StaticPhysicsComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 

@@ -103,6 +103,13 @@ public:
     virtual void deactivate();
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strSpotLightComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
     void setMultiplier(float multiplier);

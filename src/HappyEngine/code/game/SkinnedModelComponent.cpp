@@ -25,6 +25,7 @@
 #include "GraphicsEngine.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -122,6 +123,21 @@ SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const he::S
     {
         return it->second;
     }
+}
+
+void SkinnedModelComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool SkinnedModelComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool SkinnedModelComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 

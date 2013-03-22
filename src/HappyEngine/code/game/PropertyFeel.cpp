@@ -16,37 +16,13 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Bastian Damman
-//Created: 13/03/2013
+//Created: 2013/03/20
+#include "HappyPCH.h" 
 
-_DEF_FS(str, "");
+#include "PropertyFeel.h"
 
-DEF_FS(X)
-DEF_FS(Y)
-DEF_FS(Z)
-DEF_FS(W)
+namespace he {
+namespace ge {
 
-// Components
-DEF_FS(Entity);
-DEF_FS(CharacterPhysicsComponent);
-DEF_FS(DynamicPhysicsComponent);
-DEF_FS(InstancedModelComponent);
-DEF_FS(PointLightComponent);
-DEF_FS(SpotLightComponent);
-DEF_FS(ModelComponent);
-DEF_FS(PickingComponent);
-DEF_FS(SkinnedModelComponent);
-DEF_FS(StaticPhysicsComponent);
-DEF_FS(TriggerComponent);
 
-// Component Properties
-DEF_FS(Translate);
-DEF_FS(Rotate);
-DEF_FS(Scale);
-
-DEF_FS(Multiplier)
-DEF_FS(Attenuation)
-DEF_FS(Color)
-DEF_FS(Fov)
-DEF_FS(Direction)
-DEF_FS(ShadowResolution)
-
+} } //end namespace

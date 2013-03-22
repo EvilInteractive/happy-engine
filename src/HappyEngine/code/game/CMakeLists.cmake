@@ -37,5 +37,10 @@ addFilter(CODE_SRCS src/game/components/factory code/game/
 addFilter(CODE_SRCS src/game/components/base code/game/
             EntityComponent.cpp                     EntityComponent.h
             EntityComponentDesc.cpp                 EntityComponentDesc.h
+        )
+
+addFilter(CODE_SRCS src/game/components/editor code/game/
             Property.cpp                            Property.h
+            PropertyFeel.cpp                        PropertyFeel.h
+            PropertyConverter.cpp                   PropertyConverter.h
         )

@@ -34,6 +34,8 @@
 
 #include "EntityComponentDesc.h"
 #include "Property.h"
+#include "PropertyFeel.h"
+#include "PropertyConverter.h"
 
 namespace he {
 namespace ge {
@@ -140,23 +142,25 @@ const vec3& PointLightComponent::getColor() const
 void PointLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
     desc.m_ID = HEFS::strPointLightComponent;
-    desc.m_DisplayName = "Point Light";
-    desc.m_Properties.clear();
+    desc.m_DisplayName = "Pointlight";
 
     // Multiplier
     Property* mulProp(NEW Property());
     mulProp->init<float>(HEFS::strMultiplier, 1.0f);
-    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light"));
-
-    // Color
-    Property* attProp(NEW Property());
-    attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
-    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light"));
+    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
+        NEW PropertyConverterFloat(), NEW PropertyFeelSlider(0.01f, 100.0f)));
 
     // Attenuation
+    Property* attProp(NEW Property());
+    attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
+    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
+        NEW PropertyConverterVec2(), NEW PropertyFeelDefault()));
+
+    // Color
     Property* colorProp(NEW Property());
     colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
-    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light", PropertyFeel_Color));
+    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light", 
+        NEW PropertyConverterVec3(), NEW PropertyFeelColor()));
 }
 
 bool PointLightComponent::setProperty( const Property* const inProperty )
@@ -354,6 +358,61 @@ float SpotLightComponent::getFov() const
 gfx::ShadowResolution SpotLightComponent::getShadow() const
 {
     return m_ShadowResolution;
+}
+
+void SpotLightComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
+{
+    desc.m_ID = HEFS::strSpotLightComponent;
+    desc.m_DisplayName = "Spotlight";
+    
+    // Multiplier
+    Property* const mulProp(NEW Property());
+    mulProp->init<float>(HEFS::strMultiplier, 1.0f);
+    desc.m_Properties.add(PropertyDesc(mulProp, "Multiplier", "Sets the intensity of the light", 
+        NEW PropertyConverterFloat(), NEW PropertyFeelSlider(0.01f, 100.0f)));
+
+    // Fov
+    Property* const fovProp(NEW Property());
+    fovProp->init<float>(HEFS::strFov, 90.0f); // Properties are in degrees
+    desc.m_Properties.add(PropertyDesc(fovProp, "Field of view", "Sets the field of view of the spotlight", 
+        NEW PropertyConverterFloat(), NEW PropertyFeelSlider(10.0f, 180.0f)));
+
+    // Color
+    Property* const colorProp(NEW Property());
+    colorProp->init<vec3>(HEFS::strColor, vec3(1, 1, 1));
+    desc.m_Properties.add(PropertyDesc(colorProp, "Color", "Sets the color of the light",
+        NEW PropertyConverterVec3(), NEW PropertyFeelColor()));
+
+    // Attenuation
+    Property* const attProp(NEW Property());
+    attProp->init<vec2>(HEFS::strAttenuation, vec2(1.0f, 10.0f));
+    desc.m_Properties.add(PropertyDesc(attProp, "Attenuation", "Sets the range of the light",
+        NEW PropertyConverterVec2(), NEW PropertyFeelDefault()));
+
+    // ShadowResolution
+    Property* const shadowProp(NEW Property());
+    PropertyFeelDropDown* const shadowDropDown(NEW PropertyFeelDropDown());
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_None));
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_32));
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_64));
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_128));
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_256));
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_512));
+    shadowDropDown->addItem(he::gfx::shadowResolutionToGuiString(gfx::ShadowResolution_1024));
+    shadowProp->init<he::gfx::ShadowResolution>(HEFS::strShadowResolution, he::gfx::ShadowResolution_None);
+    desc.m_Properties.add(PropertyDesc(shadowProp, "Shadow Resolution", "Sets the shadow of the spotlight",
+        NEW PropertyConverterEnum<he::gfx::ShadowResolution>(he::gfx::shadowResolutionFromGuiString, he::gfx::shadowResolutionToGuiString), 
+        shadowDropDown));
+}
+
+bool SpotLightComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool SpotLightComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 #pragma endregion

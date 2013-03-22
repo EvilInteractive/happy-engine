@@ -27,7 +27,8 @@
 
 namespace he {
 namespace ge {
-    
+   
+struct EntityComponentDesc; 
 class HAPPY_ENTRY SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSkinnedDrawable)
@@ -49,6 +50,13 @@ public:
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strSkinnedModelComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
 

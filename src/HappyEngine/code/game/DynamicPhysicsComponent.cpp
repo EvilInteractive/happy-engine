@@ -24,6 +24,7 @@
 #include "Entity.h"
 #include "Game.h"
 #include "PhysicsDynamicActor.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -89,6 +90,21 @@ px::PhysicsDynamicActor* DynamicPhysicsComponent::getDynamicActor() const
 void DynamicPhysicsComponent::calculateWorldMatrix()
 {
     Object3D::calculateWorldMatrix();
+}
+
+void DynamicPhysicsComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+
+}
+
+bool DynamicPhysicsComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool DynamicPhysicsComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 } } //end namespace

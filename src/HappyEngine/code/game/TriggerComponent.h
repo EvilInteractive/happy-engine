@@ -31,7 +31,8 @@ namespace px {
     class IPhysicsShape;
 }
 namespace ge {
-
+    
+struct EntityComponentDesc;
 class HAPPY_ENTRY TriggerComponent : public EntityComponent, public Object3D
 {
 public:
@@ -46,6 +47,13 @@ public:
     virtual void deactivate();
 
     virtual const he::FixedString& getComponentID() const { return HEFS::strTriggerComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     
     /* GENERAL */
     void addShape(const px::IPhysicsShape* shape, uint32 collisionGroup, uint32 collisionGroupAgainst, 
