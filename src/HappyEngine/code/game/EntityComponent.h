@@ -48,6 +48,8 @@ public:
 
     virtual bool setProperty(const Property* const inProperty);
     virtual bool getProperty(Property* const inOutProperty);
+    
+    virtual Entity* getEntityParent();
 
     //////////////////////////////////////////////////////////////////////////
     // IObject3D

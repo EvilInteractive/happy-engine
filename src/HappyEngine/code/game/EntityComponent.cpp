@@ -21,6 +21,7 @@
 #include "EntityComponent.h"
 
 #include "Property.h"
+#include "Entity.h"
 
 namespace he {
 namespace ge {
@@ -72,6 +73,11 @@ bool EntityComponent::getProperty( Property* const inOutProperty )
         result = false;
     }
     return result;
+}
+
+Entity* EntityComponent::getEntityParent()
+{
+    return checked_cast<Entity*>(getParent());
 }
 
 } } //end namespace
