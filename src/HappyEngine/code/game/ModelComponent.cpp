@@ -29,6 +29,9 @@
 #include "ContentManager.h"
 #include "Model.h"
 #include "EntityComponentDesc.h"
+#include "Property.h"
+#include "PropertyConverter.h"
+#include "PropertyFeel.h"
 
 namespace he {
 namespace ge {
@@ -136,14 +139,47 @@ void ModelComponent::deactivate()
     }
 }
 
-void ModelComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+void ModelComponent::fillEntityComponentDesc( EntityComponentDesc& desc )
 {
-    LOG(LogType_ProgrammerAssert, "Not implemented");
+    desc.m_ID = HEFS::strModelComponent;
+    desc.m_DisplayName = "Model Component";
+
+    Property* modelProp(NEW Property());
+    modelProp->init<he::String>(HEFS::strModel, "");
+    desc.m_Properties.add(PropertyDesc(modelProp, "Model", "The model to display", 
+        NEW PropertyConverterString(), NEW PropertyFeelDefault()));
+
+    Property* materialProp(NEW Property());
+    materialProp->init<he::String>(HEFS::strMaterial, "");
+    desc.m_Properties.add(PropertyDesc(materialProp, "Material", "The material to use", 
+        NEW PropertyConverterString(), NEW PropertyFeelDefault()));
 }
 
 bool ModelComponent::setProperty( const Property* const inProperty )
 {
-    return EntityComponent::setProperty(inProperty);
+    if (EntityComponent::setProperty(inProperty) == false)
+    {
+        const he::FixedString name(inProperty->getName());
+        if (name == HEFS::strModel)
+        {
+            m_ModelAsset = inProperty->get<he::String>();
+            if (m_ModelAsset.empty() == false && m_MaterialAsset.empty() == false)
+            {
+                setModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
+            }
+            return true;
+        }
+        else if (name == HEFS::strMaterial)
+        {
+            m_MaterialAsset = inProperty->get<he::String>();
+            if (m_ModelAsset.empty() == false && m_MaterialAsset.empty() == false)
+            {
+                setModelMeshAndMaterial(m_MaterialAsset, m_ModelAsset);
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 bool ModelComponent::getProperty( Property* const inOutProperty )

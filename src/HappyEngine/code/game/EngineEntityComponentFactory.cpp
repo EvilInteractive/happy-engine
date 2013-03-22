@@ -97,7 +97,7 @@ void EngineEntityComponentFactory::fillComponentDescList( he::PrimitiveList<Enti
     //FILL_COMPONENT_DESC(list, PickingComponent);
 
     //// Needs to be better with a ModelResource and a MaterialResource ////
-    //FILL_COMPONENT_DESC(list, ModelComponent);
+    FILL_COMPONENT_DESC(list, ModelComponent);
 
     //// When we have animations ////
     //FILL_COMPONENT_DESC(list, SkinnedModelComponent);

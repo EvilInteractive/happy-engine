@@ -35,6 +35,20 @@ public:
     virtual he::String toString(const Property* const prop) = 0;
 };
 
+class PropertyConverterString : public PropertyConverter
+{
+public:
+    virtual ~PropertyConverterString() {}
+    virtual void fromString(Property* const prop, const he::String& str)
+    {
+        prop->set<he::String>(str);
+    }
+    virtual he::String toString(const Property* const prop)
+    {
+        return prop->get<he::String>();
+    }
+};
+
 template<typename T>
 class PropertyConverterInt : public PropertyConverter
 {

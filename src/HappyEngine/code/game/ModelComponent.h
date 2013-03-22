@@ -77,6 +77,9 @@ private:
     gfx::ModelMesh* m_ModelMesh;
     const gfx::Material* m_Material;
 
+    he::String m_MaterialAsset;
+    he::String m_ModelAsset;
+
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);
     ModelComponent& operator=(const ModelComponent&);

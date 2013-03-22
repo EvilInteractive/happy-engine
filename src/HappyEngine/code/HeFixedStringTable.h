@@ -50,3 +50,6 @@ DEF_FS(Fov)
 DEF_FS(Direction)
 DEF_FS(ShadowResolution)
 
+DEF_FS(Model)
+DEF_FS(Material)
+
