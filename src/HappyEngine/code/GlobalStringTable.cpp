@@ -40,21 +40,14 @@ GlobalStringTable::~GlobalStringTable()
 
 he::FixedString GlobalStringTable::add( const char* const str, const int length )
 {
-    Map::const_iterator it(m_HashMap.find(str));
-    if (it == m_HashMap.cend())
-    {
-        const int len(length == -1? strlen(str) : length);
-        char* const myStr(static_cast<char*>(he_malloc((len + 1) * sizeof(char))));
-        he_memcpy(myStr, str, len * sizeof(char));
-        myStr[len] = '\0';
-        m_HashMap.insert(myStr);
-        return FixedString(myStr);
-    }
-    else
-    {
-        HE_ASSERT(strcmp(str, *it) == 0, "Hash clash occurd! %s != %s", str, *it);
-        return FixedString(*it);
-    }
+    HE_ASSERT(m_HashMap.find(str) == m_HashMap.cend(), "Hash clash occurd! %s != %s", str, *m_HashMap.find(str));
+
+    const int len(length == -1? strlen(str) : length);
+    char* const myStr(static_cast<char*>(he_malloc((len + 1) * sizeof(char))));
+    he_memcpy(myStr, str, len * sizeof(char));
+    myStr[len] = '\0';
+    m_HashMap.insert(myStr);
+    return FixedString(myStr);
 }
 
 } //end namespace
