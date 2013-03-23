@@ -20,6 +20,8 @@
 
 _DEF_FS(str, "");
 
+DEF_FS(Array);
+
 DEF_FS(X)
 DEF_FS(Y)
 DEF_FS(Z)

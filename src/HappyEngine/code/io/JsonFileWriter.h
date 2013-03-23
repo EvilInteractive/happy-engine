@@ -41,23 +41,26 @@ public:
     virtual bool enterNode(const he::FixedString& key, const char* comment = NULL);
     virtual void exitNode(const he::FixedString& key);
 
-    virtual bool visit(const he::FixedString& key, he::String& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, bool& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, int8& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, uint8& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, int16& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, uint16& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, int32& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, uint32& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, int64& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, uint64& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, float& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, double& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, vec2& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, vec3& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, vec4& value, const char* comment = NULL);
-    virtual bool visit(const he::FixedString& key, Guid& value, const char* comment = NULL);
-  
+protected:
+    virtual bool enterNode(const size_t index, const char* comment = NULL);
+    virtual void exitNode(const size_t index);
+    virtual bool enterArray(const he::FixedString& key, const char* comment = NULL);
+    virtual void exitArray(const he::FixedString& key);
+    virtual size_t getArraySize();
+    
+    virtual bool visit(he::String& value, const char* comment = NULL);
+    virtual bool visit(bool& value, const char* comment = NULL);
+    virtual bool visit(int8& value, const char* comment = NULL);
+    virtual bool visit(uint8& value, const char* comment = NULL);
+    virtual bool visit(int16& value, const char* comment = NULL);
+    virtual bool visit(uint16& value, const char* comment = NULL);
+    virtual bool visit(int32& value, const char* comment = NULL);
+    virtual bool visit(uint32& value, const char* comment = NULL);
+    virtual bool visit(int64& value, const char* comment = NULL);
+    virtual bool visit(uint64& value, const char* comment = NULL);
+    virtual bool visit(float& value, const char* comment = NULL);
+    virtual bool visit(double& value, const char* comment = NULL);
+
 private:
     Writer* m_Writer;
     Path m_SavePath;

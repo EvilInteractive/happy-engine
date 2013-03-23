@@ -64,7 +64,7 @@ public:
 
     void init()
     {
-        m_Root = json::Value();
+        m_Root = json::Value(json::objectValue);
         m_RootStack.clear();
         pushRoot(HEFS::str, m_Root);
     }
@@ -115,12 +115,15 @@ bool JsonFileWriter::enterNode( const he::FixedString& key, const char* comment 
 {
     bool result(true);
     json::Value& root(m_Writer->getRoot());
-    json::Value& val(root[key.c_str()] = json::Value(json::objectValue));
-    if (comment != NULL)
+    HE_IF_ASSERT(root.isNull() || root.isArray() == false, "Root can not be of type array!")
     {
-        val.setComment(comment, json::commentAfterOnSameLine);
+        json::Value& val(root[key.c_str()] = json::Value(json::nullValue));
+        if (comment != NULL)
+        {
+            val.setComment(comment, json::commentAfterOnSameLine);
+        }
+        m_Writer->pushRoot(key, val);
     }
-    m_Writer->pushRoot(key, val);
     return result;
 }
 
@@ -130,124 +133,145 @@ void JsonFileWriter::exitNode( const he::FixedString& key )
     m_Writer->popRoot();
 }
 
-
-template<typename T>
-bool visitDefaultType(JsonFileWriter::Writer* const writer, const he::FixedString& key, T& value, const char* comment = NULL)
+bool JsonFileWriter::enterNode( const size_t index, const char* comment /*= NULL*/ )
 {
     bool result(true);
-    json::Value& root(writer->getRoot());
-    json::Value& val(root[key.c_str()] = value);
-    if (comment != NULL)
+    json::Value& root(m_Writer->getRoot());
+    HE_IF_ASSERT(root.isArray(), "Root must be of type array!")
     {
-        val.setComment(comment, json::commentBefore);
+        json::Value& val(root[index] = json::Value(json::objectValue));
+        if (comment != NULL)
+        {
+            val.setComment(comment, json::commentAfterOnSameLine);
+        }
+        m_Writer->pushRoot(HEFS::strArray, val);
     }
     return result;
 }
 
-bool JsonFileWriter::visit( const he::FixedString& key, he::String& value, const char* comment /*= NULL*/ )
+void JsonFileWriter::exitNode( const size_t /*index*/ )
 {
-    return visitDefaultType(m_Writer, key, value, comment);
+    HE_ASSERT(m_Writer->getRootName() == HEFS::strArray, "exiting wrong node! got: %s, expected: %s", HEFS::strArray.c_str(), m_Writer->getRootName().c_str());
+    m_Writer->popRoot();
 }
 
-bool JsonFileWriter::visit( const he::FixedString& key, bool& value, const char* comment /*= NULL*/ )
+bool JsonFileWriter::enterArray( const he::FixedString& key, const char* comment /*= NULL*/ )
 {
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, int8& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, uint8& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, int16& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, uint16& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, int32& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, uint32& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, int64& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, uint64& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, float& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, double& value, const char* comment /*= NULL*/ )
-{
-    return visitDefaultType(m_Writer, key, value, comment);
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, vec2& value, const char* comment /*= NULL*/ )
-{
-    if (enterNode(key, comment))
+    bool result(true);
+    json::Value& root(m_Writer->getRoot());
+    json::Value* val(nullptr);
+    if (root.isArray())
     {
-        visit(HEFS::strX, value.x);
-        visit(HEFS::strY, value.y);
-        exitNode(key);
-        return true;
+        val = &root.append(json::Value(json::arrayValue));
     }
-    return false;
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, vec3& value, const char* comment /*= NULL*/ )
-{
-    if (enterNode(key, comment))
+    else
     {
-        visit(HEFS::strX, value.x);
-        visit(HEFS::strY, value.y);
-        visit(HEFS::strZ, value.z);
-        exitNode(key);
-        return true;
+        val = &(root[key.c_str()] = json::Value(json::arrayValue));
     }
-    return false;
-}
-
-bool JsonFileWriter::visit( const he::FixedString& key, vec4& value, const char* comment /*= NULL*/ )
-{
-    if (enterNode(key, comment))
+    if (comment != NULL)
     {
-        visit(HEFS::strX, value.x);
-        visit(HEFS::strY, value.y);
-        visit(HEFS::strZ, value.z);
-        visit(HEFS::strW, value.w);
-        exitNode(key);
-        return true;
+        val->setComment(comment, json::commentAfterOnSameLine);
     }
-    return false;
+    m_Writer->pushRoot(key, *val);
+    return result;
 }
 
-bool JsonFileWriter::visit( const he::FixedString& key, Guid& value, const char* comment /*= NULL*/ )
+void JsonFileWriter::exitArray( const he::FixedString& key )
 {
-    std::string guid(value.toString());
-    return visit(key, guid, comment);
+    HE_ASSERT(m_Writer->getRootName() == key, "exiting wrong node! got: %s, expected: %s", key.c_str(), m_Writer->getRootName().c_str()); key;
+    m_Writer->popRoot();
 }
 
+size_t JsonFileWriter::getArraySize()
+{
+    size_t result(0);
+    const json::Value& val(m_Writer->getRoot());
+    if (val.isArray() == true)
+    {
+        result = val.size();
+    }
+    return result;
+}
+
+template<typename T>
+bool visitDefaultType(JsonFileWriter::Writer* const writer, T& value, const char* comment = NULL)
+{
+    bool result(true);
+    json::Value& root(writer->getRoot());
+    json::Value* val(nullptr);
+    if (root.isNull() == false && root.isArray())
+    {
+        val = &root.append(value);
+    }
+    else
+    {
+        val = &(root = value);
+    }
+    if (comment != NULL)
+    {
+        val->setComment(comment, json::commentAfterOnSameLine);
+    }
+    return result;
+}
+
+bool JsonFileWriter::visit( he::String& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( bool& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( int8& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( uint8& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( int16& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( uint16& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( int32& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( uint32& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( int64& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( uint64& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( float& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
+
+bool JsonFileWriter::visit( double& value, const char* comment /*= NULL*/ )
+{
+    return visitDefaultType(m_Writer, value, comment);
+}
 
 } } //end namespace

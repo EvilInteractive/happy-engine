@@ -60,9 +60,9 @@ public:
         HE_ASSERT(m_RootStack.empty() == false, "No more roots to pop!");
         m_RootStack.removeAt(m_RootStack.size() - 1);
     }
-    void init(const json::Value& value)
+    void init(json::Value&& value)
     {
-        m_Root = value;
+        m_Root = std::forward<json::Value>(value);
         m_RootStack.clear();
         pushRoot(HEFS::str, m_Root);
     }
@@ -94,7 +94,7 @@ bool JsonFileReader::open( const Path& path )
         json::Value root;
         if (m_Reader->getReader().parse(file, root, true))
         {
-            m_Reader->init(root);
+            m_Reader->init(std::move(root));
             m_OpenType = StructuredVisitor::eOpenType_Read;
             result = true;
         }
@@ -121,7 +121,7 @@ void JsonFileReader::close()
 bool JsonFileReader::enterNode( const he::FixedString& key, const char* /*comment*/ /*= NULL*/ )
 {
     const json::Value& val(m_Reader->getRoot()[key.c_str()]);
-    if (val.isObject())
+    if (val.isNull() == false)
     {
         m_Reader->pushRoot(key, val);
         return true;
@@ -135,54 +135,103 @@ void JsonFileReader::exitNode( const he::FixedString& key )
     m_Reader->popRoot();
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, he::String& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::enterNode( const size_t index, const char* /*comment*/ /*= NULL*/ )
 {
     bool result(false);
-    const json::Value& val(m_Reader->getRoot()[key.c_str()]);
-    if (val.isNull() == false)
+    HE_IF_ASSERT(m_Reader->getRoot().isArray(), "Root must be an array to use this method!")
     {
-        if (val.isString())
+        const json::Value& val(m_Reader->getRoot()[checked_numcast<json::ArrayIndex>(index)]);
+        if (val.isNull() == false)
         {
-            value = val.asCString();
+            m_Reader->pushRoot(HEFS::strArray, val);
             result = true;
-        }
-        else
-        {
-            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a string!: %s", key.c_str());
         }
     }
     return result;
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, bool& value, const char* /*comment*/ /*= NULL*/ )
+void JsonFileReader::exitNode( const size_t /*index*/ )
+{
+    HE_ASSERT(m_Reader->getRootName() == HEFS::strArray, "exiting wrong node! got: %s, expected: %s", HEFS::strArray.c_str(), m_Reader->getRootName().c_str());;
+    m_Reader->popRoot();
+}
+
+bool JsonFileReader::enterArray( const he::FixedString& key, const char* /*comment*/ /*= NULL*/ )
+{
+    const json::Value& val(m_Reader->getRoot()[key.c_str()]);
+    if (val.isArray())
+    {
+        m_Reader->pushRoot(key, val);
+        return true;
+    }
+    return false;
+}
+
+void JsonFileReader::exitArray( const he::FixedString& key )
+{
+    HE_ASSERT(m_Reader->getRootName() == key, "exiting wrong node! got: %s, expected: %s", key.c_str(), m_Reader->getRootName().c_str()); key;
+    m_Reader->popRoot();
+}
+
+size_t JsonFileReader::getArraySize()
+{
+    size_t result(0);
+    const json::Value& val(m_Reader->getRoot());
+    if (val.isArray() == true)
+    {
+        result = val.size();
+    }
+    return result;
+}
+
+
+bool JsonFileReader::visit( he::String& value, const char* /*comment*/ /*= NULL*/ )
 {
     bool result(false);
-    const json::Value& val(m_Reader->getRoot()[key.c_str()]);
-    if (val.isNull() == false)
+    const json::Value& currentRoot(m_Reader->getRoot());
+    HE_IF_ASSERT(currentRoot.isObject() == false && currentRoot.isArray() == false, "I did not enter a value yet!")
     {
-        if (val.isBool())
+        if (currentRoot.isString())
         {
-            value = val.asBool();
+            value = currentRoot.asCString();
             result = true;
         }
         else
         {
-            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a bool!: %s", key.c_str());
+            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a string!: %s", m_Reader->getRootName().c_str());
+        }
+    }
+    return result;
+}
+
+bool JsonFileReader::visit( bool& value, const char* /*comment*/ /*= NULL*/ )
+{
+    bool result(false);
+    const json::Value& currentRoot(m_Reader->getRoot());
+    HE_IF_ASSERT(currentRoot.isObject() == false && currentRoot.isArray() == false, "I did not enter a value yet!")
+    {
+        if (currentRoot.isBool())
+        {
+            value = currentRoot.asBool();
+            result = true;
+        }
+        else
+        {
+            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a bool!: %s", m_Reader->getRootName().c_str());
         }
     }
     return result;
 }
 
 template<typename T>
-bool visitIntType(JsonFileReader::Reader* const reader, const he::FixedString& key, T& value)
+bool visitIntType(T& value, const json::Value& currentValue, const he::FixedString& key)
 {
     bool result(false);
-    const json::Value& val(reader->getRoot()[key.c_str()]);
-    if (val.isNull() == false)
+    HE_IF_ASSERT(currentValue.isObject() == false && currentValue.isArray() == false, "I did not enter a value yet!")
     {
-        if (val.isIntegral())
+        if (currentValue.isIntegral())
         {
-            value = checked_numcast<T>(val.asInt());
+            value = checked_numcast<T>(currentValue.asInt());
             result = true;
         }
         else
@@ -194,15 +243,14 @@ bool visitIntType(JsonFileReader::Reader* const reader, const he::FixedString& k
 }
 
 template<typename T>
-bool visitUIntType(JsonFileReader::Reader* const reader, const he::FixedString& key, T& value)
+bool visitUIntType(T& value, const json::Value& currentValue, const he::FixedString& key)
 {
     bool result(false);
-    const json::Value& val(reader->getRoot()[key.c_str()]);
-    if (val.isNull() == false)
+    HE_IF_ASSERT(currentValue.isObject() == false && currentValue.isArray() == false, "I did not enter a value yet!")
     {
-        if (val.isIntegral())
+        if (currentValue.isIntegral())
         {
-            value = checked_numcast<T>(val.asUInt());
+            value = checked_numcast<T>(currentValue.asUInt());
             result = true;
         }
         else
@@ -213,133 +261,82 @@ bool visitUIntType(JsonFileReader::Reader* const reader, const he::FixedString& 
     return result;
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, int8& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( int8& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitIntType(m_Reader, key, value);
+    return visitIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, uint8& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( uint8& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitUIntType(m_Reader, key, value);
+    return visitUIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, int16& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( int16& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitIntType(m_Reader, key, value);
+    return visitIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, uint16& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( uint16& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitUIntType(m_Reader, key, value);
+    return visitUIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, int32& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( int32& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitIntType(m_Reader, key, value);
+    return visitIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, uint32& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( uint32& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitUIntType(m_Reader, key, value);
+    return visitUIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, int64& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( int64& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitIntType(m_Reader, key, value);
+    return visitIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, uint64& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( uint64& value, const char* /*comment*/ /*= NULL*/ )
 {
-    return visitUIntType(m_Reader, key, value);
+    return visitUIntType(value, m_Reader->getRoot(), m_Reader->getRootName());
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, float& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( float& value, const char* /*comment*/ /*= NULL*/ )
 {
     bool result(false);
-    const json::Value& val(m_Reader->getRoot()[key.c_str()]);
-    if (val.isNull() == false)
+    const json::Value& currentRoot(m_Reader->getRoot());
+    HE_IF_ASSERT(currentRoot.isObject() == false && currentRoot.isArray() == false, "I did not enter a value yet!")
     {
-        if (val.isDouble())
+        if (currentRoot.isDouble())
         {
-            value = static_cast<float>(val.asDouble());
+            value = static_cast<float>(currentRoot.asDouble());
             result = true;
         }
         else
         {
-            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a float!: %s", key.c_str());
+            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a float!: %s", m_Reader->getRootName().c_str());
         }
     }
     return result;
 }
 
-bool JsonFileReader::visit( const he::FixedString& key, double& value, const char* /*comment*/ /*= NULL*/ )
+bool JsonFileReader::visit( double& value, const char* /*comment*/ /*= NULL*/ )
 {
     bool result(false);
-    const json::Value& val(m_Reader->getRoot()[key.c_str()]);
-    if (val.isNull() == false)
+    const json::Value& currentRoot(m_Reader->getRoot());
+    HE_IF_ASSERT(currentRoot.isObject() == false && currentRoot.isArray() == false, "I did not enter a value yet!")
     {
-        if (val.isDouble())
+        if (currentRoot.isDouble())
         {
-            value = val.asDouble();
+            value = currentRoot.asDouble();
             result = true;
         }
         else
         {
-            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a double!: %s", key.c_str());
+            LOG(LogType_ProgrammerAssert, "Trying to get value witch is not a double!: %s", m_Reader->getRootName().c_str());
         }
     }
     return result;
 }
-
-bool JsonFileReader::visit( const he::FixedString& key, vec2& value, const char* /*comment*/ /*= NULL*/ )
-{
-    if (enterNode(key))
-    {
-        visit(HEFS::strX, value.x);
-        visit(HEFS::strY, value.y);
-        exitNode(key);
-        return true;
-    }
-    return false;
-}
-
-bool JsonFileReader::visit( const he::FixedString& key, vec3& value, const char* /*comment*/ /*= NULL*/ )
-{
-    if (enterNode(key))
-    {
-        visit(HEFS::strX, value.x);
-        visit(HEFS::strY, value.y);
-        visit(HEFS::strZ, value.z);
-        exitNode(key);
-        return true;
-    }
-    return false;
-}
-
-bool JsonFileReader::visit( const he::FixedString& key, vec4& value, const char* /*comment*/ /*= NULL*/ )
-{
-    if (enterNode(key))
-    {
-        visit(HEFS::strX, value.x);
-        visit(HEFS::strY, value.y);
-        visit(HEFS::strZ, value.z);
-        visit(HEFS::strW, value.w);
-        exitNode(key);
-        return true;
-    }
-    return false;
-}
-
-bool JsonFileReader::visit( const he::FixedString& key, Guid& value, const char* /*comment*/ /*= NULL*/ )
-{
-    std::string guid;
-    if (visit(key, guid))
-    {
-        value = Guid(guid.c_str());
-        return true;
-    }
-    return false;
-}
-
 
 } } //end namespace

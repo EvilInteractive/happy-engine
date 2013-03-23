@@ -27,3 +27,5 @@ DEF_FS(Int8Test);
 DEF_FS(UInt32Test);
 DEF_FS(GuidTest);
 DEF_FS(ObjectTest);
+DEF_FS(ObjectTestCustom);
+DEF_FS(IntListTest);

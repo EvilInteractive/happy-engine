@@ -42,22 +42,88 @@ public:
     virtual bool enterNode(const he::FixedString& key, const char* comment = NULL) = 0;
     virtual void exitNode(const he::FixedString& key) = 0;
 
-    virtual bool visit(const he::FixedString& key, he::String& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, bool& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, int8& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, uint8& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, int16& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, uint16& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, int32& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, uint32& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, int64& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, uint64& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, float& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, double& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, vec2& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, vec3& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, vec4& value, const char* comment = NULL) = 0;
-    virtual bool visit(const he::FixedString& key, Guid& value, const char* comment = NULL) = 0;
+    bool visit(const he::FixedString& key, he::String& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, bool& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, int8& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, uint8& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, int16& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, uint16& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, int32& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, uint32& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, int64& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, uint64& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, float& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, double& value, const char* comment = NULL)
+    {
+        return internalVisit(key, value, comment);
+    }
+    bool visit(const he::FixedString& key, vec2& value, const char* comment = NULL);
+    bool visit(const he::FixedString& key, vec3& value, const char* comment = NULL);
+    bool visit(const he::FixedString& key, vec4& value, const char* comment = NULL);
+    bool visit(const he::FixedString& key, Guid& value, const char* comment = NULL);
+
+    template<typename T>
+    bool visitList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
+    {
+        return internalVisitList(key, list, comment);
+    }
+    template<typename T>
+    bool visitList(const he::FixedString& key, he::PrimitiveList<T>& list, const char* comment = NULL)
+    {
+        return internalVisitList(key, list, comment);
+    }
+
+    template<typename T>
+    bool visitObjectList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
+    {
+        return internalVisitObjectList(key, list, comment);
+    }
+
+    template<typename T>
+    bool visitCustomList(const he::FixedString& key, he::ObjectList<T>& list, 
+        const boost::function3<void, StructuredVisitor* const, const size_t, T&>& callback, const char* comment = NULL)
+    {
+        return internalVisitCustomList<he::ObjectList<T>, T>(key, list, callback, comment);
+    }
+    template<typename T>
+    bool visitCustomList(const he::FixedString& key, he::PrimitiveList<T>& list,
+        const boost::function3<void, StructuredVisitor* const, const size_t, T&>& callback, const char* comment = NULL)
+    {
+        return internalVisitCustomList<he::PrimitiveList<T>, T>(key, list, callback, comment);
+    }
     
     template<typename EnumType, typename CastType>
     bool visitEnum(const he::FixedString& key, EnumType& enumValue, const char* comment = NULL)
@@ -76,9 +142,115 @@ public:
     }
 
 protected:
+    // Array methods
+    virtual bool enterNode(const size_t index, const char* comment = NULL) = 0;
+    virtual void exitNode(const size_t index) = 0;
+    virtual bool enterArray(const he::FixedString& key, const char* comment = NULL) = 0;
+    virtual void exitArray(const he::FixedString& key) = 0;
+    virtual size_t getArraySize() = 0;
+    
+    // internal visits
+    virtual bool visit(he::String& value, const char* comment = NULL) = 0;
+    virtual bool visit(bool& value, const char* comment = NULL) = 0;
+    virtual bool visit(int8& value, const char* comment = NULL) = 0;
+    virtual bool visit(uint8& value, const char* comment = NULL) = 0;
+    virtual bool visit(int16& value, const char* comment = NULL) = 0;
+    virtual bool visit(uint16& value, const char* comment = NULL) = 0;
+    virtual bool visit(int32& value, const char* comment = NULL) = 0;
+    virtual bool visit(uint32& value, const char* comment = NULL) = 0;
+    virtual bool visit(int64& value, const char* comment = NULL) = 0;
+    virtual bool visit(uint64& value, const char* comment = NULL) = 0;
+    virtual bool visit(float& value, const char* comment = NULL) = 0;
+    virtual bool visit(double& value, const char* comment = NULL) = 0;
+
     EOpenType m_OpenType;
 
 private:
+    template <typename T>
+    bool internalVisit(const he::FixedString& key, T& value, const char* comment)
+    {
+        bool result(false);
+        if (enterNode(key))
+        {
+            result = visit(value, comment);
+            exitNode(key);
+        }
+        return result;
+    }
+
+    template<typename T>
+    bool internalVisitList(const he::FixedString& key, T& list, const char* comment = NULL)
+    {
+        bool result(false);
+        if (enterArray(key, comment))
+        {
+            HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
+            const size_t size(m_OpenType == eOpenType_Read? getArraySize() : list.size());
+            list.resize(size);
+            for (size_t i(0); i < size; ++i)
+            {
+                if (enterNode(i))
+                {
+                    visit(list[i], NULL);
+                    exitNode(i);
+                }
+            };
+            result = true;
+            exitArray(key);
+        }
+        return result;
+    }
+
+    template<typename T, typename U>
+    bool internalVisitCustomList(const he::FixedString& key, T& list,
+        const boost::function3<void, StructuredVisitor* const, const size_t, U&>& callback, const char* comment = NULL)
+    {
+        bool result(false);
+        if (enterArray(key, comment))
+        {
+            HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
+            HE_ASSERT(m_OpenType != eOpenType_Read || list.empty(), "List is not empty when visiting!");
+            const size_t size(m_OpenType == eOpenType_Read? getArraySize() : list.size());
+            list.resize(size);
+            for (size_t i(0); i < size; ++i)
+            {
+                U& element(list[i]);
+                if (enterNode(i))
+                {
+                    callback(this, i, element);
+                    exitNode(i);
+                }
+            };
+            result = true;
+            exitArray(key);
+        }
+        return result;
+    }
+
+    template<typename T>
+    bool internalVisitObjectList(const he::FixedString& key, he::ObjectList<T>& list, const char* comment = NULL)
+    {
+        bool result(false);
+        if (enterArray(key, comment))
+        {
+            HE_ASSERT(m_OpenType != eOpenType_Closed, "Stream is closed!");
+            const size_t size(m_OpenType == eOpenType_Read? getArraySize() : list.size());
+            list.resize(size);
+            for (size_t i(0); i < size; ++i)
+            {
+                if (enterNode(i))
+                {
+                    T& element(list[i]);
+                    element.visit(this);
+                    exitNode(i);
+                }
+            };
+            result = true;
+            exitArray(key);
+        }
+        return result;
+    }
+
     //Disable default copy constructor and default assignment operator
     StructuredVisitor(const StructuredVisitor&);
     StructuredVisitor& operator=(const StructuredVisitor&);

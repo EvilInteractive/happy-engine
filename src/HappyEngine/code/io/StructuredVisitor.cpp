@@ -24,4 +24,91 @@
 namespace he {
 namespace io {
 
+bool StructuredVisitor::visit( const he::FixedString& key, Guid& value, const char* comment /*= NULL*/ )
+{
+    std::string guid(m_OpenType == eOpenType_Write? value.toString() : "");
+    if (visit(key, guid, comment))
+    {
+        if (m_OpenType == eOpenType_Read)
+            value = Guid(guid.c_str());
+        return true;
+    }
+    return false;
+}
+
+bool StructuredVisitor::visit( const he::FixedString& key, vec2& value, const char* comment /*= NULL*/ )
+{
+    if (enterArray(key, comment))
+    {
+        if (enterNode(0))
+        {
+            visit(value.x);
+            exitNode(0);
+        }
+        if (enterNode(1))
+        {
+            visit(value.y);
+            exitNode(1);
+        }
+        exitArray(key);
+        return true;
+    }
+    return false;
+}
+
+bool StructuredVisitor::visit( const he::FixedString& key, vec3& value, const char* comment /*= NULL*/ )
+{
+    if (enterArray(key, comment))
+    {
+        if (enterNode(0))
+        {
+            visit(value.x);
+            exitNode(0);
+        }
+        if (enterNode(1))
+        {
+            visit(value.y);
+            exitNode(1);
+        }
+        if (enterNode(2))
+        {
+            visit(value.z);
+            exitNode(2);
+        }
+        exitArray(key);
+        return true;
+    }
+    return false;
+}
+
+bool StructuredVisitor::visit( const he::FixedString& key, vec4& value, const char* comment /*= NULL*/ )
+{
+    if (enterArray(key, comment))
+    {
+        if (enterNode(0))
+        {
+            visit(value.x);
+            exitNode(0);
+        }
+        if (enterNode(1))
+        {
+            visit(value.y);
+            exitNode(1);
+        }
+        if (enterNode(2))
+        {
+            visit(value.z);
+            exitNode(2);
+        }
+        if (enterNode(3))
+        {
+            visit(value.w);
+            exitNode(3);
+        }
+        exitArray(key);
+        return true;
+    }
+    return false;
+}
+
 } } //end namespace

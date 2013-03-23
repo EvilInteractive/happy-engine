@@ -22,7 +22,7 @@
 namespace he {
 namespace io {
 
-class FileReader
+class HAPPY_ENTRY FileReader
 {
 public:
     enum OpenType
