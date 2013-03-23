@@ -241,7 +241,8 @@ namespace json {
       Value( const Value &other );
       ~Value();
 
-      Value &operator=( const Value &other );
+      Value& operator=( const Value& other );
+      Value& operator=( Value&& other );
       /// Swap values.
       /// \note Currently, comments are intentionally not swapped, for
       /// both logic and efficiency.
@@ -498,7 +499,6 @@ namespace json {
 # endif
       CommentInfo *comments_;
    };
-
 
    /** \brief Experimental and untested: represents an element of the "path" to access a node.
     */
