@@ -407,6 +407,47 @@ Value::Value( bool value )
 }
 
 
+Value::Value( Value&& other )
+    : type_( other.type_ )
+    , comments_( 0 )
+# ifdef JSON_VALUE_USE_INTERNAL_MAP
+    , itemIsUsed_( 0 )
+#endif
+{
+    memset(&value_, 0, sizeof(ValueHolder));
+    switch ( type_ )
+    {
+    case nullValue:
+    case intValue:
+    case uintValue:
+    case realValue:
+    case booleanValue:
+        value_ = other.value_;
+        break;
+    case stringValue:
+        std::swap(value_.string_, other.value_.string_);
+        allocated_ = true;
+        other.allocated_ = false;
+        break;
+#ifndef JSON_VALUE_USE_INTERNAL_MAP
+    case arrayValue:
+    case objectValue:
+        std::swap(value_.map_, other.value_.map_);
+        break;
+#else
+    case arrayValue:
+        std::swap(value_.array_, other.value_.array_);
+        break;
+    case objectValue:
+        std::swap(value_.map_, other.value_.map_);
+        break;
+#endif
+    default:
+        JSON_ASSERT_UNREACHABLE;
+    }
+    std::swap(comments_, other.comments_);
+}
+
 Value::Value( const Value &other )
    : type_( other.type_ )
    , comments_( 0 )

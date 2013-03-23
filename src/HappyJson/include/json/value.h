@@ -237,6 +237,7 @@ namespace json {
       Value( const CppTL::ConstString &value );
 # endif
       Value( bool value );
+      Value( Value&& other );
       Value( const Value &other );
       ~Value();
 
@@ -244,7 +245,7 @@ namespace json {
       /// Swap values.
       /// \note Currently, comments are intentionally not swapped, for
       /// both logic and efficiency.
-      void swap( Value &other );
+      void swap( Value& other );
 
       ValueType type() const;
 
