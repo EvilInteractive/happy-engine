@@ -28,6 +28,7 @@
 
 namespace he {
 namespace io {
+    class StructuredVisitor;
     class BinaryFileVisitor;
 }
 namespace gui {
@@ -133,8 +134,10 @@ public:
     void setGuid(const Guid& id) { m_Guid = id; }
     const Guid& getGuid() const { return m_Guid; }
     const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
+    he::PrimitiveList<Connecter*>& getConnectersForEdit() { return m_Connecters; }
     
-    void visit(io::BinaryFileVisitor& stream);
+    void visit(io::StructuredVisitor* const visitor);
+    void visit(io::BinaryFileVisitor* const visitor);
 
     void draw2D(gui::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 

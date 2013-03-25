@@ -51,6 +51,9 @@
 #include "PluginLoader.h"
 #include "EntityManager.h"
 #include <EntityManager.h>
+#include <ControlsManager.h>
+#include <Keyboard.h>
+#include <materialGenerator/MaterialGeneratorGraph.h>
 
 //#include "boost/filesystem.hpp"
 
@@ -65,7 +68,8 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
                       m_Window(nullptr),
                       m_GamePlugin(nullptr),
                       m_EntityManager(NEW EntityManager()),
-                      m_TestScene(nullptr)
+                      m_TestScene(nullptr),
+                      m_MaterialGenerator(nullptr)
 {
 }
 
@@ -203,6 +207,9 @@ void MainGame::init()
 
     m_Scene->getLightManager()->setAmbientLight(Color(1.0f, 1.0f, 1.0f, 0.8f), 0.5f);
     m_Scene->getLightManager()->setDirectionalLight(normalize(vec3(-4.0f, 5.f, 1.0f)), Color(1.0f, 0.9f, 0.8f, 1.0f), 1.0f);
+
+    m_MaterialGenerator = NEW he::tools::MaterialGeneratorGraph();
+    m_MaterialGenerator->init();
 }
 
 void MainGame::tick(float dTime)
@@ -211,6 +218,14 @@ void MainGame::tick(float dTime)
     const he::vec3& position(camera->getPosition());
 
     m_UIController->updateSceneInfo(position);
+
+    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F9))
+    {
+        if (m_MaterialGenerator->isOpen())
+            m_MaterialGenerator->close();
+        else
+            m_MaterialGenerator->open();
+    }
 
     he::ge::Game::tick(dTime);
     m_FPSGraph->tick(dTime);

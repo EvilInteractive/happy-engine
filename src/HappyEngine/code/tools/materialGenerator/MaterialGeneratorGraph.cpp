@@ -45,10 +45,13 @@
 #include "BezierShape2D.h"
 
 #include "Command.h"
-#include "BinaryFileVisitor.h"
+#include "StructuredVisitor.h"
+#include "JsonFileWriter.h"
+#include "JsonFileReader.h"
 #include "MaterialGeneratorNodeFactory.h"
 #include "WebView.h"
 #include "WebListener.h"
+#include "BinaryFileVisitor.h"
 
 
 #define ZOOM_STEP 0.1f
@@ -331,11 +334,13 @@ void MaterialGeneratorGraph::updateStates( const float /*dTime*/ )
             }
             else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_S))
             {
-                save();
+                he::Path p(CONTENT->getShaderFolderPath().append("testShader2.shader").str());
+                save(p);
             }
             else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_O))
             {
-                load();
+                he::Path p(CONTENT->getShaderFolderPath().append("testShader2.shader").str());
+                load(p);
             }
             else if (keyboard->isShortcutPressed(io::Key_Ctrl, io::Key_Z))
             {
@@ -788,51 +793,129 @@ void MaterialGeneratorGraph::increaseErrorPool(const size_t extraSize)
 
 #define VERSION 1
 
-void MaterialGeneratorGraph::save()
+void MaterialGeneratorGraph::save(const he::Path& path)
 {
-    io::BinaryFileVisitor stream;
-    if (stream.openWrite(CONTENT->getShaderFolderPath().append("testShader.shader").str()))
+    io::JsonFileWriter writer;
+    if (writer.open(path))
     {
-        uint16 version(VERSION);
-        uint32 nodeCount(static_cast<uint32>(m_NodeList.size()));
-        stream.visit(version);
-        stream.visit(nodeCount);
-        m_NodeList.forEach([&stream](MaterialGeneratorNode* const node)
-        {
-            MaterialGeneratorNodeType type(node->getType());
-            stream.visitEnum<MaterialGeneratorNodeType, uint16>(type);
-            stream.visit(type);
-            node->visit(stream);
-        });
-        m_NodeList.forEach([&stream](const MaterialGeneratorNode* const node)
-        {
-            io::BinaryFileVisitor& scopedStream(stream);
-            node->getConnecters().forEach([&scopedStream](MaterialGeneratorNode::Connecter* const connecter)
-            {
-                if (connecter->isInput())
-                {
-                    bool isConnected(connecter->isConnected());
-                    scopedStream.visit(isConnected);
-                    if (isConnected)
-                    {
-                        MaterialGeneratorNode::Connecter* const connection(connecter->getConnection());
-                        Guid guid(connection->getParent()->getGuid());
-                        uint8 index(connection->getIndex());
-                        scopedStream.visit(guid);
-                        scopedStream.visit(index);
-                    }
-                }
-            });
-        });
-        stream.close();
+        visit(&writer);
+        writer.close();
     }
     else
     {
-        LOG(LogType_ArtAssert, "File open failed!\nSave failed...");
+        LOG(LogType_ArtAssert, "File open failed!\nSave failed... %s", path.str().c_str());
     }
 }
 
-void MaterialGeneratorGraph::load()
+void MaterialGeneratorGraph::load(const he::Path& path)
+{
+    io::JsonFileReader reader;
+    if (reader.open(path))
+    {
+        visit(&reader);
+        reader.close();
+    }
+    else
+    {
+        LOG(LogType_ArtAssert, "File open failed!\nLoad failed... %s", path.str().c_str());
+    }
+}
+
+struct VisitConnection
+{
+    VisitConnection() {}
+    VisitConnection(const Guid& from, const uint8 fromIndex, const Guid& to, const uint8 toIndex)
+        : m_From(from), m_FromOutput(fromIndex), m_To(to), m_ToInput(toIndex) {}
+    ~VisitConnection() {}
+
+    Guid m_From;
+    uint8 m_FromOutput;
+    Guid m_To;
+    uint8 m_ToInput;
+
+    void visit( he::io::StructuredVisitor* const visitor )
+    {
+        visitor->visit(HEFS::strFrom, m_From);
+        visitor->visit(HEFS::strFromOutput, m_FromOutput);
+        visitor->visit(HEFS::strTo, m_To);
+        visitor->visit(HEFS::strToInput, m_ToInput);
+    }
+};
+
+void MaterialGeneratorGraph::visit( he::io::StructuredVisitor* const visitor )
+{
+    MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
+    const bool isLoading(visitor->isReading());
+
+    if (isLoading) 
+    {
+        clear();
+    }
+
+    uint16 version(VERSION);
+    visitor->visit(HEFS::strVersion, version);
+    if (version == VERSION)
+    {
+        // Visit Nodes
+        visitor->visitCustomList<MaterialGeneratorNode*>(HEFS::strNodes, m_NodeList, 
+            [isLoading, factory, this](io::StructuredVisitor* const visitor, const size_t /*index*/, MaterialGeneratorNode*& node)
+        {
+            MaterialGeneratorNodeType type(isLoading? MaterialGeneratorNodeType_Unassigned : node->getType());
+            visitor->visitEnum<MaterialGeneratorNodeType, uint16>(HEFS::strType, type);
+            if (isLoading)
+            {
+                node = factory->create(type);
+                node->setParent(this);
+            }
+            node->visit(visitor);
+        });
+
+        // Visit connections
+        he::ObjectList<VisitConnection> connections;
+
+        if (isLoading == false)
+        {
+            m_NodeList.forEach([&connections](MaterialGeneratorNode* const node)
+            {
+                he::ObjectList<VisitConnection>& scopedConnections(connections);
+                node->getConnecters().forEach([&scopedConnections](MaterialGeneratorNode::Connecter* const connecterA)
+                {
+                    if (connecterA->isInput()) // Only 1 input connection allowed, so no doubles here!
+                    {
+                        const bool isConnected(connecterA->isConnected());
+                        if (isConnected)
+                        {
+                            MaterialGeneratorNode::Connecter* const connecterB(connecterA->getConnection());
+                            const VisitConnection connection(
+                                connecterB->getParent()->getGuid(), connecterB->getIndex(),
+                                connecterA->getParent()->getGuid(), connecterA->getIndex());
+                            scopedConnections.add(connection);
+                        }
+                    }
+                });
+            });
+        }
+
+        visitor->visitObjectList(HEFS::strConnections, connections);
+
+        if (isLoading == true)
+        {
+            connections.forEach([this](const VisitConnection& connection)
+            {
+                MaterialGeneratorNode* const fromNode(getNode(connection.m_From));
+                MaterialGeneratorNode* const toNode(getNode(connection.m_To));
+                MaterialGeneratorError error;
+                toNode->connectToInput(fromNode, connection.m_FromOutput, connection.m_ToInput, error);
+            });
+        }
+    }
+    else
+    {
+        LOG(LogType_ProgrammerAssert, "Shader load failed, wrong version! %d != %d", version, VERSION);
+    }
+}
+
+void MaterialGeneratorGraph::clear()
 {
     MaterialGeneratorNodeFactory* const factory(MaterialGeneratorNodeFactory::getInstance());
     m_NodeList.forEach([factory](MaterialGeneratorNode* const node)
@@ -842,56 +925,6 @@ void MaterialGeneratorGraph::load()
     m_NodeList.clear();
     m_NodeGraph.clear();
     m_CommandStack.clear();
-
-    io::BinaryFileVisitor stream;
-    if (stream.openRead(CONTENT->getShaderFolderPath().append("testShader.shader").str()))
-    {
-        uint16 version(0);
-        stream.visit(version);
-        if (version == VERSION)
-        {
-            uint32 size(0);
-            stream.visit(size);
-            for (uint32 i(0); i < size; ++i)
-            {
-                MaterialGeneratorNodeType type(MaterialGeneratorNodeType_Unassigned);
-                stream.visitEnum<MaterialGeneratorNodeType, uint16>(type);
-                MaterialGeneratorNode* const node(factory->create(type));
-                addNode(node);
-                node->visit(stream);
-            }
-            m_NodeGraph.addRootNode(m_NodeList[0]); // first node is always root
-            m_NodeList.forEach([&stream, this](MaterialGeneratorNode* const node)
-            {
-                io::BinaryFileVisitor& scopedStream(stream);
-                MaterialGeneratorGraph* const scopedThis(this);
-                node->getConnecters().forEach([&scopedStream, node, scopedThis](MaterialGeneratorNode::Connecter* const connecter)
-                {
-                    if (connecter->isInput())
-                    {
-                        bool isConnected(false);
-                        scopedStream.visit(isConnected);
-                        if (isConnected)
-                        {
-                            Guid guid;
-                            scopedStream.visit(guid);
-                            uint8 index(0);
-                            scopedStream.visit(index);
-                            MaterialGeneratorNode* const otherNode(scopedThis->getNode(guid));
-                            MaterialGeneratorError error;
-                            node->connectToInput(otherNode, index, connecter->getIndex(), error);
-                        }
-                    }
-                });
-            });
-        }
-        else
-        {
-            LOG(LogType_ArtAssert, "Incompatible version!\nVersion = %d, code version = %d", version, VERSION);
-        }
-
-        stream.close();
-    }
 }
 
 

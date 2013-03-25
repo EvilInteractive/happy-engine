@@ -28,6 +28,7 @@
 namespace he {
     namespace tools {
         class FPSGraph;
+        class MaterialGeneratorGraph;
     }
     namespace ge {
         class DefaultRenderPipeline;
@@ -79,6 +80,8 @@ private:
     he::pl::IPlugin* m_GamePlugin;
 
     EntityManager* m_EntityManager;
+
+    he::tools::MaterialGeneratorGraph* m_MaterialGenerator;
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

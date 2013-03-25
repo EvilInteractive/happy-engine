@@ -87,11 +87,12 @@ JsonFileWriter::~JsonFileWriter()
     delete m_Writer;
 }
 
-void JsonFileWriter::open( const Path& path )
+bool JsonFileWriter::open( const Path& path )
 {
     m_SavePath = path;
     m_Writer->init();
     m_OpenType = StructuredVisitor::eOpenType_Write;
+    return true;
 }
 
 void JsonFileWriter::close()

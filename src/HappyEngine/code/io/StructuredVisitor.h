@@ -18,8 +18,8 @@
 //Author:  Bastian Damman
 //Created: 26/01/2013
 
-#ifndef _HE_BINARY_VISITOR_H_
-#define _HE_BINARY_VISITOR_H_
+#ifndef _HE_STRUCTURED_VISITOR_H_
+#define _HE_STRUCTURED_VISITOR_H_
 #pragma once
 
 namespace he {
@@ -36,6 +36,8 @@ public:
     virtual ~StructuredVisitor() {}
 
     bool isOpen() const { return m_OpenType != eOpenType_Closed; }
+    bool isReading() const { return m_OpenType == eOpenType_Read; }
+    bool isWriting() const { return m_OpenType == eOpenType_Write; }
 
     virtual void close() = 0;
 

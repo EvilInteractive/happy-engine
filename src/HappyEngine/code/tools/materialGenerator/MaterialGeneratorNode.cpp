@@ -27,6 +27,7 @@
 #include "Renderer2D.h"
 #include "MathFunctions.h"
 #include "BezierShape2D.h"
+#include "StructuredVisitor.h"
 #include "BinaryFileVisitor.h"
 
 #include "ContentManager.h"
@@ -588,10 +589,16 @@ void MaterialGeneratorNode::setSize( const vec2& size )
     updateConnecterPositions();
 }
 
-void MaterialGeneratorNode::visit( io::BinaryFileVisitor& stream )
+void MaterialGeneratorNode::visit( io::StructuredVisitor* const visitor )
 {
-    stream.visit(m_Position);
-    stream.visit(m_Guid);
+    visitor->visit(HEFS::strPosition, m_Position);
+    visitor->visit(HEFS::strID, m_Guid);
+}
+
+void MaterialGeneratorNode::visit( io::BinaryFileVisitor* const visitor )
+{
+    visitor->visit(m_Position);
+    visitor->visit(m_Guid);
 }
 
 

@@ -35,7 +35,7 @@ public:
     JsonFileWriter();
     virtual ~JsonFileWriter();
 
-    void open(const Path& file);
+    bool open(const Path& file);
     virtual void close();
 
     virtual bool enterNode(const he::FixedString& key, const char* comment = NULL);

@@ -50,7 +50,7 @@ namespace ct {
 namespace tools {
 class MaterialGeneratorNode;
 
-class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
+class HAPPY_ENTRY MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
 {
     friend class MaterialGeneratorGraphMoveCommand;
     friend class MaterialGeneratorGraphEditSelectionCommand;
@@ -86,6 +86,7 @@ public:
 
     /* GENERAL */
     void init();
+    void clear();
 
     void open();
     void close();
@@ -102,8 +103,8 @@ public:
 
     void pushError(const MaterialGeneratorError& errorMsg);
 
-    void save();
-    void load();
+    void save(const he::Path& path);
+    void load(const he::Path& path);
 
 private:
 
@@ -124,6 +125,8 @@ private:
     void updateErrors(const float dTime);
 
     void addNode(MaterialGeneratorNode* const node);
+
+    void visit(he::io::StructuredVisitor* const visitor);
 
     /* MEMBERS */
     ct::ShaderGenerator* m_Generator;
