@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 2.8)
 SET(CMAKE_COLOR_MAKEFILE ON)
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
+SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
+
 if (WIN32)
     set(PLATFORM "win")
 elseif (APPLE)
@@ -77,3 +79,7 @@ if (${Include_HappySandBox})
     add_subdirectory (HappyTools/HappySandBox)
 endif()
 
+# Copy thirdparty dll's
+if (WIN32)
+CopyThirdParty(${HappyEngine_SOURCE_DIR}/bin)
+endif()

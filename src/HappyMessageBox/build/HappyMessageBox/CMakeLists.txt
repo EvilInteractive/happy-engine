@@ -22,6 +22,7 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
 add_library (HappyMessageBox STATIC ${HAPPYMESSAGEBOX_SRCS})
 
 #set output dir
-SET_TARGET_PROPERTIES(HappyMessageBox PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin)                     
+SET_TARGET_PROPERTIES(HappyMessageBox PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin) 
+SET_TARGET_PROPERTIES(HappyMessageBox PROPERTIES FOLDER "HappyEngine/MessageBox")                      
   
 

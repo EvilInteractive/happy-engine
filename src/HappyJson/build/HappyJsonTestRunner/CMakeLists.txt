@@ -16,4 +16,5 @@ add_executable (HappyJsonTestRunner ${HAPPYJSONTESTRUNNER_SRCS})
 target_link_libraries(HappyJsonTestRunner HappyJson)
 
 #set output dir
-SET_TARGET_PROPERTIES(HappyJsonTestRunner PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyJson/bin)                     
+SET_TARGET_PROPERTIES(HappyJsonTestRunner PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyJson/bin) 
+SET_TARGET_PROPERTIES(HappyJsonTestRunner PROPERTIES FOLDER "HappyEngine/Json")                  

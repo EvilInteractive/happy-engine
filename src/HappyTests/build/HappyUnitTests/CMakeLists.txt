@@ -29,18 +29,13 @@ if (WIN32)
 LinkThirdParty(HappyUnitTests)
 endif()
 
-# Copy thirdparty dll's
-if (WIN32)
-CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTests/bin)
-endif()
-
 # link HappyEngine
 target_link_libraries(HappyUnitTests HappyEngine)
-
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
 ADD_NATIVE_PRECOMPILED_HEADER(HappyUnitTests HappyUnitTestsPCH.h ../../code/HappyUnitTests/HappyUnitTestsPCH.cpp)
 
 # set output dir
-SET_TARGET_PROPERTIES(HappyUnitTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)
+SET_TARGET_PROPERTIES(HappyUnitTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)
+SET_TARGET_PROPERTIES(HappyUnitTests PROPERTIES FOLDER "HappyTests")

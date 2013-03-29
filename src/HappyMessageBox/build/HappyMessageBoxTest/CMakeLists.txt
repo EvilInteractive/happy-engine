@@ -29,15 +29,5 @@ target_link_libraries(HappyMessageBoxTest optimized sfml-system-s)
 target_link_libraries(HappyMessageBoxTest optimized sfml-window-s)
 
 #set output dir
-SET_TARGET_PROPERTIES(HappyMessageBoxTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin)                     
-                            
-if (WIN32)               
-set(AWEFILES av.* awe.* icudt.dll libEGL.dll libGLESv2.dll)
-foreach (f ${AWEFILES})
-file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Debug/${PLATFORM}${BITNESS}/ DESTINATION ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin/Debug FILES_MATCHING REGEX ${f})
-file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Release/${PLATFORM}${BITNESS}/ DESTINATION ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin/MinSizeRel FILES_MATCHING REGEX ${f})
-file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Release/${PLATFORM}${BITNESS}/ DESTINATION ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin/Release FILES_MATCHING REGEX ${f})
-file(INSTALL ${HappyEngine_SOURCE_DIR}/3thParty/dll/Release/${PLATFORM}${BITNESS}/ DESTINATION ${HappyEngine_SOURCE_DIR}/HappyMessageBox/bin/RelWithDebInfo FILES_MATCHING REGEX ${f})
-endforeach()
-endif()                            
-                            
+SET_TARGET_PROPERTIES(HappyMessageBoxTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)    
+SET_TARGET_PROPERTIES(HappyMessageBoxTest PROPERTIES FOLDER "HappyEngine/MessageBox")                    

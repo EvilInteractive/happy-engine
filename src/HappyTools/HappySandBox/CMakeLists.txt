@@ -29,11 +29,6 @@ if (WIN32)
 LinkThirdParty(HappySandBox)
 endif()
 
-# Copy thirdparty dll's
-if (WIN32)
-CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/bin)
-endif()
-
 # link HappyEngine
 target_link_libraries(HappySandBox HappyEngine)
 
@@ -43,4 +38,5 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
 ADD_NATIVE_PRECOMPILED_HEADER(HappySandBox HappySandBoxPCH.h code/HappySandBoxPCH.cpp)
 
 # set output dir
-SET_TARGET_PROPERTIES(HappySandBox PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/bin)
+SET_TARGET_PROPERTIES(HappySandBox PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)   
+SET_TARGET_PROPERTIES(HappySandBox PROPERTIES FOLDER "HappyTools")

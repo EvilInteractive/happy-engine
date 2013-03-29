@@ -25,16 +25,13 @@ copyHappyRuntime(HappyPluginLoader)
 # link thirdparty
 LinkThirdParty(HappyPluginLoader)
 
-# Copy thirdparty dll's
-CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTests/bin)
-
 # link HappyEngine
 target_link_libraries(HappyPluginLoader HappyEngine)
-
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
 ADD_NATIVE_PRECOMPILED_HEADER(HappyPluginLoader HappyPluginLoaderPCH.h ../../code/HappyPluginLoader/HappyPluginLoaderPCH.cpp)
 
 # set output dir
-SET_TARGET_PROPERTIES(HappyPluginLoader PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)
+SET_TARGET_PROPERTIES(HappyPluginLoader PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)
+SET_TARGET_PROPERTIES(HappyPluginLoader PROPERTIES FOLDER "HappyTests")

@@ -30,5 +30,6 @@ include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/SetCompilerOptions.cmake)
 add_library (HappyJson ${HAPPYJSON_SRCS})
 
 #set output dir
-SET_TARGET_PROPERTIES(HappyJson PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyJson/bin)                     
+SET_TARGET_PROPERTIES(HappyJson PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyJson/bin)
+SET_TARGET_PROPERTIES(HappyJson PROPERTIES FOLDER "HappyEngine/Json")                  
                             

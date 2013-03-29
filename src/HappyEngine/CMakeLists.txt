@@ -34,4 +34,5 @@ endif()
 
 #set output dir
 SET_TARGET_PROPERTIES(HappyEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyEngine/bin
-                                             RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyEngine/bin)
+                                             RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyEngine/bin)    
+SET_TARGET_PROPERTIES(HappyEngine PROPERTIES FOLDER "HappyEngine")
