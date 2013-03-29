@@ -75,6 +75,9 @@ MainGame::MainGame(): m_FPSGraph(nullptr),
 
 MainGame::~MainGame()
 {
+    delete m_MaterialGenerator;
+    m_MaterialGenerator = nullptr;
+
     m_RenderPipeline->get2DRenderer()->detachFromRender(m_FPSGraph);
     m_RenderPipeline->get2DRenderer()->detachFromRender(this);
     CONSOLE->detachFromRenderer();
@@ -121,7 +124,7 @@ void MainGame::init()
     m_Window->Closed += quitHandler;
     m_Window->create();
 
-    m_GamePlugin = HAPPYENGINE->getPluginLoader()->loadPlugin(he::Path("HappyPluginTest.dll"));
+    //m_GamePlugin = HAPPYENGINE->getPluginLoader()->loadPlugin(he::Path("HappyPluginTest.dll"));
 
     using namespace he;
 
