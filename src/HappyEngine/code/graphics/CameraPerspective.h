@@ -74,6 +74,9 @@ public:
     virtual void setPosition(const vec3& pos);
     virtual void setLens(float aspectRatio = (16.0f/9.0f), float fov = piOverFour, float nearZ = 10.0f, float farZ = 1000.0f);
     virtual void setAspectRatio(float aspectRatio);
+    void setFov( const float fov );
+    void setNearFarPlane(float nearZ = 1.0f, float farZ = 1000.0f);
+    void setEyeShift(const float lookShift, const float projShift);
 
     // GETTERS
     virtual const vec3& getRight() const { return m_RightWorld; }
@@ -94,6 +97,8 @@ protected:
     vec3 m_RightWorld;
     vec3 m_UpWorld;
     vec3 m_LookWorld;
+    float m_LookShift;
+    float m_ProjShift;
 
     CameraBound m_Bound;
 

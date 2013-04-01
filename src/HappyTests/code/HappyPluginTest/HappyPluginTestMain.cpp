@@ -50,7 +50,7 @@ ht::HappyPluginTestMain::~HappyPluginTestMain()
 
 }
 
-void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::RectI& viewport)
+void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::RectF& relViewport)
 {
     HE_INFO("HappyPluginTestMain init");
     he::gfx::GraphicsEngine* const graphicsEngine(GRAPHICS);
@@ -58,15 +58,17 @@ void ht::HappyPluginTestMain::init(he::gfx::Window* const window, const he::Rect
     m_Scene = graphicsEngine->createScene();
 
     he::gfx::RenderSettings settings;
+    settings.stereoSetting = he::gfx::StereoSetting_OculusRift;
+    settings.cameraSettings.setRelativeViewport(relViewport);
     CONTENT->setRenderSettings(settings);
 
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);
 
     m_Camera = NEW FlyCamera();
+    m_Camera->setNearFarPlane(0.1f, 500.0f);
 
     m_View->setWindow(window);
-    m_View->setAbsoluteViewport(viewport);
     m_View->init(settings);
     m_View->setCamera(m_Camera);
 
@@ -141,7 +143,3 @@ void ht::HappyPluginTestMain::onResumeGame()
 
 }
 
-void ht::HappyPluginTestMain::onResize( const he::RectI& newViewport )
-{
-    m_View->setAbsoluteViewport(newViewport);
-}

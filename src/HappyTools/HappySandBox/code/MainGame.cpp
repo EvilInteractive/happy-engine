@@ -54,6 +54,7 @@
 #include <ControlsManager.h>
 #include <Keyboard.h>
 #include <materialGenerator/MaterialGeneratorGraph.h>
+#include <OculusRiftBinding.h>
 
 //#include "boost/filesystem.hpp"
 
@@ -131,6 +132,7 @@ void MainGame::init()
     he::gfx::RenderSettings settings;
     settings.enableDeferred = true;
     settings.enablePost = true;
+    settings.stereoSetting = gfx::StereoSetting_None;
 
     settings.lightingSettings.enableLighting = true;
     settings.lightingSettings.enableNormalMap = true;
@@ -147,12 +149,12 @@ void MainGame::init()
     settings.postSettings.shaderSettings.enableNormalEdgeDetect = false;
     settings.postSettings.shaderSettings.enableVignette = true;
     settings.postSettings.hdrSettings.exposureSpeed = 0.5f;
+    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
 
     CONTENT->setRenderSettings(settings);
 
     m_Scene = GRAPHICS->createScene();
     m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
 
     m_RenderPipeline = NEW he::ge::DefaultRenderPipeline();
     m_RenderPipeline->init(m_View, m_Scene, settings);

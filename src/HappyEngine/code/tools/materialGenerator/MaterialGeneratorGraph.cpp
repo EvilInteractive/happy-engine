@@ -172,11 +172,11 @@ void MaterialGeneratorGraph::init()
     m_Window->close();
 
     m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_Renderer = NEW gfx::Renderer2D();
     m_View->addRenderPlugin(m_Renderer);
     gfx::RenderSettings settings;
     settings.enablePost = false;
+    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
     he::eventCallback0<void> viewResizedHandler(boost::bind(&MaterialGeneratorGraph::onViewResized, this));

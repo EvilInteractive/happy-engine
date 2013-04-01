@@ -35,12 +35,14 @@
 //////////////////////////////////////////////////////////////////////////
 ///    malloc
 //////////////////////////////////////////////////////////////////////////
+#if GCC || LLVM
+#define he_malloc_dbg(size, file, line) malloc(size)
+#else
+#define he_malloc_dbg(size, file, line) _malloc_dbg(size, _NORMAL_BLOCK, file, line)
+#endif
+
 #if DEBUG || _DEBUG
-    #if GCC || LLVM
-        #define he_malloc(size) malloc(size)
-    #else
-        #define he_malloc(size) _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__)
-    #endif
+    #define he_malloc(size) he_malloc_dbg(size, __FILE__, __LINE__)
 #else
     #define he_malloc(size) malloc(size)
 #endif

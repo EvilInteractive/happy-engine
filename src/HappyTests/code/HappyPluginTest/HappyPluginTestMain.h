@@ -44,7 +44,7 @@ public:
     HappyPluginTestMain();
     virtual ~HappyPluginTestMain();
 
-    virtual void init(he::gfx::Window* const window, const he::RectI& viewport);
+    virtual void init(he::gfx::Window* const window, const he::RectF& viewport);
     virtual void terminate();
 
     virtual he::pl::EPluginType getPluginType() const { return he::pl::ePluginType_ToolGamePlugin; }
@@ -57,7 +57,6 @@ public:
     virtual void onStopGame();
     virtual void onPauseGame();
     virtual void onResumeGame();
-    virtual void onResize(const he::RectI& newViewport);
 
 private:
     he::gfx::View* m_View;

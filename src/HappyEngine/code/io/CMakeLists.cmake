@@ -24,3 +24,7 @@ addFilter(CODE_SRCS src/io/mouse code/io/
             Mouse.cpp                           Mouse.h
             MouseButtons.h
         )
+
+addFilter(CODE_SRCS src/io/vr code/io/
+            OculusRiftBinding.cpp               OculusRiftBinding.h
+)

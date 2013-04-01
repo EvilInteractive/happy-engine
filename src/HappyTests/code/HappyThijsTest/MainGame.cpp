@@ -75,13 +75,13 @@ void MainGame::init()
     m_Window->create();
 
     he::gfx::RenderSettings settings;
+    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     CONTENT->setRenderSettings(settings);
 
     m_Renderer = NEW he::gfx::Renderer2D;
     m_View->addRenderPlugin(m_Renderer);
 
     m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
     m_Renderer->attachToRender(this);

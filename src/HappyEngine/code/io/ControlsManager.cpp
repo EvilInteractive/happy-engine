@@ -22,17 +22,25 @@
 #include "ControlsManager.h"
 #include "Mouse.h"
 #include "Keyboard.h"
-
+#include "OculusRiftBinding.h"
 
 namespace he {
 namespace io {
 
-ControlsManager::ControlsManager(): m_Mouse(NEW Mouse), m_Keyboard(NEW Keyboard), m_Locked(false), m_LockedObject(nullptr)
+ControlsManager::ControlsManager()
+    : m_Mouse(NEW Mouse)
+    , m_Keyboard(NEW Keyboard)
+    , m_OculusRiftBinding(NEW OculusRiftBinding())
+    , m_Locked(false)
+    , m_LockedObject(nullptr)
 {
+    m_OculusRiftBinding->init();
 }
 
 ControlsManager::~ControlsManager()
 {
+    m_OculusRiftBinding->shutdown();
+    delete m_OculusRiftBinding;
     delete m_Keyboard;
     delete m_Mouse;
 }

@@ -92,7 +92,7 @@ void main()
     vec4 color = texture(colorIllMap, texCoord);
      
     //Out         
-    outColor = vec4(((diffuseLight + spec) + ambientLight + vec3(color.a, color.a, color.a) * 100) * color.rgb
+    outColor = vec4(((diffuseLight + spec) + ambientLight + vec3(color.a, color.a, color.a) * 10) * color.rgb
                         , 1.0f);		
     //outColor *= vec4(cascade, 1);
 }

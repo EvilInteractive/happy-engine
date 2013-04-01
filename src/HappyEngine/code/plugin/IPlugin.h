@@ -54,7 +54,7 @@ class IPlugin
 public:
     virtual ~IPlugin() {}
     
-    virtual void init(he::gfx::Window* const window, const he::RectI& viewport) = 0;
+    virtual void init(he::gfx::Window* const window, const he::RectF& relViewport) = 0;
     virtual void terminate() = 0;
 
     virtual he::pl::EPluginType getPluginType() const = 0;
@@ -67,7 +67,6 @@ public:
     virtual void onStopGame() = 0;
     virtual void onPauseGame() = 0;
     virtual void onResumeGame() = 0;
-    virtual void onResize(const he::RectI& newViewport) = 0;
 };
 
 } } //end namespace

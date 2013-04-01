@@ -57,8 +57,8 @@ void MainGame::init()
     m_Window = graphicsEngine->createWindow();
 
     m_Window->setResizable(true);
-    m_Window->setVSync(true);
-    m_Window->setWindowDimension(1280, 720);
+    m_Window->setVSync(false);
+    m_Window->setWindowDimension(1280, 800);
     m_Window->setWindowTitle("HappyPluginTest");
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
@@ -72,34 +72,17 @@ void MainGame::init()
     m_Plugin = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest.dll"));
     if (m_Plugin != nullptr)
     {
-        m_Plugin->init(m_Window, he::RectI(0, 0, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
+        m_Plugin->init(m_Window, he::RectF(0, 0, 1.0f, 1.0f));
         m_Plugin->onLoadLevel(he::Path(""));
-
-        he::eventCallback0<void> resizeHandler([this]()
-        {
-            m_Plugin->onResize(he::RectI(0, 0, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
-        });
-        m_Window->Resized += resizeHandler;
-    }
-    m_Plugin2 = m_PluginLoader->loadPlugin(he::Path("HappyPluginTest.dll"));
-    if (m_Plugin2 != nullptr)
-    {
-        m_Plugin2->init(m_Window, he::RectI(0, m_Window->getWindowHeight() / 2, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
-        m_Plugin2->onLoadLevel(he::Path(""));
-
-        he::eventCallback0<void> resizeHandler([this]()
-        {
-            m_Plugin2->onResize(he::RectI(0, m_Window->getWindowHeight() / 2, m_Window->getWindowWidth(), m_Window->getWindowHeight() / 2));
-        });
-        m_Window->Resized += resizeHandler;
     }
 
     he::gfx::RenderSettings settings;
     settings.enableDeferred = false;
     settings.enablePost = false;
+    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1, 1));
+    settings.stereoSetting = he::gfx::StereoSetting_OculusRift;
     m_View = graphicsEngine->createView();
     m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1, 1));
     m_DebugRenderer = NEW he::gfx::Renderer2D();
     m_View->addRenderPlugin(m_DebugRenderer);
     m_View->init(settings);

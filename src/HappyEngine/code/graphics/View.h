@@ -65,12 +65,13 @@ public:
     virtual void init(const RenderSettings& settings);
     const RenderSettings& getSettings() const { return m_Settings; }
 
+    // Setters
+    void setStereo(const StereoSetting stereo, const bool force = false);
+
     // PLugin
     virtual void addRenderPlugin(IRenderer* renderer);
     
     // Window
-    void setAbsoluteViewport(const RectI& viewport);
-    void setRelativeViewport(const RectF& viewportPercentage);
     const RectI& getViewport() const { return m_Viewport; }
 
     void setWindow(Window* window);
@@ -92,6 +93,11 @@ public:
 private:
     void resize();
     void calcViewportFromPercentage();
+
+    void render();
+
+    void setAbsoluteViewport(const RectI& viewport, const bool force = false);
+    void setRelativeViewport(const RectF& viewportPercentage, const bool force = false);
 
     // Camera
     CameraPerspective* m_Camera;

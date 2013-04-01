@@ -26,6 +26,7 @@ namespace he {
 namespace io {
 class IMouse;
 class IKeyboard;
+class OculusRiftBinding;
 
 class HAPPY_ENTRY ControlsManager
 {
@@ -37,6 +38,7 @@ public:
 
     IKeyboard* getKeyboard() const;
     IMouse* getMouse() const;
+    OculusRiftBinding* getOculusRiftBinding() const { return m_OculusRiftBinding; }
 
     bool getFocus(void* object);
     void returnFocus(void* object);
@@ -46,6 +48,7 @@ private:
 
     IKeyboard* m_Keyboard;
     IMouse* m_Mouse;
+    OculusRiftBinding* m_OculusRiftBinding;
 
     bool m_Locked;
     void* m_LockedObject;

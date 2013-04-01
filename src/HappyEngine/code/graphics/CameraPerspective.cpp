@@ -39,7 +39,8 @@ CameraPerspective::CameraPerspective() :
         m_RightWorld(0.0f, 0.0f, 1.0f),
         m_UpWorld(0.0f, 1.0f, 0.0f),
         m_LookWorld(1.0f, 0.0f, 0.0f),
-        m_RegenViewMatrix(true), m_RegenProjMatrix(true)
+        m_RegenViewMatrix(true), m_RegenProjMatrix(true),
+        m_LookShift(0.0f), m_ProjShift(0.0f)
 {
 }
 
@@ -168,10 +169,18 @@ void CameraPerspective::prepareForRendering()
     {
         const vec3& pos(getPosition());
         m_View = mat44::createLookAtLH(pos, pos + m_LookWorld, m_UpWorld);
+        if (m_LookShift != 0.0f)
+        {
+            m_View = mat44::createTranslation(vec3(m_LookShift, 0, 0)) * m_View;
+        }
     }
     if (m_RegenProjMatrix)
     {
         m_Projection = mat44::createPerspectiveLH(m_FOV, m_AspectRatio, m_NearZ, m_FarZ);
+        if (m_ProjShift != 0.0f)
+        {
+            m_Projection = mat44::createTranslation(vec3(m_ProjShift, 0, 0)) * m_Projection;
+        }
     }
     if (m_RegenProjMatrix || m_RegenViewMatrix)
     {
@@ -182,6 +191,26 @@ void CameraPerspective::prepareForRendering()
     }
 }
 
+void CameraPerspective::setFov( const float fov )
+{
+    m_FOV = fov;
+    m_RegenProjMatrix = true;
+}
+
+void CameraPerspective::setEyeShift( const float lookShift, const float projShift )
+{
+    m_LookShift = lookShift;
+    m_ProjShift = projShift;
+    m_RegenProjMatrix = true;
+    m_RegenViewMatrix = true;
+}
+
+void CameraPerspective::setNearFarPlane( float nearZ /*= 1.0f*/, float farZ /*= 1000.0f*/ )
+{
+    m_NearZ = nearZ;
+    m_FarZ = farZ;
+    m_RegenProjMatrix = true;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
