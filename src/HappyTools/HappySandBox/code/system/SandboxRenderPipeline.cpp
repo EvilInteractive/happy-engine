@@ -43,9 +43,8 @@ SandboxRenderPipeline::~SandboxRenderPipeline()
 
 void SandboxRenderPipeline::init( he::gfx::View* const view )
 {
-    m_UIRenderer = NEW he::gfx::Renderer2D();
-    m_DebugRenderer = NEW he::gfx::Renderer2D();
-
+    m_UIRenderer = NEW UIRenderer();
+    m_DebugRenderer = NEW DebugRenderer();
     view->addRenderPlugin(m_UIRenderer);
     view->addRenderPlugin(m_DebugRenderer);
 }

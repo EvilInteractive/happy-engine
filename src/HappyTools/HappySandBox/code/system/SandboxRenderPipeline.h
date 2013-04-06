@@ -22,12 +22,25 @@
 #define _HE_SandboxRenderPipeline_H_
 #pragma once
 
+#include <Renderer2D.h>
+
 namespace he {
 namespace gfx {
     class Renderer2D;
     class View;
 } }
 namespace hs {
+
+class UIRenderer : public he::gfx::Renderer2D
+{
+public:
+    he::uint8 getRenderPriority() const { return 100; }
+};
+class DebugRenderer : public he::gfx::Renderer2D
+{
+public:
+    he::uint8 getRenderPriority() const { return 50; }
+};
 
 class SandboxRenderPipeline
 {
@@ -37,12 +50,12 @@ public:
 
     void init(he::gfx::View* const view);
 
-    he::gfx::Renderer2D* getUIRenderer() const { return m_UIRenderer; }
-    he::gfx::Renderer2D* getDebugRenderer() const { return m_DebugRenderer; }
+    UIRenderer* getUIRenderer() const { return m_UIRenderer; }
+    DebugRenderer* getDebugRenderer() const { return m_DebugRenderer; }
 
 private:
-    he::gfx::Renderer2D* m_UIRenderer;
-    he::gfx::Renderer2D* m_DebugRenderer;
+    UIRenderer* m_UIRenderer;
+    DebugRenderer* m_DebugRenderer;
     
     //Disable default copy constructor and default assignment operator
     SandboxRenderPipeline(const SandboxRenderPipeline&);

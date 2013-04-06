@@ -40,37 +40,22 @@ public:
 
     virtual void tick(float dTime)
     {
-        if (m_NewTickList.size() > 0)
+        for (size_t i(0); i < m_TickList.size(); ++i)
         {
-            m_TickList.append(m_NewTickList);
-            m_NewTickList.clear();
-        }
-        if (m_RemoveTickList.size() > 0)
-        {
-            m_RemoveTickList.forEach([this](ITickable* const obj)
-            {
-                m_TickList.remove(obj);
-            });
-            m_RemoveTickList.clear();
-        }
-        m_TickList.forEach([&dTime](ITickable* pObj)
-        {
-            pObj->tick(dTime);
-        });
+            m_TickList[i]->tick(dTime);
+        };
     }
-    virtual void addToTickList(ITickable* pObj)
+    virtual void addToTickList(ITickable* obj)
     {
-        m_NewTickList.add(pObj);
+        m_TickList.add(obj);
     }
-    virtual void removeFromTickList(ITickable* pObj)
+    virtual void removeFromTickList(ITickable* obj)
     {
-        m_RemoveTickList.add(pObj);
+        m_TickList.remove(obj);
     }
     
 private:
     he::PrimitiveList<ITickable*> m_TickList;
-    he::PrimitiveList<ITickable*> m_NewTickList;
-    he::PrimitiveList<ITickable*> m_RemoveTickList;
 };
 
 } } //end namespace

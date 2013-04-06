@@ -67,7 +67,7 @@ Canvas2DRendererCairo::~Canvas2DRendererCairo()
         cairo_surface_destroy(data->m_CairoSurface);
         delete data;
 
-        m_DynamicSpriteList.remove(data);
+        m_DynamicSpriteList.removeAt(m_DynamicSpriteList.size() - 1);
     }
 }
 

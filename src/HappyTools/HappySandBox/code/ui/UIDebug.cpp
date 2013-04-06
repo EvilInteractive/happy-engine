@@ -41,7 +41,7 @@ void UIDebug::load()
 {
     /* GUI */
     m_FPSGraph = NEW he::tools::FPSGraph();
-    m_FPSGraph->setType(he::tools::FPSGraph::Type_TextOnly);
+    m_FPSGraph->setType(he::tools::FPSGraph::Type_Full);
     m_FPSGraph->setPos(he::vec2(910,35));
 }
 

@@ -24,7 +24,6 @@
 #include "system/SandboxRenderPipeline.h"
 #include "system/EntityManager.h"
 
-#include <Renderer2D.h>
 #include <WebView.h>
 #include <WebListener.h>
 
@@ -44,9 +43,9 @@ void UIMain::load()
     HE_IF_ASSERT(m_WebView == nullptr, "UIMain already loaded!")
     {
         Sandbox* const sandbox(Sandbox::getInstance());
-        he::gfx::Renderer2D* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
+        UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
         m_WebView = renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true);
-        he::eventCallback0<void> onUrlLoaded([this]()
+        he::eventCallback0<void> onUrlLoaded([this, renderer]()
         {
             he::gui::WebListener* const listener(m_WebView->getWebListener());
 
@@ -60,7 +59,7 @@ void UIMain::load()
         });
         m_WebView->OnUrlLoaded += onUrlLoaded;
         he::Path url(he::Path::getWorkingDir().append("../../data/gui/main.html"));
-        m_WebView->loadFile(url);
+        m_WebView->loadUrl(url);
     }
 }
 
@@ -68,9 +67,12 @@ void UIMain::unload()
 {
     HE_IF_ASSERT(m_WebView != nullptr, "UIMain already unloaded!")
     {
-        hide();
+        if (isVisible() == true)
+        {
+            hide();
+        }
         Sandbox* const sandbox(Sandbox::getInstance());
-        he::gfx::Renderer2D* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
+        UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
         renderer->removeWebView(m_WebView);
         m_WebView = nullptr;
     }
@@ -80,7 +82,7 @@ void UIMain::show()
 {
     UI::show();
     Sandbox* const sandbox(Sandbox::getInstance());
-    he::gfx::Renderer2D* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
+    UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
     renderer->attachToRender(m_WebView);
 }
 
@@ -88,7 +90,7 @@ void UIMain::hide()
 {
     UI::hide();
     Sandbox* const sandbox(Sandbox::getInstance());
-    he::gfx::Renderer2D* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
+    UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
     renderer->detachFromRender(m_WebView);
 }
 

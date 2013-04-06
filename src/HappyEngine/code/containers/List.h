@@ -361,8 +361,8 @@ void he::List<T, Creator>::internalSort( const int begin, const int end, const S
 
     do 
     {
-        while(sorter(m_Buffer[b], centerObject) == -1) { ++b; } // if begin is smaller than middle
-        while(sorter(centerObject, m_Buffer[e]) == -1) { --e; } // if middle is smaller than end
+        while(sorter(m_Buffer[b], centerObject) < 0) { ++b; } // if begin is smaller than middle
+        while(sorter(centerObject, m_Buffer[e]) < 0) { --e; } // if middle is smaller than end
 
         if(b < e)
         {

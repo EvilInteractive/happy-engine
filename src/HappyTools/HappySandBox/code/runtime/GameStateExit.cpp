@@ -4,6 +4,8 @@
 
 #include "Sandbox.h"
 #include "system/SandboxRenderPipeline.h"
+#include "system/UIManager.h"
+
 #include <tools/FPSGraph.h>
 
 namespace hs {
@@ -18,6 +20,9 @@ GameStateExit::~GameStateExit ()
 
 bool GameStateExit::enter()
 {
+    UIManager* const uiManager(UIManager::getInstance());
+    uiManager->unload();
+
     CONSOLE->detachFromRenderer();
     PROFILER->detachFromRenderer();
     HAPPYENGINE->quit();

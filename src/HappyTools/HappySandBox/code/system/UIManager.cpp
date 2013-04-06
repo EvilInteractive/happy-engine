@@ -29,7 +29,9 @@ void UIManager::load()
 
 void UIManager::unload()
 {
+    hideDebugUI();
     m_DebugUI->unload();
+    hideEditorUI();
     m_MainUI->unload();
 
     delete m_MainUI;
@@ -40,23 +42,35 @@ void UIManager::unload()
 
 void UIManager::showEditorUI()
 {
-    m_MainUI->show();
+    if (m_MainUI->isVisible() == false)
+    {
+        m_MainUI->show();
+    }
     // + show all other UI's (toolbars / panels (make good system))
 }
 
 void UIManager::hideEditorUI()
 {
-    m_MainUI->hide();
+    if (m_MainUI->isVisible() == true)
+    {
+        m_MainUI->hide();
+    }
 }
 
 void UIManager::showDebugUI()
 {
-    m_DebugUI->show();
+    if (m_DebugUI->isVisible() == false)
+    {
+        m_DebugUI->show();
+    }
 }
 
 void UIManager::hideDebugUI()
 {
-    m_DebugUI->hide();
+    if (m_DebugUI->isVisible() == true)
+    {
+        m_DebugUI->hide();
+    }
 }
 
 

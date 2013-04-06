@@ -51,9 +51,7 @@ public:
 
     /* GENERAL */
     virtual void draw2D(gui::Canvas2D* canvas);
-    void loadUrl(const he::String& url);   // for web
-    void loadFile(const he::Path& path);    // for local
-    void executeJavaScript(const he::String& script);
+    void loadUrl(const he::Path& url); 
     void focus();
     void unfocus();
     void setTransparent(bool transparent);
