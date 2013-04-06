@@ -22,7 +22,7 @@ bool GameStateExit::enter()
 {
     UIManager* const uiManager(UIManager::getInstance());
     uiManager->unload();
-
+    
     CONSOLE->detachFromRenderer();
     PROFILER->detachFromRenderer();
     HAPPYENGINE->quit();

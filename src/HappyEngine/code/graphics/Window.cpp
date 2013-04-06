@@ -290,7 +290,14 @@ void Window::setMousePosition( const vec2& pos )
     sf::Mouse::setPosition(sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y)), *m_Window);
 }
 
-void Window::addView( const ObjectHandle& view )
+void Window::addViewAtBegin( const ObjectHandle& view )
+{
+    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
+    {
+        m_Views.insert(view, 0);
+    }
+}
+void Window::addViewAtEnd( const ObjectHandle& view )
 {
     HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
     {

@@ -70,6 +70,8 @@ public:
     he::gfx::View* getMainView() const { return m_View; }
     hs::SandboxRenderPipeline* getRenderPipeline() { return m_RenderPipeline; }
 
+    void setGamePlugin(he::pl::IPlugin* const plugin) { m_GamePlugin = plugin; }
+
 private:
     
     he::gfx::Window* m_Window;

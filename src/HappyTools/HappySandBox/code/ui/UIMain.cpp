@@ -45,6 +45,7 @@ void UIMain::load()
         Sandbox* const sandbox(Sandbox::getInstance());
         UIRenderer* const renderer(sandbox->getRenderPipeline()->getUIRenderer());
         m_WebView = renderer->createWebViewRelative(he::RectF(0, 0, 1, 1), true);
+        m_WebView->setTransparent(true);
         he::eventCallback0<void> onUrlLoaded([this, renderer]()
         {
             he::gui::WebListener* const listener(m_WebView->getWebListener());

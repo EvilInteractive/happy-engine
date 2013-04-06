@@ -48,6 +48,8 @@ public:
     virtual void terminate();
 
     virtual he::pl::EPluginType getPluginType() const { return he::pl::ePluginType_ToolGamePlugin; }
+    virtual he::gfx::Scene* getScene() const { return m_Scene; }
+    virtual he::gfx::ICamera* getActiveCamera() const;
 
     // Events
     virtual void onLoadLevel(const he::Path& path);

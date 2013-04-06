@@ -58,6 +58,12 @@ class HAPPY_ENTRY View : public ge::ITickable
 {
     DECLARE_OBJECT(View)
 public:
+    enum EViewInsertMode
+    {
+        eViewInsertMode_Last,
+        eViewInsertMode_First
+    };
+
     View();
     virtual ~View();
 
@@ -74,7 +80,7 @@ public:
     // Window
     const RectI& getViewport() const { return m_Viewport; }
 
-    void setWindow(Window* window);
+    void setWindow(Window* window, const EViewInsertMode mode = eViewInsertMode_Last);
     Window* getWindow() const { return m_Window; }
     
     event0<void> SettingsChanged;

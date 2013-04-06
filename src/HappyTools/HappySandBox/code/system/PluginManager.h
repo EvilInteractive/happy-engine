@@ -22,15 +22,28 @@
 #define _HT_PluginManager_H_
 #pragma once
 
+#include <Singleton.h>
+
+namespace he {
+namespace pl {
+    class IPlugin;
+    class PluginLoader;
+} }
+
 namespace hs {
 
-class PluginManager
+class PluginManager : public he::Singleton<PluginManager>
 {
 public:
     PluginManager();
-    virtual ~PluginManager();
+    ~PluginManager();
+
+    he::pl::IPlugin* loadPlugin(const he::Path& path);
+    void releasePlugin(he::pl::IPlugin* const plugin);
 
 private:
+
+    he::pl::PluginLoader* m_Loader;
 
     /* DEFAULT COPY & ASSIGNMENT */
     PluginManager(const PluginManager&);

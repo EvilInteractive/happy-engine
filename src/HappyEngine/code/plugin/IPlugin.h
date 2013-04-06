@@ -30,6 +30,8 @@ namespace io {
 
 namespace gfx {
     class Window;
+    class Scene;
+    class ICamera;
 }
 
 namespace pl {
@@ -58,6 +60,8 @@ public:
     virtual void terminate() = 0;
 
     virtual he::pl::EPluginType getPluginType() const = 0;
+    virtual he::gfx::Scene* getScene() const = 0;
+    virtual he::gfx::ICamera* getActiveCamera() const = 0;
 
     // Events
     virtual void onLoadLevel(const he::Path& path) = 0;

@@ -233,7 +233,7 @@ void View::addRenderPlugin( IRenderer* renderer )
 }
 
 //  Window  //////////////////////////////////////////////////////////////
-void View::setWindow( Window* window )
+void View::setWindow( Window* window, const EViewInsertMode mode )
 {
     HE_ASSERT(window != nullptr, "active window can not be nullptr!");
     if (m_Window != nullptr)
@@ -243,7 +243,14 @@ void View::setWindow( Window* window )
     }
     m_Window = window;
     m_Window->Resized += m_WindowResizedCallback;
-    m_Window->addView(getHandle());
+    if (mode == eViewInsertMode_Last)
+    {
+        m_Window->addViewAtEnd(getHandle());
+    }
+    else
+    {
+        m_Window->addViewAtBegin(getHandle());
+    }
 }
 void View::setAbsoluteViewport( const RectI& viewport, const bool force )
 {

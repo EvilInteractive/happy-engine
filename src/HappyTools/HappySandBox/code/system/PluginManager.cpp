@@ -22,14 +22,28 @@
 
 #include "PluginManager.h"
 
+#include <PluginLoader.h>
+
 namespace hs {
 
 PluginManager::PluginManager()
+    : m_Loader(NEW he::pl::PluginLoader())
 {
 }
 
 PluginManager::~PluginManager()
 {
+    delete m_Loader;
+}
+
+he::pl::IPlugin* PluginManager::loadPlugin( const he::Path& path )
+{
+    return m_Loader->loadPlugin(path);
+}
+
+void PluginManager::releasePlugin( he::pl::IPlugin* const plugin )
+{
+    m_Loader->unloadPlugin(plugin);
 }
 
 } //end namespace

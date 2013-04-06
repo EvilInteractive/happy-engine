@@ -4,14 +4,15 @@
 #include "Sandbox.h"
 #include "system/SandboxRenderPipeline.h"
 #include "system/UIManager.h"
+#include "system/GameStateMachine.h"
 
 namespace hs {
 
-GameStateInit::GameStateInit ()
+GameStateInit::GameStateInit()
 {
 }
 
-GameStateInit::~GameStateInit ()
+GameStateInit::~GameStateInit()
 {
 }
 
@@ -26,6 +27,8 @@ bool GameStateInit::enter()
     uiManager->load();
     uiManager->showDebugUI();
     uiManager->showEditorUI();
+    
+    GameStateMachine::getInstance()->queueState(eGameState_LoadPlugin);
 
     return true;
 }

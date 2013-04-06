@@ -58,14 +58,6 @@ Sandbox::~Sandbox()
 
 void Sandbox::destroy()
 {
-    m_EntityManager->destroy();
-
-    if (m_GamePlugin != nullptr)
-    {
-        HAPPYENGINE->getPluginLoader()->unloadPlugin(m_GamePlugin);
-        m_GamePlugin = nullptr;
-    }
-
     delete m_EntityManager;
     m_EntityManager = nullptr;
 

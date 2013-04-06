@@ -85,7 +85,8 @@ public:
     NativeWindowHandle getNativeHandle() const;
 
     // Views
-    void addView(const ObjectHandle& view);
+    void addViewAtBegin(const ObjectHandle& view);
+    void addViewAtEnd(const ObjectHandle& view);
     void removeView(const ObjectHandle& view);
     const he::ObjectList<ObjectHandle>& getViews() const { return m_Views; }
 

@@ -44,7 +44,7 @@ public:
     EntityManager();
     ~EntityManager();
 
-    void init(he::gfx::Scene* const scene);
+    void init();
     void destroy();
 
     /* GENERAL */
@@ -56,7 +56,6 @@ public:
 
 private:
 
-    he::gfx::Scene* m_Scene;
     he::PrimitiveList<he::ge::Entity*> m_Entities;
     he::FixedStringMap<he::ge::EntityComponentDesc*> m_ComponentDescList;
 

@@ -21,6 +21,9 @@
 #include "HappySandBoxPCH.h" 
 
 #include "EntityManager.h"
+
+#include "Sandbox.h"
+
 #include <Scene.h>
 #include <Entity.h>
 #include <CameraManager.h>
@@ -28,12 +31,12 @@
 #include <ModelComponent.h>
 #include <EntityManager.h>
 #include <EngineEntityComponentFactory.h>
+#include <IPlugin.h>
 
 namespace hs {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 EntityManager::EntityManager() 
-    : m_Scene(nullptr)
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();
@@ -44,7 +47,7 @@ EntityManager::~EntityManager()
 }
 
 
-void EntityManager::init( he::gfx::Scene* const scene )
+void EntityManager::init()
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->installComponentFactory(NEW he::ge::EngineEntityComponentFactory());
@@ -57,8 +60,6 @@ void EntityManager::init( he::gfx::Scene* const scene )
         HE_ASSERT(m_ComponentDescList.find(desc->m_ID) == m_ComponentDescList.cend(), "Component ID %s is already registered!", desc->m_ID.c_str());
         m_ComponentDescList[desc->m_ID] = desc;
     });
-
-    m_Scene = scene;
 }
 
 void EntityManager::destroy()
@@ -81,18 +82,22 @@ he::ge::Entity* EntityManager::createEntity()
 {
     using namespace he;
 
+    pl::IPlugin* const plugin(Sandbox::getInstance()->getGamePlugin());
+    gfx::Scene* const scene(plugin->getScene());
+    gfx::ICamera* const camera(plugin->getActiveCamera());
+
     // still some test code
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     ge::Entity* newEntity(entityMan->createEmptyEntity());
-    newEntity->setScene(m_Scene);
+    newEntity->setScene(scene);
 
     ge::ModelComponent* modelComp(static_cast<ge::ModelComponent*>(
         entityMan->createComponent(he::HEFS::strModelComponent)));
     newEntity->addComponent(modelComp);
     modelComp->setModelMeshAndMaterial("testSceneBas.material", "box.binobj");    
 
-    he::vec3 translation(m_Scene->getCameraManager()->getCamera("default")->getLook() * 10.0f);
-    newEntity->setLocalTranslate(m_Scene->getCameraManager()->getCamera("default")->getPosition() + translation);
+    he::vec3 translation(camera->getLook() * 10.0f);
+    newEntity->setLocalTranslate(camera->getPosition() + translation);
 
     newEntity->activate();
 
