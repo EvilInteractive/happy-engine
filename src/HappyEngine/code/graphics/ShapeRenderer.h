@@ -37,7 +37,7 @@ class View;
 class RenderTarget;
 class IShapeDrawable;
 
-class ShapeRenderer : public IRenderer
+class HAPPY_ENTRY ShapeRenderer : public IRenderer
 {
 public:
 

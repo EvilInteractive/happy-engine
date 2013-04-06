@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -15,33 +15,21 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 10/07/2012
+//Created: 2013/04/06
 
-#include "HappySandBoxPCH.h" 
+#ifndef _HS_STATIC_DATA_MANAGER_H_
+#define _HS_STATIC_DATA_MANAGER_H_
+#pragma once
 
-#include "ContentManager.h"
+namespace hs {
 
-#include "Sandbox.h"
-#include "StaticDataManager.h"
-
-// Happy SandBox
-
-int main( int /*argc*/, char** /*args[]*/ )
+class StaticDataManager
 {
+public:
+    static void init();
+    static void destroy();
+};
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+} //end namespace
+
 #endif
-
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
-    hs::StaticDataManager::init();
-    HAPPYENGINE->start(hs::Sandbox::getInstance());
-    hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
-}

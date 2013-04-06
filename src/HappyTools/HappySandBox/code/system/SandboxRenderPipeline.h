@@ -15,44 +15,38 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 10/11/2012
 
-#ifndef _HT_SelectionManger_H_
-#define _HT_SelectionManger_H_
+#ifndef _HE_SandboxRenderPipeline_H_
+#define _HE_SandboxRenderPipeline_H_
 #pragma once
 
-#include <Singleton.h>
-#include "SandboxTypes.h"
-
 namespace he {
-namespace ge {
-    class Entity;
+namespace gfx {
+    class Renderer2D;
+    class View;
 } }
-
 namespace hs {
-    
-class SelectionManger : he::Singleton<SelectionManger>
+
+class SandboxRenderPipeline
 {
 public:
-    SelectionManger();
-    virtual ~SelectionManger();
-    
-    void deselect(he::ge::Entity* const entity);
-    void deselectAll();
-    void select(he::ge::Entity* const entity);
+    SandboxRenderPipeline();
+    virtual ~SandboxRenderPipeline();
 
-    const SelectionSet& getSelection() const;
+    void init(he::gfx::View* const view);
+
+    he::gfx::Renderer2D* getUIRenderer() const { return m_UIRenderer; }
+    he::gfx::Renderer2D* getDebugRenderer() const { return m_DebugRenderer; }
 
 private:
-    void internalDeselect(he::ge::Entity* const entity);
-    void internalSelect(he::ge::Entity* const entity);
-
-    SelectionSet m_Selection;
-
-    /* DEFAULT COPY & ASSIGNMENT */
-    SelectionManger(const SelectionManger&);
-    SelectionManger& operator=(const SelectionManger&);
+    he::gfx::Renderer2D* m_UIRenderer;
+    he::gfx::Renderer2D* m_DebugRenderer;
+    
+    //Disable default copy constructor and default assignment operator
+    SandboxRenderPipeline(const SandboxRenderPipeline&);
+    SandboxRenderPipeline& operator=(const SandboxRenderPipeline&);
 };
 
 } //end namespace

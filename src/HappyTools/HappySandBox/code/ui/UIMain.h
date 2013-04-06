@@ -15,33 +15,47 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 10/07/2012
+//Created: 2013/04/01
 
-#include "HappySandBoxPCH.h" 
+#ifndef _HT_UIMain_H_
+#define _HT_UIMain_H_
+#pragma once
 
-#include "ContentManager.h"
+#include "system/UI.h"
 
-#include "Sandbox.h"
-#include "StaticDataManager.h"
-
-// Happy SandBox
-
-int main( int /*argc*/, char** /*args[]*/ )
-{
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
-    hs::StaticDataManager::init();
-    HAPPYENGINE->start(hs::Sandbox::getInstance());
-    hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
+namespace Awesomium {
+    class JSArray;
 }
+
+namespace he {
+namespace gui {
+    class WebView;
+} }
+
+namespace hs {
+
+class UIMain : public UI
+{
+public:
+    UIMain();
+    virtual ~UIMain();
+
+    void load();
+    void unload();
+
+    void show();
+    void hide();
+
+private:
+    void createEntityHandler(const Awesomium::JSArray& args);
+
+    he::gui::WebView* m_WebView;
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    UIMain(const UIMain&);
+    UIMain& operator=(const UIMain&);
+};
+
+} //end namespace
+
+#endif

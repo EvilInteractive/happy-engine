@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.8)
 
 # include source files
 include (${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/CMakeLists.cmake)
+include_directories (${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/)
 set (HAPPYSANDBOX_SRCS ${HAPPYSANDBOX_CODE_SRCS})
 
 # set compiler options

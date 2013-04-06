@@ -15,33 +15,41 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 10/07/2012
+//Created: 2013/04/01
 
-#include "HappySandBoxPCH.h" 
+#ifndef _HT_UIDebug_H_
+#define _HT_UIDebug_H_
+#pragma once
 
-#include "ContentManager.h"
+#include "system/UI.h"
 
-#include "Sandbox.h"
-#include "StaticDataManager.h"
+namespace he {
+namespace tools {
+    class FPSGraph;
+} }
 
-// Happy SandBox
+namespace hs {
 
-int main( int /*argc*/, char** /*args[]*/ )
+class UIDebug : public UI
 {
+public:
+    UIDebug();
+    virtual ~UIDebug();
 
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    void load();
+    void unload();
+
+    void show();
+    void hide();
+
+private:
+    he::tools::FPSGraph* m_FPSGraph;
+
+    /* DEFAULT COPY & ASSIGNMENT */
+    UIDebug(const UIDebug&);
+    UIDebug& operator=(const UIDebug&);
+};
+
+} //end namespace
+
 #endif
-
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
-    hs::StaticDataManager::init();
-    HAPPYENGINE->start(hs::Sandbox::getInstance());
-    hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
-}

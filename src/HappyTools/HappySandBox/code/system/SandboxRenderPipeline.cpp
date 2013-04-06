@@ -15,33 +15,39 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Sebastiaan Sprengers
-//Created: 10/07/2012
-
+//Author:  Bastian Damman
+//Created: 2013/04/01
 #include "HappySandBoxPCH.h" 
 
-#include "ContentManager.h"
+#include "SandboxRenderPipeline.h"
 
-#include "Sandbox.h"
-#include "StaticDataManager.h"
+#include "View.h"
 
-// Happy SandBox
+#include "ShapeRenderer.h"
+#include "Renderer2D.h"
 
-int main( int /*argc*/, char** /*args[]*/ )
+namespace hs {
+
+SandboxRenderPipeline::SandboxRenderPipeline()
+    : m_UIRenderer(nullptr)
+    , m_DebugRenderer(nullptr)
 {
-
-#if _DEBUG && !GCC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-    he::HappyEngine::init(he::SubEngine_All, he::Path("../../data"));
-    hs::StaticDataManager::init();
-    HAPPYENGINE->start(hs::Sandbox::getInstance());
-    hs::StaticDataManager::destroy();
-    he::HappyEngine::dispose();
-
-    std::cout << "\npress enter to quit\n";
-    std::cin.get();
-
-    return 0;
 }
+
+
+SandboxRenderPipeline::~SandboxRenderPipeline()
+{
+    delete m_UIRenderer;
+    delete m_DebugRenderer;
+}
+
+void SandboxRenderPipeline::init( he::gfx::View* const view )
+{
+    m_UIRenderer = NEW he::gfx::Renderer2D();
+    m_DebugRenderer = NEW he::gfx::Renderer2D();
+
+    view->addRenderPlugin(m_UIRenderer);
+    view->addRenderPlugin(m_DebugRenderer);
+}
+
+} //end namespace
