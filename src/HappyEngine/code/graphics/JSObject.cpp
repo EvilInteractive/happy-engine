@@ -97,7 +97,7 @@ JSObject* JSObject::create(Awesomium::WebView* const webView, const he::String& 
     HE_ASSERT(tries > 0, "JSObject creation timed out!");
 
     #else
-    Awesomium::JSValue val(m_WebView->CreateGlobalJavascriptObject(Awesomium::WSLit(object.c_str())));
+    Awesomium::JSValue val(webView->CreateGlobalJavascriptObject(Awesomium::WSLit(name.c_str())));
 
     HE_ASSERT(val.IsObject(), "object: %s, is not a javascript object!", object.c_str());
 

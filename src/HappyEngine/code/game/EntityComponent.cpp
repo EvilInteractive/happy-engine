@@ -77,7 +77,7 @@ bool EntityComponent::getProperty( Property* const inOutProperty )
 
 Entity* EntityComponent::getEntityParent()
 {
-    return checked_cast<Entity*>(getParent());
+    return checked_cast<Entity*>(checked_cast<Object3D*>(getParent()));
 }
 
 } } //end namespace

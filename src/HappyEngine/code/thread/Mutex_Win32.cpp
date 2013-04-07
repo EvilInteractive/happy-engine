@@ -46,7 +46,7 @@ void Mutex::lock( const char* file, int line )
 }
 bool Mutex::tryLock( const char* file, int line )
 {
-    if (TryEnterCriticalSection(&m_Internal))
+    if (TryEnterCriticalSection(&m_Internal) == TRUE)
     {
         m_File = file;
         m_Line = line;
@@ -61,11 +61,11 @@ bool Mutex::tryLock( const char* file, int line )
 #else
 void Mutex::lock()
 {
-    EnterCriticalSection(&m_Internal)
+    EnterCriticalSection(&m_Internal);
 }
 bool Mutex::tryLock()
 {
-    return TryEnterCriticalSection(&m_Internal);
+    return TryEnterCriticalSection(&m_Internal) == TRUE;
 }
 #endif
 

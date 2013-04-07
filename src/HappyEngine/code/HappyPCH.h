@@ -30,6 +30,8 @@
 #define __HE_FUNCTION__ __FUNCTION__
 #ifdef _DEBUG
 #define FILE_AND_LINE __FILE__, __LINE__
+#else
+#define FILE_AND_LINE
 #endif
 
 #ifdef HappyEngine_EXPORTS
@@ -127,7 +129,7 @@ inline To checked_numcast(const From value)
     return static_cast<To>(value);
 }
 template<typename To, typename From>
-inline To* checked_cast(From* const value)
+inline To checked_cast(From value)
 {
     return static_cast<To>(value);
 }

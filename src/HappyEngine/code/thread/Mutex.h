@@ -37,6 +37,7 @@ public:
     bool tryLock(const char* file, int line);
 #else
     void lock();
+    bool tryLock();
 #endif
     void unlock();
 
