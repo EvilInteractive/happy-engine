@@ -54,6 +54,9 @@ public:
 
     void fillComponentDescList(he::PrimitiveList<EntityComponentDesc*>& list) const;
 
+    event1<void, Entity*> EntityCreated;
+    event1<void, Entity*> EntityDestroyed;
+
 private:
     EntityManager();
 

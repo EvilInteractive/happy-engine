@@ -35,15 +35,24 @@
 
 namespace hs {
 
+#pragma warning(disable:4355) // this in constructor
 /* CONSTRUCTOR - DESTRUCTOR */
 EntityManager::EntityManager() 
+    : m_EntityCreatedCallback(boost::bind(&EntityManager::onEntityCreated, this, _1))
+    , m_EntityDestroyedCallback(boost::bind(&EntityManager::onEntityDestroyed, this, _1))
 {
     he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
     entityMan->init();
+    entityMan->EntityCreated += m_EntityCreatedCallback;
+    entityMan->EntityDestroyed += m_EntityDestroyedCallback;
 }
+#pragma warning(default:4355)
 
 EntityManager::~EntityManager()
 {
+    he::ge::EntityManager* const entityMan(he::ge::EntityManager::getInstance());
+    entityMan->EntityCreated -= m_EntityCreatedCallback;
+    entityMan->EntityDestroyed -= m_EntityDestroyedCallback;
 }
 
 
@@ -121,4 +130,15 @@ he::ge::EntityComponentDesc* EntityManager::getComponentDescriptor( const he::Fi
     HE_ASSERT(m_ComponentDescList.find(component) != m_ComponentDescList.cend(), "Could not find component %s", component.c_str());
     return m_ComponentDescList[component];
 }
+
+void EntityManager::onEntityCreated( he::ge::Entity* const /*entity*/ )
+{
+    HE_INFO("Logged a new entity!");
+}
+
+void EntityManager::onEntityDestroyed( he::ge::Entity* const /*entity*/ )
+{
+    HE_INFO("Destroyed an entity!");
+}
+
 } //end namespace

@@ -55,9 +55,14 @@ public:
     he::ge::EntityComponentDesc* getComponentDescriptor(const he::FixedString& component);
 
 private:
+    void onEntityCreated(he::ge::Entity* const entity);
+    void onEntityDestroyed(he::ge::Entity* const entity);
 
     he::PrimitiveList<he::ge::Entity*> m_Entities;
     he::FixedStringMap<he::ge::EntityComponentDesc*> m_ComponentDescList;
+
+    he::eventCallback1<void, he::ge::Entity*> m_EntityCreatedCallback;
+    he::eventCallback1<void, he::ge::Entity*> m_EntityDestroyedCallback;
 
     /* DEFAULT COPY & ASSIGNMENT */
     EntityManager(const EntityManager&);

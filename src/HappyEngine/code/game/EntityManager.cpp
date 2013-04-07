@@ -65,11 +65,13 @@ Entity* EntityManager::createEmptyEntity()
 {
     ObjectHandle handle(m_EntityFactory.create());
     Entity* const entity(m_EntityFactory.get(handle));
+    EntityCreated(entity);
     return entity;
 }
 
 void EntityManager::destroyEntity( Entity* const entity )
 {
+    EntityDestroyed(entity);
     while (entity->getComponentCount() > 0)
     {
         EntityComponent* comp(entity->getComponentAt(0));
