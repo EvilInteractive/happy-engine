@@ -81,23 +81,4 @@ void checkFboStatus( const he::String& name )
     }
 }
 
-void glHandleError( GLenum err )
-{
-    if (err != GL_NO_ERROR)
-    {
-        HE_ERROR("GL: %s", (char*)glewGetErrorString(err));
-    }
-}
-
-void glCheckForErrors( bool postErrors /*= true*/ )
-{
-    GLenum err = glGetError();
-    while (err != GL_NO_ERROR)
-    {
-        if (postErrors)
-            glHandleError(err);
-        err = glGetError();
-    }
-}
-
 } } //end namespace

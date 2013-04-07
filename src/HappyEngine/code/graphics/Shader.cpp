@@ -197,7 +197,6 @@ bool Shader::initFromMem( const he::String& vs, const he::String& fs, const Shad
         HE_ASSERT(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()) == (GLint)e.getElementIndex(), 
             "Attribute (%s) bind failed! requested:%d - got:%d", e.getShaderVariableName().c_str(), e.getElementIndex(), glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
     });
-    err::glCheckForErrors();
     #endif
 
     succes = succes && validateProgram(m_Id);

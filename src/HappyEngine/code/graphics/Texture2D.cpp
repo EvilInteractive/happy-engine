@@ -122,9 +122,6 @@ void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data,
         //Data
         glCompressedTexImage2D(GL_TEXTURE_2D, mipLevel, details::getInternalTextureFormat(m_TextureFormat), width, height, 
             0, imageSizeInBytes, data);
-#if _DEBUG
-        err::glCheckForErrors(true);
-#endif
     }
 }
 

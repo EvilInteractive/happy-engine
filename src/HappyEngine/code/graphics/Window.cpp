@@ -87,6 +87,10 @@ void Window::create(Window* parent)
     settings.antialiasingLevel = 0;
     settings.majorVersion = 3;
     settings.minorVersion = 2;
+#if defined(DEBUG) | defined(_DEBUG)
+    settings.debug = true;
+#endif
+    settings.compatibility = false;
     if (m_Parent == nullptr)
     {
         m_Window->create(sf::VideoMode(m_WindowRect.width, m_WindowRect.height, 32), m_Titel, 

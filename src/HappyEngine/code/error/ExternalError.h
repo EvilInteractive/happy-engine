@@ -27,9 +27,6 @@
 namespace he {
 namespace err {
 
-void glHandleError(GLenum err);
-void glCheckForErrors(bool postErrors = true);
-//void sdlHandleError(int err);
 void checkFboStatus(const he::String& name);
 
 class HappyPhysicsErrorCallback : public physx::PxErrorCallback
