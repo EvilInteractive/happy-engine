@@ -267,7 +267,7 @@ MACRO(GET_NATIVE_PRECOMPILED_HEADER _targetName _input)
 ENDMACRO(GET_NATIVE_PRECOMPILED_HEADER)
 
 
-MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
+MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _path _inputh _inputcpp)
 
 	IF( "${ARGN}" STREQUAL "0")
 		SET(_dowarn 0)
@@ -276,6 +276,8 @@ MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
 	ENDIF("${ARGN}" STREQUAL "0")
 	
 	if(CMAKE_GENERATOR MATCHES Visual*)
+    SET(_inputcpp ${_path}${_inputcpp})
+
 		GET_TARGET_PROPERTY(oldProps ${_targetName} COMPILE_FLAGS)
 		if (${oldProps} MATCHES NOTFOUND)
 			SET(oldProps "")
@@ -300,7 +302,7 @@ MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
 
 			# When buiding out of the tree, precompiled may not be located
 			# Use full path instead.
-			GET_FILENAME_COMPONENT(fullPath ${_inputh} ABSOLUTE)
+			GET_FILENAME_COMPONENT(fullPath ${_path}${_inputh} ABSOLUTE)
 
 			SET_TARGET_PROPERTIES(${_targetName} PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${fullPath}")
 			SET_TARGET_PROPERTIES(${_targetName} PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER "YES")
