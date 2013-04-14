@@ -26,17 +26,14 @@
 
 namespace he {
 namespace gui {
-class Canvas2Dnew;
+class Canvas2D;
+class WebView;
 }
 namespace gfx {
-class WebView;
-class Canvas2D;
-class Simple2DTextureEffect;
-class ModelMesh;
 class IDrawable2D;
 class Texture2D;
 
-class Renderer2D : public IRenderer
+class HAPPY_ENTRY Renderer2D : public IRenderer
 {
 public:
 
@@ -45,27 +42,20 @@ public:
     virtual ~Renderer2D();
 
     /* GENERAL */
-    Canvas2D* createCanvasAbsolute(const RectI& viewport);
-    Canvas2D* createCanvasRelative(const RectF& viewportPercent);
-    Canvas2D* getDefaultCanvas() { return m_DefaultCanvas; }
-    void removeCanvas(Canvas2D* canvas);
+    gui::Canvas2D* createCanvasAbsolute(const RectI& viewport);
+    gui::Canvas2D* createCanvasRelative(const RectF& viewportPercent);
+    gui::Canvas2D* getDefaultCanvas() { return m_DefaultCanvas; }
+    void removeCanvas(gui::Canvas2D* canvas);
 
-    WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
-    WebView* createWebViewRelative(const RectF& viewportPercent, bool enableUserInput = false);
-    void removeWebView(WebView* webview);
- 
-    void drawTexture2DToScreen( const Texture2D* tex2D, const vec2& pos = vec2(),
-                                bool useBlending = true,
-                                const vec2& newDimensions = vec2(),
-                                const RectF& regionToDraw = RectF());
+    gui::WebView* createWebViewAbsolute(const RectI& viewport, bool enableUserInput = false);
+    gui::WebView* createWebViewRelative(const RectF& viewportPercent, bool enableUserInput = false);
+    void removeWebView(gui::WebView* webview);
 
     View* getView() const { return m_View; }
     const RenderTarget* getRTG() const {return m_RenderTarget;}
 
-    gui::Canvas2Dnew* getNewCanvas() const;
-
     /* Attach */
-    void attachToRender(IDrawable2D* drawable, uint16 depth = 0xff);
+    void attachToRender(IDrawable2D* drawable, uint16 depth = 0x8000);
     void detachFromRender(IDrawable2D* drawable);
 
     /* IRenderer */
@@ -80,16 +70,12 @@ private:
     View* m_View;
     const RenderTarget* m_RenderTarget;
 
-    he::PrimitiveList<WebView*> m_WebViews;
-    he::PrimitiveList<Canvas2D*> m_Canvas2Ds;
+    he::PrimitiveList<gui::WebView*> m_WebViews;
+    he::PrimitiveList<gui::Canvas2D*> m_Canvas2Ds;
     he::PrimitiveList<IDrawable2D*> m_Drawables;
     he::PrimitiveList<std::pair<uint32,uint16> > m_DrawablesDepth;
 
-    Simple2DTextureEffect* m_TextureEffect;
-    ModelMesh* m_TextureQuad;
-
-    Canvas2D* m_DefaultCanvas;
-    he::gui::Canvas2Dnew* m_CanvasNew;
+    gui::Canvas2D* m_DefaultCanvas;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Renderer2D(const Renderer2D&);

@@ -36,7 +36,7 @@ enum RenderPass
     RenderPass_Gui
 };
 
-class IRenderer
+class HAPPY_ENTRY IRenderer
 {
 public:
     virtual ~IRenderer() {}

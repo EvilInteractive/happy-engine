@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-class DefaultSingleDrawable : public SingleDrawable
+class HAPPY_ENTRY DefaultSingleDrawable : public SingleDrawable
 {
 public:
     DefaultSingleDrawable();

@@ -1,7 +1,0 @@
-[Forward]
-shader = "shadow/linShadowMap.shader"
-
-[info]
-blending = false
-post = false
-shadow = false

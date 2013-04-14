@@ -22,9 +22,6 @@
 #define _HE_HITREGION_H_
 #pragma once
 
-#include "vec2.h"
-#include "mat33.h"
-
 namespace he {
 namespace gui {
 
@@ -32,15 +29,8 @@ class Hitregion
 {
 public:
 
-    enum TYPE
-    {
-        TYPE_RECTANGLE = 0,
-        TYPE_ELLIPSE = 1,
-        TYPE_CONVEX = 2
-    };
-
     /* CONSTRUCTOR - DESTRUCTOR */
-    Hitregion(TYPE hitregionType, const vec2& centerPos, const vec2& size);
+    Hitregion(const vec2& centerPos, const vec2& size);
     virtual ~Hitregion();
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
@@ -53,20 +43,15 @@ public:
 
     vec2 getSize() const;
     vec2 getPosition() const;
-    Hitregion::TYPE getType() const;
 
     /* SETTERS */
     void setPosition(const vec2& pos);
     void setSize(const vec2& size);
     void move(const vec2& translation);
-    void setTransformationMatrix(const mat33& mat);
 
 private:
 
     /* DATAMEMBERS */
-    TYPE m_Type;
-
-    mat33 m_matWorld;
     vec2 m_Size;
     vec2 m_Pos;
 };

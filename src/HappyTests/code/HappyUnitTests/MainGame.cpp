@@ -26,6 +26,10 @@
 #include "NodeGraph.h"
 #include "NodeGraphNode.h"
 
+#include <JsonFileReader.h>
+#include <JsonFileWriter.h>
+#include <FileReader.h>
+
 namespace hut {
 
 MainGame::MainGame()
@@ -39,14 +43,18 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
-}
-
-void MainGame::load()
-{
     //listUnitTest();
     //nodeGraphUnitTest();
-    guidUnitTest();
+    //guidUnitTest();
+    //mat33UnitTest();
+
+    jsonUnitTest();
     HAPPYENGINE->quit();
+}
+
+void MainGame::destroy()
+{
+
 }
 
 void MainGame::tick( float dTime )
@@ -96,7 +104,7 @@ void MainGame::nodeGraphUnitTest()
             return *this;
         }
         Type type;
-        std::string name;
+        he::String name;
         void* data;
         size_t dataSize;
         void setData(size_t size)
@@ -331,6 +339,172 @@ void MainGame::listUnitTest()
         {
             list.add(TestStruct(i));
         }
+    }
+}
+
+void printMat33(const he::mat33& mat)
+{
+    HE_INFO("|%6.3f %6.3f %6.3f|", mat(0, 0), mat(0, 1), mat(0, 2));
+    HE_INFO("|%6.3f %6.3f %6.3f|", mat(1, 0), mat(1, 1), mat(1, 2));
+    HE_INFO("|%6.3f %6.3f %6.3f|", mat(2, 0), mat(2, 1), mat(2, 2));
+}
+void printVec3(const he::vec3& vec)
+{
+    HE_INFO("(%.3f, %.3f, %.3f)", vec.x, vec.y, vec.z);
+}
+
+void MainGame::mat33UnitTest()
+{
+    using namespace he;
+    mat33 test1(mat33::createRotation3D(vec3::forward, piOverFour / 2) * mat33::createRotation3D(vec3::up, piOverTwo) * mat33::createRotation3D(vec3::right, piOverFour));
+    HE_INFO("Test1:");
+    printMat33(test1);
+    HE_INFO("result:");
+    vec3 euler(test1.getEulerAngles());
+    printVec3(euler);
+    HE_INFO("result2:");
+    mat33 result2(mat33::createRotation3D(euler));
+    printMat33(result2);
+    
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Json test
+//////////////////////////////////////////////////////////////////////////
+struct JsonConfig
+{
+    struct ObjTest
+    {
+        ObjTest(): m_Float(235.1245f), m_Int8Test(-69), m_Uint32Test(12156483) {}
+        ~ObjTest() {}
+        float m_Float;
+        he::int8 m_Int8Test;
+        he::uint32 m_Uint32Test;
+        void visit(he::io::StructuredVisitor* visitor)
+        {
+            visitor->visit(HTFS::strFloatTest, m_Float);
+            visitor->visit(HTFS::strInt8Test, m_Int8Test, "//int8 test");
+            visitor->visit(HTFS::strUInt32Test, m_Uint32Test);
+        }
+        void fill()
+        {
+            m_Float = rand() / static_cast<float>(RAND_MAX);
+            m_Int8Test = checked_numcast<he::int8>(rand() % 255 - 128);
+            m_Uint32Test = checked_numcast<he::uint32>(rand());
+        }
+    };
+
+    JsonConfig(): m_Vec4Test(0.0f, 0.0f, 0.0f, 0.0f), m_Vec2Test(0.0f), m_StringTest("")
+    {
+    }
+    ~JsonConfig() {}
+    JsonConfig(JsonConfig& other)
+        : m_Vec4Test(other.m_Vec4Test)
+        , m_Vec2Test(other.m_Vec2Test)
+        , m_StringTest(other.m_StringTest)
+        , m_GuidTest(other.m_GuidTest)
+    {
+        m_ObjectTest.append(other.m_ObjectTest);
+        m_IntListTest.append(other.m_IntListTest);
+    }
+
+    he::vec4 m_Vec4Test;
+    he::vec2 m_Vec2Test;
+    he::String m_StringTest;
+    he::Guid m_GuidTest;
+    he::ObjectList<ObjTest> m_ObjectTest;
+    he::ObjectList<he::int32> m_IntListTest;
+
+    void visit(he::io::StructuredVisitor* visitor)
+    {
+        visitor->visit(HTFS::strVec4Test, m_Vec4Test, "//Vec4 Testje");
+        visitor->visit(HTFS::strVec2Test, m_Vec2Test);
+        visitor->visit(HTFS::strStringTest, m_StringTest);
+        visitor->visit(HTFS::strGuidTest, m_GuidTest);
+        visitor->visitObjectList(HTFS::strObjectTest, m_ObjectTest);
+        visitor->visitList(HTFS::strIntListTest, m_IntListTest);
+        visitor->visitCustomList<ObjTest>(HTFS::strObjectTestCustom, m_ObjectTest, 
+            [](he::io::StructuredVisitor* const visitor, const size_t /*index*/, ObjTest& element)
+        {
+            element.visit(visitor);
+        });
+    }
+
+    void fill()
+    {
+        m_Vec4Test = he::vec4(
+            rand() / static_cast<float>(RAND_MAX) * 10, 
+            rand() / static_cast<float>(RAND_MAX) * -5, 
+            rand() / static_cast<float>(RAND_MAX) * 30, 
+            rand() / static_cast<float>(RAND_MAX));
+        m_Vec2Test = he::vec2(rand() / static_cast<float>(RAND_MAX), rand() / static_cast<float>(RAND_MAX));
+        m_StringTest = "Hallo ik ben een string";
+        m_GuidTest=  he::Guid::generateGuid();
+        
+        ObjTest test;
+        test.fill();
+        m_ObjectTest.add(test);
+        test.fill();
+        m_ObjectTest.add(test);
+        test.fill();
+        m_ObjectTest.add(test);
+        for (size_t i(0); i < 6; ++i)
+        {
+            m_IntListTest.add(rand() % 64 - 32);
+        }
+    }
+};
+
+void MainGame::jsonUnitTest()
+{
+    using namespace he;
+
+    JsonConfig configWrite;
+    configWrite.fill();
+    JsonConfig configRead;
+
+    he::Path pathA("jsonTestA.txt");
+    he::Path pathB("jsonTestB.txt");
+
+    {
+        he::io::JsonFileWriter writer;
+        writer.open(pathA);
+        configWrite.visit(&writer);
+        writer.close();
+    }
+    {
+        he::io::JsonFileReader reader;
+        if (reader.open(pathA))
+        {
+            configRead.visit(&reader);
+            reader.close();
+        }
+    }
+    {
+        he::io::JsonFileWriter writer;
+        writer.open(pathB);
+        configRead.visit(&writer);
+        writer.close();
+    }
+
+    std::string resultA;
+    std::string resultB;
+
+    io::FileReader reader;
+    if (reader.open(pathA, io::FileReader::OpenType_ASCII))
+    {
+        resultA = reader.readToEnd();
+        reader.close();
+    }
+    if (reader.open(pathB, io::FileReader::OpenType_ASCII))
+    {
+        resultB = reader.readToEnd();
+        reader.close();
+    }
+
+    HE_IF_ASSERT(resultA.size() == resultB.size(), "unitTest fail: Json: files do not match!")
+    {
+        HE_ASSERT(memcmp(resultA.c_str(), resultB.c_str(), resultA.size()) == 0, "unitTest fail: Json: files do not match!");
     }
 }
 

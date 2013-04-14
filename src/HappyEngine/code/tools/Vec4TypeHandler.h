@@ -36,7 +36,7 @@ public:
 
 	virtual ~Vec4TypeHandler() {}
 
-	bool parse(const std::string& values, boost::any& pValueToAssign) const
+	bool parse(const he::String& values, boost::any& pValueToAssign) const
 	{
 		float i[4];
 
@@ -52,7 +52,7 @@ public:
 		return true;
 	}
 
-	std::string getType() const
+	he::String getType() const
 	{
 		return typeid(vec4).name();
 	}

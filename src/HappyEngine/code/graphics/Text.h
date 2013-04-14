@@ -26,7 +26,7 @@ namespace he {
 namespace gui {
     class Font;
 
-class Text
+class HAPPY_ENTRY Text
 {
 public:
 

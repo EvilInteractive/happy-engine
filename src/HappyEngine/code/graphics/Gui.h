@@ -22,7 +22,13 @@
 #define _HE_GUI_H_
 #pragma once
 
+#include "Renderer2D.h"
+#include "Canvas2D.h"
 #include "SpriteCreator.h"
+#include "Sprite.h"
+#include "Text.h"
+#include "Font.h"
+#include "Hitregion.h"
 
 namespace he {
 namespace gui {
@@ -31,17 +37,26 @@ struct Gui
 {
 public:
 
-    Gui() : Sprites(NEW SpriteCreator())
-    {}
+    /* CONSTRUCTOR - DESTRUCTOR */
+    Gui() : m_SpriteCreator(NEW SpriteCreator()) {}
 
     ~Gui()
     {
-        delete Sprites;
+        delete m_SpriteCreator;
     }
 
-    SpriteCreator* const Sprites;
+    /* GETTERS */
+    SpriteCreator* getSpriteCreator() const
+    {
+        return m_SpriteCreator;
+    }
 
 private:
+
+    /* MEMBERS */
+    SpriteCreator* m_SpriteCreator;
+
+    /* DEFAULT COPY & ASSIGNMENT */
     Gui(const Gui&);
     Gui& operator=(const Gui&);
 };

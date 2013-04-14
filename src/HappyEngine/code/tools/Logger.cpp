@@ -20,11 +20,12 @@
 #include "HappyPCH.h" 
 
 #include "Logger.h"
+#include "BinaryVisitor.h"
 
 namespace he {
 namespace tools {
 
-Logger* Logger::s_Instance = nullptr;
+Logger* Logger::s_Instance(nullptr);
 
 Logger::Logger()
 {
@@ -58,8 +59,11 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
     memset(buff, 0, 1024);
     vsnprintf(buff, 1024, str, argList);
 
-    std::string typeString("");
+    he::String typeString("");
     CMSG_TYPE consoleType(CMSG_TYPE_ENGINE);
+#ifdef HE_WINDOWS
+    WORD flags(0);
+#endif
     file; func; line;
     switch(type)
     {
@@ -70,6 +74,9 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 #ifdef _DEBUG
             he::err::details::happyAssert(err::details::AssertType_Code, file, func, line, buff);
 #endif
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_INTENSITY;
+#endif
         } break;
         case LogType_ArtAssert:
         {
@@ -78,26 +85,37 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
 #ifdef _DEBUG
             he::err::details::happyAssert(err::details::AssertType_Art, file, func, line, buff);
 #endif
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_GREEN;
+#endif
         } break;
         case LogType_Error:
         {
             typeString = "Error"; 
             consoleType = CMSG_TYPE_ERROR;
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_INTENSITY;
+#endif
         } break;
         case LogType_Warning:
         {
             typeString = "Warning"; 
             consoleType = CMSG_TYPE_WARNING;
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_RED | FOREGROUND_GREEN;
+#endif
         } break;
         case LogType_Info:
         {
             typeString = "Info"; 
             consoleType = CMSG_TYPE_INFO;
+#ifdef HE_WINDOWS
+            flags |= FOREGROUND_GREEN;
+#endif
         } break;
     }
 
-    m_Mutex.lock();
-
+    m_Mutex.lock(FILE_AND_LINE);
     std::ofstream output;
     output.open("log.log", std::ios_base::app);
     if (output.is_open())
@@ -106,30 +124,42 @@ void Logger::log( const LogType type, const char* file, const char* func, int li
         output.close();
     }
 
-    std::cout << typeString << ": " << buff << "\n";
+#ifdef HE_WINDOWS
+    SetConsoleTextAttribute( GetStdHandle(STD_OUTPUT_HANDLE), flags );
+#endif
+    std::cout << typeString << ": ";
+
+#ifdef HE_WINDOWS
+    SetConsoleTextAttribute( GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE );
+#endif   
+    std::cout << buff << "\n";
+#ifdef _MSC_VER
+    OutputDebugStringA(typeString.c_str());
+    OutputDebugStringA(": ");
+    OutputDebugStringA(buff);
+    OutputDebugStringA("\n");
+#endif
+    m_Mutex.unlock();
     if (HAPPYENGINE != nullptr && CONSOLE != nullptr) 
     {
         CONSOLE->addMessage(buff, consoleType);
     }
-
-    m_Mutex.unlock();
 }
 
 void Logger::sdmInit()
 {
-    HE_ASSERT(s_Instance == nullptr, "Logger is already initialized!");
+    HE_ASSERT(s_Instance == nullptr, "initing an already inited singleton");
     s_Instance = NEW Logger();
 }
 
 void Logger::sdmDestroy()
 {
     delete s_Instance;
-    s_Instance = nullptr;
 }
 
-Logger* Logger::getInstance()
+void Logger::sdmVisit( he::io::BinaryVisitor& visitor )
 {
-    return s_Instance;
+    visitor.visit(s_Instance);
 }
 
 } } //end namespace

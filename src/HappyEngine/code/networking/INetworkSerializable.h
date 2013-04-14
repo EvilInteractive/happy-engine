@@ -26,18 +26,17 @@ namespace he {
 namespace net {
 class NetworkSerializer;
 class NetworkDeserializer;
+class NetworkVisitor;
 
 class INetworkSerializable
 {
 public:
-    virtual void serializeCreate(net::NetworkStream* stream) const = 0;
-    virtual bool deserializeCreate(net::NetworkStream* stream) = 0;
-    virtual void serializeRemove(net::NetworkStream* stream) const = 0;
-    virtual bool deserializeRemove(net::NetworkStream* stream) = 0;
+    virtual void netVisitCreate(net::NetworkVisitor& stream) = 0;
+    virtual void netVisitRemove(net::NetworkVisitor& stream) = 0;
 
-    virtual bool isSerializeDataDirty() const = 0;
-    virtual void serialize(const NetworkSerializer& serializer) = 0;
-    virtual void deserialize(const NetworkDeserializer& serializer) = 0;
+    virtual bool isNetSerializeDataDirty() const = 0;
+    virtual void netSerialize(const NetworkSerializer& serializer) = 0;
+    virtual void netDeserialize(const NetworkDeserializer& serializer) = 0;
 };
 
 } } //end namespace

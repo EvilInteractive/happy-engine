@@ -20,7 +20,7 @@
 #include "HappyPCH.h"
 
 #include "HeAssert.h"
-#include "MessageBox.h"
+#include <HappyMessageBox.h>
 
 #pragma warning(disable:4127)
 namespace he {
@@ -46,10 +46,10 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
     }
     if (ignore == false)
     {
-        const MessageBoxButton result(MessageBox::showExt(type == AssertType_Code? "Assert!" : "Art Assert!", 
-            infoText, type == AssertType_Code? MessageBoxIcon_ProgrammerAssert : MessageBoxIcon_ArtAssert, 
+        const HappyMessageBox::Button result(HappyMessageBox::showAssert(type == AssertType_Code? "Assert!" : "Art Assert!", 
+            infoText, type == AssertType_Code? HappyMessageBox::Icon_ProgrammerAssert : HappyMessageBox::Icon_ArtAssert, 
             "Debug", "Skip", "Ignore"));
-        if (result == MessageBoxButton_Button1)
+        if (result == HappyMessageBox::Button_Button1)
         {
             #ifndef GCC
             __debugbreak();
@@ -57,7 +57,7 @@ void happyAssert(AssertType type, const char* file, const char* func, int line, 
             __builtin_trap();
             #endif
         }
-        else if (result == MessageBoxButton_Button3)
+        else if (result == HappyMessageBox::Button_Button3)
         {
             g_IgnoreAsserts[line].insert(file);
         }

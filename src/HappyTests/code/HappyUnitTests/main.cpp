@@ -20,6 +20,7 @@
 #include "HappyUnitTestsPCH.h"
 
 #include "MainGame.h"
+#include "UnitTestFixedStrings.h"
 
 int main( int /*argc*/, char** /*args[]*/ )
 {
@@ -27,13 +28,15 @@ int main( int /*argc*/, char** /*args[]*/ )
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    HAPPYENGINE->init(he::SubEngine_None);
+    he::HappyEngine::init(he::SubEngine_None, he::Path("../../data"));
+    hut::HTFS::sdmInit();
 
     he::ge::Game* game(NEW hut::MainGame());
     HAPPYENGINE->start(game);
     delete game;
 
-    HAPPYENGINE->dispose();
+    hut::HTFS::sdmDestroy();
+    he::HappyEngine::dispose();
 
     std::cout << "\npress enter to quit\n";
     std::cin.get();

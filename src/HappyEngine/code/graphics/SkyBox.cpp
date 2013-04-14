@@ -70,7 +70,7 @@ void SkyBox::unload()
     }
 }
 
-void SkyBox::load( const std::string& asset )
+void SkyBox::load( const he::String& asset )
 {
     //////////////////////////////////////////////////////////////////////////
     /// Load Model
@@ -110,7 +110,7 @@ void SkyBox::load( const std::string& asset )
     BufferLayout layout;
     layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, sizeof(vec3), 0));
     m_Cube->init(layout, MeshDrawMode_Triangles);
-    m_Cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static);
+    m_Cube->setVertices(&vertices[0], static_cast<uint32>(vertices.size()), MeshUsage_Static, false);
     m_Cube->setIndices(&indices[0], static_cast<uint32>(indices.size()), IndexStride_Byte, MeshUsage_Static);
     m_Cube->setLoaded();
 

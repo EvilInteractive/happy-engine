@@ -21,7 +21,6 @@
 #include "HappyPCH.h" 
 
 #include "WebView.h"
-#include "Awesomium/BitmapSurface.h"
 #include "Awesomium/WebView.h"
 #include "Canvas2D.h"
 #include "Renderer2D.h"
@@ -33,13 +32,14 @@
 #include "ControlsManager.h"
 #include "IKeyboard.h"
 #include "IMouse.h"
-#include "Canvas2Dnew.h"
 #include "WebListener.h"
+
+#include "WebViewSurface.h"
 
 #define COMMON_ASCII_CHAR 128
 
 namespace he {
-namespace gfx {
+namespace gui {
 
 WebView::WebView(gfx::View* view, const RectI& viewport, bool enableUserInput) :   
 m_WebView(nullptr),
@@ -84,8 +84,8 @@ void WebView::init()
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(1,1);
     m_WebListener = NEW WebListener(m_WebView);
 
-    ObjectHandle handle = ResourceFactory<Texture2D>::getInstance()->create();
-    m_RenderTexture = ResourceFactory<Texture2D>::getInstance()->get(handle);
+    ObjectHandle handle = ResourceFactory<gfx::Texture2D>::getInstance()->create();
+    m_RenderTexture = ResourceFactory<gfx::Texture2D>::getInstance()->get(handle);
     m_RenderTexture->init(gfx::TextureWrapType_Clamp, gfx::TextureFilterType_Nearest,
         gfx::TextureFormat_RGBA8, false);
 
@@ -235,46 +235,37 @@ WebView::~WebView()
 }
 
 /* GENERAL */
-void WebView::draw2D(Canvas2D* canvas)
+void WebView::draw2D(gui::Canvas2D* canvas)
 {
     if (m_WebView->surface())
     {
-        Awesomium::BitmapSurface* pSurface = static_cast<Awesomium::BitmapSurface*>(m_WebView->surface());
+        gfx::WebViewSurface* surface(static_cast<gfx::WebViewSurface*>(m_WebView->surface()));
 
-        if (pSurface->is_dirty())
+        if (surface->isDirty())
         {
-            pSurface->CopyTo(m_Buffer, pSurface->width() * 4, 4, false, true);
+            const RectI bounds(surface->getDirtyBounds(true));
 
-            m_RenderTexture->setData(
-                pSurface->width(), pSurface->height(), 
-                m_Buffer, 
-                gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
+            surface->copyDirty(m_Buffer, true);
+
+            m_RenderTexture->setSubData(bounds.x, bounds.y, bounds.width, bounds.height,
+                m_Buffer, gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
+
+            surface->setDirty(false);
         }
     }
 
-    gui::Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
-    cvs->drawImage(m_RenderTexture, m_Position);
+    canvas->drawImage(m_RenderTexture, m_Position);
 }
 
-void WebView::loadUrl(const std::string& url)
+void WebView::loadUrl(const he::Path& url)
 {
-    Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), static_cast<unsigned int>(strlen(url.c_str()))));
+    const char* curl(url.str().c_str());
+    Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(curl, static_cast<unsigned int>(url.str().size())));
     m_WebView->LoadURL(webUrl);
 
     m_WebView->set_load_listener(this);
     m_WebView->set_view_listener(this);
     m_WebView->set_js_method_handler(m_WebListener);
-}
-
-void WebView::loadFile(const he::Path& /*path*/)
-{
-    //m_WebView->LoadURL()
-}
-
-void WebView::executeJavaScript(const std::string& /*script*/)
-{
-    //Awesomium::WebString string(script.c_str());
-    //m_WebView->ExecuteJavascriptWithResult(string);
 }
 
 void WebView::focus()
@@ -355,6 +346,11 @@ void WebView::resize( const vec2& newSize )
             m_WebView = GRAPHICS->getWebCore()->CreateWebView((int)newSize.x, (int)newSize.y);
 
         m_Buffer = static_cast<uint8*>(he_realloc(m_Buffer, (int)newSize.x * 4 * (int)newSize.y));
+
+        // needed for setsubdata
+        m_RenderTexture->setData((int)newSize.x, (int)newSize.y,
+            0, gfx::TextureBufferLayout_BGRA, gfx::TextureBufferType_Byte, 0);
+
         m_Size = newSize;
     }
 }
@@ -470,6 +466,23 @@ io::MouseCursor getCursorTypeFromAwesomium(const Awesomium::Cursor cursor)
 void WebView::OnChangeCursor( Awesomium::WebView* /*caller*/, Awesomium::Cursor cursor )
 {
     m_View->getWindow()->setCursor(getCursorTypeFromAwesomium(cursor));
+}
+
+void WebView::OnAddConsoleMessage(
+        Awesomium::WebView* /*caller*/,
+        const Awesomium::WebString& msg,int lineNr,
+        const Awesomium::WebString& source)
+{
+    char* buff0 = NEW char[msg.length()];
+    msg.ToUTF8(buff0, msg.length());
+
+    char* buff1 = NEW char[source.length()];
+    source.ToUTF8(buff1, source.length());
+
+    HE_WARNING("JS Console: msg:'%s', lineNr:'%d', source:'%s'", buff0, lineNr, buff1);
+
+    delete[] buff0;
+    delete[] buff1;
 }
 
 }} //end namespace

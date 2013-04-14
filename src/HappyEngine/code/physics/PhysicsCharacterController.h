@@ -24,6 +24,8 @@
 
 #include "PhysicsActor.h"
 #include "PhysicsUserData.h"
+#include <characterkinematic/PxController.h>
+#include <characterkinematic/PxCapsuleController.h>
 
 namespace he {
 namespace px {
@@ -56,9 +58,9 @@ public:
     event0<void> HitSide;
 
     // PxUserControllerHitReport
-    virtual void onShapeHit(const PVD::PxControllerShapeHit& hit);
-    virtual void onControllerHit(const PVD::PxControllersHit& hit);
-    virtual void onObstacleHit(const PVD::PxControllerObstacleHit& hit);
+    virtual void onShapeHit(const physx::PxControllerShapeHit& hit);
+    virtual void onControllerHit(const physx::PxControllersHit& hit);
+    virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit);
 
     // IPhysicsUserDataContainer
     virtual PhysicsUserDataContainerType getType() const { return PhysicsUserDataContainerType_Controller; }

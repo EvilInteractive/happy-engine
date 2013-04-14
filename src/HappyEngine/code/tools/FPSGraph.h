@@ -25,21 +25,23 @@
 #define BOOST_DISABLE_ASSERTS
 
 #include "IDrawable2D.h"
+#include "ITickable.h"
 
 namespace he {
 namespace gfx {
-    class Canvas2D;
     class Font;
     class View;
 }
 namespace gui {
     class Sprite;
+    class Canvas2D;
 }
 namespace tools {
 
-class FPSGraph : public gfx::IDrawable2D
+class HAPPY_ENTRY FPSGraph : public gfx::IDrawable2D, public ge::ITickable
 {
 public:
+
     enum Type
     {
         Type_Hide,
@@ -48,13 +50,27 @@ public:
         Type_Full
     };
 
+    enum PositionType
+    {
+        PositionType_Absolute,
+        PositionType_Dock
+    };
+
+    enum Position
+    {
+        Position_TopLeft,
+        Position_TopRight,
+        Position_BottomLeft,
+        Position_BottomRight
+    };
+
     /* CONSTRUCTOR - DESTRUCTOR */
     FPSGraph(float interval = 0.5f, uint16 recordTime = 60);
     virtual ~FPSGraph();
 
     /* GENERAL */
-    void tick(float dTime);
-    virtual void draw2D(gfx::Canvas2D* canvas);
+    virtual void tick(float dTime);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
     /* GETTERS */
     uint16 getMaxFPS() const;
@@ -63,16 +79,18 @@ public:
 
     /* SETTERS */
     void setType(Type type);
+    void setPositionType(PositionType posType);
     void setPos(const vec2& pos);
+    void setPos(Position pos);
 
 private:
 
     /* INTERNAL */
     inline uint16 cap(const float& fps) const;
     inline uint16 cap(const uint32& fps) const;
-    void drawToConsole(gfx::Canvas2D* canvas);
-    void drawTextOnly(gfx::Canvas2D* canvas);
-    void drawFull(gfx::Canvas2D* canvas);
+    void drawToConsole(gui::Canvas2D* canvas);
+    void drawTextOnly(gui::Canvas2D* canvas);
+    void drawFull(gui::Canvas2D* canvas);
     void updateScale(uint16 currentMaxFpsInFrame);
 
     void renderGraph();

@@ -44,23 +44,19 @@ class Ray
 {
 public:
     Ray(const vec3& position, const vec3& direction, float maxDist = FLT_MAX);
-    Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& viewCoord, float maxDist = FLT_MAX);
-    virtual ~Ray();
+    Ray(const gfx::View* view, const gfx::ICamera* camera, const vec2& mousePos, float maxDist = FLT_MAX);
+    ~Ray();
 
-    const vec3& getOrigin() const;
-    const vec3& getDirection() const;
-    float getMaxDistance() const;
+    inline const vec3& getOrigin() const { return m_Origin; }
+    inline const vec3& getDirection() const { return m_Direction; }
+    inline float getMaxDistance() const { return m_MaxDistance; }
+
+    Ray transform(const mat44& world) const;
 
 private:
-
     vec3 m_Origin;
     vec3 m_Direction;
     float m_MaxDistance;
-
-
-    //Disable default copy constructor and default assignment operator
-    Ray(const Ray&);
-    Ray& operator=(const Ray&);
 };
 
 } //end namespace

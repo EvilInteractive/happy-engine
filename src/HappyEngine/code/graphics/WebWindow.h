@@ -30,9 +30,16 @@ namespace Awesomium {
     class WebWindow;
 }
 
+namespace sf {
+    class Window;
+}
+
 namespace he {
 namespace gfx {
-class Texture2D;
+    class Texture2D;
+}
+
+namespace gui {
 class WebListener;
 
 class WebWindow : public Awesomium::WebViewListener::Load
@@ -46,16 +53,16 @@ public:
     void init(const int width, const int height);
 
     /* GENERAL */
-    void loadUrl(const std::string& url);
+    void loadUrl(const he::String& url);
     void focus();
     void unfocus();
     void tick();
     void close();
-    void setTitle(const std::string& title);
+    void setTitle(const he::String& title);
 
     /* GETTERS */
     Awesomium::WebView* getAWEView() const { return m_WebView; } 
-    bool isOpen() { return m_Window.isOpen(); }
+    bool isOpen() const;
     WebListener* getWebListener() const { return m_WebListener; }
     
     /* EVENTS */
@@ -97,7 +104,7 @@ private:
     Awesomium::WebView* m_WebView;
     WebListener* m_WebListener;
 
-    sf::Window m_Window;
+    sf::Window* m_Window;
     
     /* DEFAULT COPY & ASSIGNMENT */
     WebWindow(const WebWindow&);

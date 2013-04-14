@@ -83,7 +83,7 @@ Deferred3DRenderer::Deferred3DRenderer():
 void Deferred3DRenderer::init( View* view, const RenderTarget* target )
 {
     HE_ASSERT(m_View == nullptr, "Deferred3DRenderer inited twice!");
-    CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
+    //CONSOLE->registerVar(&m_ShowDebugTextures, "debugDefTex");
     
     m_View = view;
     m_CollectionRenderTarget = NEW RenderTarget(m_View->getWindow()->getContext());
@@ -159,8 +159,8 @@ void Deferred3DRenderer::compileShaders()
     //////////////////////////////////////////////////////////////////////////
     ///                                 Load                               ///
     //////////////////////////////////////////////////////////////////////////
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
-    std::set<std::string> shaderDefines;
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
+    std::set<he::String> shaderDefines;
     if (m_Settings.enableSpecular)
         shaderDefines.insert("SPECULAR");
     // Shadowless
@@ -321,15 +321,14 @@ void Deferred3DRenderer::render()
         GL::heSetDepthFunc(DepthFunc_LessOrEqual);
     }
 }
-void Deferred3DRenderer::draw2D(Canvas2D* canvas)
+void Deferred3DRenderer::draw2D(gui::Canvas2D* canvas)
 {
     if (m_ShowDebugTextures)
     {
-        canvas->setBlendStyle(gfx::BlendStyle_Opac);
-        canvas->drawImage(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), vec2(256, 144));
-        canvas->drawImage(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), vec2(256, 144));
-        canvas->drawImage(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), vec2(256, 144));
-        canvas->drawImage(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), vec2(256, 144));
+        canvas->blitImage(m_ColorIllTexture, vec2(12 * 1 + 256 * 0, 12), false, vec2(256, 144));
+        canvas->blitImage(m_SGTexture,       vec2(12 * 2 + 256 * 1, 12), false, vec2(256, 144));
+        canvas->blitImage(m_NormalDepthTexture,   vec2(12 * 3 + 256 * 2, 12), false, vec2(256, 144));
+        canvas->blitImage(m_OutputRenderTarget->getTextureTarget(0), vec2(12 * 1 + 256 * 0, 12 * 2 + 1 * 144), false, vec2(256, 144));
     }
 }
 

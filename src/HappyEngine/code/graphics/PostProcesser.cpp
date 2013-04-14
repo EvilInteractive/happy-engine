@@ -131,7 +131,7 @@ void PostProcesser::onSettingsChanged( const RenderSettings& settings, bool forc
 }
 void PostProcesser::compileShader()
 {
-    std::set<std::string> postDefines;
+    std::set<he::String> postDefines;
     const PostSettings::ShaderSettings& settings(m_Settings.postSettings.shaderSettings);
 
     if (settings.enableBloom)
@@ -162,7 +162,7 @@ void PostProcesser::compileShader()
     ShaderLayout shaderLayout;
     shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
 
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
 
     m_PostShader->initFromFile(folder + "shared/postShaderQuad.vert", 
         folder + "post/postEffects.frag", 
@@ -260,18 +260,17 @@ void PostProcesser::draw()
     glDrawElements(GL_TRIANGLES, m_Quad->getNumIndices(), m_Quad->getIndexType(), 0);
 }
 
-void PostProcesser::draw2D(Canvas2D* canvas)
+void PostProcesser::draw2D(gui::Canvas2D* canvas)
 {
     if (m_ShowDebugTextures)
     {
-        canvas->setBlendStyle(gfx::BlendStyle_Opac);
         float height(72.0f);
         float aspect(m_Bloom->getBloom(0)->getWidth() / (float)m_Bloom->getBloom(0)->getHeight());
         float width(aspect * height);
-        canvas->drawImage(m_Bloom->getBloom(0), vec2(12 * 1 + width * 0, height), vec2(width, height));
-        canvas->drawImage(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), vec2(width, height));
-        canvas->drawImage(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), vec2(width, height));
-        canvas->drawImage(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(0), vec2(12 * 1 + width * 0, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(1), vec2(12 * 2 + width * 1, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(2), vec2(12 * 3 + width * 2, height), false, vec2(width, height));
+        canvas->blitImage(m_Bloom->getBloom(3), vec2(12 * 4 + width * 3, height), false, vec2(width, height));
         if (m_Settings.postSettings.shaderSettings.enableHDR)
             canvas->drawImage(m_AutoExposure->getLuminanceMap(), vec2(12 * 5 + width * 4, 12), vec2(height, height));
     }

@@ -21,29 +21,28 @@
 
 #include "TextBox.h"
 #include "ContentManager.h"
-#include "Renderer2D.h"
 #include "ControlsManager.h"
 #include "IMouse.h"
-#include "Text.h"
-#include "Canvas2Dnew.h"
+#include "Hitregion.h"
+#include "Gui.h"
 
 namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 TextBox::TextBox(RectF posSize,
-                 const std::string& defaultString,
+                 const he::String& defaultString,
                  uint16 fontSize,
-                 const std::string& customFont) :	m_Rect(posSize),
+                 const he::String& customFont) :	m_Rect(posSize),
                                                     m_DefaultString(defaultString),
-                                                    m_bActive(true),
+                                                    m_Active(true),
                                                     m_String(""),
-                                                    m_bHasFocus(false),
+                                                    m_HasFocus(false),
                                                     m_Hitrect(nullptr),
                                                     m_CursorPos(0),
                                                     m_Cursor("|"),
-                                                    m_bEntered(false),
-                                                    m_bKeyDown(false),
+                                                    m_Entered(false),
+                                                    m_KeyDown(false),
                                                     m_BackspaceDown(false),
                                                     m_BackSpaceTimer(0),
                                                     m_BackSpaceDelayTimer(0)
@@ -52,9 +51,9 @@ TextBox::TextBox(RectF posSize,
     m_Text.setFont(m_Font);
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Left);
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
+    m_Text.setBounds(vec2(m_Rect.width - 4, m_Rect.height - 4));
 
-    m_Hitrect = NEW gui::Hitregion(
-        gui::Hitregion::TYPE_RECTANGLE,
+    m_Hitrect = NEW Hitregion(
         vec2(posSize.x + (posSize.width/2.0f), posSize.y + (posSize.height/2.0f)),
         vec2(posSize.width, posSize.height));
 
@@ -64,12 +63,26 @@ TextBox::TextBox(RectF posSize,
     m_Colors[TextBoxColor_Edge] = Color(0.1f,0.1f,0.1f);
 
     m_BlinkTimer.restart();
+
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+
+    m_NormalSprite = cr->createSprite(
+        vec2(posSize.width, posSize.height), gui::Sprite::UNIFORM_SCALE);
+
+    m_HoverSprite = cr->createSprite(
+        vec2(posSize.width, posSize.height), gui::Sprite::UNIFORM_SCALE);
+
+    renderSprites();
 }
 
 TextBox::~TextBox()
 {
     m_Font->release();
     delete m_Hitrect;
+
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+    cr->removeSprite(m_NormalSprite);
+    cr->removeSprite(m_HoverSprite);
 }
 
 /* GENERAL */
@@ -79,17 +92,17 @@ void TextBox::tick()
     {
         if (m_Hitrect->hitTest(CONTROLS->getMouse()->getPosition()))
         {
-            m_bHasFocus = true;
+            m_HasFocus = true;
             CONTROLS->getFocus(this);
         }
         else
         {
             CONTROLS->returnFocus(this);
-            m_bHasFocus = false;
+            m_HasFocus = false;
         }
     }
 
-    if (m_bHasFocus && m_bActive && CONTROLS->hasFocus(this))
+    if (m_HasFocus && m_Active)
     {
         if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Left))
         {
@@ -158,62 +171,53 @@ void TextBox::tick()
         if (CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return)/* ||
             CONTROLS->getKeyboard()->isKeyPressed(io::Key_Return2)*/)
         {
-            m_bEntered = true;
+            m_Entered = true;
         }
         else
         {
-            m_bEntered = false;
+            m_Entered = false;
         }
     }
 }
 
-void TextBox::draw(gfx::Canvas2D* canvas)
+void TextBox::draw(gui::Canvas2D* canvas)
 {
+    RectF textRect(m_Rect.x + 4, m_Rect.y + 2, m_Rect.width - 4, m_Rect.height - 2);
 
-    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-
-    RectF textRect(m_Rect.x + 4, m_Rect.y + 3, m_Rect.width - 8, m_Rect.height - 8);
-
-    if (m_bActive)
+    if (m_Active)
     {
-        canvas->setFillColor(m_Colors[TextBoxColor_Background]);
-        canvas->fillRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
-
-        canvas->setStrokeColor(m_Colors[TextBoxColor_Edge]);
-        canvas->strokeRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
-
-        if (m_bHasFocus)
+        if (m_HasFocus)
         {
-            canvas->setStrokeColor(m_Colors[TextBoxColor_Focus]);
-            canvas->strokeRect(vec2(m_Rect.x + 1 , m_Rect.y + 1), vec2(m_Rect.width - 2, m_Rect.height - 2));
+            canvas->drawSprite(m_HoverSprite, vec2(m_Rect.x, m_Rect.y));
+        }
+        else
+        {
+            canvas->drawSprite(m_NormalSprite, vec2(m_Rect.x, m_Rect.y));
         }
 
-        cvs->setColor(m_Colors[TextBoxColor_Text]);
+        canvas->setColor(m_Colors[TextBoxColor_Text]);
 
         m_Text.clear();
+
         if (m_String.empty())
         {
-            if (!m_bHasFocus)
+            if (!m_HasFocus)
             {
-                m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
-
                 m_Text.addText(m_DefaultString.c_str());
-                cvs->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
             }
         }
         else
         {
-            m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
-
             m_Text.addText(m_String.c_str());
-            cvs->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
         }
 
-        if (m_bHasFocus)
+        canvas->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 2));
+
+        if (m_HasFocus)
         {
             if (static_cast<int>(m_BlinkTimer.elapsed() * 100) % 100 < 50)
             {
-                std::string cursorText(m_String.substr(0, m_CursorPos));
+                he::String cursorText(m_String.substr(0, m_CursorPos));
 
                 RectF cursorRect(textRect);
 
@@ -227,12 +231,13 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
                 m_Text.clear();
                 m_Text.addText(m_Cursor.c_str());
-                cvs->fillText(m_Text, vec2(cursorRect.x, cursorRect.y - 1));
+                canvas->fillText(m_Text, vec2(cursorRect.x, cursorRect.y - 1));
             }
         }
     }
     else
     {
+        /*
         canvas->setFillColor(Color(0.3f,0.3f,0.3f));
         canvas->fillRect(vec2(m_Rect.x, m_Rect.y), vec2(m_Rect.width, m_Rect.height));
 
@@ -243,7 +248,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
         
         if (m_String == "")
         {
-            if (!m_bHasFocus)
+            if (!m_HasFocus)
             {
                 m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 8));
 
@@ -257,7 +262,7 @@ void TextBox::draw(gfx::Canvas2D* canvas)
 
             m_Text.addLine(m_String.c_str());
             canvas->fillText(m_Text, vec2(m_Rect.x + 4, m_Rect.y + 4));
-        }
+        }*/
     }
 }
 
@@ -268,33 +273,33 @@ void TextBox::resetText()
 }
 
 /* GETTERS */
-const std::string& TextBox::getString() const
+const he::String& TextBox::getString() const
 {
     return m_String;
 }
 
 bool TextBox::hasFocus() const
 {
-    return m_bHasFocus;
+    return m_HasFocus;
 }
 
 bool TextBox::entered() const
 {
-    return m_bEntered;
+    return m_Entered;
 }
 
 /* SETTERS */
 void TextBox::setActive(bool isActive)
 {
-    m_bActive = isActive;
+    m_Active = isActive;
 }
 
 void TextBox::setFocus(bool focus)
 {
-    m_bHasFocus = focus;
+    m_HasFocus = focus;
 }
 
-void TextBox::setString(const std::string& string)
+void TextBox::setString(const he::String& string)
 {
     m_String = string;
     m_CursorPos = (uint32)string.size();
@@ -311,16 +316,52 @@ void TextBox::setColors(	const Color& backgroundColor,
     m_Colors[TextBoxColor_Edge] = edgeColor;
 }
 
-void TextBox::setSize( const vec2& size )
+void TextBox::setSize(const vec2& size)
 {
     m_Rect.width = size.x;
     m_Rect.height = size.y;
+
+    m_Text.setBounds(vec2(m_Rect.width - 8, m_Rect.height - 4));
+
+    m_NormalSprite->invalidate(vec2(m_Rect.width, m_Rect.height));
+    m_HoverSprite->invalidate(vec2(m_Rect.width, m_Rect.height));
+
+    renderSprites();
+
+    m_Hitrect->setSize(vec2(m_Rect.width, m_Rect.height));
 }
 
-void TextBox::setPosition( const vec2& pos )
+void TextBox::setPosition(const vec2& pos)
 {
     m_Rect.x = pos.x;
     m_Rect.y = pos.y;
+
+    m_Hitrect->setPosition(pos + (vec2(m_Rect.width, m_Rect.height) / 2.0f));
+}
+
+/* INTERNAL */
+void TextBox::renderSprites()
+{
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+
+    cr->setActiveSprite(m_NormalSprite);
+    cr->rectangle(vec2(0, 0), vec2(m_Rect.width, m_Rect.height));
+    cr->setColor(m_Colors[TextBoxColor_Background]);
+    cr->fill();
+
+    cr->setColor(m_Colors[TextBoxColor_Edge]);
+    cr->stroke();
+
+    cr->setActiveSprite(m_HoverSprite);
+    cr->rectangle(vec2(0, 0), vec2(m_Rect.width, m_Rect.height));
+    cr->setColor(m_Colors[TextBoxColor_Background]);
+    cr->fill();
+
+    cr->setColor(m_Colors[TextBoxColor_Edge]);
+    cr->stroke();
+
+    cr->setColor(m_Colors[TextBoxColor_Focus]);
+    cr->stroke();
 }
 
 } } //end namespace

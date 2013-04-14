@@ -39,7 +39,7 @@ public:
     void setBeginTangent(const vec2& tangent);
     void setEndTangent(const vec2& tangent);
 
-    void draw2D(gfx::Canvas2D* const canvas, const mat33& transform);
+    void draw2D(gui::Canvas2D* const canvas, const mat33& transform);
 
 private:
     void updateShape();

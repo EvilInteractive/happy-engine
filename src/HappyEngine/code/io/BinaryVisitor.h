@@ -27,7 +27,7 @@
 namespace he {
 namespace io {
 
-class BinaryVisitor
+class HAPPY_ENTRY BinaryVisitor
 {
 public:
     enum EOpenType
@@ -102,7 +102,7 @@ private:
 };
     
 template<>
-void BinaryVisitor::visit(std::string& value);
+void BinaryVisitor::visit(he::String& value);
 
 } } //end namespace
 

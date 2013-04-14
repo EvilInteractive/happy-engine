@@ -36,11 +36,11 @@ public:
 
 	virtual ~StringTypeHandler() {}
 
-	bool parse(const std::string& values, boost::any& pValueToAssign) const
+	bool parse(const he::String& values, boost::any& pValueToAssign) const
 	{
-		std::string& pF = *boost::any_cast<std::string*>(pValueToAssign);
+		he::String& pF = *boost::any_cast<he::String*>(pValueToAssign);
 
-		std::string s(values);
+		he::String s(values);
 
 		size_t firstQ(s.find("\""));
         size_t secondQ(s.find("\"", firstQ + 1));
@@ -57,9 +57,9 @@ public:
 		return true;
 	}
 
-	std::string getType() const
+	he::String getType() const
 	{
-		return typeid(std::string).name();
+		return typeid(he::String).name();
 	}
 
     //Disable default copy constructor and default assignment operator

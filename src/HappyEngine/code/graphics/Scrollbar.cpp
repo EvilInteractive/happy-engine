@@ -22,70 +22,79 @@
 
 #include "Scrollbar.h"
 #include "ControlsManager.h"
-#include "Renderer2D.h"
 #include "IMouse.h"
+#include "Gui.h"
 
 namespace he {
 namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :	m_pHitregion(nullptr),
+Scrollbar::Scrollbar(const vec2& pos, const vec2& size, float heightScrollbar) :	m_Hitregion(nullptr),
 																					m_Pos(pos),
 																					m_Size(size),
 																					m_BarPos(0.0f),
-																					m_bDragging(false),
+																					m_Dragging(false),
 																					m_PreviousMousePos(0,0),
 																					m_ScrollbarHeight(heightScrollbar)
 {
-	m_pHitregion = NEW Hitregion(Hitregion::TYPE_RECTANGLE,
-		vec2(pos.x + size.x/2, pos.y + (heightScrollbar/2)),
+	m_Hitregion = NEW Hitregion(
+        vec2(pos.x + size.x/2, pos.y + (heightScrollbar/2)),
 		vec2(size.x - 2, heightScrollbar));
 
 	m_Colors["background"] = Color(0.6f,0.6f,0.6f);
 	m_Colors["scrollbar"] = Color(0.4f,0.4f,0.4f);
 	m_Colors["edge"] = Color(0.2f,0.2f,0.2f);
+
+    SpriteCreator* const cr(GUI->getSpriteCreator());
+    m_Sprites[0] = cr->createSprite(m_Size, Sprite::UNIFORM_SCALE);
+    m_Sprites[1] = cr->createSprite(vec2(m_Size.x, heightScrollbar), Sprite::UNIFORM_SCALE);
+
+    renderSprites();
 }
 
 Scrollbar::~Scrollbar()
 {
-	delete m_pHitregion;
-	m_pHitregion = nullptr;
+	delete m_Hitregion;
+	m_Hitregion = nullptr;
 }
 
 /* GENERAL */
 void Scrollbar::tick()
 {
+    const vec2 mousePos(CONTROLS->getMouse()->getPosition());
+    const vec2 hitrectPos(m_Hitregion->getPosition());
+
 	if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Left))
 	{
-		if (m_pHitregion->hitTest(CONTROLS->getMouse()->getPosition()))
+		if (m_Hitregion->hitTest(mousePos))
 		{
-			m_bDragging = true;
+			m_Dragging = true;
 		}
 	}
 	else
 	{
-		m_bDragging = false;
+		m_Dragging = false;
 
-		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+		m_PreviousMousePos = mousePos;
 	}
 
-	if (m_bDragging)
+	if (m_Dragging)
 	{
 		vec2 mouseMovement(0.0f,0.0f);
 
-		if (CONTROLS->getMouse()->getPosition().y >= m_Pos.y && CONTROLS->getMouse()->getPosition().y <= m_Pos.y + m_Size.y)
-			mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
+		if (mousePos.y >= m_Pos.y && mousePos.y <= m_Pos.y + m_Size.y)
+			mouseMovement = mousePos - m_PreviousMousePos;
 
-		m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+		m_PreviousMousePos = mousePos;
 
-		m_pHitregion->move(vec2(0, mouseMovement.y));
+		m_Hitregion->move(vec2(0, mouseMovement.y));
 
-		if (m_pHitregion->getPosition().y - (m_ScrollbarHeight/2) < m_Pos.y)
-			m_pHitregion->setPosition(vec2(m_pHitregion->getPosition().x, m_Pos.y + (m_ScrollbarHeight/2)));
-		else if (m_pHitregion->getPosition().y + (m_ScrollbarHeight/2) > m_Pos.y + m_Size.y)
-			m_pHitregion->setPosition(vec2(m_pHitregion->getPosition().x, m_Pos.y + m_Size.y - (m_ScrollbarHeight/2)));
+		if (hitrectPos.y - (m_ScrollbarHeight/2) < m_Pos.y)
+			m_Hitregion->setPosition(vec2(hitrectPos.x, m_Pos.y + (m_ScrollbarHeight/2)));
+		else if (hitrectPos.y + (m_ScrollbarHeight/2) > m_Pos.y + m_Size.y)
+			m_Hitregion->setPosition(vec2(hitrectPos.x, m_Pos.y + m_Size.y - (m_ScrollbarHeight/2)));
 
-		m_BarPos = (m_pHitregion->getPosition().y - m_Pos.y - (m_ScrollbarHeight/2)) / (m_Size.y - m_ScrollbarHeight);
+		m_BarPos = (hitrectPos.y - m_Pos.y - (m_ScrollbarHeight/2)) / (m_Size.y - m_ScrollbarHeight);
 	}
 
 	if (m_BarPos < 0)
@@ -94,21 +103,10 @@ void Scrollbar::tick()
 		m_BarPos = 1.0f;
 }
 
-void Scrollbar::draw(gfx::Canvas2D* canvas)
+void Scrollbar::draw(gui::Canvas2D* canvas)
 {
-	canvas->setFillColor(m_Colors["background"]);
-	canvas->fillRect(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y));
-
-    canvas->setStrokeColor(m_Colors["edge"]);
-    canvas->strokeRect(vec2(m_Pos.x, m_Pos.y), vec2(m_Size.x, m_Size.y));
-
-    canvas->setFillColor(m_Colors["scrollbar"]);
-	canvas->fillRect(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
-					vec2(m_Size.x - 2, m_ScrollbarHeight));
-
-    canvas->setStrokeColor(m_Colors["edge"]);
-    canvas->strokeRect(vec2(m_Pos.x + 1, m_pHitregion->getPosition().y - (m_ScrollbarHeight/2)),
-						vec2(m_Size.x - 2, m_ScrollbarHeight));
+   canvas->drawSprite(m_Sprites[0], m_Pos);
+   canvas->drawSprite(m_Sprites[1], m_Hitregion->getPosition() - vec2(m_Size.x / 2.0f, m_Hitregion->getSize().y / 2.0f));
 }
 
 /* SETTERS */
@@ -118,7 +116,7 @@ void Scrollbar::setBarPos(float barPos)
 
 	float y((m_BarPos * (m_Size.y - m_ScrollbarHeight)) + (m_ScrollbarHeight/2) + m_Pos.y);
 
-	m_pHitregion->setPosition(vec2(m_pHitregion->getPosition().x, y));
+	m_Hitregion->setPosition(vec2(m_Hitregion->getPosition().x, y));
 }
 
 void Scrollbar::setColors(	const Color& backgroundColor,
@@ -139,14 +137,41 @@ float Scrollbar::getBarPos() const
 void Scrollbar::setPosition( const vec2& pos )
 {
     m_Pos = pos;
-    m_pHitregion->setPosition(vec2(m_Pos.x + m_Size.x / 2, m_Pos.y + (m_ScrollbarHeight / 2)));
+    m_Hitregion->setPosition(vec2(m_Pos.x + m_Size.x / 2, m_Pos.y + (m_ScrollbarHeight / 2)));
     setBarPos(m_BarPos);
 }
 
 void Scrollbar::setSize( const vec2& size )
 {
     m_Size = size;
-    m_pHitregion->setSize(vec2(size.x - 2, m_ScrollbarHeight));
+    m_Hitregion->setSize(vec2(size.x - 2, m_ScrollbarHeight));
+}
+
+/* INTERNAL */
+void Scrollbar::renderSprites()
+{
+    Sprite* const back(m_Sprites[0]);
+    Sprite* const front(m_Sprites[1]);
+    SpriteCreator* const cr(GUI->getSpriteCreator());
+
+    const vec2 hitrectPos(m_Hitregion->getPosition());
+
+    cr->setActiveSprite(back);
+    cr->setColor(m_Colors["background"]);
+    cr->rectangle(vec2(0, 0), vec2(m_Size.x, m_Size.y));
+    cr->fill();
+    cr->setColor(m_Colors["edge"]);
+    cr->stroke();
+    cr->renderSpriteAsync();
+
+    cr->setActiveSprite(front);
+    cr->setColor(m_Colors["scrollbar"]);
+    cr->rectangle(vec2(1, hitrectPos.y - (m_ScrollbarHeight/2)),
+				  vec2(m_Size.x - 2, m_ScrollbarHeight));
+    cr->fill();
+    cr->setColor(m_Colors["edge"]);
+    cr->stroke();
+    cr->renderSpriteAsync();
 }
 
 } } //end namespace

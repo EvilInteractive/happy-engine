@@ -53,7 +53,8 @@ void ModelLoader::tick(float /*dTime*/)
         if (m_ModelLoadQueue.empty() == false)
         {
             m_isModelThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_ModelLoadThread = boost::thread(boost::bind(&ModelLoader::modelLoadThread, this));
+            m_ModelLoadThread.join(); // wait for previous to really finish
+            m_ModelLoadThread.startThread(boost::bind(&ModelLoader::modelLoadThread, this), "ModelLoadThread");
         }
     }
 }
@@ -62,7 +63,7 @@ void ModelLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_ModelInvokeQueue.empty() == false)
     {
-        m_ModelInvokeQueueMutex.lock();
+        m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
         ModelLoadData data(m_ModelInvokeQueue.front());
         m_ModelInvokeQueue.pop();
         m_ModelInvokeQueueMutex.unlock();
@@ -76,14 +77,14 @@ void ModelLoader::modelLoadThread()
     HE_INFO("Model Load thread started");
     while (m_ModelLoadQueue.empty() == false)
     {
-        m_ModelLoadQueueMutex.lock();
+        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
         ModelLoadData data(m_ModelLoadQueue.front());
         m_ModelLoadQueue.pop();
         m_ModelLoadQueueMutex.unlock();
 
         if (loadModel(data))
         {
-            m_ModelInvokeQueueMutex.lock();
+            m_ModelInvokeQueueMutex.lock(FILE_AND_LINE);
             m_ModelInvokeQueue.push(data);
             m_ModelInvokeQueueMutex.unlock();
         }                
@@ -109,13 +110,13 @@ bool ModelLoader::loadModel( ModelLoadData& data )
 }
 bool ModelLoader::createModel( ModelLoadData& data )
 {
-    m_WaitListMutex.lock();
+    m_WaitListMutex.lock(FILE_AND_LINE);
 
     gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
     uint32 notLoadedMeshes(model->getNumMeshes());
     for (uint32 i = 0; i < data.loader->getNumMeshes(); ++i)
     {
-        const std::string& meshName(data.loader->getMeshName(i));
+        const he::String& meshName(data.loader->getMeshName(i));
         gfx::ModelMesh* mesh(nullptr);
         if (notLoadedMeshes > 0)
         {
@@ -136,8 +137,13 @@ bool ModelLoader::createModel( ModelLoadData& data )
 
         mesh->init(data.vertexLayout, gfx::MeshDrawMode_Triangles);
         mesh->setBones(data.loader->getBones(i));
-        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), gfx::MeshUsage_Static);
+        mesh->setVertices(data.loader->getVertices(i), data.loader->getNumVertices(i), gfx::MeshUsage_Static, true);
         mesh->setIndices(data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i), gfx::MeshUsage_Static);
+        if (data.savePickingData == true)
+        {
+            mesh->createPickingData(data.loader->getVertices(i), data.loader->getNumVertices(i), data.vertexLayout, 
+                data.loader->getIndices(i), data.loader->getNumIndices(i), data.loader->getIndexStride(i));
+        }
         mesh->setLoaded();
 
         mesh->release();
@@ -153,7 +159,7 @@ bool ModelLoader::createModel( ModelLoadData& data )
     return true;
 }
 
-bool ModelLoader::isModelLoaded( const std::string& path, ObjectHandle& outHandle )
+bool ModelLoader::isModelLoaded( const he::String& path, ObjectHandle& outHandle )
 {
     bool isLoaded(true);
     isLoaded &= m_AssetContainer.isAssetPresent(path);
@@ -165,7 +171,7 @@ bool ModelLoader::isModelLoaded( const std::string& path, ObjectHandle& outHandl
     return isLoaded;
 }
 
-gfx::Model* ModelLoader::asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ModelLoader::asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
 {
     ObjectHandle handle;
     if (isModelLoaded(path, handle))
@@ -179,6 +185,7 @@ gfx::Model* ModelLoader::asyncLoadModel(const std::string& path, const gfx::Buff
         data.path = path;
         data.vertexLayout = vertexLayout;
         data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
+        data.savePickingData = savePickingData;
         
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
         model->setName(path);
@@ -188,13 +195,13 @@ gfx::Model* ModelLoader::asyncLoadModel(const std::string& path, const gfx::Buff
         return model;
     }
 }
-gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout )
+gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData )
 {
     ObjectHandle modelHandle;
     if (isModelLoaded(path, modelHandle)) // if model is loading/loaded
     {
         gfx::ModelMesh* mesh(nullptr);
-        m_WaitListMutex.lock();
+        m_WaitListMutex.lock(FILE_AND_LINE);
 
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(modelHandle));
         if (model->isLoaded()) // if loading done
@@ -237,6 +244,7 @@ gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const 
         data.path = path;
         data.vertexLayout = vertexLayout;
         data.modelHandle = modelHandle;
+        data.savePickingData = savePickingData;
 
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(modelHandle));
         model->setName(path);
@@ -255,11 +263,11 @@ gfx::ModelMesh* ModelLoader::asyncLoadModelMesh( const std::string& path, const 
 
 bool ModelLoader::getModelLoader( ModelLoadData& data )
 {
-    if (data.path.rfind(".obj") != std::string::npos)
+    if (data.path.rfind(".obj") != he::String::npos)
     {
         data.loader = NEW models::ObjLoader();
     }
-    else if (data.path.rfind(".binobj") != std::string::npos)
+    else if (data.path.rfind(".binobj") != he::String::npos)
     {
         data.loader = NEW models::BinObjLoader();
     }
@@ -282,7 +290,7 @@ bool ModelLoader::startAsyncLoadModel(ModelLoadData& data)
     {
         // need reference for async loading
         ResourceFactory<gfx::Model>::getInstance()->instantiate(data.modelHandle);
-        m_ModelLoadQueueMutex.lock();
+        m_ModelLoadQueueMutex.lock(FILE_AND_LINE);
         m_ModelLoadQueue.push(data);
         m_ModelLoadQueueMutex.unlock();
     }
@@ -307,7 +315,7 @@ bool ModelLoader::startSyncLoadModel( ModelLoadData& data )
 }
 
 
-gfx::Model* ModelLoader::loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ModelLoader::loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
 {
     ObjectHandle handle;
     if (isModelLoaded(path, handle))
@@ -321,6 +329,7 @@ gfx::Model* ModelLoader::loadModel(const std::string& path, const gfx::BufferLay
         data.path = path;
         data.vertexLayout = vertexLayout;
         data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
+        data.savePickingData = savePickingData;
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));
         model->setName(path);
 
@@ -330,7 +339,7 @@ gfx::Model* ModelLoader::loadModel(const std::string& path, const gfx::BufferLay
     }
 }
 
-gfx::ModelMesh* ModelLoader::loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ModelLoader::loadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData)
 {
     ObjectHandle modelHandle;
     if (isModelLoaded(path, modelHandle))
@@ -352,7 +361,7 @@ gfx::ModelMesh* ModelLoader::loadModelMesh(const std::string& path, const std::s
         {
             // this will be a problem because the model is loaded async as well
             HE_WARNING("Loading mesh: %s - %s problem. Trying to load sync but mesh is already loading async -> loading async", path.c_str(), meshName.c_str());
-            mesh = asyncLoadModelMesh(path, meshName, vertexLayout);
+            mesh = asyncLoadModelMesh(path, meshName, vertexLayout, savePickingData);
         }
 
         return mesh;
@@ -363,6 +372,7 @@ gfx::ModelMesh* ModelLoader::loadModelMesh(const std::string& path, const std::s
         data.path = path;
         data.vertexLayout = vertexLayout;
         data.modelHandle = ResourceFactory<gfx::Model>::getInstance()->create();
+        data.savePickingData = savePickingData;
 
         ObjectHandle meshHandle(ResourceFactory<gfx::ModelMesh>::getInstance()->create());
         gfx::Model* model(ResourceFactory<gfx::Model>::getInstance()->get(data.modelHandle));

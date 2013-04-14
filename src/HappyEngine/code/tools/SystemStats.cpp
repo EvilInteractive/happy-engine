@@ -22,7 +22,7 @@
 
 #include "SystemStats.h"
 
-#ifndef _MSC_VER
+#ifndef HE_WINDOWS
     
 #else
     #include "windows.h"
@@ -37,43 +37,33 @@ namespace tools {
 /* CONSTRUCTOR - DESTRUCTOR */
 SystemStats::SystemStats()
 {
-    #ifndef _MSC_VER
-    
-    #else
-        SYSTEM_INFO sysInfo;
-        FILETIME ftime, fsys, fuser;
+#ifdef HE_WINDOWS
+    SYSTEM_INFO sysInfo;
+    FILETIME ftime, fsys, fuser;
 
-        GetSystemInfo(&sysInfo);
-        m_NumProcessors = (uint8)sysInfo.dwNumberOfProcessors;
-    
-        GetSystemTimeAsFileTime(&ftime);
-        memcpy(&m_LastCPU, &ftime, sizeof(FILETIME));
+    GetSystemInfo(&sysInfo);
+    m_NumProcessors = checked_numcast<uint8>(sysInfo.dwNumberOfProcessors);
 
-        m_Self = GetCurrentProcess();
-        GetProcessTimes(m_Self, &ftime, &ftime, &fsys, &fuser);
-        memcpy(&m_LastSysCPU, &fsys, sizeof(FILETIME));
-        memcpy(&m_LastUserCPU, &fuser, sizeof(FILETIME));
-    #endif
+    GetSystemTimeAsFileTime(&ftime);
+    memcpy(&m_LastCPU, &ftime, sizeof(FILETIME));
+
+    m_Self = GetCurrentProcess();
+    GetProcessTimes(m_Self, &ftime, &ftime, &fsys, &fuser);
+    memcpy(&m_LastSysCPU, &fsys, sizeof(FILETIME));
+    memcpy(&m_LastUserCPU, &fuser, sizeof(FILETIME)); 
+#else
+    m_NumProcessors = checked_numcast<uint8>(sysconf( _SC_NPROCESSORS_ONLN ));
+#endif
 }
 
 SystemStats::~SystemStats()
 {
 }
 
-/* GENERAL */
-void SystemStats::init()
-{
-    SystemStats::sdmInit();
-}
-void SystemStats::done()
-{
-    SystemStats::sdmDestroy();
-}
-
 /* GETTERS */
 uint32 SystemStats::getTotalVirtualMemory() const
 {
-    #ifndef _MSC_VER
+    #ifndef HE_WINDOWS
     return 0;
     #else
         MEMORYSTATUSEX memInfo;
@@ -86,7 +76,7 @@ uint32 SystemStats::getTotalVirtualMemory() const
 }
 uint32 SystemStats::getVirtualMemoryUsed() const
 {
-    #ifndef _MSC_VER
+    #ifndef HE_WINDOWS
     return 0;
     #else
         PROCESS_MEMORY_COUNTERS_EX pmc;
@@ -98,7 +88,7 @@ uint32 SystemStats::getVirtualMemoryUsed() const
 }
 uint32 SystemStats::getTotalMemory() const
 {
-    #ifndef _MSC_VER
+    #ifndef HE_WINDOWS
     return 0;
     #else
         MEMORYSTATUSEX memInfo;
@@ -111,7 +101,7 @@ uint32 SystemStats::getTotalMemory() const
 }
 uint32 SystemStats::getMemoryUsed() const
 {
-    #ifndef _MSC_VER
+    #ifndef HE_WINDOWS
     return 0;
     #else
         PROCESS_MEMORY_COUNTERS pmc;
@@ -123,7 +113,7 @@ uint32 SystemStats::getMemoryUsed() const
 }
 float SystemStats::getCpuUsage()
 {
-    #ifndef _MSC_VER
+    #ifndef HE_WINDOWS
     return 0;
     #else
         FILETIME ftime, fsys, fuser;

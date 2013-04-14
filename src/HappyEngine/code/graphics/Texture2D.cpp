@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "Texture2D.h"
+#include "ExternalError.h"
 
 namespace he {
 namespace gfx {
@@ -90,6 +91,21 @@ void Texture2D::setData( uint32 width, uint32 height,
     }
 }
 
+void Texture2D::setSubData(uint32 xOffset, uint32 yOffset, uint32 width, uint32 height, 
+    const void* pData, TextureBufferLayout bufferLayout, TextureBufferType bufferType, uint8 mipLevel)
+{
+    HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
+    {
+        // Bind
+        GL::heBindTexture2D(0, m_Id);
+
+        //Data
+        glTexSubImage2D(GL_TEXTURE_2D, mipLevel, xOffset, yOffset, width, height, 
+            details::getInternalTextureBufferLayout(bufferLayout), details::getInternalTextureBufferType(bufferType), 
+            pData);
+    }
+}
+
 void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data, uint32 imageSizeInBytes, uint8 mipLevel)
 {
     HE_IF_ASSERT(m_Id != UINT32_MAX, "Texture2D has not been initialized!: %s", getName().c_str())
@@ -106,15 +122,12 @@ void Texture2D::setCompressedData(uint32 width, uint32 height, const void* data,
         //Data
         glCompressedTexImage2D(GL_TEXTURE_2D, mipLevel, details::getInternalTextureFormat(m_TextureFormat), width, height, 
             0, imageSizeInBytes, data);
-#if _DEBUG
-        err::glCheckForErrors(true);
-#endif
     }
 }
 
 void Texture2D::setLoadFinished()
 {
-    m_CallbackMutex.lock();
+    m_CallbackMutex.lock(FILE_AND_LINE);
     m_IsLoadDone = true;
     Loaded();
     Loaded.clear();
@@ -134,7 +147,7 @@ void Texture2D::generateMipMaps() const
 void Texture2D::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
 {
     Texture2D* _this(const_cast<Texture2D*>(this));
-    _this->m_CallbackMutex.lock();
+    _this->m_CallbackMutex.lock(FILE_AND_LINE);
     if (m_IsLoadDone)
     {
         _this->m_CallbackMutex.unlock();

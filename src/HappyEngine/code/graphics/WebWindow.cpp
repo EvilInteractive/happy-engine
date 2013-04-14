@@ -29,8 +29,10 @@
 #include "Window.h"
 #include "WebListener.h"
 
+#include <SFML/Window.hpp>
+
 namespace he {
-namespace gfx {
+namespace gui {
 
 WebWindow::WebWindow() :   
 m_WebView(nullptr),
@@ -42,20 +44,22 @@ void WebWindow::init(const int width, const int height)
     // create WebWindow
     m_WebView = GRAPHICS->getWebCore()->CreateWebView(width, height, 0, Awesomium::kWebViewType_Window);
     m_WebListener = NEW WebListener(m_WebView);
-    m_Window.create(sf::VideoMode(width, height), "");
-    m_Window.setVerticalSyncEnabled(true);
-    m_WebView->set_parent_window(static_cast<Awesomium::NativeWindow>(m_Window.getSystemHandle()));
+    m_Window = NEW sf::Window();
+    m_Window->create(sf::VideoMode(width, height), "");
+    m_Window->setVerticalSyncEnabled(true);
+    m_WebView->set_parent_window(static_cast<Awesomium::NativeWindow>(m_Window->getSystemHandle()));
 }
 
 WebWindow::~WebWindow()
 {
     m_WebView->Destroy();
-    m_Window.close();
+    m_Window->close();
+    delete m_Window;
     delete m_WebListener;
 }
 
 /* GENERAL */
-void WebWindow::loadUrl(const std::string& url)
+void WebWindow::loadUrl(const he::String& url)
 {
     Awesomium::WebURL webUrl(Awesomium::WebString::CreateFromUTF8(url.c_str(), static_cast<unsigned int>(strlen(url.c_str()))));
     m_WebView->LoadURL(webUrl);
@@ -133,12 +137,12 @@ void WebWindow::OnBeginLoadingFrame(
 void WebWindow::tick()
 {
     sf::Event event;
-    while (m_Window.pollEvent(event))
+    while (m_Window->pollEvent(event))
     {
         switch(event.type) 
         {
         case sf::Event::Closed:
-            m_Window.close();
+            m_Window->close();
             WindowClosed();
             break;
         case sf::Event::Resized:
@@ -150,12 +154,17 @@ void WebWindow::tick()
 
 void WebWindow::close()
 {
-    m_Window.close();
+    m_Window->close();
 }
 
-void WebWindow::setTitle( const std::string& title )
+void WebWindow::setTitle( const he::String& title )
 {
-    m_Window.setTitle(title);
+    m_Window->setTitle(title);
+}
+
+bool WebWindow::isOpen() const
+{
+    return m_Window->isOpen();
 }
 
 }} //end namespace

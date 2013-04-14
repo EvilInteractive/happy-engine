@@ -34,7 +34,7 @@ class PointLight;
 
 class Scene;
 
-class LightManager
+class HAPPY_ENTRY LightManager
 {
 public:
     LightManager(Scene* scene);

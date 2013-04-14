@@ -36,24 +36,31 @@
 
 namespace ht {
 
-MainGame::MainGame(): m_FpsGraph(nullptr), m_Window(nullptr), m_View(nullptr), m_Renderer(nullptr), m_Font(nullptr)
+MainGame::MainGame()
+	: m_FpsGraph(nullptr)
+	, m_Window(nullptr)
+	, m_View(nullptr)
+	, m_Renderer(nullptr)
+	, m_AStar(nullptr)
 {
 }
 
 
 MainGame::~MainGame()
 {
+}
+
+void MainGame::destroy()
+{
     m_Renderer->detachFromRender(m_FpsGraph);
     m_Renderer->detachFromRender(this);
 
-    m_Font->release();
     delete m_FpsGraph;
 
     delete m_Renderer;
     GRAPHICS->removeView(m_View);
-    GRAPHICS->removeWindow(m_Window);
+    GRAPHICS->removeWindow(m_Window);    
 }
-
 void MainGame::init()
 {
     m_View = GRAPHICS->createView();
@@ -66,18 +73,15 @@ void MainGame::init()
     he::eventCallback0<void> quitHandler(boost::bind(&he::HappyEngine::quit, HAPPYENGINE));
     m_Window->Closed += quitHandler;
     m_Window->create();
-}
 
-void MainGame::load()
-{
     he::gfx::RenderSettings settings;
+    settings.cameraSettings.setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     CONTENT->setRenderSettings(settings);
 
     m_Renderer = NEW he::gfx::Renderer2D;
     m_View->addRenderPlugin(m_Renderer);
 
     m_View->setWindow(m_Window);
-    m_View->setRelativeViewport(he::RectF(0, 0, 1.0f, 1.0f));
     m_View->init(settings);
 
     m_Renderer->attachToRender(this);
@@ -86,7 +90,8 @@ void MainGame::load()
     m_FpsGraph->setType(he::tools::FPSGraph::Type_TextOnly);
     m_Renderer->attachToRender(m_FpsGraph);
 
-    m_Font = CONTENT->loadFont("Ubuntu-Bold.ttf", 18);
+	m_AStar = NEW ht::AStar();
+	m_AStar->init();
 }
 
 void MainGame::tick( float dTime )
@@ -95,9 +100,9 @@ void MainGame::tick( float dTime )
     m_FpsGraph->tick(dTime);
 }
 
-void MainGame::draw2D( he::gfx::Canvas2D* canvas )
+void MainGame::draw2D( he::gui::Canvas2D* canvas )
 {
-    canvas->drawImage(m_Font->getTextureAtlas(), he::vec2(20, 20));
+	m_AStar->draw2D(canvas);
 }
 
 } //end namespace

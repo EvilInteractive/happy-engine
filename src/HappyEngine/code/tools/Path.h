@@ -24,21 +24,21 @@
 
 namespace he {
 
-class Path
+class HAPPY_ENTRY Path
 {
 public:
-    Path(const std::string& other); // implicit conversion allowed
+    Path(const he::String& other); // implicit conversion allowed
     Path(const Path& other);
     Path& operator=(const Path& other);
-    virtual ~Path();
+    ~Path();
 
-    const std::string& str() const; // includes trailing slash
+    const he::String& str() const; // includes trailing slash
 
     //ex:
     //Root = C:/Test/
     //relativePath = ../data/test.png
     //return = C:/data/test.png => absolute
-    Path append(const std::string& relativePath) const; 
+    Path append(const he::String& relativePath) const; 
 
     // Checks
     bool isFile() const;
@@ -46,19 +46,27 @@ public:
     bool exists() const;
 
     // Getters
-    std::string getFileName() const;
+    he::String getFileName() const;
 
     // Iterators
     bool iterateFiles(const bool recursive, const boost::function1<void, const Path&>& func);
 
     // Static
-    static Path getWorkingDir();
+    static const Path& getDataPath() { return s_DataPath; }
+    static const Path& getFullDataPath() { return s_FullDataPath; }
+    static const Path& getWorkingDir() { return s_WorkingDirectory; }
+
+    static void init(const Path& dataPath);
 
 private:
     void convertBackslashesToForward();
     void ensureTrailingSlash();
 
-    std::string m_Path;
+    static Path s_DataPath;
+    static Path s_FullDataPath;
+    static Path s_WorkingDirectory;
+
+    he::String m_Path;
 };
 
 } //end namespace

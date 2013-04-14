@@ -34,12 +34,15 @@
 #include "Awesomium/WebCore.h"
 #pragma warning(default:4100)
 #include "GLContext.h"
+#include <SFML/Window.hpp>
+
+#include "WebViewSurfaceFactory.h"
 
 namespace he {
 namespace gfx {
 
 GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m_ActiveView(nullptr),
-    m_DefaultContext(nullptr), m_DefaultSfContext(nullptr)
+    m_DefaultContext(nullptr), m_DefaultSfContext(nullptr), m_WebViewSurfaceFactory(nullptr)
 {
     for (uint32 i(0); i < MAX_OPENGL_CONTEXT; ++i)
     {
@@ -51,15 +54,13 @@ GraphicsEngine::GraphicsEngine(): m_ActiveWindow(nullptr), m_WebCore(nullptr), m
 GraphicsEngine::~GraphicsEngine()
 {
     delete m_DefaultSfContext;
+    delete m_WebViewSurfaceFactory;
 }
 void GraphicsEngine::destroy()
 {
-    ViewFactory::getInstance()->destroyAll();
-    SceneFactory::getInstance()->destroyAll();
-    WindowFactory::getInstance()->destroyAll();
-
-    if (m_WebCore != nullptr)
-        Awesomium::WebCore::Shutdown();
+    HE_ASSERT(ViewFactory::getInstance()->isEmpty(), "View leak detected!");
+    HE_ASSERT(SceneFactory::getInstance()->isEmpty(), "Scene leak detected!");
+    HE_ASSERT(WindowFactory::getInstance()->isEmpty(), "Window leak detected!");
 }
 
 void GraphicsEngine::init()
@@ -70,7 +71,9 @@ void GraphicsEngine::init()
     registerContext(&m_DefaultContext);
     GL::init();
 
-    m_WebCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+    m_WebViewSurfaceFactory = NEW WebViewSurfaceFactory();
+    m_WebCore = Awesomium::WebCore::instance();
+    m_WebCore->set_surface_factory(m_WebViewSurfaceFactory);
         
     HE_INFO((char*)glGetString(GL_VENDOR));
     HE_INFO((char*)glGetString(GL_RENDERER));
@@ -158,18 +161,35 @@ void GraphicsEngine::removeWindow( Window* window )
 
 void GraphicsEngine::draw()
 {
-    setActiveContext(&m_DefaultContext);
-    SceneFactory* sceneFactory(SceneFactory::getInstance());
+    SceneFactory* const sceneFactory(SceneFactory::getInstance());
     m_Scenes.forEach([sceneFactory](const ObjectHandle& sceneHandle)
     {
-        Scene* scene(sceneFactory->get(sceneHandle));
+        Scene* const scene(sceneFactory->get(sceneHandle));
         if (scene->getActive())
             scene->prepareForRendering();
     });
-    ViewFactory* viewFactory(ViewFactory::getInstance());
-    m_Views.forEach([viewFactory](const ObjectHandle& view)
+    WindowFactory* const windowFactory(WindowFactory::getInstance());
+    m_Windows.forEach([this, windowFactory](const ObjectHandle& windowHandle)
     {
-        viewFactory->get(view)->draw();
+        Window* const window(windowFactory->get(windowHandle));
+        if (window->isOpen())
+        {
+            const ObjectList<ObjectHandle>& viewList(window->getViews());
+            if (viewList.empty() == false)
+            {
+                window->prepareForRendering();
+                GraphicsEngine* const _this(this);
+                ViewFactory* const viewFactory(ViewFactory::getInstance());
+                viewList.forEach([_this, viewFactory](const ObjectHandle& viewHandle)
+                {
+                    View* const view(viewFactory->get(viewHandle));
+                    _this->setActiveView(view);
+                    view->draw();
+                });
+
+                window->present();
+            }
+        }
     });
 }
 

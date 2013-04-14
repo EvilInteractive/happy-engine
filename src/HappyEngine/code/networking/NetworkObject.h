@@ -23,6 +23,7 @@
 #pragma once
 
 #include "NetworkObjectBase.h"
+#include "NetworkObjectFactory.h"
 
 namespace he {
 namespace net {
@@ -36,15 +37,13 @@ public:
     NetworkObject() {}
     virtual ~NetworkObject() {}
 
-    virtual void serializeCreate(net::NetworkStream* /*stream*/) const {}
-    virtual bool deserializeCreate(net::NetworkStream* /*stream*/)  { return true; } // return == allow creation
-    virtual void serializeRemove(net::NetworkStream* /*stream*/) const {}
-    virtual bool deserializeRemove(net::NetworkStream* /*stream*/) { return true; } // return == allow destruction
+    virtual void netVisitCreate(he::net::NetworkVisitor& /*visitor*/) {}
+    virtual void netVisitRemove(he::net::NetworkVisitor& /*visitor*/) {}
 
-    virtual bool isSerializeDataDirty() const { return m_IsSerializeDataDirty; }
+    virtual bool isNetSerializeDataDirty() const { return m_IsSerializeDataDirty; }
     virtual void setSerializeDataDirty(bool dirty = true) { m_IsSerializeDataDirty = dirty; }
-    virtual void serialize(const NetworkSerializer& /*serializer*/) {};
-    virtual void deserialize(const NetworkDeserializer& /*serializer*/) {};
+    virtual void netSerialize(const NetworkSerializer& /*serializer*/) {}
+    virtual void netDeserialize(const NetworkDeserializer& /*serializer*/) {}
 
     virtual void destroyReplica()
     {

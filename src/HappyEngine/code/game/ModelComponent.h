@@ -24,14 +24,12 @@
 
 #include "EntityComponent.h"
 #include "DefaultSingleDrawable.h"
-#include "IPickable.h"
 
 namespace he {
 namespace ge {
-
-class ModelComponent;
-
-class ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
+ 
+struct EntityComponentDesc;   
+class HAPPY_ENTRY ModelComponent : public gfx::DefaultSingleDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSingleDrawable)
 public:
@@ -47,6 +45,15 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const he::FixedString& getComponentID() const { return HEFS::strModelComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
 
@@ -57,7 +64,9 @@ public:
     virtual const gfx::ModelMesh* getModelMesh() const;
     //////////////////////////////////////////////////////////////////////////
        
-    void setModelMeshAndMaterial(const std::string& materialAsset, const std::string& modelAsset, const std::string& meshName = "");
+    void setModelMeshAndMaterial(const he::String& materialAsset, const he::String& modelAsset, const he::String& meshName = "");
+
+    he::event0<void> OnModelMeshLoaded;
 
 protected:
     Entity* m_Parent;
@@ -67,6 +76,9 @@ private:
 
     gfx::ModelMesh* m_ModelMesh;
     const gfx::Material* m_Material;
+
+    he::String m_MaterialAsset;
+    he::String m_ModelAsset;
 
     //Disable default copy constructor and default assignment operator
     ModelComponent(const ModelComponent&);

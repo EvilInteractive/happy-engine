@@ -24,8 +24,6 @@
 
 #include "Singleton.h"
 
-#define HESTATS he::tools::SystemStats::getInstance()
-
 namespace he {
 namespace tools {
 
@@ -37,11 +35,7 @@ public:
 
     /* DESTRUCTOR */
     virtual ~SystemStats();
-
-    /* GENERAL */
-    static void init();
-    static void done();
-
+    
     /* GETTERS */
     uint32 getTotalVirtualMemory() const;
     uint32 getVirtualMemoryUsed() const;
@@ -51,6 +45,8 @@ public:
 
     float getCpuUsage();
 
+    uint8 getNumCores() const { return m_NumProcessors; }
+
 private:
 
     /* CONSTRUCTOR */
@@ -58,15 +54,16 @@ private:
 
     /* MEMBERS */
 
-    #ifndef _MSC_VER
-    #else
+#ifdef HE_WINDOWS
         ULARGE_INTEGER m_LastCPU;
         ULARGE_INTEGER m_LastSysCPU;
         ULARGE_INTEGER m_LastUserCPU;
 
         uint8 m_NumProcessors;
         HANDLE m_Self;
-    #endif
+#else
+        uint8 m_NumProcessors;
+#endif
 
     /* DEFAULT COPY & ASSIGNMENT */
     SystemStats(const SystemStats&);

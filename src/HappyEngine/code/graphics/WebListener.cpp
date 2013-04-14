@@ -29,7 +29,7 @@
 #pragma warning(default:4267)
 
 namespace he {
-namespace gfx {
+namespace gui {
 
 /* CONSTRUCTOR - DESTRUCTOR */
 WebListener::WebListener(Awesomium::WebView* const webView)
@@ -48,9 +48,9 @@ WebListener::~WebListener()
 }
 
 /* GENERAL */
-void WebListener::addObjectCallback(const std::string& object,
-                        const std::string& method,
-                        eventCallback1<void, const Awesomium::JSArray&>& callBack)
+void WebListener::addObjectCallback(const he::String& object,
+                                    const he::String& method,
+                                    eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
     auto it(std::find_if(m_Objects.cbegin(), m_Objects.cend(), [&object](JSObject* obj)
@@ -63,62 +63,22 @@ void WebListener::addObjectCallback(const std::string& object,
     // create new js object if it doesn't already exists
     if (objectExists == false)
     {
-        Awesomium::JSValue val(m_WebView->CreateGlobalJavascriptObject(
-                Awesomium::WSLit(object.c_str())));
+        JSObject* jsObject(JSObject::create(m_WebView, object));
+        Awesomium::WebString aweMethod(Awesomium::WSLit(method.c_str()));
 
-        Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
-
-        HE_ASSERT(val.IsObject(), "object: %s, is not a javascript object!", object.c_str());
-        Awesomium::JSObject& obj = val.ToObject();
-
-        // prevent crashing by retrying
-        // wait some time for the awesomium process to
-        // finish with the object
-        #if DEBUG || _DEBUG
-        uint8 tries(10);
-        boost::posix_time::seconds waitTime =
-            boost::posix_time::seconds(1);
-
-        while (tries > 0)
-        {
-            Awesomium::Error error(obj.last_error());
-            if (error != Awesomium::kError_None)
-            {
-                const char* errorString("Unknown");
-                switch (error)
-                {
-                case Awesomium::kError_BadParameters: errorString = "BadParameters"; break; 
-                case Awesomium::kError_ObjectGone: errorString = "ObjectGone"; break;     
-                case Awesomium::kError_ConnectionGone: errorString = "ConnectionGone"; break; 
-                case Awesomium::kError_TimedOut: errorString = "TimedOut"; break;       
-                case Awesomium::kError_WebViewGone: errorString = "WebViewGone"; break;    
-                case Awesomium::kError_Generic: errorString = "Generic"; break; 
-                }
-                HE_ERROR("Awesomium error: %s, waiting 1s", errorString);
-                boost::this_thread::sleep(waitTime);
-                --tries;
-            }
-            else
-                break;
-        }
-
-        HE_ASSERT(tries > 0, "JSObject creation timed out!");
-        #endif
-
-        JSObject* jsObject(NEW JSObject(obj, object));
         jsObject->addCallback(aweMethod, callBack);
 
         m_Objects.add(jsObject);
     }
     else
     {
-        Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
+        Awesomium::WebString aweMethod(Awesomium::WSLit(method.c_str()));
 
         (*it)->addCallback(aweMethod, callBack);
     };
 }
-void WebListener::removeObjectCallback(const std::string& object,
-                            const std::string& method,
+void WebListener::removeObjectCallback(const he::String& object,
+                            const he::String& method,
                             eventCallback1<void, const Awesomium::JSArray&>& callBack)
 {
     // check if jsobject already exists
@@ -134,12 +94,12 @@ void WebListener::removeObjectCallback(const std::string& object,
     }
 }
 
-void WebListener::executeFunction(const std::string& object,
-                                    const std::string& method,
+void WebListener::executeFunction(const he::String& object,
+                                    const he::String& method,
                                     const Awesomium::JSArray& args)
 {
     // global js object for global functions
-    std::string objName("window");
+    he::String objName("window");
     Awesomium::WebString aweMethod = Awesomium::WSLit(method.c_str());
 
     if (object != "window" && object != "")

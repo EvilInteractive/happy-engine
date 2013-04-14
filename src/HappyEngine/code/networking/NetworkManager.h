@@ -69,19 +69,21 @@ public:
     void setMaxConnections(uint8 count);
 
     void host(uint16 port = 30000);
-    void join(const std::string& ip = "localhost", uint16 port = 30000);
+    void join(const he::String& ip = "localhost", uint16 port = 30000);
     void disconnect();
     void tick(float dTime);
     bool isConnected() const;
 
     void send(const NetworkPackage& package, const NetworkID& to, 
         const ENetworkReliability reliability = eNetworkReliability_ReliableOrdered, const ENetworkPriority priority = eNetworkPriority_High);
+    void sendToServer(const NetworkPackage& package,
+        const ENetworkReliability reliability = eNetworkReliability_ReliableOrdered, const ENetworkPriority priority = eNetworkPriority_High);
     void broadcast(const NetworkPackage& package, const bool ignoreSelf = true, 
         const ENetworkReliability reliability = eNetworkReliability_ReliableOrdered, const ENetworkPriority priority = eNetworkPriority_High);
 
     bool IsHost() const;
     NetworkID getNetworkId() const;
-
+    
     // Normal = 1 / 30s
     // Fastplay = 1 / 60s
     void setSyncTimeout(float seconds);
@@ -101,7 +103,7 @@ public:
     he::event1<bool, NetworkPackage&> PacketReceived; // return true if you handled the package
 
 private:
-    void clientConnected(const NetworkID& id, const std::string& adress);
+    void clientConnected(const NetworkID& id, const he::String& adress);
     void clientDisconnected(const NetworkID& id);
 
     float m_Sleep, m_SleepTimout;
@@ -113,6 +115,7 @@ private:
     RakNet::NetworkIDManager* m_NetworkIdManager;
 
     uint8 m_MaxConnections;
+    NetworkID m_ServerID;
 
     NetworkPackage m_NetworkPackage;
 

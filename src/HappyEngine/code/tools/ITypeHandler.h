@@ -35,8 +35,8 @@ public:
 
 	virtual ~ITypeHandler() {}
 
-	virtual bool parse(const std::string& values, boost::any& pValueToAssign) const = 0;
-	virtual std::string getType() const = 0;
+	virtual bool parse(const he::String& values, boost::any& pValueToAssign) const = 0;
+	virtual he::String getType() const = 0;
 };
 
 } } //end namespace

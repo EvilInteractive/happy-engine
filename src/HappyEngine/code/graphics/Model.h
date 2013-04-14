@@ -44,8 +44,8 @@ public:
     void addMesh(const ObjectHandle& handle);
     size_t getNumMeshes() const;
     ModelMesh* instantiateMesh(uint32 index) const;
-    ModelMesh* instantiateMesh(const std::string& name) const;
-    Model* instantiateMeshesWithPrefix(const std::string& prefix) const;
+    ModelMesh* instantiateMesh(const he::String& name) const;
+    Model* instantiateMeshesWithPrefix(const he::String& prefix) const;
 
     he::PrimitiveList<ModelMesh*>::const_iterator cbegin() const;
     he::PrimitiveList<ModelMesh*>::const_iterator cend() const;
@@ -58,7 +58,7 @@ public:
 private:
 
     event0<void> m_LoadedCallback;
-    boost::mutex m_LoadedMutex;
+    he::Mutex m_LoadedMutex;
 
     he::PrimitiveList<ModelMesh*> m_Meshes;
     bool m_IsLoaded;

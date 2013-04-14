@@ -55,9 +55,11 @@ public:
     vec2 getSize() const;
     RectF getCenter() const;
     char getFlags() const;
+    bool isRendered() const;
 
     /* SETTERS */
     void setCenter(const RectF& center);
+    void setRendered(bool rendered);
 
 private:
 

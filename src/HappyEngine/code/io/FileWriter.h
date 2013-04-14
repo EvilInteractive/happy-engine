@@ -32,7 +32,7 @@ public:
     void close();
 
     FileWriter& operator<<(const char* const str);
-    FileWriter& operator<<(const std::string& str);
+    FileWriter& operator<<(const he::String& str);
 
     FileWriter& operator<<(const wchar_t* const str);
     FileWriter& operator<<(const std::wstring& str);

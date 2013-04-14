@@ -26,7 +26,7 @@ namespace he {
 class Polygon;
 namespace gfx {
 
-class Mesh2D
+class HAPPY_ENTRY Mesh2D
 {
 public:
 
@@ -47,6 +47,7 @@ public:
     const mat44& getWorldMatrix() const;
     const he::PrimitiveList<vec2>& getVertices() const;
     const he::PrimitiveList<uint32>& getIndices() const;
+    bool hasBuffer() const { return m_HasBuffer; }
 
     /* SETTERS */
     void setWorldMatrix(const mat44& mat);
@@ -68,6 +69,7 @@ private:
     eventCallback1<void, GLContext*> m_ContextRemovedHandler;
 
     bool m_StaticDraw;
+    bool m_HasBuffer;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Mesh2D(const Mesh2D&);

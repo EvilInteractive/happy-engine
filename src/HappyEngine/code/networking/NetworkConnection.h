@@ -33,7 +33,7 @@ public:
     // copy and assignment: OK
 
     NetworkID m_NetworkId;
-    std::string m_SystemAdress;
+    he::String m_SystemAdress;
 };
 
 } } //end namespace

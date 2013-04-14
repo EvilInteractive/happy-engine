@@ -26,6 +26,7 @@
 #include "InstancingManager.h"
 #include "InstancingController.h"
 #include "DynamicBuffer.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
@@ -55,7 +56,7 @@ void InstancedModelComponent::init( Entity* parent )
     setController(m_ControllerKey);
 }
 
-void InstancedModelComponent::setController( const std::string& key )
+void InstancedModelComponent::setController( const he::String& key )
 {
     if (m_ControllerKey != "")
     {
@@ -80,7 +81,7 @@ void InstancedModelComponent::setController( const std::string& key )
     }
 }
 
-const std::string& InstancedModelComponent::getControllerKey() const
+const he::String& InstancedModelComponent::getControllerKey() const
 {
     return m_ControllerKey;
 }
@@ -88,6 +89,21 @@ const std::string& InstancedModelComponent::getControllerKey() const
 void InstancedModelComponent::fillInstancingBuffer( gfx::DynamicBuffer& buffer ) const
 {
     buffer.setValue(0, getWorldMatrix());
+}
+
+void InstancedModelComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool InstancedModelComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool InstancedModelComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 

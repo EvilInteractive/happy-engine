@@ -33,7 +33,8 @@ Mesh2D::Mesh2D(bool staticDraw) :
     m_WorldMatrix(mat44::Identity),
     m_ContextCreatedHandler(boost::bind(&Mesh2D::initVao, this, _1)),
     m_ContextRemovedHandler(boost::bind(&Mesh2D::destroyVao, this, _1)),
-    m_StaticDraw(staticDraw)
+    m_StaticDraw(staticDraw),
+    m_HasBuffer(false)
 {
     glGenBuffers(1, &m_VBOID);
     glGenBuffers(1, &m_IBOID);
@@ -95,11 +96,13 @@ Mesh2D::~Mesh2D()
 void Mesh2D::addVertex(const vec2& point)
 {
     m_Polygon->addPoint(point);
+    m_HasBuffer = false;
 }
 
 void Mesh2D::clear()
 {
     m_Polygon->clear();
+    m_HasBuffer = false;
 }
 
 bool Mesh2D::triangulate()
@@ -133,6 +136,8 @@ void Mesh2D::createBuffer(bool outline)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBOID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Polygon->getIndexCount() * sizeof(uint32), &m_Polygon->getIndices()[0], drawType);
+
+    m_HasBuffer = true;
 }
 
 /* GETTERS */

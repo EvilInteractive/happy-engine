@@ -26,6 +26,7 @@
 #include "IMouse.h"
 
 #include "OpenGL.h"
+#include <SFML/Window.hpp>
 
 #ifdef HE_WINDOWS
 #include <windows.h>
@@ -86,6 +87,10 @@ void Window::create(Window* parent)
     settings.antialiasingLevel = 0;
     settings.majorVersion = 3;
     settings.minorVersion = 2;
+#if defined(DEBUG) | defined(_DEBUG)
+    settings.debug = true;
+#endif
+    settings.compatibility = false;
     if (m_Parent == nullptr)
     {
         m_Window->create(sf::VideoMode(m_WindowRect.width, m_WindowRect.height, 32), m_Titel, 
@@ -224,7 +229,7 @@ he::uint32 Window::getWindowHeight() const
     return m_Window->getSize().y;
 }
 
-void Window::setWindowTitle( const std::string& caption )
+void Window::setWindowTitle( const he::String& caption )
 {
     m_Window->setTitle(caption);
     m_Titel = caption;
@@ -287,6 +292,29 @@ void Window::setResizable( bool resizable )
 void Window::setMousePosition( const vec2& pos )
 {
     sf::Mouse::setPosition(sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y)), *m_Window);
+}
+
+void Window::addViewAtBegin( const ObjectHandle& view )
+{
+    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
+    {
+        m_Views.insert(view, 0);
+    }
+}
+void Window::addViewAtEnd( const ObjectHandle& view )
+{
+    HE_IF_ASSERT(!m_Views.contains(view), "View already attached to window!")
+    {
+        m_Views.add(view);
+    }
+}
+
+void Window::removeView( const ObjectHandle& view )
+{
+    HE_IF_ASSERT(m_Views.contains(view), "View not attached to window!")
+    {
+        m_Views.remove(view);
+    }
 }
 
 #ifdef HE_WINDOWS
@@ -478,6 +506,11 @@ void Window::setCursor( const io::MouseCursor cursor )
     
 void Window::setCursor( const io::MouseCursor /*cursor*/ )
 {
+}
+
+he::gfx::NativeWindowHandle Window::getNativeHandle() const
+{
+    return m_Window->getSystemHandle();
 }
 
 #endif

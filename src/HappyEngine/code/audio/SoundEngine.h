@@ -60,8 +60,8 @@ public:
     void tick(float dTime);
     void deleteAllSounds();
 
-    Sound2D* loadSound2D(const std::string& path, bool stream = false);
-    Sound3D* loadSound3D(const std::string& path, bool stream = false);
+    Sound2D* loadSound2D(const he::String& path, bool stream = false);
+    Sound3D* loadSound3D(const he::String& path, bool stream = false);
 
     void playSound(ISound* pSound, bool forceRestart = false);
     void stopSound(ISound* pSound);

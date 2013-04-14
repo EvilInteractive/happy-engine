@@ -45,9 +45,9 @@ void Simple2DEffect::load()
     layout.addElement(ShaderLayoutElement(0, "inPosition"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<std::string> shaderOutputs;
+    he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
     const bool shaderInited(m_Shader->initFromFile(folder + "2D/simple2DShader.vert", 
                                               folder + "2D/simple2DShader.frag", layout, shaderOutputs)); shaderInited;
     HE_ASSERT(shaderInited == true, "simple2DShader init failed");

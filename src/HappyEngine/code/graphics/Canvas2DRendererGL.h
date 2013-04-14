@@ -38,6 +38,7 @@ namespace gfx {
     class Simple2DTextureEffect;
     class Simple2DFontEffect;
     class NinePatchEffect;
+    class Mesh2D;
 
 class Canvas2DRendererGL
 {
@@ -49,10 +50,7 @@ public:
 
     /* GENERAL */
     void init();
-
     void resize();
-
-    /* GETTERS */
 
     /* SETTERS */
     void setColor(const Color& col);
@@ -60,12 +58,23 @@ public:
     /* DRAW */
     void fillText(const he::gui::Text& text, const vec2& pos);
     void drawImage( const Texture2D* tex2D, const vec2& pos,
-                    const vec2& newDimensions = vec2(0.0f,0.0f),
-                    const RectI regionToDraw = RectI(0,0,0,0));
+                    const vec2& newDimensions = vec2(),
+                    const RectI regionToDraw = RectI());
     void drawSprite(const gui::Sprite* sprite, const vec2& pos,
-                    const vec2& size = vec2(0.0f,0.0f));
+                    const vec2& size = vec2());
+    void blitImage( const Texture2D* tex2D, const vec2& pos,
+                    bool useBlending = true,
+                    const vec2& newDimensions = vec2(),
+                    const RectI regionToDraw = RectI());
+    void strokeShape(Mesh2D* const shape);
+    void fillShape(Mesh2D* const shape);
+    void strokeRect(const RectI& rect);
+    void fillRect(const RectI& rect);
+    void drawLine(const vec2& p1, const vec2& p2);
 
 private:
+
+    /* EXTRA */
     float addTextToTextBuffer(const char* const buffer,
                               const size_t count,
                               const vec2& pos,
@@ -90,8 +99,6 @@ private:
 
     Color m_Color;
 
-    bool m_SurfaceDirty;
-
     Canvas2DBuffer* m_CanvasBuffer;
 
     ModelMesh* m_TextureQuad;
@@ -101,6 +108,8 @@ private:
     PrimitiveList<VertexText> m_CharVertexBuffer;
     PrimitiveList<uint32> m_CharIndexBuffer;
     ModelMesh* m_DynamicFontMesh;
+
+    Mesh2D* m_DynamicShapeMesh;
     
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2DRendererGL(const Canvas2DRendererGL&);

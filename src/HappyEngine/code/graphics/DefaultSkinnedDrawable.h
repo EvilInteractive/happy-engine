@@ -28,7 +28,7 @@
 namespace he {
 namespace gfx {
 
-class DefaultSkinnedDrawable : public SkinnedDrawable
+class HAPPY_ENTRY DefaultSkinnedDrawable : public SkinnedDrawable
 {
 public:
     DefaultSkinnedDrawable();

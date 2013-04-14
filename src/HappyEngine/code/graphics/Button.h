@@ -64,7 +64,7 @@ public:
 
     /* GENERAL */
     virtual void tick();
-    virtual void draw2D(gfx::Canvas2D* renderer);
+    virtual void draw2D(gui::Canvas2D* renderer);
 
     /* SETTERS */
     virtual void setSpriteSheet(const ObjectHandle& spriteSheet);
@@ -77,7 +77,7 @@ public:
     virtual void setPosition(const vec2& centerPos);
     virtual void setSize(const vec2& size);
     virtual void setType(const TYPE& type);
-    virtual void setText(const std::string& text, uint16 fontSize = 12);
+    virtual void setText(const he::String& text, uint16 fontSize = 12);
     virtual void setColors(const Color& normal, const Color& hoover, const Color& down, const Color& disabled, const Color& border);
 
     virtual const gui::Text& getText() const { return m_Text; }
@@ -94,8 +94,8 @@ public:
 protected:
 
     /* EXTRA */
-    virtual void drawColor(gfx::Canvas2D* renderer);
-    virtual void drawSprites(gfx::Canvas2D* renderer);
+    virtual void drawColor(gui::Canvas2D* renderer);
+    virtual void drawSprites(gui::Canvas2D* renderer);
     virtual void drawSpriteSheet();
 
     /* CALLBACK HANDLERS */

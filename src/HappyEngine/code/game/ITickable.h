@@ -24,7 +24,7 @@
 namespace he {
 namespace ge {
 
-class ITickable
+class HAPPY_ENTRY ITickable
 {
 public:
     virtual ~ITickable() {}

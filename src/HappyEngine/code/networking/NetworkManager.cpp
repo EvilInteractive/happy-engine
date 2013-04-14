@@ -76,10 +76,11 @@ void NetworkManager::host(uint16 port)
         HE_INFO("Net: Starting server @ %s:%d...", "localhost", port);
 
         m_ConnectionType = ConnectionType_Host;
+
     }
 }
 
-void NetworkManager::join(const std::string& ip, uint16 port)
+void NetworkManager::join(const he::String& ip, uint16 port)
 {
     HE_IF_ASSERT(m_RakPeer == nullptr, "Call host or join only once! Or call disconnect first!")
     {
@@ -103,6 +104,7 @@ void NetworkManager::disconnect()
 {
     HE_IF_ASSERT(isConnected(), "Already disconnected or never had a connect attempt!")
     {
+        m_ServerID = UNASSIGNED_NETWORKID;
         m_RakPeer->Shutdown(100, 0);
         RakNet::RakPeerInterface::DestroyInstance(m_RakPeer);
         m_RakPeer = nullptr;
@@ -114,7 +116,7 @@ void NetworkManager::clientDisconnected( const NetworkID& id )
     m_Connections.erase(id);
     ClientDisconnected(id);
 }
-void NetworkManager::clientConnected( const NetworkID& id, const std::string& adress )
+void NetworkManager::clientConnected( const NetworkID& id, const he::String& adress )
 {
     NetworkConnection connection;
     connection.m_NetworkId = id;
@@ -150,6 +152,7 @@ void NetworkManager::tick( float dTime )
                 break;
             case ID_CONNECTION_REQUEST_ACCEPTED: // client
                 HE_INFO("Net: Connection accepted!");
+                m_ServerID = packet->guid;
                 ConnectionSuccessful();
                 break;
             case ID_NEW_INCOMING_CONNECTION: // server
@@ -197,12 +200,16 @@ void NetworkManager::tick( float dTime )
                     }*/
                 }
                 break;
-            case ID_USER_PACKET_ENUM:
+            default:
                 {
-                    m_NetworkPackage.init(packet->data, packet->length, packet->guid);
-                    const bool eaten(PacketReceived(m_NetworkPackage));
-                    HE_ASSERT(eaten == true, "Unhandled packet received!"); eaten;
-                    m_NetworkPackage.finalise();
+                    if (packet->data[0] >= ID_USER_PACKET_ENUM)
+                    {
+                        HE_INFO("Received packet %d form %s", packet->data[0] - ID_USER_PACKET_ENUM, packet->guid.ToString());
+                        m_NetworkPackage.init(packet->data, packet->length, packet->guid);
+                        const bool eaten(PacketReceived(m_NetworkPackage));
+                        HE_ASSERT(eaten == true, "Unhandled packet received! %d", packet->data[0] - ID_USER_PACKET_ENUM); eaten;
+                        m_NetworkPackage.finalise();
+                    }
                 }
                 break;
             }
@@ -261,6 +268,13 @@ void NetworkManager::send( const NetworkPackage& package, const NetworkID& to,
         checked_numcast<PacketPriority>(priority), checked_numcast<PacketReliability>(reliability), 0, to, false);
 }
 
+void NetworkManager::sendToServer( const NetworkPackage& package, const ENetworkReliability reliability /*= eNetworkReliability_ReliableOrdered*/, const ENetworkPriority priority /*= eNetworkPriority_High*/ )
+{
+    HE_ASSERT(IsHost() == false, "Server can't send to server!");
+    HE_ASSERT(m_ServerID != UNASSIGNED_NETWORKID, "Use of unassigned server id!");
+    m_RakPeer->Send(static_cast<const char*>(package.getData()), package.getByteCount(), 
+        checked_numcast<PacketPriority>(priority), checked_numcast<PacketReliability>(reliability), 0, m_ServerID, false);
+}
 void NetworkManager::broadcast( const NetworkPackage& package, const bool ignoreSelf, 
     const ENetworkReliability reliability, const ENetworkPriority priority )
 {
@@ -268,6 +282,8 @@ void NetworkManager::broadcast( const NetworkPackage& package, const bool ignore
         checked_numcast<PacketPriority>(priority), checked_numcast<PacketReliability>(reliability), 
         0, ignoreSelf?getNetworkId():UNASSIGNED_NETWORKID, true);
 }
+
+
 
 
 } } //end namespace

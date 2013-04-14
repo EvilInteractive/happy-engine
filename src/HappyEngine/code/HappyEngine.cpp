@@ -34,20 +34,18 @@
 #include "Window.h"
 #include "Gui.h"
 #include "Sprite.h"
+#include "PluginLoader.h"
+#include "Timer.h"
 
 namespace he {
-
-HappyEngine* HappyEngine::s_HappyEngine = nullptr;
-Random HappyEngine::s_Random;
-
-
+    
 HappyEngine::HappyEngine(): m_Game(nullptr), m_Quit(false),
                             m_GraphicsEngine(nullptr), m_ControlsManager(nullptr),
                             m_PhysicsEngine(nullptr), m_ContentManager(nullptr),
                             m_NetworkManager(nullptr),
                             m_Console(nullptr), m_SoundEngine(nullptr), m_SubEngines(0),
                             m_ShowProfiler(false), m_GameLoading(true),
-                            m_RootDir("./"), m_Gui(nullptr)
+                            m_RootDir("./"), m_Gui(nullptr), m_PluginLoader(nullptr)
 {
 }
 HappyEngine::~HappyEngine()
@@ -65,9 +63,6 @@ void HappyEngine::dispose()
     HAPPYENGINE->cleanup();
 
     StaticDataManager::destroy();
-
-    delete s_HappyEngine;
-    s_HappyEngine = nullptr;
 }
 void HappyEngine::cleanup()
 {  
@@ -79,13 +74,15 @@ void HappyEngine::cleanup()
         m_GraphicsEngine->destroy();
 
     //dispose/delete all sub engines here
-    delete m_Gui;
-    m_Gui = nullptr;
     delete m_Console;
     m_Console = nullptr;
+    m_Game = nullptr;
+    delete m_Gui;
+    m_Gui = nullptr;
+    delete m_PluginLoader;
+    m_PluginLoader = nullptr;
     delete m_ContentManager;
     m_ContentManager = nullptr;
-    m_Game = nullptr;
     delete m_SoundEngine;
     m_SoundEngine = nullptr;
     delete m_ControlsManager;
@@ -99,11 +96,10 @@ void HappyEngine::cleanup()
     delete m_GraphicsEngine;
     m_GraphicsEngine = nullptr;
 }
-void HappyEngine::init(int subengines)
+void HappyEngine::init(const int subengines, const he::Path& dataPath)
 {
+    Path::init(dataPath);
     StaticDataManager::init();
-    if (s_HappyEngine == nullptr)
-        s_HappyEngine = NEW HappyEngine();
     HAPPYENGINE->initSubEngines(subengines);
 }
 void HappyEngine::initSubEngines(int subengines = SubEngine_All)
@@ -129,7 +125,9 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
     }
 
     if (subengines & (SubEngine_Graphics | SubEngine_Physics | SubEngine_Audio))
+    {
         m_ContentManager = NEW ct::ContentManager();
+    }
     
     if (subengines & SubEngine_Physics)
     {
@@ -146,6 +144,8 @@ void HappyEngine::initSubEngines(int subengines = SubEngine_All)
         m_SoundEngine = NEW sfx::SoundEngine();
         m_SoundEngine->initialize();
     }
+
+    m_PluginLoader = NEW pl::PluginLoader();
 }
 
 void HappyEngine::start(ge::Game* game)
@@ -183,9 +183,6 @@ void HappyEngine::start(ge::Game* game)
 #endif
     m_Game = game;
   
-    // Init Game
-    game->init();
-
     // Load stuff
     if (m_SubEngines & SubEngine_Graphics)
     {
@@ -197,11 +194,11 @@ void HappyEngine::start(ge::Game* game)
 #endif
     }
     
-    m_Game->load();
+    m_Game->init();
     
     if (m_SubEngines & SubEngine_Audio)
     {
-        m_AudioThread = boost::thread(&HappyEngine::audioLoop, this);
+        m_AudioThread.startThread(boost::bind(&HappyEngine::audioLoop, this), "Audio Thread");
     }
 
     m_PrevTime = boost::chrono::high_resolution_clock::now();
@@ -231,7 +228,7 @@ void HappyEngine::loop()
         }
         else
         {
-            boost::this_thread::sleep(boost::posix_time::millisec(5));
+            he::Thread::sleep(5);
         }
     }
 #ifdef ENABLE_PROFILING
@@ -272,8 +269,9 @@ void HappyEngine::updateLoop(float dTime)
 
     if (m_Gui != nullptr)
     {
-        m_Gui->Sprites->tick(dTime);
-        m_Gui->Sprites->glThreadInvoke();
+        gui::SpriteCreator* const cr(m_Gui->getSpriteCreator());
+        cr->tick(dTime);
+        cr->glThreadInvoke();
     }
 
     if (m_SubEngines & SubEngine_Physics)
@@ -289,30 +287,19 @@ void HappyEngine::drawLoop()
     GRAPHICS->draw();
 }
 
-HappyEngine* HappyEngine::getPointer()
-{
-    return s_HappyEngine;
-}
-
 void HappyEngine::audioLoop()
 {
-    boost::posix_time::milliseconds waitTime = boost::posix_time::milliseconds(1);
-    boost::chrono::high_resolution_clock::time_point prevTime(boost::chrono::high_resolution_clock::now());
-    float dTime(0);
+    Timer timer;
 
+    timer.start();
     while (m_Quit == false)
     {
-        boost::chrono::high_resolution_clock::duration elapsedTime(boost::chrono::high_resolution_clock::now() - prevTime);
-        prevTime = boost::chrono::high_resolution_clock::now();
-        dTime += (elapsedTime.count() / static_cast<float>(boost::nano::den));
+        const float dTime(timer.getElapsedSecondsF());
+        timer.restart();
 
-        if (dTime >= (1 / 60.0f))
-        {
-            m_SoundEngine->tick(dTime);
-            dTime = 0;
-        }
-        else
-            boost::this_thread::sleep(waitTime);
+        m_SoundEngine->tick(dTime);
+
+        he::Thread::sleep(33);
     }
 }
 

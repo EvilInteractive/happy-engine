@@ -30,8 +30,8 @@ namespace px {
     class PhysicsCharacterController;
 }
 namespace ge {
-
-class CharacterPhysicsComponent : public EntityComponent, public Object3D, public ITickable
+struct EntityComponentDesc;
+class HAPPY_ENTRY CharacterPhysicsComponent : public EntityComponent, public Object3D, public ITickable
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
@@ -45,6 +45,15 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const he::FixedString& getComponentID() const { return HEFS::strCharacterPhysicsComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
      
     //////////////////////////////////////////////////////////////////////////

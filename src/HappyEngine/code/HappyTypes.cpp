@@ -61,7 +61,7 @@ Guid& Guid::operator=( const Guid& other )
     return *this;
 }
 
-std::string Guid::toString() const
+he::String Guid::toString() const
 {
     char buff[37];
     sprintf(buff, "%08x-%04x-%04x-%04x-%04x%08x", m_Data1, m_Data2, m_Data3, m_Data4, m_Data5, m_Data6);

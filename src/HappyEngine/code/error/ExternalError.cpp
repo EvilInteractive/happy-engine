@@ -60,7 +60,7 @@ void HappyPhysicsErrorCallback::reportError(physx::PxErrorCode::Enum code, const
     HE_WARNING(stream.str().c_str());
 }
 
-void checkFboStatus( const std::string& name )
+void checkFboStatus( const he::String& name )
 {
     GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (err != GL_FRAMEBUFFER_COMPLETE)
@@ -78,25 +78,6 @@ void checkFboStatus( const std::string& name )
         case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:       HE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");       break;
         default:                                            HE_ERROR("GL_UNKOWN_ERROR");                               break;
         }
-    }
-}
-
-void glHandleError( GLenum err )
-{
-    if (err != GL_NO_ERROR)
-    {
-        HE_ERROR("GL: %s", (char*)glewGetErrorString(err));
-    }
-}
-
-void glCheckForErrors( bool postErrors /*= true*/ )
-{
-    GLenum err = glGetError();
-    while (err != GL_NO_ERROR)
-    {
-        if (postErrors)
-            glHandleError(err);
-        err = glGetError();
     }
 }
 

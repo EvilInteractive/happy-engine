@@ -31,9 +31,10 @@ namespace io {
 }
 namespace ge {
 class Entity;
-
-class EntityComponent : public IObject3D
+class Property;
+class HAPPY_ENTRY EntityComponent : public IObject3D
 {
+DECLARE_OBJECT(EntityComponent)
 friend class Entity;
 public:
     virtual ~EntityComponent() {}
@@ -42,6 +43,13 @@ public:
 
     virtual void activate() {}
     virtual void deactivate() {}
+
+    virtual const he::FixedString& getComponentID() const = 0;
+
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    
+    virtual Entity* getEntityParent();
 
     //////////////////////////////////////////////////////////////////////////
     // IObject3D

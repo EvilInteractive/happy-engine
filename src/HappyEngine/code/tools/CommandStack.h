@@ -35,8 +35,8 @@ public:
     CommandStack();
     virtual ~CommandStack();
 
-    void beginTransaction(const std::string& name);
-    void endTransaction(const std::string& rename = "");
+    void beginTransaction(const he::String& name);
+    void endTransaction(const he::String& rename = "");
 
     void pushCommand(const Command& command);
     void undo();

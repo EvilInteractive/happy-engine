@@ -23,6 +23,7 @@
 
 #include "Texture2D.h"
 #include "TextureCube.h"
+#include "ExternalError.h"
 
 namespace he {
 namespace gfx {
@@ -48,7 +49,7 @@ Shader::~Shader()
     glDeleteShader(m_FsId);
     glDeleteProgram(m_Id);
 }
-bool validateShader(GLuint shaderID, const std::string& file)
+bool validateShader(GLuint shaderID, const he::String& file)
 {
     GLint compiled;
     glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
@@ -98,23 +99,23 @@ bool validateProgram(GLuint programID)
 
     return succes;
 }
-bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout)
 {
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), he::ObjectList<std::string>());
+    return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), he::ObjectList<he::String>());
 }
-bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<std::string>& outputs)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const he::ObjectList<he::String>& outputs)
 {
-    return initFromFile(vsPath, fsPath, shaderLayout, std::set<std::string>(), outputs);
+    return initFromFile(vsPath, fsPath, shaderLayout, std::set<he::String>(), outputs);
 }
-bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, const ShaderLayout& shaderLayout, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs)
+bool Shader::initFromFile(const he::String& vsPath, const he::String& fsPath, const ShaderLayout& shaderLayout, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
 {
     HE_ASSERT(m_Id != -1, "no need to init twice");
 
     // Read VS and FS files --------------------------->
     io::FileReader reader;
 
-    std::string strVS;
-    std::string strFS;
+    he::String strVS;
+    he::String strFS;
     if (reader.open(vsPath, io::FileReader::OpenType_ASCII))
     {
         strVS = reader.readToEnd();
@@ -140,15 +141,15 @@ bool Shader::initFromFile(const std::string& vsPath, const std::string& fsPath, 
     return initFromMem(strVS, strFS, shaderLayout, vsPath, fsPath, defines, outputs);
 }
 
-bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName)
 {
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), he::ObjectList<std::string>());
+    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<he::String>(), he::ObjectList<he::String>());
 }
-bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName , const he::ObjectList<std::string>& outputs)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName , const he::ObjectList<he::String>& outputs)
 {
-    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<std::string>(), outputs);
+    return initFromMem(vs, fs, shaderLayout, debugVertName, debugFragName, std::set<he::String>(), outputs);
 }
-bool Shader::initFromMem( const std::string& vs, const std::string& fs, const ShaderLayout& shaderLayout, const std::string& debugVertName, const std::string& debugFragName, const std::set<std::string>& defines, const he::ObjectList<std::string>& outputs)
+bool Shader::initFromMem( const he::String& vs, const he::String& fs, const ShaderLayout& shaderLayout, const he::String& debugVertName, const he::String& debugFragName, const std::set<he::String>& defines, const he::ObjectList<he::String>& outputs)
 {
     bool succes = true;
 
@@ -157,8 +158,8 @@ bool Shader::initFromMem( const std::string& vs, const std::string& fs, const Sh
     m_VertShaderName = debugVertName;
     m_FragShaderName = debugFragName;
 
-    std::string vsPost = ct::details::ShaderPreProcessor::process(vs, defines);
-    std::string fsPost = ct::details::ShaderPreProcessor::process(fs, defines);
+    he::String vsPost = ct::details::ShaderPreProcessor::process(vs, defines);
+    he::String fsPost = ct::details::ShaderPreProcessor::process(fs, defines);
 
     m_VsId = glCreateShader(GL_VERTEX_SHADER);
     m_FsId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -196,7 +197,6 @@ bool Shader::initFromMem( const std::string& vs, const std::string& fs, const Sh
         HE_ASSERT(glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()) == (GLint)e.getElementIndex(), 
             "Attribute (%s) bind failed! requested:%d - got:%d", e.getShaderVariableName().c_str(), e.getElementIndex(), glGetAttribLocation(m_Id, e.getShaderVariableName().c_str()));
     });
-    err::glCheckForErrors();
     #endif
 
     succes = succes && validateProgram(m_Id);
@@ -213,7 +213,7 @@ void Shader::bind()
     }
 }
 
-uint32 Shader::getBufferId( const std::string& name ) const
+uint32 Shader::getBufferId( const he::String& name ) const
 {
     uint32 loc(glGetUniformBlockIndex(m_Id, name.c_str()));
     if (loc == -1)
@@ -224,7 +224,7 @@ uint32 Shader::getBufferId( const std::string& name ) const
     return loc;
 }
 
-uint32 Shader::getShaderVarId(const std::string& name) const
+uint32 Shader::getShaderVarId(const he::String& name) const
 {
     uint32 loc(glGetUniformLocation(m_Id, name.c_str()));
     if (loc == -1)
@@ -234,9 +234,9 @@ uint32 Shader::getShaderVarId(const std::string& name) const
     }
     return loc;
 }
-uint32 Shader::getShaderSamplerId(const std::string& name)
+uint32 Shader::getShaderSamplerId(const he::String& name)
 {
-    std::map<std::string, uint32>::const_iterator loc(m_SamplerLocationMap.find(name));
+    std::map<he::String, uint32>::const_iterator loc(m_SamplerLocationMap.find(name));
     if (loc != m_SamplerLocationMap.cend())
     {
         return loc->second;

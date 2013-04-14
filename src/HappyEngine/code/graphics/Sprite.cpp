@@ -128,11 +128,20 @@ char Sprite::getFlags() const
 {
     return m_Flags;
 }
+bool Sprite::isRendered() const
+{
+    return m_Rendered;
+}
 
 /* SETTERS */
 void Sprite::setCenter(const RectF& center)
 {
     m_Center = center;
+}
+
+void Sprite::setRendered(bool rendered)
+{
+    m_Rendered = rendered;
 }
 
 }} //end namespace

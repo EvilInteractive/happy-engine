@@ -26,6 +26,9 @@
 
 #include "BinaryVisitor.h"
 
+#include <PxPhysics.h>
+#include <geometry/PxConvexMesh.h>
+
 
 namespace he {
 namespace px {
@@ -53,7 +56,7 @@ void PhysicsConvexMesh::load( PhysicsBinaryStream& stream )
     uint8 numConvex(0);
     visitor->visit(numConvex);
 
-    std::string name;
+    he::String name;
     for (uint8 i(0); i < numConvex; ++i)
     {
         visitor->visit(name);

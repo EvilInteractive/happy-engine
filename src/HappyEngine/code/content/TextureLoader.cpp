@@ -53,7 +53,7 @@ TextureLoader::~TextureLoader()
 }
 
 
-inline void handleILError(const std::string& file)
+inline void handleILError(const he::String& file)
 {
     ILenum err = ilGetError();
     while (err != IL_NO_ERROR)
@@ -87,7 +87,8 @@ void TextureLoader::tick(float dTime) //checks for new load operations, if true 
         if (m_TextureLoadQueue.empty() == false)
         {
             m_isLoadThreadRunning = true; //must be here else it could happen that the load thread starts twice
-            m_TextureLoadThread = boost::thread(boost::bind(&TextureLoader::TextureLoadThread, this));
+            m_TextureLoadThread.join();
+            m_TextureLoadThread.startThread(boost::bind(&TextureLoader::TextureLoadThread, this), "TextureLoadThread");
         }
     }
 }
@@ -95,7 +96,7 @@ void TextureLoader::glThreadInvoke()  //needed for all of the gl operations
 {
     while (m_TextureInvokeQueue.empty() == false)
     {
-        m_TextureInvokeQueueMutex.lock();
+        m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
         TextureLoadData data(m_TextureInvokeQueue.front());
         m_TextureInvokeQueue.pop();
         m_TextureInvokeQueueMutex.unlock();
@@ -124,7 +125,7 @@ const gfx::Texture2D* TextureLoader::asyncMakeTexture2D(const Color& color)
         data.m_Color = color;
         data.m_Tex = handle;
 
-        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
@@ -160,28 +161,28 @@ const gfx::Texture2D* TextureLoader::makeTexture2D(const Color& color)
         return FACTORY_2D->get(handle);
     }
 }
-const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const std::string& path)
+const gfx::Texture2D* TextureLoader::asyncLoadTexture2D(const he::String& path)
 {
     ResourceFactory<gfx::Texture2D>* factory(FACTORY_2D);
     return factory->get(asyncLoadTexture(path, factory));
 }
-const gfx::Texture2D* TextureLoader::loadTexture2D(const std::string& path)
+const gfx::Texture2D* TextureLoader::loadTexture2D(const he::String& path)
 {
     ResourceFactory<gfx::Texture2D>* factory(FACTORY_2D);
     return factory->get(loadTexture(path, factory));
 }
-const gfx::TextureCube* TextureLoader::asyncLoadTextureCube(const std::string& path)
+const gfx::TextureCube* TextureLoader::asyncLoadTextureCube(const he::String& path)
 {
     ResourceFactory<gfx::TextureCube>* factory(FACTORY_CUBE);
     return factory->get(asyncLoadTexture(path, factory));
 }
-const gfx::TextureCube* TextureLoader::loadTextureCube(const std::string& path)
+const gfx::TextureCube* TextureLoader::loadTextureCube(const he::String& path)
 {
     ResourceFactory<gfx::TextureCube>* factory(FACTORY_CUBE);
     return factory->get(loadTexture(path, factory));
 }
 
-he::ObjectHandle TextureLoader::loadTexture( const std::string& path, IResourceFactory* factory )
+he::ObjectHandle TextureLoader::loadTexture( const he::String& path, IResourceFactory* factory )
 {
     ObjectHandle handle;
     if (m_AssetContainer.isAssetPresent(path, handle) && factory->isAlive(handle))
@@ -204,7 +205,7 @@ he::ObjectHandle TextureLoader::loadTexture( const std::string& path, IResourceF
     }
     return handle;
 }
-he::ObjectHandle TextureLoader::asyncLoadTexture( const std::string& path, IResourceFactory* factory )
+he::ObjectHandle TextureLoader::asyncLoadTexture( const he::String& path, IResourceFactory* factory )
 {
     ObjectHandle handle;
     if (m_AssetContainer.isAssetPresent(path, handle) && factory->isAlive(handle))
@@ -219,7 +220,7 @@ he::ObjectHandle TextureLoader::asyncLoadTexture( const std::string& path, IReso
         data.m_Path = path;
         data.m_Tex = handle;
 
-        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         m_TextureLoadQueue.push(data);
         m_TextureLoadQueueMutex.unlock();
 
@@ -490,7 +491,7 @@ void TextureLoader::TextureLoadThread()
     HE_INFO("Texture Load thread started");
     while (m_TextureLoadQueue.empty() == false)
     {
-        m_TextureLoadQueueMutex.lock();
+        m_TextureLoadQueueMutex.lock(FILE_AND_LINE);
         TextureLoadData data(m_TextureLoadQueue.front());
         m_TextureLoadQueue.pop();
         m_TextureLoadQueueMutex.unlock();
@@ -499,7 +500,7 @@ void TextureLoader::TextureLoadThread()
         {
             if (loadData(data))
             {
-                m_TextureInvokeQueueMutex.lock();
+                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
                 m_TextureInvokeQueue.push(data);
                 m_TextureInvokeQueueMutex.unlock();
             }
@@ -508,7 +509,7 @@ void TextureLoader::TextureLoadThread()
         {
             if (makeData(data))
             {
-                m_TextureInvokeQueueMutex.lock();
+                m_TextureInvokeQueueMutex.lock(FILE_AND_LINE);
                 m_TextureInvokeQueue.push(data);
                 m_TextureInvokeQueueMutex.unlock();
             }

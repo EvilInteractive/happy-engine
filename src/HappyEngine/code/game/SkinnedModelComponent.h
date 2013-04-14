@@ -27,8 +27,9 @@
 
 namespace he {
 namespace ge {
-    
-class SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
+   
+struct EntityComponentDesc; 
+class HAPPY_ENTRY SkinnedModelComponent : public gfx::DefaultSkinnedDrawable, public EntityComponent
 {
     IMPLEMENT_IOBJECT3D_FROM(gfx::DefaultSkinnedDrawable)
 public:
@@ -47,6 +48,15 @@ public:
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* pParent);
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+
+    virtual const he::FixedString& getComponentID() const { return HEFS::strSkinnedModelComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
 
@@ -61,7 +71,7 @@ public:
     void setModelMesh(const ObjectHandle& modelHandle);
     void setMaterial(const ObjectHandle& material);
 
-    BoneTransform getBone(const std::string& name) const;
+    BoneTransform getBone(const he::String& name) const;
 
 protected:
     virtual void onModelLoaded() {}
@@ -73,7 +83,7 @@ private:
     const gfx::Material* m_Material;
 
     he::PrimitiveList<mat44> m_BoneTransform;
-    std::map<std::string, BoneTransform> m_Bones;
+    std::map<he::String, BoneTransform> m_Bones;
         
     Entity* m_Parent;
     

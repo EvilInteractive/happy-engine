@@ -36,7 +36,7 @@ SoundFile::SoundFile() :
 {
 }
 
-SoundFile::SoundFile(const std::string& filePath) :	m_FilePath(filePath),
+SoundFile::SoundFile(const he::String& filePath) :	m_FilePath(filePath),
                                                     m_SoundFile(nullptr),
                                                     m_NrSamples(0),
                                                     m_Samplerate(0),
@@ -55,7 +55,7 @@ bool SoundFile::open()
     close();
 
     SF_INFO fileInfo;
-    std::string fullPath(CONTENT->getContentDir().str() + "audio/" + m_FilePath);
+    he::String fullPath(CONTENT->getContentDir().str() + "audio/" + m_FilePath);
     m_SoundFile = sf_open(fullPath.c_str(), SFM_READ, &fileInfo);
 
     if (!m_SoundFile)
@@ -74,7 +74,7 @@ void SoundFile::close()
     {
         const int err(sf_close(m_SoundFile));
 
-        std::string errMsg("Can't close file: ");
+        he::String errMsg("Can't close file: ");
         errMsg += getProperties().filePath;
 
         HE_ASSERT(err == 0, errMsg.c_str()); err;

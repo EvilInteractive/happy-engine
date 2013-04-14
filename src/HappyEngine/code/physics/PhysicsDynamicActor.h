@@ -45,7 +45,7 @@ public:
     virtual void getTranslation(vec3& translation) const;
     virtual void getRotation(mat33& rotation) const;
     virtual void getPose(mat44& pose) const;
-    virtual physx::PxRigidDynamic* getInternalActor() const;
+    virtual physx::PxRigidActor* getInternalActor() const;
 
     void addShape(const IPhysicsShape* pShape, const PhysicsMaterial& material, float mass, 
                   uint32 collisionGroup = 0xffffffff, uint32 collisionAgainstGroup = 0xffffffff, 

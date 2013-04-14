@@ -23,6 +23,8 @@
 #include "GLContext.h"
 #include "BufferLayout.h"
 #include "GraphicsEngine.h"
+#include "ExternalError.h"
+#include <GL/glew.h>
 
 namespace he {
 namespace gfx {
@@ -245,10 +247,27 @@ void GL::heLineSmoothEnabled(bool enabled)
     }
 }
 
+void APIENTRY glDebugCallback(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity, GLsizei length,
+    const GLchar* message, void* /*userParam*/)
+{
+    switch (severity)
+    {
+    case GL_DEBUG_SEVERITY_HIGH_ARB: 
+        LOG(LogType_ProgrammerAssert, "GL: %.*s", length, message); break;
+    case GL_DEBUG_SEVERITY_MEDIUM_ARB: 
+        HE_ERROR("GL: %.*s", length, message); break;
+    case GL_DEBUG_SEVERITY_LOW_ARB: 
+        HE_WARNING("GL: %.*s", length, message); break;
+    default: 
+        HE_INFO("GL: %.*s", length, message);
+        break;
+    }
+}
+
 void GL::init()
 {
     glewExperimental = true;
-    err::glHandleError(glewInit());
+    glewInit();
 
     glClearDepth(1.0f);
 
@@ -260,6 +279,14 @@ void GL::init()
     glEnable(GL_CULL_FACE);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_SCISSOR_TEST);
+
+#if defined(DEBUG) || defined(_DEBUG)
+    if (glewGetContext()->__GLEW_ARB_debug_output)
+    {
+        glDebugMessageCallbackARB(glDebugCallback, nullptr);
+        glEnable(GL_DEBUG_OUTPUT);
+    }
+#endif
 
     if (glewGetContext()->__GLEW_EXT_texture_filter_anisotropic == GL_TRUE)
     {

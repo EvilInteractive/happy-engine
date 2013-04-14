@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "Sphere.h"
+#include "Ray.h"
 
 namespace he {
 
@@ -40,6 +41,31 @@ bool Sphere::intersectTest(const Sphere& other) const
 
     return false;
 }
+
+bool Sphere::intersectTest( const Ray& ray ) const
+{
+    // http://www.cs.princeton.edu/courses/archive/fall00/cs426/lectures/raycast/sld013.htm
+    bool result(false);
+    const vec3 tocenter(m_Position - ray.getOrigin());
+    const float toCenterLenSqr(lengthSqr(tocenter));
+    const float lenToCenterPP(dot(tocenter, ray.getDirection()));
+    const float radSqr(sqr(m_Radius));
+    if (toCenterLenSqr <= radSqr) // inside sphere
+    {
+        result = true;
+    }
+    else if ( lenToCenterPP >= 0) // ray points to sphere
+    {
+        const float distToChordSqr(toCenterLenSqr - sqr(lenToCenterPP));
+        if (distToChordSqr <= radSqr)
+        {
+            result = true;
+        }
+    }
+
+    return result;
+}
+
 bool Sphere::isOtherInside(const Sphere& other) const
 {
     vec3 axis(other.m_Position - m_Position);

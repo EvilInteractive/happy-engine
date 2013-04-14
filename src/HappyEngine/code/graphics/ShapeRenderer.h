@@ -37,7 +37,7 @@ class View;
 class RenderTarget;
 class IShapeDrawable;
 
-class ShapeRenderer : public IRenderer
+class HAPPY_ENTRY ShapeRenderer : public IRenderer
 {
 public:
 
@@ -65,11 +65,11 @@ private:
     void createBillboardQuad();
 
     /* DATAMEMBERS */
-    SimpleColorEffect* m_pColorEffect;
+    SimpleColorEffect* m_ColorEffect;
     
-    ModelMesh* m_pBillboardQuad;
+    ModelMesh* m_BillboardQuad;
     BufferLayout m_VertexLayoutBillboard;
-    BillboardEffect* m_pBillboardEffect;
+    BillboardEffect* m_BillboardEffect;
 
     View* m_View;
     const RenderTarget* m_RenderTarget;

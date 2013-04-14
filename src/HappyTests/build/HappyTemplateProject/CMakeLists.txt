@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 2.8)
 
 # include source files
 include (${HappyEngine_SOURCE_DIR}/HappyTests/code/Xx/CMakeLists.cmake)
-include_directories (${HappyEngine_SOURCE_DIR}/HappyTests/code/Xx)
 set (XX_SRCS ${XX_CODE_SRCS})
 
 # set compiler options
@@ -27,18 +26,13 @@ if (WIN32)
 LinkThirdParty(Xx)
 endif()
 
-# Copy thirdparty dll's
-if (WIN32)
-CopyThirdParty(${HappyEngine_SOURCE_DIR}/HappyTests/bin)
-endif()
-
 # link HappyEngine
 target_link_libraries(Xx HappyEngine)
-
 
 # setup PCH
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/PCHSupport_26.cmake)
 ADD_NATIVE_PRECOMPILED_HEADER(Xx XxPCH.h ../../code/Xx/XxPCH.cpp)
 
 # set output dir
-SET_TARGET_PROPERTIES(Xx PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/HappyTests/bin)
+SET_TARGET_PROPERTIES(Xx PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${HappyEngine_SOURCE_DIR}/bin)
+SET_TARGET_PROPERTIES(Xx PROPERTIES FOLDER "HappyTests")

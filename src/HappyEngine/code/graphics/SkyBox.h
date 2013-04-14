@@ -39,7 +39,7 @@ public:
     SkyBox();
     virtual ~SkyBox();
 
-    void load(const std::string& asset);
+    void load(const he::String& asset);
     void unload();
 
     virtual const Material* getMaterial() const { return m_Material; }

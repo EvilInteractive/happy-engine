@@ -28,7 +28,7 @@
 
 namespace he {
 
-class Random
+class HAPPY_ENTRY Random
 {
 public:
     explicit Random(uint32 seed = time(nullptr));

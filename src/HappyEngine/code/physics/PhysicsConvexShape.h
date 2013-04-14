@@ -28,13 +28,13 @@
 namespace he {
 namespace px {
 
-class PhysicsConvexShape : public IPhysicsShape
+class HAPPY_ENTRY PhysicsConvexShape : public IPhysicsShape
 {
 DECLARE_OBJECT(PhysicsConvexShape)
 public:
     PhysicsConvexShape();
     explicit PhysicsConvexShape(const ObjectHandle& convexMesh, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
-    explicit PhysicsConvexShape(const std::string& asset, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
+    explicit PhysicsConvexShape(const he::String& asset, const vec3& scale = vec3(1.0f, 1.0f, 1.0f));
     virtual ~PhysicsConvexShape();
     PhysicsConvexShape(const PhysicsConvexShape& other);
     PhysicsConvexShape& operator=(const PhysicsConvexShape& other);

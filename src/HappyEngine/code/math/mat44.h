@@ -30,7 +30,7 @@ namespace gfx {
 class ICamera;
 }
 
-class mat44
+class HAPPY_ENTRY mat44
 {
 private:
     physx::PxMat44 m_Matrix;

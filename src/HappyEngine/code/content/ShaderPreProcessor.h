@@ -31,7 +31,7 @@ namespace details {
 class ShaderPreProcessor
 {
 public:
-    static std::string process(const std::string& file, const std::set<std::string>& defines);
+    static he::String process(const he::String& file, const std::set<he::String>& defines);
 
 };
 

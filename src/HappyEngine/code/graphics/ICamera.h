@@ -28,7 +28,7 @@ class Sphere;
 
 namespace gfx {
 
-class ICamera
+class HAPPY_ENTRY ICamera
 {
 public:
     virtual ~ICamera() {}

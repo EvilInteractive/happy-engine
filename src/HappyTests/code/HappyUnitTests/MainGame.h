@@ -33,14 +33,15 @@ public:
     virtual ~MainGame();
 
     virtual void init();
-    virtual void destroy() {}
-    virtual void load();
+    virtual void destroy();
     virtual void tick(float dTime);
 
 private:
     void nodeGraphUnitTest();
     void listUnitTest();
     void guidUnitTest();
+    void mat33UnitTest();
+    void jsonUnitTest();
 
     //Disable default copy constructor and default assignment operator
     MainGame(const MainGame&);

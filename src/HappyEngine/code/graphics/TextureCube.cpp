@@ -20,6 +20,7 @@
 #include "HappyPCH.h" 
 
 #include "TextureCube.h"
+#include "ExternalError.h"
 
 namespace he {
 namespace gfx {
@@ -108,15 +109,12 @@ void TextureCube::setCompressedData( uint32 width, uint32 height, const Face& fa
         //Data
         glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mipLevel, details::getInternalTextureFormat(m_TextureFormat), 
             width, height, 0, imageSizeInBytes, data);
-#if _DEBUG
-        err::glCheckForErrors(true);
-#endif
     }
 }
 
 void TextureCube::setLoadFinished()
 {
-    m_CallbackMutex.lock();
+    m_CallbackMutex.lock(FILE_AND_LINE);
     m_IsLoadDone = true;
     Loaded();
     Loaded.clear();
@@ -126,7 +124,7 @@ void TextureCube::setLoadFinished()
 void TextureCube::callbackOnceIfLoaded( const boost::function<void()>& callback ) const
 {
     TextureCube* _this(const_cast<TextureCube*>(this));
-    _this->m_CallbackMutex.lock();
+    _this->m_CallbackMutex.lock(FILE_AND_LINE);
     if (m_IsLoadDone)
     {
         _this->m_CallbackMutex.unlock();

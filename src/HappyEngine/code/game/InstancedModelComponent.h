@@ -31,8 +31,9 @@ namespace gfx {
     class InstancingController;
 }
 namespace ge {
-    
-class InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
+  
+struct EntityComponentDesc;  
+class HAPPY_ENTRY InstancedModelComponent : public EntityComponent, public gfx::IInstancible, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
@@ -45,6 +46,15 @@ public:
     virtual void init(Entity* pParent);
 
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+
+    virtual const he::FixedString& getComponentID() const { return HEFS::strInstancedModelComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
     //////////////////////////////////////////////////////////////////////////
@@ -53,11 +63,11 @@ public:
     virtual void fillInstancingBuffer(gfx::DynamicBuffer& buffer) const;
     //////////////////////////////////////////////////////////////////////////
 
-    void setController(const std::string& key);
-    const std::string& getControllerKey() const;
+    void setController(const he::String& key);
+    const he::String& getControllerKey() const;
 
 private:
-    std::string m_ControllerKey;
+    he::String m_ControllerKey;
     uint32 m_InstanceId;
 
     Entity* m_Parent; 

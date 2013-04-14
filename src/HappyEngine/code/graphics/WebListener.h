@@ -33,7 +33,7 @@ namespace Awesomium
 }
 
 namespace he {
-namespace gfx {
+namespace gui {
     class WebView;
     class WebWindow;
 
@@ -47,15 +47,15 @@ public:
     virtual ~WebListener();
 
     /* GENERAL */
-    void addObjectCallback(const std::string& object,
-                           const std::string& method,
+    HAPPY_ENTRY void addObjectCallback(const he::String& object,
+                           const he::String& method,
                            eventCallback1<void, const Awesomium::JSArray&>& callBack);
-    void removeObjectCallback(const std::string& object,
-                              const std::string& method,
+    HAPPY_ENTRY void removeObjectCallback(const he::String& object,
+                              const he::String& method,
                               eventCallback1<void, const Awesomium::JSArray&>& callBack);
 
-    void executeFunction(const std::string& object,
-                        const std::string& method,
+    HAPPY_ENTRY void executeFunction(const he::String& object,
+                        const he::String& method,
                         const Awesomium::JSArray& args);
 
     // method handler

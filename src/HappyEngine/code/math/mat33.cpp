@@ -135,6 +135,19 @@ he::mat33 mat33::createRotation3D( const vec3& axis, float radians )
 
 }
 
+he::mat33 mat33::createRotation3D( const vec3& forward, const vec3& up, const vec3& right )
+{
+    return mat33(
+        right.x,        up.x,           forward.x,
+        right.y,        up.y,           forward.y,
+        right.z,        up.z,           forward.z);
+}
+
+he::mat33 mat33::createRotation3D( const vec3& eulerAngle )
+{
+    return createRotation3D(vec3::forward, eulerAngle.z) * createRotation3D(vec3::up, eulerAngle.y) * createRotation3D(vec3::right, eulerAngle.x);
+}
+
 const vec3& mat33::getForward() const
 {
     return *reinterpret_cast<const vec3*>(&m_Matrix.column2);
@@ -148,6 +161,51 @@ const vec3& mat33::getUp() const
 const vec3& mat33::getRight() const
 {
     return *reinterpret_cast<const vec3*>(&m_Matrix.column0);
+}
+
+he::vec3 mat33::getEulerAngles() const
+{
+    const float m20(m_Matrix(2, 0));
+    if(1.0f - fabs(m20) <= FLT_EPSILON)
+    {
+        vec3 result(0, 0, 0); // pitch, yaw, roll
+        if(m20 < 0.f)
+        {
+            result.y = piOverTwo;
+            result.x = atan2f(m_Matrix(0, 1), m_Matrix(0, 2));
+        }
+        else
+        {
+            result.y = -piOverTwo;
+            result.x = atan2f(-m_Matrix(0, 1), m_Matrix(0, 2));
+        }
+        return result;
+    }
+    else
+    {
+        vec3 result(0, 0, 0); // pitch, yaw, roll
+        vec3 result2(0, 0, 0);
+        result.y = asinf(-m20);
+        result2.y = pi - result.y;
+
+        const float invCosYaw(1.0f / cos(result.y));
+        result.x = atan2f(m_Matrix(2, 1) * invCosYaw, m_Matrix(2, 2) * invCosYaw);
+        result.z = atan2f(m_Matrix(1, 0) * invCosYaw, m_Matrix(0, 0) * invCosYaw);
+
+        const float invCosYaw2(1.0f / cos(result2.y));
+        result2.x = atan2f(m_Matrix(2, 1) * invCosYaw2, m_Matrix(2, 2) * invCosYaw2);
+        result2.z = atan2f(m_Matrix(1, 0) * invCosYaw2, m_Matrix(0, 0) * invCosYaw2);
+
+        // minimize angle sum, apparently this works very well in practice.
+        if (lengthSqr(result2) < lengthSqr(result))
+        {
+            return result2;
+        }
+        else
+        {
+            return result;
+        }
+    }
 }
 
 /* STATIC */

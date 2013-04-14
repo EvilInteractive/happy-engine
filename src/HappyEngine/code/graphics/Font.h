@@ -37,7 +37,7 @@ namespace gfx {
 namespace gui {
     class Text;
 
-class Font : public Resource<Font>
+class HAPPY_ENTRY Font : public Resource<Font>
 {
 public:
 
@@ -66,7 +66,7 @@ public:
     uint32 getPixelHeight() const;
     uint32 getLineSpacing() const;
     uint32 getLineHeight() const;
-    float getStringWidth(const std::string& string) const;
+    float getStringWidth(const he::String& string) const;
     float getStringWidth(const char* buff, const int len = -1) const;
 
     int getKerning(char first, char second) const;

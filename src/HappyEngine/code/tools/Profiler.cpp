@@ -28,7 +28,6 @@
 #include "Text.h"
 #include "Canvas2D.h"
 #include "View.h"
-#include "Canvas2Dnew.h"
 
 namespace he {
 namespace tools {
@@ -63,7 +62,7 @@ struct Profiler::ProfileTreeNode
     double m_MaxTime;
     uint32 m_HitsPerFrame;
     uint32 m_Recurses;
-    std::string m_Name;
+    he::String m_Name;
 
     ProfileData m_CurrentProfile;
     Profiler::DataMap m_Nodes;
@@ -256,7 +255,7 @@ void Profiler::drawProfileNode(const ProfileTreeNode& node, gui::Text& text, int
         drawProfileNode(treeNode, text, treeDepth + 1, lines);
     });
 }
-void Profiler::draw2D(gfx::Canvas2D* canvas)
+void Profiler::draw2D(gui::Canvas2D* canvas)
 {
     if (isEnabled() == false)
         return;
@@ -274,12 +273,11 @@ void Profiler::draw2D(gfx::Canvas2D* canvas)
 
     //float y((float)(m_Text.getText().size() * m_Font->getLineSpacing()));
 
-    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
     //canvas->setFillColor(Color(0.3f, 0.3f, 0.3f, 0.8f));
     //canvas->fillRect(vec2(0, 0), vec2(m_Width + 5.0f, y + 5.0f));
 
-    cvs->setColor(Color(1.0f, 1.0f, 1.0f));
-    cvs->fillText(m_Text, vec2(4, 4));
+    canvas->setColor(Color(1.0f, 1.0f, 1.0f));
+    canvas->fillText(m_Text, vec2(4, 4));
 }
 
 void Profiler::attachToRenderer( gfx::Renderer2D* renderer )

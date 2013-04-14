@@ -25,7 +25,22 @@
 
 namespace he {
 
-Path::Path( const std::string& path ): m_Path(path)
+Path Path::s_WorkingDirectory("");
+Path Path::s_FullDataPath("");
+Path Path::s_DataPath("");
+
+void Path::init( const Path& dataPath )
+{
+    s_DataPath = dataPath;
+
+    boost::filesystem::path workDir(boost::filesystem::current_path());
+    s_WorkingDirectory = Path(workDir.string());
+
+    s_FullDataPath = s_WorkingDirectory.append(dataPath.str());
+}
+
+
+Path::Path( const he::String& path ): m_Path(path)
 {
     convertBackslashesToForward();
     ensureTrailingSlash();
@@ -47,24 +62,24 @@ Path::~Path()
 {
 }
 
-const std::string& Path::str() const
+const he::String& Path::str() const
 {
     return m_Path;
 }
 
-Path Path::append( const std::string& relativePath ) const
+Path Path::append( const he::String& relativePath ) const
 {
     Path temp(relativePath); // ensures forward slashes and trailing slash
-    const std::string path(temp.str());
-    std::string::size_type newLength(m_Path.size() - 2); // -2 : skip trailing slash
-    std::string::size_type off(0);
+    const he::String path(temp.str());
+    he::String::size_type newLength(m_Path.size() - 2); // -2 : skip trailing slash
+    he::String::size_type off(0);
     for (;;)
     {
-        std::string::size_type tmpOff(path.find("../", off));
-        if (tmpOff == std::string::npos)
+        he::String::size_type tmpOff(path.find("../", off));
+        if (tmpOff == he::String::npos)
             break;
-        std::string::size_type sPos(m_Path.rfind('/', newLength));
-        if (sPos == std::string::npos)
+        he::String::size_type sPos(m_Path.rfind('/', newLength));
+        if (sPos == he::String::npos)
         {
             newLength = 0;
             break;
@@ -79,13 +94,6 @@ Path Path::append( const std::string& relativePath ) const
     returnPath.m_Path += path.substr(off);
     
     return returnPath;
-}
-
-Path Path::getWorkingDir()
-{
-    boost::filesystem::path workDir(boost::filesystem::current_path());
-
-    return Path(workDir.string());
 }
 
 void Path::ensureTrailingSlash()
@@ -119,11 +127,11 @@ void Path::convertBackslashesToForward()
     }
 }
 
-std::string Path::getFileName() const
+he::String Path::getFileName() const
 {
-    std::string result("");
+    he::String result("");
     size_t index(m_Path.rfind('/', m_Path.size() - 1));
-    if (index != std::string::npos)
+    if (index != he::String::npos)
     {
         result = m_Path.substr(index + 1, m_Path.size() - index - 1);
     }

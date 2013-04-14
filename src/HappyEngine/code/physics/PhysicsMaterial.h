@@ -29,7 +29,7 @@ namespace physx {
 namespace he {
 namespace px {
 
-class PhysicsMaterial
+class HAPPY_ENTRY PhysicsMaterial
 {
 public:
     PhysicsMaterial();

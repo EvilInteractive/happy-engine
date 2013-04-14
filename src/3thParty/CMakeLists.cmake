@@ -1,5 +1,13 @@
 include (${HappyEngine_SOURCE_DIR}/cmakeHelpers/LibFindPackage.cmake)
 
+if (WIN32)
+    add_definitions(-DHE_WINDOWS)
+elseif (APPLE)
+    add_definitions(-DHE_MAC)
+else()
+    add_definitions(-DHE_LINUX)
+endif()
+
 macro (IncludeThirdParty)
 
 if(APPLE)
@@ -49,6 +57,7 @@ include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/FreeType/include/free
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/fontconfig/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/glew/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/libsndfile/include)
+include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/LibOVR/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/OpenAl/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/PhysX/include)
 include_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/include)
@@ -74,6 +83,7 @@ link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/FreeType/lib/${PLATFORM}
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/fontconfig/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/glew/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/libsndfile/lib/${PLATFORM}${BITNESS})
+link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/LibOVR/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/OpenAl/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/PhysX/lib/${PLATFORM}${BITNESS})
 link_directories(${HappyEngine_SOURCE_DIR}/3thParty/lib/RakNet/lib/${PLATFORM}${BITNESS})
@@ -184,11 +194,13 @@ target_link_libraries(${target} ILU)
 
 target_link_libraries(${target} freetype)
 
-target_link_libraries(${target} debug glew32mxsd)
-target_link_libraries(${target} optimized glew32mxs)
+target_link_libraries(${target} glew32mxs)
 target_link_libraries(${target} libsndfile-1)
 target_link_libraries(${target} OpenAL32)
 target_link_libraries(${target} cairo)
+
+target_link_libraries(${target} debug libovrd)
+target_link_libraries(${target} optimized libovr)
 
 if (${BITNESS} EQUAL 32)
     set (arch x86)

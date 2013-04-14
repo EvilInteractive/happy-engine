@@ -24,6 +24,10 @@
 
 namespace he {
 
+namespace io {
+    class BinaryVisitor;
+}
+
 class StaticDataManager
 {
 public:

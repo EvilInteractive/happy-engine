@@ -24,10 +24,10 @@
 #include "Canvas2D.h"
 #include "Sprite.h"
 #include "Gui.h"
-#include "Canvas2Dnew.h"
 #include "Renderer2D.h"
 #include "MathFunctions.h"
 #include "BezierShape2D.h"
+#include "StructuredVisitor.h"
 #include "BinaryFileVisitor.h"
 
 #include "ContentManager.h"
@@ -59,7 +59,7 @@ MaterialGeneratorNode::Connecter::Connecter( MaterialGeneratorNode* const parent
 #pragma warning(default:4355) // use of this in init list
 MaterialGeneratorNode::Connecter::~Connecter()
 {
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->removeSprite(m_Sprites[0]);
     cr->removeSprite(m_Sprites[1]);
     cr->removeSprite(m_Sprites[2]);
@@ -74,7 +74,7 @@ void MaterialGeneratorNode::Connecter::renderSprites()
     //const vec2 extraSize(name.measureText());
     //const vec2 newSize(extraSize.x + normalSize.x + 4.0f, std::max(extraSize.y, normalSize.y));
 
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Sprites[0] = cr->createSprite(m_Size);
     m_Sprites[1] = cr->createSprite(m_Size);
     m_Sprites[2] = cr->createSprite(m_Size);
@@ -110,19 +110,17 @@ void MaterialGeneratorNode::Connecter::renderSprites()
     cr->renderSpriteAsync();
 }
 
-void MaterialGeneratorNode::Connecter::draw2D( gfx::Canvas2D* const canvas, const mat33& transform ) const
+void MaterialGeneratorNode::Connecter::draw2D( gui::Canvas2D* const canvas, const mat33& transform ) const
 {
-    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-
     const vec2 transformedPosition(transform * m_Position);
     const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
 
     if (m_IsSelected)
-        cvs->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
+        canvas->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
     else if (m_IsHooverd)
-        cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
+        canvas->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
     else
-        cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+        canvas->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
     
     if (m_IsConnected)
     {
@@ -200,7 +198,7 @@ MaterialGeneratorNode::MaterialGeneratorNode():
 
 void MaterialGeneratorNode::init()
 {
-    gui::SpriteCreator* cr(GUI->Sprites);
+    gui::SpriteCreator* cr(GUI->getSpriteCreator());
 
     gui::Font* nodeFont(CONTENT->loadFont("Ubuntu-Medium.ttf", 18));
     gui::Text name;
@@ -307,7 +305,7 @@ void MaterialGeneratorNode::init()
 
 MaterialGeneratorNode::~MaterialGeneratorNode()
 {
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Sprites.forEach([cr](gui::Sprite* sp)
     {
         cr->removeSprite(sp);
@@ -548,10 +546,8 @@ bool MaterialGeneratorNode::isInView( const mat33& transform, const RectF& clipR
             transformedPosition.y + size.y / 2.0f > clipRect.y && transformedPosition.y - size.y / 2.0f < clipRect.y + clipRect.height;
 }
 
-void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
+void MaterialGeneratorNode::draw2D(gui::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect )
 {
-    gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-
     const vec2 transformedPosition(transform * m_Position);
     const vec2 size((transform * vec3(m_Size.x, m_Size.y, 0)).xy());
     const vec2 textSize((transform * vec3(m_Sprites[3]->getSize(), 0)).xy());
@@ -561,14 +557,14 @@ void MaterialGeneratorNode::draw2D(gfx::Canvas2D* const canvas, const mat33& tra
         { return connecter->isConnected() && connecter->getConnection()->getParent()->isInView(transform, clipRect); }, index))
     {
         if (m_IsSelected)
-            cvs->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
+            canvas->drawSprite(m_Sprites[1], transformedPosition - size / 2.0f, size);
         else if (m_IsHoovering)
-            cvs->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
+            canvas->drawSprite(m_Sprites[2], transformedPosition - size / 2.0f, size);
         else
-            cvs->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
+            canvas->drawSprite(m_Sprites[0], transformedPosition - size / 2.0f, size);
 
         // Name
-        cvs->drawSprite(m_Sprites[3], transformedPosition - vec2(textSize.x / 2.0f, size.y / 2.0f - textSize.y / 2.0f), textSize);
+        canvas->drawSprite(m_Sprites[3], transformedPosition - vec2(textSize.x / 2.0f, size.y / 2.0f - textSize.y / 2.0f), textSize);
         
         m_Connecters.forEach([canvas, &transform](Connecter* connecter)
         {
@@ -593,10 +589,16 @@ void MaterialGeneratorNode::setSize( const vec2& size )
     updateConnecterPositions();
 }
 
-void MaterialGeneratorNode::visit( io::BinaryFileVisitor& stream )
+void MaterialGeneratorNode::visit( io::StructuredVisitor* const visitor )
 {
-    stream.visit(m_Position);
-    stream.visit(m_Guid);
+    visitor->visit(HEFS::strPosition, m_Position);
+    visitor->visit(HEFS::strID, m_Guid);
+}
+
+void MaterialGeneratorNode::visit( io::BinaryFileVisitor* const visitor )
+{
+    visitor->visit(m_Position);
+    visitor->visit(m_Guid);
 }
 
 

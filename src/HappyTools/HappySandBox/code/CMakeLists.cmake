@@ -1,23 +1,14 @@
-set (HAPPYSANDBOX_CODE_FILES_SRC_FILTER
+include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/runtime/CMakeLists.cmake)
+include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/system/CMakeLists.cmake)
+include(${HappyEngine_SOURCE_DIR}/HappyTools/HappySandBox/code/ui/CMakeLists.cmake)
+
+addFilter(HAPPYSANDBOX_CODE_SRCS src/ code/
         main.cpp
-        MainGame.cpp            MainGame.h
-		FlyCamera.cpp			 FlyCamera.h
-		UIController.cpp		 UIController.h
-		UIBind.cpp				 UIBind.h)
+        Sandbox.cpp                 Sandbox.h
+        StaticDataManager.cpp       StaticDataManager.h    
+    )
+       
+addFilter(HAPPYSANDBOX_CODE_SRCS pch/ code/
+        HappySandBoxPCH.cpp         HappySandBoxPCH.h
+    )
 
-set (HAPPYSANDBOX_CODE_FILES_PCH_FILTER    
-        HappySandBoxPCH.cpp     HappySandBoxPCH.h)
-                        
-foreach(f ${HAPPYSANDBOX_CODE_FILES_SRC_FILTER}) 
-    LIST(APPEND HAPPYSANDBOX_CODE_FILES_SRC_FILTER_SRCS ./code/${f})
-endforeach(f)           
-
-foreach(f ${HAPPYSANDBOX_CODE_FILES_PCH_FILTER}) 
-    LIST(APPEND HAPPYSANDBOX_CODE_FILES_PCH_FILTER_SRCS ./code/${f})
-endforeach(f) 
-
-source_group(src FILES ${HAPPYSANDBOX_CODE_FILES_SRC_FILTER_SRCS})
-source_group(pch FILES ${HAPPYSANDBOX_CODE_FILES_PCH_FILTER_SRCS})
-
-set (HAPPYSANDBOX_CODE_SRCS  ${HAPPYSANDBOX_CODE_FILES_SRC_FILTER_SRCS} 
-                             ${HAPPYSANDBOX_CODE_FILES_PCH_FILTER_SRCS})

@@ -32,7 +32,7 @@ namespace he {
 namespace ct {
 namespace details {
 
-std::string trimEnd(const std::string& str)
+he::String trimEnd(const he::String& str)
 {
     int32 i(static_cast<int32>(str.size()) - 1);
     for (; i >= 0; --i)
@@ -44,12 +44,12 @@ std::string trimEnd(const std::string& str)
     }
     return str.substr(0, i + 1);
 }
-std::string ShaderPreProcessor::process(const std::string& code, const std::set<std::string>& defines)
+he::String ShaderPreProcessor::process(const he::String& code, const std::set<he::String>& defines)
 {
     std::stringstream stream;
 
     std::stringstream linesStream;
-    he::ObjectList<std::string> lines;
+    he::ObjectList<he::String> lines;
     std::for_each(code.cbegin(), code.cend(), [&](const char& c)
     {
         if (c == '\n')
@@ -66,15 +66,15 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
 
     uint32 ifblocks = 0;
     uint32 discardBlock = 0;
-    lines.forEach([&](const std::string& line)
+    lines.forEach([&](const he::String& line)
     {        
-        if (line.find("#endif") != std::string::npos)
+        if (line.find("#endif") != he::String::npos)
         {
             --ifblocks;
             if (discardBlock > ifblocks)
                 discardBlock = 0;
         }
-        else if (line.find("#if ") != std::string::npos)
+        else if (line.find("#if ") != he::String::npos)
         {
             ++ifblocks;
             if (discardBlock == 0 && defines.find(trimEnd(line.substr(line.find("#if ") + 4))) == defines.cend())
@@ -86,17 +86,17 @@ std::string ShaderPreProcessor::process(const std::string& code, const std::set<
         {
             if (discardBlock == 0)
             {
-                if (line.find("#include ") != std::string::npos)
+                if (line.find("#include ") != he::String::npos)
                 {
-                    const std::string& includeRelativePath(CONTENT->getShaderFolderPath().str());
+                    const he::String& includeRelativePath(CONTENT->getShaderFolderPath().str());
                     HE_ASSERT(includeRelativePath.back() == '/', "includeRelativePath does not end with trailing slash");
-                    std::string fName(line.substr(10, line.length() - 11));
+                    he::String fName(line.substr(10, line.length() - 11));
 
                     io::FileReader reader;
 
                     if (reader.open(includeRelativePath + fName, io::FileReader::OpenType_ASCII)) 
                     {
-                        std::string str;
+                        he::String str;
                         str = reader.readToEnd();
                         reader.close();
 

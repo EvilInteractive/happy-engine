@@ -17,3 +17,4 @@ installers\win\RakNet.exe
 installers\win\SFML2.0.exe
 installers\win\Cairo.exe
 installers\win\fontconfig.exe
+installers\win\LibOVR.exe

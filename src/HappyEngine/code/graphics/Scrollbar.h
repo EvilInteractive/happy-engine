@@ -22,14 +22,11 @@
 #define _HE_SCROLLBAR_H_
 #pragma once
 
-#include "vec2.h"
-#include <map>
-#include "Hitregion.h"
-#include "Color.h"
-#include "Canvas2D.h"
-
 namespace he {
 namespace gui {
+    class Canvas2D;
+    class Sprite;
+    class Hitregion;
 
 class Scrollbar
 {
@@ -41,7 +38,7 @@ public:
 
 	/* GENERAL */
 	void tick();
-	void draw(gfx::Canvas2D* canvas);
+	void draw(gui::Canvas2D* canvas);
 
 	/* SETTERS */
 	void setBarPos(float barPos);
@@ -56,19 +53,24 @@ public:
 
 private:
 
-	/* DATAMEMBERS */
-	std::map<std::string, Color> m_Colors;
+    /* INTERNAL */
+    void renderSprites();
 
-	Hitregion* m_pHitregion;
+	/* DATAMEMBERS */
+	std::map<he::String, Color> m_Colors;
+
+	Hitregion* m_Hitregion;
 
 	float m_BarPos;
 	float m_ScrollbarHeight;
 
-	bool m_bDragging;
+	bool m_Dragging;
 
 	vec2 m_Pos;
 	vec2 m_Size;
 	vec2 m_PreviousMousePos;
+
+    Sprite* m_Sprites[2];
 
     /* DEFAULT COPY & ASSIGNMENT OPERATOR */
     Scrollbar(const Scrollbar&);

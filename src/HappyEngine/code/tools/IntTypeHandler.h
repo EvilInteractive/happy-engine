@@ -35,7 +35,7 @@ public:
 
 	virtual ~IntTypeHandler() {}
 
-	bool parse(const std::string& values, boost::any& pValueToAssign) const
+	bool parse(const he::String& values, boost::any& pValueToAssign) const
 	{
 		int i;
 
@@ -49,7 +49,7 @@ public:
 		return true;
 	}
 
-	std::string getType() const
+	he::String getType() const
 	{
 		return typeid(int).name();
 	}

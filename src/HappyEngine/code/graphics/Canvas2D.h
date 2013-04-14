@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -16,163 +16,112 @@
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
 //Author:  Sebastiaan Sprengers
-//Created: 19/03/2012
+//Created: 17/11/2012
 
-#ifndef _HE_CANVAS2D_H_
-#define _HE_CANVAS2D_H_
+// This class is the canvas on which all 2d drawing is done.
+// Most rendering operations are done by other classes linked to Canvas2D.
+
+#ifndef _HE_CANVAS2DNEW_H_
+#define _HE_CANVAS2DNEW_H_
 #pragma once
+
+#include "Text.h"
 
 namespace he {
 namespace gfx {
-class View;
-class Mesh2D;
-class Simple2DEffect;
-class Simple2DTextureEffect;
-class Simple2DFontEffect;
-class ModelMesh;
-class Texture2D;
+    struct Canvas2DBuffer;
+    class Renderer2D;
+    class Texture2D;
+    class Canvas2DRendererGL;
+    class Mesh2D;
+}
+namespace gui {
+    class Sprite;
 
-enum BlendStyle
-{
-    BlendStyle_Opac,
-    BlendStyle_Alpha,
-    BlendStyle_Add
-};
-
-class Canvas2D
+class HAPPY_ENTRY Canvas2D
 {
 public:
 
-    struct Data
-    {
-        Data() : m_FBufferID(UINT32_MAX),
-                 m_ColorRbufferID(UINT32_MAX),
-                 m_DepthRbufferID(UINT32_MAX),
-                 m_Context(nullptr),
-                 m_RenderTextureHnd(ObjectHandle::unassigned)
-        {}
-
-        ObjectHandle m_RenderTextureHnd;
-        uint32 m_FBufferID;
-        uint32 m_ColorRbufferID;
-        uint32 m_DepthRbufferID;
-        GLContext* m_Context;
-    };
-
-    /* STATIC */
-    static Data* create(GLContext* context, const vec2& size);
-    static void resizeData(Data* data, const vec2& size);
-
     /* CONSTRUCTOR - DESTRUCTOR */
-    Canvas2D(const RectI& absoluteViewport);
-    Canvas2D(Renderer2D* parent, const RectF& relativeViewport);
+    // create canvas and attach to parent 2d renderer
+    // relative in percentages from 0.0f to 1.0f, absolute in pixels
+    Canvas2D(gfx::Renderer2D* parent, const RectF& relativeViewport);
+    Canvas2D(gfx::Renderer2D* parent, const RectI& absoluteViewport);
     virtual ~Canvas2D();
 
     /* GENERAL */
-    void translate(const vec2& translation);
-    void rotate(float rotation);
-    void scale(const vec2& scale);
-
-    void save();
-    void restore();
-
-    void restoreDepth();
+    void init();
+    // store render buffer to texture
+    // this disables drawing to the canvas
+    // and uploads buffer to gpu
+    void storeBuffer();
 
     /* GETTERS */
-    Data* getData() const;
-    const vec2& getSize() const { return m_CanvasSize; }
-    Renderer2D* getRenderer2D() const { return m_Renderer2D; }
-    
+    // return render buffer data
+    gfx::Canvas2DBuffer* getCanvas2DBuffer() const;
+
+    // return size of canvas in pixels
+    const vec2& getPosition() const;
+    const vec2& getSize() const;
+
     /* SETTERS */
-    void setStrokeColor(const Color& newColor);
-    void setFillColor(const Color& newColor);
-    void setBlendStyle(const BlendStyle& blendStyle) { m_BlendStyle = blendStyle; }
+    // sets position in pixels on screen
+    void setPosition(const vec2& position);
+    void setSize(const vec2& size);
 
-    void setLineWidth(float width);
+    void setColor(const Color& color);
 
-    void setGlobalAlpha(float alpha);
-
-    void setAutoClearing(bool clearAfterDraw);
-    void setPosition(const vec2& position) { m_Position = position; }
-
-    void setDepth(short depth);
-    
-    /* DRAW METHODS */
+    /* DRAW */
+    // clear buffer to rgba(0,0,0,0)
     void clear();
-    virtual void draw();
+    // draw to screen
+    void draw();
 
-    void strokeRect(const vec2& pos, const vec2& size);
-    void fillRect(const vec2& pos, const vec2& size);
-
-    void fillText(const he::gui::Text& txt, const vec2& pos);
-
-    void drawImage(	const Texture2D* tex2D, const vec2& pos,
-                    const vec2& newDimensions = vec2(0.0f,0.0f),
-                    const RectF& regionToDraw = RectF(0.0f,0.0f,0.0f,0.0f));
+    // draw dynamic text, for static use sprite
+    void fillText(const Text& text, const vec2& pos);
+    // draw image
+    void drawImage(const gfx::Texture2D* tex2D, const vec2& pos,
+                   const vec2& size = vec2(),
+                   const RectI& regionToDraw = RectI());
+    void drawSprite(const Sprite* sprite, const vec2& pos,
+                    const vec2& size = vec2());
+    // blit to screen
+    void blitImage( const gfx::Texture2D* tex2D, const vec2& pos = vec2(),
+                    bool useBlending = true,
+                    const vec2& newDimensions = vec2(),
+                    const RectI& regionToDraw = RectI());
+    void strokeShape(gfx::Mesh2D* const shape);
+    void fillShape(gfx::Mesh2D* const shape);
+    void strokeRect(const RectI& rect);
+    void fillRect(const RectI& rect);
+    void drawLine(const vec2& p1, const vec2& p2);
 
 private:
 
-    /* CONSTANT */
-    static const int STACK_DEPTH_LIMIT = 16;
-
-    /* EXTRA */
-    void init();
+    /* INTERNAL */
+    // deletion
     void cleanup();
-    mat44 getTransformation();
-    float getNewDepth();
-
+    // handler for resize
     void viewResized();
-    void resize(const vec2& newSize);
+    // resize
+    void resize();
 
-    void applyBlend();
+    /* MEMBERS */
+    gfx::Renderer2D* m_Renderer2D;
+    gfx::Canvas2DBuffer* m_BufferData;
 
-    /* DATAMEMBERS */
-    he::PrimitiveList<mat33> m_TransformationStack;
-    uint16 m_StackDepth;
+    gfx::Canvas2DRendererGL* m_RendererGL;
 
-    mat44 m_OrthographicMatrix;
-
-    Color m_StrokeColor;
-    Color m_FillColor;
-
-    float m_LineWidth;
-    float m_GlobalAlpha;
-
-    Data* m_BufferData;
-
-    Mesh2D* m_BufferMesh;
-
-    Simple2DEffect* m_ColorEffect;
-    Simple2DTextureEffect* m_TextureEffect;
-    Simple2DFontEffect* m_FontEffect;
-
-    Texture2D* m_RenderTexture;
-    Texture2D* m_TextBuffer;
-
-    BlendStyle m_BlendStyle;
-
-    View* m_View;
-    RectF m_RelativeViewport;
-    vec2 m_CanvasSize;
     vec2 m_Position;
+    vec2 m_Size;
 
-    ModelMesh* m_TextureQuad;
-
-    float m_PixelDepth;
-
-    bool m_AutoClear;
-
-    eventCallback0<void> m_ViewResizedHandler;
-
-    int16 m_ExtraPixelDepth;
-
-    Renderer2D* m_Renderer2D;
+    Color m_Color;
 
     /* DEFAULT COPY & ASSIGNMENT */
     Canvas2D(const Canvas2D&);
     Canvas2D& operator=(const Canvas2D&);
 };
 
-} } //end namespace
+}} //end namespace
 
 #endif

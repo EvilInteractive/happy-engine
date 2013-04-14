@@ -46,7 +46,7 @@ class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
     virtual ~SceneFactory() { }
 };
 
-class Scene
+class HAPPY_ENTRY Scene
 {
     DECLARE_OBJECT(Scene)
 public:
@@ -76,7 +76,7 @@ public:
     bool getActive() const { return m_Active; }
 
     // Skybox
-    void loadSkybox(const std::string& asset);
+    void loadSkybox(const he::String& asset);
 
 private:  
     // Managers

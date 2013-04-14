@@ -28,39 +28,42 @@
 #endif
 
 #define __HE_FUNCTION__ __FUNCTION__
+#ifdef _DEBUG
+#define FILE_AND_LINE __FILE__, __LINE__
+#else
+#define FILE_AND_LINE
+#endif
 
-#include <cstdlib>
-#include <string>
+#ifdef HappyEngine_EXPORTS
+#define HAPPY_ENTRY __declspec(dllexport)
+#else
+#define HAPPY_ENTRY __declspec(dllimport)
+#endif
+
+/*
+'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+To minimize the possibility of data corruption when exporting a class with __declspec(dllexport), ensure that:
+ - All your static data is access through functions that are exported from the DLL.
+ - No inlined methods of your class can modify static data.
+ - No inlined methods of your class use CRT functions or other library functions use static data (see Potential Errors Passing CRT Objects Across DLL Boundaries for more information).
+ - No methods of your class (regardless of inlining) can use types where the instantiation in the EXE and DLL have static data differences.
+--> Make sure the compile options are the same!
+*/
+#pragma warning( disable : 4251 )
+
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <deque>
 #include <queue>
 #include <set>
-#include <algorithm>
-#include <utility>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdarg>
 
-#pragma warning (disable : 4244)
-#include <boost/thread.hpp>
-#pragma warning (default : 4244)
+#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/any.hpp>
 #include <boost/function.hpp>
 #include <boost/date_time.hpp>
-
-#include <SFML/Window.hpp>
-
-#ifdef SFML_SYSTEM_WINDOWS
-#define HE_WINDOWS
-#elif defined SFML_SYSTEM_LINUX
-#define  HE_LINUX
-#elif defined SFML_SYSTEM_MACOS
-#define HE_MAC
-#endif
+#include <boost/timer.hpp>
 
 #if !(defined(HE_WINDOWS) || defined(HE_LINUX) || defined(HE_MAC))
 #error Unsupported OS!
@@ -70,7 +73,6 @@
 
 #define glewGetContext() (&he::gfx::GL::s_CurrentContext->internalContext)
 
-#include <GL/glew.h>
 
 // Happy Code
 
@@ -79,6 +81,10 @@
 #else
 #define ENUM(name, size) enum name : size
 #endif
+
+#include "HeString.h"
+#include "FixedString.h"
+#include "HeFixedStrings.h"
 
 #include "HappyTypes.h"
 #include "vec2.h"
@@ -89,16 +95,17 @@
 #include "Color.h"
 #include "Rect.h"
 
-#include "PxPhysicsAPI.h"
-
 #include "RTTI.h"
+
+#include "thread/Thread.h"
+#include "thread/Mutex.h"
+
 
 #include "Logger.h"
 #include "HappyInfo.h"
-
-#include "Logger.h"
 #include "HeAssert.h"
 
+#ifdef _DEBUG
 #pragma warning(disable:4389) // '==' signed/unsigned mismatch
 template<typename To, typename From>
 inline To checked_numcast(const From value)
@@ -108,18 +115,37 @@ inline To checked_numcast(const From value)
     return result;
 }
 #pragma warning(default:4389)
+template<typename To, typename From>
+inline To checked_cast(From const value)
+{
+    To const result(dynamic_cast<To>(value));
+    HE_ASSERT(value == nullptr || nullptr != result, "checked cast failed!");
+    return result;
+}
+#else
+template<typename To, typename From>
+inline To checked_numcast(const From value)
+{
+    return static_cast<To>(value);
+}
+template<typename To, typename From>
+inline To checked_cast(From value)
+{
+    return static_cast<To>(value);
+}
+#endif
 
-#include "ExternalError.h"
 #include "HappyMemory.h"
 #include "HappyNew.h"
 #include "MathConstants.h"
 #include "MathFunctions.h"
 
+#include <GL/glew.h>
+#include "OpenGL.h"
+#include "GLContext.h"
+
 #include "List.h"
 #include "FixedSizeList.h"
-
-#include "GLContext.h"
-#include "OpenGL.h"
 
 #include "ObjectFactory.h"
 

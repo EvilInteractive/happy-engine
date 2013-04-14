@@ -39,22 +39,48 @@
 #include "Sprite.h"
 #include "materialGenerator/MaterialGeneratorNodeFactory.h"
 #include "SpriteCreator.h"
+#include "PickingManager.h"
+#include "BinaryVisitor.h"
+#include "EntityManager.h"
+#include "SystemStats.h"
+#include "GlobalStringTable.h"
+#include <HappyMessageBox.h>
+
+#pragma warning(disable:4100)
+#include <Awesomium/WebCore.h>
+#pragma warning(default:4100)
 
 namespace he {
 
 void StaticDataManager::init()
 {
-    details::ObjectFactoryTypeManager::sdmInit();
+    Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+    he::Path msbbox(he::Path::getFullDataPath().append("gui/messageBox.html"));
+    he::HappyMessageBox::init(msbbox.str().c_str(), 1024, 512);
+    he::HappyEngine::sdmInit();
     tools::Logger::sdmInit();
-    ResourceFactory<gfx::Material>::init(64, 64, "MaterialFactory");
-    ResourceFactory<gfx::Texture2D>::init(64, 64, "TextureFactory");
-    ResourceFactory<gfx::TextureCube>::init(5, 5, "TextureCubeFactory");
-    ResourceFactory<gfx::Model>::init(64, 64, "ModelFactory");
-    ResourceFactory<gfx::ModelMesh>::init(64, 64, "ModelMeshFactory");
-    ResourceFactory<gui::Font>::init(64, 64, "FontFactory");
-    ResourceFactory<gfx::Shader>::init(16, 16, "ShaderFactory");
-    ResourceFactory<px::PhysicsConvexMesh>::init(64, 64, "PhysicsConvexMeshFactory");
-    ResourceFactory<px::PhysicsConcaveMesh>::init(64, 64, "PhysicsConcaveMeshFactory");
+    he::GlobalStringTable::sdmInit();
+    he::HEFS::sdmInit();
+    he::tools::SystemStats::sdmInit();
+    details::ObjectFactoryTypeManager::sdmInit();
+    ResourceFactory<gfx::Material>::sdmInit();
+    ResourceFactory<gfx::Material>::getInstance()->init(0, 16, "MaterialFactory");
+    ResourceFactory<gfx::Texture2D>::sdmInit();
+    ResourceFactory<gfx::Texture2D>::getInstance()->init(0, 16, "TextureFactory");
+    ResourceFactory<gfx::TextureCube>::sdmInit();
+    ResourceFactory<gfx::TextureCube>::getInstance()->init(0, 5, "TextureCubeFactory");
+    ResourceFactory<gfx::Model>::sdmInit();
+    ResourceFactory<gfx::Model>::getInstance()->init(0, 16, "ModelFactory");
+    ResourceFactory<gfx::ModelMesh>::sdmInit();
+    ResourceFactory<gfx::ModelMesh>::getInstance()->init(0, 16, "ModelMeshFactory");
+    ResourceFactory<gui::Font>::sdmInit();
+    ResourceFactory<gui::Font>::getInstance()->init(0, 2, "FontFactory");
+    ResourceFactory<gfx::Shader>::sdmInit();
+    ResourceFactory<gfx::Shader>::getInstance()->init(0, 8, "ShaderFactory");
+    ResourceFactory<px::PhysicsConvexMesh>::sdmInit();
+    ResourceFactory<px::PhysicsConvexMesh>::getInstance()->init(0, 16, "PhysicsConvexMeshFactory");
+    ResourceFactory<px::PhysicsConcaveMesh>::sdmInit();
+    ResourceFactory<px::PhysicsConcaveMesh>::getInstance()->init(0, 16, "PhysicsConcaveMeshFactory");
     gui::SpriteFactory::sdmInit();
     gfx::ViewFactory::sdmInit();
     gfx::SceneFactory::sdmInit();
@@ -63,29 +89,39 @@ void StaticDataManager::init()
     gfx::CullOctreeNodeFactory::sdmInit();
     ct::ShaderGeneratorVariableFactory::sdmInit();
     tools::MaterialGeneratorNodeFactory::sdmInit();
+    ge::PickingManager::sdmInit();
+    ge::EntityManager::sdmInit();
 }
 
 void StaticDataManager::destroy()
 {
+    ge::EntityManager::sdmDestroy();
+    ge::PickingManager::sdmDestroy();
     tools::MaterialGeneratorNodeFactory::sdmDestroy();
     ct::ShaderGeneratorVariableFactory::sdmDestroy();
     gfx::CullOctreeNodeFactory::sdmDestroy();
     gfx::LightFactory::sdmDestroy();
-    ResourceFactory<gui::Font>::destroy();
-    ResourceFactory<gfx::Material>::destroy();
-    ResourceFactory<gfx::TextureCube>::destroy();
-    ResourceFactory<gfx::Texture2D>::destroy();
-    ResourceFactory<gfx::Model>::destroy();
-    ResourceFactory<gfx::ModelMesh>::destroy();
-    ResourceFactory<gfx::Shader>::destroy();
-    ResourceFactory<px::PhysicsConvexMesh>::destroy();
-    ResourceFactory<px::PhysicsConcaveMesh>::destroy();
+    ResourceFactory<gui::Font>::sdmDestroy();
+    ResourceFactory<gfx::Material>::sdmDestroy();
+    ResourceFactory<gfx::TextureCube>::sdmDestroy();
+    ResourceFactory<gfx::Texture2D>::sdmDestroy();
+    ResourceFactory<gfx::Model>::sdmDestroy();
+    ResourceFactory<gfx::ModelMesh>::sdmDestroy();
+    ResourceFactory<gfx::Shader>::sdmDestroy();
+    ResourceFactory<px::PhysicsConvexMesh>::sdmDestroy();
+    ResourceFactory<px::PhysicsConcaveMesh>::sdmDestroy();
     gui::SpriteFactory::sdmDestroy();
     gfx::ViewFactory::sdmDestroy();
     gfx::SceneFactory::sdmDestroy();
     gfx::WindowFactory::sdmDestroy();
-    tools::Logger::sdmDestroy();
     details::ObjectFactoryTypeManager::sdmDestroy();
+    he::tools::SystemStats::sdmDestroy();
+    he::HEFS::sdmDestroy();
+    he::GlobalStringTable::sdmDestroy();
+    tools::Logger::sdmDestroy();
+    he::HappyEngine::sdmDestroy();
+    he::HappyMessageBox::destroy();
+    Awesomium::WebCore::Shutdown();
 }
 
 } //end namespace

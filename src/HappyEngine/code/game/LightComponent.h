@@ -32,8 +32,8 @@ namespace gfx {
     ENUM(ShadowResolution, uint8);
 }
 namespace ge {
-    
-class PointLightComponent : public EntityComponent, public Object3D
+struct EntityComponentDesc;
+class HAPPY_ENTRY PointLightComponent : public EntityComponent, public Object3D
 {
     IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
@@ -47,10 +47,20 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const he::FixedString& getComponentID() const { return HEFS::strPointLightComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
         
     void setMultiplier(float multiplier);
     void setAttenuation(float begin, float end);
+    void setAttenuation(const vec2& att);
     void setColor(const vec3& color);
     void setColor(const Color& color);
 
@@ -77,7 +87,7 @@ private:
     PointLightComponent& operator=(const PointLightComponent&);
 };
 
-class SpotLightComponent : public EntityComponent, public Object3D
+class HAPPY_ENTRY SpotLightComponent : public EntityComponent, public Object3D
 {
 IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
@@ -91,6 +101,15 @@ public:
 
     virtual void activate();
     virtual void deactivate();
+
+    virtual const he::FixedString& getComponentID() const { return HEFS::strSpotLightComponent; }
+
+    //// Editor //////////////////////////////////////////////////////////////
+    static void fillEntityComponentDesc(EntityComponentDesc& desc);
+    virtual bool setProperty(const Property* const inProperty);
+    virtual bool getProperty(Property* const inOutProperty);
+    //////////////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////
     
     void setMultiplier(float multiplier);

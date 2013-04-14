@@ -24,6 +24,7 @@
 
 #include "Game.h"
 #include "IDrawable2D.h"
+#include "AStar.h"
 
 namespace he {
     namespace tools {
@@ -46,10 +47,9 @@ public:
     virtual ~MainGame();
 
     virtual void init();
-    virtual void destroy() {}
-    virtual void load();
+    virtual void destroy();
     virtual void tick(float dTime);
-    virtual void draw2D(he::gfx::Canvas2D* canvas);
+    virtual void draw2D(he::gui::Canvas2D* canvas);
 
 private:
 
@@ -58,7 +58,7 @@ private:
     he::gfx::Window* m_Window;
     he::gfx::View*   m_View;
     he::gfx::Renderer2D* m_Renderer;
-    he::gui::Font* m_Font;
+	ht::AStar*	m_AStar;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MainGame(const MainGame&);

@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 2.8)
 SET(CMAKE_COLOR_MAKEFILE ON)
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
+SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
+
 if (WIN32)
     set(PLATFORM "win")
 elseif (APPLE)
@@ -31,6 +33,11 @@ endif()
 
 
 # Compiler flags
+if (MSVC)
+    message(msvc)
+    string(REPLACE "/Zm1000" "/Zm200" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
     message(gcc)
@@ -45,11 +52,21 @@ endif()
 message(Platform: ${PLATFORM}${BITNESS})
 
 SET(Include_HappyEngine on CACHE BOOL "Include HappyEngine in solution")
+SET(Include_HappyJson on CACHE BOOL "Include HappyJson in solution")
+SET(Include_HappyMessageBox on CACHE BOOL "Include HappyMessageBox in solution")
 SET(Include_HappyTests on CACHE BOOL "Include HappyTests in solution")
 SET(Include_HappySandBox on CACHE BOOL "Include HappySandBox in solution")
 
 if (${Include_HappyEngine})
     add_subdirectory (HappyEngine)
+endif()
+
+if (${Include_HappyJson})
+    include (HappyJson/CMakeIncludeLists.cmake)
+endif()
+
+if (${Include_HappyMessageBox})
+    include (HappyMessageBox/CMakeIncludeLists.cmake)
 endif()
 
 if (${Include_HappyTests})
@@ -60,3 +77,7 @@ if (${Include_HappySandBox})
     add_subdirectory (HappyTools/HappySandBox)
 endif()
 
+# Copy thirdparty dll's
+if (WIN32)
+CopyThirdParty(${HappyEngine_SOURCE_DIR}/bin)
+endif()

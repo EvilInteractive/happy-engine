@@ -42,7 +42,7 @@ Button::Button() :	m_Type(TYPE_NORMAL),
                     m_ActivationType(ACTIVATION_MOUSE),
                     m_bClicked(false),
                     m_pSpriteSheet(nullptr),
-                    m_Hitregion(Hitregion::TYPE_RECTANGLE, vec2(0, 0), vec2(128, 64))
+                    m_Hitregion(vec2(0, 0), vec2(128, 64))
 {
     m_Text.setHorizontalAlignment(gui::Text::HAlignment_Center);
     m_Text.setVerticalAlignment(gui::Text::VAlignment_Center);
@@ -96,7 +96,7 @@ void Button::tick()
     }
 }
 
-void Button::draw2D(gfx::Canvas2D* renderer)
+void Button::draw2D(gui::Canvas2D* renderer)
 {
     switch (m_Type)
     {
@@ -155,7 +155,7 @@ void Button::setPosition(const vec2& centerPos)
     m_Hitregion.setPosition(m_Pos);
 }
 
-void Button::setText(const std::string& text, uint16 fontSize)
+void Button::setText(const he::String& text, uint16 fontSize)
 {
     m_Text.clear();
     m_Text.addText(text.c_str());
@@ -219,8 +219,9 @@ bool Button::isClicked() const
 }
 
 /* EXTRA */
-void Button::drawColor(gfx::Canvas2D* renderer)
+void Button::drawColor(gui::Canvas2D* /*renderer*/)
 {
+    /*
     switch (m_State)
     {
         case STATE_NORMAL:
@@ -260,10 +261,10 @@ void Button::drawColor(gfx::Canvas2D* renderer)
 
     renderer->setFillColor(Color(0.25f, 0.25f, 0.25f));
     renderer->fillText(m_Text, m_Pos - m_Size / 2.0f);
-
+    */
 }
 
-void Button::drawSprites(gfx::Canvas2D* /*renderer*/)
+void Button::drawSprites(gui::Canvas2D* /*renderer*/)
 {
     LOG(LogType_ProgrammerAssert, "Not Implemented!");
 }

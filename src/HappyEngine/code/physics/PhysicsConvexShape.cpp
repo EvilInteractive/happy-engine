@@ -35,7 +35,7 @@ PhysicsConvexShape::PhysicsConvexShape(const ObjectHandle& convexMesh, const vec
 { 
     ResourceFactory<PhysicsConvexMesh>::getInstance()->instantiate(m_ConvexMesh);
 }
-PhysicsConvexShape::PhysicsConvexShape(const std::string& asset, const vec3& scale): 
+PhysicsConvexShape::PhysicsConvexShape(const he::String& asset, const vec3& scale): 
         m_ConvexMesh(CONTENT->loadPhysicsConvex(asset)), m_Scale(scale)
 { 
 }

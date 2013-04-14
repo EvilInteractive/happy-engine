@@ -46,7 +46,7 @@ typedef unsigned long NativeWindowHandle;
 typedef void* NativeWindowHandle;
 #endif
 
-class Window
+class HAPPY_ENTRY Window
 {
 DECLARE_OBJECT(Window)
 friend GraphicsEngine;
@@ -67,7 +67,7 @@ public:
     void present();
 
     // Setters
-    void setWindowTitle(const std::string& caption);
+    void setWindowTitle(const he::String& caption);
     void setWindowPosition(int x, int y);
     void setWindowDimension(uint32 width, uint32 height);
     void setVSync(bool enable);
@@ -82,7 +82,13 @@ public:
     uint32 getWindowWidth() const;
     uint32 getWindowHeight() const;
     GLContext* getContext() { return &m_Context; }  
-    NativeWindowHandle getNativeHandle() const { return m_Window->getSystemHandle(); }
+    NativeWindowHandle getNativeHandle() const;
+
+    // Views
+    void addViewAtBegin(const ObjectHandle& view);
+    void addViewAtEnd(const ObjectHandle& view);
+    void removeView(const ObjectHandle& view);
+    const he::ObjectList<ObjectHandle>& getViews() const { return m_Views; }
 
     // Events
     event0<void> Resized;
@@ -91,11 +97,13 @@ public:
     event0<void> LostFocus;
 
 private:
+    he::ObjectList<ObjectHandle> m_Views;
+
     sf::Window* m_Window;
     Window* m_Parent;
 
     RectI m_WindowRect;
-    std::string m_Titel;
+    he::String m_Titel;
     Color m_ClearColor;
     bool m_VSyncEnabled;
     bool m_IsCursorVisible;

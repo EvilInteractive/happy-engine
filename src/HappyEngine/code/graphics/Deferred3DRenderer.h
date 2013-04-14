@@ -31,6 +31,9 @@
 #include "IDrawable2D.h"
 
 namespace he {
+namespace gui {
+    class Canvas2D;
+}
 namespace gfx {
 
 class LightManager;
@@ -126,7 +129,7 @@ public:
     virtual uint8 getRenderPriority() const { return 50; }
 
     virtual void render();
-    virtual void draw2D(Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
 private:
     static BufferLayout s_VertexLayoutFullscreenQuad;

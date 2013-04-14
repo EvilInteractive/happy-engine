@@ -53,11 +53,11 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model* asyncLoadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* asyncLoadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::ModelMesh* asyncLoadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
 
-    gfx::Model* loadModel(const std::string& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* loadModelMesh(const std::string& path, const std::string& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::ModelMesh* loadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
 
     /* GETTERS */
     bool isLoading() const;
@@ -66,10 +66,12 @@ private:
     struct ModelLoadData
     {
     public:
-        std::string path;
+        ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false) {}
+        he::String path;
         gfx::BufferLayout vertexLayout;
         ObjectHandle modelHandle;
         models::IModelLoader* loader;
+        bool savePickingData;
     };
 
     bool getModelLoader(ModelLoadData& data);
@@ -79,18 +81,18 @@ private:
     bool loadModel(ModelLoadData& data);
     bool createModel(ModelLoadData& data);
 
-    bool isModelLoaded(const std::string& path, ObjectHandle& outHandle);
+    bool isModelLoaded(const he::String& path, ObjectHandle& outHandle);
     void modelLoadThread();
     bool m_isModelThreadRunning;
 
     std::queue<ModelLoadData> m_ModelLoadQueue;
-    boost::mutex m_ModelLoadQueueMutex;
+    he::Mutex m_ModelLoadQueueMutex;
     std::queue<ModelLoadData> m_ModelInvokeQueue;
-    boost::mutex m_ModelInvokeQueueMutex;
+    he::Mutex m_ModelInvokeQueueMutex;
 
-    boost::mutex m_WaitListMutex;
+    he::Mutex m_WaitListMutex;
 
-    boost::thread m_ModelLoadThread;
+    he::Thread m_ModelLoadThread;
 
 
     AssetContainer<ObjectHandle> m_AssetContainer;

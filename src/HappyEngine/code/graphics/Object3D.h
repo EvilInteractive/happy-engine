@@ -25,7 +25,7 @@
 namespace he {
 class mat44;
 
-class IObject3D
+class HAPPY_ENTRY IObject3D
 {
     friend class Object3D;
 public:
@@ -89,7 +89,7 @@ virtual void setLocalMatrixDirty(uint8 cause) { X::setLocalMatrixDirty(cause); }
 virtual void calculateWorldMatrix() { X::calculateWorldMatrix(); }
 
 
-class Object3D : public IObject3D
+class HAPPY_ENTRY Object3D : public IObject3D
 {
 public:
     Object3D();

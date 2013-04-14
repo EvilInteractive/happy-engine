@@ -19,9 +19,65 @@
 //Created: 04/09/2012
 #include "HappyPCH.h"
 #include "EntityComponent.h"
-#include "NetworkSerializer.h"
+
+#include "Property.h"
+#include "Entity.h"
 
 namespace he {
 namespace ge {
+
+IMPLEMENT_OBJECT(EntityComponent)
+
+bool EntityComponent::setProperty( const Property* const inProperty )
+{
+    bool result(true);
+    const he::FixedString& name(inProperty->getName());
+    if (name == HEFS::strTranslate)
+    {
+        setLocalTranslate(inProperty->get<vec3>());
+    }
+    else if (name == HEFS::strRotate)
+    {
+        const vec3& rotate(inProperty->get<vec3>());
+        setLocalRotate(mat33::createRotation3D(rotate));
+    }
+    else if (name == HEFS::strScale)
+    {
+        setLocalScale(inProperty->get<vec3>());
+    }
+    else
+    {
+        result = false;
+    }
+    return result;
+}
+
+bool EntityComponent::getProperty( Property* const inOutProperty )
+{
+    bool result(true);
+    const he::FixedString& name(inOutProperty->getName());
+    if (name == HEFS::strTranslate)
+    {
+        inOutProperty->set<vec3>(getLocalTranslate());
+    }
+    else if (name == HEFS::strRotate)
+    {
+        inOutProperty->set<vec3>(getLocalRotate().getEulerAngles());       
+    }
+    else if (name == HEFS::strScale)
+    {
+        inOutProperty->set<vec3>(getLocalScale());
+    }
+    else
+    {
+        result = false;
+    }
+    return result;
+}
+
+Entity* EntityComponent::getEntityParent()
+{
+    return checked_cast<Entity*>(checked_cast<Object3D*>(getParent()));
+}
 
 } } //end namespace

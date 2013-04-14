@@ -22,6 +22,7 @@
 #define _HE_MouseButtons_H_
 #pragma once
 
+#include <SFML/Window/Mouse.hpp>
 
 namespace he {
 namespace io {

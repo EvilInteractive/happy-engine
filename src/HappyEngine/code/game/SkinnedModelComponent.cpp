@@ -25,10 +25,11 @@
 #include "GraphicsEngine.h"
 #include "ModelMesh.h"
 #include "Material.h"
+#include "EntityComponentDesc.h"
 
 namespace he {
 namespace ge {
-
+    
 SkinnedModelComponent::SkinnedModelComponent(): m_ModelMesh(nullptr), m_Parent(nullptr), m_Material(nullptr)
 {
 }
@@ -110,9 +111,9 @@ const he::PrimitiveList<mat44>& SkinnedModelComponent::getBoneTransforms() const
     return m_BoneTransform;
 }
 
-SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const std::string& name ) const
+SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const he::String& name ) const
 {
-    std::map<std::string, BoneTransform>::const_iterator it(m_Bones.find(name));
+    std::map<he::String, BoneTransform>::const_iterator it(m_Bones.find(name));
     if (it == m_Bones.cend())
     {
         HE_ERROR("SkinnedModelComponent error: No bone exists with name: %s", name.c_str());
@@ -122,6 +123,21 @@ SkinnedModelComponent::BoneTransform SkinnedModelComponent::getBone( const std::
     {
         return it->second;
     }
+}
+
+void SkinnedModelComponent::fillEntityComponentDesc( EntityComponentDesc& /*desc*/ )
+{
+    LOG(LogType_ProgrammerAssert, "Not implemented");
+}
+
+bool SkinnedModelComponent::setProperty( const Property* const inProperty )
+{
+    return EntityComponent::setProperty(inProperty);
+}
+
+bool SkinnedModelComponent::getProperty( Property* const inOutProperty )
+{
+    return EntityComponent::getProperty(inOutProperty);
 }
 
 

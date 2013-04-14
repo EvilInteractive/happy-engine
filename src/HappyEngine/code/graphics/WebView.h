@@ -34,10 +34,13 @@ namespace Awesomium {
 
 namespace he {
 namespace gfx {
-class Texture2D;
+    class Texture2D;
+}
+
+namespace gui {
 class WebListener;
 
-class WebView : public IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
+class HAPPY_ENTRY WebView : public gfx::IDrawable2D, public Awesomium::WebViewListener::Load, public Awesomium::WebViewListener::View
 {
 public:
 
@@ -47,10 +50,8 @@ public:
     virtual ~WebView();
 
     /* GENERAL */
-    virtual void draw2D(Canvas2D* canvas);
-    void loadUrl(const std::string& url);   // for web
-    void loadFile(const he::Path& path);    // for local
-    void executeJavaScript(const std::string& script);
+    virtual void draw2D(gui::Canvas2D* canvas);
+    void loadUrl(const he::Path& url); 
     void focus();
     void unfocus();
     void setTransparent(bool transparent);
@@ -109,6 +110,10 @@ public:
         const Awesomium::WebURL& /*target_url*/,
         const Awesomium::Rect& /*initial_pos*/,
         bool /*is_popup*/) {}
+    void OnAddConsoleMessage(
+        Awesomium::WebView* caller,
+        const Awesomium::WebString& msg,int lineNr,
+        const Awesomium::WebString& source);
 
 private:
 
@@ -124,7 +129,7 @@ private:
     bool m_InputEnabled;
     bool m_HasFocus;
     
-    Texture2D* m_RenderTexture;
+    gfx::Texture2D* m_RenderTexture;
     vec2 m_Position;
     vec2 m_Size;
     RectF m_ViewportPercent;

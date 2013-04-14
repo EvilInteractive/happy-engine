@@ -24,8 +24,7 @@
 #include "GraphicsEngine.h"
 #include "ContentManager.h"
 #include "ControlsManager.h"
-#include "Renderer2D.h"
-#include "Canvas2Dnew.h"
+#include "Gui.h"
 
 #include "BoolTypeHandler.h"
 #include "FloatTypeHandler.h"
@@ -39,13 +38,12 @@
 #include "Scrollbar.h"
 #include "TextBox.h"
 #include "View.h"
-#include "Text.h"
 
 namespace he {
 namespace tools {
 
 /* CONSTRUCTOR - DESTRUCTOR */
-Console::Console() :	m_Shortcut(io::Key_C),
+Console::Console() :	m_Shortcut(io::Key_F1),
                         m_MaxMessages(0),
                         m_IsOpen(false),
                         m_TextBox(nullptr),
@@ -55,7 +53,8 @@ Console::Console() :	m_Shortcut(io::Key_C),
                         m_Help(""),
                         m_Font(nullptr),
                         m_Renderer(nullptr),
-                        m_ViewportSize(20,20)
+                        m_ViewportSize(20,20),
+                        m_Background(nullptr)
 {
     m_MsgColors[CMSG_TYPE_INFO] = Color(1.0f,1.0f,1.0f);
     m_MsgColors[CMSG_TYPE_WARNING] = Color(1.0f,0.9f,0.6f);
@@ -120,11 +119,15 @@ void Console::load()
     m_ScrollBar->setBarPos(1.0f);
 
     m_MaxMessagesInWindow = static_cast<uint32>(190 / m_Font->getLineSpacing());
+
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+    m_Background = cr->createSprite(vec2(1280.0f, 200.0f));
+    renderBackground();
 }
 
 Console::~Console()
 {
-    std::for_each(m_TypeHandlers.begin(), m_TypeHandlers.end(), [&](std::pair<std::string, ITypeHandler*> p)
+    std::for_each(m_TypeHandlers.begin(), m_TypeHandlers.end(), [&](std::pair<he::String, ITypeHandler*> p)
     {
         delete p.second;
         p.second = nullptr;
@@ -139,9 +142,9 @@ Console::~Console()
     delete m_ScrollBar;
 }
 
-void Console::processCommand(const std::string& command)
+void Console::processCommand(const he::String& command)
 {
-    std::string s(command);
+    he::String s(command);
 
     // remove spaces
     #if !GCC
@@ -153,13 +156,13 @@ void Console::processCommand(const std::string& command)
     if (s.find('=') != -1)
     {
         // get keyword (variable to change)
-        std::string keyWord(s.substr(0, s.find('=')));
+        he::String keyWord(s.substr(0, s.find('=')));
 
         if (m_ValueContainer.find(keyWord) != m_ValueContainer.end())
         {
-            std::string values(s.substr(s.find('=') + 1, s.size() - 1));
+            he::String values(s.substr(s.find('=') + 1, s.size() - 1));
 
-            std::string type(m_ValueContainer[keyWord].type().name());
+            he::String type(m_ValueContainer[keyWord].type().name());
             type = type.substr(0, type.size() - 2);
 
             if (m_TypeHandlers.find(type) != m_TypeHandlers.cend())
@@ -213,9 +216,9 @@ void Console::displayVars()
     }
     else
     {
-        std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<std::string, boost::any> p)
+        std::for_each(m_ValueContainer.cbegin(), m_ValueContainer.cend(), [&] (std::pair<he::String, boost::any> p)
         {
-            std::string type(p.second.type().name());
+            he::String type(p.second.type().name());
             type = type.substr(0, type.size() - 2);
 
             stream << "'" << p.first << "' (" << type << ")\n";
@@ -239,9 +242,9 @@ void Console::displayCmds()
     }
     else
     {
-        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<std::string, boost::function<void()> > p)
+        std::for_each(m_FunctionContainer.cbegin(), m_FunctionContainer.cend(), [&] (std::pair<he::String, boost::function<void()> > p)
         {
-            stream << "'" << p.first << "'";
+            stream << "'" << p.first << "'\n";
         });
     }
 
@@ -254,14 +257,14 @@ void Console::displayCmds()
 void Console::tick()
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut) && !m_TextBox->hasFocus())
+    if (CONTROLS->getKeyboard()->isKeyPressed(m_Shortcut))
     {
         m_IsOpen = !m_IsOpen;
         m_TextBox->resetText();
 
-        std::string& s = m_MsgHistory[m_MsgHistory.size() - 1].second;
+        he::String& s = m_MsgHistory[m_MsgHistory.size() - 1].second;
 
-        if (s != std::string("&FFF").append(m_HelpCommand))
+        if (s != he::String("&FFF").append(m_HelpCommand))
         {
             addMessage(m_HelpCommand.c_str(), CMSG_TYPE_INFO);
         }
@@ -323,18 +326,9 @@ void Console::tick()
     }
 }
 
-void Console::draw2D(gfx::Canvas2D* canvas)
+void Console::draw2D(gui::Canvas2D* canvas)
 {
-    he::gui::Canvas2Dnew* cvs(canvas->getRenderer2D()->getNewCanvas());
-    canvas->setBlendStyle(gfx::BlendStyle_Alpha);
-
-    canvas->setDepth(-2000);
-
-    canvas->setFillColor(Color(0.2f,0.2f,0.2f,0.9f));
-    canvas->fillRect(vec2(0,0), vec2(canvas->getSize().x, 200));
-
-    canvas->setStrokeColor(Color(0.19f,0.19f,0.19f));
-    canvas->strokeRect(vec2(0,0), vec2(canvas->getSize().x, 200));
+    canvas->drawSprite(m_Background, vec2(0,0));
 
     m_TextBox->draw(canvas);
     
@@ -349,12 +343,10 @@ void Console::draw2D(gfx::Canvas2D* canvas)
         m_Text.addTextExt("%s\n", m_MsgHistory[i].second.c_str());
     }
 
-    cvs->fillText(m_Text, vec2(5, 5));
-
+    canvas->fillText(m_Text, vec2(5, 5));
+    
     if (m_MsgHistory.size() > m_MaxMessagesInWindow)
         m_ScrollBar->draw(canvas);
-
-    canvas->restoreDepth();
 }
 
 void Console::addMessage(const char* msg, CMSG_TYPE type)
@@ -368,11 +360,33 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
         type == CMSG_TYPE_COMMAND? "] " : "", msg);
 
     size_t size(strlen(buff));
-
-    size = std::remove(buff, buff + size, '\n') - buff;
     buff[size] = 0;
 
-    m_MsgHistory.add(std::pair<CMSG_TYPE, std::string>(type, buff));
+    size_t lineCharStart(0);
+    for (size_t i(0); i < size; ++i)
+    {
+        const char character(buff[i]);
+
+        if (character == '\n')
+        {
+            const size_t lineSize(i - lineCharStart);
+            if (lineSize > 0)
+            {
+                m_MsgHistory.add(std::make_pair(type, he::String(buff, lineCharStart, lineSize)));
+            }
+
+            lineCharStart = i + 1;
+        }
+    }
+
+    if (lineCharStart < size)
+    {
+        const size_t lineSize(size - lineCharStart);
+        if (lineSize > 0)
+        {
+            m_MsgHistory.add(std::make_pair(type, he::String(buff, lineCharStart, lineSize)));
+        }
+    }
 
     if (m_MsgHistory.size() > m_MaxMessages && m_MaxMessages != 0)
     {
@@ -380,7 +394,7 @@ void Console::addMessage(const char* msg, CMSG_TYPE type)
     }
 }
 
-void Console::registerCmd(const boost::function<void()>& command, const std::string& cmdKey)
+void Console::registerCmd(const boost::function<void()>& command, const he::String& cmdKey)
 {
     HE_IF_ASSERT(m_FunctionContainer.find(cmdKey) == m_FunctionContainer.end(), "Command: '%s' already registered", cmdKey.c_str())
     {
@@ -448,7 +462,7 @@ void Console::attachToRenderer(gfx::Renderer2D* renderer)
 
         if (m_IsOpen)
         {
-            m_Renderer->attachToRender(this, 65000);
+            m_Renderer->attachToRender(this, 1);
         }
     }
 }
@@ -476,6 +490,22 @@ void Console::onResize()
 
     m_TextBox->setSize(vec2(m_ViewportSize.x, 20.f));
     m_ScrollBar->setPosition(vec2(m_ViewportSize.x - 20, 0));
+
+    m_Background->invalidate(vec2(m_ViewportSize.x, 200));
+
+    renderBackground();
+}
+
+void Console::renderBackground()
+{
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
+    cr->setActiveSprite(m_Background);
+    
+    cr->rectangle(vec2(0,0), vec2(m_Background->getSize().x - 2, 200));
+    cr->setColor(Color(0.2f,0.2f,0.2f,0.9f));
+    cr->fill();
+    cr->setColor(Color(0.19f,0.19f,0.19f));
+    cr->stroke();
 }
 
 } } //end namespace

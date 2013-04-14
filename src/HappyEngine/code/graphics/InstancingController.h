@@ -42,8 +42,8 @@ class Scene;
 class InstancingController : public InstancedDrawable, public ge::ITickable
 {
 public:
-    InstancingController(const std::string& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
-    InstancingController(const std::string& name, bool dynamic, const std::string& materialAsset, const std::string& modelAsset);
+    InstancingController(const he::String& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material);
+    InstancingController(const he::String& name, bool dynamic, const he::String& materialAsset, const he::String& modelAsset);
     virtual ~InstancingController();
 
     uint32 addInstance(const IInstancible* pObj); //return id
@@ -92,7 +92,7 @@ private:
 
     bool m_Dynamic, m_NeedsUpdate, m_ManualMode;
 
-    std::string m_Name;
+    he::String m_Name;
 
     details::InstancingBuffer m_CpuBuffer;
     uint32  m_GpuBuffer;

@@ -37,12 +37,12 @@ namespace gfx {
     class Window;
     class View;
     class Renderer2D;
-    class WebView;
-    class WebListener;
 }
 namespace gui {
     class Sprite;
     class BezierShape2D;
+    class WebView;
+    class WebListener;
 }
 namespace ct {
     class ShaderGenerator;
@@ -50,7 +50,7 @@ namespace ct {
 namespace tools {
 class MaterialGeneratorNode;
 
-class MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
+class HAPPY_ENTRY MaterialGeneratorGraph : public ge::ITickable, public gfx::IDrawable2D
 {
     friend class MaterialGeneratorGraphMoveCommand;
     friend class MaterialGeneratorGraphEditSelectionCommand;
@@ -86,12 +86,13 @@ public:
 
     /* GENERAL */
     void init();
+    void clear();
 
     void open();
     void close();
     
     virtual void tick(float dTime);
-    virtual void draw2D(gfx::Canvas2D* canvas);
+    virtual void draw2D(gui::Canvas2D* canvas);
 
     /* GETTERS */
     ct::ShaderGenerator* getGenerator() const { return m_Generator; }
@@ -102,8 +103,8 @@ public:
 
     void pushError(const MaterialGeneratorError& errorMsg);
 
-    void save();
-    void load();
+    void save(const he::Path& path);
+    void load(const he::Path& path);
 
 private:
 
@@ -124,6 +125,8 @@ private:
     void updateErrors(const float dTime);
 
     void addNode(MaterialGeneratorNode* const node);
+
+    void visit(he::io::StructuredVisitor* const visitor);
 
     /* MEMBERS */
     ct::ShaderGenerator* m_Generator;
@@ -173,8 +176,8 @@ private:
     he::ObjectList<ErrorMessage> m_VisibleErrors;
     gui::Sprite* m_ErrorBackgroundSprite;
 
-    gfx::WebView* m_WebViewGui;
-    gfx::WebListener* m_WebListener;
+    gui::WebView* m_WebViewGui;
+    gui::WebListener* m_WebListener;
 
     /* DEFAULT COPY & ASSIGNMENT */
     MaterialGeneratorGraph(const MaterialGeneratorGraph&);

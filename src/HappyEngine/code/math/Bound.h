@@ -58,6 +58,10 @@ public:
         }
         return IntersectResult_Outside;
     }
+    bool intersectTest(const Ray& ray) const
+    {
+        return m_Sphere.intersectTest(ray);
+    }
     bool isOtherInside(const Bound& other) const
     {
         if (m_Sphere.intersectTest(other.m_Sphere))

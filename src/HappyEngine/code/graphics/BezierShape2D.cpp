@@ -22,10 +22,6 @@
 #include "BezierShape2D.h"
 
 #include "Gui.h"
-#include "SpriteCreator.h"
-#include "Renderer2D.h"
-#include "Canvas2D.h"
-#include "Canvas2Dnew.h"
 
 namespace he {
 namespace gui {
@@ -36,14 +32,14 @@ BezierShape2D::BezierShape2D():
     m_Sprite(nullptr), m_NeedsUpdate(false),
     m_PositionBegin(0, 0), m_PositionEnd(0, 0)
 {
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     m_Sprite = cr->createSprite(vec2(64, 64), gui::Sprite::DYNAMIC_DRAW | gui::Sprite::UNIFORM_SCALE);
 }
 
 
 BezierShape2D::~BezierShape2D()
 {
-    GUI->Sprites->removeSprite(m_Sprite);
+    GUI->getSpriteCreator()->removeSprite(m_Sprite);
 }
 
 void BezierShape2D::setPositionStart( const vec2& position )
@@ -81,7 +77,7 @@ void BezierShape2D::setEndTangent( const vec2& tangent )
         m_NeedsUpdate = true;
     }
 }
-void BezierShape2D::draw2D( gfx::Canvas2D* const canvas, const mat33& transform )
+void BezierShape2D::draw2D(gui::Canvas2D* const canvas, const mat33& transform)
 {
     vec2 diff(m_PositionEnd - m_PositionBegin);
     const vec2 myNormal(diff.x > 0? 1.0f : -1.0f, 0.0f);
@@ -91,8 +87,7 @@ void BezierShape2D::draw2D( gfx::Canvas2D* const canvas, const mat33& transform 
     const vec2 size((transform * vec3(m_Sprite->getSize().x, m_Sprite->getSize().y, 0)).xy());
     const vec2 scaledMarge((transform * vec3(marge.x, marge.y, 0)).xy());
 
-    Canvas2Dnew* const cvs(canvas->getRenderer2D()->getNewCanvas());
-    cvs->drawSprite(m_Sprite, 
+    canvas->drawSprite(m_Sprite, 
         transformedPosition - vec2(myNormal.x > 0 ? scaledMarge.x / 2.0f : size.x - scaledMarge.x / 2.0f,
                                    myUp.y > 0 ? scaledMarge.y / 2.0f : size.y - scaledMarge.y / 2.0f), size);
     if (m_NeedsUpdate)
@@ -118,7 +113,7 @@ void BezierShape2D::updateShape()
 
     m_Sprite->invalidate(size);
 
-    gui::SpriteCreator* const cr(GUI->Sprites);
+    gui::SpriteCreator* const cr(GUI->getSpriteCreator());
     cr->setActiveSprite(m_Sprite);
     cr->newPath();
     cr->moveTo(beginPoint);

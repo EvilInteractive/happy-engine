@@ -51,9 +51,9 @@ void Simple2DFontEffect::load()
     layout.addElement(ShaderLayoutElement(2, "inColor"));
 
     m_Shader = ResourceFactory<Shader>::getInstance()->get(ResourceFactory<Shader>::getInstance()->create());
-    he::ObjectList<std::string> shaderOutputs;
+    he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");
-    const std::string& folder(CONTENT->getShaderFolderPath().str());
+    const he::String& folder(CONTENT->getShaderFolderPath().str());
     const bool compiled = m_Shader->initFromFile(folder + "2D/simple2DFontShader.vert", 
                                                  folder + "2D/simple2DFontShader.frag", layout, shaderOutputs);
     HE_ASSERT(compiled, ""); compiled;

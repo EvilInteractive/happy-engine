@@ -29,7 +29,7 @@
 namespace he {
 namespace px {
 
-class PhysicsBoxShape : public IPhysicsShape
+class HAPPY_ENTRY PhysicsBoxShape : public IPhysicsShape
 {
 public:
     explicit PhysicsBoxShape(const vec3& dimension);

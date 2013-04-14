@@ -9,8 +9,7 @@ addFilter(CODE_SRCS src/graphics code/graphics/
             IDrawable2D.h
             IShapeDrawable.h
             Object3D.cpp                        Object3D.h
-            IDrawable.h    
-            IPickable.h 
+            IDrawable.h  
             SkyBox.cpp                          SkyBox.h
 			Texture.cpp							Texture.h
             Texture2D.cpp                       Texture2D.h
@@ -27,6 +26,11 @@ addFilter(CODE_SRCS src/graphics/gui code/graphics/
 			Sprite.cpp							Sprite.h
 			SpriteCreator.cpp					SpriteCreator.h
 			Gui.h
+			WebView.cpp                         WebView.h
+            WebWindow.cpp                       WebWindow.h
+			WebListener.cpp					    WebListener.h
+			JSObject.cpp						JSObject.h
+			Canvas2D.cpp                        Canvas2D.h
         )
             
 addFilter(CODE_SRCS src/graphics/light code/graphics/
@@ -52,12 +56,7 @@ addFilter(CODE_SRCS src/graphics/model code/graphics/
             Model.cpp                           Model.h
             ModelMesh.cpp                       ModelMesh.h
         )
-            
-addFilter(CODE_SRCS src/graphics/picking code/graphics/
-            PickEffect.cpp                      PickEffect.h
-            Picker.cpp                          Picker.h
-        )
-            
+                        
 addFilter(CODE_SRCS src/graphics/rendering code/graphics/
             CameraOrtho.cpp                     CameraOrtho.h
             CameraPerspective.cpp               CameraPerspective.h
@@ -74,8 +73,6 @@ addFilter(CODE_SRCS src/graphics/rendering code/graphics/
         )
             
 addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
-			Canvas2D.cpp                        Canvas2D.h
-			Canvas2Dnew.cpp                     Canvas2Dnew.h
 			Canvas2DBuffer.cpp                  Canvas2DBuffer.h
 			Canvas2DRendererGL.cpp              Canvas2DRendererGL.h
 			Canvas2DRendererCairo.cpp           Canvas2DRendererCairo.h
@@ -83,12 +80,10 @@ addFilter(CODE_SRCS src/graphics/rendering/2D code/graphics/
 			Simple2DEffect.cpp                  Simple2DEffect.h
 			Simple2DFontEffect.cpp              Simple2DFontEffect.h
 			Simple2DTextureEffect.cpp           Simple2DTextureEffect.h
-			WebView.cpp                         WebView.h
-            WebWindow.cpp                       WebWindow.h
-			WebListener.cpp					    WebListener.h
-			JSObject.h
 			NinePatchEffect.cpp					NinePatchEffect.h
 			SpriteData.h
+			WebViewSurface.cpp					WebViewSurface.h
+			WebViewSurfaceFactory.cpp			WebViewSurfaceFactory.h
         )
             
 addFilter(CODE_SRCS src/graphics/rendering/2D/shapes code/graphics/

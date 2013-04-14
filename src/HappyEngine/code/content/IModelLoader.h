@@ -39,10 +39,10 @@ class IModelLoader
 public:
     virtual ~IModelLoader() {}
   
-    virtual bool load(const std::string& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
+    virtual bool load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
 
     virtual size_t getNumMeshes() const = 0;
-    virtual const std::string& getMeshName(uint32 mesh) const = 0;
+    virtual const he::String& getMeshName(uint32 mesh) const = 0;
 
     virtual const void* getVertices(uint32 mesh) const = 0;
     virtual size_t getNumVertices(uint32 mesh) const = 0;

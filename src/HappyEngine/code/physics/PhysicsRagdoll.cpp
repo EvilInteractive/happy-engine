@@ -26,6 +26,11 @@
 
 #include "PhysicsEngine.h"
 
+#include <extensions/PxD6Joint.h>
+#include <PxAggregate.h>
+#include <PxScene.h>
+#include <PxRigidDynamic.h>
+
 namespace he {
 namespace px {
 
@@ -107,7 +112,7 @@ void PhysicsRagdoll::addBodyPart(PhysicsDynamicActor** ppActor, const BodyPart& 
     (*ppActor) = NEW PhysicsDynamicActor(mat44::createTranslation(m_StartPosition) * part.bonePose);
     PHYSICS->getScene()->removeActor(*(*ppActor)->getInternalActor());
     m_Aggregate->addActor(*(*ppActor)->getInternalActor());
-    (*ppActor)->getInternalActor()->setSolverIterationCounts(8, 2);
+    static_cast<physx::PxRigidDynamic*>((*ppActor)->getInternalActor())->setSolverIterationCounts(8, 2);
     PhysicsCapsuleShape pelvisShape(part.radius / 2.0f, part.length);
     (*ppActor)->addShape(&pelvisShape, material, part.mass, collisionGroup, collisionGroupAgainst, part.capsulePose);
 }

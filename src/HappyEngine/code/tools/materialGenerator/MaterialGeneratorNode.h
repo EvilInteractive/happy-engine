@@ -27,15 +27,14 @@
 #include "MaterialGeneratorNodeParam.h"
 
 namespace he {
-namespace gfx {
-    class Canvas2D;
-}
 namespace io {
+    class StructuredVisitor;
     class BinaryFileVisitor;
 }
 namespace gui {
     class Sprite;
     class BezierShape2D;
+    class Canvas2D;
 }
 namespace tools {
 
@@ -52,10 +51,10 @@ protected:
     struct ConnecterDesc
     {
         ConnecterDesc() {}
-        ConnecterDesc(const std::string& name, const Color& color)
+        ConnecterDesc(const he::String& name, const Color& color)
             : m_Name(name)
             , m_Color(color) {}
-        std::string m_Name;
+        he::String m_Name;
         Color m_Color;
     };
 public:
@@ -84,7 +83,7 @@ public:
         void setHoover(const bool isHoovered) { m_IsHooverd = isHoovered; }
 
         void renderSprites();
-        void draw2D(gfx::Canvas2D* const canvas, const mat33& transform) const;
+        void draw2D(gui::Canvas2D* const canvas, const mat33& transform) const;
 
     private:
         he::event0<void> Moved;
@@ -135,10 +134,12 @@ public:
     void setGuid(const Guid& id) { m_Guid = id; }
     const Guid& getGuid() const { return m_Guid; }
     const he::PrimitiveList<Connecter*>& getConnecters() const { return m_Connecters; }
+    he::PrimitiveList<Connecter*>& getConnectersForEdit() { return m_Connecters; }
     
-    void visit(io::BinaryFileVisitor& stream);
+    void visit(io::StructuredVisitor* const visitor);
+    void visit(io::BinaryFileVisitor* const visitor);
 
-    void draw2D(gfx::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
+    void draw2D(gui::Canvas2D* const canvas, const mat33& transform, const RectF& clipRect);
 
 protected:
     void addOverload(uint8 outputCount, uint8 inputCount, ...);   // Takes MaterialGeneratorVariableType's

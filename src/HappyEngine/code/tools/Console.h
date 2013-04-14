@@ -40,6 +40,7 @@ namespace gui {
     class TextBox;
     class Text;
     class Scrollbar;
+    class Sprite;
 }
 
 namespace gfx {
@@ -50,7 +51,7 @@ namespace gfx {
 namespace tools {
 class ITypeHandler;
 
-class Console : public gfx::IDrawable2D
+class HAPPY_ENTRY Console : public gfx::IDrawable2D
 {
 public:
 
@@ -65,12 +66,12 @@ public:
     void attachToRenderer(gfx::Renderer2D* renderer);
     void detachFromRenderer();
 
-    virtual void draw2D(gfx::Canvas2D* canvas); // auto called
+    virtual void draw2D(gui::Canvas2D* canvas); // auto called
 
     void addMessage(const char* msg, CMSG_TYPE type = CMSG_TYPE_INFO);
 
     template <typename T>
-    void registerVar(T* pVar, const std::string& varKey)
+    void registerVar(T* pVar, const he::String& varKey)
     {
         HE_IF_ASSERT(m_TypeHandlers.find(typeid(T).name()) != m_TypeHandlers.cend(), "Type handler for '%s'not specified!", typeid(T).name())
         {
@@ -81,7 +82,7 @@ public:
         }
     }
 
-    void registerCmd(const boost::function<void()>& command, const std::string& cmdKey);
+    void registerCmd(const boost::function<void()>& command, const he::String& cmdKey);
 
     void addTypeHandler(ITypeHandler* typeHandler);
     void flushMessageHistory();
@@ -99,19 +100,20 @@ public:
 
 private:
 
-    void processCommand(const std::string& command);
+    void processCommand(const he::String& command);
     void displayHelp();
     void displayVars();
     void displayCmds();
     void onResize();
+    void renderBackground();
 
     /* DATAMEMBERS */
-    std::map<std::string, boost::any> m_ValueContainer;
-    std::map<std::string, boost::function<void()> > m_FunctionContainer;
+    std::map<he::String, boost::any> m_ValueContainer;
+    std::map<he::String, boost::function<void()> > m_FunctionContainer;
     std::map<CMSG_TYPE, Color> m_MsgColors;
-    std::map<std::string, ITypeHandler*> m_TypeHandlers;
-    he::ObjectList<std::pair<CMSG_TYPE, std::string> > m_MsgHistory;
-    he::ObjectList<std::string> m_CmdHistory;
+    std::map<he::String, ITypeHandler*> m_TypeHandlers;
+    he::ObjectList<std::pair<CMSG_TYPE, he::String> > m_MsgHistory;
+    he::ObjectList<he::String> m_CmdHistory;
     std::map<CMSG_TYPE, bool> m_ShowMessageTypes;
 
     io::Key m_Shortcut;
@@ -123,14 +125,15 @@ private:
     bool m_IsOpen;
 
     gui::TextBox* m_TextBox;
-    std::string m_Help;
+    he::String m_Help;
     gui::Scrollbar* m_ScrollBar;
 
-    std::string m_HelpCommand;
+    he::String m_HelpCommand;
 
     gui::Font* m_Font;
     gui::Text m_Text;
     gfx::Renderer2D* m_Renderer;
+    gui::Sprite* m_Background;
 
     vec2 m_ViewportSize;
     eventCallback0<void> m_ResizeHandler;

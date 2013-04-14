@@ -27,7 +27,7 @@
 namespace he {
 namespace io {
 
-class IKeyboard
+class HAPPY_ENTRY IKeyboard
 {
 public:
     virtual ~IKeyboard() {}

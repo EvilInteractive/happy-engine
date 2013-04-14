@@ -37,6 +37,8 @@
 #include "CameraPerspective.h"
 #include "Game.h"
 #include "SkyBox.h"
+#include "ControlsManager.h"
+#include "OculusRiftBinding.h"
 
 namespace he {
 namespace gfx {
@@ -51,11 +53,9 @@ int rendererSorter(const IRenderer* a, const IRenderer* b)
     else if (aPass > bPass) return 1;
     else
     {
-        int aPriority(a->getRenderPriority());
-        int bPriority(b->getRenderPriority());
-        if (aPriority < bPriority) return -1;
-        else if (aPriority > bPriority) return 1;
-        else return 0;
+        const int aPriority(a->getRenderPriority());
+        const int bPriority(b->getRenderPriority());
+        return bPriority - aPriority;
     }
 }
 
@@ -98,8 +98,17 @@ View::~View()
 void View::init( const RenderSettings& settings )
 {
     m_Settings = settings;
+    setStereo(m_Settings.stereoSetting, true);
 
     HE_ASSERT(ViewportSizeChanged.empty() == true, "Do not register events before View::init"); // we want to be first in line
+    he::eventCallback0<void> updateCameraAspect([this]()
+    {
+        if (m_Camera != nullptr)
+        {
+            m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
+        }
+    });
+    ViewportSizeChanged += updateCameraAspect;
     if (settings.enablePost)
     {
         he::eventCallback0<void> resizeCallback([&]()
@@ -165,6 +174,54 @@ void View::init( const RenderSettings& settings )
     });
 
 }
+//  Setters  //////////////////////////////////////////////////////////////
+void View::setStereo( const StereoSetting stereo, const bool force )
+{
+    if (stereo != m_Settings.stereoSetting || force)
+    {
+        switch (stereo)
+        {
+            case StereoSetting_None:
+            {
+                const CameraSettings& camSettings(m_Settings.cameraSettings);
+                if (m_Camera != nullptr)
+                {
+                    m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
+                    m_Camera->setEyeShift(0.0f, 0.0f);
+                    m_Camera->setFov(camSettings.fov);
+                }
+                if (camSettings.useRelativeViewport)
+                {
+                    setRelativeViewport(RectF(
+                        camSettings.viewport.relativeViewport[0], 
+                        camSettings.viewport.relativeViewport[1], 
+                        camSettings.viewport.relativeViewport[2], 
+                        camSettings.viewport.relativeViewport[3]));
+                }
+                else
+                {
+                    setAbsoluteViewport(RectI(
+                        camSettings.viewport.absoluteViewport[0], 
+                        camSettings.viewport.absoluteViewport[1], 
+                        camSettings.viewport.absoluteViewport[2], 
+                        camSettings.viewport.absoluteViewport[3]));
+                }
+            } break;
+            case StereoSetting_OculusRift:
+            {
+                const CameraSettings& camSettings(m_Settings.cameraSettings);
+                HE_ASSERT(camSettings.useRelativeViewport == true, "When using the oculus we must have a relative viewport!");
+                // Oculus can only work if we go fullscreen! ( + horizontal splitscreen)
+                setRelativeViewport(RectF(0.0f, camSettings.viewport.relativeViewport[1], 0.5f, camSettings.viewport.relativeViewport[3]));
+            } break;
+            default:
+            {
+                LOG(LogType_ProgrammerAssert, "Unknown stereo mode");
+            }
+        }
+        m_Settings.stereoSetting = stereo;
+    }
+}
 
 //  Plugin  //////////////////////////////////////////////////////////////
 void View::addRenderPlugin( IRenderer* renderer )
@@ -176,35 +233,61 @@ void View::addRenderPlugin( IRenderer* renderer )
 }
 
 //  Window  //////////////////////////////////////////////////////////////
-void View::setWindow( Window* window )
+void View::setWindow( Window* window, const EViewInsertMode mode )
 {
     HE_ASSERT(window != nullptr, "active window can not be nullptr!");
     if (m_Window != nullptr)
+    {
         m_Window->Resized -= m_WindowResizedCallback;
+        m_Window->removeView(getHandle());
+    }
     m_Window = window;
     m_Window->Resized += m_WindowResizedCallback;
+    if (mode == eViewInsertMode_Last)
+    {
+        m_Window->addViewAtEnd(getHandle());
+    }
+    else
+    {
+        m_Window->addViewAtBegin(getHandle());
+    }
 }
-void View::setAbsoluteViewport( const RectI& viewport )
+void View::setAbsoluteViewport( const RectI& viewport, const bool force )
 {
-    m_Viewport = viewport;
-    m_UsePercentage = false;
-    ViewportSizeChanged();
+    if (force || m_Viewport.width != viewport.width || m_Viewport.height != viewport.height)
+    {
+        m_Viewport = viewport;
+        m_UsePercentage = false;
+        ViewportSizeChanged();
+    }
+    else
+    {
+        m_Viewport = viewport;
+    }
 }
-void View::setRelativeViewport( const RectF& viewportPercentage )
+void View::setRelativeViewport( const RectF& viewportPercentage, const bool force )
 {
     m_ViewportPercentage = viewportPercentage;
     m_UsePercentage = true;
     if (m_Window != nullptr)
     {
+        RectI oldViewPort(m_Viewport);
         calcViewportFromPercentage();
-        ViewportSizeChanged();
+        if (force || m_Viewport.width != oldViewPort.width || m_Viewport.height != oldViewPort.height)
+        {
+            ViewportSizeChanged();
+        }
     }
 }
 void View::resize()
 {
+    RectI oldViewPort(m_Viewport);
     calcViewportFromPercentage();
 
-    ViewportSizeChanged();
+    if (m_Viewport.width != oldViewPort.width || m_Viewport.height != oldViewPort.height)
+    {
+        ViewportSizeChanged();
+    }
 }
 void View::calcViewportFromPercentage()
 {
@@ -221,6 +304,10 @@ void View::calcViewportFromPercentage()
 void View::setCamera( CameraPerspective* camera )
 {
     m_Camera = camera;
+    if (m_Camera != nullptr)
+    {
+        m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
+    }
 }
 
 void View::tick( float dTime )
@@ -231,37 +318,70 @@ void View::tick( float dTime )
 
 void View::draw()
 {
-    if (m_Window->isOpen())
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
+
+    if (m_Settings.stereoSetting == StereoSetting_OculusRift)
     {
-        m_Window->prepareForRendering();
-        GRAPHICS->setActiveView(this);
+        RectI newViewport(m_Viewport);
+
+        io::OculusRiftDevice* const oculus(CONTROLS->getOculusRiftBinding()->getDevice(0));
+
+        const float eyeShift(oculus->getInterpupillaryDistance() * 0.5f);
+        const float projectedEyeShift(1.0f - 4.0f * eyeShift / oculus->getScreenWidth());
+
         if (m_Camera != nullptr)
         {
-            m_Camera->setAspectRatio(m_Viewport.width / (float)m_Viewport.height);
-            m_Camera->prepareForRendering();
+            m_Camera->setFov(2.0f * atan(oculus->getScreenHeight() / (2.0f * oculus->getEyeToScreenDistance())));
+            m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
+            m_Camera->setEyeShift(eyeShift, projectedEyeShift);
         }
+        render();
 
-        GL::heSetViewport(m_Viewport);
-        if (m_IntermediateRenderTarget != nullptr)
-            m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
-        m_OutputRenderTarget->clear(Color(0.2f, 0.4f, 0.6f, 1.0f));
-
-        m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
-
-        if (m_Settings.enablePost)
-            m_PostProcesser->draw();
-
-        if (m_IntermediateRenderTarget != nullptr)
+        newViewport.x += newViewport.width;
+        setAbsoluteViewport(newViewport);
+        if (m_Camera != nullptr)
         {
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
-            m_OutputRenderTarget->prepareForRendering();
-            glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+            m_Camera->setEyeShift(-eyeShift, -projectedEyeShift);
         }
+        render();
 
-        m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
-
-        m_Window->present();
+        newViewport.x -= newViewport.width;
+        setAbsoluteViewport(newViewport);
     }
+    else
+    {
+        render();
+    }
+}
+
+void View::render()
+{
+    if (m_Camera != nullptr)
+    {
+        m_Camera->prepareForRendering();
+    }
+
+    GL::heSetViewport(m_Viewport);
+
+    if (m_IntermediateRenderTarget != nullptr)
+        m_IntermediateRenderTarget->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
+
+    m_PrePostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
+
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
+    if (m_Settings.enablePost)
+        m_PostProcesser->draw();
+
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
+    if (m_IntermediateRenderTarget != nullptr)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_IntermediateRenderTarget->getFboId());
+        m_OutputRenderTarget->prepareForRendering();
+        glBlitFramebuffer(0, 0, m_Viewport.width, m_Viewport.height, 0, 0, m_Viewport.width, m_Viewport.height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    }
+
+    HE_ASSERT(GL::s_CurrentContext == m_Window->getContext(), "Context Access violation!");
+    m_PostPostRenderPlugins.forEach([](IRenderer* renderer) { renderer->render(); });
 }
 
 //////////////////////////////////////////////////////////////////////////

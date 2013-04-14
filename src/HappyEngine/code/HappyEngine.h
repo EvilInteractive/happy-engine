@@ -52,9 +52,12 @@ namespace ge {
     class Game;
     class CameraManager;
 }
+namespace pl {
+    class PluginLoader;
+}
 }
 
-#define HAPPYENGINE he::HappyEngine::getPointer()
+#define HAPPYENGINE he::HappyEngine::getInstance()
 #define GRAPHICS HAPPYENGINE->getGraphicsEngine()
 #define CONTROLS HAPPYENGINE->getControls()
 #define PHYSICS HAPPYENGINE->getPhysics()
@@ -76,18 +79,17 @@ enum SubEngine
     SubEngine_All = 1<<0 | 1<<1 | 1<<2 | 1<<3
 };
 
-class HappyEngine
+class HAPPY_ENTRY HappyEngine : public Singleton<HappyEngine>
 {
+friend class Singleton<HappyEngine>;
 public:
     virtual ~HappyEngine();
 
-    static void init(int subengines);
-    void start(ge::Game* pGame);
-
+    static void init(const int subengines, const he::Path& dataPath);
     static void dispose();
 
-    static HappyEngine* getPointer();
-
+    void start(ge::Game* pGame);
+        
     void quit();
     
     void audioLoop();
@@ -106,14 +108,11 @@ public:
     sfx::SoundEngine* getSoundEngine() const { return m_SoundEngine; }
     ge::Game* getGame() const { return m_Game; }
     gui::Gui* getGui() const { return m_Gui; }
-
-    static const Random& getRandom() { return s_Random; }
-
+    pl::PluginLoader* getPluginLoader() const { return m_PluginLoader; }
+    
 private:
     // Singleton design pattern
     HappyEngine();
-    static HappyEngine* s_HappyEngine;
-    static Random s_Random;
 
     void initSubEngines(int subengines);
     
@@ -128,6 +127,7 @@ private:
     tools::Console* m_Console;
     sfx::SoundEngine* m_SoundEngine;
     gui::Gui* m_Gui;
+    pl::PluginLoader* m_PluginLoader;
 
     Path m_RootDir;
 
@@ -137,7 +137,7 @@ private:
 
     int m_SubEngines;
 
-    boost::thread m_AudioThread;
+    he::Thread m_AudioThread;
 
     boost::chrono::high_resolution_clock::time_point m_PrevTime;
     

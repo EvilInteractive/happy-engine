@@ -101,18 +101,60 @@ struct LightingSettings
         return !(*this == other);
     }
 };
+enum StereoSetting
+{
+    StereoSetting_None,
+    StereoSetting_OculusRift
+}; 
+struct CameraSettings
+{
+    CameraSettings(): fov(pi / 3.0f), useRelativeViewport(true) 
+    { 
+        viewport.relativeViewport[0] = 0.0f; 
+        viewport.relativeViewport[1] = 0.0f;
+        viewport.relativeViewport[2] = 1.0f;
+        viewport.relativeViewport[3] = 1.0f;
+    }
+
+    void setRelativeViewport(const RectF& rect)
+    {
+        useRelativeViewport = true;
+        viewport.relativeViewport[0] = rect.x; 
+        viewport.relativeViewport[1] = rect.y;
+        viewport.relativeViewport[2] = rect.width;
+        viewport.relativeViewport[3] = rect.height;
+    }
+    void setAbsoluteViewport(const RectI& rect)
+    {
+        useRelativeViewport = false;
+        viewport.absoluteViewport[0] = rect.x; 
+        viewport.absoluteViewport[1] = rect.y;
+        viewport.absoluteViewport[2] = rect.width;
+        viewport.absoluteViewport[3] = rect.height;
+    }
+
+    float fov;
+    bool useRelativeViewport;
+    union 
+    {
+        float relativeViewport[4];
+        uint32 absoluteViewport[4];
+    } viewport;
+};
 
 struct RenderSettings
 {
 public:
-    RenderSettings(): enableDeferred(true), enablePost(true)
+    RenderSettings(): enableDeferred(true), enablePost(true), stereoSetting(StereoSetting_None)
     {}
     bool enableDeferred;
     bool enablePost; 
+    StereoSetting stereoSetting;
         
     LightingSettings lightingSettings;
     PostSettings postSettings;
     ShadowSettings shadowSettings;
+    CameraSettings cameraSettings;
 };
 
 } } //end namespace
