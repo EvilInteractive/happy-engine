@@ -15,43 +15,30 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
+//Author:  Bastian Damman
+//Created: 13/04/2013
 
-#ifndef _FLY_CAMERA_H_
-#define _FLY_CAMERA_H_
+#ifndef _HE_IPickingManager_H_
+#define _HE_IPickingManager_H_
 #pragma once
 
-#include "CameraPerspective.h"
+namespace he {
+class Ray;
+namespace ge {
+class PickResult;
+class Pickable;
 
-namespace hs {
-
-class FlyCamera : public he::gfx::CameraPerspective
+class IPickingManager
 {
 public:
-    // CONSTRUCTOR - DESTRUCTOR
-    FlyCamera();
-    virtual ~FlyCamera();
+    virtual ~IPickingManager() {}
 
-    // GENERAL
-    virtual void tick(const float dTime);
-    
-    // SETTERS
-    void moveable(bool bMoveable);
-    void setMouseSensitivty(float sens = 100.0f);
+    virtual bool pick(const Ray& ray, PickResult& result) = 0;
 
-private:
-    bool m_bMoveable;
-
-    float m_Speed;
-    float m_FastForward;
-    float m_MouseSensitivity;
-
-    he::vec2 m_PreviousMousePos;
-
-    //Disable default copy constructor and default assignment operator
-    FlyCamera(const FlyCamera&);
-    FlyCamera& operator=(const FlyCamera&);
+    virtual void addToPickList(Pickable* const object) = 0;
+    virtual void removeFromPickList(Pickable* const object) = 0;
 };
 
-} //end namespace
+} } //end namespace
 
 #endif

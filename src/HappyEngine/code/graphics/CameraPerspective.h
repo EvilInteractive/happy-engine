@@ -62,12 +62,14 @@ public:
     virtual float getFarClip() const { return m_FarZ; }
     virtual const vec3& getPosition() const { return m_PosWorld; }
     virtual const vec3& getLook() const { return m_LookWorld; }
+    virtual ECameraType getCameraType() { return eCameraType_Perspective; }
+
     virtual void prepareForRendering();
     virtual IntersectResult intersect(const Bound& bound) const;
     virtual IntersectResult intersect(const Sphere& bound) const;
 
     // GENERAL
-    virtual void tick(float /*dTime*/) {}
+    virtual void tick(const float /*dTime*/) {}
     virtual void lookAt(const vec3& pos, const vec3& target, const vec3& up);
 
     // SETTERS

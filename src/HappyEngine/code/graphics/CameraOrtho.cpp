@@ -36,7 +36,9 @@ CameraOrtho::CameraOrtho() :
     m_PosWorld(0.0f, 0.0f, 0.0f),
     m_RightWorld(0.0f, 0.0f, 1.0f),
     m_UpWorld(0.0f, 1.0f, 0.0f),
-    m_LookWorld(1.0f, 0.0f, 0.0f)
+    m_LookWorld(1.0f, 0.0f, 0.0f),
+    m_RegenViewMatrix(false),
+    m_RegenProjMatrix(false)
 {
     m_Bound.calculate(this);
 }
@@ -58,7 +60,7 @@ void CameraOrtho::lookAt(const vec3 &pos, const vec3 &target, const vec3 &up)
     m_UpWorld = newUp;
     m_LookWorld = lookAt;
 
-    buildViewMatrix();
+    m_RegenViewMatrix = true;
 }
 
 // SETTERS
@@ -66,7 +68,7 @@ void CameraOrtho::setPosition(const vec3 &pos)
 {
     m_PosWorld = pos;
 
-    buildViewMatrix();
+    m_RegenViewMatrix = true;
 }
 
 void CameraOrtho::setLens(float left, float right, float top, float bottom, float zNear, float zFar)
@@ -78,24 +80,7 @@ void CameraOrtho::setLens(float left, float right, float top, float bottom, floa
     m_NearZ = zNear;
     m_FarZ = zFar;
 
-    buildProjectionMatrix();
-}
-
-
-void CameraOrtho::buildViewMatrix()
-{
-    vec3 pos(getPosition());
-    m_View = mat44::createLookAtLH(pos, pos + m_LookWorld, m_UpWorld);
-    m_ViewProjection = m_Projection * m_View;
-    m_Bound.calculate(this);
-}
-
-void CameraOrtho::buildProjectionMatrix()
-{
-    m_Projection = mat44::createOrthoLH(m_Left, m_Right, m_Top, m_Bottom, m_NearZ, m_FarZ);
-
-    m_ViewProjection = m_Projection * m_View;
-    m_Bound.calculate(this);
+    m_RegenProjMatrix = true;
 }
 
 IntersectResult CameraOrtho::intersect( const Bound& bound ) const
@@ -147,7 +132,41 @@ he::IntersectResult CameraOrtho::intersect( const Sphere& bound ) const
 
 void CameraOrtho::prepareForRendering()
 {
-    // TODO
+    if (m_RegenViewMatrix)
+    {
+        vec3 pos(getPosition());
+        m_View = mat44::createLookAtLH(pos, pos + m_LookWorld, m_UpWorld);
+        m_ViewProjection = m_Projection * m_View;
+    }
+    if (m_RegenProjMatrix)
+    {
+        m_Projection = mat44::createOrthoLH(m_Left, m_Right, m_Top, m_Bottom, m_NearZ, m_FarZ);
+        m_ViewProjection = m_Projection * m_View;
+    }
+    if (m_RegenProjMatrix || m_RegenViewMatrix)
+    {
+        m_ViewProjection = m_Projection * m_View;
+        m_Bound.calculate(this);
+        m_RegenViewMatrix = false;
+        m_RegenProjMatrix = false;
+    }
+}
+
+void CameraOrtho::setNearFarPlane( float nearZ, float farZ )
+{
+    m_NearZ = nearZ;
+    m_FarZ = farZ;
+    m_RegenProjMatrix = true;
+}
+
+void CameraOrtho::setAspectRatio( float aspectRatio )
+{
+    const float height(m_Bottom - m_Top);
+    const float width(height * aspectRatio);
+    const float diff(width - (m_Right - m_Left));
+    m_Left -= diff / 2.0f;
+    m_Right += diff / 2.0f;
+    m_RegenProjMatrix = true;
 }
 
 //////////////////////////////////////////////////////////////////////////

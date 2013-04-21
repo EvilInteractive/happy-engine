@@ -55,6 +55,7 @@ public:
     void detachFromRenderer(IShapeDrawable* drawable);
 
     /* DRAW METHODS */
+    void drawAABB(const vec3& position, const vec3& dimensions, const Color& color) const;
     void drawColored(const ModelMesh* model, const mat44& world, const Color& color) const;
     void drawColoredNoDepth(const ModelMesh* model, const mat44& world, const Color& color) const;
     void drawMeshColor(const ModelMesh* spline, const mat44& world, const Color& color) const;
@@ -63,12 +64,13 @@ public:
 private:
 
     void createBillboardQuad();
+    void createAABB();
 
     /* DATAMEMBERS */
     SimpleColorEffect* m_ColorEffect;
     
     ModelMesh* m_BillboardQuad;
-    BufferLayout m_VertexLayoutBillboard;
+    ModelMesh* m_AABB;
     BillboardEffect* m_BillboardEffect;
 
     View* m_View;

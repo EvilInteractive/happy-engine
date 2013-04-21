@@ -18,8 +18,8 @@
 //Author:  Sebastiaan Sprengers
 //Created: 11/11/2011
 
-#ifndef _HE_PickingManager_H_
-#define _HE_PickingManager_H_
+#ifndef _HE_EditorPickingManager_H_
+#define _HE_EditorPickingManager_H_
 #pragma once
 
 #include "Singleton.h"
@@ -30,28 +30,32 @@ class Ray;
 namespace ge {
 class PickResult;
 class Pickable;
+}}
 
-class PickingManager : public IPickingManager, public Singleton<PickingManager>
+namespace hs 
 {
-    friend class Singleton<PickingManager>;
+
+class EditorPickingManager : public he::ge::IPickingManager, public he::Singleton<EditorPickingManager>
+{
+    friend class he::Singleton<EditorPickingManager>;
 public:
-    virtual ~PickingManager();
+    virtual ~EditorPickingManager();
 
-    bool pick(const Ray& ray, PickResult& result);
+    bool pick(const he::Ray& ray, he::ge::PickResult& result);
 
-    void addToPickList(Pickable* const object);
-    void removeFromPickList(Pickable* const object);
+    void addToPickList(he::ge::Pickable* const object);
+    void removeFromPickList(he::ge::Pickable* const object);
 
 private:
-    PickingManager();
+    EditorPickingManager();
     
-    PrimitiveList<Pickable*> m_PickList;
+    he::PrimitiveList<he::ge::Pickable*> m_PickList;
 
     /* DEFAULT COPY & ASSIGNMENT */
-    PickingManager(const PickingManager&);
-    PickingManager& operator=(const PickingManager&);
+    EditorPickingManager(const EditorPickingManager&);
+    EditorPickingManager& operator=(const EditorPickingManager&);
 };
 
-} } //end namespace
+} //end namespace
 
 #endif

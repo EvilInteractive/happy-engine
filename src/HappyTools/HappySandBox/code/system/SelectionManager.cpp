@@ -21,11 +21,18 @@
 #include "HappySandBoxPCH.h" 
 
 #include "SelectionManager.h"
+#include "Sandbox.h"
+#include "SandboxRenderPipeline.h"
+#include "runtime/EditorComponent.h"
 
 #include <Entity.h>
 #include <EntityManager.h>
+#include <ModelComponent.h>
+#include <ShapeRenderer.h>
 
 namespace hs {
+
+const he::Color SelectionManger::s_SelectionColor(1.0f, 0.3f, 0.01f, 1.0f);
 
 SelectionManger::SelectionManger()
 {
@@ -35,6 +42,15 @@ SelectionManger::~SelectionManger()
 {
 }
 
+void SelectionManger::init()
+{
+    Sandbox::getInstance()->getRenderPipeline()->getShapeRenderer()->attachToRenderer(this);
+}
+
+void SelectionManger::destroy()
+{
+    Sandbox::getInstance()->getRenderPipeline()->getShapeRenderer()->detachFromRenderer(this);
+}
 void SelectionManger::deselect( he::ge::Entity* const entity )
 {
     size_t index(0);
@@ -43,6 +59,8 @@ void SelectionManger::deselect( he::ge::Entity* const entity )
     {
         internalDeselect(entity);
         m_Selection.removeAt(index);
+
+        recomputeBoundingBox();
     }
 }
 
@@ -55,6 +73,8 @@ void SelectionManger::deselectAll()
         internalDeselect(entity);
     });
     m_Selection.clear();
+
+    recomputeBoundingBox();
 }
 
 void SelectionManger::select( he::ge::Entity* const entity )
@@ -63,25 +83,57 @@ void SelectionManger::select( he::ge::Entity* const entity )
     {
         internalSelect(entity);
         m_Selection.add(entity->getHandle());
+        recomputeBoundingBox();
     }
 }
 
-void SelectionManger::internalDeselect( he::ge::Entity* const /*entity*/ )
+void SelectionManger::internalDeselect( he::ge::Entity* const entity )
 {
-//     EditorComponent* const comp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
-//     if (comp != nullptr)
-//     {
-//         comp->setSelected(false);
-//     }
+    EditorComponent* const comp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
+    if (comp != nullptr)
+    {
+        comp->setSelected(false);
+    }
 }
 
-void SelectionManger::internalSelect( he::ge::Entity* const /*entity*/ )
+void SelectionManger::internalSelect( he::ge::Entity* const entity )
 {
-//     EditorComponent* const comp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
-//     if (comp != nullptr)
-//     {
-//         comp->setSelected(true);
-//     }
+    EditorComponent* const comp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
+    if (comp != nullptr)
+    {
+        comp->setSelected(true);
+    }
 }
+
+void SelectionManger::drawShapes( he::gfx::ShapeRenderer* const renderer )
+{
+    if (m_Selection.empty() == false)
+    {
+        const he::vec3 center((m_AABB.getBottomBackRight() + m_AABB.getTopFrontLeft()) / 2.0f);
+        const he::vec3 dim(m_AABB.getBottomBackRight() - m_AABB.getTopFrontLeft());
+        renderer->drawAABB(center, dim, s_SelectionColor);
+    }
+}
+
+void SelectionManger::recomputeBoundingBox()
+{
+    he::ge::EntityManager* const entityManager(he::ge::EntityManager::getInstance());
+    bool first(true);
+    m_Selection.forEach([this, entityManager, &first](const he::ObjectHandle& entityHandle)
+    {
+        he::ge::Entity* const entity(entityManager->getEntity(entityHandle));
+        EditorComponent* const editorComp(checked_cast<EditorComponent*>(entity->getComponent(HSFS::strEditorComponent)));
+        if (first)
+        {
+            m_AABB = editorComp->getBound();
+            first = false;
+        }
+        else
+        {
+            m_AABB.merge(editorComp->getBound());
+        }
+    });
+}
+
 
 } //end namespace

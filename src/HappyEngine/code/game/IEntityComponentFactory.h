@@ -33,8 +33,8 @@ class HAPPY_ENTRY IEntityComponentFactory
 public:
     virtual ~IEntityComponentFactory() {}
 
-    virtual EntityComponent* createEntityComponent(const he::FixedString& type) const = 0;
-    virtual void fillComponentDescList(he::PrimitiveList<EntityComponentDesc*>& list) const = 0;
+    virtual he::ge::EntityComponent* createEntityComponent(const he::FixedString& type) const = 0;
+    virtual void fillComponentDescList(he::PrimitiveList<he::ge::EntityComponentDesc*>& list) const = 0;
 };
 
 } } //end namespace

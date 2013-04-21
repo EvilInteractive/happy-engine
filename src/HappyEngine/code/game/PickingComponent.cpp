@@ -24,7 +24,7 @@
 #include "ResourceFactory.h"
 #include "ModelMesh.h"
 #include "ModelComponent.h"
-#include "PickingManager.h"
+#include "IPickingManager.h"
 #include "EntityManager.h"
 #include "EntityComponentDesc.h"
 
@@ -36,6 +36,7 @@ PickingComponent::PickingComponent()
     : m_ModelMesh(nullptr)
     , m_Parent(nullptr)
     , m_OnNewPickingMesh([this](){ initPickingMesh(); })
+    , m_PickingManager(nullptr)
 {
 }
 #pragma warning(default:4355)
@@ -55,6 +56,7 @@ void PickingComponent::activate()
 {
     HE_IF_ASSERT(m_Parent != nullptr, "Activating PickingComponent without a parent is not possible!")
     {
+        HE_ASSERT(m_PickingManager != nullptr, "You did not set a PickingManager on this pickingcomponent!");
         EntityComponent* const comp(m_Parent->getComponent(HEFS::strModelComponent));
         if (comp != nullptr)
         {
@@ -80,7 +82,7 @@ void PickingComponent::deactivate()
     }
     if (m_ModelMesh != nullptr)
     {
-        PickingManager::getInstance()->removeFromPickList(this);
+        m_PickingManager->removeFromPickList(this);
         m_ModelMesh->release();
         m_ModelMesh = nullptr;
     }
@@ -126,7 +128,7 @@ void PickingComponent::initPickingMesh()
             }
             if (m_ModelMesh == nullptr)
             {
-                PickingManager::getInstance()->addToPickList(this);
+                m_PickingManager->addToPickList(this);
             }
             m_ModelMesh = mesh;
             m_ModelMesh->instantiate();
@@ -147,6 +149,11 @@ bool PickingComponent::setProperty( const Property* const inProperty )
 bool PickingComponent::getProperty( Property* const inOutProperty )
 {
     return EntityComponent::getProperty(inOutProperty);
+}
+
+void PickingComponent::setPickingManager( he::ge::IPickingManager* const manager )
+{
+    m_PickingManager = manager;
 }
 
 } } //end namespace

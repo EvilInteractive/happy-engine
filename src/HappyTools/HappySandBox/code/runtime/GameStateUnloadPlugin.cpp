@@ -4,6 +4,7 @@
 
 #include "system/PluginManager.h"
 #include "system/EntityManager.h"
+#include "system/SelectionManager.h"
 #include "Sandbox.h"
 
 #include <IPlugin.h>
@@ -23,6 +24,9 @@ bool GameStateUnloadPlugin::enter()
     Sandbox* const sandbox(Sandbox::getInstance());
     he::pl::IPlugin* const plugin(sandbox->getGamePlugin());
     plugin->onUnloadLevel();
+
+    SelectionManger::getInstance()->deselectAll();
+    SelectionManger::getInstance()->destroy();
 
     EntityManager* const entityMan(sandbox->getEntityManager());
     entityMan->destroy();

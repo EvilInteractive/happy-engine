@@ -34,7 +34,7 @@
 #include "ShadowCaster.h"
 #include "RenderTarget.h"
 #include "GraphicsEngine.h"
-#include "CameraPerspective.h"
+#include "ICamera.h"
 #include "Game.h"
 #include "SkyBox.h"
 #include "ControlsManager.h"
@@ -187,8 +187,11 @@ void View::setStereo( const StereoSetting stereo, const bool force )
                 if (m_Camera != nullptr)
                 {
                     m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
-                    m_Camera->setEyeShift(0.0f, 0.0f);
-                    m_Camera->setFov(camSettings.fov);
+                    if (m_Camera->getCameraType() == eCameraType_Perspective)
+                    {
+                        m_Camera->setEyeShift(0.0f, 0.0f);
+                        m_Camera->setFov(camSettings.fov);
+                    }
                 }
                 if (camSettings.useRelativeViewport)
                 {
@@ -301,11 +304,15 @@ void View::calcViewportFromPercentage()
 }
 
 
-void View::setCamera( CameraPerspective* camera )
+void View::setCamera( ICamera* const camera )
 {
     m_Camera = camera;
     if (m_Camera != nullptr)
     {
+        if (m_Camera->getCameraType() == eCameraType_Ortho)
+        {
+            setStereo(StereoSetting_None, false);
+        }
         m_Camera->setAspectRatio(m_Viewport.width / static_cast<float>(m_Viewport.height));
     }
 }

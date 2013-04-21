@@ -65,26 +65,26 @@ protected:
 
 #define IMPLEMENT_IOBJECT3D_FROM(X) \
 public:\
-virtual void setLocalTranslate(const vec3& translate)  { X::setLocalTranslate(translate); } \
-virtual void setLocalRotate(const mat33& rotate) { X::setLocalRotate(rotate); } \
-virtual void setLocalScale(const vec3& scale) { X::setLocalScale(scale); } \
+virtual void setLocalTranslate(const he::vec3& translate)  { X::setLocalTranslate(translate); } \
+virtual void setLocalRotate(const he::mat33& rotate) { X::setLocalRotate(rotate); } \
+virtual void setLocalScale(const he::vec3& scale) { X::setLocalScale(scale); } \
 \
-virtual const vec3&  getLocalTranslate() const { return X::getLocalTranslate(); } \
-virtual const mat33& getLocalRotate() const { return X::getLocalRotate(); } \
-virtual const vec3&  getLocalScale() const { return X::getLocalScale(); } \
+virtual const he::vec3&  getLocalTranslate() const { return X::getLocalTranslate(); } \
+virtual const he::mat33& getLocalRotate() const { return X::getLocalRotate(); } \
+virtual const he::vec3&  getLocalScale() const { return X::getLocalScale(); } \
 \
-virtual const mat44& getLocalMatrix() const { return X::getLocalMatrix(); } \
-virtual const mat44& getWorldMatrix() const { return X::getWorldMatrix(); } \
+virtual const he::mat44& getLocalMatrix() const { return X::getLocalMatrix(); } \
+virtual const he::mat44& getWorldMatrix() const { return X::getWorldMatrix(); } \
 \
-virtual void attach(IObject3D* child) { X::attach(child); } \
-virtual void detach(IObject3D* child) { X::detach(child); } \
+virtual void attach(he::IObject3D* child) { X::attach(child); } \
+virtual void detach(he::IObject3D* child) { X::detach(child); } \
 \
 protected:\
-virtual IObject3D* getParent() const { return X::getParent(); } \
-virtual void setParent(IObject3D* parent) { X::setParent(parent); } \
+virtual he::IObject3D* getParent() const { return X::getParent(); } \
+virtual void setParent(he::IObject3D* parent) { X::setParent(parent); } \
 \
-virtual void setWorldMatrixDirty(uint8 cause) { X::setWorldMatrixDirty(cause); } \
-virtual void setLocalMatrixDirty(uint8 cause) { X::setLocalMatrixDirty(cause); } \
+virtual void setWorldMatrixDirty(he::uint8 cause) { X::setWorldMatrixDirty(cause); } \
+virtual void setLocalMatrixDirty(he::uint8 cause) { X::setLocalMatrixDirty(cause); } \
 \
 virtual void calculateWorldMatrix() { X::calculateWorldMatrix(); }
 

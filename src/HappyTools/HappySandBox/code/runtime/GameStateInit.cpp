@@ -28,7 +28,10 @@ bool GameStateInit::enter()
     uiManager->showDebugUI();
     uiManager->showEditorUI();
     
-    GameStateMachine::getInstance()->queueState(eGameState_LoadPlugin);
+    GameStateMachine* const gamestateMachine(GameStateMachine::getInstance());
+    gamestateMachine->queueState(eGameState_LoadPlugin);
+    gamestateMachine->queueState(eGameState_Load);
+    gamestateMachine->queueState(eGameState_Edit);
 
     return true;
 }

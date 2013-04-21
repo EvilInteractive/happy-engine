@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
+//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
 //
 //This file is part of HappyEngine.
 //
@@ -15,24 +15,7 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 11/08/2012
+//Created: 2013/04/20
 
-#ifndef _HE_IShapeDrawable_H_
-#define _HE_IShapeDrawable_H_
-#pragma once
 
-namespace he {
-namespace gfx {
-class ShapeRenderer;
-class IShapeDrawable
-{
-public:
-    virtual ~IShapeDrawable() {};
-
-    virtual void drawShapes(he::gfx::ShapeRenderer* const renderer) = 0;
-}; 
-
-} } //end namespace
-
-#endif
+DEF_FS(EditorComponent);

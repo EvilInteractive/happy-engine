@@ -23,6 +23,9 @@
 #pragma once
 
 #include <Singleton.h>
+#include <IShapeDrawable.h>
+#include <AABB.h>
+
 #include "SandboxTypes.h"
 
 namespace he {
@@ -32,11 +35,14 @@ namespace ge {
 
 namespace hs {
     
-class SelectionManger : public he::Singleton<SelectionManger>
+    class SelectionManger : public he::Singleton<SelectionManger>, he::gfx::IShapeDrawable
 {
 public:
     SelectionManger();
     virtual ~SelectionManger();
+
+    void init();
+    void destroy();
     
     void deselect(he::ge::Entity* const entity);
     void deselectAll();
@@ -44,11 +50,19 @@ public:
 
     const SelectionSet& getSelection() const;
 
+    void drawShapes(he::gfx::ShapeRenderer* const renderer); // override
+
+    const static he::Color s_SelectionColor;
+
 private:
     void internalDeselect(he::ge::Entity* const entity);
     void internalSelect(he::ge::Entity* const entity);
 
+    void recomputeBoundingBox();
+
     SelectionSet m_Selection;
+
+    he::AABB m_AABB;
 
     /* DEFAULT COPY & ASSIGNMENT */
     SelectionManger(const SelectionManger&);

@@ -15,42 +15,27 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 2013/04/01
+//Created: 2013/04/20
 #include "HappySandBoxPCH.h" 
+#include "SandboxEntityComponentFactory.h"
 
-#include "SandboxRenderPipeline.h"
-
-#include "View.h"
-
-#include "ShapeRenderer.h"
-#include "Renderer2D.h"
+#include "EditorComponent.h"
 
 namespace hs {
 
-SandboxRenderPipeline::SandboxRenderPipeline()
-    : m_UIRenderer(nullptr)
-    , m_DebugRenderer(nullptr)
-    , m_ShapeRenderer(nullptr)
+he::ge::EntityComponent* SandboxEntityComponentFactory::createEntityComponent( const he::FixedString& type ) const
+{
+    he::ge::EntityComponent* result(nullptr);
+    if (type == HSFS::strEditorComponent)
+    {
+        result = NEW EditorComponent();
+    }
+    return result;
+}
+
+void SandboxEntityComponentFactory::fillComponentDescList( he::PrimitiveList<he::ge::EntityComponentDesc*>& /*list*/ ) const
 {
 }
 
-
-SandboxRenderPipeline::~SandboxRenderPipeline()
-{
-    delete m_ShapeRenderer;
-    delete m_UIRenderer;
-    delete m_DebugRenderer;
-}
-
-void SandboxRenderPipeline::init( he::gfx::View* const view )
-{
-    m_ShapeRenderer = NEW he::gfx::ShapeRenderer();
-    m_UIRenderer = NEW UIRenderer();
-    m_DebugRenderer = NEW DebugRenderer();
-    view->addRenderPlugin(m_ShapeRenderer);
-    view->addRenderPlugin(m_UIRenderer);
-    view->addRenderPlugin(m_DebugRenderer);
-}
 
 } //end namespace

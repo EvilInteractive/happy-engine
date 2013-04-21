@@ -61,7 +61,9 @@ public:
 
     virtual he::pl::EPluginType getPluginType() const = 0;
     virtual he::gfx::Scene* getScene() const = 0;
+
     virtual he::gfx::ICamera* getActiveCamera() const = 0;
+    virtual void setActiveCamera(he::gfx::ICamera* const camera) = 0;
 
     // Events
     virtual void onLoadLevel(const he::Path& path) = 0;

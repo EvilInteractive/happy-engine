@@ -140,11 +140,16 @@ void ht::HappyPluginTestMain::onPauseGame()
 
 void ht::HappyPluginTestMain::onResumeGame()
 {
-
+    m_View->setCamera(m_Camera);
 }
 
 he::gfx::ICamera* ht::HappyPluginTestMain::getActiveCamera() const
 {
     return m_View->getCamera();
+}
+
+void ht::HappyPluginTestMain::setActiveCamera( he::gfx::ICamera* const camera )
+{
+    m_View->setCamera(camera);
 }
 

@@ -28,21 +28,35 @@ class Sphere;
 
 namespace gfx {
 
+enum ECameraType
+{
+    eCameraType_Perspective,
+    eCameraType_Ortho,
+};
+
 class HAPPY_ENTRY ICamera
 {
 public:
     virtual ~ICamera() {}
     
+    // Getters
     virtual const mat44& getView() const = 0;
     virtual const mat44& getProjection() const = 0;
     virtual const mat44& getViewProjection() const = 0;
-
     virtual float getNearClip() const = 0;
     virtual float getFarClip() const = 0;
-
     virtual const vec3& getPosition() const = 0;
     virtual const vec3& getLook() const = 0;
+    virtual ECameraType getCameraType() = 0;
 
+    // Setters
+    virtual void setPosition(const vec3& pos) = 0;
+    virtual void setAspectRatio(float aspectRatio) = 0;
+    virtual void setFov( const float fov ) = 0;
+    virtual void setNearFarPlane(float nearZ, float farZ) = 0;
+    virtual void setEyeShift(const float lookShift, const float projShift) = 0;
+
+    virtual void tick(const float dTime) = 0;
     virtual void prepareForRendering() = 0;
 
     virtual IntersectResult intersect(const Bound& bound) const = 0;

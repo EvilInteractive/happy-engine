@@ -40,7 +40,7 @@ struct RayCastResult
     px::PhysicsActor* actorHit;
 };
 
-class Ray
+class HAPPY_ENTRY Ray
 {
 public:
     Ray(const vec3& position, const vec3& direction, float maxDist = FLT_MAX);

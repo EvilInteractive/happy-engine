@@ -12,6 +12,7 @@ addFilter(HAPPYSANDBOX_CODE_SRCS src/system/statemachine code/system/
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/managers code/system/
 		EntityManager.cpp			EntityManager.h
         SelectionManager.cpp        SelectionManager.h
+        EditorPickingManager.cpp    EditorPickingManager.h    
     )
     
 addFilter(HAPPYSANDBOX_CODE_SRCS src/system/plugin code/system/

@@ -38,7 +38,7 @@ class RenderTarget;
 class Renderer2D;
 class Texture2D;
 class ShapeRenderer;
-class CameraPerspective;
+class ICamera;
 class View;
 class SkyBox;
 
@@ -89,8 +89,8 @@ public:
     PostProcesser* getPostProcessor() const { return m_PostProcesser; }
 
     // Camera
-    void setCamera(CameraPerspective* camera);
-    CameraPerspective* getCamera() const { return m_Camera; }
+    void setCamera(ICamera* const camera);
+    ICamera* getCamera() const { return m_Camera; }
     
     // Update / Draw
     virtual void tick( float dTime );
@@ -106,7 +106,7 @@ private:
     void setRelativeViewport(const RectF& viewportPercentage, const bool force = false);
 
     // Camera
-    CameraPerspective* m_Camera;
+    ICamera* m_Camera;
     
     // Render Textures
     Texture2D* m_ColorRenderMap;

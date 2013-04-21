@@ -44,8 +44,11 @@ void FlyCamera::tick(float dTime)
 {
     using namespace he;
 
-    CONTROLS->getFocus(this);
-    
+    he::io::ControlsManager* const controls(CONTROLS);
+    const he::io::IKeyboard* const keyboard(controls->getKeyboard());
+    const he::io::IMouse* const mouse(controls->getMouse());
+    controls->getFocus(this);
+
     if (m_bMoveable)
     {
         bool bRunning = false;
@@ -53,20 +56,20 @@ void FlyCamera::tick(float dTime)
         // camera controls
         vec3 dir(0.0f, 0.0f, 0.0f);
 
-        if (CONTROLS->hasFocus(this))
+        if (controls->hasFocus(this))
         {
-            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Z))
+            if (keyboard->isKeyDown(io::Key_Z) || keyboard->isKeyDown(io::Key_W))
                 dir += m_LookWorld;
-            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Q))
+            if (keyboard->isKeyDown(io::Key_Q) || keyboard->isKeyDown(io::Key_A))
                 dir -= m_RightWorld;
 
-            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_S))
+            if (keyboard->isKeyDown(io::Key_S))
                 dir -= m_LookWorld;
-            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_D))
+            if (keyboard->isKeyDown(io::Key_D))
                 dir += m_RightWorld;
 
             // fast forward
-            if (CONTROLS->getKeyboard()->isKeyDown(io::Key_Lshift))
+            if (keyboard->isKeyDown(io::Key_Lshift))
                 bRunning = true;
         }
 
@@ -78,10 +81,10 @@ void FlyCamera::tick(float dTime)
         m_PosWorld += dir * finalSpeed * dTime;
     }
 
-    if (CONTROLS->getMouse()->isButtonDown(io::MouseButton_Right) && CONTROLS->hasFocus(this))
+    if (mouse->isButtonDown(io::MouseButton_Right) && controls->hasFocus(this))
     {
-        vec2 mouseMovement = CONTROLS->getMouse()->getPosition() - m_PreviousMousePos;
-        m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+        vec2 mouseMovement = mouse->getPosition() - m_PreviousMousePos;
+        m_PreviousMousePos = mouse->getPosition();
         float pitch = mouseMovement.y / m_MouseSensitivity;
         float yAngle = mouseMovement.x / m_MouseSensitivity;
 
@@ -89,15 +92,17 @@ void FlyCamera::tick(float dTime)
         m_LookWorld = normalize(R * m_LookWorld);
         m_UpWorld = normalize(R * m_UpWorld);
 
-        R = mat44::createRotation(vec3(0,1,0), -yAngle);
+        R = mat44::createRotation(vec3(0, 1, 0), -yAngle);
         m_LookWorld = normalize(R * m_LookWorld);
         m_RightWorld = normalize(R * m_RightWorld);
         m_UpWorld = -normalize(cross(m_LookWorld, m_RightWorld));
     }
     else
-        m_PreviousMousePos = CONTROLS->getMouse()->getPosition();
+    {
+        m_PreviousMousePos = mouse->getPosition();
+    }
 
-    CONTROLS->returnFocus(this);
+    controls->returnFocus(this);
 
     m_RegenViewMatrix = true;
 }

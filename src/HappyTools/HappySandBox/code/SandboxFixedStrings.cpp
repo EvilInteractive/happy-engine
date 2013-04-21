@@ -15,42 +15,36 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 2013/04/01
+//Created: 2013/04/20
 #include "HappySandBoxPCH.h" 
 
-#include "SandboxRenderPipeline.h"
-
-#include "View.h"
-
-#include "ShapeRenderer.h"
-#include "Renderer2D.h"
+#include "SandboxFixedStrings.h"
 
 namespace hs {
 
-SandboxRenderPipeline::SandboxRenderPipeline()
-    : m_UIRenderer(nullptr)
-    , m_DebugRenderer(nullptr)
-    , m_ShapeRenderer(nullptr)
+#define _DEF_FS(name, string) he::FixedString HSFS::name;
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "SandboxFixedStringsTable.h"
+#undef _DEF_FS
+#undef DEF_FS
+
+
+void HSFS::sdmInit()
 {
+#define _DEF_FS(name, string) name = he::FixedString::fromString(string, sizeof(string));
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "SandboxFixedStringsTable.h"
+#undef _DEF_FS
+#undef DEF_FS
 }
 
-
-SandboxRenderPipeline::~SandboxRenderPipeline()
+void HSFS::sdmDestroy()
 {
-    delete m_ShapeRenderer;
-    delete m_UIRenderer;
-    delete m_DebugRenderer;
-}
-
-void SandboxRenderPipeline::init( he::gfx::View* const view )
-{
-    m_ShapeRenderer = NEW he::gfx::ShapeRenderer();
-    m_UIRenderer = NEW UIRenderer();
-    m_DebugRenderer = NEW DebugRenderer();
-    view->addRenderPlugin(m_ShapeRenderer);
-    view->addRenderPlugin(m_UIRenderer);
-    view->addRenderPlugin(m_DebugRenderer);
+#define _DEF_FS(name, string) name = he::FixedString();
+#define DEF_FS(string) _DEF_FS(str##string, #string);
+#include "SandboxFixedStringsTable.h"
+#undef _DEF_FS
+#undef DEF_FS
 }
 
 } //end namespace

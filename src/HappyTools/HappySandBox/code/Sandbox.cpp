@@ -31,14 +31,23 @@
 
 #include "PluginLoader.h"
 #include "system/EntityManager.h"
+#include "system/SandboxRenderPipeline.h"
+#include "system/GameStateMachine.h"
+#include "system/EditorPickingManager.h"
+#include "system/SelectionManager.h"
+
 #include <EntityManager.h>
 #include <ControlsManager.h>
 #include <Keyboard.h>
+#include <Mouse.h>
 #include <materialGenerator/MaterialGeneratorGraph.h>
 #include <GraphicsEngine.h>
+#include <Ray.h>
+#include <PickResult.h>
+#include <CameraPerspective.h>
+#include <PickingComponent.h>
+#include <IPlugin.h>
 
-#include "system/SandboxRenderPipeline.h"
-#include "system/GameStateMachine.h"
 
 namespace hs {
 
@@ -115,14 +124,15 @@ void Sandbox::init()
 
 void Sandbox::tick(float dTime)
 {
-    if (CONTROLS->getKeyboard()->isKeyPressed(he::io::Key_F9))
+    he::io::ControlsManager* const controls(CONTROLS);
+    he::io::IKeyboard* const keyboard(controls->getKeyboard());
+    if (keyboard->isKeyPressed(he::io::Key_F9))
     {
         if (m_MaterialGenerator->isOpen())
             m_MaterialGenerator->close();
         else
             m_MaterialGenerator->open();
     }
-
     he::ge::Game::tick(dTime);
 }
 

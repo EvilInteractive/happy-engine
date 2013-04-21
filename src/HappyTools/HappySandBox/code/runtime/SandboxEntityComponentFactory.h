@@ -15,42 +15,25 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  Bastian Damman
-//Created: 2013/04/01
-#include "HappySandBoxPCH.h" 
+//Created: 2013/04/20
 
-#include "SandboxRenderPipeline.h"
+#ifndef _HE_SandboxEntityComponentFactory_H_
+#define _HE_SandboxEntityComponentFactory_H_
+#pragma once
 
-#include "View.h"
-
-#include "ShapeRenderer.h"
-#include "Renderer2D.h"
+#include "IEntityComponentFactory.h"
 
 namespace hs {
 
-SandboxRenderPipeline::SandboxRenderPipeline()
-    : m_UIRenderer(nullptr)
-    , m_DebugRenderer(nullptr)
-    , m_ShapeRenderer(nullptr)
+class SandboxEntityComponentFactory : public he::ge::IEntityComponentFactory
 {
-}
+public:
+    virtual ~SandboxEntityComponentFactory() {}
 
-
-SandboxRenderPipeline::~SandboxRenderPipeline()
-{
-    delete m_ShapeRenderer;
-    delete m_UIRenderer;
-    delete m_DebugRenderer;
-}
-
-void SandboxRenderPipeline::init( he::gfx::View* const view )
-{
-    m_ShapeRenderer = NEW he::gfx::ShapeRenderer();
-    m_UIRenderer = NEW UIRenderer();
-    m_DebugRenderer = NEW DebugRenderer();
-    view->addRenderPlugin(m_ShapeRenderer);
-    view->addRenderPlugin(m_UIRenderer);
-    view->addRenderPlugin(m_DebugRenderer);
-}
+    he::ge::EntityComponent* createEntityComponent(const he::FixedString& type) const;
+    void fillComponentDescList(he::PrimitiveList<he::ge::EntityComponentDesc*>& list) const;
+};
 
 } //end namespace
+
+#endif

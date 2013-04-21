@@ -33,6 +33,7 @@ namespace gfx {
 }
 
 namespace ge {
+class IPickingManager;
   
 struct EntityComponentDesc;  
 class HAPPY_ENTRY PickingComponent : public Pickable, public EntityComponent, public Object3D
@@ -46,6 +47,7 @@ public:
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
     virtual void init(Entity* parent);
+    void setPickingManager(he::ge::IPickingManager* const manager);
 
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
@@ -75,6 +77,7 @@ private:
     he::eventCallback0<void> m_OnNewPickingMesh;
     const gfx::ModelMesh* m_ModelMesh;
     ObjectHandle m_LinkedModelComponent;
+    he::ge::IPickingManager* m_PickingManager;
 
     //Disable default copy constructor and default assignment operator
     PickingComponent(const PickingComponent&);

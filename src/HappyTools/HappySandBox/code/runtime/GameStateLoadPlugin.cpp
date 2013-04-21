@@ -4,6 +4,7 @@
 
 #include "system/PluginManager.h"
 #include "system/EntityManager.h"
+#include "system/SelectionManager.h"
 #include "Sandbox.h"
 
 #include <IPlugin.h>
@@ -25,10 +26,11 @@ bool GameStateLoadPlugin::enter()
     Sandbox* const sandbox(Sandbox::getInstance());
     sandbox->setGamePlugin(plugin);
 
+    SelectionManger::getInstance()->init();
+
     EntityManager* const entityMan(sandbox->getEntityManager());
     entityMan->init();
     plugin->init(sandbox->getMainWindow(), he::RectF(0, 0, 1, 1));
-    plugin->onLoadLevel(he::Path(""));
 
     return true;
 }

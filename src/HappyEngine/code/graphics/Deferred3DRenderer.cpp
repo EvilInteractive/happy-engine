@@ -36,7 +36,7 @@
 #include "ContentManager.h"
 
 #include "CameraManager.h"
-#include "CameraPerspective.h"
+#include "ICamera.h"
 #include "CameraBound.h"
 #include "LightFactory.h"
 
@@ -267,7 +267,7 @@ void Deferred3DRenderer::onViewResized()
 void Deferred3DRenderer::render()
 {
     HE_ASSERT(m_Scene != nullptr, "Scene is nullptr, assign a scene first!");
-    const CameraPerspective* camera(m_View->getCamera());
+    const ICamera* const camera(m_View->getCamera());
     if (camera != nullptr)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -374,7 +374,7 @@ void Deferred3DRenderer::postPointLights()
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
 
-    const CameraPerspective& camera(*m_View->getCamera());
+    const ICamera& camera(*m_View->getCamera());
     vec3 position;
     lights.forEach([&](const ObjectHandle& lightHandle)
     {
@@ -422,7 +422,7 @@ void Deferred3DRenderer::postSpotLights()
 
     GL::heSetDepthWrite(false);
     GL::heSetDepthRead(true);
-    const CameraPerspective& camera(*m_View->getCamera());
+    const ICamera& camera(*m_View->getCamera());
     vec3 position;
 
     bool shadowLights(false);

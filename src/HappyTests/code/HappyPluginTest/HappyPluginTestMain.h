@@ -50,6 +50,7 @@ public:
     virtual he::pl::EPluginType getPluginType() const { return he::pl::ePluginType_ToolGamePlugin; }
     virtual he::gfx::Scene* getScene() const { return m_Scene; }
     virtual he::gfx::ICamera* getActiveCamera() const;
+    virtual void setActiveCamera(he::gfx::ICamera* const camera);
 
     // Events
     virtual void onLoadLevel(const he::Path& path);
