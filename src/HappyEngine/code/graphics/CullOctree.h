@@ -22,6 +22,8 @@
 #define _HE_CullOctree_H_
 #pragma once
 
+#ifdef HE_USE_OCTREE
+
 #include "Bound.h"
 
 namespace he {
@@ -98,5 +100,7 @@ private:
 };
 
 } } //end namespace
+
+#endif // HE_USE_OCTREE
 
 #endif

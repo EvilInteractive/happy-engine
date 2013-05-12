@@ -22,6 +22,7 @@ addFilter(CODE_SRCS src code/
             HappyMemory.h
             HappyNew.h
             HappyPCH.h              HappyPCH.cpp
+            HappyTargetDefines.h
             HappyTypes.h            HappyTypes.cpp
             HeString.h              HeString.cpp
             FixedString.h           FixedString.cpp

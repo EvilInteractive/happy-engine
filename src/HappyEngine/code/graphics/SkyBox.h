@@ -33,7 +33,7 @@ class TextureCube;
 class ModelMesh;
 class Material;
 
-class SkyBox : public Drawable
+class SkyBox
 {
 public:
     SkyBox();
@@ -41,16 +41,12 @@ public:
 
     void load(const he::String& asset);
     void unload();
-
-    virtual const Material* getMaterial() const { return m_Material; }
-    virtual const ModelMesh* getModelMesh() const { return m_Cube; }
-
-    virtual void calculateBound() {}
+    
+    Drawable* getDrawable() const { return m_Drawable; }
 
 private:
-    ModelMesh* m_Cube;
     const TextureCube* m_CubeMap;
-    Material* m_Material;
+    Drawable* m_Drawable;
     
     //Disable default copy constructor and default assignment operator
     SkyBox(const SkyBox&);

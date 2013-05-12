@@ -31,7 +31,7 @@ namespace gfx {
 }
 namespace ge {
 
-class HAPPY_ENTRY Entity : public EntityComponent, public Object3D
+class HAPPY_ENTRY Entity : public EntityComponent
 {
 public:
     DECLARE_RTTI(RTTI::Entity)
@@ -46,10 +46,10 @@ public:
     size_t getComponentCount() const { return m_Components.size(); }
     EntityComponent* getComponentAt(const size_t index) const { return m_Components[index]; }
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strEntity; }
+    const he::FixedString& getComponentID() const { return HEFS::strEntity; }
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate();
+    void deactivate();
 
     void setScene(gfx::Scene* const scene) { m_Scene = scene; }
     gfx::Scene* getScene() const { return m_Scene; }
@@ -59,30 +59,6 @@ public:
     //////////////////////////////////////////////////////////////////////////    
     virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
 
-    //////////////////////////////////////////////////////////////////////////
-    /// Object3D (resolve ambiguity)
-    //////////////////////////////////////////////////////////////////////////
-public:
-    virtual void setLocalTranslate(const vec3& translate)  { Object3D::setLocalTranslate(translate); } 
-    virtual void setLocalRotate(const mat33& rotate) { Object3D::setLocalRotate(rotate); } 
-    virtual void setLocalScale(const vec3& scale) { Object3D::setLocalScale(scale); } 
-           
-    virtual const vec3&  getLocalTranslate() const { return Object3D::getLocalTranslate(); } 
-    virtual const mat33& getLocalRotate() const { return Object3D::getLocalRotate(); } 
-    virtual const vec3&  getLocalScale() const { return Object3D::getLocalScale(); } 
-           
-    virtual const mat44& getLocalMatrix() const { return Object3D::getLocalMatrix(); } 
-    virtual const mat44& getWorldMatrix() const { return Object3D::getWorldMatrix(); } 
-           
-protected:
-    virtual IObject3D* getParent() const { return Object3D::getParent(); } 
-    virtual void setParent(IObject3D* parent) { Object3D::setParent(parent); } 
-
-    virtual void setWorldMatrixDirty(const uint8 cause) { Object3D::setWorldMatrixDirty(cause); } 
-    virtual void setLocalMatrixDirty(const uint8 cause) { Object3D::setLocalMatrixDirty(cause); } 
-
-    virtual void calculateWorldMatrix() { Object3D::calculateWorldMatrix(); }
-    
 private:
     virtual void init(Entity* parent);
 

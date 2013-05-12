@@ -44,7 +44,6 @@ addFilter(CODE_SRCS src/graphics/light code/graphics/
             
 addFilter(CODE_SRCS src/graphics/material code/graphics/
             Material.cpp                        Material.h
-            MaterialInstance.cpp                MaterialInstance.h
             Shader.cpp                          Shader.h
             ShaderLayout.cpp                    ShaderLayout.h
             ShaderVar.h                         

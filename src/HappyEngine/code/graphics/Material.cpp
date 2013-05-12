@@ -31,12 +31,72 @@
 #include "ModelMesh.h"
 #include "DrawContext.h"
 
-#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
-
 namespace
 {
     void applyShaderVar(he::gfx::Shader* const shader, he::gfx::ShaderVar* const var, 
-        const he::gfx::Drawable* const drawable, const he::gfx::ICamera* const camera);
+        const he::gfx::Drawable* const drawable, const he::gfx::ICamera* const camera)
+    {
+        switch (var->getType())
+        {      
+        case he::gfx::ShaderVarType_User:
+            {
+                var->assignData(shader);
+            } break;
+        case he::gfx::ShaderVarType_WorldViewProjection: 
+            {
+                shader->setShaderVar(var->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
+            } break;
+        case he::gfx::ShaderVarType_ViewProjection: 
+            {
+                shader->setShaderVar(var->getId(), camera->getViewProjection()); 
+            } break;
+        case he::gfx::ShaderVarType_World: 
+            {
+                shader->setShaderVar(var->getId(), camera->getView() * drawable->getWorldMatrix()); 
+            } break;
+        case he::gfx::ShaderVarType_WorldView: 
+            {
+                shader->setShaderVar(var->getId(), camera->getView() * drawable->getWorldMatrix()); 
+            } break;
+        case he::gfx::ShaderVarType_View: 
+            {
+                shader->setShaderVar(var->getId(), camera->getView()); 
+            } break;
+        case he::gfx::ShaderVarType_BoneTransforms: 
+            {
+                HE_NOT_IMPLEMENTED
+                    //shader->setShaderVar(var->getId(), drawable->getModelMesh()->getBoneTransforms()); 
+            } break;
+        case he::gfx::ShaderVarType_WorldPosition: 
+            {
+                he::vec3 worldPos;
+                drawable->getWorldMatrix().getTranslationComponent(worldPos);
+                shader->setShaderVar(var->getId(), worldPos); 
+            } break;
+
+        case he::gfx::ShaderVarType_AmbientColor: 
+            {
+                shader->setShaderVar(var->getId(), he::vec4(drawable->getScene()->getLightManager()->getAmbientLight()->color, drawable->getScene()->getLightManager()->getAmbientLight()->multiplier)); 
+            } break;
+        case he::gfx::ShaderVarType_DirectionalColor: 
+            {
+                shader->setShaderVar(var->getId(), he::vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
+            } break;
+        case he::gfx::ShaderVarType_DirectionalDirection: 
+            {
+                shader->setShaderVar(var->getId(), (camera->getView() * he::vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
+            } break;
+        case he::gfx::ShaderVarType_NearFar: 
+            {
+                shader->setShaderVar(var->getId(), he::vec2(camera->getNearClip(), camera->getFarClip())); 
+            } break;
+
+        default: 
+            {
+                LOG(he::LogType_ProgrammerAssert, "unknown shaderVartype when preparing for draw");
+            } break;
+        }
+    }
 }
 
 namespace he {
@@ -68,11 +128,6 @@ Material::~Material()
             m_Shader[i] = nullptr;
         }
     }
-}
-
-void Material::init( const BufferLayout& vertexLayout )
-{
-    m_VertexLayout = vertexLayout;
 }
 
 void Material::registerCommonVar( ShaderVar* const var )
@@ -118,25 +173,25 @@ void Material::setInstancedShader( Shader* const shader, const BufferLayout& ins
     shader->instantiate();
     HE_ASSERT(m_Shader[eShaderType_Instanced] == nullptr, "Instanced shader already initialized!");
     m_Shader[eShaderType_Instanced] = shader;
-    m_InstanceLayout = instancingLayout;
+    //m_InstanceLayout = instancingLayout;
 }
 
 void Material::applyNormal( const DrawContext& context ) const
 {
-    applyShader(eShaderType_Normal, drawable, camera);
-    applyMesh(eShaderType_Normal, drawable->getModelMesh(), drawable->getMaterialLayout());
+    applyShader(eShaderType_Normal, context);
+    applyMesh(eShaderType_Normal, context);
 }
 
 void Material::applySkinned( const DrawContext& context ) const
 {
-    applyShader(eShaderType_Skinned, drawable, camera);
-    applyMesh(eShaderType_Skinned, drawable->getModelMesh(), drawable->getMaterialLayout());
+    applyShader(eShaderType_Skinned, context);
+    applyMesh(eShaderType_Skinned, context);
 }
 
 void Material::applyInstanced( const DrawContext& context ) const
 {
-    applyShader(eShaderType_Instanced, drawable, camera);
-    applyMesh(eShaderType_Instanced, drawable->getModelMesh(), drawable->getMaterialLayout());
+    applyShader(eShaderType_Instanced, context);
+    applyMesh(eShaderType_Instanced, context);
 }
 
 void Material::applyShader( const EShaderType type, const DrawContext& context ) const
@@ -153,14 +208,14 @@ void Material::applyShader( const EShaderType type, const DrawContext& context )
 
     Shader* const shader(m_Shader[type]);
     shader->bind();
-    m_ShaderCommonVars.forEach(boost::bind(applyShaderVar, shader, _1, obj, camera));
-    m_ShaderSpecificVars[type].forEach(boost::bind(applyShaderVar, shader, _1, obj, camera));
+    m_ShaderCommonVars.forEach(boost::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
+    m_ShaderSpecificVars[type].forEach(boost::bind(::applyShaderVar, shader, _1, context.m_CurrentDrawable, context.m_Camera));
 }
 
 void Material::applyMesh( const EShaderType type, const DrawContext& context ) const
 {
     const ModelMesh* const mesh(context.m_CurrentDrawable->getModelMesh());
-    const MaterialLayout& materialLayout(context.m_CurrentDrawable->getMaterialLayout());
+    const MaterialLayout& materialLayout(*context.m_CurrentDrawable->getMaterialLayout());
     const MaterialLayout::layout& elements(materialLayout.m_Layout[type]);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBOID());
@@ -178,10 +233,17 @@ void Material::setIsBlended( bool isBlended, BlendEquation equation/* = BlendEqu
                                              BlendFunc sourceBlend/*  = BlendFunc_One*/,
                                              BlendFunc destBlend/*    = BlendFunc_Zero*/ )
 {
-    raiseFlag(eMaterialFlags_Blended);
-    m_BlendEquation = equation;
-    m_SourceBlend = sourceBlend;
-    m_DestBlend = destBlend;
+    if (isBlended)
+    {
+        raiseFlag(eMaterialFlags_Blended);
+        m_BlendEquation = equation;
+        m_SourceBlend = sourceBlend;
+        m_DestBlend = destBlend;
+    }
+    else
+    {
+        clearFlag(eMaterialFlags_Blended);
+    }
 }
 
 void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, MaterialLayout& outMaterialLayout )
@@ -209,11 +271,11 @@ void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, Materi
                     GLenum type(0);
                     GL::getGLTypesFromBufferElement(meshElement, components, type);
 
-                    matEl.m_ElementIndex = e.getElementIndex();
+                    matEl.m_ElementIndex = checked_numcast<uint16>(e.getElementIndex());
                     matEl.m_Components = checked_numcast<uint8>(components);
                     matEl.m_Type = checked_numcast<uint16>(type);
-                    matEl.m_Stride = stride;
-                    matEl.m_ByteOffset = meshElement.getByteOffset();
+                    matEl.m_Stride = checked_numcast<uint16>(stride);
+                    matEl.m_ByteOffset = checked_numcast<uint8>(meshElement.getByteOffset());
                     elements.add(matEl);
 
                     break;
@@ -226,70 +288,3 @@ void Material::calculateMaterialLayout( const BufferLayout& bufferLayout, Materi
 
 } } //end namespace
 
-namespace
-{
-void applyShaderVar(he::gfx::Shader* const shader, he::gfx::ShaderVar* const var, const he::gfx::Drawable* const drawable, const he::gfx::ICamera* const camera)
-{
-    switch (var->getType())
-    {      
-    case he::gfx::ShaderVarType_User:
-        {
-            var->assignData(shader);
-        } break;
-    case he::gfx::ShaderVarType_WorldViewProjection: 
-        {
-            shader->setShaderVar(var->getId(), camera->getViewProjection() * drawable->getWorldMatrix()); 
-        } break;
-    case he::gfx::ShaderVarType_ViewProjection: 
-        {
-            shader->setShaderVar(var->getId(), camera->getViewProjection()); 
-        } break;
-    case he::gfx::ShaderVarType_World: 
-        {
-            shader->setShaderVar(var->getId(), camera->getView() * drawable->getWorldMatrix()); 
-        } break;
-    case he::gfx::ShaderVarType_WorldView: 
-        {
-            shader->setShaderVar(var->getId(), camera->getView() * drawable->getWorldMatrix()); 
-        } break;
-    case he::gfx::ShaderVarType_View: 
-        {
-            shader->setShaderVar(var->getId(), camera->getView()); 
-        } break;
-    case he::gfx::ShaderVarType_BoneTransforms: 
-        {
-            HE_NOT_IMPLEMENTED
-                //shader->setShaderVar(var->getId(), drawable->getModelMesh()->getBoneTransforms()); 
-        } break;
-    case he::gfx::ShaderVarType_WorldPosition: 
-        {
-            he::vec3 worldPos;
-            drawable->getWorldMatrix().getTranslationComponent(worldPos);
-            shader->setShaderVar(var->getId(), worldPos); 
-        } break;
-
-    case he::gfx::ShaderVarType_AmbientColor: 
-        {
-            shader->setShaderVar(var->getId(), he::vec4(drawable->getScene()->getLightManager()->getAmbientLight()->color, drawable->getScene()->getLightManager()->getAmbientLight()->multiplier)); 
-        } break;
-    case he::gfx::ShaderVarType_DirectionalColor: 
-        {
-            shader->setShaderVar(var->getId(), he::vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getColor(), drawable->getScene()->getLightManager()->getDirectionalLight()->getMultiplier())); 
-        } break;
-    case he::gfx::ShaderVarType_DirectionalDirection: 
-        {
-            shader->setShaderVar(var->getId(), (camera->getView() * he::vec4(drawable->getScene()->getLightManager()->getDirectionalLight()->getDirection(), 0)).xyz()); 
-        } break;
-    case he::gfx::ShaderVarType_NearFar: 
-        {
-            shader->setShaderVar(var->getId(), he::vec2(camera->getNearClip(), camera->getFarClip())); 
-        } break;
-
-    default: 
-        {
-            LOG(LogType_ProgrammerAssert, "unknown shaderVartype when preparing for draw");
-        } break;
-    }
-}
-
-}

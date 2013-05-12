@@ -1,4 +1,4 @@
-//HappyEngine Copyright (C) 2011 - 2012  Evil Interactive
+//HappyEngine Copyright (C) 2011 - 2012  Bastian Damman, Sebastiaan Sprengers 
 //
 //This file is part of HappyEngine.
 //
@@ -15,28 +15,13 @@
 //    You should have received a copy of the GNU Lesser General Public License
 //    along with HappyEngine.  If not, see <http://www.gnu.org/licenses/>.
 //
-//Author:  
-//Created: //
+//Author:  Bastian Damman
+//Created: 23/08/2011
 
-#ifndef _HE_X_H_
-#define _HE_X_H_
+#ifndef _HE_HAPPY_TARGETDEFINES_H_
+#define _HE_HAPPY_TARGETDEFINES_H_
 #pragma once
 
-namespace he {
-
-class X
-{
-public:
-    X();
-    virtual ~X();
-
-private:
-
-    //Disable default copy constructor and default assignment operator
-    X(const X&);
-    X& operator=(const X&);
-};
-
-} //end namespace
+//#define HE_USE_OCTREE
 
 #endif

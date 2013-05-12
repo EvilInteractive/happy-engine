@@ -17,11 +17,9 @@ addFilter(CODE_SRCS src/game/picking code/game/
 addFilter(CODE_SRCS src/game/components/components code/game/
             CharacterPhysicsComponent.cpp           CharacterPhysicsComponent.h
             DynamicPhysicsComponent.cpp             DynamicPhysicsComponent.h
-            InstancedModelComponent.cpp             InstancedModelComponent.h
             LightComponent.cpp                      LightComponent.h
             ModelComponent.cpp                      ModelComponent.h
             PickingComponent.cpp                    PickingComponent.h
-            SkinnedModelComponent.cpp               SkinnedModelComponent.h
             StaticPhysicsComponent.cpp              StaticPhysicsComponent.h
             TriggerComponent.cpp                    TriggerComponent.h
         )

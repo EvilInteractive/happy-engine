@@ -215,41 +215,41 @@ void Shader::bind()
     }
 }
 
-uint32 Shader::getBufferId( const he::String& name ) const
+uint32 Shader::getBufferId( const he::FixedString& id ) const
 {
-    uint32 loc(glGetUniformBlockIndex(m_Id, name.c_str()));
+    uint32 loc(glGetUniformBlockIndex(m_Id, id.c_str()));
     if (loc == -1)
     {
-        HE_ERROR("Uniform buffer: '%s' not found!", name.c_str());
+        HE_ERROR("Uniform buffer: '%s' not found!",  id.c_str());
         HE_ERROR("In shader: %s", m_FragShaderName.c_str());
     }
     return loc;
 }
 
-uint32 Shader::getShaderVarId(const he::String& name) const
+uint32 Shader::getShaderVarId(const he::FixedString& id) const
 {
-    uint32 loc(glGetUniformLocation(m_Id, name.c_str()));
+    uint32 loc(glGetUniformLocation(m_Id, id.c_str()));
     if (loc == -1)
     {
-        HE_ERROR("Shader var: '%s' not found!", name.c_str());
+        HE_ERROR("Shader var: '%s' not found!", id.c_str());
         HE_ERROR("In shader: %s", m_FragShaderName.c_str());
     }
     return loc;
 }
-uint32 Shader::getShaderSamplerId(const he::String& name)
+uint32 Shader::getShaderSamplerId(const he::FixedString& id)
 {
-    std::map<he::String, uint32>::const_iterator loc(m_SamplerLocationMap.find(name));
+    he::FixedStringMap<uint32>::const_iterator loc(m_SamplerLocationMap.find(id));
     if (loc != m_SamplerLocationMap.cend())
     {
         return loc->second;
     }
     else
     {
-        uint32 texLoc(getShaderVarId(name));
-        uint32 samplerIndex(static_cast<uint32>(m_SamplerLocationMap.size()));
+        const uint32 texLoc(getShaderVarId(id));
+        const uint32 samplerIndex(static_cast<uint32>(m_SamplerLocationMap.size()));
         bind();
         glUniform1i(texLoc, samplerIndex);
-        m_SamplerLocationMap[name] = samplerIndex;
+        m_SamplerLocationMap[id] = samplerIndex;
         return samplerIndex;
     }
 }

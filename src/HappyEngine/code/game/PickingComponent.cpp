@@ -119,7 +119,7 @@ void PickingComponent::initPickingMesh()
     {
         EntityComponent* const comp(EntityManager::getInstance()->getComponent(m_LinkedModelComponent));
         ModelComponent* const modelComp(checked_cast<ModelComponent*>(comp));
-        const gfx::ModelMesh* mesh(modelComp->getModelMesh());
+        const gfx::ModelMesh* mesh(modelComp->getDrawable()->getModelMesh());
         if (mesh != nullptr)
         {
             if (m_ModelMesh != nullptr)

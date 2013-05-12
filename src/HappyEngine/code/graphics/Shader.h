@@ -23,6 +23,7 @@
 
 #include "ShaderLayout.h"
 #include "Resource.h"
+#include "FixedStringMap.h"
 
 namespace he {
 class mat44;
@@ -137,10 +138,10 @@ public:
 
     void bind();
 
-    uint32 getShaderVarId(const he::String& name) const;
-    uint32 getBufferId(const he::String& name) const;
-    uint32 getBufferVarId(uint32 bufferId, const he::String& name) const;
-    uint32 getShaderSamplerId(const he::String& name);
+    uint32 getShaderVarId(const he::FixedString& id) const;
+    uint32 getBufferId(const he::FixedString& id) const;
+    uint32 getBufferVarId(uint32 bufferId, const he::FixedString& id) const;
+    uint32 getShaderSamplerId(const he::FixedString& id);
 
     const ShaderLayout& getShaderLayout() const { return m_Layout; }
 
@@ -163,7 +164,7 @@ private:
     uint32 m_VsId;
     uint32 m_FsId;
 
-    std::map<he::String, uint32> m_SamplerLocationMap;
+    FixedStringMap<uint32> m_SamplerLocationMap;
     std::map<uint32, UniformBuffer*> m_UniformBufferMap;
 
     ShaderLayout m_Layout;

@@ -87,7 +87,7 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     ///                          LOAD SHADERS                              ///
     //////////////////////////////////////////////////////////////////////////
     ShaderLayout shaderLayout;
-    shaderLayout.addElement(ShaderLayoutElement(0, "inPosition"));
+    shaderLayout.addElement(ShaderLayoutElement("inPosition", BufferElement::Usage_Position));
 
     he::ObjectList<he::String> shaderOutputs;
     shaderOutputs.add("outColor");
@@ -95,9 +95,9 @@ void AutoExposure::init(const PostSettings::HdrSettings& settings)
     m_LumShader = ResourceFactory<gfx::Shader>::getInstance()->get(
         CONTENT->loadShader("shared/postShaderQuad.vert", 
                             "post/autoLum.frag", shaderLayout, shaderOutputs));
-    m_HDRmapPos = m_LumShader->getShaderSamplerId("hdrMap");
-    m_PrevLumMapPos = m_LumShader->getShaderSamplerId("prevLumMap");
-    m_DTimePos = m_LumShader->getShaderVarId("dTime");
+    m_HDRmapPos = m_LumShader->getShaderSamplerId(HEFS::strhdrMap);
+    m_PrevLumMapPos = m_LumShader->getShaderSamplerId(HEFS::strprevLumMap);
+    m_DTimePos = m_LumShader->getShaderVarId(HEFS::strdTime);
 
     m_ExposureSpeed = settings.exposureSpeed;
 
@@ -124,7 +124,13 @@ void AutoExposure::calculate( const Texture2D* hdrMap)
     m_LumShader->setShaderVar(m_HDRmapPos, hdrMap);
     m_LumShader->setShaderVar(m_PrevLumMapPos, m_LumTexture[m_FirstBuffer? 1 : 0]);
     m_LumShader->setShaderVar(m_DTimePos, m_DTime * m_ExposureSpeed);
-    GL::heBindVao(m_Quad->getVertexArraysID());
+    
+    glBindBuffer(GL_ARRAY_BUFFER, m_Quad->getVBOID());
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(12)); 
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Quad->getVBOIndexID());
+
     glDrawElements(GL_TRIANGLES, m_Quad->getNumIndices(), m_Quad->getIndexType(), 0);
 }
 

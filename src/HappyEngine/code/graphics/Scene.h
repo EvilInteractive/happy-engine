@@ -49,13 +49,12 @@ class SceneFactory: public ObjectFactory<Scene>, public Singleton<SceneFactory>
 class HAPPY_ENTRY Scene
 {
     DECLARE_OBJECT(Scene)
+    friend class Drawable;
 public:
     Scene();
     virtual ~Scene();
 
     // Drawlist
-    void attachToScene(Drawable* drawable);
-    void detachFromScene(Drawable* drawable);
     void forceReevalute(Drawable* drawable);
     void doReevalute(Drawable* drawable);
     void prepareForRendering();
@@ -79,6 +78,10 @@ public:
     void loadSkybox(const he::String& asset);
 
 private:  
+    // Drawable friends
+    void attachToScene(Drawable* drawable);
+    void detachFromScene(Drawable* drawable);
+
     // Managers
     LightManager* m_LightManager;
     InstancingManager* m_InstancingManager;

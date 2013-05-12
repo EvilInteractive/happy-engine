@@ -33,14 +33,19 @@ Drawable::Drawable()
     : m_Bound(AABB(vec3(-1, -1, -1), vec3(1, 1, 1)))
     , m_ModelMesh(nullptr)
     , m_Material(nullptr)
+    , m_MaterialLayout(NEW MaterialLayout())
     , m_Scene(nullptr)
     , m_Flags(eDrawableFlags_None)
+#ifdef HE_USE_OCTREE
+    , m_Node(nullptr)
+#endif
 {
 }
 
 
 Drawable::~Drawable()
 {
+    delete m_MaterialLayout;
 }
 
 void Drawable::setModelMesh( ModelMesh* const mesh )
@@ -73,7 +78,7 @@ void Drawable::setMaterial( Material* const material )
 
 void Drawable::updateMaterialLayout(ModelMesh* const mesh, Material* const material)
 {
-    if (m_ModelMesh == mesh && m_Material == material)
+    if (m_ModelMesh == mesh && m_Material == material) // Threading recall check
     {
         if ( m_ModelMesh != nullptr && m_Material != nullptr)
         {
@@ -81,7 +86,7 @@ void Drawable::updateMaterialLayout(ModelMesh* const mesh, Material* const mater
             {
                 if (m_Material->isLoaded())
                 {
-                    m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout(), m_MaterialLayout);
+                    m_Material->calculateMaterialLayout(m_ModelMesh->getVertexLayout(), *m_MaterialLayout);
                 }
                 else
                 {
@@ -96,11 +101,6 @@ void Drawable::updateMaterialLayout(ModelMesh* const mesh, Material* const mater
     }
 }
 
-void Drawable::invoke( ModelMesh* const mesh, Material* const material, const boost::function0<void> func )
-{
-
-}
-
 void Drawable::detachFromScene()
 {
     HE_IF_ASSERT(m_Scene != nullptr, "Object not attached to scene")
@@ -112,10 +112,34 @@ void Drawable::detachFromScene()
 
 void Drawable::attachToScene( Scene* scene )
 {
-    HE_IF_ASSERT(m_Scene == nullptr, "Object already attached to scene")
+    HE_IF_ASSERT(isAttachedToScene() == false, "Object already attached to scene")
+    HE_IF_ASSERT(m_ModelMesh != nullptr, "Drawable does not have a mesh when being attached to the scene!")
+    HE_IF_ASSERT(m_Material != nullptr, "Drawable does not have a material when being attached to the scene!")
     {
         m_Scene = scene;
-        m_Scene->attachToScene(this);
+        internalAttachToScene(scene);
+    }
+}
+
+void Drawable::internalAttachToScene( Scene* const scene )
+{
+    if (m_Scene == scene) // Threading recall check
+    {
+        if (m_ModelMesh->isLoaded())
+        {
+            if (m_Material->isLoaded())
+            {
+                m_Scene->attachToScene(this);
+            }
+            else
+            {
+                m_Material->callbackOnceIfLoaded(boost::bind(&Drawable::internalAttachToScene, this, scene));
+            }
+        }
+        else
+        {
+            m_ModelMesh->callbackOnceIfLoaded(boost::bind(&Drawable::internalAttachToScene, this, scene));
+        }
     }
 }
 

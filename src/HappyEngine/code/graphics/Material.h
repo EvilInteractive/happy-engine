@@ -23,7 +23,7 @@
 #define _HE_MATERIAL_H_
 #pragma once
 
-#include "BufferLayout.h"
+#include "ShaderLayout.h"
 #include "Resource.h"
 
 namespace he {
@@ -50,6 +50,7 @@ namespace details {
 struct MaterialLayoutElement
 {
     MaterialLayoutElement(): m_ElementIndex(UINT16_MAX), m_Components(0), m_Type(0), m_Stride(0), m_ByteOffset(0) {}
+    ~MaterialLayoutElement() {}
     uint16 m_ElementIndex;
     uint8 m_Components;
     uint16 m_Type;
@@ -81,12 +82,10 @@ class Material : public Resource<Material>
 public:
     Material();
     virtual ~Material();
-
-    void init(const BufferLayout& vertexLayout);
-    
+        
     void registerCommonVar(ShaderVar* const var);
     void registerSpecificVar(const EShaderType type, ShaderVar* const var);
-    ShaderVar* getVar(const he::FixedString& var); // Only from common ~usealy user vars
+    ShaderVar* getVar(const he::FixedString& var); // Only from user vars
 
     void setNormalShader(Shader* const shader);
     void setSkinnedShader(Shader* const shader);
@@ -130,10 +129,7 @@ private:
     Shader* m_Shader[eShaderType_MAX];
     he::PrimitiveList<ShaderVar*> m_ShaderCommonVars;
     he::PrimitiveList<ShaderVar*> m_ShaderSpecificVars[eShaderType_MAX];
-
-    BufferLayout m_VertexLayout;
-    BufferLayout m_InstanceLayout;
-
+    
     // Disabled
     Material(const Material* other);
     Material* operator=(const Material* other);

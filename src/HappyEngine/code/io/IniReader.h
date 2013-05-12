@@ -37,7 +37,7 @@ namespace io {
 class IniReader
 {
 private:
-typedef std::map<std::wstring, std::map<std::wstring, std::wstring>> IniReadData;
+typedef std::map<he::String, std::map<he::String, he::String>> IniReadData;
 public:
     IniReader();
     virtual ~IniReader();
@@ -48,23 +48,22 @@ public:
     bool isOpen() const;
 
     //when the asked node is not found, defaultReturn is returned
-    bool readBool(const std::wstring& root, const std::wstring& node, bool defaultReturn = false) const;
-    int readInt(const std::wstring& root, const std::wstring& node, int defaultReturn = 0) const;
-    float readFloat(const std::wstring& root, const std::wstring& node, float defaultReturn = 0.0f) const;
+    bool readBool(const he::String& root, const he::String& node, bool defaultReturn = false) const;
+    int readInt(const he::String& root, const he::String& node, int defaultReturn = 0) const;
+    float readFloat(const he::String& root, const he::String& node, float defaultReturn = 0.0f) const;
 
-    vec2 readVector2(const std::wstring& root, const std::wstring& node, const vec2& defaultReturn = vec2(0.0f, 0.0f)) const;
-    vec3 readVector3(const std::wstring& root, const std::wstring& node, const vec3& defaultReturn = vec3(0.0f, 0.0f, 0.0f)) const;
-    vec4 readVector4(const std::wstring& root, const std::wstring& node, const vec4& defaultReturn = vec4(0.0f, 0.0f, 0.0f, 0.0f)) const;
+    vec2 readVector2(const he::String& root, const he::String& node, const vec2& defaultReturn = vec2(0.0f, 0.0f)) const;
+    vec3 readVector3(const he::String& root, const he::String& node, const vec3& defaultReturn = vec3(0.0f, 0.0f, 0.0f)) const;
+    vec4 readVector4(const he::String& root, const he::String& node, const vec4& defaultReturn = vec4(0.0f, 0.0f, 0.0f, 0.0f)) const;
 
-    he::String readString(const std::wstring& root, const std::wstring& node, const he::String& defaultReturn = "") const;
-    std::wstring readWString(const std::wstring& root, const std::wstring& node, const std::wstring& defaultReturn = L"") const;
+    he::String readString(const he::String& root, const he::String& node, const he::String& defaultReturn = "") const;
 
-    const std::map<std::wstring, std::wstring>& getNodes(const std::wstring& root) const;
+    const std::map<he::String, he::String>& getNodes(const he::String& root) const;
 
-    bool containsRoot(const std::wstring& root) const;
+    bool containsRoot(const he::String& root) const;
 
 private:
-    bool readRaw(const std::wstring& root, const std::wstring& node, std::wstring& returnValue) const;
+    bool readRaw(const he::String& root, const he::String& node, he::String& returnValue) const;
 
     IniReadData m_Data;
     bool m_IsOpen;

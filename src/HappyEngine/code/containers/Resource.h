@@ -63,7 +63,7 @@ public:
 
     void setLoaded()
     {
-        HE_ASSERT(m_Loaded == false, "Resource %s already loaded!", m_Name.c_str());
+        HE_ASSERT(m_IsLoaded == false, "Resource %s already loaded!", m_Name.c_str());
         HE_ASSERT(m_Name.empty() == false, "Resource is loaded but does not have a name!");
 
         m_IsLoaded = true;
@@ -81,7 +81,7 @@ public:
         if (m_IsLoaded)
         {
             m_LoadMutex.unlock(); //we don't know how long callback will take, and it is not necessary to keep the lock
-            callback();
+            callback(this);
         }
         else
         {

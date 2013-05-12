@@ -25,11 +25,7 @@ namespace he {
 namespace gfx {
     struct Bone;
     class BufferLayout;
-#if defined(_MSC_VER) && _MSC_VER < 1700
-    enum IndexStride;
-#else
-    enum IndexStride : uint8;
-#endif
+    ENUM(IndexStride, uint8);
 }
 namespace ct {
 namespace models {
@@ -39,7 +35,7 @@ class IModelLoader
 public:
     virtual ~IModelLoader() {}
   
-    virtual bool load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true) = 0;
+    virtual bool load(const he::String& path, bool allowByteIndices = true) = 0;
 
     virtual size_t getNumMeshes() const = 0;
     virtual const he::String& getMeshName(uint32 mesh) const = 0;
@@ -52,6 +48,8 @@ public:
     virtual const void* getIndices(uint32 mesh) const = 0;
     virtual gfx::IndexStride getIndexStride(uint32 mesh) const = 0;
     virtual size_t getNumIndices(uint32 mesh) const = 0;
+
+    virtual const gfx::BufferLayout& getVertexLayout() const = 0;
 };
 
 } } } //end namespace

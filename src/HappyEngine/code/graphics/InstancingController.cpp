@@ -37,9 +37,7 @@
 
 namespace he {
 namespace gfx {
-
-#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
-
+    
 #pragma warning(disable:4355) // use of this in initializer list
 InstancingController::InstancingController(const he::String& name, bool dynamic, const ObjectHandle& modelHandle, const ObjectHandle& material):
     m_Dynamic(dynamic), m_ModelMesh(nullptr), m_NeedsUpdate(false), m_BufferCapacity(32),

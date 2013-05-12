@@ -233,9 +233,9 @@ he::ObjectHandle TextureLoader::asyncLoadTexture( const he::String& path, IResou
 
 bool TextureLoader::createTexture( const TextureLoadData& data )
 {
-    if (data.m_Tex.type == gfx::Texture2D::s_ObjectType)
+    if (data.m_Tex.getType() == gfx::Texture2D::s_ObjectType)
         return createTexture2D(data);
-    else if (data.m_Tex.type == gfx::TextureCube::s_ObjectType)
+    else if (data.m_Tex.getType()  == gfx::TextureCube::s_ObjectType)
         return createTextureCube(data);
     LOG(LogType_ProgrammerAssert, "Unsupported object type id!");
     return false;

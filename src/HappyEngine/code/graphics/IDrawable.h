@@ -66,12 +66,9 @@ public:
     virtual bool isSkinned() const = 0;
     
     //////////////////////////////////////////////////////////////////////////
-    CullOctreeNode* getNode() const { return m_Node; };
-    void setNode(CullOctreeNode* node) { m_Node = node; };
     virtual void nodeReevaluated() {} // callback
 
 private:
-    CullOctreeNode* m_Node;
 }; 
 
 } } //end namespace

@@ -50,10 +50,8 @@ SpotLight::SpotLight()
     , m_ShadowLookDirty(true)
 {
     m_Material = ResourceFactory<Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
-    BufferLayout vertexLayout;
-    vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    //m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight", vertexLayout); //HACK: wrong volume
-    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight", vertexLayout); //HACK: wrong volume
+    //m_pLightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/spotLight.binobj", "M_SpotLight"); //HACK: wrong volume
+    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointLight.binobj", "M_PointLight"); //HACK: wrong volume
 
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
     m_Model = m_LightVolume;

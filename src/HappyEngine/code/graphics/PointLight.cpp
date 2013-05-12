@@ -37,9 +37,7 @@ PointLight::PointLight()
     , m_LightVolume(nullptr)
 {
     m_Material = ResourceFactory<gfx::Material>::getInstance()->get(CONTENT->loadMaterial("engine/light/debuglight.material"));
-    BufferLayout vertexLayout;
-    vertexLayout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
-    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight", vertexLayout);
+    m_LightVolume = CONTENT->asyncLoadModelMesh("engine/lightvolume/pointlight.binobj", "M_PointLight");
 
     ResourceFactory<gfx::ModelMesh>::getInstance()->instantiate(m_LightVolume->getHandle());
     m_Model = m_LightVolume;

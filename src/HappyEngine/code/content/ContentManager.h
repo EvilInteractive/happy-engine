@@ -49,10 +49,10 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model* asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* asyncLoadModelMesh(const he::String& modelPath, const he::String& meshName, const gfx::BufferLayout& vertexLayout);
-    gfx::Model* loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout);
-    gfx::ModelMesh* loadModelMesh(const he::String& modelPath, const he::String& meshName, const gfx::BufferLayout& vertexLayout);
+    gfx::Model* asyncLoadModel(const he::String& path);
+    gfx::ModelMesh* asyncLoadModelMesh(const he::String& modelPath, const he::String& meshName);
+    gfx::Model* loadModel(const he::String& path);
+    gfx::ModelMesh* loadModelMesh(const he::String& modelPath, const he::String& meshName);
     gfx::ModelMesh* getFullscreenQuad();
     gfx::ModelMesh* getParticleQuad();
 

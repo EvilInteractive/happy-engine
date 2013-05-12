@@ -84,6 +84,7 @@ To minimize the possibility of data corruption when exporting a class with __dec
 #define ENUM(name, size) enum name : size
 #endif
 
+#include "HappyTargetDefines.h"
 #include "HeString.h"
 #include "FixedString.h"
 #include "HeFixedStrings.h"

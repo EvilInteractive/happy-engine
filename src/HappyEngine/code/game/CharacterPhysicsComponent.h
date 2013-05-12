@@ -31,27 +31,26 @@ namespace px {
 }
 namespace ge {
 struct EntityComponentDesc;
-class HAPPY_ENTRY CharacterPhysicsComponent : public EntityComponent, public Object3D, public ITickable
+class HAPPY_ENTRY CharacterPhysicsComponent : public EntityComponent, public ITickable
 {
-    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     CharacterPhysicsComponent();
-    virtual ~CharacterPhysicsComponent();
+    ~CharacterPhysicsComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {}  // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strCharacterPhysicsComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strCharacterPhysicsComponent; } // override, final
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
@@ -59,12 +58,12 @@ public:
     //////////////////////////////////////////////////////////////////////////
     ///                            ITickable                               ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void tick(float dTime);
+    void tick(float dTime); // override, final
     //////////////////////////////////////////////////////////////////////////
     
 
 protected:
-    virtual void init(Entity* parent);
+    void init(Entity* parent); // override, final
 
     px::PhysicsCharacterController* getCharacterController() const { return m_CharacterController; }
 

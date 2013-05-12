@@ -56,7 +56,7 @@ public:
             }
         }
     }
-    void init(size_t startSize, size_t increaseSize, const he::String& displayName)
+    void init(const size_t startSize, const size_t increaseSize, const he::String& displayName)
     {
         ObjectFactory<T>::init(startSize, increaseSize, displayName);
     }
@@ -78,40 +78,40 @@ public:
         return ret;
     }
 
-    uint32 getRefCount(const ObjectHandle& handle)
+    uint32 getRefCount(const ObjectHandle handle)
     {
-        return m_RefCounter[handle.index];
+        return m_RefCounter[handle.getIndex()];
     }
 
-    virtual void instantiate(const ObjectHandle& handle)
+    virtual void instantiate(const ObjectHandle handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): instantiating unassigned handle", this->m_DisplayName.c_str());
-        HE_ASSERT(handle.type == this->m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(handle.getType() == this->m_Type, "ObjectHandle does not belong to this factory!");
         HE_ASSERT(ObjectFactory<T>::get(handle) != nullptr, "ResourceFactory (%s): oops handle has been garbage collected", this->m_DisplayName.c_str());
-        ++m_RefCounter[handle.index];
+        ++m_RefCounter[handle.getIndex()];
     }
 
-    void release(const ObjectHandle& handle)
+    void release(const ObjectHandle handle)
     {
         HE_ASSERT(handle != ObjectHandle::unassigned, "ResourceFactory (%s): releasing unassigned handle", this->m_DisplayName.c_str());
-        HE_ASSERT(handle.type == this->m_Type, "ObjectHandle does not belong to this factory!");
-        HE_ASSERT(m_RefCounter[handle.index] != 0, "ResourceFactory (%s): All refs are already released (%s)", this->m_DisplayName.c_str(), this->get(handle)->getName().c_str());
-        --m_RefCounter[handle.index];
+        HE_ASSERT(handle.getType() == this->m_Type, "ObjectHandle does not belong to this factory!");
+        HE_ASSERT(m_RefCounter[handle.getIndex()] != 0, "ResourceFactory (%s): All refs are already released (%s)", this->m_DisplayName.c_str(), this->get(handle)->getName().c_str());
+        --m_RefCounter[handle.getIndex()];
     }
 
     //////////////////////////////////////////////////////////////////////////
     /// Overrides ObjectFactory<T>
     //////////////////////////////////////////////////////////////////////////
-    virtual bool isAlive(const ObjectHandle& handle) const { return ObjectFactory<T>::isAlive(handle); }
+    virtual bool isAlive(const ObjectHandle handle) const { return ObjectFactory<T>::isAlive(handle); }
     virtual ObjectHandle create()
     {
-        ObjectHandle handle(ObjectFactory<T>::create());
+        const ObjectHandle handle(ObjectFactory<T>::create());
         instantiate(handle);
         return handle;
     }
-    virtual ObjectHandle registerObject(T* obj)
+    virtual ObjectHandle registerObject(T* const obj)
     {
-        ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
+        const ObjectHandle handle(ObjectFactory<T>::registerObject(obj));
         this->get(handle)->setHandle(handle);
         instantiate(handle);
         return handle;
@@ -123,20 +123,20 @@ protected:
     {
         ObjectFactory<T>::destroyAll();
     }
-    virtual void destroyObject(const ObjectHandle& handle)
+    virtual void destroyObject(const ObjectHandle handle)
     {
         ObjectFactory<T>::destroyObject(handle);
     }
-    virtual void destroyAt(ObjectHandle::IndexType index)
+    virtual void destroyAt(const ObjectHandle::IndexType index)
     {
         ObjectFactory<T>::destroyAt(index);
     }
     // <--
 
-    virtual void resize(size_t newSize)
+    virtual void resize(const size_t newSize)
     {
         ObjectFactory<T>::resize(newSize);
-        size_t prevSize(m_RefCounter.size());
+        const size_t prevSize(m_RefCounter.size());
         m_RefCounter.resize(newSize);
         for (size_t i(prevSize); i < newSize; ++i)
             m_RefCounter[i] = 0;

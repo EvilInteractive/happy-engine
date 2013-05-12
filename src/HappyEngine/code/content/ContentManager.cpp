@@ -108,21 +108,21 @@ void ContentManager::glThreadInvoke()  //needed for all of the gl operations
 }
 
 //////////////////////////////////////////////////////////////////////////
-gfx::Model* ContentManager::asyncLoadModel(const he::String& asset, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::asyncLoadModel(const he::String& asset)
 {
-    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, vertexLayout, true);
+    return m_ModelLoader->asyncLoadModel(m_ModelPath.str() + asset, true);
 }
-gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const he::String& asset, const he::String& meshName, const gfx::BufferLayout& vertexLayout )
+gfx::ModelMesh* ContentManager::asyncLoadModelMesh( const he::String& asset, const he::String& meshName )
 {
-    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
+    return m_ModelLoader->asyncLoadModelMesh(m_ModelPath.str() + asset, meshName, true);
 }
-gfx::Model* ContentManager::loadModel(const he::String& asset, const gfx::BufferLayout& vertexLayout)
+gfx::Model* ContentManager::loadModel(const he::String& asset)
 {
-    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, vertexLayout, true);
+    return m_ModelLoader->loadModel(m_ModelPath.str() + asset, true);
 }
-gfx::ModelMesh* ContentManager::loadModelMesh(const he::String& asset, const he::String& meshName, const gfx::BufferLayout& vertexLayout)
+gfx::ModelMesh* ContentManager::loadModelMesh(const he::String& asset, const he::String& meshName)
 {
-    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, vertexLayout, true);
+    return m_ModelLoader->loadModelMesh(m_ModelPath.str() + asset, meshName, true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ gfx::ModelMesh* ContentManager::getFullscreenQuad()
     if (m_FullscreenQuad == nullptr)
     {
         BufferLayout layout;
-        layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+        layout.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
         ObjectHandle handle(ResourceFactory<ModelMesh>::getInstance()->create());
         m_FullscreenQuad = ResourceFactory<ModelMesh>::getInstance()->get(handle);
@@ -333,7 +333,7 @@ gfx::ModelMesh* ContentManager::getParticleQuad()
     {    
         using namespace gfx;
         BufferLayout layout;
-        layout.addElement(BufferElement(0, BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
+        layout.addElement(BufferElement(BufferElement::Type_Vec3, BufferElement::Usage_Position, 12, 0));
 
         he::ObjectList<VertexPos> vertices(4);
         vertices.add(VertexPos(vec3(-1, 1, 0.0f)));

@@ -23,7 +23,6 @@
 #pragma once
 
 #include "Bound.h"
-//#define USE_OCTREE
 
 namespace he {
 namespace gfx {
@@ -63,7 +62,7 @@ private:
     void getContainerIndex(const Drawable* drawable, BlendFilter& main);
 
     he::PrimitiveList<Drawable*> m_Dynamics;
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     CullOctree* m_DrawList[BlendFilter_MAX];
 #else
     he::PrimitiveList<Drawable*> m_DrawList[BlendFilter_MAX];

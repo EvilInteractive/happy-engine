@@ -20,14 +20,14 @@
 #include "HappyPCH.h" 
 
 #include "MaterialLoader.h"
-#include "HappyNew.h"
 #include "IniReader.h"
-#include "HappyEngine.h"
-#include "BufferLayout.h"
 #include "Texture2D.h"
 #include "ContentManager.h"
 #include "Bone.h"
 #include "ShaderVar.h"
+#include "Material.h"
+#include "ShaderLayout.h"
+#include "GlobalStringTable.h"
 
 namespace he {
 namespace ct {
@@ -149,14 +149,14 @@ ObjectHandle MaterialLoader::load(const he::String& path)
         
         if (reader.isOpen())
         {     
-            gfx::BufferLayout vertexLayout;
+            gfx::ShaderLayout materialLayout;
             // [Shader]
             {
                 he::String file;
-                file = reader.readString(L"Forward", L"shader", "");
+                file = reader.readString("Forward", "shader", "");
                 if (m_RenderSettings.enableDeferred)
                 {
-                    he::String temp = reader.readString(L"Deferred", L"shader", file);
+                    he::String temp = reader.readString("Deferred", "shader", file);
                     if (temp != file)
                     {
                         file = temp;
@@ -173,20 +173,20 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                 he::ObjectList<he::String> shaderOutputs;
 
                 // [out]
-                if (shaderReader.containsRoot(L"out"))
+                if (shaderReader.containsRoot("out"))
                 {
-                    const std::map<std::wstring, std::wstring>& outNodes(shaderReader.getNodes(L"out"));
+                    const std::map<he::String, he::String>& outNodes(shaderReader.getNodes("out"));
                     if (outNodes.size() == 3)
                     {
                         shaderOutputs.resize(3);
-                        std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
+                        std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<he::String, he::String>& p)
                         {
-                            if (p.second == L"GBUFFER_COLOR")
-                                shaderOutputs[0] = he::String(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_SG")
-                                shaderOutputs[1] = he::String(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_NORMALDEPTH")
-                                shaderOutputs[2] = he::String(p.first.cbegin(), p.first.cend());
+                            if (p.second == "GBUFFER_COLOR")
+                                shaderOutputs[0] = p.first;
+                            else if (p.second == "GBUFFER_SG")
+                                shaderOutputs[1] = p.first;
+                            else if (p.second == "GBUFFER_NORMALDEPTH")
+                                shaderOutputs[2] = p.first;
                             else
                                 LOG(LogType_ProgrammerAssert, "unknow semantic");
                         });
@@ -194,12 +194,12 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                     else if (outNodes.size() == 2)
                     {
                         shaderOutputs.resize(2);
-                        std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
+                        std::for_each(outNodes.cbegin(), outNodes.cend(), [&](const std::pair<he::String, he::String>& p)
                         {
-                            if (p.second == L"GBUFFER_COLOR")
-                                shaderOutputs[0] = he::String(p.first.cbegin(), p.first.cend());
-                            else if (p.second == L"GBUFFER_NORMALDEPTH")
-                                shaderOutputs[1] = he::String(p.first.cbegin(), p.first.cend());
+                            if (p.second == "GBUFFER_COLOR")
+                                shaderOutputs[0] = p.first;
+                            else if (p.second == "GBUFFER_NORMALDEPTH")
+                                shaderOutputs[1] = p.first;
                             else
                                 LOG(LogType_ProgrammerAssert, "unknow semantic");
                         });
@@ -208,58 +208,46 @@ ObjectHandle MaterialLoader::load(const he::String& path)
 
                 // [inPerVertex]
                 gfx::ShaderLayout shaderLayout;
-                uint32 count(0);
-                uint32 offset(0);
-                const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"inPerVertex"));
-                std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
+                const std::map<he::String, he::String>& inNodes(shaderReader.getNodes("inPerVertex"));
+                std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<he::String, he::String>& p)
                 {
-                    if (p.second == L"POSITION")
+                    if (p.second == "POSITION")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Position, sizeof(vec3), offset));
-                        offset += sizeof(vec3);
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(p.first, gfx::BufferElement::Usage_Position));
                     }
-                    else if (p.second == L"TEXCOORD")
+                    else if (p.second == "TEXCOORD")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_TextureCoordinate, sizeof(vec2), offset));
-                        offset += sizeof(vec2);
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(p.first, gfx::BufferElement::Usage_TextureCoordinate));
                     }
-                    else if (p.second == L"NORMAL")
+                    else if (p.second == "NORMAL")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Normal, sizeof(vec3), offset));
-                        offset += sizeof(vec3);
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(p.first, gfx::BufferElement::Usage_Normal));
                     }
-                    else if (p.second == L"TANGENT")
+                    else if (p.second == "TANGENT")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Tangent, sizeof(vec3), offset));
-                        offset += sizeof(vec3);
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(p.first, gfx::BufferElement::Usage_Tangent));
                     }
-                    else if (p.second == L"BONEIDS")
+                    else if (p.second == "BONEIDS")
                     {
-                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneIDs, sizeof(vec4), offset));
-                        offset += sizeof(vec4);
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(p.first, gfx::BufferElement::Usage_BoneIDs));
                     }
-                    else if (p.second == L"BONEWEIGHTS")
+                    else if (p.second == "BONEWEIGHTS")
                     {
-                        HE_COMPILE_ASSERT(gfx::Bone::MAX_BONEWEIGHTS == 4, "layout incompatible");
-                        vertexLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_BoneWeights, sizeof(vec4), offset));
-                        offset += sizeof(vec4);
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(p.first, gfx::BufferElement::Usage_BoneWeights));
                     }
                     else
                     {
-                        HE_ERROR("Material: unknown attribute %s", he::String(p.second.cbegin(), p.second.cend()).c_str());
+                        HE_ERROR("Material: unknown attribute %s", p.second.c_str());
                     } 
-                    shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), he::String(p.first.cbegin(), p.first.cend())));
                 }); 
 
                 gfx::BufferLayout instancingLayout;
-                offset = 0;
-                count = 0;
-                if (shaderReader.containsRoot(L"inPerInstance"))
+                /*if (shaderReader.containsRoot("inPerInstance"))
                 {
-                    const std::map<std::wstring, std::wstring>& inNodes(shaderReader.getNodes(L"inPerInstance"));
-                    std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<std::wstring, std::wstring>& p)
+                    const std::map<he::String, he::String>& inNodes(shaderReader.getNodes("inPerInstance"));
+                    std::for_each(inNodes.cbegin(), inNodes.cend(), [&](const std::pair<he::String, he::String>& p)
                     {
-                        if (p.second == L"MAT44")
+                        if (p.second == "MAT44")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
                             offset += sizeof(vec4);
@@ -270,32 +258,32 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
                             offset += sizeof(vec4);
                         }
-                        else if (p.second == L"FLOAT")
+                        else if (p.second == "FLOAT")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Float, gfx::BufferElement::Usage_Instancing, sizeof(float), offset));
                             offset += sizeof(float);
                         }
-                        else if (p.second == L"VEC2")
+                        else if (p.second == "VEC2")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec2, gfx::BufferElement::Usage_Instancing, sizeof(vec2), offset));
                             offset += sizeof(vec2);
                         }
-                        else if (p.second == L"VEC3")
+                        else if (p.second == "VEC3")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec3, gfx::BufferElement::Usage_Instancing, sizeof(vec3), offset));
                             offset += sizeof(vec3);
                         }
-                        else if (p.second == L"VEC4")
+                        else if (p.second == "VEC4")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Vec4, gfx::BufferElement::Usage_Instancing, sizeof(vec4), offset));
                             offset += sizeof(vec4);
                         }
-                        else if (p.second == L"INT")
+                        else if (p.second == "INT")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_Int, gfx::BufferElement::Usage_Instancing, sizeof(int), offset));
                             offset += sizeof(int);
                         }
-                        else if (p.second == L"UINT")
+                        else if (p.second == "UINT")
                         {
                             instancingLayout.addElement(gfx::BufferElement(count++, gfx::BufferElement::Type_UInt, gfx::BufferElement::Usage_Instancing, sizeof(uint32), offset));
                             offset += sizeof(uint32);
@@ -304,14 +292,14 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                         {
                             HE_ERROR("Material: instancing unknown type %s", he::String(p.second.cbegin(), p.second.cend()).c_str());
                         }
-                        shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), he::String(p.first.cbegin(), p.first.cend())));  
+                        shaderLayout.addElement(gfx::ShaderLayoutElement(static_cast<uint32>(shaderLayout.getElements().size()), p.first));  
                     });
-                }
+                }*/
 
                 // [Shader]
-                gfx::Shader* pShader(ResourceFactory<gfx::Shader>::getInstance()->get(
-                    CONTENT->loadShader(shaderReader.readString(L"Shader", L"vsPath", ""),
-                                        shaderReader.readString(L"Shader", L"fsPath", ""),
+                gfx::Shader* shader(ResourceFactory<gfx::Shader>::getInstance()->get(
+                    CONTENT->loadShader(shaderReader.readString("Shader", "vsPath", ""),
+                                        shaderReader.readString("Shader", "fsPath", ""),
                                         shaderLayout,
                                         shaderOutputs)));
 
@@ -321,161 +309,161 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                 gfx::BlendFunc srcBlend(gfx::BlendFunc_One), destBlend(gfx::BlendFunc_Zero);
                 bool post(true);
                 bool cullFrontFace(false);
-                if (reader.containsRoot(L"info"))
+                if (reader.containsRoot("info"))
                 {
-                    isBlended = reader.readBool(L"info", L"blending", false);
+                    isBlended = reader.readBool("info", "blending", false);
                     if (isBlended)
                     {
-                        blendEq = blendEquationFromString(reader.readString(L"info", L"blendFunc", "ADD"));
-                        srcBlend = blendFuncFromString(reader.readString(L"info", L"srcBlend", "ONE"));
-                        destBlend = blendFuncFromString(reader.readString(L"info", L"destBlend", "ZERO"));
+                        blendEq = blendEquationFromString(reader.readString("info", "blendFunc", "ADD"));
+                        srcBlend = blendFuncFromString(reader.readString("info", "srcBlend", "ONE"));
+                        destBlend = blendFuncFromString(reader.readString("info", "destBlend", "ZERO"));
                     }
-                    post = reader.readBool(L"info", L"post", true);
-                    cullFrontFace = reader.readBool(L"info", L"cullFrontFace", false);
+                    post = reader.readBool("info", "post", true);
+                    cullFrontFace = reader.readBool("info", "cullFrontFace", false);
                 }
 
                 material->setIsBlended(isBlended, blendEq, srcBlend, destBlend);
                 material->setNoPost(!post);
                 material->setCullFrontFace(cullFrontFace);
-                material->setShader(pShader->getHandle(), vertexLayout, instancingLayout);
+                material->setNormalShader(shader);
 
 
                 // [uniform]
-                if (shaderReader.containsRoot(L"uniform"))
+                if (shaderReader.containsRoot("uniform"))
                 {
-                    const std::map<std::wstring, std::wstring>& uniformNodes(shaderReader.getNodes(L"uniform"));
-                    std::for_each(uniformNodes.cbegin(), uniformNodes.cend(), [&](const std::pair<std::wstring, std::wstring> node)
+                    const std::map<he::String, he::String>& uniformNodes(shaderReader.getNodes("uniform"));
+                    std::for_each(uniformNodes.cbegin(), uniformNodes.cend(), [&](const std::pair<he::String, he::String> node)
                     {
-                        he::String name = he::String(node.first.cbegin(), node.first.cend());
+                        const he::FixedString name(he::GlobalStringTable::getInstance()->add(node.first.c_str(), node.first.size()));
                         // Camera
-                        if (node.second == L"WORLDVIEWPROJECTION")
+                        if (node.second == "WORLDVIEWPROJECTION")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_WorldViewProjection));
+                            material->registerSpecificVar(gfx::eShaderType_Normal,
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_WorldViewProjection));
                         }
-                        else if (node.second == L"WORLDVIEW")
+                        else if (node.second == "WORLDVIEW")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_WorldView));
+                            material->registerSpecificVar(gfx::eShaderType_Normal,
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_WorldView));
                         }
-                        else if (node.second == L"VIEWPROJECTION")
+                        else if (node.second == "VIEWPROJECTION")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_ViewProjection));
+                            material->registerSpecificVar(gfx::eShaderType_Normal,
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_ViewProjection));
                         }
-                        else if (node.second == L"VIEW")
+                        else if (node.second == "VIEW")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_View));
+                            material->registerSpecificVar(gfx::eShaderType_Normal,
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_View));
                         }
-                        else if (node.second == L"WORLD")
+                        else if (node.second == "WORLD")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_World));
+                            material->registerSpecificVar(gfx::eShaderType_Normal,
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_World));
                         }
-                        else if (node.second == L"WORLDPOSITION")
+                        else if (node.second == "WORLDPOSITION")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_WorldPosition));
+                            material->registerCommonVar(
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_WorldPosition));
                         }
 
                         // Light
-                        else if (node.second == L"AMBIENT_COLOR")
+                        else if (node.second == "AMBIENT_COLOR")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_AmbientColor));
+                            material->registerCommonVar(
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_AmbientColor));
                         }
-                        else if (node.second == L"DIRECTIONAL_COLOR")
+                        else if (node.second == "DIRECTIONAL_COLOR")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalColor));
+                            material->registerCommonVar(
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalColor));
                         }
-                        else if (node.second == L"DIRECTIONAL_DIRECTION")
+                        else if (node.second == "DIRECTIONAL_DIRECTION")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalDirection));
+                            material->registerCommonVar(
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_DirectionalDirection));
                         }
 
-                        else if (node.second == L"NEARFAR")
+                        else if (node.second == "NEARFAR")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_NearFar));
+                            material->registerCommonVar(
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_NearFar));
                         }
 
                         // Skinning
-                        else if (node.second == L"BONETRANSFORMS")
+                        else if (node.second == "BONETRANSFORMS")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderGlobalVar(pShader->getShaderVarId(name), name, gfx::ShaderVarType_BoneTransforms));
+                            material->registerSpecificVar(gfx::eShaderType_Skinned,
+                                NEW gfx::ShaderGlobalVar(shader->getShaderVarId(name), name, gfx::ShaderVarType_BoneTransforms));
                         }
 
                         // Texture
-                        else if (node.second == L"TEXTURE2D")
+                        else if (node.second == "TEXTURE2D")
                         {
                             const gfx::Texture2D* tex; 
-                            vec4 testColorMap(reader.readVector4(L"TEXTURE2D", node.first, vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN)));
+                            vec4 testColorMap(reader.readVector4("TEXTURE2D", node.first, vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN)));
                             if (testColorMap == vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN))
-                                tex = CONTENT->asyncLoadTexture2D(reader.readString(L"TEXTURE2D", node.first, ""));
+                                tex = CONTENT->asyncLoadTexture2D(reader.readString("TEXTURE2D", node.first, ""));
                             else
                                 tex = CONTENT->asyncMakeTexture2D(Color(testColorMap));
 
-                            material->registerVar(
+                            material->registerCommonVar(
                                 NEW gfx::ShaderUserVar<const gfx::Texture2D*>(
-                                pShader->getShaderSamplerId(name), name, tex));
+                                shader->getShaderSamplerId(name), name, tex));
                             tex->release();
                         }
                         // Texture Cube
-                        else if (node.second == L"TEXTURECUBE")
+                        else if (node.second == "TEXTURECUBE")
                         {
                             const gfx::TextureCube* tex( 
-                                CONTENT->asyncLoadTextureCube(reader.readString(L"TEXTURECUBE", node.first, "")));
+                                CONTENT->asyncLoadTextureCube(reader.readString("TEXTURECUBE", node.first, "")));
 
-                            material->registerVar(
+                            material->registerCommonVar(
                                 NEW gfx::ShaderUserVar<const gfx::TextureCube*>(
-                                pShader->getShaderSamplerId(name), name, tex));
+                                shader->getShaderSamplerId(name), name, tex));
                             tex->release();
                         }
 
                         // User
-                        else if (node.second == L"FLOAT")
+                        else if (node.second == "FLOAT")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderUserVar<float>(pShader->getShaderVarId(name), name, 
-                                    reader.readFloat(L"FLOAT", node.first, 1.0f)));
+                            material->registerCommonVar(
+                                NEW gfx::ShaderUserVar<float>(shader->getShaderVarId(name), name, 
+                                    reader.readFloat("FLOAT", node.first, 1.0f)));
                         }
-                        else if (node.second == L"VEC2")
+                        else if (node.second == "VEC2")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderUserVar<vec2>(pShader->getShaderVarId(name), name, 
-                                    reader.readVector2(L"VEC2", node.first, vec2(1.0f, 1.0f)))
+                            material->registerCommonVar(
+                                NEW gfx::ShaderUserVar<vec2>(shader->getShaderVarId(name), name, 
+                                    reader.readVector2("VEC2", node.first, vec2(1.0f, 1.0f)))
                                     );
                         }
-                        else if (node.second == L"VEC3")
+                        else if (node.second == "VEC3")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderUserVar<vec3>(pShader->getShaderVarId(name), name, 
-                                reader.readVector3(L"VEC3", node.first, vec3(1.0f, 1.0f, 1.0f)))
+                            material->registerCommonVar(
+                                NEW gfx::ShaderUserVar<vec3>(shader->getShaderVarId(name), name, 
+                                reader.readVector3("VEC3", node.first, vec3(1.0f, 1.0f, 1.0f)))
                                 );
                         }
-                        else if (node.second == L"VEC4")
+                        else if (node.second == "VEC4")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderUserVar<vec4>(pShader->getShaderVarId(name), name, 
-                                reader.readVector4(L"VEC4", node.first, vec4(1.0f, 1.0f, 1.0f, 1.0f)))
+                            material->registerCommonVar(
+                                NEW gfx::ShaderUserVar<vec4>(shader->getShaderVarId(name), name, 
+                                reader.readVector4("VEC4", node.first, vec4(1.0f, 1.0f, 1.0f, 1.0f)))
                                 );
                         }
-                        else if (node.second == L"INT")
+                        else if (node.second == "INT")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderUserVar<int>(pShader->getShaderVarId(name), name, 
-                                reader.readInt(L"INT", node.first, 0))
+                            material->registerCommonVar(
+                                NEW gfx::ShaderUserVar<int>(shader->getShaderVarId(name), name, 
+                                reader.readInt("INT", node.first, 0))
                                 );
                         }
-                        else if (node.second == L"UINT")
+                        else if (node.second == "UINT")
                         {
-                            material->registerVar(
-                                NEW gfx::ShaderUserVar<uint32>(pShader->getShaderVarId(name), name, 
-                                static_cast<uint32>(reader.readInt(L"UINT", node.first, 0)))
+                            material->registerCommonVar(
+                                NEW gfx::ShaderUserVar<uint32>(shader->getShaderVarId(name), name, 
+                                static_cast<uint32>(reader.readInt("UINT", node.first, 0)))
                                 );
                         }
                         else
@@ -484,7 +472,7 @@ ObjectHandle MaterialLoader::load(const he::String& path)
                         }
                     });
                 }
-                pShader->release();
+                shader->release();
             }
         }
         material->setLoaded();

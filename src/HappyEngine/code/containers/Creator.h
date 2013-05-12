@@ -44,7 +44,7 @@ public:
         for (size_t i(0); i < num; ++i)
             create(mem + i);
     }
-    static inline void destroy(T* mem) { mem->~T(); }
+    static inline void destroy(T* mem) { (void)mem->~T(); }
     static inline void destroyArray(T* mem, size_t num) 
     {
         for (size_t i(0); i < num; ++i)

@@ -29,6 +29,8 @@ namespace gfx {
 #define MAX_VERTEX_ARRAY_OBJECTS MAX_OPENGL_CONTEXT
 typedef uint32 VaoID;
 
+#define BUFFER_OFFSET(i) ((char*)nullptr + (i))
+
 //http://www.opengl.org/sdk/docs/man3/xhtml/glDepthFunc.xml
 enum DepthFunc
 {

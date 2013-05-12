@@ -22,7 +22,7 @@
 #include "DrawListContainer.h"
 #include "Drawable.h"
 #include "Material.h"
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
 #include "CullOctree.h"
 #endif
 #include "ICamera.h"
@@ -32,7 +32,7 @@ namespace gfx {
 
 DrawListContainer::DrawListContainer()
 {
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         m_DrawList[blend] = NEW CullOctree();
 #endif
@@ -41,7 +41,7 @@ DrawListContainer::DrawListContainer()
 
 DrawListContainer::~DrawListContainer()
 {
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     for (uint32 blend(0); blend < BlendFilter_MAX; ++blend)
         delete m_DrawList[blend];
 #else
@@ -66,7 +66,7 @@ void DrawListContainer::insert( Drawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->insert(drawable);
 #else
     HE_IF_ASSERT(m_DrawList[blend].contains(drawable) == false, "Drawable already attached")
@@ -78,7 +78,7 @@ void DrawListContainer::remove( Drawable* drawable )
 {
     BlendFilter blend;
     getContainerIndex(drawable, blend);  
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->remove(drawable);
 #else
     m_DrawList[blend].remove(drawable);
@@ -89,7 +89,7 @@ void DrawListContainer::remove( Drawable* drawable )
 void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->draw(camera, drawFunc);
 #else
     std::for_each(m_DrawList[blend].cbegin(), m_DrawList[blend].cend(), [camera, drawFunc](Drawable* drawable)
@@ -102,7 +102,7 @@ void DrawListContainer::draw( BlendFilter blend, const ICamera* camera, const bo
 void DrawListContainer::drawAndCreateDebugMesh( BlendFilter blend, const ICamera* camera, const boost::function1<void, Drawable*>& drawFunc, he::PrimitiveList<vec3>& vertices, he::PrimitiveList<uint32>& indices ) const
 {
     HIERARCHICAL_PROFILE(__HE_FUNCTION__);
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     m_DrawList[blend]->drawAndCreateDebugMesh(camera, drawFunc, vertices, indices);
 #else
     vertices; indices; camera;
@@ -121,7 +121,7 @@ void DrawListContainer::prepareForRendering()
             BlendFilter blend;
             getContainerIndex(drawable, blend);
             drawable->calculateBound();
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
             m_DrawList[blend]->reevaluate(drawable);
 #endif
             drawable->nodeReevaluated();
@@ -132,7 +132,7 @@ void DrawListContainer::prepareForRendering()
 
 void DrawListContainer::forceReevalute( Drawable* drawable )
 {
-#ifdef USE_OCTREE
+#ifdef HE_USE_OCTREE
     BlendFilter blend;
     getContainerIndex(drawable, blend);  
     m_DrawList[blend]->reevaluate(drawable);

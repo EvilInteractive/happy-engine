@@ -43,8 +43,12 @@ public:
     /// Model
     void addMesh(const ObjectHandle& handle);
     size_t getNumMeshes() const;
-    ModelMesh* instantiateMesh(uint32 index) const;
+
+    ModelMesh* instantiateMesh(const uint32 index) const;
     ModelMesh* instantiateMesh(const he::String& name) const;
+    ModelMesh* getMesh(const uint32 index) const;
+    ModelMesh* getMesh(const he::String& name) const;
+
     Model* instantiateMeshesWithPrefix(const he::String& prefix) const;
 
     he::PrimitiveList<ModelMesh*>::const_iterator cbegin() const;

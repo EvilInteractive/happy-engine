@@ -22,6 +22,8 @@
 #define _HE_ShaderLayout_H_
 #pragma once
 
+#include "BufferLayout.h"
+
 namespace he {
 namespace gfx {
 

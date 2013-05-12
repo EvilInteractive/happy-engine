@@ -31,12 +31,10 @@ DEF_FS(W)
 DEF_FS(Entity);
 DEF_FS(CharacterPhysicsComponent);
 DEF_FS(DynamicPhysicsComponent);
-DEF_FS(InstancedModelComponent);
 DEF_FS(PointLightComponent);
 DEF_FS(SpotLightComponent);
 DEF_FS(ModelComponent);
 DEF_FS(PickingComponent);
-DEF_FS(SkinnedModelComponent);
 DEF_FS(StaticPhysicsComponent);
 DEF_FS(TriggerComponent);
 
@@ -66,3 +64,13 @@ DEF_FS(From)
 DEF_FS(FromOutput)
 DEF_FS(To)
 DEF_FS(ToInput)
+
+//////////////////////////////////////////////////////////////////////////
+// Shader
+//////////////////////////////////////////////////////////////////////////
+DEF_FS(dTime)
+DEF_FS(prevLumMap)
+DEF_FS(hdrMap)
+DEF_FS(cubeMap)
+
+

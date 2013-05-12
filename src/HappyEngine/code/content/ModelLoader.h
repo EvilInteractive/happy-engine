@@ -53,11 +53,11 @@ public:
     void tick(float dTime); //checks for new load operations, if true start thread
     void glThreadInvoke();  //needed for all of the gl operations
 
-    gfx::Model* asyncLoadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
-    gfx::ModelMesh* asyncLoadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::Model* asyncLoadModel(const he::String& path, const bool savePickingData);
+    gfx::ModelMesh* asyncLoadModelMesh(const he::String& path, const he::String& meshName, const bool savePickingData);
 
-    gfx::Model* loadModel(const he::String& path, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
-    gfx::ModelMesh* loadModelMesh(const he::String& path, const he::String& meshName, const gfx::BufferLayout& vertexLayout, const bool savePickingData);
+    gfx::Model* loadModel(const he::String& path, const bool savePickingData);
+    gfx::ModelMesh* loadModelMesh(const he::String& path, const he::String& meshName, const bool savePickingData);
 
     /* GETTERS */
     bool isLoading() const;
@@ -68,7 +68,6 @@ private:
     public:
         ModelLoadData() : modelHandle(ObjectHandle::unassigned), loader(nullptr), savePickingData(false) {}
         he::String path;
-        gfx::BufferLayout vertexLayout;
         ObjectHandle modelHandle;
         models::IModelLoader* loader;
         bool savePickingData;

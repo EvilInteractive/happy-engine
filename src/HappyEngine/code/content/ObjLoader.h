@@ -46,7 +46,7 @@ public:
     ObjLoader();
     virtual ~ObjLoader();
 
-    virtual bool load(const he::String& path, const gfx::BufferLayout& vertLayout, bool allowByteIndices = true);
+    virtual bool load(const he::String& path, bool allowByteIndices = true);
 
     virtual size_t getNumMeshes() const;
     virtual const he::String& getMeshName(uint32 mesh) const;
@@ -60,6 +60,7 @@ public:
     virtual gfx::IndexStride getIndexStride(uint32 mesh) const;
     virtual size_t getNumIndices(uint32 mesh) const;
 
+    const gfx::BufferLayout& getVertexLayout() const { return m_VertexLayout; }
 
 private:
     struct Range
@@ -72,7 +73,7 @@ private:
     void flushCreateGroup(uint32 group);
     void create(bool allowByteIndices);
     void addIndex(uint32 index, uint32 group);
-    void fill(void* pdata, const gfx::BufferLayout& vertLayout) const;
+    void fill(void* pdata) const;
 
     he::PrimitiveList<vec3> m_PositionData;
     he::PrimitiveList<vec2> m_TextureData;

@@ -36,42 +36,38 @@ namespace ge {
 class IPickingManager;
   
 struct EntityComponentDesc;  
-class HAPPY_ENTRY PickingComponent : public Pickable, public EntityComponent, public Object3D
+class HAPPY_ENTRY PickingComponent : public Pickable, public EntityComponent
 {
-    IMPLEMENT_IOBJECT3D_FROM(Object3D)
 public:
     PickingComponent();
-    virtual ~PickingComponent();
+    ~PickingComponent();
 
     //////////////////////////////////////////////////////////////////////////
     ///                         EntityComponent                            ///
     //////////////////////////////////////////////////////////////////////////
-    virtual void init(Entity* parent);
+    void init(Entity* parent);  // override, final
     void setPickingManager(he::ge::IPickingManager* const manager);
 
-    virtual void visit(he::io::BinaryVisitor* const /*visitor*/) {}
+    void visit(he::io::BinaryVisitor* const /*visitor*/) {}  // override, final
 
-    virtual void activate();
-    virtual void deactivate();
+    void activate(); // override, final
+    void deactivate(); // override, final
 
-    virtual const he::FixedString& getComponentID() const { return HEFS::strPickingComponent; }
+    const he::FixedString& getComponentID() const { return HEFS::strPickingComponent; }
 
     //// Editor //////////////////////////////////////////////////////////////
     static void fillEntityComponentDesc(EntityComponentDesc& desc);
-    virtual bool setProperty(const Property* const inProperty);
-    virtual bool getProperty(Property* const inOutProperty);
-    //////////////////////////////////////////////////////////////////////////
-
+    bool setProperty(const Property* const inProperty); // override, final
+    bool getProperty(Property* const inOutProperty); // override, final
     //////////////////////////////////////////////////////////////////////////
            
-protected:
-    virtual void getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const;   // Local space
-    virtual const Bound& getPickingBound() const; // Local space
-    virtual const mat44& getPickingWorld() const;
+private:
+    void getPickingData(const vec3*& outVertices, const void*& outIndices, gfx::IndexStride& outIndexStride, size_t& outTriangleCount) const;   // Local space
+    const Bound& getPickingBound() const; // Local space
+    const mat44& getPickingWorld() const;
 
     Entity* m_Parent;
 
-private:
     void initPickingMesh();
 
     he::eventCallback0<void> m_OnNewPickingMesh;

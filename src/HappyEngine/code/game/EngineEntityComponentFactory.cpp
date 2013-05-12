@@ -23,11 +23,9 @@
 
 #include "CharacterPhysicsComponent.h"
 #include "DynamicPhysicsComponent.h"
-#include "InstancedModelComponent.h"
 #include "LightComponent.h"
 #include "ModelComponent.h"
 #include "PickingComponent.h"
-#include "SkinnedModelComponent.h"
 #include "StaticPhysicsComponent.h"
 #include "TriggerComponent.h"
 
@@ -45,10 +43,6 @@ EntityComponent* EngineEntityComponentFactory::createEntityComponent( const he::
     {
         result = NEW DynamicPhysicsComponent();
     }
-    else if (type == HEFS::strInstancedModelComponent)
-    {
-        result = NEW InstancedModelComponent();
-    }
     else if (type == HEFS::strPointLightComponent)
     {
         result = NEW PointLightComponent();
@@ -64,10 +58,6 @@ EntityComponent* EngineEntityComponentFactory::createEntityComponent( const he::
     else if (type == HEFS::strPickingComponent)
     {
         result = NEW PickingComponent();
-    }
-    else if (type == HEFS::strSkinnedModelComponent)
-    {
-        result = NEW SkinnedModelComponent();
     }
     else if (type == HEFS::strStaticPhysicsComponent)
     {
@@ -98,13 +88,7 @@ void EngineEntityComponentFactory::fillComponentDescList( he::PrimitiveList<Enti
 
     //// Needs to be better with a ModelResource and a MaterialResource ////
     FILL_COMPONENT_DESC(list, ModelComponent);
-
-    //// When we have animations ////
-    //FILL_COMPONENT_DESC(list, SkinnedModelComponent);
-
-    //// Need a better manager for this one, we need to have a controller object somewhere ////
-    //FILL_COMPONENT_DESC(list, InstancedModelComponent);
-
+        
     //// Need shape components for these - also these are mutually exclusive! ////
     //FILL_COMPONENT_DESC(list, CharacterPhysicsComponent);
     //FILL_COMPONENT_DESC(list, DynamicPhysicsComponent);

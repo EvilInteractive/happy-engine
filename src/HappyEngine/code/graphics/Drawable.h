@@ -30,11 +30,13 @@ namespace he {
 namespace gfx {
 class ModelMesh;
 class Material;
+class MaterialLayout;
 class Scene;
+class CullOctreeNode;
 
 class HAPPY_ENTRY Drawable: public he::Object3D
 {
-    enum EDrawableFlags //: he::uint8
+    ENUM(EDrawableFlags, he::uint8)
     {
         eDrawableFlags_None = 0,
         eDrawableFlags_CastShadow = 1 << 0,
@@ -50,7 +52,7 @@ public:
 
     HE_FORCEINLINE ModelMesh* const getModelMesh() const { return m_ModelMesh; }
     HE_FORCEINLINE Material* const getMaterial() const { return m_Material; }
-    HE_FORCEINLINE const MaterialLayout& getMaterialLayout() const { return m_MaterialLayout; }
+    HE_FORCEINLINE MaterialLayout* getMaterialLayout() const { return m_MaterialLayout; }
 
     bool getCastsShadow() const { return checkFlag(eDrawableFlags_CastShadow); }
     void setCastsShadow(const bool castShadow) { castShadow? raiseFlag(eDrawableFlags_CastShadow) : clearFlag(eDrawableFlags_CastShadow); }
@@ -65,21 +67,31 @@ public:
     HE_FORCEINLINE bool isAttachedToScene() const { return m_Scene != nullptr; }
 
     void nodeReevaluated() { clearFlag(eDrawableFlags_NeedsSceneReevaluate); }
-    
-private:
+
+#ifdef HE_USE_OCTREE
+    CullOctreeNode* getNode() const { return m_Node; };
+    void setNode(CullOctreeNode* const node) { m_Node = node; };
+#endif
+
+protected:
     void setWorldMatrixDirty(const uint8 cause);
+
+private:
     HE_FORCEINLINE bool checkFlag(const EDrawableFlags flag) const { return (m_Flags & flag) != 0; }
     HE_FORCEINLINE void raiseFlag(const EDrawableFlags flag) { m_Flags |= flag; }
     HE_FORCEINLINE void clearFlag(const EDrawableFlags flag) { m_Flags &= ~flag; }
 
-    void updateMaterialLayout();
-    void invoke(ModelMesh* const mesh, Material* const material, const boost::function0<void> func);
+    void updateMaterialLayout(ModelMesh* const mesh, Material* const material);
+    void internalAttachToScene(Scene* const scene);
 
     Bound m_Bound;
+#ifdef HE_USE_OCTREE
+    CullOctreeNode* m_Node;
+#endif
     
     ModelMesh* m_ModelMesh;
     Material* m_Material;
-    MaterialLayout m_MaterialLayout;
+    MaterialLayout* m_MaterialLayout;
 
     Scene* m_Scene;
     uint8 m_Flags;

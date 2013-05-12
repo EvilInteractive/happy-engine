@@ -19,6 +19,7 @@
 //Created: 18/07/2012
 #include "HappyPCH.h" 
 
+#ifdef HE_USE_OCTREE
 #include "CullOctree.h"
 #include "Drawable.h"
 #include "Frustum.h"
@@ -466,3 +467,5 @@ void CullOctreeNode::doRemoveChilderen(bool checkParent)
 }
 
 } } //end namespace
+
+#endif
